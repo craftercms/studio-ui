@@ -17,13 +17,13 @@
 import { defineMessages } from 'react-intl';
 
 export const translations = defineMessages({
-  placeholder: {
-    id: 'createFolder.placeholder',
-    defaultMessage: 'Please type a folder name'
-  },
-  policyError: {
-    defaultMessage: 'File "{fileName}" doesn\'t comply with project policies: {detail}'
-  }
+	placeholder: {
+		id: 'createFolder.placeholder',
+		defaultMessage: 'Please type a folder name'
+	},
+	policyError: {
+		defaultMessage: 'File "{fileName}" doesn\'t comply with project policies: {detail}'
+	}
 });
 
 export default translations;

@@ -18,8 +18,8 @@ import LegacyIFrame from '../LegacyIFrame';
 import React from 'react';
 
 export function EmbeddedSearchIframe() {
-  const path = 'search?embedded=true&mode=default';
-  return <LegacyIFrame path={path} />;
+	const path = 'search?embedded=true&mode=default';
+	return <LegacyIFrame path={path} />;
 }
 
 export default EmbeddedSearchIframe;

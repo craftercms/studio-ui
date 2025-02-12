@@ -25,38 +25,38 @@ import React from 'react';
 import { AuditLogEntryParametersDialogUIProps } from './utils';
 
 export function AuditLogEntryParametersDialogUI(props: AuditLogEntryParametersDialogUIProps) {
-  const { parameters = [] } = props;
+	const { parameters = [] } = props;
 
-  return (
-    <DialogBody>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>
-              <FormattedMessage id="words.id" defaultMessage="Id" />
-            </TableCell>
-            <TableCell align="right">
-              <FormattedMessage id="words.type" defaultMessage="Type" />
-            </TableCell>
-            <TableCell align="right">
-              <FormattedMessage id="words.value" defaultMessage="Value" />
-            </TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {parameters.map((logParameters) => (
-            <TableRow key={logParameters.targetId}>
-              <TableCell component="th" scope="row">
-                {logParameters.targetId}
-              </TableCell>
-              <TableCell align="right">{logParameters.targetType}</TableCell>
-              <TableCell align="right">{logParameters.targetValue}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </DialogBody>
-  );
+	return (
+		<DialogBody>
+			<Table>
+				<TableHead>
+					<TableRow>
+						<TableCell>
+							<FormattedMessage id="words.id" defaultMessage="Id" />
+						</TableCell>
+						<TableCell align="right">
+							<FormattedMessage id="words.type" defaultMessage="Type" />
+						</TableCell>
+						<TableCell align="right">
+							<FormattedMessage id="words.value" defaultMessage="Value" />
+						</TableCell>
+					</TableRow>
+				</TableHead>
+				<TableBody>
+					{parameters.map((logParameters) => (
+						<TableRow key={logParameters.targetId}>
+							<TableCell component="th" scope="row">
+								{logParameters.targetId}
+							</TableCell>
+							<TableCell align="right">{logParameters.targetType}</TableCell>
+							<TableCell align="right">{logParameters.targetValue}</TableCell>
+						</TableRow>
+					))}
+				</TableBody>
+			</Table>
+		</DialogBody>
+	);
 }
 
 export default AuditLogEntryParametersDialogUI;

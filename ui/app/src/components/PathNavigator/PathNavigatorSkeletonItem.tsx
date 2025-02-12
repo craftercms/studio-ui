@@ -22,35 +22,35 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 
 function PathNavigatorSkeletonItem() {
-  return (
-    <ListItem
-      sx={{
-        minHeight: '23.5px',
-        padding: '0 0 0 5px',
-        marginLeft: '15px',
-        width: 'calc(100% - 15px)',
-        '&:hover': {
-          backgroundColor: (theme) =>
-            theme.palette.mode === 'dark' ? theme.palette.action.hover : theme.palette.grey['A200']
-        }
-      }}
-      style={{ height: '25px' }}
-    >
-      <ListItemIcon
-        sx={{
-          mr: 0,
-          [`& .${skeletonClasses.root}`]: {
-            marginRight: '5px',
-            fontSize: '1.2rem'
-          }
-        }}
-      >
-        <Skeleton variant="circular" height={15} width={15} />
-        <Skeleton variant="circular" height={15} width={15} />
-      </ListItemIcon>
-      <ListItemText primary={<Skeleton width={`${rand(30, 85)}%`} height={15} />} />
-    </ListItem>
-  );
+	return (
+		<ListItem
+			sx={{
+				minHeight: '23.5px',
+				padding: '0 0 0 5px',
+				marginLeft: '15px',
+				width: 'calc(100% - 15px)',
+				'&:hover': {
+					backgroundColor: (theme) =>
+						theme.palette.mode === 'dark' ? theme.palette.action.hover : theme.palette.grey['A200']
+				}
+			}}
+			style={{ height: '25px' }}
+		>
+			<ListItemIcon
+				sx={{
+					mr: 0,
+					[`& .${skeletonClasses.root}`]: {
+						marginRight: '5px',
+						fontSize: '1.2rem'
+					}
+				}}
+			>
+				<Skeleton variant="circular" height={15} width={15} />
+				<Skeleton variant="circular" height={15} width={15} />
+			</ListItemIcon>
+			<ListItemText primary={<Skeleton width={`${rand(30, 85)}%`} height={15} />} />
+		</ListItem>
+	);
 }
 
 export default PathNavigatorSkeletonItem;

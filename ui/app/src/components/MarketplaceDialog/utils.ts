@@ -20,24 +20,24 @@ import { PagedArray } from '../../models/PagedArray';
 import LookupTable from '../../models/LookupTable';
 
 export interface InstallPluginDialogBaseProps {
-  open: boolean;
-  installedPlugins: LookupTable<boolean>;
-  installPermission?: boolean;
+	open: boolean;
+	installedPlugins: LookupTable<boolean>;
+	installPermission?: boolean;
 }
 
 export type InstallPluginDialogProps = PropsWithChildren<
-  InstallPluginDialogBaseProps & {
-    onInstall(plugin: MarketplacePlugin): void;
-    onClose(): void;
-    onClosed?(): void;
-  }
+	InstallPluginDialogBaseProps & {
+		onInstall(plugin: MarketplacePlugin): void;
+		onClose(): void;
+		onClosed?(): void;
+	}
 >;
 
 export interface PluginListProps {
-  plugins: PagedArray<MarketplacePlugin>;
-  installPermission: boolean;
-  installedPlugins: LookupTable<boolean>;
-  installingLookup: LookupTable<boolean>;
-  onPluginDetails(plugin: MarketplacePlugin): void;
-  onPluginSelected(plugin: MarketplacePlugin): void;
+	plugins: PagedArray<MarketplacePlugin>;
+	installPermission: boolean;
+	installedPlugins: LookupTable<boolean>;
+	installingLookup: LookupTable<boolean>;
+	onPluginDetails(plugin: MarketplacePlugin): void;
+	onPluginSelected(plugin: MarketplacePlugin): void;
 }

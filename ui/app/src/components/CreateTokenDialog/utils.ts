@@ -21,10 +21,10 @@ import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDial
 export interface CreateTokenBaseProps {}
 
 export interface CreateTokenDialogProps extends CreateTokenBaseProps, EnhancedDialogProps {
-  onCreated?(response: Token): void;
-  onSubmittingAndOrPendingChange(value: onSubmittingAndOrPendingChangeProps): void;
+	onCreated?(response: Token): void;
+	onSubmittingAndOrPendingChange(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
 export interface CreateTokenContainerProps
-  extends CreateTokenBaseProps,
-    Pick<CreateTokenDialogProps, 'onClose' | 'onCreated' | 'onSubmittingAndOrPendingChange' | 'isSubmitting'> {}
+	extends CreateTokenBaseProps,
+		Pick<CreateTokenDialogProps, 'onClose' | 'onCreated' | 'onSubmittingAndOrPendingChange' | 'isSubmitting'> {}

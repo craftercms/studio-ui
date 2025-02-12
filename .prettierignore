@@ -1,0 +1,26 @@
+# Global
+node_modules
+build_tsc
+build
+target
+.yarn
+.idea
+.min.*
+
+# ui/app
+ui/app/src/vite-env.d.ts
+ui/app/src/react-app-env.d.ts
+
+# ui/guest
+ui/guest/jquery
+
+# ui/uppy
+ui/uppy/lib
+
+# static-assets
+static-assets/app
+static-assets/libs
+static-assets/jquery
+static-assets/yui
+static-assets/modules
+static-assets/styles

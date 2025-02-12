@@ -27,27 +27,27 @@ import { useSelection } from '../../hooks/useSelection';
 export interface PreviewBackButtonProps extends IconButtonProps {}
 
 export function PreviewBackButton(props: PreviewBackButtonProps) {
-  const currentUrlPath = useSelection((state) => state.previewNavigation.currentUrlPath);
-  const stack = useHistoryBackStack();
-  const dispatch = useDispatch();
-  const onClick = () => {
-    dispatch(goToLastPage());
-  };
+	const currentUrlPath = useSelection((state) => state.previewNavigation.currentUrlPath);
+	const stack = useHistoryBackStack();
+	const dispatch = useDispatch();
+	const onClick = () => {
+		dispatch(goToLastPage());
+	};
 
-  return (
-    <Tooltip title={<FormattedMessage id="words.back" defaultMessage="Back" />}>
-      <span>
-        <IconButton
-          disabled={stack.length === 0 || (stack.length === 1 && currentUrlPath === stack[0])}
-          onClick={onClick}
-          size="large"
-          {...props}
-        >
-          <ArrowBackRoundedIcon />
-        </IconButton>
-      </span>
-    </Tooltip>
-  );
+	return (
+		<Tooltip title={<FormattedMessage id="words.back" defaultMessage="Back" />}>
+			<span>
+				<IconButton
+					disabled={stack.length === 0 || (stack.length === 1 && currentUrlPath === stack[0])}
+					onClick={onClick}
+					size="large"
+					{...props}
+				>
+					<ArrowBackRoundedIcon />
+				</IconButton>
+			</span>
+		</Tooltip>
+	);
 }
 
 export default PreviewBackButton;

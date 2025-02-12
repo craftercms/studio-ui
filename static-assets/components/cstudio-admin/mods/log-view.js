@@ -15,28 +15,28 @@
  */
 
 CStudioAdminConsole.Tool.LogView =
-  CStudioAdminConsole.Tool.LogView ||
-  function (config, el) {
-    this.containerEl = el;
-    this.config = config;
-    this.types = [];
-    return this;
-  };
+	CStudioAdminConsole.Tool.LogView ||
+	function (config, el) {
+		this.containerEl = el;
+		this.config = config;
+		this.types = [];
+		return this;
+	};
 
 /**
  * Overarching class that drives the content type tools
  */
 YAHOO.extend(CStudioAdminConsole.Tool.LogView, CStudioAdminConsole.Tool, {
-  renderWorkarea: function () {
-    const workarea = document.getElementById('cstudio-admin-console-workarea');
-    var el = document.createElement('div');
-    el.className = 'cstudio-admin-console-workarea-container';
-    $(workarea).html('');
-    workarea.appendChild(el);
-    CrafterCMSNext.render(el, 'LogConsole', { logType: 'preview' });
-    // TODO: This should be removed when ContentTypes and WorkflowStates are Reactified
-    CStudioAuthoring.ContextualNav.AdminConsoleNav.initActions([]);
-  }
+	renderWorkarea: function () {
+		const workarea = document.getElementById('cstudio-admin-console-workarea');
+		var el = document.createElement('div');
+		el.className = 'cstudio-admin-console-workarea-container';
+		$(workarea).html('');
+		workarea.appendChild(el);
+		CrafterCMSNext.render(el, 'LogConsole', { logType: 'preview' });
+		// TODO: This should be removed when ContentTypes and WorkflowStates are Reactified
+		CStudioAuthoring.ContextualNav.AdminConsoleNav.initActions([]);
+	}
 });
 
 CStudioAuthoring.Module.moduleLoaded('cstudio-console-tools-log-view', CStudioAdminConsole.Tool.LogView);

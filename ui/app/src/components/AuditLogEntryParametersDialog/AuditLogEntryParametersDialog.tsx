@@ -21,12 +21,12 @@ import EnhancedDialog from '../EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
 
 export function AuditLogEntryParametersDialog(props: AuditLogEntryParametersDialogProps) {
-  const { parameters, ...rest } = props;
-  return (
-    <EnhancedDialog title={<FormattedMessage id="words.parameters" defaultMessage="Parameters" />} {...rest}>
-      <AuditLogEntryParametersDialogUI parameters={parameters} />
-    </EnhancedDialog>
-  );
+	const { parameters, ...rest } = props;
+	return (
+		<EnhancedDialog title={<FormattedMessage id="words.parameters" defaultMessage="Parameters" />} {...rest}>
+			<AuditLogEntryParametersDialogUI parameters={parameters} />
+		</EnhancedDialog>
+	);
 }
 
 export default AuditLogEntryParametersDialog;

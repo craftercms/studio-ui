@@ -16,15 +16,15 @@
 
 import { get, postJSON } from '../utils/ajax';
 import {
-  Api2BulkResponseFormat,
-  Api2ResponseFormat,
-  LookupTable,
-  MarketplacePlugin,
-  MarketplacePluginVersion,
-  MarketplaceSite,
-  PagedArray,
-  PluginRecord,
-  SandboxItem
+	Api2BulkResponseFormat,
+	Api2ResponseFormat,
+	LookupTable,
+	MarketplacePlugin,
+	MarketplacePluginVersion,
+	MarketplaceSite,
+	PagedArray,
+	PluginRecord,
+	SandboxItem
 } from '../models';
 import { map, switchMap } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
@@ -32,87 +32,87 @@ import { pluckProps, toQueryString } from '../utils/object';
 import { fetchItemsByPath } from './content';
 
 export function fetchBlueprints(options?: {
-  type?: string;
-  limit?: number;
-  showIncompatible?: boolean;
+	type?: string;
+	limit?: number;
+	showIncompatible?: boolean;
 }): Observable<PagedArray<MarketplacePlugin>> {
-  return fetchMarketplacePlugins({
-    limit: 1000,
-    showIncompatible: true,
-    ...options,
-    type: 'blueprint'
-  });
+	return fetchMarketplacePlugins({
+		limit: 1000,
+		showIncompatible: true,
+		...options,
+		type: 'blueprint'
+	});
 }
 
 interface MarketplacePluginSearchOptions {
-  type: string;
-  limit: number;
-  offset: number;
-  keywords: string;
-  showIncompatible: boolean;
+	type: string;
+	limit: number;
+	offset: number;
+	keywords: string;
+	showIncompatible: boolean;
 }
 
 export function fetchMarketplacePlugins(
-  options: Partial<MarketplacePluginSearchOptions>
+	options: Partial<MarketplacePluginSearchOptions>
 ): Observable<PagedArray<MarketplacePlugin>> {
-  const qs = toQueryString(options);
-  return get<
-    Api2BulkResponseFormat<{
-      plugins: MarketplacePlugin[];
-    }>
-  >(`/studio/api/2/marketplace/search${qs}`).pipe(
-    map((response) =>
-      Object.assign(response.response.plugins, pluckProps(response.response, 'limit', 'total', 'offset'))
-    )
-  );
+	const qs = toQueryString(options);
+	return get<
+		Api2BulkResponseFormat<{
+			plugins: MarketplacePlugin[];
+		}>
+	>(`/studio/api/2/marketplace/search${qs}`).pipe(
+		map((response) =>
+			Object.assign(response.response.plugins, pluckProps(response.response, 'limit', 'total', 'offset'))
+		)
+	);
 }
 
 export function installMarketplacePlugin(
-  siteId: string,
-  pluginId: string,
-  pluginVersion: MarketplacePluginVersion,
-  parameters?: LookupTable<string>
+	siteId: string,
+	pluginId: string,
+	pluginVersion: MarketplacePluginVersion,
+	parameters?: LookupTable<string>
 ): Observable<boolean> {
-  return postJSON('/studio/api/2/marketplace/install', { siteId, pluginId, pluginVersion, parameters }).pipe(
-    map(() => true)
-  );
+	return postJSON('/studio/api/2/marketplace/install', { siteId, pluginId, pluginVersion, parameters }).pipe(
+		map(() => true)
+	);
 }
 
 export function uninstallMarketplacePlugin(
-  siteId: string,
-  pluginId: string,
-  force: boolean = false
+	siteId: string,
+	pluginId: string,
+	force: boolean = false
 ): Observable<boolean> {
-  return postJSON('/studio/api/2/marketplace/remove', {
-    siteId,
-    pluginId,
-    force
-  }).pipe(map(() => true));
+	return postJSON('/studio/api/2/marketplace/remove', {
+		siteId,
+		pluginId,
+		force
+	}).pipe(map(() => true));
 }
 
 export function getPluginConfiguration(siteId: string, pluginId: string): Observable<string> {
-  const qs = toQueryString({ siteId, pluginId });
-  return get(`/studio/api/2/plugin/get_configuration${qs}`).pipe(map((response) => response?.response?.content));
+	const qs = toQueryString({ siteId, pluginId });
+	return get(`/studio/api/2/plugin/get_configuration${qs}`).pipe(map((response) => response?.response?.content));
 }
 
 export function setPluginConfiguration(siteId: string, pluginId: string, content: string): Observable<boolean> {
-  return postJSON('/studio/api/2/plugin/write_configuration', { siteId, pluginId, content }).pipe(map(() => true));
+	return postJSON('/studio/api/2/plugin/write_configuration', { siteId, pluginId, content }).pipe(map(() => true));
 }
 
 export function fetchMarketplacePluginUsage(siteId: string, pluginId: string): Observable<SandboxItem[]> {
-  const qs = toQueryString({ siteId, pluginId });
-  return get(`/studio/api/2/marketplace/usage${qs}`).pipe(
-    map((response) => response?.response?.items),
-    switchMap((items) => (items.length === 0 ? of(items) : fetchItemsByPath(siteId, items)))
-  );
+	const qs = toQueryString({ siteId, pluginId });
+	return get(`/studio/api/2/marketplace/usage${qs}`).pipe(
+		map((response) => response?.response?.items),
+		switchMap((items) => (items.length === 0 ? of(items) : fetchItemsByPath(siteId, items)))
+	);
 }
 
 export function fetchInstalledMarketplacePlugins(siteId: string): Observable<PluginRecord[]> {
-  return get<Api2ResponseFormat<{ plugins: PluginRecord[] }>>(
-    `/studio/api/2/marketplace/installed?siteId=${siteId}`
-  ).pipe(map((response) => response?.response?.plugins));
+	return get<Api2ResponseFormat<{ plugins: PluginRecord[] }>>(
+		`/studio/api/2/marketplace/installed?siteId=${siteId}`
+	).pipe(map((response) => response?.response?.plugins));
 }
 
 export function createSite(site: MarketplaceSite): Observable<boolean> {
-  return postJSON('/studio/api/2/sites/create_site_from_marketplace', site).pipe(map(() => true));
+	return postJSON('/studio/api/2/sites/create_site_from_marketplace', site).pipe(map(() => true));
 }

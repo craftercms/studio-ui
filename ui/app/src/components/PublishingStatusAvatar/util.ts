@@ -18,22 +18,22 @@ import { Theme } from '@mui/material/styles';
 import { PublishingStatusCodes } from '../../models';
 
 export const getPublishingStatusCodeColor = (code: PublishingStatusCodes, theme: Theme) => {
-  switch (code) {
-    case 'ready':
-    case 'publishing': {
-      return theme.palette.success.main;
-    }
-    case 'stopped': {
-      return theme.palette.error.main;
-    }
-  }
-  // region Compiler hints
-  // Var below is for typescript to complain if we ever add/remove codes.
-  // eslint-disable-next-line no-unreachable,@typescript-eslint/no-unused-vars
-  const control: Record<PublishingStatusCodes, any> = {
-    publishing: undefined,
-    ready: undefined,
-    stopped: undefined
-  };
-  // endregion
+	switch (code) {
+		case 'ready':
+		case 'publishing': {
+			return theme.palette.success.main;
+		}
+		case 'stopped': {
+			return theme.palette.error.main;
+		}
+	}
+	// region Compiler hints
+	// Var below is for typescript to complain if we ever add/remove codes.
+	// eslint-disable-next-line no-unreachable,@typescript-eslint/no-unused-vars
+	const control: Record<PublishingStatusCodes, any> = {
+		publishing: undefined,
+		ready: undefined,
+		stopped: undefined
+	};
+	// endregion
 };

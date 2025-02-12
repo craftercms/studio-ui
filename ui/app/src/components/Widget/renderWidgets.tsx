@@ -21,30 +21,30 @@ import Widget, { WidgetProps } from './Widget';
 type MapperFn = (widget: WidgetDescriptor, index: number) => ReactElement;
 
 export function renderWidgets(
-  widgets: WidgetDescriptor[],
-  options?: Pick<WidgetProps, 'overrideProps' | 'defaultProps'> & {
-    userRoles?: string[];
-    createMapperFn?(originalMapperFn: MapperFn): MapperFn;
-  }
+	widgets: WidgetDescriptor[],
+	options?: Pick<WidgetProps, 'overrideProps' | 'defaultProps'> & {
+		userRoles?: string[];
+		createMapperFn?(originalMapperFn: MapperFn): MapperFn;
+	}
 ): JSX.Element[] {
-  if (!Array.isArray(widgets)) {
-    return [];
-  }
-  const { userRoles, overrideProps, defaultProps, createMapperFn = (fn) => fn } = options;
-  const mapperFn = createMapperFn((widget, index) => (
-    <Widget key={widget.uiKey ?? index} {...widget} overrideProps={overrideProps} defaultProps={defaultProps} />
-  ));
-  return Array.isArray(userRoles)
-    ? widgets
-        .filter(
-          (widget) =>
-            // Incorrect deserialization or content of permittedRoles may cause it to be something other than an array
-            !Array.isArray(widget.permittedRoles) ||
-            (widget.permittedRoles ?? []).length === 0 ||
-            (userRoles ?? []).some((role) => widget.permittedRoles.includes(role))
-        )
-        .map(mapperFn)
-    : widgets.map(mapperFn);
+	if (!Array.isArray(widgets)) {
+		return [];
+	}
+	const { userRoles, overrideProps, defaultProps, createMapperFn = (fn) => fn } = options;
+	const mapperFn = createMapperFn((widget, index) => (
+		<Widget key={widget.uiKey ?? index} {...widget} overrideProps={overrideProps} defaultProps={defaultProps} />
+	));
+	return Array.isArray(userRoles)
+		? widgets
+				.filter(
+					(widget) =>
+						// Incorrect deserialization or content of permittedRoles may cause it to be something other than an array
+						!Array.isArray(widget.permittedRoles) ||
+						(widget.permittedRoles ?? []).length === 0 ||
+						(userRoles ?? []).some((role) => widget.permittedRoles.includes(role))
+				)
+				.map(mapperFn)
+		: widgets.map(mapperFn);
 }
 
 export default renderWidgets;

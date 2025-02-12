@@ -30,92 +30,92 @@ import { SystemStyleObject } from '@mui/system/styleFunctionSx/styleFunctionSx';
 export type PathNavigatorHeaderClassKey = 'root' | 'content';
 
 export interface PathNavigatorHeaderProps {
-  locale: string;
-  title: string;
-  icon?: SystemIconDescriptor & Partial<{ expandedStyle: {}; collapsedStyle: {} }>;
-  collapsed: boolean;
-  onLanguageMenu?(anchor: Element): void;
-  onMenuButtonClick?(anchor: Element): void;
-  menuButtonIcon?: ReactNode;
-  className?: string;
-  classes?: Partial<Record<PathNavigatorHeaderClassKey, string>>;
-  sx?: SxProps<Theme>;
-  sxs?: PartialSxRecord<PathNavigatorHeaderClassKey>;
+	locale: string;
+	title: string;
+	icon?: SystemIconDescriptor & Partial<{ expandedStyle: {}; collapsedStyle: {} }>;
+	collapsed: boolean;
+	onLanguageMenu?(anchor: Element): void;
+	onMenuButtonClick?(anchor: Element): void;
+	menuButtonIcon?: ReactNode;
+	className?: string;
+	classes?: Partial<Record<PathNavigatorHeaderClassKey, string>>;
+	sx?: SxProps<Theme>;
+	sxs?: PartialSxRecord<PathNavigatorHeaderClassKey>;
 }
 
 // PathNavigatorHeader
 export function PathNavigatorHeader(props: PathNavigatorHeaderProps) {
-  const {
-    title,
-    icon,
-    locale,
-    onLanguageMenu,
-    onMenuButtonClick,
-    menuButtonIcon = <MoreVertIcon />,
-    collapsed = false,
-    className,
-    sx,
-    sxs
-  } = props;
-  const currentFlag = (locale: string) => <LanguageRounded />;
-  return (
-    <AccordionSummary
-      className={className}
-      classes={{
-        root: props.classes?.root,
-        content: props.classes?.content
-      }}
-      sx={{
-        ...(sx as SystemStyleObject<Theme>),
-        ...sxs?.root,
-        [`& .${accordionSummaryClasses.content}`]: {
-          alignItems: 'center',
-          placeContent: 'center space-between',
-          '&, &.Mui-expanded': {
-            margin: 0
-          },
-          ...sxs?.content
-        }
-      }}
-    >
-      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-        {icon && (
-          <SystemIcon
-            icon={icon}
-            sx={{ color: (theme) => theme.palette.action.active, marginRight: '10px' }}
-            style={icon[collapsed ? 'collapsedStyle' : 'expandedStyle']}
-          />
-        )}
-        <Typography variant="body1" component="h6" sx={{ flexGrow: 1 }} children={title} />
-      </Box>
-      <Box>
-        {onLanguageMenu && (
-          <IconButton
-            aria-label="language select"
-            onClick={(e) => {
-              e.stopPropagation();
-              onLanguageMenu(e.currentTarget);
-            }}
-            size="small"
-          >
-            {currentFlag(locale)}
-          </IconButton>
-        )}
-        {onMenuButtonClick && (
-          <IconButton
-            aria-label="options"
-            onClick={(e) => {
-              e.stopPropagation();
-              onMenuButtonClick(e.currentTarget);
-            }}
-            size="small"
-          >
-            {menuButtonIcon}
-          </IconButton>
-        )}
-      </Box>
-    </AccordionSummary>
-  );
+	const {
+		title,
+		icon,
+		locale,
+		onLanguageMenu,
+		onMenuButtonClick,
+		menuButtonIcon = <MoreVertIcon />,
+		collapsed = false,
+		className,
+		sx,
+		sxs
+	} = props;
+	const currentFlag = (locale: string) => <LanguageRounded />;
+	return (
+		<AccordionSummary
+			className={className}
+			classes={{
+				root: props.classes?.root,
+				content: props.classes?.content
+			}}
+			sx={{
+				...(sx as SystemStyleObject<Theme>),
+				...sxs?.root,
+				[`& .${accordionSummaryClasses.content}`]: {
+					alignItems: 'center',
+					placeContent: 'center space-between',
+					'&, &.Mui-expanded': {
+						margin: 0
+					},
+					...sxs?.content
+				}
+			}}
+		>
+			<Box sx={{ display: 'flex', alignItems: 'center' }}>
+				{icon && (
+					<SystemIcon
+						icon={icon}
+						sx={{ color: (theme) => theme.palette.action.active, marginRight: '10px' }}
+						style={icon[collapsed ? 'collapsedStyle' : 'expandedStyle']}
+					/>
+				)}
+				<Typography variant="body1" component="h6" sx={{ flexGrow: 1 }} children={title} />
+			</Box>
+			<Box>
+				{onLanguageMenu && (
+					<IconButton
+						aria-label="language select"
+						onClick={(e) => {
+							e.stopPropagation();
+							onLanguageMenu(e.currentTarget);
+						}}
+						size="small"
+					>
+						{currentFlag(locale)}
+					</IconButton>
+				)}
+				{onMenuButtonClick && (
+					<IconButton
+						aria-label="options"
+						onClick={(e) => {
+							e.stopPropagation();
+							onMenuButtonClick(e.currentTarget);
+						}}
+						size="small"
+					>
+						{menuButtonIcon}
+					</IconButton>
+				)}
+			</Box>
+		</AccordionSummary>
+	);
 }
 
 export default PathNavigatorHeader;

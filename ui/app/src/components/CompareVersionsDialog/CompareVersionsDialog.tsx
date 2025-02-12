@@ -23,49 +23,49 @@ import { AsDayMonthDateTime } from '../VersionList';
 import Slide from '@mui/material/Slide';
 
 export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
-  const {
-    selectedA,
-    selectedB,
-    leftActions,
-    rightActions,
-    versionsBranch,
-    isFetching,
-    error,
-    disableItemSwitching,
-    contentTypesBranch,
-    ...rest
-  } = props;
+	const {
+		selectedA,
+		selectedB,
+		leftActions,
+		rightActions,
+		versionsBranch,
+		isFetching,
+		error,
+		disableItemSwitching,
+		contentTypesBranch,
+		...rest
+	} = props;
 
-  return (
-    <EnhancedDialog
-      title={
-        <FormattedMessage
-          defaultMessage="Comparing “{selectedA}” with “{selectedB}”"
-          values={{
-            selectedA: <AsDayMonthDateTime date={selectedA?.modifiedDate} />,
-            selectedB: <AsDayMonthDateTime date={selectedB?.modifiedDate} />
-          }}
-        />
-      }
-      dialogHeaderProps={{
-        leftActions,
-        rightActions
-      }}
-      maxWidth="xl"
-      TransitionComponent={Slide}
-      {...rest}
-    >
-      <CompareVersionsDialogContainer
-        versionsBranch={versionsBranch}
-        isFetching={isFetching}
-        error={error}
-        disableItemSwitching={disableItemSwitching}
-        contentTypesBranch={contentTypesBranch}
-        selectedA={selectedA}
-        selectedB={selectedB}
-      />
-    </EnhancedDialog>
-  );
+	return (
+		<EnhancedDialog
+			title={
+				<FormattedMessage
+					defaultMessage="Comparing “{selectedA}” with “{selectedB}”"
+					values={{
+						selectedA: <AsDayMonthDateTime date={selectedA?.modifiedDate} />,
+						selectedB: <AsDayMonthDateTime date={selectedB?.modifiedDate} />
+					}}
+				/>
+			}
+			dialogHeaderProps={{
+				leftActions,
+				rightActions
+			}}
+			maxWidth="xl"
+			TransitionComponent={Slide}
+			{...rest}
+		>
+			<CompareVersionsDialogContainer
+				versionsBranch={versionsBranch}
+				isFetching={isFetching}
+				error={error}
+				disableItemSwitching={disableItemSwitching}
+				contentTypesBranch={contentTypesBranch}
+				selectedA={selectedA}
+				selectedB={selectedB}
+			/>
+		</EnhancedDialog>
+	);
 }
 
 export default CompareVersionsDialog;

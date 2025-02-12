@@ -20,19 +20,19 @@ import { closeViewPackagesDialog, showViewPackagesDialog, viewPackagesDialogClos
 import { ViewPackagesDialogStateProps } from '../../../components/ViewPackagesDialog';
 
 const initialState = {
-  open: false,
-  item: null
+	open: false,
+	item: null
 };
 
 export default createReducer<GlobalState['dialogs']['viewPackages']>(initialState, (builder) => {
-  builder
-    .addCase(showViewPackagesDialog, (state, { payload }) => ({
-      ...state,
-      onClose: closeViewPackagesDialog(),
-      onClosed: viewPackagesDialogClosed(),
-      ...(payload as Partial<ViewPackagesDialogStateProps>),
-      open: true
-    }))
-    .addCase(closeViewPackagesDialog, (state) => ({ ...state, open: false }))
-    .addCase(viewPackagesDialogClosed, () => initialState);
+	builder
+		.addCase(showViewPackagesDialog, (state, { payload }) => ({
+			...state,
+			onClose: closeViewPackagesDialog(),
+			onClosed: viewPackagesDialogClosed(),
+			...(payload as Partial<ViewPackagesDialogStateProps>),
+			open: true
+		}))
+		.addCase(closeViewPackagesDialog, (state) => ({ ...state, open: false }))
+		.addCase(viewPackagesDialogClosed, () => initialState);
 });

@@ -22,16 +22,16 @@ import { AwsItem } from '../models/Aws';
 import { Api2ResponseFormat } from '../models/ApiResponse';
 
 export function list(
-  siteId: string,
-  profileId: string,
-  options: { path?: string; type?: string } = {}
+	siteId: string,
+	profileId: string,
+	options: { path?: string; type?: string } = {}
 ): Observable<AwsItem[]> {
-  const qs = toQueryString({
-    siteId,
-    profileId,
-    ...options
-  });
-  return get<Api2ResponseFormat<{ items: AwsItem[] }>>(`/studio/api/2/aws/s3/list${qs}`).pipe(
-    map((response) => response?.response?.items)
-  );
+	const qs = toQueryString({
+		siteId,
+		profileId,
+		...options
+	});
+	return get<Api2ResponseFormat<{ items: AwsItem[] }>>(`/studio/api/2/aws/s3/list${qs}`).pipe(
+		map((response) => response?.response?.items)
+	);
 }

@@ -19,26 +19,26 @@ import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 
 export interface CreateFolderBaseProps {
-  path?: string;
-  rename?: boolean;
-  value?: string;
-  allowBraces?: boolean;
+	path?: string;
+	rename?: boolean;
+	value?: string;
+	allowBraces?: boolean;
 }
 
 export interface CreateFolderProps extends CreateFolderBaseProps, EnhancedDialogProps {
-  onCreated?(response: { path: string; name: string; rename: boolean }): void;
-  onRenamed?(response: { path: string; name: string; rename: boolean }): void;
+	onCreated?(response: { path: string; name: string; rename: boolean }): void;
+	onRenamed?(response: { path: string; name: string; rename: boolean }): void;
 }
 
 export interface CreateFolderStateProps extends CreateFolderBaseProps, EnhancedDialogState {
-  onClose?: StandardAction;
-  onClosed?: StandardAction;
-  onCreated?: StandardAction;
-  onRenamed?: StandardAction;
+	onClose?: StandardAction;
+	onClosed?: StandardAction;
+	onCreated?: StandardAction;
+	onRenamed?: StandardAction;
 }
 
 export interface CreateFolderContainerProps
-  extends Pick<
-    CreateFolderProps,
-    'path' | 'allowBraces' | 'value' | 'rename' | 'onRenamed' | 'onCreated' | 'onClose'
-  > {}
+	extends Pick<
+		CreateFolderProps,
+		'path' | 'allowBraces' | 'value' | 'rename' | 'onRenamed' | 'onCreated' | 'onClose'
+	> {}

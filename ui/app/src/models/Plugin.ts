@@ -15,18 +15,18 @@
  */
 
 export interface FileRecord {
-  path: string;
-  sha512: string;
+	path: string;
+	sha512: string;
 }
 
 export interface PluginRecord {
-  id: string;
-  version: {
-    major: number;
-    minor: number;
-    patch: number;
-  };
-  pluginUrl: string;
-  installationDate: string;
-  files?: FileRecord[];
+	id: string;
+	version: {
+		major: number;
+		minor: number;
+		patch: number;
+	};
+	pluginUrl: string;
+	installationDate: string;
+	files?: FileRecord[];
 }

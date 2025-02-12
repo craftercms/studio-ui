@@ -15,116 +15,116 @@
  */
 
 (function () {
-  const { React, ReactDOM, i18n } = CrafterCMSNext;
-  const { useState, useMemo, useRef, useEffect } = React;
+	const { React, ReactDOM, i18n } = CrafterCMSNext;
+	const { useState, useMemo, useRef, useEffect } = React;
 
-  const STAR = '*';
+	const STAR = '*';
 
-  function createLookupTableFromCVS(cvs) {
-    return !cvs
-      ? []
-      : cvs.split(',').reduce(
-          (lookupTable, id) => ({
-            ...lookupTable,
-            [id]: true
-          }),
-          {}
-        );
-  }
+	function createLookupTableFromCVS(cvs) {
+		return !cvs
+			? []
+			: cvs.split(',').reduce(
+					(lookupTable, id) => ({
+						...lookupTable,
+						[id]: true
+					}),
+					{}
+				);
+	}
 
-  function Selector({ contentTypes, onSelection, initialValue }) {
-    const [keywords, setKeywords] = useState('');
-    const [selected, setSelected] = useState(createLookupTableFromCVS(initialValue));
+	function Selector({ contentTypes, onSelection, initialValue }) {
+		const [keywords, setKeywords] = useState('');
+		const [selected, setSelected] = useState(createLookupTableFromCVS(initialValue));
 
-    const types = useMemo(
-      () => [
-        { name: STAR, label: 'Allow any component' },
-        ...contentTypes.filter(
-          (type) => type.type === 'component' && (type.name.includes(keywords) || type.label.includes(keywords))
-        )
-      ],
-      [contentTypes, keywords]
-    );
+		const types = useMemo(
+			() => [
+				{ name: STAR, label: 'Allow any component' },
+				...contentTypes.filter(
+					(type) => type.type === 'component' && (type.name.includes(keywords) || type.label.includes(keywords))
+				)
+			],
+			[contentTypes, keywords]
+		);
 
-    const ref = useRef();
+		const ref = useRef();
 
-    const update = (id, isSelected) => {
-      const isStar = id === STAR;
-      const nextSelected = isStar ? {} : { ...selected };
-      if (isSelected) {
-        nextSelected[id] = isSelected;
-      } else {
-        delete nextSelected[id];
-      }
-      setSelected(nextSelected);
-      onSelection && onSelection(Object.keys(nextSelected));
-    };
+		const update = (id, isSelected) => {
+			const isStar = id === STAR;
+			const nextSelected = isStar ? {} : { ...selected };
+			if (isSelected) {
+				nextSelected[id] = isSelected;
+			} else {
+				delete nextSelected[id];
+			}
+			setSelected(nextSelected);
+			onSelection && onSelection(Object.keys(nextSelected));
+		};
 
-    useEffect(() => {
-      if (selected[STAR]) {
-        Array.from(ref.current.querySelectorAll('input')).forEach((e) => {
-          if (e.value !== STAR) {
-            e.checked = false;
-          }
-        });
-      }
-    }, [selected]);
+		useEffect(() => {
+			if (selected[STAR]) {
+				Array.from(ref.current.querySelectorAll('input')).forEach((e) => {
+					if (e.value !== STAR) {
+						e.checked = false;
+					}
+				});
+			}
+		}, [selected]);
 
-    return (
-      <div ref={ref}>
-        <div className="content-type-selector--search-wrapper">
-          <input
-            type="text"
-            value={keywords}
-            className="content-type-selector--search-input"
-            placeholder={'Search components...'}
-            onChange={(e) => setKeywords(e.target.value)}
-          />
-        </div>
-        {types.map((contentType) => (
-          <label key={`${contentType.name}_label`} className="content-type-selector--label">
-            <input
-              type="checkbox"
-              value={contentType.name}
-              className="content-type-selector--checkbox"
-              checked={selected[contentType.name]}
-              disabled={contentType.name === STAR ? false : selected[STAR]}
-              onChange={(e) => update(e.target.value, e.target.checked)}
-            />
-            {contentType.label}
-          </label>
-        ))}
-      </div>
-    );
-  }
+		return (
+			<div ref={ref}>
+				<div className="content-type-selector--search-wrapper">
+					<input
+						type="text"
+						value={keywords}
+						className="content-type-selector--search-input"
+						placeholder={'Search components...'}
+						onChange={(e) => setKeywords(e.target.value)}
+					/>
+				</div>
+				{types.map((contentType) => (
+					<label key={`${contentType.name}_label`} className="content-type-selector--label">
+						<input
+							type="checkbox"
+							value={contentType.name}
+							className="content-type-selector--checkbox"
+							checked={selected[contentType.name]}
+							disabled={contentType.name === STAR ? false : selected[STAR]}
+							onChange={(e) => update(e.target.value, e.target.checked)}
+						/>
+						{contentType.label}
+					</label>
+				))}
+			</div>
+		);
+	}
 
-  function ContentTypes(fieldName, container) {
-    this.fieldName = fieldName;
-    this.container = container;
-    this.value = '';
-  }
+	function ContentTypes(fieldName, container) {
+		this.fieldName = fieldName;
+		this.container = container;
+		this.value = '';
+	}
 
-  ContentTypes.prototype = {
-    render(value, updateFn) {
-      const element = $('<div class="content-type-selector"/>').appendTo(this.container)[0];
-      const contentTypes = CStudioAuthoring.Dialogs.DialogSelectContentType.contentTypes;
-      ReactDOM.render(
-        <Selector
-          initialValue={value}
-          contentTypes={contentTypes}
-          onSelection={(selected) => {
-            const value = (this.value = selected.join(','));
-            updateFn(null, { fieldName: this.fieldName, value });
-          }}
-        />,
-        element
-      );
-      this.value = value;
-    },
-    getValue() {
-      return this.value;
-    }
-  };
+	ContentTypes.prototype = {
+		render(value, updateFn) {
+			const element = $('<div class="content-type-selector"/>').appendTo(this.container)[0];
+			const contentTypes = CStudioAuthoring.Dialogs.DialogSelectContentType.contentTypes;
+			ReactDOM.render(
+				<Selector
+					initialValue={value}
+					contentTypes={contentTypes}
+					onSelection={(selected) => {
+						const value = (this.value = selected.join(','));
+						updateFn(null, { fieldName: this.fieldName, value });
+					}}
+				/>,
+				element
+			);
+			this.value = value;
+		},
+		getValue() {
+			return this.value;
+		}
+	};
 
-  CStudioAuthoring.Module.moduleLoaded('cstudio-console-tools-content-types-proptype-contentTypes', ContentTypes);
+	CStudioAuthoring.Module.moduleLoaded('cstudio-console-tools-content-types-proptype-contentTypes', ContentTypes);
 })();

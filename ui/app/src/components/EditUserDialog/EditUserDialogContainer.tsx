@@ -31,211 +31,211 @@ import { isInvalidEmail, validateFieldMinLength } from '../UserManagement/utils'
 import { pluckProps } from '../../utils/object';
 
 const translations = defineMessages({
-  userDeleted: {
-    id: 'userInfoDialog.userDeleted',
-    defaultMessage: 'User deleted successfully'
-  },
-  userUpdated: {
-    id: 'userInfoDialog.userUpdated',
-    defaultMessage: 'User updated successfully'
-  },
-  userEnabled: {
-    id: 'userInfoDialog.userEnabled',
-    defaultMessage: 'User enabled successfully'
-  },
-  userDisabled: {
-    id: 'userInfoDialog.userDisabled',
-    defaultMessage: 'User disabled successfully'
-  }
+	userDeleted: {
+		id: 'userInfoDialog.userDeleted',
+		defaultMessage: 'User deleted successfully'
+	},
+	userUpdated: {
+		id: 'userInfoDialog.userUpdated',
+		defaultMessage: 'User updated successfully'
+	},
+	userEnabled: {
+		id: 'userInfoDialog.userEnabled',
+		defaultMessage: 'User enabled successfully'
+	},
+	userDisabled: {
+		id: 'userInfoDialog.userDisabled',
+		defaultMessage: 'User disabled successfully'
+	}
 });
 
 export function EditUserDialogContainer(props: EditUserDialogContainerProps) {
-  const {
-    open,
-    onClose,
-    onUserEdited,
-    passwordRequirementsMinComplexity,
-    isSubmitting,
-    onSubmittingAndOrPendingChange
-  } = props;
-  const dispatch = useDispatch();
-  const { formatMessage } = useIntl();
-  const [user, setUser] = useSpreadState<User>({
-    id: null,
-    firstName: '',
-    lastName: '',
-    email: '',
-    username: '',
-    enabled: false,
-    externallyManaged: false
-  });
-  const [submitOk, setSubmitOk] = useState(false);
-  const sites = useSitesBranch();
-  const sitesById = sites.byId;
-  const mySites = useMemo(() => Object.values(sitesById), [sitesById]);
-  const [lastSavedUser, setLastSavedUser] = useState(null);
-  const [rolesBySite, setRolesBySite] = useState<LookupTable<string[]>>({});
-  const [dirty, setDirty] = useState(false);
-  const [openResetPassword, setOpenResetPassword] = useState(false);
-  const fnRefs = useUpdateRefs({ onSubmittingAndOrPendingChange, onUserEdited });
+	const {
+		open,
+		onClose,
+		onUserEdited,
+		passwordRequirementsMinComplexity,
+		isSubmitting,
+		onSubmittingAndOrPendingChange
+	} = props;
+	const dispatch = useDispatch();
+	const { formatMessage } = useIntl();
+	const [user, setUser] = useSpreadState<User>({
+		id: null,
+		firstName: '',
+		lastName: '',
+		email: '',
+		username: '',
+		enabled: false,
+		externallyManaged: false
+	});
+	const [submitOk, setSubmitOk] = useState(false);
+	const sites = useSitesBranch();
+	const sitesById = sites.byId;
+	const mySites = useMemo(() => Object.values(sitesById), [sitesById]);
+	const [lastSavedUser, setLastSavedUser] = useState(null);
+	const [rolesBySite, setRolesBySite] = useState<LookupTable<string[]>>({});
+	const [dirty, setDirty] = useState(false);
+	const [openResetPassword, setOpenResetPassword] = useState(false);
+	const fnRefs = useUpdateRefs({ onSubmittingAndOrPendingChange, onUserEdited });
 
-  const editMode = !props.user?.externallyManaged;
+	const editMode = !props.user?.externallyManaged;
 
-  const onInputChange = (value: object) => {
-    setDirty(true);
-    setUser(value);
-  };
+	const onInputChange = (value: object) => {
+		setDirty(true);
+		setUser(value);
+	};
 
-  const onCancelForm = () => {
-    if (lastSavedUser) {
-      setUser(lastSavedUser);
-    } else {
-      setUser(props.user);
-    }
-    setDirty(false);
-  };
+	const onCancelForm = () => {
+		if (lastSavedUser) {
+			setUser(lastSavedUser);
+		} else {
+			setUser(props.user);
+		}
+		setDirty(false);
+	};
 
-  const onEnableChange = (value) => {
-    setUser(value);
-    if (value.enabled) {
-      enable(user.username).subscribe({
-        next() {
-          dispatch(
-            showSystemNotification({
-              message: formatMessage(translations.userEnabled)
-            })
-          );
-        },
-        error({ response: { response } }) {
-          dispatch(showErrorDialog({ error: response }));
-        }
-      });
-    } else {
-      disable(user.username).subscribe({
-        next() {
-          dispatch(
-            showSystemNotification({
-              message: formatMessage(translations.userDisabled)
-            })
-          );
-        },
-        error({ response: { response } }) {
-          dispatch(showErrorDialog({ error: response }));
-        }
-      });
-    }
-  };
+	const onEnableChange = (value) => {
+		setUser(value);
+		if (value.enabled) {
+			enable(user.username).subscribe({
+				next() {
+					dispatch(
+						showSystemNotification({
+							message: formatMessage(translations.userEnabled)
+						})
+					);
+				},
+				error({ response: { response } }) {
+					dispatch(showErrorDialog({ error: response }));
+				}
+			});
+		} else {
+			disable(user.username).subscribe({
+				next() {
+					dispatch(
+						showSystemNotification({
+							message: formatMessage(translations.userDisabled)
+						})
+					);
+				},
+				error({ response: { response } }) {
+					dispatch(showErrorDialog({ error: response }));
+				}
+			});
+		}
+	};
 
-  const onSave = () => {
-    if (!editMode) {
-      return;
-    }
-    onSubmittingAndOrPendingChange({
-      isSubmitting: true
-    });
-    update(pluckProps(user, 'id', 'firstName', 'lastName', 'email', 'enabled')).subscribe({
-      next() {
-        dispatch(
-          showSystemNotification({
-            message: formatMessage(translations.userUpdated)
-          })
-        );
-        setDirty(false);
-        setLastSavedUser(user);
-        fnRefs.current.onUserEdited();
-        fnRefs.current.onSubmittingAndOrPendingChange({
-          isSubmitting: false
-        });
-      },
-      error({ response: { response } }) {
-        dispatch(showErrorDialog({ error: response }));
-        fnRefs.current.onSubmittingAndOrPendingChange({
-          isSubmitting: false
-        });
-      }
-    });
-  };
+	const onSave = () => {
+		if (!editMode) {
+			return;
+		}
+		onSubmittingAndOrPendingChange({
+			isSubmitting: true
+		});
+		update(pluckProps(user, 'id', 'firstName', 'lastName', 'email', 'enabled')).subscribe({
+			next() {
+				dispatch(
+					showSystemNotification({
+						message: formatMessage(translations.userUpdated)
+					})
+				);
+				setDirty(false);
+				setLastSavedUser(user);
+				fnRefs.current.onUserEdited();
+				fnRefs.current.onSubmittingAndOrPendingChange({
+					isSubmitting: false
+				});
+			},
+			error({ response: { response } }) {
+				dispatch(showErrorDialog({ error: response }));
+				fnRefs.current.onSubmittingAndOrPendingChange({
+					isSubmitting: false
+				});
+			}
+		});
+	};
 
-  const onDelete = (username: string) => {
-    trash(username).subscribe({
-      next() {
-        onClose(null, null);
-        dispatch(
-          showSystemNotification({
-            message: formatMessage(translations.userDeleted)
-          })
-        );
-        fnRefs.current.onUserEdited();
-      },
-      error({ response: { response } }) {
-        dispatch(showErrorDialog({ error: response }));
-      }
-    });
-  };
+	const onDelete = (username: string) => {
+		trash(username).subscribe({
+			next() {
+				onClose(null, null);
+				dispatch(
+					showSystemNotification({
+						message: formatMessage(translations.userDeleted)
+					})
+				);
+				fnRefs.current.onUserEdited();
+			},
+			error({ response: { response } }) {
+				dispatch(showErrorDialog({ error: response }));
+			}
+		});
+	};
 
-  const onCloseResetPasswordDialog = () => {
-    setOpenResetPassword(false);
-  };
+	const onCloseResetPasswordDialog = () => {
+		setOpenResetPassword(false);
+	};
 
-  const onResetPassword = (value: boolean) => {
-    setOpenResetPassword(value);
-  };
+	const onResetPassword = (value: boolean) => {
+		setOpenResetPassword(value);
+	};
 
-  useEffect(() => {
-    if (open) {
-      setUser(props.user);
-    }
-  }, [props.user, open, setUser]);
+	useEffect(() => {
+		if (open) {
+			setUser(props.user);
+		}
+	}, [props.user, open, setUser]);
 
-  useEffect(() => {
-    if (mySites.length && props.user?.username) {
-      fetchRolesBySite(props.user.username, mySites).subscribe((response) => {
-        setRolesBySite(response);
-      });
-    }
-  }, [mySites, props.user?.username]);
+	useEffect(() => {
+		if (mySites.length && props.user?.username) {
+			fetchRolesBySite(props.user.username, mySites).subscribe((response) => {
+				setRolesBySite(response);
+			});
+		}
+	}, [mySites, props.user?.username]);
 
-  const refs = useUpdateRefs({
-    validateFieldMinLength
-  });
+	const refs = useUpdateRefs({
+		validateFieldMinLength
+	});
 
-  useEffect(() => {
-    setSubmitOk(
-      Boolean(
-        user.firstName.trim() &&
-          !validateFieldMinLength('firstName', user.firstName) &&
-          user.lastName.trim() &&
-          !validateFieldMinLength('lastName', user.lastName) &&
-          !isInvalidEmail(user.email)
-      )
-    );
-  }, [user, refs]);
-  useEffect(() => {
-    onSubmittingAndOrPendingChange({
-      hasPendingChanges: dirty
-    });
-  }, [dirty, onSubmittingAndOrPendingChange]);
+	useEffect(() => {
+		setSubmitOk(
+			Boolean(
+				user.firstName.trim() &&
+					!validateFieldMinLength('firstName', user.firstName) &&
+					user.lastName.trim() &&
+					!validateFieldMinLength('lastName', user.lastName) &&
+					!isInvalidEmail(user.email)
+			)
+		);
+	}, [user, refs]);
+	useEffect(() => {
+		onSubmittingAndOrPendingChange({
+			hasPendingChanges: dirty
+		});
+	}, [dirty, onSubmittingAndOrPendingChange]);
 
-  return (
-    <EditUserDialogUI
-      user={user}
-      openResetPassword={openResetPassword}
-      inProgress={isSubmitting}
-      submitOk={submitOk}
-      dirty={dirty}
-      sites={mySites}
-      rolesBySite={rolesBySite}
-      passwordRequirementsMinComplexity={passwordRequirementsMinComplexity}
-      onSave={onSave}
-      onCloseButtonClick={(e) => onClose(e, null)}
-      onDelete={onDelete}
-      onCloseResetPasswordDialog={onCloseResetPasswordDialog}
-      onInputChange={onInputChange}
-      onEnableChange={onEnableChange}
-      onCancelForm={onCancelForm}
-      onResetPassword={onResetPassword}
-    />
-  );
+	return (
+		<EditUserDialogUI
+			user={user}
+			openResetPassword={openResetPassword}
+			inProgress={isSubmitting}
+			submitOk={submitOk}
+			dirty={dirty}
+			sites={mySites}
+			rolesBySite={rolesBySite}
+			passwordRequirementsMinComplexity={passwordRequirementsMinComplexity}
+			onSave={onSave}
+			onCloseButtonClick={(e) => onClose(e, null)}
+			onDelete={onDelete}
+			onCloseResetPasswordDialog={onCloseResetPasswordDialog}
+			onInputChange={onInputChange}
+			onEnableChange={onEnableChange}
+			onCancelForm={onCancelForm}
+			onResetPassword={onResetPassword}
+		/>
+	);
 }
 
 export default EditUserDialogContainer;

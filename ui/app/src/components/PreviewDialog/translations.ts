@@ -17,12 +17,12 @@
 import { defineMessages } from 'react-intl';
 
 export const translations = defineMessages({
-  edit: {
-    id: 'words.edit',
-    defaultMessage: 'Edit'
-  },
-  toggleBackgroundColor: {
-    id: 'previewDialog.toggleBackgroundColor',
-    defaultMessage: 'Toggle background color'
-  }
+	edit: {
+		id: 'words.edit',
+		defaultMessage: 'Edit'
+	},
+	toggleBackgroundColor: {
+		id: 'previewDialog.toggleBackgroundColor',
+		defaultMessage: 'Toggle background color'
+	}
 });

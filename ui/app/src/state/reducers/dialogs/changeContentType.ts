@@ -16,36 +16,36 @@
 
 import { createReducer } from '@reduxjs/toolkit';
 import {
-  changeContentTypeDialogClosed,
-  closeChangeContentTypeDialog,
-  showChangeContentTypeDialog
+	changeContentTypeDialogClosed,
+	closeChangeContentTypeDialog,
+	showChangeContentTypeDialog
 } from '../../actions/dialogs';
 import { ChangeContentTypeDialogStateProps } from '../../../components/ChangeContentTypeDialog/utils';
 
 const initialState: ChangeContentTypeDialogStateProps = {
-  open: false,
-  isSubmitting: null,
-  isMinimized: null,
-  hasPendingChanges: null,
-  compact: false,
-  item: null,
-  rootPath: '/site/website',
-  selectedContentType: null
+	open: false,
+	isSubmitting: null,
+	isMinimized: null,
+	hasPendingChanges: null,
+	compact: false,
+	item: null,
+	rootPath: '/site/website',
+	selectedContentType: null
 };
 
 export default createReducer<ChangeContentTypeDialogStateProps>(initialState, (builder) => {
-  builder
-    .addCase(showChangeContentTypeDialog, (state, { payload }) => ({
-      ...state,
-      onClose: closeChangeContentTypeDialog(),
-      onClosed: changeContentTypeDialogClosed(),
-      onDismiss: closeChangeContentTypeDialog(),
-      ...(payload as Partial<ChangeContentTypeDialogStateProps>),
-      open: true
-    }))
-    .addCase(closeChangeContentTypeDialog, (state) => ({
-      ...state,
-      open: false
-    }))
-    .addCase(changeContentTypeDialogClosed, () => initialState);
+	builder
+		.addCase(showChangeContentTypeDialog, (state, { payload }) => ({
+			...state,
+			onClose: closeChangeContentTypeDialog(),
+			onClosed: changeContentTypeDialogClosed(),
+			onDismiss: closeChangeContentTypeDialog(),
+			...(payload as Partial<ChangeContentTypeDialogStateProps>),
+			open: true
+		}))
+		.addCase(closeChangeContentTypeDialog, (state) => ({
+			...state,
+			open: false
+		}))
+		.addCase(changeContentTypeDialogClosed, () => initialState);
 });

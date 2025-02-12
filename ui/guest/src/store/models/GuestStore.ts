@@ -27,54 +27,54 @@ import Person from '@craftercms/studio-ui/models/Person';
 import { SearchItem } from '@craftercms/studio-ui/models';
 
 interface T {
-  [K: string]: any;
+	[K: string]: any;
 }
 
 // TODO: Types
 export interface GuestState {
-  dragContext: {
-    targetIndex: number;
-    inZone: boolean;
-    invalidDrop?: boolean;
-    dropZone?: DropZone;
-    players: any[];
-    siblings: any[];
-    containers: any[];
-    over?: any;
-    prev?: any;
-    next?: any;
-    coordinates?: any;
-    // TODO: Dragged seems to be an ICE record, but there's code looking for dragged.path
-    dragged: ICERecord | DataTransferItem | SearchItem;
-    dropZones: DropZone[];
-    scrolling?: boolean;
-    contentType?: ContentType;
-    instance?: ContentInstance;
-  };
-  hostCheckedIn: boolean;
-  status: EditingStatus;
-  editMode: boolean;
-  highlightMode: string;
-  authoringBase: string;
-  editModePadding: boolean;
-  editable: T;
-  draggable: T;
-  highlighted: T;
-  uploading: LookupTable;
-  // TODO: Move items and instances to state and out of content controller.
-  // models: LookupTable<ContentInstance>;
-  // itemsByPath: LookupTable<SandboxItem>;
-  lockedPaths: LookupTable<{ user: Person }>;
-  externallyModifiedPaths: LookupTable<{ user: Person }>;
-  contentTypes: LookupTable<ContentType>;
-  fieldSwitcher?: {
-    iceId: number;
-    currentElement: number;
-    registryEntryIds: number[];
-  };
-  rteConfig: RteConfig;
-  activeSite: string;
-  username: string;
+	dragContext: {
+		targetIndex: number;
+		inZone: boolean;
+		invalidDrop?: boolean;
+		dropZone?: DropZone;
+		players: any[];
+		siblings: any[];
+		containers: any[];
+		over?: any;
+		prev?: any;
+		next?: any;
+		coordinates?: any;
+		// TODO: Dragged seems to be an ICE record, but there's code looking for dragged.path
+		dragged: ICERecord | DataTransferItem | SearchItem;
+		dropZones: DropZone[];
+		scrolling?: boolean;
+		contentType?: ContentType;
+		instance?: ContentInstance;
+	};
+	hostCheckedIn: boolean;
+	status: EditingStatus;
+	editMode: boolean;
+	highlightMode: string;
+	authoringBase: string;
+	editModePadding: boolean;
+	editable: T;
+	draggable: T;
+	highlighted: T;
+	uploading: LookupTable;
+	// TODO: Move items and instances to state and out of content controller.
+	// models: LookupTable<ContentInstance>;
+	// itemsByPath: LookupTable<SandboxItem>;
+	lockedPaths: LookupTable<{ user: Person }>;
+	externallyModifiedPaths: LookupTable<{ user: Person }>;
+	contentTypes: LookupTable<ContentType>;
+	fieldSwitcher?: {
+		iceId: number;
+		currentElement: number;
+		registryEntryIds: number[];
+	};
+	rteConfig: RteConfig;
+	activeSite: string;
+	username: string;
 }
 
 export type GuestStateObservable = StateObservable<GuestState>;

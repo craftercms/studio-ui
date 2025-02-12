@@ -15,25 +15,25 @@
  */
 
 export interface AuditLogEntryParameter {
-  targetId: string;
-  targetType: string;
-  targetSubtype: string;
-  targetValue: string;
+	targetId: string;
+	targetType: string;
+	targetSubtype: string;
+	targetValue: string;
 }
 
 export interface AuditLogEntry {
-  id: number;
-  organizationId: number;
-  siteId: number;
-  siteName: string;
-  operation: string;
-  operationTimestamp: string;
-  origin: string;
-  primaryTargetId: string;
-  primaryTargetType: string;
-  primaryTargetSubtype: string;
-  primaryTargetValue: string;
-  actorId: string;
-  actorDetails: string;
-  parameters: AuditLogEntryParameter[];
+	id: number;
+	organizationId: number;
+	siteId: number;
+	siteName: string;
+	operation: string;
+	operationTimestamp: string;
+	origin: string;
+	primaryTargetId: string;
+	primaryTargetType: string;
+	primaryTargetSubtype: string;
+	primaryTargetValue: string;
+	actorId: string;
+	actorDetails: string;
+	parameters: AuditLogEntryParameter[];
 }

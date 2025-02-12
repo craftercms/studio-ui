@@ -19,11 +19,11 @@
 let count = 0;
 
 export const incrementMinimizedBarCount = () => {
-  count++;
+	count++;
 };
 
 export const decrementMinimizedBarCount = () => {
-  count--;
+	count--;
 };
 
 export const getMinimizedBarCount = () => count;

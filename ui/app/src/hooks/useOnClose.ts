@@ -15,21 +15,21 @@
  */
 
 interface UseOnCloseProps {
-  onClose?(event: any, reason: 'backdropClick' | 'escapeKeyDown'): void;
-  disableBackdropClick?: boolean;
-  disableEscapeKeyDown?: boolean;
+	onClose?(event: any, reason: 'backdropClick' | 'escapeKeyDown'): void;
+	disableBackdropClick?: boolean;
+	disableEscapeKeyDown?: boolean;
 }
 
 export function useOnClose({ onClose, disableBackdropClick = false, disableEscapeKeyDown = false }: UseOnCloseProps) {
-  return (event, reason) => {
-    if (disableBackdropClick && reason === 'backdropClick') {
-      return false;
-    } else if (disableEscapeKeyDown && reason === 'escapeKeyDown') {
-      return false;
-    } else {
-      onClose?.(event, reason);
-    }
-  };
+	return (event, reason) => {
+		if (disableBackdropClick && reason === 'backdropClick') {
+			return false;
+		} else if (disableEscapeKeyDown && reason === 'escapeKeyDown') {
+			return false;
+		} else {
+			onClose?.(event, reason);
+		}
+	};
 }
 
 export default useOnClose;

@@ -27,60 +27,60 @@ import Box from '@mui/material/Box';
 const tabsHeight = 450;
 
 export interface RemoteRepositoriesDiffDialogUIProps {
-  fileDiff: FileDiff;
-  tab: number;
+	fileDiff: FileDiff;
+	tab: number;
 }
 
 export function ConflictedPathDiffDialogUI(props: RemoteRepositoriesDiffDialogUIProps) {
-  const { fileDiff, tab } = props;
+	const { fileDiff, tab } = props;
 
-  return (
-    <Box
-      sx={{
-        height: tabsHeight,
-        overflowX: 'auto',
-        '& .ace_editor': {
-          margin: 0
-        }
-      }}
-    >
-      {tab === 0 && <AceEditor mode="ace/mode/diff" autoFocus={false} readOnly value={fileDiff.diff} />}
+	return (
+		<Box
+			sx={{
+				height: tabsHeight,
+				overflowX: 'auto',
+				'& .ace_editor': {
+					margin: 0
+				}
+			}}
+		>
+			{tab === 0 && <AceEditor mode="ace/mode/diff" autoFocus={false} readOnly value={fileDiff.diff} />}
 
-      {tab === 1 && (
-        <>
-          <Grid
-            container
-            sx={{
-              width: 'calc(100% - 30px)',
-              textAlign: 'center',
-              backgroundColor: (theme) => theme.palette.background.paper
-            }}
-          >
-            <Grid size={6}>
-              <Typography variant="body1">
-                <FormattedMessage id="words.local" defaultMessage="Local" />
-              </Typography>
-            </Grid>
-            <Grid size={6}>
-              <Typography variant="body1">
-                <FormattedMessage id="words.remote" defaultMessage="Remote" />
-              </Typography>
-            </Grid>
-          </Grid>
-          <ConflictedPathDiffDialogSplitView
-            diff={fileDiff}
-            sx={{
-              width: '100%',
-              height: 'calc(100% - 24px)',
-              '&.unChanged': {
-                height: 'auto'
-              }
-            }}
-          />
-        </>
-      )}
-    </Box>
-  );
+			{tab === 1 && (
+				<>
+					<Grid
+						container
+						sx={{
+							width: 'calc(100% - 30px)',
+							textAlign: 'center',
+							backgroundColor: (theme) => theme.palette.background.paper
+						}}
+					>
+						<Grid size={6}>
+							<Typography variant="body1">
+								<FormattedMessage id="words.local" defaultMessage="Local" />
+							</Typography>
+						</Grid>
+						<Grid size={6}>
+							<Typography variant="body1">
+								<FormattedMessage id="words.remote" defaultMessage="Remote" />
+							</Typography>
+						</Grid>
+					</Grid>
+					<ConflictedPathDiffDialogSplitView
+						diff={fileDiff}
+						sx={{
+							width: '100%',
+							height: 'calc(100% - 24px)',
+							'&.unChanged': {
+								height: 'auto'
+							}
+						}}
+					/>
+				</>
+			)}
+		</Box>
+	);
 }
 
 export default ConflictedPathDiffDialogUI;

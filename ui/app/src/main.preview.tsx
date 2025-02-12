@@ -23,9 +23,9 @@ import { createCodebaseBridge } from './env/codebase-bridge';
 createCodebaseBridge();
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <CrafterCMSNextBridge>
-      <Preview />
-    </CrafterCMSNextBridge>
-  </StrictMode>
+	<StrictMode>
+		<CrafterCMSNextBridge>
+			<Preview />
+		</CrafterCMSNextBridge>
+	</StrictMode>
 );

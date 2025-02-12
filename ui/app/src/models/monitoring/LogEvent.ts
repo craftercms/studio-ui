@@ -15,11 +15,11 @@
  */
 
 export interface LogEvent {
-  exception: string;
-  level: string; // TODO: complete levels 'ERROR', etc
-  message: string;
-  site: string;
-  thread: string;
-  timestamp: string;
-  timestampm: number;
+	exception: string;
+	level: string; // TODO: complete levels 'ERROR', etc
+	message: string;
+	site: string;
+	thread: string;
+	timestamp: string;
+	timestampm: number;
 }

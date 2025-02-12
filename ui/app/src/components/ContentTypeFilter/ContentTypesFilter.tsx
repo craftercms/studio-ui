@@ -24,77 +24,77 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import palette from '../../styles/palette';
 
 interface Filter {
-  type: string;
-  label: string;
+	type: string;
+	label: string;
 }
 
 interface ContentTypesFilterProps {
-  filters: Filter[];
-  selected: string;
-  disabled?: boolean;
-  onFilterChange(filter: string): void;
+	filters: Filter[];
+	selected: string;
+	disabled?: boolean;
+	onFilterChange(filter: string): void;
 }
 
 export function ContentTypesFilter(props: ContentTypesFilterProps) {
-  const { onFilterChange, selected, disabled, filters } = props;
-  const [anchorEl, setAnchorEl] = useState(null);
+	const { onFilterChange, selected, disabled, filters } = props;
+	const [anchorEl, setAnchorEl] = useState(null);
 
-  const filter = filters.find((filter) => filter.type === selected);
+	const filter = filters.find((filter) => filter.type === selected);
 
-  const onMenuClose = () => setAnchorEl(null);
+	const onMenuClose = () => setAnchorEl(null);
 
-  const onMenuOpen = (e) => setAnchorEl(e.currentTarget);
+	const onMenuOpen = (e) => setAnchorEl(e.currentTarget);
 
-  const onChange = (e) => {
-    onFilterChange(e.target.value);
-    onMenuClose();
-  };
+	const onChange = (e) => {
+		onFilterChange(e.target.value);
+		onMenuClose();
+	};
 
-  return (
-    <>
-      <Button disabled={disabled} onClick={onMenuOpen} sx={{ fontSize: '16px' }}>
-        {filter.label}
-        <ArrowDropDownIcon
-          sx={{
-            fontSize: '24px',
-            marginLeft: '5px',
-            paddingTop: '2px',
-            fill: palette.gray.medium4
-          }}
-        />
-      </Button>
-      <Menu
-        anchorEl={anchorEl}
-        keepMounted
-        open={Boolean(anchorEl)}
-        onClose={onMenuClose}
-        slotProps={{
-          paper: {
-            sx: { padding: '5px 10px' }
-          }
-        }}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'right'
-        }}
-        transformOrigin={{
-          vertical: 'bottom',
-          horizontal: 'right'
-        }}
-      >
-        <RadioGroup value={selected} onChange={onChange} sx={{ '&:focus': { outline: 0 } }}>
-          {filters.map((filter) => (
-            <FormControlLabel
-              key={filter.type}
-              value={filter.type}
-              control={<Radio color="primary" />}
-              label={filter.label}
-            />
-          ))}
-        </RadioGroup>
-      </Menu>
-    </>
-  );
+	return (
+		<>
+			<Button disabled={disabled} onClick={onMenuOpen} sx={{ fontSize: '16px' }}>
+				{filter.label}
+				<ArrowDropDownIcon
+					sx={{
+						fontSize: '24px',
+						marginLeft: '5px',
+						paddingTop: '2px',
+						fill: palette.gray.medium4
+					}}
+				/>
+			</Button>
+			<Menu
+				anchorEl={anchorEl}
+				keepMounted
+				open={Boolean(anchorEl)}
+				onClose={onMenuClose}
+				slotProps={{
+					paper: {
+						sx: { padding: '5px 10px' }
+					}
+				}}
+				anchorOrigin={{
+					vertical: 'bottom',
+					horizontal: 'right'
+				}}
+				transformOrigin={{
+					vertical: 'bottom',
+					horizontal: 'right'
+				}}
+			>
+				<RadioGroup value={selected} onChange={onChange} sx={{ '&:focus': { outline: 0 } }}>
+					{filters.map((filter) => (
+						<FormControlLabel
+							key={filter.type}
+							value={filter.type}
+							control={<Radio color="primary" />}
+							label={filter.label}
+						/>
+					))}
+				</RadioGroup>
+			</Menu>
+		</>
+	);
 }
 
 export default ContentTypesFilter;

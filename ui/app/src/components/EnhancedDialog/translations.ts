@@ -17,10 +17,10 @@
 import { defineMessages } from 'react-intl';
 
 export const translations = defineMessages({
-  pendingChanges: {
-    id: 'dialog.pendingChangesConfirmation',
-    defaultMessage: 'Close without saving changes?'
-  }
+	pendingChanges: {
+		id: 'dialog.pendingChangesConfirmation',
+		defaultMessage: 'Close without saving changes?'
+	}
 });
 
 export default translations;

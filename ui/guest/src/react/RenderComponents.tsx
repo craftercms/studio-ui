@@ -22,46 +22,46 @@ import { ContentInstance } from '@craftercms/studio-ui/models';
 import PropTypes from 'prop-types';
 
 export type RenderComponentsProps<
-  RootProps = {},
-  ItemProps = {},
-  ItemType extends ContentInstance = ContentInstance
+	RootProps = {},
+	ItemProps = {},
+	ItemType extends ContentInstance = ContentInstance
 > = Omit<RenderRepeatProps<RootProps, ItemProps, ItemType>, 'renderItem'> & {
-  contentTypeProps?: Record<string, any>;
-  nthContentTypeProps?: Record<number, any>;
+	contentTypeProps?: Record<string, any>;
+	nthContentTypeProps?: Record<number, any>;
 } & (
-    | {
-        contentTypeMap: Record<string, ElementType>;
-        renderItem?: RenderRepeatProps<RootProps, ItemProps, ItemType>['renderItem'];
-      }
-    | {
-        contentTypeMap?: Record<string, ElementType>;
-        renderItem: RenderRepeatProps<RootProps, ItemProps, ItemType>['renderItem'];
-      }
-  );
+		| {
+				contentTypeMap: Record<string, ElementType>;
+				renderItem?: RenderRepeatProps<RootProps, ItemProps, ItemType>['renderItem'];
+		  }
+		| {
+				contentTypeMap?: Record<string, ElementType>;
+				renderItem: RenderRepeatProps<RootProps, ItemProps, ItemType>['renderItem'];
+		  }
+	);
 
 export const RenderComponents = forwardRef<any, RenderComponentsProps>((props, ref) => {
-  const {
-    contentTypeMap = defaultContentTypeMap,
-    contentTypeProps = {},
-    nthContentTypeProps = {},
-    renderItem = (component, index) => (
-      <ContentType
-        model={component as ContentInstance}
-        contentTypeMap={contentTypeMap}
-        {...{ ...contentTypeProps, ...nthContentTypeProps[index] }}
-      />
-    )
-  } = props;
-  return (
-    <RenderRepeat
-      {...props}
-      // Next like is to avoid compiler complaining about the `itemKeyGenerator` prop differences.
-      // TODO: Is there a way to carry the type correctly?
-      itemKeyGenerator={props.itemKeyGenerator as any}
-      ref={ref}
-      renderItem={renderItem}
-    />
-  );
+	const {
+		contentTypeMap = defaultContentTypeMap,
+		contentTypeProps = {},
+		nthContentTypeProps = {},
+		renderItem = (component, index) => (
+			<ContentType
+				model={component as ContentInstance}
+				contentTypeMap={contentTypeMap}
+				{...{ ...contentTypeProps, ...nthContentTypeProps[index] }}
+			/>
+		)
+	} = props;
+	return (
+		<RenderRepeat
+			{...props}
+			// Next like is to avoid compiler complaining about the `itemKeyGenerator` prop differences.
+			// TODO: Is there a way to carry the type correctly?
+			itemKeyGenerator={props.itemKeyGenerator as any}
+			ref={ref}
+			renderItem={renderItem}
+		/>
+	);
 });
 
 RenderComponents.propTypes = { ...RenderRepeat.propTypes, renderItem: PropTypes.func };

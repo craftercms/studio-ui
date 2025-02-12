@@ -25,38 +25,38 @@ import { rand } from '../../PathNavigator/utils';
 import { RepositoriesGridTableHead } from './RepoGridUI';
 
 export interface RepoGridSkeletonProps {
-  numOfItems?: number;
+	numOfItems?: number;
 }
 
 export function RepoGridSkeleton(props: RepoGridSkeletonProps) {
-  const { numOfItems = 2 } = props;
-  const items = new Array(numOfItems).fill(null);
+	const { numOfItems = 2 } = props;
+	const items = new Array(numOfItems).fill(null);
 
-  return (
-    <TableContainer>
-      <Table>
-        <RepositoriesGridTableHead />
-        <TableBody>
-          {items.map((item, index) => (
-            <GlobalAppGridRow key={index}>
-              <GlobalAppGridCell align="left">
-                <Skeleton variant="text" width="30%" />
-              </GlobalAppGridCell>
-              <GlobalAppGridCell align="left">
-                <Skeleton variant="text" width={`${rand(40, 60)}%`} />
-              </GlobalAppGridCell>
-              <GlobalAppGridCell align="left">
-                <Skeleton variant="text" width={`${rand(40, 60)}%`} />
-              </GlobalAppGridCell>
-              <GlobalAppGridCell align="left">
-                <Skeleton variant="text" width={`${rand(40, 60)}%`} />
-              </GlobalAppGridCell>
-            </GlobalAppGridRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  );
+	return (
+		<TableContainer>
+			<Table>
+				<RepositoriesGridTableHead />
+				<TableBody>
+					{items.map((item, index) => (
+						<GlobalAppGridRow key={index}>
+							<GlobalAppGridCell align="left">
+								<Skeleton variant="text" width="30%" />
+							</GlobalAppGridCell>
+							<GlobalAppGridCell align="left">
+								<Skeleton variant="text" width={`${rand(40, 60)}%`} />
+							</GlobalAppGridCell>
+							<GlobalAppGridCell align="left">
+								<Skeleton variant="text" width={`${rand(40, 60)}%`} />
+							</GlobalAppGridCell>
+							<GlobalAppGridCell align="left">
+								<Skeleton variant="text" width={`${rand(40, 60)}%`} />
+							</GlobalAppGridCell>
+						</GlobalAppGridRow>
+					))}
+				</TableBody>
+			</Table>
+		</TableContainer>
+	);
 }
 
 export default RepoGridSkeleton;

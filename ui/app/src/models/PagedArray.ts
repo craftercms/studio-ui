@@ -15,9 +15,9 @@
  */
 
 export interface PagedArray<T = unknown> extends Array<T> {
-  limit: number;
-  total: number;
-  offset: number;
+	limit: number;
+	total: number;
+	offset: number;
 }
 
 export default PagedArray;

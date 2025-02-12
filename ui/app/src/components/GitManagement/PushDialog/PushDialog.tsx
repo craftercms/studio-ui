@@ -21,19 +21,19 @@ import { EnhancedDialog } from '../../EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
 
 export function PushDialog(props: PushDialogProps) {
-  const { branches, remoteName, onPushSuccess, onPushError, onSubmittingChange, ...rest } = props;
-  return (
-    <EnhancedDialog title={<FormattedMessage id="words.push" defaultMessage="Push" />} maxWidth="xs" {...rest}>
-      <PushDialogContainer
-        branches={branches}
-        remoteName={remoteName}
-        onPushSuccess={onPushSuccess}
-        onPushError={onPushError}
-        isSubmitting={rest.isSubmitting}
-        onSubmittingChange={onSubmittingChange}
-      />
-    </EnhancedDialog>
-  );
+	const { branches, remoteName, onPushSuccess, onPushError, onSubmittingChange, ...rest } = props;
+	return (
+		<EnhancedDialog title={<FormattedMessage id="words.push" defaultMessage="Push" />} maxWidth="xs" {...rest}>
+			<PushDialogContainer
+				branches={branches}
+				remoteName={remoteName}
+				onPushSuccess={onPushSuccess}
+				onPushError={onPushError}
+				isSubmitting={rest.isSubmitting}
+				onSubmittingChange={onSubmittingChange}
+			/>
+		</EnhancedDialog>
+	);
 }
 
 export default PushDialog;

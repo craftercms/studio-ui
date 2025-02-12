@@ -24,84 +24,84 @@ import { PartialSxRecord } from '../../models';
 export type LauncherTileClassKey = 'tile' | 'tileActive' | 'title' | 'iconAvatar';
 
 export interface LauncherTileProps {
-  icon: SystemIconDescriptor;
-  title: string;
-  link?: string;
-  target?: string;
-  disabled?: any;
-  active?: boolean;
-  classes?: Partial<Record<LauncherTileClassKey, string>>;
-  sxs?: PartialSxRecord<LauncherTileClassKey>;
-  onClick?(e: React.MouseEvent<HTMLAnchorElement | HTMLSpanElement>): any;
+	icon: SystemIconDescriptor;
+	title: string;
+	link?: string;
+	target?: string;
+	disabled?: any;
+	active?: boolean;
+	classes?: Partial<Record<LauncherTileClassKey, string>>;
+	sxs?: PartialSxRecord<LauncherTileClassKey>;
+	onClick?(e: React.MouseEvent<HTMLAnchorElement | HTMLSpanElement>): any;
 }
 
 function LauncherTile(props: LauncherTileProps) {
-  const { title, icon, link, target, onClick, disabled = false, active, sxs } = props;
-  return (
-    <Link
-      className={[disabled ? 'disabled' : '', props.classes?.tile].filter(Boolean).join(' ')}
-      sx={{
-        width: '120px',
-        height: '100px',
-        display: 'flex',
-        alignItems: 'center',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        cursor: 'pointer',
-        textAlign: 'center',
-        borderRadius: (theme) => `${theme.shape.borderRadius}px`,
-        transition: 'background 250ms ease, box-shadow 500ms ease',
-        margin: '5px',
-        overflow: 'hidden',
-        '&:hover, &:focus': {
-          background: (theme) => theme.palette.action.hover,
-          boxShadow: (theme) => theme.shadows[2],
-          textDecoration: 'none'
-        },
-        '&.disabled': {
-          opacity: (theme) => theme.palette.action.disabledOpacity,
-          background: (theme) => theme.palette.action.disabled,
-          pointerEvents: 'none'
-        },
-        ...sxs?.tile,
-        ...(active
-          ? {
-              '&, &:hover, &:focus': {
-                boxShadow: 'none',
-                cursor: 'default',
-                background: (theme) => theme.palette.action.selected
-              }
-            }
-          : {})
-      }}
-      href={disabled ? null : link}
-      onClick={(e) => (!disabled && onClick ? onClick(e) : null)}
-      target={target ? target : '_self'}
-    >
-      <Avatar
-        variant="rounded"
-        className={props.classes?.iconAvatar}
-        sx={{
-          backgroundColor: 'transparent',
-          color: (theme) => theme.palette.text.secondary,
-          margin: '5px',
-          ...sxs?.iconAvatar
-        }}
-      >
-        <SystemIcon icon={icon} />
-      </Avatar>
-      <Typography
-        color="textPrimary"
-        className={props.classes?.title}
-        sx={{
-          lineHeight: 1,
-          ...sxs?.title
-        }}
-      >
-        {title}
-      </Typography>
-    </Link>
-  );
+	const { title, icon, link, target, onClick, disabled = false, active, sxs } = props;
+	return (
+		<Link
+			className={[disabled ? 'disabled' : '', props.classes?.tile].filter(Boolean).join(' ')}
+			sx={{
+				width: '120px',
+				height: '100px',
+				display: 'flex',
+				alignItems: 'center',
+				flexDirection: 'column',
+				justifyContent: 'center',
+				cursor: 'pointer',
+				textAlign: 'center',
+				borderRadius: (theme) => `${theme.shape.borderRadius}px`,
+				transition: 'background 250ms ease, box-shadow 500ms ease',
+				margin: '5px',
+				overflow: 'hidden',
+				'&:hover, &:focus': {
+					background: (theme) => theme.palette.action.hover,
+					boxShadow: (theme) => theme.shadows[2],
+					textDecoration: 'none'
+				},
+				'&.disabled': {
+					opacity: (theme) => theme.palette.action.disabledOpacity,
+					background: (theme) => theme.palette.action.disabled,
+					pointerEvents: 'none'
+				},
+				...sxs?.tile,
+				...(active
+					? {
+							'&, &:hover, &:focus': {
+								boxShadow: 'none',
+								cursor: 'default',
+								background: (theme) => theme.palette.action.selected
+							}
+						}
+					: {})
+			}}
+			href={disabled ? null : link}
+			onClick={(e) => (!disabled && onClick ? onClick(e) : null)}
+			target={target ? target : '_self'}
+		>
+			<Avatar
+				variant="rounded"
+				className={props.classes?.iconAvatar}
+				sx={{
+					backgroundColor: 'transparent',
+					color: (theme) => theme.palette.text.secondary,
+					margin: '5px',
+					...sxs?.iconAvatar
+				}}
+			>
+				<SystemIcon icon={icon} />
+			</Avatar>
+			<Typography
+				color="textPrimary"
+				className={props.classes?.title}
+				sx={{
+					lineHeight: 1,
+					...sxs?.title
+				}}
+			>
+				{title}
+			</Typography>
+		</Link>
+	);
 }
 
 export default LauncherTile;

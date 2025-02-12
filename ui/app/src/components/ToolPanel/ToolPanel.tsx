@@ -30,65 +30,65 @@ import Box from '@mui/material/Box';
 export type ToolPanelClassKey = 'body';
 
 type ToolPanelProps = PropsWithChildren<{
-  title: TranslationOrText;
-  BackIcon?: ElementType;
-  onBack?: () => void;
-  classes?: Partial<Record<ToolPanelClassKey, string>>;
-  sxs?: PartialSxRecord<ToolPanelClassKey>;
+	title: TranslationOrText;
+	BackIcon?: ElementType;
+	onBack?: () => void;
+	classes?: Partial<Record<ToolPanelClassKey, string>>;
+	sxs?: PartialSxRecord<ToolPanelClassKey>;
 }>;
 
 interface PanelHeaderProps {
-  title: string;
-  BackIcon?: ElementType;
-  onBack: () => void;
+	title: string;
+	BackIcon?: ElementType;
+	onBack: () => void;
 }
 
 export const PanelHeader: FunctionComponent<PanelHeaderProps> = (props) => {
-  const { title, BackIcon = ChevronLeftRounded, onBack } = props;
-  return (
-    <>
-      <Box
-        component="header"
-        sx={(theme) => ({
-          display: 'flex',
-          alignItems: 'center',
-          padding: theme.spacing(0, 1),
-          ...theme.mixins.toolbar,
-          justifyContent: 'flex-start'
-        })}
-      >
-        <IconButton onClick={onBack} size="large">
-          <BackIcon />
-        </IconButton>
-        <Typography component="h2" noWrap title={title}>
-          {title}
-        </Typography>
-      </Box>
-      <Divider />
-    </>
-  );
+	const { title, BackIcon = ChevronLeftRounded, onBack } = props;
+	return (
+		<>
+			<Box
+				component="header"
+				sx={(theme) => ({
+					display: 'flex',
+					alignItems: 'center',
+					padding: theme.spacing(0, 1),
+					...theme.mixins.toolbar,
+					justifyContent: 'flex-start'
+				})}
+			>
+				<IconButton onClick={onBack} size="large">
+					<BackIcon />
+				</IconButton>
+				<Typography component="h2" noWrap title={title}>
+					{title}
+				</Typography>
+			</Box>
+			<Divider />
+		</>
+	);
 };
 
 export function ToolPanel(props: ToolPanelProps): ReactElement | null {
-  const dispatch = useDispatch();
-  const { formatMessage } = useIntl();
-  const { title, BackIcon, onBack = () => dispatch(popToolsPanelPage()), classes, sxs } = props;
-  return (
-    <>
-      <PanelHeader
-        title={typeof title === 'object' ? formatMessage(title) : title}
-        BackIcon={BackIcon}
-        onBack={onBack}
-      />
-      <Suspense>
-        <ErrorBoundary>
-          <Box component="section" className={classes?.body} sx={sxs?.body}>
-            {props.children}
-          </Box>
-        </ErrorBoundary>
-      </Suspense>
-    </>
-  );
+	const dispatch = useDispatch();
+	const { formatMessage } = useIntl();
+	const { title, BackIcon, onBack = () => dispatch(popToolsPanelPage()), classes, sxs } = props;
+	return (
+		<>
+			<PanelHeader
+				title={typeof title === 'object' ? formatMessage(title) : title}
+				BackIcon={BackIcon}
+				onBack={onBack}
+			/>
+			<Suspense>
+				<ErrorBoundary>
+					<Box component="section" className={classes?.body} sx={sxs?.body}>
+						{props.children}
+					</Box>
+				</ErrorBoundary>
+			</Suspense>
+		</>
+	);
 }
 
 export default ToolPanel;

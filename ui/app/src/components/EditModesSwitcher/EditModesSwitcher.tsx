@@ -29,98 +29,98 @@ import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import DragIndicatorRoundedIcon from '@mui/icons-material/DragIndicatorRounded';
 
 export interface EditModesSwitcherProps {
-  item: DetailedItem;
-  disabled?: boolean;
+	item: DetailedItem;
+	disabled?: boolean;
 }
 
 export function EditModesSwitcher(props: EditModesSwitcherProps) {
-  const { disabled } = props;
-  const { editMode, highlightMode } = usePreviewState();
-  const dispatch = useDispatch();
-  const onEditModeChange = (editMode, highlightMode?) => dispatch(setPreviewEditMode({ editMode, highlightMode }));
-  const isAllHighlightMode = editMode && highlightMode === 'all';
-  const isMoveHighlightMode = editMode && !isAllHighlightMode;
-  const commonModeButtonStyle = {
-    bgcolor: 'background.default',
-    ':hover': {
-      cursor: 'default'
-    }
-  };
-  return (
-    <Box
-      sx={{
-        minWidth: 104,
-        borderRadius: 20,
-        display: 'inline-block',
-        border: (theme) =>
-          `1px solid ${theme.palette.mode === 'light' ? theme.palette.divider : theme.palette.grey[700]}`,
-        transition: (theme) => theme.transitions.create(['background-color', 'border'])
-      }}
-    >
-      <Tooltip
-        title={
-          <FormattedMessage
-            id="editModesSwitcher.offButtonTooltip"
-            defaultMessage="Switch off editing ({shortcutKey})"
-            values={{
-              shortcutKey: editMode ? (isAllHighlightMode ? 'e' : 'm') : 'e | m'
-            }}
-          />
-        }
-      >
-        <IconButton
-          size="small"
-          color={!editMode ? 'error' : UNDEFINED}
-          disabled={disabled}
-          onClick={() => onEditModeChange(false)}
-          sx={{
-            borderTopRightRadius: 0,
-            borderBottomRightRadius: 0,
-            ...(!editMode && { cursor: 'default' })
-          }}
-        >
-          <PowerSettingsNewRoundedIcon />
-        </IconButton>
-      </Tooltip>
-      <Tooltip
-        title={
-          disabled ? '' : <FormattedMessage id="editModesSwitcher.editModeTooltip" defaultMessage="Edit mode (e)" />
-        }
-      >
-        <IconButton
-          color={isAllHighlightMode ? 'success' : UNDEFINED}
-          disabled={disabled}
-          size="small"
-          onClick={() => onEditModeChange(true, 'all')}
-          sx={{
-            borderRadius: 0,
-            ...(isAllHighlightMode && commonModeButtonStyle)
-          }}
-        >
-          <EditRoundedIcon />
-        </IconButton>
-      </Tooltip>
-      <Tooltip
-        title={
-          disabled ? '' : <FormattedMessage id="editModesSwitcher.moveModeTooltip" defaultMessage="Move mode (m)" />
-        }
-      >
-        <IconButton
-          color={isMoveHighlightMode ? 'primary' : UNDEFINED}
-          disabled={disabled}
-          size="small"
-          onClick={() => onEditModeChange(true, 'move')}
-          sx={{
-            borderTopLeftRadius: 0,
-            borderBottomLeftRadius: 0,
-            ...(isMoveHighlightMode && commonModeButtonStyle)
-          }}
-        >
-          <DragIndicatorRoundedIcon />
-        </IconButton>
-      </Tooltip>
-    </Box>
-  );
+	const { disabled } = props;
+	const { editMode, highlightMode } = usePreviewState();
+	const dispatch = useDispatch();
+	const onEditModeChange = (editMode, highlightMode?) => dispatch(setPreviewEditMode({ editMode, highlightMode }));
+	const isAllHighlightMode = editMode && highlightMode === 'all';
+	const isMoveHighlightMode = editMode && !isAllHighlightMode;
+	const commonModeButtonStyle = {
+		bgcolor: 'background.default',
+		':hover': {
+			cursor: 'default'
+		}
+	};
+	return (
+		<Box
+			sx={{
+				minWidth: 104,
+				borderRadius: 20,
+				display: 'inline-block',
+				border: (theme) =>
+					`1px solid ${theme.palette.mode === 'light' ? theme.palette.divider : theme.palette.grey[700]}`,
+				transition: (theme) => theme.transitions.create(['background-color', 'border'])
+			}}
+		>
+			<Tooltip
+				title={
+					<FormattedMessage
+						id="editModesSwitcher.offButtonTooltip"
+						defaultMessage="Switch off editing ({shortcutKey})"
+						values={{
+							shortcutKey: editMode ? (isAllHighlightMode ? 'e' : 'm') : 'e | m'
+						}}
+					/>
+				}
+			>
+				<IconButton
+					size="small"
+					color={!editMode ? 'error' : UNDEFINED}
+					disabled={disabled}
+					onClick={() => onEditModeChange(false)}
+					sx={{
+						borderTopRightRadius: 0,
+						borderBottomRightRadius: 0,
+						...(!editMode && { cursor: 'default' })
+					}}
+				>
+					<PowerSettingsNewRoundedIcon />
+				</IconButton>
+			</Tooltip>
+			<Tooltip
+				title={
+					disabled ? '' : <FormattedMessage id="editModesSwitcher.editModeTooltip" defaultMessage="Edit mode (e)" />
+				}
+			>
+				<IconButton
+					color={isAllHighlightMode ? 'success' : UNDEFINED}
+					disabled={disabled}
+					size="small"
+					onClick={() => onEditModeChange(true, 'all')}
+					sx={{
+						borderRadius: 0,
+						...(isAllHighlightMode && commonModeButtonStyle)
+					}}
+				>
+					<EditRoundedIcon />
+				</IconButton>
+			</Tooltip>
+			<Tooltip
+				title={
+					disabled ? '' : <FormattedMessage id="editModesSwitcher.moveModeTooltip" defaultMessage="Move mode (m)" />
+				}
+			>
+				<IconButton
+					color={isMoveHighlightMode ? 'primary' : UNDEFINED}
+					disabled={disabled}
+					size="small"
+					onClick={() => onEditModeChange(true, 'move')}
+					sx={{
+						borderTopLeftRadius: 0,
+						borderBottomLeftRadius: 0,
+						...(isMoveHighlightMode && commonModeButtonStyle)
+					}}
+				>
+					<DragIndicatorRoundedIcon />
+				</IconButton>
+			</Tooltip>
+		</Box>
+	);
 }
 
 export default EditModesSwitcher;

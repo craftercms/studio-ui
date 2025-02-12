@@ -18,6 +18,6 @@ import { GetChildrenResponse } from './GetChildrenResponse';
 import { DetailedItem } from './Item';
 
 export interface GetItemWithChildrenResponse {
-  item: DetailedItem;
-  children: GetChildrenResponse;
+	item: DetailedItem;
+	children: GetChildrenResponse;
 }

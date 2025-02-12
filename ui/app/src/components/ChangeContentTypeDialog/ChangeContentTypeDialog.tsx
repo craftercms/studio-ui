@@ -21,29 +21,29 @@ import { ChangeContentTypeDialogProps } from './utils';
 import ChangeContentTypeDialogContainer from './ChangeContentTypeDialogContainer';
 
 export function ChangeContentTypeDialog(props: ChangeContentTypeDialogProps) {
-  const { item, onContentTypeSelected, compact, rootPath, selectedContentType, ...rest } = props;
-  return (
-    <EnhancedDialog
-      title={<FormattedMessage id="changeContentTypeDialog.title" defaultMessage="Choose Content Type" />}
-      dialogHeaderProps={{
-        subtitle: (
-          <FormattedMessage
-            id="changeContentTypeDialog.subtitle"
-            defaultMessage="The following starter templates are available for use within this section."
-          />
-        )
-      }}
-      {...rest}
-    >
-      <ChangeContentTypeDialogContainer
-        item={item}
-        onContentTypeSelected={onContentTypeSelected}
-        compact={compact}
-        rootPath={rootPath}
-        selectedContentType={selectedContentType}
-      />
-    </EnhancedDialog>
-  );
+	const { item, onContentTypeSelected, compact, rootPath, selectedContentType, ...rest } = props;
+	return (
+		<EnhancedDialog
+			title={<FormattedMessage id="changeContentTypeDialog.title" defaultMessage="Choose Content Type" />}
+			dialogHeaderProps={{
+				subtitle: (
+					<FormattedMessage
+						id="changeContentTypeDialog.subtitle"
+						defaultMessage="The following starter templates are available for use within this section."
+					/>
+				)
+			}}
+			{...rest}
+		>
+			<ChangeContentTypeDialogContainer
+				item={item}
+				onContentTypeSelected={onContentTypeSelected}
+				compact={compact}
+				rootPath={rootPath}
+				selectedContentType={selectedContentType}
+			/>
+		</EnhancedDialog>
+	);
 }
 
 export default ChangeContentTypeDialog;

@@ -39,135 +39,135 @@ export const intl$ = intl$$.asObservable();
 let intl = createIntl({ locale: 'en', messages: currentTranslations.en }, createIntlCache());
 
 if (getCurrentLocale() !== 'en') {
-  createIntlInstance(getCurrentLocale()).then((newIntl) => {
-    intl = newIntl;
-    intl$$.next(newIntl);
-  });
+	createIntlInstance(getCurrentLocale()).then((newIntl) => {
+		intl = newIntl;
+		intl$$.next(newIntl);
+	});
 }
 
 async function fetchLocale(locale: string): Promise<LookupTable<string>> {
-  let translations;
-  switch (locale) {
-    case 'de':
-      translations = await import('../translations/de.json');
-      break;
-    case 'es':
-      translations = await import('../translations/es.json');
-      break;
-    case 'ko':
-      translations = await import('../translations/ko.json');
-      break;
-    default:
-      translations = Promise.resolve({});
-      break;
-  }
-  return translations.default ?? translations;
+	let translations;
+	switch (locale) {
+		case 'de':
+			translations = await import('../translations/de.json');
+			break;
+		case 'es':
+			translations = await import('../translations/es.json');
+			break;
+		case 'ko':
+			translations = await import('../translations/ko.json');
+			break;
+		default:
+			translations = Promise.resolve({});
+			break;
+	}
+	return translations.default ?? translations;
 }
 
 async function createIntlInstance(localeCode: string): Promise<IntlShape> {
-  if (
-    !fetchedLocales[localeCode] &&
-    // Nothing to fetch point if we don't have the locale
-    ['de', 'es', 'ko'].includes(localeCode)
-  ) {
-    let fetchedTranslations = await fetchLocale(localeCode as BundledLocaleCodes);
-    // Plugins may have added translations to a locale that hasn't been fetched.
-    currentTranslations[localeCode] = { ...currentTranslations[localeCode], ...fetchedTranslations };
-    fetchedLocales[localeCode] = true;
-  }
-  return createIntl(
-    {
-      locale: localeCode,
-      messages: currentTranslations[localeCode] || currentTranslations.en
-    },
-    createIntlCache()
-  );
+	if (
+		!fetchedLocales[localeCode] &&
+		// Nothing to fetch point if we don't have the locale
+		['de', 'es', 'ko'].includes(localeCode)
+	) {
+		let fetchedTranslations = await fetchLocale(localeCode as BundledLocaleCodes);
+		// Plugins may have added translations to a locale that hasn't been fetched.
+		currentTranslations[localeCode] = { ...currentTranslations[localeCode], ...fetchedTranslations };
+		fetchedLocales[localeCode] = true;
+	}
+	return createIntl(
+		{
+			locale: localeCode,
+			messages: currentTranslations[localeCode] || currentTranslations.en
+		},
+		createIntlCache()
+	);
 }
 
 export function augmentTranslations(translations: { [localeCode: string]: object }): void {
-  if (translations) {
-    let currentLocale = intl.locale;
-    let currentLocaleChanged = false;
-    Object.entries(translations).forEach(([localeCode, translations]) => {
-      currentTranslations[localeCode] = { ...currentTranslations[localeCode], ...translations };
-      currentLocale === localeCode && (currentLocaleChanged = true);
-    });
-    if (currentLocaleChanged) {
-      createIntlInstance(currentLocale).then((newIntl) => {
-        intl = newIntl;
-        intl$$.next(newIntl);
-      });
-    }
-  }
+	if (translations) {
+		let currentLocale = intl.locale;
+		let currentLocaleChanged = false;
+		Object.entries(translations).forEach(([localeCode, translations]) => {
+			currentTranslations[localeCode] = { ...currentTranslations[localeCode], ...translations };
+			currentLocale === localeCode && (currentLocaleChanged = true);
+		});
+		if (currentLocaleChanged) {
+			createIntlInstance(currentLocale).then((newIntl) => {
+				intl = newIntl;
+				intl$$.next(newIntl);
+			});
+		}
+	}
 }
 
 export function getTranslation(
-  key: string,
-  table: Record<string, MessageDescriptor>,
-  formatMessage: IntlShape['formatMessage']
+	key: string,
+	table: Record<string, MessageDescriptor>,
+	formatMessage: IntlShape['formatMessage']
 ): string {
-  return formatMessage(
-    table[key] || {
-      id: 'translationNotAvailable',
-      defaultMessage: key || '(check configuration)'
-    }
-  );
+	return formatMessage(
+		table[key] || {
+			id: 'translationNotAvailable',
+			defaultMessage: key || '(check configuration)'
+		}
+	);
 }
 
 export function getPossibleTranslation(
-  titleOrDescriptor: TranslationOrText,
-  formatMessage: IntlShape['formatMessage'],
-  // TODO: Fix FormatXMLElementFn generics
-  values?: Record<string, PrimitiveType | FormatXMLElementFn<any, any>>
+	titleOrDescriptor: TranslationOrText,
+	formatMessage: IntlShape['formatMessage'],
+	// TODO: Fix FormatXMLElementFn generics
+	values?: Record<string, PrimitiveType | FormatXMLElementFn<any, any>>
 ): string | ReactNode[] {
-  if (nou(titleOrDescriptor)) {
-    return null;
-  }
-  return typeof titleOrDescriptor === 'object' ? formatMessage(titleOrDescriptor, values) : titleOrDescriptor;
+	if (nou(titleOrDescriptor)) {
+		return null;
+	}
+	return typeof titleOrDescriptor === 'object' ? formatMessage(titleOrDescriptor, values) : titleOrDescriptor;
 }
 
 export function getCurrentLocale(username?: string): string {
-  const user = username ?? localStorage.getItem('username');
-  return getStoredLanguage(user) || 'en';
+	const user = username ?? localStorage.getItem('username');
+	return getStoredLanguage(user) || 'en';
 }
 
 export function getCurrentIntl(): IntlShape {
-  return intl;
+	return intl;
 }
 
 export function buildStoredLanguageKey(username: string): string {
-  return `${username}_crafterStudioLanguage`;
+	return `${username}_crafterStudioLanguage`;
 }
 
 export function getStoredLanguage(username?: string): string {
-  return (
-    (username ? localStorage.getItem(buildStoredLanguageKey(username)) : null) ??
-    localStorage.getItem(`crafterStudioLanguage`)
-  );
+	return (
+		(username ? localStorage.getItem(buildStoredLanguageKey(username)) : null) ??
+		localStorage.getItem(`crafterStudioLanguage`)
+	);
 }
 
 export function setStoredLanguage(language: string, username?: string): void {
-  // Prevent `null` or `undefined`, or even `"""` from being stored.
-  if (language) {
-    username && localStorage.setItem(buildStoredLanguageKey(username), language);
-    localStorage.setItem('crafterStudioLanguage', language);
-  }
+	// Prevent `null` or `undefined`, or even `"""` from being stored.
+	if (language) {
+		username && localStorage.setItem(buildStoredLanguageKey(username), language);
+		localStorage.setItem('crafterStudioLanguage', language);
+	}
 }
 
 export function dispatchLanguageChange(language: string): void {
-  let event = new CustomEvent('setlocale', { detail: language });
-  document.dispatchEvent(event);
+	let event = new CustomEvent('setlocale', { detail: language });
+	document.dispatchEvent(event);
 }
 
 // @ts-ignore
 document.addEventListener(
-  'setlocale',
-  async (e: CustomEvent<string>) => {
-    if (e.detail && e.detail !== intl.locale) {
-      intl = await createIntlInstance(e.detail);
-      document.documentElement.setAttribute('lang', e.detail);
-      intl$$.next(intl);
-    }
-  },
-  false
+	'setlocale',
+	async (e: CustomEvent<string>) => {
+		if (e.detail && e.detail !== intl.locale) {
+			intl = await createIntlInstance(e.detail);
+			document.documentElement.setAttribute('lang', e.detail);
+			intl$$.next(intl);
+		}
+	},
+	false
 );

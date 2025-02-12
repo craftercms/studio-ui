@@ -24,34 +24,34 @@ import { PartialSxRecord } from '../../models';
 import Box from '@mui/material/Box';
 
 export interface DialogTitleProps {
-  title: string;
-  subtitle?: string;
-  onClose?(): void;
-  sxs?: PartialSxRecord<'root' | 'title' | 'subtitle' | 'closeIcon'>;
+	title: string;
+	subtitle?: string;
+	onClose?(): void;
+	sxs?: PartialSxRecord<'root' | 'title' | 'subtitle' | 'closeIcon'>;
 }
 
 export function DialogTitle(props: DialogTitleProps) {
-  const { onClose, title, subtitle, sxs } = props;
-  return (
-    <MuiDialogTitle sx={{ margin: 0, padding: '13px 20px 11px', background: palette.white, ...sxs?.root }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', ...sxs?.title }}>
-        <Typography variant="h6">{title}</Typography>
-        {onClose ? (
-          <IconButton aria-label="close" onClick={onClose} sx={sxs?.closeIcon} size="large">
-            <CloseIcon />
-          </IconButton>
-        ) : null}
-      </Box>
-      {subtitle && (
-        <Typography
-          variant="subtitle1"
-          sx={{ fontSize: '14px', lineHeight: '18px', paddingRight: '35px', ...sxs?.subtitle }}
-        >
-          {subtitle}
-        </Typography>
-      )}
-    </MuiDialogTitle>
-  );
+	const { onClose, title, subtitle, sxs } = props;
+	return (
+		<MuiDialogTitle sx={{ margin: 0, padding: '13px 20px 11px', background: palette.white, ...sxs?.root }}>
+			<Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', ...sxs?.title }}>
+				<Typography variant="h6">{title}</Typography>
+				{onClose ? (
+					<IconButton aria-label="close" onClick={onClose} sx={sxs?.closeIcon} size="large">
+						<CloseIcon />
+					</IconButton>
+				) : null}
+			</Box>
+			{subtitle && (
+				<Typography
+					variant="subtitle1"
+					sx={{ fontSize: '14px', lineHeight: '18px', paddingRight: '35px', ...sxs?.subtitle }}
+				>
+					{subtitle}
+				</Typography>
+			)}
+		</MuiDialogTitle>
+	);
 }
 
 export default DialogTitle;

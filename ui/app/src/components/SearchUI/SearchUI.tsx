@@ -46,407 +46,407 @@ import Box from '@mui/material/Box';
 import { drawerClasses } from '@mui/material';
 
 export interface SearchUIProps {
-  selectedPath: string;
-  selected: string[];
-  selectionOptions: ContextMenuOption[];
-  guestBase: string;
-  sortBy?: string;
-  sortOrder?: string;
-  keyword: string;
-  mode: 'select' | 'default';
-  drawerOpen: boolean;
-  embedded: boolean;
-  desktopScreen: boolean;
-  currentView: 'grid' | 'list';
-  searchResults: SearchResult;
-  areAllSelected: boolean;
-  checkedFilters: LookupTable<CheckedFilter>;
-  searchParameters: ElasticParams;
-  error: ApiResponse;
-  isFetching: boolean;
-  preselectedLookup?: LookupTable<boolean>;
-  disableChangePreselected?: SearchProps['disableChangePreselected'];
-  onActionClicked(option: AllItemActions, event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
-  handleSelectAll(checked: any): void;
-  onSelectedPathChanges(path: string): void;
-  onCheckedFiltersChanges(checkedFilters: LookupTable<CheckedFilter>): any;
-  clearFilter(facet: string): void;
-  clearFilters(): void;
-  handleSearchKeyword(keyword: string): void;
-  handleChangeView(): void;
-  toggleDrawer(): void;
-  handleFilterChange(filter: Filter, isFilter?: boolean): void;
-  handleChangePage(event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null, newPage: number): void;
-  handleChangeRowsPerPage(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void;
-  handleSelect(path: string, isSelected: boolean): void;
-  onPreview(item: MediaItem): void;
-  onHeaderButtonClick(event: any, item: MediaItem): void;
-  handleClearSelected(): void;
-  onClose(): void;
-  onAcceptSelection?(items: string[]): void;
+	selectedPath: string;
+	selected: string[];
+	selectionOptions: ContextMenuOption[];
+	guestBase: string;
+	sortBy?: string;
+	sortOrder?: string;
+	keyword: string;
+	mode: 'select' | 'default';
+	drawerOpen: boolean;
+	embedded: boolean;
+	desktopScreen: boolean;
+	currentView: 'grid' | 'list';
+	searchResults: SearchResult;
+	areAllSelected: boolean;
+	checkedFilters: LookupTable<CheckedFilter>;
+	searchParameters: ElasticParams;
+	error: ApiResponse;
+	isFetching: boolean;
+	preselectedLookup?: LookupTable<boolean>;
+	disableChangePreselected?: SearchProps['disableChangePreselected'];
+	onActionClicked(option: AllItemActions, event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
+	handleSelectAll(checked: any): void;
+	onSelectedPathChanges(path: string): void;
+	onCheckedFiltersChanges(checkedFilters: LookupTable<CheckedFilter>): any;
+	clearFilter(facet: string): void;
+	clearFilters(): void;
+	handleSearchKeyword(keyword: string): void;
+	handleChangeView(): void;
+	toggleDrawer(): void;
+	handleFilterChange(filter: Filter, isFilter?: boolean): void;
+	handleChangePage(event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null, newPage: number): void;
+	handleChangeRowsPerPage(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void;
+	handleSelect(path: string, isSelected: boolean): void;
+	onPreview(item: MediaItem): void;
+	onHeaderButtonClick(event: any, item: MediaItem): void;
+	handleClearSelected(): void;
+	onClose(): void;
+	onAcceptSelection?(items: string[]): void;
 }
 
 export function SearchUI(props: SearchUIProps) {
-  // region const { ... } = props
-  const {
-    areAllSelected,
-    error,
-    isFetching,
-    sortBy,
-    sortOrder,
-    searchParameters,
-    mode,
-    currentView,
-    desktopScreen,
-    embedded,
-    keyword,
-    handleSearchKeyword,
-    checkedFilters,
-    drawerOpen,
-    searchResults,
-    toggleDrawer,
-    handleChangeView,
-    handleFilterChange,
-    clearFilter,
-    clearFilters,
-    selectedPath,
-    onSelectedPathChanges,
-    onCheckedFiltersChanges,
-    handleSelectAll,
-    handleChangePage,
-    handleChangeRowsPerPage,
-    onPreview,
-    handleSelect,
-    selected,
-    guestBase,
-    selectionOptions,
-    onHeaderButtonClick,
-    onActionClicked,
-    handleClearSelected,
-    onClose,
-    onAcceptSelection,
-    preselectedLookup = {},
-    disableChangePreselected = true
-  } = props;
-  // endregion
+	// region const { ... } = props
+	const {
+		areAllSelected,
+		error,
+		isFetching,
+		sortBy,
+		sortOrder,
+		searchParameters,
+		mode,
+		currentView,
+		desktopScreen,
+		embedded,
+		keyword,
+		handleSearchKeyword,
+		checkedFilters,
+		drawerOpen,
+		searchResults,
+		toggleDrawer,
+		handleChangeView,
+		handleFilterChange,
+		clearFilter,
+		clearFilters,
+		selectedPath,
+		onSelectedPathChanges,
+		onCheckedFiltersChanges,
+		handleSelectAll,
+		handleChangePage,
+		handleChangeRowsPerPage,
+		onPreview,
+		handleSelect,
+		selected,
+		guestBase,
+		selectionOptions,
+		onHeaderButtonClick,
+		onActionClicked,
+		handleClearSelected,
+		onClose,
+		onAcceptSelection,
+		preselectedLookup = {},
+		disableChangePreselected = true
+	} = props;
+	// endregion
 
-  const { formatMessage } = useIntl();
+	const { formatMessage } = useIntl();
 
-  const container = useRef(undefined);
+	const container = useRef(undefined);
 
-  return (
-    <Box
-      component="section"
-      ref={container}
-      sx={{ height: '100%', position: 'relative', background: (theme) => theme.palette.background.default }}
-    >
-      <SiteSearchToolBar
-        onChange={handleSearchKeyword}
-        onMenuIconClick={toggleDrawer}
-        handleChangeView={handleChangeView}
-        currentView={currentView}
-        keyword={keyword}
-        showActionButton={Boolean(keyword)}
-        showTitle={mode === 'select' || (mode === 'default' && !embedded)}
-        embedded={embedded}
-      />
-      <Drawer
-        variant={desktopScreen ? 'persistent' : 'temporary'}
-        container={container.current}
-        anchor="left"
-        open={drawerOpen}
-        sx={{
-          flexShrink: 0,
-          [`& .${drawerClasses.paper}`]: {
-            top: 65,
-            bottom: mode === 'select' ? '71px' : 0,
-            width: drawerWidth,
-            zIndex: (theme) => theme.zIndex.appBar - 1,
-            height: 'auto',
-            position: 'absolute'
-          },
-          [`& .${drawerClasses.modal}`]: {
-            position: 'absolute',
-            '& .MuiBackdrop-root': {
-              background: 'transparent'
-            }
-          }
-        }}
-        ModalProps={{
-          ...(!desktopScreen && {
-            onClose: () => toggleDrawer()
-          })
-        }}
-      >
-        {searchResults && searchResults.facets && (
-          <SiteSearchFilters
-            mode={mode}
-            sx={{ marginRight: '7px' }}
-            facets={searchResults.facets}
-            handleFilterChange={handleFilterChange}
-            sortBy={sortBy}
-            sortOrder={sortOrder}
-            checkedFilters={checkedFilters}
-            setCheckedFilters={onCheckedFiltersChanges}
-            clearFilters={clearFilters}
-            handleClearClick={clearFilter}
-            selectedPath={selectedPath}
-            setSelectedPath={onSelectedPathChanges}
-          />
-        )}
-      </Drawer>
-      <Box
-        component="section"
-        sx={[
-          (theme) => ({
-            height: 'calc(100% - 65px)', // 100% - toolbar height
-            margin: 'auto',
-            display: 'flex',
-            flexDirection: 'column',
-            background: theme.palette.background.default,
-            transition: drawerOpen
-              ? theme.transitions.create('margin', {
-                  easing: theme.transitions.easing.easeOut,
-                  duration: theme.transitions.duration.enteringScreen
-                })
-              : theme.transitions.create('margin', {
-                  easing: theme.transitions.easing.sharp,
-                  duration: theme.transitions.duration.leavingScreen
-                }),
-            '&.hasContent': {
-              height: 'inherit'
-            },
-            '&.select': {}
-          }),
-          mode === 'select' && { height: 'calc(100% - 136px)' }
-        ]}
-        style={
-          drawerOpen && desktopScreen
-            ? { width: `calc(100% - ${drawerWidth}px`, marginLeft: drawerWidth }
-            : { marginLeft: 0 }
-        }
-      >
-        <Box
-          sx={(theme) => ({
-            display: 'flex',
-            padding: '0 6px 0 20px',
-            alignItems: 'center',
-            background: theme.palette.background.paper,
-            borderBottom: `1px solid ${theme.palette.divider}`
-          })}
-        >
-          <FormGroup>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  color="primary"
-                  checked={areAllSelected}
-                  onClick={(e: any) => handleSelectAll(e.target.checked)}
-                />
-              }
-              label={<Typography color="textPrimary">{formatMessage(translations.selectAll)}</Typography>}
-            />
-          </FormGroup>
-          <TablePagination
-            rowsPerPageOptions={[9, 15, 21]}
-            sx={{
-              marginLeft: 'auto',
-              '& p': {
-                padding: 0
-              },
-              '& svg': {
-                top: 'inherit'
-              },
-              [`& .${tablePaginationClasses.selectRoot}`]: { mr: 0 },
-              [`& .${tablePaginationClasses.select}`]: { border: 'none' }
-            }}
-            component="div"
-            labelRowsPerPage={null}
-            labelDisplayedRows={({ from, to, count }) => (
-              <>
-                <FormattedMessage
-                  id="search.resultsCaption"
-                  defaultMessage="{from}-{to} of {count} results {keywordLength, plural, =0 {}other{ for <b>“{keyword}”</b>}}"
-                  values={{
-                    from,
-                    to,
-                    count,
-                    keyword: keyword.length > 18 ? keyword.substring(0, 15).trim() + '...' : keyword,
-                    keywordLength: keyword.length,
-                    b: (content: ReactNode[]) => <strong key={content[0] as string}>{content[0]}</strong>
-                  }}
-                />
-                {(Object.keys(checkedFilters).length > 0 || Boolean(selectedPath)) && (
-                  <strong>
-                    <FormattedMessage
-                      id="search.filtersActive"
-                      defaultMessage=" • <span>Filters Active</span>"
-                      values={{
-                        span: (content: ReactNode[]) => (
-                          <Box
-                            component="span"
-                            key={content[0] as string}
-                            sx={{
-                              color: '#FFB400',
-                              marginLeft: '2px'
-                            }}
-                          >
-                            {content[0]}
-                          </Box>
-                        )
-                      }}
-                    />
-                  </strong>
-                )}
-              </>
-            )}
-            count={searchResults?.total ?? 0}
-            rowsPerPage={searchParameters.limit}
-            page={Math.ceil(searchParameters.offset / searchParameters.limit)}
-            backIconButtonProps={{
-              'aria-label': formatMessage(translations.previousPage)
-            }}
-            nextIconButtonProps={{
-              'aria-label': formatMessage(translations.nextPage)
-            }}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
-        </Box>
-        <Box component="section" sx={{ flexGrow: 1, padding: '25px 30px', overflowY: 'scroll', position: 'relative' }}>
-          {error ? (
-            <ApiResponseErrorState error={error} />
-          ) : (
-            <Grid
-              container
-              spacing={3}
-              minHeight="100%"
-              alignContent={isFetching || searchResults === null ? 'center' : 'start'}
-              sx={[searchResults?.items.length === 0 && { height: '100%', justifyContent: 'center' }]}
-            >
-              {isFetching || searchResults === null ? (
-                <LoadingState />
-              ) : (
-                <>
-                  {searchResults.items.length > 0 ? (
-                    searchResults.items.map((item: MediaItem, i) => (
-                      <Grid
-                        key={i}
-                        size={{ xs: 12, ...(currentView === 'grid' ? { sm: 6, md: 4, lg: 4, xl: 3 } : {}) }}
-                      >
-                        <MediaCard
-                          sxs={{
-                            root: {
-                              cursor:
-                                disableChangePreselected && preselectedLookup[item.path] ? 'not-allowed' : 'pointer',
-                              display: currentView === 'list' ? 'flex' : 'block'
-                            },
-                            ...(currentView === 'list'
-                              ? {
-                                  checkbox: {
-                                    justifyContent: 'center',
-                                    order: -2,
-                                    marginRight: '5px',
-                                    marginLeft: '16px'
-                                  },
-                                  media: {
-                                    paddingTop: 0,
-                                    height: '80px',
-                                    width: '80px',
-                                    order: -1
-                                  },
-                                  mediaIcon: {
-                                    height: '80px',
-                                    width: '80px',
-                                    paddingTop: 0,
-                                    order: -1
-                                  },
-                                  cardActionArea: {
-                                    width: 'auto',
-                                    display: 'flex'
-                                  },
-                                  cardHeader: { flexGrow: 1 }
-                                }
-                              : {})
-                          }}
-                          item={item}
-                          onPreview={mode === 'default' ? () => onPreview(item) : UNDEFINED}
-                          onClick={
-                            !(disableChangePreselected && preselectedLookup[item.path]) && mode === 'select'
-                              ? () => handleSelect(item.path, !selected.includes(item.path))
-                              : UNDEFINED
-                          }
-                          onSelect={handleSelect}
-                          disableSelection={disableChangePreselected && preselectedLookup[item.path]}
-                          selected={selected}
-                          previewAppBaseUri={guestBase}
-                          action={
-                            mode === 'default' ? (
-                              <IconButton onClick={(e) => onHeaderButtonClick(e, item)} size="small">
-                                <MoreVertRounded />
-                              </IconButton>
-                            ) : null
-                          }
-                        />
-                      </Grid>
-                    ))
-                  ) : (
-                    <EmptyState
-                      title={formatMessage(translations.noResults)}
-                      subtitle={formatMessage(translations.changeQuery)}
-                    />
-                  )}
-                </>
-              )}
-            </Grid>
-          )}
-        </Box>
-      </Box>
-      {mode === 'default' && (
-        <ItemActionsSnackbar
-          open={selected.length > 0}
-          options={selectionOptions}
-          onActionClicked={onActionClicked}
-          append={
-            <Button size="small" color="primary" variant="text" onClick={handleClearSelected}>
-              <ListItemText
-                primary={formatMessage(translations.clearSelected, {
-                  count: selected.length
-                })}
-              />
-            </Button>
-          }
-        />
-      )}
-      {mode === 'select' && (
-        <Box
-          component="section"
-          sx={{
-            flex: '0 0 auto',
-            display: 'flex',
-            padding: '14px 20px',
-            justifyContent: 'flex-end',
-            borderTop: (theme) => `1px solid ${theme.palette.divider}`,
-            '& > :not(:first-child)': {
-              marginLeft: '12px'
-            }
-          }}
-        >
-          <Button variant="outlined" onClick={onClose}>
-            {formatMessage(translations.cancel)}
-          </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            disabled={selected.length === 0}
-            onClick={() => onAcceptSelection?.(selected)}
-          >
-            {formatMessage(translations.acceptSelection)}
-          </Button>
-        </Box>
-      )}
-    </Box>
-  );
+	return (
+		<Box
+			component="section"
+			ref={container}
+			sx={{ height: '100%', position: 'relative', background: (theme) => theme.palette.background.default }}
+		>
+			<SiteSearchToolBar
+				onChange={handleSearchKeyword}
+				onMenuIconClick={toggleDrawer}
+				handleChangeView={handleChangeView}
+				currentView={currentView}
+				keyword={keyword}
+				showActionButton={Boolean(keyword)}
+				showTitle={mode === 'select' || (mode === 'default' && !embedded)}
+				embedded={embedded}
+			/>
+			<Drawer
+				variant={desktopScreen ? 'persistent' : 'temporary'}
+				container={container.current}
+				anchor="left"
+				open={drawerOpen}
+				sx={{
+					flexShrink: 0,
+					[`& .${drawerClasses.paper}`]: {
+						top: 65,
+						bottom: mode === 'select' ? '71px' : 0,
+						width: drawerWidth,
+						zIndex: (theme) => theme.zIndex.appBar - 1,
+						height: 'auto',
+						position: 'absolute'
+					},
+					[`& .${drawerClasses.modal}`]: {
+						position: 'absolute',
+						'& .MuiBackdrop-root': {
+							background: 'transparent'
+						}
+					}
+				}}
+				ModalProps={{
+					...(!desktopScreen && {
+						onClose: () => toggleDrawer()
+					})
+				}}
+			>
+				{searchResults && searchResults.facets && (
+					<SiteSearchFilters
+						mode={mode}
+						sx={{ marginRight: '7px' }}
+						facets={searchResults.facets}
+						handleFilterChange={handleFilterChange}
+						sortBy={sortBy}
+						sortOrder={sortOrder}
+						checkedFilters={checkedFilters}
+						setCheckedFilters={onCheckedFiltersChanges}
+						clearFilters={clearFilters}
+						handleClearClick={clearFilter}
+						selectedPath={selectedPath}
+						setSelectedPath={onSelectedPathChanges}
+					/>
+				)}
+			</Drawer>
+			<Box
+				component="section"
+				sx={[
+					(theme) => ({
+						height: 'calc(100% - 65px)', // 100% - toolbar height
+						margin: 'auto',
+						display: 'flex',
+						flexDirection: 'column',
+						background: theme.palette.background.default,
+						transition: drawerOpen
+							? theme.transitions.create('margin', {
+									easing: theme.transitions.easing.easeOut,
+									duration: theme.transitions.duration.enteringScreen
+								})
+							: theme.transitions.create('margin', {
+									easing: theme.transitions.easing.sharp,
+									duration: theme.transitions.duration.leavingScreen
+								}),
+						'&.hasContent': {
+							height: 'inherit'
+						},
+						'&.select': {}
+					}),
+					mode === 'select' && { height: 'calc(100% - 136px)' }
+				]}
+				style={
+					drawerOpen && desktopScreen
+						? { width: `calc(100% - ${drawerWidth}px`, marginLeft: drawerWidth }
+						: { marginLeft: 0 }
+				}
+			>
+				<Box
+					sx={(theme) => ({
+						display: 'flex',
+						padding: '0 6px 0 20px',
+						alignItems: 'center',
+						background: theme.palette.background.paper,
+						borderBottom: `1px solid ${theme.palette.divider}`
+					})}
+				>
+					<FormGroup>
+						<FormControlLabel
+							control={
+								<Checkbox
+									color="primary"
+									checked={areAllSelected}
+									onClick={(e: any) => handleSelectAll(e.target.checked)}
+								/>
+							}
+							label={<Typography color="textPrimary">{formatMessage(translations.selectAll)}</Typography>}
+						/>
+					</FormGroup>
+					<TablePagination
+						rowsPerPageOptions={[9, 15, 21]}
+						sx={{
+							marginLeft: 'auto',
+							'& p': {
+								padding: 0
+							},
+							'& svg': {
+								top: 'inherit'
+							},
+							[`& .${tablePaginationClasses.selectRoot}`]: { mr: 0 },
+							[`& .${tablePaginationClasses.select}`]: { border: 'none' }
+						}}
+						component="div"
+						labelRowsPerPage={null}
+						labelDisplayedRows={({ from, to, count }) => (
+							<>
+								<FormattedMessage
+									id="search.resultsCaption"
+									defaultMessage="{from}-{to} of {count} results {keywordLength, plural, =0 {}other{ for <b>“{keyword}”</b>}}"
+									values={{
+										from,
+										to,
+										count,
+										keyword: keyword.length > 18 ? keyword.substring(0, 15).trim() + '...' : keyword,
+										keywordLength: keyword.length,
+										b: (content: ReactNode[]) => <strong key={content[0] as string}>{content[0]}</strong>
+									}}
+								/>
+								{(Object.keys(checkedFilters).length > 0 || Boolean(selectedPath)) && (
+									<strong>
+										<FormattedMessage
+											id="search.filtersActive"
+											defaultMessage=" • <span>Filters Active</span>"
+											values={{
+												span: (content: ReactNode[]) => (
+													<Box
+														component="span"
+														key={content[0] as string}
+														sx={{
+															color: '#FFB400',
+															marginLeft: '2px'
+														}}
+													>
+														{content[0]}
+													</Box>
+												)
+											}}
+										/>
+									</strong>
+								)}
+							</>
+						)}
+						count={searchResults?.total ?? 0}
+						rowsPerPage={searchParameters.limit}
+						page={Math.ceil(searchParameters.offset / searchParameters.limit)}
+						backIconButtonProps={{
+							'aria-label': formatMessage(translations.previousPage)
+						}}
+						nextIconButtonProps={{
+							'aria-label': formatMessage(translations.nextPage)
+						}}
+						onPageChange={handleChangePage}
+						onRowsPerPageChange={handleChangeRowsPerPage}
+					/>
+				</Box>
+				<Box component="section" sx={{ flexGrow: 1, padding: '25px 30px', overflowY: 'scroll', position: 'relative' }}>
+					{error ? (
+						<ApiResponseErrorState error={error} />
+					) : (
+						<Grid
+							container
+							spacing={3}
+							minHeight="100%"
+							alignContent={isFetching || searchResults === null ? 'center' : 'start'}
+							sx={[searchResults?.items.length === 0 && { height: '100%', justifyContent: 'center' }]}
+						>
+							{isFetching || searchResults === null ? (
+								<LoadingState />
+							) : (
+								<>
+									{searchResults.items.length > 0 ? (
+										searchResults.items.map((item: MediaItem, i) => (
+											<Grid
+												key={i}
+												size={{ xs: 12, ...(currentView === 'grid' ? { sm: 6, md: 4, lg: 4, xl: 3 } : {}) }}
+											>
+												<MediaCard
+													sxs={{
+														root: {
+															cursor:
+																disableChangePreselected && preselectedLookup[item.path] ? 'not-allowed' : 'pointer',
+															display: currentView === 'list' ? 'flex' : 'block'
+														},
+														...(currentView === 'list'
+															? {
+																	checkbox: {
+																		justifyContent: 'center',
+																		order: -2,
+																		marginRight: '5px',
+																		marginLeft: '16px'
+																	},
+																	media: {
+																		paddingTop: 0,
+																		height: '80px',
+																		width: '80px',
+																		order: -1
+																	},
+																	mediaIcon: {
+																		height: '80px',
+																		width: '80px',
+																		paddingTop: 0,
+																		order: -1
+																	},
+																	cardActionArea: {
+																		width: 'auto',
+																		display: 'flex'
+																	},
+																	cardHeader: { flexGrow: 1 }
+																}
+															: {})
+													}}
+													item={item}
+													onPreview={mode === 'default' ? () => onPreview(item) : UNDEFINED}
+													onClick={
+														!(disableChangePreselected && preselectedLookup[item.path]) && mode === 'select'
+															? () => handleSelect(item.path, !selected.includes(item.path))
+															: UNDEFINED
+													}
+													onSelect={handleSelect}
+													disableSelection={disableChangePreselected && preselectedLookup[item.path]}
+													selected={selected}
+													previewAppBaseUri={guestBase}
+													action={
+														mode === 'default' ? (
+															<IconButton onClick={(e) => onHeaderButtonClick(e, item)} size="small">
+																<MoreVertRounded />
+															</IconButton>
+														) : null
+													}
+												/>
+											</Grid>
+										))
+									) : (
+										<EmptyState
+											title={formatMessage(translations.noResults)}
+											subtitle={formatMessage(translations.changeQuery)}
+										/>
+									)}
+								</>
+							)}
+						</Grid>
+					)}
+				</Box>
+			</Box>
+			{mode === 'default' && (
+				<ItemActionsSnackbar
+					open={selected.length > 0}
+					options={selectionOptions}
+					onActionClicked={onActionClicked}
+					append={
+						<Button size="small" color="primary" variant="text" onClick={handleClearSelected}>
+							<ListItemText
+								primary={formatMessage(translations.clearSelected, {
+									count: selected.length
+								})}
+							/>
+						</Button>
+					}
+				/>
+			)}
+			{mode === 'select' && (
+				<Box
+					component="section"
+					sx={{
+						flex: '0 0 auto',
+						display: 'flex',
+						padding: '14px 20px',
+						justifyContent: 'flex-end',
+						borderTop: (theme) => `1px solid ${theme.palette.divider}`,
+						'& > :not(:first-child)': {
+							marginLeft: '12px'
+						}
+					}}
+				>
+					<Button variant="outlined" onClick={onClose}>
+						{formatMessage(translations.cancel)}
+					</Button>
+					<Button
+						variant="contained"
+						color="primary"
+						disabled={selected.length === 0}
+						onClick={() => onAcceptSelection?.(selected)}
+					>
+						{formatMessage(translations.acceptSelection)}
+					</Button>
+				</Box>
+			)}
+		</Box>
+	);
 }
 
 export default SearchUI;

@@ -20,28 +20,28 @@ import EnhancedDialog from '../EnhancedDialog';
 import EditUserDialogContainer from './EditUserDialogContainer';
 
 export function EditUserDialog(props: EditUserDialogProps) {
-  const {
-    open,
-    user,
-    onUserEdited,
-    passwordRequirementsMinComplexity,
-    onSubmittingAndOrPendingChange,
-    isSubmitting,
-    ...rest
-  } = props;
+	const {
+		open,
+		user,
+		onUserEdited,
+		passwordRequirementsMinComplexity,
+		onSubmittingAndOrPendingChange,
+		isSubmitting,
+		...rest
+	} = props;
 
-  return (
-    <EnhancedDialog open={open} omitHeader isSubmitting={isSubmitting} {...rest}>
-      <EditUserDialogContainer
-        open={open}
-        user={user}
-        onUserEdited={onUserEdited}
-        onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
-        passwordRequirementsMinComplexity={passwordRequirementsMinComplexity}
-        isSubmitting={isSubmitting}
-      />
-    </EnhancedDialog>
-  );
+	return (
+		<EnhancedDialog open={open} omitHeader isSubmitting={isSubmitting} {...rest}>
+			<EditUserDialogContainer
+				open={open}
+				user={user}
+				onUserEdited={onUserEdited}
+				onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
+				passwordRequirementsMinComplexity={passwordRequirementsMinComplexity}
+				isSubmitting={isSubmitting}
+			/>
+		</EnhancedDialog>
+	);
 }
 
 export default EditUserDialog;

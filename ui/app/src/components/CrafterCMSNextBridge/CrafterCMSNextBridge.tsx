@@ -15,14 +15,14 @@
  */
 
 import React, {
-  ElementType,
-  Fragment,
-  lazy,
-  PropsWithChildren,
-  ReactNode,
-  Suspense,
-  useLayoutEffect,
-  useState
+	ElementType,
+	Fragment,
+	lazy,
+	PropsWithChildren,
+	ReactNode,
+	Suspense,
+	useLayoutEffect,
+	useState
 } from 'react';
 import { ThemeOptions } from '@mui/material/styles';
 import { setRequestForgeryToken } from '../../utils/auth';
@@ -43,82 +43,82 @@ const LegacyConcierge = lazy(() => import('../LegacyConcierge/LegacyConcierge'))
 const GlobalDialogManager = lazy(() => import('../GlobalDialogManager/GlobalDialogManager'));
 
 export function CrafterCMSNextBridge(
-  props: PropsWithChildren<{
-    mountGlobalDialogManager?: boolean;
-    mountSnackbarProvider?: boolean;
-    mountLegacyConcierge?: boolean;
-    mountCssBaseline?: boolean;
-    suspenseFallback?: ReactNode;
-    themeOptions?: ThemeOptions;
-  }>
+	props: PropsWithChildren<{
+		mountGlobalDialogManager?: boolean;
+		mountSnackbarProvider?: boolean;
+		mountLegacyConcierge?: boolean;
+		mountCssBaseline?: boolean;
+		suspenseFallback?: ReactNode;
+		themeOptions?: ThemeOptions;
+	}>
 ) {
-  const [store, setStore] = useState<CrafterCMSStore>(null);
-  const [storeError, setStoreError] = useState<string>();
-  const {
-    children,
-    themeOptions,
-    suspenseFallback = '',
-    mountCssBaseline = true,
-    mountGlobalDialogManager = true,
-    mountSnackbarProvider = true,
-    mountLegacyConcierge = false
-  } = props;
-  const SnackbarOrFragment: ElementType = mountSnackbarProvider ? SnackbarProvider : Fragment;
-  const snackbarOrFragmentProps = mountSnackbarProvider
-    ? ({
-        maxSnack: 5,
-        autoHideDuration: 5000,
-        anchorOrigin: { vertical: 'bottom', horizontal: 'left' },
-        action: (id) => <SnackbarCloseButton id={id} />,
-        Components: {
-          error: NotistackVariant,
-          success: NotistackVariant,
-          warning: NotistackVariant,
-          info: NotistackVariant
-        }
-      } as SnackbarProviderProps)
-    : {};
-  useLayoutEffect(() => {
-    registerComponents();
-    publishCrafterGlobal();
-    setRequestForgeryToken();
-    getStore().subscribe({
-      next: (store) => setStore(store),
-      error: (message) => setStoreError(message)
-    });
-  }, []);
-  return (
-    <CrafterThemeProvider themeOptions={themeOptions}>
-      <I18nProvider>
-        <SnackbarOrFragment {...snackbarOrFragmentProps}>
-          {storeError ? (
-            <ErrorState
-              title={storeError}
-              imageUrl="/studio/static-assets/images/warning_state.svg"
-              sxs={{ title: { textAlign: 'center' }, image: { width: 250, marginBottom: '10px', marginTop: '10px' } }}
-            />
-          ) : store ? (
-            <StoreProvider store={store}>
-              <Suspense fallback={suspenseFallback} children={children} />
-              {mountGlobalDialogManager && (
-                <Suspense fallback="">
-                  <GlobalDialogManager />
-                </Suspense>
-              )}
-              {mountLegacyConcierge && (
-                <Suspense fallback="">
-                  <LegacyConcierge />
-                </Suspense>
-              )}
-            </StoreProvider>
-          ) : (
-            <LoadingState />
-          )}
-        </SnackbarOrFragment>
-      </I18nProvider>
-      <GlobalStyles cssBaseline={mountCssBaseline} />
-    </CrafterThemeProvider>
-  );
+	const [store, setStore] = useState<CrafterCMSStore>(null);
+	const [storeError, setStoreError] = useState<string>();
+	const {
+		children,
+		themeOptions,
+		suspenseFallback = '',
+		mountCssBaseline = true,
+		mountGlobalDialogManager = true,
+		mountSnackbarProvider = true,
+		mountLegacyConcierge = false
+	} = props;
+	const SnackbarOrFragment: ElementType = mountSnackbarProvider ? SnackbarProvider : Fragment;
+	const snackbarOrFragmentProps = mountSnackbarProvider
+		? ({
+				maxSnack: 5,
+				autoHideDuration: 5000,
+				anchorOrigin: { vertical: 'bottom', horizontal: 'left' },
+				action: (id) => <SnackbarCloseButton id={id} />,
+				Components: {
+					error: NotistackVariant,
+					success: NotistackVariant,
+					warning: NotistackVariant,
+					info: NotistackVariant
+				}
+			} as SnackbarProviderProps)
+		: {};
+	useLayoutEffect(() => {
+		registerComponents();
+		publishCrafterGlobal();
+		setRequestForgeryToken();
+		getStore().subscribe({
+			next: (store) => setStore(store),
+			error: (message) => setStoreError(message)
+		});
+	}, []);
+	return (
+		<CrafterThemeProvider themeOptions={themeOptions}>
+			<I18nProvider>
+				<SnackbarOrFragment {...snackbarOrFragmentProps}>
+					{storeError ? (
+						<ErrorState
+							title={storeError}
+							imageUrl="/studio/static-assets/images/warning_state.svg"
+							sxs={{ title: { textAlign: 'center' }, image: { width: 250, marginBottom: '10px', marginTop: '10px' } }}
+						/>
+					) : store ? (
+						<StoreProvider store={store}>
+							<Suspense fallback={suspenseFallback} children={children} />
+							{mountGlobalDialogManager && (
+								<Suspense fallback="">
+									<GlobalDialogManager />
+								</Suspense>
+							)}
+							{mountLegacyConcierge && (
+								<Suspense fallback="">
+									<LegacyConcierge />
+								</Suspense>
+							)}
+						</StoreProvider>
+					) : (
+						<LoadingState />
+					)}
+				</SnackbarOrFragment>
+			</I18nProvider>
+			<GlobalStyles cssBaseline={mountCssBaseline} />
+		</CrafterThemeProvider>
+	);
 }
 
 export default CrafterCMSNextBridge;

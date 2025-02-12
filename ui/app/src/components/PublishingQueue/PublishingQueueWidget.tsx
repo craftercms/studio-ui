@@ -22,14 +22,14 @@ import { FormattedMessage } from 'react-intl';
 import Box from '@mui/material/Box';
 
 export function PublishingQueueWidget(props: PublishingQueueProps) {
-  return (
-    <Paper elevation={2}>
-      <DialogHeader title={<FormattedMessage id="publishingQueue.title" defaultMessage="Publishing Queue" />} />
-      <Box sx={{ backgroundColor: (theme) => theme.palette.background.default, padding: '16px' }}>
-        <PublishingQueue {...props} />
-      </Box>
-    </Paper>
-  );
+	return (
+		<Paper elevation={2}>
+			<DialogHeader title={<FormattedMessage id="publishingQueue.title" defaultMessage="Publishing Queue" />} />
+			<Box sx={{ backgroundColor: (theme) => theme.palette.background.default, padding: '16px' }}>
+				<PublishingQueue {...props} />
+			</Box>
+		</Paper>
+	);
 }
 
 export default PublishingQueueWidget;

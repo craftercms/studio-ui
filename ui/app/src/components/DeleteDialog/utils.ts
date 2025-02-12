@@ -9,50 +9,50 @@ import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import ApiResponse from '../../models/ApiResponse';
 
 export interface DeleteDialogBaseProps {
-  items: DetailedItem[];
-  isFetching: boolean;
-  childItems: string[];
-  dependentItems: string[];
-  error: ApiResponse;
+	items: DetailedItem[];
+	isFetching: boolean;
+	childItems: string[];
+	dependentItems: string[];
+	error: ApiResponse;
 }
 
 export interface DeleteDialogProps extends DeleteDialogBaseProps, EnhancedDialogProps {
-  onSuccess?(response?: any): any;
+	onSuccess?(response?: any): any;
 }
 
 export interface DeleteDialogStateProps extends DeleteDialogBaseProps, EnhancedDialogState {
-  onClose?: StandardAction;
-  onClosed?: StandardAction;
-  onSuccess?: StandardAction;
+	onClose?: StandardAction;
+	onClosed?: StandardAction;
+	onSuccess?: StandardAction;
 }
 
 export interface DeleteDialogContainerProps
-  extends DeleteDialogBaseProps,
-    Pick<DeleteDialogProps, 'isSubmitting' | 'onClose' | 'onSuccess'> {}
+	extends DeleteDialogBaseProps,
+		Pick<DeleteDialogProps, 'isSubmitting' | 'onClose' | 'onSuccess'> {}
 
 export interface DeleteDialogContentUIProps {
-  items: DetailedItem[];
-  childItems: string[];
-  dependentItems: string[];
-  comment: string;
-  selectedItems: LookupTable<boolean>;
-  isCommentRequired: boolean;
-  isDisabled: boolean;
-  isConfirmDeleteChecked: boolean;
-  onCommentChange: InputProps['onChange'];
-  onItemClicked: SelectionListProps['onItemClicked'];
-  onSelectAllClicked: SelectionListProps['onSelectAllClicked'];
-  onConfirmDeleteChange(event: React.ChangeEvent, checked: boolean): void;
-  onEditDependantClick: SelectionListProps['onEditClick'];
+	items: DetailedItem[];
+	childItems: string[];
+	dependentItems: string[];
+	comment: string;
+	selectedItems: LookupTable<boolean>;
+	isCommentRequired: boolean;
+	isDisabled: boolean;
+	isConfirmDeleteChecked: boolean;
+	onCommentChange: InputProps['onChange'];
+	onItemClicked: SelectionListProps['onItemClicked'];
+	onSelectAllClicked: SelectionListProps['onSelectAllClicked'];
+	onConfirmDeleteChange(event: React.ChangeEvent, checked: boolean): void;
+	onEditDependantClick: SelectionListProps['onEditClick'];
 }
 
 export interface DeleteDialogUIProps extends DeleteDialogContentUIProps {
-  isSubmitting: boolean;
-  isSubmitButtonDisabled: boolean;
-  error: ApiResponse;
-  submitError: ApiResponse;
-  setSubmitError?(error: ApiResponse): void;
-  isFetching: boolean;
-  onSubmit(): void;
-  onCloseButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
+	isSubmitting: boolean;
+	isSubmitButtonDisabled: boolean;
+	error: ApiResponse;
+	submitError: ApiResponse;
+	setSubmitError?(error: ApiResponse): void;
+	isFetching: boolean;
+	onSubmit(): void;
+	onCloseButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
 }

@@ -27,33 +27,33 @@ import { Theme } from '@mui/material/styles';
 export type SystemIconDescriptor = { id?: string; class?: string; style?: object; content?: string };
 
 export interface SystemIconProps {
-  icon: SystemIconDescriptor;
-  fontIconProps?: IconProps;
-  svgIconProps?: SvgIconProps;
-  className?: string;
-  sx?: SxProps<Theme>;
-  /** @deprecated Use `sx` prop */
-  style?: SxProps<Theme>;
+	icon: SystemIconDescriptor;
+	fontIconProps?: IconProps;
+	svgIconProps?: SvgIconProps;
+	className?: string;
+	sx?: SxProps<Theme>;
+	/** @deprecated Use `sx` prop */
+	style?: SxProps<Theme>;
 }
 
 export function SystemIcon(props: SystemIconProps) {
-  let { icon, className, style, sx = style } = props;
-  const combinedSx = { ...sx, ...icon.style, ...style, ...props.svgIconProps?.sx } as SxProps<Theme>;
-  if ('id' in icon) {
-    const IconComponent = components.get(icon.id) as typeof ErrorRounded;
-    const iconClassName = clsx(icon.class, className, props.svgIconProps?.className);
-    return IconComponent ? (
-      <Suspense fallback={<Skeleton variant="rectangular" width="24px" sx={combinedSx} className={iconClassName} />}>
-        <IconComponent {...props.svgIconProps} sx={combinedSx} className={iconClassName} />
-      </Suspense>
-    ) : (
-      <Tooltip title={`Icon ${icon.id} not found. Check config.`}>
-        <ErrorRounded sx={combinedSx} className={iconClassName} />
-      </Tooltip>
-    );
-  } else {
-    return <MuiIcon className={icon.class} children={icon.content} {...props.fontIconProps} sx={combinedSx} />;
-  }
+	let { icon, className, style, sx = style } = props;
+	const combinedSx = { ...sx, ...icon.style, ...style, ...props.svgIconProps?.sx } as SxProps<Theme>;
+	if ('id' in icon) {
+		const IconComponent = components.get(icon.id) as typeof ErrorRounded;
+		const iconClassName = clsx(icon.class, className, props.svgIconProps?.className);
+		return IconComponent ? (
+			<Suspense fallback={<Skeleton variant="rectangular" width="24px" sx={combinedSx} className={iconClassName} />}>
+				<IconComponent {...props.svgIconProps} sx={combinedSx} className={iconClassName} />
+			</Suspense>
+		) : (
+			<Tooltip title={`Icon ${icon.id} not found. Check config.`}>
+				<ErrorRounded sx={combinedSx} className={iconClassName} />
+			</Tooltip>
+		);
+	} else {
+		return <MuiIcon className={icon.class} children={icon.content} {...props.fontIconProps} sx={combinedSx} />;
+	}
 }
 
 export default SystemIcon;

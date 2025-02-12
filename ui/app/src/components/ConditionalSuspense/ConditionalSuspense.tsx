@@ -18,13 +18,13 @@ import React, { PropsWithChildren, ReactNode } from 'react';
 import LoadingState from '../LoadingState/LoadingState';
 
 export type ConditionalSuspenseProps = PropsWithChildren<{
-  isLoading: boolean;
-  fallback?: ReactNode;
+	isLoading: boolean;
+	fallback?: ReactNode;
 }>;
 
 export function ConditionalSuspense(props: ConditionalSuspenseProps): JSX.Element {
-  const { children, isLoading, fallback = <LoadingState /> } = props;
-  return (isLoading ? fallback : children) as JSX.Element;
+	const { children, isLoading, fallback = <LoadingState /> } = props;
+	return (isLoading ? fallback : children) as JSX.Element;
 }
 
 export default ConditionalSuspense;

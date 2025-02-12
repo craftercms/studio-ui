@@ -25,68 +25,68 @@ import { updateWidgetDialog } from '../../../state/actions/dialogs';
 import { SiteToolsContext, SiteToolsContextProps } from '../siteToolsContext';
 
 interface EmbeddedSiteToolsProps {
-  onMinimize?: () => void;
-  onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;
+	onMinimize?: () => void;
+	onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
 export const EmbeddedSiteToolsContainer = (props: EmbeddedSiteToolsProps) => {
-  const [width, setWidth] = useState(240);
-  const [activeToolId, setActiveToolId] = useState<string>();
-  const [{ openSidebar }] = useGlobalAppState();
-  const siteTools = useReference('craftercms.siteTools');
-  const tools: Tool[] = siteTools?.tools;
-  const site = useActiveSiteId();
-  const dispatch = useDispatch();
-  const contextValue = useMemo<SiteToolsContextProps>(
-    () => ({ setTool: (id) => setActiveToolId(id.replace(/^\//, '')), activeToolId }),
-    [activeToolId]
-  );
+	const [width, setWidth] = useState(240);
+	const [activeToolId, setActiveToolId] = useState<string>();
+	const [{ openSidebar }] = useGlobalAppState();
+	const siteTools = useReference('craftercms.siteTools');
+	const tools: Tool[] = siteTools?.tools;
+	const site = useActiveSiteId();
+	const dispatch = useDispatch();
+	const contextValue = useMemo<SiteToolsContextProps>(
+		() => ({ setTool: (id) => setActiveToolId(id.replace(/^\//, '')), activeToolId }),
+		[activeToolId]
+	);
 
-  const onNavItemClick = (id: string) => {
-    setActiveToolId(id);
-  };
+	const onNavItemClick = (id: string) => {
+		setActiveToolId(id);
+	};
 
-  const onSubmittingAndOrPendingChange =
-    props.onSubmittingAndOrPendingChange ??
-    ((value: onSubmittingAndOrPendingChangeProps) => {
-      dispatch(updateWidgetDialog(value));
-    });
+	const onSubmittingAndOrPendingChange =
+		props.onSubmittingAndOrPendingChange ??
+		((value: onSubmittingAndOrPendingChangeProps) => {
+			dispatch(updateWidgetDialog(value));
+		});
 
-  return (
-    <SiteToolsContext.Provider value={contextValue}>
-      <SiteTools
-        site={site}
-        sidebarWidth={width}
-        onWidthChange={setWidth}
-        onNavItemClick={onNavItemClick}
-        sidebarBelowToolbar
-        hideSidebarLogo
-        showAppsButton={false}
-        hideSidebarSiteSwitcher
-        activeToolId={activeToolId}
-        openSidebar={openSidebar || !activeToolId}
-        tools={tools}
-        sx={{ height: '100%' }}
-        onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
-        onMinimize={() => {
-          if (props.onMinimize) {
-            props.onMinimize();
-          } else {
-            dispatch(updateWidgetDialog({ isMinimized: true }));
-          }
-        }}
-        mountMode="dialog"
-      />
-    </SiteToolsContext.Provider>
-  );
+	return (
+		<SiteToolsContext.Provider value={contextValue}>
+			<SiteTools
+				site={site}
+				sidebarWidth={width}
+				onWidthChange={setWidth}
+				onNavItemClick={onNavItemClick}
+				sidebarBelowToolbar
+				hideSidebarLogo
+				showAppsButton={false}
+				hideSidebarSiteSwitcher
+				activeToolId={activeToolId}
+				openSidebar={openSidebar || !activeToolId}
+				tools={tools}
+				sx={{ height: '100%' }}
+				onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
+				onMinimize={() => {
+					if (props.onMinimize) {
+						props.onMinimize();
+					} else {
+						dispatch(updateWidgetDialog({ isMinimized: true }));
+					}
+				}}
+				mountMode="dialog"
+			/>
+		</SiteToolsContext.Provider>
+	);
 };
 
 export function EmbeddedSiteTools(props: EmbeddedSiteToolsProps) {
-  return (
-    <GlobalAppContextProvider>
-      <EmbeddedSiteToolsContainer {...props} />
-    </GlobalAppContextProvider>
-  );
+	return (
+		<GlobalAppContextProvider>
+			<EmbeddedSiteToolsContainer {...props} />
+		</GlobalAppContextProvider>
+	);
 }
 
 export default EmbeddedSiteTools;

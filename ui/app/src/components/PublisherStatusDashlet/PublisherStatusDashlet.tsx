@@ -28,47 +28,47 @@ import { getPublishingStatusMessage } from '../PublishingStatusDisplay';
 export interface PublisherStatusDashletProps extends Omit<Partial<DashletCardProps>, 'contentHeight'> {}
 
 interface PublisherStatusDashletState {
-  publishingStatus: PublishingStatus;
-  loading: boolean;
+	publishingStatus: PublishingStatus;
+	loading: boolean;
 }
 
 export function PublisherStatusDashlet(props: PublisherStatusDashletProps) {
-  const { borderLeftColor = 'success.main' } = props;
-  const site = useActiveSiteId();
-  const [{ publishingStatus, loading }, setState] = useSpreadState<PublisherStatusDashletState>({
-    publishingStatus: null,
-    loading: false
-  });
-  const { formatMessage } = useIntl();
-  const onRefresh = useMemo(
-    () => () => {
-      setState({ publishingStatus: null, loading: true });
-      fetchStatus(site).subscribe((publishingStatus) => {
-        setState({ publishingStatus, loading: false });
-      });
-    },
-    [site, setState]
-  );
-  useEffect(() => {
-    onRefresh();
-  }, [onRefresh]);
+	const { borderLeftColor = 'success.main' } = props;
+	const site = useActiveSiteId();
+	const [{ publishingStatus, loading }, setState] = useSpreadState<PublisherStatusDashletState>({
+		publishingStatus: null,
+		loading: false
+	});
+	const { formatMessage } = useIntl();
+	const onRefresh = useMemo(
+		() => () => {
+			setState({ publishingStatus: null, loading: true });
+			fetchStatus(site).subscribe((publishingStatus) => {
+				setState({ publishingStatus, loading: false });
+			});
+		},
+		[site, setState]
+	);
+	useEffect(() => {
+		onRefresh();
+	}, [onRefresh]);
 
-  return (
-    <DashletCard {...props} sxs={{ content: { pt: 2 }, ...props.sxs }} borderLeftColor={borderLeftColor}>
-      {loading && (
-        <>
-          <Skeleton />
-          <Skeleton />
-        </>
-      )}
-      {publishingStatus && (
-        <>
-          <FormattedMessage defaultMessage="Publisher Status" />{' '}
-          <Typography component="div" children={getPublishingStatusMessage(publishingStatus, formatMessage)} mt={2} />
-        </>
-      )}
-    </DashletCard>
-  );
+	return (
+		<DashletCard {...props} sxs={{ content: { pt: 2 }, ...props.sxs }} borderLeftColor={borderLeftColor}>
+			{loading && (
+				<>
+					<Skeleton />
+					<Skeleton />
+				</>
+			)}
+			{publishingStatus && (
+				<>
+					<FormattedMessage defaultMessage="Publisher Status" />{' '}
+					<Typography component="div" children={getPublishingStatusMessage(publishingStatus, formatMessage)} mt={2} />
+				</>
+			)}
+		</DashletCard>
+	);
 }
 
 export default PublisherStatusDashlet;

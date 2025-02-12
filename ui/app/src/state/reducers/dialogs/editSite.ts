@@ -17,35 +17,35 @@
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
 import {
-  closeEditSiteDialog,
-  editSiteDialogClosed,
-  showEditSiteDialog,
-  updateEditSiteDialog
+	closeEditSiteDialog,
+	editSiteDialogClosed,
+	showEditSiteDialog,
+	updateEditSiteDialog
 } from '../../actions/dialogs';
 import { EditSiteDialogStateProps } from '../../../components/EditSiteDialog/utils';
 
 const initialState: EditSiteDialogStateProps = {
-  isSubmitting: null,
-  isMinimized: null,
-  hasPendingChanges: null,
-  open: false,
-  site: null
+	isSubmitting: null,
+	isMinimized: null,
+	hasPendingChanges: null,
+	open: false,
+	site: null
 };
 
 export default createReducer<GlobalState['dialogs']['editSite']>(initialState, (builder) => {
-  builder
-    .addCase(showEditSiteDialog, (state, { payload }) => ({
-      ...state,
-      onClose: closeEditSiteDialog(),
-      onClosed: editSiteDialogClosed(),
-      onSaveSuccess: closeEditSiteDialog(),
-      ...(payload as Partial<EditSiteDialogStateProps>),
-      open: true
-    }))
-    .addCase(updateEditSiteDialog, (state, { payload }) => ({
-      ...state,
-      ...(payload as Partial<EditSiteDialogStateProps>)
-    }))
-    .addCase(closeEditSiteDialog, (state) => ({ ...state, open: false }))
-    .addCase(editSiteDialogClosed, (state) => initialState);
+	builder
+		.addCase(showEditSiteDialog, (state, { payload }) => ({
+			...state,
+			onClose: closeEditSiteDialog(),
+			onClosed: editSiteDialogClosed(),
+			onSaveSuccess: closeEditSiteDialog(),
+			...(payload as Partial<EditSiteDialogStateProps>),
+			open: true
+		}))
+		.addCase(updateEditSiteDialog, (state, { payload }) => ({
+			...state,
+			...(payload as Partial<EditSiteDialogStateProps>)
+		}))
+		.addCase(closeEditSiteDialog, (state) => ({ ...state, open: false }))
+		.addCase(editSiteDialogClosed, (state) => initialState);
 });

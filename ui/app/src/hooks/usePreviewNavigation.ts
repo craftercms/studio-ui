@@ -18,7 +18,7 @@ import GlobalState from '../models/GlobalState';
 import { useSelector } from 'react-redux';
 
 export function usePreviewNavigation(): GlobalState['previewNavigation'] {
-  return useSelector<GlobalState, GlobalState['previewNavigation']>((state) => state.previewNavigation);
+	return useSelector<GlobalState, GlobalState['previewNavigation']>((state) => state.previewNavigation);
 }
 
 export default usePreviewNavigation;

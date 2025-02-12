@@ -22,24 +22,24 @@ import Box from '@mui/material/Box';
 // type PathNavigatorSkeletonClassKey = 'skeletonRoot' | 'skeletonHeader' | 'skeletonBody' | 'skeletonBodyItem' | 'childrenRail';
 
 interface PathNavigatorSkeletonProps {
-  numOfItems?: number;
+	numOfItems?: number;
 }
 
 function PathNavigatorSkeletonTree({ numOfItems = 5 }: PathNavigatorSkeletonProps) {
-  return (
-    <Box component="section" sx={{ margin: '10px 0' }}>
-      <Box component="header" sx={{ display: 'flex', marginBottom: '5px', padding: '0 10px' }}>
-        <Skeleton variant="rectangular" width="20px" />
-        <Skeleton variant="text" style={{ margin: '0 10px', width: '100%' }} />
-        <Skeleton variant="circular" width="20px" />
-      </Box>
-      <Box component="section" sx={{ paddingLeft: '5px' }}>
-        {new Array(numOfItems).fill(null).map((_, index) => (
-          <PathNavigatorTreeSkeletonItem key={index} />
-        ))}
-      </Box>
-    </Box>
-  );
+	return (
+		<Box component="section" sx={{ margin: '10px 0' }}>
+			<Box component="header" sx={{ display: 'flex', marginBottom: '5px', padding: '0 10px' }}>
+				<Skeleton variant="rectangular" width="20px" />
+				<Skeleton variant="text" style={{ margin: '0 10px', width: '100%' }} />
+				<Skeleton variant="circular" width="20px" />
+			</Box>
+			<Box component="section" sx={{ paddingLeft: '5px' }}>
+				{new Array(numOfItems).fill(null).map((_, index) => (
+					<PathNavigatorTreeSkeletonItem key={index} />
+				))}
+			</Box>
+		</Box>
+	);
 }
 
 export default PathNavigatorSkeletonTree;

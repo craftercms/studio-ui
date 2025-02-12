@@ -21,25 +21,25 @@ import Box from '@mui/material/Box';
 import { DependencyChip } from './PublishDialogContainer';
 
 export function PublishReferencesLegend() {
-  return (
-    <Box my={2}>
-      <Typography variant="body2" sx={{ mb: 1 }}>
-        <FormattedMessage defaultMessage="LEGEND" />
-      </Typography>
-      <Box display="flex" sx={{ display: 'flex', mb: 1, gap: 1 }}>
-        <DependencyChip type="hard" />
-        <Typography variant="body2" color="textSecondary">
-          <FormattedMessage defaultMessage="References of mandatory submission" />
-        </Typography>
-      </Box>
-      <Box sx={{ display: 'flex', gap: 1 }}>
-        <DependencyChip type="soft" />
-        <Typography variant="body2" color="textSecondary">
-          <FormattedMessage defaultMessage="References of optional submission" />
-        </Typography>
-      </Box>
-    </Box>
-  );
+	return (
+		<Box my={2}>
+			<Typography variant="body2" sx={{ mb: 1 }}>
+				<FormattedMessage defaultMessage="LEGEND" />
+			</Typography>
+			<Box display="flex" sx={{ display: 'flex', mb: 1, gap: 1 }}>
+				<DependencyChip type="hard" />
+				<Typography variant="body2" color="textSecondary">
+					<FormattedMessage defaultMessage="References of mandatory submission" />
+				</Typography>
+			</Box>
+			<Box sx={{ display: 'flex', gap: 1 }}>
+				<DependencyChip type="soft" />
+				<Typography variant="body2" color="textSecondary">
+					<FormattedMessage defaultMessage="References of optional submission" />
+				</Typography>
+			</Box>
+		</Box>
+	);
 }
 
 export default PublishReferencesLegend;

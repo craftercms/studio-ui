@@ -21,16 +21,16 @@ import { CopyTokenContainer } from './CopyTokenContainer';
 import EnhancedDialog from '../EnhancedDialog';
 
 export function CopyTokenDialog(props: CopyTokenProps) {
-  const { token, onCopy, ...rest } = props;
-  return (
-    <EnhancedDialog
-      title={<FormattedMessage id="copyTokenDialog.title" defaultMessage="Access Token Created" />}
-      maxWidth="xs"
-      {...rest}
-    >
-      <CopyTokenContainer token={token} onCopy={onCopy} />
-    </EnhancedDialog>
-  );
+	const { token, onCopy, ...rest } = props;
+	return (
+		<EnhancedDialog
+			title={<FormattedMessage id="copyTokenDialog.title" defaultMessage="Access Token Created" />}
+			maxWidth="xs"
+			{...rest}
+		>
+			<CopyTokenContainer token={token} onCopy={onCopy} />
+		</EnhancedDialog>
+	);
 }
 
 export default CopyTokenDialog;

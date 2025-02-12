@@ -24,54 +24,54 @@ import Link from '@mui/material/Link';
 import { FormattedMessage } from 'react-intl';
 
 export interface PluginDocumentationProps {
-  plugin: MarketplacePlugin;
+	plugin: MarketplacePlugin;
 }
 
 export function PluginDocumentation(props: PluginDocumentationProps) {
-  const { plugin } = props;
-  const [markdown, setMarkdown] = useState(null);
-  const [link, setLink] = useState(null);
-  const [markdownError, setMarkdownError] = useState<boolean>(null);
-  useEffect(() => {
-    if (plugin.documentation) {
-      const marked = new Marked(
-        markedHighlight({
-          langPrefix: 'hljs language-',
-          highlight(code, lang) {
-            const language = hljs.getLanguage(lang) ? lang : 'plaintext';
-            return hljs.highlight(code, { language }).value;
-          }
-        })
-      );
-      if (/(\/readme$)|(.md$)/.test(plugin.documentation)) {
-        fetch(plugin.documentation)
-          .then((r) => r.text())
-          .then((content) => {
-            setMarkdown(marked.parse(content));
-          })
-          .catch((error) => {
-            setMarkdownError(true);
-          });
-      } else if (plugin.documentation) {
-        setLink(plugin.documentation);
-      }
-    }
-  }, [plugin]);
-  return (
-    <>
-      {markdown && <Typography component="div" dangerouslySetInnerHTML={{ __html: markdown }} />}
-      {link && <Link href={link}>{link}</Link>}
-      {markdownError && (
-        <Typography>
-          <FormattedMessage
-            id="pluginDetails.markdownError"
-            defaultMessage="Unable to render documentation. Visit <a>{link}</a> to view."
-            values={{ link: plugin.documentation, a: (text: ReactNode[]) => <a href={text[0] as string}>{text[0]}</a> }}
-          />
-        </Typography>
-      )}
-    </>
-  );
+	const { plugin } = props;
+	const [markdown, setMarkdown] = useState(null);
+	const [link, setLink] = useState(null);
+	const [markdownError, setMarkdownError] = useState<boolean>(null);
+	useEffect(() => {
+		if (plugin.documentation) {
+			const marked = new Marked(
+				markedHighlight({
+					langPrefix: 'hljs language-',
+					highlight(code, lang) {
+						const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+						return hljs.highlight(code, { language }).value;
+					}
+				})
+			);
+			if (/(\/readme$)|(.md$)/.test(plugin.documentation)) {
+				fetch(plugin.documentation)
+					.then((r) => r.text())
+					.then((content) => {
+						setMarkdown(marked.parse(content));
+					})
+					.catch((error) => {
+						setMarkdownError(true);
+					});
+			} else if (plugin.documentation) {
+				setLink(plugin.documentation);
+			}
+		}
+	}, [plugin]);
+	return (
+		<>
+			{markdown && <Typography component="div" dangerouslySetInnerHTML={{ __html: markdown }} />}
+			{link && <Link href={link}>{link}</Link>}
+			{markdownError && (
+				<Typography>
+					<FormattedMessage
+						id="pluginDetails.markdownError"
+						defaultMessage="Unable to render documentation. Visit <a>{link}</a> to view."
+						values={{ link: plugin.documentation, a: (text: ReactNode[]) => <a href={text[0] as string}>{text[0]}</a> }}
+					/>
+				</Typography>
+			)}
+		</>
+	);
 }
 
 export default PluginDocumentation;

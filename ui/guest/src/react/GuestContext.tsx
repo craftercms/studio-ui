@@ -17,37 +17,37 @@
 import React, { useContext, useMemo } from 'react';
 import { GuestState } from '../store/models/GuestStore';
 import {
-  createDispatchHook,
-  createSelectorHook,
-  createStoreHook,
-  EqualityFn,
-  ReactReduxContextValue
+	createDispatchHook,
+	createSelectorHook,
+	createStoreHook,
+	EqualityFn,
+	ReactReduxContextValue
 } from 'react-redux';
 import { Dispatch, Store } from 'redux';
 import { HighlightMode, StandardAction } from '@craftercms/studio-ui/models';
 
 export type GuestContextProps = {
-  hasHost: boolean;
-  editMode: boolean;
-  draggable: GuestState['draggable'];
-  highlightMode: HighlightMode;
-  // onEvent: EventHandler<SyntheticEvent<HTMLElement, MouseEvent>>;
-  onEvent: (event, elementRegistryId?: number) => any;
+	hasHost: boolean;
+	editMode: boolean;
+	draggable: GuestState['draggable'];
+	highlightMode: HighlightMode;
+	// onEvent: EventHandler<SyntheticEvent<HTMLElement, MouseEvent>>;
+	onEvent: (event, elementRegistryId?: number) => any;
 };
 
 export const GuestReduxContext: React.Context<ReactReduxContextValue> =
-  React.createContext<ReactReduxContextValue>(null);
+	React.createContext<ReactReduxContextValue>(null);
 if (process.env.NODE_ENV !== 'production') {
-  GuestReduxContext.displayName = 'GuestRedux';
+	GuestReduxContext.displayName = 'GuestRedux';
 }
 
 export const useDispatch: () => Dispatch<StandardAction> = createDispatchHook(GuestReduxContext);
 
 interface UseSelector {
-  <TState = unknown, Selected = unknown>(
-    selector: (state: TState) => Selected,
-    equalityFn?: EqualityFn<Selected>
-  ): Selected;
+	<TState = unknown, Selected = unknown>(
+		selector: (state: TState) => Selected,
+		equalityFn?: EqualityFn<Selected>
+	): Selected;
 }
 
 export const useSelector: UseSelector = createSelectorHook(GuestReduxContext);
@@ -57,15 +57,15 @@ export const useStore: () => Store<GuestState, StandardAction> = createStoreHook
 const GuestContext = React.createContext<GuestContextProps>(null);
 
 export function useGuestContext(): GuestContextProps {
-  return useContext(GuestContext);
+	return useContext(GuestContext);
 }
 
 export function useIsAuthoring(): boolean {
-  const context = useGuestContext();
-  return Boolean(context?.editMode && context.hasHost);
+	const context = useGuestContext();
+	return Boolean(context?.editMode && context.hasHost);
 }
 
 export function GuestContextProvider(props): JSX.Element {
-  const value = useMemo(() => props.value, [props.value]);
-  return <GuestContext.Provider {...props} value={value} />;
+	const value = useMemo(() => props.value, [props.value]);
+	return <GuestContext.Provider {...props} value={value} />;
 }

@@ -25,36 +25,36 @@ import palette from '../../styles/palette';
 import { LIVE_COLOUR, STAGING_COLOUR } from './styles';
 
 export type ItemPublishingTargetIconClassKey =
-  | 'root'
-  | 'publishingTargetLive'
-  | 'publishingTargetStaged'
-  | 'publishingIcon';
+	| 'root'
+	| 'publishingTargetLive'
+	| 'publishingTargetStaged'
+	| 'publishingIcon';
 export interface ItemPublishingTargetIconProps {
-  item: DetailedItem | SandboxItem;
-  classes?: Partial<Record<ItemPublishingTargetIconClassKey, string>>;
-  sxs?: PartialSxRecord<ItemPublishingTargetIconClassKey>;
-  className?: string;
-  displayTooltip?: boolean;
-  fontSize?: SvgIconProps['fontSize'];
+	item: DetailedItem | SandboxItem;
+	classes?: Partial<Record<ItemPublishingTargetIconClassKey, string>>;
+	sxs?: PartialSxRecord<ItemPublishingTargetIconClassKey>;
+	className?: string;
+	displayTooltip?: boolean;
+	fontSize?: SvgIconProps['fontSize'];
 }
 
 export function ItemPublishingTargetIcon(props: ItemPublishingTargetIconProps) {
-  const { item, classes, sxs, className, displayTooltip = true, fontSize } = props;
-  return (
-    <Tooltip
-      title={displayTooltip ? getItemPublishingTargetText(item.stateMap) : ''}
-      open={displayTooltip ? void 0 : false}
-    >
-      <PublishingTargetIcon
-        fontSize={fontSize}
-        className={[className, classes?.root].join(' ')}
-        sx={{
-          color: item.stateMap.live ? LIVE_COLOUR : item.stateMap.staged ? STAGING_COLOUR : palette.gray.medium2,
-          ...sxs?.root
-        }}
-      />
-    </Tooltip>
-  );
+	const { item, classes, sxs, className, displayTooltip = true, fontSize } = props;
+	return (
+		<Tooltip
+			title={displayTooltip ? getItemPublishingTargetText(item.stateMap) : ''}
+			open={displayTooltip ? void 0 : false}
+		>
+			<PublishingTargetIcon
+				fontSize={fontSize}
+				className={[className, classes?.root].join(' ')}
+				sx={{
+					color: item.stateMap.live ? LIVE_COLOUR : item.stateMap.staged ? STAGING_COLOUR : palette.gray.medium2,
+					...sxs?.root
+				}}
+			/>
+		</Tooltip>
+	);
 }
 
 export default ItemPublishingTargetIcon;

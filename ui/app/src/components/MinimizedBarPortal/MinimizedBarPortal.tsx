@@ -21,21 +21,21 @@ import { decrementMinimizedBarCount, incrementMinimizedBarCount } from './minimi
 let portalEl;
 
 function createPortalEl() {
-  if (!portalEl) {
-    portalEl = document.createElement('div');
-    portalEl.setAttribute('class', 'minimized-bar-portal-root');
-    document.body.appendChild(portalEl);
-  }
-  return portalEl;
+	if (!portalEl) {
+		portalEl = document.createElement('div');
+		portalEl.setAttribute('class', 'minimized-bar-portal-root');
+		document.body.appendChild(portalEl);
+	}
+	return portalEl;
 }
 
 export function MinimizedBarPortal(props: PropsWithChildren<{}>) {
-  const el = createPortalEl();
-  useEffect(() => {
-    incrementMinimizedBarCount();
-    return () => decrementMinimizedBarCount();
-  }, []);
-  return createPortal(props.children, el) as JSX.Element;
+	const el = createPortalEl();
+	useEffect(() => {
+		incrementMinimizedBarCount();
+		return () => decrementMinimizedBarCount();
+	}, []);
+	return createPortal(props.children, el) as JSX.Element;
 }
 
 export default MinimizedBarPortal;

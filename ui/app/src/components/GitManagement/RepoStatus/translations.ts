@@ -17,48 +17,48 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
-  revertPullSuccessMessage: {
-    id: 'repositories.revertPullSuccessMessage',
-    defaultMessage: 'Successfully reverted repository.'
-  },
-  commitSuccessMessage: {
-    id: 'repositories.commitSuccessMessage',
-    defaultMessage: 'Successfully committed.'
-  },
-  revertAll: {
-    id: 'repositories.revertAll',
-    defaultMessage: 'Revert All'
-  },
-  no: {
-    id: 'words.no',
-    defaultMessage: 'No'
-  },
-  yes: {
-    id: 'words.yes',
-    defaultMessage: 'Yes'
-  },
-  confirmHelper: {
-    id: 'repositories.confirmHelper',
-    defaultMessage: "Cancel pull operation and keep what's on this repository."
-  },
-  acceptRemote: {
-    id: 'repositories.acceptRemote',
-    defaultMessage: 'Accept Remote'
-  },
-  acceptRemoteHelper: {
-    id: 'repositories.acceptRemoteHelper',
-    defaultMessage: 'Override local file with the version pulled from remote.'
-  },
-  keepLocal: {
-    id: 'repositories.keepLocal',
-    defaultMessage: 'Keep Local'
-  },
-  keepLocalHelper: {
-    id: 'repositories.keepLocalHelper',
-    defaultMessage: 'Discard remote changes and keep the local file.'
-  },
-  diff: {
-    id: 'words.diff',
-    defaultMessage: 'Diff'
-  }
+	revertPullSuccessMessage: {
+		id: 'repositories.revertPullSuccessMessage',
+		defaultMessage: 'Successfully reverted repository.'
+	},
+	commitSuccessMessage: {
+		id: 'repositories.commitSuccessMessage',
+		defaultMessage: 'Successfully committed.'
+	},
+	revertAll: {
+		id: 'repositories.revertAll',
+		defaultMessage: 'Revert All'
+	},
+	no: {
+		id: 'words.no',
+		defaultMessage: 'No'
+	},
+	yes: {
+		id: 'words.yes',
+		defaultMessage: 'Yes'
+	},
+	confirmHelper: {
+		id: 'repositories.confirmHelper',
+		defaultMessage: "Cancel pull operation and keep what's on this repository."
+	},
+	acceptRemote: {
+		id: 'repositories.acceptRemote',
+		defaultMessage: 'Accept Remote'
+	},
+	acceptRemoteHelper: {
+		id: 'repositories.acceptRemoteHelper',
+		defaultMessage: 'Override local file with the version pulled from remote.'
+	},
+	keepLocal: {
+		id: 'repositories.keepLocal',
+		defaultMessage: 'Keep Local'
+	},
+	keepLocalHelper: {
+		id: 'repositories.keepLocalHelper',
+		defaultMessage: 'Discard remote changes and keep the local file.'
+	},
+	diff: {
+		id: 'words.diff',
+		defaultMessage: 'Diff'
+	}
 });

@@ -19,50 +19,50 @@ import videojs from 'video.js';
 import 'video.js/dist/video-js.css';
 
 export interface VideoPlayerProps {
-  src: string;
-  autoplay?: boolean;
-  controls?: boolean;
-  height?: number;
-  width?: number;
-  muted?: boolean;
-  poster?: string;
-  type?: string;
+	src: string;
+	autoplay?: boolean;
+	controls?: boolean;
+	height?: number;
+	width?: number;
+	muted?: boolean;
+	poster?: string;
+	type?: string;
 }
 
 const SourceTypes = {
-  mp4: 'video/mp4',
-  m3u8: 'application/x-mpegURL',
-  mpd: 'application/dash+xml'
+	mp4: 'video/mp4',
+	m3u8: 'application/x-mpegURL',
+	mpd: 'application/dash+xml'
 };
 
 const extensionRegex = /(?:\.([^.]+))?$/;
 
 function VideoPlayer(props: VideoPlayerProps) {
-  const videoNode = useRef(null);
-  const player = useRef(null);
+	const videoNode = useRef(null);
+	const player = useRef(null);
 
-  useEffect(() => {
-    const extension = extensionRegex.exec(props.src)[1];
-    player.current = videojs(videoNode.current, {
-      autoplay: props.autoplay,
-      controls: props.controls,
-      height: props.height,
-      width: props.width,
-      muted: props.muted,
-      poster: props.poster,
-      sources: [
-        {
-          src: props.src,
-          type: props.type ?? SourceTypes[extension]
-        }
-      ]
-    });
-    return () => {
-      player.current.dispose();
-    };
-  }, [props.autoplay, props.controls, props.height, props.width, props.muted, props.poster, props.src, props.type]);
+	useEffect(() => {
+		const extension = extensionRegex.exec(props.src)[1];
+		player.current = videojs(videoNode.current, {
+			autoplay: props.autoplay,
+			controls: props.controls,
+			height: props.height,
+			width: props.width,
+			muted: props.muted,
+			poster: props.poster,
+			sources: [
+				{
+					src: props.src,
+					type: props.type ?? SourceTypes[extension]
+				}
+			]
+		});
+		return () => {
+			player.current.dispose();
+		};
+	}, [props.autoplay, props.controls, props.height, props.width, props.muted, props.poster, props.src, props.type]);
 
-  return <video ref={videoNode} className="video-js" />;
+	return <video ref={videoNode} className="video-js" />;
 }
 
 export default VideoPlayer;

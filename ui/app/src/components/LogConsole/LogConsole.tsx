@@ -35,121 +35,121 @@ import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useMount } from '../../hooks/useMount';
 
 interface LogConsoleManagementProps {
-  logType?: 'studio' | 'preview';
-  embedded?: boolean;
-  showAppsButton?: boolean;
+	logType?: 'studio' | 'preview';
+	embedded?: boolean;
+	showAppsButton?: boolean;
 }
 
 export function LogConsole(props: LogConsoleManagementProps) {
-  const { logType = 'studio', embedded, showAppsButton = !embedded } = props;
-  const [logEvents, setLogEvents] = useState<LogEvent[]>();
-  const [showLogEventDialog, setShowLogEventDialog] = useState(false);
-  const site = useActiveSiteId();
-  const [selectedLogEvent, setSelectedLogEvent] = useState(null);
-  const [error, setError] = useState<ApiResponse>();
-  const [paused, setPaused] = useState(false);
-  const dispatch = useDispatch();
+	const { logType = 'studio', embedded, showAppsButton = !embedded } = props;
+	const [logEvents, setLogEvents] = useState<LogEvent[]>();
+	const [showLogEventDialog, setShowLogEventDialog] = useState(false);
+	const site = useActiveSiteId();
+	const [selectedLogEvent, setSelectedLogEvent] = useState(null);
+	const [error, setError] = useState<ApiResponse>();
+	const [paused, setPaused] = useState(false);
+	const dispatch = useDispatch();
 
-  const refresh = useCallback(
-    (since?: number) => {
-      since = since ?? moment().subtract(1, 'hour').valueOf();
-      (logType === 'studio' ? fetchLog(since) : fetchPreviewLog(site, since)).subscribe({
-        next(newLogEvents) {
-          if (logEvents) {
-            setLogEvents([...logEvents, ...newLogEvents]);
-          } else {
-            setLogEvents(newLogEvents);
-          }
-        },
-        error(response) {
-          response = response.response ? response.response.response : response;
-          setError(response);
-          dispatch(showErrorDialog({ error: response }));
-        }
-      });
-    },
-    [dispatch, logEvents, logType, site]
-  );
+	const refresh = useCallback(
+		(since?: number) => {
+			since = since ?? moment().subtract(1, 'hour').valueOf();
+			(logType === 'studio' ? fetchLog(since) : fetchPreviewLog(site, since)).subscribe({
+				next(newLogEvents) {
+					if (logEvents) {
+						setLogEvents([...logEvents, ...newLogEvents]);
+					} else {
+						setLogEvents(newLogEvents);
+					}
+				},
+				error(response) {
+					response = response.response ? response.response.response : response;
+					setError(response);
+					dispatch(showErrorDialog({ error: response }));
+				}
+			});
+		},
+		[dispatch, logEvents, logType, site]
+	);
 
-  useEffect(() => {
-    if (!paused && !error) {
-      const timer = setTimeout(() => {
-        const since = moment().subtract(5, 'seconds').valueOf();
-        refresh(since);
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [paused, logEvents, error, refresh]);
+	useEffect(() => {
+		if (!paused && !error) {
+			const timer = setTimeout(() => {
+				const since = moment().subtract(5, 'seconds').valueOf();
+				refresh(since);
+			}, 5000);
+			return () => clearTimeout(timer);
+		}
+	}, [paused, logEvents, error, refresh]);
 
-  useMount(() => {
-    refresh();
-  });
+	useMount(() => {
+		refresh();
+	});
 
-  const togglePause = () => {
-    setPaused(!paused);
-  };
+	const togglePause = () => {
+		setPaused(!paused);
+	};
 
-  const onClear = () => {
-    setLogEvents([]);
-  };
+	const onClear = () => {
+		setLogEvents([]);
+	};
 
-  const onLogEventDetails = (logEvent: LogEvent) => {
-    setShowLogEventDialog(true);
-    setSelectedLogEvent(logEvent);
-  };
+	const onLogEventDetails = (logEvent: LogEvent) => {
+		setShowLogEventDialog(true);
+		setSelectedLogEvent(logEvent);
+	};
 
-  const onCloseLogEventDetailsDialog = () => {
-    setShowLogEventDialog(false);
-  };
+	const onCloseLogEventDetailsDialog = () => {
+		setShowLogEventDialog(false);
+	};
 
-  const onLogEventDetailsDialogClosed = () => {
-    setSelectedLogEvent(null);
-  };
+	const onLogEventDetailsDialogClosed = () => {
+		setSelectedLogEvent(null);
+	};
 
-  return (
-    <Paper elevation={0}>
-      <GlobalAppToolbar
-        title={!embedded && <FormattedMessage id="globalMenu.logConsoleEntryLabel" defaultMessage="Log Console" />}
-        rightContent={
-          <>
-            <Button
-              onClick={togglePause}
-              variant="text"
-              color="primary"
-              endIcon={paused ? <PlayArrowRoundedIcon /> : <PauseRoundedIcon />}
-            >
-              {paused ? (
-                <FormattedMessage id="words.continue" defaultMessage="Continue" />
-              ) : (
-                <FormattedMessage id="words.pause" defaultMessage="Pause" />
-              )}
-            </Button>
-            <Button variant="text" color="primary" onClick={onClear}>
-              <FormattedMessage id="words.clear" defaultMessage="Clear" />
-            </Button>
-          </>
-        }
-        showHamburgerMenuButton={!embedded}
-        showAppsButton={showAppsButton}
-      />
-      <ConditionalLoadingState isLoading={!logEvents}>
-        <LogConsoleGridUI
-          showSiteColumn={logType !== 'studio'}
-          logEvents={logEvents}
-          onLogEventDetails={onLogEventDetails}
-        />
-      </ConditionalLoadingState>
-      {logEvents?.length === 0 && (
-        <EmptyState title={<FormattedMessage id="logConsoleManagement.noLogs" defaultMessage="No logs found" />} />
-      )}
-      <LogConsoleDetailsDialog
-        open={showLogEventDialog}
-        logEvent={selectedLogEvent}
-        onClose={onCloseLogEventDetailsDialog}
-        onClosed={onLogEventDetailsDialogClosed}
-      />
-    </Paper>
-  );
+	return (
+		<Paper elevation={0}>
+			<GlobalAppToolbar
+				title={!embedded && <FormattedMessage id="globalMenu.logConsoleEntryLabel" defaultMessage="Log Console" />}
+				rightContent={
+					<>
+						<Button
+							onClick={togglePause}
+							variant="text"
+							color="primary"
+							endIcon={paused ? <PlayArrowRoundedIcon /> : <PauseRoundedIcon />}
+						>
+							{paused ? (
+								<FormattedMessage id="words.continue" defaultMessage="Continue" />
+							) : (
+								<FormattedMessage id="words.pause" defaultMessage="Pause" />
+							)}
+						</Button>
+						<Button variant="text" color="primary" onClick={onClear}>
+							<FormattedMessage id="words.clear" defaultMessage="Clear" />
+						</Button>
+					</>
+				}
+				showHamburgerMenuButton={!embedded}
+				showAppsButton={showAppsButton}
+			/>
+			<ConditionalLoadingState isLoading={!logEvents}>
+				<LogConsoleGridUI
+					showSiteColumn={logType !== 'studio'}
+					logEvents={logEvents}
+					onLogEventDetails={onLogEventDetails}
+				/>
+			</ConditionalLoadingState>
+			{logEvents?.length === 0 && (
+				<EmptyState title={<FormattedMessage id="logConsoleManagement.noLogs" defaultMessage="No logs found" />} />
+			)}
+			<LogConsoleDetailsDialog
+				open={showLogEventDialog}
+				logEvent={selectedLogEvent}
+				onClose={onCloseLogEventDetailsDialog}
+				onClosed={onLogEventDetailsDialogClosed}
+			/>
+		</Paper>
+	);
 }
 
 export default LogConsole;

@@ -19,33 +19,33 @@ import { DialogProps } from '@mui/material/Dialog';
 import { AlertDialogClassKey, AlertDialogProps } from '../AlertDialog';
 
 export interface ConfirmDialogBaseProps {
-  title?: ReactNode;
-  body?: ReactNode;
-  hideBackdrop?: boolean;
-  imageUrl?: string;
-  disableEnforceFocus?: boolean;
-  disableEscapeKeyDown?: boolean;
-  disableBackdropClick?: boolean;
-  maxWidth?: DialogProps['maxWidth'];
+	title?: ReactNode;
+	body?: ReactNode;
+	hideBackdrop?: boolean;
+	imageUrl?: string;
+	disableEnforceFocus?: boolean;
+	disableEscapeKeyDown?: boolean;
+	disableBackdropClick?: boolean;
+	maxWidth?: DialogProps['maxWidth'];
 }
 
 export interface ConfirmDialogProps extends ConfirmDialogBaseProps, Omit<DialogProps, 'title' | 'classes'> {
-  classes?: Partial<Record<AlertDialogClassKey, string>>;
-  sxs?: AlertDialogProps['sxs'];
-  disableOkButton?: boolean;
-  disableCancelButton?: boolean;
-  okButtonText?: ReactNode;
-  cancelButtonText?: ReactNode;
-  onOk?(): void;
-  onCancel?(): void;
-  onClosed?(): void;
+	classes?: Partial<Record<AlertDialogClassKey, string>>;
+	sxs?: AlertDialogProps['sxs'];
+	disableOkButton?: boolean;
+	disableCancelButton?: boolean;
+	okButtonText?: ReactNode;
+	cancelButtonText?: ReactNode;
+	onOk?(): void;
+	onCancel?(): void;
+	onClosed?(): void;
 }
 
 export interface ConfirmDialogStateProps extends ConfirmDialogBaseProps, Pick<DialogProps, 'open'> {
-  onOk?: StandardAction;
-  onCancel?: StandardAction;
-  onClose?: StandardAction;
-  onClosed?: StandardAction;
-  okButtonText?: string;
-  cancelButtonText?: string;
+	onOk?: StandardAction;
+	onCancel?: StandardAction;
+	onClose?: StandardAction;
+	onClosed?: StandardAction;
+	okButtonText?: string;
+	cancelButtonText?: string;
 }

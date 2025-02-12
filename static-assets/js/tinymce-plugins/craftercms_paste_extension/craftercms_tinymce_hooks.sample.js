@@ -18,26 +18,26 @@
  */
 
 (function () {
-  'use strict';
+	'use strict';
 
-  var pluginManager = tinymce.util.Tools.resolve('tinymce.PluginManager');
+	var pluginManager = tinymce.util.Tools.resolve('tinymce.PluginManager');
 
-  function TinyHooks(editor) {
-    return {
-      paste_preprocess(plugin, args) {
-        console.log('Doing some custom paste pre process.');
-      },
-      paste_postprocess(plugin, args) {
-        console.log('Doing some custom paste post process.');
-      }
-    };
-  }
+	function TinyHooks(editor) {
+		return {
+			paste_preprocess(plugin, args) {
+				console.log('Doing some custom paste pre process.');
+			},
+			paste_postprocess(plugin, args) {
+				console.log('Doing some custom paste post process.');
+			}
+		};
+	}
 
-  Object.assign(TinyHooks, {
-    setup(editor) {
-      console.log('Doing some custom setup.');
-    }
-  });
+	Object.assign(TinyHooks, {
+		setup(editor) {
+			console.log('Doing some custom setup.');
+		}
+	});
 
-  pluginManager.add('craftercms_tinymce_hooks', TinyHooks);
+	pluginManager.add('craftercms_tinymce_hooks', TinyHooks);
 })();

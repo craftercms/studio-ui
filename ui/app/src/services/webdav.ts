@@ -21,15 +21,15 @@ import { WebDAVItem } from '../models/WebDAV';
 import { Observable } from 'rxjs';
 
 export function list(
-  siteId: string,
-  profileId: string,
-  options: { path?: string; type?: string } = {}
+	siteId: string,
+	profileId: string,
+	options: { path?: string; type?: string } = {}
 ): Observable<WebDAVItem[]> {
-  const qs = toQueryString({
-    siteId,
-    profileId,
-    ...options
-  });
+	const qs = toQueryString({
+		siteId,
+		profileId,
+		...options
+	});
 
-  return get(`/studio/api/2/webdav/list${qs}`).pipe(map((response) => response?.response?.items));
+	return get(`/studio/api/2/webdav/list${qs}`).pipe(map((response) => response?.response?.items));
 }

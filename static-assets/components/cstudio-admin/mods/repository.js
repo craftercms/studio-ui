@@ -15,29 +15,29 @@
  */
 
 CStudioAdminConsole.Tool.Repository =
-  CStudioAdminConsole.Tool.Repository ||
-  function (config, el) {
-    this.containerEl = el;
-    this.config = config;
-    this.types = [];
-    this.currMillis = new Date().getTime();
-    return this;
-  };
+	CStudioAdminConsole.Tool.Repository ||
+	function (config, el) {
+		this.containerEl = el;
+		this.config = config;
+		this.types = [];
+		this.currMillis = new Date().getTime();
+		return this;
+	};
 
 /**
  * Overarching class that drives the content type tools
  */
 YAHOO.extend(CStudioAdminConsole.Tool.Repository, CStudioAdminConsole.Tool, {
-  renderWorkarea: function () {
-    const workarea = document.getElementById('cstudio-admin-console-workarea');
-    var el = document.createElement('div');
-    el.className = 'cstudio-admin-console-workarea-container';
-    $(workarea).html('');
-    workarea.appendChild(el);
-    CrafterCMSNext.render(el, 'RemotesManagement');
-    // TODO: This should be removed when ContentTypes and WorkflowStates are Reactified
-    CStudioAuthoring.ContextualNav.AdminConsoleNav.initActions([]);
-  }
+	renderWorkarea: function () {
+		const workarea = document.getElementById('cstudio-admin-console-workarea');
+		var el = document.createElement('div');
+		el.className = 'cstudio-admin-console-workarea-container';
+		$(workarea).html('');
+		workarea.appendChild(el);
+		CrafterCMSNext.render(el, 'RemotesManagement');
+		// TODO: This should be removed when ContentTypes and WorkflowStates are Reactified
+		CStudioAuthoring.ContextualNav.AdminConsoleNav.initActions([]);
+	}
 });
 
 CStudioAuthoring.Module.moduleLoaded('cstudio-console-tools-repository', CStudioAdminConsole.Tool.Repository);

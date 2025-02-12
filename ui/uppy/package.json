@@ -1,62 +1,62 @@
 {
-  "name": "@craftercms/uppy",
-  "description": "CrafterCMS UI Uppy extensions.",
-  "version": "4.2.0",
-  "license": "MIT",
-  "main": "lib/index.js",
-  "types": "types/index.d.ts",
-  "keywords": [
-    "file uploader",
-    "uppy",
-    "uppy-plugin",
-    "dashboard",
-    "xhr",
-    "craftercms"
-  ],
-  "homepage": "https://craftercms.org",
-  "bugs": {
-    "url": "https://github.com/craftercms/craftercms/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/craftercms/studio-ui.git",
-    "directory": "ui/uppy"
-  },
-  "bic": {
-    "skip": [
-      "lib",
-      ".gitignore",
-      "README.md"
-    ]
-  },
-  "scripts": {
-    "build": "babel src -d lib",
-    "watch": "babel src -d lib --watch",
-    "bom": "mkdir -p target && yarn cyclonedx --output-file target/bom.json"
-  },
-  "devDependencies": {
-    "@babel/cli": "^7.26.4",
-    "@babel/plugin-proposal-class-properties": "^7.18.6",
-    "@babel/plugin-proposal-object-rest-spread": "^7.20.7",
-    "@babel/plugin-transform-react-jsx": "^7.25.9",
-    "@babel/preset-env": "^7.26.7",
-    "@babel/preset-react": "^7.26.3",
-    "@types/babel__preset-env": "^7.10.0",
-    "@types/eslint": "^9.6.1",
-    "babel-plugin-inline-package-json": "^2.0.0",
-    "build-if-changed": "^1.5.5",
-    "eslint": "^9.19.0"
-  },
-  "peerDependencies": {
-    "uppy": "^3.27.3"
-  },
-  "files": [
-    "lib/*",
-    "types/*"
-  ],
-  "eslintConfig": {
-    "parserOptions": {
-      "sourceType": "module"
-    }
-  }
+	"name": "@craftercms/uppy",
+	"description": "CrafterCMS UI Uppy extensions.",
+	"version": "4.2.0",
+	"license": "MIT",
+	"main": "lib/index.js",
+	"types": "types/index.d.ts",
+	"keywords": [
+		"file uploader",
+		"uppy",
+		"uppy-plugin",
+		"dashboard",
+		"xhr",
+		"craftercms"
+	],
+	"homepage": "https://craftercms.org",
+	"bugs": {
+		"url": "https://github.com/craftercms/craftercms/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/craftercms/studio-ui.git",
+		"directory": "ui/uppy"
+	},
+	"bic": {
+		"skip": [
+			"lib",
+			".gitignore",
+			"README.md"
+		]
+	},
+	"scripts": {
+		"build": "babel src -d lib",
+		"watch": "babel src -d lib --watch",
+		"bom": "mkdir -p target && yarn cyclonedx --output-file target/bom.json"
+	},
+	"devDependencies": {
+		"@babel/cli": "^7.26.4",
+		"@babel/plugin-proposal-class-properties": "^7.18.6",
+		"@babel/plugin-proposal-object-rest-spread": "^7.20.7",
+		"@babel/plugin-transform-react-jsx": "^7.25.9",
+		"@babel/preset-env": "^7.26.7",
+		"@babel/preset-react": "^7.26.3",
+		"@types/babel__preset-env": "^7.10.0",
+		"@types/eslint": "^9.6.1",
+		"babel-plugin-inline-package-json": "^2.0.0",
+		"build-if-changed": "^1.5.5",
+		"eslint": "^9.19.0"
+	},
+	"peerDependencies": {
+		"uppy": "^3.27.3"
+	},
+	"files": [
+		"lib/*",
+		"types/*"
+	],
+	"eslintConfig": {
+		"parserOptions": {
+			"sourceType": "module"
+		}
+	}
 }

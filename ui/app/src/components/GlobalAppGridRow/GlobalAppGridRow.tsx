@@ -18,14 +18,14 @@ import { styled } from '@mui/material/styles';
 import TableRow from '@mui/material/TableRow';
 
 const GlobalAppGridRow = styled(TableRow)(({ theme }) => ({
-  cursor: 'pointer',
-  '&:hover': {
-    backgroundColor: theme.palette.action.hover
-  },
-  '&.hoverDisabled': {
-    cursor: 'inherit',
-    background: 'none'
-  }
+	cursor: 'pointer',
+	'&:hover': {
+		backgroundColor: theme.palette.action.hover
+	},
+	'&.hoverDisabled': {
+		cursor: 'inherit',
+		background: 'none'
+	}
 }));
 
 export default GlobalAppGridRow;

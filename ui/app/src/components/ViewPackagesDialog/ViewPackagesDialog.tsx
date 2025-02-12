@@ -23,34 +23,34 @@ import ViewPackagesDialogContainer from './ViewPackagesDialogContainer';
 import { DetailedItem, SandboxItem } from '../../models';
 
 export interface ViewPackagesDialogBaseProps {
-  item: SandboxItem | DetailedItem;
+	item: SandboxItem | DetailedItem;
 }
 
 export interface ViewPackagesDialogProps extends ViewPackagesDialogBaseProps, EnhancedDialogProps {
-  onContinue?(): void;
+	onContinue?(): void;
 }
 
 export interface ViewPackagesDialogStateProps extends ViewPackagesDialogBaseProps, EnhancedDialogState {
-  onClose?: StandardAction;
-  onClosed?: StandardAction;
-  onContinue?: StandardAction;
+	onClose?: StandardAction;
+	onClosed?: StandardAction;
+	onContinue?: StandardAction;
 }
 
 export function ViewPackagesDialog(props: ViewPackagesDialogProps) {
-  const { item, onContinue, ...enhancedDialogProps } = props;
-  return (
-    <EnhancedDialog
-      fullWidth
-      maxWidth="sm"
-      title={<FormattedMessage defaultMessage="View Packages" />}
-      subtitle={
-        <FormattedMessage defaultMessage="The item is part of one or more publishing packages. Editing it will cancel the packages." />
-      }
-      {...enhancedDialogProps}
-    >
-      <ViewPackagesDialogContainer item={item} onContinue={onContinue} />
-    </EnhancedDialog>
-  );
+	const { item, onContinue, ...enhancedDialogProps } = props;
+	return (
+		<EnhancedDialog
+			fullWidth
+			maxWidth="sm"
+			title={<FormattedMessage defaultMessage="View Packages" />}
+			subtitle={
+				<FormattedMessage defaultMessage="The item is part of one or more publishing packages. Editing it will cancel the packages." />
+			}
+			{...enhancedDialogProps}
+		>
+			<ViewPackagesDialogContainer item={item} onContinue={onContinue} />
+		</EnhancedDialog>
+	);
 }
 
 export default ViewPackagesDialog;

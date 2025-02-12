@@ -21,15 +21,15 @@ import EnhancedDialog from '../EnhancedDialog/EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
 
 export function DependenciesDialog(props: DependenciesDialogProps) {
-  const { item, dependenciesShown, rootPath, ...rest } = props;
-  return (
-    <EnhancedDialog
-      title={<FormattedMessage id="dependenciesDialog.title" defaultMessage="Content Item Dependencies" />}
-      {...rest}
-    >
-      <DependenciesDialogContainer item={item} rootPath={rootPath} dependenciesShown={dependenciesShown} />
-    </EnhancedDialog>
-  );
+	const { item, dependenciesShown, rootPath, ...rest } = props;
+	return (
+		<EnhancedDialog
+			title={<FormattedMessage id="dependenciesDialog.title" defaultMessage="Content Item Dependencies" />}
+			{...rest}
+		>
+			<DependenciesDialogContainer item={item} rootPath={rootPath} dependenciesShown={dependenciesShown} />
+		</EnhancedDialog>
+	);
 }
 
 export default DependenciesDialog;

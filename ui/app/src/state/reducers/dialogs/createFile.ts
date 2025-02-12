@@ -17,39 +17,39 @@
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
 import {
-  closeCreateFileDialog,
-  createFileDialogClosed,
-  showCreateFileDialog,
-  updateCreateFileDialog
+	closeCreateFileDialog,
+	createFileDialogClosed,
+	showCreateFileDialog,
+	updateCreateFileDialog
 } from '../../actions/dialogs';
 import { CreateFileStateProps } from '../../../components/CreateFileDialog/utils';
 
 const initialState: CreateFileStateProps = {
-  open: false,
-  isSubmitting: null,
-  isMinimized: null,
-  hasPendingChanges: null,
-  path: null,
-  type: null
+	open: false,
+	isSubmitting: null,
+	isMinimized: null,
+	hasPendingChanges: null,
+	path: null,
+	type: null
 };
 
 export default createReducer<GlobalState['dialogs']['createFile']>(initialState, (builder) => {
-  builder
-    .addCase(showCreateFileDialog, (state, { payload }) => ({
-      ...state,
-      onClose: closeCreateFileDialog(),
-      onClosed: createFileDialogClosed(),
-      onCreated: closeCreateFileDialog(),
-      ...(payload as Partial<CreateFileStateProps>),
-      open: true
-    }))
-    .addCase(closeCreateFileDialog, (state) => ({
-      ...state,
-      open: false
-    }))
-    .addCase(updateCreateFileDialog, (state, { payload }) => ({
-      ...state,
-      ...(payload as Partial<CreateFileStateProps>)
-    }))
-    .addCase(createFileDialogClosed, () => initialState);
+	builder
+		.addCase(showCreateFileDialog, (state, { payload }) => ({
+			...state,
+			onClose: closeCreateFileDialog(),
+			onClosed: createFileDialogClosed(),
+			onCreated: closeCreateFileDialog(),
+			...(payload as Partial<CreateFileStateProps>),
+			open: true
+		}))
+		.addCase(closeCreateFileDialog, (state) => ({
+			...state,
+			open: false
+		}))
+		.addCase(updateCreateFileDialog, (state, { payload }) => ({
+			...state,
+			...(payload as Partial<CreateFileStateProps>)
+		}))
+		.addCase(createFileDialogClosed, () => initialState);
 });

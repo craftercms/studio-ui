@@ -24,20 +24,20 @@ type ContextType = [Context, Dispatch<SetStateAction<Partial<Context>>>];
 const GlobalAppContext = createContext<ContextType>([{ openSidebar: true }, null]);
 
 export const GlobalAppContextProvider = ({ children }) => {
-  const user = useActiveUser();
-  const [state, setState] = useSpreadState(null, () => ({
-    openSidebar: getStoredGlobalAppOpenSidebar(user.username)
-      ? getStoredGlobalAppOpenSidebar(user.username) === 'true'
-      : true
-  }));
+	const user = useActiveUser();
+	const [state, setState] = useSpreadState(null, () => ({
+		openSidebar: getStoredGlobalAppOpenSidebar(user.username)
+			? getStoredGlobalAppOpenSidebar(user.username) === 'true'
+			: true
+	}));
 
-  useEffect(() => {
-    setStoredGlobalAppOpenSidebar(user.username, state.openSidebar);
-  }, [state.openSidebar, user.username]);
+	useEffect(() => {
+		setStoredGlobalAppOpenSidebar(user.username, state.openSidebar);
+	}, [state.openSidebar, user.username]);
 
-  const value = useMemo<ContextType>(() => [state, setState], [state, setState]);
+	const value = useMemo<ContextType>(() => [state, setState], [state, setState]);
 
-  return <GlobalAppContext.Provider value={value}>{children}</GlobalAppContext.Provider>;
+	return <GlobalAppContext.Provider value={value}>{children}</GlobalAppContext.Provider>;
 };
 
 export const useGlobalAppState = () => useContext(GlobalAppContext);

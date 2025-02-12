@@ -35,77 +35,77 @@ import { batchActions } from '../../state/actions/misc';
 import { showSystemNotification } from '../../state/actions/system';
 
 export interface CancelPackageDialogContainerProps
-  extends CancelPackageDialogBaseProps,
-    Pick<CancelPackageDialogProps, 'onSuccess' | 'onClose' | 'isSubmitting'> {}
+	extends CancelPackageDialogBaseProps,
+		Pick<CancelPackageDialogProps, 'onSuccess' | 'onClose' | 'isSubmitting'> {}
 
 export function CancelPackageDialogContainer(props: CancelPackageDialogContainerProps) {
-  const { packageId, onSuccess, onClose, isSubmitting } = props;
-  const [state, setState] = useSpreadState({
-    comment: '',
-    error: null
-  });
-  const dispatch = useDispatch();
-  const siteId = useActiveSiteId();
-  const submitDisabled = isBlank(state.comment);
-  const { formatMessage } = useIntl();
+	const { packageId, onSuccess, onClose, isSubmitting } = props;
+	const [state, setState] = useSpreadState({
+		comment: '',
+		error: null
+	});
+	const dispatch = useDispatch();
+	const siteId = useActiveSiteId();
+	const submitDisabled = isBlank(state.comment);
+	const { formatMessage } = useIntl();
 
-  const handleSubmit = () => {
-    dispatch(updateCancelPackageDialog({ isSubmitting: true }));
-    cancelPackages(siteId, {
-      packageIds: [packageId],
-      comment: state.comment
-    }).subscribe({
-      next() {
-        dispatch(
-          batchActions([
-            updateCancelPackageDialog({ isSubmitting: false }),
-            showSystemNotification({ message: formatMessage({ defaultMessage: 'Package cancelled successfully.' }) })
-          ])
-        );
-        onSuccess?.();
-      },
-      error({ response }) {
-        dispatch(
-          batchActions([
-            updateCancelPackageDialog({ isSubmitting: false }),
-            showErrorDialog({ error: response.response })
-          ])
-        );
-      }
-    });
-  };
+	const handleSubmit = () => {
+		dispatch(updateCancelPackageDialog({ isSubmitting: true }));
+		cancelPackages(siteId, {
+			packageIds: [packageId],
+			comment: state.comment
+		}).subscribe({
+			next() {
+				dispatch(
+					batchActions([
+						updateCancelPackageDialog({ isSubmitting: false }),
+						showSystemNotification({ message: formatMessage({ defaultMessage: 'Package cancelled successfully.' }) })
+					])
+				);
+				onSuccess?.();
+			},
+			error({ response }) {
+				dispatch(
+					batchActions([
+						updateCancelPackageDialog({ isSubmitting: false }),
+						showErrorDialog({ error: response.response })
+					])
+				);
+			}
+		});
+	};
 
-  return (
-    <>
-      <DialogBody sx={{ px: 4 }}>
-        <PackageDetails
-          packageId={packageId}
-          reviewActions={
-            <>
-              <Divider />
-              <TextFieldWithMax
-                value={state.comment}
-                label={<FormattedMessage defaultMessage="Comment" />}
-                fullWidth
-                onChange={(e) => setState({ comment: e.target.value })}
-                multiline
-                required
-                sx={{ mt: 2 }}
-              />
-            </>
-          }
-        />
-      </DialogBody>
-      <DialogFooter>
-        <SecondaryButton disabled={isSubmitting} onClick={(e) => onClose(e, null)}>
-          <FormattedMessage defaultMessage="Close" />
-        </SecondaryButton>
-        <PrimaryButton disabled={submitDisabled} loading={isSubmitting} onClick={() => handleSubmit()}>
-          <FormattedMessage defaultMessage="Confirm" />
-        </PrimaryButton>
-      </DialogFooter>
-    </>
-  );
+	return (
+		<>
+			<DialogBody sx={{ px: 4 }}>
+				<PackageDetails
+					packageId={packageId}
+					reviewActions={
+						<>
+							<Divider />
+							<TextFieldWithMax
+								value={state.comment}
+								label={<FormattedMessage defaultMessage="Comment" />}
+								fullWidth
+								onChange={(e) => setState({ comment: e.target.value })}
+								multiline
+								required
+								sx={{ mt: 2 }}
+							/>
+						</>
+					}
+				/>
+			</DialogBody>
+			<DialogFooter>
+				<SecondaryButton disabled={isSubmitting} onClick={(e) => onClose(e, null)}>
+					<FormattedMessage defaultMessage="Close" />
+				</SecondaryButton>
+				<PrimaryButton disabled={submitDisabled} loading={isSubmitting} onClick={() => handleSubmit()}>
+					<FormattedMessage defaultMessage="Confirm" />
+				</PrimaryButton>
+			</DialogFooter>
+		</>
+	);
 }
 
 export default CancelPackageDialogContainer;

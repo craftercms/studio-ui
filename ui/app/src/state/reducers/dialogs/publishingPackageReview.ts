@@ -18,33 +18,33 @@ import { createReducer } from '@reduxjs/toolkit';
 import { PublishingPackageReviewDialogStateProps } from '../../../components/PublishPackageReviewDialog/types';
 import { GlobalState } from '../../../models';
 import {
-  publishingPackageReviewDialogClosed,
-  closePublishingPackageReviewDialog,
-  showPublishingPackageReviewDialog,
-  updatePublishingPackageReviewDialog
+	publishingPackageReviewDialogClosed,
+	closePublishingPackageReviewDialog,
+	showPublishingPackageReviewDialog,
+	updatePublishingPackageReviewDialog
 } from '../../actions/dialogs';
 
 const initialState: PublishingPackageReviewDialogStateProps = {
-  open: false,
-  packageId: null,
-  isSubmitting: null,
-  isMinimized: null,
-  hasPendingChanges: null
+	open: false,
+	packageId: null,
+	isSubmitting: null,
+	isMinimized: null,
+	hasPendingChanges: null
 };
 
 export default createReducer<GlobalState['dialogs']['publishingPackageApproval']>(initialState, (builder) => {
-  builder
-    .addCase(showPublishingPackageReviewDialog, (state, { payload }) => ({
-      ...state,
-      onClose: closePublishingPackageReviewDialog(),
-      onClosed: publishingPackageReviewDialogClosed(),
-      ...(payload as Partial<PublishingPackageReviewDialogStateProps>),
-      open: true
-    }))
-    .addCase(updatePublishingPackageReviewDialog, (state, { payload }) => ({
-      ...state,
-      ...(payload as Partial<PublishingPackageReviewDialogStateProps>)
-    }))
-    .addCase(closePublishingPackageReviewDialog, (state) => ({ ...state, open: false }))
-    .addCase(publishingPackageReviewDialogClosed, () => initialState);
+	builder
+		.addCase(showPublishingPackageReviewDialog, (state, { payload }) => ({
+			...state,
+			onClose: closePublishingPackageReviewDialog(),
+			onClosed: publishingPackageReviewDialogClosed(),
+			...(payload as Partial<PublishingPackageReviewDialogStateProps>),
+			open: true
+		}))
+		.addCase(updatePublishingPackageReviewDialog, (state, { payload }) => ({
+			...state,
+			...(payload as Partial<PublishingPackageReviewDialogStateProps>)
+		}))
+		.addCase(closePublishingPackageReviewDialog, (state) => ({ ...state, open: false }))
+		.addCase(publishingPackageReviewDialogClosed, () => initialState);
 });

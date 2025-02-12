@@ -15,44 +15,44 @@
  */
 
 export interface Repository {
-  name: string;
-  url: string;
-  fetch: string;
-  push_url: string;
-  pushUrl: string;
-  branches: string[];
-  reachable: boolean;
-  unreachableReason: string;
-  removable: boolean;
+	name: string;
+	url: string;
+	fetch: string;
+	push_url: string;
+	pushUrl: string;
+	branches: string[];
+	reachable: boolean;
+	unreachableReason: string;
+	removable: boolean;
 }
 
 export interface RepositoryStatus {
-  clean: boolean;
-  conflicting: string[];
-  uncommittedChanges: string[];
-  untracked: string[];
+	clean: boolean;
+	conflicting: string[];
+	uncommittedChanges: string[];
+	untracked: string[];
 }
 
 export interface FileDiff {
-  diff: string;
-  studioVersion: string;
-  remoteVersion: string;
+	diff: string;
+	studioVersion: string;
+	remoteVersion: string;
 }
 
 export interface Remote {
-  siteId: string;
-  remoteName: string;
-  remoteUrl: string;
-  authenticationType: string;
-  remoteUsername?: string;
-  remotePassword?: string;
-  remoteToken?: string;
-  remotePrivateKey?: string;
-  remoteBranch?: string;
-  mergeStrategy?: string;
+	siteId: string;
+	remoteName: string;
+	remoteUrl: string;
+	authenticationType: string;
+	remoteUsername?: string;
+	remotePassword?: string;
+	remoteToken?: string;
+	remotePrivateKey?: string;
+	remoteBranch?: string;
+	mergeStrategy?: string;
 }
 
 export interface MergeStrategy {
-  key: 'none' | 'ours' | 'theirs';
-  value: string;
+	key: 'none' | 'ours' | 'theirs';
+	value: string;
 }

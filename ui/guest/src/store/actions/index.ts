@@ -30,7 +30,7 @@ export const computedDragOver = /*#__PURE__*/ createAction<{ record: ElementReco
 export const iceZoneSelected = /*#__PURE__*/ createAction<{ record: ElementRecord; event }>('ice_zone_selected');
 export const editComponentInline = /*#__PURE__*/ createAction('edit_component_inline');
 export const exitComponentInlineEdit = /*#__PURE__*/ createAction<{ path: string; saved: boolean }>(
-  'exit_component_inline_edit'
+	'exit_component_inline_edit'
 );
 export const setEditMode = /*#__PURE__*/ createAction('set_edit_mode');
 export const startListening = /*#__PURE__*/ createAction('start_listening');
@@ -43,21 +43,21 @@ export const documentDragLeave = /*#__PURE__*/ createAction<{ event: Event }>('d
 export const documentDrop = /*#__PURE__*/ createAction<{ event: Event }>('document:drop');
 export const documentDragEnd = /*#__PURE__*/ createAction<{ event: Event }>('document:dragend');
 export const desktopAssetDragStarted = /*#__PURE__*/ createAction<{ asset: DataTransferItem }>(
-  'desktop_asset_drag_started'
+	'desktop_asset_drag_started'
 );
 export const desktopAssetDragEnded = /*#__PURE__*/ createAction('desktop_asset_drag_ended');
 export const setEditingStatus = /*#__PURE__*/ createAction<{ status: EditingStatus }>('set_editing_status');
 export const desktopAssetUploadComplete = /*#__PURE__*/ createAction<{ record: ElementRecord; path: string }>(
-  'DESKTOP_ASSET_UPLOAD_COMPLETE'
+	'DESKTOP_ASSET_UPLOAD_COMPLETE'
 );
 export const desktopAssetUploadProgress = /*#__PURE__*/ createAction<{ record: ElementRecord; percentage: number }>(
-  'DESKTOP_ASSET_UPLOAD_PROGRESS'
+	'DESKTOP_ASSET_UPLOAD_PROGRESS'
 );
 export const desktopAssetUploadStarted = /*#__PURE__*/ createAction<{ record: ElementRecord }>(
-  'DESKTOP_ASSET_UPLOAD_STARTED'
+	'DESKTOP_ASSET_UPLOAD_STARTED'
 );
 export const desktopAssetUploadFailed = /*#__PURE__*/ createAction<{ record: ElementRecord }>(
-  'DESKTOP_ASSET_UPLOAD_FAILED'
+	'DESKTOP_ASSET_UPLOAD_FAILED'
 );
 
 export const setLockedItems = /*#__PURE__*/ createAction<SandboxItem[]>('set_locked_items');

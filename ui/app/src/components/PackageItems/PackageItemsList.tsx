@@ -30,96 +30,96 @@ import AutoSizer from 'react-virtualized-auto-sizer';
 import Box from '@mui/material/Box';
 
 export interface PackageItemsListProps {
-  items: PackageItem[];
-  totalItems: number;
-  hasNextPage: boolean;
-  isNextPageLoading: boolean;
-  loadNextPage(): void;
-  onOpenMenu(e: React.MouseEvent<HTMLButtonElement>, item: PackageItem): void;
+	items: PackageItem[];
+	totalItems: number;
+	hasNextPage: boolean;
+	isNextPageLoading: boolean;
+	loadNextPage(): void;
+	onOpenMenu(e: React.MouseEvent<HTMLButtonElement>, item: PackageItem): void;
 }
 
 export function PackageItemsList(props: PackageItemsListProps) {
-  const { items, hasNextPage, isNextPageLoading, loadNextPage, onOpenMenu } = props;
-  const [over, setOver] = useState(null);
-  // If there are more items to be loaded then add an extra row to hold a loading indicator.
-  const currentItemsCount = hasNextPage ? items.length + 1 : items.length;
+	const { items, hasNextPage, isNextPageLoading, loadNextPage, onOpenMenu } = props;
+	const [over, setOver] = useState(null);
+	// If there are more items to be loaded then add an extra row to hold a loading indicator.
+	const currentItemsCount = hasNextPage ? items.length + 1 : items.length;
 
-  // Only load 1 page of items at a time.
-  // Pass an empty callback to InfiniteLoader in case it asks us to load more than once.
-  const loadMoreItems = isNextPageLoading ? () => {} : loadNextPage;
+	// Only load 1 page of items at a time.
+	// Pass an empty callback to InfiniteLoader in case it asks us to load more than once.
+	const loadMoreItems = isNextPageLoading ? () => {} : loadNextPage;
 
-  // Every row is loaded except for our loading indicator row.
-  const isItemLoaded = (index) => !hasNextPage || index < items.length;
+	// Every row is loaded except for our loading indicator row.
+	const isItemLoaded = (index) => !hasNextPage || index < items.length;
 
-  return (
-    <InfiniteLoader isItemLoaded={isItemLoaded} itemCount={currentItemsCount} loadMoreItems={loadMoreItems}>
-      {({ onItemsRendered, ref }) => (
-        <Box sx={{ flex: 1 }}>
-          <AutoSizer>
-            {({ height, width }) => (
-              <List
-                className="List"
-                height={height}
-                itemCount={currentItemsCount}
-                itemSize={59}
-                onItemsRendered={onItemsRendered}
-                ref={ref}
-                width={width}
-              >
-                {({ index, style }) => {
-                  let content;
-                  if (!isItemLoaded(index)) {
-                    content = <FormattedMessage defaultMessage="Loading..." />;
-                  } else {
-                    const item = items[index];
-                    content = (
-                      <ListItemButton
-                        onMouseOver={() => setOver(item.path)}
-                        onMouseOut={() => setOver(null)}
-                        sx={{
-                          cursor: 'default',
-                          justifyContent: 'space-between',
-                          py: 0
-                        }}
-                      >
-                        <ListItemText
-                          primary={
-                            <ItemDisplay
-                              item={item as unknown as SandboxItem}
-                              titleDisplayProp="path"
-                              showWorkflowState={false}
-                              showPublishingTarget={false}
-                              showNavigableAsLinks={false}
-                            />
-                          }
-                          secondary={item.path}
-                        />
+	return (
+		<InfiniteLoader isItemLoaded={isItemLoaded} itemCount={currentItemsCount} loadMoreItems={loadMoreItems}>
+			{({ onItemsRendered, ref }) => (
+				<Box sx={{ flex: 1 }}>
+					<AutoSizer>
+						{({ height, width }) => (
+							<List
+								className="List"
+								height={height}
+								itemCount={currentItemsCount}
+								itemSize={59}
+								onItemsRendered={onItemsRendered}
+								ref={ref}
+								width={width}
+							>
+								{({ index, style }) => {
+									let content;
+									if (!isItemLoaded(index)) {
+										content = <FormattedMessage defaultMessage="Loading..." />;
+									} else {
+										const item = items[index];
+										content = (
+											<ListItemButton
+												onMouseOver={() => setOver(item.path)}
+												onMouseOut={() => setOver(null)}
+												sx={{
+													cursor: 'default',
+													justifyContent: 'space-between',
+													py: 0
+												}}
+											>
+												<ListItemText
+													primary={
+														<ItemDisplay
+															item={item as unknown as SandboxItem}
+															titleDisplayProp="path"
+															showWorkflowState={false}
+															showPublishingTarget={false}
+															showNavigableAsLinks={false}
+														/>
+													}
+													secondary={item.path}
+												/>
 
-                        {over === item.path && (
-                          <Tooltip title={<FormattedMessage defaultMessage="Options" />}>
-                            <IconButton
-                              size="small"
-                              onClick={(e) => {
-                                onOpenMenu(e, item);
-                              }}
-                              sx={{ padding: 0 }}
-                            >
-                              <MoreVertRoundedIcon />
-                            </IconButton>
-                          </Tooltip>
-                        )}
-                      </ListItemButton>
-                    );
-                  }
-                  return <div style={style}>{content}</div>;
-                }}
-              </List>
-            )}
-          </AutoSizer>
-        </Box>
-      )}
-    </InfiniteLoader>
-  );
+												{over === item.path && (
+													<Tooltip title={<FormattedMessage defaultMessage="Options" />}>
+														<IconButton
+															size="small"
+															onClick={(e) => {
+																onOpenMenu(e, item);
+															}}
+															sx={{ padding: 0 }}
+														>
+															<MoreVertRoundedIcon />
+														</IconButton>
+													</Tooltip>
+												)}
+											</ListItemButton>
+										);
+									}
+									return <div style={style}>{content}</div>;
+								}}
+							</List>
+						)}
+					</AutoSizer>
+				</Box>
+			)}
+		</InfiniteLoader>
+	);
 }
 
 export default PackageItemsList;

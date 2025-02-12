@@ -21,30 +21,30 @@ import EnhancedDialog from '../EnhancedDialog';
 import { UninstallPluginDialogContainer } from './UninstallPluginDialogContainer';
 
 function UninstallPluginDialog(props: UninstallPluginDialogProps) {
-  const { pluginId, onSubmittingAndOrPendingChange, isSubmitting, onComplete, ...rest } = props;
-  return (
-    <EnhancedDialog
-      title={<FormattedMessage id="uninstallPluginDialog.headerTitle" defaultMessage="Uninstall Plugin" />}
-      dialogHeaderProps={{
-        subtitle: (
-          <FormattedMessage
-            id="uninstallPluginDialog.headerSubtitle"
-            defaultMessage={`Please confirm the uninstalling of "{pluginId}"`}
-            values={{ pluginId: pluginId }}
-          />
-        )
-      }}
-      isSubmitting={isSubmitting}
-      {...rest}
-    >
-      <UninstallPluginDialogContainer
-        pluginId={pluginId}
-        isSubmitting={isSubmitting}
-        onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
-        onComplete={onComplete}
-      />
-    </EnhancedDialog>
-  );
+	const { pluginId, onSubmittingAndOrPendingChange, isSubmitting, onComplete, ...rest } = props;
+	return (
+		<EnhancedDialog
+			title={<FormattedMessage id="uninstallPluginDialog.headerTitle" defaultMessage="Uninstall Plugin" />}
+			dialogHeaderProps={{
+				subtitle: (
+					<FormattedMessage
+						id="uninstallPluginDialog.headerSubtitle"
+						defaultMessage={`Please confirm the uninstalling of "{pluginId}"`}
+						values={{ pluginId: pluginId }}
+					/>
+				)
+			}}
+			isSubmitting={isSubmitting}
+			{...rest}
+		>
+			<UninstallPluginDialogContainer
+				pluginId={pluginId}
+				isSubmitting={isSubmitting}
+				onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
+				onComplete={onComplete}
+			/>
+		</EnhancedDialog>
+	);
 }
 
 export default UninstallPluginDialog;

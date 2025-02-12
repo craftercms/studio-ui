@@ -19,10 +19,10 @@ import { CSSSelectorObjectOrCssVariables } from '@mui/system/styleFunctionSx/sty
 import { CSSProperties } from 'react';
 
 export interface StateStylingProps {
-  baseStyle: CSSProperties;
-  expandedStyle: CSSProperties;
-  collapsedStyle: CSSProperties;
-  baseSxs: CSSSelectorObjectOrCssVariables<Theme>;
-  expandedSxs: CSSSelectorObjectOrCssVariables<Theme>;
-  collapsedSxs: CSSSelectorObjectOrCssVariables<Theme>;
+	baseStyle: CSSProperties;
+	expandedStyle: CSSProperties;
+	collapsedStyle: CSSProperties;
+	baseSxs: CSSSelectorObjectOrCssVariables<Theme>;
+	expandedSxs: CSSSelectorObjectOrCssVariables<Theme>;
+	collapsedSxs: CSSSelectorObjectOrCssVariables<Theme>;
 }

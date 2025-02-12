@@ -21,9 +21,9 @@ const buildPath = path.join(packagePath, './build_tsc');
 
 const replace = require('replace-in-file');
 const options = {
-  files: `${buildPath}/**/*.js`,
-  from: 'process.env.VERSION',
-  to: `'${pkg.version}'`
+	files: `${buildPath}/**/*.js`,
+	from: 'process.env.VERSION',
+	to: `'${pkg.version}'`
 };
 
 replace(options).then(() => {});

@@ -24,60 +24,60 @@ import { renderTreeNode } from './utils';
 import { PackageItem } from './PackageItems';
 
 export interface PackageItemsTreeProps {
-  items: PackageItem[];
-  expandedPaths: string[];
-  setExpandedPaths(paths: string[]): void;
-  onOpenMenu(e: React.MouseEvent<HTMLButtonElement>, item: PackageItem): void;
+	items: PackageItem[];
+	expandedPaths: string[];
+	setExpandedPaths(paths: string[]): void;
+	onOpenMenu(e: React.MouseEvent<HTMLButtonElement>, item: PackageItem): void;
 }
 
 export function PackageItemsTree(props: PackageItemsTreeProps) {
-  const { items, expandedPaths, setExpandedPaths, onOpenMenu } = props;
-  const { itemMap, itemPaths } = useMemo(() => {
-    const itemPaths = [];
-    const itemMap: Record<string, PackageItem> = {};
+	const { items, expandedPaths, setExpandedPaths, onOpenMenu } = props;
+	const { itemMap, itemPaths } = useMemo(() => {
+		const itemPaths = [];
+		const itemMap: Record<string, PackageItem> = {};
 
-    items.forEach((item) => {
-      itemMap[item.path] = item;
-      itemPaths.push(item.path);
-    });
+		items.forEach((item) => {
+			itemMap[item.path] = item;
+			itemPaths.push(item.path);
+		});
 
-    return {
-      itemMap,
-      itemPaths
-    };
-  }, [items]);
-  const [trees, parentTreeNodePaths] = useMemo(() => {
-    const treeItemPaths = itemPaths;
-    const treeBuilderResult = buildPathTrees(treeItemPaths);
-    return [...treeBuilderResult, treeItemPaths] as [PathTreeNode[], string[], string[]];
-  }, [itemPaths]);
+		return {
+			itemMap,
+			itemPaths
+		};
+	}, [items]);
+	const [trees, parentTreeNodePaths] = useMemo(() => {
+		const treeItemPaths = itemPaths;
+		const treeBuilderResult = buildPathTrees(treeItemPaths);
+		return [...treeBuilderResult, treeItemPaths] as [PathTreeNode[], string[], string[]];
+	}, [itemPaths]);
 
-  return (
-    <SimpleTreeView
-      expandedItems={expandedPaths ?? parentTreeNodePaths}
-      onExpandedItemsChange={(event, itemIds) => setExpandedPaths(itemIds)}
-      disableSelection
-      sx={{
-        '.tree-item-more-section': { display: 'none' },
-        [`.${treeItemClasses.content}:hover`]: {
-          '.tree-item-more-section': { display: 'flex' }
-        },
-        [`[data-is-item="false"] > .${treeItemClasses.content} > .${treeItemClasses.checkbox}`]: {
-          display: 'none'
-        }
-      }}
-    >
-      {trees.map((node) =>
-        renderTreeNode({
-          itemMap: itemMap as unknown as LookupTable<DetailedItem>,
-          node,
-          dependencyTypeMap: {},
-          onMenuClick: (e, path) => onOpenMenu(e, itemMap[path]),
-          showItemTarget: false
-        })
-      )}
-    </SimpleTreeView>
-  );
+	return (
+		<SimpleTreeView
+			expandedItems={expandedPaths ?? parentTreeNodePaths}
+			onExpandedItemsChange={(event, itemIds) => setExpandedPaths(itemIds)}
+			disableSelection
+			sx={{
+				'.tree-item-more-section': { display: 'none' },
+				[`.${treeItemClasses.content}:hover`]: {
+					'.tree-item-more-section': { display: 'flex' }
+				},
+				[`[data-is-item="false"] > .${treeItemClasses.content} > .${treeItemClasses.checkbox}`]: {
+					display: 'none'
+				}
+			}}
+		>
+			{trees.map((node) =>
+				renderTreeNode({
+					itemMap: itemMap as unknown as LookupTable<DetailedItem>,
+					node,
+					dependencyTypeMap: {},
+					onMenuClick: (e, path) => onOpenMenu(e, itemMap[path]),
+					showItemTarget: false
+				})
+			)}
+		</SimpleTreeView>
+	);
 }
 
 export default PackageItemsTree;

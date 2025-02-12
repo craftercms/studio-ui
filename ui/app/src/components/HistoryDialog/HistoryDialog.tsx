@@ -21,12 +21,12 @@ import { HistoryDialogProps } from './utils';
 import { FormattedMessage } from 'react-intl';
 
 export function HistoryDialog(props: HistoryDialogProps) {
-  const { versionsBranch, error, ...rest } = props;
-  return (
-    <EnhancedDialog title={<FormattedMessage id="historyDialog.headerTitle" defaultMessage="Item History" />} {...rest}>
-      <HistoryDialogContainer versionsBranch={versionsBranch} error={error} />
-    </EnhancedDialog>
-  );
+	const { versionsBranch, error, ...rest } = props;
+	return (
+		<EnhancedDialog title={<FormattedMessage id="historyDialog.headerTitle" defaultMessage="Item History" />} {...rest}>
+			<HistoryDialogContainer versionsBranch={versionsBranch} error={error} />
+		</EnhancedDialog>
+	);
 }
 
 export default HistoryDialog;

@@ -35,147 +35,147 @@ import useUpdateRefs from '../../hooks/useUpdateRefs';
 const mixHeaders = (headers: Record<string, any>) => Object.assign({}, getGlobalHeaders(), headers);
 
 export function UploadDialogContainer(props: UploadDialogContainerProps) {
-  const { formatMessage } = useIntl();
-  const expiresAt = useSelection((state) => state.auth.expiresAt);
-  const { upload } = useSiteUIConfig();
-  // region const { ... } = props
-  const {
-    site,
-    path,
-    onClose,
-    onClosed,
-    maxSimultaneousUploads,
-    onMinimized,
-    hasPendingChanges,
-    setPendingChanges,
-    headers,
-    method = 'post',
-    meta,
-    allowedMetaFields,
-    endpoint,
-    useFormData = true,
-    fieldName = 'file',
-    onFileAdded,
-    onUploadSuccess,
-    validateStatus,
-    getResponseData,
-    getResponseError,
-    successfulUploadButton,
-    showRemoveButtonAfterComplete = false,
-    autoProceed = true
-  } = props;
-  // endregion
-  const propRefs = useUpdateRefs({
-    headers,
-    meta,
-    allowedMetaFields,
-    onFileAdded,
-    onUploadSuccess,
-    validateStatus,
-    getResponseData,
-    getResponseError
-  });
+	const { formatMessage } = useIntl();
+	const expiresAt = useSelection((state) => state.auth.expiresAt);
+	const { upload } = useSiteUIConfig();
+	// region const { ... } = props
+	const {
+		site,
+		path,
+		onClose,
+		onClosed,
+		maxSimultaneousUploads,
+		onMinimized,
+		hasPendingChanges,
+		setPendingChanges,
+		headers,
+		method = 'post',
+		meta,
+		allowedMetaFields,
+		endpoint,
+		useFormData = true,
+		fieldName = 'file',
+		onFileAdded,
+		onUploadSuccess,
+		validateStatus,
+		getResponseData,
+		getResponseError,
+		successfulUploadButton,
+		showRemoveButtonAfterComplete = false,
+		autoProceed = true
+	} = props;
+	// endregion
+	const propRefs = useUpdateRefs({
+		headers,
+		meta,
+		allowedMetaFields,
+		onFileAdded,
+		onUploadSuccess,
+		validateStatus,
+		getResponseData,
+		getResponseError
+	});
 
-  // TODO: Currently unknown if recreating the Uppy instance works properly down the component tree.
-  const uppy = React.useMemo(() => {
-    // Want to avoid memo renewal on every render due to these various props not being memoized up in the tree.
-    const {
-      headers,
-      allowedMetaFields,
-      validateStatus,
-      getResponseData,
-      getResponseError,
-      onFileAdded,
-      onUploadSuccess,
-      meta
-    } = propRefs.current;
-    const xhrOptions: XHRUploadOptions = {
-      endpoint: endpoint ?? getBulkUploadUrl(site, path),
-      formData: useFormData,
-      fieldName,
-      limit: maxSimultaneousUploads ? maxSimultaneousUploads : upload.maxSimultaneousUploads,
-      timeout: upload.timeout,
-      headers: mixHeaders(headers),
-      method,
-      getResponseError: (responseText) => getResponseErrorUtil(responseText, formatMessage)
-    };
-    allowedMetaFields && (xhrOptions.allowedMetaFields = allowedMetaFields);
-    // These (validateStatus, getResponseData, getResponseError) are unlikely to have closures inside them that would go stale.
-    validateStatus && (xhrOptions.validateStatus = validateStatus);
-    getResponseData && (xhrOptions.getResponseData = getResponseData);
-    getResponseError && (xhrOptions.getResponseError = getResponseError);
-    const instance = new Uppy({
-      meta: Object.assign({ site }, meta),
-      locale: { strings: { noDuplicates: formatMessage(translations.noDuplicates) } }
-    }).use(XHRUpload, xhrOptions);
-    onFileAdded &&
-      instance.on('file-added', (file) => {
-        propRefs.current.onFileAdded({ file, uppy: instance });
-      });
-    onUploadSuccess &&
-      instance.on('upload-success', (file, response) => {
-        propRefs.current.onUploadSuccess({ file, response });
-      });
-    return instance;
-  }, [
-    propRefs,
-    endpoint,
-    site,
-    path,
-    useFormData,
-    fieldName,
-    maxSimultaneousUploads,
-    upload.maxSimultaneousUploads,
-    upload.timeout,
-    method,
-    formatMessage
-  ]);
+	// TODO: Currently unknown if recreating the Uppy instance works properly down the component tree.
+	const uppy = React.useMemo(() => {
+		// Want to avoid memo renewal on every render due to these various props not being memoized up in the tree.
+		const {
+			headers,
+			allowedMetaFields,
+			validateStatus,
+			getResponseData,
+			getResponseError,
+			onFileAdded,
+			onUploadSuccess,
+			meta
+		} = propRefs.current;
+		const xhrOptions: XHRUploadOptions = {
+			endpoint: endpoint ?? getBulkUploadUrl(site, path),
+			formData: useFormData,
+			fieldName,
+			limit: maxSimultaneousUploads ? maxSimultaneousUploads : upload.maxSimultaneousUploads,
+			timeout: upload.timeout,
+			headers: mixHeaders(headers),
+			method,
+			getResponseError: (responseText) => getResponseErrorUtil(responseText, formatMessage)
+		};
+		allowedMetaFields && (xhrOptions.allowedMetaFields = allowedMetaFields);
+		// These (validateStatus, getResponseData, getResponseError) are unlikely to have closures inside them that would go stale.
+		validateStatus && (xhrOptions.validateStatus = validateStatus);
+		getResponseData && (xhrOptions.getResponseData = getResponseData);
+		getResponseError && (xhrOptions.getResponseError = getResponseError);
+		const instance = new Uppy({
+			meta: Object.assign({ site }, meta),
+			locale: { strings: { noDuplicates: formatMessage(translations.noDuplicates) } }
+		}).use(XHRUpload, xhrOptions);
+		onFileAdded &&
+			instance.on('file-added', (file) => {
+				propRefs.current.onFileAdded({ file, uppy: instance });
+			});
+		onUploadSuccess &&
+			instance.on('upload-success', (file, response) => {
+				propRefs.current.onUploadSuccess({ file, response });
+			});
+		return instance;
+	}, [
+		propRefs,
+		endpoint,
+		site,
+		path,
+		useFormData,
+		fieldName,
+		maxSimultaneousUploads,
+		upload.maxSimultaneousUploads,
+		upload.timeout,
+		method,
+		formatMessage
+	]);
 
-  useUnmount(() => {
-    uppy.close();
-    onClosed?.();
-  });
+	useUnmount(() => {
+		uppy.close();
+		onClosed?.();
+	});
 
-  useEffect(() => {
-    const handleBeforeUpload = () => {
-      return formatMessage(translations.uploadInProgress);
-    };
+	useEffect(() => {
+		const handleBeforeUpload = () => {
+			return formatMessage(translations.uploadInProgress);
+		};
 
-    if (hasPendingChanges) {
-      window.onbeforeunload = handleBeforeUpload;
-    } else {
-      window.onbeforeunload = null;
-    }
+		if (hasPendingChanges) {
+			window.onbeforeunload = handleBeforeUpload;
+		} else {
+			window.onbeforeunload = null;
+		}
 
-    return () => {
-      window.onbeforeunload = null;
-    };
-  }, [hasPendingChanges, formatMessage]);
+		return () => {
+			window.onbeforeunload = null;
+		};
+	}, [hasPendingChanges, formatMessage]);
 
-  useEffect(() => {
-    const plugin = uppy.getPlugin('XHRUpload');
-    plugin.setOptions({ headers: mixHeaders(headers) });
-  }, [expiresAt, uppy, headers]);
+	useEffect(() => {
+		const plugin = uppy.getPlugin('XHRUpload');
+		plugin.setOptions({ headers: mixHeaders(headers) });
+	}, [expiresAt, uppy, headers]);
 
-  return (
-    <>
-      <Button style={{ display: 'none' }}>test</Button>
-      <IconButton style={{ display: 'none' }} size="large">
-        <CloseIconRounded />
-      </IconButton>
-      <DialogBody sx={{ minHeight: '60vh', padding: 0 }}>
-        <UppyDashboard
-          uppy={uppy}
-          site={site}
-          path={path}
-          onMinimized={onMinimized}
-          onPendingChanges={setPendingChanges}
-          onClose={onClose}
-          title={formatMessage(translations.title)}
-          maxActiveUploads={upload.maxActiveUploads}
-          options={{ successfulUploadButton, showRemoveButtonAfterComplete, autoProceed }}
-        />
-      </DialogBody>
-    </>
-  );
+	return (
+		<>
+			<Button style={{ display: 'none' }}>test</Button>
+			<IconButton style={{ display: 'none' }} size="large">
+				<CloseIconRounded />
+			</IconButton>
+			<DialogBody sx={{ minHeight: '60vh', padding: 0 }}>
+				<UppyDashboard
+					uppy={uppy}
+					site={site}
+					path={path}
+					onMinimized={onMinimized}
+					onPendingChanges={setPendingChanges}
+					onClose={onClose}
+					title={formatMessage(translations.title)}
+					maxActiveUploads={upload.maxActiveUploads}
+					options={{ successfulUploadButton, showRemoveButtonAfterComplete, autoProceed }}
+				/>
+			</DialogBody>
+		</>
+	);
 }

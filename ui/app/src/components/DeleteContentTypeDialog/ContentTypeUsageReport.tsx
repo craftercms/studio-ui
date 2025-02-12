@@ -27,49 +27,49 @@ import { SandboxItem } from '../../models/Item';
 type ContentTypeUsageReportClassKey = 'listHeader' | 'listItem';
 
 export interface ContentTypeUsageReportProps {
-  entries: Array<[keyof FetchContentTypeUsageResponse, SandboxItem[]]>;
-  classes?: Partial<Record<ContentTypeUsageReportClassKey, string>>;
-  messages: {
-    templates: ReactNode;
-    scripts: ReactNode;
-    content: ReactNode;
-  };
+	entries: Array<[keyof FetchContentTypeUsageResponse, SandboxItem[]]>;
+	classes?: Partial<Record<ContentTypeUsageReportClassKey, string>>;
+	messages: {
+		templates: ReactNode;
+		scripts: ReactNode;
+		content: ReactNode;
+	};
 }
 
 function ContentTypeUsageReport(props: ContentTypeUsageReportProps) {
-  const { entries, classes, messages } = props;
-  return (
-    <>
-      {entries.map(([type, items]) => (
-        <List
-          key={type}
-          subheader={
-            <ListSubheader
-              className={classes?.listHeader}
-              sx={{ background: (theme) => theme.palette.background.paper }}
-              disableSticky
-            >
-              {messages[type] ?? type} ({items.length})
-            </ListSubheader>
-          }
-        >
-          {items.map((item) => (
-            <ListItem
-              key={item.path}
-              divider
-              className={classes?.listItem}
-              sx={{ background: (theme) => theme.palette.background.paper }}
-            >
-              <ListItemText
-                primary={<ItemDisplay item={item} showNavigableAsLinks={false} />}
-                secondary={<Typography variant="body2" color="textSecondary" children={item.path} />}
-              />
-            </ListItem>
-          ))}
-        </List>
-      ))}
-    </>
-  );
+	const { entries, classes, messages } = props;
+	return (
+		<>
+			{entries.map(([type, items]) => (
+				<List
+					key={type}
+					subheader={
+						<ListSubheader
+							className={classes?.listHeader}
+							sx={{ background: (theme) => theme.palette.background.paper }}
+							disableSticky
+						>
+							{messages[type] ?? type} ({items.length})
+						</ListSubheader>
+					}
+				>
+					{items.map((item) => (
+						<ListItem
+							key={item.path}
+							divider
+							className={classes?.listItem}
+							sx={{ background: (theme) => theme.palette.background.paper }}
+						>
+							<ListItemText
+								primary={<ItemDisplay item={item} showNavigableAsLinks={false} />}
+								secondary={<Typography variant="body2" color="textSecondary" children={item.path} />}
+							/>
+						</ListItem>
+					))}
+				</List>
+			))}
+		</>
+	);
 }
 
 export default ContentTypeUsageReport;

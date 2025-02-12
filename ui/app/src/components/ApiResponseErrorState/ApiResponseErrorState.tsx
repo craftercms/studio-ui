@@ -22,62 +22,62 @@ import { useIntl } from 'react-intl';
 import ErrorState, { ErrorStateProps } from '../ErrorState/ErrorState';
 
 export type ApiResponseErrorStateProps = Omit<ErrorStateProps, 'title' | 'message'> & {
-  error: ApiResponse;
-  validationErrors?: Api2ResponseFormat<any>['validationErrors'];
+	error: ApiResponse;
+	validationErrors?: Api2ResponseFormat<any>['validationErrors'];
 };
 
 export function createErrorStatePropsFromApiResponse(
-  apiResponse: ApiResponse,
-  formatMessage,
-  validationErrors?: Api2ResponseFormat<any>['validationErrors']
+	apiResponse: ApiResponse,
+	formatMessage,
+	validationErrors?: Api2ResponseFormat<any>['validationErrors']
 ): Partial<ErrorStateProps> {
-  const {
-    code,
-    message = '',
-    remedialAction,
-    documentationUrl
-  } = apiResponse ?? {
-    code: '',
-    message: formatMessage({
-      defaultMessage: 'The server is unreachable or your are offline.'
-    })
-  };
-  return {
-    title: [
-      formatMessage({
-        id: 'words.error',
-        defaultMessage: 'Error'
-      }),
-      code
-    ]
-      .filter(Boolean)
-      .join(' '),
-    message:
-      message +
-      (message.endsWith('.') || !remedialAction ? '' : '.') +
-      (remedialAction ? ` ${remedialAction}` : '') +
-      (remedialAction && message ? (remedialAction.endsWith('.') ? '' : '.') : ''),
-    children: (
-      <>
-        {validationErrors?.map(({ field, message }, index) => <div key={`${field}_${index}`}>{message}</div>)}
-        {documentationUrl && (
-          <Button href={documentationUrl} target="_blank" rel="noreferrer" variant="text">
-            {formatMessage({
-              id: 'common.moreInfo',
-              defaultMessage: 'More info'
-            })}{' '}
-            <OpenInNewIcon />
-          </Button>
-        )}
-      </>
-    )
-  };
+	const {
+		code,
+		message = '',
+		remedialAction,
+		documentationUrl
+	} = apiResponse ?? {
+		code: '',
+		message: formatMessage({
+			defaultMessage: 'The server is unreachable or your are offline.'
+		})
+	};
+	return {
+		title: [
+			formatMessage({
+				id: 'words.error',
+				defaultMessage: 'Error'
+			}),
+			code
+		]
+			.filter(Boolean)
+			.join(' '),
+		message:
+			message +
+			(message.endsWith('.') || !remedialAction ? '' : '.') +
+			(remedialAction ? ` ${remedialAction}` : '') +
+			(remedialAction && message ? (remedialAction.endsWith('.') ? '' : '.') : ''),
+		children: (
+			<>
+				{validationErrors?.map(({ field, message }, index) => <div key={`${field}_${index}`}>{message}</div>)}
+				{documentationUrl && (
+					<Button href={documentationUrl} target="_blank" rel="noreferrer" variant="text">
+						{formatMessage({
+							id: 'common.moreInfo',
+							defaultMessage: 'More info'
+						})}{' '}
+						<OpenInNewIcon />
+					</Button>
+				)}
+			</>
+		)
+	};
 }
 
 export function ApiResponseErrorState(props: ApiResponseErrorStateProps) {
-  const { error, validationErrors } = props;
-  const { formatMessage } = useIntl();
-  return <ErrorState {...props} {...createErrorStatePropsFromApiResponse(error, formatMessage, validationErrors)} />;
+	const { error, validationErrors } = props;
+	const { formatMessage } = useIntl();
+	return <ErrorState {...props} {...createErrorStatePropsFromApiResponse(error, formatMessage, validationErrors)} />;
 }
 
 export default ApiResponseErrorState;

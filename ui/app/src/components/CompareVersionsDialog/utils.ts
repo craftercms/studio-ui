@@ -25,30 +25,30 @@ import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { DialogHeaderActionProps } from '../DialogHeaderAction';
 
 export interface CompareVersionsDialogBaseProps {
-  error: ApiResponse;
-  isFetching: boolean;
-  disableItemSwitching?: boolean;
+	error: ApiResponse;
+	isFetching: boolean;
+	disableItemSwitching?: boolean;
 }
 
 export interface CompareVersionsDialogProps extends CompareVersionsDialogBaseProps, EnhancedDialogProps {
-  versionsBranch: VersionsStateProps;
-  selectedA: ItemHistoryEntry;
-  selectedB: ItemHistoryEntry;
-  contentTypesBranch?: EntityState<ContentType>;
-  leftActions?: DialogHeaderActionProps[];
-  rightActions?: DialogHeaderActionProps[];
+	versionsBranch: VersionsStateProps;
+	selectedA: ItemHistoryEntry;
+	selectedB: ItemHistoryEntry;
+	contentTypesBranch?: EntityState<ContentType>;
+	leftActions?: DialogHeaderActionProps[];
+	rightActions?: DialogHeaderActionProps[];
 }
 
 export interface CompareVersionsDialogStateProps extends CompareVersionsDialogBaseProps, EnhancedDialogState {
-  leftActions?: DialogHeaderStateAction[];
-  rightActions?: DialogHeaderStateAction[];
-  onClose?: StandardAction;
-  onClosed?: StandardAction;
+	leftActions?: DialogHeaderStateAction[];
+	rightActions?: DialogHeaderStateAction[];
+	onClose?: StandardAction;
+	onClosed?: StandardAction;
 }
 
 export interface CompareVersionsDialogContainerProps
-  extends CompareVersionsDialogBaseProps,
-    Pick<
-      CompareVersionsDialogProps,
-      'contentTypesBranch' | 'versionsBranch' | 'selectedA' | 'selectedB' | 'disableItemSwitching'
-    > {}
+	extends CompareVersionsDialogBaseProps,
+		Pick<
+			CompareVersionsDialogProps,
+			'contentTypesBranch' | 'versionsBranch' | 'selectedA' | 'selectedB' | 'disableItemSwitching'
+		> {}

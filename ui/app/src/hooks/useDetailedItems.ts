@@ -23,30 +23,30 @@ import { completeDetailedItem } from '../state/actions/content';
 import { batchActions } from '../state/actions/misc';
 
 export function useDetailedItems(paths: string[]): { itemsByPath: LookupTable<DetailedItem>; isFetching: boolean } {
-  const dispatch = useDispatch();
-  const fetchingLookup = useSelection((state) => state.content.itemsBeingFetchedByPath);
-  const itemsByPath = useSelection((state) => state.content.itemsByPath);
-  const items = useMemo(() => {
-    let _items = {};
-    paths.forEach((path) => {
-      if (itemsByPath[path]) {
-        _items[path] = itemsByPath[path];
-      }
-    });
-    return _items;
-  }, [itemsByPath, paths]);
-  useEffect(() => {
-    let actions = [];
-    paths.forEach((path) => {
-      if (!itemsByPath[path] && fetchingLookup[path] === undefined) {
-        actions.push(completeDetailedItem({ path }));
-      }
-    });
-    if (actions.length) {
-      dispatch(actions.length > 1 ? batchActions(actions) : actions[0]);
-    }
-  }, [fetchingLookup, dispatch, paths, itemsByPath]);
-  return { itemsByPath: items, isFetching: paths.some((path) => fetchingLookup[path]) };
+	const dispatch = useDispatch();
+	const fetchingLookup = useSelection((state) => state.content.itemsBeingFetchedByPath);
+	const itemsByPath = useSelection((state) => state.content.itemsByPath);
+	const items = useMemo(() => {
+		let _items = {};
+		paths.forEach((path) => {
+			if (itemsByPath[path]) {
+				_items[path] = itemsByPath[path];
+			}
+		});
+		return _items;
+	}, [itemsByPath, paths]);
+	useEffect(() => {
+		let actions = [];
+		paths.forEach((path) => {
+			if (!itemsByPath[path] && fetchingLookup[path] === undefined) {
+				actions.push(completeDetailedItem({ path }));
+			}
+		});
+		if (actions.length) {
+			dispatch(actions.length > 1 ? batchActions(actions) : actions[0]);
+		}
+	}, [fetchingLookup, dispatch, paths, itemsByPath]);
+	return { itemsByPath: items, isFetching: paths.some((path) => fetchingLookup[path]) };
 }
 
 export default useDetailedItems;

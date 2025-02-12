@@ -18,7 +18,7 @@ import GlobalState from '../models/GlobalState';
 import { useSelection } from './useSelection';
 
 export function useLocale(): GlobalState['uiConfig']['locale'] {
-  return useSelection((state) => state.uiConfig.locale);
+	return useSelection((state) => state.uiConfig.locale);
 }
 
 export default useLocale;

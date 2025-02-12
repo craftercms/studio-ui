@@ -17,22 +17,22 @@
 import { CSSProperties } from 'react';
 
 const cardTitleStyles: CSSProperties = {
-  fontWeight: 600,
-  lineHeight: '1.5rem',
-  overflow: 'hidden',
-  display: '-webkit-box',
-  WebkitLineClamp: 1,
-  WebkitBoxOrient: 'vertical',
-  marginBottom: 0,
-  wordBreak: 'break-all'
+	fontWeight: 600,
+	lineHeight: '1.5rem',
+	overflow: 'hidden',
+	display: '-webkit-box',
+	WebkitLineClamp: 1,
+	WebkitBoxOrient: 'vertical',
+	marginBottom: 0,
+	wordBreak: 'break-all'
 };
 
 export const cardSubtitleStyles: CSSProperties = {
-  overflow: 'hidden',
-  display: '-webkit-box',
-  WebkitLineClamp: 2,
-  WebkitBoxOrient: 'vertical',
-  wordBreak: 'break-all'
+	overflow: 'hidden',
+	display: '-webkit-box',
+	WebkitLineClamp: 2,
+	WebkitBoxOrient: 'vertical',
+	wordBreak: 'break-all'
 };
 
 export default cardTitleStyles;

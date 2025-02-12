@@ -20,23 +20,23 @@ import { UppyFile } from '@uppy/utils';
 import { DashboardOptions } from '@uppy/dashboard';
 
 export interface UppyDashboardProps {
-  uppy: Uppy;
-  site: string;
-  path: string;
-  title: string;
-  maxActiveUploads: number;
-  onMinimized?(): void;
-  onPendingChanges?(pending: boolean): void;
-  onClose?(): void;
-  options?: DashboardOptions & {
-    successfulUploadButton?: {
-      /** One of the "known" icon ids (e.g. more, edit, download), or a `d` attribute for a `path` tag with a "0 0 24 24" view box */
-      icon: 'more' | 'edit' | 'download' | 'MoreVertRounded' | 'EditRounded' | 'DownloadRounded' | string;
-      label: string;
-      onClick(event: React.MouseEvent, file: UppyFile, api: { remove(): void }): void;
-    };
-    autoProceed: boolean;
-  };
+	uppy: Uppy;
+	site: string;
+	path: string;
+	title: string;
+	maxActiveUploads: number;
+	onMinimized?(): void;
+	onPendingChanges?(pending: boolean): void;
+	onClose?(): void;
+	options?: DashboardOptions & {
+		successfulUploadButton?: {
+			/** One of the "known" icon ids (e.g. more, edit, download), or a `d` attribute for a `path` tag with a "0 0 24 24" view box */
+			icon: 'more' | 'edit' | 'download' | 'MoreVertRounded' | 'EditRounded' | 'DownloadRounded' | string;
+			label: string;
+			onClick(event: React.MouseEvent, file: UppyFile, api: { remove(): void }): void;
+		};
+		autoProceed: boolean;
+	};
 }
 
 export default UppyDashboardProps;

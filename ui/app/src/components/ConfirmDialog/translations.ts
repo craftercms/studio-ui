@@ -17,13 +17,13 @@
 import { defineMessages } from 'react-intl';
 
 export const translations = defineMessages({
-  accept: {
-    id: 'words.accept',
-    defaultMessage: 'Accept'
-  },
-  cancel: {
-    id: 'words.cancel',
-    defaultMessage: 'Cancel'
-  }
+	accept: {
+		id: 'words.accept',
+		defaultMessage: 'Accept'
+	},
+	cancel: {
+		id: 'words.cancel',
+		defaultMessage: 'Cancel'
+	}
 });
 export default translations;

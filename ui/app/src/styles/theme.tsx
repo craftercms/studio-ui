@@ -21,97 +21,97 @@ export const backgroundColor = palette.gray.light1;
 export const RedColor = palette.red.main;
 
 export function createDefaultThemeOptions({ mode }: { mode: ThemeOptions['palette']['mode'] }) {
-  const defaultTheme = createTheme({ palette: { mode } });
-  const theme: ThemeOptions = {
-    typography: {
-      button: {
-        textTransform: 'none'
-      },
-      fontSize: 14,
-      fontFamily: '"Source Sans Pro", "Open Sans", sans-serif',
-      fontWeightMedium: 600,
-      fontWeightBold: 700,
-      fontWeightLight: 300,
-      fontWeightRegular: 400
-    },
-    components: {
-      MuiListItem: {
-        styleOverrides: {
-          root: {
-            '&.Mui-selected, &.Mui-selected:hover': {
-              backgroundColor: palette.blue.highlight
-            }
-          }
-        }
-      },
-      MuiListItemIcon: {
-        styleOverrides: {
-          root: {
-            marginRight: 10,
-            minWidth: 'auto'
-          }
-        }
-      },
-      MuiFormLabel: {
-        styleOverrides: {
-          asterisk: {
-            color: RedColor
-          }
-        }
-      },
-      MuiTabs: {
-        styleOverrides: {
-          indicator: {
-            backgroundColor: palette.blue.main
-          }
-        }
-      },
-      MuiAccordion: {
-        styleOverrides: {
-          root: {
-            '&:before': {
-              display: 'none'
-            }
-          }
-        }
-      },
-      MuiAccordionSummary: {
-        styleOverrides: {
-          root: {
-            '&:hover:not(.Mui-disabled)': {
-              background: defaultTheme.palette.action.hover
-            }
-          },
-          content: {
-            '&$expanded': {
-              margin: '12px 0'
-            }
-          }
-        }
-      },
-      MuiTableCell: {
-        styleOverrides: {
-          sizeSmall: {
-            padding: '6px 10px'
-          }
-        }
-      },
-      MuiTextField: {
-        defaultProps: {
-          variant: 'outlined'
-        }
-      },
-      MuiSelect: {
-        defaultProps: {
-          variant: 'outlined'
-        }
-      },
-      MuiTooltip: {
-        defaultProps: {
-          disableInteractive: true
-        }
-      }
-    }
-  };
-  return theme;
+	const defaultTheme = createTheme({ palette: { mode } });
+	const theme: ThemeOptions = {
+		typography: {
+			button: {
+				textTransform: 'none'
+			},
+			fontSize: 14,
+			fontFamily: '"Source Sans Pro", "Open Sans", sans-serif',
+			fontWeightMedium: 600,
+			fontWeightBold: 700,
+			fontWeightLight: 300,
+			fontWeightRegular: 400
+		},
+		components: {
+			MuiListItem: {
+				styleOverrides: {
+					root: {
+						'&.Mui-selected, &.Mui-selected:hover': {
+							backgroundColor: palette.blue.highlight
+						}
+					}
+				}
+			},
+			MuiListItemIcon: {
+				styleOverrides: {
+					root: {
+						marginRight: 10,
+						minWidth: 'auto'
+					}
+				}
+			},
+			MuiFormLabel: {
+				styleOverrides: {
+					asterisk: {
+						color: RedColor
+					}
+				}
+			},
+			MuiTabs: {
+				styleOverrides: {
+					indicator: {
+						backgroundColor: palette.blue.main
+					}
+				}
+			},
+			MuiAccordion: {
+				styleOverrides: {
+					root: {
+						'&:before': {
+							display: 'none'
+						}
+					}
+				}
+			},
+			MuiAccordionSummary: {
+				styleOverrides: {
+					root: {
+						'&:hover:not(.Mui-disabled)': {
+							background: defaultTheme.palette.action.hover
+						}
+					},
+					content: {
+						'&$expanded': {
+							margin: '12px 0'
+						}
+					}
+				}
+			},
+			MuiTableCell: {
+				styleOverrides: {
+					sizeSmall: {
+						padding: '6px 10px'
+					}
+				}
+			},
+			MuiTextField: {
+				defaultProps: {
+					variant: 'outlined'
+				}
+			},
+			MuiSelect: {
+				defaultProps: {
+					variant: 'outlined'
+				}
+			},
+			MuiTooltip: {
+				defaultProps: {
+					disableInteractive: true
+				}
+			}
+		}
+	};
+	return theme;
 }

@@ -16,40 +16,40 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <title>CrafterCMS - Resume Session</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <script>
-    setTimeout(() => {
-      document.querySelector('.banner').style.display = '';
-    }, 1000);
-    (window.opener && window.opener !== window) ? window.close() : (window.location.href = '/');
-  </script>
-  <style>
-    html, body {
-      height: 100%;
-      text-align: center;
-      background: #f3f3f3;
-      font-family: sans-serif;
-    }
-    .banner {
-      display: flex;
-      height: 100%;
-      flex-direction: column;
-      align-items: center;
-      place-content: center;
-    }
-    .banner__image {
-      max-width: 300px;
-      margin: 1em 0;
-    }
-  </style>
+	<meta charset="utf-8"/>
+	<title>CrafterCMS - Resume Session</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1"/>
+	<script>
+		setTimeout(() => {
+			document.querySelector('.banner').style.display = '';
+		}, 1000);
+		(window.opener && window.opener !== window) ? window.close() : (window.location.href = '/');
+	</script>
+	<style>
+		html, body {
+			height: 100%;
+			text-align: center;
+			background: #f3f3f3;
+			font-family: sans-serif;
+		}
+		.banner {
+			display: flex;
+			height: 100%;
+			flex-direction: column;
+			align-items: center;
+			place-content: center;
+		}
+		.banner__image {
+			max-width: 300px;
+			margin: 1em 0;
+		}
+	</style>
 </head>
 <body>
 <section class="banner" style="display: none">
-  <h1>Session Renewed</h1>
-  <img class="banner__image" src="/studio/static-assets/images/content_creation.svg" alt="">
-  <p><script>document.write(window.opener && window.opener !== window ? 'You may now return to your other tab to resume your session.' : 'You may now <a href="/studio">continue to Crafter Studio</a>.')</script></p>
+	<h1>Session Renewed</h1>
+	<img class="banner__image" src="/studio/static-assets/images/content_creation.svg" alt="">
+	<p><script>document.write(window.opener && window.opener !== window ? 'You may now return to your other tab to resume your session.' : 'You may now <a href="/studio">continue to Crafter Studio</a>.')</script></p>
 </section>
 </body>
 </html>

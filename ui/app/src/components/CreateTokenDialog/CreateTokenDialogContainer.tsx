@@ -38,119 +38,119 @@ import { createAtLeastHalfHourInFutureDate } from '../../utils/datetime';
 import Box from '@mui/material/Box';
 
 const translations = defineMessages({
-  placeholder: {
-    id: 'words.label',
-    defaultMessage: 'Label'
-  },
-  expiresLabel: {
-    id: 'createTokenDialog.expiresLabel',
-    defaultMessage: 'Expire Token'
-  }
+	placeholder: {
+		id: 'words.label',
+		defaultMessage: 'Label'
+	},
+	expiresLabel: {
+		id: 'createTokenDialog.expiresLabel',
+		defaultMessage: 'Expire Token'
+	}
 });
 
 export function CreateTokenDialogContainer(props: CreateTokenContainerProps) {
-  const { isSubmitting, onCreated, onClose, onSubmittingAndOrPendingChange } = props;
-  const [expires, setExpires] = useState(false);
-  const [expiresAt, setExpiresAt] = useState(createAtLeastHalfHourInFutureDate());
-  const [label, setLabel] = useState('');
-  const { formatMessage } = useIntl();
-  const dispatch = useDispatch();
-  const onSubmit = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    onOk({ label, expiresAt: expires ? expiresAt : null });
-  };
-  const locale = useSelection<GlobalState['uiConfig']['locale']>((state) => state.uiConfig.locale);
-  const functionRefs = useUpdateRefs({
-    onSubmittingAndOrPendingChange
-  });
+	const { isSubmitting, onCreated, onClose, onSubmittingAndOrPendingChange } = props;
+	const [expires, setExpires] = useState(false);
+	const [expiresAt, setExpiresAt] = useState(createAtLeastHalfHourInFutureDate());
+	const [label, setLabel] = useState('');
+	const { formatMessage } = useIntl();
+	const dispatch = useDispatch();
+	const onSubmit = (e) => {
+		e.preventDefault();
+		e.stopPropagation();
+		onOk({ label, expiresAt: expires ? expiresAt : null });
+	};
+	const locale = useSelection<GlobalState['uiConfig']['locale']>((state) => state.uiConfig.locale);
+	const functionRefs = useUpdateRefs({
+		onSubmittingAndOrPendingChange
+	});
 
-  useEffect(() => {
-    onSubmittingAndOrPendingChange({
-      hasPendingChanges: Boolean(expires || label)
-    });
-  }, [onSubmittingAndOrPendingChange, expires, label]);
+	useEffect(() => {
+		onSubmittingAndOrPendingChange({
+			hasPendingChanges: Boolean(expires || label)
+		});
+	}, [onSubmittingAndOrPendingChange, expires, label]);
 
-  const onOk = ({ label, expiresAt }) => {
-    functionRefs.current.onSubmittingAndOrPendingChange({
-      isSubmitting: true
-    });
-    createToken(label, expiresAt).subscribe(
-      (token) => {
-        functionRefs.current.onSubmittingAndOrPendingChange({
-          isSubmitting: false
-        });
-        onCreated?.(token);
-      },
-      (response) => {
-        functionRefs.current.onSubmittingAndOrPendingChange({
-          isSubmitting: false
-        });
-        dispatch(showErrorDialog({ error: response }));
-      }
-    );
-  };
+	const onOk = ({ label, expiresAt }) => {
+		functionRefs.current.onSubmittingAndOrPendingChange({
+			isSubmitting: true
+		});
+		createToken(label, expiresAt).subscribe(
+			(token) => {
+				functionRefs.current.onSubmittingAndOrPendingChange({
+					isSubmitting: false
+				});
+				onCreated?.(token);
+			},
+			(response) => {
+				functionRefs.current.onSubmittingAndOrPendingChange({
+					isSubmitting: false
+				});
+				dispatch(showErrorDialog({ error: response }));
+			}
+		);
+	};
 
-  return (
-    <form onSubmit={onSubmit}>
-      <DialogBody>
-        <Typography variant="body2">
-          <FormattedMessage
-            id="createTokenDialog.helperText"
-            defaultMessage="Type a name for the new token. The token will be created by the server and shown to you after. Store it securely as you won’t be able to see it’s value again."
-          />
-        </Typography>
-        <TextField
-          value={label}
-          autoFocus
-          required
-          placeholder={formatMessage(translations.placeholder)}
-          margin="normal"
-          onChange={(e) => {
-            setLabel(e.target.value);
-          }}
-        />
-        <Box component="section" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <FormControlLabel
-            control={<Switch checked={expires} color="primary" onChange={(e, checked) => setExpires(checked)} />}
-            label={formatMessage(translations.expiresLabel)}
-          />
-          <FormHelperText>
-            {expires ? (
-              <FormattedMessage
-                id="createTokenDialog.expiresHelperNeverText"
-                defaultMessage="Switch off to never expire."
-              />
-            ) : (
-              <FormattedMessage
-                id="createTokenDialog.expiresHelperText"
-                defaultMessage="Switch on to set an expiration."
-              />
-            )}
-          </FormHelperText>
-        </Box>
-        <Collapse in={expires} mountOnEnter>
-          <DateTimeTimezonePicker
-            onChange={(date) => {
-              setExpiresAt(date);
-            }}
-            value={expiresAt}
-            disablePast
-            localeCode={locale.localeCode}
-            dateTimeFormatOptions={locale.dateTimeFormatOptions}
-          />
-        </Collapse>
-      </DialogBody>
-      <DialogFooter>
-        <SecondaryButton onClick={(e) => onClose(e, null)}>
-          <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
-        </SecondaryButton>
-        <PrimaryButton type="submit" autoFocus disabled={isSubmitting || label === ''} loading={isSubmitting}>
-          <FormattedMessage id="words.submit" defaultMessage="Submit" />
-        </PrimaryButton>
-      </DialogFooter>
-    </form>
-  );
+	return (
+		<form onSubmit={onSubmit}>
+			<DialogBody>
+				<Typography variant="body2">
+					<FormattedMessage
+						id="createTokenDialog.helperText"
+						defaultMessage="Type a name for the new token. The token will be created by the server and shown to you after. Store it securely as you won’t be able to see it’s value again."
+					/>
+				</Typography>
+				<TextField
+					value={label}
+					autoFocus
+					required
+					placeholder={formatMessage(translations.placeholder)}
+					margin="normal"
+					onChange={(e) => {
+						setLabel(e.target.value);
+					}}
+				/>
+				<Box component="section" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+					<FormControlLabel
+						control={<Switch checked={expires} color="primary" onChange={(e, checked) => setExpires(checked)} />}
+						label={formatMessage(translations.expiresLabel)}
+					/>
+					<FormHelperText>
+						{expires ? (
+							<FormattedMessage
+								id="createTokenDialog.expiresHelperNeverText"
+								defaultMessage="Switch off to never expire."
+							/>
+						) : (
+							<FormattedMessage
+								id="createTokenDialog.expiresHelperText"
+								defaultMessage="Switch on to set an expiration."
+							/>
+						)}
+					</FormHelperText>
+				</Box>
+				<Collapse in={expires} mountOnEnter>
+					<DateTimeTimezonePicker
+						onChange={(date) => {
+							setExpiresAt(date);
+						}}
+						value={expiresAt}
+						disablePast
+						localeCode={locale.localeCode}
+						dateTimeFormatOptions={locale.dateTimeFormatOptions}
+					/>
+				</Collapse>
+			</DialogBody>
+			<DialogFooter>
+				<SecondaryButton onClick={(e) => onClose(e, null)}>
+					<FormattedMessage id="words.cancel" defaultMessage="Cancel" />
+				</SecondaryButton>
+				<PrimaryButton type="submit" autoFocus disabled={isSubmitting || label === ''} loading={isSubmitting}>
+					<FormattedMessage id="words.submit" defaultMessage="Submit" />
+				</PrimaryButton>
+			</DialogFooter>
+		</form>
+	);
 }
 
 export default CreateTokenDialogContainer;

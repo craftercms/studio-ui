@@ -17,22 +17,22 @@
 import { defineMessages } from 'react-intl';
 
 export const translations = defineMessages({
-  compactInput: {
-    id: 'words.compact',
-    defaultMessage: 'Compact'
-  },
-  contentTypeAllLabel: {
-    id: 'newContentDialog.contentTypeAllLabel',
-    defaultMessage: 'Show all types'
-  },
-  contentTypePageLabel: {
-    id: 'newContentDialog.contentTypePageLabel',
-    defaultMessage: 'Pages only'
-  },
-  contentTypeComponentLabel: {
-    id: 'newContentDialog.contentTypeComponentLabel',
-    defaultMessage: 'Components only'
-  }
+	compactInput: {
+		id: 'words.compact',
+		defaultMessage: 'Compact'
+	},
+	contentTypeAllLabel: {
+		id: 'newContentDialog.contentTypeAllLabel',
+		defaultMessage: 'Show all types'
+	},
+	contentTypePageLabel: {
+		id: 'newContentDialog.contentTypePageLabel',
+		defaultMessage: 'Pages only'
+	},
+	contentTypeComponentLabel: {
+		id: 'newContentDialog.contentTypeComponentLabel',
+		defaultMessage: 'Components only'
+	}
 });
 
 export default translations;

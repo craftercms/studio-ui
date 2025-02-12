@@ -47,12 +47,12 @@ import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
 import Tooltip from '@mui/material/Tooltip';
 
 export const actionsToBeShown: AllItemActions[] = [
-  'edit',
-  'delete',
-  'publish',
-  'requestPublish',
-  'dependencies',
-  'history'
+	'edit',
+	'delete',
+	'publish',
+	'requestPublish',
+	'dependencies',
+	'history'
 ];
 
 export const List = styled(MuiList)({ paddingTop: 0 });
@@ -70,144 +70,144 @@ export const DenseCheckbox = styled(MuiCheckbox)({ padding: '5px' });
 export const DashletAvatar = styled(Avatar)({ width: 40, height: 40 });
 
 export interface PersonAvatarProps {
-  person: Person;
-  sx?: SxProps;
+	person: Person;
+	sx?: SxProps;
 }
 
 export function PersonAvatar(props: PersonAvatarProps) {
-  const { person, sx } = props;
-  const backgroundColor = toColor(person.username);
-  return (
-    <DashletAvatar
-      src={person.avatar ?? UNDEFINED}
-      children={person.avatar ? UNDEFINED : getInitials(person)}
-      sx={{ backgroundColor, color: (theme) => theme.palette.getContrastText(backgroundColor), ...sx }}
-    />
-  );
+	const { person, sx } = props;
+	const backgroundColor = toColor(person.username);
+	return (
+		<DashletAvatar
+			src={person.avatar ?? UNDEFINED}
+			children={person.avatar ? UNDEFINED : getInitials(person)}
+			sx={{ backgroundColor, color: (theme) => theme.palette.getContrastText(backgroundColor), ...sx }}
+		/>
+	);
 }
 
 export const getItemSkeleton = ({
-  numOfItems = 1,
-  showCheckbox = false,
-  showAvatar = false
+	numOfItems = 1,
+	showCheckbox = false,
+	showAvatar = false
 }: Partial<{ numOfItems: number; showCheckbox: boolean; showAvatar: boolean }>) => (
-  <List>
-    {new Array(numOfItems).fill(null).map((nothing, index) => (
-      <ListItem key={index} sx={{ pl: 2, pr: 2 }}>
-        {showCheckbox && (
-          <ListItemIcon>
-            <Checkbox edge="start" disabled />
-          </ListItemIcon>
-        )}
-        {showAvatar && (
-          <ListItemAvatar>
-            <DashletAvatar />
-          </ListItemAvatar>
-        )}
-        <ListItemText
-          primary={<Skeleton variant="text" />}
-          secondary={
-            <Typography color="text.secondary" variant="body2">
-              <Skeleton variant="text" />
-            </Typography>
-          }
-        />
-      </ListItem>
-    ))}
-  </List>
+	<List>
+		{new Array(numOfItems).fill(null).map((nothing, index) => (
+			<ListItem key={index} sx={{ pl: 2, pr: 2 }}>
+				{showCheckbox && (
+					<ListItemIcon>
+						<Checkbox edge="start" disabled />
+					</ListItemIcon>
+				)}
+				{showAvatar && (
+					<ListItemAvatar>
+						<DashletAvatar />
+					</ListItemAvatar>
+				)}
+				<ListItemText
+					primary={<Skeleton variant="text" />}
+					secondary={
+						<Typography color="text.secondary" variant="body2">
+							<Skeleton variant="text" />
+						</Typography>
+					}
+				/>
+			</ListItem>
+		))}
+	</List>
 );
 
 export type DashletEmptyMessageProps = PropsWithChildren<{ sx?: BoxProps['sx'] }>;
 
 export const DashletEmptyMessage = ({ children, sx }: DashletEmptyMessageProps) => (
-  <Box display="flex" flexDirection="column" alignItems="center" sx={{ mt: 2, ...sx }}>
-    <CheckRounded sx={{ color: 'success.main', mb: 1 }} />
-    <Typography color="text.secondary" variant="body2">
-      {children}
-    </Typography>
-  </Box>
+	<Box display="flex" flexDirection="column" alignItems="center" sx={{ mt: 2, ...sx }}>
+		<CheckRounded sx={{ color: 'success.main', mb: 1 }} />
+		<Typography color="text.secondary" variant="body2">
+			{children}
+		</Typography>
+	</Box>
 );
 
 export interface PersonFullNameProps {
-  person: Person;
+	person: Person;
 }
 
 export function PersonFullName({ person }: PersonFullNameProps) {
-  return <Typography variant="h6">{getPersonFullName(person)}</Typography>;
+	return <Typography variant="h6">{getPersonFullName(person)}</Typography>;
 }
 
 export function Pager(props: {
-  totalPages: number;
-  totalItems: number;
-  currentPage: number;
-  rowsPerPage: number;
-  onPagePickerChange(page: number): void;
-  onPageChange(page: number): void;
-  onRowsPerPageChange(rowsPerPage: number): void;
+	totalPages: number;
+	totalItems: number;
+	currentPage: number;
+	rowsPerPage: number;
+	onPagePickerChange(page: number): void;
+	onPageChange(page: number): void;
+	onRowsPerPageChange(rowsPerPage: number): void;
 }) {
-  const { totalPages, totalItems, currentPage, rowsPerPage, onPagePickerChange, onPageChange, onRowsPerPageChange } =
-    props;
+	const { totalPages, totalItems, currentPage, rowsPerPage, onPagePickerChange, onPageChange, onRowsPerPageChange } =
+		props;
 
-  return (
-    <>
-      <Select
-        variant="standard"
-        disableUnderline
-        value={`${currentPage}`}
-        onChange={(e) => onPagePickerChange(parseInt(e.target.value))}
-        sx={{ fontSize: (theme) => theme.typography.fontSize }}
-      >
-        {new Array(totalPages).fill(null).map((nothing, index) => (
-          <MenuItem value={index} sx={{ fontSize: (theme) => theme.typography.fontSize }} key={index}>
-            {currentPage === index ? (
-              <FormattedMessage defaultMessage="Page {pageNumber}" values={{ pageNumber: index + 1 }} />
-            ) : (
-              <FormattedMessage defaultMessage="Go to page {pageNumber}" values={{ pageNumber: index + 1 }} />
-            )}
-          </MenuItem>
-        ))}
-      </Select>
-      <Pagination
-        count={totalItems}
-        onPageChange={(e, page) => onPageChange(page)}
-        page={currentPage}
-        rowsPerPage={rowsPerPage}
-        onRowsPerPageChange={(e) => onRowsPerPageChange(parseInt(e.target.value))}
-        mode="table"
-      />
-    </>
-  );
+	return (
+		<>
+			<Select
+				variant="standard"
+				disableUnderline
+				value={`${currentPage}`}
+				onChange={(e) => onPagePickerChange(parseInt(e.target.value))}
+				sx={{ fontSize: (theme) => theme.typography.fontSize }}
+			>
+				{new Array(totalPages).fill(null).map((nothing, index) => (
+					<MenuItem value={index} sx={{ fontSize: (theme) => theme.typography.fontSize }} key={index}>
+						{currentPage === index ? (
+							<FormattedMessage defaultMessage="Page {pageNumber}" values={{ pageNumber: index + 1 }} />
+						) : (
+							<FormattedMessage defaultMessage="Go to page {pageNumber}" values={{ pageNumber: index + 1 }} />
+						)}
+					</MenuItem>
+				))}
+			</Select>
+			<Pagination
+				count={totalItems}
+				onPageChange={(e, page) => onPageChange(page)}
+				page={currentPage}
+				rowsPerPage={rowsPerPage}
+				onRowsPerPageChange={(e) => onRowsPerPageChange(parseInt(e.target.value))}
+				mode="table"
+			/>
+		</>
+	);
 }
 
 export function DashletItemOptions(props: { path: string; iconButtonProps?: IconButtonProps }) {
-  const { path, iconButtonProps } = props;
-  const dispatch = useDispatch();
+	const { path, iconButtonProps } = props;
+	const dispatch = useDispatch();
 
-  const onOpenItemMegaMenu = (element: Element) => {
-    const anchorRect = element.getBoundingClientRect();
-    const top = anchorRect.top + getOffsetTop(anchorRect, 'top');
-    const left = anchorRect.left + getOffsetLeft(anchorRect, 'left');
-    dispatch(
-      showItemMegaMenu({
-        path,
-        anchorReference: 'anchorPosition',
-        anchorPosition: { top, left }
-      })
-    );
-  };
+	const onOpenItemMegaMenu = (element: Element) => {
+		const anchorRect = element.getBoundingClientRect();
+		const top = anchorRect.top + getOffsetTop(anchorRect, 'top');
+		const left = anchorRect.left + getOffsetLeft(anchorRect, 'left');
+		dispatch(
+			showItemMegaMenu({
+				path,
+				anchorReference: 'anchorPosition',
+				anchorPosition: { top, left }
+			})
+		);
+	};
 
-  return (
-    <Tooltip title={<FormattedMessage defaultMessage="Options" />}>
-      <IconButton
-        size="small"
-        onClick={(e) => {
-          e.stopPropagation();
-          onOpenItemMegaMenu(e.currentTarget);
-        }}
-        {...iconButtonProps}
-      >
-        <MoreVertRoundedIcon />
-      </IconButton>
-    </Tooltip>
-  );
+	return (
+		<Tooltip title={<FormattedMessage defaultMessage="Options" />}>
+			<IconButton
+				size="small"
+				onClick={(e) => {
+					e.stopPropagation();
+					onOpenItemMegaMenu(e.currentTarget);
+				}}
+				{...iconButtonProps}
+			>
+				<MoreVertRoundedIcon />
+			</IconButton>
+		</Tooltip>
+	);
 }

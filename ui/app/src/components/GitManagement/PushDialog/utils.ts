@@ -17,18 +17,18 @@ import ApiResponse from '../../../models/ApiResponse';
 import { EnhancedDialogProps } from '../../EnhancedDialog';
 
 export interface PushDialogBaseProps {
-  branches: string[];
-  remoteName: string;
+	branches: string[];
+	remoteName: string;
 }
 
 export interface PushDialogProps extends PushDialogBaseProps, EnhancedDialogProps {
-  onPushSuccess?(): void;
-  onPushError?(response: ApiResponse): void;
-  onSubmittingChange?(isSubmitting: boolean): void;
+	onPushSuccess?(): void;
+	onPushError?(response: ApiResponse): void;
+	onSubmittingChange?(isSubmitting: boolean): void;
 }
 
 export interface PushDialogContainerProps
-  extends PushDialogBaseProps,
-    Pick<PushDialogProps, 'onClose' | 'onPushSuccess' | 'onPushError' | 'onSubmittingChange'> {
-  isSubmitting: boolean;
+	extends PushDialogBaseProps,
+		Pick<PushDialogProps, 'onClose' | 'onPushSuccess' | 'onPushError' | 'onSubmittingChange'> {
+	isSubmitting: boolean;
 }

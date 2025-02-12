@@ -20,11 +20,11 @@ import { setSiteCookie } from '../../utils/auth';
 import { fetchAll } from '../../services/sites';
 import { catchAjaxError } from '../../utils/ajax';
 import {
-  changeSite,
-  changeSiteComplete,
-  fetchSites as fetchSitesAction,
-  fetchSitesComplete,
-  fetchSitesFailed
+	changeSite,
+	changeSiteComplete,
+	fetchSites as fetchSitesAction,
+	fetchSitesComplete,
+	fetchSitesFailed
 } from '../actions/sites';
 import GlobalState from '../../models/GlobalState';
 import { CrafterCMSEpic } from '../store';
@@ -33,46 +33,46 @@ import { merge, of } from 'rxjs';
 import { blockUI, unblockUI } from '../actions/system';
 
 export default [
-  // region Change site
-  (action$, state$: StateObservable<GlobalState>) =>
-    action$.pipe(
-      ofType(changeSite.type),
-      withLatestFrom(state$),
-      tap(
-        ([
-          {
-            payload: { nextSite }
-          },
-          {
-            env: { useBaseDomain }
-          }
-        ]) => setSiteCookie(nextSite, useBaseDomain)
-      ),
-      switchMap(
-        ([
-          {
-            payload: { nextSite, nextUrl }
-          },
-          state
-        ]) =>
-          merge(
-            of(blockUI({ progress: 'indeterminate' })),
-            previewSwitch().pipe(
-              switchMap(() => [unblockUI(), changeSiteComplete({ nextSite, nextUrl })]),
-              catchAjaxError(() => {
-                setSiteCookie(state.sites.active, state.env.useBaseDomain);
-                return of(unblockUI());
-              })
-            )
-          )
-      )
-    ),
-  // endregion
-  // region Fetch sites
-  (action$) =>
-    action$.pipe(
-      ofType(fetchSitesAction.type),
-      switchMap(() => fetchAll().pipe(map(fetchSitesComplete), catchAjaxError(fetchSitesFailed)))
-    )
-  // endregion
+	// region Change site
+	(action$, state$: StateObservable<GlobalState>) =>
+		action$.pipe(
+			ofType(changeSite.type),
+			withLatestFrom(state$),
+			tap(
+				([
+					{
+						payload: { nextSite }
+					},
+					{
+						env: { useBaseDomain }
+					}
+				]) => setSiteCookie(nextSite, useBaseDomain)
+			),
+			switchMap(
+				([
+					{
+						payload: { nextSite, nextUrl }
+					},
+					state
+				]) =>
+					merge(
+						of(blockUI({ progress: 'indeterminate' })),
+						previewSwitch().pipe(
+							switchMap(() => [unblockUI(), changeSiteComplete({ nextSite, nextUrl })]),
+							catchAjaxError(() => {
+								setSiteCookie(state.sites.active, state.env.useBaseDomain);
+								return of(unblockUI());
+							})
+						)
+					)
+			)
+		),
+	// endregion
+	// region Fetch sites
+	(action$) =>
+		action$.pipe(
+			ofType(fetchSitesAction.type),
+			switchMap(() => fetchAll().pipe(map(fetchSitesComplete), catchAjaxError(fetchSitesFailed)))
+		)
+	// endregion
 ] as CrafterCMSEpic[];

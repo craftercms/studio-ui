@@ -15,90 +15,90 @@
  */
 
 CStudioForms.Datasources.ImgWebDAVRepo =
-  CStudioForms.Datasources.ImgWebDAVRepo ||
-  function (id, form, properties, constraints) {
-    this.id = id;
-    this.form = form;
-    this.properties = properties;
-    this.constraints = constraints;
+	CStudioForms.Datasources.ImgWebDAVRepo ||
+	function (id, form, properties, constraints) {
+		this.id = id;
+		this.form = form;
+		this.properties = properties;
+		this.constraints = constraints;
 
-    for (var i = 0; i < properties.length; i++) {
-      if (properties[i].name === 'repoPath') {
-        this.repoPath = properties[i].value;
-      }
-      if (properties[i].name === 'profileId') {
-        this.profileId = properties[i].value;
-      }
-    }
+		for (var i = 0; i < properties.length; i++) {
+			if (properties[i].name === 'repoPath') {
+				this.repoPath = properties[i].value;
+			}
+			if (properties[i].name === 'profileId') {
+				this.profileId = properties[i].value;
+			}
+		}
 
-    return this;
-  };
+		return this;
+	};
 
 YAHOO.extend(CStudioForms.Datasources.ImgWebDAVRepo, CStudioForms.CStudioFormDatasource, {
-  insertImageAction: function (insertCb) {
-    var _self = this;
+	insertImageAction: function (insertCb) {
+		var _self = this;
 
-    var browseCb = {
-      success: function (searchId, selectedTOs) {
-        for (var i = 0; i < selectedTOs.length; i++) {
-          var item = selectedTOs[i];
-          var uri = item.browserUri;
-          var fileName = item.internalName;
-          var fileExtension = fileName.split('.').pop();
+		var browseCb = {
+			success: function (searchId, selectedTOs) {
+				for (var i = 0; i < selectedTOs.length; i++) {
+					var item = selectedTOs[i];
+					var uri = item.browserUri;
+					var fileName = item.internalName;
+					var fileExtension = fileName.split('.').pop();
 
-          var imageData = {
-            previewUrl: uri,
-            relativeUrl: uri,
-            fileExtension: fileExtension,
-            remote: true
-          };
+					var imageData = {
+						previewUrl: uri,
+						relativeUrl: uri,
+						fileExtension: fileExtension,
+						remote: true
+					};
 
-          insertCb.success(imageData, true);
-        }
-      },
-      failure: function () {}
-    };
+					insertCb.success(imageData, true);
+				}
+			},
+			failure: function () {}
+		};
 
-    CStudioAuthoring.Operations.openWebDAVBrowse(
-      _self.processPathsForMacros(_self.repoPath),
-      _self.profileId,
-      'select',
-      true,
-      browseCb,
-      'image'
-    );
-  },
+		CStudioAuthoring.Operations.openWebDAVBrowse(
+			_self.processPathsForMacros(_self.repoPath),
+			_self.profileId,
+			'select',
+			true,
+			browseCb,
+			'image'
+		);
+	},
 
-  getConfig: function (callback) {
-    CStudioAuthoring.Service.getConfiguration(CStudioAuthoringContext.site, '/webdav/webdav.xml', {
-      success: function (config) {
-        callback(config);
-      }
-    });
-  },
+	getConfig: function (callback) {
+		CStudioAuthoring.Service.getConfiguration(CStudioAuthoringContext.site, '/webdav/webdav.xml', {
+			success: function (config) {
+				callback(config);
+			}
+		});
+	},
 
-  getLabel: function () {
-    return CMgs.format(langBundle, 'imageWebDavRepository');
-  },
+	getLabel: function () {
+		return CMgs.format(langBundle, 'imageWebDavRepository');
+	},
 
-  getInterface: function () {
-    return 'image';
-  },
+	getInterface: function () {
+		return 'image';
+	},
 
-  getName: function () {
-    return 'img-WebDAV-repo';
-  },
+	getName: function () {
+		return 'img-WebDAV-repo';
+	},
 
-  getSupportedProperties: function () {
-    return [
-      { label: CMgs.format(langBundle, 'repositoryPath'), name: 'repoPath', type: 'string' },
-      { label: CMgs.format(langBundle, 'profileId'), name: 'profileId', type: 'string' }
-    ];
-  },
+	getSupportedProperties: function () {
+		return [
+			{ label: CMgs.format(langBundle, 'repositoryPath'), name: 'repoPath', type: 'string' },
+			{ label: CMgs.format(langBundle, 'profileId'), name: 'profileId', type: 'string' }
+		];
+	},
 
-  getSupportedConstraints: function () {
-    return [];
-  }
+	getSupportedConstraints: function () {
+		return [];
+	}
 });
 
 CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-img-WebDAV-repo', CStudioForms.Datasources.ImgWebDAVRepo);

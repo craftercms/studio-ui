@@ -15,42 +15,42 @@
  */
 
 @mixin m($property, $ax, $value) {
-  $name: str-slice($property, 1, 2);
-  $name: str-insert($name, str-slice($ax, 1, 2), 2);
-  $name: str-insert($name, quote('#{$value}'), 3);
+	$name: str-slice($property, 1, 2);
+	$name: str-insert($name, str-slice($ax, 1, 2), 2);
+	$name: str-insert($name, quote('#{$value}'), 3);
 
-  @if (str-length(quote('#{$value}')) == 2) {
-    $name: str-slice($name, 1, 4);
-  } @else if (str-length(quote('#{$value}')) == 3) {
-    $name: str-slice($name, 1, 5);
-  } @else if (str-length(quote('#{$value}')) == 1) {
-    $name: str-slice($name, 1, 3);
-  }
+	@if (str-length(quote('#{$value}')) == 2) {
+		$name: str-slice($name, 1, 4);
+	} @else if (str-length(quote('#{$value}')) == 3) {
+		$name: str-slice($name, 1, 5);
+	} @else if (str-length(quote('#{$value}')) == 1) {
+		$name: str-slice($name, 1, 3);
+	}
 
-  .#{$name} {
-    #{$property}-#{$ax}: #{$value}#{if($value == 0, '', 'px')} !important;
-  }
+	.#{$name} {
+		#{$property}-#{$ax}: #{$value}#{if($value == 0, '', 'px')} !important;
+	}
 }
 
 @mixin p($property, $value) {
-  $name: str-slice($property, 1, 2);
-  $name: str-insert($name, quote('#{$value}'), 2);
+	$name: str-slice($property, 1, 2);
+	$name: str-insert($name, quote('#{$value}'), 2);
 
-  @if (str-length(quote('#{$value}')) == 2) {
-    $name: str-slice($name, 1, 3);
-  } @else if (str-length(quote('#{$value}')) == 3) {
-    $name: str-slice($name, 1, 4);
-  } @else if (str-length(quote('#{$value}')) == 1) {
-    $name: str-slice($name, 1, 2);
-  }
+	@if (str-length(quote('#{$value}')) == 2) {
+		$name: str-slice($name, 1, 3);
+	} @else if (str-length(quote('#{$value}')) == 3) {
+		$name: str-slice($name, 1, 4);
+	} @else if (str-length(quote('#{$value}')) == 1) {
+		$name: str-slice($name, 1, 2);
+	}
 
-  .#{$name} {
-    #{$property}: #{$value}#{if($value == 0, '', 'px')} !important;
-  }
+	.#{$name} {
+		#{$property}: #{$value}#{if($value == 0, '', 'px')} !important;
+	}
 }
 
 .no-margin {
-  margin: 0;
+	margin: 0;
 }
 
 @include p(margin, 0);
@@ -110,7 +110,7 @@
 
 .unpadded,
 .no-padding {
-  padding: 0;
+	padding: 0;
 }
 
 @include p(padding, 0);
@@ -169,7 +169,7 @@
 
 .auto-height,
 .height-auto {
-  height: auto !important;
+	height: auto !important;
 }
 
 @include m(min, height, 50);
@@ -180,27 +180,27 @@
 
 .auto-width,
 .width-auto {
-  width: auto !important;
+	width: auto !important;
 }
 
 .center-block {
-  margin-left: auto;
-  margin-right: auto;
+	margin-left: auto;
+	margin-right: auto;
 }
 
 .display-block {
-  display: block !important;
+	display: block !important;
 }
 
 .table,
 .display-table {
-  width: 100%;
-  display: table;
+	width: 100%;
+	display: table;
 
-  .cell {
-    display: table-cell;
-    vertical-align: middle;
-  }
+	.cell {
+		display: table-cell;
+		vertical-align: middle;
+	}
 }
 
 @include m(border, top, 0);
@@ -210,278 +210,278 @@
 
 .no-min-height,
 .min-height-none {
-  min-height: 0 !important;
+	min-height: 0 !important;
 }
 
 .no-box-shadow {
-  box-shadow: none !important;
+	box-shadow: none !important;
 }
 
 .tar {
-  text-align: right !important;
+	text-align: right !important;
 }
 
 .tal {
-  text-align: left !important;
+	text-align: left !important;
 }
 
 .tac {
-  text-align: center !important;
+	text-align: center !important;
 }
 
 .no-border {
-  border: none !important;
+	border: none !important;
 }
 
 .square {
-  border-radius: 0 !important;
+	border-radius: 0 !important;
 }
 
 .round {
-  border-radius: 5px;
+	border-radius: 5px;
 }
 
 .round-top {
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
 }
 
 .round-right {
-  border-top-right-radius: 5px;
-  border-bottom-right-radius: 5px;
+	border-top-right-radius: 5px;
+	border-bottom-right-radius: 5px;
 }
 
 .round-bottom {
-  border-bottom-left-radius: 5px;
-  border-bottom-right-radius: 5px;
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
 }
 
 .round-left {
-  border-top-left-radius: 5px;
-  border-bottom-left-radius: 5px;
+	border-top-left-radius: 5px;
+	border-bottom-left-radius: 5px;
 }
 
 .text-off {
-  text-indent: -99999px;
+	text-indent: -99999px;
 }
 
 .relative {
-  position: relative;
+	position: relative;
 }
 
 .absolute {
-  position: absolute;
+	position: absolute;
 }
 
 .block {
-  display: block;
+	display: block;
 }
 
 .dinline {
-  display: inline !important;
+	display: inline !important;
 }
 
 .inline-block {
-  display: inline-block !important;
+	display: inline-block !important;
 }
 
 .uppercase {
-  text-transform: uppercase;
+	text-transform: uppercase;
 }
 
 .underline {
-  text-decoration: underline;
+	text-decoration: underline;
 }
 
 .width-auto {
-  width: auto;
+	width: auto;
 }
 
 .full-width {
-  width: 100%;
+	width: 100%;
 }
 
 .no-list {
-  margin-left: 0;
+	margin-left: 0;
 }
 
 .no-list li {
-  list-style: none;
+	list-style: none;
 }
 
 .inline-list li {
-  float: left;
+	float: left;
 }
 
 .italic,
 .text-italic {
-  font-style: italic;
+	font-style: italic;
 }
 
 .transparent {
-  background-color: transparent !important;
+	background-color: transparent !important;
 }
 
 .bg-white {
-  background-color: #ffffff !important;
+	background-color: #ffffff !important;
 }
 
 .arial {
-  font-family: Arial;
+	font-family: Arial;
 }
 
 .helvetica {
-  font-family: helvetica;
+	font-family: helvetica;
 }
 
 .bold {
-  font-weight: bold !important;
+	font-weight: bold !important;
 }
 
 .ligher {
-  font-weight: lighter;
+	font-weight: lighter;
 }
 
 .normal {
-  font-weight: normal !important;
+	font-weight: normal !important;
 }
 
 .c-white {
-  color: #ffffff;
+	color: #ffffff;
 }
 
 .c-black {
-  color: #000000;
+	color: #000000;
 }
 
 .pointer {
-  cursor: pointer;
+	cursor: pointer;
 }
 
 a.no-decoration,
 .no-decoration {
-  text-decoration: none;
+	text-decoration: none;
 }
 
 .overflow-visible {
-  overflow: visible;
+	overflow: visible;
 }
 
 .overflow-hidden {
-  overflow: hidden;
+	overflow: hidden;
 }
 
 .cr {
-  clear: right;
+	clear: right;
 }
 
 .cl {
-  clear: left;
+	clear: left;
 }
 
 .cb {
-  clear: both;
+	clear: both;
 }
 
 @mixin cstudioLoadingBar($height, $color) {
-  height: $height;
-  position: relative;
-  background: #555;
-  box-shadow: inset 0 -1px 1px rgba(255, 255, 255, 0.3);
+	height: $height;
+	position: relative;
+	background: #555;
+	box-shadow: inset 0 -1px 1px rgba(255, 255, 255, 0.3);
 
-  > span {
-    display: block;
-    height: 3px;
-    background-color: $color;
-    position: relative;
-    overflow: hidden;
+	> span {
+		display: block;
+		height: 3px;
+		background-color: $color;
+		position: relative;
+		overflow: hidden;
 
-    &::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      bottom: 0;
-      right: 0;
-      background-image: -webkit-gradient(
-        linear,
-        0 0,
-        100% 100%,
-        color-stop(0.25, rgba(255, 255, 255, 0.3)),
-        color-stop(0.25, transparent),
-        color-stop(0.5, transparent),
-        color-stop(0.5, rgba(255, 255, 255, 0.3)),
-        color-stop(0.75, rgba(255, 255, 255, 0.3)),
-        color-stop(0.75, transparent),
-        to(transparent)
-      );
-      background-image: -moz-linear-gradient(
-        -45deg,
-        rgba(255, 255, 255, 0.3) 25%,
-        transparent 25%,
-        transparent 50%,
-        rgba(255, 255, 255, 0.3) 50%,
-        rgba(255, 255, 255, 0.3) 75%,
-        transparent 75%,
-        transparent
-      );
-      z-index: 1;
-      -webkit-background-size: 50px 50px;
-      -moz-background-size: 50px 50px;
-      -webkit-animation: move 2s linear infinite;
-      overflow: hidden;
-    }
-  }
+		&::after {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 0;
+			bottom: 0;
+			right: 0;
+			background-image: -webkit-gradient(
+				linear,
+				0 0,
+				100% 100%,
+				color-stop(0.25, rgba(255, 255, 255, 0.3)),
+				color-stop(0.25, transparent),
+				color-stop(0.5, transparent),
+				color-stop(0.5, rgba(255, 255, 255, 0.3)),
+				color-stop(0.75, rgba(255, 255, 255, 0.3)),
+				color-stop(0.75, transparent),
+				to(transparent)
+			);
+			background-image: -moz-linear-gradient(
+				-45deg,
+				rgba(255, 255, 255, 0.3) 25%,
+				transparent 25%,
+				transparent 50%,
+				rgba(255, 255, 255, 0.3) 50%,
+				rgba(255, 255, 255, 0.3) 75%,
+				transparent 75%,
+				transparent
+			);
+			z-index: 1;
+			-webkit-background-size: 50px 50px;
+			-moz-background-size: 50px 50px;
+			-webkit-animation: move 2s linear infinite;
+			overflow: hidden;
+		}
+	}
 
-  .animate > span {
-    > span {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      bottom: 0;
-      right: 0;
-      background-image: -webkit-gradient(
-        linear,
-        0 0,
-        100% 100%,
-        color-stop(0.25, rgba(255, 255, 255, 0.3)),
-        color-stop(0.25, transparent),
-        color-stop(0.5, transparent),
-        color-stop(0.5, rgba(255, 255, 255, 0.3)),
-        color-stop(0.75, rgba(255, 255, 255, 0.3)),
-        color-stop(0.75, transparent),
-        to(transparent)
-      );
-      background-image: -moz-linear-gradient(
-        -45deg,
-        rgba(255, 255, 255, 0.3) 25%,
-        transparent 25%,
-        transparent 50%,
-        rgba(255, 255, 255, 0.3) 50%,
-        rgba(255, 255, 255, 0.3) 75%,
-        transparent 75%,
-        transparent
-      );
-      z-index: 1;
-      -webkit-background-size: 50px 50px;
-      -moz-background-size: 50px 50px;
-      -webkit-animation: move 2s linear infinite;
-      overflow: hidden;
-    }
+	.animate > span {
+		> span {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 0;
+			bottom: 0;
+			right: 0;
+			background-image: -webkit-gradient(
+				linear,
+				0 0,
+				100% 100%,
+				color-stop(0.25, rgba(255, 255, 255, 0.3)),
+				color-stop(0.25, transparent),
+				color-stop(0.5, transparent),
+				color-stop(0.5, rgba(255, 255, 255, 0.3)),
+				color-stop(0.75, rgba(255, 255, 255, 0.3)),
+				color-stop(0.75, transparent),
+				to(transparent)
+			);
+			background-image: -moz-linear-gradient(
+				-45deg,
+				rgba(255, 255, 255, 0.3) 25%,
+				transparent 25%,
+				transparent 50%,
+				rgba(255, 255, 255, 0.3) 50%,
+				rgba(255, 255, 255, 0.3) 75%,
+				transparent 75%,
+				transparent
+			);
+			z-index: 1;
+			-webkit-background-size: 50px 50px;
+			-moz-background-size: 50px 50px;
+			-webkit-animation: move 2s linear infinite;
+			overflow: hidden;
+		}
 
-    &::after {
-      display: none;
-    }
-  }
+		&::after {
+			display: none;
+		}
+	}
 }
 
 @-webkit-keyframes move {
-  0% {
-    background-position: 0 0;
-  }
+	0% {
+		background-position: 0 0;
+	}
 
-  100% {
-    background-position: 50px 50px;
-  }
+	100% {
+		background-position: 50px 50px;
+	}
 }

@@ -15,56 +15,56 @@
  */
 
 CStudioForms.Controls.RTE.InsertStub = CStudioForms.Controls.RTE.InsertStub || {
-  createControl: function (n, cm, editor) {
-    switch (n) {
-      case 'insertStub':
-        var config = tinymce2.activeEditor.contextControl.rteConfig;
-        var layouts = config.rteStubs.stub;
+	createControl: function (n, cm, editor) {
+		switch (n) {
+			case 'insertStub':
+				var config = tinymce2.activeEditor.contextControl.rteConfig;
+				var layouts = config.rteStubs.stub;
 
-        if (!layouts) {
-          layouts = [];
-        }
+				if (!layouts) {
+					layouts = [];
+				}
 
-        if (!layouts.length) {
-          layouts = [layouts];
-        }
+				if (!layouts.length) {
+					layouts = [layouts];
+				}
 
-        if (layouts.length > 0) {
-          var c = cm.createMenuButton('insertStub', {
-            title: 'Insert Stub',
-            style: 'mce_insertComponentPencil'
-          });
+				if (layouts.length > 0) {
+					var c = cm.createMenuButton('insertStub', {
+						title: 'Insert Stub',
+						style: 'mce_insertComponentPencil'
+					});
 
-          c.layouts = layouts;
+					c.layouts = layouts;
 
-          c.onRenderMenu.add(function (c, m) {
-            for (var i = 0; i < layouts.length; i++) {
-              var layout = layouts[i];
-              var prototype = layout.prototype;
+					c.onRenderMenu.add(function (c, m) {
+						for (var i = 0; i < layouts.length; i++) {
+							var layout = layouts[i];
+							var prototype = layout.prototype;
 
-              var onClickFn = function () {
-                tinymce2.activeEditor.execCommand('mceInsertContent', false, this.layoutPrototype);
-                ed.contextControl.save();
-              };
+							var onClickFn = function () {
+								tinymce2.activeEditor.execCommand('mceInsertContent', false, this.layoutPrototype);
+								ed.contextControl.save();
+							};
 
-              var layoutItem = {
-                title: layout.name,
-                onclick: onClickFn,
-                layoutPrototype: prototype
-              };
+							var layoutItem = {
+								title: layout.name,
+								onclick: onClickFn,
+								layoutPrototype: prototype
+							};
 
-              m.add(layoutItem);
-            }
-          });
+							m.add(layoutItem);
+						}
+					});
 
-          return c;
-        } else {
-          // no layouts to render
-        }
-    }
+					return c;
+				} else {
+					// no layouts to render
+				}
+		}
 
-    return null;
-  }
+		return null;
+	}
 };
 
 tinymce2.create('tinymce2.plugins.CStudioInsertStubPlugin', CStudioForms.Controls.RTE.InsertStub);

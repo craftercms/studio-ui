@@ -15,26 +15,26 @@
  */
 
 CStudioAdminConsole.Tool.CommentModeration =
-  CStudioAdminConsole.Tool.CommentModeration ||
-  function (config, el) {
-    return this;
-  };
+	CStudioAdminConsole.Tool.CommentModeration ||
+	function (config, el) {
+		return this;
+	};
 
 YAHOO.extend(CStudioAdminConsole.Tool.CommentModeration, CStudioAdminConsole.Tool, {
-  renderWorkarea: function () {
-    var workareaEl = document.getElementById('cstudio-admin-console-workarea');
+	renderWorkarea: function () {
+		var workareaEl = document.getElementById('cstudio-admin-console-workarea');
 
-    workareaEl.innerHTML = 'Not Yet Implemented';
+		workareaEl.innerHTML = 'Not Yet Implemented';
 
-    var actions = [];
+		var actions = [];
 
-    CStudioAuthoring.ContextualNav.AdminConsoleNav.initActions(actions);
+		CStudioAuthoring.ContextualNav.AdminConsoleNav.initActions(actions);
 
-    CStudioAdminConsole.CommandBar.render([]);
-  }
+		CStudioAdminConsole.CommandBar.render([]);
+	}
 });
 
 CStudioAuthoring.Module.moduleLoaded(
-  'cstudio-console-tools-comment-moderation',
-  CStudioAdminConsole.Tool.CommentModeration
+	'cstudio-console-tools-comment-moderation',
+	CStudioAdminConsole.Tool.CommentModeration
 );

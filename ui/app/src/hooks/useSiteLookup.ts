@@ -19,7 +19,7 @@ import { Site } from '../models/Site';
 import { useSitesBranch } from './useSitesBranch';
 
 export function useSiteLookup(): LookupTable<Site> {
-  return useSitesBranch().byId;
+	return useSitesBranch().byId;
 }
 
 export default useSiteLookup;

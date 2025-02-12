@@ -32,99 +32,99 @@ import Tooltip from '@mui/material/Tooltip';
 import ConfirmDropdown from '../../ConfirmDropdown';
 
 export interface RepoGridUIProps {
-  repositories: Array<Repository>;
-  disableActions: boolean;
-  onPullClick(remoteName: string, branches: string[]): void;
-  onPushClick(remoteName: string, branches: string[]): void;
-  onDeleteRemote(remoteName: string): void;
+	repositories: Array<Repository>;
+	disableActions: boolean;
+	onPullClick(remoteName: string, branches: string[]): void;
+	onPushClick(remoteName: string, branches: string[]): void;
+	onDeleteRemote(remoteName: string): void;
 }
 
 export function RepoGridUI(props: RepoGridUIProps) {
-  const { repositories, disableActions, onDeleteRemote, onPullClick, onPushClick } = props;
-  return (
-    <TableContainer>
-      <Table>
-        <RepositoriesGridTableHead />
-        <TableBody>
-          {repositories?.map((repository) => (
-            <GlobalAppGridRow key={repository.name} className="hoverDisabled">
-              <GlobalAppGridCell align="left">{repository.name}</GlobalAppGridCell>
-              <GlobalAppGridCell align="left">{repository.url}</GlobalAppGridCell>
-              <GlobalAppGridCell align="left">{repository.fetch}</GlobalAppGridCell>
-              <GlobalAppGridCell align="left">{repository.pushUrl}</GlobalAppGridCell>
-              <GlobalAppGridCell align="right">
-                <Tooltip title={<FormattedMessage id="words.pull" defaultMessage="Pull" />}>
-                  <span>
-                    <IconButton
-                      onClick={() => onPullClick(repository.name, repository.branches)}
-                      disabled={disableActions}
-                      size="large"
-                    >
-                      <ArrowDownwardRoundedIcon />
-                    </IconButton>
-                  </span>
-                </Tooltip>
-                <Tooltip title={<FormattedMessage id="words.push" defaultMessage="Push" />}>
-                  <span>
-                    <IconButton
-                      onClick={() => onPushClick(repository.name, repository.branches)}
-                      disabled={disableActions}
-                      size="large"
-                    >
-                      <ArrowUpwardRoundedIcon />
-                    </IconButton>
-                  </span>
-                </Tooltip>
-                <ConfirmDropdown
-                  cancelText={<FormattedMessage id="words.no" defaultMessage="No" />}
-                  confirmText={<FormattedMessage id="words.yes" defaultMessage="Yes" />}
-                  confirmHelperText={
-                    <FormattedMessage id="repositories.deleteConfirmation" defaultMessage="Delete remote repository?" />
-                  }
-                  iconTooltip={<FormattedMessage id="words.delete" defaultMessage="Delete" />}
-                  icon={DeleteRoundedIcon}
-                  onConfirm={() => {
-                    onDeleteRemote(repository.name);
-                  }}
-                  disabled={disableActions}
-                />
-              </GlobalAppGridCell>
-            </GlobalAppGridRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  );
+	const { repositories, disableActions, onDeleteRemote, onPullClick, onPushClick } = props;
+	return (
+		<TableContainer>
+			<Table>
+				<RepositoriesGridTableHead />
+				<TableBody>
+					{repositories?.map((repository) => (
+						<GlobalAppGridRow key={repository.name} className="hoverDisabled">
+							<GlobalAppGridCell align="left">{repository.name}</GlobalAppGridCell>
+							<GlobalAppGridCell align="left">{repository.url}</GlobalAppGridCell>
+							<GlobalAppGridCell align="left">{repository.fetch}</GlobalAppGridCell>
+							<GlobalAppGridCell align="left">{repository.pushUrl}</GlobalAppGridCell>
+							<GlobalAppGridCell align="right">
+								<Tooltip title={<FormattedMessage id="words.pull" defaultMessage="Pull" />}>
+									<span>
+										<IconButton
+											onClick={() => onPullClick(repository.name, repository.branches)}
+											disabled={disableActions}
+											size="large"
+										>
+											<ArrowDownwardRoundedIcon />
+										</IconButton>
+									</span>
+								</Tooltip>
+								<Tooltip title={<FormattedMessage id="words.push" defaultMessage="Push" />}>
+									<span>
+										<IconButton
+											onClick={() => onPushClick(repository.name, repository.branches)}
+											disabled={disableActions}
+											size="large"
+										>
+											<ArrowUpwardRoundedIcon />
+										</IconButton>
+									</span>
+								</Tooltip>
+								<ConfirmDropdown
+									cancelText={<FormattedMessage id="words.no" defaultMessage="No" />}
+									confirmText={<FormattedMessage id="words.yes" defaultMessage="Yes" />}
+									confirmHelperText={
+										<FormattedMessage id="repositories.deleteConfirmation" defaultMessage="Delete remote repository?" />
+									}
+									iconTooltip={<FormattedMessage id="words.delete" defaultMessage="Delete" />}
+									icon={DeleteRoundedIcon}
+									onConfirm={() => {
+										onDeleteRemote(repository.name);
+									}}
+									disabled={disableActions}
+								/>
+							</GlobalAppGridCell>
+						</GlobalAppGridRow>
+					))}
+				</TableBody>
+			</Table>
+		</TableContainer>
+	);
 }
 
 export function RepositoriesGridTableHead() {
-  return (
-    <TableHead>
-      <GlobalAppGridRow className="hoverDisabled">
-        <GlobalAppGridCell>
-          <Typography variant="subtitle2">
-            <FormattedMessage id="words.name" defaultMessage="Name" />
-          </Typography>
-        </GlobalAppGridCell>
-        <GlobalAppGridCell>
-          <Typography variant="subtitle2">
-            <FormattedMessage id="words.url" defaultMessage="Url" />
-          </Typography>
-        </GlobalAppGridCell>
-        <GlobalAppGridCell>
-          <Typography variant="subtitle2">
-            <FormattedMessage id="words.fetch" defaultMessage="Fetch" />
-          </Typography>
-        </GlobalAppGridCell>
-        <GlobalAppGridCell>
-          <Typography variant="subtitle2">
-            <FormattedMessage id="repositories.pushUrl" defaultMessage="Push URL" />
-          </Typography>
-        </GlobalAppGridCell>
-        <GlobalAppGridCell />
-      </GlobalAppGridRow>
-    </TableHead>
-  );
+	return (
+		<TableHead>
+			<GlobalAppGridRow className="hoverDisabled">
+				<GlobalAppGridCell>
+					<Typography variant="subtitle2">
+						<FormattedMessage id="words.name" defaultMessage="Name" />
+					</Typography>
+				</GlobalAppGridCell>
+				<GlobalAppGridCell>
+					<Typography variant="subtitle2">
+						<FormattedMessage id="words.url" defaultMessage="Url" />
+					</Typography>
+				</GlobalAppGridCell>
+				<GlobalAppGridCell>
+					<Typography variant="subtitle2">
+						<FormattedMessage id="words.fetch" defaultMessage="Fetch" />
+					</Typography>
+				</GlobalAppGridCell>
+				<GlobalAppGridCell>
+					<Typography variant="subtitle2">
+						<FormattedMessage id="repositories.pushUrl" defaultMessage="Push URL" />
+					</Typography>
+				</GlobalAppGridCell>
+				<GlobalAppGridCell />
+			</GlobalAppGridRow>
+		</TableHead>
+	);
 }
 
 export default RepoGridUI;

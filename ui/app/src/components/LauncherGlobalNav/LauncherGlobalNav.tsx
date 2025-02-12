@@ -32,65 +32,65 @@ import { useSystemVersion } from '../../hooks/useSystemVersion';
 import { useGlobalNavigation } from '../../hooks/useGlobalNavigation';
 
 export interface LauncherGlobalNavProps {
-  title?: TranslationOrText;
-  onTileClicked?(e: React.MouseEvent<HTMLAnchorElement | HTMLSpanElement>, id: string, label: string): any;
-  tileSxs?: LauncherTileProps['sxs'];
-  sectionSxs?: LauncherSectionUIProps['sxs'];
+	title?: TranslationOrText;
+	onTileClicked?(e: React.MouseEvent<HTMLAnchorElement | HTMLSpanElement>, id: string, label: string): any;
+	tileSxs?: LauncherTileProps['sxs'];
+	sectionSxs?: LauncherSectionUIProps['sxs'];
 }
 
 function LauncherGlobalNav(props: LauncherGlobalNavProps) {
-  const dispatch = useDispatch();
-  const { formatMessage } = useIntl();
-  const { authoringBase } = useEnv();
-  const version = useSystemVersion();
-  const onTileClicked = props.onTileClicked ?? (() => dispatch(closeLauncher()));
-  const { items, error } = useGlobalNavigation();
-  const [activeItemId, setActiveItemId] = useState('');
-  useEffect(() => {
-    const idLookup = {};
-    Object.entries(urlMapping).forEach(([id, hash]) => (idLookup[hash] = id));
-    function hashchange() {
-      const hash = window.location.hash;
-      setActiveItemId(idLookup[hash]);
-    }
-    hashchange();
-    window.addEventListener('hashchange', hashchange, false);
-  }, []);
-  if (!error && !items) {
-    const style = { margin: 5, width: 120, height: 100, display: 'inline-flex' };
-    return (
-      <>
-        <Skeleton style={style} />
-        <Skeleton style={style} />
-        <Skeleton style={style} />
-        <Skeleton style={style} />
-      </>
-    );
-  } else if (error) {
-    return <ApiResponseErrorState error={error.response ?? error} />;
-  }
-  return (
-    <LauncherSectionUI sxs={props?.sectionSxs} title={props.title ?? formatMessage(messages.global)}>
-      {items.map((item) => (
-        <LauncherTile
-          key={item.id}
-          active={activeItemId === item.id}
-          title={globalMenuMessages[item.id] ? formatMessage(globalMenuMessages[item.id]) : item.id}
-          icon={item.icon}
-          link={getLauncherSectionLink(item.id, authoringBase)}
-          onClick={(e: React.MouseEvent<HTMLAnchorElement | HTMLSpanElement>) => onTileClicked(e, item.id, item.label)}
-          sxs={props.tileSxs}
-        />
-      ))}
-      <LauncherTile
-        title={formatMessage(messages.docs)}
-        icon={{ id: 'craftercms.icons.Docs' }}
-        link={`https://docs.craftercms.org/en/${getSimplifiedVersion(version)}/index.html`}
-        target="_blank"
-        sxs={props.tileSxs}
-      />
-    </LauncherSectionUI>
-  );
+	const dispatch = useDispatch();
+	const { formatMessage } = useIntl();
+	const { authoringBase } = useEnv();
+	const version = useSystemVersion();
+	const onTileClicked = props.onTileClicked ?? (() => dispatch(closeLauncher()));
+	const { items, error } = useGlobalNavigation();
+	const [activeItemId, setActiveItemId] = useState('');
+	useEffect(() => {
+		const idLookup = {};
+		Object.entries(urlMapping).forEach(([id, hash]) => (idLookup[hash] = id));
+		function hashchange() {
+			const hash = window.location.hash;
+			setActiveItemId(idLookup[hash]);
+		}
+		hashchange();
+		window.addEventListener('hashchange', hashchange, false);
+	}, []);
+	if (!error && !items) {
+		const style = { margin: 5, width: 120, height: 100, display: 'inline-flex' };
+		return (
+			<>
+				<Skeleton style={style} />
+				<Skeleton style={style} />
+				<Skeleton style={style} />
+				<Skeleton style={style} />
+			</>
+		);
+	} else if (error) {
+		return <ApiResponseErrorState error={error.response ?? error} />;
+	}
+	return (
+		<LauncherSectionUI sxs={props?.sectionSxs} title={props.title ?? formatMessage(messages.global)}>
+			{items.map((item) => (
+				<LauncherTile
+					key={item.id}
+					active={activeItemId === item.id}
+					title={globalMenuMessages[item.id] ? formatMessage(globalMenuMessages[item.id]) : item.id}
+					icon={item.icon}
+					link={getLauncherSectionLink(item.id, authoringBase)}
+					onClick={(e: React.MouseEvent<HTMLAnchorElement | HTMLSpanElement>) => onTileClicked(e, item.id, item.label)}
+					sxs={props.tileSxs}
+				/>
+			))}
+			<LauncherTile
+				title={formatMessage(messages.docs)}
+				icon={{ id: 'craftercms.icons.Docs' }}
+				link={`https://docs.craftercms.org/en/${getSimplifiedVersion(version)}/index.html`}
+				target="_blank"
+				sxs={props.tileSxs}
+			/>
+		</LauncherSectionUI>
+	);
 }
 
 export default LauncherGlobalNav;

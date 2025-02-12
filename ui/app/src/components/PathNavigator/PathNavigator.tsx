@@ -20,29 +20,29 @@ import ContextMenu, { ContextMenuOption } from '../ContextMenu/ContextMenu';
 import { useDispatch } from 'react-redux';
 import { withIndex, withoutIndex } from '../../utils/path';
 import {
-  pathNavigatorBackgroundRefresh,
-  pathNavigatorChangeLimit,
-  pathNavigatorChangePage,
-  pathNavigatorConditionallySetPath,
-  pathNavigatorFetchPath,
-  pathNavigatorInit,
-  pathNavigatorItemChecked,
-  pathNavigatorItemUnchecked,
-  pathNavigatorRefresh,
-  pathNavigatorSetCollapsed,
-  pathNavigatorSetKeyword,
-  pathNavigatorSetLocaleCode
+	pathNavigatorBackgroundRefresh,
+	pathNavigatorChangeLimit,
+	pathNavigatorChangePage,
+	pathNavigatorConditionallySetPath,
+	pathNavigatorFetchPath,
+	pathNavigatorInit,
+	pathNavigatorItemChecked,
+	pathNavigatorItemUnchecked,
+	pathNavigatorRefresh,
+	pathNavigatorSetCollapsed,
+	pathNavigatorSetKeyword,
+	pathNavigatorSetLocaleCode
 } from '../../state/actions/pathNavigator';
 import { showEditDialog, showItemMegaMenu, showPreviewDialog } from '../../state/actions/dialogs';
 import {
-  getEditorMode,
-  isEditableViaFormEditor,
-  isFolder,
-  isImage,
-  isNavigable,
-  isPreviewable,
-  isVideo,
-  isPdfDocument
+	getEditorMode,
+	isEditableViaFormEditor,
+	isFolder,
+	isImage,
+	isNavigable,
+	isPreviewable,
+	isVideo,
+	isPdfDocument
 } from './utils';
 import { StateStylingProps } from '../../models/UiConfig';
 import { debounceTime } from 'rxjs/operators';
@@ -65,63 +65,63 @@ import { useActiveUser } from '../../hooks/useActiveUser';
 import { GetChildrenOptions, PartialSxRecord } from '../../models';
 
 interface Menu {
-  path?: string;
-  sections?: ContextMenuOption[][];
-  anchorEl: Element;
-  loaderItems?: number;
-  emptyState?: {
-    icon?: ElementType;
-    message: string;
-  };
+	path?: string;
+	sections?: ContextMenuOption[][];
+	anchorEl: Element;
+	loaderItems?: number;
+	emptyState?: {
+		icon?: ElementType;
+		message: string;
+	};
 }
 
 export type PathNavigatorClassKey = 'root' | 'body' | 'searchRoot';
 
 export interface PathNavigatorProps {
-  id: string;
-  label: string;
-  rootPath: string;
-  sortStrategy?: GetChildrenOptions['sortStrategy'];
-  order?: GetChildrenOptions['order'];
-  excludes?: string[];
-  locale?: string;
-  limit?: number;
-  initialCollapsed?: boolean;
-  icon?: SystemIconDescriptor;
-  expandedIcon?: SystemIconDescriptor;
-  collapsedIcon?: SystemIconDescriptor;
-  container?: Partial<StateStylingProps>;
-  classes?: Partial<Record<PathNavigatorClassKey, string>>;
-  sxs?: PartialSxRecord<PathNavigatorClassKey>;
-  onItemClicked?(item: DetailedItem, event?: React.MouseEvent): void;
-  computeActiveItems?: (items: DetailedItem[]) => string[];
-  createItemClickedHandler?: (
-    defaultHandler: (item: DetailedItem, event?: React.MouseEvent) => void
-  ) => (item: DetailedItem) => void;
+	id: string;
+	label: string;
+	rootPath: string;
+	sortStrategy?: GetChildrenOptions['sortStrategy'];
+	order?: GetChildrenOptions['order'];
+	excludes?: string[];
+	locale?: string;
+	limit?: number;
+	initialCollapsed?: boolean;
+	icon?: SystemIconDescriptor;
+	expandedIcon?: SystemIconDescriptor;
+	collapsedIcon?: SystemIconDescriptor;
+	container?: Partial<StateStylingProps>;
+	classes?: Partial<Record<PathNavigatorClassKey, string>>;
+	sxs?: PartialSxRecord<PathNavigatorClassKey>;
+	onItemClicked?(item: DetailedItem, event?: React.MouseEvent): void;
+	computeActiveItems?: (items: DetailedItem[]) => string[];
+	createItemClickedHandler?: (
+		defaultHandler: (item: DetailedItem, event?: React.MouseEvent) => void
+	) => (item: DetailedItem) => void;
 }
 
 export interface PathNavigatorStateProps {
-  id: string;
-  rootPath: string;
-  currentPath: string;
-  localeCode: string;
-  keyword: string;
-  isSelectMode: boolean;
-  hasClipboard: boolean;
-  levelDescriptor: string;
-  itemsInPath: string[];
-  breadcrumb: string[];
-  selectedItems: string[];
-  total: number; // Number of items in the current path
-  limit: number;
-  offset: number;
-  collapsed?: boolean;
-  excludes?: string[];
-  isFetching: boolean;
-  error: any;
-  isRootPathMissing: boolean;
-  sortStrategy: GetChildrenOptions['sortStrategy'];
-  order: GetChildrenOptions['order'];
+	id: string;
+	rootPath: string;
+	currentPath: string;
+	localeCode: string;
+	keyword: string;
+	isSelectMode: boolean;
+	hasClipboard: boolean;
+	levelDescriptor: string;
+	itemsInPath: string[];
+	breadcrumb: string[];
+	selectedItems: string[];
+	total: number; // Number of items in the current path
+	limit: number;
+	offset: number;
+	collapsed?: boolean;
+	excludes?: string[];
+	isFetching: boolean;
+	error: any;
+	isRootPathMissing: boolean;
+	sortStrategy: GetChildrenOptions['sortStrategy'];
+	order: GetChildrenOptions['order'];
 }
 
 // @see https://github.com/craftercms/craftercms/issues/5360
@@ -133,308 +133,308 @@ export interface PathNavigatorStateProps {
 // };
 
 export function PathNavigator(props: PathNavigatorProps) {
-  // region const { ... } = props;
-  const {
-    label = '(No name)',
-    icon,
-    expandedIcon,
-    collapsedIcon,
-    container,
-    rootPath: path,
-    id = label.replace(/\s/g, ''),
-    limit = 10,
-    locale,
-    excludes,
-    initialCollapsed = true,
-    onItemClicked: onItemClickedProp,
-    createItemClickedHandler = (defaultHandler) => defaultHandler,
-    computeActiveItems,
-    sortStrategy,
-    order,
-    sxs
-  } = props;
-  // endregion
-  const state = useSelection((state) => state.pathNavigator)[id];
-  const itemsByPath = useItemsByPath();
-  const { id: siteId, uuid } = useActiveSite();
-  const user = useActiveUser();
-  const { authoringBase } = useEnv();
-  const dispatch = useDispatch();
-  const [widgetMenu, setWidgetMenu] = useState<Menu>({
-    anchorEl: null,
-    sections: [],
-    emptyState: null
-  });
-  const [keyword, setKeyword] = useState('');
-  const onSearch$ = useSubject<string>();
-  const uiConfig = useSelection<GlobalState['uiConfig']>((state) => state.uiConfig);
-  const siteLocales = useSiteLocales();
+	// region const { ... } = props;
+	const {
+		label = '(No name)',
+		icon,
+		expandedIcon,
+		collapsedIcon,
+		container,
+		rootPath: path,
+		id = label.replace(/\s/g, ''),
+		limit = 10,
+		locale,
+		excludes,
+		initialCollapsed = true,
+		onItemClicked: onItemClickedProp,
+		createItemClickedHandler = (defaultHandler) => defaultHandler,
+		computeActiveItems,
+		sortStrategy,
+		order,
+		sxs
+	} = props;
+	// endregion
+	const state = useSelection((state) => state.pathNavigator)[id];
+	const itemsByPath = useItemsByPath();
+	const { id: siteId, uuid } = useActiveSite();
+	const user = useActiveUser();
+	const { authoringBase } = useEnv();
+	const dispatch = useDispatch();
+	const [widgetMenu, setWidgetMenu] = useState<Menu>({
+		anchorEl: null,
+		sections: [],
+		emptyState: null
+	});
+	const [keyword, setKeyword] = useState('');
+	const onSearch$ = useSubject<string>();
+	const uiConfig = useSelection<GlobalState['uiConfig']>((state) => state.uiConfig);
+	const siteLocales = useSiteLocales();
 
-  useEffect(() => {
-    // Adding uiConfig as means to stop navigator from trying to
-    // initialize with previous state information when switching sites
-    if (!state && uiConfig.currentSite === siteId) {
-      const storedState = getStoredPathNavigator(uuid, user.username, id);
-      if (storedState?.keyword) {
-        setKeyword(storedState.keyword);
-      }
-      dispatch(
-        pathNavigatorInit({
-          id,
-          rootPath: path,
-          locale,
-          excludes,
-          limit,
-          collapsed: initialCollapsed,
-          sortStrategy,
-          order,
-          ...storedState
-        })
-      );
-    }
-  }, [
-    dispatch,
-    excludes,
-    id,
-    limit,
-    locale,
-    path,
-    siteId,
-    state,
-    initialCollapsed,
-    uiConfig.currentSite,
-    user.username,
-    uuid,
-    sortStrategy,
-    order
-  ]);
+	useEffect(() => {
+		// Adding uiConfig as means to stop navigator from trying to
+		// initialize with previous state information when switching sites
+		if (!state && uiConfig.currentSite === siteId) {
+			const storedState = getStoredPathNavigator(uuid, user.username, id);
+			if (storedState?.keyword) {
+				setKeyword(storedState.keyword);
+			}
+			dispatch(
+				pathNavigatorInit({
+					id,
+					rootPath: path,
+					locale,
+					excludes,
+					limit,
+					collapsed: initialCollapsed,
+					sortStrategy,
+					order,
+					...storedState
+				})
+			);
+		}
+	}, [
+		dispatch,
+		excludes,
+		id,
+		limit,
+		locale,
+		path,
+		siteId,
+		state,
+		initialCollapsed,
+		uiConfig.currentSite,
+		user.username,
+		uuid,
+		sortStrategy,
+		order
+	]);
 
-  useMount(() => {
-    if (state) {
-      dispatch(pathNavigatorBackgroundRefresh({ id }));
-    }
-  });
+	useMount(() => {
+		if (state) {
+			dispatch(pathNavigatorBackgroundRefresh({ id }));
+		}
+	});
 
-  useEffect(() => {
-    const subscription = onSearch$.pipe(debounceTime(400)).subscribe((keyword) => {
-      dispatch(pathNavigatorSetKeyword({ id, keyword }));
-    });
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [dispatch, id, onSearch$]);
+	useEffect(() => {
+		const subscription = onSearch$.pipe(debounceTime(400)).subscribe((keyword) => {
+			dispatch(pathNavigatorSetKeyword({ id, keyword }));
+		});
+		return () => {
+			subscription.unsubscribe();
+		};
+	}, [dispatch, id, onSearch$]);
 
-  useEffect(() => {
-    if (siteLocales.defaultLocaleCode && state?.localeCode !== siteLocales.defaultLocaleCode) {
-      dispatch(
-        pathNavigatorSetLocaleCode({
-          id,
-          locale: siteLocales.defaultLocaleCode
-        })
-      );
-    }
-  }, [dispatch, id, siteLocales.defaultLocaleCode, state?.localeCode]);
+	useEffect(() => {
+		if (siteLocales.defaultLocaleCode && state?.localeCode !== siteLocales.defaultLocaleCode) {
+			dispatch(
+				pathNavigatorSetLocaleCode({
+					id,
+					locale: siteLocales.defaultLocaleCode
+				})
+			);
+		}
+	}, [dispatch, id, siteLocales.defaultLocaleCode, state?.localeCode]);
 
-  if (!state) {
-    const storedState = getStoredPathNavigator(uuid, user.username, id);
-    return <PathNavigatorSkeleton renderBody={storedState ? !storedState.collapsed : !initialCollapsed} />;
-  }
+	if (!state) {
+		const storedState = getStoredPathNavigator(uuid, user.username, id);
+		return <PathNavigatorSkeleton renderBody={storedState ? !storedState.collapsed : !initialCollapsed} />;
+	}
 
-  const onPathSelected = (item: DetailedItem) => {
-    dispatch(
-      pathNavigatorFetchPath({
-        id,
-        path: item.path,
-        keyword
-      })
-    );
-  };
+	const onPathSelected = (item: DetailedItem) => {
+		dispatch(
+			pathNavigatorFetchPath({
+				id,
+				path: item.path,
+				keyword
+			})
+		);
+	};
 
-  const onPreview = (item: DetailedItem) => {
-    if (isEditableViaFormEditor(item)) {
-      dispatch(showEditDialog({ path: item.path, authoringBase, site: siteId, readonly: true }));
-    } else if (isImage(item) || isVideo(item) || isPdfDocument(item.mimeType)) {
-      dispatch(
-        showPreviewDialog({
-          type: isImage(item) ? 'image' : isVideo(item) ? 'video' : 'pdf',
-          title: item.label,
-          url: item.path
-        })
-      );
-    } else {
-      const mode = getEditorMode(item);
-      dispatch(
-        showPreviewDialog({
-          type: 'editor',
-          title: item.label,
-          url: item.path,
-          path: item.path,
-          mode
-        })
-      );
-    }
-  };
+	const onPreview = (item: DetailedItem) => {
+		if (isEditableViaFormEditor(item)) {
+			dispatch(showEditDialog({ path: item.path, authoringBase, site: siteId, readonly: true }));
+		} else if (isImage(item) || isVideo(item) || isPdfDocument(item.mimeType)) {
+			dispatch(
+				showPreviewDialog({
+					type: isImage(item) ? 'image' : isVideo(item) ? 'video' : 'pdf',
+					title: item.label,
+					url: item.path
+				})
+			);
+		} else {
+			const mode = getEditorMode(item);
+			dispatch(
+				showPreviewDialog({
+					type: 'editor',
+					title: item.label,
+					url: item.path,
+					path: item.path,
+					mode
+				})
+			);
+		}
+	};
 
-  const onPageChanged = (page: number) => {
-    const offset = page * state.limit;
-    dispatch(
-      pathNavigatorChangePage({
-        id,
-        offset
-      })
-    );
-  };
+	const onPageChanged = (page: number) => {
+		const offset = page * state.limit;
+		dispatch(
+			pathNavigatorChangePage({
+				id,
+				offset
+			})
+		);
+	};
 
-  const onRowsPerPageChange = (e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-    const limit = Number(e.target.value);
-    dispatch(
-      pathNavigatorChangeLimit({
-        id,
-        limit,
-        offset: 0
-      })
-    );
-  };
+	const onRowsPerPageChange = (e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+		const limit = Number(e.target.value);
+		dispatch(
+			pathNavigatorChangeLimit({
+				id,
+				limit,
+				offset: 0
+			})
+		);
+	};
 
-  const onSelectItem = (item: DetailedItem, checked: boolean) => {
-    dispatch(
-      checked
-        ? pathNavigatorItemChecked({ id, item })
-        : pathNavigatorItemUnchecked({
-            id,
-            item
-          })
-    );
-  };
+	const onSelectItem = (item: DetailedItem, checked: boolean) => {
+		dispatch(
+			checked
+				? pathNavigatorItemChecked({ id, item })
+				: pathNavigatorItemUnchecked({
+						id,
+						item
+					})
+		);
+	};
 
-  const onCurrentParentMenu = (element: Element) => {
-    const anchorRect = element.getBoundingClientRect();
-    const top = anchorRect.top + getOffsetTop(anchorRect, 'top');
-    const left = anchorRect.left + getOffsetLeft(anchorRect, 'left');
-    let path = state.currentPath;
-    if (path === '/site/website') {
-      path = withIndex(state.currentPath);
-    }
-    dispatch(
-      showItemMegaMenu({
-        path: path,
-        anchorReference: 'anchorPosition',
-        anchorPosition: { top, left },
-        loaderItems: getNumOfMenuOptionsForItem(lookupItemByPath(path, itemsByPath))
-      })
-    );
-  };
+	const onCurrentParentMenu = (element: Element) => {
+		const anchorRect = element.getBoundingClientRect();
+		const top = anchorRect.top + getOffsetTop(anchorRect, 'top');
+		const left = anchorRect.left + getOffsetLeft(anchorRect, 'left');
+		let path = state.currentPath;
+		if (path === '/site/website') {
+			path = withIndex(state.currentPath);
+		}
+		dispatch(
+			showItemMegaMenu({
+				path: path,
+				anchorReference: 'anchorPosition',
+				anchorPosition: { top, left },
+				loaderItems: getNumOfMenuOptionsForItem(lookupItemByPath(path, itemsByPath))
+			})
+		);
+	};
 
-  const onOpenItemMenu = (element: Element, item: DetailedItem) => {
-    const anchorRect = element.getBoundingClientRect();
-    const top = anchorRect.top + getOffsetTop(anchorRect, 'top');
-    const left = anchorRect.left + getOffsetLeft(anchorRect, 'left');
+	const onOpenItemMenu = (element: Element, item: DetailedItem) => {
+		const anchorRect = element.getBoundingClientRect();
+		const top = anchorRect.top + getOffsetTop(anchorRect, 'top');
+		const left = anchorRect.left + getOffsetLeft(anchorRect, 'left');
 
-    dispatch(
-      showItemMegaMenu({
-        path: item.path,
-        anchorReference: 'anchorPosition',
-        anchorPosition: { top, left },
-        loaderItems: getNumOfMenuOptionsForItem(item)
-      })
-    );
-  };
+		dispatch(
+			showItemMegaMenu({
+				path: item.path,
+				anchorReference: 'anchorPosition',
+				anchorPosition: { top, left },
+				loaderItems: getNumOfMenuOptionsForItem(item)
+			})
+		);
+	};
 
-  const onHeaderButtonClick = (anchorEl: Element, type: string) => {
-    // @see https://github.com/craftercms/craftercms/issues/5360
-    onSimpleMenuClick('refresh');
-    // setWidgetMenu({
-    //   sections: [[toContextMenuOptionsLookup(menuOptions, formatMessage).refresh]],
-    //   anchorEl
-    // });
-  };
+	const onHeaderButtonClick = (anchorEl: Element, type: string) => {
+		// @see https://github.com/craftercms/craftercms/issues/5360
+		onSimpleMenuClick('refresh');
+		// setWidgetMenu({
+		//   sections: [[toContextMenuOptionsLookup(menuOptions, formatMessage).refresh]],
+		//   anchorEl
+		// });
+	};
 
-  const onCloseWidgetMenu = () => setWidgetMenu({ ...widgetMenu, anchorEl: null });
+	const onCloseWidgetMenu = () => setWidgetMenu({ ...widgetMenu, anchorEl: null });
 
-  const onItemClicked = onItemClickedProp
-    ? onItemClickedProp
-    : createItemClickedHandler((item: DetailedItem, e) => {
-        if (isNavigable(item)) {
-          const url = getSystemLink({
-            site: siteId,
-            systemLinkId: 'preview',
-            authoringBase,
-            page: item.previewUrl
-          });
-          if (e.ctrlKey || e.metaKey) {
-            window.open(url);
-          } else {
-            window.location.href = url;
-          }
-        } else if (isFolder(item)) {
-          onPathSelected(item);
-        } else if (isPreviewable(item)) {
-          onPreview?.(item);
-        }
-      });
+	const onItemClicked = onItemClickedProp
+		? onItemClickedProp
+		: createItemClickedHandler((item: DetailedItem, e) => {
+				if (isNavigable(item)) {
+					const url = getSystemLink({
+						site: siteId,
+						systemLinkId: 'preview',
+						authoringBase,
+						page: item.previewUrl
+					});
+					if (e.ctrlKey || e.metaKey) {
+						window.open(url);
+					} else {
+						window.location.href = url;
+					}
+				} else if (isFolder(item)) {
+					onPathSelected(item);
+				} else if (isPreviewable(item)) {
+					onPreview?.(item);
+				}
+			});
 
-  const onBreadcrumbSelected = (item: DetailedItem) => {
-    if (withoutIndex(item.path) !== withoutIndex(state.currentPath)) {
-      dispatch(pathNavigatorConditionallySetPath({ id, path: item.path, keyword }));
-    }
-  };
+	const onBreadcrumbSelected = (item: DetailedItem) => {
+		if (withoutIndex(item.path) !== withoutIndex(state.currentPath)) {
+			dispatch(pathNavigatorConditionallySetPath({ id, path: item.path, keyword }));
+		}
+	};
 
-  const onSimpleMenuClick = (option: string) => {
-    onCloseWidgetMenu();
-    if (option === 'refresh') {
-      dispatch(
-        pathNavigatorRefresh({
-          id
-        })
-      );
-    }
-  };
+	const onSimpleMenuClick = (option: string) => {
+		onCloseWidgetMenu();
+		if (option === 'refresh') {
+			dispatch(
+				pathNavigatorRefresh({
+					id
+				})
+			);
+		}
+	};
 
-  const onChangeCollapsed = (collapsed: boolean) => {
-    dispatch(pathNavigatorSetCollapsed({ id, collapsed }));
-  };
+	const onChangeCollapsed = (collapsed: boolean) => {
+		dispatch(pathNavigatorSetCollapsed({ id, collapsed }));
+	};
 
-  const onSearch = (keyword: string) => {
-    setKeyword(keyword);
-    onSearch$.next(keyword);
-  };
+	const onSearch = (keyword: string) => {
+		setKeyword(keyword);
+		onSearch$.next(keyword);
+	};
 
-  return (
-    <>
-      <PathNavigatorUI
-        state={state}
-        classes={props.classes}
-        sxs={sxs}
-        itemsByPath={itemsByPath}
-        icon={expandedIcon && collapsedIcon ? (state.collapsed ? collapsedIcon : expandedIcon) : icon}
-        container={container}
-        title={label}
-        onChangeCollapsed={onChangeCollapsed}
-        onHeaderButtonClick={state.collapsed ? void 0 : onHeaderButtonClick}
-        onCurrentParentMenu={onCurrentParentMenu}
-        siteLocales={siteLocales}
-        keyword={keyword}
-        onSearch={onSearch}
-        onBreadcrumbSelected={onBreadcrumbSelected}
-        onSelectItem={onSelectItem}
-        onPathSelected={onPathSelected}
-        onPreview={onPreview}
-        onOpenItemMenu={onOpenItemMenu}
-        onItemClicked={onItemClicked}
-        onPageChanged={onPageChanged}
-        onRowsPerPageChange={onRowsPerPageChange}
-        computeActiveItems={computeActiveItems}
-      />
-      <ContextMenu
-        anchorEl={widgetMenu.anchorEl}
-        options={widgetMenu.sections}
-        emptyState={widgetMenu.emptyState}
-        open={Boolean(widgetMenu.anchorEl)}
-        onClose={onCloseWidgetMenu}
-        onMenuItemClicked={onSimpleMenuClick}
-      />
-    </>
-  );
+	return (
+		<>
+			<PathNavigatorUI
+				state={state}
+				classes={props.classes}
+				sxs={sxs}
+				itemsByPath={itemsByPath}
+				icon={expandedIcon && collapsedIcon ? (state.collapsed ? collapsedIcon : expandedIcon) : icon}
+				container={container}
+				title={label}
+				onChangeCollapsed={onChangeCollapsed}
+				onHeaderButtonClick={state.collapsed ? void 0 : onHeaderButtonClick}
+				onCurrentParentMenu={onCurrentParentMenu}
+				siteLocales={siteLocales}
+				keyword={keyword}
+				onSearch={onSearch}
+				onBreadcrumbSelected={onBreadcrumbSelected}
+				onSelectItem={onSelectItem}
+				onPathSelected={onPathSelected}
+				onPreview={onPreview}
+				onOpenItemMenu={onOpenItemMenu}
+				onItemClicked={onItemClicked}
+				onPageChanged={onPageChanged}
+				onRowsPerPageChange={onRowsPerPageChange}
+				computeActiveItems={computeActiveItems}
+			/>
+			<ContextMenu
+				anchorEl={widgetMenu.anchorEl}
+				options={widgetMenu.sections}
+				emptyState={widgetMenu.emptyState}
+				open={Boolean(widgetMenu.anchorEl)}
+				onClose={onCloseWidgetMenu}
+				onMenuItemClicked={onSimpleMenuClick}
+			/>
+		</>
+	);
 }
 
 export default PathNavigator;

@@ -17,16 +17,16 @@
 import { defineMessages } from 'react-intl';
 
 export const translations = defineMessages({
-  title: {
-    id: 'legacyFormDialog.title',
-    defaultMessage: 'Content Form'
-  },
-  loadingForm: {
-    id: 'legacyFormDialog.loadingForm',
-    defaultMessage: 'Loading...'
-  },
-  error: {
-    id: 'legacyFormDialog.errorLoadingForm',
-    defaultMessage: 'An error occurred trying to load the form'
-  }
+	title: {
+		id: 'legacyFormDialog.title',
+		defaultMessage: 'Content Form'
+	},
+	loadingForm: {
+		id: 'legacyFormDialog.loadingForm',
+		defaultMessage: 'Loading...'
+	},
+	error: {
+		id: 'legacyFormDialog.errorLoadingForm',
+		defaultMessage: 'An error occurred trying to load the form'
+	}
 });

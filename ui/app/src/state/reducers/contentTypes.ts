@@ -18,53 +18,53 @@ import GlobalState from '../../models/GlobalState';
 import { createEntityState, createLookupTable } from '../../utils/object';
 import { createReducer } from '@reduxjs/toolkit';
 import {
-  associateTemplateComplete,
-  dissociateTemplateComplete,
-  fetchContentTypes,
-  fetchContentTypesComplete,
-  fetchContentTypesFailed
+	associateTemplateComplete,
+	dissociateTemplateComplete,
+	fetchContentTypes,
+	fetchContentTypesComplete,
+	fetchContentTypesFailed
 } from '../actions/preview';
 import ContentType from '../../models/ContentType';
 import { changeSiteComplete } from '../actions/sites';
 
 const reducer = createReducer<GlobalState['contentTypes']>(createEntityState(), (builder) => {
-  builder
-    .addCase(changeSiteComplete, () => createEntityState())
-    .addCase(fetchContentTypes, (state) => ({
-      ...state,
-      isFetching: true
-    }))
-    .addCase(fetchContentTypesComplete, (state, { payload: contentTypes }) => ({
-      ...state,
-      byId: createLookupTable<ContentType>(contentTypes),
-      isFetching: false,
-      error: null
-    }))
-    .addCase(fetchContentTypesFailed, (state, { payload }) => ({
-      ...state,
-      error: payload.response,
-      isFetching: false
-    }))
-    .addCase(associateTemplateComplete, (state, { payload }) => ({
-      ...state,
-      byId: {
-        ...state.byId,
-        [payload.contentTypeId]: {
-          ...state.byId[payload.contentTypeId],
-          displayTemplate: payload.displayTemplate
-        }
-      }
-    }))
-    .addCase(dissociateTemplateComplete, (state, { payload }) => ({
-      ...state,
-      byId: {
-        ...state.byId,
-        [payload.contentTypeId]: {
-          ...state.byId[payload.contentTypeId],
-          displayTemplate: ''
-        }
-      }
-    }));
+	builder
+		.addCase(changeSiteComplete, () => createEntityState())
+		.addCase(fetchContentTypes, (state) => ({
+			...state,
+			isFetching: true
+		}))
+		.addCase(fetchContentTypesComplete, (state, { payload: contentTypes }) => ({
+			...state,
+			byId: createLookupTable<ContentType>(contentTypes),
+			isFetching: false,
+			error: null
+		}))
+		.addCase(fetchContentTypesFailed, (state, { payload }) => ({
+			...state,
+			error: payload.response,
+			isFetching: false
+		}))
+		.addCase(associateTemplateComplete, (state, { payload }) => ({
+			...state,
+			byId: {
+				...state.byId,
+				[payload.contentTypeId]: {
+					...state.byId[payload.contentTypeId],
+					displayTemplate: payload.displayTemplate
+				}
+			}
+		}))
+		.addCase(dissociateTemplateComplete, (state, { payload }) => ({
+			...state,
+			byId: {
+				...state.byId,
+				[payload.contentTypeId]: {
+					...state.byId[payload.contentTypeId],
+					displayTemplate: ''
+				}
+			}
+		}));
 });
 
 export default reducer;

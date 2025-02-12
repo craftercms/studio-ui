@@ -18,9 +18,9 @@ import { createHashRouter, createRoutesFromElements, Route, RouterProvider, useP
 import URLDrivenSearch from '../components/Search/URLDrivenSearch';
 
 export default function SearchApp(topProps: any) {
-  const params = useParams();
-  const router = createHashRouter(
-    createRoutesFromElements(<Route path="/" element={<URLDrivenSearch {...topProps} {...params} />} />)
-  );
-  return <RouterProvider router={router} />;
+	const params = useParams();
+	const router = createHashRouter(
+		createRoutesFromElements(<Route path="/" element={<URLDrivenSearch {...topProps} {...params} />} />)
+	);
+	return <RouterProvider router={router} />;
 }

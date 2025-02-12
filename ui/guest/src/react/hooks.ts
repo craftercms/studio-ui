@@ -29,182 +29,182 @@ import { MutableRef } from '@craftercms/studio-ui/models';
 // region Typings
 
 interface ICEHandlers {
-  onMouseOver: EventHandler<SyntheticEvent<HTMLElement, MouseEvent>>;
-  onMouseLeave: EventHandler<SyntheticEvent<HTMLElement, MouseEvent>>;
-  onDragStart: EventHandler<SyntheticEvent<HTMLElement, MouseEvent>>;
-  onDragOver: EventHandler<SyntheticEvent<HTMLElement, MouseEvent>>;
-  onDragLeave: EventHandler<SyntheticEvent<HTMLElement, MouseEvent>>;
-  onDrop: EventHandler<SyntheticEvent<HTMLElement, MouseEvent>>;
-  onDragEnd: EventHandler<SyntheticEvent<HTMLElement, MouseEvent>>;
-  onClick: EventHandler<SyntheticEvent<HTMLElement, MouseEvent>>;
-  onDoubleClick: EventHandler<SyntheticEvent<HTMLElement, MouseEvent>>;
+	onMouseOver: EventHandler<SyntheticEvent<HTMLElement, MouseEvent>>;
+	onMouseLeave: EventHandler<SyntheticEvent<HTMLElement, MouseEvent>>;
+	onDragStart: EventHandler<SyntheticEvent<HTMLElement, MouseEvent>>;
+	onDragOver: EventHandler<SyntheticEvent<HTMLElement, MouseEvent>>;
+	onDragLeave: EventHandler<SyntheticEvent<HTMLElement, MouseEvent>>;
+	onDrop: EventHandler<SyntheticEvent<HTMLElement, MouseEvent>>;
+	onDragEnd: EventHandler<SyntheticEvent<HTMLElement, MouseEvent>>;
+	onClick: EventHandler<SyntheticEvent<HTMLElement, MouseEvent>>;
+	onDoubleClick: EventHandler<SyntheticEvent<HTMLElement, MouseEvent>>;
 }
 
 interface UseICEProps extends Omit<ICEProps, 'modelId'>, Partial<ICEHandlers> {
-  ref?: MutableRef<any>;
-  model: ContentInstance;
-  noRef?: boolean;
+	ref?: MutableRef<any>;
+	model: ContentInstance;
+	noRef?: boolean;
 }
 
 interface ICEMaterials {
-  model: ContentInstance;
-  props: Partial<ICEHandlers> & {
-    ref?: MutableRef<any>;
-  };
+	model: ContentInstance;
+	props: Partial<ICEHandlers> & {
+		ref?: MutableRef<any>;
+	};
 }
 
 interface UseModelProps extends Omit<ICEProps, 'modelId'> {
-  model: ContentInstance;
+	model: ContentInstance;
 }
 
 // endregion
 
 const handlerMap = {
-  mouseover: 'onMouseOver',
-  mouseleave: 'onMouseLeave',
-  dragstart: 'onDragStart',
-  dragover: 'onDragOver',
-  dragleave: 'onDragLeave',
-  drop: 'onDrop',
-  dragend: 'onDragEnd',
-  click: 'onClick',
-  dblclick: 'onDoubleClick'
+	mouseover: 'onMouseOver',
+	mouseleave: 'onMouseLeave',
+	dragstart: 'onDragStart',
+	dragover: 'onDragOver',
+	dragleave: 'onDragLeave',
+	drop: 'onDrop',
+	dragend: 'onDragEnd',
+	click: 'onClick',
+	dblclick: 'onDoubleClick'
 };
 
 function bypassICE(props: UseICEProps): ICEMaterials {
-  return {
-    model: props.model,
-    props: pluckProps(
-      props,
-      'ref',
-      'onMouseOver',
-      'onMouseLeave',
-      'onDragStart',
-      'onDragOver',
-      'onDragLeave',
-      'onDrop',
-      'onDragEnd',
-      'onClick',
-      'onDoubleClick'
-    )
-  };
+	return {
+		model: props.model,
+		props: pluckProps(
+			props,
+			'ref',
+			'onMouseOver',
+			'onMouseLeave',
+			'onDragStart',
+			'onDragOver',
+			'onDragLeave',
+			'onDrop',
+			'onDragEnd',
+			'onClick',
+			'onDoubleClick'
+		)
+	};
 }
 
 export function useICE(props: UseICEProps): ICEMaterials {
-  const context = useGuestContext();
-  const inAuthoring = useIsAuthoring();
-  const { onEvent, draggable } = context ?? {};
-  const elementRef = useRef<HTMLElement>(undefined);
-  const elementRegistryId = useRef<number>(undefined);
-  const model = useHotReloadModel(props);
-  const modelId = props.model?.craftercms.id;
+	const context = useGuestContext();
+	const inAuthoring = useIsAuthoring();
+	const { onEvent, draggable } = context ?? {};
+	const elementRef = useRef<HTMLElement>(undefined);
+	const elementRegistryId = useRef<number>(undefined);
+	const model = useHotReloadModel(props);
+	const modelId = props.model?.craftercms.id;
 
-  // Register
-  useEffect(() => {
-    if (inAuthoring) {
-      elementRegistryId.current = register({
-        element: elementRef.current,
-        modelId: modelId,
-        fieldId: props.fieldId,
-        index: props.index
-      });
-      return () => {
-        // Deregister
-        deregister(elementRegistryId.current);
-      };
-    }
-  }, [props.index, props.fieldId, modelId, inAuthoring]);
+	// Register
+	useEffect(() => {
+		if (inAuthoring) {
+			elementRegistryId.current = register({
+				element: elementRef.current,
+				modelId: modelId,
+				fieldId: props.fieldId,
+				index: props.index
+			});
+			return () => {
+				// Deregister
+				deregister(elementRegistryId.current);
+			};
+		}
+	}, [props.index, props.fieldId, modelId, inAuthoring]);
 
-  const ref: ICEMaterials['props']['ref'] = (node) => {
-    // During React update cycles, it may momentarily set the ref to
-    // null and then back to the previous element. We're only paying attention
-    // to the times that there is an element. Final de-registration occurs
-    // at unmount time.
-    if (node) {
-      elementRef.current = node;
-    }
-    if (props.ref) {
-      if (typeof props.ref === 'function') {
-        props.ref(node);
-      } else {
-        props.ref.current = node;
-      }
-    }
-  };
+	const ref: ICEMaterials['props']['ref'] = (node) => {
+		// During React update cycles, it may momentarily set the ref to
+		// null and then back to the previous element. We're only paying attention
+		// to the times that there is an element. Final de-registration occurs
+		// at unmount time.
+		if (node) {
+			elementRef.current = node;
+		}
+		if (props.ref) {
+			if (typeof props.ref === 'function') {
+				props.ref(node);
+			} else {
+				props.ref.current = node;
+			}
+		}
+	};
 
-  if (inAuthoring && model) {
-    const isDraggable = nnou(draggable[elementRegistryId.current]) && draggable[elementRegistryId.current] !== false;
-    const handler = (event: SyntheticEvent) => {
-      // Registering here would be elegant (lazy registration) however
-      // it would take a toll on the ContentTree panel
-      if (onEvent(event, elementRegistryId.current)) {
-        event.persist();
-      } else {
-        props[handlerMap[event.type]]?.();
-      }
-    };
-    return {
-      model,
-      props:
-        props.noRef !== true
-          ? {
-              ref,
-              ...(isDraggable ? { draggable: true } : {}),
-              onMouseOver: handler,
-              onMouseLeave: handler,
-              onDragStart: handler,
-              onDragOver: handler,
-              onDragLeave: handler,
-              onDrop: handler,
-              onDragEnd: handler,
-              onClick: handler,
-              onDoubleClick: handler
-            }
-          : null
-    };
-  } else {
-    return bypassICE({ ...props, ref });
-  }
+	if (inAuthoring && model) {
+		const isDraggable = nnou(draggable[elementRegistryId.current]) && draggable[elementRegistryId.current] !== false;
+		const handler = (event: SyntheticEvent) => {
+			// Registering here would be elegant (lazy registration) however
+			// it would take a toll on the ContentTree panel
+			if (onEvent(event, elementRegistryId.current)) {
+				event.persist();
+			} else {
+				props[handlerMap[event.type]]?.();
+			}
+		};
+		return {
+			model,
+			props:
+				props.noRef !== true
+					? {
+							ref,
+							...(isDraggable ? { draggable: true } : {}),
+							onMouseOver: handler,
+							onMouseLeave: handler,
+							onDragStart: handler,
+							onDragOver: handler,
+							onDragLeave: handler,
+							onDrop: handler,
+							onDragEnd: handler,
+							onClick: handler,
+							onDoubleClick: handler
+						}
+					: null
+		};
+	} else {
+		return bypassICE({ ...props, ref });
+	}
 }
 
 export function useHotReloadModel(props: UseModelProps): any {
-  const context = useGuestContext();
-  const inAuthoring = Boolean(context) && Boolean(context.hasHost);
-  const [model, setModel] = useState(props.model);
-  const id = props.model?.craftercms.id;
-  const path = props.model?.craftercms.path;
-  useEffect(() => {
-    if (inAuthoring) {
-      // Insure the model gets loaded.
-      path && byPathFetchIfNotLoaded(path).subscribe();
-      const s = model$(id)
-        .pipe(
-          distinctUntilChanged((prev, next) => {
-            if (nou(props.fieldId)) {
-              return prev === next;
-            } /* if (nnou(props.index) && nnou(props.fieldId)) {
+	const context = useGuestContext();
+	const inAuthoring = Boolean(context) && Boolean(context.hasHost);
+	const [model, setModel] = useState(props.model);
+	const id = props.model?.craftercms.id;
+	const path = props.model?.craftercms.path;
+	useEffect(() => {
+		if (inAuthoring) {
+			// Insure the model gets loaded.
+			path && byPathFetchIfNotLoaded(path).subscribe();
+			const s = model$(id)
+				.pipe(
+					distinctUntilChanged((prev, next) => {
+						if (nou(props.fieldId)) {
+							return prev === next;
+						} /* if (nnou(props.index) && nnou(props.fieldId)) {
               return prev[props.fieldId] === next[props.fieldId];
             } else */ else {
-              // Accounting for multiple (comma separated) fields
-              return !props.fieldId
-                .replace(/\s/g, '')
-                .split(',')
-                .some((field) => prev[field] !== next[field]);
-            }
-          }),
-          withLatestFrom(models$),
-          map(([model, models]) => denormalizeModel(model, models))
-        )
-        .subscribe(setModel);
-      return () => s.unsubscribe();
-    }
-  }, [inAuthoring, props.fieldId, id, path]);
-  return model;
+							// Accounting for multiple (comma separated) fields
+							return !props.fieldId
+								.replace(/\s/g, '')
+								.split(',')
+								.some((field) => prev[field] !== next[field]);
+						}
+					}),
+					withLatestFrom(models$),
+					map(([model, models]) => denormalizeModel(model, models))
+				)
+				.subscribe(setModel);
+			return () => s.unsubscribe();
+		}
+	}, [inAuthoring, props.fieldId, id, path]);
+	return model;
 }
 
 export function useFieldValue(props: UseModelProps): any {
-  const { model, fieldId } = props;
-  return Model.value(model, fieldId);
+	const { model, fieldId } = props;
+	return Model.value(model, fieldId);
 }
 
 // TODO: Future authoring-less version of the hooks for live?

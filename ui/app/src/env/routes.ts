@@ -15,31 +15,31 @@
  */
 
 export enum GlobalRoutes {
-  Projects = '/projects',
-  Users = '/users',
-  Groups = '/groups',
-  Audit = '/audit',
-  LogLevel = '/logging',
-  LogConsole = '/log',
-  GlobalConfig = '/global-config',
-  EncryptTool = '/encryption-tool',
-  TokenManagement = '/token-management',
-  About = '/about-us',
-  Settings = '/settings'
+	Projects = '/projects',
+	Users = '/users',
+	Groups = '/groups',
+	Audit = '/audit',
+	LogLevel = '/logging',
+	LogConsole = '/log',
+	GlobalConfig = '/global-config',
+	EncryptTool = '/encryption-tool',
+	TokenManagement = '/token-management',
+	About = '/about-us',
+	Settings = '/settings'
 }
 
 export enum ProjectToolsRoutes {
-  ContentTypes = '/content-types',
-  EncryptTool = '/encrypt-tool',
-  Configuration = '/configuration',
-  Audit = '/audit',
-  WorkflowStates = '/item-states',
-  LogConsole = '/log',
-  Publishing = '/publishing',
-  Git = '/git',
-  GraphQL = '/graphiql',
-  PluginManagement = '/plugins',
-  ProjectTools = '/site-config',
-  Search = '/search',
-  SiteDashboard = '/site-dashboard'
+	ContentTypes = '/content-types',
+	EncryptTool = '/encrypt-tool',
+	Configuration = '/configuration',
+	Audit = '/audit',
+	WorkflowStates = '/item-states',
+	LogConsole = '/log',
+	Publishing = '/publishing',
+	Git = '/git',
+	GraphQL = '/graphiql',
+	PluginManagement = '/plugins',
+	ProjectTools = '/site-config',
+	Search = '/search',
+	SiteDashboard = '/site-dashboard'
 }

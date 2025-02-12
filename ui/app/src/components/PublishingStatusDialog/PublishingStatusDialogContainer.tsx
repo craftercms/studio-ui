@@ -26,49 +26,49 @@ import useActiveSiteId from '../../hooks/useActiveSiteId';
 const permittedRoles = ['developer', 'admin'];
 
 export function PublishingStatusDialogContainer(props: PublishingStatusDialogContainerProps) {
-  const { enabled, published, currentTask, onClose, onRefresh, onStartStop, isFetching } = props;
-  const { formatMessage } = useIntl();
-  const user = useActiveUser();
-  const siteId = useActiveSiteId();
-  const userRoles = user?.rolesBySite[siteId];
-  const allowedUser = (userRoles && permittedRoles?.some((role) => userRoles.includes(role))) ?? false;
+	const { enabled, published, currentTask, onClose, onRefresh, onStartStop, isFetching } = props;
+	const { formatMessage } = useIntl();
+	const user = useActiveUser();
+	const siteId = useActiveSiteId();
+	const userRoles = user?.rolesBySite[siteId];
+	const allowedUser = (userRoles && permittedRoles?.some((role) => userRoles.includes(role))) ?? false;
 
-  return (
-    <>
-      <DialogHeader
-        title={formatMessage(publishingStatusMessages.publishingStatus)}
-        onCloseButtonClick={onClose}
-        rightActions={[
-          onStartStop &&
-            allowedUser && {
-              icon: enabled
-                ? { id: '@mui/icons-material/PauseCircleOutlineOutlined' }
-                : { id: '@mui/icons-material/PlayCircleOutlineOutlined' },
-              onClick: onStartStop,
-              tooltip: formatMessage(enabled ? publishingStatusMessages.stop : publishingStatusMessages.start)
-            },
-          onRefresh && {
-            icon: { id: '@mui/icons-material/RefreshRounded' },
-            onClick: onRefresh,
-            tooltip: formatMessage(publishingStatusMessages.refresh)
-          }
-        ].filter(Boolean)}
-      />
-      <DialogBody
-        sx={{
-          minHeight: 145,
-          placeContent: 'center'
-        }}
-      >
-        <PublishingStatusDisplay
-          enabled={enabled}
-          isFetching={isFetching}
-          published={published}
-          currentTask={currentTask}
-        />
-      </DialogBody>
-    </>
-  );
+	return (
+		<>
+			<DialogHeader
+				title={formatMessage(publishingStatusMessages.publishingStatus)}
+				onCloseButtonClick={onClose}
+				rightActions={[
+					onStartStop &&
+						allowedUser && {
+							icon: enabled
+								? { id: '@mui/icons-material/PauseCircleOutlineOutlined' }
+								: { id: '@mui/icons-material/PlayCircleOutlineOutlined' },
+							onClick: onStartStop,
+							tooltip: formatMessage(enabled ? publishingStatusMessages.stop : publishingStatusMessages.start)
+						},
+					onRefresh && {
+						icon: { id: '@mui/icons-material/RefreshRounded' },
+						onClick: onRefresh,
+						tooltip: formatMessage(publishingStatusMessages.refresh)
+					}
+				].filter(Boolean)}
+			/>
+			<DialogBody
+				sx={{
+					minHeight: 145,
+					placeContent: 'center'
+				}}
+			>
+				<PublishingStatusDisplay
+					enabled={enabled}
+					isFetching={isFetching}
+					published={published}
+					currentTask={currentTask}
+				/>
+			</DialogBody>
+		</>
+	);
 }
 
 export default PublishingStatusDialogContainer;

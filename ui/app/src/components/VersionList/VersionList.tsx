@@ -31,117 +31,117 @@ import { createPresenceTable } from '../../utils/array';
 import ListItem from '@mui/material/ListItem';
 
 interface FancyFormattedDateProps {
-  date: string;
-  locale?: GlobalState['uiConfig']['locale'];
+	date: string;
+	locale?: GlobalState['uiConfig']['locale'];
 }
 
 export function AsDayMonthDateTime(props: FancyFormattedDateProps) {
-  const { date, locale } = props;
-  const hour12 = locale?.dateTimeFormatOptions?.hour12 ?? true;
+	const { date, locale } = props;
+	const hour12 = locale?.dateTimeFormatOptions?.hour12 ?? true;
 
-  return (
-    <FormattedDateParts value={date} month="long" day="numeric" weekday="long" year="numeric">
-      {(parts) => (
-        <>
-          {`${parts[0].value} ${parts[2].value} `}
-          <FormattedMessage
-            id="dateTime.ordinals"
-            defaultMessage="{day, selectordinal, one {#st} two {#nd} few {#rd} other {#th}}"
-            values={{ day: parts[4].value }}
-          />{' '}
-          {parts[6].value} @ <FormattedTime value={date} hour12={hour12} />
-        </>
-      )}
-    </FormattedDateParts>
-  );
+	return (
+		<FormattedDateParts value={date} month="long" day="numeric" weekday="long" year="numeric">
+			{(parts) => (
+				<>
+					{`${parts[0].value} ${parts[2].value} `}
+					<FormattedMessage
+						id="dateTime.ordinals"
+						defaultMessage="{day, selectordinal, one {#st} two {#nd} few {#rd} other {#th}}"
+						values={{ day: parts[4].value }}
+					/>{' '}
+					{parts[6].value} @ <FormattedTime value={date} hour12={hour12} />
+				</>
+			)}
+		</FormattedDateParts>
+	);
 }
 
 interface VersionListProps {
-  versions: ItemHistoryEntry[];
-  selected?: string[];
-  current?: string;
-  isSelectMode?: boolean;
-  onItemClick(version: ItemHistoryEntry): void;
-  onOpenMenu?(anchorEl: Element, version: ItemHistoryEntry, isCurrent: boolean, lastOne: boolean): void;
+	versions: ItemHistoryEntry[];
+	selected?: string[];
+	current?: string;
+	isSelectMode?: boolean;
+	onItemClick(version: ItemHistoryEntry): void;
+	onOpenMenu?(anchorEl: Element, version: ItemHistoryEntry, isCurrent: boolean, lastOne: boolean): void;
 }
 
 export function VersionList(props: VersionListProps) {
-  const { versions, onOpenMenu, onItemClick, current, selected, isSelectMode = false } = props;
-  const locale = useSelection<GlobalState['uiConfig']['locale']>((state) => state.uiConfig.locale);
-  const selectedLookup = createPresenceTable(selected);
-  return (
-    <List
-      component="div"
-      sx={{
-        backgroundColor: (theme) => theme.palette.background.paper,
-        padding: 0,
-        borderRadius: '5px 5px 0 0'
-      }}
-      disablePadding
-    >
-      {versions.map((version: ItemHistoryEntry, i: number) => {
-        const isSelected = Boolean(selectedLookup[version.versionNumber]);
-        return (
-          <ListItemButton
-            key={version.versionNumber}
-            component={ListItem}
-            divider={versions.length - 1 !== i}
-            onClick={() => onItemClick(version)}
-            sx={{ padding: '15px 48px 15px 20px' }}
-            className={isSelected && 'selected'}
-            secondaryAction={
-              onOpenMenu || isSelectMode ? (
-                <>
-                  {isSelectMode && <Checkbox checked={isSelected} />}
-                  {!isSelectMode && onOpenMenu && (
-                    <IconButton
-                      edge="end"
-                      size="large"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onOpenMenu(
-                          e.currentTarget,
-                          version,
-                          current === version.versionNumber,
-                          versions.length === i + 1
-                        );
-                      }}
-                    >
-                      <MoreVertIcon />
-                    </IconButton>
-                  )}
-                </>
-              ) : null
-            }
-          >
-            <ListItemText
-              sx={{ margin: 0 }}
-              primaryTypographyProps={{ sx: { display: 'flex', alignItems: 'center' } }}
-              secondaryTypographyProps={{ sx: { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' } }}
-              primary={
-                <>
-                  <AsDayMonthDateTime date={version.modifiedDate} locale={locale} />
-                  {current === version.versionNumber && (
-                    <Chip
-                      label={<FormattedMessage id="historyDialog.current" defaultMessage="current" />}
-                      sx={{
-                        padding: '1px',
-                        backgroundColor: palette.green.main,
-                        height: 'auto',
-                        color: palette.white,
-                        marginLeft: '10px'
-                      }}
-                    />
-                  )}
-                </>
-              }
-              secondary={version.comment}
-            />
-          </ListItemButton>
-        );
-      })}
-    </List>
-  );
+	const { versions, onOpenMenu, onItemClick, current, selected, isSelectMode = false } = props;
+	const locale = useSelection<GlobalState['uiConfig']['locale']>((state) => state.uiConfig.locale);
+	const selectedLookup = createPresenceTable(selected);
+	return (
+		<List
+			component="div"
+			sx={{
+				backgroundColor: (theme) => theme.palette.background.paper,
+				padding: 0,
+				borderRadius: '5px 5px 0 0'
+			}}
+			disablePadding
+		>
+			{versions.map((version: ItemHistoryEntry, i: number) => {
+				const isSelected = Boolean(selectedLookup[version.versionNumber]);
+				return (
+					<ListItemButton
+						key={version.versionNumber}
+						component={ListItem}
+						divider={versions.length - 1 !== i}
+						onClick={() => onItemClick(version)}
+						sx={{ padding: '15px 48px 15px 20px' }}
+						className={isSelected && 'selected'}
+						secondaryAction={
+							onOpenMenu || isSelectMode ? (
+								<>
+									{isSelectMode && <Checkbox checked={isSelected} />}
+									{!isSelectMode && onOpenMenu && (
+										<IconButton
+											edge="end"
+											size="large"
+											onClick={(e) => {
+												e.stopPropagation();
+												onOpenMenu(
+													e.currentTarget,
+													version,
+													current === version.versionNumber,
+													versions.length === i + 1
+												);
+											}}
+										>
+											<MoreVertIcon />
+										</IconButton>
+									)}
+								</>
+							) : null
+						}
+					>
+						<ListItemText
+							sx={{ margin: 0 }}
+							primaryTypographyProps={{ sx: { display: 'flex', alignItems: 'center' } }}
+							secondaryTypographyProps={{ sx: { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' } }}
+							primary={
+								<>
+									<AsDayMonthDateTime date={version.modifiedDate} locale={locale} />
+									{current === version.versionNumber && (
+										<Chip
+											label={<FormattedMessage id="historyDialog.current" defaultMessage="current" />}
+											sx={{
+												padding: '1px',
+												backgroundColor: palette.green.main,
+												height: 'auto',
+												color: palette.white,
+												marginLeft: '10px'
+											}}
+										/>
+									)}
+								</>
+							}
+							secondary={version.comment}
+						/>
+					</ListItemButton>
+				);
+			})}
+		</List>
+	);
 }
 
 export default VersionList;

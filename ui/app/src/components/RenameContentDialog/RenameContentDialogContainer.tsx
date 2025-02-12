@@ -32,90 +32,90 @@ import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { applyContentNameRules } from '../../utils/content';
 
 export interface RenameContentDialogContainerProps
-  extends Pick<
-    RenameContentDialogProps,
-    'path' | 'value' | 'onRenamed' | 'onClose' | 'onSubmittingAndOrPendingChange'
-  > {
-  dependantItems: DetailedItem[];
-  fetchingDependantItems: boolean;
-  error: AjaxError;
+	extends Pick<
+		RenameContentDialogProps,
+		'path' | 'value' | 'onRenamed' | 'onClose' | 'onSubmittingAndOrPendingChange'
+	> {
+	dependantItems: DetailedItem[];
+	fetchingDependantItems: boolean;
+	error: AjaxError;
 }
 
 export function RenameContentDialogContainer(props: RenameContentDialogContainerProps) {
-  const {
-    path,
-    value,
-    onRenamed,
-    onClose,
-    dependantItems,
-    fetchingDependantItems,
-    error,
-    onSubmittingAndOrPendingChange
-  } = props;
-  const isPage = value.includes('/index.xml');
-  const { isSubmitting } = useEnhancedDialogContext();
-  const strippedValue = isPage ? value.replace('/index.xml', '') : value.replace('.xml', '');
-  const [name, setName] = useState(strippedValue);
-  const [itemExists, setItemExists] = useState(false);
-  const isValid = !isBlank(name) && !itemExists && name !== strippedValue;
-  const [confirmBrokenReferences, setConfirmBrokenReferences] = useState(false);
-  const renameDisabled =
-    isSubmitting || !isValid || fetchingDependantItems || (dependantItems?.length > 0 && !confirmBrokenReferences);
-  const siteId = useActiveSiteId();
+	const {
+		path,
+		value,
+		onRenamed,
+		onClose,
+		dependantItems,
+		fetchingDependantItems,
+		error,
+		onSubmittingAndOrPendingChange
+	} = props;
+	const isPage = value.includes('/index.xml');
+	const { isSubmitting } = useEnhancedDialogContext();
+	const strippedValue = isPage ? value.replace('/index.xml', '') : value.replace('.xml', '');
+	const [name, setName] = useState(strippedValue);
+	const [itemExists, setItemExists] = useState(false);
+	const isValid = !isBlank(name) && !itemExists && name !== strippedValue;
+	const [confirmBrokenReferences, setConfirmBrokenReferences] = useState(false);
+	const renameDisabled =
+		isSubmitting || !isValid || fetchingDependantItems || (dependantItems?.length > 0 && !confirmBrokenReferences);
+	const siteId = useActiveSiteId();
 
-  const onNameUpdate$ = useDebouncedInput((name: string) => {
-    checkPathExistence(siteId, `${ensureSingleSlash(`${path}/${name}`)}${isPage ? '/index.xml' : '.xml'}`).subscribe(
-      (exists) => {
-        setItemExists(name !== strippedValue && exists);
-      }
-    );
-  }, 400);
+	const onNameUpdate$ = useDebouncedInput((name: string) => {
+		checkPathExistence(siteId, `${ensureSingleSlash(`${path}/${name}`)}${isPage ? '/index.xml' : '.xml'}`).subscribe(
+			(exists) => {
+				setItemExists(name !== strippedValue && exists);
+			}
+		);
+	}, 400);
 
-  const onInputChanges = (newValue: string) => {
-    setName(newValue);
-    onNameUpdate$.next(newValue);
-    const newHasPendingChanges = newValue !== strippedValue;
-    onSubmittingAndOrPendingChange({ hasPendingChanges: newHasPendingChanges });
-  };
+	const onInputChanges = (newValue: string) => {
+		setName(newValue);
+		onNameUpdate$.next(newValue);
+		const newHasPendingChanges = newValue !== strippedValue;
+		onSubmittingAndOrPendingChange({ hasPendingChanges: newHasPendingChanges });
+	};
 
-  const onRename = () => {
-    onRenamed(`${name}${isPage ? '/index.xml' : '.xml'}`);
-  };
+	const onRename = () => {
+		onRenamed(`${name}${isPage ? '/index.xml' : '.xml'}`);
+	};
 
-  return (
-    <>
-      <DialogBody>
-        <RenameItemView
-          name={name}
-          disabled={renameDisabled}
-          newNameExists={itemExists}
-          dependantItems={dependantItems}
-          isSubmitting={false}
-          confirmBrokenReferences={confirmBrokenReferences}
-          fetchingDependantItems={fetchingDependantItems}
-          error={error}
-          setConfirmBrokenReferences={setConfirmBrokenReferences}
-          onRename={onRename}
-          onInputChanges={(event) => onInputChanges(applyContentNameRules(event.target.value))}
-          helperText={
-            itemExists ? (
-              <FormattedMessage defaultMessage="An item with that name already exists." />
-            ) : (
-              <FormattedMessage defaultMessage="Consisting of lowercase letters without accents, numbers, dash (-) and underscore (_)." />
-            )
-          }
-        />
-      </DialogBody>
-      <DialogFooter>
-        <SecondaryButton onClick={(e) => onClose(e, null)} disabled={isSubmitting}>
-          <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
-        </SecondaryButton>
-        <PrimaryButton onClick={onRename} disabled={renameDisabled} loading={isSubmitting}>
-          <FormattedMessage id="words.rename" defaultMessage="Rename" />
-        </PrimaryButton>
-      </DialogFooter>
-    </>
-  );
+	return (
+		<>
+			<DialogBody>
+				<RenameItemView
+					name={name}
+					disabled={renameDisabled}
+					newNameExists={itemExists}
+					dependantItems={dependantItems}
+					isSubmitting={false}
+					confirmBrokenReferences={confirmBrokenReferences}
+					fetchingDependantItems={fetchingDependantItems}
+					error={error}
+					setConfirmBrokenReferences={setConfirmBrokenReferences}
+					onRename={onRename}
+					onInputChanges={(event) => onInputChanges(applyContentNameRules(event.target.value))}
+					helperText={
+						itemExists ? (
+							<FormattedMessage defaultMessage="An item with that name already exists." />
+						) : (
+							<FormattedMessage defaultMessage="Consisting of lowercase letters without accents, numbers, dash (-) and underscore (_)." />
+						)
+					}
+				/>
+			</DialogBody>
+			<DialogFooter>
+				<SecondaryButton onClick={(e) => onClose(e, null)} disabled={isSubmitting}>
+					<FormattedMessage id="words.cancel" defaultMessage="Cancel" />
+				</SecondaryButton>
+				<PrimaryButton onClick={onRename} disabled={renameDisabled} loading={isSubmitting}>
+					<FormattedMessage id="words.rename" defaultMessage="Rename" />
+				</PrimaryButton>
+			</DialogFooter>
+		</>
+	);
 }
 
 export default RenameContentDialogContainer;

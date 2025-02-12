@@ -15,90 +15,90 @@
  */
 
 CStudioForms.Datasources.AudioDesktopUpload =
-  CStudioForms.Datasources.AudioDesktopUpload ||
-  function (id, form, properties, constraints) {
-    this.id = id;
-    this.form = form;
-    this.properties = properties;
-    this.constraints = constraints;
-    this.formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
-    this.messages = CrafterCMSNext.i18n.messages.audioDSMessages;
+	CStudioForms.Datasources.AudioDesktopUpload ||
+	function (id, form, properties, constraints) {
+		this.id = id;
+		this.form = form;
+		this.properties = properties;
+		this.constraints = constraints;
+		this.formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
+		this.messages = CrafterCMSNext.i18n.messages.audioDSMessages;
 
-    return this;
-  };
+		return this;
+	};
 
 YAHOO.extend(CStudioForms.Datasources.AudioDesktopUpload, CStudioForms.CStudioFormDatasource, {
-  getLabel: function () {
-    return this.formatMessage(this.messages.uploadLabel);
-  },
+	getLabel: function () {
+		return this.formatMessage(this.messages.uploadLabel);
+	},
 
-  /**
-   * action called when user clicks insert audio
-   */
-  insertAudioAction: function (insertCb) {
-    const site = CStudioAuthoringContext.site;
-    let path = '/static-assets/audio';
-    let isUploadOverwrite = true;
+	/**
+	 * action called when user clicks insert audio
+	 */
+	insertAudioAction: function (insertCb) {
+		const site = CStudioAuthoringContext.site;
+		let path = '/static-assets/audio';
+		let isUploadOverwrite = true;
 
-    for (let i = 0; i < this.properties.length; i++) {
-      if (this.properties[i].name === 'repoPath') {
-        path = this.properties[i].value;
-        path = this.processPathsForMacros(path);
-      }
-    }
+		for (let i = 0; i < this.properties.length; i++) {
+			if (this.properties[i].name === 'repoPath') {
+				path = this.properties[i].value;
+				path = this.processPathsForMacros(path);
+			}
+		}
 
-    const _self = this;
-    const callback = {
-      success: function (audioData) {
-        audioData.previewUrl = this.context.createPreviewUrl(path + '/' + audioData.fileName);
-        audioData.relativeUrl = path + '/' + audioData.fileName;
-        insertCb.success(audioData);
-      },
-      failure: function () {
-        insertCb.failure(_self.formatMessage(_self.messages.uploadError));
-      },
-      context: this
-    };
+		const _self = this;
+		const callback = {
+			success: function (audioData) {
+				audioData.previewUrl = this.context.createPreviewUrl(path + '/' + audioData.fileName);
+				audioData.relativeUrl = path + '/' + audioData.fileName;
+				insertCb.success(audioData);
+			},
+			failure: function () {
+				insertCb.failure(_self.formatMessage(_self.messages.uploadError));
+			},
+			context: this
+		};
 
-    CStudioAuthoring.Operations.uploadAsset(site, path, isUploadOverwrite, callback, ['audio/*']);
-  },
+		CStudioAuthoring.Operations.uploadAsset(site, path, isUploadOverwrite, callback, ['audio/*']);
+	},
 
-  /**
-   * create preview URL
-   */
-  createPreviewUrl: function (audioPath) {
-    return `${CStudioAuthoringContext.previewAppBaseUri}${audioPath}`;
-  },
+	/**
+	 * create preview URL
+	 */
+	createPreviewUrl: function (audioPath) {
+		return `${CStudioAuthoringContext.previewAppBaseUri}${audioPath}`;
+	},
 
-  /**
-   * clean up preview URL so that URL is canonical
-   */
-  cleanPreviewUrl: function (previewUrl) {
-    let url = previewUrl;
-    if (previewUrl.indexOf(CStudioAuthoringContext.previewAppBaseUri) !== -1) {
-      url = previewUrl.substring(CStudioAuthoringContext.previewAppBaseUri.length);
-    }
-    return url;
-  },
+	/**
+	 * clean up preview URL so that URL is canonical
+	 */
+	cleanPreviewUrl: function (previewUrl) {
+		let url = previewUrl;
+		if (previewUrl.indexOf(CStudioAuthoringContext.previewAppBaseUri) !== -1) {
+			url = previewUrl.substring(CStudioAuthoringContext.previewAppBaseUri.length);
+		}
+		return url;
+	},
 
-  getInterface: function () {
-    return 'audio';
-  },
+	getInterface: function () {
+		return 'audio';
+	},
 
-  getName: function () {
-    return 'audio-desktop-upload';
-  },
+	getName: function () {
+		return 'audio-desktop-upload';
+	},
 
-  getSupportedProperties: function () {
-    return [{ label: CMgs.format(langBundle, 'repositoryPath'), name: 'repoPath', type: 'string' }];
-  },
+	getSupportedProperties: function () {
+		return [{ label: CMgs.format(langBundle, 'repositoryPath'), name: 'repoPath', type: 'string' }];
+	},
 
-  getSupportedConstraints: function () {
-    return [{ label: CMgs.format(langBundle, 'required'), name: 'required', type: 'boolean' }];
-  }
+	getSupportedConstraints: function () {
+		return [{ label: CMgs.format(langBundle, 'required'), name: 'required', type: 'boolean' }];
+	}
 });
 
 CStudioAuthoring.Module.moduleLoaded(
-  'cstudio-forms-controls-audio-desktop-upload',
-  CStudioForms.Datasources.AudioDesktopUpload
+	'cstudio-forms-controls-audio-desktop-upload',
+	CStudioForms.Datasources.AudioDesktopUpload
 );

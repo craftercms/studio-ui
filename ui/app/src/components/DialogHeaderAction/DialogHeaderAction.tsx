@@ -20,23 +20,23 @@ import Tooltip from '@mui/material/Tooltip';
 import SystemIcon, { SystemIconDescriptor } from '../SystemIcon';
 
 export interface DialogHeaderActionProps extends IconButtonProps {
-  icon: SystemIconDescriptor;
-  tooltip?: string;
+	icon: SystemIconDescriptor;
+	tooltip?: string;
 }
 
 export function DialogHeaderAction(props: DialogHeaderActionProps) {
-  const { icon, tooltip, disabled = false, ...rest } = props;
-  return tooltip ? (
-    <Tooltip title={disabled ? '' : tooltip}>
-      <IconButton {...rest} disabled={disabled} size="large">
-        <SystemIcon icon={icon} />
-      </IconButton>
-    </Tooltip>
-  ) : (
-    <IconButton {...rest} disabled={disabled} size="large">
-      <SystemIcon icon={icon} />
-    </IconButton>
-  );
+	const { icon, tooltip, disabled = false, ...rest } = props;
+	return tooltip ? (
+		<Tooltip title={disabled ? '' : tooltip}>
+			<IconButton {...rest} disabled={disabled} size="large">
+				<SystemIcon icon={icon} />
+			</IconButton>
+		</Tooltip>
+	) : (
+		<IconButton {...rest} disabled={disabled} size="large">
+			<SystemIcon icon={icon} />
+		</IconButton>
+	);
 }
 
 export default DialogHeaderAction;

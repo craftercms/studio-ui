@@ -1,32 +1,29 @@
 {
-  "extends": "./tsconfig.json",
-  "compilerOptions": {
-    "baseUrl": "src",
-    "rootDir": "src",
-    "outDir": "./build_tsc/node",
-    "module": "CommonJS",
-    "target": "es6",
-    "removeComments": true,
-    "sourceMap": false,
-    "noEmit": false,
-    "declaration": true,
-    "declarationMap": false,
-    "composite": false,
-    "jsx": "react"
-  },
-  "include": [
-    "src",
-    "src/**/*.json"
-  ],
-  "exclude": [
-    "src/tests",
-    "node_modules",
-    "../../node_modules",
-    "src/serviceWorker.ts",
-    "src/translations/src",
-    "src/translations/whitelists",
-    "src/**/*.ignore.*",
-    "src/**/*.test.ts",
-    "main.*.tsx"
-  ]
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"baseUrl": "src",
+		"rootDir": "src",
+		"outDir": "./build_tsc/node",
+		"module": "CommonJS",
+		"target": "es6",
+		"removeComments": true,
+		"sourceMap": false,
+		"noEmit": false,
+		"declaration": true,
+		"declarationMap": false,
+		"composite": false,
+		"jsx": "react"
+	},
+	"include": ["src", "src/**/*.json"],
+	"exclude": [
+		"src/tests",
+		"node_modules",
+		"../../node_modules",
+		"src/serviceWorker.ts",
+		"src/translations/src",
+		"src/translations/whitelists",
+		"src/**/*.ignore.*",
+		"src/**/*.test.ts",
+		"main.*.tsx"
+	]
 }

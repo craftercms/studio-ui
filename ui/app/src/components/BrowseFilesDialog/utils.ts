@@ -23,73 +23,73 @@ import { LookupTable } from '../../models';
 import { SORT_AUTO } from '../Search/utils';
 
 export interface BrowseFilesDialogBaseProps {
-  path: string;
-  multiSelect?: boolean;
-  contentTypes?: string[];
-  mimeTypes?: string[];
-  numOfLoaderItems?: number;
-  allowUpload?: boolean;
-  initialParameters?: Partial<ElasticParams>;
-  preselectedPaths?: string[];
-  disableChangePreselected?: boolean;
+	path: string;
+	multiSelect?: boolean;
+	contentTypes?: string[];
+	mimeTypes?: string[];
+	numOfLoaderItems?: number;
+	allowUpload?: boolean;
+	initialParameters?: Partial<ElasticParams>;
+	preselectedPaths?: string[];
+	disableChangePreselected?: boolean;
 }
 
 export interface BrowseFilesDialogProps extends BrowseFilesDialogBaseProps, EnhancedDialogProps {
-  onSuccess?(items: MediaItem | MediaItem[]): void;
+	onSuccess?(items: MediaItem | MediaItem[]): void;
 }
 
 export interface BrowseFilesDialogPropsStateProps extends BrowseFilesDialogBaseProps {
-  onClose?: StandardAction;
-  onSuccess?: StandardAction;
-  onClosed?: StandardAction;
+	onClose?: StandardAction;
+	onSuccess?: StandardAction;
+	onClosed?: StandardAction;
 }
 
 export interface BrowseFilesDialogContainerProps
-  extends BrowseFilesDialogBaseProps,
-    Pick<BrowseFilesDialogProps, 'onClose' | 'onSuccess'> {}
+	extends BrowseFilesDialogBaseProps,
+		Pick<BrowseFilesDialogProps, 'onClose' | 'onSuccess'> {}
 
 export interface BrowseFilesDialogUIProps {
-  items: SearchItem[];
-  guestBase: string;
-  selectedCard: MediaItem;
-  selectedArray: string[];
-  multiSelect?: boolean;
-  viewMode?: MediaCardViewModes;
-  path: string;
-  currentPath: string;
-  searchParameters: ElasticParams;
-  setSearchParameters(params: Partial<ElasticParams>): void;
-  limit: number;
-  offset: number;
-  keyword: string;
-  total: number;
-  numOfLoaderItems?: number;
-  allowUpload?: boolean;
-  sortKeys: Array<string>;
-  preselectedPaths?: BrowseFilesDialogBaseProps['preselectedPaths'];
-  preselectedLookup?: LookupTable<boolean>;
-  disableChangePreselected?: BrowseFilesDialogBaseProps['disableChangePreselected'];
-  disableSubmission?: boolean;
-  onCardSelected(item: MediaItem): void;
-  onPreviewImage?(item: MediaItem): void;
-  onCheckboxChecked(path: string, selected: boolean): void;
-  handleSearchKeyword(keyword: string): void;
-  onPathSelected(path: string): void;
-  onSelectButtonClick(): void;
-  onChangePage(page: number): void;
-  onChangeRowsPerPage(event): void;
-  onCloseButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
-  onRefresh(): void;
-  onUpload(): void;
-  onToggleViewMode?(): void;
+	items: SearchItem[];
+	guestBase: string;
+	selectedCard: MediaItem;
+	selectedArray: string[];
+	multiSelect?: boolean;
+	viewMode?: MediaCardViewModes;
+	path: string;
+	currentPath: string;
+	searchParameters: ElasticParams;
+	setSearchParameters(params: Partial<ElasticParams>): void;
+	limit: number;
+	offset: number;
+	keyword: string;
+	total: number;
+	numOfLoaderItems?: number;
+	allowUpload?: boolean;
+	sortKeys: Array<string>;
+	preselectedPaths?: BrowseFilesDialogBaseProps['preselectedPaths'];
+	preselectedLookup?: LookupTable<boolean>;
+	disableChangePreselected?: BrowseFilesDialogBaseProps['disableChangePreselected'];
+	disableSubmission?: boolean;
+	onCardSelected(item: MediaItem): void;
+	onPreviewImage?(item: MediaItem): void;
+	onCheckboxChecked(path: string, selected: boolean): void;
+	handleSearchKeyword(keyword: string): void;
+	onPathSelected(path: string): void;
+	onSelectButtonClick(): void;
+	onChangePage(page: number): void;
+	onChangeRowsPerPage(event): void;
+	onCloseButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
+	onRefresh(): void;
+	onUpload(): void;
+	onToggleViewMode?(): void;
 }
 
 export const initialParameters: ElasticParams = {
-  query: '',
-  keywords: '',
-  offset: 0,
-  limit: 25,
-  sortBy: SORT_AUTO,
-  sortOrder: 'desc',
-  filters: {}
+	query: '',
+	keywords: '',
+	offset: 0,
+	limit: 25,
+	sortBy: SORT_AUTO,
+	sortOrder: 'desc',
+	filters: {}
 };

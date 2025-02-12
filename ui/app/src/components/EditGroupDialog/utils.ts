@@ -23,45 +23,45 @@ import { LookupTable, PaginationOptions } from '../../models';
 import { useTransferListStateReturn } from '../TransferList/utils';
 
 export interface EditGroupBaseProps {
-  group?: Group;
+	group?: Group;
 }
 
 export interface EditGroupDialogProps extends EditGroupBaseProps, EnhancedDialogProps {
-  onGroupSaved(group: Group): void;
-  onGroupDeleted(group: Group): void;
-  onSubmittingAndOrPendingChange(value: onSubmittingAndOrPendingChangeProps): void;
+	onGroupSaved(group: Group): void;
+	onGroupDeleted(group: Group): void;
+	onSubmittingAndOrPendingChange(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
 export interface EditGroupDialogContainerProps
-  extends EditGroupBaseProps,
-    Pick<
-      EditGroupDialogProps,
-      'onClose' | 'onGroupSaved' | 'onGroupDeleted' | 'isSubmitting' | 'onSubmittingAndOrPendingChange'
-    > {}
+	extends EditGroupBaseProps,
+		Pick<
+			EditGroupDialogProps,
+			'onClose' | 'onGroupSaved' | 'onGroupDeleted' | 'isSubmitting' | 'onSubmittingAndOrPendingChange'
+		> {}
 
 export interface GroupEditDialogUIProps {
-  group?: Group;
-  groupNameError: boolean;
-  title: React.ReactNode;
-  subtitle?: React.ReactNode;
-  isEdit: boolean;
-  isDirty: boolean;
-  onCloseButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
-  onDeleteGroup?(group: Group): void;
-  onSave(): void;
-  submitOk: boolean;
-  onChangeValue(value: { key: string; value: string }): void;
-  onAddMembers?(): void;
-  onRemoveMembers?(): void;
-  users?: User[];
-  members?: User[];
-  membersLookup?: LookupTable<boolean>;
-  inProgressIds?: (string | number)[];
-  transferListState: useTransferListStateReturn;
-  sourceItemsAllChecked: boolean;
-  onFilterUsers(keyword: string): void;
-  onFetchMoreUsers(options?: Partial<PaginationOptions & { keyword?: string }>): void;
-  hasMoreUsers: boolean;
-  disableAddMembers: boolean;
-  isSubmitting: boolean;
+	group?: Group;
+	groupNameError: boolean;
+	title: React.ReactNode;
+	subtitle?: React.ReactNode;
+	isEdit: boolean;
+	isDirty: boolean;
+	onCloseButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
+	onDeleteGroup?(group: Group): void;
+	onSave(): void;
+	submitOk: boolean;
+	onChangeValue(value: { key: string; value: string }): void;
+	onAddMembers?(): void;
+	onRemoveMembers?(): void;
+	users?: User[];
+	members?: User[];
+	membersLookup?: LookupTable<boolean>;
+	inProgressIds?: (string | number)[];
+	transferListState: useTransferListStateReturn;
+	sourceItemsAllChecked: boolean;
+	onFilterUsers(keyword: string): void;
+	onFetchMoreUsers(options?: Partial<PaginationOptions & { keyword?: string }>): void;
+	hasMoreUsers: boolean;
+	disableAddMembers: boolean;
+	isSubmitting: boolean;
 }

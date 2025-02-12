@@ -18,8 +18,8 @@ import { LookupTable } from './LookupTable';
 import { ApiResponse } from './ApiResponse';
 
 export interface EntityState<T = any> {
-  error: ApiResponse;
-  byId: LookupTable<T>;
-  isFetching: boolean;
-  [key: string]: any;
+	error: ApiResponse;
+	byId: LookupTable<T>;
+	isFetching: boolean;
+	[key: string]: any;
 }

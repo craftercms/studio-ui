@@ -15,17 +15,17 @@
   -->
 
 <#if (envConfig.role! == 'admin' || envConfig.role! == 'developer')>
-  <#include "/static-assets/app/pages/project-tools.html">
+<#include "/static-assets/app/pages/project-tools.html">
 <#else>
-  <script>window.location.href = '/studio';</script>
-  <style>
-    body {
-      text-align: center;
-      font-family: sans-serif;
-    }
-  </style>
-  <noscript>
-    <h1>Access Denied</h1>
-    <p>You don't have the necessary permissions to access this page.</p>
-  </noscript>
+	<script>window.location.href = '/studio';</script>
+	<style>
+		body {
+			text-align: center;
+			font-family: sans-serif;
+		}
+	</style>
+	<noscript>
+		<h1>Access Denied</h1>
+		<p>You don't have the necessary permissions to access this page.</p>
+	</noscript>
 </#if>.

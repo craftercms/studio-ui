@@ -23,32 +23,32 @@ import { Control } from '../../models/FormsEngine';
 import commonStyles from './styles';
 
 export function Dropdown(props: Control) {
-  const { field, value = '', onChange, disabled } = props;
+	const { field, value = '', onChange, disabled } = props;
 
-  const handleSelectChange = (event: SelectChangeEvent<{ value: unknown }>) => {
-    onChange(event.target.value);
-  };
+	const handleSelectChange = (event: SelectChangeEvent<{ value: unknown }>) => {
+		onChange(event.target.value);
+	};
 
-  return (
-    <FormControl variant="outlined" sx={commonStyles.formControl} fullWidth>
-      <InputLabel id={`labelFor_${field.id}`}>{field.name}</InputLabel>
-      <Select
-        labelId={`labelFor_${field.id}`}
-        id={`select_${field.id}`}
-        label={field.name}
-        fullWidth
-        value={value}
-        onChange={handleSelectChange}
-        disabled={disabled}
-      >
-        {field.values?.map((possibleValue: any) => (
-          <MenuItem value={possibleValue.value} key={possibleValue.value}>
-            {possibleValue.label}
-          </MenuItem>
-        ))}
-      </Select>
-    </FormControl>
-  );
+	return (
+		<FormControl variant="outlined" sx={commonStyles.formControl} fullWidth>
+			<InputLabel id={`labelFor_${field.id}`}>{field.name}</InputLabel>
+			<Select
+				labelId={`labelFor_${field.id}`}
+				id={`select_${field.id}`}
+				label={field.name}
+				fullWidth
+				value={value}
+				onChange={handleSelectChange}
+				disabled={disabled}
+			>
+				{field.values?.map((possibleValue: any) => (
+					<MenuItem value={possibleValue.value} key={possibleValue.value}>
+						{possibleValue.label}
+					</MenuItem>
+				))}
+			</Select>
+		</FormControl>
+	);
 }
 
 export default Dropdown;

@@ -23,29 +23,29 @@ import SecondaryButton from '../SecondaryButton';
 import translations from './translations';
 
 export function ConfirmDialog(props: ConfirmDialogProps) {
-  const { onOk, onCancel, disableOkButton, disableCancelButton, okButtonText, cancelButtonText, ...rest } = props;
-  const { formatMessage } = useIntl();
-  return (
-    <AlertDialog
-      disableBackdropClick
-      disableEscapeKeyDown
-      {...rest}
-      buttons={
-        <>
-          {onOk && (
-            <PrimaryButton onClick={onOk} autoFocus fullWidth size="large" disabled={disableOkButton}>
-              {okButtonText ?? formatMessage(translations.accept)}
-            </PrimaryButton>
-          )}
-          {onCancel && (
-            <SecondaryButton onClick={onCancel} fullWidth size="large" disabled={disableCancelButton}>
-              {cancelButtonText ?? formatMessage(translations.cancel)}
-            </SecondaryButton>
-          )}
-        </>
-      }
-    />
-  );
+	const { onOk, onCancel, disableOkButton, disableCancelButton, okButtonText, cancelButtonText, ...rest } = props;
+	const { formatMessage } = useIntl();
+	return (
+		<AlertDialog
+			disableBackdropClick
+			disableEscapeKeyDown
+			{...rest}
+			buttons={
+				<>
+					{onOk && (
+						<PrimaryButton onClick={onOk} autoFocus fullWidth size="large" disabled={disableOkButton}>
+							{okButtonText ?? formatMessage(translations.accept)}
+						</PrimaryButton>
+					)}
+					{onCancel && (
+						<SecondaryButton onClick={onCancel} fullWidth size="large" disabled={disableCancelButton}>
+							{cancelButtonText ?? formatMessage(translations.cancel)}
+						</SecondaryButton>
+					)}
+				</>
+			}
+		/>
+	);
 }
 
 export default ConfirmDialog;

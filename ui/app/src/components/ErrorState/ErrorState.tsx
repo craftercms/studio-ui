@@ -26,92 +26,92 @@ import Box from '@mui/material/Box';
 type ErrorStateClassKey = 'root' | 'image' | 'title' | 'message' | 'button';
 
 export type ErrorStateProps = React.PropsWithChildren<{
-  title?: ReactNode;
-  message?: string;
-  imageUrl?: string;
-  buttonIcon?: ReactNode;
-  buttonText?: string;
-  onButtonClick?(event: React.MouseEvent): any;
-  classes?: Partial<Record<ErrorStateClassKey, string>>;
-  sxs?: PartialSxRecord<ErrorStateClassKey>;
+	title?: ReactNode;
+	message?: string;
+	imageUrl?: string;
+	buttonIcon?: ReactNode;
+	buttonText?: string;
+	onButtonClick?(event: React.MouseEvent): any;
+	classes?: Partial<Record<ErrorStateClassKey, string>>;
+	sxs?: PartialSxRecord<ErrorStateClassKey>;
 }>;
 
 export function ErrorState(props: ErrorStateProps) {
-  const {
-    title,
-    message,
-    buttonText = 'Back',
-    buttonIcon = <ArrowBackIcon />,
-    onButtonClick,
-    imageUrl = crack,
-    children,
-    sxs
-  } = props;
-  return (
-    <Box
-      component="section"
-      className={props.classes?.root}
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: (theme) => theme.spacing(1),
-        paddingBottom: '0',
-        ...sxs?.root
-      }}
-    >
-      <Box
-        component="img"
-        className={props.classes?.image}
-        sx={{
-          maxWidth: '100%',
-          marginBottom: (theme) => theme.spacing(1),
-          ...sxs?.image
-        }}
-        src={imageUrl}
-        alt=""
-      />
-      {nnou(title) && (
-        <Typography
-          variant="body1"
-          component="h3"
-          className={props.classes?.title}
-          sx={{ marginBottom: (theme) => theme.spacing(1), ...sxs?.title }}
-          children={title}
-        />
-      )}
-      {nnou(message) && (
-        <Typography
-          variant="body2"
-          component="p"
-          className={props.classes?.message}
-          sx={{
-            textAlign: 'center',
-            marginBottom: (theme) => theme.spacing(1),
-            wordBreak: 'break-all',
-            ...sxs?.message
-          }}
-          children={message}
-        />
-      )}
-      {children}
-      {onButtonClick && (
-        <Fab
-          onClick={onButtonClick}
-          aria-label={buttonText}
-          className={props.classes?.message}
-          sx={{
-            color: (theme) => theme.palette.text.secondary,
-            background: (theme) => theme.palette.background.default,
-            marginBottom: (theme) => theme.spacing(1),
-            ...sxs?.button
-          }}
-          children={buttonIcon}
-        />
-      )}
-    </Box>
-  );
+	const {
+		title,
+		message,
+		buttonText = 'Back',
+		buttonIcon = <ArrowBackIcon />,
+		onButtonClick,
+		imageUrl = crack,
+		children,
+		sxs
+	} = props;
+	return (
+		<Box
+			component="section"
+			className={props.classes?.root}
+			sx={{
+				display: 'flex',
+				flexDirection: 'column',
+				alignItems: 'center',
+				justifyContent: 'center',
+				padding: (theme) => theme.spacing(1),
+				paddingBottom: '0',
+				...sxs?.root
+			}}
+		>
+			<Box
+				component="img"
+				className={props.classes?.image}
+				sx={{
+					maxWidth: '100%',
+					marginBottom: (theme) => theme.spacing(1),
+					...sxs?.image
+				}}
+				src={imageUrl}
+				alt=""
+			/>
+			{nnou(title) && (
+				<Typography
+					variant="body1"
+					component="h3"
+					className={props.classes?.title}
+					sx={{ marginBottom: (theme) => theme.spacing(1), ...sxs?.title }}
+					children={title}
+				/>
+			)}
+			{nnou(message) && (
+				<Typography
+					variant="body2"
+					component="p"
+					className={props.classes?.message}
+					sx={{
+						textAlign: 'center',
+						marginBottom: (theme) => theme.spacing(1),
+						wordBreak: 'break-all',
+						...sxs?.message
+					}}
+					children={message}
+				/>
+			)}
+			{children}
+			{onButtonClick && (
+				<Fab
+					onClick={onButtonClick}
+					aria-label={buttonText}
+					className={props.classes?.message}
+					sx={{
+						color: (theme) => theme.palette.text.secondary,
+						background: (theme) => theme.palette.background.default,
+						marginBottom: (theme) => theme.spacing(1),
+						...sxs?.button
+					}}
+					children={buttonIcon}
+				/>
+			)}
+		</Box>
+	);
 }
 
 export default ErrorState;

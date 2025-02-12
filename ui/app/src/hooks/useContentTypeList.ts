@@ -21,21 +21,21 @@ import { useMemo } from 'react';
 export function useContentTypeList(filterFn: (type: ContentType) => boolean): Array<ContentType>;
 export function useContentTypeList(): Array<ContentType>;
 export function useContentTypeList(filterFn: (type: ContentType) => boolean = null): Array<ContentType> {
-  const byId = useContentTypes();
-  return useMemo(
-    () => {
-      if (!byId) {
-        return null;
-      } else {
-        const list = Object.values(byId);
-        return Boolean(filterFn) ? list.filter(filterFn) : list;
-      }
-    },
-    // Filter omitted purposely to facilitate use without need
-    // to memoize filterFn on the consumer side
-    // eslint-disable-next-line
-    [byId]
-  );
+	const byId = useContentTypes();
+	return useMemo(
+		() => {
+			if (!byId) {
+				return null;
+			} else {
+				const list = Object.values(byId);
+				return Boolean(filterFn) ? list.filter(filterFn) : list;
+			}
+		},
+		// Filter omitted purposely to facilitate use without need
+		// to memoize filterFn on the consumer side
+		// eslint-disable-next-line
+		[byId]
+	);
 }
 
 export default useContentTypeList;

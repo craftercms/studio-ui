@@ -18,7 +18,7 @@ import { useSelector } from 'react-redux';
 import GlobalState from '../models/GlobalState';
 
 export function useActiveSiteId(): string {
-  return useSelector<GlobalState, string>((state) => state.sites.active);
+	return useSelector<GlobalState, string>((state) => state.sites.active);
 }
 
 export default useActiveSiteId;

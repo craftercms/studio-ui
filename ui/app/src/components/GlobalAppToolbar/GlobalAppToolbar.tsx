@@ -26,139 +26,139 @@ import Box from '@mui/material/Box';
 import { typographyClasses } from '@mui/material';
 
 export type GlobalAppToolbarClassKey =
-  | ViewToolbarClassKey
-  | 'headings'
-  | 'subtitle'
-  | 'leftContent'
-  | 'rightContent'
-  | 'ellipsis';
+	| ViewToolbarClassKey
+	| 'headings'
+	| 'subtitle'
+	| 'leftContent'
+	| 'rightContent'
+	| 'ellipsis';
 
 export interface GlobalAppToolbarProps {
-  elevation?: number;
-  title?: React.ReactNode;
-  subtitle?: React.ReactNode;
-  leftContent?: React.ReactNode;
-  rightContent?: React.ReactNode;
-  classes?: Partial<Record<GlobalAppToolbarClassKey, string>>;
-  sxs?: PartialSxRecord<GlobalAppToolbarClassKey>;
-  startContent?: React.ReactNode;
-  showHamburgerMenuButton?: boolean;
-  showAppsButton?: boolean;
+	elevation?: number;
+	title?: React.ReactNode;
+	subtitle?: React.ReactNode;
+	leftContent?: React.ReactNode;
+	rightContent?: React.ReactNode;
+	classes?: Partial<Record<GlobalAppToolbarClassKey, string>>;
+	sxs?: PartialSxRecord<GlobalAppToolbarClassKey>;
+	startContent?: React.ReactNode;
+	showHamburgerMenuButton?: boolean;
+	showAppsButton?: boolean;
 }
 
 const translations = defineMessages({
-  toggleSidebar: {
-    id: 'globalAppToolbar.toggleSidebar',
-    defaultMessage: 'Toggle Sidebar'
-  }
+	toggleSidebar: {
+		id: 'globalAppToolbar.toggleSidebar',
+		defaultMessage: 'Toggle Sidebar'
+	}
 });
 
 export const GlobalAppToolbar = React.memo<GlobalAppToolbarProps>(function (props) {
-  const {
-    title,
-    subtitle,
-    leftContent,
-    rightContent,
-    showHamburgerMenuButton = true,
-    showAppsButton = true,
-    startContent,
-    sxs
-  } = props;
-  const { formatMessage } = useIntl();
-  const [{ openSidebar }, setState] = useGlobalAppState();
+	const {
+		title,
+		subtitle,
+		leftContent,
+		rightContent,
+		showHamburgerMenuButton = true,
+		showAppsButton = true,
+		startContent,
+		sxs
+	} = props;
+	const { formatMessage } = useIntl();
+	const [{ openSidebar }, setState] = useGlobalAppState();
 
-  return (
-    <ViewToolbar
-      elevation={props.elevation}
-      classes={props.classes}
-      sxs={{
-        appBar: sxs?.appBar,
-        toolbar: sxs?.toolbar
-      }}
-    >
-      {showHamburgerMenuButton && Boolean(setState) && (
-        <LogoAndMenuBundleButton
-          showCrafterIcon={showAppsButton}
-          aria-label={formatMessage(translations.toggleSidebar)}
-          onClick={() => setState({ openSidebar: !openSidebar })}
-        />
-      )}
-      {startContent}
-      {Boolean(title || subtitle) && (
-        <Box
-          component="section"
-          className={props.classes?.headings}
-          sx={{
-            marginLeft: '10px',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'flex-start!important',
-            overflow: 'hidden',
-            [`& .${typographyClasses.root}`]: {
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap'
-            },
-            ...sxs?.headings
-          }}
-        >
-          {title && (
-            <Typography
-              variant="h5"
-              component="h1"
-              className={props.classes?.ellipsis}
-              sx={{
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-                ...sxs?.ellipsis
-              }}
-            >
-              {title}
-            </Typography>
-          )}
-          {subtitle && (
-            <Typography
-              variant="body2"
-              component="h2"
-              color="textSecondary"
-              className={props.classes?.subtitle}
-              sx={sxs?.subtitle}
-            >
-              {subtitle}
-            </Typography>
-          )}
-        </Box>
-      )}
-      <Box
-        component="section"
-        className={props.classes?.leftContent}
-        sx={{
-          marginLeft: '25px',
-          display: 'flex',
-          alignItems: 'center',
-          whiteSpace: 'nowrap',
-          ...sxs?.leftContent
-        }}
-      >
-        {leftContent}
-      </Box>
-      <Box
-        component="section"
-        className={props.classes?.rightContent}
-        sx={{
-          marginLeft: 'auto',
-          display: 'flex',
-          alignItems: 'center',
-          whiteSpace: 'nowrap',
-          ...sxs?.rightContent
-        }}
-      >
-        {rightContent}
-      </Box>
-      {showAppsButton && <LauncherOpenerButton />}
-    </ViewToolbar>
-  );
+	return (
+		<ViewToolbar
+			elevation={props.elevation}
+			classes={props.classes}
+			sxs={{
+				appBar: sxs?.appBar,
+				toolbar: sxs?.toolbar
+			}}
+		>
+			{showHamburgerMenuButton && Boolean(setState) && (
+				<LogoAndMenuBundleButton
+					showCrafterIcon={showAppsButton}
+					aria-label={formatMessage(translations.toggleSidebar)}
+					onClick={() => setState({ openSidebar: !openSidebar })}
+				/>
+			)}
+			{startContent}
+			{Boolean(title || subtitle) && (
+				<Box
+					component="section"
+					className={props.classes?.headings}
+					sx={{
+						marginLeft: '10px',
+						display: 'flex',
+						flexDirection: 'column',
+						alignItems: 'flex-start!important',
+						overflow: 'hidden',
+						[`& .${typographyClasses.root}`]: {
+							overflow: 'hidden',
+							textOverflow: 'ellipsis',
+							whiteSpace: 'nowrap'
+						},
+						...sxs?.headings
+					}}
+				>
+					{title && (
+						<Typography
+							variant="h5"
+							component="h1"
+							className={props.classes?.ellipsis}
+							sx={{
+								overflow: 'hidden',
+								textOverflow: 'ellipsis',
+								whiteSpace: 'nowrap',
+								...sxs?.ellipsis
+							}}
+						>
+							{title}
+						</Typography>
+					)}
+					{subtitle && (
+						<Typography
+							variant="body2"
+							component="h2"
+							color="textSecondary"
+							className={props.classes?.subtitle}
+							sx={sxs?.subtitle}
+						>
+							{subtitle}
+						</Typography>
+					)}
+				</Box>
+			)}
+			<Box
+				component="section"
+				className={props.classes?.leftContent}
+				sx={{
+					marginLeft: '25px',
+					display: 'flex',
+					alignItems: 'center',
+					whiteSpace: 'nowrap',
+					...sxs?.leftContent
+				}}
+			>
+				{leftContent}
+			</Box>
+			<Box
+				component="section"
+				className={props.classes?.rightContent}
+				sx={{
+					marginLeft: 'auto',
+					display: 'flex',
+					alignItems: 'center',
+					whiteSpace: 'nowrap',
+					...sxs?.rightContent
+				}}
+			>
+				{rightContent}
+			</Box>
+			{showAppsButton && <LauncherOpenerButton />}
+		</ViewToolbar>
+	);
 });
 
 export default GlobalAppToolbar;

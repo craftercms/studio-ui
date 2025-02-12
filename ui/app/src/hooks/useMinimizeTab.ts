@@ -21,22 +21,22 @@ import { useEffect } from 'react';
 import { popTab, pushTab } from '../state/reducers/dialogs/minimizedTabs';
 
 export function useMinimizeTab(initialTab: MinimizedTab) {
-  const dispatch = useDispatch();
-  const state = useSelection((state) => state.dialogs.minimizedTabs[initialTab.id]);
+	const dispatch = useDispatch();
+	const state = useSelection((state) => state.dialogs.minimizedTabs[initialTab.id]);
 
-  useEffect(
-    () => {
-      dispatch(pushTab(initialTab));
-      return () => {
-        dispatch(popTab({ id: initialTab.id }));
-      };
-    },
-    // `initialTab` omitted purposely to facilitate use without memo from consumer side
-    // eslint-disable-next-line
-    [dispatch, initialTab.id]
-  );
+	useEffect(
+		() => {
+			dispatch(pushTab(initialTab));
+			return () => {
+				dispatch(popTab({ id: initialTab.id }));
+			};
+		},
+		// `initialTab` omitted purposely to facilitate use without memo from consumer side
+		// eslint-disable-next-line
+		[dispatch, initialTab.id]
+	);
 
-  return state?.minimized ?? initialTab.minimized;
+	return state?.minimized ?? initialTab.minimized;
 }
 
 export default useMinimizeTab;

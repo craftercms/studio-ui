@@ -18,7 +18,7 @@ import GlobalState from '../models/GlobalState';
 import { useSelection } from './useSelection';
 
 export function useSitesBranch(): GlobalState['sites'] {
-  return useSelection((state) => state.sites);
+	return useSelection((state) => state.sites);
 }
 
 export default useSitesBranch;

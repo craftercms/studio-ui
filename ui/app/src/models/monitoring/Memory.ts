@@ -15,11 +15,11 @@
  */
 
 export interface Memory {
-  totalJvmMemory: number;
-  freeJvmMemory: number;
-  maxJvmMemory: number;
-  totalOsMemory: number;
-  freeOsMemory: number;
-  totalSwapMemory: number;
-  freeSwapMemory: number;
+	totalJvmMemory: number;
+	freeJvmMemory: number;
+	maxJvmMemory: number;
+	totalOsMemory: number;
+	freeOsMemory: number;
+	totalSwapMemory: number;
+	freeSwapMemory: number;
 }

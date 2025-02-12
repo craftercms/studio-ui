@@ -24,78 +24,78 @@ import Group from '../models/Group';
 import User from '../models/User';
 
 const paginationDefault = {
-  limit: 100,
-  offset: 0
+	limit: 100,
+	offset: 0
 };
 
 export function fetchAll(options?: Partial<PaginationOptions> & { keyword?: string }): Observable<PagedArray<Group>> {
-  const mergedOptions = {
-    ...paginationDefault,
-    ...options
-  };
-  return get(`/studio/api/2/groups${toQueryString(mergedOptions)}`).pipe(
-    map(({ response }) =>
-      Object.assign(response.groups, {
-        limit: response.limit < mergedOptions.limit ? mergedOptions.limit : response.limit,
-        offset: response.offset,
-        total: response.total
-      })
-    )
-  );
+	const mergedOptions = {
+		...paginationDefault,
+		...options
+	};
+	return get(`/studio/api/2/groups${toQueryString(mergedOptions)}`).pipe(
+		map(({ response }) =>
+			Object.assign(response.groups, {
+				limit: response.limit < mergedOptions.limit ? mergedOptions.limit : response.limit,
+				offset: response.offset,
+				total: response.total
+			})
+		)
+	);
 }
 
 export function fetchUsersFromGroup(id: number, options?: PaginationOptions): Observable<PagedArray<User>> {
-  const qs = toQueryString({
-    ...paginationDefault,
-    options
-  });
-  return get(`/studio/api/2/groups/${id}/members${qs}`).pipe(
-    map(({ response }) =>
-      Object.assign(response.users, {
-        limit: response.limit,
-        offset: response.offset,
-        total: response.total
-      })
-    )
-  );
+	const qs = toQueryString({
+		...paginationDefault,
+		options
+	});
+	return get(`/studio/api/2/groups/${id}/members${qs}`).pipe(
+		map(({ response }) =>
+			Object.assign(response.users, {
+				limit: response.limit,
+				offset: response.offset,
+				total: response.total
+			})
+		)
+	);
 }
 
 export function create(group: Partial<Group>): Observable<Group> {
-  return postJSON('/studio/api/2/groups', group).pipe(map((response) => response?.response?.group));
+	return postJSON('/studio/api/2/groups', group).pipe(map((response) => response?.response?.group));
 }
 
 export function update(group: Partial<Group>): Observable<Group> {
-  return patchJSON(`/studio/api/2/groups`, group).pipe(map((response) => response?.response?.group));
+	return patchJSON(`/studio/api/2/groups`, group).pipe(map((response) => response?.response?.group));
 }
 
 export function trash(groupId: number): Observable<true> {
-  return del(`/studio/api/2/groups?id=${groupId}`).pipe(map(() => true));
+	return del(`/studio/api/2/groups?id=${groupId}`).pipe(map(() => true));
 }
 
 export function addUserToGroup(groupId: number, username: string): Observable<User> {
-  return addUsersToGroup(groupId, [username]).pipe(map((response) => response[0]));
+	return addUsersToGroup(groupId, [username]).pipe(map((response) => response[0]));
 }
 
 export function addUsersToGroup(groupId: number, ids: number[]): Observable<User[]>;
 export function addUsersToGroup(groupId: number, usernames: string[]): Observable<User[]>;
 export function addUsersToGroup(groupId: number, idsOrUsernames: Array<number> | Array<string>): Observable<User[]> {
-  return postJSON(`/studio/api/2/groups/${groupId}/members`, {
-    [typeof idsOrUsernames[0] === 'string' ? 'usernames' : 'ids']: idsOrUsernames
-  }).pipe(map((response) => response?.response?.users));
+	return postJSON(`/studio/api/2/groups/${groupId}/members`, {
+		[typeof idsOrUsernames[0] === 'string' ? 'usernames' : 'ids']: idsOrUsernames
+	}).pipe(map((response) => response?.response?.users));
 }
 
 export function deleteUserFromGroup(groupId: number, username: string): Observable<true>;
 export function deleteUserFromGroup(groupId: number, userId: number): Observable<true>;
 export function deleteUserFromGroup(groupId: number, usernameOrUserId: number | string): Observable<true> {
-  // @ts-ignore - types are correct, signature to accept either is simply not published by deleteUsersFromGroup
-  return deleteUsersFromGroup(groupId, [usernameOrUserId]);
+	// @ts-ignore - types are correct, signature to accept either is simply not published by deleteUsersFromGroup
+	return deleteUsersFromGroup(groupId, [usernameOrUserId]);
 }
 
 export function deleteUsersFromGroup(groupId: number, userIds: number[]): Observable<true>;
 export function deleteUsersFromGroup(groupId: number, usernames: string[]): Observable<true>;
 export function deleteUsersFromGroup(groupId: number, usernamesOrUserIds: number[] | string[]): Observable<true> {
-  const qs = toQueryString({
-    [typeof usernamesOrUserIds[0] === 'string' ? 'username' : 'userId']: usernamesOrUserIds
-  });
-  return del(`/studio/api/2/groups/${groupId}/members${qs}`).pipe(map(() => true));
+	const qs = toQueryString({
+		[typeof usernamesOrUserIds[0] === 'string' ? 'username' : 'userId']: usernamesOrUserIds
+	});
+	return del(`/studio/api/2/groups/${groupId}/members${qs}`).pipe(map(() => true));
 }

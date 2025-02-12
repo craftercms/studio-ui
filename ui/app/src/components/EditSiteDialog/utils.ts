@@ -24,21 +24,21 @@ export type Source = { site: Site; error: Error };
 export type Return = Omit<Source, 'error'>;
 
 export interface EditSiteDialogBaseProps {
-  site: Site;
+	site: Site;
 }
 
 export interface EditSiteDialogProps extends EditSiteDialogBaseProps, EnhancedDialogProps {
-  onSaveSuccess?(response?: any): any;
-  onSiteImageChange?(): void;
+	onSaveSuccess?(response?: any): any;
+	onSiteImageChange?(): void;
 }
 
 export interface EditSiteDialogStateProps extends EditSiteDialogBaseProps, EnhancedDialogState {
-  onSaveSuccess?: StandardAction;
-  onSiteImageChange?: StandardAction;
-  onClose?: StandardAction;
-  onClosed?: StandardAction;
+	onSaveSuccess?: StandardAction;
+	onSiteImageChange?: StandardAction;
+	onClose?: StandardAction;
+	onClosed?: StandardAction;
 }
 
 export interface EditSiteDialogContainerProps
-  extends EditSiteDialogBaseProps,
-    Pick<EditSiteDialogProps, 'isSubmitting' | 'onSaveSuccess' | 'onSiteImageChange' | 'onClose'> {}
+	extends EditSiteDialogBaseProps,
+		Pick<EditSiteDialogProps, 'isSubmitting' | 'onSaveSuccess' | 'onSiteImageChange' | 'onClose'> {}

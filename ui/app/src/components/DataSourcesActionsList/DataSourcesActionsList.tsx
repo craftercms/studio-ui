@@ -19,41 +19,41 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 
 export interface DataSourcesActionsListProps {
-  show: boolean;
-  rect: DOMRect;
-  items: {
-    label: string;
-    path: string;
-    action(path: string, type: 'image' | 'media'): void;
-    type: 'image' | 'media';
-  }[];
-  onClose?(): void;
+	show: boolean;
+	rect: DOMRect;
+	items: {
+		label: string;
+		path: string;
+		action(path: string, type: 'image' | 'media'): void;
+		type: 'image' | 'media';
+	}[];
+	onClose?(): void;
 }
 
 export function DataSourcesActionsList(props: DataSourcesActionsListProps) {
-  const { show, rect, items, onClose } = props;
+	const { show, rect, items, onClose } = props;
 
-  return (
-    <>
-      {items.length > 0 && (
-        <Menu
-          open={show}
-          anchorReference="anchorPosition"
-          anchorPosition={{
-            top: rect.top,
-            left: rect.left
-          }}
-          onClose={onClose}
-        >
-          {items.map((item, index) => (
-            <MenuItem key={index} onClick={() => item.action(item.path, item.type)}>
-              {item.label}
-            </MenuItem>
-          ))}
-        </Menu>
-      )}
-    </>
-  );
+	return (
+		<>
+			{items.length > 0 && (
+				<Menu
+					open={show}
+					anchorReference="anchorPosition"
+					anchorPosition={{
+						top: rect.top,
+						left: rect.left
+					}}
+					onClose={onClose}
+				>
+					{items.map((item, index) => (
+						<MenuItem key={index} onClick={() => item.action(item.path, item.type)}>
+							{item.label}
+						</MenuItem>
+					))}
+				</Menu>
+			)}
+		</>
+	);
 }
 
 export default DataSourcesActionsList;

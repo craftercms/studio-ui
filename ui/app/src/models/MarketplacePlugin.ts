@@ -15,72 +15,72 @@
  */
 
 export interface MarketplacePluginImage {
-  url: string;
-  title: string;
-  description: string;
+	url: string;
+	title: string;
+	description: string;
 }
 
 export interface MarketplacePluginVideo {
-  title: string;
-  description: string;
-  url: string;
+	title: string;
+	description: string;
+	url: string;
 }
 
 interface MarketplacePluginMedia {
-  screenshots: [MarketplacePluginImage];
-  videos?: [MarketplacePluginVideo] | [];
+	screenshots: [MarketplacePluginImage];
+	videos?: [MarketplacePluginVideo] | [];
 }
 
 export interface MarketplacePluginVersion {
-  major: number;
-  minor: number;
-  patch: number;
+	major: number;
+	minor: number;
+	patch: number;
 }
 
 export interface MarketplacePluginParameter {
-  label: string;
-  name: string;
-  required: boolean;
-  type: string;
-  description: string;
-  defaultValue: string;
+	label: string;
+	name: string;
+	required: boolean;
+	type: string;
+	description: string;
+	defaultValue: string;
 }
 
 export interface MarketplacePlugin {
-  id: string;
-  type?: string;
-  name: string;
-  tags?: string[];
-  version?: MarketplacePluginVersion;
-  description: string;
-  documentation: string;
-  website?: {
-    name: string;
-    url: string;
-  };
-  media: MarketplacePluginMedia;
-  developer?: {
-    people: any;
-    company?: {
-      name: string;
-      url: string;
-    };
-  };
-  build?: {
-    id: string;
-    url: string;
-  };
-  license?: {
-    name: string;
-    url: string;
-  };
-  crafterCmsVersions?: [MarketplacePluginVersion];
-  crafterCmsEditions?: string[];
-  parameters?: [MarketplacePluginParameter];
-  status?: string;
-  source?: string;
-  compatible?: boolean;
-  searchEngine?: string;
-  url?: string;
-  ref?: string;
+	id: string;
+	type?: string;
+	name: string;
+	tags?: string[];
+	version?: MarketplacePluginVersion;
+	description: string;
+	documentation: string;
+	website?: {
+		name: string;
+		url: string;
+	};
+	media: MarketplacePluginMedia;
+	developer?: {
+		people: any;
+		company?: {
+			name: string;
+			url: string;
+		};
+	};
+	build?: {
+		id: string;
+		url: string;
+	};
+	license?: {
+		name: string;
+		url: string;
+	};
+	crafterCmsVersions?: [MarketplacePluginVersion];
+	crafterCmsEditions?: string[];
+	parameters?: [MarketplacePluginParameter];
+	status?: string;
+	source?: string;
+	compatible?: boolean;
+	searchEngine?: string;
+	url?: string;
+	ref?: string;
 }

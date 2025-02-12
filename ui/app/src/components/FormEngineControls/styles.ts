@@ -17,8 +17,8 @@
 import { PartialSxRecord } from '../../models';
 
 const commonStyles: PartialSxRecord<'formControl' | 'inputLabel'> = {
-  formControl: {},
-  inputLabel: {}
+	formControl: {},
+	inputLabel: {}
 };
 
 export default commonStyles;

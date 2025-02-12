@@ -20,13 +20,13 @@ import { dispatchDOMEvent } from '../actions/misc';
 import { CrafterCMSEpic } from '../store';
 
 export default [
-  (action$) =>
-    action$.pipe(
-      ofType(dispatchDOMEvent.type),
-      tap(({ payload }) => {
-        let event = new CustomEvent(payload.id, { detail: payload });
-        document.dispatchEvent(event);
-      }),
-      ignoreElements()
-    )
+	(action$) =>
+		action$.pipe(
+			ofType(dispatchDOMEvent.type),
+			tap(({ payload }) => {
+				let event = new CustomEvent(payload.id, { detail: payload });
+				document.dispatchEvent(event);
+			}),
+			ignoreElements()
+		)
 ] as CrafterCMSEpic[];

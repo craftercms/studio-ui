@@ -17,13 +17,13 @@
 import { CrafterCMSModules } from '../services/configuration';
 
 export interface SiteConfigurationFileWithId extends SiteConfigurationFile {
-  id: string;
+	id: string;
 }
 
 export interface SiteConfigurationFile {
-  description: string;
-  module: CrafterCMSModules;
-  path: string;
-  samplePath: string;
-  title: string;
+	description: string;
+	module: CrafterCMSModules;
+	path: string;
+	samplePath: string;
+	title: string;
 }

@@ -21,42 +21,42 @@ import Dialog from '@mui/material/Dialog';
 import AlertDialogContainer from './AlertDialogContainer';
 
 export function AlertDialog(props: AlertDialogProps) {
-  const {
-    open,
-    disableBackdropClick,
-    disableEnforceFocus,
-    hideBackdrop,
-    maxWidth,
-    disableEscapeKeyDown,
-    onClose,
-    sxs,
-    ...rest
-  } = props;
+	const {
+		open,
+		disableBackdropClick,
+		disableEnforceFocus,
+		hideBackdrop,
+		maxWidth,
+		disableEscapeKeyDown,
+		onClose,
+		sxs,
+		...rest
+	} = props;
 
-  const onCloseHandler = useOnClose({
-    onClose: onClose,
-    disableBackdropClick: disableBackdropClick,
-    disableEscapeKeyDown: disableEscapeKeyDown
-  });
+	const onCloseHandler = useOnClose({
+		onClose: onClose,
+		disableBackdropClick: disableBackdropClick,
+		disableEscapeKeyDown: disableEscapeKeyDown
+	});
 
-  return (
-    <Dialog
-      open={open}
-      onClose={onCloseHandler}
-      aria-labelledby="alertDialogTitle"
-      aria-describedby="alertDialogBody"
-      disableEnforceFocus={disableEnforceFocus}
-      hideBackdrop={hideBackdrop}
-      maxWidth={maxWidth ?? 'xs'}
-      fullWidth
-      sx={{
-        '& .MuiPaper-root': { borderRadius: 2.5 },
-        ...sxs?.root
-      }}
-    >
-      <AlertDialogContainer {...rest} sxs={sxs} />
-    </Dialog>
-  );
+	return (
+		<Dialog
+			open={open}
+			onClose={onCloseHandler}
+			aria-labelledby="alertDialogTitle"
+			aria-describedby="alertDialogBody"
+			disableEnforceFocus={disableEnforceFocus}
+			hideBackdrop={hideBackdrop}
+			maxWidth={maxWidth ?? 'xs'}
+			fullWidth
+			sx={{
+				'& .MuiPaper-root': { borderRadius: 2.5 },
+				...sxs?.root
+			}}
+		>
+			<AlertDialogContainer {...rest} sxs={sxs} />
+		</Dialog>
+	);
 }
 
 export default AlertDialog;

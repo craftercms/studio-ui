@@ -19,35 +19,35 @@ import palette from '../../styles/palette';
 import Box from '@mui/material/Box';
 
 export interface ProgressBarProps {
-  status: 'failed' | 'complete';
-  progress: number;
+	status: 'failed' | 'complete';
+	progress: number;
 }
 
 export function ProgressBar(props: ProgressBarProps) {
-  const { status, progress } = props;
-  return (
-    <Box
-      sx={{
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        width: '100%',
-        height: '3px',
-        transition: 'height .2s'
-      }}
-    >
-      <Box
-        sx={{
-          backgroundColor:
-            status === 'failed' ? palette.red.main : progress === 100 ? palette.green.main : palette.blue.tint,
-          height: '100%',
-          width: 0,
-          transition: status === 'failed' ? 'width 0.4s ease' : 'background-color 0.5s ease'
-        }}
-        style={{ width: `${progress}%` }}
-      />
-    </Box>
-  );
+	const { status, progress } = props;
+	return (
+		<Box
+			sx={{
+				position: 'absolute',
+				bottom: 0,
+				left: 0,
+				width: '100%',
+				height: '3px',
+				transition: 'height .2s'
+			}}
+		>
+			<Box
+				sx={{
+					backgroundColor:
+						status === 'failed' ? palette.red.main : progress === 100 ? palette.green.main : palette.blue.tint,
+					height: '100%',
+					width: 0,
+					transition: status === 'failed' ? 'width 0.4s ease' : 'background-color 0.5s ease'
+				}}
+				style={{ width: `${progress}%` }}
+			/>
+		</Box>
+	);
 }
 
 export default ProgressBar;

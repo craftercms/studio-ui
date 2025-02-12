@@ -43,113 +43,113 @@ import { SvgIconProps } from '@mui/material/SvgIcon';
 import { BoxProps } from '@mui/material/Box';
 
 export interface ItemTypeIconProps extends SvgIconProps {
-  item: DetailedItem | SandboxItem;
-  tooltipProps?: Partial<TooltipProps>;
-  sxs?: Partial<{
-    icon: BoxProps['sx'];
-  }>;
+	item: DetailedItem | SandboxItem;
+	tooltipProps?: Partial<TooltipProps>;
+	sxs?: Partial<{
+		icon: BoxProps['sx'];
+	}>;
 }
 
 export function getItemTypeText(item: DetailedItem | SandboxItem, formatMessage: IntlFormatters['formatMessage']) {
-  return messages[item.systemType]
-    ? formatMessage(messages[item.systemType])
-    : item.mimeType
-      ? item.mimeType
-      : formatMessage(messages.unknown);
+	return messages[item.systemType]
+		? formatMessage(messages[item.systemType])
+		: item.mimeType
+			? item.mimeType
+			: formatMessage(messages.unknown);
 }
 
 export function ItemTypeIcon(props: ItemTypeIconProps) {
-  const { item, tooltipProps, sxs, ...rest } = props;
-  const { formatMessage } = useIntl();
-  let TheIcon = UnknownStateIcon;
-  switch (item.systemType) {
-    case 'file':
-    case 'asset':
-    case 'content type':
-      if (item.mimeType.includes('image/')) {
-        TheIcon = ImageIcon;
-      } else if (item.mimeType.includes('video/')) {
-        TheIcon = VideoIcon;
-      } else if (item.mimeType.includes('audio/')) {
-        TheIcon = AudioIcon;
-      } else {
-        switch (item.mimeType) {
-          case 'application/javascript':
-          case 'application/x-javascript':
-            TheIcon = Js;
-            break;
-          case 'application/json':
-            TheIcon = JsonIcon;
-            break;
-          case 'application/x-groovy':
-            TheIcon = Groovy;
-            break;
-          case 'application/x-freemarker':
-            TheIcon = Freemarker;
-            break;
-          case 'text/html':
-            TheIcon = Html;
-            break;
-          case 'text/css':
-            TheIcon = Css;
-            break;
-          case 'text/plain':
-            TheIcon = TextIcon;
-            break;
-          case 'application/xml':
-            TheIcon = CodeRounded;
-            break;
-          case 'font/ttf':
-          case 'font/otf':
-          case 'font/woff':
-          case 'font/woff2':
-          case 'application/vnd.ms-fontobject':
-            TheIcon = FontIcon;
-            break;
-          case 'image/vnd.microsoft.icon':
-            TheIcon = ImageIcon;
-            break;
-          case 'application/x-subrip':
-            TheIcon = SubtitlesIcon;
-            break;
-          default:
-            if (item.mimeType.includes('text/')) {
-              TheIcon = TextIcon;
-            }
-            break;
-        }
-      }
-      break;
-    case 'component':
-      TheIcon = ComponentIcon;
-      break;
-    case 'page':
-      TheIcon = PageIcon;
-      break;
-    case 'folder':
-      TheIcon = FolderIcon;
-      break;
-    case 'levelDescriptor':
-      TheIcon = LevelDescriptorIcon;
-      break;
-    case 'renderingTemplate':
-      TheIcon = Freemarker;
-      break;
-    case 'script':
-      TheIcon = Groovy;
-      break;
-    case 'taxonomy':
-      TheIcon = TaxonomyIcon;
-      break;
-    case 'configuration':
-      TheIcon = SettingsOutlinedIcon;
-      break;
-  }
-  return (
-    <Tooltip {...tooltipProps} title={getItemTypeText(item, formatMessage)}>
-      <TheIcon sx={sxs?.icon} {...rest} />
-    </Tooltip>
-  );
+	const { item, tooltipProps, sxs, ...rest } = props;
+	const { formatMessage } = useIntl();
+	let TheIcon = UnknownStateIcon;
+	switch (item.systemType) {
+		case 'file':
+		case 'asset':
+		case 'content type':
+			if (item.mimeType.includes('image/')) {
+				TheIcon = ImageIcon;
+			} else if (item.mimeType.includes('video/')) {
+				TheIcon = VideoIcon;
+			} else if (item.mimeType.includes('audio/')) {
+				TheIcon = AudioIcon;
+			} else {
+				switch (item.mimeType) {
+					case 'application/javascript':
+					case 'application/x-javascript':
+						TheIcon = Js;
+						break;
+					case 'application/json':
+						TheIcon = JsonIcon;
+						break;
+					case 'application/x-groovy':
+						TheIcon = Groovy;
+						break;
+					case 'application/x-freemarker':
+						TheIcon = Freemarker;
+						break;
+					case 'text/html':
+						TheIcon = Html;
+						break;
+					case 'text/css':
+						TheIcon = Css;
+						break;
+					case 'text/plain':
+						TheIcon = TextIcon;
+						break;
+					case 'application/xml':
+						TheIcon = CodeRounded;
+						break;
+					case 'font/ttf':
+					case 'font/otf':
+					case 'font/woff':
+					case 'font/woff2':
+					case 'application/vnd.ms-fontobject':
+						TheIcon = FontIcon;
+						break;
+					case 'image/vnd.microsoft.icon':
+						TheIcon = ImageIcon;
+						break;
+					case 'application/x-subrip':
+						TheIcon = SubtitlesIcon;
+						break;
+					default:
+						if (item.mimeType.includes('text/')) {
+							TheIcon = TextIcon;
+						}
+						break;
+				}
+			}
+			break;
+		case 'component':
+			TheIcon = ComponentIcon;
+			break;
+		case 'page':
+			TheIcon = PageIcon;
+			break;
+		case 'folder':
+			TheIcon = FolderIcon;
+			break;
+		case 'levelDescriptor':
+			TheIcon = LevelDescriptorIcon;
+			break;
+		case 'renderingTemplate':
+			TheIcon = Freemarker;
+			break;
+		case 'script':
+			TheIcon = Groovy;
+			break;
+		case 'taxonomy':
+			TheIcon = TaxonomyIcon;
+			break;
+		case 'configuration':
+			TheIcon = SettingsOutlinedIcon;
+			break;
+	}
+	return (
+		<Tooltip {...tooltipProps} title={getItemTypeText(item, formatMessage)}>
+			<TheIcon sx={sxs?.icon} {...rest} />
+		</Tooltip>
+	);
 }
 
 export default ItemTypeIcon;

@@ -23,34 +23,34 @@ import BulkCancelPackageDialogContainer from './BulkCancelPackageDialogContainer
 import StandardAction from '../../models/StandardAction';
 
 export interface BulkCancelPackageDialogBaseProps {
-  packages?: PublishPackage[];
+	packages?: PublishPackage[];
 }
 
 export interface BulkCancelPackageDialogProps extends EnhancedDialogProps, BulkCancelPackageDialogBaseProps {
-  onSuccess?(): void;
+	onSuccess?(): void;
 }
 
 export interface BulkCancelPackageDialogStateProps extends BulkCancelPackageDialogBaseProps, EnhancedDialogState {
-  onClose?: StandardAction;
-  onClosed?: StandardAction;
-  onSuccess?: StandardAction;
+	onClose?: StandardAction;
+	onClosed?: StandardAction;
+	onSuccess?: StandardAction;
 }
 
 export function BulkCancelPackageDialog(props: BulkCancelPackageDialogProps) {
-  const { packages, onSuccess, isSubmitting, ...enhancedDialogProps } = props;
+	const { packages, onSuccess, isSubmitting, ...enhancedDialogProps } = props;
 
-  return (
-    <EnhancedDialog
-      fullWidth
-      maxWidth="sm"
-      {...enhancedDialogProps}
-      title={<FormattedMessage defaultMessage="Cancel Packages" />}
-      subtitle={<FormattedMessage defaultMessage="Confirm the cancellation of the following packages?" />}
-      isSubmitting={isSubmitting}
-    >
-      <BulkCancelPackageDialogContainer packages={packages} onSuccess={onSuccess} isSubmitting={isSubmitting} />
-    </EnhancedDialog>
-  );
+	return (
+		<EnhancedDialog
+			fullWidth
+			maxWidth="sm"
+			{...enhancedDialogProps}
+			title={<FormattedMessage defaultMessage="Cancel Packages" />}
+			subtitle={<FormattedMessage defaultMessage="Confirm the cancellation of the following packages?" />}
+			isSubmitting={isSubmitting}
+		>
+			<BulkCancelPackageDialogContainer packages={packages} onSuccess={onSuccess} isSubmitting={isSubmitting} />
+		</EnhancedDialog>
+	);
 }
 
 export default BulkCancelPackageDialog;

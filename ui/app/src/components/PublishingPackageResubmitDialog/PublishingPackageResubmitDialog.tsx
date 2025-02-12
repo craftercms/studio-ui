@@ -21,29 +21,29 @@ import { EnhancedDialog } from '../EnhancedDialog';
 import PublishingPackageResubmitDialogContainer from './PublishingPackageResubmitDialogContainer';
 
 export function PublishingPackageResubmitDialog(props: PublishingPackageResubmitDialogProps) {
-  const { pkg, type, isSubmitting, onSuccess, ...rest } = props;
+	const { pkg, type, isSubmitting, onSuccess, ...rest } = props;
 
-  return (
-    <EnhancedDialog
-      title={
-        type === 'resubmit' ? (
-          <FormattedMessage defaultMessage="Resubmit Publishing Package" />
-        ) : (
-          <FormattedMessage defaultMessage="Promote Publishing Package" />
-        )
-      }
-      maxWidth="lg"
-      {...rest}
-      isSubmitting={isSubmitting}
-    >
-      <PublishingPackageResubmitDialogContainer
-        type={type}
-        pkg={pkg}
-        onSuccess={onSuccess}
-        isSubmitting={isSubmitting}
-      />
-    </EnhancedDialog>
-  );
+	return (
+		<EnhancedDialog
+			title={
+				type === 'resubmit' ? (
+					<FormattedMessage defaultMessage="Resubmit Publishing Package" />
+				) : (
+					<FormattedMessage defaultMessage="Promote Publishing Package" />
+				)
+			}
+			maxWidth="lg"
+			{...rest}
+			isSubmitting={isSubmitting}
+		>
+			<PublishingPackageResubmitDialogContainer
+				type={type}
+				pkg={pkg}
+				onSuccess={onSuccess}
+				isSubmitting={isSubmitting}
+			/>
+		</EnhancedDialog>
+	);
 }
 
 export default PublishingPackageResubmitDialog;

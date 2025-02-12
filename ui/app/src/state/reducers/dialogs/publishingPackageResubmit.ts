@@ -18,34 +18,34 @@ import { createReducer } from '@reduxjs/toolkit';
 import { PublishingPackageResubmitDialogStateProps } from '../../../components/PublishingPackageResubmitDialog/types';
 import { GlobalState } from '../../../models';
 import {
-  closePublishingPackageResubmitDialog,
-  publishingPackageResubmitDialogClosed,
-  showPublishingPackageResubmitDialog,
-  updatePublishingPackageResubmitDialog
+	closePublishingPackageResubmitDialog,
+	publishingPackageResubmitDialogClosed,
+	showPublishingPackageResubmitDialog,
+	updatePublishingPackageResubmitDialog
 } from '../../actions/dialogs';
 
 const initialState: PublishingPackageResubmitDialogStateProps = {
-  open: false,
-  pkg: null,
-  type: null,
-  isSubmitting: null,
-  isMinimized: null,
-  hasPendingChanges: null
+	open: false,
+	pkg: null,
+	type: null,
+	isSubmitting: null,
+	isMinimized: null,
+	hasPendingChanges: null
 };
 
 export default createReducer<GlobalState['dialogs']['publishingPackageResubmit']>(initialState, (builder) => {
-  builder
-    .addCase(showPublishingPackageResubmitDialog, (state, { payload }) => ({
-      ...state,
-      onClose: closePublishingPackageResubmitDialog(),
-      onClosed: publishingPackageResubmitDialogClosed(),
-      ...(payload as Partial<PublishingPackageResubmitDialogStateProps>),
-      open: true
-    }))
-    .addCase(updatePublishingPackageResubmitDialog, (state, { payload }) => ({
-      ...state,
-      ...(payload as Partial<PublishingPackageResubmitDialogStateProps>)
-    }))
-    .addCase(closePublishingPackageResubmitDialog, (state) => ({ ...state, open: false }))
-    .addCase(publishingPackageResubmitDialogClosed, () => initialState);
+	builder
+		.addCase(showPublishingPackageResubmitDialog, (state, { payload }) => ({
+			...state,
+			onClose: closePublishingPackageResubmitDialog(),
+			onClosed: publishingPackageResubmitDialogClosed(),
+			...(payload as Partial<PublishingPackageResubmitDialogStateProps>),
+			open: true
+		}))
+		.addCase(updatePublishingPackageResubmitDialog, (state, { payload }) => ({
+			...state,
+			...(payload as Partial<PublishingPackageResubmitDialogStateProps>)
+		}))
+		.addCase(closePublishingPackageResubmitDialog, (state) => ({ ...state, open: false }))
+		.addCase(publishingPackageResubmitDialogClosed, () => initialState);
 });

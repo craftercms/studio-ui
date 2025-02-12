@@ -15,10 +15,10 @@
  */
 
 export interface Group {
-  id: number;
-  name: string;
-  desc: string;
-  externallyManaged: boolean;
+	id: number;
+	name: string;
+	desc: string;
+	externallyManaged: boolean;
 }
 
 export default Group;

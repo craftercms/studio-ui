@@ -41,168 +41,168 @@ import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 
 interface AuditManagementProps {
-  site?: string;
-  embedded?: boolean;
-  showAppsButton?: boolean;
+	site?: string;
+	embedded?: boolean;
+	showAppsButton?: boolean;
 }
 
 export function AuditManagement(props: AuditManagementProps) {
-  const { site, embedded, showAppsButton } = props;
-  const [auditLogs, setAuditLogs] = useState<PagedArray<AuditLogEntry>>(null);
-  const [error, setError] = useState<ApiResponse>();
-  const sites = useSiteList();
-  const [users, setUsers] = useState<PagedArray<User>>();
-  const [options, setOptions] = useSpreadState<AuditOptions>({
-    offset: 0,
-    limit: 10,
-    sort: 'date',
-    order: 'DESC',
-    siteId: site
-  });
-  const [parametersLookup, setParametersLookup] = useSpreadState<LookupTable<AuditLogEntryParameter[]>>({});
-  const [dialogParams, setDialogParams] = useState<AuditLogEntryParameter[]>([]);
-  const { formatMessage } = useIntl();
-  const hasActiveFilters = Object.keys(options).some((key) => {
-    return (
-      !(Boolean(site) ? ['limit', 'offset', 'sort', 'siteId'] : ['limit', 'offset', 'sort']).includes(key) &&
-      nnou(options[key])
-    );
-  });
-  const [page, setPage] = useState(0);
-  const auditLogEntryParametersDialogState = useEnhancedDialogState();
-  const dispatch = useDispatch();
+	const { site, embedded, showAppsButton } = props;
+	const [auditLogs, setAuditLogs] = useState<PagedArray<AuditLogEntry>>(null);
+	const [error, setError] = useState<ApiResponse>();
+	const sites = useSiteList();
+	const [users, setUsers] = useState<PagedArray<User>>();
+	const [options, setOptions] = useSpreadState<AuditOptions>({
+		offset: 0,
+		limit: 10,
+		sort: 'date',
+		order: 'DESC',
+		siteId: site
+	});
+	const [parametersLookup, setParametersLookup] = useSpreadState<LookupTable<AuditLogEntryParameter[]>>({});
+	const [dialogParams, setDialogParams] = useState<AuditLogEntryParameter[]>([]);
+	const { formatMessage } = useIntl();
+	const hasActiveFilters = Object.keys(options).some((key) => {
+		return (
+			!(Boolean(site) ? ['limit', 'offset', 'sort', 'siteId'] : ['limit', 'offset', 'sort']).includes(key) &&
+			nnou(options[key])
+		);
+	});
+	const [page, setPage] = useState(0);
+	const auditLogEntryParametersDialogState = useEnhancedDialogState();
+	const dispatch = useDispatch();
 
-  const refresh = useCallback(() => {
-    fetchAuditLog(options).subscribe({
-      next: (logs) => {
-        setAuditLogs(logs);
-      },
-      error: ({ response }) => {
-        setError(response.response);
-      }
-    });
-  }, [options]);
+	const refresh = useCallback(() => {
+		fetchAuditLog(options).subscribe({
+			next: (logs) => {
+				setAuditLogs(logs);
+			},
+			error: ({ response }) => {
+				setError(response.response);
+			}
+		});
+	}, [options]);
 
-  useMount(() => {
-    fetchAll().subscribe((users) => {
-      setUsers(users);
-    });
-  });
+	useMount(() => {
+		fetchAll().subscribe((users) => {
+			setUsers(users);
+		});
+	});
 
-  useEffect(() => {
-    refresh();
-  }, [refresh]);
+	useEffect(() => {
+		refresh();
+	}, [refresh]);
 
-  const onPageChange = (pageNumber: number) => {
-    setPage(pageNumber);
-    setOptions({ offset: pageNumber * options.limit });
-  };
+	const onPageChange = (pageNumber: number) => {
+		setPage(pageNumber);
+		setOptions({ offset: pageNumber * options.limit });
+	};
 
-  const onPageSizeChange = (pageSize: number) => {
-    setPage(0);
-    setOptions({ offset: 0, limit: pageSize });
-  };
+	const onPageSizeChange = (pageSize: number) => {
+		setPage(0);
+		setOptions({ offset: 0, limit: pageSize });
+	};
 
-  const onFilterChange = ({ id, value }: { id: string; value: string | string[] }) => {
-    setPage(0);
-    setOptions({ [id]: value, offset: 0 });
-  };
+	const onFilterChange = ({ id, value }: { id: string; value: string | string[] }) => {
+		setPage(0);
+		setOptions({ [id]: value, offset: 0 });
+	};
 
-  const onResetFilter = (id: string | string[]) => {
-    let filters = {};
-    if (Array.isArray(id)) {
-      id.forEach((key) => {
-        filters[key] = undefined;
-      });
-    } else {
-      filters[id] = undefined;
-    }
-    setOptions(filters);
-  };
+	const onResetFilter = (id: string | string[]) => {
+		let filters = {};
+		if (Array.isArray(id)) {
+			id.forEach((key) => {
+				filters[key] = undefined;
+			});
+		} else {
+			filters[id] = undefined;
+		}
+		setOptions(filters);
+	};
 
-  const onResetFilters = () => {
-    const { limit, offset, sort, siteId, ...rest } = options;
-    Object.keys(rest).forEach((key) => {
-      rest[key] = undefined;
-    });
-    setOptions({ limit, offset, sort, siteId: Boolean(site) ? site : undefined, ...rest });
-  };
+	const onResetFilters = () => {
+		const { limit, offset, sort, siteId, ...rest } = options;
+		Object.keys(rest).forEach((key) => {
+			rest[key] = undefined;
+		});
+		setOptions({ limit, offset, sort, siteId: Boolean(site) ? site : undefined, ...rest });
+	};
 
-  const onFetchParameters = (id: number) => {
-    if (parametersLookup[id]?.length) {
-      setDialogParams(parametersLookup[id]);
-      auditLogEntryParametersDialogState.onOpen();
-    } else {
-      fetchAuditLogEntry(id, site).subscribe({
-        next(response) {
-          setParametersLookup({ [id]: response.parameters });
-          if (response.parameters.length) {
-            setDialogParams(response.parameters);
-            auditLogEntryParametersDialogState.onOpen();
-          }
-        },
-        error({ response }) {
-          dispatch(showErrorDialog({ error: response.response }));
-        }
-      });
-    }
-  };
+	const onFetchParameters = (id: number) => {
+		if (parametersLookup[id]?.length) {
+			setDialogParams(parametersLookup[id]);
+			auditLogEntryParametersDialogState.onOpen();
+		} else {
+			fetchAuditLogEntry(id, site).subscribe({
+				next(response) {
+					setParametersLookup({ [id]: response.parameters });
+					if (response.parameters.length) {
+						setDialogParams(response.parameters);
+						auditLogEntryParametersDialogState.onOpen();
+					}
+				},
+				error({ response }) {
+					dispatch(showErrorDialog({ error: response.response }));
+				}
+			});
+		}
+	};
 
-  const onShowParametersDialogClosed = () => {
-    setDialogParams([]);
-  };
+	const onShowParametersDialogClosed = () => {
+		setDialogParams([]);
+	};
 
-  return (
-    <Paper elevation={0}>
-      <GlobalAppToolbar
-        title={!embedded && <FormattedMessage id="GlobalMenu.Audit" defaultMessage="Audit" />}
-        rightContent={
-          <Button disabled={!hasActiveFilters} variant="text" color="primary" onClick={() => onResetFilters()}>
-            <FormattedMessage id="auditGrid.clearFilters" defaultMessage="Clear filters" />
-          </Button>
-        }
-        showHamburgerMenuButton={!embedded}
-        showAppsButton={showAppsButton}
-      />
-      {error ? (
-        <ApiResponseErrorState error={error} />
-      ) : auditLogs ? (
-        <AuditGridUI
-          page={page}
-          auditLogs={auditLogs}
-          sites={sites}
-          users={users}
-          siteMode={Boolean(site)}
-          parametersLookup={parametersLookup}
-          onFetchParameters={onFetchParameters}
-          onPageChange={onPageChange}
-          onResetFilters={onResetFilters}
-          onResetFilter={onResetFilter}
-          onPageSizeChange={onPageSizeChange}
-          onFilterChange={onFilterChange}
-          filters={options}
-          hasActiveFilters={hasActiveFilters}
-          timezones={moment.tz.names()}
-          operations={Operations.map((id) => ({ id, value: id, name: formatMessage(OperationsMessages[id]) }))}
-          origins={[
-            { id: 'GIT', name: 'GIT', value: 'GIT' },
-            { id: 'API', name: 'API', value: 'API' }
-          ]}
-        />
-      ) : (
-        <AuditGridSkeleton siteMode={Boolean(site)} numOfItems={auditLogs?.length ?? 10} filters={options} />
-      )}
-      <AuditLogEntryParametersDialog
-        open={auditLogEntryParametersDialogState.open}
-        onClose={auditLogEntryParametersDialogState.onClose}
-        onClosed={onShowParametersDialogClosed}
-        parameters={dialogParams}
-        hasPendingChanges={auditLogEntryParametersDialogState.hasPendingChanges}
-        isMinimized={auditLogEntryParametersDialogState.isMinimized}
-        isSubmitting={auditLogEntryParametersDialogState.isSubmitting}
-      />
-    </Paper>
-  );
+	return (
+		<Paper elevation={0}>
+			<GlobalAppToolbar
+				title={!embedded && <FormattedMessage id="GlobalMenu.Audit" defaultMessage="Audit" />}
+				rightContent={
+					<Button disabled={!hasActiveFilters} variant="text" color="primary" onClick={() => onResetFilters()}>
+						<FormattedMessage id="auditGrid.clearFilters" defaultMessage="Clear filters" />
+					</Button>
+				}
+				showHamburgerMenuButton={!embedded}
+				showAppsButton={showAppsButton}
+			/>
+			{error ? (
+				<ApiResponseErrorState error={error} />
+			) : auditLogs ? (
+				<AuditGridUI
+					page={page}
+					auditLogs={auditLogs}
+					sites={sites}
+					users={users}
+					siteMode={Boolean(site)}
+					parametersLookup={parametersLookup}
+					onFetchParameters={onFetchParameters}
+					onPageChange={onPageChange}
+					onResetFilters={onResetFilters}
+					onResetFilter={onResetFilter}
+					onPageSizeChange={onPageSizeChange}
+					onFilterChange={onFilterChange}
+					filters={options}
+					hasActiveFilters={hasActiveFilters}
+					timezones={moment.tz.names()}
+					operations={Operations.map((id) => ({ id, value: id, name: formatMessage(OperationsMessages[id]) }))}
+					origins={[
+						{ id: 'GIT', name: 'GIT', value: 'GIT' },
+						{ id: 'API', name: 'API', value: 'API' }
+					]}
+				/>
+			) : (
+				<AuditGridSkeleton siteMode={Boolean(site)} numOfItems={auditLogs?.length ?? 10} filters={options} />
+			)}
+			<AuditLogEntryParametersDialog
+				open={auditLogEntryParametersDialogState.open}
+				onClose={auditLogEntryParametersDialogState.onClose}
+				onClosed={onShowParametersDialogClosed}
+				parameters={dialogParams}
+				hasPendingChanges={auditLogEntryParametersDialogState.hasPendingChanges}
+				isMinimized={auditLogEntryParametersDialogState.isMinimized}
+				isSubmitting={auditLogEntryParametersDialogState.isSubmitting}
+			/>
+		</Paper>
+	);
 }
 
 export default AuditManagement;

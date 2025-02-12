@@ -38,129 +38,129 @@ import { applyAssetNameRules } from '../../utils/content';
 import { DialogBody } from '../DialogBody';
 
 export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
-  const {
-    onClose,
-    onRenamed,
-    path,
-    value = '',
-    allowBraces = false,
-    type,
-    dependantItems,
-    fetchingDependantItems,
-    error
-  } = props;
-  const { isSubmitting, hasPendingChanges } = useEnhancedDialogContext();
-  const [name, setName] = useState(value);
-  const dispatch = useDispatch();
-  const itemLookupTable = useItemsByPath();
-  const newAssetName = type !== 'asset' ? getFileNameWithExtensionForItemType(type, name) : name;
-  const newAssetPath = `${getParentPath(path)}/${newAssetName}`;
-  const assetExists = newAssetName !== value && itemLookupTable[newAssetPath] !== UNDEFINED;
-  const isValid = !isBlank(name) && !assetExists && name !== value;
-  const siteId = useActiveSiteId();
-  const [confirm, setConfirm] = useState(null);
-  const [confirmBrokenReferences, setConfirmBrokenReferences] = useState(false);
-  const { formatMessage } = useIntl();
-  const renameDisabled =
-    isSubmitting || !isValid || fetchingDependantItems || (dependantItems?.length > 0 && !confirmBrokenReferences);
+	const {
+		onClose,
+		onRenamed,
+		path,
+		value = '',
+		allowBraces = false,
+		type,
+		dependantItems,
+		fetchingDependantItems,
+		error
+	} = props;
+	const { isSubmitting, hasPendingChanges } = useEnhancedDialogContext();
+	const [name, setName] = useState(value);
+	const dispatch = useDispatch();
+	const itemLookupTable = useItemsByPath();
+	const newAssetName = type !== 'asset' ? getFileNameWithExtensionForItemType(type, name) : name;
+	const newAssetPath = `${getParentPath(path)}/${newAssetName}`;
+	const assetExists = newAssetName !== value && itemLookupTable[newAssetPath] !== UNDEFINED;
+	const isValid = !isBlank(name) && !assetExists && name !== value;
+	const siteId = useActiveSiteId();
+	const [confirm, setConfirm] = useState(null);
+	const [confirmBrokenReferences, setConfirmBrokenReferences] = useState(false);
+	const { formatMessage } = useIntl();
+	const renameDisabled =
+		isSubmitting || !isValid || fetchingDependantItems || (dependantItems?.length > 0 && !confirmBrokenReferences);
 
-  useEffect(() => {
-    dispatch(fetchRenameAssetDependants());
-  }, [dispatch]);
+	useEffect(() => {
+		dispatch(fetchRenameAssetDependants());
+	}, [dispatch]);
 
-  const onInputChanges = (newValue: string) => {
-    setName(newValue);
-    const newHasPendingChanges = newValue !== value;
-    hasPendingChanges !== newHasPendingChanges &&
-      dispatch(updateRenameAssetDialog({ hasPendingChanges: newHasPendingChanges }));
-  };
+	const onInputChanges = (newValue: string) => {
+		setName(newValue);
+		const newHasPendingChanges = newValue !== value;
+		hasPendingChanges !== newHasPendingChanges &&
+			dispatch(updateRenameAssetDialog({ hasPendingChanges: newHasPendingChanges }));
+	};
 
-  const onRenameAsset = (siteId: string, path: string, name: string) => {
-    const fileName = type !== 'asset' ? getFileNameWithExtensionForItemType(type, name) : name;
-    renameContent(siteId, path, fileName).subscribe({
-      next() {
-        onRenamed?.({ path, name });
-        dispatch(updateRenameAssetDialog({ isSubmitting: false, hasPendingChanges: false }));
-      },
-      error({ response }) {
-        dispatch(showErrorDialog({ error: response.response }));
-        dispatch(updateRenameAssetDialog({ isSubmitting: false }));
-      }
-    });
-  };
+	const onRenameAsset = (siteId: string, path: string, name: string) => {
+		const fileName = type !== 'asset' ? getFileNameWithExtensionForItemType(type, name) : name;
+		renameContent(siteId, path, fileName).subscribe({
+			next() {
+				onRenamed?.({ path, name });
+				dispatch(updateRenameAssetDialog({ isSubmitting: false, hasPendingChanges: false }));
+			},
+			error({ response }) {
+				dispatch(showErrorDialog({ error: response.response }));
+				dispatch(updateRenameAssetDialog({ isSubmitting: false }));
+			}
+		});
+	};
 
-  const onConfirmCancel = () => {
-    setConfirm(null);
-    dispatch(updateRenameAssetDialog({ isSubmitting: false }));
-  };
+	const onConfirmCancel = () => {
+		setConfirm(null);
+		dispatch(updateRenameAssetDialog({ isSubmitting: false }));
+	};
 
-  const onRename = () => {
-    dispatch(updateRenameAssetDialog({ isSubmitting: true }));
-    if (name) {
-      validateActionPolicy(siteId, {
-        type: 'RENAME',
-        target: newAssetPath
-      }).subscribe(({ allowed, modifiedValue, message }) => {
-        if (allowed && modifiedValue) {
-          setConfirm({ body: message });
-        } else if (allowed) {
-          onRenameAsset(siteId, path, name);
-        } else {
-          setConfirm({
-            error: true,
-            body: formatMessage(translations.policyError, { fileName: name, detail: message })
-          });
-        }
-      });
-    }
-  };
+	const onRename = () => {
+		dispatch(updateRenameAssetDialog({ isSubmitting: true }));
+		if (name) {
+			validateActionPolicy(siteId, {
+				type: 'RENAME',
+				target: newAssetPath
+			}).subscribe(({ allowed, modifiedValue, message }) => {
+				if (allowed && modifiedValue) {
+					setConfirm({ body: message });
+				} else if (allowed) {
+					onRenameAsset(siteId, path, name);
+				} else {
+					setConfirm({
+						error: true,
+						body: formatMessage(translations.policyError, { fileName: name, detail: message })
+					});
+				}
+			});
+		}
+	};
 
-  return (
-    <>
-      <DialogBody>
-        <RenameItemView
-          name={name}
-          disabled={renameDisabled}
-          newNameExists={assetExists}
-          dependantItems={dependantItems}
-          isSubmitting={isSubmitting}
-          confirmBrokenReferences={confirmBrokenReferences}
-          fetchingDependantItems={fetchingDependantItems}
-          error={error}
-          setConfirmBrokenReferences={setConfirmBrokenReferences}
-          onRename={onRename}
-          onInputChanges={(event) => onInputChanges(applyAssetNameRules(event.target.value, { allowBraces }))}
-          helperText={
-            assetExists ? (
-              <FormattedMessage
-                id="renameAsset.assetAlreadyExists"
-                defaultMessage="An asset with that name already exists."
-              />
-            ) : !name && isSubmitting ? (
-              <FormattedMessage id="renameAsset.assetNameRequired" defaultMessage="Asset name is required." />
-            ) : (
-              <FormattedMessage
-                id="renameAsset.helperText"
-                defaultMessage="Consisting of letters, numbers, dot (.), dash (-) and underscore (_)."
-              />
-            )
-          }
-        />
-      </DialogBody>
-      <DialogFooter>
-        <SecondaryButton onClick={(e) => onClose(e, null)} disabled={isSubmitting}>
-          <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
-        </SecondaryButton>
-        <PrimaryButton onClick={onRename} disabled={renameDisabled} loading={isSubmitting}>
-          <FormattedMessage id="words.rename" defaultMessage="Rename" />
-        </PrimaryButton>
-      </DialogFooter>
-      <ConfirmDialog
-        open={Boolean(confirm)}
-        body={confirm?.body}
-        onOk={confirm?.error ? onConfirmCancel : () => onRenameAsset(siteId, path, name)}
-        onCancel={confirm?.error ? null : onConfirmCancel}
-      />
-    </>
-  );
+	return (
+		<>
+			<DialogBody>
+				<RenameItemView
+					name={name}
+					disabled={renameDisabled}
+					newNameExists={assetExists}
+					dependantItems={dependantItems}
+					isSubmitting={isSubmitting}
+					confirmBrokenReferences={confirmBrokenReferences}
+					fetchingDependantItems={fetchingDependantItems}
+					error={error}
+					setConfirmBrokenReferences={setConfirmBrokenReferences}
+					onRename={onRename}
+					onInputChanges={(event) => onInputChanges(applyAssetNameRules(event.target.value, { allowBraces }))}
+					helperText={
+						assetExists ? (
+							<FormattedMessage
+								id="renameAsset.assetAlreadyExists"
+								defaultMessage="An asset with that name already exists."
+							/>
+						) : !name && isSubmitting ? (
+							<FormattedMessage id="renameAsset.assetNameRequired" defaultMessage="Asset name is required." />
+						) : (
+							<FormattedMessage
+								id="renameAsset.helperText"
+								defaultMessage="Consisting of letters, numbers, dot (.), dash (-) and underscore (_)."
+							/>
+						)
+					}
+				/>
+			</DialogBody>
+			<DialogFooter>
+				<SecondaryButton onClick={(e) => onClose(e, null)} disabled={isSubmitting}>
+					<FormattedMessage id="words.cancel" defaultMessage="Cancel" />
+				</SecondaryButton>
+				<PrimaryButton onClick={onRename} disabled={renameDisabled} loading={isSubmitting}>
+					<FormattedMessage id="words.rename" defaultMessage="Rename" />
+				</PrimaryButton>
+			</DialogFooter>
+			<ConfirmDialog
+				open={Boolean(confirm)}
+				body={confirm?.body}
+				onOk={confirm?.error ? onConfirmCancel : () => onRenameAsset(siteId, path, name)}
+				onCancel={confirm?.error ? null : onConfirmCancel}
+			/>
+		</>
+	);
 }

@@ -20,17 +20,17 @@ import CloseIcon from '@mui/icons-material/Close';
 import React from 'react';
 
 export interface SnackbarCloseButtonProps {
-  id: number | string;
+	id: number | string;
 }
 
 export function SnackbarCloseButton(props: SnackbarCloseButtonProps) {
-  const { id } = props;
-  const { closeSnackbar } = useSnackbar();
-  return (
-    <IconButton onClick={() => closeSnackbar(id)} size="small" color="secondary">
-      <CloseIcon fontSize="small" />
-    </IconButton>
-  );
+	const { id } = props;
+	const { closeSnackbar } = useSnackbar();
+	return (
+		<IconButton onClick={() => closeSnackbar(id)} size="small" color="secondary">
+			<CloseIcon fontSize="small" />
+		</IconButton>
+	);
 }
 
 export default SnackbarCloseButton;

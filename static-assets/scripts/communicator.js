@@ -15,270 +15,270 @@
  */
 
 (function (window) {
-  var define =
-    typeof window.crafterDefine === 'function' && window.crafterDefine.amd
-      ? window.crafterDefine
-      : function (a, b, f) {
-          f(window.crafter, window.amplify);
-        };
+	var define =
+		typeof window.crafterDefine === 'function' && window.crafterDefine.amd
+			? window.crafterDefine
+			: function (a, b, f) {
+					f(window.crafter, window.amplify);
+				};
 
-  define('communicator', ['crafter', 'amplify'], function (crafter, amplify) {
-    'use strict';
+	define('communicator', ['crafter', 'amplify'], function (crafter, amplify) {
+		'use strict';
 
-    if (typeof amplify === 'undefined') {
-      amplify = window.amplify;
-    }
+		if (typeof amplify === 'undefined') {
+			amplify = window.amplify;
+		}
 
-    var studio = crafter.studio,
-      undefined;
+		var studio = crafter.studio,
+			undefined;
 
-    var SCOPE_LOCAL = 'SCOPE_LOCAL',
-      SCOPE_BROADCAST = 'SCOPE_BROADCAST',
-      SCOPE_EXTERNAL = 'SCOPE_EXTERNAL',
-      SCOPE_REMOTE = 'SCOPE_REMOTE',
-      ALL_TOPICS = '*';
+		var SCOPE_LOCAL = 'SCOPE_LOCAL',
+			SCOPE_BROADCAST = 'SCOPE_BROADCAST',
+			SCOPE_EXTERNAL = 'SCOPE_EXTERNAL',
+			SCOPE_REMOTE = 'SCOPE_REMOTE',
+			ALL_TOPICS = '*';
 
-    function Communicator(remotes, targetWindows, allowedOrigins) {
-      if (arguments.length === 1) {
-        allowedOrigins = remotes;
-        targetWindows = [];
-        remotes = [];
-      } else if (arguments.length === 2) {
-        allowedOrigins = targetWindows;
-        targetWindows = remotes;
-        remotes = [];
-      }
+		function Communicator(remotes, targetWindows, allowedOrigins) {
+			if (arguments.length === 1) {
+				allowedOrigins = remotes;
+				targetWindows = [];
+				remotes = [];
+			} else if (arguments.length === 2) {
+				allowedOrigins = targetWindows;
+				targetWindows = remotes;
+				remotes = [];
+			}
 
-      if (!remotes) {
-        remotes = [];
-      }
+			if (!remotes) {
+				remotes = [];
+			}
 
-      if (!targetWindows) {
-        remotes = [];
-      }
+			if (!targetWindows) {
+				remotes = [];
+			}
 
-      if (!allowedOrigins) {
-        allowedOrigins = [];
-      }
+			if (!allowedOrigins) {
+				allowedOrigins = [];
+			}
 
-      if (typeof remotes === 'string' || !('splice' in remotes)) {
-        remotes = [remotes];
-      }
+			if (typeof remotes === 'string' || !('splice' in remotes)) {
+				remotes = [remotes];
+			}
 
-      if (typeof targetWindows === 'string' || !('splice' in targetWindows)) {
-        targetWindows = [targetWindows];
-      }
+			if (typeof targetWindows === 'string' || !('splice' in targetWindows)) {
+				targetWindows = [targetWindows];
+			}
 
-      if (typeof allowedOrigins === 'string' || !('splice' in allowedOrigins)) {
-        allowedOrigins = [allowedOrigins];
-      }
+			if (typeof allowedOrigins === 'string' || !('splice' in allowedOrigins)) {
+				allowedOrigins = [allowedOrigins];
+			}
 
-      var me = this;
-      var privates = {
-        remotes: remotes,
+			var me = this;
+			var privates = {
+				remotes: remotes,
 
-        targetWindows: targetWindows,
+				targetWindows: targetWindows,
 
-        defaultScope: SCOPE_BROADCAST,
+				defaultScope: SCOPE_BROADCAST,
 
-        allowedOrigins: allowedOrigins
-      };
+				allowedOrigins: allowedOrigins
+			};
 
-      this.setAllowedOrigins = function (origins) {
-        privates.allowedOrigins = origins;
-      };
+			this.setAllowedOrigins = function (origins) {
+				privates.allowedOrigins = origins;
+			};
 
-      this.getAllowedOrigins = function () {
-        return privates.allowedOrigins;
-      };
+			this.getAllowedOrigins = function () {
+				return privates.allowedOrigins;
+			};
 
-      this.getDefaultScope = function () {
-        return privates.defaultScope;
-      };
+			this.getDefaultScope = function () {
+				return privates.defaultScope;
+			};
 
-      this.setDefaultScope = function (defaultScope) {
-        privates.defaultScope = defaultScope;
-      };
+			this.setDefaultScope = function (defaultScope) {
+				privates.defaultScope = defaultScope;
+			};
 
-      this.getTargetWindows = function () {
-        return privates.targetWindows;
-      };
+			this.getTargetWindows = function () {
+				return privates.targetWindows;
+			};
 
-      this.setTargetWindows = function (targetWindows) {
-        privates.targetWindows = targetWindows;
-      };
+			this.setTargetWindows = function (targetWindows) {
+				privates.targetWindows = targetWindows;
+			};
 
-      window.addEventListener(
-        'message',
-        function (event) {
-          receiveMessage.call(me, event);
-        },
-        false
-      );
+			window.addEventListener(
+				'message',
+				function (event) {
+					receiveMessage.call(me, event);
+				},
+				false
+			);
 
-      return this;
-    }
+			return this;
+		}
 
-    Communicator.prototype = {
-      addOrigin,
-      addTargetWindow,
-      removeTargetWindow,
-      isAllowedOrigin: isAllowedOrigin,
-      publish,
-      pub: publish,
-      subscribe,
-      on: subscribe,
-      unsubscribe,
-      dispatch
-    };
+		Communicator.prototype = {
+			addOrigin,
+			addTargetWindow,
+			removeTargetWindow,
+			isAllowedOrigin: isAllowedOrigin,
+			publish,
+			pub: publish,
+			subscribe,
+			on: subscribe,
+			unsubscribe,
+			dispatch
+		};
 
-    /*public*/
-    function subscribe(topic, callback, scope) {
-      return amplify.subscribe(getScopeSpecificTopic(topic, scope), callback);
-    }
+		/*public*/
+		function subscribe(topic, callback, scope) {
+			return amplify.subscribe(getScopeSpecificTopic(topic, scope), callback);
+		}
 
-    /*public*/
-    function unsubscribe(topic, callback, scope) {
-      return amplify.unsubscribe(getScopeSpecificTopic(topic, scope), callback);
-    }
+		/*public*/
+		function unsubscribe(topic, callback, scope) {
+			return amplify.unsubscribe(getScopeSpecificTopic(topic, scope), callback);
+		}
 
-    /*public*/
-    function addOrigin(origin) {
-      this.getAllowedOrigins().push(origin);
-    }
+		/*public*/
+		function addOrigin(origin) {
+			this.getAllowedOrigins().push(origin);
+		}
 
-    /*public*/
-    function isAllowedOrigin(origin) {
-      var origins = this.getAllowedOrigins(),
-        i,
-        l;
+		/*public*/
+		function isAllowedOrigin(origin) {
+			var origins = this.getAllowedOrigins(),
+				i,
+				l;
 
-      for (i = 0, l = origins.length; i < l; ++i) {
-        if (origins[i] === origin) {
-          return true;
-        }
-      }
+			for (i = 0, l = origins.length; i < l; ++i) {
+				if (origins[i] === origin) {
+					return true;
+				}
+			}
 
-      return false;
-    }
+			return false;
+		}
 
-    /*public*/
-    function addTargetWindow(targetWindow) {
-      var hasWindow = false,
-        targetWindows = this.getTargetWindows();
+		/*public*/
+		function addTargetWindow(targetWindow) {
+			var hasWindow = false,
+				targetWindows = this.getTargetWindows();
 
-      for (var i = 0; !hasWindow && i < targetWindows.length; ++i)
-        hasWindow = targetWindow.window === targetWindows[i].window;
+			for (var i = 0; !hasWindow && i < targetWindows.length; ++i)
+				hasWindow = targetWindow.window === targetWindows[i].window;
 
-      if (!hasWindow) targetWindows.push(targetWindow);
+			if (!hasWindow) targetWindows.push(targetWindow);
 
-      return !hasWindow;
-    }
+			return !hasWindow;
+		}
 
-    /*public*/
-    function removeTargetWindow(targetWindow) {
-      var i,
-        hasWindow = false,
-        targetWindows = this.getTargetWindows();
+		/*public*/
+		function removeTargetWindow(targetWindow) {
+			var i,
+				hasWindow = false,
+				targetWindows = this.getTargetWindows();
 
-      for (i = 0; !hasWindow && i < targetWindows.length; ++i) hasWindow = targetWindow === targetWindows[i];
+			for (i = 0; !hasWindow && i < targetWindows.length; ++i) hasWindow = targetWindow === targetWindows[i];
 
-      if (!hasWindow) targetWindows.push(targetWindow);
+			if (!hasWindow) targetWindows.push(targetWindow);
 
-      return !hasWindow;
-    }
+			return !hasWindow;
+		}
 
-    /*public*/
-    function publish(topic, message, scope) {
-      switch (message) {
-        case SCOPE_LOCAL:
-        case SCOPE_REMOTE:
-        case SCOPE_EXTERNAL:
-        case SCOPE_BROADCAST:
-          scope = message;
-          message = undefined;
-          break;
-      }
+		/*public*/
+		function publish(topic, message, scope) {
+			switch (message) {
+				case SCOPE_LOCAL:
+				case SCOPE_REMOTE:
+				case SCOPE_EXTERNAL:
+				case SCOPE_BROADCAST:
+					scope = message;
+					message = undefined;
+					break;
+			}
 
-      switch (scope) {
-        case SCOPE_LOCAL:
-        case SCOPE_REMOTE:
-        case SCOPE_EXTERNAL:
-        case SCOPE_BROADCAST:
-          break;
-        default:
-          scope = this.getDefaultScope();
-      }
+			switch (scope) {
+				case SCOPE_LOCAL:
+				case SCOPE_REMOTE:
+				case SCOPE_EXTERNAL:
+				case SCOPE_BROADCAST:
+					break;
+				default:
+					scope = this.getDefaultScope();
+			}
 
-      // Publish event locally.
-      if (scope === SCOPE_LOCAL || scope === SCOPE_BROADCAST) {
-        doLocalPublish(topic, scope, message);
-      }
+			// Publish event locally.
+			if (scope === SCOPE_LOCAL || scope === SCOPE_BROADCAST) {
+				doLocalPublish(topic, scope, message);
+			}
 
-      // Publish data externally.
-      if (scope === SCOPE_BROADCAST || scope === SCOPE_EXTERNAL) {
-        sendMessage.call(this, { topic: topic, message: message, scope: scope });
-      }
-    }
+			// Publish data externally.
+			if (scope === SCOPE_BROADCAST || scope === SCOPE_EXTERNAL) {
+				sendMessage.call(this, { topic: topic, message: message, scope: scope });
+			}
+		}
 
-    /*private*/
-    function sendMessage(message, targetWindows) {
-      !targetWindows && (targetWindows = this.getTargetWindows());
+		/*private*/
+		function sendMessage(message, targetWindows) {
+			!targetWindows && (targetWindows = this.getTargetWindows());
 
-      message.meta = { craftercms: true, source: 'legacy' };
+			message.meta = { craftercms: true, source: 'legacy' };
 
-      for (var i = 0, l = targetWindows.length; i < l; ++i) {
-        targetWindows[i].window.postMessage(message, targetWindows[i].origin);
-      }
-    }
+			for (var i = 0, l = targetWindows.length; i < l; ++i) {
+				targetWindows[i].window.postMessage(message, targetWindows[i].origin);
+			}
+		}
 
-    function dispatch(action) {
-      var targetWindows = this.getTargetWindows();
-      for (var i = 0, l = targetWindows.length; i < l; ++i) {
-        targetWindows[i].window.postMessage(action, targetWindows[i].origin);
-      }
-    }
+		function dispatch(action) {
+			var targetWindows = this.getTargetWindows();
+			for (var i = 0, l = targetWindows.length; i < l; ++i) {
+				targetWindows[i].window.postMessage(action, targetWindows[i].origin);
+			}
+		}
 
-    /*private*/
-    function receiveMessage(event) {
-      if (this.isAllowedOrigin(event.origin)) {
-        var data = event.data;
-        if (data != null && typeof data === 'object') {
-          if ('topic' in data) {
-            doLocalPublish(data.topic, data.scope, data.message);
-          } else if (
-            // This is the signature of ui4 messages
-            'type' in data &&
-            'meta' in data
-          ) {
-            doLocalPublish(data.type, null, data.payload);
-          }
-        }
-      }
-    }
+		/*private*/
+		function receiveMessage(event) {
+			if (this.isAllowedOrigin(event.origin)) {
+				var data = event.data;
+				if (data != null && typeof data === 'object') {
+					if ('topic' in data) {
+						doLocalPublish(data.topic, data.scope, data.message);
+					} else if (
+						// This is the signature of ui4 messages
+						'type' in data &&
+						'meta' in data
+					) {
+						doLocalPublish(data.type, null, data.payload);
+					}
+				}
+			}
+		}
 
-    /* private */
-    function getScopeSpecificTopic(topic, scope) {
-      return topic + (scope ? ':' + scope : '');
-    }
+		/* private */
+		function getScopeSpecificTopic(topic, scope) {
+			return topic + (scope ? ':' + scope : '');
+		}
 
-    /* private */
-    function doLocalPublish(topic, scope, message) {
-      amplify.publish(ALL_TOPICS, topic, message, scope);
-      amplify.publish(topic, message, scope);
-      if (scope) {
-        const scoped = getScopeSpecificTopic(topic, scope);
-        amplify.publish(scoped, message, scope);
-      }
-    }
+		/* private */
+		function doLocalPublish(topic, scope, message) {
+			amplify.publish(ALL_TOPICS, topic, message, scope);
+			amplify.publish(topic, message, scope);
+			if (scope) {
+				const scoped = getScopeSpecificTopic(topic, scope);
+				amplify.publish(scoped, message, scope);
+			}
+		}
 
-    Communicator.SCOPE_LOCAL = SCOPE_LOCAL;
-    Communicator.SCOPE_BROADCAST = SCOPE_BROADCAST;
-    Communicator.SCOPE_EXTERNAL = SCOPE_EXTERNAL;
-    Communicator.SCOPE_REMOTE = SCOPE_REMOTE;
+		Communicator.SCOPE_LOCAL = SCOPE_LOCAL;
+		Communicator.SCOPE_BROADCAST = SCOPE_BROADCAST;
+		Communicator.SCOPE_EXTERNAL = SCOPE_EXTERNAL;
+		Communicator.SCOPE_REMOTE = SCOPE_REMOTE;
 
-    studio.define('Communicator', Communicator);
+		studio.define('Communicator', Communicator);
 
-    return Communicator;
-  });
+		return Communicator;
+	});
 })(window);

@@ -20,18 +20,18 @@ import React from 'react';
 import Box from '@mui/material/Box';
 
 export function LegacyVersionDialog(props: VersionViewProps) {
-  const { version } = props;
-  const authoringUrl = useSelection<string>((state) => state.env.authoringBase);
-  return (
-    <Box
-      component="iframe"
-      title="View version"
-      sx={{ border: 'none', height: '80vh' }}
-      src={`${authoringUrl}/diff?site=${version.site}&path=${encodeURIComponent(version.path)}&version=${
-        version.versionNumber
-      }&versionTO=${version.versionNumber}&mode=iframe&ui=next`}
-    />
-  );
+	const { version } = props;
+	const authoringUrl = useSelection<string>((state) => state.env.authoringBase);
+	return (
+		<Box
+			component="iframe"
+			title="View version"
+			sx={{ border: 'none', height: '80vh' }}
+			src={`${authoringUrl}/diff?site=${version.site}&path=${encodeURIComponent(version.path)}&version=${
+				version.versionNumber
+			}&versionTO=${version.versionNumber}&mode=iframe&ui=next`}
+		/>
+	);
 }
 
 export default LegacyVersionDialog;

@@ -28,115 +28,115 @@ import { fromEvent } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
 const renameContentDialogDataInitialState = {
-  id: '',
-  path: '',
-  value: ''
+	id: '',
+	path: '',
+	value: ''
 };
 
 export function LegacyFormDialog(props: LegacyFormDialogProps) {
-  const { formatMessage } = useIntl();
-  const { open, inProgress, isSubmitting, disableHeader, isMinimized, onMaximize, onMinimize, ...rest } = props;
-  const renameContentDialogState = useEnhancedDialogState();
-  const [renameContentDialogData, setRenameContentDialogData] = useState(renameContentDialogDataInitialState);
-  const [iframeLoaded, setIframeLoaded] = useState(false);
-  const iframeRef = useRef<HTMLIFrameElement>(undefined);
-  const messages = fromEvent(window, 'message').pipe(filter((e: any) => e.data && e.data.type));
+	const { formatMessage } = useIntl();
+	const { open, inProgress, isSubmitting, disableHeader, isMinimized, onMaximize, onMinimize, ...rest } = props;
+	const renameContentDialogState = useEnhancedDialogState();
+	const [renameContentDialogData, setRenameContentDialogData] = useState(renameContentDialogDataInitialState);
+	const [iframeLoaded, setIframeLoaded] = useState(false);
+	const iframeRef = useRef<HTMLIFrameElement>(undefined);
+	const messages = fromEvent(window, 'message').pipe(filter((e: any) => e.data && e.data.type));
 
-  const title = formatMessage(translations.title);
+	const title = formatMessage(translations.title);
 
-  const onClose = (e, reason?) => {
-    // The form engine is too expensive to load to lose it with an unintentional
-    // backdrop click. Disabling backdrop click until form engine 2.
-    if ('backdropClick' !== reason && !isSubmitting) {
-      if (inProgress || !iframeLoaded) {
-        props?.onClose();
-      }
-      iframeRef.current.contentWindow.postMessage({ type: 'LEGACY_FORM_DIALOG_CANCEL_REQUEST' }, '*');
-    }
-  };
+	const onClose = (e, reason?) => {
+		// The form engine is too expensive to load to lose it with an unintentional
+		// backdrop click. Disabling backdrop click until form engine 2.
+		if ('backdropClick' !== reason && !isSubmitting) {
+			if (inProgress || !iframeLoaded) {
+				props?.onClose();
+			}
+			iframeRef.current.contentWindow.postMessage({ type: 'LEGACY_FORM_DIALOG_CANCEL_REQUEST' }, '*');
+		}
+	};
 
-  const onCloseButtonClick = (e) => {
-    onClose(e);
-  };
+	const onCloseButtonClick = (e) => {
+		onClose(e);
+	};
 
-  const onContentRenamed = (newName) => {
-    renameContentDialogState.onClose();
-    iframeRef.current.contentWindow.postMessage(
-      { type: 'LEGACY_FORM_DIALOG_RENAMED_CONTENT', newName, id: renameContentDialogData.id },
-      '*'
-    );
-  };
+	const onContentRenamed = (newName) => {
+		renameContentDialogState.onClose();
+		iframeRef.current.contentWindow.postMessage(
+			{ type: 'LEGACY_FORM_DIALOG_RENAMED_CONTENT', newName, id: renameContentDialogData.id },
+			'*'
+		);
+	};
 
-  useEffect(() => {
-    const messagesSubscription = messages.subscribe((e: any) => {
-      switch (e.data.type) {
-        case 'LEGACY_FORM_DIALOG_RENAME_CONTENT':
-          const { path, fileName, id } = e.data;
-          setRenameContentDialogData({
-            id,
-            path,
-            value: fileName
-          });
-          renameContentDialogState.onOpen();
-          break;
-      }
-    });
+	useEffect(() => {
+		const messagesSubscription = messages.subscribe((e: any) => {
+			switch (e.data.type) {
+				case 'LEGACY_FORM_DIALOG_RENAME_CONTENT':
+					const { path, fileName, id } = e.data;
+					setRenameContentDialogData({
+						id,
+						path,
+						value: fileName
+					});
+					renameContentDialogState.onOpen();
+					break;
+			}
+		});
 
-    return () => {
-      messagesSubscription.unsubscribe();
-    };
-  }, [messages, renameContentDialogState]);
+		return () => {
+			messagesSubscription.unsubscribe();
+		};
+	}, [messages, renameContentDialogState]);
 
-  return (
-    <>
-      <Dialog
-        open={open && !isMinimized}
-        keepMounted={isMinimized}
-        fullWidth
-        maxWidth="xl"
-        sx={{
-          [`& .${dialogClasses.paper}`]: {
-            minHeight: '90vh'
-          }
-        }}
-        onClose={onClose}
-      >
-        {!disableHeader && (
-          <DialogHeader
-            title={title}
-            disabled={isSubmitting}
-            onCloseButtonClick={onCloseButtonClick}
-            rightActions={[
-              {
-                icon: { id: '@mui/icons-material/RemoveRounded' },
-                onClick: onMinimize
-              }
-            ]}
-          />
-        )}
-        <EmbeddedLegacyContainer
-          ref={iframeRef}
-          inProgress={inProgress}
-          onMinimize={onMinimize}
-          setIframeLoaded={setIframeLoaded}
-          {...rest}
-        />
-      </Dialog>
-      <MinimizedBar open={isMinimized} onMaximize={onMaximize} title={title} />
-      <RenameContentDialog
-        open={renameContentDialogState.open}
-        hasPendingChanges={renameContentDialogState.hasPendingChanges}
-        onSubmittingAndOrPendingChange={renameContentDialogState.onSubmittingAndOrPendingChange}
-        onClose={() => {
-          renameContentDialogState.onResetState();
-          setRenameContentDialogData(renameContentDialogDataInitialState);
-        }}
-        onRenamed={onContentRenamed}
-        path={renameContentDialogData.path}
-        value={renameContentDialogData.value}
-      />
-    </>
-  );
+	return (
+		<>
+			<Dialog
+				open={open && !isMinimized}
+				keepMounted={isMinimized}
+				fullWidth
+				maxWidth="xl"
+				sx={{
+					[`& .${dialogClasses.paper}`]: {
+						minHeight: '90vh'
+					}
+				}}
+				onClose={onClose}
+			>
+				{!disableHeader && (
+					<DialogHeader
+						title={title}
+						disabled={isSubmitting}
+						onCloseButtonClick={onCloseButtonClick}
+						rightActions={[
+							{
+								icon: { id: '@mui/icons-material/RemoveRounded' },
+								onClick: onMinimize
+							}
+						]}
+					/>
+				)}
+				<EmbeddedLegacyContainer
+					ref={iframeRef}
+					inProgress={inProgress}
+					onMinimize={onMinimize}
+					setIframeLoaded={setIframeLoaded}
+					{...rest}
+				/>
+			</Dialog>
+			<MinimizedBar open={isMinimized} onMaximize={onMaximize} title={title} />
+			<RenameContentDialog
+				open={renameContentDialogState.open}
+				hasPendingChanges={renameContentDialogState.hasPendingChanges}
+				onSubmittingAndOrPendingChange={renameContentDialogState.onSubmittingAndOrPendingChange}
+				onClose={() => {
+					renameContentDialogState.onResetState();
+					setRenameContentDialogData(renameContentDialogDataInitialState);
+				}}
+				onRenamed={onContentRenamed}
+				path={renameContentDialogData.path}
+				value={renameContentDialogData.value}
+			/>
+		</>
+	);
 }
 
 export default LegacyFormDialog;

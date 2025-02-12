@@ -26,130 +26,130 @@ import SimpleAjaxError from '../../models/SimpleAjaxError';
 type PayloadWithId<P> = P & { id: string };
 
 export const pathNavigatorTreeInit = /*#__PURE__*/ createAction<
-  PayloadWithId<{
-    rootPath: string;
-    collapsed?: boolean;
-    excludes?: string[];
-    limit: number;
-    expanded?: string[];
-    systemTypes?: SystemType[];
-    sortStrategy?: GetChildrenOptions['sortStrategy'];
-    order?: GetChildrenOptions['order'];
-    keywordByPath: LookupTable<string>;
-  }>
+	PayloadWithId<{
+		rootPath: string;
+		collapsed?: boolean;
+		excludes?: string[];
+		limit: number;
+		expanded?: string[];
+		systemTypes?: SystemType[];
+		sortStrategy?: GetChildrenOptions['sortStrategy'];
+		order?: GetChildrenOptions['order'];
+		keywordByPath: LookupTable<string>;
+	}>
 >('PATH_NAV_TREE_INIT');
 
 export const pathNavigatorTreeRefresh = /*#__PURE__*/ createAction<{ id: string }>('PATH_NAV_TREE_REFRESH');
 
 export const pathNavigatorTreeBackgroundRefresh = /*#__PURE__*/ createAction<{ id: string }>(
-  'PATH_NAV_TREE_BACKGROUND_REFRESH'
+	'PATH_NAV_TREE_BACKGROUND_REFRESH'
 );
 
 export const pathNavigatorTreeBulkRefresh = /*#__PURE__*/ createAction<{
-  requests: PayloadWithId<{ backgroundRefresh?: boolean }>[];
+	requests: PayloadWithId<{ backgroundRefresh?: boolean }>[];
 }>('PATH_NAV_TREE_BULK_REFRESH');
 
 export const pathNavigatorTreeRestore = /*#__PURE__*/ createAction<PayloadWithId<{}>>('PATH_NAV_TREE_RESTORE');
 
 export type PathNavigatorTreeRestoreCompletePayload = PayloadWithId<{
-  expanded: string[];
-  collapsed: boolean;
-  items: DetailedItem[];
-  children: LookupTable<GetChildrenResponse>;
+	expanded: string[];
+	collapsed: boolean;
+	items: DetailedItem[];
+	children: LookupTable<GetChildrenResponse>;
 }>;
 
 export const pathNavigatorTreeRestoreComplete = /*#__PURE__*/ createAction<PathNavigatorTreeRestoreCompletePayload>(
-  'PATH_NAV_TREE_RESTORE_COMPLETE'
+	'PATH_NAV_TREE_RESTORE_COMPLETE'
 );
 
 export const pathNavigatorTreeBulkRestoreComplete = /*#__PURE__*/ createAction<{
-  trees: PathNavigatorTreeRestoreCompletePayload[];
+	trees: PathNavigatorTreeRestoreCompletePayload[];
 }>('PATH_NAV_TREE_BULK_RESTORE_COMPLETE');
 
 export const pathNavigatorTreeRestoreFailed = /*#__PURE__*/ createAction<{
-  id: string;
-  error: Omit<AjaxError, 'request' | 'xhr'>;
+	id: string;
+	error: Omit<AjaxError, 'request' | 'xhr'>;
 }>('PATH_NAV_TREE_RESTORE_FAILED');
 
 export const pathNavigatorTreeBulkRestoreFailed = /*#__PURE__*/ createAction<{
-  ids: string[];
-  error: Omit<AjaxError, 'request' | 'xhr'>;
+	ids: string[];
+	error: Omit<AjaxError, 'request' | 'xhr'>;
 }>('PATH_NAV_TREE_RESTORE_FAILED');
 
 export const pathNavigatorTreeExpandPath =
-  /*#__PURE__*/ createAction<PayloadWithId<{ path: string }>>('PATH_NAV_TREE_EXPAND_PATH');
+	/*#__PURE__*/ createAction<PayloadWithId<{ path: string }>>('PATH_NAV_TREE_EXPAND_PATH');
 
 export const pathNavigatorTreeCollapsePath =
-  /*#__PURE__*/ createAction<PayloadWithId<{ path: string }>>('PATH_NAV_TREE_COLLAPSE_PATH');
+	/*#__PURE__*/ createAction<PayloadWithId<{ path: string }>>('PATH_NAV_TREE_COLLAPSE_PATH');
 
 export const pathNavigatorTreeSetKeyword =
-  /*#__PURE__*/ createAction<PayloadWithId<{ keyword: string; path: string }>>('PATH_NAV_TREE_SET_KEYWORD');
+	/*#__PURE__*/ createAction<PayloadWithId<{ keyword: string; path: string }>>('PATH_NAV_TREE_SET_KEYWORD');
 
 export const pathNavigatorTreeToggleCollapsed = /*#__PURE__*/ createAction<PayloadWithId<{ collapsed: boolean }>>(
-  'PATH_NAV_TREE_TOGGLE_EXPANDED'
+	'PATH_NAV_TREE_TOGGLE_EXPANDED'
 );
 
 export const pathNavigatorTreeFetchPathPage = /*#__PURE__*/ createAction<
-  PayloadWithId<{ path: string; options?: Partial<GetChildrenOptions> }>
+	PayloadWithId<{ path: string; options?: Partial<GetChildrenOptions> }>
 >('PATH_NAV_TREE_FETCH_PATH_PAGE');
 
 export const pathNavigatorTreeFetchPathPageComplete = /*#__PURE__*/ createAction<
-  PayloadWithId<{ children: GetChildrenResponse; parentPath: string; options?: Partial<GetChildrenOptions> }>
+	PayloadWithId<{ children: GetChildrenResponse; parentPath: string; options?: Partial<GetChildrenOptions> }>
 >('PATH_NAV_TREE_FETCH_PATH_PAGE_COMPLETE');
 
 export const pathNavigatorTreeFetchPathPageFailed = /*#__PURE__*/ createAction<{
-  id: string;
-  error: Omit<AjaxError, 'request' | 'xhr'>;
+	id: string;
+	error: Omit<AjaxError, 'request' | 'xhr'>;
 }>('PATH_NAV_TREE_FETCH_PATH_PAGE_FAILED');
 
 export type PathNavTreeFetchPathChildrenPayload = PayloadWithId<{
-  path: string;
-  options?: Partial<GetChildrenOptions>;
-  expand?: boolean;
+	path: string;
+	options?: Partial<GetChildrenOptions>;
+	expand?: boolean;
 }>;
 
 export const pathNavigatorTreeFetchPathChildren = /*#__PURE__*/ createAction<PathNavTreeFetchPathChildrenPayload>(
-  'PATH_NAV_TREE_FETCH_PATH_CHILDREN'
+	'PATH_NAV_TREE_FETCH_PATH_CHILDREN'
 );
 
 export type PathNavTreeBulkFetchPathChildrenPayload = { requests: Array<PathNavTreeFetchPathChildrenPayload> };
 
 export const pathNavigatorTreeBulkFetchPathChildren =
-  /*#__PURE__*/ createAction<PathNavTreeBulkFetchPathChildrenPayload>('PATH_NAV_TREE_BULK_FETCH_PATH_CHILDREN');
+	/*#__PURE__*/ createAction<PathNavTreeBulkFetchPathChildrenPayload>('PATH_NAV_TREE_BULK_FETCH_PATH_CHILDREN');
 
 export const pathNavigatorTreeFetchPathChildrenComplete = /*#__PURE__*/ createAction<
-  PayloadWithId<{ children: GetChildrenResponse; parentPath: string; options?: Partial<GetChildrenOptions> }>
+	PayloadWithId<{ children: GetChildrenResponse; parentPath: string; options?: Partial<GetChildrenOptions> }>
 >('PATH_NAV_TREE_FETCH_PATH_CHILDREN_COMPLETE');
 
 export type PathNavTreeBulkFetchPathChildrenCompletePayload = {
-  paths: PayloadWithId<{ children: GetChildrenResponse; parentPath: string; options?: Partial<GetChildrenOptions> }>[];
+	paths: PayloadWithId<{ children: GetChildrenResponse; parentPath: string; options?: Partial<GetChildrenOptions> }>[];
 };
 
 export const pathNavigatorTreeBulkFetchPathChildrenComplete =
-  /*#__PURE__*/ createAction<PathNavTreeBulkFetchPathChildrenCompletePayload>(
-    'PATH_NAV_BULK_TREE_FETCH_PATH_CHILDREN_COMPLETE'
-  );
+	/*#__PURE__*/ createAction<PathNavTreeBulkFetchPathChildrenCompletePayload>(
+		'PATH_NAV_BULK_TREE_FETCH_PATH_CHILDREN_COMPLETE'
+	);
 
 export const pathNavigatorTreeFetchPathChildrenFailed = /*#__PURE__*/ createAction<{
-  id: string;
-  path: string;
-  error: SimpleAjaxError;
+	id: string;
+	path: string;
+	error: SimpleAjaxError;
 }>('PATH_NAV_TREE_FETCH_PATH_CHILDREN_FAILED');
 
 export const pathNavigatorTreeBulkFetchPathChildrenFailed = /*#__PURE__*/ createAction<{
-  ids: string[];
-  error: Omit<AjaxError, 'request' | 'xhr'>;
+	ids: string[];
+	error: Omit<AjaxError, 'request' | 'xhr'>;
 }>('PATH_NAV_TREE_BULK_FETCH_PATH_CHILDREN_FAILED');
 
 export const pathNavigatorTreeUpdate = /*#__PURE__*/ createAction<
-  PayloadWithId<{
-    expanded?: string[];
-    collapsed?: boolean;
-    items?: DetailedItem[];
-    data?: LookupTable<GetChildrenResponse>;
-    sortStrategy?: GetChildrenOptions['sortStrategy'];
-    order?: GetChildrenOptions['order'];
-  }>
+	PayloadWithId<{
+		expanded?: string[];
+		collapsed?: boolean;
+		items?: DetailedItem[];
+		data?: LookupTable<GetChildrenResponse>;
+		sortStrategy?: GetChildrenOptions['sortStrategy'];
+		order?: GetChildrenOptions['order'];
+	}>
 >('PATH_NAV_TREE_UPDATE');
 
 export const pathNavigatorTreeRootMissing = /*#__PURE__*/ createAction<PayloadWithId<{}>>('PATH_NAV_TREE_ROOT_MISSING');

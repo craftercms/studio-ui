@@ -24,33 +24,33 @@ import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 
 export interface VersionViewProps {
-  version: {
-    content: string;
-    path: string;
-    site: string;
-    versionNumber: string;
-  };
+	version: {
+		content: string;
+		path: string;
+		site: string;
+		versionNumber: string;
+	};
 }
 
 export interface ViewVersionDialogBaseProps {
-  error: ApiResponse;
-  isFetching: boolean;
-  version: any;
+	error: ApiResponse;
+	isFetching: boolean;
+	version: any;
 }
 
 export interface ViewVersionDialogProps extends ViewVersionDialogBaseProps, EnhancedDialogProps {
-  contentTypesBranch: EntityState<ContentType>;
-  leftActions?: DialogHeaderActionProps[];
-  rightActions?: DialogHeaderActionProps[];
+	contentTypesBranch: EntityState<ContentType>;
+	leftActions?: DialogHeaderActionProps[];
+	rightActions?: DialogHeaderActionProps[];
 }
 
 export interface ViewVersionDialogStateProps extends ViewVersionDialogBaseProps, EnhancedDialogState {
-  leftActions?: DialogHeaderStateAction[];
-  rightActions?: DialogHeaderStateAction[];
-  onClose?: StandardAction;
-  onClosed?: StandardAction;
+	leftActions?: DialogHeaderStateAction[];
+	rightActions?: DialogHeaderStateAction[];
+	onClose?: StandardAction;
+	onClosed?: StandardAction;
 }
 
 export interface ViewVersionDialogContainerProps
-  extends ViewVersionDialogBaseProps,
-    Pick<ViewVersionDialogProps, 'contentTypesBranch'> {}
+	extends ViewVersionDialogBaseProps,
+		Pick<ViewVersionDialogProps, 'contentTypesBranch'> {}

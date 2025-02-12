@@ -19,16 +19,16 @@ import { PublishingStatusDialogStateProps } from '../../components/PublishingSta
 import { PublishingStatus } from '../../models/Publishing';
 
 export const updatePublishingStatus =
-  /*#__PURE__*/ createAction<Partial<PublishingStatusDialogStateProps>>('UPDATE_PUBLISHING_STATUS');
+	/*#__PURE__*/ createAction<Partial<PublishingStatusDialogStateProps>>('UPDATE_PUBLISHING_STATUS');
 
 export const fetchPublishingStatus = /*#__PURE__*/ createAction('FETCH_PUBLISHING_STATUS');
 
 export const fetchPublishingStatusComplete = /*#__PURE__*/ createAction<PublishingStatus>(
-  'FETCH_PUBLISHING_STATUS_COMPLETE'
+	'FETCH_PUBLISHING_STATUS_COMPLETE'
 );
 
 export const fetchPublishingStatusProcessingComplete = /*#__PURE__*/ createAction<PublishingStatus>(
-  'FETCH_PUBLISHING_STATUS_PROCESSING_COMPLETE'
+	'FETCH_PUBLISHING_STATUS_PROCESSING_COMPLETE'
 );
 
 export const fetchPublishingStatusFailed = /*#__PURE__*/ createAction('FETCH_PUBLISHING_STATUS_FAILED');

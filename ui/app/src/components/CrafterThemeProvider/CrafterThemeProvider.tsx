@@ -34,70 +34,70 @@ tssCache.compat = true;
 muiCache.compat = true;
 
 export function CrafterThemeProvider(props: CrafterThemeProviderProps) {
-  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
-  const theme = useMemo(() => {
-    const mode = prefersDarkMode ? 'dark' : 'light';
-    const auxTheme = createTheme({ palette: { mode } });
-    const defaultThemeOptions = createDefaultThemeOptions({ mode });
-    return createTheme({
-      ...(props.themeOptions ?? defaultThemeOptions),
-      palette: {
-        mode,
-        primary: {
-          main: prefersDarkMode ? palette.blue.tint : palette.blue.main
-        },
-        warning: {
-          main: prefersDarkMode ? palette.orange.tint : palette.orange.main
-        },
-        error: {
-          main: prefersDarkMode ? palette.red.tint : palette.red.main
-        },
-        success: {
-          main: prefersDarkMode ? palette.green.tint : palette.green.main
-        },
-        info: {
-          main: prefersDarkMode ? palette.teal.tint : palette.teal.main
-        },
-        secondary: {
-          main: prefersDarkMode ? palette.indigo.tint : palette.purple.tint
-        },
-        action: {
-          selected: palette.blue.highlight
-        },
-        background: {
-          default: prefersDarkMode ? palette.gray.dark7 : palette.gray.light0
-        },
-        divider: prefersDarkMode ? 'rgba(59, 74, 89, 0.3)' : auxTheme.palette.divider,
-        ...props.themeOptions?.palette
-      },
-      components: deepmerge((props.themeOptions ?? defaultThemeOptions).components ?? {}, {
-        MuiLink: {
-          defaultProps: {
-            underline: 'hover'
-          }
-        },
-        MuiOutlinedInput: {
-          styleOverrides: {
-            root: {
-              backgroundColor: auxTheme.palette.background.paper
-            }
-          }
-        },
-        MuiInputBase: {
-          styleOverrides: {
-            root: {
-              backgroundColor: auxTheme.palette.background.paper
-            }
-          }
-        }
-      })
-    });
-  }, [prefersDarkMode, props.themeOptions]);
-  return (
-    <CacheProvider value={muiCache}>
-      <ThemeProvider theme={theme} children={props.children} />
-    </CacheProvider>
-  );
+	const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+	const theme = useMemo(() => {
+		const mode = prefersDarkMode ? 'dark' : 'light';
+		const auxTheme = createTheme({ palette: { mode } });
+		const defaultThemeOptions = createDefaultThemeOptions({ mode });
+		return createTheme({
+			...(props.themeOptions ?? defaultThemeOptions),
+			palette: {
+				mode,
+				primary: {
+					main: prefersDarkMode ? palette.blue.tint : palette.blue.main
+				},
+				warning: {
+					main: prefersDarkMode ? palette.orange.tint : palette.orange.main
+				},
+				error: {
+					main: prefersDarkMode ? palette.red.tint : palette.red.main
+				},
+				success: {
+					main: prefersDarkMode ? palette.green.tint : palette.green.main
+				},
+				info: {
+					main: prefersDarkMode ? palette.teal.tint : palette.teal.main
+				},
+				secondary: {
+					main: prefersDarkMode ? palette.indigo.tint : palette.purple.tint
+				},
+				action: {
+					selected: palette.blue.highlight
+				},
+				background: {
+					default: prefersDarkMode ? palette.gray.dark7 : palette.gray.light0
+				},
+				divider: prefersDarkMode ? 'rgba(59, 74, 89, 0.3)' : auxTheme.palette.divider,
+				...props.themeOptions?.palette
+			},
+			components: deepmerge((props.themeOptions ?? defaultThemeOptions).components ?? {}, {
+				MuiLink: {
+					defaultProps: {
+						underline: 'hover'
+					}
+				},
+				MuiOutlinedInput: {
+					styleOverrides: {
+						root: {
+							backgroundColor: auxTheme.palette.background.paper
+						}
+					}
+				},
+				MuiInputBase: {
+					styleOverrides: {
+						root: {
+							backgroundColor: auxTheme.palette.background.paper
+						}
+					}
+				}
+			})
+		});
+	}, [prefersDarkMode, props.themeOptions]);
+	return (
+		<CacheProvider value={muiCache}>
+			<ThemeProvider theme={theme} children={props.children} />
+		</CacheProvider>
+	);
 }
 
 export default CrafterThemeProvider;

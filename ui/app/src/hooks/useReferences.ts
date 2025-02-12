@@ -18,7 +18,7 @@ import { useSelection } from './useSelection';
 import GlobalState from '../models/GlobalState';
 
 export function useReferences(): GlobalState['uiConfig']['references'] {
-  return useSelection((state) => state.uiConfig.references);
+	return useSelection((state) => state.uiConfig.references);
 }
 
 export default useReferences;

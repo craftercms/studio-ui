@@ -24,29 +24,29 @@ import { EmptyState } from '../EmptyState';
 import { FormattedMessage } from 'react-intl';
 
 export function CompareVersionsDialogContainer(props: CompareVersionsDialogContainerProps) {
-  const { versionsBranch } = props;
-  const { compareVersionsBranch } = versionsBranch;
+	const { versionsBranch } = props;
+	const { compareVersionsBranch } = versionsBranch;
 
-  return (
-    <DialogBody
-      sx={{
-        overflow: 'auto',
-        minHeight: '50vh',
-        padding: 0
-      }}
-    >
-      {compareVersionsBranch &&
-        (compareVersionsBranch.error ? (
-          <ApiResponseErrorState error={compareVersionsBranch.error} />
-        ) : compareVersionsBranch.isFetching ? (
-          <LoadingState />
-        ) : compareVersionsBranch.compareVersions?.length > 0 ? (
-          <CompareVersions versions={compareVersionsBranch.compareVersions} />
-        ) : (
-          <EmptyState title={<FormattedMessage defaultMessage="No versions found" />} />
-        ))}
-    </DialogBody>
-  );
+	return (
+		<DialogBody
+			sx={{
+				overflow: 'auto',
+				minHeight: '50vh',
+				padding: 0
+			}}
+		>
+			{compareVersionsBranch &&
+				(compareVersionsBranch.error ? (
+					<ApiResponseErrorState error={compareVersionsBranch.error} />
+				) : compareVersionsBranch.isFetching ? (
+					<LoadingState />
+				) : compareVersionsBranch.compareVersions?.length > 0 ? (
+					<CompareVersions versions={compareVersionsBranch.compareVersions} />
+				) : (
+					<EmptyState title={<FormattedMessage defaultMessage="No versions found" />} />
+				))}
+		</DialogBody>
+	);
 }
 
 export default CompareVersionsDialogContainer;

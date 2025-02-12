@@ -18,11 +18,11 @@ import { useSelector } from 'react-redux';
 import GlobalState from '../models/GlobalState';
 
 export const useSelection: <T = any>(
-  selectorFn: (state: GlobalState) => T,
-  equalityFn?: (left: T, right: T) => boolean
+	selectorFn: (state: GlobalState) => T,
+	equalityFn?: (left: T, right: T) => boolean
 ) => T =
-  import.meta.env.NODE_ENV === 'production'
-    ? useSelector
-    : <T = any>(selector, equalityFn) => useSelector<GlobalState, T>(selector, equalityFn);
+	import.meta.env.NODE_ENV === 'production'
+		? useSelector
+		: <T = any>(selector, equalityFn) => useSelector<GlobalState, T>(selector, equalityFn);
 
 export default useSelection;

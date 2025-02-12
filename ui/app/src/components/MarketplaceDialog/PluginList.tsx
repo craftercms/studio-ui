@@ -22,51 +22,51 @@ import React from 'react';
 import EmptyState from '../EmptyState/EmptyState';
 
 export function PluginList(props: PluginListProps) {
-  const {
-    plugins,
-    onPluginDetails,
-    onPluginSelected,
-    installedPlugins = {},
-    installPermission,
-    installingLookup = {}
-  } = props;
+	const {
+		plugins,
+		onPluginDetails,
+		onPluginSelected,
+		installedPlugins = {},
+		installPermission,
+		installingLookup = {}
+	} = props;
 
-  return (
-    <Grid container spacing={3} sx={{ height: '100%' }}>
-      {plugins.length === 0 ? (
-        <EmptyState
-          sxs={{
-            root: {
-              flexGrow: 1,
-              justifyContent: 'center'
-            }
-          }}
-          title={<FormattedMessage id="InstallPluginDialog.empty" defaultMessage="No plugins found." />}
-        />
-      ) : (
-        plugins.map((plugin) => (
-          <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={plugin.id}>
-            <PluginCard
-              plugin={plugin}
-              inUse={Boolean(installedPlugins[plugin.id])}
-              usePermission={installPermission}
-              disableCardActionClick
-              useLabel={
-                Boolean(installedPlugins[plugin.id]) ? (
-                  <FormattedMessage id="words.installed" defaultMessage="Installed" />
-                ) : (
-                  <FormattedMessage id="words.install" defaultMessage="Install" />
-                )
-              }
-              beingInstalled={installingLookup[plugin.id]}
-              onDetails={onPluginDetails}
-              onPluginSelected={onPluginSelected}
-            />
-          </Grid>
-        ))
-      )}
-    </Grid>
-  );
+	return (
+		<Grid container spacing={3} sx={{ height: '100%' }}>
+			{plugins.length === 0 ? (
+				<EmptyState
+					sxs={{
+						root: {
+							flexGrow: 1,
+							justifyContent: 'center'
+						}
+					}}
+					title={<FormattedMessage id="InstallPluginDialog.empty" defaultMessage="No plugins found." />}
+				/>
+			) : (
+				plugins.map((plugin) => (
+					<Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={plugin.id}>
+						<PluginCard
+							plugin={plugin}
+							inUse={Boolean(installedPlugins[plugin.id])}
+							usePermission={installPermission}
+							disableCardActionClick
+							useLabel={
+								Boolean(installedPlugins[plugin.id]) ? (
+									<FormattedMessage id="words.installed" defaultMessage="Installed" />
+								) : (
+									<FormattedMessage id="words.install" defaultMessage="Install" />
+								)
+							}
+							beingInstalled={installingLookup[plugin.id]}
+							onDetails={onPluginDetails}
+							onPluginSelected={onPluginSelected}
+						/>
+					</Grid>
+				))
+			)}
+		</Grid>
+	);
 }
 
 export default PluginList;

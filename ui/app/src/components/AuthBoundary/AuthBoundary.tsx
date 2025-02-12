@@ -23,28 +23,28 @@ import { getRequestForgeryToken } from '../../utils/auth';
 import Typography from '@mui/material/Typography';
 
 export function AuthBoundary(props) {
-  const [loggedIn, setLoggedIn] = useState<boolean>(null);
-  useEffect(() => {
-    obtainAuthToken()
-      .pipe()
-      .subscribe({
-        next: () => setLoggedIn(true),
-        error: () => setLoggedIn(false)
-      });
-  }, []);
-  if (loggedIn === null) {
-    return <Typography sx={{ margin: '50px auto', textAlign: 'center' }}>Checking Authentication</Typography>;
-  } else if (loggedIn) {
-    return props.children;
-  } else {
-    return (
-      <I18nProvider>
-        <CrafterThemeProvider>
-          <Login passwordRequirementsMinComplexity={4} xsrfToken={getRequestForgeryToken()} xsrfParamName="_csrf" />
-        </CrafterThemeProvider>
-      </I18nProvider>
-    );
-  }
+	const [loggedIn, setLoggedIn] = useState<boolean>(null);
+	useEffect(() => {
+		obtainAuthToken()
+			.pipe()
+			.subscribe({
+				next: () => setLoggedIn(true),
+				error: () => setLoggedIn(false)
+			});
+	}, []);
+	if (loggedIn === null) {
+		return <Typography sx={{ margin: '50px auto', textAlign: 'center' }}>Checking Authentication</Typography>;
+	} else if (loggedIn) {
+		return props.children;
+	} else {
+		return (
+			<I18nProvider>
+				<CrafterThemeProvider>
+					<Login passwordRequirementsMinComplexity={4} xsrfToken={getRequestForgeryToken()} xsrfParamName="_csrf" />
+				</CrafterThemeProvider>
+			</I18nProvider>
+		);
+	}
 }
 
 export default AuthBoundary;

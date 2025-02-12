@@ -30,27 +30,27 @@ import { asArray } from '../utils/array';
 export type CrafterCMSModules = 'studio' | 'engine';
 
 export function fetchConfigurationXML(
-  site: string,
-  configPath: string,
-  module: CrafterCMSModules,
-  environment?: string
+	site: string,
+	configPath: string,
+	module: CrafterCMSModules,
+	environment?: string
 ): Observable<string> {
-  const qs = toQueryString({
-    siteId: site,
-    module,
-    path: configPath,
-    environment
-  });
-  return get(`/studio/api/2/configuration/get_configuration${qs}`).pipe(map((response) => response?.response?.content));
+	const qs = toQueryString({
+		siteId: site,
+		module,
+		path: configPath,
+		environment
+	});
+	return get(`/studio/api/2/configuration/get_configuration${qs}`).pipe(map((response) => response?.response?.content));
 }
 
 export function fetchConfigurationDOM(
-  site: string,
-  configPath: string,
-  module: CrafterCMSModules,
-  environment?: string
+	site: string,
+	configPath: string,
+	module: CrafterCMSModules,
+	environment?: string
 ): Observable<XMLDocument> {
-  return fetchConfigurationXML(site, configPath, module, environment).pipe(map(fromString));
+	return fetchConfigurationXML(site, configPath, module, environment).pipe(map(fromString));
 }
 
 /**
@@ -61,19 +61,19 @@ export function fetchConfigurationDOM(
  * @param environment {string} Optional environment to fetch the configuration from
  */
 export function fetchConfigurationJSON(
-  site: string,
-  configPath: string,
-  module: CrafterCMSModules,
-  environment?: string
+	site: string,
+	configPath: string,
+	module: CrafterCMSModules,
+	environment?: string
 ): Observable<any> {
-  return fetchConfigurationXML(site, configPath, module, environment).pipe(
-    map((conf) => {
-      return deserialize(conf, {
-        parseTagValue: false,
-        tagValueProcessor: entityEncodingTagValueProcessor
-      });
-    })
-  );
+	return fetchConfigurationXML(site, configPath, module, environment).pipe(
+		map((conf) => {
+			return deserialize(conf, {
+				parseTagValue: false,
+				tagValueProcessor: entityEncodingTagValueProcessor
+			});
+		})
+	);
 }
 
 /**
@@ -85,233 +85,233 @@ export function fetchConfigurationJSON(
  * @param environment {string} Optional environment to write to.
  **/
 export function writeConfiguration(
-  site: string,
-  partialPath: string,
-  module: CrafterCMSModules,
-  content: string,
-  environment?: string
+	site: string,
+	partialPath: string,
+	module: CrafterCMSModules,
+	content: string,
+	environment?: string
 ): Observable<boolean> {
-  return postJSON('/studio/api/2/configuration/write_configuration', {
-    siteId: site,
-    module,
-    path: partialPath,
-    content,
-    ...(environment && { environment })
-  }).pipe(map(() => true));
+	return postJSON('/studio/api/2/configuration/write_configuration', {
+		siteId: site,
+		module,
+		path: partialPath,
+		content,
+		...(environment && { environment })
+	}).pipe(map(() => true));
 }
 
 // region AudiencesPanelConfig
 
 export interface ActiveTargetingModel {
-  id: string;
+	id: string;
 
-  [prop: string]: string;
+	[prop: string]: string;
 }
 
 // TODO: asses the location of profile methods.
 export function fetchActiveTargetingModel(site?: string): Observable<ContentInstance> {
-  return get(`/api/1/profile/get`).pipe(
-    map((response) => {
-      const data = reversePluckProps(response.response, 'id');
-      const id = response.response.id ?? null;
+	return get(`/api/1/profile/get`).pipe(
+		map((response) => {
+			const data = reversePluckProps(response.response, 'id');
+			const id = response.response.id ?? null;
 
-      return {
-        craftercms: {
-          id,
-          path: null,
-          label: null,
-          locale: null,
-          dateCreated: null,
-          dateModified: null,
-          contentTypeId: null,
-          disabled: false,
-          sourceMap: {}
-        },
-        ...data
-      };
-    })
-  );
+			return {
+				craftercms: {
+					id,
+					path: null,
+					label: null,
+					locale: null,
+					dateCreated: null,
+					dateModified: null,
+					contentTypeId: null,
+					disabled: false,
+					sourceMap: {}
+				},
+				...data
+			};
+		})
+	);
 }
 
 export function deserializeActiveTargetingModelData<T extends Object>(
-  data: T,
-  contentTypeFields: LookupTable<ContentTypeField>
+	data: T,
+	contentTypeFields: LookupTable<ContentTypeField>
 ): ContentInstance {
-  return {
-    craftercms: {
-      id: '',
-      path: null,
-      label: null,
-      dateCreated: null,
-      dateModified: null,
-      contentTypeId: null,
-      disabled: false,
-      sourceMap: {}
-    },
-    ...data
-  };
+	return {
+		craftercms: {
+			id: '',
+			path: null,
+			label: null,
+			dateCreated: null,
+			dateModified: null,
+			contentTypeId: null,
+			disabled: false,
+			sourceMap: {}
+		},
+		...data
+	};
 }
 
 export function setActiveTargetingModel(data): Observable<ActiveTargetingModel> {
-  const model = reversePluckProps(data, 'craftercms');
-  const qs = toQueryString({ id: data.craftercms.id });
-  return postJSON(`/api/1/profile/set${qs}`, model).pipe(map((response) => response?.response));
+	const model = reversePluckProps(data, 'craftercms');
+	const qs = toQueryString({ id: data.craftercms.id });
+	return postJSON(`/api/1/profile/set${qs}`, model).pipe(map((response) => response?.response));
 }
 
 // endregion
 
 export function fetchSiteUiConfig(site: string, environment: string): Observable<string> {
-  return fetchConfigurationXML(site, '/ui.xml', 'studio', environment);
+	return fetchConfigurationXML(site, '/ui.xml', 'studio', environment);
 }
 
 const legacyToNextMenuIconMap = {
-  'fa-sitemap': 'craftercms.icons.Sites',
-  'fa-user': '@mui/icons-material/PeopleRounded',
-  'fa-users': '@mui/icons-material/SupervisedUserCircleRounded',
-  'fa-database': '@mui/icons-material/StorageRounded',
-  'fa-bars': '@mui/icons-material/SubjectRounded',
-  'fa-level-down': '@mui/icons-material/SettingsApplicationsRounded',
-  'fa-align-left': '@mui/icons-material/FormatAlignCenterRounded',
-  'fa-globe': '@mui/icons-material/PublicRounded',
-  'fa-lock': '@mui/icons-material/LockRounded',
-  'fa-key': '@mui/icons-material/VpnKeyRounded'
+	'fa-sitemap': 'craftercms.icons.Sites',
+	'fa-user': '@mui/icons-material/PeopleRounded',
+	'fa-users': '@mui/icons-material/SupervisedUserCircleRounded',
+	'fa-database': '@mui/icons-material/StorageRounded',
+	'fa-bars': '@mui/icons-material/SubjectRounded',
+	'fa-level-down': '@mui/icons-material/SettingsApplicationsRounded',
+	'fa-align-left': '@mui/icons-material/FormatAlignCenterRounded',
+	'fa-globe': '@mui/icons-material/PublicRounded',
+	'fa-lock': '@mui/icons-material/LockRounded',
+	'fa-key': '@mui/icons-material/VpnKeyRounded'
 };
 
 export function fetchGlobalMenuItems(): Observable<GlobalState['globalNavigation']['items']> {
-  return get('/studio/api/2/ui/views/global_menu.json').pipe(
-    map((response) => {
-      const menuItems = response?.response?.menuItems ?? [];
-      return [
-        ...menuItems.map((item) => ({
-          ...item,
-          icon: legacyToNextMenuIconMap[item.icon]
-            ? { id: legacyToNextMenuIconMap[item.icon] }
-            : { baseClass: item.icon.includes('fa') ? `fa ${item.icon}` : item.icon }
-        })),
-        { id: 'home.globalMenu.about-us', icon: { id: 'craftercms.icons.About' }, label: 'About' },
-        { id: 'home.globalMenu.settings', icon: { id: '@mui/icons-material/AccountCircleRounded' }, label: 'Account' }
-      ];
-    })
-  );
+	return get('/studio/api/2/ui/views/global_menu.json').pipe(
+		map((response) => {
+			const menuItems = response?.response?.menuItems ?? [];
+			return [
+				...menuItems.map((item) => ({
+					...item,
+					icon: legacyToNextMenuIconMap[item.icon]
+						? { id: legacyToNextMenuIconMap[item.icon] }
+						: { baseClass: item.icon.includes('fa') ? `fa ${item.icon}` : item.icon }
+				})),
+				{ id: 'home.globalMenu.about-us', icon: { id: 'craftercms.icons.About' }, label: 'About' },
+				{ id: 'home.globalMenu.settings', icon: { id: '@mui/icons-material/AccountCircleRounded' }, label: 'Account' }
+			];
+		})
+	);
 }
 
 export function fetchProductLanguages(): Observable<{ id: string; label: string }[]> {
-  return get('/studio/api/1/services/api/1/server/get-available-languages.json').pipe(
-    map((response) => response?.response)
-  );
+	return get('/studio/api/1/services/api/1/server/get-available-languages.json').pipe(
+		map((response) => response?.response)
+	);
 }
 
 export function fetchHistory(
-  site: string,
-  path: string,
-  environment: string,
-  module: string
+	site: string,
+	path: string,
+	environment: string,
+	module: string
 ): Observable<ItemHistoryEntry[]> {
-  const parsedPath = encodeURIComponent(path.replace(/(\/config\/)(studio|engine)/g, ''));
+	const parsedPath = encodeURIComponent(path.replace(/(\/config\/)(studio|engine)/g, ''));
 
-  return get(
-    `/studio/api/2/configuration/get_configuration_history.json?siteId=${site}&path=${parsedPath}&environment=${environment}&module=${module}`
-  ).pipe(map((response) => response?.response.history.versions));
+	return get(
+		`/studio/api/2/configuration/get_configuration_history.json?siteId=${site}&path=${parsedPath}&environment=${environment}&module=${module}`
+	).pipe(map((response) => response?.response.history.versions));
 }
 
 export function fetchCannedMessage(site: string, locale: string, type: string): Observable<string> {
-  return get(
-    `/studio/api/1/services/api/1/site/get-canned-message.json?site=${site}&locale=${locale}&type=${type}`
-  ).pipe(
-    map((response) => response?.response),
-    catchError(errorSelectorApi1)
-  );
+	return get(
+		`/studio/api/1/services/api/1/site/get-canned-message.json?site=${site}&locale=${locale}&type=${type}`
+	).pipe(
+		map((response) => response?.response),
+		catchError(errorSelectorApi1)
+	);
 }
 
 export function fetchSiteLocale(site: string, environment: string): Observable<any> {
-  return fetchSiteConfigDOM(site, environment).pipe(
-    map((xml) => {
-      let settings = {};
-      if (xml) {
-        const localeXML = xml.querySelector('locale');
-        if (localeXML) {
-          settings = deserialize(localeXML).locale;
-        }
-      }
-      return settings;
-    })
-  );
+	return fetchSiteConfigDOM(site, environment).pipe(
+		map((xml) => {
+			let settings = {};
+			if (xml) {
+				const localeXML = xml.querySelector('locale');
+				if (localeXML) {
+					settings = deserialize(localeXML).locale;
+				}
+			}
+			return settings;
+		})
+	);
 }
 
 export function fetchSiteConfigurationFiles(site: string, environment?: string): Observable<SiteConfigurationFile[]> {
-  return fetchConfigurationDOM(site, '/administration/config-list.xml', 'studio', environment).pipe(
-    map((xml) => {
-      let files = [];
-      if (xml) {
-        const filesXML = xml.querySelector('files');
-        if (filesXML) {
-          files = deserialize(filesXML).files.file;
-        }
-      }
-      return asArray(files);
-    })
-  );
+	return fetchConfigurationDOM(site, '/administration/config-list.xml', 'studio', environment).pipe(
+		map((xml) => {
+			let files = [];
+			if (xml) {
+				const filesXML = xml.querySelector('files');
+				if (filesXML) {
+					files = deserialize(filesXML).files.file;
+				}
+			}
+			return asArray(files);
+		})
+	);
 }
 
 export interface StudioSiteConfig
-  extends Pick<
-    GlobalState['uiConfig'],
-    'cdataEscapedFieldPatterns' | 'upload' | 'locale' | 'publishing' | 'remoteGitBranch'
-  > {
-  site: string;
+	extends Pick<
+		GlobalState['uiConfig'],
+		'cdataEscapedFieldPatterns' | 'upload' | 'locale' | 'publishing' | 'remoteGitBranch'
+	> {
+	site: string;
 }
 
 export function fetchSiteConfig(site: string, environment: string): Observable<StudioSiteConfig> {
-  return fetchSiteConfigDOM(site, environment).pipe(
-    map((dom) => ({
-      site,
-      cdataEscapedFieldPatterns: Array.from(dom.querySelectorAll('cdata-escaped-field-patterns > pattern'))
-        .map(getInnerHtml as (node) => string)
-        .filter(Boolean),
-      upload: ((node) => (node ? deserialize(node).upload : {}))(dom.querySelector(':scope > upload')),
-      locale: ((node) => (node ? deserialize(node).locale : {}))(dom.querySelector(':scope > locale')),
-      remoteGitBranch: ((node) => (node ? deserialize(node).remoteGitBranch : null))(
-        dom.querySelector(':scope > remoteGitBranch')
-      ),
-      publishing: ((node) => {
-        const commentSettings = Object.assign({ required: false }, deserialize(node)?.publishing?.comments);
-        return {
-          publishCommentRequired: commentSettings['publishing-required'] ?? commentSettings.required,
-          deleteCommentRequired: commentSettings['delete-required'] ?? commentSettings.required,
-          bulkPublishCommentRequired: commentSettings['bulk-publish-required'] ?? commentSettings.required,
-          publishByCommitCommentRequired: commentSettings['publish-by-commit-required'] ?? commentSettings.required,
-          publishEverythingCommentRequired: commentSettings['publish-everything-required'] ?? commentSettings.required,
-          submissionCommentMaxLength: commentSettings['submission-max-length'] ?? 500
-        };
-      })(dom.querySelector(':scope > publishing'))
-    }))
-  );
+	return fetchSiteConfigDOM(site, environment).pipe(
+		map((dom) => ({
+			site,
+			cdataEscapedFieldPatterns: Array.from(dom.querySelectorAll('cdata-escaped-field-patterns > pattern'))
+				.map(getInnerHtml as (node) => string)
+				.filter(Boolean),
+			upload: ((node) => (node ? deserialize(node).upload : {}))(dom.querySelector(':scope > upload')),
+			locale: ((node) => (node ? deserialize(node).locale : {}))(dom.querySelector(':scope > locale')),
+			remoteGitBranch: ((node) => (node ? deserialize(node).remoteGitBranch : null))(
+				dom.querySelector(':scope > remoteGitBranch')
+			),
+			publishing: ((node) => {
+				const commentSettings = Object.assign({ required: false }, deserialize(node)?.publishing?.comments);
+				return {
+					publishCommentRequired: commentSettings['publishing-required'] ?? commentSettings.required,
+					deleteCommentRequired: commentSettings['delete-required'] ?? commentSettings.required,
+					bulkPublishCommentRequired: commentSettings['bulk-publish-required'] ?? commentSettings.required,
+					publishByCommitCommentRequired: commentSettings['publish-by-commit-required'] ?? commentSettings.required,
+					publishEverythingCommentRequired: commentSettings['publish-everything-required'] ?? commentSettings.required,
+					submissionCommentMaxLength: commentSettings['submission-max-length'] ?? 500
+				};
+			})(dom.querySelector(':scope > publishing'))
+		}))
+	);
 }
 
 function fetchSiteConfigDOM(site: string, environment: string): Observable<XMLDocument> {
-  return fetchConfigurationDOM(site, '/site-config.xml', 'studio', environment);
+	return fetchConfigurationDOM(site, '/site-config.xml', 'studio', environment);
 }
 
 export interface CannedMessage {
-  key: string;
-  title: string;
-  message: string;
+	key: string;
+	title: string;
+	message: string;
 }
 
 export function fetchCannedMessages(site: string, environment: string): Observable<CannedMessage[]> {
-  return fetchConfigurationDOM(site, '/workflow/notification-config.xml', 'studio', environment).pipe(
-    map((dom) => {
-      const cannedMessages = [];
+	return fetchConfigurationDOM(site, '/workflow/notification-config.xml', 'studio', environment).pipe(
+		map((dom) => {
+			const cannedMessages = [];
 
-      dom.querySelectorAll('cannedMessages > content').forEach((tag) => {
-        cannedMessages.push({
-          key: tag.getAttribute('key'),
-          title: tag.getAttribute('title'),
-          message: getInnerHtml(tag)
-        });
-      });
+			dom.querySelectorAll('cannedMessages > content').forEach((tag) => {
+				cannedMessages.push({
+					key: tag.getAttribute('key'),
+					title: tag.getAttribute('title'),
+					message: getInnerHtml(tag)
+				});
+			});
 
-      return cannedMessages;
-    })
-  );
+			return cannedMessages;
+		})
+	);
 }

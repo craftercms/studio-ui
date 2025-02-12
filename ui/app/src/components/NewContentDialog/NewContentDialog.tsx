@@ -23,62 +23,62 @@ import EnhancedDialog from '../EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
 
 export function NewContentDialog(props: NewContentDialogProps) {
-  const { item, rootPath, compact, onContentTypeSelected, ...rest } = props;
-  return (
-    <EnhancedDialog
-      title={<FormattedMessage id="newContentDialog.title" defaultMessage="Create Content" />}
-      dialogHeaderProps={{
-        subtitle: (
-          <FormattedMessage
-            id="newContentDialog.subtitle"
-            defaultMessage="Choose a content type template for your new content item."
-          />
-        )
-      }}
-      {...rest}
-    >
-      <NewContentDialogContainer
-        item={item}
-        rootPath={rootPath}
-        compact={compact}
-        onContentTypeSelected={onContentTypeSelected}
-      />
-    </EnhancedDialog>
-  );
+	const { item, rootPath, compact, onContentTypeSelected, ...rest } = props;
+	return (
+		<EnhancedDialog
+			title={<FormattedMessage id="newContentDialog.title" defaultMessage="Create Content" />}
+			dialogHeaderProps={{
+				subtitle: (
+					<FormattedMessage
+						id="newContentDialog.subtitle"
+						defaultMessage="Choose a content type template for your new content item."
+					/>
+				)
+			}}
+			{...rest}
+		>
+			<NewContentDialogContainer
+				item={item}
+				rootPath={rootPath}
+				compact={compact}
+				onContentTypeSelected={onContentTypeSelected}
+			/>
+		</EnhancedDialog>
+	);
 }
 
 export function ContentTypesLoader(props: { numOfItems?: number; isCompact: boolean }) {
-  const { numOfItems = 6, isCompact } = props;
-  const items = new Array(numOfItems).fill(null);
-  return (
-    <Grid container spacing={3} style={{ marginTop: '14px' }}>
-      {items.map((value, i) => (
-        <Grid key={i} size={{ xs: 12, sm: !isCompact ? 4 : 6 }}>
-          <ContentSkeletonCard isCompact={isCompact} />
-        </Grid>
-      ))}
-    </Grid>
-  );
+	const { numOfItems = 6, isCompact } = props;
+	const items = new Array(numOfItems).fill(null);
+	return (
+		<Grid container spacing={3} style={{ marginTop: '14px' }}>
+			{items.map((value, i) => (
+				<Grid key={i} size={{ xs: 12, sm: !isCompact ? 4 : 6 }}>
+					<ContentSkeletonCard isCompact={isCompact} />
+				</Grid>
+			))}
+		</Grid>
+	);
 }
 
 export function ContentTypesGrid(props: ContentTypesGridProps) {
-  const { contentTypes, isCompact, onTypeOpen, selectedContentType } = props;
-  return (
-    <Grid container spacing={3} sx={{ marginTop: '14px' }}>
-      {contentTypes.map((content) => (
-        <Grid key={content.label} size={{ xs: 12, sm: !isCompact ? 4 : 6 }}>
-          <NewContentCard
-            isCompact={isCompact}
-            headerTitle={content.label}
-            subheader={content.form}
-            contentTypeName={content.name}
-            onClick={() => onTypeOpen(content)}
-            isSelected={content.name === selectedContentType}
-          />
-        </Grid>
-      ))}
-    </Grid>
-  );
+	const { contentTypes, isCompact, onTypeOpen, selectedContentType } = props;
+	return (
+		<Grid container spacing={3} sx={{ marginTop: '14px' }}>
+			{contentTypes.map((content) => (
+				<Grid key={content.label} size={{ xs: 12, sm: !isCompact ? 4 : 6 }}>
+					<NewContentCard
+						isCompact={isCompact}
+						headerTitle={content.label}
+						subheader={content.form}
+						contentTypeName={content.name}
+						onClick={() => onTypeOpen(content)}
+						isSelected={content.name === selectedContentType}
+					/>
+				</Grid>
+			))}
+		</Grid>
+	);
 }
 
 export default NewContentDialog;

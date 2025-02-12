@@ -20,19 +20,19 @@ import { LogEvent } from '../../models/monitoring/LogEvent';
 import LogConsoleDetailsDialogUI from './LogConsoleDetailsDialogUI';
 
 export interface LogConsoleDetailsDialogProps {
-  open: boolean;
-  onClose(): void;
-  onClosed?(): void;
-  logEvent: LogEvent;
+	open: boolean;
+	onClose(): void;
+	onClosed?(): void;
+	logEvent: LogEvent;
 }
 
 export function LogConsoleDetailsDialog(props: LogConsoleDetailsDialogProps) {
-  const { open, onClose } = props;
-  return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
-      <LogConsoleDetailsDialogUI {...props} />
-    </Dialog>
-  );
+	const { open, onClose } = props;
+	return (
+		<Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
+			<LogConsoleDetailsDialogUI {...props} />
+		</Dialog>
+	);
 }
 
 export default LogConsoleDetailsDialog;

@@ -29,76 +29,76 @@ import { RepositoryStatus } from '../../models';
 import { AjaxError } from 'rxjs/ajax';
 
 export interface CommitResolutionDialogContainerProps {
-  open: boolean;
-  setDisableQuickDismiss?(disable: boolean): void;
-  onClose(): void;
-  onCommitRequestSent?(): void;
-  onCommitSuccess?(status: RepositoryStatus): void;
-  onCommitError?(status: AjaxError): void;
+	open: boolean;
+	setDisableQuickDismiss?(disable: boolean): void;
+	onClose(): void;
+	onCommitRequestSent?(): void;
+	onCommitSuccess?(status: RepositoryStatus): void;
+	onCommitError?(status: AjaxError): void;
 }
 
 export function CommitResolutionDialogContainer(props: CommitResolutionDialogContainerProps) {
-  const { onClose, onCommitRequestSent, setDisableQuickDismiss, onCommitSuccess, onCommitError } = props;
-  const siteId = useActiveSiteId();
-  const [message, setMessage] = useState('');
+	const { onClose, onCommitRequestSent, setDisableQuickDismiss, onCommitSuccess, onCommitError } = props;
+	const siteId = useActiveSiteId();
+	const [message, setMessage] = useState('');
 
-  const onChange = (e: any) => {
-    e.persist();
-    setMessage(e.target.value);
-    setDisableQuickDismiss(Boolean(e.target.value));
-  };
+	const onChange = (e: any) => {
+		e.persist();
+		setMessage(e.target.value);
+		setDisableQuickDismiss(Boolean(e.target.value));
+	};
 
-  const onSubmit = (e) => {
-    e.preventDefault();
+	const onSubmit = (e) => {
+		e.preventDefault();
 
-    if (!isBlank(message)) {
-      onCommitRequestSent?.();
-      commitResolution(siteId, message).subscribe({
-        next(status) {
-          onCommitSuccess?.(status);
-        },
-        error({ response }) {
-          onCommitError?.(response);
-        }
-      });
-    }
-  };
+		if (!isBlank(message)) {
+			onCommitRequestSent?.();
+			commitResolution(siteId, message).subscribe({
+				next(status) {
+					onCommitSuccess?.(status);
+				},
+				error({ response }) {
+					onCommitError?.(response);
+				}
+			});
+		}
+	};
 
-  return (
-    <form onSubmit={onSubmit}>
-      <DialogHeader
-        title={<FormattedMessage id="repositories.commitResolution" defaultMessage="Commit Resolution" />}
-        onCloseButtonClick={onClose}
-      />
-      <DialogBody>
-        <TextField
-          autoFocus
-          label={<FormattedMessage id="repositories.messageLabel" defaultMessage="Conflict resolution message" />}
-          multiline
-          fullWidth
-          rows={4}
-          placeholder="Please supply a message for the repository history log."
-          variant="outlined"
-          value={message}
-          onChange={onChange}
-          helperText={
-            <FormattedMessage
-              id="repositories.commitResolutionHelper"
-              defaultMessage="After committing this resolution. you should 'push' the changes to remote(s) to sync up the new state that you have just defined."
-            />
-          }
-        />
-      </DialogBody>
-      <DialogFooter>
-        <SecondaryButton onClick={onClose}>
-          <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
-        </SecondaryButton>
-        <PrimaryButton type="submit" disabled={isBlank(message)}>
-          <FormattedMessage id="repositories.commitResolution" defaultMessage="Commit Resolution" />
-        </PrimaryButton>
-      </DialogFooter>
-    </form>
-  );
+	return (
+		<form onSubmit={onSubmit}>
+			<DialogHeader
+				title={<FormattedMessage id="repositories.commitResolution" defaultMessage="Commit Resolution" />}
+				onCloseButtonClick={onClose}
+			/>
+			<DialogBody>
+				<TextField
+					autoFocus
+					label={<FormattedMessage id="repositories.messageLabel" defaultMessage="Conflict resolution message" />}
+					multiline
+					fullWidth
+					rows={4}
+					placeholder="Please supply a message for the repository history log."
+					variant="outlined"
+					value={message}
+					onChange={onChange}
+					helperText={
+						<FormattedMessage
+							id="repositories.commitResolutionHelper"
+							defaultMessage="After committing this resolution. you should 'push' the changes to remote(s) to sync up the new state that you have just defined."
+						/>
+					}
+				/>
+			</DialogBody>
+			<DialogFooter>
+				<SecondaryButton onClick={onClose}>
+					<FormattedMessage id="words.cancel" defaultMessage="Cancel" />
+				</SecondaryButton>
+				<PrimaryButton type="submit" disabled={isBlank(message)}>
+					<FormattedMessage id="repositories.commitResolution" defaultMessage="Commit Resolution" />
+				</PrimaryButton>
+			</DialogFooter>
+		</form>
+	);
 }
 
 export default CommitResolutionDialogContainer;

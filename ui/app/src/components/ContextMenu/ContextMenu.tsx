@@ -28,93 +28,93 @@ import { PartialSxRecord } from '../../models';
 import Box from '@mui/material/Box';
 
 export interface ContextMenuOption {
-  id: string;
-  icon?: SystemIconDescriptor;
-  label: ReactNode;
+	id: string;
+	icon?: SystemIconDescriptor;
+	label: ReactNode;
 }
 
 export type ContextMenuClassKey = 'menuItem' | 'emptyRoot' | 'loadingRoot';
 
 export interface ContextMenuProps extends MenuProps {
-  isLoading?: boolean;
-  numOfLoaderItems?: number;
-  classes?: MenuProps['classes'] & Partial<Record<ContextMenuClassKey, string>>;
-  sxs?: PartialSxRecord<ContextMenuClassKey>;
-  options: Array<Array<ContextMenuOption>>;
-  emptyState?: {
-    icon?: ElementType;
-    message: string;
-  };
-  onMenuItemClicked(optionId: string, event: React.MouseEvent<Element, MouseEvent>): void;
+	isLoading?: boolean;
+	numOfLoaderItems?: number;
+	classes?: MenuProps['classes'] & Partial<Record<ContextMenuClassKey, string>>;
+	sxs?: PartialSxRecord<ContextMenuClassKey>;
+	options: Array<Array<ContextMenuOption>>;
+	emptyState?: {
+		icon?: ElementType;
+		message: string;
+	};
+	onMenuItemClicked(optionId: string, event: React.MouseEvent<Element, MouseEvent>): void;
 }
 
 export function ContextMenu(props: ContextMenuProps) {
-  const {
-    options,
-    classes: propClasses,
-    sxs,
-    onMenuItemClicked,
-    emptyState,
-    isLoading = false,
-    numOfLoaderItems = 5,
-    ...menuProps
-  } = props;
-  return (
-    <Menu {...menuProps} classes={propClasses}>
-      {isLoading ? (
-        <Box
-          className={propClasses?.loadingRoot}
-          sx={{
-            width: '135px',
-            padding: '0 15px',
-            ...sxs?.loadingRoot
-          }}
-        >
-          {new Array(numOfLoaderItems).fill(null).map((value, i) => (
-            <Typography key={i} variant="body2" style={{ width: `${rand(85, 100)}%`, padding: '6px 0' }}>
-              <Skeleton animation="wave" width="100%" />
-            </Typography>
-          ))}
-        </Box>
-      ) : options.flatMap((i) => i).length === 0 ? (
-        <Box
-          className={propClasses?.emptyRoot}
-          sx={{
-            display: 'block',
-            padding: '10px',
-            textAlign: 'center',
-            ...sxs?.emptyRoot
-          }}
-        >
-          <ErrorOutlineOutlinedIcon fontSize="small" />
-          <Typography variant="caption" display="block">
-            {emptyState?.message || (
-              <FormattedMessage
-                id="contextMenu.emptyOptionsMessage"
-                defaultMessage="No options available to display."
-              />
-            )}
-          </Typography>
-        </Box>
-      ) : (
-        options.map((section: any, i: number) =>
-          section.map((option: ContextMenuOption, y: number) => (
-            <MenuItem
-              dense
-              key={option.id}
-              divider={i !== options.length - 1 && y === section.length - 1}
-              onClick={(e) => onMenuItemClicked(option.id, e)}
-              className={propClasses?.menuItem}
-              sx={sxs?.menuItem}
-            >
-              <Typography variant="body2">{option.label}</Typography>
-              {option.icon && <SystemIcon icon={option.icon} sx={{ ml: 1 }} />}
-            </MenuItem>
-          ))
-        )
-      )}
-    </Menu>
-  );
+	const {
+		options,
+		classes: propClasses,
+		sxs,
+		onMenuItemClicked,
+		emptyState,
+		isLoading = false,
+		numOfLoaderItems = 5,
+		...menuProps
+	} = props;
+	return (
+		<Menu {...menuProps} classes={propClasses}>
+			{isLoading ? (
+				<Box
+					className={propClasses?.loadingRoot}
+					sx={{
+						width: '135px',
+						padding: '0 15px',
+						...sxs?.loadingRoot
+					}}
+				>
+					{new Array(numOfLoaderItems).fill(null).map((value, i) => (
+						<Typography key={i} variant="body2" style={{ width: `${rand(85, 100)}%`, padding: '6px 0' }}>
+							<Skeleton animation="wave" width="100%" />
+						</Typography>
+					))}
+				</Box>
+			) : options.flatMap((i) => i).length === 0 ? (
+				<Box
+					className={propClasses?.emptyRoot}
+					sx={{
+						display: 'block',
+						padding: '10px',
+						textAlign: 'center',
+						...sxs?.emptyRoot
+					}}
+				>
+					<ErrorOutlineOutlinedIcon fontSize="small" />
+					<Typography variant="caption" display="block">
+						{emptyState?.message || (
+							<FormattedMessage
+								id="contextMenu.emptyOptionsMessage"
+								defaultMessage="No options available to display."
+							/>
+						)}
+					</Typography>
+				</Box>
+			) : (
+				options.map((section: any, i: number) =>
+					section.map((option: ContextMenuOption, y: number) => (
+						<MenuItem
+							dense
+							key={option.id}
+							divider={i !== options.length - 1 && y === section.length - 1}
+							onClick={(e) => onMenuItemClicked(option.id, e)}
+							className={propClasses?.menuItem}
+							sx={sxs?.menuItem}
+						>
+							<Typography variant="body2">{option.label}</Typography>
+							{option.icon && <SystemIcon icon={option.icon} sx={{ ml: 1 }} />}
+						</MenuItem>
+					))
+				)
+			)}
+		</Menu>
+	);
 }
 
 export default ContextMenu;

@@ -15,22 +15,22 @@
  */
 
 function yaml_parse(require, exports, module) {
-  'use strict';
+	'use strict';
 
-  const yaml = require(self.location.origin + '/studio/static-assets/libs/js-yaml/js-yaml.min.js');
+	const yaml = require(self.location.origin + '/studio/static-assets/libs/js-yaml/js-yaml.min.js');
 
-  return function (source, reviver) {
-    try {
-      yaml.load(source);
-    } catch (error) {
-      if (error instanceof yaml.YAMLException) {
-        throw {
-          name: 'SyntaxError',
-          message: error.message,
-          at: error.mark.position,
-          text: source
-        };
-      }
-    }
-  };
+	return function (source, reviver) {
+		try {
+			yaml.load(source);
+		} catch (error) {
+			if (error instanceof yaml.YAMLException) {
+				throw {
+					name: 'SyntaxError',
+					message: error.message,
+					at: error.mark.position,
+					text: source
+				};
+			}
+		}
+	};
 }

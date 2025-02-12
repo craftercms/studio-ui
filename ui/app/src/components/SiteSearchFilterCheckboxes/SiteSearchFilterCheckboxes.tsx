@@ -22,48 +22,48 @@ import Checkbox from '@mui/material/Checkbox';
 import React from 'react';
 
 interface FilterCheckboxesProps {
-  facetData: Facet;
-  facet: string;
-  checkedFilters: LookupTable;
-  facetLabelLookup: LookupTable;
-  handleCheckboxClick(key: string, checked: boolean, facet: string): any;
+	facetData: Facet;
+	facet: string;
+	checkedFilters: LookupTable;
+	facetLabelLookup: LookupTable;
+	handleCheckboxClick(key: string, checked: boolean, facet: string): any;
 }
 
 export function SiteSearchFilterCheckboxes(props: FilterCheckboxesProps) {
-  const { facetData, facet, handleCheckboxClick, checkedFilters, facetLabelLookup } = props;
-  const items = facetData.values;
-  return (
-    <FormGroup>
-      {Object.keys(items).map((key) => {
-        return (
-          <FormControlLabel
-            key={key}
-            name={key}
-            control={
-              <Checkbox
-                color="primary"
-                checked={(checkedFilters && checkedFilters[facet] && checkedFilters[facet][key]) || false}
-                value={key}
-                onChange={(e) => handleCheckboxClick(key, e.target.checked, facet)}
-              />
-            }
-            label={`${facetLabelLookup[key] ?? key} (${items[key]})`}
-            labelPlacement="start"
-            sx={{
-              marginRight: '5px',
-              [`& .${formControlLabelClasses.label}`]: {
-                width: '100%',
-                overflow: 'hidden',
-                display: '-webkit-box',
-                WebkitLineClamp: 1,
-                WebkitBoxOrient: 'vertical'
-              }
-            }}
-          />
-        );
-      })}
-    </FormGroup>
-  );
+	const { facetData, facet, handleCheckboxClick, checkedFilters, facetLabelLookup } = props;
+	const items = facetData.values;
+	return (
+		<FormGroup>
+			{Object.keys(items).map((key) => {
+				return (
+					<FormControlLabel
+						key={key}
+						name={key}
+						control={
+							<Checkbox
+								color="primary"
+								checked={(checkedFilters && checkedFilters[facet] && checkedFilters[facet][key]) || false}
+								value={key}
+								onChange={(e) => handleCheckboxClick(key, e.target.checked, facet)}
+							/>
+						}
+						label={`${facetLabelLookup[key] ?? key} (${items[key]})`}
+						labelPlacement="start"
+						sx={{
+							marginRight: '5px',
+							[`& .${formControlLabelClasses.label}`]: {
+								width: '100%',
+								overflow: 'hidden',
+								display: '-webkit-box',
+								WebkitLineClamp: 1,
+								WebkitBoxOrient: 'vertical'
+							}
+						}}
+					/>
+				);
+			})}
+		</FormGroup>
+	);
 }
 
 export default SiteSearchFilterCheckboxes;

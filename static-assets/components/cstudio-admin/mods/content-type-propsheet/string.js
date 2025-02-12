@@ -15,85 +15,85 @@
  */
 
 CStudioAdminConsole.Tool.ContentTypes.PropertyType.String =
-  CStudioAdminConsole.Tool.ContentTypes.PropertyType.String ||
-  function (fieldName, containerEl) {
-    this.fieldName = fieldName;
-    this.containerEl = containerEl;
-    return this;
-  };
+	CStudioAdminConsole.Tool.ContentTypes.PropertyType.String ||
+	function (fieldName, containerEl) {
+		this.fieldName = fieldName;
+		this.containerEl = containerEl;
+		return this;
+	};
 
 YAHOO.extend(
-  CStudioAdminConsole.Tool.ContentTypes.PropertyType.String,
-  CStudioAdminConsole.Tool.ContentTypes.PropertyType,
-  {
-    render: function (value, updateFn, fName, itemId, defaultValue, typeControl, disabled, validations) {
-      var _self = this;
-      var containerEl = this.containerEl,
-        wrapperEl = document.createElement('div'),
-        valueEl = document.createElement('input');
+	CStudioAdminConsole.Tool.ContentTypes.PropertyType.String,
+	CStudioAdminConsole.Tool.ContentTypes.PropertyType,
+	{
+		render: function (value, updateFn, fName, itemId, defaultValue, typeControl, disabled, validations) {
+			var _self = this;
+			var containerEl = this.containerEl,
+				wrapperEl = document.createElement('div'),
+				valueEl = document.createElement('input');
 
-      wrapperEl.appendChild(valueEl);
-      containerEl.appendChild(wrapperEl);
-      valueEl.value = value;
-      valueEl.fieldName = this.fieldName;
-      valueEl.className = 'text-prop';
-      validations && valueEl.setAttribute('data-id', validations.name);
-      validations && valueEl.setAttribute('data-label', validations.label);
+			wrapperEl.appendChild(valueEl);
+			containerEl.appendChild(wrapperEl);
+			valueEl.value = value;
+			valueEl.fieldName = this.fieldName;
+			valueEl.className = 'text-prop';
+			validations && valueEl.setAttribute('data-id', validations.name);
+			validations && valueEl.setAttribute('data-label', validations.label);
 
-      if (updateFn) {
-        var updateFieldFn = function (event, el) {
-          updateFn(event, el);
-          CStudioAdminConsole.Tool.ContentTypes.visualization.render();
-          valueEl.dispatchEvent(new Event('propertyUpdate', { event }));
-        };
+			if (updateFn) {
+				var updateFieldFn = function (event, el) {
+					updateFn(event, el);
+					CStudioAdminConsole.Tool.ContentTypes.visualization.render();
+					valueEl.dispatchEvent(new Event('propertyUpdate', { event }));
+				};
 
-        var onBlur = function (event, el) {
-          if (!el.value.startsWith(validations.startsWith)) {
-            if (el.value.startsWith('/')) {
-              el.value = validations.startsWith + el.value;
-            } else {
-              el.value = validations.startsWith + '/' + el.value;
-            }
-          }
-          updateFn(event, el);
-          CStudioAdminConsole.Tool.ContentTypes.visualization.render();
-        };
+				var onBlur = function (event, el) {
+					if (!el.value.startsWith(validations.startsWith)) {
+						if (el.value.startsWith('/')) {
+							el.value = validations.startsWith + el.value;
+						} else {
+							el.value = validations.startsWith + '/' + el.value;
+						}
+					}
+					updateFn(event, el);
+					CStudioAdminConsole.Tool.ContentTypes.visualization.render();
+				};
 
-        YAHOO.util.Event.on(
-          valueEl,
-          'keyup',
-          CStudioAuthoring.Utils.debounce((e) => updateFieldFn(e, valueEl)),
-          valueEl
-        );
+				YAHOO.util.Event.on(
+					valueEl,
+					'keyup',
+					CStudioAuthoring.Utils.debounce((e) => updateFieldFn(e, valueEl)),
+					valueEl
+				);
 
-        if (validations) {
-          if (validations.startsWith) {
-            YAHOO.util.Event.on(valueEl, 'blur', onBlur, valueEl);
-          }
-        }
-      }
+				if (validations) {
+					if (validations.startsWith) {
+						YAHOO.util.Event.on(valueEl, 'blur', onBlur, valueEl);
+					}
+				}
+			}
 
-      if (validations && validations.dependsOn) {
-        const dependency = document.querySelector(`[data-id="${validations.dependsOn}"]`);
+			if (validations && validations.dependsOn) {
+				const dependency = document.querySelector(`[data-id="${validations.dependsOn}"]`);
 
-        const dependencyStatus = _self.dependencyStatus(dependency);
-        valueEl.value = dependencyStatus.supported ? (dependencyStatus.dependencyMet ? value : false) : value;
+				const dependencyStatus = _self.dependencyStatus(dependency);
+				valueEl.value = dependencyStatus.supported ? (dependencyStatus.dependencyMet ? value : false) : value;
 
-        _self.handleDependency(dependency, valueEl, validations, 'value', '', updateFieldFn);
-      } else {
-        valueEl.value = value;
-      }
+				_self.handleDependency(dependency, valueEl, validations, 'value', '', updateFieldFn);
+			} else {
+				valueEl.value = value;
+			}
 
-      this.valueEl = valueEl;
-    },
+			this.valueEl = valueEl;
+		},
 
-    getValue: function () {
-      return this.valueEl.value;
-    }
-  }
+		getValue: function () {
+			return this.valueEl.value;
+		}
+	}
 );
 
 CStudioAuthoring.Module.moduleLoaded(
-  'cstudio-console-tools-content-types-proptype-string',
-  CStudioAdminConsole.Tool.ContentTypes.PropertyType.String
+	'cstudio-console-tools-content-types-proptype-string',
+	CStudioAdminConsole.Tool.ContentTypes.PropertyType.String
 );

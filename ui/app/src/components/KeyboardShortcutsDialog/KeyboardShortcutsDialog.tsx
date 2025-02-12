@@ -29,60 +29,60 @@ import Typography from '@mui/material/Typography';
 import { getPossibleTranslation } from '../../utils/i18n';
 
 export function KeyboardShortcutsDialog(props: KeyboardShortcutsDialogProps) {
-  const { shortcuts, sxs, ...rest } = props;
-  const { formatMessage } = useIntl();
-  return (
-    <EnhancedDialog
-      title={<FormattedMessage id="keyboardShortcutsDialog.title" defaultMessage="Keyboard Shortcuts" />}
-      maxWidth="sm"
-      {...rest}
-    >
-      <DialogBody>
-        {shortcuts.map((category, index) => (
-          <Card key={index}>
-            <CardContent>
-              <Typography
-                variant="subtitle1"
-                gutterBottom
-                sx={{
-                  fontSize: '1.25rem',
-                  ...sxs?.categoryTitle
-                }}
-              >
-                {getPossibleTranslation(category.label, formatMessage)}
-              </Typography>
+	const { shortcuts, sxs, ...rest } = props;
+	const { formatMessage } = useIntl();
+	return (
+		<EnhancedDialog
+			title={<FormattedMessage id="keyboardShortcutsDialog.title" defaultMessage="Keyboard Shortcuts" />}
+			maxWidth="sm"
+			{...rest}
+		>
+			<DialogBody>
+				{shortcuts.map((category, index) => (
+					<Card key={index}>
+						<CardContent>
+							<Typography
+								variant="subtitle1"
+								gutterBottom
+								sx={{
+									fontSize: '1.25rem',
+									...sxs?.categoryTitle
+								}}
+							>
+								{getPossibleTranslation(category.label, formatMessage)}
+							</Typography>
 
-              <List
-                sx={{
-                  padding: 0,
-                  ...sxs?.shortcutsList
-                }}
-              >
-                {category.shortcuts.map(({ label, shortcut }, index) => (
-                  <ListItem
-                    key={index}
-                    secondaryAction={
-                      <Chip
-                        label={shortcut}
-                        sx={{
-                          fontFamily: 'monospace',
-                          borderRadius: '8px',
-                          ...sxs?.shortcutChip
-                        }}
-                      />
-                    }
-                    divider
-                  >
-                    <ListItemText primary={getPossibleTranslation(label, formatMessage)} />
-                  </ListItem>
-                ))}
-              </List>
-            </CardContent>
-          </Card>
-        ))}
-      </DialogBody>
-    </EnhancedDialog>
-  );
+							<List
+								sx={{
+									padding: 0,
+									...sxs?.shortcutsList
+								}}
+							>
+								{category.shortcuts.map(({ label, shortcut }, index) => (
+									<ListItem
+										key={index}
+										secondaryAction={
+											<Chip
+												label={shortcut}
+												sx={{
+													fontFamily: 'monospace',
+													borderRadius: '8px',
+													...sxs?.shortcutChip
+												}}
+											/>
+										}
+										divider
+									>
+										<ListItemText primary={getPossibleTranslation(label, formatMessage)} />
+									</ListItem>
+								))}
+							</List>
+						</CardContent>
+					</Card>
+				))}
+			</DialogBody>
+		</EnhancedDialog>
+	);
 }
 
 export default KeyboardShortcutsDialog;

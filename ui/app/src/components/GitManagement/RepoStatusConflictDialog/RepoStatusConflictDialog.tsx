@@ -23,89 +23,89 @@ import React, { useEffect, useState } from 'react';
 import SecondaryButton from '../../SecondaryButton';
 
 export interface RepoStatusConflictDialogProps extends EnhancedDialogProps {
-  status: RepositoryStatus;
-  onCommitSuccess?(status: RepositoryStatus): void;
-  onRevertSuccess?(): void;
-  onConflictResolved?(status: RepositoryStatus): void;
-  onFailedPullCancelled?(status: RepositoryStatus): void;
+	status: RepositoryStatus;
+	onCommitSuccess?(status: RepositoryStatus): void;
+	onRevertSuccess?(): void;
+	onConflictResolved?(status: RepositoryStatus): void;
+	onFailedPullCancelled?(status: RepositoryStatus): void;
 }
 
 export function RepoStatusConflictDialog(props: RepoStatusConflictDialogProps) {
-  const {
-    status,
-    onCommitSuccess,
-    onRevertSuccess: onRevertSuccessProp,
-    onConflictResolved,
-    onFailedPullCancelled,
-    ...dialogProps
-  } = props;
-  const isRepoClean = !status?.conflicting.length && !status?.uncommittedChanges.length;
-  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+	const {
+		status,
+		onCommitSuccess,
+		onRevertSuccess: onRevertSuccessProp,
+		onConflictResolved,
+		onFailedPullCancelled,
+		...dialogProps
+	} = props;
+	const isRepoClean = !status?.conflicting.length && !status?.uncommittedChanges.length;
+	const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
 
-  useEffect(() => {
-    if (dialogProps.open && !isRepoClean) {
-      window.onbeforeunload = (event) => {
-        event.preventDefault();
-        return (event.returnValue = '');
-      };
-    } else {
-      window.onbeforeunload = null;
-    }
-    return () => {
-      window.onbeforeunload = null;
-    };
-  }, [dialogProps.open, isRepoClean]);
+	useEffect(() => {
+		if (dialogProps.open && !isRepoClean) {
+			window.onbeforeunload = (event) => {
+				event.preventDefault();
+				return (event.returnValue = '');
+			};
+		} else {
+			window.onbeforeunload = null;
+		}
+		return () => {
+			window.onbeforeunload = null;
+		};
+	}, [dialogProps.open, isRepoClean]);
 
-  const onRevertSuccess = () => {
-    setOpenConfirmDialog(false);
-    onRevertSuccessProp?.();
-  };
+	const onRevertSuccess = () => {
+		setOpenConfirmDialog(false);
+		onRevertSuccessProp?.();
+	};
 
-  const onConfirmDialogOk = () => {
-    setOpenConfirmDialog(false);
-  };
+	const onConfirmDialogOk = () => {
+		setOpenConfirmDialog(false);
+	};
 
-  const onClose = (e) => {
-    if (!isRepoClean) {
-      setOpenConfirmDialog(true);
-    } else {
-      props.onClose?.(e, null);
-    }
-  };
+	const onClose = (e) => {
+		if (!isRepoClean) {
+			setOpenConfirmDialog(true);
+		} else {
+			props.onClose?.(e, null);
+		}
+	};
 
-  return (
-    <>
-      <EnhancedDialog
-        maxWidth="lg"
-        {...dialogProps}
-        onClose={onClose}
-        title={<FormattedMessage defaultMessage="Resolve conflicts" />}
-      >
-        <DialogBody
-          sx={{
-            minHeight: '40vh',
-            justifyContent: isRepoClean ? 'center' : null,
-            alignItems: isRepoClean ? 'center' : null
-          }}
-        >
-          <RepoStatus
-            status={status}
-            openConfirmDialog={openConfirmDialog}
-            onCommitSuccess={onCommitSuccess}
-            onConflictResolved={onConflictResolved}
-            onFailedPullCancelled={onFailedPullCancelled}
-            onConfirmDialogOk={onConfirmDialogOk}
-            onRevertSuccess={onRevertSuccess}
-          />
-          {isRepoClean && (
-            <SecondaryButton onClick={onClose}>
-              <FormattedMessage defaultMessage="Close" />
-            </SecondaryButton>
-          )}
-        </DialogBody>
-      </EnhancedDialog>
-    </>
-  );
+	return (
+		<>
+			<EnhancedDialog
+				maxWidth="lg"
+				{...dialogProps}
+				onClose={onClose}
+				title={<FormattedMessage defaultMessage="Resolve conflicts" />}
+			>
+				<DialogBody
+					sx={{
+						minHeight: '40vh',
+						justifyContent: isRepoClean ? 'center' : null,
+						alignItems: isRepoClean ? 'center' : null
+					}}
+				>
+					<RepoStatus
+						status={status}
+						openConfirmDialog={openConfirmDialog}
+						onCommitSuccess={onCommitSuccess}
+						onConflictResolved={onConflictResolved}
+						onFailedPullCancelled={onFailedPullCancelled}
+						onConfirmDialogOk={onConfirmDialogOk}
+						onRevertSuccess={onRevertSuccess}
+					/>
+					{isRepoClean && (
+						<SecondaryButton onClick={onClose}>
+							<FormattedMessage defaultMessage="Close" />
+						</SecondaryButton>
+					)}
+				</DialogBody>
+			</EnhancedDialog>
+		</>
+	);
 }
 
 export default RepoStatusConflictDialog;

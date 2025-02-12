@@ -19,46 +19,46 @@ import GlobalState from '../../../models/GlobalState';
 import { PublishingStatusDialogStateProps } from '../../../components/PublishingStatusDialog';
 import { closePublishingStatusDialog, showPublishingStatusDialog } from '../../actions/dialogs';
 import {
-  fetchPublishingStatus,
-  fetchPublishingStatusComplete,
-  fetchPublishingStatusFailed,
-  updatePublishingStatus
+	fetchPublishingStatus,
+	fetchPublishingStatusComplete,
+	fetchPublishingStatusFailed,
+	updatePublishingStatus
 } from '../../actions/publishingStatus';
 import { commonDialogProps } from '../../../utils/state';
 
 const initialState: PublishingStatusDialogStateProps = commonDialogProps({
-  open: false,
-  message: null,
-  isFetching: false,
-  onClose: closePublishingStatusDialog(),
-  onRefresh: fetchPublishingStatus(),
-  enabled: null,
-  published: null,
-  currentTask: null
+	open: false,
+	message: null,
+	isFetching: false,
+	onClose: closePublishingStatusDialog(),
+	onRefresh: fetchPublishingStatus(),
+	enabled: null,
+	published: null,
+	currentTask: null
 });
 
 const publishingStatus = createReducer<GlobalState['dialogs']['publishingStatus']>(initialState, (builder) => {
-  builder
-    .addCase(showPublishingStatusDialog, (state, { payload }) => {
-      const data: Partial<PublishingStatusDialogStateProps> = payload;
-      return {
-        ...state,
-        ...data,
-        open: true
-      };
-    })
-    .addCase(closePublishingStatusDialog, (state) => ({ ...state, open: false }))
-    .addCase(updatePublishingStatus, (state, { payload }) => ({
-      ...state,
-      ...(payload as Partial<PublishingStatusDialogStateProps>)
-    }))
-    .addCase(fetchPublishingStatus, (state) => ({ ...state, isFetching: true }))
-    .addCase(fetchPublishingStatusComplete, (state, { payload }) => ({
-      ...state,
-      ...(payload as Partial<PublishingStatusDialogStateProps>),
-      isFetching: false
-    }))
-    .addCase(fetchPublishingStatusFailed, (state) => ({ ...state, isFetching: false }));
+	builder
+		.addCase(showPublishingStatusDialog, (state, { payload }) => {
+			const data: Partial<PublishingStatusDialogStateProps> = payload;
+			return {
+				...state,
+				...data,
+				open: true
+			};
+		})
+		.addCase(closePublishingStatusDialog, (state) => ({ ...state, open: false }))
+		.addCase(updatePublishingStatus, (state, { payload }) => ({
+			...state,
+			...(payload as Partial<PublishingStatusDialogStateProps>)
+		}))
+		.addCase(fetchPublishingStatus, (state) => ({ ...state, isFetching: true }))
+		.addCase(fetchPublishingStatusComplete, (state, { payload }) => ({
+			...state,
+			...(payload as Partial<PublishingStatusDialogStateProps>),
+			isFetching: false
+		}))
+		.addCase(fetchPublishingStatusFailed, (state) => ({ ...state, isFetching: false }));
 });
 
 export default publishingStatus;

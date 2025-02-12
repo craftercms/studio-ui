@@ -23,43 +23,43 @@ import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 
 export interface SplitViewProps {
-  diff: FileDiff;
-  className?: string;
-  sx?: SxProps<Theme>;
+	diff: FileDiff;
+	className?: string;
+	sx?: SxProps<Theme>;
 }
 
 export function ConflictedPathDiffDialogSplitView(props: SplitViewProps) {
-  const { diff, className, sx } = props;
-  const ref = useRef(undefined);
-  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
-  const diffEditorRef = useRef(null);
-  useEffect(() => {
-    if (diff) {
-      withMonaco((monaco) => {
-        const studioVersion = monaco.editor.createModel(diff.studioVersion, 'text/plain');
-        const remoteVersion = monaco.editor.createModel(diff.remoteVersion, 'text/plain');
-        monaco.editor.setTheme(prefersDarkMode ? 'vs-dark' : 'vs');
-        // Only create diff editor if it doesn't exist yet.
-        // This is to avoid creating a new diff editor on every update.
-        if (!diffEditorRef.current) {
-          diffEditorRef.current = monaco.editor.createDiffEditor(ref.current, {
-            scrollbar: {
-              alwaysConsumeMouseWheel: false
-            },
-            readOnly: true,
-            // Monaco editor has a breakpoint for split view, we had to decrease it for the split view to show in current dialog
-            renderSideBySideInlineBreakpoint: 300
-          });
-        }
-        diffEditorRef.current.setModel({
-          original: studioVersion,
-          modified: remoteVersion
-        });
-      });
-    }
-  }, [diff, prefersDarkMode]);
+	const { diff, className, sx } = props;
+	const ref = useRef(undefined);
+	const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+	const diffEditorRef = useRef(null);
+	useEffect(() => {
+		if (diff) {
+			withMonaco((monaco) => {
+				const studioVersion = monaco.editor.createModel(diff.studioVersion, 'text/plain');
+				const remoteVersion = monaco.editor.createModel(diff.remoteVersion, 'text/plain');
+				monaco.editor.setTheme(prefersDarkMode ? 'vs-dark' : 'vs');
+				// Only create diff editor if it doesn't exist yet.
+				// This is to avoid creating a new diff editor on every update.
+				if (!diffEditorRef.current) {
+					diffEditorRef.current = monaco.editor.createDiffEditor(ref.current, {
+						scrollbar: {
+							alwaysConsumeMouseWheel: false
+						},
+						readOnly: true,
+						// Monaco editor has a breakpoint for split view, we had to decrease it for the split view to show in current dialog
+						renderSideBySideInlineBreakpoint: 300
+					});
+				}
+				diffEditorRef.current.setModel({
+					original: studioVersion,
+					modified: remoteVersion
+				});
+			});
+		}
+	}, [diff, prefersDarkMode]);
 
-  return <Box ref={ref} className={className} sx={sx} />;
+	return <Box ref={ref} className={className} sx={sx} />;
 }
 
 export default ConflictedPathDiffDialogSplitView;

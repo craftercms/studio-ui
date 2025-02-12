@@ -20,22 +20,22 @@ import { closeDependenciesDialog, dependenciesDialogClosed, showDependenciesDial
 import { DependenciesDialogStateProps } from '../../../components/DependenciesDialog/utils';
 
 const initialState: DependenciesDialogStateProps = {
-  isMinimized: null,
-  isSubmitting: null,
-  hasPendingChanges: null,
-  open: false,
-  rootPath: '/site/website'
+	isMinimized: null,
+	isSubmitting: null,
+	hasPendingChanges: null,
+	open: false,
+	rootPath: '/site/website'
 };
 
 export default createReducer<GlobalState['dialogs']['dependencies']>(initialState, (builder) => {
-  builder
-    .addCase(showDependenciesDialog, (state, { payload }) => ({
-      ...state,
-      onClose: closeDependenciesDialog(),
-      onClosed: dependenciesDialogClosed(),
-      ...(payload as Partial<DependenciesDialogStateProps>),
-      open: true
-    }))
-    .addCase(closeDependenciesDialog, (state) => ({ ...state, open: false }))
-    .addCase(dependenciesDialogClosed, () => initialState);
+	builder
+		.addCase(showDependenciesDialog, (state, { payload }) => ({
+			...state,
+			onClose: closeDependenciesDialog(),
+			onClosed: dependenciesDialogClosed(),
+			...(payload as Partial<DependenciesDialogStateProps>),
+			open: true
+		}))
+		.addCase(closeDependenciesDialog, (state) => ({ ...state, open: false }))
+		.addCase(dependenciesDialogClosed, () => initialState);
 });

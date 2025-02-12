@@ -1,23 +1,23 @@
 {
-  "private": true,
-  "name": "@craftercms/studio-ui-legacy",
-  "version": "1.0.0",
-  "main": "index.js",
-  "license": "MIT",
-  "bic": {
-    "skip": [
-      "README.md",
-      "CHANGE_LOG.md"
-    ]
-  },
-  "scripts": {
-    "build": "swc components -d ../../static-assets",
-    "bom": "mkdir -p target && yarn cyclonedx --output-file target/bom.json"
-  },
-  "devDependencies": {
-    "@babel/cli": "^7.26.4",
-    "@swc/cli": "^0.5.2",
-    "@swc/core": "^1.10.11",
-    "build-if-changed": "^1.5.5"
-  }
+	"private": true,
+	"name": "@craftercms/studio-ui-legacy",
+	"version": "1.0.0",
+	"main": "index.js",
+	"license": "MIT",
+	"bic": {
+		"skip": [
+			"README.md",
+			"CHANGE_LOG.md"
+		]
+	},
+	"scripts": {
+		"build": "swc components -d ../../static-assets",
+		"bom": "mkdir -p target && yarn cyclonedx --output-file target/bom.json"
+	},
+	"devDependencies": {
+		"@babel/cli": "^7.26.4",
+		"@swc/cli": "^0.5.2",
+		"@swc/core": "^1.10.11",
+		"build-if-changed": "^1.5.5"
+	}
 }

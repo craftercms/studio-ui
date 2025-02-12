@@ -25,71 +25,71 @@ import palette from '../../styles/palette';
 import { useSelection } from '../../hooks/useSelection';
 
 export function RubbishBin(props: any) {
-  const [over, setOver] = useState(false);
-  const [trashed, setTrashed] = useState(false);
-  const toolsPanelWidth = useSelection<number>((state) => state.preview.toolsPanelWidth);
-  useEffect(() => {
-    if (props.open) {
-      setOver(false);
-      setTrashed(false);
-    }
-  }, [props.open]);
-  return (
-    <Grow in={props.open}>
-      <Paper
-        elevation={2}
-        style={{ width: toolsPanelWidth - 30 }}
-        sx={(theme) => ({
-          height: 250,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          background: over ? palette.red.main : palette.orange.main,
-          margin: theme.spacing(1),
-          position: 'absolute',
-          right: theme.spacing(1),
-          bottom: theme.spacing(1),
-          color: palette.white,
-          zIndex: theme.zIndex.drawer
-        })}
-        onDragOver={(e) => {
-          e.preventDefault();
-        }}
-        onDragEnter={(e) => {
-          e.preventDefault();
-          setOver(true);
-        }}
-        onDragLeave={(e) => {
-          e.preventDefault();
-          setOver(false);
-        }}
-        onDrop={(e) => {
-          e.preventDefault();
-          setTrashed(true);
-          props.onTrash?.();
-        }}
-      >
-        {/* For embedded components show a link instead of a rubbish bin
+	const [over, setOver] = useState(false);
+	const [trashed, setTrashed] = useState(false);
+	const toolsPanelWidth = useSelection<number>((state) => state.preview.toolsPanelWidth);
+	useEffect(() => {
+		if (props.open) {
+			setOver(false);
+			setTrashed(false);
+		}
+	}, [props.open]);
+	return (
+		<Grow in={props.open}>
+			<Paper
+				elevation={2}
+				style={{ width: toolsPanelWidth - 30 }}
+				sx={(theme) => ({
+					height: 250,
+					display: 'flex',
+					flexDirection: 'column',
+					alignItems: 'center',
+					justifyContent: 'center',
+					background: over ? palette.red.main : palette.orange.main,
+					margin: theme.spacing(1),
+					position: 'absolute',
+					right: theme.spacing(1),
+					bottom: theme.spacing(1),
+					color: palette.white,
+					zIndex: theme.zIndex.drawer
+				})}
+				onDragOver={(e) => {
+					e.preventDefault();
+				}}
+				onDragEnter={(e) => {
+					e.preventDefault();
+					setOver(true);
+				}}
+				onDragLeave={(e) => {
+					e.preventDefault();
+					setOver(false);
+				}}
+				onDrop={(e) => {
+					e.preventDefault();
+					setTrashed(true);
+					props.onTrash?.();
+				}}
+			>
+				{/* For embedded components show a link instead of a rubbish bin
           (over)
             ? <BrokenLinkRounded className={classes.rubbishIcon} />
             : <LinkRounded className={classes.rubbishIcon} />
           */}
-        {over ? (
-          <DeleteRoundedTilted sx={{ width: '100%', height: '50%', color: palette.white, pointerEvents: 'none' }} />
-        ) : (
-          <DeleteRounded sx={{ width: '100%', height: '50%', color: palette.white, pointerEvents: 'none' }} />
-        )}
-        <Typography variant="caption" sx={{ pointerEvents: 'none' }}>
-          {trashed ? (
-            <FormattedMessage id="previewRubbishBin.itemTrashed" defaultMessage="Trashed!" />
-          ) : (
-            <FormattedMessage id="previewRubbishBin.dropToTrash" defaultMessage="Drop Here To Trash" />
-          )}
-        </Typography>
-      </Paper>
-    </Grow>
-  );
+				{over ? (
+					<DeleteRoundedTilted sx={{ width: '100%', height: '50%', color: palette.white, pointerEvents: 'none' }} />
+				) : (
+					<DeleteRounded sx={{ width: '100%', height: '50%', color: palette.white, pointerEvents: 'none' }} />
+				)}
+				<Typography variant="caption" sx={{ pointerEvents: 'none' }}>
+					{trashed ? (
+						<FormattedMessage id="previewRubbishBin.itemTrashed" defaultMessage="Trashed!" />
+					) : (
+						<FormattedMessage id="previewRubbishBin.dropToTrash" defaultMessage="Drop Here To Trash" />
+					)}
+				</Typography>
+			</Paper>
+		</Grow>
+	);
 }
 
 export default RubbishBin;

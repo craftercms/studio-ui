@@ -15,11 +15,11 @@
  */
 
 export interface PluginFileBuilder {
-  site: string;
-  type: string;
-  name: string;
-  file?: string;
-  id?: string;
+	site: string;
+	type: string;
+	name: string;
+	file?: string;
+	id?: string;
 }
 
 export default PluginFileBuilder;

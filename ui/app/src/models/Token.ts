@@ -15,10 +15,10 @@
  */
 
 export interface Token {
-  id: number;
-  label: string;
-  token: string;
-  createdOn: string;
-  expiresAt: string;
-  enabled: boolean;
+	id: number;
+	label: string;
+	token: string;
+	createdOn: string;
+	expiresAt: string;
+	enabled: boolean;
 }

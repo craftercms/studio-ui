@@ -16,28 +16,28 @@
 
 /* Utils */
 .clear {
-  clear: both;
+	clear: both;
 }
 
 .floatRight {
-  float: right;
+	float: right;
 }
 
 .floatLeft {
-  float: left;
+	float: left;
 }
 
 .borderNone {
-  border: 0;
+	border: 0;
 }
 .toppadding {
-  padding: 5px 0 0 0;
+	padding: 5px 0 0 0;
 }
 .topmargin {
-  margin: 5px 0 0 0;
+	margin: 5px 0 0 0;
 }
 .leftmargin {
-  margin-left: 6px;
+	margin-left: 6px;
 }
 
 /* End Of Utils */
@@ -45,41 +45,41 @@
 /* index Layout */
 
 .iconGuide {
-  margin: 0;
-  padding: 0;
-  width: 250px;
+	margin: 0;
+	padding: 0;
+	width: 250px;
 }
 .headerStripIcon {
-  background: url(../images/bg/bar_bg.gif);
-  border-bottom: #a1a1a1 1px solid;
-  float: left;
-  margin: 0;
-  padding: 0;
-  height: 30px;
-  width: 250px;
+	background: url(../images/bg/bar_bg.gif);
+	border-bottom: #a1a1a1 1px solid;
+	float: left;
+	margin: 0;
+	padding: 0;
+	height: 30px;
+	width: 250px;
 }
 
 .headerIcon {
-  background: #f0f0f0;
-  float: left;
-  width: 250px;
+	background: #f0f0f0;
+	float: left;
+	width: 250px;
 }
 .iconLeft {
-  float: left;
-  padding: 10px 15px 0 15px;
-  width: 111px;
+	float: left;
+	padding: 10px 15px 0 15px;
+	width: 111px;
 }
 
 .iconRight {
-  float: left;
-  padding: 10px 15px 0 15px;
-  width: 111px;
+	float: left;
+	padding: 10px 15px 0 15px;
+	width: 111px;
 }
 
 .iconName {
-  margin: 2px 0 0 0;
-  float: left;
-  min-width: 124px;
+	margin: 2px 0 0 0;
+	float: left;
+	min-width: 124px;
 }
 
 /*.iconNameR{
@@ -90,114 +90,114 @@
 }*/
 
 .iconPlainPaper {
-  background: transparent url(../images/icons/icon_strip.gif) -300px 0 no-repeat;
-  display: block;
-  float: left;
-  height: 20px;
-  width: 20px;
+	background: transparent url(../images/icons/icon_strip.gif) -300px 0 no-repeat;
+	display: block;
+	float: left;
+	height: 20px;
+	width: 20px;
 }
 
 .iconPuzzle {
-  background: transparent url(../images/icons/icon_strip.gif) -500px 0 no-repeat;
-  display: block;
-  float: left;
-  height: 20px;
-  width: 20px;
+	background: transparent url(../images/icons/icon_strip.gif) -500px 0 no-repeat;
+	display: block;
+	float: left;
+	height: 20px;
+	width: 20px;
 }
 .iconPen {
-  background: transparent url(../images/icons/icon_strip.gif) -140px 0 no-repeat;
-  display: block;
-  float: left;
-  height: 20px;
-  width: 20px;
+	background: transparent url(../images/icons/icon_strip.gif) -140px 0 no-repeat;
+	display: block;
+	float: left;
+	height: 20px;
+	width: 20px;
 }
 
 .iconFlag {
-  background: transparent url(../images/icons/icon_strip.gif) -160px 0 no-repeat;
-  display: block;
-  float: left;
-  height: 20px;
-  width: 20px;
+	background: transparent url(../images/icons/icon_strip.gif) -160px 0 no-repeat;
+	display: block;
+	float: left;
+	height: 20px;
+	width: 20px;
 }
 
 .iconDoc {
-  background: transparent url(../images/icons/icon_strip.gif) -400px 0 no-repeat;
-  display: block;
-  float: left;
-  height: 20px;
-  width: 20px;
+	background: transparent url(../images/icons/icon_strip.gif) -400px 0 no-repeat;
+	display: block;
+	float: left;
+	height: 20px;
+	width: 20px;
 }
 
 .iconSchedule {
-  background: transparent url(../images/icons/icon_strip.gif) -180px 0 no-repeat;
-  display: block;
-  float: left;
-  height: 20px;
-  width: 20px;
+	background: transparent url(../images/icons/icon_strip.gif) -180px 0 no-repeat;
+	display: block;
+	float: left;
+	height: 20px;
+	width: 20px;
 }
 
 .iconDelete {
-  background: transparent url(../images/icons/icon_strip_vertical.gif) 0 -640px no-repeat;
-  display: block;
-  float: left;
-  height: 20px;
-  width: 20px;
+	background: transparent url(../images/icons/icon_strip_vertical.gif) 0 -640px no-repeat;
+	display: block;
+	float: left;
+	height: 20px;
+	width: 20px;
 }
 
 .iconInFlight {
-  background: transparent url(../images/icons/icon_strip_vertical.gif) 0 -1081px no-repeat;
-  display: block;
-  float: left;
-  height: 20px;
-  width: 20px;
+	background: transparent url(../images/icons/icon_strip_vertical.gif) 0 -1081px no-repeat;
+	display: block;
+	float: left;
+	height: 20px;
+	width: 20px;
 }
 
 .iconLocked {
-  background: transparent url(../images/icons/icon_strip_vertical.gif) 0 -1061px no-repeat;
-  display: block;
-  float: left;
-  height: 20px;
-  width: 20px;
+	background: transparent url(../images/icons/icon_strip_vertical.gif) 0 -1061px no-repeat;
+	display: block;
+	float: left;
+	height: 20px;
+	width: 20px;
 }
 
 .iconPaper {
-  background: transparent url(../images/icons/icon_strip.gif) -200px 0 no-repeat;
-  float: left;
-  height: 20px;
-  width: 20px;
+	background: transparent url(../images/icons/icon_strip.gif) -200px 0 no-repeat;
+	float: left;
+	height: 20px;
+	width: 20px;
 }
 
 .iconMinus {
-  background: transparent url(../images/icons/icon_strip.gif) -20px 0 no-repeat;
-  float: left;
-  height: 20px;
-  margin: 8px 0 5px 15px;
-  _margin: 8px 0 5px 8px;
-  width: 20px;
+	background: transparent url(../images/icons/icon_strip.gif) -20px 0 no-repeat;
+	float: left;
+	height: 20px;
+	margin: 8px 0 5px 15px;
+	_margin: 8px 0 5px 8px;
+	width: 20px;
 }
 
 .widgetHeader {
-  float: left;
-  margin: 8px 0 0 0;
+	float: left;
+	margin: 8px 0 0 0;
 }
 .iconSpace {
-  float: left;
-  height: 16px;
-  margin: 4px 0 0 0;
-  width: 20px;
+	float: left;
+	height: 16px;
+	margin: 4px 0 0 0;
+	width: 20px;
 }
 
 .iconText {
-  float: left;
-  padding: 0 0 10px 0;
-  width: 120px;
-  text-decoration: line-through;
+	float: left;
+	padding: 0 0 10px 0;
+	width: 120px;
+	text-decoration: line-through;
 }
 
 .glyphicon.revert {
-  -moz-transform: scale(-1, 1);
-  -webkit-transform: scale(-1, 1);
-  -o-transform: scale(-1, 1);
-  -ms-transform: scale(-1, 1);
-  transform: scale(-1, 1);
+	-moz-transform: scale(-1, 1);
+	-webkit-transform: scale(-1, 1);
+	-o-transform: scale(-1, 1);
+	-ms-transform: scale(-1, 1);
+	transform: scale(-1, 1);
 }

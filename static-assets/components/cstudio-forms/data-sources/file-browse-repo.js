@@ -15,134 +15,134 @@
  */
 
 CStudioForms.Datasources.FileBrowseRepo =
-  CStudioForms.Datasources.FileBrowseRepo ||
-  function (id, form, properties, constraints) {
-    this.id = id;
-    this.form = form;
-    this.properties = properties;
-    this.constraints = constraints;
+	CStudioForms.Datasources.FileBrowseRepo ||
+	function (id, form, properties, constraints) {
+		this.id = id;
+		this.form = form;
+		this.properties = properties;
+		this.constraints = constraints;
 
-    for (var i = 0; i < properties.length; i++) {
-      if (properties[i].name == 'repoPath') {
-        this.repoPath = properties[i].value;
-      }
-    }
+		for (var i = 0; i < properties.length; i++) {
+			if (properties[i].name == 'repoPath') {
+				this.repoPath = properties[i].value;
+			}
+		}
 
-    return this;
-  };
+		return this;
+	};
 
 YAHOO.extend(CStudioForms.Datasources.FileBrowseRepo, CStudioForms.CStudioFormDatasource, {
-  add: function (control, onlyAppend) {
-    var _self = this;
-    var CMgs = CStudioAuthoring.Messages;
-    var langBundle = CMgs.getBundle('contentTypes', CStudioAuthoringContext.lang);
+	add: function (control, onlyAppend) {
+		var _self = this;
+		var CMgs = CStudioAuthoring.Messages;
+		var langBundle = CMgs.getBundle('contentTypes', CStudioAuthoringContext.lang);
 
-    var datasourceDef = this.form.definition.datasources,
-      newElTitle = '';
+		var datasourceDef = this.form.definition.datasources,
+			newElTitle = '';
 
-    for (var x = 0; x < datasourceDef.length; x++) {
-      if (datasourceDef[x].id == this.id) {
-        newElTitle = datasourceDef[x].title;
-      }
-    }
+		for (var x = 0; x < datasourceDef.length; x++) {
+			if (datasourceDef[x].id == this.id) {
+				newElTitle = datasourceDef[x].title;
+			}
+		}
 
-    const openBrowse = () => {
-      // Paths already in the control, by sending them to the Browse Dialog, it'll mark them as selected, and disable
-      // the actions for those paths.
-      const preselectedPaths = craftercms.utils.array
-        .asArray(control?.form.model[control.fieldDef.id])
-        .flatMap((item) => item.key || []);
+		const openBrowse = () => {
+			// Paths already in the control, by sending them to the Browse Dialog, it'll mark them as selected, and disable
+			// the actions for those paths.
+			const preselectedPaths = craftercms.utils.array
+				.asArray(control?.form.model[control.fieldDef.id])
+				.flatMap((item) => item.key || []);
 
-      CStudioAuthoring.Operations.openBrowseFilesDialog({
-        path: _self.processPathsForMacros(_self.repoPath),
-        preselectedPaths,
-        onSuccess: (item) => {
-          const fileName = item.name;
-          const fileExtension = fileName.split('.').pop();
-          const returnProp = control.returnProp ? control.returnProp : 'path';
-          control.insertItem(item[returnProp], item.path, fileExtension, null, _self.id);
-          if (control._renderItems) {
-            control._renderItems();
-          }
-        }
-      });
-    };
+			CStudioAuthoring.Operations.openBrowseFilesDialog({
+				path: _self.processPathsForMacros(_self.repoPath),
+				preselectedPaths,
+				onSuccess: (item) => {
+					const fileName = item.name;
+					const fileExtension = fileName.split('.').pop();
+					const returnProp = control.returnProp ? control.returnProp : 'path';
+					control.insertItem(item[returnProp], item.path, fileExtension, null, _self.id);
+					if (control._renderItems) {
+						control._renderItems();
+					}
+				}
+			});
+		};
 
-    if (onlyAppend) {
-      const create = $(
-        `<li class="cstudio-form-controls-create-element">
+		if (onlyAppend) {
+			const create = $(
+				`<li class="cstudio-form-controls-create-element">
         <a class="cstudio-form-control-node-selector-add-container-item">
           ${CMgs.format(langBundle, 'browseExisting')} - ${CrafterCMSNext.util.string.escapeHTML(newElTitle)}
         </a>
       </li>`
-      );
+			);
 
-      create.find('a').on('click', function () {
-        openBrowse();
-      });
+			create.find('a').on('click', function () {
+				openBrowse();
+			});
 
-      control.$dropdownMenu.append(create);
-    } else {
-      openBrowse();
-    }
-  },
+			control.$dropdownMenu.append(create);
+		} else {
+			openBrowse();
+		}
+	},
 
-  edit: function (key) {
-    var getContentItemCb = {
-      success: function (contentTO) {
-        var editCallback = {
-          success: function () {
-            // update label?
-          },
-          failure: function () {}
-        };
+	edit: function (key) {
+		var getContentItemCb = {
+			success: function (contentTO) {
+				var editCallback = {
+					success: function () {
+						// update label?
+					},
+					failure: function () {}
+				};
 
-        CStudioAuthoring.Operations.editContent(
-          contentTO.item.contentType,
-          CStudioAuthoringContext.siteId,
-          contentTO.item.mimeType,
-          contentTO.item.nodeRef,
-          contentTO.item.uri,
-          false,
-          editCallback
-        );
-      },
-      failure: function () {}
-    };
+				CStudioAuthoring.Operations.editContent(
+					contentTO.item.contentType,
+					CStudioAuthoringContext.siteId,
+					contentTO.item.mimeType,
+					contentTO.item.nodeRef,
+					contentTO.item.uri,
+					false,
+					editCallback
+				);
+			},
+			failure: function () {}
+		};
 
-    CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, key, getContentItemCb);
-  },
+		CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, key, getContentItemCb);
+	},
 
-  getLabel: function () {
-    return CMgs.format(langBundle, 'fileBrowse');
-  },
+	getLabel: function () {
+		return CMgs.format(langBundle, 'fileBrowse');
+	},
 
-  getInterface: function () {
-    return 'item';
-  },
+	getInterface: function () {
+		return 'item';
+	},
 
-  getName: function () {
-    return 'file-browse-repo';
-  },
+	getName: function () {
+		return 'file-browse-repo';
+	},
 
-  getSupportedProperties: function () {
-    return [
-      {
-        label: CMgs.format(langBundle, 'repositoryPath'),
-        name: 'repoPath',
-        type: 'content-path-input',
-        defaultValue: '/',
-        rootPath: '/'
-      }
-    ];
-  },
+	getSupportedProperties: function () {
+		return [
+			{
+				label: CMgs.format(langBundle, 'repositoryPath'),
+				name: 'repoPath',
+				type: 'content-path-input',
+				defaultValue: '/',
+				rootPath: '/'
+			}
+		];
+	},
 
-  getSupportedConstraints: function () {
-    return [];
-  }
+	getSupportedConstraints: function () {
+		return [];
+	}
 });
 
 CStudioAuthoring.Module.moduleLoaded(
-  'cstudio-forms-controls-file-browse-repo',
-  CStudioForms.Datasources.FileBrowseRepo
+	'cstudio-forms-controls-file-browse-repo',
+	CStudioForms.Datasources.FileBrowseRepo
 );

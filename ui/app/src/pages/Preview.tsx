@@ -18,6 +18,6 @@ import { createHashRouter, createRoutesFromElements, Route, RouterProvider } fro
 import PreviewComponent from '../components/Preview/Preview';
 
 export default function Preview() {
-  const router = createHashRouter(createRoutesFromElements(<Route path="/" element={<PreviewComponent />} />));
-  return <RouterProvider router={router} />;
+	const router = createHashRouter(createRoutesFromElements(<Route path="/" element={<PreviewComponent />} />));
+	return <RouterProvider router={router} />;
 }

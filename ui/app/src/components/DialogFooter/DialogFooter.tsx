@@ -19,20 +19,20 @@ import MuiDialogActions, { DialogActionsProps } from '@mui/material/DialogAction
 import { useTheme } from '@mui/material/styles';
 
 export function DialogFooter(props: DialogActionsProps) {
-  const theme = useTheme();
-  return (
-    <MuiDialogActions
-      {...props}
-      sx={{
-        minHeight: '50px',
-        backgroundColor: theme.palette.background.paper,
-        borderTop: '1px solid rgba(0, 0, 0, 0.12)',
-        padding: `${theme.spacing(1)} ${theme.spacing(1.8)}`,
-        alignItems: 'center',
-        ...props.sx
-      }}
-    />
-  );
+	const theme = useTheme();
+	return (
+		<MuiDialogActions
+			{...props}
+			sx={{
+				minHeight: '50px',
+				backgroundColor: theme.palette.background.paper,
+				borderTop: '1px solid rgba(0, 0, 0, 0.12)',
+				padding: `${theme.spacing(1)} ${theme.spacing(1.8)}`,
+				alignItems: 'center',
+				...props.sx
+			}}
+		/>
+	);
 }
 
 export default DialogFooter;

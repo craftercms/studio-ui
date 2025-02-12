@@ -19,42 +19,42 @@ import Box from '@mui/material/Box';
 import { nnou } from '../../utils/object';
 
 interface IFrameProps {
-  url: string;
-  title: string;
-  width?: string | number;
-  height?: string | number;
-  className?: string;
-  border?: 'portrait' | 'landscape';
-  onLoadComplete?(): void;
+	url: string;
+	title: string;
+	width?: string | number;
+	height?: string | number;
+	className?: string;
+	border?: 'portrait' | 'landscape';
+	onLoadComplete?(): void;
 }
 
 export function IFrame(props: IFrameProps) {
-  const { url, title, width, height, border, className, onLoadComplete } = props;
-  return (
-    <Box
-      component="iframe"
-      style={{ width, height }}
-      className={className}
-      sx={[
-        {
-          width: '100%',
-          maxWidth: '100%',
-          border: 'none',
-          height: '100%',
-          transition: 'width .25s ease, height .25s ease'
-        },
-        nnou(border) && {
-          borderRadius: '20px',
-          borderColor: '#000',
-          borderStyle: 'solid',
-          borderWidth: border === 'landscape' ? '50px 10px' : '10px 50px'
-        }
-      ]}
-      title={title}
-      onLoad={onLoadComplete}
-      src={url || 'about:blank'}
-    />
-  );
+	const { url, title, width, height, border, className, onLoadComplete } = props;
+	return (
+		<Box
+			component="iframe"
+			style={{ width, height }}
+			className={className}
+			sx={[
+				{
+					width: '100%',
+					maxWidth: '100%',
+					border: 'none',
+					height: '100%',
+					transition: 'width .25s ease, height .25s ease'
+				},
+				nnou(border) && {
+					borderRadius: '20px',
+					borderColor: '#000',
+					borderStyle: 'solid',
+					borderWidth: border === 'landscape' ? '50px 10px' : '10px 50px'
+				}
+			]}
+			title={title}
+			onLoad={onLoadComplete}
+			src={url || 'about:blank'}
+		/>
+	);
 }
 
 export default IFrame;

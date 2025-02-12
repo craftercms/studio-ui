@@ -25,71 +25,71 @@ import { PartialSxRecord } from '../../models';
 type EmptyStateClassKey = 'root' | 'title' | 'subtitle' | 'image';
 
 export type EmptyStateProps = React.PropsWithChildren<{
-  image?: string;
-  title: ReactNode | MessageDescriptor;
-  subtitle?: ReactNode | MessageDescriptor;
-  classes?: Partial<Record<EmptyStateClassKey, string>>;
-  sxs?: PartialSxRecord<EmptyStateClassKey>;
+	image?: string;
+	title: ReactNode | MessageDescriptor;
+	subtitle?: ReactNode | MessageDescriptor;
+	classes?: Partial<Record<EmptyStateClassKey, string>>;
+	sxs?: PartialSxRecord<EmptyStateClassKey>;
 }>;
 
 function isValidElement(target: any): boolean {
-  return React.isValidElement(target) || nou(target) || ['string', 'number'].includes(typeof target);
+	return React.isValidElement(target) || nou(target) || ['string', 'number'].includes(typeof target);
 }
 
 export function EmptyState(props: EmptyStateProps) {
-  const { sxs } = props;
-  const { formatMessage } = useIntl();
-  const { image = emptyImage, classes: propClasses, children } = props;
-  const title = isValidElement(props.title) ? (props.title as string) : formatMessage(props.title as MessageDescriptor);
-  const subtitle = isValidElement(props.subtitle)
-    ? (props.subtitle as string)
-    : formatMessage(props.subtitle as MessageDescriptor);
-  return (
-    <Box
-      className={propClasses?.root}
-      sx={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexDirection: 'column',
-        margin: (theme) => theme.spacing(2),
-        ...sxs?.root
-      }}
-    >
-      {image && (
-        <Box
-          component="img"
-          className={propClasses?.image}
-          sx={{ width: 100, maxWidth: '80%', ...sxs?.image }}
-          src={image}
-          alt=""
-        />
-      )}
-      {title && (
-        <Typography
-          variant="body1"
-          component="h3"
-          className={propClasses?.title}
-          sx={{ margin: (theme) => `${theme.spacing(1)} 0`, ...sxs?.title }}
-          color="textSecondary"
-        >
-          {title}
-        </Typography>
-      )}
-      {subtitle && (
-        <Typography
-          variant="body2"
-          component="p"
-          className={propClasses?.subtitle}
-          sx={{ textAlign: 'center', ...sxs?.subtitle }}
-          color="textSecondary"
-        >
-          {subtitle}
-        </Typography>
-      )}
-      {children}
-    </Box>
-  );
+	const { sxs } = props;
+	const { formatMessage } = useIntl();
+	const { image = emptyImage, classes: propClasses, children } = props;
+	const title = isValidElement(props.title) ? (props.title as string) : formatMessage(props.title as MessageDescriptor);
+	const subtitle = isValidElement(props.subtitle)
+		? (props.subtitle as string)
+		: formatMessage(props.subtitle as MessageDescriptor);
+	return (
+		<Box
+			className={propClasses?.root}
+			sx={{
+				display: 'flex',
+				alignItems: 'center',
+				justifyContent: 'center',
+				flexDirection: 'column',
+				margin: (theme) => theme.spacing(2),
+				...sxs?.root
+			}}
+		>
+			{image && (
+				<Box
+					component="img"
+					className={propClasses?.image}
+					sx={{ width: 100, maxWidth: '80%', ...sxs?.image }}
+					src={image}
+					alt=""
+				/>
+			)}
+			{title && (
+				<Typography
+					variant="body1"
+					component="h3"
+					className={propClasses?.title}
+					sx={{ margin: (theme) => `${theme.spacing(1)} 0`, ...sxs?.title }}
+					color="textSecondary"
+				>
+					{title}
+				</Typography>
+			)}
+			{subtitle && (
+				<Typography
+					variant="body2"
+					component="p"
+					className={propClasses?.subtitle}
+					sx={{ textAlign: 'center', ...sxs?.subtitle }}
+					color="textSecondary"
+				>
+					{subtitle}
+				</Typography>
+			)}
+			{children}
+		</Box>
+	);
 }
 
 export default EmptyState;

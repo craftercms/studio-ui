@@ -20,17 +20,17 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 
 export interface PathNavigatorTreeSkeletonItemProps {
-  textWidth?: string;
-  classes?: Partial<Record<'root', string>>;
+	textWidth?: string;
+	classes?: Partial<Record<'root', string>>;
 }
 
 export function PathNavigatorTreeSkeletonItem(props: PathNavigatorTreeSkeletonItemProps) {
-  return (
-    <Box className={props.classes?.root} sx={{ display: 'flex', padding: '5px 5px' }}>
-      <Skeleton variant="circular" width="20px" style={{ marginRight: '10px' }} />
-      <Skeleton variant="text" style={{ margin: '0 10px', width: props.textWidth ?? `${rand(60, 95)}%` }} />
-    </Box>
-  );
+	return (
+		<Box className={props.classes?.root} sx={{ display: 'flex', padding: '5px 5px' }}>
+			<Skeleton variant="circular" width="20px" style={{ marginRight: '10px' }} />
+			<Skeleton variant="text" style={{ margin: '0 10px', width: props.textWidth ?? `${rand(60, 95)}%` }} />
+		</Box>
+	);
 }
 
 export default PathNavigatorTreeSkeletonItem;

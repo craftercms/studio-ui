@@ -24,27 +24,27 @@ export const USER_LAST_NAME_MAX_LENGTH = 32;
 export const USER_EMAIL_MAX_LENGTH = 255;
 
 export const minLengthMap = {
-  username: USER_USERNAME_MIN_LENGTH,
-  firstName: USER_FIRST_NAME_MIN_LENGTH,
-  lastName: USER_LAST_NAME_MIN_LENGTH
+	username: USER_USERNAME_MIN_LENGTH,
+	firstName: USER_FIRST_NAME_MIN_LENGTH,
+	lastName: USER_LAST_NAME_MIN_LENGTH
 };
 
 export const isInvalidEmail = (email: string) => {
-  // From https://emailregex.com/, according to the RFC 5322 standard
-  const emailRegex =
-    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  return Boolean(email) && !emailRegex.test(email);
+	// From https://emailregex.com/, according to the RFC 5322 standard
+	const emailRegex =
+		/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+	return Boolean(email) && !emailRegex.test(email);
 };
 
 export const isInvalidUsername = (username: string) => {
-  const usernameRegex = /^[a-zA-Z][\w.\-@+]+$/g;
-  return Boolean(username) && !usernameRegex.test(username);
+	const usernameRegex = /^[a-zA-Z][\w.\-@+]+$/g;
+	return Boolean(username) && !usernameRegex.test(username);
 };
 
 export const validateFieldMinLength = (key: string, value: string) => {
-  return value.trim() !== '' && value.trim().length < minLengthMap[key];
+	return value.trim() !== '' && value.trim().length < minLengthMap[key];
 };
 
 export const validateRequiredField = (field: string) => {
-  return field.trim() === '';
+	return field.trim() === '';
 };

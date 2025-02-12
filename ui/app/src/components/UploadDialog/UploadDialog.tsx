@@ -30,63 +30,63 @@ import MinimizedBar from '../MinimizedBar';
 import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 
 export function UploadDialog(props: UploadDialogProps) {
-  const { formatMessage } = useIntl();
-  const dispatch = useDispatch();
-  const { isMinimized, onMaximize, onMinimize, hasPendingChanges, onSubmittingAndOrPendingChange } =
-    useEnhancedDialogState();
-  const { open } = props;
+	const { formatMessage } = useIntl();
+	const dispatch = useDispatch();
+	const { isMinimized, onMaximize, onMinimize, hasPendingChanges, onSubmittingAndOrPendingChange } =
+		useEnhancedDialogState();
+	const { open } = props;
 
-  const preventWrongDrop = (e: React.DragEvent) => {
-    e.stopPropagation();
-    e.preventDefault();
-  };
+	const preventWrongDrop = (e: React.DragEvent) => {
+		e.stopPropagation();
+		e.preventDefault();
+	};
 
-  const setPendingChanges = (value: boolean) => {
-    onSubmittingAndOrPendingChange({
-      hasPendingChanges: value
-    });
-  };
+	const setPendingChanges = (value: boolean) => {
+		onSubmittingAndOrPendingChange({
+			hasPendingChanges: value
+		});
+	};
 
-  const onClose = () => {
-    if (hasPendingChanges) {
-      dispatch(
-        showConfirmDialog({
-          body: formatMessage(translations.uploadInProgressConfirmation),
-          onOk: batchActions([closeConfirmDialog(), closeUploadDialog()]),
-          onCancel: closeConfirmDialog()
-        })
-      );
-    } else {
-      props.onClose();
-    }
-  };
+	const onClose = () => {
+		if (hasPendingChanges) {
+			dispatch(
+				showConfirmDialog({
+					body: formatMessage(translations.uploadInProgressConfirmation),
+					onOk: batchActions([closeConfirmDialog(), closeUploadDialog()]),
+					onCancel: closeConfirmDialog()
+				})
+			);
+		} else {
+			props.onClose();
+		}
+	};
 
-  return (
-    <>
-      <Dialog
-        open={open && !isMinimized}
-        keepMounted={isMinimized}
-        onDrop={preventWrongDrop}
-        onDragOver={preventWrongDrop}
-        onClose={onClose}
-        fullWidth
-        maxWidth="md"
-      >
-        <UploadDialogContainer
-          {...props}
-          onClose={onClose}
-          onMinimized={onMinimize}
-          hasPendingChanges={hasPendingChanges}
-          setPendingChanges={setPendingChanges}
-        />
-      </Dialog>
-      <MinimizedBar
-        open={isMinimized}
-        onMaximize={onMaximize}
-        title={<FormattedMessage id="words.upload" defaultMessage="Upload" />}
-      />
-    </>
-  );
+	return (
+		<>
+			<Dialog
+				open={open && !isMinimized}
+				keepMounted={isMinimized}
+				onDrop={preventWrongDrop}
+				onDragOver={preventWrongDrop}
+				onClose={onClose}
+				fullWidth
+				maxWidth="md"
+			>
+				<UploadDialogContainer
+					{...props}
+					onClose={onClose}
+					onMinimized={onMinimize}
+					hasPendingChanges={hasPendingChanges}
+					setPendingChanges={setPendingChanges}
+				/>
+			</Dialog>
+			<MinimizedBar
+				open={isMinimized}
+				onMaximize={onMaximize}
+				title={<FormattedMessage id="words.upload" defaultMessage="Upload" />}
+			/>
+		</>
+	);
 }
 
 export default UploadDialog;

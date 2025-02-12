@@ -33,129 +33,129 @@ import DialogFooter from '../DialogFooter/DialogFooter';
 import EmptyState from '../EmptyState';
 
 export function ChangeContentTypeDialogContainer(props: ChangeContentTypeDialogContainerProps) {
-  const { item, onContentTypeSelected, compact = false, rootPath, selectedContentType } = props;
-  const site = useActiveSiteId();
-  const dispatch = useDispatch();
+	const { item, onContentTypeSelected, compact = false, rootPath, selectedContentType } = props;
+	const site = useActiveSiteId();
+	const dispatch = useDispatch();
 
-  const [isCompact, setIsCompact] = useState(compact);
-  const [openSelector, setOpenSelector] = useState(false);
-  const [selectedItem, setSelectedItem] = useState(item);
-  const [contentTypes, setContentTypes] = useState<LegacyContentType[]>();
-  const [isFetching, setIsFetching] = useState(false);
-  const [keyword, setKeyword] = useState('');
-  const [debounceKeyword, setDebounceKeyword] = useState('');
-  const filteredContentTypes = useMemo(() => {
-    const lowercaseKeyword = debounceKeyword.toLowerCase();
-    return contentTypes?.filter((contentType) => contentType.label.toLowerCase().includes(lowercaseKeyword));
-  }, [contentTypes, debounceKeyword]);
+	const [isCompact, setIsCompact] = useState(compact);
+	const [openSelector, setOpenSelector] = useState(false);
+	const [selectedItem, setSelectedItem] = useState(item);
+	const [contentTypes, setContentTypes] = useState<LegacyContentType[]>();
+	const [isFetching, setIsFetching] = useState(false);
+	const [keyword, setKeyword] = useState('');
+	const [debounceKeyword, setDebounceKeyword] = useState('');
+	const filteredContentTypes = useMemo(() => {
+		const lowercaseKeyword = debounceKeyword.toLowerCase();
+		return contentTypes?.filter((contentType) => contentType.label.toLowerCase().includes(lowercaseKeyword));
+	}, [contentTypes, debounceKeyword]);
 
-  const onSelectedContentType = (contentType: LegacyContentType) => {
-    onContentTypeSelected?.({
-      newContentTypeId: contentType.form
-    });
-  };
+	const onSelectedContentType = (contentType: LegacyContentType) => {
+		onContentTypeSelected?.({
+			newContentTypeId: contentType.form
+		});
+	};
 
-  useEffect(() => {
-    if (selectedItem.path) {
-      setIsFetching(true);
-      const sub = fetchLegacyContentTypes(site, selectedItem.path).subscribe({
-        next: (response) => {
-          setIsFetching(false);
-          setContentTypes(
-            response.filter(
-              (contentType) =>
-                contentType.type === selectedItem.systemType && contentType.name !== selectedItem.contentTypeId
-            )
-          );
-        },
-        error: (response) => {
-          setIsFetching(false);
-          dispatch(showErrorDialog({ error: response }));
-        }
-      });
-      return () => {
-        sub.unsubscribe();
-      };
-    }
-  }, [dispatch, selectedItem, site]);
+	useEffect(() => {
+		if (selectedItem.path) {
+			setIsFetching(true);
+			const sub = fetchLegacyContentTypes(site, selectedItem.path).subscribe({
+				next: (response) => {
+					setIsFetching(false);
+					setContentTypes(
+						response.filter(
+							(contentType) =>
+								contentType.type === selectedItem.systemType && contentType.name !== selectedItem.contentTypeId
+						)
+					);
+				},
+				error: (response) => {
+					setIsFetching(false);
+					dispatch(showErrorDialog({ error: response }));
+				}
+			});
+			return () => {
+				sub.unsubscribe();
+			};
+		}
+	}, [dispatch, selectedItem, site]);
 
-  const onSearch$ = useSubject<string>();
+	const onSearch$ = useSubject<string>();
 
-  useEffect(() => {
-    onSearch$.pipe(debounceTime(400)).subscribe((keywords) => {
-      setDebounceKeyword(keywords);
-    });
-  });
+	useEffect(() => {
+		onSearch$.pipe(debounceTime(400)).subscribe((keywords) => {
+			setDebounceKeyword(keywords);
+		});
+	});
 
-  const onSearch = (keyword: string) => {
-    onSearch$.next(keyword);
-    setKeyword(keyword);
-  };
+	const onSearch = (keyword: string) => {
+		onSearch$.next(keyword);
+		setKeyword(keyword);
+	};
 
-  return (
-    <>
-      <DialogBody sx={{ minHeight: '455px' }}>
-        <Box display="flex" justifyContent="space-between" alignItems="center">
-          <Box>
-            <SingleItemSelector
-              label={<FormattedMessage id="words.item" defaultMessage="Item" />}
-              open={openSelector}
-              onClose={() => setOpenSelector(false)}
-              onDropdownClick={() => setOpenSelector(!openSelector)}
-              rootPath={rootPath}
-              selectedItem={selectedItem}
-              onItemClicked={(item) => {
-                setOpenSelector(false);
-                setSelectedItem(item);
-              }}
-            />
-          </Box>
-          <Box sx={{ minWidth: '33%' }}>
-            <SearchBar onChange={onSearch} keyword={keyword} autoFocus showActionButton={Boolean(keyword)} />
-          </Box>
-        </Box>
-        {isFetching ? (
-          <ContentTypesLoader numOfItems={6} isCompact={isCompact} />
-        ) : filteredContentTypes ? (
-          filteredContentTypes.length > 0 ? (
-            <ContentTypesGrid
-              contentTypes={filteredContentTypes}
-              isCompact={isCompact}
-              onTypeOpen={onSelectedContentType}
-              selectedContentType={selectedContentType}
-            />
-          ) : (
-            <EmptyState
-              title={
-                <FormattedMessage
-                  id="changeContentTypeDialog.emptyStateMessage"
-                  defaultMessage="No Content Types Found"
-                />
-              }
-              sxs={{
-                image: {
-                  width: '250px',
-                  marginBottom: '17px'
-                }
-              }}
-            />
-          )
-        ) : (
-          <></>
-        )}
-      </DialogBody>
-      <DialogFooter>
-        <FormControlLabel
-          sx={{
-            marginRight: 'auto',
-            paddingLeft: '20px'
-          }}
-          control={<Checkbox checked={isCompact} onChange={() => setIsCompact(!isCompact)} color="primary" />}
-          label={<FormattedMessage id="words.compact" defaultMessage="Compact" />}
-        />
-      </DialogFooter>
-    </>
-  );
+	return (
+		<>
+			<DialogBody sx={{ minHeight: '455px' }}>
+				<Box display="flex" justifyContent="space-between" alignItems="center">
+					<Box>
+						<SingleItemSelector
+							label={<FormattedMessage id="words.item" defaultMessage="Item" />}
+							open={openSelector}
+							onClose={() => setOpenSelector(false)}
+							onDropdownClick={() => setOpenSelector(!openSelector)}
+							rootPath={rootPath}
+							selectedItem={selectedItem}
+							onItemClicked={(item) => {
+								setOpenSelector(false);
+								setSelectedItem(item);
+							}}
+						/>
+					</Box>
+					<Box sx={{ minWidth: '33%' }}>
+						<SearchBar onChange={onSearch} keyword={keyword} autoFocus showActionButton={Boolean(keyword)} />
+					</Box>
+				</Box>
+				{isFetching ? (
+					<ContentTypesLoader numOfItems={6} isCompact={isCompact} />
+				) : filteredContentTypes ? (
+					filteredContentTypes.length > 0 ? (
+						<ContentTypesGrid
+							contentTypes={filteredContentTypes}
+							isCompact={isCompact}
+							onTypeOpen={onSelectedContentType}
+							selectedContentType={selectedContentType}
+						/>
+					) : (
+						<EmptyState
+							title={
+								<FormattedMessage
+									id="changeContentTypeDialog.emptyStateMessage"
+									defaultMessage="No Content Types Found"
+								/>
+							}
+							sxs={{
+								image: {
+									width: '250px',
+									marginBottom: '17px'
+								}
+							}}
+						/>
+					)
+				) : (
+					<></>
+				)}
+			</DialogBody>
+			<DialogFooter>
+				<FormControlLabel
+					sx={{
+						marginRight: 'auto',
+						paddingLeft: '20px'
+					}}
+					control={<Checkbox checked={isCompact} onChange={() => setIsCompact(!isCompact)} color="primary" />}
+					label={<FormattedMessage id="words.compact" defaultMessage="Compact" />}
+				/>
+			</DialogFooter>
+		</>
+	);
 }
 
 export default ChangeContentTypeDialogContainer;

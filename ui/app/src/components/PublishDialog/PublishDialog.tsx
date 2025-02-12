@@ -21,17 +21,17 @@ import { PublishDialogProps } from './utils';
 import { FormattedMessage } from 'react-intl';
 
 export function PublishDialog(props: PublishDialogProps) {
-  const { items, scheduling, onSuccess, isSubmitting, ...rest } = props;
-  return (
-    <EnhancedDialog
-      title={<FormattedMessage id="publishDialog.title" defaultMessage="Publish" />}
-      maxWidth="lg"
-      {...rest}
-      isSubmitting={isSubmitting}
-    >
-      <PublishDialogContainer items={items} scheduling={scheduling} onSuccess={onSuccess} isSubmitting={isSubmitting} />
-    </EnhancedDialog>
-  );
+	const { items, scheduling, onSuccess, isSubmitting, ...rest } = props;
+	return (
+		<EnhancedDialog
+			title={<FormattedMessage id="publishDialog.title" defaultMessage="Publish" />}
+			maxWidth="lg"
+			{...rest}
+			isSubmitting={isSubmitting}
+		>
+			<PublishDialogContainer items={items} scheduling={scheduling} onSuccess={onSuccess} isSubmitting={isSubmitting} />
+		</EnhancedDialog>
+	);
 }
 
 export default PublishDialog;

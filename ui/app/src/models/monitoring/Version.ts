@@ -15,14 +15,14 @@
  */
 
 export interface Version {
-  javaVendor: string;
-  javaVersion: string;
-  javaVm: string;
-  osArch: string;
-  osName: string;
-  osVersion: string;
-  packageBuild: string;
-  packageBuildDate: string;
-  packageName: string;
-  packageVersion: string;
+	javaVendor: string;
+	javaVersion: string;
+	javaVm: string;
+	osArch: string;
+	osName: string;
+	osVersion: string;
+	packageBuild: string;
+	packageBuildDate: string;
+	packageName: string;
+	packageVersion: string;
 }

@@ -18,10 +18,10 @@ import { Observable, Subject } from 'rxjs';
 import { useMemo } from 'react';
 
 export function useObservable<T = void>(): { subject: Subject<T>; observable: Observable<T> } {
-  return useMemo(() => {
-    const subject = new Subject<T>();
-    return { subject, observable: subject.asObservable() };
-  }, []);
+	return useMemo(() => {
+		const subject = new Subject<T>();
+		return { subject, observable: subject.asObservable() };
+	}, []);
 }
 
 export default useObservable;

@@ -41,195 +41,195 @@ import { SxProps } from '@mui/system';
 import { Theme } from '@mui/material';
 
 export interface Tool {
-  title: TranslationOrText;
-  icon: SystemIconDescriptor;
-  url: string;
-  widget: WidgetDescriptor;
+	title: TranslationOrText;
+	icon: SystemIconDescriptor;
+	url: string;
+	widget: WidgetDescriptor;
 }
 
 export interface SiteToolsProps {
-  site: string;
-  activeToolId: string;
-  footerHtml?: string;
-  openSidebar: boolean;
-  sidebarWidth: number;
-  tools: Tool[];
-  sidebarBelowToolbar?: boolean;
-  hideSidebarLogo?: boolean;
-  hideSidebarSiteSwitcher?: boolean;
-  showAppsButton?: boolean;
-  classes?: Partial<Record<'root', string>>;
-  sx?: SxProps<Theme>;
-  sxs?: PartialSxRecord<'root'>;
-  // Whether the component is mounted on a dialog or it's the main app on a page (i.e. `/studio/site-tools`)
-  mountMode?: 'dialog' | 'page';
-  onBackClick?(): void;
-  onWidthChange(width: number): void;
-  onNavItemClick(url: string): void;
-  onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;
-  onMinimize?: () => void;
+	site: string;
+	activeToolId: string;
+	footerHtml?: string;
+	openSidebar: boolean;
+	sidebarWidth: number;
+	tools: Tool[];
+	sidebarBelowToolbar?: boolean;
+	hideSidebarLogo?: boolean;
+	hideSidebarSiteSwitcher?: boolean;
+	showAppsButton?: boolean;
+	classes?: Partial<Record<'root', string>>;
+	sx?: SxProps<Theme>;
+	sxs?: PartialSxRecord<'root'>;
+	// Whether the component is mounted on a dialog or it's the main app on a page (i.e. `/studio/site-tools`)
+	mountMode?: 'dialog' | 'page';
+	onBackClick?(): void;
+	onWidthChange(width: number): void;
+	onNavItemClick(url: string): void;
+	onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;
+	onMinimize?: () => void;
 }
 
 export function SiteTools(props: SiteToolsProps) {
-  const {
-    site,
-    activeToolId,
-    hideSidebarSiteSwitcher = false,
-    hideSidebarLogo = false,
-    sidebarBelowToolbar = false,
-    mountMode = 'dialog',
-    footerHtml,
-    onBackClick,
-    openSidebar,
-    sidebarWidth,
-    onWidthChange,
-    tools,
-    onNavItemClick,
-    showAppsButton,
-    onSubmittingAndOrPendingChange,
-    onMinimize,
-    sx
-  } = props;
-  const { formatMessage } = useIntl();
-  const baseUrl = useSelection<string>((state) => state.env.authoringBase);
-  const tool = tools?.find((tool) => tool.url === activeToolId)?.widget;
-  return (
-    <Paper
-      className={props.classes?.root}
-      sx={{
-        height: '100vh',
-        width: '100%',
-        ...sx
-      }}
-      elevation={0}
-    >
-      <ResizeableDrawer
-        sxs={{
-          drawerPaper: {
-            position: 'absolute'
-          },
-          drawerBody: {
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            padding: (theme) => theme.spacing(2)
-          }
-        }}
-        open={openSidebar}
-        width={sidebarWidth}
-        belowToolbar={sidebarBelowToolbar}
-        onWidthChange={onWidthChange}
-      >
-        <section>
-          <Box display="flex" justifyContent="space-between" marginBottom="10px">
-            {onBackClick && (
-              <Tooltip title={<FormattedMessage id="words.preview" defaultMessage="Preview" />}>
-                <IconButton onClick={onBackClick} size="large">
-                  <KeyboardArrowLeftRoundedIcon />
-                </IconButton>
-              </Tooltip>
-            )}
-            {!hideSidebarSiteSwitcher && <SiteSwitcherSelect site={site} fullWidth />}
-          </Box>
-          <MenuList disablePadding sx={{ overflow: 'auto' }}>
-            {tools ? (
-              tools.map((tool) => (
-                <MenuItem
-                  onClick={() => onNavItemClick(tool.url)}
-                  key={tool.url}
-                  selected={`/${tool.url}` === activeToolId}
-                >
-                  <SystemIcon
-                    sx={{ marginRight: '10px' }}
-                    icon={tool.icon}
-                    svgIconProps={{ fontSize: 'small', color: 'action' }}
-                  />
-                  <Typography>{getPossibleTranslation(tool.title, formatMessage)}</Typography>
-                </MenuItem>
-              ))
-            ) : (
-              <EmptyState
-                title={
-                  <FormattedMessage
-                    id="siteTools.toolListingNotConfigured"
-                    defaultMessage="The project tools list has not been set"
-                  />
-                }
-                subtitle={
-                  <FormattedMessage
-                    id="siteTools.toolListingNotConfiguredSubtitle"
-                    defaultMessage="Please set the craftercms.siteTools reference on the ui.xml"
-                  />
-                }
-              />
-            )}
-          </MenuList>
-        </section>
-        <Box component="footer" sx={{ padding: '20px 0', textAlign: 'center' }}>
-          {!hideSidebarLogo && <CrafterCMSLogo width={100} sxs={{ root: { margin: '0 auto 10px auto' } }} />}
-          {footerHtml && (
-            <Typography
-              component="p"
-              variant="caption"
-              sx={(theme) => ({
-                color: theme.palette.text.secondary,
-                '& > a': {
-                  textDecoration: 'none',
-                  color: theme.palette.primary.main
-                }
-              })}
-              dangerouslySetInnerHTML={{ __html: footerHtml }}
-            />
-          )}
-        </Box>
-      </ResizeableDrawer>
-      <Box
-        sx={(theme) => ({
-          transition: theme.transitions.create('padding-left', {
-            easing: theme.transitions.easing.easeOut,
-            duration: theme.transitions.duration.enteringScreen
-          })
-        })}
-        height="100%"
-        width="100%"
-        paddingLeft={openSidebar ? `${sidebarWidth}px` : 0}
-      >
-        {activeToolId ? (
-          tool ? (
-            <Suspencified>
-              <Widget
-                {...tool}
-                overrideProps={{
-                  embedded: false,
-                  mountMode,
-                  showAppsButton,
-                  onSubmittingAndOrPendingChange,
-                  onMinimize
-                }}
-              />
-            </Suspencified>
-          ) : (
-            <Box display="flex" flexDirection="column" height="100%">
-              <Box component="section" sx={{ margin: '10px 12px 0 auto' }}>
-                <LauncherOpenerButton />
-              </Box>
-              <EmptyState
-                sxs={{ root: { height: '100%', margin: 0 } }}
-                title="404"
-                subtitle={<FormattedMessage id="siteTools.toolNotFound" defaultMessage="Tool not found" />}
-              />
-            </Box>
-          )
-        ) : (
-          <EmptyState
-            sxs={{ root: { height: '100%', margin: 0 } }}
-            title={<FormattedMessage id="siteTools.selectTool" defaultMessage="Please choose a tool from the left." />}
-            image={`${baseUrl}/static-assets/images/choose_option.svg`}
-          />
-        )}
-      </Box>
-    </Paper>
-  );
+	const {
+		site,
+		activeToolId,
+		hideSidebarSiteSwitcher = false,
+		hideSidebarLogo = false,
+		sidebarBelowToolbar = false,
+		mountMode = 'dialog',
+		footerHtml,
+		onBackClick,
+		openSidebar,
+		sidebarWidth,
+		onWidthChange,
+		tools,
+		onNavItemClick,
+		showAppsButton,
+		onSubmittingAndOrPendingChange,
+		onMinimize,
+		sx
+	} = props;
+	const { formatMessage } = useIntl();
+	const baseUrl = useSelection<string>((state) => state.env.authoringBase);
+	const tool = tools?.find((tool) => tool.url === activeToolId)?.widget;
+	return (
+		<Paper
+			className={props.classes?.root}
+			sx={{
+				height: '100vh',
+				width: '100%',
+				...sx
+			}}
+			elevation={0}
+		>
+			<ResizeableDrawer
+				sxs={{
+					drawerPaper: {
+						position: 'absolute'
+					},
+					drawerBody: {
+						display: 'flex',
+						flexDirection: 'column',
+						justifyContent: 'space-between',
+						padding: (theme) => theme.spacing(2)
+					}
+				}}
+				open={openSidebar}
+				width={sidebarWidth}
+				belowToolbar={sidebarBelowToolbar}
+				onWidthChange={onWidthChange}
+			>
+				<section>
+					<Box display="flex" justifyContent="space-between" marginBottom="10px">
+						{onBackClick && (
+							<Tooltip title={<FormattedMessage id="words.preview" defaultMessage="Preview" />}>
+								<IconButton onClick={onBackClick} size="large">
+									<KeyboardArrowLeftRoundedIcon />
+								</IconButton>
+							</Tooltip>
+						)}
+						{!hideSidebarSiteSwitcher && <SiteSwitcherSelect site={site} fullWidth />}
+					</Box>
+					<MenuList disablePadding sx={{ overflow: 'auto' }}>
+						{tools ? (
+							tools.map((tool) => (
+								<MenuItem
+									onClick={() => onNavItemClick(tool.url)}
+									key={tool.url}
+									selected={`/${tool.url}` === activeToolId}
+								>
+									<SystemIcon
+										sx={{ marginRight: '10px' }}
+										icon={tool.icon}
+										svgIconProps={{ fontSize: 'small', color: 'action' }}
+									/>
+									<Typography>{getPossibleTranslation(tool.title, formatMessage)}</Typography>
+								</MenuItem>
+							))
+						) : (
+							<EmptyState
+								title={
+									<FormattedMessage
+										id="siteTools.toolListingNotConfigured"
+										defaultMessage="The project tools list has not been set"
+									/>
+								}
+								subtitle={
+									<FormattedMessage
+										id="siteTools.toolListingNotConfiguredSubtitle"
+										defaultMessage="Please set the craftercms.siteTools reference on the ui.xml"
+									/>
+								}
+							/>
+						)}
+					</MenuList>
+				</section>
+				<Box component="footer" sx={{ padding: '20px 0', textAlign: 'center' }}>
+					{!hideSidebarLogo && <CrafterCMSLogo width={100} sxs={{ root: { margin: '0 auto 10px auto' } }} />}
+					{footerHtml && (
+						<Typography
+							component="p"
+							variant="caption"
+							sx={(theme) => ({
+								color: theme.palette.text.secondary,
+								'& > a': {
+									textDecoration: 'none',
+									color: theme.palette.primary.main
+								}
+							})}
+							dangerouslySetInnerHTML={{ __html: footerHtml }}
+						/>
+					)}
+				</Box>
+			</ResizeableDrawer>
+			<Box
+				sx={(theme) => ({
+					transition: theme.transitions.create('padding-left', {
+						easing: theme.transitions.easing.easeOut,
+						duration: theme.transitions.duration.enteringScreen
+					})
+				})}
+				height="100%"
+				width="100%"
+				paddingLeft={openSidebar ? `${sidebarWidth}px` : 0}
+			>
+				{activeToolId ? (
+					tool ? (
+						<Suspencified>
+							<Widget
+								{...tool}
+								overrideProps={{
+									embedded: false,
+									mountMode,
+									showAppsButton,
+									onSubmittingAndOrPendingChange,
+									onMinimize
+								}}
+							/>
+						</Suspencified>
+					) : (
+						<Box display="flex" flexDirection="column" height="100%">
+							<Box component="section" sx={{ margin: '10px 12px 0 auto' }}>
+								<LauncherOpenerButton />
+							</Box>
+							<EmptyState
+								sxs={{ root: { height: '100%', margin: 0 } }}
+								title="404"
+								subtitle={<FormattedMessage id="siteTools.toolNotFound" defaultMessage="Tool not found" />}
+							/>
+						</Box>
+					)
+				) : (
+					<EmptyState
+						sxs={{ root: { height: '100%', margin: 0 } }}
+						title={<FormattedMessage id="siteTools.selectTool" defaultMessage="Please choose a tool from the left." />}
+						image={`${baseUrl}/static-assets/images/choose_option.svg`}
+					/>
+				)}
+			</Box>
+		</Paper>
+	);
 }
 
 export default SiteTools;

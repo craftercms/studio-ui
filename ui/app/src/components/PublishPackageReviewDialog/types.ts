@@ -19,23 +19,23 @@ import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { StandardAction } from '../../models';
 
 export interface PublishingPackageReviewDialogBaseProps {
-  packageId: number;
+	packageId: number;
 }
 
 export interface PublishingPackageReviewDialogProps
-  extends PublishingPackageReviewDialogBaseProps,
-    EnhancedDialogProps {
-  onSuccess?(): void;
+	extends PublishingPackageReviewDialogBaseProps,
+		EnhancedDialogProps {
+	onSuccess?(): void;
 }
 
 export interface PublishingPackageReviewDialogStateProps
-  extends PublishingPackageReviewDialogBaseProps,
-    EnhancedDialogState {
-  onClose?: StandardAction;
-  onClosed?: StandardAction;
-  onSuccess?: StandardAction;
+	extends PublishingPackageReviewDialogBaseProps,
+		EnhancedDialogState {
+	onClose?: StandardAction;
+	onClosed?: StandardAction;
+	onSuccess?: StandardAction;
 }
 
 export interface PublishingPackageReviewDialogContainerProps
-  extends PublishingPackageReviewDialogBaseProps,
-    Pick<PublishingPackageReviewDialogProps, 'isSubmitting' | 'onSuccess' | 'onClose'> {}
+	extends PublishingPackageReviewDialogBaseProps,
+		Pick<PublishingPackageReviewDialogProps, 'isSubmitting' | 'onSuccess' | 'onClose'> {}

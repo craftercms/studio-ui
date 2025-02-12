@@ -20,12 +20,12 @@ import { createLocationArgument } from './utils/util';
 import { fadeIn } from './utils/dom';
 
 message$.subscribe(function ({ type, payload }) {
-  switch (type) {
-    case navigationRequest.type: {
-      window.location.href = payload.url;
-      break;
-    }
-  }
+	switch (type) {
+		case navigationRequest.type: {
+			window.location.href = payload.url;
+			break;
+		}
+	}
 });
 
 const location = createLocationArgument();
@@ -33,11 +33,11 @@ const location = createLocationArgument();
 post(guestCheckIn.type, { location, __CRAFTERCMS_GUEST_LANDING__: true, version: process.env.VERSION });
 
 setTimeout(() => {
-  document.querySelectorAll('img').forEach((img) => {
-    fadeIn(img);
-  });
+	document.querySelectorAll('img').forEach((img) => {
+		fadeIn(img);
+	});
 }, 700);
 
 window.onbeforeunload = () => {
-  post(guestCheckOut.type);
+	post(guestCheckOut.type);
 };

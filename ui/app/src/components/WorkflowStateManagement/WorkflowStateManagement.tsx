@@ -58,494 +58,494 @@ import { EmptyState } from '../EmptyState';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 
 const workflowStateManagementMessages = defineMessages({
-  statesUpdatedMessage: {
-    id: 'workflowStateManagementMessages.statesUpdatedMessage',
-    defaultMessage: 'State for {count} {count, plural, one {item} other {items}} updated successfully'
-  }
+	statesUpdatedMessage: {
+		id: 'workflowStateManagementMessages.statesUpdatedMessage',
+		defaultMessage: 'State for {count} {count, plural, one {item} other {items}} updated successfully'
+	}
 });
 
 export interface WorkflowStateManagementProps {
-  embedded?: boolean;
-  showAppsButton?: boolean;
-  onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;
+	embedded?: boolean;
+	showAppsButton?: boolean;
+	onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
 const drawerWidth = 260;
 
 const initialStates: ItemStates[] = [
-  'new',
-  'modified',
-  'deleted',
-  'locked',
-  'systemProcessing',
-  'submitted',
-  'scheduled',
-  'staged',
-  'live'
+	'new',
+	'modified',
+	'deleted',
+	'locked',
+	'systemProcessing',
+	'submitted',
+	'scheduled',
+	'staged',
+	'live'
 ];
 
 export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
-  const { embedded, showAppsButton = !embedded, onSubmittingAndOrPendingChange } = props;
-  const [fetching, setFetching] = useState(false);
-  const [items, setItems] = useState<PagedArray<SandboxItem>>(null);
-  const [error, setError] = useState<ApiResponse>();
-  const siteId = useActiveSiteId();
-  const [openSetStateDialog, setOpenSetStateDialog] = useState(false);
-  const [openFiltersDrawer, setOpenFiltersDrawer] = useState(false);
-  const [filtersLookup, setFiltersLookup] = useSpreadState<LookupTable<boolean>>(
-    createPresenceTable(initialStates, false)
-  );
-  const [pathRegex, setPathRegex] = useState('');
-  const [debouncePathRegex, setDebouncePathRegex] = useState('');
-  const [invalidPathRegex, setInvalidPathRegex] = useState(false);
-  const [offset, setOffset] = useState(0);
-  const [limit, setLimit] = useState(10);
-  const [selectedItems, setSelectedItems] = useState<LookupTable<SandboxItem>>({});
-  const [selectedItem, setSelectedItem] = useState<SandboxItem>(null);
-  const [isSelectedItemsOnAllPages, setIsSelectedItemsOnAllPages] = useState(false);
-  const [hasStaging, setHasStaging] = useState(false);
-  const states = useMemo(
-    () => (hasStaging ? initialStates : initialStates.filter((state) => state !== 'staged')),
-    [hasStaging]
-  );
-  const { formatMessage } = useIntl();
-  const fnRefs = useUpdateRefs({ onSubmittingAndOrPendingChange });
-  const dispatch = useDispatch();
+	const { embedded, showAppsButton = !embedded, onSubmittingAndOrPendingChange } = props;
+	const [fetching, setFetching] = useState(false);
+	const [items, setItems] = useState<PagedArray<SandboxItem>>(null);
+	const [error, setError] = useState<ApiResponse>();
+	const siteId = useActiveSiteId();
+	const [openSetStateDialog, setOpenSetStateDialog] = useState(false);
+	const [openFiltersDrawer, setOpenFiltersDrawer] = useState(false);
+	const [filtersLookup, setFiltersLookup] = useSpreadState<LookupTable<boolean>>(
+		createPresenceTable(initialStates, false)
+	);
+	const [pathRegex, setPathRegex] = useState('');
+	const [debouncePathRegex, setDebouncePathRegex] = useState('');
+	const [invalidPathRegex, setInvalidPathRegex] = useState(false);
+	const [offset, setOffset] = useState(0);
+	const [limit, setLimit] = useState(10);
+	const [selectedItems, setSelectedItems] = useState<LookupTable<SandboxItem>>({});
+	const [selectedItem, setSelectedItem] = useState<SandboxItem>(null);
+	const [isSelectedItemsOnAllPages, setIsSelectedItemsOnAllPages] = useState(false);
+	const [hasStaging, setHasStaging] = useState(false);
+	const states = useMemo(
+		() => (hasStaging ? initialStates : initialStates.filter((state) => state !== 'staged')),
+		[hasStaging]
+	);
+	const { formatMessage } = useIntl();
+	const fnRefs = useUpdateRefs({ onSubmittingAndOrPendingChange });
+	const dispatch = useDispatch();
 
-  const hasSelectedItems = useMemo(() => Object.values(selectedItems).some(Boolean), [selectedItems]);
-  const selectedItemsLength = useMemo(() => Object.values(selectedItems).filter(Boolean).length, [selectedItems]);
-  const isThisPageIndeterminate = useMemo(
-    () => items?.some((item) => !selectedItems[item.path]),
-    [items, selectedItems]
-  );
-  const hasThisPageItemsChecked = useMemo(
-    () => items?.some((item) => selectedItems[item.path]),
-    [items, selectedItems]
-  );
+	const hasSelectedItems = useMemo(() => Object.values(selectedItems).some(Boolean), [selectedItems]);
+	const selectedItemsLength = useMemo(() => Object.values(selectedItems).filter(Boolean).length, [selectedItems]);
+	const isThisPageIndeterminate = useMemo(
+		() => items?.some((item) => !selectedItems[item.path]),
+		[items, selectedItems]
+	);
+	const hasThisPageItemsChecked = useMemo(
+		() => items?.some((item) => selectedItems[item.path]),
+		[items, selectedItems]
+	);
 
-  const rootRef = useRef<HTMLDivElement>(undefined);
+	const rootRef = useRef<HTMLDivElement>(undefined);
 
-  const fetchStates = useCallback(() => {
-    let stateBitmap = getStateBitmap(filtersLookup as ItemStateMap);
+	const fetchStates = useCallback(() => {
+		let stateBitmap = getStateBitmap(filtersLookup as ItemStateMap);
 
-    setFetching(true);
-    fetchItemStates(siteId, debouncePathRegex, stateBitmap ? stateBitmap : null, { limit, offset }).subscribe({
-      next(states) {
-        setItems(states);
-        setFetching(false);
-      },
-      error({ response }) {
-        setError(response);
-        setFetching(false);
-      }
-    });
-  }, [debouncePathRegex, filtersLookup, siteId, limit, offset]);
+		setFetching(true);
+		fetchItemStates(siteId, debouncePathRegex, stateBitmap ? stateBitmap : null, { limit, offset }).subscribe({
+			next(states) {
+				setItems(states);
+				setFetching(false);
+			},
+			error({ response }) {
+				setError(response);
+				setFetching(false);
+			}
+		});
+	}, [debouncePathRegex, filtersLookup, siteId, limit, offset]);
 
-  useEffect(() => {
-    fetchStates();
-  }, [fetchStates]);
+	useEffect(() => {
+		fetchStates();
+	}, [fetchStates]);
 
-  useEffect(() => {
-    fnRefs.current.onSubmittingAndOrPendingChange?.({
-      hasPendingChanges: hasSelectedItems
-    });
-  }, [hasSelectedItems, fnRefs]);
+	useEffect(() => {
+		fnRefs.current.onSubmittingAndOrPendingChange?.({
+			hasPendingChanges: hasSelectedItems
+		});
+	}, [hasSelectedItems, fnRefs]);
 
-  useMount(() => {
-    const sub = fetchPublishingTargets(siteId).subscribe({
-      next({ publishingTargets: targets }) {
-        setHasStaging(targets.some((target) => target.name === 'staging'));
-      }
-    });
-    return () => {
-      sub.unsubscribe();
-    };
-  });
+	useMount(() => {
+		const sub = fetchPublishingTargets(siteId).subscribe({
+			next({ publishingTargets: targets }) {
+				setHasStaging(targets.some((target) => target.name === 'staging'));
+			}
+		});
+		return () => {
+			sub.unsubscribe();
+		};
+	});
 
-  const onPathRegex$ = useDebouncedInput(
-    useCallback(
-      (keyword: string) => {
-        clearSelectedItems();
+	const onPathRegex$ = useDebouncedInput(
+		useCallback(
+			(keyword: string) => {
+				clearSelectedItems();
 
-        try {
-          new RegExp(keyword);
-          setOffset(0);
-          setDebouncePathRegex(keyword);
-          setInvalidPathRegex(false);
-        } catch (e) {
-          // Not a valid regex
-          setInvalidPathRegex(true);
-        }
-      },
-      [setDebouncePathRegex]
-    ),
-    400
-  );
+				try {
+					new RegExp(keyword);
+					setOffset(0);
+					setDebouncePathRegex(keyword);
+					setInvalidPathRegex(false);
+				} catch (e) {
+					// Not a valid regex
+					setInvalidPathRegex(true);
+				}
+			},
+			[setDebouncePathRegex]
+		),
+		400
+	);
 
-  const onPathRegexInputChanges = (value: string) => {
-    setPathRegex(value);
-    onPathRegex$.next(value);
-  };
+	const onPathRegexInputChanges = (value: string) => {
+		setPathRegex(value);
+		onPathRegex$.next(value);
+	};
 
-  const onFilterChecked = (id: string, value: boolean) => {
-    clearSelectedItems();
-    setOffset(0);
-    if (id === 'any') {
-      setFiltersLookup(createPresenceTable(states, !value));
-    } else {
-      setFiltersLookup({ [id]: value });
-    }
-  };
+	const onFilterChecked = (id: string, value: boolean) => {
+		clearSelectedItems();
+		setOffset(0);
+		if (id === 'any') {
+			setFiltersLookup(createPresenceTable(states, !value));
+		} else {
+			setFiltersLookup({ [id]: value });
+		}
+	};
 
-  const onClearFilters = () => {
-    setOffset(0);
-    setFiltersLookup(createPresenceTable(states, false));
-    setDebouncePathRegex('');
-    setPathRegex('');
-  };
+	const onClearFilters = () => {
+		setOffset(0);
+		setFiltersLookup(createPresenceTable(states, false));
+		setDebouncePathRegex('');
+		setPathRegex('');
+	};
 
-  const onPageChange = (page: number) => {
-    setOffset(page * limit);
-  };
+	const onPageChange = (page: number) => {
+		setOffset(page * limit);
+	};
 
-  const onRowsPerPageChange = (e) => {
-    setLimit(e.target.value);
-  };
+	const onRowsPerPageChange = (e) => {
+		setLimit(e.target.value);
+	};
 
-  const onItemSelected = (selectedItem: SandboxItem, value: boolean) => {
-    if (isSelectedItemsOnAllPages) {
-      const selectedItemsOnPage = {};
-      setIsSelectedItemsOnAllPages(false);
-      items.forEach((item) => {
-        if (item.path !== selectedItem.path) {
-          selectedItemsOnPage[item.path] = item;
-        }
-      });
-      setSelectedItems({ ...selectedItems, ...selectedItemsOnPage });
-    } else {
-      setSelectedItems({ ...selectedItems, [selectedItem.path]: value ? selectedItem : null });
-    }
-  };
+	const onItemSelected = (selectedItem: SandboxItem, value: boolean) => {
+		if (isSelectedItemsOnAllPages) {
+			const selectedItemsOnPage = {};
+			setIsSelectedItemsOnAllPages(false);
+			items.forEach((item) => {
+				if (item.path !== selectedItem.path) {
+					selectedItemsOnPage[item.path] = item;
+				}
+			});
+			setSelectedItems({ ...selectedItems, ...selectedItemsOnPage });
+		} else {
+			setSelectedItems({ ...selectedItems, [selectedItem.path]: value ? selectedItem : null });
+		}
+	};
 
-  const onRowSelected = (item: SandboxItem) => {
-    setSelectedItem(item);
-    setOpenSetStateDialog(true);
-  };
+	const onRowSelected = (item: SandboxItem) => {
+		setSelectedItem(item);
+		setOpenSetStateDialog(true);
+	};
 
-  const onOptionClicked = (option: string) => {
-    if (option === 'editStates') {
-      setSelectedItem(null);
-      setOpenSetStateDialog(true);
-    } else if (option === 'clearSelected') {
-      clearSelectedItems();
-      setIsSelectedItemsOnAllPages(false);
-    } else if (option === 'selectAll') {
-      clearSelectedItems();
-      setIsSelectedItemsOnAllPages(true);
-    }
-  };
+	const onOptionClicked = (option: string) => {
+		if (option === 'editStates') {
+			setSelectedItem(null);
+			setOpenSetStateDialog(true);
+		} else if (option === 'clearSelected') {
+			clearSelectedItems();
+			setIsSelectedItemsOnAllPages(false);
+		} else if (option === 'selectAll') {
+			clearSelectedItems();
+			setIsSelectedItemsOnAllPages(true);
+		}
+	};
 
-  const clearSelectedItems = () => {
-    setSelectedItems({});
-  };
+	const clearSelectedItems = () => {
+		setSelectedItems({});
+	};
 
-  const onToggleSelectAllItems = () => {
-    if (isSelectedItemsOnAllPages) {
-      setIsSelectedItemsOnAllPages(false);
-    } else {
-      const selectedItemsOnPage = {};
-      if (isThisPageIndeterminate) {
-        items.forEach((item) => (selectedItemsOnPage[item.path] = item));
-      } else {
-        items.forEach((item) => (selectedItemsOnPage[item.path] = null));
-      }
-      setSelectedItems({ ...selectedItems, ...selectedItemsOnPage });
-    }
-  };
+	const onToggleSelectAllItems = () => {
+		if (isSelectedItemsOnAllPages) {
+			setIsSelectedItemsOnAllPages(false);
+		} else {
+			const selectedItemsOnPage = {};
+			if (isThisPageIndeterminate) {
+				items.forEach((item) => (selectedItemsOnPage[item.path] = item));
+			} else {
+				items.forEach((item) => (selectedItemsOnPage[item.path] = null));
+			}
+			setSelectedItems({ ...selectedItems, ...selectedItemsOnPage });
+		}
+	};
 
-  const showStatesUpdatedNotification = () => {
-    const count = selectedItem ? 1 : isSelectedItemsOnAllPages ? items?.total : selectedItemsLength;
-    dispatch(
-      showSystemNotification({
-        message: formatMessage(workflowStateManagementMessages.statesUpdatedMessage, { count })
-      })
-    );
-  };
+	const showStatesUpdatedNotification = () => {
+		const count = selectedItem ? 1 : isSelectedItemsOnAllPages ? items?.total : selectedItemsLength;
+		dispatch(
+			showSystemNotification({
+				message: formatMessage(workflowStateManagementMessages.statesUpdatedMessage, { count })
+			})
+		);
+	};
 
-  const onError = (error: ApiResponse) => {
-    dispatch(
-      showErrorDialog({
-        error
-      })
-    );
-  };
+	const onError = (error: ApiResponse) => {
+		dispatch(
+			showErrorDialog({
+				error
+			})
+		);
+	};
 
-  const onSetItemStateDialogConfirm = (update: StatesToUpdate) => {
-    if (selectedItem) {
-      setItemStates(siteId, [selectedItem.path], update).subscribe({
-        next: () => {
-          fetchStates();
-          showStatesUpdatedNotification();
-        },
-        error: ({ response }) => onError(response.response)
-      });
-    } else if (isSelectedItemsOnAllPages) {
-      let stateBitmap = getStateBitmap(filtersLookup as ItemStateMap);
-      setItemStatesByQuery(siteId, stateBitmap ? stateBitmap : null, update, debouncePathRegex).subscribe({
-        next: () => {
-          fetchStates();
-          showStatesUpdatedNotification();
-        },
-        error: ({ response }) => onError(response.response)
-      });
-    } else {
-      setItemStates(
-        siteId,
-        Object.values(selectedItems)
-          .filter(Boolean)
-          .map((item) => item.path),
-        update
-      ).subscribe({
-        next: () => {
-          fetchStates();
-          showStatesUpdatedNotification();
-        },
-        error: ({ response }) => onError(response.response)
-      });
-    }
+	const onSetItemStateDialogConfirm = (update: StatesToUpdate) => {
+		if (selectedItem) {
+			setItemStates(siteId, [selectedItem.path], update).subscribe({
+				next: () => {
+					fetchStates();
+					showStatesUpdatedNotification();
+				},
+				error: ({ response }) => onError(response.response)
+			});
+		} else if (isSelectedItemsOnAllPages) {
+			let stateBitmap = getStateBitmap(filtersLookup as ItemStateMap);
+			setItemStatesByQuery(siteId, stateBitmap ? stateBitmap : null, update, debouncePathRegex).subscribe({
+				next: () => {
+					fetchStates();
+					showStatesUpdatedNotification();
+				},
+				error: ({ response }) => onError(response.response)
+			});
+		} else {
+			setItemStates(
+				siteId,
+				Object.values(selectedItems)
+					.filter(Boolean)
+					.map((item) => item.path),
+				update
+			).subscribe({
+				next: () => {
+					fetchStates();
+					showStatesUpdatedNotification();
+				},
+				error: ({ response }) => onError(response.response)
+			});
+		}
 
-    setOpenSetStateDialog(false);
-  };
+		setOpenSetStateDialog(false);
+	};
 
-  const onSetItemStateDialogClose = () => {
-    setSelectedItem(null);
-    setOpenSetStateDialog(false);
-  };
+	const onSetItemStateDialogClose = () => {
+		setSelectedItem(null);
+		setOpenSetStateDialog(false);
+	};
 
-  return (
-    <Box
-      component="section"
-      ref={rootRef}
-      sx={{
-        height: '100%',
-        overflowY: 'auto',
-        overflowX: 'hidden',
-        display: 'flex',
-        flexDirection: 'column'
-      }}
-    >
-      <GlobalAppToolbar
-        title={!embedded && <FormattedMessage id="workflowStates.title" defaultMessage="Workflow States" />}
-        rightContent={
-          <SecondaryButton
-            sx={[!embedded && { marginRight: '12px' }]}
-            endIcon={<FilterListRoundedIcon />}
-            onClick={() => setOpenFiltersDrawer(!openFiltersDrawer)}
-          >
-            <FormattedMessage id="words.filters" defaultMessage="Filters" />
-          </SecondaryButton>
-        }
-        showHamburgerMenuButton={!embedded}
-        showAppsButton={showAppsButton}
-      />
+	return (
+		<Box
+			component="section"
+			ref={rootRef}
+			sx={{
+				height: '100%',
+				overflowY: 'auto',
+				overflowX: 'hidden',
+				display: 'flex',
+				flexDirection: 'column'
+			}}
+		>
+			<GlobalAppToolbar
+				title={!embedded && <FormattedMessage id="workflowStates.title" defaultMessage="Workflow States" />}
+				rightContent={
+					<SecondaryButton
+						sx={[!embedded && { marginRight: '12px' }]}
+						endIcon={<FilterListRoundedIcon />}
+						onClick={() => setOpenFiltersDrawer(!openFiltersDrawer)}
+					>
+						<FormattedMessage id="words.filters" defaultMessage="Filters" />
+					</SecondaryButton>
+				}
+				showHamburgerMenuButton={!embedded}
+				showAppsButton={showAppsButton}
+			/>
 
-      <Box
-        display="flex"
-        flexDirection="column"
-        flexGrow={1}
-        paddingRight={openFiltersDrawer ? `${drawerWidth}px` : 0}
-        sx={(theme) => ({
-          transition: theme.transitions.create('padding-right', {
-            easing: theme.transitions.easing.easeOut,
-            duration: theme.transitions.duration.enteringScreen
-          })
-        })}
-        position="relative"
-      >
-        {(hasSelectedItems || isSelectedItemsOnAllPages) && (
-          <ItemActionsSnackbar
-            open={hasSelectedItems || isSelectedItemsOnAllPages}
-            options={[
-              {
-                id: 'editStates',
-                label: formatMessage(translations.editStates)
-              },
-              ...(isSelectedItemsOnAllPages
-                ? []
-                : [
-                    {
-                      id: 'selectAll',
-                      label: formatMessage(translations.selectAll, { count: items.total })
-                    }
-                  ]),
-              {
-                id: 'clearSelected',
-                label: formatMessage(translations.clearSelected, {
-                  count: isSelectedItemsOnAllPages ? items.total : selectedItemsLength
-                })
-              }
-            ]}
-            onActionClicked={onOptionClicked}
-          />
-        )}
+			<Box
+				display="flex"
+				flexDirection="column"
+				flexGrow={1}
+				paddingRight={openFiltersDrawer ? `${drawerWidth}px` : 0}
+				sx={(theme) => ({
+					transition: theme.transitions.create('padding-right', {
+						easing: theme.transitions.easing.easeOut,
+						duration: theme.transitions.duration.enteringScreen
+					})
+				})}
+				position="relative"
+			>
+				{(hasSelectedItems || isSelectedItemsOnAllPages) && (
+					<ItemActionsSnackbar
+						open={hasSelectedItems || isSelectedItemsOnAllPages}
+						options={[
+							{
+								id: 'editStates',
+								label: formatMessage(translations.editStates)
+							},
+							...(isSelectedItemsOnAllPages
+								? []
+								: [
+										{
+											id: 'selectAll',
+											label: formatMessage(translations.selectAll, { count: items.total })
+										}
+									]),
+							{
+								id: 'clearSelected',
+								label: formatMessage(translations.clearSelected, {
+									count: isSelectedItemsOnAllPages ? items.total : selectedItemsLength
+								})
+							}
+						]}
+						onActionClicked={onOptionClicked}
+					/>
+				)}
 
-        {fetching && <ItemStatesGridSkeletonTable />}
-        {error && <ApiResponseErrorState error={error} />}
-        {items?.length === 0 && (
-          <EmptyState
-            title={<FormattedMessage id="itemStates.emptyStateMessage" defaultMessage="No results found" />}
-          />
-        )}
-        {Boolean(items?.length) && (
-          <ItemStatesGridUI
-            itemStates={items}
-            selectedItems={selectedItems}
-            allItemsSelected={isSelectedItemsOnAllPages}
-            hasThisPageItemsChecked={hasThisPageItemsChecked}
-            isThisPageIndeterminate={isThisPageIndeterminate}
-            onItemSelected={onItemSelected}
-            onToggleSelectedItems={onToggleSelectAllItems}
-            onPageChange={onPageChange}
-            onRowsPerPageChange={onRowsPerPageChange}
-            onRowSelected={onRowSelected}
-          />
-        )}
-        <ResizeableDrawer
-          open={openFiltersDrawer}
-          width={drawerWidth}
-          anchor="right"
-          sxs={{
-            drawerBody: {
-              overflowY: 'inherit'
-            },
-            drawerPaper: {
-              overflow: 'inherit',
-              position: 'absolute'
-            }
-          }}
-          sx={{
-            [`& .${drawerClasses.paper}`]: { p: 2 }
-          }}
-        >
-          <form
-            noValidate
-            autoComplete="off"
-            onSubmit={(e) => {
-              e.preventDefault();
-            }}
-          >
-            <Button
-              disabled={pathRegex === '' && !Object.values(filtersLookup).some(Boolean)}
-              endIcon={<CloseIcon />}
-              variant="outlined"
-              onClick={onClearFilters}
-              fullWidth
-            >
-              <FormattedMessage id="itemStates.clearFilters" defaultMessage="Clear Filters" />
-            </Button>
-            <TextField
-              value={pathRegex}
-              sx={{ marginTop: '20px' }}
-              onChange={(e) => onPathRegexInputChanges(e.target.value)}
-              label={<FormattedMessage id="itemStates.pathRegex" defaultMessage="Path (regex)" />}
-              fullWidth
-              variant="outlined"
-              error={invalidPathRegex}
-              slotProps={{
-                formHelperText: { sx: { ml: 0 } }
-              }}
-              helperText={
-                invalidPathRegex ? (
-                  <FormattedMessage
-                    id="itemStates.invalidPathRegexHelperText"
-                    defaultMessage="The regular expression is invalid"
-                  />
-                ) : (
-                  <FormattedMessage id="itemStates.pathRegexHelperText" defaultMessage="Use a path-matching regex" />
-                )
-              }
-            />
-            <FormControl component="fieldset" sx={{ marginTop: '20px' }}>
-              <FormLabel
-                component="legend"
-                sx={(theme) => ({
-                  color: theme.palette.text.primary,
-                  textTransform: 'uppercase',
-                  marginBottom: '10px'
-                })}
-              >
-                <FormattedMessage id="itemStates.showItemsIn" defaultMessage="Show Items In" />
-              </FormLabel>
-              <FormGroup>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={!Object.values(filtersLookup).some(Boolean)}
-                      name="any"
-                      onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                        onFilterChecked(event.target.name, !Object.values(filtersLookup).every(Boolean));
-                      }}
-                    />
-                  }
-                  label={<FormattedMessage id="itemStates.anyState" defaultMessage="Any state" />}
-                />
-                <Divider />
-                {states.map((id) => (
-                  <FormControlLabel
-                    key={id}
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      '& svg': {
-                        marginRight: '5px'
-                      }
-                    }}
-                    control={
-                      <Checkbox
-                        checked={filtersLookup[id]}
-                        name={id}
-                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                          onFilterChecked(event.target.name, event.target.checked);
-                        }}
-                      />
-                    }
-                    label={
-                      ['staged', 'live'].includes(id) ? (
-                        <>
-                          <ItemPublishingTargetIcon item={{ stateMap: { [id]: true } } as SandboxItem} />
-                          {getItemPublishingTargetText({ [id]: true } as ItemStateMap)}
-                        </>
-                      ) : (
-                        <>
-                          <ItemStateIcon item={{ stateMap: { [id]: true } } as SandboxItem} />
-                          {getItemStateText({ [id]: true } as ItemStateMap)}
-                        </>
-                      )
-                    }
-                  />
-                ))}
-              </FormGroup>
-            </FormControl>
-          </form>
-        </ResizeableDrawer>
-      </Box>
-      <SetItemStateDialog
-        title={
-          <FormattedMessage
-            id="workflowStates.setState"
-            defaultMessage='{count, plural, one {Set State for "{name}"} other {Set State for Items ({count})}}'
-            values={{
-              count: selectedItem ? 1 : isSelectedItemsOnAllPages ? items?.total : selectedItemsLength,
-              name: selectedItem?.label ?? Object.values(selectedItems)[0]?.label
-            }}
-          />
-        }
-        open={openSetStateDialog}
-        onClose={onSetItemStateDialogClose}
-        onConfirm={onSetItemStateDialogConfirm}
-      />
-    </Box>
-  );
+				{fetching && <ItemStatesGridSkeletonTable />}
+				{error && <ApiResponseErrorState error={error} />}
+				{items?.length === 0 && (
+					<EmptyState
+						title={<FormattedMessage id="itemStates.emptyStateMessage" defaultMessage="No results found" />}
+					/>
+				)}
+				{Boolean(items?.length) && (
+					<ItemStatesGridUI
+						itemStates={items}
+						selectedItems={selectedItems}
+						allItemsSelected={isSelectedItemsOnAllPages}
+						hasThisPageItemsChecked={hasThisPageItemsChecked}
+						isThisPageIndeterminate={isThisPageIndeterminate}
+						onItemSelected={onItemSelected}
+						onToggleSelectedItems={onToggleSelectAllItems}
+						onPageChange={onPageChange}
+						onRowsPerPageChange={onRowsPerPageChange}
+						onRowSelected={onRowSelected}
+					/>
+				)}
+				<ResizeableDrawer
+					open={openFiltersDrawer}
+					width={drawerWidth}
+					anchor="right"
+					sxs={{
+						drawerBody: {
+							overflowY: 'inherit'
+						},
+						drawerPaper: {
+							overflow: 'inherit',
+							position: 'absolute'
+						}
+					}}
+					sx={{
+						[`& .${drawerClasses.paper}`]: { p: 2 }
+					}}
+				>
+					<form
+						noValidate
+						autoComplete="off"
+						onSubmit={(e) => {
+							e.preventDefault();
+						}}
+					>
+						<Button
+							disabled={pathRegex === '' && !Object.values(filtersLookup).some(Boolean)}
+							endIcon={<CloseIcon />}
+							variant="outlined"
+							onClick={onClearFilters}
+							fullWidth
+						>
+							<FormattedMessage id="itemStates.clearFilters" defaultMessage="Clear Filters" />
+						</Button>
+						<TextField
+							value={pathRegex}
+							sx={{ marginTop: '20px' }}
+							onChange={(e) => onPathRegexInputChanges(e.target.value)}
+							label={<FormattedMessage id="itemStates.pathRegex" defaultMessage="Path (regex)" />}
+							fullWidth
+							variant="outlined"
+							error={invalidPathRegex}
+							slotProps={{
+								formHelperText: { sx: { ml: 0 } }
+							}}
+							helperText={
+								invalidPathRegex ? (
+									<FormattedMessage
+										id="itemStates.invalidPathRegexHelperText"
+										defaultMessage="The regular expression is invalid"
+									/>
+								) : (
+									<FormattedMessage id="itemStates.pathRegexHelperText" defaultMessage="Use a path-matching regex" />
+								)
+							}
+						/>
+						<FormControl component="fieldset" sx={{ marginTop: '20px' }}>
+							<FormLabel
+								component="legend"
+								sx={(theme) => ({
+									color: theme.palette.text.primary,
+									textTransform: 'uppercase',
+									marginBottom: '10px'
+								})}
+							>
+								<FormattedMessage id="itemStates.showItemsIn" defaultMessage="Show Items In" />
+							</FormLabel>
+							<FormGroup>
+								<FormControlLabel
+									control={
+										<Checkbox
+											checked={!Object.values(filtersLookup).some(Boolean)}
+											name="any"
+											onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+												onFilterChecked(event.target.name, !Object.values(filtersLookup).every(Boolean));
+											}}
+										/>
+									}
+									label={<FormattedMessage id="itemStates.anyState" defaultMessage="Any state" />}
+								/>
+								<Divider />
+								{states.map((id) => (
+									<FormControlLabel
+										key={id}
+										sx={{
+											display: 'flex',
+											alignItems: 'center',
+											'& svg': {
+												marginRight: '5px'
+											}
+										}}
+										control={
+											<Checkbox
+												checked={filtersLookup[id]}
+												name={id}
+												onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+													onFilterChecked(event.target.name, event.target.checked);
+												}}
+											/>
+										}
+										label={
+											['staged', 'live'].includes(id) ? (
+												<>
+													<ItemPublishingTargetIcon item={{ stateMap: { [id]: true } } as SandboxItem} />
+													{getItemPublishingTargetText({ [id]: true } as ItemStateMap)}
+												</>
+											) : (
+												<>
+													<ItemStateIcon item={{ stateMap: { [id]: true } } as SandboxItem} />
+													{getItemStateText({ [id]: true } as ItemStateMap)}
+												</>
+											)
+										}
+									/>
+								))}
+							</FormGroup>
+						</FormControl>
+					</form>
+				</ResizeableDrawer>
+			</Box>
+			<SetItemStateDialog
+				title={
+					<FormattedMessage
+						id="workflowStates.setState"
+						defaultMessage='{count, plural, one {Set State for "{name}"} other {Set State for Items ({count})}}'
+						values={{
+							count: selectedItem ? 1 : isSelectedItemsOnAllPages ? items?.total : selectedItemsLength,
+							name: selectedItem?.label ?? Object.values(selectedItems)[0]?.label
+						}}
+					/>
+				}
+				open={openSetStateDialog}
+				onClose={onSetItemStateDialogClose}
+				onConfirm={onSetItemStateDialogConfirm}
+			/>
+		</Box>
+	);
 }
 
 export default WorkflowStateManagement;

@@ -20,7 +20,7 @@ import Field, { FieldProps } from './Field';
 export type ModelProps<P = {}> = Omit<FieldProps<P>, 'fieldId' | 'index'>;
 
 export const Model = forwardRef<any, ModelProps>((props, ref) => {
-  return <Field {...(props as FieldProps)} ref={ref} fieldId="__CRAFTERCMS_FAKE_FIELD__" />;
+	return <Field {...(props as FieldProps)} ref={ref} fieldId="__CRAFTERCMS_FAKE_FIELD__" />;
 });
 
 Model.propTypes = (({ fieldId, index, ...propTypes }) => propTypes)(Field.propTypes);

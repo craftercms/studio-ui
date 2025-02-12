@@ -21,29 +21,29 @@ import { DetailedItem } from '../../models';
 import { AjaxError } from 'rxjs/ajax';
 
 export interface RenameAssetBaseProps {
-  path: string;
-  type: 'controller' | 'template' | 'asset';
-  dependantItems: DetailedItem[];
-  fetchingDependantItems: boolean;
-  value?: string;
-  allowBraces?: boolean;
-  error: AjaxError;
+	path: string;
+	type: 'controller' | 'template' | 'asset';
+	dependantItems: DetailedItem[];
+	fetchingDependantItems: boolean;
+	value?: string;
+	allowBraces?: boolean;
+	error: AjaxError;
 }
 
 export interface RenameAssetDialogProps extends RenameAssetBaseProps, EnhancedDialogProps {
-  onRenamed?(response: { path: string; name: string }): void;
+	onRenamed?(response: { path: string; name: string }): void;
 }
 
 export interface RenameAssetStateProps extends RenameAssetBaseProps, EnhancedDialogState {
-  onClose?: StandardAction;
-  onClosed?: StandardAction;
-  onRenamed?: StandardAction;
+	onClose?: StandardAction;
+	onClosed?: StandardAction;
+	onRenamed?: StandardAction;
 }
 
 export interface RenameAssetContainerProps
-  extends Pick<
-    RenameAssetDialogProps,
-    'path' | 'value' | 'allowBraces' | 'onRenamed' | 'onClose' | 'type' | 'fetchingDependantItems' | 'error'
-  > {
-  dependantItems: DetailedItem[];
+	extends Pick<
+		RenameAssetDialogProps,
+		'path' | 'value' | 'allowBraces' | 'onRenamed' | 'onClose' | 'type' | 'fetchingDependantItems' | 'error'
+	> {
+	dependantItems: DetailedItem[];
 }

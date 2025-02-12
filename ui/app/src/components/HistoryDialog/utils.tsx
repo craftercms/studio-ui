@@ -25,67 +25,67 @@ import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { ApiResponse } from '../../models';
 
 export interface Menu {
-  sections: ContextMenuOption[][];
-  anchorEl: Element;
-  activeItem: ItemHistoryEntry;
+	sections: ContextMenuOption[][];
+	anchorEl: Element;
+	activeItem: ItemHistoryEntry;
 }
 
 export interface HistoryDialogBaseProps {
-  error: ApiResponse;
+	error: ApiResponse;
 }
 
 export interface HistoryDialogProps extends HistoryDialogBaseProps, EnhancedDialogProps {
-  versionsBranch: VersionsStateProps;
+	versionsBranch: VersionsStateProps;
 }
 
 export interface HistoryDialogStateProps extends HistoryDialogBaseProps, EnhancedDialogState {
-  onClose?: StandardAction;
-  onClosed?: StandardAction;
+	onClose?: StandardAction;
+	onClosed?: StandardAction;
 }
 
 export interface HistoryDialogContainerProps
-  extends HistoryDialogBaseProps,
-    Pick<HistoryDialogProps, 'versionsBranch'> {}
+	extends HistoryDialogBaseProps,
+		Pick<HistoryDialogProps, 'versionsBranch'> {}
 
 export interface PaginationProps {
-  count: number;
-  page: number;
-  rowsPerPage: number;
-  onPageChanged(nextPage: number): void;
-  onRowsPerPageChange?(nextRowsPerPage: number, e: React.ChangeEvent): void;
+	count: number;
+	page: number;
+	rowsPerPage: number;
+	onPageChanged(nextPage: number): void;
+	onRowsPerPageChange?(nextRowsPerPage: number, e: React.ChangeEvent): void;
 }
 
 export const menuOptions: LookupTable<{ id: string; label: MessageDescriptor; values?: any }> = {
-  view: {
-    id: 'view',
-    label: translations.view
-  },
-  compareTo: {
-    id: 'compareTo',
-    label: translations.compareTo
-  },
-  compareToCurrent: {
-    id: 'compareToCurrent',
-    label: translations.compareToCurrent
-  },
-  compareToPrevious: {
-    id: 'compareToPrevious',
-    label: translations.compareToPrevious
-  },
-  revertToPrevious: {
-    id: 'revertToPrevious',
-    label: translations.revertToPrevious,
-    values: { b: (msg) => <b key="bold">&nbsp;{msg}</b> }
-  },
-  revertToThisVersion: {
-    id: 'revertToThisVersion',
-    label: translations.revertToThisVersion,
-    values: { b: (msg) => <b key="bold">&nbsp;{msg}</b> }
-  }
+	view: {
+		id: 'view',
+		label: translations.view
+	},
+	compareTo: {
+		id: 'compareTo',
+		label: translations.compareTo
+	},
+	compareToCurrent: {
+		id: 'compareToCurrent',
+		label: translations.compareToCurrent
+	},
+	compareToPrevious: {
+		id: 'compareToPrevious',
+		label: translations.compareToPrevious
+	},
+	revertToPrevious: {
+		id: 'revertToPrevious',
+		label: translations.revertToPrevious,
+		values: { b: (msg) => <b key="bold">&nbsp;{msg}</b> }
+	},
+	revertToThisVersion: {
+		id: 'revertToThisVersion',
+		label: translations.revertToThisVersion,
+		values: { b: (msg) => <b key="bold">&nbsp;{msg}</b> }
+	}
 };
 
 export const menuInitialState = {
-  sections: [],
-  anchorEl: null,
-  activeItem: null
+	sections: [],
+	anchorEl: null,
+	activeItem: null
 };

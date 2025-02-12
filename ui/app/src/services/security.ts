@@ -21,11 +21,11 @@ import { Observable } from 'rxjs';
 export function encrypt(text: string): Observable<string>;
 export function encrypt(text: string, site: string): Observable<string>;
 export function encrypt(text: string, site: string = ''): Observable<string> {
-  return postJSON(`/studio/api/2/security/encrypt.json`, { text, siteId: site }).pipe(
-    map((response) => response?.response?.item)
-  );
+	return postJSON(`/studio/api/2/security/encrypt.json`, { text, siteId: site }).pipe(
+		map((response) => response?.response?.item)
+	);
 }
 
 export function previewSwitch(): Observable<true> {
-  return post(`/studio/api/2/security/preview/switch`).pipe(map(() => true));
+	return post(`/studio/api/2/security/preview/switch`).pipe(map(() => true));
 }

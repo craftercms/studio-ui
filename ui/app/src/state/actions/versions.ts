@@ -19,11 +19,11 @@ import { DetailedItem, FetchContentVersion, ItemHistoryEntry } from '../../model
 import { AjaxError, AjaxResponse } from 'rxjs/ajax';
 
 export interface HistoryConfigProps {
-  item: Partial<DetailedItem>;
-  rootPath?: string;
-  environment?: string;
-  module?: string;
-  isConfig?: boolean;
+	item: Partial<DetailedItem>;
+	rootPath?: string;
+	environment?: string;
+	module?: string;
+	isConfig?: boolean;
 }
 
 export const fetchItemVersions = /*#__PURE__*/ createAction<HistoryConfigProps>('FETCH_ITEM_VERSIONS');
@@ -41,5 +41,5 @@ export const revertContent = /*#__PURE__*/ createAction<FetchContentVersion>('RE
 export const revertContentComplete = /*#__PURE__*/ createAction<{ path: string }>('REVERT_CONTENT_COMPLETE');
 export const revertContentFailed = /*#__PURE__*/ createAction<AjaxResponse<unknown>>('REVERT_CONTENT_FAILED');
 export const revertToPreviousVersion = /*#__PURE__*/ createAction<{ id: string; path: string }>(
-  'REVERT_TO_PREVIOUS_VERSION'
+	'REVERT_TO_PREVIOUS_VERSION'
 );

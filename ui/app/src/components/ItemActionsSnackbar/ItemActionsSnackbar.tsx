@@ -26,104 +26,104 @@ import { ContextMenuOption } from '../ContextMenu';
 import { useTheme } from '@mui/material/styles';
 
 export interface ItemActionsSnackbarProps {
-  open: boolean;
-  options: Array<ContextMenuOption>;
-  onActionClicked(id: string, event: React.MouseEvent<Element, MouseEvent>): void;
-  append?: ReactNode;
-  prepend?: ReactNode;
+	open: boolean;
+	options: Array<ContextMenuOption>;
+	onActionClicked(id: string, event: React.MouseEvent<Element, MouseEvent>): void;
+	append?: ReactNode;
+	prepend?: ReactNode;
 }
 
 const messages = defineMessages({
-  acceptSelection: {
-    id: 'search.acceptSelection',
-    defaultMessage: 'Accept Selection'
-  },
-  noOptionsAvailable: {
-    id: 'siteSearch.noOptionsAvailable',
-    defaultMessage: 'No options available'
-  }
+	acceptSelection: {
+		id: 'search.acceptSelection',
+		defaultMessage: 'Accept Selection'
+	},
+	noOptionsAvailable: {
+		id: 'siteSearch.noOptionsAvailable',
+		defaultMessage: 'No options available'
+	}
 });
 
 function ItemActionsSnackbar(props: ItemActionsSnackbarProps) {
-  const { open, options, onActionClicked, append, prepend } = props;
-  const { formatMessage } = useIntl();
-  const theme = useTheme();
-  const isDarkMode = theme.palette.mode === 'dark';
-  return (
-    <Snackbar
-      anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-      open={open}
-      sx={{
-        zIndex: theme.zIndex.modal,
-        '& .MuiSnackbarContent-root': {
-          backgroundColor: palette.blue.highlightHex,
-          color: palette.black,
-          borderRadius: '6px',
-          padding: '0 10px',
-          minWidth: 'unset'
-        },
-        '& .MuiSnackbarContent-message': {
-          display: 'flex',
-          padding: 0
-        }
-      }}
-      message={
-        <>
-          {prepend}
-          <List
-            sx={{
-              display: 'flex',
-              flexDirection: 'row',
-              padding: 0
-            }}
-          >
-            {options ? (
-              options.length ? (
-                options.map((option) => (
-                  <Button
-                    size="small"
-                    variant="text"
-                    color="primary"
-                    key={option.id}
-                    onClick={(e) => onActionClicked(option.id, e)}
-                  >
-                    <ListItemText primary={option.label} />
-                  </Button>
-                ))
-              ) : (
-                <ListItem>
-                  <ListItemText primary={formatMessage(messages.noOptionsAvailable)} />
-                </ListItem>
-              )
-            ) : (
-              new Array(5).fill(null).map((_, index) => (
-                <ListItem
-                  key={index}
-                  disableGutters
-                  sx={{
-                    width: 'fit-content',
-                    padding: '0 10px'
-                  }}
-                >
-                  <ListItemText
-                    primary={
-                      <Skeleton
-                        animation="pulse"
-                        height="10px"
-                        width={`${rand(60, 80)}px`}
-                        sx={{ backgroundColor: isDarkMode && palette.gray.light5 }}
-                      />
-                    }
-                  />
-                </ListItem>
-              ))
-            )}
-            {append}
-          </List>
-        </>
-      }
-    />
-  );
+	const { open, options, onActionClicked, append, prepend } = props;
+	const { formatMessage } = useIntl();
+	const theme = useTheme();
+	const isDarkMode = theme.palette.mode === 'dark';
+	return (
+		<Snackbar
+			anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+			open={open}
+			sx={{
+				zIndex: theme.zIndex.modal,
+				'& .MuiSnackbarContent-root': {
+					backgroundColor: palette.blue.highlightHex,
+					color: palette.black,
+					borderRadius: '6px',
+					padding: '0 10px',
+					minWidth: 'unset'
+				},
+				'& .MuiSnackbarContent-message': {
+					display: 'flex',
+					padding: 0
+				}
+			}}
+			message={
+				<>
+					{prepend}
+					<List
+						sx={{
+							display: 'flex',
+							flexDirection: 'row',
+							padding: 0
+						}}
+					>
+						{options ? (
+							options.length ? (
+								options.map((option) => (
+									<Button
+										size="small"
+										variant="text"
+										color="primary"
+										key={option.id}
+										onClick={(e) => onActionClicked(option.id, e)}
+									>
+										<ListItemText primary={option.label} />
+									</Button>
+								))
+							) : (
+								<ListItem>
+									<ListItemText primary={formatMessage(messages.noOptionsAvailable)} />
+								</ListItem>
+							)
+						) : (
+							new Array(5).fill(null).map((_, index) => (
+								<ListItem
+									key={index}
+									disableGutters
+									sx={{
+										width: 'fit-content',
+										padding: '0 10px'
+									}}
+								>
+									<ListItemText
+										primary={
+											<Skeleton
+												animation="pulse"
+												height="10px"
+												width={`${rand(60, 80)}px`}
+												sx={{ backgroundColor: isDarkMode && palette.gray.light5 }}
+											/>
+										}
+									/>
+								</ListItem>
+							))
+						)}
+						{append}
+					</List>
+				</>
+			}
+		/>
+	);
 }
 
 export default ItemActionsSnackbar;

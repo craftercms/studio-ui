@@ -25,57 +25,57 @@ import ConfirmDropdown from '../ConfirmDropdown';
 import { useUnmount } from '../../hooks/useUnmount';
 
 export function ConfigurationSamplePreviewDialogContainer(props: ConfigurationSamplePreviewDialogProps) {
-  const { content, onClose, onClosed, onUseSampleClick } = props;
-  useUnmount(onClosed);
-  return (
-    <>
-      <DialogHeader
-        title={<FormattedMessage id="configurationSamplePreviewDialog.title" defaultMessage="Sample File" />}
-        onCloseButtonClick={onClose}
-      />
-      <DialogBody style={{ height: '60vh', padding: 0 }}>
-        <AceEditor
-          sxs={{
-            editorRoot: {
-              margin: '0',
-              border: 0,
-              width: '100%',
-              height: '100%'
-            }
-          }}
-          value={content}
-          mode="ace/mode/yaml"
-          theme="ace/theme/textmate"
-          autoFocus={true}
-          readOnly={true}
-        />
-      </DialogBody>
-      <DialogFooter>
-        <ConfirmDropdown
-          text={
-            <FormattedMessage
-              id="configurationSamplePreviewDialog.useSampleContent"
-              defaultMessage="Use Sample Content"
-            />
-          }
-          cancelText={
-            <FormattedMessage
-              id="configurationSamplePreviewDialog.replaceContent"
-              defaultMessage="Replace current content"
-            />
-          }
-          confirmText={
-            <FormattedMessage
-              id="configurationSamplePreviewDialog.appendContent"
-              defaultMessage="Append after current content"
-            />
-          }
-          onConfirm={() => onUseSampleClick('append')}
-          onCancel={() => onUseSampleClick('replace')}
-        />
-      </DialogFooter>
-    </>
-  );
+	const { content, onClose, onClosed, onUseSampleClick } = props;
+	useUnmount(onClosed);
+	return (
+		<>
+			<DialogHeader
+				title={<FormattedMessage id="configurationSamplePreviewDialog.title" defaultMessage="Sample File" />}
+				onCloseButtonClick={onClose}
+			/>
+			<DialogBody style={{ height: '60vh', padding: 0 }}>
+				<AceEditor
+					sxs={{
+						editorRoot: {
+							margin: '0',
+							border: 0,
+							width: '100%',
+							height: '100%'
+						}
+					}}
+					value={content}
+					mode="ace/mode/yaml"
+					theme="ace/theme/textmate"
+					autoFocus={true}
+					readOnly={true}
+				/>
+			</DialogBody>
+			<DialogFooter>
+				<ConfirmDropdown
+					text={
+						<FormattedMessage
+							id="configurationSamplePreviewDialog.useSampleContent"
+							defaultMessage="Use Sample Content"
+						/>
+					}
+					cancelText={
+						<FormattedMessage
+							id="configurationSamplePreviewDialog.replaceContent"
+							defaultMessage="Replace current content"
+						/>
+					}
+					confirmText={
+						<FormattedMessage
+							id="configurationSamplePreviewDialog.appendContent"
+							defaultMessage="Append after current content"
+						/>
+					}
+					onConfirm={() => onUseSampleClick('append')}
+					onCancel={() => onUseSampleClick('replace')}
+				/>
+			</DialogFooter>
+		</>
+	);
 }
 
 export default ConfigurationSamplePreviewDialogContainer;

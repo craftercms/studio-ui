@@ -22,33 +22,33 @@ import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import StandardAction from '../../models/StandardAction';
 
 export interface PackageDetailsDialogBaseProps {
-  packageId: number;
+	packageId: number;
 }
 
 export interface PackageDetailsDialogProps extends PackageDetailsDialogBaseProps, EnhancedDialogProps {}
 
 export interface PackageDetailsDialogStateProps extends PackageDetailsDialogBaseProps, EnhancedDialogState {
-  onClose?: StandardAction;
-  onClosed?: StandardAction;
+	onClose?: StandardAction;
+	onClosed?: StandardAction;
 }
 
 export function PackageDetailsDialog(props: PackageDetailsDialogProps) {
-  const { packageId, ...enhancedDialogProps } = props;
-  return (
-    <EnhancedDialog
-      fullWidth
-      maxWidth="lg"
-      {...enhancedDialogProps}
-      title={
-        <FormattedMessage
-          id="packageDetailsDialog.packageDetailsDialogTitle"
-          defaultMessage="Publishing Package Details"
-        />
-      }
-    >
-      <PackageDetailsDialogContainer packageId={packageId} />
-    </EnhancedDialog>
-  );
+	const { packageId, ...enhancedDialogProps } = props;
+	return (
+		<EnhancedDialog
+			fullWidth
+			maxWidth="lg"
+			{...enhancedDialogProps}
+			title={
+				<FormattedMessage
+					id="packageDetailsDialog.packageDetailsDialogTitle"
+					defaultMessage="Publishing Package Details"
+				/>
+			}
+		>
+			<PackageDetailsDialogContainer packageId={packageId} />
+		</EnhancedDialog>
+	);
 }
 
 export default PackageDetailsDialog;

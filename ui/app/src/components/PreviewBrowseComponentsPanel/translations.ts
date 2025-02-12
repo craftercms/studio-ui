@@ -17,35 +17,35 @@
 import { defineMessages } from 'react-intl';
 
 export const translations = defineMessages({
-  browse: {
-    // Translation not used in code but powers i18n for `ui.xml`
-    id: 'previewBrowseComponentsPanelTitle',
-    defaultMessage: 'Existing Content'
-  },
-  noResults: {
-    id: 'previewBrowseComponentsPanel.noResults',
-    defaultMessage: ' No results found.'
-  },
-  previousPage: {
-    id: 'previewBrowseComponentsPanel.previousPage',
-    defaultMessage: 'previous page'
-  },
-  nextPage: {
-    id: 'previewBrowseComponentsPanel.nextPage',
-    defaultMessage: 'next page'
-  },
-  loading: {
-    id: 'words.loading',
-    defaultMessage: 'Loading'
-  },
-  allContentTypes: {
-    id: 'previewBrowseComponentsPanel.allContentType',
-    defaultMessage: 'All Content types'
-  },
-  filter: {
-    id: 'previewBrowseComponentsPanel.filter',
-    defaultMessage: 'Filter...'
-  }
+	browse: {
+		// Translation not used in code but powers i18n for `ui.xml`
+		id: 'previewBrowseComponentsPanelTitle',
+		defaultMessage: 'Existing Content'
+	},
+	noResults: {
+		id: 'previewBrowseComponentsPanel.noResults',
+		defaultMessage: ' No results found.'
+	},
+	previousPage: {
+		id: 'previewBrowseComponentsPanel.previousPage',
+		defaultMessage: 'previous page'
+	},
+	nextPage: {
+		id: 'previewBrowseComponentsPanel.nextPage',
+		defaultMessage: 'next page'
+	},
+	loading: {
+		id: 'words.loading',
+		defaultMessage: 'Loading'
+	},
+	allContentTypes: {
+		id: 'previewBrowseComponentsPanel.allContentType',
+		defaultMessage: 'All Content types'
+	},
+	filter: {
+		id: 'previewBrowseComponentsPanel.filter',
+		defaultMessage: 'Filter...'
+	}
 });
 
 export default translations;

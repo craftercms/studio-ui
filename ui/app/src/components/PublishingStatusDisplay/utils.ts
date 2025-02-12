@@ -19,142 +19,142 @@ import { defineMessages, IntlShape } from 'react-intl';
 import { nnou, nou } from '../../utils/object';
 
 export const publishingStatusMessages = defineMessages({
-  ready: {
-    id: 'words.ready',
-    defaultMessage: 'Ready'
-  },
-  processing: {
-    id: 'words.processing',
-    defaultMessage: 'Processing'
-  },
-  publishing: {
-    id: 'words.publishing',
-    defaultMessage: 'Publishing'
-  },
-  queued: {
-    id: 'words.queued',
-    defaultMessage: 'Queued'
-  },
-  stopped: {
-    id: 'words.stopped',
-    defaultMessage: 'Stopped'
-  },
-  error: {
-    id: 'words.error',
-    defaultMessage: 'Error'
-  },
-  readyWithErrors: { defaultMessage: 'Ready' },
-  disabled: {
-    id: 'words.disabled',
-    defaultMessage: 'Disabled'
-  },
-  unknown: {
-    id: 'words.unknown',
-    defaultMessage: 'Unknown'
-  },
-  publishingMessage: {
-    id: 'publishingStatusMessages.publishingMessage',
-    defaultMessage: 'Publishing items. Package id is {submissionId}.'
-  },
-  stoppedMessage: {
-    id: 'publishingStatusMessages.stoppedMessage',
-    defaultMessage: 'The publisher was stopped by an administrator.'
-  },
-  errorMessage: {
-    id: 'publishingStatusMessages.errorMessage',
-    defaultMessage: 'The publisher was stopped due to an error.'
-  },
-  refresh: {
-    id: 'words.refresh',
-    defaultMessage: 'Refresh'
-  },
-  unlock: {
-    id: 'words.unlock',
-    defaultMessage: 'Unlock'
-  },
-  start: {
-    id: 'words.start',
-    defaultMessage: 'Start'
-  },
-  stop: {
-    id: 'words.stop',
-    defaultMessage: 'Stop'
-  },
-  publishingStatus: {
-    id: 'publishingStatusMessages.publishingStatus',
-    defaultMessage: 'Publishing Status'
-  },
-  lockOwner: {
-    id: 'publishingStatusMessages.lockOwnerDisplayMessage',
-    defaultMessage: 'Locked by {lockOwner}'
-  },
-  lockTTL: {
-    id: 'publishingStatusMessages.lockTTLMessage',
-    defaultMessage: 'TTL {lockTTL}'
-  },
-  disabledMessage: {
-    id: 'publishingStatusMessages.isDisabledMessage',
-    defaultMessage: 'The publisher is disabled.'
-  },
-  yes: {
-    id: 'words.yes',
-    defaultMessage: 'Yes'
-  },
-  no: {
-    id: 'words.no',
-    defaultMessage: 'No'
-  },
-  confirmUnlockPublisher: {
-    id: 'publishingStatusMessages.confirmUnlockPublisher',
-    defaultMessage: 'Confirm you wish to unlock the publisher?'
-  }
+	ready: {
+		id: 'words.ready',
+		defaultMessage: 'Ready'
+	},
+	processing: {
+		id: 'words.processing',
+		defaultMessage: 'Processing'
+	},
+	publishing: {
+		id: 'words.publishing',
+		defaultMessage: 'Publishing'
+	},
+	queued: {
+		id: 'words.queued',
+		defaultMessage: 'Queued'
+	},
+	stopped: {
+		id: 'words.stopped',
+		defaultMessage: 'Stopped'
+	},
+	error: {
+		id: 'words.error',
+		defaultMessage: 'Error'
+	},
+	readyWithErrors: { defaultMessage: 'Ready' },
+	disabled: {
+		id: 'words.disabled',
+		defaultMessage: 'Disabled'
+	},
+	unknown: {
+		id: 'words.unknown',
+		defaultMessage: 'Unknown'
+	},
+	publishingMessage: {
+		id: 'publishingStatusMessages.publishingMessage',
+		defaultMessage: 'Publishing items. Package id is {submissionId}.'
+	},
+	stoppedMessage: {
+		id: 'publishingStatusMessages.stoppedMessage',
+		defaultMessage: 'The publisher was stopped by an administrator.'
+	},
+	errorMessage: {
+		id: 'publishingStatusMessages.errorMessage',
+		defaultMessage: 'The publisher was stopped due to an error.'
+	},
+	refresh: {
+		id: 'words.refresh',
+		defaultMessage: 'Refresh'
+	},
+	unlock: {
+		id: 'words.unlock',
+		defaultMessage: 'Unlock'
+	},
+	start: {
+		id: 'words.start',
+		defaultMessage: 'Start'
+	},
+	stop: {
+		id: 'words.stop',
+		defaultMessage: 'Stop'
+	},
+	publishingStatus: {
+		id: 'publishingStatusMessages.publishingStatus',
+		defaultMessage: 'Publishing Status'
+	},
+	lockOwner: {
+		id: 'publishingStatusMessages.lockOwnerDisplayMessage',
+		defaultMessage: 'Locked by {lockOwner}'
+	},
+	lockTTL: {
+		id: 'publishingStatusMessages.lockTTLMessage',
+		defaultMessage: 'TTL {lockTTL}'
+	},
+	disabledMessage: {
+		id: 'publishingStatusMessages.isDisabledMessage',
+		defaultMessage: 'The publisher is disabled.'
+	},
+	yes: {
+		id: 'words.yes',
+		defaultMessage: 'Yes'
+	},
+	no: {
+		id: 'words.no',
+		defaultMessage: 'No'
+	},
+	confirmUnlockPublisher: {
+		id: 'publishingStatusMessages.confirmUnlockPublisher',
+		defaultMessage: 'Confirm you wish to unlock the publisher?'
+	}
 });
 
 export function getPublishingStatusState(status: PublishingStatus): string {
-  let publishingStatusState: string;
-  if (nnou(status.currentTask)) {
-    publishingStatusState = 'publishing';
-  } else if (status.enabled) {
-    publishingStatusState = 'ready';
-  } else if (!status.enabled) {
-    publishingStatusState = 'stopped';
-  }
-  return publishingStatusState;
+	let publishingStatusState: string;
+	if (nnou(status.currentTask)) {
+		publishingStatusState = 'publishing';
+	} else if (status.enabled) {
+		publishingStatusState = 'ready';
+	} else if (!status.enabled) {
+		publishingStatusState = 'stopped';
+	}
+	return publishingStatusState;
 }
 
 export function getPublishingStatusText(status: PublishingStatus, formatMessage: IntlShape['formatMessage']): string {
-  if (!status.enabled) {
-    return formatMessage(publishingStatusMessages.disabled);
-  }
-  const publishingStatusState = getPublishingStatusState(status);
-  return formatMessage(publishingStatusMessages[publishingStatusState] ?? publishingStatusMessages.unknown);
+	if (!status.enabled) {
+		return formatMessage(publishingStatusMessages.disabled);
+	}
+	const publishingStatusState = getPublishingStatusState(status);
+	return formatMessage(publishingStatusMessages[publishingStatusState] ?? publishingStatusMessages.unknown);
 }
 
 export function getPublishingStatusMessage(props: PublishingStatus, formatMessage: IntlShape['formatMessage']): string {
-  if (nou(props.enabled)) {
-    return formatMessage({ defaultMessage: 'The publisher status details did not load correctly.' });
-  }
+	if (nou(props.enabled)) {
+		return formatMessage({ defaultMessage: 'The publisher status details did not load correctly.' });
+	}
 
-  const publishingStatusState = getPublishingStatusState(props);
-  switch (publishingStatusState) {
-    case 'ready':
-      return formatMessage(publishingStatusMessages.ready);
-    case 'publishing':
-      return formatMessage(publishingStatusMessages.publishingMessage, {
-        submissionId: props.currentTask?.taskId?.packageId ?? 12
-      });
-    case 'stopped':
-      return formatMessage(publishingStatusMessages.stoppedMessage);
-    default:
-      return formatMessage(publishingStatusMessages.stoppedMessage);
-  }
-  // region Compiler hints
-  // Var below is for typescript to complain if we ever add/remove codes.
-  // eslint-disable-next-line no-unreachable,@typescript-eslint/no-unused-vars
-  const control: Record<PublishingStatusCodes, any> = {
-    publishing: undefined,
-    ready: undefined,
-    stopped: undefined
-  };
-  // endregion
+	const publishingStatusState = getPublishingStatusState(props);
+	switch (publishingStatusState) {
+		case 'ready':
+			return formatMessage(publishingStatusMessages.ready);
+		case 'publishing':
+			return formatMessage(publishingStatusMessages.publishingMessage, {
+				submissionId: props.currentTask?.taskId?.packageId ?? 12
+			});
+		case 'stopped':
+			return formatMessage(publishingStatusMessages.stoppedMessage);
+		default:
+			return formatMessage(publishingStatusMessages.stoppedMessage);
+	}
+	// region Compiler hints
+	// Var below is for typescript to complain if we ever add/remove codes.
+	// eslint-disable-next-line no-unreachable,@typescript-eslint/no-unused-vars
+	const control: Record<PublishingStatusCodes, any> = {
+		publishing: undefined,
+		ready: undefined,
+		stopped: undefined
+	};
+	// endregion
 }

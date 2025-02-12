@@ -15,11 +15,11 @@
  */
 
 export interface ContentTypeDropTarget {
-  modelId: string;
-  fieldId: string;
-  label: string;
-  id: number;
-  contentTypeId: string;
+	modelId: string;
+	fieldId: string;
+	label: string;
+	id: number;
+	contentTypeId: string;
 
-  [prop: string]: any;
+	[prop: string]: any;
 }

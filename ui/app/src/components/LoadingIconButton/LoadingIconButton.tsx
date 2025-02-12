@@ -18,26 +18,26 @@ import React from 'react';
 import LoadingButton, { LoadingButtonProps } from '@mui/lab/LoadingButton';
 
 export function LoadingIconButton(props: LoadingButtonProps) {
-  const { sx, ...rest } = props;
+	const { sx, ...rest } = props;
 
-  return (
-    <LoadingButton
-      {...rest}
-      sx={{
-        borderRadius: '50%',
-        padding: '8px',
-        minWidth: 0,
-        color: (theme) => (theme.palette.mode === 'dark' ? 'white' : theme.palette.grey[600]),
-        '&:hover': {
-          backgroundColor: (theme) =>
-            theme.palette.mode === 'dark' ? theme.palette.grey[800] : theme.palette.grey[100]
-        },
-        ...sx
-      }}
-    >
-      {props.children}
-    </LoadingButton>
-  );
+	return (
+		<LoadingButton
+			{...rest}
+			sx={{
+				borderRadius: '50%',
+				padding: '8px',
+				minWidth: 0,
+				color: (theme) => (theme.palette.mode === 'dark' ? 'white' : theme.palette.grey[600]),
+				'&:hover': {
+					backgroundColor: (theme) =>
+						theme.palette.mode === 'dark' ? theme.palette.grey[800] : theme.palette.grey[100]
+				},
+				...sx
+			}}
+		>
+			{props.children}
+		</LoadingButton>
+	);
 }
 
 export default LoadingIconButton;

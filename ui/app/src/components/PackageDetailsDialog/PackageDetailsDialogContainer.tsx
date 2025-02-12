@@ -22,12 +22,12 @@ import PackageDetails from './PackageDetails';
 export interface PackageDetailsDialogContainerProps extends Pick<PackageDetailsDialogProps, 'packageId'> {}
 
 export function PackageDetailsDialogContainer(props: PackageDetailsDialogContainerProps) {
-  const { packageId } = props;
-  return (
-    <DialogBody sx={{ px: 4 }}>
-      <PackageDetails packageId={packageId} />
-    </DialogBody>
-  );
+	const { packageId } = props;
+	return (
+		<DialogBody sx={{ px: 4 }}>
+			<PackageDetails packageId={packageId} />
+		</DialogBody>
+	);
 }
 
 export default PackageDetailsDialogContainer;

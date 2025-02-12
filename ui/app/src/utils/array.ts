@@ -18,53 +18,53 @@ import LookupTable from '../models/LookupTable';
 import { PagedArray } from '../models';
 
 export function forEach<T = any, R = undefined>(
-  array: T[],
-  fn: (item: T, index: number, array: T[]) => R | 'continue' | 'break' | undefined,
-  emptyReturnValue?: R
+	array: T[],
+	fn: (item: T, index: number, array: T[]) => R | 'continue' | 'break' | undefined,
+	emptyReturnValue?: R
 ): R {
-  if (emptyReturnValue != null && array?.length === 0) {
-    return emptyReturnValue;
-  }
-  for (let i = 0, l = array.length; i < l; i++) {
-    const result = fn(array[i], i, array);
-    if (result !== 'continue') {
-      if (result === 'break') {
-        break;
-      } else if (result !== undefined) {
-        return result;
-      }
-    }
-  }
-  return emptyReturnValue;
+	if (emptyReturnValue != null && array?.length === 0) {
+		return emptyReturnValue;
+	}
+	for (let i = 0, l = array.length; i < l; i++) {
+		const result = fn(array[i], i, array);
+		if (result !== 'continue') {
+			if (result === 'break') {
+				break;
+			} else if (result !== undefined) {
+				return result;
+			}
+		}
+	}
+	return emptyReturnValue;
 }
 
 export function asArray<T = unknown>(value: T | T[]): T[] {
-  return Boolean(value) ? (Array.isArray(value) ? value : [value]) : [];
+	return Boolean(value) ? (Array.isArray(value) ? value : [value]) : [];
 }
 
 export function createPresenceTable(list: string[]): LookupTable<boolean>;
 export function createPresenceTable<T extends string | number | boolean>(list: string[], value: T): LookupTable<T>;
 export function createPresenceTable<T extends any>(
-  list: string[],
-  valueGenerator: (listItem: string) => T
+	list: string[],
+	valueGenerator: (listItem: string) => T
 ): LookupTable<T>;
 export function createPresenceTable<T extends any = boolean, K extends any = ''>(
-  list: K[],
-  valueOrGenerator: string | number | boolean | ((listItem: string) => T),
-  itemKeyGenerator: (value: K) => string
+	list: K[],
+	valueOrGenerator: string | number | boolean | ((listItem: string) => T),
+	itemKeyGenerator: (value: K) => string
 ): LookupTable<T>;
 export function createPresenceTable<T extends any = boolean, K extends any = ''>(
-  list: K[],
-  valueOrGenerator: string | number | boolean | ((listItem: string) => T) = true,
-  itemKeyGenerator: (value: K) => string = (value) => value as string
+	list: K[],
+	valueOrGenerator: string | number | boolean | ((listItem: string) => T) = true,
+	itemKeyGenerator: (value: K) => string = (value) => value as string
 ): LookupTable<T> {
-  const table = {};
-  const callback =
-    typeof valueOrGenerator === 'function'
-      ? (value) => (table[itemKeyGenerator(value)] = valueOrGenerator(value))
-      : (value) => (table[itemKeyGenerator(value)] = valueOrGenerator);
-  list.forEach(callback);
-  return table;
+	const table = {};
+	const callback =
+		typeof valueOrGenerator === 'function'
+			? (value) => (table[itemKeyGenerator(value)] = valueOrGenerator(value))
+			: (value) => (table[itemKeyGenerator(value)] = valueOrGenerator);
+	list.forEach(callback);
+	return table;
 }
 
 /**
@@ -74,16 +74,16 @@ export function createPresenceTable<T extends any = boolean, K extends any = ''>
  * @param b
  */
 export function mergeArraysAlternatively(a: string[], b: string[]): string[] {
-  return (a.length > b.length ? a : b).reduce(
-    (acc, cur, i) => (a[i] && b[i] ? [...acc, a[i], b[i]] : [...acc, cur]),
-    []
-  );
+	return (a.length > b.length ? a : b).reduce(
+		(acc, cur, i) => (a[i] && b[i] ? [...acc, a[i], b[i]] : [...acc, cur]),
+		[]
+	);
 }
 
 export function createPagedArray<T = any>(array: T[], response): PagedArray<T> {
-  return Object.assign(array, {
-    total: response.total,
-    offset: response.offset,
-    limit: response.limit
-  });
+	return Object.assign(array, {
+		total: response.total,
+		offset: response.offset,
+		limit: response.limit
+	});
 }

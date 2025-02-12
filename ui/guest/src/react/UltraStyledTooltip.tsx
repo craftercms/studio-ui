@@ -17,15 +17,15 @@
 import { Tooltip, TooltipProps } from '@mui/material';
 
 export const UltraStyledTooltip = (props: TooltipProps) => {
-  return (
-    <Tooltip
-      {...props}
-      slotProps={{
-        ...props?.slotProps,
-        tooltip: { ...props.slotProps?.tooltip, sx: { ...props.slotProps?.tooltip?.sx, fontSize: 12 } }
-      }}
-    />
-  );
+	return (
+		<Tooltip
+			{...props}
+			slotProps={{
+				...props?.slotProps,
+				tooltip: { ...props.slotProps?.tooltip, sx: { ...props.slotProps?.tooltip?.sx, fontSize: 12 } }
+			}}
+		/>
+	);
 };
 
 export default UltraStyledTooltip;

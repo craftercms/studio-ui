@@ -24,42 +24,42 @@ import { Interpolation } from '@emotion/styled';
 import { typographyStyles } from './typography';
 
 export interface GlobalStylesProps {
-  cssBaseline?: boolean;
+	cssBaseline?: boolean;
 }
 
 export function GlobalStyles(props: GlobalStylesProps) {
-  const { cssBaseline = true } = props;
-  const theme = useTheme();
-  const dynamicStyles = useMemo(
-    () =>
-      ({
-        body: { background: theme.palette.background.paper },
-        '.minimized-bar-portal-root': {
-          right: '0',
-          bottom: '20px',
-          display: 'flex',
-          position: 'fixed',
-          flexDirection: 'row-reverse',
-          width: '100%',
-          overflow: 'auto',
-          padding: '2px 20px',
-          zIndex: theme.zIndex.modal,
-          pointerEvents: 'none',
-          '& > *': {
-            pointerEvents: 'all'
-          }
-        }
-      }) as Interpolation<Theme>,
-    [theme.palette.background.paper, theme.zIndex.modal]
-  );
-  return (
-    <>
-      {cssBaseline && <CssBaseline enableColorScheme />}
-      <Global styles={dynamicStyles} />
-      <Global styles={staticGlobalStyles} />
-      <Global styles={typographyStyles} />
-    </>
-  );
+	const { cssBaseline = true } = props;
+	const theme = useTheme();
+	const dynamicStyles = useMemo(
+		() =>
+			({
+				body: { background: theme.palette.background.paper },
+				'.minimized-bar-portal-root': {
+					right: '0',
+					bottom: '20px',
+					display: 'flex',
+					position: 'fixed',
+					flexDirection: 'row-reverse',
+					width: '100%',
+					overflow: 'auto',
+					padding: '2px 20px',
+					zIndex: theme.zIndex.modal,
+					pointerEvents: 'none',
+					'& > *': {
+						pointerEvents: 'all'
+					}
+				}
+			}) as Interpolation<Theme>,
+		[theme.palette.background.paper, theme.zIndex.modal]
+	);
+	return (
+		<>
+			{cssBaseline && <CssBaseline enableColorScheme />}
+			<Global styles={dynamicStyles} />
+			<Global styles={staticGlobalStyles} />
+			<Global styles={typographyStyles} />
+		</>
+	);
 }
 
 export default GlobalStyles;

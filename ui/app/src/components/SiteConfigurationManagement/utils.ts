@@ -15,9 +15,9 @@
  */
 
 export function findPendingEncryption(tags): { tag: Element; text: string }[] {
-  const items = [];
-  tags.forEach((tag) => {
-    tag.getAttribute('encrypted') === '' && items.push({ tag: tag, text: tag.innerHTML.trim() });
-  });
-  return items;
+	const items = [];
+	tags.forEach((tag) => {
+		tag.getAttribute('encrypted') === '' && items.push({ tag: tag, text: tag.innerHTML.trim() });
+	});
+	return items;
 }

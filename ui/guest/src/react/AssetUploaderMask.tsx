@@ -18,29 +18,29 @@ import React, { CSSProperties, useEffect, useState } from 'react';
 import { getZoneMarkerStyle } from '../utils/dom';
 
 export interface AssetUploaderMaskProps {
-  rect?: DOMRect;
-  label?: string;
-  id?: number;
-  key?: number;
-  progress?: number;
+	rect?: DOMRect;
+	label?: string;
+	id?: number;
+	key?: number;
+	progress?: number;
 }
 
 export function AssetUploaderMask(props: AssetUploaderMaskProps) {
-  const { rect, progress } = props,
-    [zoneStyle, setZoneStyle] = useState<CSSProperties>();
+	const { rect, progress } = props,
+		[zoneStyle, setZoneStyle] = useState<CSSProperties>();
 
-  useEffect(() => {
-    setZoneStyle(getZoneMarkerStyle(rect));
-  }, [rect]);
+	useEffect(() => {
+		setZoneStyle(getZoneMarkerStyle(rect));
+	}, [rect]);
 
-  return (
-    // @ts-expect-error craftercms-asset-uploader-mask-container does not exist on type JSX.IntrinsicElements
-    <craftercms-asset-uploader-mask-container style={zoneStyle}>
-      {/* @ts-expect-error craftercms-asset-uploader-mask does not exist on type JSX.IntrinsicElements */}
-      <craftercms-asset-uploader-mask style={{ height: `${100 - progress}%` }} />
-      {/* @ts-expect-error craftercms-asset-uploader-mask-container does not exist on type JSX.IntrinsicElements */}
-    </craftercms-asset-uploader-mask-container>
-  );
+	return (
+		// @ts-expect-error craftercms-asset-uploader-mask-container does not exist on type JSX.IntrinsicElements
+		<craftercms-asset-uploader-mask-container style={zoneStyle}>
+			{/* @ts-expect-error craftercms-asset-uploader-mask does not exist on type JSX.IntrinsicElements */}
+			<craftercms-asset-uploader-mask style={{ height: `${100 - progress}%` }} />
+			{/* @ts-expect-error craftercms-asset-uploader-mask-container does not exist on type JSX.IntrinsicElements */}
+		</craftercms-asset-uploader-mask-container>
+	);
 }
 
 export default AssetUploaderMask;

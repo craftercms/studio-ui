@@ -29,72 +29,72 @@ import { Theme } from '@mui/material';
 export type PublishingStatusTileClassKey = 'root' | 'avatar' | 'text';
 
 export interface PublishingStatusTileProps extends React.HTMLAttributes<HTMLDivElement | HTMLButtonElement> {
-  publishingStatus: PublishingStatus;
-  isFetching?: boolean;
-  classes?: Partial<Record<PublishingStatusTileClassKey, string>>;
-  sxs?: PartialSxRecord<PublishingStatusTileClassKey>;
+	publishingStatus: PublishingStatus;
+	isFetching?: boolean;
+	classes?: Partial<Record<PublishingStatusTileClassKey, string>>;
+	sxs?: PartialSxRecord<PublishingStatusTileClassKey>;
 }
 
 const PublishingStatusTile = React.forwardRef<HTMLDivElement | HTMLButtonElement, PublishingStatusTileProps>(
-  function (props, ref) {
-    const { formatMessage } = useIntl();
-    const { publishingStatus, onClick, isFetching, sxs, ...rest } = props;
-    const status = getPublishingStatusState(publishingStatus);
-    const statusText = getPublishingStatusText(publishingStatus, formatMessage);
-    return (
-      <Box
-        component={onClick ? 'button' : 'div'}
-        ref={ref}
-        {...rest}
-        onClick={onClick}
-        className={[!isFetching && status, props.classes?.root].filter(Boolean).join(' ')}
-        sx={(theme) => ({
-          width: '120px',
-          height: '100px',
-          display: 'flex',
-          alignItems: 'center',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          textAlign: 'center',
-          border: 'none',
-          borderRadius: '4px',
-          borderTop: 'none',
-          background: theme.palette.background.paper,
-          margin: '5px',
-          'button&': {
-            cursor: 'pointer',
-            '&:hover, &:focus': {
-              background: theme.palette.action.hover,
-              boxShadow: theme.shadows[2]
-            }
-          },
-          ...(sxs?.root as SystemStyleObject<Theme>)
-        })}
-      >
-        <PublishingStatusAvatar
-          enabled={publishingStatus.enabled}
-          status={isFetching ? null : status}
-          className={props.classes?.avatar}
-          sx={{
-            margin: '5px',
-            ...sxs?.avatar
-          }}
-        />
-        <Typography
-          className={props.classes?.text}
-          sx={{
-            width: '100%',
-            ...sxs?.text
-          }}
-          noWrap
-          title={statusText}
-          color="textPrimary"
-        >
-          {isFetching ? <Skeleton /> : statusText}
-        </Typography>
-      </Box>
-    );
-  }
+	function (props, ref) {
+		const { formatMessage } = useIntl();
+		const { publishingStatus, onClick, isFetching, sxs, ...rest } = props;
+		const status = getPublishingStatusState(publishingStatus);
+		const statusText = getPublishingStatusText(publishingStatus, formatMessage);
+		return (
+			<Box
+				component={onClick ? 'button' : 'div'}
+				ref={ref}
+				{...rest}
+				onClick={onClick}
+				className={[!isFetching && status, props.classes?.root].filter(Boolean).join(' ')}
+				sx={(theme) => ({
+					width: '120px',
+					height: '100px',
+					display: 'flex',
+					alignItems: 'center',
+					flexDirection: 'column',
+					justifyContent: 'center',
+					textAlign: 'center',
+					border: 'none',
+					borderRadius: '4px',
+					borderTop: 'none',
+					background: theme.palette.background.paper,
+					margin: '5px',
+					'button&': {
+						cursor: 'pointer',
+						'&:hover, &:focus': {
+							background: theme.palette.action.hover,
+							boxShadow: theme.shadows[2]
+						}
+					},
+					...(sxs?.root as SystemStyleObject<Theme>)
+				})}
+			>
+				<PublishingStatusAvatar
+					enabled={publishingStatus.enabled}
+					status={isFetching ? null : status}
+					className={props.classes?.avatar}
+					sx={{
+						margin: '5px',
+						...sxs?.avatar
+					}}
+				/>
+				<Typography
+					className={props.classes?.text}
+					sx={{
+						width: '100%',
+						...sxs?.text
+					}}
+					noWrap
+					title={statusText}
+					color="textPrimary"
+				>
+					{isFetching ? <Skeleton /> : statusText}
+				</Typography>
+			</Box>
+		);
+	}
 );
 
 export default PublishingStatusTile;

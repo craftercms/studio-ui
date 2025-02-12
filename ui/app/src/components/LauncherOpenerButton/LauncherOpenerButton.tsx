@@ -25,43 +25,43 @@ import { LauncherStateProps } from '../Launcher/Launcher';
 import AppsRounded from '@mui/icons-material/AppsRounded';
 
 const messages = defineMessages({
-  menu: {
-    id: 'launcherOpenerButton.menuTooltip',
-    defaultMessage: 'Navigation Menu'
-  },
-  openDrawer: {
-    id: 'launcherOpenerButton.openMenuButtonText',
-    defaultMessage: 'Open Menu'
-  }
+	menu: {
+		id: 'launcherOpenerButton.menuTooltip',
+		defaultMessage: 'Navigation Menu'
+	},
+	openDrawer: {
+		id: 'launcherOpenerButton.openMenuButtonText',
+		defaultMessage: 'Open Menu'
+	}
 });
 
 let instanceCount = 0;
 
 interface LauncherOpenerButtonProps {
-  icon?: 'logo' | 'apps';
-  sitesRailPosition?: LauncherStateProps['sitesRailPosition'];
-  closeButtonPosition?: LauncherStateProps['closeButtonPosition'];
+	icon?: 'logo' | 'apps';
+	sitesRailPosition?: LauncherStateProps['sitesRailPosition'];
+	closeButtonPosition?: LauncherStateProps['closeButtonPosition'];
 }
 
 export function LauncherOpenerButton(props: LauncherOpenerButtonProps) {
-  const { icon = 'apps', ...launcherProps } = props;
-  const { formatMessage } = useIntl();
-  const id = useMemo(() => `toolbarLauncherButton${instanceCount++}`, []);
-  const dispatch = useDispatch();
-  const onMenuClick = () => dispatch(showLauncher({ anchor: `#${id}`, ...launcherProps }));
-  return (
-    <Tooltip title={formatMessage(messages.menu)}>
-      <IconButton
-        id={id}
-        aria-label={formatMessage(messages.openDrawer)}
-        onClick={onMenuClick}
-        sx={icon === 'logo' ? { padding: '7px' } : void 0}
-        size="large"
-      >
-        {icon === 'logo' ? <CrafterCMSIcon sxs={{ root: { fontSize: '1.4em' } }} /> : <AppsRounded />}
-      </IconButton>
-    </Tooltip>
-  );
+	const { icon = 'apps', ...launcherProps } = props;
+	const { formatMessage } = useIntl();
+	const id = useMemo(() => `toolbarLauncherButton${instanceCount++}`, []);
+	const dispatch = useDispatch();
+	const onMenuClick = () => dispatch(showLauncher({ anchor: `#${id}`, ...launcherProps }));
+	return (
+		<Tooltip title={formatMessage(messages.menu)}>
+			<IconButton
+				id={id}
+				aria-label={formatMessage(messages.openDrawer)}
+				onClick={onMenuClick}
+				sx={icon === 'logo' ? { padding: '7px' } : void 0}
+				size="large"
+			>
+				{icon === 'logo' ? <CrafterCMSIcon sxs={{ root: { fontSize: '1.4em' } }} /> : <AppsRounded />}
+			</IconButton>
+		</Tooltip>
+	);
 }
 
 export default LauncherOpenerButton;

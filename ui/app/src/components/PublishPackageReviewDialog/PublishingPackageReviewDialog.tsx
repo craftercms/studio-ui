@@ -21,17 +21,17 @@ import { FormattedMessage } from 'react-intl';
 import PublishingPackageReviewDialogContainer from './PublishingPackageReviewDialogContainer';
 
 export function PublishingPackageReviewDialog(props: PublishingPackageReviewDialogProps) {
-  const { packageId, isSubmitting, onSuccess, ...rest } = props;
-  return (
-    <EnhancedDialog
-      title={<FormattedMessage defaultMessage="Review Publishing Package" />}
-      maxWidth="lg"
-      {...rest}
-      isSubmitting={isSubmitting}
-    >
-      <PublishingPackageReviewDialogContainer packageId={packageId} onSuccess={onSuccess} isSubmitting={isSubmitting} />
-    </EnhancedDialog>
-  );
+	const { packageId, isSubmitting, onSuccess, ...rest } = props;
+	return (
+		<EnhancedDialog
+			title={<FormattedMessage defaultMessage="Review Publishing Package" />}
+			maxWidth="lg"
+			{...rest}
+			isSubmitting={isSubmitting}
+		>
+			<PublishingPackageReviewDialogContainer packageId={packageId} onSuccess={onSuccess} isSubmitting={isSubmitting} />
+		</EnhancedDialog>
+	);
 }
 
 export default PublishingPackageReviewDialog;

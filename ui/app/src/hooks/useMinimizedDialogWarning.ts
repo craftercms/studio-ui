@@ -21,28 +21,28 @@ import infoGraphic from '../assets/information.svg';
 import { defineMessages, useIntl } from 'react-intl';
 
 const messages = defineMessages({
-  main: {
-    id: 'common.minimizedDialogSiteSwitchCheck',
-    defaultMessage: 'Please close any minimized dialogs before switching sites'
-  }
+	main: {
+		id: 'common.minimizedDialogSiteSwitchCheck',
+		defaultMessage: 'Please close any minimized dialogs before switching sites'
+	}
 });
 
 export function useMinimizedDialogWarning() {
-  const store = useStore();
-  const { formatMessage } = useIntl();
-  return () => {
-    if (hasMinimizedBar()) {
-      store.dispatch(
-        showConfirmDialog({
-          body: formatMessage(messages.main),
-          imageUrl: infoGraphic
-        })
-      );
-      return true;
-    } else {
-      return false;
-    }
-  };
+	const store = useStore();
+	const { formatMessage } = useIntl();
+	return () => {
+		if (hasMinimizedBar()) {
+			store.dispatch(
+				showConfirmDialog({
+					body: formatMessage(messages.main),
+					imageUrl: infoGraphic
+				})
+			);
+			return true;
+		} else {
+			return false;
+		}
+	};
 }
 
 export default useMinimizedDialogWarning;

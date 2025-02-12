@@ -24,53 +24,53 @@ import ItemPublishingTargetIcon from '../ItemPublishingTargetIcon';
 import React from 'react';
 
 export interface PublishPackageReviewProps {
-  publishPackage: PublishPackage;
+	publishPackage: PublishPackage;
 }
 
 const statusItems = {
-  staging: { stateMap: { staged: true } },
-  live: { stateMap: { live: true } }
+	staging: { stateMap: { staged: true } },
+	live: { stateMap: { live: true } }
 };
 
 export function PublishPackageReview(props: PublishPackageReviewProps) {
-  const { publishPackage } = props;
+	const { publishPackage } = props;
 
-  return (
-    <Box>
-      <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
-        <FormattedMessage defaultMessage="Submitter" />
-      </Typography>
-      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-        <PersonAvatar person={publishPackage.submitter} />
-        <Typography variant="body1" sx={{ ml: 1 }}>
-          {getPersonFullName(publishPackage.submitter)}
-        </Typography>
-      </Box>
-      <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
-        <FormattedMessage defaultMessage="Package Title" />
-      </Typography>
-      <Typography variant="body1" sx={{ mb: 2 }}>
-        {publishPackage.title}
-      </Typography>
-      <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
-        <FormattedMessage defaultMessage="Submission Comment" />
-      </Typography>
-      <Typography variant="body1" sx={{ mb: 2 }}>
-        {publishPackage.submitterComment || <FormattedMessage defaultMessage="No submission comment provided" />}
-      </Typography>
-      <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
-        <FormattedMessage defaultMessage="Publishing Target" />
-      </Typography>
-      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, gap: 1 }}>
-        <ItemPublishingTargetIcon item={statusItems[publishPackage.target] as SandboxItem} />
-        <Typography variant="body1" component="span">
-          {publishPackage.target === 'live' ? (
-            <FormattedMessage defaultMessage="Live" />
-          ) : (
-            <FormattedMessage defaultMessage="Staging" />
-          )}
-        </Typography>
-      </Box>
-    </Box>
-  );
+	return (
+		<Box>
+			<Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
+				<FormattedMessage defaultMessage="Submitter" />
+			</Typography>
+			<Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+				<PersonAvatar person={publishPackage.submitter} />
+				<Typography variant="body1" sx={{ ml: 1 }}>
+					{getPersonFullName(publishPackage.submitter)}
+				</Typography>
+			</Box>
+			<Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
+				<FormattedMessage defaultMessage="Package Title" />
+			</Typography>
+			<Typography variant="body1" sx={{ mb: 2 }}>
+				{publishPackage.title}
+			</Typography>
+			<Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
+				<FormattedMessage defaultMessage="Submission Comment" />
+			</Typography>
+			<Typography variant="body1" sx={{ mb: 2 }}>
+				{publishPackage.submitterComment || <FormattedMessage defaultMessage="No submission comment provided" />}
+			</Typography>
+			<Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
+				<FormattedMessage defaultMessage="Publishing Target" />
+			</Typography>
+			<Box sx={{ display: 'flex', alignItems: 'center', mb: 2, gap: 1 }}>
+				<ItemPublishingTargetIcon item={statusItems[publishPackage.target] as SandboxItem} />
+				<Typography variant="body1" component="span">
+					{publishPackage.target === 'live' ? (
+						<FormattedMessage defaultMessage="Live" />
+					) : (
+						<FormattedMessage defaultMessage="Staging" />
+					)}
+				</Typography>
+			</Box>
+		</Box>
+	);
 }

@@ -20,7 +20,7 @@ import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 export const EnhancedDialogContext = createContext<EnhancedDialogState>(void 0);
 
 export function useEnhancedDialogContext() {
-  return useContext(EnhancedDialogContext);
+	return useContext(EnhancedDialogContext);
 }
 
 export default useEnhancedDialogContext;

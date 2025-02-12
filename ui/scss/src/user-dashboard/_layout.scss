@@ -15,79 +15,79 @@
  */
 
 #container {
-  left: 0;
-  right: 0;
-  bottom: 0;
-  top: 51px;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	top: 51px;
 }
 
 .spinner-modal {
-  .modal-content {
-    background: none;
-    border: none;
-    box-shadow: none;
-    text-align: center;
+	.modal-content {
+		background: none;
+		border: none;
+		box-shadow: none;
+		text-align: center;
 
-    .modal-body {
-      .spinner {
-        font-size: 40px;
-        color: #355475;
-      }
-    }
-  }
+		.modal-body {
+			.spinner {
+				font-size: 40px;
+				color: #355475;
+			}
+		}
+	}
 }
 
 .general-view {
-  display: block;
-  overflow: hidden;
-  padding-bottom: 25px;
-  min-height: 90%;
+	display: block;
+	overflow: hidden;
+	padding-bottom: 25px;
+	min-height: 90%;
 }
 
 .footer-general {
-  clear: both;
-  width: 100%;
-  box-sizing: border-box;
-  overflow: hidden;
+	clear: both;
+	width: 100%;
+	box-sizing: border-box;
+	overflow: hidden;
 }
 
 .footer-body {
-  color: #707070;
-  min-height: 95px;
-  text-align: center;
-  padding: 20px 10px;
+	color: #707070;
+	min-height: 95px;
+	text-align: center;
+	padding: 20px 10px;
 
-  a {
-    color: #707070;
-    text-decoration: underline;
-  }
+	a {
+		color: #707070;
+		text-decoration: underline;
+	}
 
-  .crafter-studio-logo {
-    width: 110px;
-  }
+	.crafter-studio-logo {
+		width: 110px;
+	}
 }
 
 // align checkboxes with labels in studio forms groups
 .modal-body {
-  .form-group {
-    label {
-      input[type='checkbox'] {
-        position: relative;
-        top: 2px;
-        margin-right: 2px;
-      }
-    }
-  }
+	.form-group {
+		label {
+			input[type='checkbox'] {
+				position: relative;
+				top: 2px;
+				margin-right: 2px;
+			}
+		}
+	}
 }
 
 #appsIconLauncher,
 #menuBundleButton {
-  float: left;
-  height: 52px;
-  display: flex;
-  align-items: center;
+	float: left;
+	height: 52px;
+	display: flex;
+	align-items: center;
 }
 
 #appsIconLauncher {
-  float: right;
+	float: right;
 }

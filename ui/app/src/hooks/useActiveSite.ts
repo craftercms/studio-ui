@@ -20,8 +20,8 @@ import { Site } from '../models/Site';
 import useActiveSiteId from './useActiveSiteId';
 
 export function useActiveSite(): Site {
-  const id = useActiveSiteId();
-  return useSelector<GlobalState, Site>((state) => state.sites.byId[id]);
+	const id = useActiveSiteId();
+	return useSelector<GlobalState, Site>((state) => state.sites.byId[id]);
 }
 
 export default useActiveSite;

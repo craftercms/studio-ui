@@ -18,7 +18,7 @@ import GlobalState from '../models/GlobalState';
 import { useSelector } from 'react-redux';
 
 export function usePermissionsBySite(): GlobalState['user']['permissionsBySite'] {
-  return useSelector<GlobalState, GlobalState['user']['permissionsBySite']>((state) => state.user.permissionsBySite);
+	return useSelector<GlobalState, GlobalState['user']['permissionsBySite']>((state) => state.user.permissionsBySite);
 }
 
 export default usePermissionsBySite;

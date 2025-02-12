@@ -23,25 +23,25 @@ import PathNavigatorSkeletonList from './PathNavigatorSkeletonList';
 // type PathNavigatorSkeletonClassKey = 'skeletonRoot' | 'skeletonHeader' | 'skeletonBody' | 'skeletonBodyItem' | 'childrenRail';
 
 interface PathNavigatorSkeletonProps {
-  numOfItems?: number;
-  renderBody?: boolean;
+	numOfItems?: number;
+	renderBody?: boolean;
 }
 
 const PathNavigatorSkeleton = React.memo(({ numOfItems = 5, renderBody = false }: PathNavigatorSkeletonProps) => (
-  <div>
-    <Box
-      component="header"
-      sx={{
-        display: 'flex',
-        padding: '12px 18px',
-        alignItems: 'center'
-      }}
-    >
-      <Skeleton variant="rectangular" width="20px" />
-      <Skeleton variant="text" style={{ margin: '0 10px', width: `${rand(40, 70)}%` }} />
-    </Box>
-    {renderBody && <PathNavigatorSkeletonList numOfItems={numOfItems} />}
-  </div>
+	<div>
+		<Box
+			component="header"
+			sx={{
+				display: 'flex',
+				padding: '12px 18px',
+				alignItems: 'center'
+			}}
+		>
+			<Skeleton variant="rectangular" width="20px" />
+			<Skeleton variant="text" style={{ margin: '0 10px', width: `${rand(40, 70)}%` }} />
+		</Box>
+		{renderBody && <PathNavigatorSkeletonList numOfItems={numOfItems} />}
+	</div>
 ));
 
 export default PathNavigatorSkeleton;

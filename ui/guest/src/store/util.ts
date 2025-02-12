@@ -20,9 +20,9 @@ import { fetchSandboxItem, lock } from '@craftercms/studio-ui/services/content';
 import { catchError, filter, switchMap, take, tap } from 'rxjs/operators';
 import { message$, post } from '../utils/communicator';
 import {
-  requestWorkflowCancellationDialog,
-  requestWorkflowCancellationDialogOnResult,
-  snackGuestMessage
+	requestWorkflowCancellationDialog,
+	requestWorkflowCancellationDialogOnResult,
+	snackGuestMessage
 } from '@craftercms/studio-ui/state/actions/preview';
 import { unlockItem } from '@craftercms/studio-ui/state/actions/content';
 import { NEVER, Observable, of } from 'rxjs';
@@ -35,27 +35,27 @@ import { getReferentialEntries } from '../iceRegistry';
 import { extractCollectionItem } from '@craftercms/studio-ui/utils/model';
 
 export function dragOk(status): boolean {
-  return [
-    EditingStatus.SORTING_COMPONENT,
-    EditingStatus.PLACING_NEW_COMPONENT,
-    EditingStatus.PLACING_DETACHED_ASSET,
-    EditingStatus.PLACING_DETACHED_COMPONENT,
-    EditingStatus.UPLOAD_ASSET_FROM_DESKTOP
-  ].includes(status);
+	return [
+		EditingStatus.SORTING_COMPONENT,
+		EditingStatus.PLACING_NEW_COMPONENT,
+		EditingStatus.PLACING_DETACHED_ASSET,
+		EditingStatus.PLACING_DETACHED_COMPONENT,
+		EditingStatus.UPLOAD_ASSET_FROM_DESKTOP
+	].includes(status);
 }
 
 export function unwrapEvent<T extends Event>(event: SyntheticEvent | Event): T {
-  // @ts-ignore
-  return event?.originalEvent ?? event?.nativeEvent ?? event;
+	// @ts-ignore
+	return event?.originalEvent ?? event?.nativeEvent ?? event;
 }
 
 export interface BeforeWriteProps<T = 'continue', S = never> {
-  path: string;
-  site: string;
-  username: string;
-  stop$?: Observable<S> | S[];
-  continue$?: Observable<T> | T[];
-  localItem: SandboxItem;
+	path: string;
+	site: string;
+	username: string;
+	stop$?: Observable<S> | S[];
+	continue$?: Observable<T> | T[];
+	localItem: SandboxItem;
 }
 
 /**
@@ -64,36 +64,36 @@ export interface BeforeWriteProps<T = 'continue', S = never> {
  * can't continue with the target operation, it returns the `stop$` stream (never, by default).
  */
 export function beforeWrite$<T extends any = 'continue', S extends any = never>(
-  props: BeforeWriteProps<T, S>
+	props: BeforeWriteProps<T, S>
 ): Observable<T | S> {
-  const { site, username, path, continue$ = of('continue') as Observable<T>, stop$ = NEVER, localItem } = props;
-  return lock(site, path).pipe(
-    switchMap(() => fetchSandboxItem(site, path)),
-    switchMap((item) => {
-      if (item.stateMap.submitted || item.stateMap.scheduled) {
-        post(requestWorkflowCancellationDialog({ item, siteId: site }));
-        return message$.pipe(
-          filter((e) => e.type === requestWorkflowCancellationDialogOnResult.type),
-          take(1),
-          tap(({ payload }) => payload.type !== 'continue' && post(unlockItem({ path }))),
-          switchMap(({ payload }) => (payload.type === 'continue' ? continue$ : stop$))
-        );
-      } else if (item.dateModified !== localItem.dateModified && item.lockOwner?.username !== username) {
-        post(snackGuestMessage({ id: 'outOfSyncContent', level: 'suggestion' }));
-        post(unlockItem({ path }));
-        setTimeout(() => window.location.reload());
-        return stop$;
-      } else {
-        return continue$;
-      }
-    }),
-    catchError(({ response, status }) => {
-      if (status === 409) {
-        post(snackGuestMessage({ id: 'itemLocked', level: 'suggestion', values: { lockOwner: response.person } }));
-      }
-      return stop$;
-    })
-  );
+	const { site, username, path, continue$ = of('continue') as Observable<T>, stop$ = NEVER, localItem } = props;
+	return lock(site, path).pipe(
+		switchMap(() => fetchSandboxItem(site, path)),
+		switchMap((item) => {
+			if (item.stateMap.submitted || item.stateMap.scheduled) {
+				post(requestWorkflowCancellationDialog({ item, siteId: site }));
+				return message$.pipe(
+					filter((e) => e.type === requestWorkflowCancellationDialogOnResult.type),
+					take(1),
+					tap(({ payload }) => payload.type !== 'continue' && post(unlockItem({ path }))),
+					switchMap(({ payload }) => (payload.type === 'continue' ? continue$ : stop$))
+				);
+			} else if (item.dateModified !== localItem.dateModified && item.lockOwner?.username !== username) {
+				post(snackGuestMessage({ id: 'outOfSyncContent', level: 'suggestion' }));
+				post(unlockItem({ path }));
+				setTimeout(() => window.location.reload());
+				return stop$;
+			} else {
+				return continue$;
+			}
+		}),
+		catchError(({ response, status }) => {
+			if (status === 409) {
+				post(snackGuestMessage({ id: 'itemLocked', level: 'suggestion', values: { lockOwner: response.person } }));
+			}
+			return stop$;
+		})
+	);
 }
 
 /**
@@ -101,26 +101,26 @@ export function beforeWrite$<T extends any = 'continue', S extends any = never>(
  * it uses to compute the result, so they can be used by consumer if needed.
  */
 export const checkIfLockedOrModified = (state: GuestState, record: ElementRecord) => {
-  let { modelId, fieldId } = record;
-  // If the present record refers to a node selector item, we need to switch the model to that item of the collection.
-  // Otherwise, is just the model from the present record.
-  let model = getCachedModel(modelId);
-  if (fieldId.length > 0) {
-    const entries = getReferentialEntries(record.iceIds[0]);
-    if (entries.recordType === 'node-selector-item') {
-      // There can be a scenario where the node-selector item is a file. When it is, there is no model associated to
-      // that item, so we fall back to the current model.
-      model = getCachedModel(extractCollectionItem(model, fieldId[0], record.index)) ?? model;
-      modelId = model.craftercms.id;
-    }
-  }
-  const parentModelId = model.craftercms.path ? null : getParentModelId(modelId, getCachedModels(), modelHierarchyMap);
-  const parentModel = parentModelId ? getCachedModel(parentModelId) : null;
-  const path = model.craftercms.path ?? parentModel.craftercms.path;
-  const isLocked = Boolean(state.lockedPaths[path]);
-  const isLockedByCurrentUser = isLocked && state.lockedPaths[path].user.username === state.username;
-  const isExternallyModified = Boolean(state.externallyModifiedPaths[path]);
-  return { isLocked, isExternallyModified, model, parentModelId, parentModel, path, isLockedByCurrentUser };
+	let { modelId, fieldId } = record;
+	// If the present record refers to a node selector item, we need to switch the model to that item of the collection.
+	// Otherwise, is just the model from the present record.
+	let model = getCachedModel(modelId);
+	if (fieldId.length > 0) {
+		const entries = getReferentialEntries(record.iceIds[0]);
+		if (entries.recordType === 'node-selector-item') {
+			// There can be a scenario where the node-selector item is a file. When it is, there is no model associated to
+			// that item, so we fall back to the current model.
+			model = getCachedModel(extractCollectionItem(model, fieldId[0], record.index)) ?? model;
+			modelId = model.craftercms.id;
+		}
+	}
+	const parentModelId = model.craftercms.path ? null : getParentModelId(modelId, getCachedModels(), modelHierarchyMap);
+	const parentModel = parentModelId ? getCachedModel(parentModelId) : null;
+	const path = model.craftercms.path ?? parentModel.craftercms.path;
+	const isLocked = Boolean(state.lockedPaths[path]);
+	const isLockedByCurrentUser = isLocked && state.lockedPaths[path].user.username === state.username;
+	const isExternallyModified = Boolean(state.externallyModifiedPaths[path]);
+	return { isLocked, isExternallyModified, model, parentModelId, parentModel, path, isLockedByCurrentUser };
 };
 
 /**
@@ -131,39 +131,39 @@ export const checkIfLockedOrModified = (state: GuestState, record: ElementRecord
  * targetIndex: number
  */
 export const getMoveComponentInfo = (dragContext: GuestState['dragContext']) => {
-  let { dragged: draggedRecord, targetIndex, dropZone, dropZones } = dragContext;
-  let newTargetIndex = targetIndex;
-  let draggedElementIndex = (draggedRecord as ICERecord)?.index;
-  const originDropZone = dropZones.find((dropZone) => dropZone.origin);
-  const currentDZ = dropZone.element;
-  const movedToSameZone = currentDZ === originDropZone?.element;
-  let movedToSamePosition = false;
+	let { dragged: draggedRecord, targetIndex, dropZone, dropZones } = dragContext;
+	let newTargetIndex = targetIndex;
+	let draggedElementIndex = (draggedRecord as ICERecord)?.index;
+	const originDropZone = dropZones.find((dropZone) => dropZone.origin);
+	const currentDZ = dropZone.element;
+	const movedToSameZone = currentDZ === originDropZone?.element;
+	let movedToSamePosition = false;
 
-  if (typeof draggedElementIndex === 'string') {
-    // If the index is a string, it's a nested index with dot notation.
-    // At this point, we only care for the last index piece, which is
-    // the index of this item in the collection that's being manipulated.
-    draggedElementIndex = parseInt(draggedElementIndex.substring(draggedElementIndex.lastIndexOf('.') + 1));
-  }
+	if (typeof draggedElementIndex === 'string') {
+		// If the index is a string, it's a nested index with dot notation.
+		// At this point, we only care for the last index piece, which is
+		// the index of this item in the collection that's being manipulated.
+		draggedElementIndex = parseInt(draggedElementIndex.substring(draggedElementIndex.lastIndexOf('.') + 1));
+	}
 
-  // If same dropzone
-  if (movedToSameZone) {
-    // If moving the item down the array of items, need to account
-    // for all the originally subsequent items shifting up.
-    if (draggedElementIndex < targetIndex) {
-      // Hence the final target index in reality is
-      // the drop marker's index minus 1
-      newTargetIndex = targetIndex - 1;
-    }
-    movedToSamePosition = draggedElementIndex === targetIndex;
-  }
+	// If same dropzone
+	if (movedToSameZone) {
+		// If moving the item down the array of items, need to account
+		// for all the originally subsequent items shifting up.
+		if (draggedElementIndex < targetIndex) {
+			// Hence the final target index in reality is
+			// the drop marker's index minus 1
+			newTargetIndex = targetIndex - 1;
+		}
+		movedToSamePosition = draggedElementIndex === targetIndex;
+	}
 
-  // Not same dropzone => different position
+	// Not same dropzone => different position
 
-  return {
-    movedToSameZone,
-    movedToSamePosition,
-    draggedElementIndex,
-    targetIndex: newTargetIndex
-  };
+	return {
+		movedToSameZone,
+		movedToSamePosition,
+		draggedElementIndex,
+		targetIndex: newTargetIndex
+	};
 };

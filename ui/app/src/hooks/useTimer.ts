@@ -18,24 +18,24 @@ import { useEffect, useState } from 'react';
 import useUpdateRefs from './useUpdateRefs';
 
 export const useTimer = (seconds: number, onComplete?: () => void) => {
-  const [countdown, setCountdown] = useState(seconds);
-  const onCompleteRef = useUpdateRefs(onComplete);
+	const [countdown, setCountdown] = useState(seconds);
+	const onCompleteRef = useUpdateRefs(onComplete);
 
-  useEffect(() => {
-    if (seconds > 0) {
-      let num = seconds;
-      const timer = setInterval(() => {
-        setCountdown(--num);
-        if (num === 0) {
-          clearInterval(timer);
-          onCompleteRef.current?.();
-        }
-      }, 1000);
-      return () => clearInterval(timer);
-    }
-  }, [seconds, onCompleteRef]);
+	useEffect(() => {
+		if (seconds > 0) {
+			let num = seconds;
+			const timer = setInterval(() => {
+				setCountdown(--num);
+				if (num === 0) {
+					clearInterval(timer);
+					onCompleteRef.current?.();
+				}
+			}, 1000);
+			return () => clearInterval(timer);
+		}
+	}, [seconds, onCompleteRef]);
 
-  return countdown;
+	return countdown;
 };
 
 export default useTimer;

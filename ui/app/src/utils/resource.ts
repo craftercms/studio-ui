@@ -17,54 +17,54 @@
 import { Resource } from '../models/Resource';
 
 export function createFakeResource<T>(result: T): Resource<T> {
-  return {
-    complete: true,
-    error: false,
-    read() {
-      return result;
-    }
-  };
+	return {
+		complete: true,
+		error: false,
+		read() {
+			return result;
+		}
+	};
 }
 
 export function createResource<T>(factoryFn: () => Promise<T>): Resource<T> {
-  let result,
-    promise,
-    resource,
-    status = 'pending';
-  promise = factoryFn().then(
-    (response) => {
-      status = 'success';
-      result = response;
-    },
-    (error) => {
-      status = 'error';
-      result = error;
-    }
-  );
-  resource = {
-    complete: false,
-    error: false,
-    read() {
-      if (status === 'pending') {
-        throw promise;
-      } else if (status === 'error') {
-        resource.complete = true;
-        resource.error = true;
-        throw result;
-      } else if (status === 'success') {
-        resource.complete = true;
-        return result;
-      }
-    }
-  };
-  return resource;
+	let result,
+		promise,
+		resource,
+		status = 'pending';
+	promise = factoryFn().then(
+		(response) => {
+			status = 'success';
+			result = response;
+		},
+		(error) => {
+			status = 'error';
+			result = error;
+		}
+	);
+	resource = {
+		complete: false,
+		error: false,
+		read() {
+			if (status === 'pending') {
+				throw promise;
+			} else if (status === 'error') {
+				resource.complete = true;
+				resource.error = true;
+				throw result;
+			} else if (status === 'success') {
+				resource.complete = true;
+				return result;
+			}
+		}
+	};
+	return resource;
 }
 
 export function createResourceBundle<T>(): [Resource<T>, (value?: unknown) => void, (reason?: any) => void] {
-  let resolve, reject;
-  let promise = new Promise<T>((resolvePromise, rejectPromise) => {
-    resolve = resolvePromise;
-    reject = rejectPromise;
-  });
-  return [createResource(() => promise), resolve, reject];
+	let resolve, reject;
+	let promise = new Promise<T>((resolvePromise, rejectPromise) => {
+		resolve = resolvePromise;
+		reject = rejectPromise;
+	});
+	return [createResource(() => promise), resolve, reject];
 }

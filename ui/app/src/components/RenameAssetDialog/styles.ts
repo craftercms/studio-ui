@@ -23,18 +23,18 @@ export type RenameAssetDialogFullSx = FullSxRecord<RenameAssetDialogClassKey>;
 export type RenameAssetDialogPartialSx = PartialSxRecord<RenameAssetDialogClassKey>;
 
 function getStyles(sx?: RenameAssetDialogPartialSx): RenameAssetDialogFullSx {
-  return {
-    emptyMessage: {
-      verticalAlign: 'middle',
-      display: 'inline-flex',
-      mt: 2,
-      ...sx?.emptyMessage
-    },
-    emptyMessageIcon: (theme) => ({
-      color: theme.palette.text.secondary,
-      mr: 1
-    })
-  };
+	return {
+		emptyMessage: {
+			verticalAlign: 'middle',
+			display: 'inline-flex',
+			mt: 2,
+			...sx?.emptyMessage
+		},
+		emptyMessageIcon: (theme) => ({
+			color: theme.palette.text.secondary,
+			mr: 1
+		})
+	};
 }
 
 export default getStyles;

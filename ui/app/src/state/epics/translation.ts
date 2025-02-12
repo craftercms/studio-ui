@@ -25,15 +25,15 @@ import { fetchSiteLocales, fetchSiteLocalesComplete, fetchSiteLocalesFailed } fr
 import { CrafterCMSEpic } from '../store';
 
 export default [
-  (action$, state$: Observable<GlobalState>) =>
-    action$.pipe(
-      ofType(fetchSiteLocales.type),
-      withLatestFrom(state$),
-      exhaustMap(([, state]) =>
-        fetchSiteLocalesService(state.sites.active).pipe(
-          map((config) => fetchSiteLocalesComplete(config)),
-          catchAjaxError(fetchSiteLocalesFailed)
-        )
-      )
-    )
+	(action$, state$: Observable<GlobalState>) =>
+		action$.pipe(
+			ofType(fetchSiteLocales.type),
+			withLatestFrom(state$),
+			exhaustMap(([, state]) =>
+				fetchSiteLocalesService(state.sites.active).pipe(
+					map((config) => fetchSiteLocalesComplete(config)),
+					catchAjaxError(fetchSiteLocalesFailed)
+				)
+			)
+		)
 ] as CrafterCMSEpic[];

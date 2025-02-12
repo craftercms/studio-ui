@@ -18,13 +18,13 @@ import { createAction } from '@reduxjs/toolkit';
 import { Site, StandardAction } from '../../models';
 
 export function changeSite(nextSite: string, nextUrl: string = '/'): StandardAction {
-  return {
-    type: changeSite.type,
-    payload: { nextSite, nextUrl }
-  };
+	return {
+		type: changeSite.type,
+		payload: { nextSite, nextUrl }
+	};
 }
 export const changeSiteComplete = /*#__PURE__*/ createAction<{ nextSite: string; nextUrl: string }>(
-  'CHANGE_SITE_COMPLETE'
+	'CHANGE_SITE_COMPLETE'
 );
 
 changeSite.type = 'CHANGE_SITE';

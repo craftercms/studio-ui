@@ -24,37 +24,37 @@ import FormGroup from '@mui/material/FormGroup';
 import FormLabel from '@mui/material/FormLabel';
 
 export function CheckboxGroup(props: Control) {
-  const { field, value = [], onChange, disabled } = props;
+	const { field, value = [], onChange, disabled } = props;
 
-  const handleChange = (e) =>
-    onChange(e.target.checked ? value.concat(e.target.value) : value.filter((val) => val !== e.target.value));
+	const handleChange = (e) =>
+		onChange(e.target.checked ? value.concat(e.target.value) : value.filter((val) => val !== e.target.value));
 
-  return (
-    <>
-      <FormLabel sx={commonStyles.inputLabel} htmlFor={field.id}>
-        {field.name}
-      </FormLabel>
-      <FormControl variant="outlined" sx={commonStyles.formControl} fullWidth>
-        <FormGroup>
-          {field.values?.map((possibleValue: any) => (
-            <FormControlLabel
-              key={possibleValue.value}
-              control={
-                <Checkbox
-                  value={possibleValue.value}
-                  color="primary"
-                  checked={value.includes(possibleValue.value)}
-                  onChange={handleChange}
-                  disabled={disabled}
-                />
-              }
-              label={possibleValue.label}
-            />
-          ))}
-        </FormGroup>
-      </FormControl>
-    </>
-  );
+	return (
+		<>
+			<FormLabel sx={commonStyles.inputLabel} htmlFor={field.id}>
+				{field.name}
+			</FormLabel>
+			<FormControl variant="outlined" sx={commonStyles.formControl} fullWidth>
+				<FormGroup>
+					{field.values?.map((possibleValue: any) => (
+						<FormControlLabel
+							key={possibleValue.value}
+							control={
+								<Checkbox
+									value={possibleValue.value}
+									color="primary"
+									checked={value.includes(possibleValue.value)}
+									onChange={handleChange}
+									disabled={disabled}
+								/>
+							}
+							label={possibleValue.label}
+						/>
+					))}
+				</FormGroup>
+			</FormControl>
+		</>
+	);
 }
 
 export default CheckboxGroup;

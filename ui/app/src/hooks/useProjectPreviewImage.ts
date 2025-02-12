@@ -19,25 +19,25 @@ import { fetchContentByCommitId } from '../services/content';
 import { Subscription } from 'rxjs';
 
 export function useProjectPreviewImage(siteId: string, fallbackImageSrc?: string): [string, () => Subscription] {
-  const [dataUrl, setDataUrl] = useState<string>(null);
-  const fetch = useCallback(
-    () =>
-      fetchContentByCommitId(siteId, '/.crafter/screenshots/default.png', 'HEAD').subscribe({
-        next(img) {
-          setDataUrl(img as string);
-        },
-        error() {
-          // No preview image for this project
-          fallbackImageSrc && setDataUrl(fallbackImageSrc);
-        }
-      }),
-    [siteId, fallbackImageSrc]
-  );
-  useEffect(() => {
-    const sub = fetch();
-    return () => sub.unsubscribe();
-  }, [fetch]);
-  return [dataUrl, fetch];
+	const [dataUrl, setDataUrl] = useState<string>(null);
+	const fetch = useCallback(
+		() =>
+			fetchContentByCommitId(siteId, '/.crafter/screenshots/default.png', 'HEAD').subscribe({
+				next(img) {
+					setDataUrl(img as string);
+				},
+				error() {
+					// No preview image for this project
+					fallbackImageSrc && setDataUrl(fallbackImageSrc);
+				}
+			}),
+		[siteId, fallbackImageSrc]
+	);
+	useEffect(() => {
+		const sub = fetch();
+		return () => sub.unsubscribe();
+	}, [fetch]);
+	return [dataUrl, fetch];
 }
 
 export default useProjectPreviewImage;

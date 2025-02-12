@@ -36,220 +36,220 @@ import useUpdateRefs from '../../hooks/useUpdateRefs';
 import { copyToClipboard } from '../../utils/system';
 
 export interface EncryptToolProps {
-  site?: string;
-  embedded?: boolean;
-  showAppsButton?: boolean;
-  onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;
+	site?: string;
+	embedded?: boolean;
+	showAppsButton?: boolean;
+	onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
 const messages = defineMessages({
-  inputLabel: {
-    id: 'encryptTool.inputLabel',
-    defaultMessage: 'Raw Text'
-  },
-  buttonText: {
-    id: 'encryptTool.buttonText',
-    defaultMessage: 'Encrypt Text'
-  },
-  successMessage: {
-    id: 'encryptTool.successMessage',
-    defaultMessage: 'Encrypted text copied to clipboard.'
-  },
-  errorMessage: {
-    id: 'encryptTool.errorMessage',
-    defaultMessage: 'Text encryption failed. Please try again momentarily.'
-  },
-  clearResultButtonText: {
-    id: 'encryptTool.clearResultButtonText',
-    defaultMessage: 'Clear'
-  }
+	inputLabel: {
+		id: 'encryptTool.inputLabel',
+		defaultMessage: 'Raw Text'
+	},
+	buttonText: {
+		id: 'encryptTool.buttonText',
+		defaultMessage: 'Encrypt Text'
+	},
+	successMessage: {
+		id: 'encryptTool.successMessage',
+		defaultMessage: 'Encrypted text copied to clipboard.'
+	},
+	errorMessage: {
+		id: 'encryptTool.errorMessage',
+		defaultMessage: 'Text encryption failed. Please try again momentarily.'
+	},
+	clearResultButtonText: {
+		id: 'encryptTool.clearResultButtonText',
+		defaultMessage: 'Clear'
+	}
 });
 
 const notificationInitialState = {
-  open: false,
-  variant: 'success'
+	open: false,
+	variant: 'success'
 };
 
 export const EncryptTool = (props: EncryptToolProps) => {
-  const { site, embedded = false, showAppsButton, onSubmittingAndOrPendingChange } = props;
-  const inputRef = useRef<HTMLInputElement>(undefined);
-  const [text, setText] = useState('');
-  const [result, setResult] = useState(null);
-  const [fetching, setFetching] = useState(null);
-  const [notificationSettings, setNotificationSettings] = useSpreadState(notificationInitialState);
-  const { formatMessage } = useIntl();
-  const fnRefs = useUpdateRefs({ onSubmittingAndOrPendingChange });
-  const hasText = Boolean(text);
+	const { site, embedded = false, showAppsButton, onSubmittingAndOrPendingChange } = props;
+	const inputRef = useRef<HTMLInputElement>(undefined);
+	const [text, setText] = useState('');
+	const [result, setResult] = useState(null);
+	const [fetching, setFetching] = useState(null);
+	const [notificationSettings, setNotificationSettings] = useSpreadState(notificationInitialState);
+	const { formatMessage } = useIntl();
+	const fnRefs = useUpdateRefs({ onSubmittingAndOrPendingChange });
+	const hasText = Boolean(text);
 
-  const focus = () => {
-    const toolRawTextInput: HTMLInputElement = document.querySelector('#encryptionToolRawText');
-    toolRawTextInput.focus();
-  };
+	const focus = () => {
+		const toolRawTextInput: HTMLInputElement = document.querySelector('#encryptionToolRawText');
+		toolRawTextInput.focus();
+	};
 
-  const encrypt = (e: any) => {
-    e.preventDefault();
-    if (text) {
-      setRequestForgeryToken();
-      setFetching(true);
-      setResult(null);
-      encryptService(text, site).subscribe({
-        next(encryptedText) {
-          const resultingText = `\${enc:${encryptedText}}`;
-          setFetching(false);
-          setText('');
-          setResult(resultingText);
-          copyToClipboard(resultingText)
-            .then(() => {
-              setNotificationSettings({ open: true, variant: 'success' });
-            })
-            .catch(() => {
-              inputRef.current.focus();
-              inputRef.current.select();
-            });
-        },
-        error() {
-          setNotificationSettings({ open: true, variant: 'error' });
-        }
-      });
-    } else {
-      focus();
-    }
-  };
+	const encrypt = (e: any) => {
+		e.preventDefault();
+		if (text) {
+			setRequestForgeryToken();
+			setFetching(true);
+			setResult(null);
+			encryptService(text, site).subscribe({
+				next(encryptedText) {
+					const resultingText = `\${enc:${encryptedText}}`;
+					setFetching(false);
+					setText('');
+					setResult(resultingText);
+					copyToClipboard(resultingText)
+						.then(() => {
+							setNotificationSettings({ open: true, variant: 'success' });
+						})
+						.catch(() => {
+							inputRef.current.focus();
+							inputRef.current.select();
+						});
+				},
+				error() {
+					setNotificationSettings({ open: true, variant: 'error' });
+				}
+			});
+		} else {
+			focus();
+		}
+	};
 
-  const clear = () => {
-    setText('');
-    setResult(null);
-    focus();
-  };
+	const clear = () => {
+		setText('');
+		setResult(null);
+		focus();
+	};
 
-  useEffect(() => {
-    fnRefs.current.onSubmittingAndOrPendingChange?.({ hasPendingChanges: hasText });
-  }, [hasText, fnRefs]);
+	useEffect(() => {
+		fnRefs.current.onSubmittingAndOrPendingChange?.({ hasPendingChanges: hasText });
+	}, [hasText, fnRefs]);
 
-  return (
-    <Paper elevation={0}>
-      {!embedded && (
-        <GlobalAppToolbar
-          title={<FormattedMessage id="encryptTool.pageTitle" defaultMessage="Encryption Tool" />}
-          showAppsButton={showAppsButton}
-        />
-      )}
-      <Box p="20px">
-        <form onSubmit={encrypt}>
-          <TextField
-            sx={{ mb: 2 }}
-            label={formatMessage(messages.inputLabel)}
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            onKeyUp={(e) => {
-              if (e.key === 'Enter' && e.ctrlKey) {
-                encrypt(e);
-              }
-            }}
-            fullWidth
-            id="encryptionToolRawText"
-            name="encryptionToolRawText"
-            autoFocus
-            disabled={fetching}
-            multiline
-          />
+	return (
+		<Paper elevation={0}>
+			{!embedded && (
+				<GlobalAppToolbar
+					title={<FormattedMessage id="encryptTool.pageTitle" defaultMessage="Encryption Tool" />}
+					showAppsButton={showAppsButton}
+				/>
+			)}
+			<Box p="20px">
+				<form onSubmit={encrypt}>
+					<TextField
+						sx={{ mb: 2 }}
+						label={formatMessage(messages.inputLabel)}
+						value={text}
+						onChange={(e) => setText(e.target.value)}
+						onKeyUp={(e) => {
+							if (e.key === 'Enter' && e.ctrlKey) {
+								encrypt(e);
+							}
+						}}
+						fullWidth
+						id="encryptionToolRawText"
+						name="encryptionToolRawText"
+						autoFocus
+						disabled={fetching}
+						multiline
+					/>
 
-          {result && (
-            <TextField
-              fullWidth
-              type="text"
-              color="success"
-              sx={{ mb: 2 }}
-              ref={inputRef}
-              label={<FormattedMessage id="words.result" defaultMessage="Result" />}
-              slotProps={{
-                input: { readOnly: true }
-              }}
-              value={result}
-              onClick={(e: any) => {
-                const input = e.target;
-                const value = input.value;
-                input.select();
-                copyToClipboard(value).then(() => {
-                  setNotificationSettings({ open: true, variant: 'success' });
-                });
-              }}
-            />
-          )}
-          <div>
-            <Button type="button" onClick={clear} disabled={fetching} variant="outlined" sx={{ mr: 1 }}>
-              {formatMessage(messages.clearResultButtonText)}
-            </Button>
-            <Button type="submit" onClick={encrypt} disabled={fetching} color="primary" variant="contained">
-              {formatMessage(messages.buttonText)}
-            </Button>
-          </div>
-          <Snackbar
-            anchorOrigin={{
-              vertical: 'top',
-              horizontal: 'right'
-            }}
-            open={notificationSettings.open}
-            autoHideDuration={5000}
-            onClose={() => {
-              setNotificationSettings({ open: false });
-            }}
-          >
-            <SnackbarContent
-              sx={{
-                backgroundColor: notificationSettings.variant === 'success' ? green[600] : red[600],
-                opacity: 0.9,
-                marginRight: (theme) => theme.spacing(1)
-              }}
-              aria-describedby="encryptToolSnackbar"
-              message={
-                <Box
-                  component="span"
-                  id="encryptToolSnackbar"
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center'
-                  }}
-                >
-                  {notificationSettings.variant === 'success' ? (
-                    <CheckCircleIcon
-                      sx={{
-                        fontSize: 20,
-                        opacity: 0.9,
-                        marginRight: (theme) => theme.spacing(1)
-                      }}
-                    />
-                  ) : (
-                    <ErrorIcon
-                      sx={{
-                        fontSize: 20,
-                        opacity: 0.9,
-                        marginRight: (theme) => theme.spacing(1)
-                      }}
-                    />
-                  )}
-                  {formatMessage(
-                    notificationSettings.variant === 'success' ? messages.successMessage : messages.errorMessage
-                  )}
-                </Box>
-              }
-              action={[
-                <IconButton
-                  key="close"
-                  aria-label="close"
-                  color="inherit"
-                  onClick={() => setNotificationSettings({ open: false })}
-                  size="large"
-                >
-                  <CloseIcon sx={{ fontSize: 20 }} />
-                </IconButton>
-              ]}
-            />
-          </Snackbar>
-        </form>
-      </Box>
-    </Paper>
-  );
+					{result && (
+						<TextField
+							fullWidth
+							type="text"
+							color="success"
+							sx={{ mb: 2 }}
+							ref={inputRef}
+							label={<FormattedMessage id="words.result" defaultMessage="Result" />}
+							slotProps={{
+								input: { readOnly: true }
+							}}
+							value={result}
+							onClick={(e: any) => {
+								const input = e.target;
+								const value = input.value;
+								input.select();
+								copyToClipboard(value).then(() => {
+									setNotificationSettings({ open: true, variant: 'success' });
+								});
+							}}
+						/>
+					)}
+					<div>
+						<Button type="button" onClick={clear} disabled={fetching} variant="outlined" sx={{ mr: 1 }}>
+							{formatMessage(messages.clearResultButtonText)}
+						</Button>
+						<Button type="submit" onClick={encrypt} disabled={fetching} color="primary" variant="contained">
+							{formatMessage(messages.buttonText)}
+						</Button>
+					</div>
+					<Snackbar
+						anchorOrigin={{
+							vertical: 'top',
+							horizontal: 'right'
+						}}
+						open={notificationSettings.open}
+						autoHideDuration={5000}
+						onClose={() => {
+							setNotificationSettings({ open: false });
+						}}
+					>
+						<SnackbarContent
+							sx={{
+								backgroundColor: notificationSettings.variant === 'success' ? green[600] : red[600],
+								opacity: 0.9,
+								marginRight: (theme) => theme.spacing(1)
+							}}
+							aria-describedby="encryptToolSnackbar"
+							message={
+								<Box
+									component="span"
+									id="encryptToolSnackbar"
+									sx={{
+										display: 'flex',
+										alignItems: 'center'
+									}}
+								>
+									{notificationSettings.variant === 'success' ? (
+										<CheckCircleIcon
+											sx={{
+												fontSize: 20,
+												opacity: 0.9,
+												marginRight: (theme) => theme.spacing(1)
+											}}
+										/>
+									) : (
+										<ErrorIcon
+											sx={{
+												fontSize: 20,
+												opacity: 0.9,
+												marginRight: (theme) => theme.spacing(1)
+											}}
+										/>
+									)}
+									{formatMessage(
+										notificationSettings.variant === 'success' ? messages.successMessage : messages.errorMessage
+									)}
+								</Box>
+							}
+							action={[
+								<IconButton
+									key="close"
+									aria-label="close"
+									color="inherit"
+									onClick={() => setNotificationSettings({ open: false })}
+									size="large"
+								>
+									<CloseIcon sx={{ fontSize: 20 }} />
+								</IconButton>
+							]}
+						/>
+					</Snackbar>
+				</form>
+			</Box>
+		</Paper>
+	);
 };
 
 export default EncryptTool;

@@ -19,31 +19,31 @@ import { useEnv } from '../../hooks/useEnv';
 import Box from '@mui/material/Box';
 
 export interface LegacyIFrameProps {
-  path: string;
-  title?: string;
-  iframeProps?: IframeHTMLAttributes<any>;
+	path: string;
+	title?: string;
+	iframeProps?: IframeHTMLAttributes<any>;
 }
 
 function LegacyIFrame(props: LegacyIFrameProps) {
-  const { path, title = '', iframeProps } = props;
-  const authoringUrl = useEnv().authoringBase;
-  const iframeSrc = `${authoringUrl}${path.startsWith('/') ? '' : '/'}${path}`;
+	const { path, title = '', iframeProps } = props;
+	const authoringUrl = useEnv().authoringBase;
+	const iframeSrc = `${authoringUrl}${path.startsWith('/') ? '' : '/'}${path}`;
 
-  return (
-    <Box
-      component="iframe"
-      frameBorder={0}
-      title={title}
-      src={iframeSrc}
-      sx={{
-        width: '100%',
-        height: '100%',
-        border: 'none',
-        display: 'block'
-      }}
-      {...iframeProps}
-    />
-  );
+	return (
+		<Box
+			component="iframe"
+			frameBorder={0}
+			title={title}
+			src={iframeSrc}
+			sx={{
+				width: '100%',
+				height: '100%',
+				border: 'none',
+				display: 'block'
+			}}
+			{...iframeProps}
+		/>
+	);
 }
 
 export default LegacyIFrame;

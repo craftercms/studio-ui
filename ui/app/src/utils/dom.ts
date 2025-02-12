@@ -15,16 +15,16 @@
  */
 
 export function createCustomDocumentEventListener<Detail = any>(
-  id: string,
-  listener: (detail: Detail) => void
+	id: string,
+	listener: (detail: Detail) => void
 ): () => void {
-  let callback;
-  callback = (e) => {
-    listener(e.detail);
-    document.removeEventListener(id, callback, false);
-  };
-  document.addEventListener(id, callback, false);
-  return () => {
-    document.removeEventListener(id, callback, false);
-  };
+	let callback;
+	callback = (e) => {
+		listener(e.detail);
+		document.removeEventListener(id, callback, false);
+	};
+	document.addEventListener(id, callback, false);
+	return () => {
+		document.removeEventListener(id, callback, false);
+	};
 }

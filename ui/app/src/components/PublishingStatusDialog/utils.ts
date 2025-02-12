@@ -20,19 +20,19 @@ import { PublishingStatus } from '../../models/Publishing';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 
 export interface PublishingStatusBaseProps extends PublishingStatus {
-  isFetching: boolean;
+	isFetching: boolean;
 }
 
 export interface PublishingStatusDialogProps extends PublishingStatusBaseProps, EnhancedDialogProps {
-  onRefresh?(): void;
-  onStartStop?(): void;
+	onRefresh?(): void;
+	onStartStop?(): void;
 }
 
 export interface PublishingStatusDialogStateProps extends PublishingStatusBaseProps, EnhancedDialogState {
-  onClose: StandardAction;
-  onRefresh: StandardAction;
+	onClose: StandardAction;
+	onRefresh: StandardAction;
 }
 
 export interface PublishingStatusDialogContainerProps
-  extends PublishingStatusBaseProps,
-    Pick<PublishingStatusDialogProps, 'onClose' | 'onRefresh' | 'onStartStop'> {}
+	extends PublishingStatusBaseProps,
+		Pick<PublishingStatusDialogProps, 'onClose' | 'onRefresh' | 'onStartStop'> {}

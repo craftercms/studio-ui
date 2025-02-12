@@ -25,11 +25,11 @@
 @import '../../static-assets/libs/bootstrap/scss/modal';
 
 .popover {
-  &.show {
-    opacity: 1;
-  }
+	&.show {
+		opacity: 1;
+	}
 
-  .popover-header {
-    margin-top: 0;
-  }
+	.popover-header {
+		margin-top: 0;
+	}
 }

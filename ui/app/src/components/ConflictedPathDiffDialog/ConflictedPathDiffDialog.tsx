@@ -35,124 +35,124 @@ import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { LoadingState } from '../LoadingState';
 
 export interface RemoteRepositoriesDiffDialogProps {
-  open: boolean;
-  path: string;
-  onResolveConflict(strategy: string, path: string): void;
-  onClose(): void;
+	open: boolean;
+	path: string;
+	onResolveConflict(strategy: string, path: string): void;
+	onClose(): void;
 }
 
 export function ConflictedPathDiffDialog(props: RemoteRepositoriesDiffDialogProps) {
-  const { open, path, onResolveConflict, onClose } = props;
-  const siteId = useActiveSiteId();
-  const [tab, setTab] = useState(0);
-  const [fileDiff, setFileDiff] = useState<FileDiff>(null);
-  const [fetching, setFetching] = useState(false);
-  const [error, setError] = useState<ApiResponse>();
-  const { formatMessage } = useIntl();
+	const { open, path, onResolveConflict, onClose } = props;
+	const siteId = useActiveSiteId();
+	const [tab, setTab] = useState(0);
+	const [fileDiff, setFileDiff] = useState<FileDiff>(null);
+	const [fetching, setFetching] = useState(false);
+	const [error, setError] = useState<ApiResponse>();
+	const { formatMessage } = useIntl();
 
-  useEffect(() => {
-    if (path) {
-      setFetching(true);
-      diffConflictedFile(siteId, path).subscribe({
-        next(fileDiff) {
-          setFileDiff(fileDiff);
-          setFetching(false);
-        },
-        error({ response }) {
-          setError(response);
-          setFetching(false);
-        }
-      });
-    }
-  }, [path, siteId]);
+	useEffect(() => {
+		if (path) {
+			setFetching(true);
+			diffConflictedFile(siteId, path).subscribe({
+				next(fileDiff) {
+					setFileDiff(fileDiff);
+					setFetching(false);
+				},
+				error({ response }) {
+					setError(response);
+					setFetching(false);
+				}
+			});
+		}
+	}, [path, siteId]);
 
-  const handleTabChange = (event: React.ChangeEvent<{}>, newValue: number) => {
-    setTab(newValue);
-  };
+	const handleTabChange = (event: React.ChangeEvent<{}>, newValue: number) => {
+		setTab(newValue);
+	};
 
-  return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
-      <DialogHeader
-        title={
-          <>
-            <FormattedMessage id="words.diff" defaultMessage="Diff" />: {path}
-          </>
-        }
-        onCloseButtonClick={onClose}
-        sxs={{
-          root: {
-            paddingBottom: 0
-          },
-          subtitleWrapper: {
-            padding: 0
-          }
-        }}
-      >
-        <Tabs
-          value={tab}
-          indicatorColor="primary"
-          textColor="primary"
-          onChange={handleTabChange}
-          sx={{
-            minHeight: 'inherit',
-            [`& .${tabClasses.root}`]: {
-              minWidth: '80px',
-              minHeight: '0',
-              padding: '0 0 5px 0',
-              marginRight: '20px',
-              opacity: 1,
-              '& span': {
-                textTransform: 'none'
-              }
-            }
-          }}
-        >
-          <Tab label={<FormattedMessage id="words.diff" defaultMessage="Diff" />} />
-          <Tab label={<FormattedMessage id="repositories.splitView" defaultMessage="Split View" />} />
-        </Tabs>
-      </DialogHeader>
-      <DialogBody sx={{ padding: 0 }}>
-        {error ? (
-          <ApiResponseErrorState error={error} />
-        ) : fetching ? (
-          <LoadingState />
-        ) : fileDiff ? (
-          <ConflictedPathDiffDialogUI fileDiff={fileDiff} tab={tab} />
-        ) : null}
-      </DialogBody>
-      <DialogFooter>
-        <SecondaryButton onClick={onClose}>
-          <FormattedMessage id="words.close" defaultMessage="Close" />
-        </SecondaryButton>
-        <ConfirmDropdown
-          sx={{
-            button: {
-              color: (theme) => theme.palette.warning.dark,
-              borderColor: (theme) => theme.palette.warning.main
-            }
-          }}
-          text={formatMessage(messages.acceptRemote)}
-          cancelText={formatMessage(messages.no)}
-          confirmText={formatMessage(messages.yes)}
-          confirmHelperText={formatMessage(messages.acceptRemoteHelper)}
-          onConfirm={() => onResolveConflict('theirs', path)}
-        />
-        <ConfirmDropdown
-          sx={{
-            button: {
-              color: (theme) => theme.palette.warning.dark,
-              borderColor: (theme) => theme.palette.warning.main
-            }
-          }}
-          text={formatMessage(messages.keepLocal)}
-          cancelText={formatMessage(messages.no)}
-          confirmText={formatMessage(messages.yes)}
-          confirmHelperText={formatMessage(messages.keepLocalHelper)}
-          onConfirm={() => onResolveConflict('ours', path)}
-        />
-      </DialogFooter>
-    </Dialog>
-  );
+	return (
+		<Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
+			<DialogHeader
+				title={
+					<>
+						<FormattedMessage id="words.diff" defaultMessage="Diff" />: {path}
+					</>
+				}
+				onCloseButtonClick={onClose}
+				sxs={{
+					root: {
+						paddingBottom: 0
+					},
+					subtitleWrapper: {
+						padding: 0
+					}
+				}}
+			>
+				<Tabs
+					value={tab}
+					indicatorColor="primary"
+					textColor="primary"
+					onChange={handleTabChange}
+					sx={{
+						minHeight: 'inherit',
+						[`& .${tabClasses.root}`]: {
+							minWidth: '80px',
+							minHeight: '0',
+							padding: '0 0 5px 0',
+							marginRight: '20px',
+							opacity: 1,
+							'& span': {
+								textTransform: 'none'
+							}
+						}
+					}}
+				>
+					<Tab label={<FormattedMessage id="words.diff" defaultMessage="Diff" />} />
+					<Tab label={<FormattedMessage id="repositories.splitView" defaultMessage="Split View" />} />
+				</Tabs>
+			</DialogHeader>
+			<DialogBody sx={{ padding: 0 }}>
+				{error ? (
+					<ApiResponseErrorState error={error} />
+				) : fetching ? (
+					<LoadingState />
+				) : fileDiff ? (
+					<ConflictedPathDiffDialogUI fileDiff={fileDiff} tab={tab} />
+				) : null}
+			</DialogBody>
+			<DialogFooter>
+				<SecondaryButton onClick={onClose}>
+					<FormattedMessage id="words.close" defaultMessage="Close" />
+				</SecondaryButton>
+				<ConfirmDropdown
+					sx={{
+						button: {
+							color: (theme) => theme.palette.warning.dark,
+							borderColor: (theme) => theme.palette.warning.main
+						}
+					}}
+					text={formatMessage(messages.acceptRemote)}
+					cancelText={formatMessage(messages.no)}
+					confirmText={formatMessage(messages.yes)}
+					confirmHelperText={formatMessage(messages.acceptRemoteHelper)}
+					onConfirm={() => onResolveConflict('theirs', path)}
+				/>
+				<ConfirmDropdown
+					sx={{
+						button: {
+							color: (theme) => theme.palette.warning.dark,
+							borderColor: (theme) => theme.palette.warning.main
+						}
+					}}
+					text={formatMessage(messages.keepLocal)}
+					cancelText={formatMessage(messages.no)}
+					confirmText={formatMessage(messages.yes)}
+					confirmHelperText={formatMessage(messages.keepLocalHelper)}
+					onConfirm={() => onResolveConflict('ours', path)}
+				/>
+			</DialogFooter>
+		</Dialog>
+	);
 }
 
 export default ConflictedPathDiffDialog;

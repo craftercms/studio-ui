@@ -18,32 +18,32 @@ import { createReducer } from '@reduxjs/toolkit';
 import { CancelPackageDialogStateProps } from '../../../components/CancelPackageDialog';
 import GlobalState from '../../../models/GlobalState';
 import {
-  bulkCancelPackageDialogClosed,
-  closeBulkCancelPackageDialog,
-  showBulkCancelPackageDialog,
-  updateBulkCancelPackageDialog
+	bulkCancelPackageDialogClosed,
+	closeBulkCancelPackageDialog,
+	showBulkCancelPackageDialog,
+	updateBulkCancelPackageDialog
 } from '../../actions/dialogs';
 
 const initialState: CancelPackageDialogStateProps = {
-  open: false,
-  isSubmitting: null,
-  isMinimized: null,
-  hasPendingChanges: null
+	open: false,
+	isSubmitting: null,
+	isMinimized: null,
+	hasPendingChanges: null
 };
 
 export default createReducer<GlobalState['dialogs']['cancelPackage']>(initialState, (builder) => {
-  builder
-    .addCase(showBulkCancelPackageDialog, (state, { payload }) => ({
-      ...state,
-      onClose: closeBulkCancelPackageDialog(),
-      onClosed: bulkCancelPackageDialogClosed(),
-      ...(payload as Partial<CancelPackageDialogStateProps>),
-      open: true
-    }))
-    .addCase(updateBulkCancelPackageDialog, (state, { payload }) => ({
-      ...state,
-      ...(payload as Partial<CancelPackageDialogStateProps>)
-    }))
-    .addCase(closeBulkCancelPackageDialog, (state) => ({ ...state, open: false }))
-    .addCase(bulkCancelPackageDialogClosed, () => initialState);
+	builder
+		.addCase(showBulkCancelPackageDialog, (state, { payload }) => ({
+			...state,
+			onClose: closeBulkCancelPackageDialog(),
+			onClosed: bulkCancelPackageDialogClosed(),
+			...(payload as Partial<CancelPackageDialogStateProps>),
+			open: true
+		}))
+		.addCase(updateBulkCancelPackageDialog, (state, { payload }) => ({
+			...state,
+			...(payload as Partial<CancelPackageDialogStateProps>)
+		}))
+		.addCase(closeBulkCancelPackageDialog, (state) => ({ ...state, open: false }))
+		.addCase(bulkCancelPackageDialogClosed, () => initialState);
 });

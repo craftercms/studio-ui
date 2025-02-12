@@ -23,69 +23,69 @@ import { inputsInitialState, isFormValid, NewRemoteRepositoryDialogContainerProp
 import useUpdateRefs from '../../hooks/useUpdateRefs';
 
 export function NewRemoteRepositoryDialogContainer(props: NewRemoteRepositoryDialogContainerProps) {
-  const { onClose, onCreateSuccess, onCreateError, isSubmitting, onSubmittingAndOrPendingChange } = props;
-  const siteId = useActiveSiteId();
-  const [inputs, setInputs] = useSpreadState(inputsInitialState);
-  const isValid = useMemo(() => isFormValid(inputs), [inputs]);
-  const functionRefs = useUpdateRefs({
-    onSubmittingAndOrPendingChange
-  });
+	const { onClose, onCreateSuccess, onCreateError, isSubmitting, onSubmittingAndOrPendingChange } = props;
+	const siteId = useActiveSiteId();
+	const [inputs, setInputs] = useSpreadState(inputsInitialState);
+	const isValid = useMemo(() => isFormValid(inputs), [inputs]);
+	const functionRefs = useUpdateRefs({
+		onSubmittingAndOrPendingChange
+	});
 
-  const createRemote = () => {
-    setInputs({ submitted: true });
-    if (isValid) {
-      functionRefs.current.onSubmittingAndOrPendingChange({
-        isSubmitting: true
-      });
-      addRemote({
-        siteId,
-        remoteName: inputs.remoteName,
-        remoteUrl: inputs.remoteUrl,
-        authenticationType: inputs.repoAuthentication,
-        ...(inputs.repoAuthentication === 'basic'
-          ? { remoteUsername: inputs.repoUsername, remotePassword: inputs.repoPassword }
-          : inputs.repoAuthentication === 'token'
-            ? { remoteUsername: inputs.repoUsername, remoteToken: inputs.repoToken }
-            : inputs.repoAuthentication === 'key'
-              ? { remotePrivateKey: inputs.repoKey }
-              : {})
-      }).subscribe({
-        next: () => {
-          functionRefs.current.onSubmittingAndOrPendingChange({
-            isSubmitting: false,
-            hasPendingChanges: false
-          });
-          onCreateSuccess?.();
-        },
-        error: (e) => {
-          functionRefs.current.onSubmittingAndOrPendingChange({
-            isSubmitting: false
-          });
-          onCreateError?.(e);
-        }
-      });
-    }
-  };
+	const createRemote = () => {
+		setInputs({ submitted: true });
+		if (isValid) {
+			functionRefs.current.onSubmittingAndOrPendingChange({
+				isSubmitting: true
+			});
+			addRemote({
+				siteId,
+				remoteName: inputs.remoteName,
+				remoteUrl: inputs.remoteUrl,
+				authenticationType: inputs.repoAuthentication,
+				...(inputs.repoAuthentication === 'basic'
+					? { remoteUsername: inputs.repoUsername, remotePassword: inputs.repoPassword }
+					: inputs.repoAuthentication === 'token'
+						? { remoteUsername: inputs.repoUsername, remoteToken: inputs.repoToken }
+						: inputs.repoAuthentication === 'key'
+							? { remotePrivateKey: inputs.repoKey }
+							: {})
+			}).subscribe({
+				next: () => {
+					functionRefs.current.onSubmittingAndOrPendingChange({
+						isSubmitting: false,
+						hasPendingChanges: false
+					});
+					onCreateSuccess?.();
+				},
+				error: (e) => {
+					functionRefs.current.onSubmittingAndOrPendingChange({
+						isSubmitting: false
+					});
+					onCreateError?.(e);
+				}
+			});
+		}
+	};
 
-  useEffect(() => {
-    const { remoteName, repoKey, repoPassword, repoToken, repoUsername } = inputs;
-    onSubmittingAndOrPendingChange({
-      hasPendingChanges: Boolean(remoteName || repoKey || repoPassword || repoToken || repoUsername)
-    });
-  }, [inputs, onSubmittingAndOrPendingChange]);
+	useEffect(() => {
+		const { remoteName, repoKey, repoPassword, repoToken, repoUsername } = inputs;
+		onSubmittingAndOrPendingChange({
+			hasPendingChanges: Boolean(remoteName || repoKey || repoPassword || repoToken || repoUsername)
+		});
+	}, [inputs, onSubmittingAndOrPendingChange]);
 
-  const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
+	const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
 
-  return (
-    <NewRemoteRepositoryDialogUI
-      inputs={inputs}
-      setInputs={setInputs}
-      isValid={isValid}
-      isSubmitting={isSubmitting}
-      onCreate={createRemote}
-      onCloseButtonClick={onCloseButtonClick}
-    />
-  );
+	return (
+		<NewRemoteRepositoryDialogUI
+			inputs={inputs}
+			setInputs={setInputs}
+			isValid={isValid}
+			isSubmitting={isSubmitting}
+			onCreate={createRemote}
+			onCloseButtonClick={onCloseButtonClick}
+		/>
+	);
 }
 
 export default NewRemoteRepositoryDialogContainer;

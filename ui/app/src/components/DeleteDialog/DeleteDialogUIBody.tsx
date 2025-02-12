@@ -32,147 +32,147 @@ import Box from '@mui/material/Box';
 import InfoIcon from '@mui/icons-material/InfoOutlined';
 
 export function DeleteDialogUIBody(props: DeleteDialogContentUIProps) {
-  const {
-    items,
-    childItems,
-    dependentItems,
-    comment,
-    selectedItems,
-    isCommentRequired = false,
-    isDisabled,
-    isConfirmDeleteChecked,
-    onCommentChange,
-    onItemClicked,
-    onSelectAllClicked,
-    onConfirmDeleteChange,
-    onEditDependantClick
-  } = props;
-  return (
-    <Grid container spacing={3}>
-      <Grid size={{ xs: 12, sm: 7 }}>
-        <Box
-          sx={(theme) => ({
-            background: theme.palette.background.paper,
-            border: `1px solid ${theme.palette.divider}`
-          })}
-        >
-          <SelectionList
-            title={<FormattedMessage id="deleteDialog.deleteItems" defaultMessage="Delete Items" />}
-            items={items}
-            onItemClicked={onItemClicked}
-            onSelectAllClicked={onSelectAllClicked}
-            displayItemTitle
-            selectedItems={selectedItems}
-            disabled={isDisabled}
-          />
-          <ListItem divider dense disableGutters={!Boolean(dependentItems)}>
-            <ListItemText
-              primary={
-                <Typography variant="subtitle1" component="span">
-                  <FormattedMessage id="deleteDialog.dependentItems" defaultMessage="Dependent Items" />
-                  {` • `}
-                  <FormattedMessage id="deleteDialog.brokenItems" defaultMessage="Will have broken references" />
-                </Typography>
-              }
-            />
-          </ListItem>
-          {dependentItems.length ? (
-            <List>
-              {dependentItems.map((path) => {
-                return (
-                  <ListItem
-                    dense
-                    key={path}
-                    secondaryAction={
-                      <Button
-                        color="primary"
-                        onClick={(e) => onEditDependantClick(e, path)}
-                        size="small"
-                        sx={{
-                          marginLeft: 'auto',
-                          fontWeight: 'bold',
-                          verticalAlign: 'baseline'
-                        }}
-                      >
-                        <FormattedMessage id="words.edit" defaultMessage="Edit" />
-                      </Button>
-                    }
-                  >
-                    <ListItemText
-                      primary={path}
-                      primaryTypographyProps={{
-                        title: path,
-                        sx: {
-                          overflow: 'hidden',
-                          whiteSpace: 'nowrap',
-                          textOverflow: 'ellipsis'
-                        }
-                      }}
-                    />
-                  </ListItem>
-                );
-              })}
-            </List>
-          ) : (
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                padding: '8px',
-                '& svg': {
-                  marginRight: '8px'
-                }
-              }}
-            >
-              <InfoIcon color="action" fontSize="small" />
-              <Typography variant="caption">
-                <FormattedMessage id="deleteDialog.emptyDependentItems" defaultMessage="No dependent items" />
-              </Typography>
-            </Box>
-          )}
-          <SelectionList
-            title={<FormattedMessage id="deleteDialog.childItemsText" defaultMessage="Child Items" />}
-            subtitle={<FormattedMessage id="deleteDialog.willGetDeleted" defaultMessage="Will get deleted" />}
-            emptyMessage={<FormattedMessage id="deleteDialog.emptyChildItems" defaultMessage="No child items" />}
-            paths={childItems}
-            displayItemTitle={false}
-          />
-        </Box>
-      </Grid>
-      <Grid size={{ xs: 12, sm: 5 }}>
-        <form noValidate autoComplete="off">
-          <TextFieldWithMax
-            label={<FormattedMessage id="deleteDialog.submissionCommentLabel" defaultMessage="Submission Comment" />}
-            multiline
-            value={comment}
-            onChange={onCommentChange}
-            required={isCommentRequired}
-            disabled={isDisabled}
-            sx={{ width: '100%' }}
-          />
-          <Alert severity="warning" icon={false}>
-            <FormControlLabel
-              sx={{ margin: (theme) => `${theme.spacing()} 0` }}
-              control={
-                <Checkbox
-                  color="primary"
-                  checked={isConfirmDeleteChecked}
-                  onChange={onConfirmDeleteChange}
-                  disabled={isDisabled}
-                />
-              }
-              label={
-                <FormattedMessage
-                  id="deleteDialog.confirmDeletion"
-                  defaultMessage="I understand that deleted items will be published immediately."
-                />
-              }
-            />
-          </Alert>
-        </form>
-      </Grid>
-    </Grid>
-  );
+	const {
+		items,
+		childItems,
+		dependentItems,
+		comment,
+		selectedItems,
+		isCommentRequired = false,
+		isDisabled,
+		isConfirmDeleteChecked,
+		onCommentChange,
+		onItemClicked,
+		onSelectAllClicked,
+		onConfirmDeleteChange,
+		onEditDependantClick
+	} = props;
+	return (
+		<Grid container spacing={3}>
+			<Grid size={{ xs: 12, sm: 7 }}>
+				<Box
+					sx={(theme) => ({
+						background: theme.palette.background.paper,
+						border: `1px solid ${theme.palette.divider}`
+					})}
+				>
+					<SelectionList
+						title={<FormattedMessage id="deleteDialog.deleteItems" defaultMessage="Delete Items" />}
+						items={items}
+						onItemClicked={onItemClicked}
+						onSelectAllClicked={onSelectAllClicked}
+						displayItemTitle
+						selectedItems={selectedItems}
+						disabled={isDisabled}
+					/>
+					<ListItem divider dense disableGutters={!Boolean(dependentItems)}>
+						<ListItemText
+							primary={
+								<Typography variant="subtitle1" component="span">
+									<FormattedMessage id="deleteDialog.dependentItems" defaultMessage="Dependent Items" />
+									{` • `}
+									<FormattedMessage id="deleteDialog.brokenItems" defaultMessage="Will have broken references" />
+								</Typography>
+							}
+						/>
+					</ListItem>
+					{dependentItems.length ? (
+						<List>
+							{dependentItems.map((path) => {
+								return (
+									<ListItem
+										dense
+										key={path}
+										secondaryAction={
+											<Button
+												color="primary"
+												onClick={(e) => onEditDependantClick(e, path)}
+												size="small"
+												sx={{
+													marginLeft: 'auto',
+													fontWeight: 'bold',
+													verticalAlign: 'baseline'
+												}}
+											>
+												<FormattedMessage id="words.edit" defaultMessage="Edit" />
+											</Button>
+										}
+									>
+										<ListItemText
+											primary={path}
+											primaryTypographyProps={{
+												title: path,
+												sx: {
+													overflow: 'hidden',
+													whiteSpace: 'nowrap',
+													textOverflow: 'ellipsis'
+												}
+											}}
+										/>
+									</ListItem>
+								);
+							})}
+						</List>
+					) : (
+						<Box
+							sx={{
+								display: 'flex',
+								alignItems: 'center',
+								padding: '8px',
+								'& svg': {
+									marginRight: '8px'
+								}
+							}}
+						>
+							<InfoIcon color="action" fontSize="small" />
+							<Typography variant="caption">
+								<FormattedMessage id="deleteDialog.emptyDependentItems" defaultMessage="No dependent items" />
+							</Typography>
+						</Box>
+					)}
+					<SelectionList
+						title={<FormattedMessage id="deleteDialog.childItemsText" defaultMessage="Child Items" />}
+						subtitle={<FormattedMessage id="deleteDialog.willGetDeleted" defaultMessage="Will get deleted" />}
+						emptyMessage={<FormattedMessage id="deleteDialog.emptyChildItems" defaultMessage="No child items" />}
+						paths={childItems}
+						displayItemTitle={false}
+					/>
+				</Box>
+			</Grid>
+			<Grid size={{ xs: 12, sm: 5 }}>
+				<form noValidate autoComplete="off">
+					<TextFieldWithMax
+						label={<FormattedMessage id="deleteDialog.submissionCommentLabel" defaultMessage="Submission Comment" />}
+						multiline
+						value={comment}
+						onChange={onCommentChange}
+						required={isCommentRequired}
+						disabled={isDisabled}
+						sx={{ width: '100%' }}
+					/>
+					<Alert severity="warning" icon={false}>
+						<FormControlLabel
+							sx={{ margin: (theme) => `${theme.spacing()} 0` }}
+							control={
+								<Checkbox
+									color="primary"
+									checked={isConfirmDeleteChecked}
+									onChange={onConfirmDeleteChange}
+									disabled={isDisabled}
+								/>
+							}
+							label={
+								<FormattedMessage
+									id="deleteDialog.confirmDeletion"
+									defaultMessage="I understand that deleted items will be published immediately."
+								/>
+							}
+						/>
+					</Alert>
+				</form>
+			</Grid>
+		</Grid>
+	);
 }
 
 export default DeleteDialogUIBody;

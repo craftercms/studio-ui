@@ -25,17 +25,17 @@ import { computedDragOver, scrolling, scrollingStopped } from './actions';
 export const clearAndListen$ = new Subject<void>();
 
 export const escape$ =
-  typeof document === 'undefined'
-    ? new Subject<KeyboardEvent>()
-    : fromEvent<KeyboardEvent>(document, 'keydown').pipe(filter((e) => e.key === 'Escape'));
+	typeof document === 'undefined'
+		? new Subject<KeyboardEvent>()
+		: fromEvent<KeyboardEvent>(document, 'keydown').pipe(filter((e) => e.key === 'Escape'));
 
 export const guestCheckIn$ = new ReplaySubject<boolean>(1);
 
 let active = false;
 
 let dragover$: Subject<{
-  event: DragEvent | SyntheticEvent | Event;
-  record: ElementRecord;
+	event: DragEvent | SyntheticEvent | Event;
+	record: ElementRecord;
 }>;
 const getDragOver = () => dragover$;
 
@@ -46,46 +46,46 @@ const getScrolling = () => scrolling$;
 export { getDragOver as dragover$, getScrolling as scrolling$ };
 
 export function initializeDragSubjects(state$: GuestStateObservable): Observable<GuestStandardAction> {
-  if (!active) {
-    active = true;
-    killSignal$ = new Subject();
-    dragover$ = new Subject();
-    scrolling$ = fromEvent(document, 'scroll').pipe(takeUntil(killSignal$), share());
-  }
-  return merge(
-    dragover$.pipe(
-      throttleTime(100),
-      map((data) => computedDragOver(data))
-    ),
-    scrolling$.pipe(
-      throttleTime(200),
-      withLatestFrom(state$),
-      filter(([, state]) => !state.dragContext?.scrolling),
-      map(() => scrolling())
-    ),
-    // Scrolling ended
-    scrolling$.pipe(
-      // Emit values from scroll$ only after 200ms have
-      // passed without another source emission should give
-      // us the end of scrolling.
-      debounceTime(200),
-      map(() => scrollingStopped())
-    )
-  );
+	if (!active) {
+		active = true;
+		killSignal$ = new Subject();
+		dragover$ = new Subject();
+		scrolling$ = fromEvent(document, 'scroll').pipe(takeUntil(killSignal$), share());
+	}
+	return merge(
+		dragover$.pipe(
+			throttleTime(100),
+			map((data) => computedDragOver(data))
+		),
+		scrolling$.pipe(
+			throttleTime(200),
+			withLatestFrom(state$),
+			filter(([, state]) => !state.dragContext?.scrolling),
+			map(() => scrolling())
+		),
+		// Scrolling ended
+		scrolling$.pipe(
+			// Emit values from scroll$ only after 200ms have
+			// passed without another source emission should give
+			// us the end of scrolling.
+			debounceTime(200),
+			map(() => scrollingStopped())
+		)
+	);
 }
 
 export function destroyDragSubjects() {
-  if (active) {
-    active = false;
+	if (active) {
+		active = false;
 
-    // scrolling$ is terminated by killSignal$
-    killSignal$.next();
-    killSignal$.complete();
-    killSignal$.unsubscribe();
-    killSignal$ = null;
+		// scrolling$ is terminated by killSignal$
+		killSignal$.next();
+		killSignal$.complete();
+		killSignal$.unsubscribe();
+		killSignal$ = null;
 
-    dragover$.complete();
-    dragover$.unsubscribe();
-    dragover$ = null;
-  }
+		dragover$.complete();
+		dragover$.unsubscribe();
+		dragover$ = null;
+	}
 }

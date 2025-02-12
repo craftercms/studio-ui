@@ -26,50 +26,50 @@ import TranslationOrText from '../../models/TranslationOrText';
 import ListItem from '@mui/material/ListItem';
 
 export interface ToolsPanelListItemButtonProps extends Omit<ListItemButtonProps, 'title'> {
-  title: TranslationOrText;
-  subtitle?: string;
-  icon?: SystemIconDescriptor;
-  secondaryActionIcon?: React.ReactNode;
-  onSecondaryActionClick?(): void;
+	title: TranslationOrText;
+	subtitle?: string;
+	icon?: SystemIconDescriptor;
+	secondaryActionIcon?: React.ReactNode;
+	onSecondaryActionClick?(): void;
 }
 
 export function ToolsPanelListItemButton(props: ToolsPanelListItemButtonProps) {
-  const {
-    icon,
-    title,
-    subtitle,
-    onClick,
-    secondaryActionIcon = <ChevronRounded />,
-    onSecondaryActionClick,
-    ...listItemButtonProps
-  } = props;
-  return (
-    <ListItemButton
-      component={ListItem}
-      {...listItemButtonProps}
-      onClick={onClick}
-      secondaryAction={
-        onSecondaryActionClick ? (
-          <IconButton size="small" onClick={onSecondaryActionClick}>
-            {secondaryActionIcon}
-          </IconButton>
-        ) : null
-      }
-    >
-      {icon && (
-        <ListItemIcon>
-          <SystemIcon icon={icon} fontIconProps={{ fontSize: 'small' }} />
-        </ListItemIcon>
-      )}
-      <ListItemText
-        primary={usePossibleTranslation(title)}
-        secondary={subtitle}
-        primaryTypographyProps={{ noWrap: true }}
-        secondaryTypographyProps={{ noWrap: true }}
-      />
-      {!onSecondaryActionClick && <ChevronRounded />}
-    </ListItemButton>
-  );
+	const {
+		icon,
+		title,
+		subtitle,
+		onClick,
+		secondaryActionIcon = <ChevronRounded />,
+		onSecondaryActionClick,
+		...listItemButtonProps
+	} = props;
+	return (
+		<ListItemButton
+			component={ListItem}
+			{...listItemButtonProps}
+			onClick={onClick}
+			secondaryAction={
+				onSecondaryActionClick ? (
+					<IconButton size="small" onClick={onSecondaryActionClick}>
+						{secondaryActionIcon}
+					</IconButton>
+				) : null
+			}
+		>
+			{icon && (
+				<ListItemIcon>
+					<SystemIcon icon={icon} fontIconProps={{ fontSize: 'small' }} />
+				</ListItemIcon>
+			)}
+			<ListItemText
+				primary={usePossibleTranslation(title)}
+				secondary={subtitle}
+				primaryTypographyProps={{ noWrap: true }}
+				secondaryTypographyProps={{ noWrap: true }}
+			/>
+			{!onSecondaryActionClick && <ChevronRounded />}
+		</ListItemButton>
+	);
 }
 
 export default ToolsPanelListItemButton;

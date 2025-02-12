@@ -46,257 +46,257 @@ import ApiResponseErrorState from '../ApiResponseErrorState/ApiResponseErrorStat
 import ApiResponse from '../../models/ApiResponse';
 
 export function InstallPluginDialogContainer(props: InstallPluginDialogProps) {
-  const siteId = useActiveSiteId();
-  const { installPermission = false, onInstall, installedPlugins = {} } = props;
-  const [keyword, setKeyword] = useState('');
-  const [debouncedKeyword, setDebouncedKeyword] = useState(keyword);
-  const [plugins, setPlugins] = useState<PagedArray<MarketplacePlugin>>(null);
-  const [showSearchBar, setShowSearchBar] = useState<boolean>(false);
-  const [isFetching, setIsFetching] = useState<boolean>(null);
-  const [error, setError] = useState<ApiResponse>(null);
-  const [offset, setOffset] = useState(0);
-  const [limit, setLimit] = useState(9);
-  const [selectedDetailsPlugin, setSelectedDetailsPlugin] = useState<MarketplacePlugin>(null);
-  const [formPluginState, setFormPluginState] = useSpreadState<{
-    plugin: MarketplacePlugin;
-    fields: LookupTable<string>;
-    submitted: boolean;
-    error: LookupTable<boolean>;
-  }>({
-    plugin: null,
-    fields: {},
-    submitted: false,
-    error: {}
-  });
-  const onSearch$ = useSubject<string>();
-  const dispatch = useDispatch();
-  const { formatMessage } = useIntl();
-  const [installingLookup, setInstallingLookup] = useSpreadState<LookupTable<boolean>>({});
+	const siteId = useActiveSiteId();
+	const { installPermission = false, onInstall, installedPlugins = {} } = props;
+	const [keyword, setKeyword] = useState('');
+	const [debouncedKeyword, setDebouncedKeyword] = useState(keyword);
+	const [plugins, setPlugins] = useState<PagedArray<MarketplacePlugin>>(null);
+	const [showSearchBar, setShowSearchBar] = useState<boolean>(false);
+	const [isFetching, setIsFetching] = useState<boolean>(null);
+	const [error, setError] = useState<ApiResponse>(null);
+	const [offset, setOffset] = useState(0);
+	const [limit, setLimit] = useState(9);
+	const [selectedDetailsPlugin, setSelectedDetailsPlugin] = useState<MarketplacePlugin>(null);
+	const [formPluginState, setFormPluginState] = useSpreadState<{
+		plugin: MarketplacePlugin;
+		fields: LookupTable<string>;
+		submitted: boolean;
+		error: LookupTable<boolean>;
+	}>({
+		plugin: null,
+		fields: {},
+		submitted: false,
+		error: {}
+	});
+	const onSearch$ = useSubject<string>();
+	const dispatch = useDispatch();
+	const { formatMessage } = useIntl();
+	const [installingLookup, setInstallingLookup] = useSpreadState<LookupTable<boolean>>({});
 
-  const fetchPlugins = useCallback(() => {
-    setError(null);
-    setIsFetching(true);
-    fetchMarketplacePlugins({ type: 'site', keywords: debouncedKeyword, limit, offset }).subscribe({
-      next(plugins) {
-        setPlugins(plugins);
-        setIsFetching(false);
-      },
-      error(error: AjaxError) {
-        setError(error.response.response);
-        setIsFetching(false);
-      }
-    });
-  }, [debouncedKeyword, limit, offset]);
+	const fetchPlugins = useCallback(() => {
+		setError(null);
+		setIsFetching(true);
+		fetchMarketplacePlugins({ type: 'site', keywords: debouncedKeyword, limit, offset }).subscribe({
+			next(plugins) {
+				setPlugins(plugins);
+				setIsFetching(false);
+			},
+			error(error: AjaxError) {
+				setError(error.response.response);
+				setIsFetching(false);
+			}
+		});
+	}, [debouncedKeyword, limit, offset]);
 
-  useEffect(() => {
-    fetchPlugins();
-  }, [fetchPlugins]);
+	useEffect(() => {
+		fetchPlugins();
+	}, [fetchPlugins]);
 
-  useEffect(() => {
-    const subscription = onSearch$.pipe(debounceTime(400)).subscribe((keywords) => {
-      setDebouncedKeyword(keywords);
-    });
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [onSearch$]);
+	useEffect(() => {
+		const subscription = onSearch$.pipe(debounceTime(400)).subscribe((keywords) => {
+			setDebouncedKeyword(keywords);
+		});
+		return () => {
+			subscription.unsubscribe();
+		};
+	}, [onSearch$]);
 
-  const onToggleSearchBar = () => {
-    setShowSearchBar(!showSearchBar);
-  };
+	const onToggleSearchBar = () => {
+		setShowSearchBar(!showSearchBar);
+	};
 
-  const onSearch = (keyword, event) => {
-    if (/^[\w\s-]*$/.test(event.target.value)) {
-      onSearch$.next(keyword);
-      setKeyword(keyword);
-    }
-  };
+	const onSearch = (keyword, event) => {
+		if (/^[\w\s-]*$/.test(event.target.value)) {
+			onSearch$.next(keyword);
+			setKeyword(keyword);
+		}
+	};
 
-  const onPluginDetails = (plugin: MarketplacePlugin) => {
-    setSelectedDetailsPlugin(plugin);
-  };
+	const onPluginDetails = (plugin: MarketplacePlugin) => {
+		setSelectedDetailsPlugin(plugin);
+	};
 
-  const onPluginDetailsClose = () => {
-    setSelectedDetailsPlugin(null);
-  };
+	const onPluginDetailsClose = () => {
+		setSelectedDetailsPlugin(null);
+	};
 
-  const onInstallPlugin = (plugin: MarketplacePlugin, parameters?: LookupTable<string>) => {
-    setInstallingLookup({ [plugin.id]: true });
-    dispatch(blockUI({ message: formatMessage(translations.installing, { name: plugin.name }) }));
-    installMarketplacePlugin(siteId, plugin.id, plugin.version, parameters).subscribe({
-      next() {
-        setInstallingLookup({ [plugin.id]: false });
-        onInstall(plugin);
-        onPluginFormClose();
-        dispatch(unblockUI());
-      },
-      error({ response }) {
-        setInstallingLookup({ [plugin.id]: false });
-        dispatch(batchActions([showErrorDialog({ error: response.response }), unblockUI()]));
-      }
-    });
-  };
+	const onInstallPlugin = (plugin: MarketplacePlugin, parameters?: LookupTable<string>) => {
+		setInstallingLookup({ [plugin.id]: true });
+		dispatch(blockUI({ message: formatMessage(translations.installing, { name: plugin.name }) }));
+		installMarketplacePlugin(siteId, plugin.id, plugin.version, parameters).subscribe({
+			next() {
+				setInstallingLookup({ [plugin.id]: false });
+				onInstall(plugin);
+				onPluginFormClose();
+				dispatch(unblockUI());
+			},
+			error({ response }) {
+				setInstallingLookup({ [plugin.id]: false });
+				dispatch(batchActions([showErrorDialog({ error: response.response }), unblockUI()]));
+			}
+		});
+	};
 
-  const onPluginFieldChange = (key: string, value: string) => {
-    const error =
-      formPluginState.plugin.parameters.find((parameter) => parameter.name === key).required && value === '';
-    setFormPluginState({
-      fields: { ...formPluginState.fields, [key]: value },
-      error: { ...formPluginState.error, [key]: error }
-    });
-  };
+	const onPluginFieldChange = (key: string, value: string) => {
+		const error =
+			formPluginState.plugin.parameters.find((parameter) => parameter.name === key).required && value === '';
+		setFormPluginState({
+			fields: { ...formPluginState.fields, [key]: value },
+			error: { ...formPluginState.error, [key]: error }
+		});
+	};
 
-  const onPluginDetailsSelected = (plugin: MarketplacePlugin) => {
-    if (plugin.parameters.length) {
-      setFormPluginState({ plugin, submitted: false, fields: {} });
-      onPluginDetailsClose();
-    } else {
-      onInstallPlugin(plugin);
-    }
-  };
+	const onPluginDetailsSelected = (plugin: MarketplacePlugin) => {
+		if (plugin.parameters.length) {
+			setFormPluginState({ plugin, submitted: false, fields: {} });
+			onPluginDetailsClose();
+		} else {
+			onInstallPlugin(plugin);
+		}
+	};
 
-  const onPluginFormClose = () => {
-    setFormPluginState({ plugin: null, submitted: false, fields: {} });
-  };
+	const onPluginFormClose = () => {
+		setFormPluginState({ plugin: null, submitted: false, fields: {} });
+	};
 
-  const onPageChange = (page: number) => {
-    setOffset(page * limit);
-  };
+	const onPageChange = (page: number) => {
+		setOffset(page * limit);
+	};
 
-  const onRowsPerPageChange = (e) => {
-    setLimit(e.target.value);
-  };
+	const onRowsPerPageChange = (e) => {
+		setLimit(e.target.value);
+	};
 
-  useEffect(() => {
-    if (formPluginState.plugin) {
-      const lookup = {};
-      formPluginState.plugin.parameters.forEach((parameter) => {
-        if (parameter.required) {
-          lookup[parameter.name] = true;
-        }
-      });
-      setFormPluginState({ error: lookup });
-    }
-  }, [formPluginState.plugin, setFormPluginState]);
+	useEffect(() => {
+		if (formPluginState.plugin) {
+			const lookup = {};
+			formPluginState.plugin.parameters.forEach((parameter) => {
+				if (parameter.required) {
+					lookup[parameter.name] = true;
+				}
+			});
+			setFormPluginState({ error: lookup });
+		}
+	}, [formPluginState.plugin, setFormPluginState]);
 
-  return (
-    <>
-      <DialogHeader
-        title={
-          installPermission ? (
-            <FormattedMessage id="InstallPluginDialog.title" defaultMessage="Search & install plugin" />
-          ) : (
-            <FormattedMessage id="words.search" defaultMessage="Search" />
-          )
-        }
-        onCloseButtonClick={props.onClose}
-        rightActions={[
-          {
-            icon: { id: '@mui/icons-material/SearchRounded' },
-            disabled: isFetching === null || plugins === null || Boolean(selectedDetailsPlugin),
-            onClick: onToggleSearchBar
-          }
-        ]}
-      />
-      <DialogBody
-        style={{ minHeight: '60vh', padding: selectedDetailsPlugin || formPluginState.plugin ? 0 : UNDEFINED }}
-      >
-        {isFetching ? (
-          <LoadingState
-            sxs={{
-              root: {
-                flexGrow: 1,
-                justifyContent: 'center',
-                minHeight: 'unset'
-              }
-            }}
-          />
-        ) : selectedDetailsPlugin ? (
-          <PluginDetailsView
-            plugin={selectedDetailsPlugin}
-            usePermission={installPermission}
-            inUse={Boolean(installedPlugins[selectedDetailsPlugin.id])}
-            useLabel={
-              Boolean(installedPlugins[selectedDetailsPlugin.id]) ? (
-                <FormattedMessage id="words.installed" defaultMessage="Installed" />
-              ) : (
-                <FormattedMessage id="words.install" defaultMessage="Install" />
-              )
-            }
-            beingInstalled={installingLookup[selectedDetailsPlugin.id]}
-            onCloseDetails={onPluginDetailsClose}
-            onBlueprintSelected={onPluginDetailsSelected}
-          />
-        ) : formPluginState.plugin ? (
-          <PluginParametersForm
-            plugin={formPluginState.plugin}
-            submitted={formPluginState.submitted}
-            fields={formPluginState.fields}
-            onPluginFieldChange={onPluginFieldChange}
-            onCancel={onPluginFormClose}
-          />
-        ) : (
-          <>
-            {showSearchBar && (
-              <SearchBar
-                showActionButton={Boolean(keyword)}
-                keyword={keyword}
-                onChange={onSearch}
-                autoFocus
-                sxs={{ root: { marginBottom: '16px' } }}
-              />
-            )}
-            {error ? (
-              <ApiResponseErrorState error={error} />
-            ) : (
-              plugins && (
-                <PluginList
-                  plugins={plugins}
-                  installPermission={installPermission}
-                  installedPlugins={installedPlugins}
-                  installingLookup={installingLookup}
-                  onPluginDetails={onPluginDetails}
-                  onPluginSelected={onPluginDetailsSelected}
-                />
-              )
-            )}
-          </>
-        )}
-      </DialogBody>
-      {!selectedDetailsPlugin && !error && !isFetching && (
-        <DialogFooter>
-          {formPluginState.plugin ? (
-            <>
-              <SecondaryButton onClick={onPluginFormClose} sx={{ mr: 1 }}>
-                <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
-              </SecondaryButton>
-              <PrimaryButton
-                disabled={
-                  Object.values(formPluginState.error).some((value) => value) ||
-                  (formPluginState.plugin && installingLookup[formPluginState.plugin.id])
-                }
-                onClick={() => onInstallPlugin(formPluginState.plugin, formPluginState.fields)}
-              >
-                <FormattedMessage id="words.install" defaultMessage="Install" />
-              </PrimaryButton>
-            </>
-          ) : (
-            plugins && (
-              <Pagination
-                rowsPerPageOptions={[6, 9, 15]}
-                mode="table"
-                count={plugins.total}
-                rowsPerPage={plugins.limit}
-                page={plugins && Math.ceil(plugins.offset / plugins.limit)}
-                onPageChange={(e, page: number) => onPageChange(page)}
-                onRowsPerPageChange={onRowsPerPageChange}
-              />
-            )
-          )}
-        </DialogFooter>
-      )}
-    </>
-  );
+	return (
+		<>
+			<DialogHeader
+				title={
+					installPermission ? (
+						<FormattedMessage id="InstallPluginDialog.title" defaultMessage="Search & install plugin" />
+					) : (
+						<FormattedMessage id="words.search" defaultMessage="Search" />
+					)
+				}
+				onCloseButtonClick={props.onClose}
+				rightActions={[
+					{
+						icon: { id: '@mui/icons-material/SearchRounded' },
+						disabled: isFetching === null || plugins === null || Boolean(selectedDetailsPlugin),
+						onClick: onToggleSearchBar
+					}
+				]}
+			/>
+			<DialogBody
+				style={{ minHeight: '60vh', padding: selectedDetailsPlugin || formPluginState.plugin ? 0 : UNDEFINED }}
+			>
+				{isFetching ? (
+					<LoadingState
+						sxs={{
+							root: {
+								flexGrow: 1,
+								justifyContent: 'center',
+								minHeight: 'unset'
+							}
+						}}
+					/>
+				) : selectedDetailsPlugin ? (
+					<PluginDetailsView
+						plugin={selectedDetailsPlugin}
+						usePermission={installPermission}
+						inUse={Boolean(installedPlugins[selectedDetailsPlugin.id])}
+						useLabel={
+							Boolean(installedPlugins[selectedDetailsPlugin.id]) ? (
+								<FormattedMessage id="words.installed" defaultMessage="Installed" />
+							) : (
+								<FormattedMessage id="words.install" defaultMessage="Install" />
+							)
+						}
+						beingInstalled={installingLookup[selectedDetailsPlugin.id]}
+						onCloseDetails={onPluginDetailsClose}
+						onBlueprintSelected={onPluginDetailsSelected}
+					/>
+				) : formPluginState.plugin ? (
+					<PluginParametersForm
+						plugin={formPluginState.plugin}
+						submitted={formPluginState.submitted}
+						fields={formPluginState.fields}
+						onPluginFieldChange={onPluginFieldChange}
+						onCancel={onPluginFormClose}
+					/>
+				) : (
+					<>
+						{showSearchBar && (
+							<SearchBar
+								showActionButton={Boolean(keyword)}
+								keyword={keyword}
+								onChange={onSearch}
+								autoFocus
+								sxs={{ root: { marginBottom: '16px' } }}
+							/>
+						)}
+						{error ? (
+							<ApiResponseErrorState error={error} />
+						) : (
+							plugins && (
+								<PluginList
+									plugins={plugins}
+									installPermission={installPermission}
+									installedPlugins={installedPlugins}
+									installingLookup={installingLookup}
+									onPluginDetails={onPluginDetails}
+									onPluginSelected={onPluginDetailsSelected}
+								/>
+							)
+						)}
+					</>
+				)}
+			</DialogBody>
+			{!selectedDetailsPlugin && !error && !isFetching && (
+				<DialogFooter>
+					{formPluginState.plugin ? (
+						<>
+							<SecondaryButton onClick={onPluginFormClose} sx={{ mr: 1 }}>
+								<FormattedMessage id="words.cancel" defaultMessage="Cancel" />
+							</SecondaryButton>
+							<PrimaryButton
+								disabled={
+									Object.values(formPluginState.error).some((value) => value) ||
+									(formPluginState.plugin && installingLookup[formPluginState.plugin.id])
+								}
+								onClick={() => onInstallPlugin(formPluginState.plugin, formPluginState.fields)}
+							>
+								<FormattedMessage id="words.install" defaultMessage="Install" />
+							</PrimaryButton>
+						</>
+					) : (
+						plugins && (
+							<Pagination
+								rowsPerPageOptions={[6, 9, 15]}
+								mode="table"
+								count={plugins.total}
+								rowsPerPage={plugins.limit}
+								page={plugins && Math.ceil(plugins.offset / plugins.limit)}
+								onPageChange={(e, page: number) => onPageChange(page)}
+								onRowsPerPageChange={onRowsPerPageChange}
+							/>
+						)
+					)}
+				</DialogFooter>
+			)}
+		</>
+	);
 }
 
 export default InstallPluginDialogContainer;

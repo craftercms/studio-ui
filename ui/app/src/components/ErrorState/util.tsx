@@ -20,12 +20,12 @@ import { isAjaxError, isApiResponse } from '../../utils/object';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 
 export function renderErrorState(error: any, errorStateProps?: ErrorStateProps): JSX.Element {
-  const errorObj = error.response ?? error;
-  return isApiResponse(errorObj) ? (
-    <ApiResponseErrorState error={errorObj} {...errorStateProps} />
-  ) : isAjaxError(errorObj) ? (
-    <ErrorState title={`${errorObj.name} ${errorObj.status}`} message={errorObj.message} {...errorStateProps} />
-  ) : (
-    <ErrorState message={errorObj.message ?? errorObj} {...errorStateProps} />
-  );
+	const errorObj = error.response ?? error;
+	return isApiResponse(errorObj) ? (
+		<ApiResponseErrorState error={errorObj} {...errorStateProps} />
+	) : isAjaxError(errorObj) ? (
+		<ErrorState title={`${errorObj.name} ${errorObj.status}`} message={errorObj.message} {...errorStateProps} />
+	) : (
+		<ErrorState message={errorObj.message ?? errorObj} {...errorStateProps} />
+	);
 }

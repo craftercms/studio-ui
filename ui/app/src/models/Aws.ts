@@ -15,7 +15,7 @@
  */
 
 export interface AwsItem {
-  name: string;
-  url: string;
-  folder: boolean;
+	name: string;
+	url: string;
+	folder: boolean;
 }

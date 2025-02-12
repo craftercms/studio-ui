@@ -20,20 +20,20 @@ import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState, onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 
 interface WidgetDialogBaseProps {
-  title: string;
-  widget: WidgetDescriptor;
-  fullHeight?: boolean;
-  extraProps?: any;
+	title: string;
+	widget: WidgetDescriptor;
+	fullHeight?: boolean;
+	extraProps?: any;
 }
 
 export interface WidgetDialogProps extends WidgetDialogBaseProps, Omit<EnhancedDialogProps, 'title'> {
-  title: string;
-  onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;
+	title: string;
+	onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
 export interface WidgetDialogStateProps extends WidgetDialogBaseProps, EnhancedDialogState {
-  onClose?: StandardAction;
-  onClosed?: StandardAction;
-  onMaximize?: StandardAction;
-  onMinimize?: StandardAction;
+	onClose?: StandardAction;
+	onClosed?: StandardAction;
+	onMaximize?: StandardAction;
+	onMinimize?: StandardAction;
 }

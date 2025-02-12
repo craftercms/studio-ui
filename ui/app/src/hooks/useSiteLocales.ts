@@ -22,14 +22,14 @@ import { fetchSiteLocales } from '../state/actions/translation';
 
 // TODO: 1. Presents issues when call loads 2. Not refreshing when site changes
 export function useSiteLocales(): GlobalState['uiConfig']['siteLocales'] {
-  const siteLocales = useSelection((state) => state.uiConfig.siteLocales);
-  const dispatch = useDispatch();
-  useEffect(() => {
-    if (!siteLocales.localeCodes && !siteLocales.isFetching && !siteLocales.error) {
-      dispatch(fetchSiteLocales());
-    }
-  }, [dispatch, siteLocales.error, siteLocales.isFetching, siteLocales.localeCodes]);
-  return siteLocales;
+	const siteLocales = useSelection((state) => state.uiConfig.siteLocales);
+	const dispatch = useDispatch();
+	useEffect(() => {
+		if (!siteLocales.localeCodes && !siteLocales.isFetching && !siteLocales.error) {
+			dispatch(fetchSiteLocales());
+		}
+	}, [dispatch, siteLocales.error, siteLocales.isFetching, siteLocales.localeCodes]);
+	return siteLocales;
 }
 
 export default useSiteLocales;

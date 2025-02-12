@@ -21,63 +21,63 @@ import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
 export type RecordTypes = 'page' | 'component' | 'field' | 'repeat-item' | 'node-selector-item';
 
 export interface DropZone {
-  element: Element;
-  children: Element[];
-  iceId: string | number;
-  elementRecordId: number;
-  rect: DOMRect;
-  arrangement: string;
-  childrenRects: DOMRect[];
-  origin?: any;
-  validations: LookupTable<ValidationResult>;
+	element: Element;
+	children: Element[];
+	iceId: string | number;
+	elementRecordId: number;
+	rect: DOMRect;
+	arrangement: string;
+	childrenRects: DOMRect[];
+	origin?: any;
+	validations: LookupTable<ValidationResult>;
 }
 
 export interface ICEProps {
-  path?: string;
-  modelId: string;
-  fieldId: string;
-  index: string | number;
+	path?: string;
+	modelId: string;
+	fieldId: string;
+	index: string | number;
 }
 
 export interface BaseICERecord extends ICEProps {
-  id: number;
+	id: number;
 }
 
 export interface ICERecord extends BaseICERecord {
-  recordType: RecordTypes;
+	recordType: RecordTypes;
 }
 
 export interface ICERecordRegistration {
-  modelId: string;
-  fieldId?: string;
-  index?: string | number;
+	modelId: string;
+	fieldId?: string;
+	index?: string | number;
 }
 
 export interface ElementRecord extends Omit<BaseICERecord, 'fieldId'> {
-  label: string;
-  iceIds: number[];
-  element: HTMLElement;
-  complete: boolean;
-  fieldId: string[];
-  inherited: boolean;
+	label: string;
+	iceIds: number[];
+	element: HTMLElement;
+	complete: boolean;
+	fieldId: string[];
+	inherited: boolean;
 }
 
 export interface ElementRecordRegistration extends ICEProps {
-  label?: string;
-  element: HTMLElement;
+	label?: string;
+	element: HTMLElement;
 }
 
 export interface HighlightData {
-  id: number;
-  rect: DOMRect;
-  label: string;
-  inherited: boolean;
-  validations: LookupTable<ValidationResult>;
+	id: number;
+	rect: DOMRect;
+	label: string;
+	inherited: boolean;
+	validations: LookupTable<ValidationResult>;
 }
 
 export interface ReferentialEntries extends ICERecord {
-  field: ContentTypeField;
-  model: ContentInstance;
-  contentType: ContentType;
-  contentTypeId: string;
+	field: ContentTypeField;
+	model: ContentInstance;
+	contentType: ContentType;
+	contentTypeId: string;
 }

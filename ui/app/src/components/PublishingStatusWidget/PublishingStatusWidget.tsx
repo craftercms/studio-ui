@@ -23,38 +23,38 @@ import { useDispatch } from 'react-redux';
 import { useSelection } from '../../hooks/useSelection';
 
 type PublishingStatusWidgetProps = {
-  siteId: string;
+	siteId: string;
 };
 
 export function PublishingStatusWidget(props: PublishingStatusWidgetProps) {
-  const { siteId } = props;
-  const state = useSelection((state) => state.dialogs.publishingStatus);
-  const { enabled, published, currentTask } = state;
-  const dispatch = useDispatch();
+	const { siteId } = props;
+	const state = useSelection((state) => state.dialogs.publishingStatus);
+	const { enabled, published, currentTask } = state;
+	const dispatch = useDispatch();
 
-  const onStartStop = () => {
-    enable(siteId, !state.enabled).subscribe(() => {
-      dispatch(fetchPublishingStatus());
-    });
-  };
+	const onStartStop = () => {
+		enable(siteId, !state.enabled).subscribe(() => {
+			dispatch(fetchPublishingStatus());
+		});
+	};
 
-  const onRefresh = () => {
-    dispatch(fetchPublishingStatus());
-  };
+	const onRefresh = () => {
+		dispatch(fetchPublishingStatus());
+	};
 
-  return (
-    <Paper elevation={2}>
-      <PublishingStatusDialogContainer
-        enabled={enabled}
-        published={published}
-        currentTask={currentTask}
-        isFetching={!state}
-        onClose={null}
-        onRefresh={onRefresh}
-        onStartStop={onStartStop}
-      />
-    </Paper>
-  );
+	return (
+		<Paper elevation={2}>
+			<PublishingStatusDialogContainer
+				enabled={enabled}
+				published={published}
+				currentTask={currentTask}
+				isFetching={!state}
+				onClose={null}
+				onRefresh={onRefresh}
+				onStartStop={onStartStop}
+			/>
+		</Paper>
+	);
 }
 
 export default PublishingStatusWidget;

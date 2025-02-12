@@ -46,15 +46,15 @@ import Tooltip from '@mui/material/Tooltip';
 import { RepoStatusConflictDialog } from './RepoStatusConflictDialog';
 
 export interface GitManagementProps {
-  embedded?: boolean;
-  showAppsButton?: boolean;
+	embedded?: boolean;
+	showAppsButton?: boolean;
 }
 
 function a11yProps(index: number) {
-  return {
-    id: `simple-tab-${index}`,
-    'aria-controls': `gitReposTabpanel_${index}`
-  };
+	return {
+		id: `simple-tab-${index}`,
+		'aria-controls': `gitReposTabpanel_${index}`
+	};
 }
 
 // TODO:
@@ -62,260 +62,260 @@ function a11yProps(index: number) {
 //  - Accommodate area to display status fetch errors
 //  - Use/discard `loading` props
 export function GitManagement(props: GitManagementProps) {
-  const { embedded, showAppsButton = !embedded } = props;
-  const siteId = useActiveSiteId();
-  const dispatch = useDispatch();
-  const { formatMessage } = useIntl();
-  const [activeTab, setActiveTab] = useState(0);
-  const repoStatusConflictDialog = useEnhancedDialogState();
+	const { embedded, showAppsButton = !embedded } = props;
+	const siteId = useActiveSiteId();
+	const dispatch = useDispatch();
+	const { formatMessage } = useIntl();
+	const [activeTab, setActiveTab] = useState(0);
+	const repoStatusConflictDialog = useEnhancedDialogState();
 
-  const [{ repositories }, setRepoState] = useSpreadState({
-    repositories: null as Array<Repository>,
-    loadingRepos: false,
-    reposFetchError: null as ApiResponse
-  });
+	const [{ repositories }, setRepoState] = useSpreadState({
+		repositories: null as Array<Repository>,
+		loadingRepos: false,
+		reposFetchError: null as ApiResponse
+	});
 
-  const [{ loadingStatus, repoStatus, clean, hasConflicts, hasUncommitted, statusMessageKey }, setRepoStatusState] =
-    useSpreadState({
-      clean: true,
-      loadingStatus: false,
-      hasConflicts: false,
-      hasUncommitted: false,
-      statusFetchError: null as ApiResponse,
-      repoStatus: null as RepositoryStatus,
-      statusMessageKey: null as string
-    });
+	const [{ loadingStatus, repoStatus, clean, hasConflicts, hasUncommitted, statusMessageKey }, setRepoStatusState] =
+		useSpreadState({
+			clean: true,
+			loadingStatus: false,
+			hasConflicts: false,
+			hasUncommitted: false,
+			statusFetchError: null as ApiResponse,
+			repoStatus: null as RepositoryStatus,
+			statusMessageKey: null as string
+		});
 
-  const fetchRepositories = useCallback(() => {
-    setRepoState({ loadingRepos: true, reposFetchError: null });
-    fetchRepositoriesService(siteId).subscribe({
-      next: (repositories) => {
-        setRepoState({ repositories, loadingRepos: false });
-      },
-      error: ({ response }) => {
-        setRepoState({ loadingRepos: false, reposFetchError: response });
-      }
-    });
-  }, [setRepoState, siteId]);
+	const fetchRepositories = useCallback(() => {
+		setRepoState({ loadingRepos: true, reposFetchError: null });
+		fetchRepositoriesService(siteId).subscribe({
+			next: (repositories) => {
+				setRepoState({ repositories, loadingRepos: false });
+			},
+			error: ({ response }) => {
+				setRepoState({ loadingRepos: false, reposFetchError: response });
+			}
+		});
+	}, [setRepoState, siteId]);
 
-  const fetchRepoStatusReceiver = useCallback(
-    (repoStatus: RepositoryStatus) => {
-      let statusMessageKey = null;
-      if (repoStatus.clean) {
-        statusMessageKey = 'noConflicts';
-      } else if (repoStatus.conflicting.length > 0) {
-        statusMessageKey = 'conflictsExist';
-      } else if (repoStatus.uncommittedChanges.length > 0 && repoStatus.conflicting.length < 1) {
-        statusMessageKey = 'pendingCommit';
-      } else if (repoStatus.uncommittedChanges.length < 1 && repoStatus.conflicting.length < 1) {
-        statusMessageKey = 'unstagedFiles';
-      }
-      setRepoStatusState({
-        loadingStatus: false,
-        repoStatus,
-        statusMessageKey,
-        clean: repoStatus.clean,
-        hasConflicts: Boolean(repoStatus.conflicting.length),
-        hasUncommitted: Boolean(repoStatus.uncommittedChanges.length)
-      });
-    },
-    [setRepoStatusState]
-  );
-  const fetchRepoStatus = useCallback((): Promise<RepositoryStatus> => {
-    setRepoStatusState({ loadingStatus: true, statusFetchError: null });
-    return new Promise((resolve, reject) => {
-      fetchStatus(siteId).subscribe({
-        next: (repoStatus) => {
-          fetchRepoStatusReceiver(repoStatus);
-          resolve(repoStatus);
-        },
-        error(response) {
-          setRepoStatusState({ loadingStatus: false, statusFetchError: response });
-          dispatch(
-            showSystemNotification({
-              message: response.response.message,
-              options: { variant: 'error' }
-            })
-          );
-          reject(response);
-        }
-      });
-    });
-  }, [dispatch, fetchRepoStatusReceiver, setRepoStatusState, siteId]);
+	const fetchRepoStatusReceiver = useCallback(
+		(repoStatus: RepositoryStatus) => {
+			let statusMessageKey = null;
+			if (repoStatus.clean) {
+				statusMessageKey = 'noConflicts';
+			} else if (repoStatus.conflicting.length > 0) {
+				statusMessageKey = 'conflictsExist';
+			} else if (repoStatus.uncommittedChanges.length > 0 && repoStatus.conflicting.length < 1) {
+				statusMessageKey = 'pendingCommit';
+			} else if (repoStatus.uncommittedChanges.length < 1 && repoStatus.conflicting.length < 1) {
+				statusMessageKey = 'unstagedFiles';
+			}
+			setRepoStatusState({
+				loadingStatus: false,
+				repoStatus,
+				statusMessageKey,
+				clean: repoStatus.clean,
+				hasConflicts: Boolean(repoStatus.conflicting.length),
+				hasUncommitted: Boolean(repoStatus.uncommittedChanges.length)
+			});
+		},
+		[setRepoStatusState]
+	);
+	const fetchRepoStatus = useCallback((): Promise<RepositoryStatus> => {
+		setRepoStatusState({ loadingStatus: true, statusFetchError: null });
+		return new Promise((resolve, reject) => {
+			fetchStatus(siteId).subscribe({
+				next: (repoStatus) => {
+					fetchRepoStatusReceiver(repoStatus);
+					resolve(repoStatus);
+				},
+				error(response) {
+					setRepoStatusState({ loadingStatus: false, statusFetchError: response });
+					dispatch(
+						showSystemNotification({
+							message: response.response.message,
+							options: { variant: 'error' }
+						})
+					);
+					reject(response);
+				}
+			});
+		});
+	}, [dispatch, fetchRepoStatusReceiver, setRepoStatusState, siteId]);
 
-  const onPullSuccess = (result: PullResponse) => {
-    fetchRepoStatus();
-  };
+	const onPullSuccess = (result: PullResponse) => {
+		fetchRepoStatus();
+	};
 
-  const onPullError = (response) => {
-    fetchRepoStatus().then((repoStatus: RepositoryStatus) => {
-      if (Boolean(repoStatus.conflicting.length)) {
-        repoStatusConflictDialog.onOpen();
-      }
-    });
-    dispatch(
-      showSystemNotification({
-        message:
-          response?.message ??
-          formatMessage({
-            defaultMessage: 'An error occurred while pulling from remote repository.'
-          }),
-        options: { variant: 'error' }
-      })
-    );
-  };
+	const onPullError = (response) => {
+		fetchRepoStatus().then((repoStatus: RepositoryStatus) => {
+			if (Boolean(repoStatus.conflicting.length)) {
+				repoStatusConflictDialog.onOpen();
+			}
+		});
+		dispatch(
+			showSystemNotification({
+				message:
+					response?.message ??
+					formatMessage({
+						defaultMessage: 'An error occurred while pulling from remote repository.'
+					}),
+				options: { variant: 'error' }
+			})
+		);
+	};
 
-  const onRepoCreatedSuccess = () => {
-    fetchRepositories();
-    newRemoteRepositoryDialogState.onClose();
-    dispatch(
-      showSystemNotification({
-        message: formatMessage(translations.remoteCreateSuccessMessage)
-      })
-    );
-  };
+	const onRepoCreatedSuccess = () => {
+		fetchRepositories();
+		newRemoteRepositoryDialogState.onClose();
+		dispatch(
+			showSystemNotification({
+				message: formatMessage(translations.remoteCreateSuccessMessage)
+			})
+		);
+	};
 
-  const onRepoCreateError = ({ response }) => {
-    dispatch(
-      showSystemNotification({
-        message: response.response.message,
-        options: { variant: 'error' }
-      })
-    );
-  };
+	const onRepoCreateError = ({ response }) => {
+		dispatch(
+			showSystemNotification({
+				message: response.response.message,
+				options: { variant: 'error' }
+			})
+		);
+	};
 
-  const onTabChange = (event: React.SyntheticEvent, newValue: number) => {
-    setActiveTab(newValue);
-  };
+	const onTabChange = (event: React.SyntheticEvent, newValue: number) => {
+		setActiveTab(newValue);
+	};
 
-  const onConflictDialogCommitSuccess = (status: RepositoryStatus) => {
-    fetchRepoStatusReceiver(status);
-  };
+	const onConflictDialogCommitSuccess = (status: RepositoryStatus) => {
+		fetchRepoStatusReceiver(status);
+	};
 
-  useEffect(() => {
-    fetchRepositories();
-  }, [fetchRepositories]);
+	useEffect(() => {
+		fetchRepositories();
+	}, [fetchRepositories]);
 
-  useEffect(() => {
-    fetchRepoStatus();
-  }, [fetchRepoStatus]);
+	useEffect(() => {
+		fetchRepoStatus();
+	}, [fetchRepoStatus]);
 
-  const newRemoteRepositoryDialogState = useEnhancedDialogState();
-  const newRemoteRepositoryDialogStatePendingChangesCloseRequest = useWithPendingChangesCloseRequest(
-    newRemoteRepositoryDialogState.onClose
-  );
+	const newRemoteRepositoryDialogState = useEnhancedDialogState();
+	const newRemoteRepositoryDialogStatePendingChangesCloseRequest = useWithPendingChangesCloseRequest(
+		newRemoteRepositoryDialogState.onClose
+	);
 
-  return (
-    <Paper elevation={0}>
-      <GlobalAppToolbar
-        title={!embedded && <FormattedMessage id="words.git" defaultMessage="Git" />}
-        leftContent={
-          <Button
-            startIcon={<AddIcon />}
-            variant="outlined"
-            color="primary"
-            onClick={() => newRemoteRepositoryDialogState.onOpen()}
-          >
-            <FormattedMessage id="repositories.newRepository" defaultMessage="New Remote" />
-          </Button>
-        }
-        rightContent={
-          <Tooltip title={<FormattedMessage id="words.refresh" defaultMessage="Refresh" />}>
-            <IconButton
-              onClick={() => {
-                fetchRepositories();
-                fetchRepoStatus();
-              }}
-            >
-              <RefreshRounded />
-            </IconButton>
-          </Tooltip>
-        }
-        showHamburgerMenuButton={!embedded}
-        showAppsButton={showAppsButton}
-      />
-      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Tabs value={activeTab} onChange={onTabChange}>
-          <Tab
-            label={<FormattedMessage id="remoteRepositories.title" defaultMessage="Remote Repositories" />}
-            {...a11yProps(0)}
-          />
-          <Tab
-            sx={{
-              flexDirection: 'row',
-              color: hasConflicts ? 'error.main' : hasUncommitted ? 'warning.main' : UNDEFINED
-            }}
-            label={
-              <>
-                <FormattedMessage id="repository.repositoryStatusLabel" defaultMessage="Repository Status" />
-                {(hasConflicts || hasUncommitted) && (
-                  <WarningRounded sx={{ ml: 1 }} color={hasConflicts ? 'error' : 'warning'} />
-                )}
-              </>
-            }
-            {...a11yProps(1)}
-          />
-        </Tabs>
-      </Box>
-      <section>
-        {activeTab === 0 && (
-          <Box padding={2}>
-            <Alert severity={loadingStatus ? 'info' : clean ? 'success' : 'warning'}>
-              {formatMessage(translations[loadingStatus ? 'fetchingStatus' : (statusMessageKey ?? 'fetchingStatus')])}
-            </Alert>
-            <RepoGrid
-              repositories={repositories}
-              onPullSuccess={onPullSuccess}
-              onPullError={onPullError}
-              fetchRepositories={fetchRepositories}
-              disableActions={!repoStatus || repoStatus.conflicting.length > 0}
-            />
-            <Typography
-              variant="caption"
-              sx={(theme) => ({
-                display: 'flex',
-                justifyContent: 'center',
-                color: theme.palette.text.secondary,
-                marginTop: theme.spacing(2)
-              })}
-            >
-              <FormattedMessage
-                id="repository.statusNote"
-                defaultMessage="Do not use Studio as a git merge and conflict resolution platform. All merge conflicts should be resolved upstream before getting pulled into Studio."
-              />
-            </Typography>
-          </Box>
-        )}
-        {activeTab === 1 && (
-          <RepoStatus
-            status={repoStatus}
-            onCommitSuccess={fetchRepoStatusReceiver}
-            onConflictResolved={fetchRepoStatusReceiver}
-            onFailedPullCancelled={fetchRepoStatusReceiver}
-          />
-        )}
-        <NewRemoteRepositoryDialog
-          open={newRemoteRepositoryDialogState.open}
-          isMinimized={newRemoteRepositoryDialogState.isMinimized}
-          isSubmitting={newRemoteRepositoryDialogState.isSubmitting}
-          hasPendingChanges={newRemoteRepositoryDialogState.hasPendingChanges}
-          onSubmittingAndOrPendingChange={newRemoteRepositoryDialogState.onSubmittingAndOrPendingChange}
-          onWithPendingChangesCloseRequest={newRemoteRepositoryDialogStatePendingChangesCloseRequest}
-          onClose={newRemoteRepositoryDialogState.onClose}
-          onCreateSuccess={onRepoCreatedSuccess}
-          onCreateError={onRepoCreateError}
-        />
-        <RepoStatusConflictDialog
-          open={repoStatusConflictDialog.open}
-          onClose={repoStatusConflictDialog.onClose}
-          status={repoStatus}
-          onCommitSuccess={onConflictDialogCommitSuccess}
-          onConflictResolved={fetchRepoStatusReceiver}
-          onFailedPullCancelled={fetchRepoStatusReceiver}
-        />
-      </section>
-    </Paper>
-  );
+	return (
+		<Paper elevation={0}>
+			<GlobalAppToolbar
+				title={!embedded && <FormattedMessage id="words.git" defaultMessage="Git" />}
+				leftContent={
+					<Button
+						startIcon={<AddIcon />}
+						variant="outlined"
+						color="primary"
+						onClick={() => newRemoteRepositoryDialogState.onOpen()}
+					>
+						<FormattedMessage id="repositories.newRepository" defaultMessage="New Remote" />
+					</Button>
+				}
+				rightContent={
+					<Tooltip title={<FormattedMessage id="words.refresh" defaultMessage="Refresh" />}>
+						<IconButton
+							onClick={() => {
+								fetchRepositories();
+								fetchRepoStatus();
+							}}
+						>
+							<RefreshRounded />
+						</IconButton>
+					</Tooltip>
+				}
+				showHamburgerMenuButton={!embedded}
+				showAppsButton={showAppsButton}
+			/>
+			<Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+				<Tabs value={activeTab} onChange={onTabChange}>
+					<Tab
+						label={<FormattedMessage id="remoteRepositories.title" defaultMessage="Remote Repositories" />}
+						{...a11yProps(0)}
+					/>
+					<Tab
+						sx={{
+							flexDirection: 'row',
+							color: hasConflicts ? 'error.main' : hasUncommitted ? 'warning.main' : UNDEFINED
+						}}
+						label={
+							<>
+								<FormattedMessage id="repository.repositoryStatusLabel" defaultMessage="Repository Status" />
+								{(hasConflicts || hasUncommitted) && (
+									<WarningRounded sx={{ ml: 1 }} color={hasConflicts ? 'error' : 'warning'} />
+								)}
+							</>
+						}
+						{...a11yProps(1)}
+					/>
+				</Tabs>
+			</Box>
+			<section>
+				{activeTab === 0 && (
+					<Box padding={2}>
+						<Alert severity={loadingStatus ? 'info' : clean ? 'success' : 'warning'}>
+							{formatMessage(translations[loadingStatus ? 'fetchingStatus' : (statusMessageKey ?? 'fetchingStatus')])}
+						</Alert>
+						<RepoGrid
+							repositories={repositories}
+							onPullSuccess={onPullSuccess}
+							onPullError={onPullError}
+							fetchRepositories={fetchRepositories}
+							disableActions={!repoStatus || repoStatus.conflicting.length > 0}
+						/>
+						<Typography
+							variant="caption"
+							sx={(theme) => ({
+								display: 'flex',
+								justifyContent: 'center',
+								color: theme.palette.text.secondary,
+								marginTop: theme.spacing(2)
+							})}
+						>
+							<FormattedMessage
+								id="repository.statusNote"
+								defaultMessage="Do not use Studio as a git merge and conflict resolution platform. All merge conflicts should be resolved upstream before getting pulled into Studio."
+							/>
+						</Typography>
+					</Box>
+				)}
+				{activeTab === 1 && (
+					<RepoStatus
+						status={repoStatus}
+						onCommitSuccess={fetchRepoStatusReceiver}
+						onConflictResolved={fetchRepoStatusReceiver}
+						onFailedPullCancelled={fetchRepoStatusReceiver}
+					/>
+				)}
+				<NewRemoteRepositoryDialog
+					open={newRemoteRepositoryDialogState.open}
+					isMinimized={newRemoteRepositoryDialogState.isMinimized}
+					isSubmitting={newRemoteRepositoryDialogState.isSubmitting}
+					hasPendingChanges={newRemoteRepositoryDialogState.hasPendingChanges}
+					onSubmittingAndOrPendingChange={newRemoteRepositoryDialogState.onSubmittingAndOrPendingChange}
+					onWithPendingChangesCloseRequest={newRemoteRepositoryDialogStatePendingChangesCloseRequest}
+					onClose={newRemoteRepositoryDialogState.onClose}
+					onCreateSuccess={onRepoCreatedSuccess}
+					onCreateError={onRepoCreateError}
+				/>
+				<RepoStatusConflictDialog
+					open={repoStatusConflictDialog.open}
+					onClose={repoStatusConflictDialog.onClose}
+					status={repoStatus}
+					onCommitSuccess={onConflictDialogCommitSuccess}
+					onConflictResolved={fetchRepoStatusReceiver}
+					onFailedPullCancelled={fetchRepoStatusReceiver}
+				/>
+			</section>
+		</Paper>
+	);
 }
 
 export default GitManagement;

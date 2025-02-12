@@ -15,7 +15,7 @@
  */
 
 if (import.meta.env.MODE === 'production' || import.meta.env.VITE_MAIN === undefined) {
-  import('./main.prod');
+	import('./main.prod');
 } else {
-  import(/* @vite-ignore */ import.meta.env.VITE_MAIN);
+	import(/* @vite-ignore */ import.meta.env.VITE_MAIN);
 }

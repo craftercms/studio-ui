@@ -1,93 +1,93 @@
 {
-  "name": "@craftercms/experience-builder",
-  "description": "CrafterCMS' Experience Builder integration sdk.",
-  "version": "4.2.0",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/craftercms/studio-ui.git",
-    "directory": "ui/guest/src"
-  },
-  "private": true,
-  "main": "build_tsc/node/index.js",
-  "module": "build_tsc/index.js",
-  "typings": "build_tsc/index.d.ts",
-  "craftercms": {
-    "id": "craftercms.guest"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
-  "bic": {
-    "skip": [
-      "build",
-      "build_tsc",
-      "README.md",
-      "CHANGE_LOG.md"
-    ]
-  },
-  "scripts": {
-    "build": "rollup -c",
-    "start": "rollup -c -w",
-    "watch": "rollup -c -w",
-    "build:modern": "tsc --build tsconfig.json",
-    "clean:npm": "rimraf ./build_tsc ./tsconfig.tsbuildinfo",
-    "build:node": "tsc --build tsconfig.node.json",
-    "create-package-file": "node ./scripts/package.js",
-    "replace-env-version": "node ./scripts/replaceEnvVersion.js",
-    "build:npm": "run-s clean:npm build:modern replace-env-version create-package-file copy-jquery-npm",
-    "copy-jquery-npm": "cp -r ./src/jquery ./build_tsc/jquery",
-    "bom": "mkdir -p target && yarn cyclonedx --output-file target/bom.json",
-    "lint": "eslint ."
-  },
-  "dependencies": {
-    "@craftercms/classes": "4.2.2",
-    "@craftercms/content": "4.2.2",
-    "@craftercms/ice": "4.2.2",
-    "@craftercms/npm-content": "workspace:^",
-    "@craftercms/search": "4.2.2",
-    "@craftercms/studio-ui": "workspace:^",
-    "@emotion/css": "^11.13.5",
-    "@emotion/react": "^11.14.0",
-    "@emotion/styled": "^11.14.0",
-    "@mui/icons-material": "^6.4.1",
-    "@mui/material": "^6.4.1",
-    "@reduxjs/toolkit": "^2.5.1",
-    "@rollup/plugin-alias": "^5.1.1",
-    "@types/react-dom": "^19.0.3",
-    "js-cookie": "^3.0.5",
-    "prop-types": "^15.8.1",
-    "react": "19.0.0",
-    "react-dom": "19.0.0",
-    "react-hotkeys-hook": "^4.6.1",
-    "react-is": "^18.3.1",
-    "react-redux": "^9.2.0",
-    "redux": "^5.0.1",
-    "redux-observable": "^3.0.0-rc.2",
-    "rxjs": "^7.8.1",
-    "typescript": "^5.7.3",
-    "uuid": "^10.0.0"
-  },
-  "devDependencies": {
-    "@rollup/plugin-swc": "^0.4.0",
-    "@swc/core": "^1.10.11",
-    "@types/jquery": "^3.5.32",
-    "@types/js-cookie": "^3.0.6",
-    "@types/prop-types": "^15.7.14",
-    "@types/react-is": "^18.3.1",
-    "build-if-changed": "^1.5.5",
-    "npm-run-all": "^4.1.5",
-    "replace-in-file": "^8.3.0",
-    "rollup": "^4.32.1",
-    "rollup-plugin-swc3": "^0.11.2",
-    "yargs": "^17.7.2"
-  }
+	"name": "@craftercms/experience-builder",
+	"description": "CrafterCMS' Experience Builder integration sdk.",
+	"version": "4.2.0",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/craftercms/studio-ui.git",
+		"directory": "ui/guest/src"
+	},
+	"private": true,
+	"main": "build_tsc/node/index.js",
+	"module": "build_tsc/index.js",
+	"typings": "build_tsc/index.d.ts",
+	"craftercms": {
+		"id": "craftercms.guest"
+	},
+	"browserslist": {
+		"production": [
+			">0.2%",
+			"not dead",
+			"not op_mini all"
+		],
+		"development": [
+			"last 1 chrome version",
+			"last 1 firefox version",
+			"last 1 safari version"
+		]
+	},
+	"bic": {
+		"skip": [
+			"build",
+			"build_tsc",
+			"README.md",
+			"CHANGE_LOG.md"
+		]
+	},
+	"scripts": {
+		"build": "rollup -c",
+		"start": "rollup -c -w",
+		"watch": "rollup -c -w",
+		"build:modern": "tsc --build tsconfig.json",
+		"clean:npm": "rimraf ./build_tsc ./tsconfig.tsbuildinfo",
+		"build:node": "tsc --build tsconfig.node.json",
+		"create-package-file": "node ./scripts/package.js",
+		"replace-env-version": "node ./scripts/replaceEnvVersion.js",
+		"build:npm": "run-s clean:npm build:modern replace-env-version create-package-file copy-jquery-npm",
+		"copy-jquery-npm": "cp -r ./src/jquery ./build_tsc/jquery",
+		"bom": "mkdir -p target && yarn cyclonedx --output-file target/bom.json",
+		"lint": "eslint ."
+	},
+	"dependencies": {
+		"@craftercms/classes": "4.2.2",
+		"@craftercms/content": "4.2.2",
+		"@craftercms/ice": "4.2.2",
+		"@craftercms/npm-content": "workspace:^",
+		"@craftercms/search": "4.2.2",
+		"@craftercms/studio-ui": "workspace:^",
+		"@emotion/css": "^11.13.5",
+		"@emotion/react": "^11.14.0",
+		"@emotion/styled": "^11.14.0",
+		"@mui/icons-material": "^6.4.1",
+		"@mui/material": "^6.4.1",
+		"@reduxjs/toolkit": "^2.5.1",
+		"@rollup/plugin-alias": "^5.1.1",
+		"@types/react-dom": "^19.0.3",
+		"js-cookie": "^3.0.5",
+		"prop-types": "^15.8.1",
+		"react": "19.0.0",
+		"react-dom": "19.0.0",
+		"react-hotkeys-hook": "^4.6.1",
+		"react-is": "^18.3.1",
+		"react-redux": "^9.2.0",
+		"redux": "^5.0.1",
+		"redux-observable": "^3.0.0-rc.2",
+		"rxjs": "^7.8.1",
+		"typescript": "^5.7.3",
+		"uuid": "^10.0.0"
+	},
+	"devDependencies": {
+		"@rollup/plugin-swc": "^0.4.0",
+		"@swc/core": "^1.10.11",
+		"@types/jquery": "^3.5.32",
+		"@types/js-cookie": "^3.0.6",
+		"@types/prop-types": "^15.7.14",
+		"@types/react-is": "^18.3.1",
+		"build-if-changed": "^1.5.5",
+		"npm-run-all": "^4.1.5",
+		"replace-in-file": "^8.3.0",
+		"rollup": "^4.32.1",
+		"rollup-plugin-swc3": "^0.11.2",
+		"yargs": "^17.7.2"
+	}
 }

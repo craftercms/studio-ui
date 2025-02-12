@@ -22,7 +22,7 @@ export const sessionTimeout = /*#__PURE__*/ createAction('SESSION_TIMEOUT');
 export const fetchGlobalProperties = /*#__PURE__*/ createAction('FETCH_GLOBAL_PROPERTIES');
 
 export const fetchGlobalPropertiesComplete = /*#__PURE__*/ createAction<{ properties: LookupTable<string> }>(
-  'FETCH_GLOBAL_PROPERTIES_COMPLETE'
+	'FETCH_GLOBAL_PROPERTIES_COMPLETE'
 );
 
 export const fetchGlobalPropertiesFailed = /*#__PURE__*/ createAction('FETCH_GLOBAL_PROPERTIES_FAILED');
@@ -30,17 +30,17 @@ export const fetchGlobalPropertiesFailed = /*#__PURE__*/ createAction('FETCH_GLO
 export const fetchSiteProperties = /*#__PURE__*/ createAction('FETCH_SITE_PROPERTIES');
 
 export const fetchSitePropertiesComplete = /*#__PURE__*/ createAction<{ properties: LookupTable<string> }>(
-  'FETCH_SITE_PROPERTIES_COMPLETE'
+	'FETCH_SITE_PROPERTIES_COMPLETE'
 );
 
 export const fetchSitePropertiesFailed = /*#__PURE__*/ createAction('FETCH_SITE_PROPERTIES_FAILED');
 
 export const deleteProperties = /*#__PURE__*/ createAction<{ properties: string[]; siteId?: string }>(
-  'DELETE_PROPERTIES'
+	'DELETE_PROPERTIES'
 );
 
 export const deletePropertiesComplete = /*#__PURE__*/ createAction<{ properties: LookupTable<string> }>(
-  'DELETE_PROPERTIES_COMPLETE'
+	'DELETE_PROPERTIES_COMPLETE'
 );
 
 export const deletePropertiesFailed = /*#__PURE__*/ createAction('DELETE_PROPERTIES_FAILED');
@@ -48,7 +48,7 @@ export const deletePropertiesFailed = /*#__PURE__*/ createAction('DELETE_PROPERT
 export const fetchMyRolesInSite = /*#__PURE__*/ createAction('FETCH_MY_ROLES_IN_SITE');
 
 export const fetchMyRolesInSiteComplete = /*#__PURE__*/ createAction<{ site: string; roles: string[] }>(
-  'FETCH_MY_ROLES_IN_SITE_COMPLETE'
+	'FETCH_MY_ROLES_IN_SITE_COMPLETE'
 );
 
 export const fetchMyRolesInSiteFailed = /*#__PURE__*/ createAction('FETCH_MY_ROLES_IN_SITE_FAILED');
@@ -56,7 +56,7 @@ export const fetchMyRolesInSiteFailed = /*#__PURE__*/ createAction('FETCH_MY_ROL
 export const fetchMyPermissionsInSite = /*#__PURE__*/ createAction('FETCH_MY_PERMISSIONS_IN_SITE');
 
 export const fetchMyPermissionsInSiteComplete = /*#__PURE__*/ createAction<{ site: string; permissions: string[] }>(
-  'FETCH_MY_PERMISSIONS_IN_SITE_COMPLETE'
+	'FETCH_MY_PERMISSIONS_IN_SITE_COMPLETE'
 );
 
 export const fetchMyPermissionsInSiteFailed = /*#__PURE__*/ createAction('FETCH_MY_PERMISSIONS_IN_SITE_FAILED');

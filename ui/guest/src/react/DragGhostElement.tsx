@@ -19,33 +19,33 @@ import { Box, Theme } from '@mui/material';
 import { SxProps } from '@mui/system';
 
 export interface DragGhostElementProps {
-  sx?: SxProps<Theme>;
-  label: string;
+	sx?: SxProps<Theme>;
+	label: string;
 }
 
 export function DragGhostElement(props: DragGhostElementProps) {
-  return (
-    <Box
-      className="craftercms-dragged-element"
-      sx={{
-        display: 'block',
-        maxWidth: 200,
-        backgroundColor: 'common.white',
-        color: 'text.secondary',
-        padding: '5px 10px',
-        borderRadius: 1,
-        whiteSpace: 'nowrap',
-        textOverflow: 'ellipsis',
-        overflow: 'hidden',
-        position: 'absolute',
-        // top: -1000,
-        left: -1000,
-        ...props.sx
-      }}
-    >
-      {props.label}
-    </Box>
-  );
+	return (
+		<Box
+			className="craftercms-dragged-element"
+			sx={{
+				display: 'block',
+				maxWidth: 200,
+				backgroundColor: 'common.white',
+				color: 'text.secondary',
+				padding: '5px 10px',
+				borderRadius: 1,
+				whiteSpace: 'nowrap',
+				textOverflow: 'ellipsis',
+				overflow: 'hidden',
+				position: 'absolute',
+				// top: -1000,
+				left: -1000,
+				...props.sx
+			}}
+		>
+			{props.label}
+		</Box>
+	);
 }
 
 export default DragGhostElement;

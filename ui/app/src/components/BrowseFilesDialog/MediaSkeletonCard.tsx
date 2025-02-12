@@ -20,28 +20,28 @@ import CardHeader from '@mui/material/CardHeader';
 import Skeleton from '@mui/material/Skeleton';
 
 export function MediaSkeletonCard() {
-  return (
-    <Card
-      sx={{
-        width: '200px',
-        height: '155px',
-        margin: '10px'
-      }}
-    >
-      <CardHeader
-        avatar={<Skeleton variant="circular" width={24} height={24} />}
-        title={<Skeleton animation="wave" height={20} width="100%" />}
-      />
-      <Skeleton
-        animation="wave"
-        variant="rectangular"
-        sx={{
-          height: 0,
-          paddingTop: '56.25%' // 16:9
-        }}
-      />
-    </Card>
-  );
+	return (
+		<Card
+			sx={{
+				width: '200px',
+				height: '155px',
+				margin: '10px'
+			}}
+		>
+			<CardHeader
+				avatar={<Skeleton variant="circular" width={24} height={24} />}
+				title={<Skeleton animation="wave" height={20} width="100%" />}
+			/>
+			<Skeleton
+				animation="wave"
+				variant="rectangular"
+				sx={{
+					height: 0,
+					paddingTop: '56.25%' // 16:9
+				}}
+			/>
+		</Card>
+	);
 }
 
 export default MediaSkeletonCard;

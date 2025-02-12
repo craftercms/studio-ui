@@ -15,11 +15,11 @@
  */
 
 export interface RegistryEntry {
-  id: number;
-  element: Element;
-  modelId: string;
-  index: number | string;
-  label: string;
-  fieldId: string;
-  iceId: number;
+	id: number;
+	element: Element;
+	modelId: string;
+	index: number | string;
+	label: string;
+	fieldId: string;
+	iceId: number;
 }

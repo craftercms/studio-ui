@@ -18,14 +18,14 @@ import { EnhancedDialogProps } from '../EnhancedDialog';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 
 interface CreateUserDialogBase {
-  passwordRequirementsMinComplexity: number;
+	passwordRequirementsMinComplexity: number;
 }
 
 export interface CreateUserDialogProps extends CreateUserDialogBase, EnhancedDialogProps {
-  onCreateSuccess?(): void;
-  onSubmittingAndOrPendingChange(value: onSubmittingAndOrPendingChangeProps): void;
+	onCreateSuccess?(): void;
+	onSubmittingAndOrPendingChange(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
 export interface CreateUserDialogContainerProps
-  extends CreateUserDialogBase,
-    Pick<CreateUserDialogProps, 'onClose' | 'isSubmitting' | 'onCreateSuccess' | 'onSubmittingAndOrPendingChange'> {}
+	extends CreateUserDialogBase,
+		Pick<CreateUserDialogProps, 'onClose' | 'isSubmitting' | 'onCreateSuccess' | 'onSubmittingAndOrPendingChange'> {}

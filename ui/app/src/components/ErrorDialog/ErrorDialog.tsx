@@ -25,52 +25,52 @@ import { useUnmount } from '../../hooks/useUnmount';
 import Box from '@mui/material/Box';
 
 interface ErrorDialogBaseProps {
-  open: boolean;
-  error: ApiResponse;
+	open: boolean;
+	error: ApiResponse;
 }
 
 export type ErrorDialogProps = PropsWithChildren<
-  ErrorDialogBaseProps & {
-    onClose?(): void;
-    onClosed?(): void;
-    onDismiss?(): void;
-  }
+	ErrorDialogBaseProps & {
+		onClose?(): void;
+		onClosed?(): void;
+		onDismiss?(): void;
+	}
 >;
 
 export interface ErrorDialogStateProps extends ErrorDialogBaseProps {
-  onClose?: StandardAction;
-  onClosed?: StandardAction;
-  onDismiss?: StandardAction;
+	onClose?: StandardAction;
+	onClosed?: StandardAction;
+	onDismiss?: StandardAction;
 }
 
 function ErrorDialogBody(props: ErrorDialogProps) {
-  const { onDismiss, error } = props;
-  useUnmount(props.onClosed);
-  return (
-    <Box sx={{ padding: (theme) => theme.spacing(2) }}>
-      <IconButton
-        aria-label="close"
-        sx={(theme) => ({
-          position: 'absolute',
-          right: theme.spacing(1),
-          top: theme.spacing(1)
-        })}
-        onClick={() => onDismiss()}
-        size="large"
-      >
-        <CloseIcon />
-      </IconButton>
-      {error && <ApiResponseErrorState error={error} />}
-    </Box>
-  );
+	const { onDismiss, error } = props;
+	useUnmount(props.onClosed);
+	return (
+		<Box sx={{ padding: (theme) => theme.spacing(2) }}>
+			<IconButton
+				aria-label="close"
+				sx={(theme) => ({
+					position: 'absolute',
+					right: theme.spacing(1),
+					top: theme.spacing(1)
+				})}
+				onClick={() => onDismiss()}
+				size="large"
+			>
+				<CloseIcon />
+			</IconButton>
+			{error && <ApiResponseErrorState error={error} />}
+		</Box>
+	);
 }
 
 export function ErrorDialog(props: ErrorDialogProps) {
-  return (
-    <Dialog open={props.open} onClose={props.onClose}>
-      <ErrorDialogBody {...props} />
-    </Dialog>
-  );
+	return (
+		<Dialog open={props.open} onClose={props.onClose}>
+			<ErrorDialogBody {...props} />
+		</Dialog>
+	);
 }
 
 export default ErrorDialog;

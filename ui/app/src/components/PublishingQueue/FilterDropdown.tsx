@@ -31,187 +31,187 @@ import { packageStatesMap } from '../PublishPackageReviewDialog/utils';
 import { allFiltersState } from './PublishingQueue';
 
 const messages: any = defineMessages({
-  pathExpression: {
-    id: 'publishingDashboard.pathExpression',
-    defaultMessage: 'Path Expression'
-  },
-  environment: {
-    id: 'common.publishingTarget',
-    defaultMessage: 'Publishing Target'
-  },
-  state: {
-    id: 'publishingDashboard.state',
-    defaultMessage: 'State'
-  },
-  all: {
-    id: 'publishingDashboard.all',
-    defaultMessage: 'All'
-  },
-  ready: {
-    id: 'publishingDashboard.ready',
-    defaultMessage: 'Ready for Live'
-  },
-  processing: {
-    id: 'publishingDashboard.processing',
-    defaultMessage: 'Processing'
-  },
-  liveSuccess: {
-    id: 'publishingDashboard.liveSuccess',
-    defaultMessage: 'Live Success'
-  },
-  liveCompletedWithErrors: {
-    id: 'publishingDashboard.liveCompletedWithErrors',
-    defaultMessage: 'Live Completed with Errors'
-  },
-  liveFailed: {
-    id: 'publishingDashboard.liveFailed',
-    defaultMessage: 'Live Failed'
-  },
-  stagingSuccess: {
-    id: 'publishingDashboard.stagingSuccess',
-    defaultMessage: 'Staging Success'
-  },
-  stagingCompletedWithErrors: {
-    id: 'publishingDashboard.stagingCompletedWithErrors',
-    defaultMessage: 'Staging Completed with Errors'
-  },
-  stagingFailed: {
-    id: 'publishingDashboard.stagingFailed',
-    defaultMessage: 'Staging Failed'
-  },
-  completed: {
-    id: 'publishingDashboard.completed',
-    defaultMessage: 'Completed'
-  },
-  cancelled: {
-    id: 'publishingDashboard.cancelled',
-    defaultMessage: 'Cancelled'
-  }
+	pathExpression: {
+		id: 'publishingDashboard.pathExpression',
+		defaultMessage: 'Path Expression'
+	},
+	environment: {
+		id: 'common.publishingTarget',
+		defaultMessage: 'Publishing Target'
+	},
+	state: {
+		id: 'publishingDashboard.state',
+		defaultMessage: 'State'
+	},
+	all: {
+		id: 'publishingDashboard.all',
+		defaultMessage: 'All'
+	},
+	ready: {
+		id: 'publishingDashboard.ready',
+		defaultMessage: 'Ready for Live'
+	},
+	processing: {
+		id: 'publishingDashboard.processing',
+		defaultMessage: 'Processing'
+	},
+	liveSuccess: {
+		id: 'publishingDashboard.liveSuccess',
+		defaultMessage: 'Live Success'
+	},
+	liveCompletedWithErrors: {
+		id: 'publishingDashboard.liveCompletedWithErrors',
+		defaultMessage: 'Live Completed with Errors'
+	},
+	liveFailed: {
+		id: 'publishingDashboard.liveFailed',
+		defaultMessage: 'Live Failed'
+	},
+	stagingSuccess: {
+		id: 'publishingDashboard.stagingSuccess',
+		defaultMessage: 'Staging Success'
+	},
+	stagingCompletedWithErrors: {
+		id: 'publishingDashboard.stagingCompletedWithErrors',
+		defaultMessage: 'Staging Completed with Errors'
+	},
+	stagingFailed: {
+		id: 'publishingDashboard.stagingFailed',
+		defaultMessage: 'Staging Failed'
+	},
+	completed: {
+		id: 'publishingDashboard.completed',
+		defaultMessage: 'Completed'
+	},
+	cancelled: {
+		id: 'publishingDashboard.cancelled',
+		defaultMessage: 'Cancelled'
+	}
 });
 
 interface FilterDropdownProps {
-  text: string;
-  className?: any;
-  sx?: SxProps<Theme>;
-  currentFilters: CurrentFilters;
-  filters: any;
-  handleFilterChange(event: any): any;
+	text: string;
+	className?: any;
+	sx?: SxProps<Theme>;
+	currentFilters: CurrentFilters;
+	filters: any;
+	handleFilterChange(event: any): any;
 }
 
 export function FilterDropdown(props: FilterDropdownProps) {
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const { text, className, handleFilterChange, currentFilters, filters, sx } = props;
-  const { formatMessage } = useIntl();
+	const [anchorEl, setAnchorEl] = React.useState(null);
+	const { text, className, handleFilterChange, currentFilters, filters, sx } = props;
+	const { formatMessage } = useIntl();
 
-  const handleClick = (event: any) => {
-    setAnchorEl(event.currentTarget);
-  };
+	const handleClick = (event: any) => {
+		setAnchorEl(event.currentTarget);
+	};
 
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+	const handleClose = () => {
+		setAnchorEl(null);
+	};
 
-  return (
-    <div>
-      <Button variant="outlined" onClick={handleClick} sx={sx} className={className}>
-        {text} <ArrowDropDownIcon />
-      </Button>
-      <Popover
-        id="publishingFilterDropdown"
-        anchorEl={anchorEl}
-        slotProps={{ paper: { sx: { width: '300px' } } }}
-        keepMounted
-        open={Boolean(anchorEl)}
-        onClose={handleClose}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'right'
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'right'
-        }}
-      >
-        <section>
-          <Box
-            component="header"
-            sx={(theme) => ({
-              background: theme.palette.mode === 'dark' ? theme.palette.background.default : theme.palette.grey['100'],
-              padding: '10px'
-            })}
-          >
-            <Typography variant="body1">
-              <strong>{formatMessage(messages.environment)}</strong>
-            </Typography>
-          </Box>
-          <Box sx={{ width: '100%', padding: '5px 15px 20px 15px' }}>
-            <RadioGroup
-              aria-label={formatMessage(messages.environment)}
-              name="target"
-              value={currentFilters.target}
-              onChange={handleFilterChange}
-            >
-              <FormControlLabel value="" control={<Radio color="primary" />} label={formatMessage(messages.all)} />
-              {filters.environments &&
-                filters.environments.map((filter: string, index: number) => (
-                  <FormControlLabel key={index} value={filter} control={<Radio color="primary" />} label={filter} />
-                ))}
-            </RadioGroup>
-          </Box>
-        </section>
-        <section>
-          <Box
-            component="header"
-            sx={(theme) => ({
-              background: theme.palette.mode === 'dark' ? theme.palette.background.default : theme.palette.grey['100'],
-              padding: '10px'
-            })}
-          >
-            <Typography variant="body1" sx={{ ml: '5px' }}>
-              <FormControlLabel
-                value=""
-                label={<strong>{formatMessage(messages.state)}</strong>}
-                control={
-                  <Checkbox
-                    color="primary"
-                    value=""
-                    indeterminate={
-                      currentFilters.states !== null &&
-                      currentFilters.states !== 0 &&
-                      currentFilters.states !== allFiltersState
-                    }
-                    checked={currentFilters.states === allFiltersState}
-                    onChange={handleFilterChange}
-                  />
-                }
-              />
-            </Typography>
-          </Box>
-          <Box sx={{ width: '100%', padding: '5px 15px 20px 15px' }}>
-            <FormGroup>
-              {Object.entries(packageStatesMap).map(([key, { mask, validation }]) => {
-                return (
-                  <FormControlLabel
-                    key={key}
-                    value={mask}
-                    control={
-                      <Checkbox
-                        color="primary"
-                        value={mask}
-                        checked={validation(currentFilters.states)}
-                        onChange={handleFilterChange}
-                      />
-                    }
-                    label={formatMessage(messages[key])}
-                  />
-                );
-              })}
-            </FormGroup>
-          </Box>
-        </section>
-      </Popover>
-    </div>
-  );
+	return (
+		<div>
+			<Button variant="outlined" onClick={handleClick} sx={sx} className={className}>
+				{text} <ArrowDropDownIcon />
+			</Button>
+			<Popover
+				id="publishingFilterDropdown"
+				anchorEl={anchorEl}
+				slotProps={{ paper: { sx: { width: '300px' } } }}
+				keepMounted
+				open={Boolean(anchorEl)}
+				onClose={handleClose}
+				anchorOrigin={{
+					vertical: 'bottom',
+					horizontal: 'right'
+				}}
+				transformOrigin={{
+					vertical: 'top',
+					horizontal: 'right'
+				}}
+			>
+				<section>
+					<Box
+						component="header"
+						sx={(theme) => ({
+							background: theme.palette.mode === 'dark' ? theme.palette.background.default : theme.palette.grey['100'],
+							padding: '10px'
+						})}
+					>
+						<Typography variant="body1">
+							<strong>{formatMessage(messages.environment)}</strong>
+						</Typography>
+					</Box>
+					<Box sx={{ width: '100%', padding: '5px 15px 20px 15px' }}>
+						<RadioGroup
+							aria-label={formatMessage(messages.environment)}
+							name="target"
+							value={currentFilters.target}
+							onChange={handleFilterChange}
+						>
+							<FormControlLabel value="" control={<Radio color="primary" />} label={formatMessage(messages.all)} />
+							{filters.environments &&
+								filters.environments.map((filter: string, index: number) => (
+									<FormControlLabel key={index} value={filter} control={<Radio color="primary" />} label={filter} />
+								))}
+						</RadioGroup>
+					</Box>
+				</section>
+				<section>
+					<Box
+						component="header"
+						sx={(theme) => ({
+							background: theme.palette.mode === 'dark' ? theme.palette.background.default : theme.palette.grey['100'],
+							padding: '10px'
+						})}
+					>
+						<Typography variant="body1" sx={{ ml: '5px' }}>
+							<FormControlLabel
+								value=""
+								label={<strong>{formatMessage(messages.state)}</strong>}
+								control={
+									<Checkbox
+										color="primary"
+										value=""
+										indeterminate={
+											currentFilters.states !== null &&
+											currentFilters.states !== 0 &&
+											currentFilters.states !== allFiltersState
+										}
+										checked={currentFilters.states === allFiltersState}
+										onChange={handleFilterChange}
+									/>
+								}
+							/>
+						</Typography>
+					</Box>
+					<Box sx={{ width: '100%', padding: '5px 15px 20px 15px' }}>
+						<FormGroup>
+							{Object.entries(packageStatesMap).map(([key, { mask, validation }]) => {
+								return (
+									<FormControlLabel
+										key={key}
+										value={mask}
+										control={
+											<Checkbox
+												color="primary"
+												value={mask}
+												checked={validation(currentFilters.states)}
+												onChange={handleFilterChange}
+											/>
+										}
+										label={formatMessage(messages[key])}
+									/>
+								);
+							})}
+						</FormGroup>
+					</Box>
+				</section>
+			</Popover>
+		</div>
+	);
 }
 
 export default FilterDropdown;

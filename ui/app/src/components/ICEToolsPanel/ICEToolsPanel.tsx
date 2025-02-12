@@ -36,71 +36,71 @@ import Alert from '@mui/material/Alert';
 import { blockPreviewIframePointerEvents } from '../Preview/utils';
 
 export function ICEToolsPanel() {
-  const dispatch = useDispatch();
-  const uiConfig = useSiteUIConfig();
-  const { icePanel, windowSize, guest } = usePreviewState();
-  const { id: site, uuid } = useActiveSite();
-  const { rolesBySite, username } = useActiveUser();
-  const { icePanelWidth: width, editMode, icePanelStack } = useSelection((state) => state.preview);
-  const item = useCurrentPreviewItem();
-  const isOpen = editMode;
-  const isLockedForMe = Boolean(item && isItemLockedForMe(item, username));
-  const isStale = guest?.mainModelModifier ? guest.mainModelModifier.username !== username : false;
-  const previewIframe = document.getElementById('crafterCMSPreviewIframe');
+	const dispatch = useDispatch();
+	const uiConfig = useSiteUIConfig();
+	const { icePanel, windowSize, guest } = usePreviewState();
+	const { id: site, uuid } = useActiveSite();
+	const { rolesBySite, username } = useActiveUser();
+	const { icePanelWidth: width, editMode, icePanelStack } = useSelection((state) => state.preview);
+	const item = useCurrentPreviewItem();
+	const isOpen = editMode;
+	const isLockedForMe = Boolean(item && isItemLockedForMe(item, username));
+	const isStale = guest?.mainModelModifier ? guest.mainModelModifier.username !== username : false;
+	const previewIframe = document.getElementById('crafterCMSPreviewIframe');
 
-  const onWidthChange = (width) => {
-    dispatch(updateIcePanelWidth({ width }));
-  };
+	const onWidthChange = (width) => {
+		dispatch(updateIcePanelWidth({ width }));
+	};
 
-  useEffect(() => {
-    if (nnou(uiConfig.xml) && !icePanel) {
-      const icePanelWidth = getStoredICEToolsPanelWidth(site, username);
-      const storedPage = getStoredICEToolsPanelPage(uuid, username);
-      dispatch(initIcePanelConfig({ configXml: uiConfig.xml, storedPage, icePanelWidth }));
-    }
-  }, [uiConfig.xml, dispatch, icePanel, site, username, uuid]);
+	useEffect(() => {
+		if (nnou(uiConfig.xml) && !icePanel) {
+			const icePanelWidth = getStoredICEToolsPanelWidth(site, username);
+			const storedPage = getStoredICEToolsPanelPage(uuid, username);
+			dispatch(initIcePanelConfig({ configXml: uiConfig.xml, storedPage, icePanelWidth }));
+		}
+	}, [uiConfig.xml, dispatch, icePanel, site, username, uuid]);
 
-  return (
-    <ResizeableDrawer
-      open={isOpen}
-      belowToolbar
-      anchor="right"
-      width={width}
-      maxWidth={windowSize}
-      onWidthChange={onWidthChange}
-      onResizeStart={() => blockPreviewIframePointerEvents(true)}
-      onResizeStop={() => blockPreviewIframePointerEvents(false)}
-      sxs={{
-        resizeHandle: { backgroundColor: 'transparent' },
-        drawerPaperBelowToolbar: { top: '64px' }
-      }}
-    >
-      <Suspense fallback={<LoadingState />}>
-        <ConditionalLoadingState isLoading={!Boolean(icePanel)}>
-          {isLockedForMe && (
-            <Alert variant="outlined" severity="warning" sx={{ borderStyle: 'none none solid', borderRadius: 0 }}>
-              <FormattedMessage defaultMessage="Item is locked, editing is disabled." />
-            </Alert>
-          )}
-          {isStale && (
-            <Alert variant="outlined" severity="error" sx={{ borderStyle: 'none none solid', borderRadius: 0 }}>
-              <FormattedMessage defaultMessage="Item was modified, refresh to edit." />
-            </Alert>
-          )}
-          {icePanel?.widgets && icePanel.widgets.length > 0 ? (
-            renderWidgets(icePanelStack.length ? icePanelStack.slice(icePanelStack.length - 1) : icePanel.widgets, {
-              userRoles: rolesBySite[site],
-              defaultProps: { disabled: isLockedForMe }
-            })
-          ) : (
-            <EmptyState
-              title={<FormattedMessage id="icePanel.noWidgetsMessage" defaultMessage="No tools have been configured" />}
-            />
-          )}
-        </ConditionalLoadingState>
-      </Suspense>
-    </ResizeableDrawer>
-  );
+	return (
+		<ResizeableDrawer
+			open={isOpen}
+			belowToolbar
+			anchor="right"
+			width={width}
+			maxWidth={windowSize}
+			onWidthChange={onWidthChange}
+			onResizeStart={() => blockPreviewIframePointerEvents(true)}
+			onResizeStop={() => blockPreviewIframePointerEvents(false)}
+			sxs={{
+				resizeHandle: { backgroundColor: 'transparent' },
+				drawerPaperBelowToolbar: { top: '64px' }
+			}}
+		>
+			<Suspense fallback={<LoadingState />}>
+				<ConditionalLoadingState isLoading={!Boolean(icePanel)}>
+					{isLockedForMe && (
+						<Alert variant="outlined" severity="warning" sx={{ borderStyle: 'none none solid', borderRadius: 0 }}>
+							<FormattedMessage defaultMessage="Item is locked, editing is disabled." />
+						</Alert>
+					)}
+					{isStale && (
+						<Alert variant="outlined" severity="error" sx={{ borderStyle: 'none none solid', borderRadius: 0 }}>
+							<FormattedMessage defaultMessage="Item was modified, refresh to edit." />
+						</Alert>
+					)}
+					{icePanel?.widgets && icePanel.widgets.length > 0 ? (
+						renderWidgets(icePanelStack.length ? icePanelStack.slice(icePanelStack.length - 1) : icePanel.widgets, {
+							userRoles: rolesBySite[site],
+							defaultProps: { disabled: isLockedForMe }
+						})
+					) : (
+						<EmptyState
+							title={<FormattedMessage id="icePanel.noWidgetsMessage" defaultMessage="No tools have been configured" />}
+						/>
+					)}
+				</ConditionalLoadingState>
+			</Suspense>
+		</ResizeableDrawer>
+	);
 }
 
 export default ICEToolsPanel;

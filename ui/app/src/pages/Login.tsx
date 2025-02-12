@@ -26,37 +26,37 @@ import DialogContent from '@mui/material/DialogContent';
 import Box from '@mui/material/Box';
 
 export default function Login(props: LoginViewProps) {
-  const supportError = useMemo<string>(
-    () =>
-      'SharedWorker' in window
-        ? UNDEFINED
-        : ['iPad Simulator', 'iPhone Simulator', 'iPod Simulator', 'iPad', 'iPhone', 'iPod'].includes(
-              navigator.platform
-            )
-          ? 'iOS is not supported as it lacks essential features. Please use Chrome or Firefox browsers on your desktop.'
-          : 'Your browser is not supported as it lacks essential features. Please use Chrome or Firefox.',
-    []
-  );
-  // **************************************************************************
-  // TODO: To be enabled or removed depending on the background video decision.
-  // **************************************************************************
-  // const videoRef = useRef<HTMLVideoElement>();
-  // useEffect(() => {
-  //   const video = videoRef.current;
-  //   video.playbackRate = .55;
-  //   video.play();
-  // }, []);
-  return (
-    <I18nProvider>
-      <CrafterThemeProvider>
-        <Box
-          sx={{
-            height: '100%',
-            background: 'url("/studio/static-assets/images/cogs.jpg") 0 0 no-repeat',
-            backgroundSize: 'cover'
-          }}
-        >
-          {/*
+	const supportError = useMemo<string>(
+		() =>
+			'SharedWorker' in window
+				? UNDEFINED
+				: ['iPad Simulator', 'iPhone Simulator', 'iPod Simulator', 'iPad', 'iPhone', 'iPod'].includes(
+							navigator.platform
+					  )
+					? 'iOS is not supported as it lacks essential features. Please use Chrome or Firefox browsers on your desktop.'
+					: 'Your browser is not supported as it lacks essential features. Please use Chrome or Firefox.',
+		[]
+	);
+	// **************************************************************************
+	// TODO: To be enabled or removed depending on the background video decision.
+	// **************************************************************************
+	// const videoRef = useRef<HTMLVideoElement>();
+	// useEffect(() => {
+	//   const video = videoRef.current;
+	//   video.playbackRate = .55;
+	//   video.play();
+	// }, []);
+	return (
+		<I18nProvider>
+			<CrafterThemeProvider>
+				<Box
+					sx={{
+						height: '100%',
+						background: 'url("/studio/static-assets/images/cogs.jpg") 0 0 no-repeat',
+						backgroundSize: 'cover'
+					}}
+				>
+					{/*
           **************************************************************************
           TODO: To be enabled or removed depending on the background video decision.
           **************************************************************************
@@ -81,25 +81,25 @@ export default function Login(props: LoginViewProps) {
             src="/studio/static-assets/images/camera-moving-through-cogs.mp4"
           />
           */}
-          {supportError ? (
-            <Dialog open={true}>
-              <DialogContent>
-                <ErrorState
-                  title={supportError}
-                  imageUrl="/studio/static-assets/images/warning_state.svg"
-                  sxs={{
-                    title: { textAlign: 'center' },
-                    image: { width: 250, marginBottom: '10px', marginTop: '10px' }
-                  }}
-                />
-              </DialogContent>
-            </Dialog>
-          ) : (
-            <LoginView {...props} />
-          )}
-        </Box>
-        <GlobalStyles />
-      </CrafterThemeProvider>
-    </I18nProvider>
-  );
+					{supportError ? (
+						<Dialog open={true}>
+							<DialogContent>
+								<ErrorState
+									title={supportError}
+									imageUrl="/studio/static-assets/images/warning_state.svg"
+									sxs={{
+										title: { textAlign: 'center' },
+										image: { width: 250, marginBottom: '10px', marginTop: '10px' }
+									}}
+								/>
+							</DialogContent>
+						</Dialog>
+					) : (
+						<LoginView {...props} />
+					)}
+				</Box>
+				<GlobalStyles />
+			</CrafterThemeProvider>
+		</I18nProvider>
+	);
 }

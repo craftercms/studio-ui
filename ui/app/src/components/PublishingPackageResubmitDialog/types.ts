@@ -19,24 +19,24 @@ import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { PublishPackage, StandardAction } from '../../models';
 
 export interface PublishingPackageResubmitDialogBaseProps {
-  type: 'resubmit' | 'promote';
-  pkg: PublishPackage;
+	type: 'resubmit' | 'promote';
+	pkg: PublishPackage;
 }
 
 export interface PublishingPackageResubmitDialogProps
-  extends PublishingPackageResubmitDialogBaseProps,
-    EnhancedDialogProps {
-  onSuccess?(): void;
+	extends PublishingPackageResubmitDialogBaseProps,
+		EnhancedDialogProps {
+	onSuccess?(): void;
 }
 
 export interface PublishingPackageResubmitDialogStateProps
-  extends PublishingPackageResubmitDialogBaseProps,
-    EnhancedDialogState {
-  onClose?: StandardAction;
-  onClosed?: StandardAction;
-  onSuccess?: StandardAction;
+	extends PublishingPackageResubmitDialogBaseProps,
+		EnhancedDialogState {
+	onClose?: StandardAction;
+	onClosed?: StandardAction;
+	onSuccess?: StandardAction;
 }
 
 export interface PublishingPackageResubmitDialogContainerProps
-  extends PublishingPackageResubmitDialogBaseProps,
-    Pick<PublishingPackageResubmitDialogProps, 'isSubmitting' | 'onSuccess' | 'onClose'> {}
+	extends PublishingPackageResubmitDialogBaseProps,
+		Pick<PublishingPackageResubmitDialogProps, 'isSubmitting' | 'onSuccess' | 'onClose'> {}

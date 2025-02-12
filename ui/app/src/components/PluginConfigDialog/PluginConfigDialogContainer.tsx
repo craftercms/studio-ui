@@ -33,125 +33,125 @@ import { translations } from '../SiteConfigurationManagement/translations';
 import { parseValidateDocument } from '../../utils/xml';
 
 export function PluginConfigDialogContainer(props: PluginConfigDialogContainerProps) {
-  const siteId = useActiveSiteId();
-  const { pluginId, onSaved, isSubmitting, onClose, onSubmittingAndOrPendingChange } = props;
-  const [loading, setLoading] = useState(false);
-  const [content, setContent] = useState('');
-  const editorRef = useRef<any>(undefined);
-  const dispatch = useDispatch();
-  const [disabledSaveButton, setDisabledSaveButton] = useState(true);
-  const { formatMessage } = useIntl();
-  const functionRefs = useUpdateRefs({
-    onSubmittingAndOrPendingChange
-  });
+	const siteId = useActiveSiteId();
+	const { pluginId, onSaved, isSubmitting, onClose, onSubmittingAndOrPendingChange } = props;
+	const [loading, setLoading] = useState(false);
+	const [content, setContent] = useState('');
+	const editorRef = useRef<any>(undefined);
+	const dispatch = useDispatch();
+	const [disabledSaveButton, setDisabledSaveButton] = useState(true);
+	const { formatMessage } = useIntl();
+	const functionRefs = useUpdateRefs({
+		onSubmittingAndOrPendingChange
+	});
 
-  useEffect(() => {
-    setLoading(true);
-    getPluginConfiguration(siteId, pluginId).subscribe({
-      next: (content) => {
-        setContent(content);
-        setLoading(false);
-      },
-      error: ({ response }) => {
-        dispatch(
-          showErrorDialog({
-            error: response
-          })
-        );
-      }
-    });
-  }, [dispatch, pluginId, siteId]);
+	useEffect(() => {
+		setLoading(true);
+		getPluginConfiguration(siteId, pluginId).subscribe({
+			next: (content) => {
+				setContent(content);
+				setLoading(false);
+			},
+			error: ({ response }) => {
+				dispatch(
+					showErrorDialog({
+						error: response
+					})
+				);
+			}
+		});
+	}, [dispatch, pluginId, siteId]);
 
-  const onEditorChanges = () => {
-    if (content !== editorRef.current.getValue()) {
-      setDisabledSaveButton(false);
-      onSubmittingAndOrPendingChange?.({ hasPendingChanges: true });
-    } else {
-      setDisabledSaveButton(true);
-      onSubmittingAndOrPendingChange?.({ hasPendingChanges: false });
-    }
-  };
+	const onEditorChanges = () => {
+		if (content !== editorRef.current.getValue()) {
+			setDisabledSaveButton(false);
+			onSubmittingAndOrPendingChange?.({ hasPendingChanges: true });
+		} else {
+			setDisabledSaveButton(true);
+			onSubmittingAndOrPendingChange?.({ hasPendingChanges: false });
+		}
+	};
 
-  const onSave = () => {
-    const content = editorRef.current.getValue();
-    const doc = parseValidateDocument(content);
-    if (typeof doc === 'string') {
-      dispatch(
-        showSystemNotification({
-          message: formatMessage(translations.xmlContainsErrors, {
-            errors: doc
-          }),
-          options: {
-            variant: 'error'
-          }
-        })
-      );
-      return;
-    }
-    const errors = editorRef.current
-      .getSession()
-      .getAnnotations()
-      .filter((annotation) => {
-        return annotation.type === 'error';
-      });
+	const onSave = () => {
+		const content = editorRef.current.getValue();
+		const doc = parseValidateDocument(content);
+		if (typeof doc === 'string') {
+			dispatch(
+				showSystemNotification({
+					message: formatMessage(translations.xmlContainsErrors, {
+						errors: doc
+					}),
+					options: {
+						variant: 'error'
+					}
+				})
+			);
+			return;
+		}
+		const errors = editorRef.current
+			.getSession()
+			.getAnnotations()
+			.filter((annotation) => {
+				return annotation.type === 'error';
+			});
 
-    if (errors.length) {
-      dispatch(
-        showSystemNotification({
-          message: formatMessage(translations.documentError),
-          options: {
-            variant: 'error'
-          }
-        })
-      );
-    } else {
-      functionRefs.current.onSubmittingAndOrPendingChange({ isSubmitting: true });
-      setPluginConfiguration(siteId, pluginId, content).subscribe({
-        next: () => {
-          functionRefs.current.onSubmittingAndOrPendingChange({ isSubmitting: false, hasPendingChanges: false });
-          onSaved();
-        },
-        error: ({ response }) => {
-          functionRefs.current.onSubmittingAndOrPendingChange({ isSubmitting: false });
-          dispatch(
-            showErrorDialog({
-              error: response.response
-            })
-          );
-        }
-      });
-    }
-  };
+		if (errors.length) {
+			dispatch(
+				showSystemNotification({
+					message: formatMessage(translations.documentError),
+					options: {
+						variant: 'error'
+					}
+				})
+			);
+		} else {
+			functionRefs.current.onSubmittingAndOrPendingChange({ isSubmitting: true });
+			setPluginConfiguration(siteId, pluginId, content).subscribe({
+				next: () => {
+					functionRefs.current.onSubmittingAndOrPendingChange({ isSubmitting: false, hasPendingChanges: false });
+					onSaved();
+				},
+				error: ({ response }) => {
+					functionRefs.current.onSubmittingAndOrPendingChange({ isSubmitting: false });
+					dispatch(
+						showErrorDialog({
+							error: response.response
+						})
+					);
+				}
+			});
+		}
+	};
 
-  const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
+	const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
 
-  return (
-    <>
-      <DialogBody sx={{ height: '60vh', padding: 0 }}>
-        <ConditionalLoadingState isLoading={loading} sxs={{ root: { flexGrow: 1 } }}>
-          <AceEditor
-            ref={editorRef}
-            mode="ace/mode/xml"
-            theme="ace/theme/textmate"
-            autoFocus={true}
-            onChange={onEditorChanges}
-            value={content}
-          />
-        </ConditionalLoadingState>
-      </DialogBody>
-      <DialogFooter>
-        <SecondaryButton
-          onClick={onCloseButtonClick}
-          sx={{
-            mr: '8px'
-          }}
-        >
-          <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
-        </SecondaryButton>
-        <PrimaryButton disabled={disabledSaveButton || isSubmitting} onClick={onSave} loading={isSubmitting}>
-          <FormattedMessage id="words.save" defaultMessage="Save" />
-        </PrimaryButton>
-      </DialogFooter>
-    </>
-  );
+	return (
+		<>
+			<DialogBody sx={{ height: '60vh', padding: 0 }}>
+				<ConditionalLoadingState isLoading={loading} sxs={{ root: { flexGrow: 1 } }}>
+					<AceEditor
+						ref={editorRef}
+						mode="ace/mode/xml"
+						theme="ace/theme/textmate"
+						autoFocus={true}
+						onChange={onEditorChanges}
+						value={content}
+					/>
+				</ConditionalLoadingState>
+			</DialogBody>
+			<DialogFooter>
+				<SecondaryButton
+					onClick={onCloseButtonClick}
+					sx={{
+						mr: '8px'
+					}}
+				>
+					<FormattedMessage id="words.cancel" defaultMessage="Cancel" />
+				</SecondaryButton>
+				<PrimaryButton disabled={disabledSaveButton || isSubmitting} onClick={onSave} loading={isSubmitting}>
+					<FormattedMessage id="words.save" defaultMessage="Save" />
+				</PrimaryButton>
+			</DialogFooter>
+		</>
+	);
 }

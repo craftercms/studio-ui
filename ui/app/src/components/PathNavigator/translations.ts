@@ -17,32 +17,32 @@
 import { defineMessages } from 'react-intl';
 
 export const translations = defineMessages({
-  previousPage: {
-    id: 'pagination.previousPage',
-    defaultMessage: 'Previous page'
-  },
-  nextPage: {
-    id: 'pagination.nextPage',
-    defaultMessage: 'Next page'
-  },
-  itemsSelected: {
-    id: 'craftercms.pages.widget.itemsSelected',
-    defaultMessage: '{count, plural, one {{count} Item selected} other {{count} Items selected}}'
-  },
-  select: {
-    id: 'words.select',
-    defaultMessage: 'Select'
-  },
-  terminateSelection: {
-    id: 'craftercms.pages.option.terminateSelection',
-    defaultMessage: 'Terminate Selection'
-  },
-  refresh: {
-    id: 'words.refresh',
-    defaultMessage: 'Refresh'
-  },
-  noLocales: {
-    id: 'craftercms.pages.option.noLocales',
-    defaultMessage: 'The project has no locales declared.'
-  }
+	previousPage: {
+		id: 'pagination.previousPage',
+		defaultMessage: 'Previous page'
+	},
+	nextPage: {
+		id: 'pagination.nextPage',
+		defaultMessage: 'Next page'
+	},
+	itemsSelected: {
+		id: 'craftercms.pages.widget.itemsSelected',
+		defaultMessage: '{count, plural, one {{count} Item selected} other {{count} Items selected}}'
+	},
+	select: {
+		id: 'words.select',
+		defaultMessage: 'Select'
+	},
+	terminateSelection: {
+		id: 'craftercms.pages.option.terminateSelection',
+		defaultMessage: 'Terminate Selection'
+	},
+	refresh: {
+		id: 'words.refresh',
+		defaultMessage: 'Refresh'
+	},
+	noLocales: {
+		id: 'craftercms.pages.option.noLocales',
+		defaultMessage: 'The project has no locales declared.'
+	}
 });

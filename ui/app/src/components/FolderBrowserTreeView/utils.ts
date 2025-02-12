@@ -17,15 +17,15 @@
 import { LegacyItem } from '../../models/Item';
 
 export function legacyItemsToTreeNodes(items: LegacyItem[]) {
-  return items
-    .filter((item) => item.contentType === 'folder')
-    .map((item) => ({
-      id: item.path,
-      name: item.name,
-      children: [
-        {
-          id: 'loading'
-        }
-      ]
-    }));
+	return items
+		.filter((item) => item.contentType === 'folder')
+		.map((item) => ({
+			id: item.path,
+			name: item.name,
+			children: [
+				{
+					id: 'loading'
+				}
+			]
+		}));
 }

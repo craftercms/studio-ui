@@ -20,16 +20,16 @@ import { fetchDetailedItem, fetchSandboxItem } from '../services/content';
 import { DetailedItem } from '../models/Item';
 
 export function useFetchItem(path: string, detailed: boolean = false): DetailedItem {
-  const [item, setItem] = useState(null);
-  const siteId = useActiveSiteId();
-  useEffect(() => {
-    if (detailed) {
-      fetchDetailedItem(siteId, path).subscribe(setItem);
-    } else {
-      fetchSandboxItem(siteId, path, { castAsDetailedItem: true }).subscribe(setItem);
-    }
-  }, [siteId, path, detailed]);
-  return item;
+	const [item, setItem] = useState(null);
+	const siteId = useActiveSiteId();
+	useEffect(() => {
+		if (detailed) {
+			fetchDetailedItem(siteId, path).subscribe(setItem);
+		} else {
+			fetchSandboxItem(siteId, path, { castAsDetailedItem: true }).subscribe(setItem);
+		}
+	}, [siteId, path, detailed]);
+	return item;
 }
 
 export default useFetchItem;

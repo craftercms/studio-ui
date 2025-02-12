@@ -21,29 +21,29 @@ import CreateFolderContainer from './CreateFolderContainer';
 import { FormattedMessage } from 'react-intl';
 
 export function CreateFolderDialog(props: CreateFolderProps) {
-  const { path, allowBraces, value, rename, onRenamed, onCreated, ...rest } = props;
-  return (
-    <EnhancedDialog
-      title={
-        rename ? (
-          <FormattedMessage id="newFolder.renameFolder" defaultMessage="Rename Folder" />
-        ) : (
-          <FormattedMessage id="newFolder.title" defaultMessage="Create a New Folder" />
-        )
-      }
-      maxWidth="xs"
-      {...rest}
-    >
-      <CreateFolderContainer
-        path={path}
-        rename={rename}
-        allowBraces={allowBraces}
-        value={value}
-        onCreated={onCreated}
-        onRenamed={onRenamed}
-      />
-    </EnhancedDialog>
-  );
+	const { path, allowBraces, value, rename, onRenamed, onCreated, ...rest } = props;
+	return (
+		<EnhancedDialog
+			title={
+				rename ? (
+					<FormattedMessage id="newFolder.renameFolder" defaultMessage="Rename Folder" />
+				) : (
+					<FormattedMessage id="newFolder.title" defaultMessage="Create a New Folder" />
+				)
+			}
+			maxWidth="xs"
+			{...rest}
+		>
+			<CreateFolderContainer
+				path={path}
+				rename={rename}
+				allowBraces={allowBraces}
+				value={value}
+				onCreated={onCreated}
+				onRenamed={onRenamed}
+			/>
+		</EnhancedDialog>
+	);
 }
 
 export default CreateFolderDialog;

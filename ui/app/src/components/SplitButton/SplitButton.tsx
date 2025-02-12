@@ -18,80 +18,80 @@ import React, { useEffect } from 'react';
 import SplitButtonUI from './SplitButtonUI';
 import { SplitButtonProps } from './utils';
 import {
-  getStoredSaveButtonSubAction,
-  removeStoredSaveButtonSubAction,
-  setStoredSaveButtonSubAction
+	getStoredSaveButtonSubAction,
+	removeStoredSaveButtonSubAction,
+	setStoredSaveButtonSubAction
 } from '../../utils/state';
 import useActiveUser from '../../hooks/useActiveUser';
 
 export function SplitButton(props: SplitButtonProps) {
-  const { options, defaultSelected = options[0].id, disablePortal = true, disabled, loading, storageKey } = props;
-  const [open, setOpen] = React.useState(false);
-  const user = useActiveUser();
-  const anchorRef = React.useRef<HTMLDivElement>(null);
+	const { options, defaultSelected = options[0].id, disablePortal = true, disabled, loading, storageKey } = props;
+	const [open, setOpen] = React.useState(false);
+	const user = useActiveUser();
+	const anchorRef = React.useRef<HTMLDivElement>(null);
 
-  const indexFromDefaultSelected = options.findIndex((option) => option.id === defaultSelected);
-  const [selectedIndex, setSelectedIndex] = React.useState(
-    indexFromDefaultSelected !== -1 ? indexFromDefaultSelected : 0
-  );
+	const indexFromDefaultSelected = options.findIndex((option) => option.id === defaultSelected);
+	const [selectedIndex, setSelectedIndex] = React.useState(
+		indexFromDefaultSelected !== -1 ? indexFromDefaultSelected : 0
+	);
 
-  useEffect(() => {
-    if (storageKey) {
-      const storedValue = getStoredSaveButtonSubAction(user.username, storageKey);
-      if (storedValue) {
-        const index = options.findIndex((option) => option.id === storedValue);
-        if (index !== -1) {
-          setSelectedIndex(index);
-        } else {
-          removeStoredSaveButtonSubAction(user.username, storageKey);
-        }
-      }
-    }
-  }, [storageKey, options, user.username]);
+	useEffect(() => {
+		if (storageKey) {
+			const storedValue = getStoredSaveButtonSubAction(user.username, storageKey);
+			if (storedValue) {
+				const index = options.findIndex((option) => option.id === storedValue);
+				if (index !== -1) {
+					setSelectedIndex(index);
+				} else {
+					removeStoredSaveButtonSubAction(user.username, storageKey);
+				}
+			}
+		}
+	}, [storageKey, options, user.username]);
 
-  const handleClick = (e) => {
-    options[selectedIndex]?.callback(e);
-  };
+	const handleClick = (e) => {
+		options[selectedIndex]?.callback(e);
+	};
 
-  const handleMenuItemClick = (event: React.MouseEvent<Element, MouseEvent>, index: number) => {
-    setSelectedIndex(index);
+	const handleMenuItemClick = (event: React.MouseEvent<Element, MouseEvent>, index: number) => {
+		setSelectedIndex(index);
 
-    if (storageKey) {
-      const storageValue = options[index].id;
-      setStoredSaveButtonSubAction(user.username, storageKey, storageValue);
-    }
+		if (storageKey) {
+			const storageValue = options[index].id;
+			setStoredSaveButtonSubAction(user.username, storageKey, storageValue);
+		}
 
-    setOpen(false);
-    options[index]?.callback(event);
-  };
+		setOpen(false);
+		options[index]?.callback(event);
+	};
 
-  const handleToggle = () => {
-    setOpen((prevOpen) => !prevOpen);
-  };
+	const handleToggle = () => {
+		setOpen((prevOpen) => !prevOpen);
+	};
 
-  const handleClose = (event: MouseEvent | TouchEvent) => {
-    if (anchorRef.current && anchorRef.current.contains(event.target as HTMLElement)) {
-      return;
-    }
+	const handleClose = (event: MouseEvent | TouchEvent) => {
+		if (anchorRef.current && anchorRef.current.contains(event.target as HTMLElement)) {
+			return;
+		}
 
-    setOpen(false);
-  };
+		setOpen(false);
+	};
 
-  return (
-    <SplitButtonUI
-      options={options}
-      loading={loading}
-      disablePortal={disablePortal}
-      disabled={disabled}
-      anchorRef={anchorRef}
-      selectedIndex={selectedIndex}
-      handleClick={handleClick}
-      open={open}
-      handleToggle={handleToggle}
-      handleClose={handleClose}
-      handleMenuItemClick={handleMenuItemClick}
-    />
-  );
+	return (
+		<SplitButtonUI
+			options={options}
+			loading={loading}
+			disablePortal={disablePortal}
+			disabled={disabled}
+			anchorRef={anchorRef}
+			selectedIndex={selectedIndex}
+			handleClick={handleClick}
+			open={open}
+			handleToggle={handleToggle}
+			handleClose={handleClose}
+			handleMenuItemClick={handleMenuItemClick}
+		/>
+	);
 }
 
 export default SplitButton;

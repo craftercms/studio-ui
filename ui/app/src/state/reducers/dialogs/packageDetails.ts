@@ -20,19 +20,19 @@ import { PackageDetailsDialogStateProps } from '../../../components';
 import { GlobalState } from '../../../models';
 
 const initialState = {
-  open: false,
-  packageId: null
+	open: false,
+	packageId: null
 };
 
 export default createReducer<GlobalState['dialogs']['packageDetails']>(initialState, (builder) => {
-  builder
-    .addCase(showPackageDetailsDialog, (state, { payload }) => ({
-      ...state,
-      onClose: closePackageDetailsDialog(),
-      onClosed: packageDetailsDialogClosed(),
-      ...(payload as Partial<PackageDetailsDialogStateProps>),
-      open: true
-    }))
-    .addCase(closePackageDetailsDialog, (state) => ({ ...state, open: false }))
-    .addCase(packageDetailsDialogClosed, () => initialState);
+	builder
+		.addCase(showPackageDetailsDialog, (state, { payload }) => ({
+			...state,
+			onClose: closePackageDetailsDialog(),
+			onClosed: packageDetailsDialogClosed(),
+			...(payload as Partial<PackageDetailsDialogStateProps>),
+			open: true
+		}))
+		.addCase(closePackageDetailsDialog, (state) => ({ ...state, open: false }))
+		.addCase(packageDetailsDialogClosed, () => initialState);
 });

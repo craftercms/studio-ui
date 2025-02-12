@@ -20,24 +20,24 @@ import React from 'react';
 import Box from '@mui/material/Box';
 
 interface SitesGridSkeletonProps {
-  numOfItems?: number;
-  currentView: 'grid' | 'list';
+	numOfItems?: number;
+	currentView: 'grid' | 'list';
 }
 
 export function SitesGridSkeleton(props: SitesGridSkeletonProps) {
-  const { numOfItems = 5, currentView } = props;
-  const items = new Array(numOfItems).fill(null);
-  return (
-    <Box component="section" sx={{ display: 'flex', flexDirection: 'column', padding: '20px' }}>
-      <Grid container spacing={3}>
-        {items.map((num, i) => (
-          <Grid key={i}>
-            <SiteCardSkeleton compact={currentView === 'list'} />
-          </Grid>
-        ))}
-      </Grid>
-    </Box>
-  );
+	const { numOfItems = 5, currentView } = props;
+	const items = new Array(numOfItems).fill(null);
+	return (
+		<Box component="section" sx={{ display: 'flex', flexDirection: 'column', padding: '20px' }}>
+			<Grid container spacing={3}>
+				{items.map((num, i) => (
+					<Grid key={i}>
+						<SiteCardSkeleton compact={currentView === 'list'} />
+					</Grid>
+				))}
+			</Grid>
+		</Box>
+	);
 }
 
 export default SitesGridSkeleton;

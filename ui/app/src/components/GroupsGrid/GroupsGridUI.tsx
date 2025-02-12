@@ -29,61 +29,61 @@ import GlobalAppGridCell from '../GlobalAppGridCell';
 import Box from '@mui/material/Box';
 
 export interface GroupsGridUIProps {
-  groups: PagedArray<Group>;
-  onRowClicked(user: Group): void;
-  onPageChange(page: number): void;
-  onRowsPerPageChange?: React.ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
+	groups: PagedArray<Group>;
+	onRowClicked(user: Group): void;
+	onPageChange(page: number): void;
+	onRowsPerPageChange?: React.ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
 }
 
 export function GroupsGridUI(props: GroupsGridUIProps) {
-  const { groups, onRowClicked, onPageChange, onRowsPerPageChange } = props;
+	const { groups, onRowClicked, onPageChange, onRowsPerPageChange } = props;
 
-  return (
-    <Box display="flex" flexDirection="column">
-      <TableContainer>
-        <Table sx={{ tableLayout: 'fixed' }}>
-          <TableHead>
-            <GlobalAppGridRow className="hoverDisabled">
-              <GlobalAppGridCell align="left" className="width25">
-                <Typography variant="subtitle2">
-                  <FormattedMessage id="words.name" defaultMessage="Name" />
-                </Typography>
-              </GlobalAppGridCell>
-              <GlobalAppGridCell align="left">
-                <Typography variant="subtitle2">
-                  <FormattedMessage id="words.description" defaultMessage="Description" />
-                </Typography>
-              </GlobalAppGridCell>
-            </GlobalAppGridRow>
-          </TableHead>
-          <TableBody>
-            {groups.map((group, i) => (
-              <GlobalAppGridRow key={group.id} onClick={() => onRowClicked(group)}>
-                <GlobalAppGridCell align="left" className="width25">
-                  <Typography variant="body2" noWrap title={group.name}>
-                    {group.name}
-                  </Typography>
-                </GlobalAppGridCell>
-                <GlobalAppGridCell align="left">
-                  <Typography variant="body2" sx={{ wordWrap: 'break-word' }}>
-                    {group.desc}
-                  </Typography>
-                </GlobalAppGridCell>
-              </GlobalAppGridRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <Pagination
-        mode="table"
-        count={groups.total}
-        rowsPerPage={groups.limit}
-        page={groups && Math.ceil(groups.offset / groups.limit)}
-        onPageChange={(e, page: number) => onPageChange(page)}
-        onRowsPerPageChange={onRowsPerPageChange}
-      />
-    </Box>
-  );
+	return (
+		<Box display="flex" flexDirection="column">
+			<TableContainer>
+				<Table sx={{ tableLayout: 'fixed' }}>
+					<TableHead>
+						<GlobalAppGridRow className="hoverDisabled">
+							<GlobalAppGridCell align="left" className="width25">
+								<Typography variant="subtitle2">
+									<FormattedMessage id="words.name" defaultMessage="Name" />
+								</Typography>
+							</GlobalAppGridCell>
+							<GlobalAppGridCell align="left">
+								<Typography variant="subtitle2">
+									<FormattedMessage id="words.description" defaultMessage="Description" />
+								</Typography>
+							</GlobalAppGridCell>
+						</GlobalAppGridRow>
+					</TableHead>
+					<TableBody>
+						{groups.map((group, i) => (
+							<GlobalAppGridRow key={group.id} onClick={() => onRowClicked(group)}>
+								<GlobalAppGridCell align="left" className="width25">
+									<Typography variant="body2" noWrap title={group.name}>
+										{group.name}
+									</Typography>
+								</GlobalAppGridCell>
+								<GlobalAppGridCell align="left">
+									<Typography variant="body2" sx={{ wordWrap: 'break-word' }}>
+										{group.desc}
+									</Typography>
+								</GlobalAppGridCell>
+							</GlobalAppGridRow>
+						))}
+					</TableBody>
+				</Table>
+			</TableContainer>
+			<Pagination
+				mode="table"
+				count={groups.total}
+				rowsPerPage={groups.limit}
+				page={groups && Math.ceil(groups.offset / groups.limit)}
+				onPageChange={(e, page: number) => onPageChange(page)}
+				onRowsPerPageChange={onRowsPerPageChange}
+			/>
+		</Box>
+	);
 }
 
 export default GroupsGridUI;

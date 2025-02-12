@@ -62,281 +62,281 @@ import { previewSwitch } from '../../services/security';
 import { EmptyState } from '../EmptyState';
 
 const translations = defineMessages({
-  siteDeleted: {
-    id: 'sitesGrid.siteDeleted',
-    defaultMessage: 'Project deleted successfully'
-  }
+	siteDeleted: {
+		id: 'sitesGrid.siteDeleted',
+		defaultMessage: 'Project deleted successfully'
+	}
 });
 
 const confirmDeleteInitialState = {
-  site: null,
-  open: false,
-  checked: false
+	site: null,
+	open: false,
+	checked: false
 };
 
 export function SiteManagement() {
-  const dispatch = useDispatch();
-  const { formatMessage } = useIntl();
-  const { authoringBase, useBaseDomain } = useEnv();
-  const [openCreateSiteDialog, setOpenCreateSiteDialog] = useState(false);
-  const user = useActiveUser();
-  const [currentView, setCurrentView] = useState<'grid' | 'list'>(
-    getStoredGlobalMenuSiteViewPreference(user.username) ?? 'grid'
-  );
-  const { byId: sitesById, isFetching, active } = useSitesBranch();
-  const sitesList = sitesById ? Object.values(sitesById) : null;
-  const [selectedSiteStatus, setSelectedSiteStatus] = useState<PublishingStatus>(null);
-  const [permissionsLookup, setPermissionsLookup] = useState<LookupTable<boolean>>(foo);
-  const duplicateSiteDialogState = useEnhancedDialogState();
-  const [duplicateSiteId, setDuplicateSiteId] = useState(null);
-  const [isDuplicateDialogFromCreateDialog, setIsDuplicateDialogFromCreateDialog] = useState(false);
-  const [disabledSitesLookup, setDisabledSitesLookup] = useSpreadState({});
-  const [confirmDeleteState, setConfirmDeleteState] = useSpreadState(confirmDeleteInitialState);
+	const dispatch = useDispatch();
+	const { formatMessage } = useIntl();
+	const { authoringBase, useBaseDomain } = useEnv();
+	const [openCreateSiteDialog, setOpenCreateSiteDialog] = useState(false);
+	const user = useActiveUser();
+	const [currentView, setCurrentView] = useState<'grid' | 'list'>(
+		getStoredGlobalMenuSiteViewPreference(user.username) ?? 'grid'
+	);
+	const { byId: sitesById, isFetching, active } = useSitesBranch();
+	const sitesList = sitesById ? Object.values(sitesById) : null;
+	const [selectedSiteStatus, setSelectedSiteStatus] = useState<PublishingStatus>(null);
+	const [permissionsLookup, setPermissionsLookup] = useState<LookupTable<boolean>>(foo);
+	const duplicateSiteDialogState = useEnhancedDialogState();
+	const [duplicateSiteId, setDuplicateSiteId] = useState(null);
+	const [isDuplicateDialogFromCreateDialog, setIsDuplicateDialogFromCreateDialog] = useState(false);
+	const [disabledSitesLookup, setDisabledSitesLookup] = useSpreadState({});
+	const [confirmDeleteState, setConfirmDeleteState] = useSpreadState(confirmDeleteInitialState);
 
-  useEffect(() => {
-    const subscription = hasGlobalPermissions('create_site', 'edit_site', 'delete_site', 'duplicate_site').subscribe(
-      setPermissionsLookup
-    );
-    return () => subscription.unsubscribe();
-  }, []);
+	useEffect(() => {
+		const subscription = hasGlobalPermissions('create_site', 'edit_site', 'delete_site', 'duplicate_site').subscribe(
+			setPermissionsLookup
+		);
+		return () => subscription.unsubscribe();
+	}, []);
 
-  const onSiteClick = (site: Site) => {
-    setSiteCookie(site.id, useBaseDomain);
-    previewSwitch().subscribe(() => {
-      window.location.href = getSystemLink({
-        systemLinkId: 'preview',
-        authoringBase,
-        site: site.id
-      });
-    });
-  };
+	const onSiteClick = (site: Site) => {
+		setSiteCookie(site.id, useBaseDomain);
+		previewSwitch().subscribe(() => {
+			window.location.href = getSystemLink({
+				systemLinkId: 'preview',
+				authoringBase,
+				site: site.id
+			});
+		});
+	};
 
-  const onDeleteSiteClick = (site: Site) => {
-    setConfirmDeleteState({ site, open: true });
-  };
+	const onDeleteSiteClick = (site: Site) => {
+		setConfirmDeleteState({ site, open: true });
+	};
 
-  const onConfirmDeleteSite = (site: Site) => {
-    setDisabledSitesLookup({ [site.id]: true });
-    trash(site.id).subscribe({
-      next() {
-        dispatch(
-          batchActions([
-            popSite({ siteId: site.id, isActive: site.id === active }),
-            showSystemNotification({
-              message: formatMessage(translations.siteDeleted)
-            }),
-            fetchSites()
-          ])
-        );
-        setDisabledSitesLookup({ [site.id]: false });
-      },
-      error({ response: { response } }) {
-        setDisabledSitesLookup({ [site.id]: false });
-        dispatch(showErrorDialog({ error: response }));
-      }
-    });
-  };
+	const onConfirmDeleteSite = (site: Site) => {
+		setDisabledSitesLookup({ [site.id]: true });
+		trash(site.id).subscribe({
+			next() {
+				dispatch(
+					batchActions([
+						popSite({ siteId: site.id, isActive: site.id === active }),
+						showSystemNotification({
+							message: formatMessage(translations.siteDeleted)
+						}),
+						fetchSites()
+					])
+				);
+				setDisabledSitesLookup({ [site.id]: false });
+			},
+			error({ response: { response } }) {
+				setDisabledSitesLookup({ [site.id]: false });
+				dispatch(showErrorDialog({ error: response }));
+			}
+		});
+	};
 
-  const onEditSiteClick = (site: Site) => {
-    dispatch(showEditSiteDialog({ site }));
-  };
+	const onEditSiteClick = (site: Site) => {
+		dispatch(showEditSiteDialog({ site }));
+	};
 
-  const onPublishButtonClick = (
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-    site: Site,
-    status: PublishingStatus
-  ) => {
-    event.preventDefault();
-    event.stopPropagation();
-    setSelectedSiteStatus(status);
-    publishingStatusDialogState.onOpen();
-  };
+	const onPublishButtonClick = (
+		event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+		site: Site,
+		status: PublishingStatus
+	) => {
+		event.preventDefault();
+		event.stopPropagation();
+		setSelectedSiteStatus(status);
+		publishingStatusDialogState.onOpen();
+	};
 
-  const onDuplicateSiteClick = (siteId: string) => {
-    setDuplicateSiteId(siteId);
-    setIsDuplicateDialogFromCreateDialog(false);
-    duplicateSiteDialogState.onOpen();
-  };
+	const onDuplicateSiteClick = (siteId: string) => {
+		setDuplicateSiteId(siteId);
+		setIsDuplicateDialogFromCreateDialog(false);
+		duplicateSiteDialogState.onOpen();
+	};
 
-  const handleChangeView = () => {
-    if (currentView === 'grid') {
-      setCurrentView('list');
-      setStoredGlobalMenuSiteViewPreference('list', user.username);
-    } else {
-      setCurrentView('grid');
-      setStoredGlobalMenuSiteViewPreference('grid', user.username);
-    }
-  };
+	const handleChangeView = () => {
+		if (currentView === 'grid') {
+			setCurrentView('list');
+			setStoredGlobalMenuSiteViewPreference('list', user.username);
+		} else {
+			setCurrentView('grid');
+			setStoredGlobalMenuSiteViewPreference('grid', user.username);
+		}
+	};
 
-  const createSiteDialogGoBackFromDuplicate = () => {
-    duplicateSiteDialogState.onClose();
-    setOpenCreateSiteDialog(true);
-  };
+	const createSiteDialogGoBackFromDuplicate = () => {
+		duplicateSiteDialogState.onClose();
+		setOpenCreateSiteDialog(true);
+	};
 
-  const publishingStatusDialogState = useEnhancedDialogState();
+	const publishingStatusDialogState = useEnhancedDialogState();
 
-  const handleCreateSiteClick = () => setOpenCreateSiteDialog(true);
+	const handleCreateSiteClick = () => setOpenCreateSiteDialog(true);
 
-  const hasCreateSitePermission = permissionsLookup['create_site'];
+	const hasCreateSitePermission = permissionsLookup['create_site'];
 
-  const cardHeaderBlock = (
-    <CardHeader
-      title={<FormattedMessage defaultMessage="Get Started" />}
-      titleTypographyProps={{ variant: 'h6' }}
-      subheader={
-        hasCreateSitePermission ? (
-          <FormattedMessage defaultMessage="Create your first project." />
-        ) : (
-          <FormattedMessage defaultMessage="Contact your administrator to gain access to existing projects." />
-        )
-      }
-    />
-  );
+	const cardHeaderBlock = (
+		<CardHeader
+			title={<FormattedMessage defaultMessage="Get Started" />}
+			titleTypographyProps={{ variant: 'h6' }}
+			subheader={
+				hasCreateSitePermission ? (
+					<FormattedMessage defaultMessage="Create your first project." />
+				) : (
+					<FormattedMessage defaultMessage="Contact your administrator to gain access to existing projects." />
+				)
+			}
+		/>
+	);
 
-  return (
-    <Paper elevation={0}>
-      <GlobalAppToolbar
-        title={<FormattedMessage id="GlobalMenu.Sites" defaultMessage="Projects" />}
-        leftContent={
-          hasCreateSitePermission && (
-            <Button startIcon={<AddIcon />} variant="outlined" color="primary" onClick={handleCreateSiteClick}>
-              <FormattedMessage id="sites.createSite" defaultMessage="Create Project" />
-            </Button>
-          )
-        }
-        rightContent={
-          <Tooltip title={<FormattedMessage id="sites.ChangeView" defaultMessage="Change view" />}>
-            <IconButton onClick={handleChangeView} size="large">
-              {currentView === 'grid' ? <ListViewIcon /> : <GridViewIcon />}
-            </IconButton>
-          </Tooltip>
-        }
-      />
-      <ErrorBoundary>
-        {isFetching ? (
-          <SkeletonSitesGrid numOfItems={3} currentView={currentView} />
-        ) : sitesList ? (
-          sitesList.length > 0 ? (
-            <SitesGrid
-              sites={sitesList}
-              onSiteClick={onSiteClick}
-              onDeleteSiteClick={permissionsLookup['delete_site'] && onDeleteSiteClick}
-              onEditSiteClick={permissionsLookup['edit_site'] && onEditSiteClick}
-              currentView={currentView}
-              onPublishButtonClick={onPublishButtonClick}
-              onDuplicateSiteClick={permissionsLookup['duplicate_site'] && onDuplicateSiteClick}
-              disabledSitesLookup={disabledSitesLookup}
-            />
-          ) : (
-            <EmptyState
-              title={<FormattedMessage id="sitesGrid.emptyStateMessage" defaultMessage="No Projects Found" />}
-              sxs={{
-                root: {
-                  margin: undefined,
-                  p: 5,
-                  bgcolor: 'background.default',
-                  borderRadius: 1,
-                  maxWidth: '550px',
-                  marginTop: '50px',
-                  marginLeft: 'auto',
-                  marginRight: 'auto'
-                }
-              }}
-            >
-              <Card
-                elevation={hasCreateSitePermission ? 2 : 0}
-                sx={{
-                  mt: 1,
-                  textAlign: 'center',
-                  ...(!hasCreateSitePermission && {
-                    border: '1px solid',
-                    borderColor: 'divider'
-                  })
-                }}
-              >
-                {hasCreateSitePermission ? (
-                  <CardActionArea onClick={handleCreateSiteClick}>{cardHeaderBlock}</CardActionArea>
-                ) : (
-                  cardHeaderBlock
-                )}
-              </Card>
-            </EmptyState>
-          )
-        ) : (
-          <></>
-        )}
-      </ErrorBoundary>
-      <PublishingStatusDialog
-        open={publishingStatusDialogState.open}
-        onClose={publishingStatusDialogState.onClose}
-        isMinimized={publishingStatusDialogState.isMinimized}
-        hasPendingChanges={publishingStatusDialogState.isMinimized}
-        isSubmitting={publishingStatusDialogState.isSubmitting}
-        onClosed={() => {
-          setSelectedSiteStatus(null);
-        }}
-        isFetching={false}
-        {...selectedSiteStatus}
-      />
-      <CreateSiteDialog
-        open={openCreateSiteDialog}
-        onClose={() => setOpenCreateSiteDialog(false)}
-        onShowDuplicate={() => {
-          setIsDuplicateDialogFromCreateDialog(true);
-          duplicateSiteDialogState.onOpen();
-        }}
-      />
-      <DuplicateSiteDialog
-        siteId={duplicateSiteId}
-        open={duplicateSiteDialogState.open}
-        onClose={() => {
-          setDuplicateSiteId(null);
-          duplicateSiteDialogState.onClose();
-        }}
-        onGoBack={isDuplicateDialogFromCreateDialog ? createSiteDialogGoBackFromDuplicate : null}
-        hasPendingChanges={duplicateSiteDialogState.hasPendingChanges}
-        isSubmitting={duplicateSiteDialogState.isSubmitting}
-        onSubmittingAndOrPendingChange={duplicateSiteDialogState.onSubmittingAndOrPendingChange}
-      />
-      <ConfirmDialog
-        open={confirmDeleteState.open}
-        body={
-          <>
-            <Typography>
-              <FormattedMessage
-                defaultMessage="Confirm the permanent deletion of the “{siteId}” project."
-                values={{
-                  siteId: confirmDeleteState.site?.id
-                }}
-              />
-            </Typography>
-            <Alert severity="warning" icon={false} sx={{ mt: 2 }}>
-              <FormControlLabel
-                sx={{ textAlign: 'left' }}
-                control={
-                  <Checkbox
-                    color="primary"
-                    checked={confirmDeleteState.checked}
-                    onChange={() => setConfirmDeleteState({ checked: !confirmDeleteState.checked })}
-                  />
-                }
-                label={
-                  <FormattedMessage defaultMessage="I understand deleting a project is immediate and irreversible." />
-                }
-              />
-            </Alert>
-          </>
-        }
-        okButtonText={<FormattedMessage defaultMessage="Delete" />}
-        disableOkButton={!confirmDeleteState.checked}
-        onOk={() => {
-          onConfirmDeleteSite(confirmDeleteState.site);
-          setConfirmDeleteState(confirmDeleteInitialState);
-        }}
-        onCancel={() => setConfirmDeleteState(confirmDeleteInitialState)}
-      />
-    </Paper>
-  );
+	return (
+		<Paper elevation={0}>
+			<GlobalAppToolbar
+				title={<FormattedMessage id="GlobalMenu.Sites" defaultMessage="Projects" />}
+				leftContent={
+					hasCreateSitePermission && (
+						<Button startIcon={<AddIcon />} variant="outlined" color="primary" onClick={handleCreateSiteClick}>
+							<FormattedMessage id="sites.createSite" defaultMessage="Create Project" />
+						</Button>
+					)
+				}
+				rightContent={
+					<Tooltip title={<FormattedMessage id="sites.ChangeView" defaultMessage="Change view" />}>
+						<IconButton onClick={handleChangeView} size="large">
+							{currentView === 'grid' ? <ListViewIcon /> : <GridViewIcon />}
+						</IconButton>
+					</Tooltip>
+				}
+			/>
+			<ErrorBoundary>
+				{isFetching ? (
+					<SkeletonSitesGrid numOfItems={3} currentView={currentView} />
+				) : sitesList ? (
+					sitesList.length > 0 ? (
+						<SitesGrid
+							sites={sitesList}
+							onSiteClick={onSiteClick}
+							onDeleteSiteClick={permissionsLookup['delete_site'] && onDeleteSiteClick}
+							onEditSiteClick={permissionsLookup['edit_site'] && onEditSiteClick}
+							currentView={currentView}
+							onPublishButtonClick={onPublishButtonClick}
+							onDuplicateSiteClick={permissionsLookup['duplicate_site'] && onDuplicateSiteClick}
+							disabledSitesLookup={disabledSitesLookup}
+						/>
+					) : (
+						<EmptyState
+							title={<FormattedMessage id="sitesGrid.emptyStateMessage" defaultMessage="No Projects Found" />}
+							sxs={{
+								root: {
+									margin: undefined,
+									p: 5,
+									bgcolor: 'background.default',
+									borderRadius: 1,
+									maxWidth: '550px',
+									marginTop: '50px',
+									marginLeft: 'auto',
+									marginRight: 'auto'
+								}
+							}}
+						>
+							<Card
+								elevation={hasCreateSitePermission ? 2 : 0}
+								sx={{
+									mt: 1,
+									textAlign: 'center',
+									...(!hasCreateSitePermission && {
+										border: '1px solid',
+										borderColor: 'divider'
+									})
+								}}
+							>
+								{hasCreateSitePermission ? (
+									<CardActionArea onClick={handleCreateSiteClick}>{cardHeaderBlock}</CardActionArea>
+								) : (
+									cardHeaderBlock
+								)}
+							</Card>
+						</EmptyState>
+					)
+				) : (
+					<></>
+				)}
+			</ErrorBoundary>
+			<PublishingStatusDialog
+				open={publishingStatusDialogState.open}
+				onClose={publishingStatusDialogState.onClose}
+				isMinimized={publishingStatusDialogState.isMinimized}
+				hasPendingChanges={publishingStatusDialogState.isMinimized}
+				isSubmitting={publishingStatusDialogState.isSubmitting}
+				onClosed={() => {
+					setSelectedSiteStatus(null);
+				}}
+				isFetching={false}
+				{...selectedSiteStatus}
+			/>
+			<CreateSiteDialog
+				open={openCreateSiteDialog}
+				onClose={() => setOpenCreateSiteDialog(false)}
+				onShowDuplicate={() => {
+					setIsDuplicateDialogFromCreateDialog(true);
+					duplicateSiteDialogState.onOpen();
+				}}
+			/>
+			<DuplicateSiteDialog
+				siteId={duplicateSiteId}
+				open={duplicateSiteDialogState.open}
+				onClose={() => {
+					setDuplicateSiteId(null);
+					duplicateSiteDialogState.onClose();
+				}}
+				onGoBack={isDuplicateDialogFromCreateDialog ? createSiteDialogGoBackFromDuplicate : null}
+				hasPendingChanges={duplicateSiteDialogState.hasPendingChanges}
+				isSubmitting={duplicateSiteDialogState.isSubmitting}
+				onSubmittingAndOrPendingChange={duplicateSiteDialogState.onSubmittingAndOrPendingChange}
+			/>
+			<ConfirmDialog
+				open={confirmDeleteState.open}
+				body={
+					<>
+						<Typography>
+							<FormattedMessage
+								defaultMessage="Confirm the permanent deletion of the “{siteId}” project."
+								values={{
+									siteId: confirmDeleteState.site?.id
+								}}
+							/>
+						</Typography>
+						<Alert severity="warning" icon={false} sx={{ mt: 2 }}>
+							<FormControlLabel
+								sx={{ textAlign: 'left' }}
+								control={
+									<Checkbox
+										color="primary"
+										checked={confirmDeleteState.checked}
+										onChange={() => setConfirmDeleteState({ checked: !confirmDeleteState.checked })}
+									/>
+								}
+								label={
+									<FormattedMessage defaultMessage="I understand deleting a project is immediate and irreversible." />
+								}
+							/>
+						</Alert>
+					</>
+				}
+				okButtonText={<FormattedMessage defaultMessage="Delete" />}
+				disableOkButton={!confirmDeleteState.checked}
+				onOk={() => {
+					onConfirmDeleteSite(confirmDeleteState.site);
+					setConfirmDeleteState(confirmDeleteInitialState);
+				}}
+				onCancel={() => setConfirmDeleteState(confirmDeleteInitialState)}
+			/>
+		</Paper>
+	);
 }
 
 export default SiteManagement;

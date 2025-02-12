@@ -26,25 +26,25 @@ import { usePossibleTranslation } from '../../hooks/usePossibleTranslation';
 import ToolsPanelTarget from '../../models/ToolsPanelTarget';
 
 export interface ToolsPanelPageDescriptor {
-  title: string;
-  widgets: WidgetDescriptor[];
-  target?: ToolsPanelTarget;
+	title: string;
+	widgets: WidgetDescriptor[];
+	target?: ToolsPanelTarget;
 }
 
 export interface ToolsPanelPageProps extends ToolsPanelPageDescriptor {}
 
 export function ToolsPanelPage(props: ToolsPanelPageProps) {
-  const { target = 'toolsPanel' } = props;
-  const dispatch = useDispatch();
-  const site = useActiveSiteId();
-  const { rolesBySite } = useActiveUser();
-  const popPage = target === 'toolsPanel' ? popToolsPanelPage : popIcePanelPage;
-  const pop = () => dispatch(popPage());
-  return (
-    <ToolPanel title={usePossibleTranslation(props.title)} onBack={pop}>
-      {renderWidgets(props.widgets, { userRoles: rolesBySite[site] })}
-    </ToolPanel>
-  );
+	const { target = 'toolsPanel' } = props;
+	const dispatch = useDispatch();
+	const site = useActiveSiteId();
+	const { rolesBySite } = useActiveUser();
+	const popPage = target === 'toolsPanel' ? popToolsPanelPage : popIcePanelPage;
+	const pop = () => dispatch(popPage());
+	return (
+		<ToolPanel title={usePossibleTranslation(props.title)} onBack={pop}>
+			{renderWidgets(props.widgets, { userRoles: rolesBySite[site] })}
+		</ToolPanel>
+	);
 }
 
 export default ToolsPanelPage;

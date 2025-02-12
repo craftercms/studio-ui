@@ -41,45 +41,45 @@ import { Observable } from 'rxjs';
 //  });
 
 declare global {
-  interface Window {
-    craftercms: CrafterCMSGlobal;
-  }
+	interface Window {
+		craftercms: CrafterCMSGlobal;
+	}
 }
 
 export interface CrafterCMSGlobal {
-  libs: {
-    React: typeof React;
-    ReactDOM: typeof ReactDOM;
-    ReactDOMClient: { createRoot: typeof createRoot };
-    MaterialUI: typeof MaterialUI;
-    ReactRedux: typeof ReactRedux;
-    ReactIntl: typeof ReactIntl;
-    createEmotion: typeof createEmotion;
-    ReduxToolkit: { createAction: typeof createAction };
-    // Include also package name aliases for builds that might use those
-    // when invoking require('...') or define([...], factory).
-    react: typeof React;
-    reactJsxRuntime: typeof reactJsxRuntime;
-    rxjs: typeof rxjs;
-    'react-dom': typeof ReactDOM;
-    'react-dom/client': CrafterCMSGlobal['libs']['ReactDOMClient'];
-    'react/jsx-runtime': typeof reactJsxRuntime;
-    'react-redux': typeof ReactRedux;
-    'react-intl': typeof ReactIntl;
-    '@mui/material': typeof MaterialUI;
-    '@emotion/css/create-instance': typeof createEmotion;
-    '@reduxjs/toolkit': { createAction: typeof createAction };
-  };
-  components: typeof components;
-  icons: typeof icons;
-  utils: typeof utils;
-  services: typeof services;
-  getStore(): CrafterCMSStore;
-  define: {
-    (): void;
-    amd: true;
-  };
-  store$(): Observable<CrafterCMSStore>;
+	libs: {
+		React: typeof React;
+		ReactDOM: typeof ReactDOM;
+		ReactDOMClient: { createRoot: typeof createRoot };
+		MaterialUI: typeof MaterialUI;
+		ReactRedux: typeof ReactRedux;
+		ReactIntl: typeof ReactIntl;
+		createEmotion: typeof createEmotion;
+		ReduxToolkit: { createAction: typeof createAction };
+		// Include also package name aliases for builds that might use those
+		// when invoking require('...') or define([...], factory).
+		react: typeof React;
+		reactJsxRuntime: typeof reactJsxRuntime;
+		rxjs: typeof rxjs;
+		'react-dom': typeof ReactDOM;
+		'react-dom/client': CrafterCMSGlobal['libs']['ReactDOMClient'];
+		'react/jsx-runtime': typeof reactJsxRuntime;
+		'react-redux': typeof ReactRedux;
+		'react-intl': typeof ReactIntl;
+		'@mui/material': typeof MaterialUI;
+		'@emotion/css/create-instance': typeof createEmotion;
+		'@reduxjs/toolkit': { createAction: typeof createAction };
+	};
+	components: typeof components;
+	icons: typeof icons;
+	utils: typeof utils;
+	services: typeof services;
+	getStore(): CrafterCMSStore;
+	define: {
+		(): void;
+		amd: true;
+	};
+	store$(): Observable<CrafterCMSStore>;
 }
 
 let UND;
@@ -88,25 +88,25 @@ const ReduxToolkit = { createAction };
 const ReactDOMClient = { createRoot };
 
 export const libs: CrafterCMSGlobal['libs'] = {
-  rxjs,
-  React,
-  ReactDOM,
-  ReactDOMClient,
-  ReactIntl,
-  MaterialUI,
-  ReactRedux,
-  ReduxToolkit,
-  createEmotion,
-  react: React,
-  reactJsxRuntime,
-  'react/jsx-runtime': reactJsxRuntime,
-  'react-dom': ReactDOM,
-  'react-dom/client': ReactDOMClient,
-  'react-redux': ReactRedux,
-  'react-intl': ReactIntl,
-  '@mui/material': MaterialUI,
-  '@emotion/css/create-instance': createEmotion,
-  '@reduxjs/toolkit': ReduxToolkit
+	rxjs,
+	React,
+	ReactDOM,
+	ReactDOMClient,
+	ReactIntl,
+	MaterialUI,
+	ReactRedux,
+	ReduxToolkit,
+	createEmotion,
+	react: React,
+	reactJsxRuntime,
+	'react/jsx-runtime': reactJsxRuntime,
+	'react-dom': ReactDOM,
+	'react-dom/client': ReactDOMClient,
+	'react-redux': ReactRedux,
+	'react-intl': ReactIntl,
+	'@mui/material': MaterialUI,
+	'@emotion/css/create-instance': createEmotion,
+	'@reduxjs/toolkit': ReduxToolkit
 };
 
 // UMD builds wouldn't give the chance to track the file builder the plugin loads from
@@ -118,46 +118,46 @@ export const libs: CrafterCMSGlobal['libs'] = {
 // use of dynamic import and use regular scripts as dynamic imports don't add a script to the DOM we could go find.
 // Perhaps UMD shouldn't be supported; only support es module-style plugin bundle builds.
 export const define = function (id, deps, factory) {
-  // Anonymous modules
-  if (typeof id !== 'string') {
-    // Adjust args appropriately
-    factory = deps;
-    deps = id;
-    id = null;
-  }
-  // This module may not have dependencies
-  if (!Array.isArray(deps)) {
-    factory = deps;
-    deps = [];
-  }
-  const resolved = deps.map((dep) => {
-    libs[dep] === UND &&
-      console.error(
-        `${
-          id ? `The "${id}" plugin` : 'A plugin'
-        } requires "${dep}" which is not provided by CrafterCMS. You should bundle this dependency with your plugin.`
-      );
-    return libs[dep];
-  });
-  const plugin: PluginDescriptor = factory.apply(null, resolved);
-  registerPlugin(plugin);
+	// Anonymous modules
+	if (typeof id !== 'string') {
+		// Adjust args appropriately
+		factory = deps;
+		deps = id;
+		id = null;
+	}
+	// This module may not have dependencies
+	if (!Array.isArray(deps)) {
+		factory = deps;
+		deps = [];
+	}
+	const resolved = deps.map((dep) => {
+		libs[dep] === UND &&
+			console.error(
+				`${
+					id ? `The "${id}" plugin` : 'A plugin'
+				} requires "${dep}" which is not provided by CrafterCMS. You should bundle this dependency with your plugin.`
+			);
+		return libs[dep];
+	});
+	const plugin: PluginDescriptor = factory.apply(null, resolved);
+	registerPlugin(plugin);
 } as CrafterCMSGlobal['define'];
 
 define.amd = true;
 
 export const craftercms: CrafterCMSGlobal = {
-  libs,
-  define,
-  getStore: getStoreSync,
-  components,
-  icons,
-  services,
-  utils,
-  store$: getStore
+	libs,
+	define,
+	getStore: getStoreSync,
+	components,
+	icons,
+	services,
+	utils,
+	store$: getStore
 };
 
 export const publishCrafterGlobal = () => {
-  window.craftercms = craftercms;
+	window.craftercms = craftercms;
 };
 
 export default craftercms;

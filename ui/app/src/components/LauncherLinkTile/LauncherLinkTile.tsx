@@ -27,53 +27,53 @@ import { usePossibleTranslation } from '../../hooks/usePossibleTranslation';
 import { getSystemLink, SystemLinkId } from '../../utils/system';
 
 export interface LauncherLinkTileProps {
-  title: TranslationOrText;
-  icon: SystemIconDescriptor;
-  link?: string;
-  systemLinkId?: SystemLinkId;
+	title: TranslationOrText;
+	icon: SystemIconDescriptor;
+	link?: string;
+	systemLinkId?: SystemLinkId;
 }
 
 const LauncherLinkTile = (props: LauncherLinkTileProps) => {
-  const { icon, systemLinkId, title: propTitle } = props;
-  const { authoringBase } = useEnv();
-  const site = useActiveSiteId();
-  const dispatch = useDispatch();
-  const title = usePossibleTranslation(propTitle);
-  const isDialog = ['siteDashboardDialog', 'siteToolsDialog', 'siteSearchDialog'].includes(systemLinkId);
+	const { icon, systemLinkId, title: propTitle } = props;
+	const { authoringBase } = useEnv();
+	const site = useActiveSiteId();
+	const dispatch = useDispatch();
+	const title = usePossibleTranslation(propTitle);
+	const isDialog = ['siteDashboardDialog', 'siteToolsDialog', 'siteSearchDialog'].includes(systemLinkId);
 
-  const onClick = isDialog
-    ? (e) => {
-        if (!e.metaKey) {
-          e.preventDefault();
-          // prettier-ignore
-          const id = systemLinkId === 'siteDashboardDialog' ? 'craftercms.components.SiteDashboard' : (
+	const onClick = isDialog
+		? (e) => {
+				if (!e.metaKey) {
+					e.preventDefault();
+					// prettier-ignore
+					const id = systemLinkId === 'siteDashboardDialog' ? 'craftercms.components.SiteDashboard' : (
             systemLinkId === 'siteToolsDialog'
               ? 'craftercms.components.EmbeddedSiteTools'
               : 'craftercms.components.Search'
           );
-          dispatch(
-            batchActions([
-              closeLauncher(),
-              showWidgetDialog({
-                id: systemLinkId,
-                title,
-                widget: { id, ...(systemLinkId === 'siteSearchDialog' && { configuration: { embedded: true } }) }
-              })
-            ])
-          );
-        }
-      }
-    : null;
+					dispatch(
+						batchActions([
+							closeLauncher(),
+							showWidgetDialog({
+								id: systemLinkId,
+								title,
+								widget: { id, ...(systemLinkId === 'siteSearchDialog' && { configuration: { embedded: true } }) }
+							})
+						])
+					);
+				}
+			}
+		: null;
 
-  const link = isDialog
-    ? getSystemLink({
-        systemLinkId: systemLinkId.replace(/Dialog$/, '') as SystemLinkId,
-        authoringBase,
-        site
-      })
-    : props.link ?? getSystemLink({ systemLinkId, authoringBase, site });
+	const link = isDialog
+		? getSystemLink({
+				systemLinkId: systemLinkId.replace(/Dialog$/, '') as SystemLinkId,
+				authoringBase,
+				site
+			})
+		: (props.link ?? getSystemLink({ systemLinkId, authoringBase, site }));
 
-  return <LauncherTile icon={icon} onClick={onClick} title={usePossibleTranslation(title)} link={link} />;
+	return <LauncherTile icon={icon} onClick={onClick} title={usePossibleTranslation(title)} link={link} />;
 };
 
 export default LauncherLinkTile;

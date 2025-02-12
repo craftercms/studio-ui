@@ -32,21 +32,21 @@ import globalNavigation from './globalNavigation';
 import { combineReducers } from 'redux';
 
 const reducer = combineReducers({
-  auth,
-  user,
-  sites,
-  env,
-  preview,
-  previewNavigation,
-  contentTypes,
-  dialogs,
-  versions,
-  content,
-  pathNavigator,
-  pathNavigatorTree,
-  uiConfig,
-  dashboard,
-  globalNavigation
+	auth,
+	user,
+	sites,
+	env,
+	preview,
+	previewNavigation,
+	contentTypes,
+	dialogs,
+	versions,
+	content,
+	pathNavigator,
+	pathNavigatorTree,
+	uiConfig,
+	dashboard,
+	globalNavigation
 });
 
 export default reducer;

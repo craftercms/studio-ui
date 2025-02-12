@@ -20,23 +20,23 @@ import DialogBody from '../DialogBody/DialogBody';
 import SingleFileUpload from '../SingleFileUpload/SingleFileUpload';
 
 export function SingleFileUploadDialogUI(props: SingleFileUploadDialogUIProps) {
-  const { site, path, customFileName, fileTypes, onUploadComplete, onUploadStart, onUploadError } = props;
+	const { site, path, customFileName, fileTypes, onUploadComplete, onUploadStart, onUploadError } = props;
 
-  return (
-    <>
-      <DialogBody>
-        <SingleFileUpload
-          site={site}
-          path={path}
-          customFileName={customFileName}
-          fileTypes={fileTypes}
-          onComplete={onUploadComplete}
-          onUploadStart={onUploadStart}
-          onError={onUploadError}
-        />
-      </DialogBody>
-    </>
-  );
+	return (
+		<>
+			<DialogBody>
+				<SingleFileUpload
+					site={site}
+					path={path}
+					customFileName={customFileName}
+					fileTypes={fileTypes}
+					onComplete={onUploadComplete}
+					onUploadStart={onUploadStart}
+					onError={onUploadError}
+				/>
+			</DialogBody>
+		</>
+	);
 }
 
 export default SingleFileUploadDialogUI;

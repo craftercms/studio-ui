@@ -36,132 +36,132 @@ import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import { AjaxError } from 'rxjs/ajax';
 
 export interface RenameItemViewProps {
-  name: string;
-  disabled: boolean;
-  newNameExists: boolean;
-  dependantItems: DetailedItem[];
-  isSubmitting: boolean;
-  confirmBrokenReferences: boolean;
-  setConfirmBrokenReferences: (value: boolean) => void;
-  fetchingDependantItems: boolean;
-  error: AjaxError;
-  onRename: () => void;
-  onInputChanges: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  helperText?: ReactNode;
+	name: string;
+	disabled: boolean;
+	newNameExists: boolean;
+	dependantItems: DetailedItem[];
+	isSubmitting: boolean;
+	confirmBrokenReferences: boolean;
+	setConfirmBrokenReferences: (value: boolean) => void;
+	fetchingDependantItems: boolean;
+	error: AjaxError;
+	onRename: () => void;
+	onInputChanges: (event: React.ChangeEvent<HTMLInputElement>) => void;
+	helperText?: ReactNode;
 }
 
 export function RenameItemView(props: RenameItemViewProps) {
-  const {
-    name,
-    disabled,
-    dependantItems,
-    newNameExists,
-    isSubmitting,
-    confirmBrokenReferences,
-    fetchingDependantItems,
-    error,
-    helperText,
-    setConfirmBrokenReferences,
-    onRename,
-    onInputChanges
-  } = props;
-  const { authoringBase } = useEnv();
-  const siteId = useActiveSiteId();
-  const dispatch = useDispatch();
+	const {
+		name,
+		disabled,
+		dependantItems,
+		newNameExists,
+		isSubmitting,
+		confirmBrokenReferences,
+		fetchingDependantItems,
+		error,
+		helperText,
+		setConfirmBrokenReferences,
+		onRename,
+		onInputChanges
+	} = props;
+	const { authoringBase } = useEnv();
+	const siteId = useActiveSiteId();
+	const dispatch = useDispatch();
 
-  const handleEditorDisplay = (item: DetailedItem) => {
-    openItemEditor(item, authoringBase, siteId, dispatch, fetchRenameAssetDependants());
-  };
+	const handleEditorDisplay = (item: DetailedItem) => {
+		openItemEditor(item, authoringBase, siteId, dispatch, fetchRenameAssetDependants());
+	};
 
-  return fetchingDependantItems ? (
-    <LoadingState
-      title={<FormattedMessage defaultMessage="Fetching dependent items" />}
-      sxs={{ title: { marginTop: 0 } }}
-    />
-  ) : dependantItems ? (
-    <>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (!disabled) {
-            onRename();
-          }
-        }}
-      >
-        <TextField
-          fullWidth
-          label={<FormattedMessage id="renameAsset.rename" defaultMessage="New name" />}
-          value={name}
-          autoFocus
-          required
-          error={newNameExists}
-          helperText={helperText}
-          disabled={isSubmitting}
-          margin="normal"
-          slotProps={{
-            inputLabel: { shrink: true }
-          }}
-          onChange={onInputChanges}
-          autoComplete="off"
-        />
-      </form>
-      {dependantItems.length > 0 ? (
-        <>
-          <Typography variant="subtitle2" sx={{ mt: 1, mb: 1 }}>
-            <FormattedMessage id="renameAsset.dependentItems" defaultMessage="Dependent Items" />
-          </Typography>
-          <DependenciesList
-            dependencies={dependantItems}
-            compactView={false}
-            showTypes="all-deps"
-            renderAction={(dependency) =>
-              isEditableAsset(dependency.path) ? (
-                <IconButton onClick={() => handleEditorDisplay(dependency)}>
-                  <EditRoundedIcon />
-                </IconButton>
-              ) : null
-            }
-          />
-          <Alert severity="warning" icon={false} sx={{ mt: 2 }}>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={confirmBrokenReferences}
-                  onChange={() => setConfirmBrokenReferences(!confirmBrokenReferences)}
-                  inputProps={{ 'aria-label': 'controlled' }}
-                />
-              }
-              label={
-                <FormattedMessage
-                  id="renameAsset.confirmBrokenReferences"
-                  defaultMessage="I understand that there will be broken references"
-                />
-              }
-            />
-          </Alert>
-        </>
-      ) : (
-        <Typography
-          variant="body1"
-          sx={{
-            verticalAlign: 'middle',
-            display: 'inline-flex',
-            mt: 2
-          }}
-        >
-          <InfoOutlinedIcon
-            sx={{
-              color: (theme) => theme.palette.text.secondary,
-              mr: 1
-            }}
-          />
-          <FormattedMessage id="renameAsset.noDependentItems" defaultMessage="No dependent items" />
-        </Typography>
-      )}
-    </>
-  ) : (
-    error && <ApiResponseErrorState error={error.response} />
-  );
+	return fetchingDependantItems ? (
+		<LoadingState
+			title={<FormattedMessage defaultMessage="Fetching dependent items" />}
+			sxs={{ title: { marginTop: 0 } }}
+		/>
+	) : dependantItems ? (
+		<>
+			<form
+				onSubmit={(e) => {
+					e.preventDefault();
+					if (!disabled) {
+						onRename();
+					}
+				}}
+			>
+				<TextField
+					fullWidth
+					label={<FormattedMessage id="renameAsset.rename" defaultMessage="New name" />}
+					value={name}
+					autoFocus
+					required
+					error={newNameExists}
+					helperText={helperText}
+					disabled={isSubmitting}
+					margin="normal"
+					slotProps={{
+						inputLabel: { shrink: true }
+					}}
+					onChange={onInputChanges}
+					autoComplete="off"
+				/>
+			</form>
+			{dependantItems.length > 0 ? (
+				<>
+					<Typography variant="subtitle2" sx={{ mt: 1, mb: 1 }}>
+						<FormattedMessage id="renameAsset.dependentItems" defaultMessage="Dependent Items" />
+					</Typography>
+					<DependenciesList
+						dependencies={dependantItems}
+						compactView={false}
+						showTypes="all-deps"
+						renderAction={(dependency) =>
+							isEditableAsset(dependency.path) ? (
+								<IconButton onClick={() => handleEditorDisplay(dependency)}>
+									<EditRoundedIcon />
+								</IconButton>
+							) : null
+						}
+					/>
+					<Alert severity="warning" icon={false} sx={{ mt: 2 }}>
+						<FormControlLabel
+							control={
+								<Checkbox
+									checked={confirmBrokenReferences}
+									onChange={() => setConfirmBrokenReferences(!confirmBrokenReferences)}
+									inputProps={{ 'aria-label': 'controlled' }}
+								/>
+							}
+							label={
+								<FormattedMessage
+									id="renameAsset.confirmBrokenReferences"
+									defaultMessage="I understand that there will be broken references"
+								/>
+							}
+						/>
+					</Alert>
+				</>
+			) : (
+				<Typography
+					variant="body1"
+					sx={{
+						verticalAlign: 'middle',
+						display: 'inline-flex',
+						mt: 2
+					}}
+				>
+					<InfoOutlinedIcon
+						sx={{
+							color: (theme) => theme.palette.text.secondary,
+							mr: 1
+						}}
+					/>
+					<FormattedMessage id="renameAsset.noDependentItems" defaultMessage="No dependent items" />
+				</Typography>
+			)}
+		</>
+	) : (
+		error && <ApiResponseErrorState error={error.response} />
+	);
 }
 
 export default RenameItemView;

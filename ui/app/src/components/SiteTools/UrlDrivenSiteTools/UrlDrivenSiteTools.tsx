@@ -25,56 +25,56 @@ import { useLocation, useNavigate } from 'react-router';
 import { SiteToolsContext, SiteToolsContextProps } from '../siteToolsContext';
 
 interface UrlDrivenSiteToolsProps {
-  footerHtml: string;
+	footerHtml: string;
 }
 
 export function UrlDrivenSiteTools(props: UrlDrivenSiteToolsProps) {
-  const { footerHtml } = props;
-  const [width, setWidth] = useState(240);
-  const location = useLocation();
-  const [activeToolId, setActiveToolId] = useState(location.pathname.replace('/', ''));
-  const [{ openSidebar }] = useGlobalAppState();
-  const tools: Tool[] = useReference('craftercms.siteTools')?.tools;
-  const site = useActiveSiteId();
-  const { authoringBase } = useEnv();
-  const navigate = useNavigate();
-  const contextValue = useMemo<SiteToolsContextProps>(
-    () => ({ setTool: (id) => navigate(id), activeToolId }),
-    [navigate, activeToolId]
-  );
+	const { footerHtml } = props;
+	const [width, setWidth] = useState(240);
+	const location = useLocation();
+	const [activeToolId, setActiveToolId] = useState(location.pathname.replace('/', ''));
+	const [{ openSidebar }] = useGlobalAppState();
+	const tools: Tool[] = useReference('craftercms.siteTools')?.tools;
+	const site = useActiveSiteId();
+	const { authoringBase } = useEnv();
+	const navigate = useNavigate();
+	const contextValue = useMemo<SiteToolsContextProps>(
+		() => ({ setTool: (id) => navigate(id), activeToolId }),
+		[navigate, activeToolId]
+	);
 
-  useEffect(() => {
-    setActiveToolId(location.pathname.replace('/', ''));
-  }, [location]);
+	useEffect(() => {
+		setActiveToolId(location.pathname.replace('/', ''));
+	}, [location]);
 
-  const onNavItemClick = (id: string) => {
-    navigate(id);
-  };
+	const onNavItemClick = (id: string) => {
+		navigate(id);
+	};
 
-  const onBackClick = () => {
-    window.location.href = getSystemLink({
-      site,
-      authoringBase,
-      systemLinkId: 'preview'
-    });
-  };
+	const onBackClick = () => {
+		window.location.href = getSystemLink({
+			site,
+			authoringBase,
+			systemLinkId: 'preview'
+		});
+	};
 
-  return (
-    <SiteToolsContext.Provider value={contextValue}>
-      <SiteTools
-        site={site}
-        sidebarWidth={width}
-        onWidthChange={setWidth}
-        onNavItemClick={onNavItemClick}
-        onBackClick={onBackClick}
-        activeToolId={activeToolId}
-        footerHtml={footerHtml}
-        openSidebar={openSidebar || !activeToolId}
-        tools={tools}
-        mountMode="page"
-      />
-    </SiteToolsContext.Provider>
-  );
+	return (
+		<SiteToolsContext.Provider value={contextValue}>
+			<SiteTools
+				site={site}
+				sidebarWidth={width}
+				onWidthChange={setWidth}
+				onNavItemClick={onNavItemClick}
+				onBackClick={onBackClick}
+				activeToolId={activeToolId}
+				footerHtml={footerHtml}
+				openSidebar={openSidebar || !activeToolId}
+				tools={tools}
+				mountMode="page"
+			/>
+		</SiteToolsContext.Provider>
+	);
 }
 
 export default UrlDrivenSiteTools;

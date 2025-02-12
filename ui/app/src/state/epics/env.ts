@@ -22,14 +22,14 @@ import { fetchSystemVersion, fetchSystemVersionComplete, fetchSystemVersionFaile
 import { CrafterCMSEpic } from '../store';
 
 export default [
-  (action$) =>
-    action$.pipe(
-      ofType(fetchSystemVersion.type),
-      switchMap(() =>
-        fetchVersion().pipe(
-          map((version) => fetchSystemVersionComplete(version)),
-          catchAjaxError(fetchSystemVersionFailed)
-        )
-      )
-    )
+	(action$) =>
+		action$.pipe(
+			ofType(fetchSystemVersion.type),
+			switchMap(() =>
+				fetchVersion().pipe(
+					map((version) => fetchSystemVersionComplete(version)),
+					catchAjaxError(fetchSystemVersionFailed)
+				)
+			)
+		)
 ] as CrafterCMSEpic[];

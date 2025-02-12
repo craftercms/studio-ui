@@ -99,26 +99,26 @@ import Slide from '@mui/material/Slide';
 } */
 
 export function ViewVersionDialog(props: ViewVersionDialogProps) {
-  const { rightActions, leftActions, contentTypesBranch, error, isFetching, version, ...rest } = props;
+	const { rightActions, leftActions, contentTypesBranch, error, isFetching, version, ...rest } = props;
 
-  return (
-    <EnhancedDialog
-      title={<FormattedMessage id="viewVersionDialog.headerTitle" defaultMessage="Viewing item version" />}
-      dialogHeaderProps={{
-        leftActions,
-        rightActions
-      }}
-      TransitionComponent={Slide}
-      {...rest}
-    >
-      <ViewVersionDialogContainer
-        version={version}
-        contentTypesBranch={contentTypesBranch}
-        error={error}
-        isFetching={isFetching}
-      />
-    </EnhancedDialog>
-  );
+	return (
+		<EnhancedDialog
+			title={<FormattedMessage id="viewVersionDialog.headerTitle" defaultMessage="Viewing item version" />}
+			dialogHeaderProps={{
+				leftActions,
+				rightActions
+			}}
+			TransitionComponent={Slide}
+			{...rest}
+		>
+			<ViewVersionDialogContainer
+				version={version}
+				contentTypesBranch={contentTypesBranch}
+				error={error}
+				isFetching={isFetching}
+			/>
+		</EnhancedDialog>
+	);
 }
 
 export default ViewVersionDialog;

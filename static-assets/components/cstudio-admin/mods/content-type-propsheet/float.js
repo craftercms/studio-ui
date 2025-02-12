@@ -17,56 +17,56 @@
  */
 
 CStudioAdminConsole.Tool.ContentTypes.PropertyType.Float =
-  CStudioAdminConsole.Tool.ContentTypes.PropertyType.Float ||
-  function (fieldName, containerEl) {
-    this.fieldName = fieldName;
-    this.containerEl = containerEl;
-    this.formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
-    this.contentTypesMessages = CrafterCMSNext.i18n.messages.contentTypesMessages;
-    return this;
-  };
+	CStudioAdminConsole.Tool.ContentTypes.PropertyType.Float ||
+	function (fieldName, containerEl) {
+		this.fieldName = fieldName;
+		this.containerEl = containerEl;
+		this.formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
+		this.contentTypesMessages = CrafterCMSNext.i18n.messages.contentTypesMessages;
+		return this;
+	};
 
 YAHOO.extend(
-  CStudioAdminConsole.Tool.ContentTypes.PropertyType.Float,
-  CStudioAdminConsole.Tool.ContentTypes.PropertyType,
-  {
-    render: function (value, updateFn) {
-      var _self = this;
-      var containerEl = this.containerEl;
-      var valueEl = document.createElement('input');
-      YAHOO.util.Dom.addClass(valueEl, 'content-type-property-sheet-property-value');
-      containerEl.appendChild(valueEl);
-      valueEl.value = value;
-      valueEl.fieldName = this.fieldName;
+	CStudioAdminConsole.Tool.ContentTypes.PropertyType.Float,
+	CStudioAdminConsole.Tool.ContentTypes.PropertyType,
+	{
+		render: function (value, updateFn) {
+			var _self = this;
+			var containerEl = this.containerEl;
+			var valueEl = document.createElement('input');
+			YAHOO.util.Dom.addClass(valueEl, 'content-type-property-sheet-property-value');
+			containerEl.appendChild(valueEl);
+			valueEl.value = value;
+			valueEl.fieldName = this.fieldName;
 
-      $(valueEl).on('focus', function () {
-        valueEl.setAttribute('type', 'number');
-      });
+			$(valueEl).on('focus', function () {
+				valueEl.setAttribute('type', 'number');
+			});
 
-      $(valueEl).on('blur', function (e) {
-        valueEl.setAttribute('type', 'text');
-        if (updateFieldFn) {
-          updateFieldFn(e, this);
-        }
-      });
+			$(valueEl).on('blur', function (e) {
+				valueEl.setAttribute('type', 'text');
+				if (updateFieldFn) {
+					updateFieldFn(e, this);
+				}
+			});
 
-      if (updateFn) {
-        var updateFieldFn = function (event, el) {
-          updateFn(event, el);
-          CStudioAdminConsole.Tool.ContentTypes.visualization.render();
-        };
-      }
+			if (updateFn) {
+				var updateFieldFn = function (event, el) {
+					updateFn(event, el);
+					CStudioAdminConsole.Tool.ContentTypes.visualization.render();
+				};
+			}
 
-      this.valueEl = valueEl;
-    },
+			this.valueEl = valueEl;
+		},
 
-    getValue: function () {
-      return this.valueEl.value;
-    }
-  }
+		getValue: function () {
+			return this.valueEl.value;
+		}
+	}
 );
 
 CStudioAuthoring.Module.moduleLoaded(
-  'cstudio-console-tools-content-types-proptype-float',
-  CStudioAdminConsole.Tool.ContentTypes.PropertyType.Float
+	'cstudio-console-tools-content-types-proptype-float',
+	CStudioAdminConsole.Tool.ContentTypes.PropertyType.Float
 );

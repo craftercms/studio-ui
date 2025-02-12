@@ -24,24 +24,24 @@ import commonStyles from './styles';
 import { useSelection } from '../../hooks/useSelection';
 
 export function DateTime(props: DateTimeControl) {
-  const { field, value, onChange, disabled } = props;
-  const locale = useSelection<GlobalState['uiConfig']['locale']>((state) => state.uiConfig.locale);
+	const { field, value, onChange, disabled } = props;
+	const locale = useSelection<GlobalState['uiConfig']['locale']>((state) => state.uiConfig.locale);
 
-  return (
-    <FormControl variant="outlined" sx={commonStyles.formControl} fullWidth>
-      <InputLabel sx={{ position: 'relative', transform: 'none', ...commonStyles.inputLabel }} htmlFor={field.id}>
-        {field.name}
-      </InputLabel>
-      <DateTimeTimezonePicker
-        id={field.id}
-        value={value}
-        onChange={onChange}
-        disabled={disabled}
-        localeCode={locale.localeCode}
-        dateTimeFormatOptions={locale.dateTimeFormatOptions}
-      />
-    </FormControl>
-  );
+	return (
+		<FormControl variant="outlined" sx={commonStyles.formControl} fullWidth>
+			<InputLabel sx={{ position: 'relative', transform: 'none', ...commonStyles.inputLabel }} htmlFor={field.id}>
+				{field.name}
+			</InputLabel>
+			<DateTimeTimezonePicker
+				id={field.id}
+				value={value}
+				onChange={onChange}
+				disabled={disabled}
+				localeCode={locale.localeCode}
+				dateTimeFormatOptions={locale.dateTimeFormatOptions}
+			/>
+		</FormControl>
+	);
 }
 
 export default DateTime;

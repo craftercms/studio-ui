@@ -23,75 +23,75 @@ import { PartialSxRecord } from '../../models';
 import { FormattedMessage } from 'react-intl';
 
 export interface MaxLengthCircularProgressProps {
-  max: number;
-  current: number;
-  threshold?: number;
-  renderThresholdPercentage?: number;
-  sx?: PartialSxRecord<'root'>;
-  sxs?: PartialSxRecord<'root' | 'tooltip' | 'typography' | 'circularProgress'>;
+	max: number;
+	current: number;
+	threshold?: number;
+	renderThresholdPercentage?: number;
+	sx?: PartialSxRecord<'root'>;
+	sxs?: PartialSxRecord<'root' | 'tooltip' | 'typography' | 'circularProgress'>;
 }
 
 export function MaxLengthCircularProgress({
-  max = 1000,
-  current = 0,
-  threshold = 20,
-  renderThresholdPercentage,
-  sx,
-  sxs
+	max = 1000,
+	current = 0,
+	threshold = 20,
+	renderThresholdPercentage,
+	sx,
+	sxs
 }: MaxLengthCircularProgressProps) {
-  const percentage = Math.floor((current * 100) / max);
-  if (renderThresholdPercentage != null && percentage < renderThresholdPercentage) return <></>;
-  const remaining = max - current;
-  const displayRemaining = remaining <= threshold;
-  const overLimit = current > max;
-  return (
-    <Tooltip
-      sx={sxs?.tooltip}
-      title={
-        overLimit ? (
-          <FormattedMessage defaultMessage="Max length exceeded" />
-        ) : (
-          <FormattedMessage defaultMessage="Max length ({current} / {max})" values={{ current, max }} />
-        )
-      }
-    >
-      <Box
-        sx={{
-          position: 'relative',
-          display: 'inline-flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          ...sx,
-          ...sxs?.root
-        }}
-      >
-        <CircularProgress
-          sx={sxs?.circularProgress}
-          thickness={5}
-          variant="determinate"
-          value={percentage > 100 ? 100 : percentage}
-          color={displayRemaining ? (overLimit ? 'error' : 'warning') : 'primary'}
-        />
-        <Typography
-          variant="caption"
-          component="div"
-          color={overLimit ? 'error' : 'text.secondary'}
-          children={displayRemaining ? remaining : `${percentage}%`}
-          sx={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            ...sxs?.typography
-          }}
-        />
-      </Box>
-    </Tooltip>
-  );
+	const percentage = Math.floor((current * 100) / max);
+	if (renderThresholdPercentage != null && percentage < renderThresholdPercentage) return <></>;
+	const remaining = max - current;
+	const displayRemaining = remaining <= threshold;
+	const overLimit = current > max;
+	return (
+		<Tooltip
+			sx={sxs?.tooltip}
+			title={
+				overLimit ? (
+					<FormattedMessage defaultMessage="Max length exceeded" />
+				) : (
+					<FormattedMessage defaultMessage="Max length ({current} / {max})" values={{ current, max }} />
+				)
+			}
+		>
+			<Box
+				sx={{
+					position: 'relative',
+					display: 'inline-flex',
+					justifyContent: 'center',
+					alignItems: 'center',
+					...sx,
+					...sxs?.root
+				}}
+			>
+				<CircularProgress
+					sx={sxs?.circularProgress}
+					thickness={5}
+					variant="determinate"
+					value={percentage > 100 ? 100 : percentage}
+					color={displayRemaining ? (overLimit ? 'error' : 'warning') : 'primary'}
+				/>
+				<Typography
+					variant="caption"
+					component="div"
+					color={overLimit ? 'error' : 'text.secondary'}
+					children={displayRemaining ? remaining : `${percentage}%`}
+					sx={{
+						position: 'absolute',
+						top: 0,
+						left: 0,
+						right: 0,
+						bottom: 0,
+						display: 'flex',
+						justifyContent: 'center',
+						alignItems: 'center',
+						...sxs?.typography
+					}}
+				/>
+			</Box>
+		</Tooltip>
+	);
 }
 
 export default MaxLengthCircularProgress;

@@ -20,24 +20,24 @@ import { closeItemMenu, itemMenuClosed, showItemMenu } from '../../actions/dialo
 import { ItemMenuStateProps } from '../../../components';
 
 const initialState: ItemMenuStateProps = {
-  open: false,
-  path: null,
-  anchorReference: 'anchorPosition',
-  anchorPosition: {
-    top: 0,
-    left: 0
-  }
+	open: false,
+	path: null,
+	anchorReference: 'anchorPosition',
+	anchorPosition: {
+		top: 0,
+		left: 0
+	}
 };
 
 export default createReducer<GlobalState['dialogs']['itemMenu']>(initialState, (builder) => {
-  builder
-    .addCase(showItemMenu, (state, { payload }) => ({
-      ...state,
-      onClose: closeItemMenu(),
-      onClosed: itemMenuClosed(),
-      ...(payload as Partial<ItemMenuStateProps>),
-      open: true
-    }))
-    .addCase(closeItemMenu, (state) => ({ ...state, open: false }))
-    .addCase(itemMenuClosed, () => initialState);
+	builder
+		.addCase(showItemMenu, (state, { payload }) => ({
+			...state,
+			onClose: closeItemMenu(),
+			onClosed: itemMenuClosed(),
+			...(payload as Partial<ItemMenuStateProps>),
+			open: true
+		}))
+		.addCase(closeItemMenu, (state) => ({ ...state, open: false }))
+		.addCase(itemMenuClosed, () => initialState);
 });

@@ -25,23 +25,23 @@ import { PublishingStatus } from '../../models/Publishing';
 import { getPublishingStatusMessage, getPublishingStatusState } from './utils';
 
 export type PublishingStatusDisplayProps = PublishingStatus & {
-  isFetching: boolean;
+	isFetching: boolean;
 };
 
 export function PublishingStatusDisplay(props: PublishingStatusDisplayProps) {
-  const { isFetching, enabled, published, currentTask } = props;
-  const { formatMessage } = useIntl();
-  const publishingStatusState = getPublishingStatusState({ enabled, published, currentTask });
-  return (
-    <>
-      <ListItem component="div">
-        <ListItemAvatar>
-          <PublishingStatusAvatar enabled={enabled} status={isFetching ? null : publishingStatusState} />
-        </ListItemAvatar>
-        <ListItemText primary={isFetching ? <Skeleton /> : getPublishingStatusMessage(props, formatMessage)} />
-      </ListItem>
-    </>
-  );
+	const { isFetching, enabled, published, currentTask } = props;
+	const { formatMessage } = useIntl();
+	const publishingStatusState = getPublishingStatusState({ enabled, published, currentTask });
+	return (
+		<>
+			<ListItem component="div">
+				<ListItemAvatar>
+					<PublishingStatusAvatar enabled={enabled} status={isFetching ? null : publishingStatusState} />
+				</ListItemAvatar>
+				<ListItemText primary={isFetching ? <Skeleton /> : getPublishingStatusMessage(props, formatMessage)} />
+			</ListItem>
+		</>
+	);
 }
 
 export default PublishingStatusDisplay;

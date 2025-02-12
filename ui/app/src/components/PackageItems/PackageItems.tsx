@@ -38,202 +38,202 @@ import useEnv from '../../hooks/useEnv';
 import PackageItemsActions from './PackageItemsActions';
 
 export interface PackageItemsProps {
-  packageId: number;
+	packageId: number;
 }
 
 const maxTreeItems = 100;
 
 export interface PackageItem {
-  path: PublishingItem['path'];
-  label: PublishingItem['itemMetadata']['label'];
-  systemType: PublishingItem['itemMetadata']['systemType'];
-  mimeType: PublishingItem['itemMetadata']['mimeType'];
+	path: PublishingItem['path'];
+	label: PublishingItem['itemMetadata']['label'];
+	systemType: PublishingItem['itemMetadata']['systemType'];
+	mimeType: PublishingItem['itemMetadata']['mimeType'];
 }
 
 export function PackageItems(props: PackageItemsProps) {
-  const { packageId } = props;
-  const siteId = useActiveSiteId();
-  const dispatch = useDispatch();
-  const [state, setState] = useSpreadState<{
-    items: PackageItem[];
-    loading: boolean;
-    error: ApiResponse;
-    total: number;
-    limit: number;
-    offset: number;
-    isNextPageLoading: boolean;
-  }>({
-    items: null,
-    loading: false,
-    error: null,
-    total: null,
-    limit: 20,
-    offset: 0,
-    isNextPageLoading: false
-  });
-  const hasNextPage = state.items?.length < state.total;
-  const { username } = useActiveUser();
-  const storedPreferredView = getPublishingPackagePreferredView(username);
-  const [isTreeView, setIsTreeView] = useState(nnou(storedPreferredView) ? storedPreferredView === 'tree' : true);
-  const disableTreeView = state.total > maxTreeItems;
-  const [expandedPaths, setExpandedPaths] = useState<string[]>();
-  const { formatMessage } = useIntl();
-  const { authoringBase } = useEnv();
-  const [contextMenu, setContextMenu] = useState({
-    item: null,
-    options: null,
-    anchorPosition: null
-  });
+	const { packageId } = props;
+	const siteId = useActiveSiteId();
+	const dispatch = useDispatch();
+	const [state, setState] = useSpreadState<{
+		items: PackageItem[];
+		loading: boolean;
+		error: ApiResponse;
+		total: number;
+		limit: number;
+		offset: number;
+		isNextPageLoading: boolean;
+	}>({
+		items: null,
+		loading: false,
+		error: null,
+		total: null,
+		limit: 20,
+		offset: 0,
+		isNextPageLoading: false
+	});
+	const hasNextPage = state.items?.length < state.total;
+	const { username } = useActiveUser();
+	const storedPreferredView = getPublishingPackagePreferredView(username);
+	const [isTreeView, setIsTreeView] = useState(nnou(storedPreferredView) ? storedPreferredView === 'tree' : true);
+	const disableTreeView = state.total > maxTreeItems;
+	const [expandedPaths, setExpandedPaths] = useState<string[]>();
+	const { formatMessage } = useIntl();
+	const { authoringBase } = useEnv();
+	const [contextMenu, setContextMenu] = useState({
+		item: null,
+		options: null,
+		anchorPosition: null
+	});
 
-  useEffect(() => {
-    if (packageId) {
-      setState({ items: null, loading: true, error: null });
-      const firstFetchLimit = 100;
-      fetchPackageItems(siteId, packageId, { limit: firstFetchLimit }).subscribe({
-        next(items) {
-          setState({
-            items: items.map((item) => ({ ...item.itemMetadata, path: item.path })),
-            loading: false,
-            offset: firstFetchLimit,
-            total: items.total
-          });
-        },
-        error({ response }) {
-          setState({ error: response.response, loading: false });
-        }
-      });
-    }
-  }, [packageId, siteId, setState, state.limit]);
+	useEffect(() => {
+		if (packageId) {
+			setState({ items: null, loading: true, error: null });
+			const firstFetchLimit = 100;
+			fetchPackageItems(siteId, packageId, { limit: firstFetchLimit }).subscribe({
+				next(items) {
+					setState({
+						items: items.map((item) => ({ ...item.itemMetadata, path: item.path })),
+						loading: false,
+						offset: firstFetchLimit,
+						total: items.total
+					});
+				},
+				error({ response }) {
+					setState({ error: response.response, loading: false });
+				}
+			});
+		}
+	}, [packageId, siteId, setState, state.limit]);
 
-  const loadNextPage = () => {
-    setState({ isNextPageLoading: true, error: null });
-    fetchPackageItems(siteId, packageId, { limit: state.limit, offset: state.offset }).subscribe({
-      next(items) {
-        const newOffset = state.offset + state.limit;
-        setState({
-          items: [...state.items, ...items.map((item) => ({ ...item.itemMetadata, path: item.path }))],
-          isNextPageLoading: false,
-          offset: newOffset,
-          total: items.total
-        });
-      },
-      error({ response }) {
-        setState({ error: response.response, isNextPageLoading: false });
-      }
-    });
-  };
+	const loadNextPage = () => {
+		setState({ isNextPageLoading: true, error: null });
+		fetchPackageItems(siteId, packageId, { limit: state.limit, offset: state.offset }).subscribe({
+			next(items) {
+				const newOffset = state.offset + state.limit;
+				setState({
+					items: [...state.items, ...items.map((item) => ({ ...item.itemMetadata, path: item.path }))],
+					isNextPageLoading: false,
+					offset: newOffset,
+					total: items.total
+				});
+			},
+			error({ response }) {
+				setState({ error: response.response, isNextPageLoading: false });
+			}
+		});
+	};
 
-  const onOpenMenu = (e: React.MouseEvent<HTMLButtonElement>, packageItem: PackageItem) => {
-    const element = e.currentTarget;
-    const anchorRect = element.getBoundingClientRect();
-    const top = anchorRect.top + getOffsetTop(anchorRect, 'top');
-    const left = anchorRect.left + getOffsetLeft(anchorRect, 'left');
-    fetchDetailedItem(siteId, packageItem.path).subscribe((detailedItem) => {
-      const itemMenuOptions = generateSingleItemOptions(detailedItem, formatMessage, {
-        includeOnly: ['view', 'dependencies', 'history']
-      });
-      setContextMenu({ options: itemMenuOptions.flat(), item: detailedItem, anchorPosition: { top, left } });
-    });
-  };
+	const onOpenMenu = (e: React.MouseEvent<HTMLButtonElement>, packageItem: PackageItem) => {
+		const element = e.currentTarget;
+		const anchorRect = element.getBoundingClientRect();
+		const top = anchorRect.top + getOffsetTop(anchorRect, 'top');
+		const left = anchorRect.left + getOffsetLeft(anchorRect, 'left');
+		fetchDetailedItem(siteId, packageItem.path).subscribe((detailedItem) => {
+			const itemMenuOptions = generateSingleItemOptions(detailedItem, formatMessage, {
+				includeOnly: ['view', 'dependencies', 'history']
+			});
+			setContextMenu({ options: itemMenuOptions.flat(), item: detailedItem, anchorPosition: { top, left } });
+		});
+	};
 
-  const onMenuItemClicked = (option: string) => {
-    itemActionDispatcher({
-      site: siteId,
-      item: contextMenu.item,
-      option: option as AllItemActions,
-      authoringBase,
-      dispatch,
-      formatMessage
-    });
-    onContextMenuClose();
-  };
+	const onMenuItemClicked = (option: string) => {
+		itemActionDispatcher({
+			site: siteId,
+			item: contextMenu.item,
+			option: option as AllItemActions,
+			authoringBase,
+			dispatch,
+			formatMessage
+		});
+		onContextMenuClose();
+	};
 
-  const onContextMenuClose = () => {
-    setContextMenu({
-      item: null,
-      options: null,
-      anchorPosition: null
-    });
-  };
+	const onContextMenuClose = () => {
+		setContextMenu({
+			item: null,
+			options: null,
+			anchorPosition: null
+		});
+	};
 
-  const onSetIsTreeView = (isTreeView: boolean) => {
-    setIsTreeView(isTreeView);
-    setPublishingPackagePreferredView(username, isTreeView ? 'tree' : 'list');
-  };
+	const onSetIsTreeView = (isTreeView: boolean) => {
+		setIsTreeView(isTreeView);
+		setPublishingPackagePreferredView(username, isTreeView ? 'tree' : 'list');
+	};
 
-  return (
-    <>
-      <PackageItemsActions
-        isTreeView={isTreeView}
-        onSetIsTreeView={onSetIsTreeView}
-        setExpandedPaths={setExpandedPaths}
-        disableTreeView={disableTreeView}
-        maxTreeItems={maxTreeItems}
-      />
-      <Divider />
-      <Box sx={{ p: 1, flexGrow: 1 }}>
-        <Paper
-          elevation={1}
-          sx={{
-            bgcolor: (theme) => (theme.palette.mode === 'dark' ? theme.palette.background.default : 'background.paper'),
-            display: 'flex',
-            flexDirection: 'column',
-            minHeight: 420,
-            height: 'calc(60vh)',
-            maxHeight: 600,
-            overflowY: 'auto'
-          }}
-        >
-          {state.items &&
-            (state.items.length === 0 ? (
-              <EmptyState
-                title={
-                  <FormattedMessage
-                    id="packageDetailsDialog.emptyPackageMessage"
-                    defaultMessage="The package is empty"
-                  />
-                }
-                subtitle={
-                  <FormattedMessage
-                    id="packageDetailsDialog.emptyPackageMessageSubtitle"
-                    defaultMessage="Fetched package id is {packageId}"
-                    values={{ packageId }}
-                  />
-                }
-              />
-            ) : !disableTreeView && isTreeView ? (
-              <PackageItemsTree
-                items={state.items}
-                onOpenMenu={onOpenMenu}
-                expandedPaths={expandedPaths}
-                setExpandedPaths={setExpandedPaths}
-              />
-            ) : (
-              <PackageItemsList
-                items={state.items}
-                totalItems={state.total}
-                hasNextPage={hasNextPage}
-                isNextPageLoading={state.isNextPageLoading}
-                loadNextPage={loadNextPage}
-                onOpenMenu={onOpenMenu}
-              />
-            ))}
-        </Paper>
-      </Box>
-      <Popover
-        open={Boolean(contextMenu.anchorPosition)}
-        anchorReference="anchorPosition"
-        anchorPosition={contextMenu.anchorPosition}
-        onClose={onContextMenuClose}
-      >
-        {contextMenu.options?.map((option) => (
-          <MenuItem key={option.id} onClick={() => onMenuItemClicked(option.id)}>
-            {option.label}
-          </MenuItem>
-        ))}
-      </Popover>
-    </>
-  );
+	return (
+		<>
+			<PackageItemsActions
+				isTreeView={isTreeView}
+				onSetIsTreeView={onSetIsTreeView}
+				setExpandedPaths={setExpandedPaths}
+				disableTreeView={disableTreeView}
+				maxTreeItems={maxTreeItems}
+			/>
+			<Divider />
+			<Box sx={{ p: 1, flexGrow: 1 }}>
+				<Paper
+					elevation={1}
+					sx={{
+						bgcolor: (theme) => (theme.palette.mode === 'dark' ? theme.palette.background.default : 'background.paper'),
+						display: 'flex',
+						flexDirection: 'column',
+						minHeight: 420,
+						height: 'calc(60vh)',
+						maxHeight: 600,
+						overflowY: 'auto'
+					}}
+				>
+					{state.items &&
+						(state.items.length === 0 ? (
+							<EmptyState
+								title={
+									<FormattedMessage
+										id="packageDetailsDialog.emptyPackageMessage"
+										defaultMessage="The package is empty"
+									/>
+								}
+								subtitle={
+									<FormattedMessage
+										id="packageDetailsDialog.emptyPackageMessageSubtitle"
+										defaultMessage="Fetched package id is {packageId}"
+										values={{ packageId }}
+									/>
+								}
+							/>
+						) : !disableTreeView && isTreeView ? (
+							<PackageItemsTree
+								items={state.items}
+								onOpenMenu={onOpenMenu}
+								expandedPaths={expandedPaths}
+								setExpandedPaths={setExpandedPaths}
+							/>
+						) : (
+							<PackageItemsList
+								items={state.items}
+								totalItems={state.total}
+								hasNextPage={hasNextPage}
+								isNextPageLoading={state.isNextPageLoading}
+								loadNextPage={loadNextPage}
+								onOpenMenu={onOpenMenu}
+							/>
+						))}
+				</Paper>
+			</Box>
+			<Popover
+				open={Boolean(contextMenu.anchorPosition)}
+				anchorReference="anchorPosition"
+				anchorPosition={contextMenu.anchorPosition}
+				onClose={onContextMenuClose}
+			>
+				{contextMenu.options?.map((option) => (
+					<MenuItem key={option.id} onClick={() => onMenuItemClicked(option.id)}>
+						{option.label}
+					</MenuItem>
+				))}
+			</Popover>
+		</>
+	);
 }
 
 export default PackageItems;

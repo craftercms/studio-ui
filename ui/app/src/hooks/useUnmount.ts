@@ -17,13 +17,13 @@
 import { useEffect } from 'react';
 
 export function useUnmount(onUnmount: () => any) {
-  useEffect(
-    () => () => onUnmount?.(),
-    // Suppressing exhaustive deps warning to avoid non-memoized
-    // onUnmount props to incur in wrongful unmount calls
-    // eslint-disable-next-line
-    []
-  );
+	useEffect(
+		() => () => onUnmount?.(),
+		// Suppressing exhaustive deps warning to avoid non-memoized
+		// onUnmount props to incur in wrongful unmount calls
+		// eslint-disable-next-line
+		[]
+	);
 }
 
 export default useUnmount;

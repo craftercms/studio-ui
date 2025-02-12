@@ -39,146 +39,146 @@ import BasePathSelector from '../BasePathSelector';
 import { UNDEFINED } from '../../utils/constants';
 
 export interface PathSelectionDialogBaseProps {
-  open: boolean;
-  title?: TranslationOrText;
-  rootPath?: string;
-  initialPath?: string;
-  allowSwitchingRootPath?: boolean;
-  showCreateFolderOption?: boolean;
-  stripXmlIndex?: boolean;
+	open: boolean;
+	title?: TranslationOrText;
+	rootPath?: string;
+	initialPath?: string;
+	allowSwitchingRootPath?: boolean;
+	showCreateFolderOption?: boolean;
+	stripXmlIndex?: boolean;
 }
 
 export interface PathSelectionDialogCallbacks {
-  onClose(): void;
-  onClosed?(): void;
-  onOk?(response: { path: string }): void;
+	onClose(): void;
+	onClosed?(): void;
+	onOk?(response: { path: string }): void;
 }
 
 export type PathSelectionDialogProps = PathSelectionDialogBaseProps & PathSelectionDialogCallbacks;
 
 export interface PathSelectionDialogStateProps extends PathSelectionDialogBaseProps {
-  onClose?: StandardAction;
-  onClosed?: StandardAction;
-  onOk?: StandardAction;
+	onClose?: StandardAction;
+	onClosed?: StandardAction;
+	onOk?: StandardAction;
 }
 
 export function PathSelectionDialog(props: PathSelectionDialogProps) {
-  return (
-    <Dialog open={props.open} onClose={props.onClose} fullWidth maxWidth="sm">
-      <PathSelectionDialogContainer {...props} />
-    </Dialog>
-  );
+	return (
+		<Dialog open={props.open} onClose={props.onClose} fullWidth maxWidth="sm">
+			<PathSelectionDialogContainer {...props} />
+		</Dialog>
+	);
 }
 
 export function PathSelectionDialogContainer(props: PathSelectionDialogProps) {
-  const {
-    onClosed,
-    onClose,
-    onOk,
-    rootPath = '',
-    initialPath,
-    showCreateFolderOption = true,
-    stripXmlIndex = true,
-    allowSwitchingRootPath = true
-  } = props;
-  const [root, setRoot] = useState(rootPath);
-  const [currentPath, setCurrentPath] = useState(initialPath ?? root);
-  const [openCreateFolderDialog, setOpenCreateFolderDialog] = useState(false);
-  const title = usePossibleTranslation(props.title);
-  const createFolderState = useSelection((state) => state.dialogs.createFolder);
+	const {
+		onClosed,
+		onClose,
+		onOk,
+		rootPath = '',
+		initialPath,
+		showCreateFolderOption = true,
+		stripXmlIndex = true,
+		allowSwitchingRootPath = true
+	} = props;
+	const [root, setRoot] = useState(rootPath);
+	const [currentPath, setCurrentPath] = useState(initialPath ?? root);
+	const [openCreateFolderDialog, setOpenCreateFolderDialog] = useState(false);
+	const title = usePossibleTranslation(props.title);
+	const createFolderState = useSelection((state) => state.dialogs.createFolder);
 
-  useUnmount(onClosed);
+	useUnmount(onClosed);
 
-  const onCloseCreateFolder = () => setOpenCreateFolderDialog(false);
+	const onCloseCreateFolder = () => setOpenCreateFolderDialog(false);
 
-  const onWithPendingChangesCloseRequest = useWithPendingChangesCloseRequest(onCloseCreateFolder);
+	const onWithPendingChangesCloseRequest = useWithPendingChangesCloseRequest(onCloseCreateFolder);
 
-  const onCreateFolder = () => setOpenCreateFolderDialog(true);
+	const onCreateFolder = () => setOpenCreateFolderDialog(true);
 
-  const onFolderCreated = ({ path, name }: { path: string; name: string }) => {
-    setOpenCreateFolderDialog(false);
-    let id = `${path}/${name}`;
-    setCurrentPath(id);
-  };
+	const onFolderCreated = ({ path, name }: { path: string; name: string }) => {
+		setOpenCreateFolderDialog(false);
+		let id = `${path}/${name}`;
+		setCurrentPath(id);
+	};
 
-  const onPathChanged = (path: string) => {
-    setCurrentPath(path);
-  };
+	const onPathChanged = (path: string) => {
+		setCurrentPath(path);
+	};
 
-  return (
-    <>
-      <DialogHeader
-        title={title ?? <FormattedMessage id="pathSelectionDialog.title" defaultMessage="Select Path" />}
-        onCloseButtonClick={onClose}
-      />
-      <DialogBody sx={{ minHeight: '60vh' }}>
-        {root && root !== '/' ? (
-          <>
-            <PathSelectionInput
-              rootPath={root}
-              onChange={onPathChanged}
-              currentPath={currentPath}
-              startAdornment={
-                allowSwitchingRootPath ? (
-                  <Tooltip
-                    title={
-                      <FormattedMessage id="pathSelectionDialog.changeRootButtonLabel" defaultMessage="Change root" />
-                    }
-                  >
-                    <IconButton
-                      sx={{ mr: 0.5 }}
-                      onClick={() => {
-                        setRoot('');
-                        setCurrentPath('');
-                      }}
-                    >
-                      <KeyboardArrowLeftRoundedIcon />
-                    </IconButton>
-                  </Tooltip>
-                ) : (
-                  UNDEFINED
-                )
-              }
-            />
-            <FolderBrowserTreeView rootPath={root} onPathSelected={onPathChanged} selectedPath={currentPath} />
-          </>
-        ) : (
-          <BasePathSelector
-            value=""
-            onChange={(e) => {
-              const path = e.target.value;
-              setRoot(path);
-              setCurrentPath(path);
-            }}
-          />
-        )}
-      </DialogBody>
-      <DialogFooter>
-        {showCreateFolderOption && (
-          <SecondaryButton onClick={onCreateFolder} sx={{ marginRight: 'auto' }}>
-            <FormattedMessage id="pathSelectionDialog.createFolderButtonLabel" defaultMessage="Create Folder" />
-          </SecondaryButton>
-        )}
-        <SecondaryButton onClick={onClose}>
-          <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
-        </SecondaryButton>
-        <PrimaryButton onClick={() => onOk?.({ path: stripXmlIndex ? withoutIndex(currentPath) : currentPath })}>
-          <FormattedMessage id="words.accept" defaultMessage="Accept" />
-        </PrimaryButton>
-      </DialogFooter>
-      <CreateFolderDialog
-        title={<FormattedMessage id="newFolder.title" defaultMessage="Create a New Folder" />}
-        path={currentPath}
-        isSubmitting={createFolderState.isSubmitting}
-        hasPendingChanges={createFolderState.hasPendingChanges}
-        isMinimized={createFolderState.isMinimized}
-        onWithPendingChangesCloseRequest={onWithPendingChangesCloseRequest}
-        open={openCreateFolderDialog}
-        onClose={onCloseCreateFolder}
-        onCreated={onFolderCreated}
-      />
-    </>
-  );
+	return (
+		<>
+			<DialogHeader
+				title={title ?? <FormattedMessage id="pathSelectionDialog.title" defaultMessage="Select Path" />}
+				onCloseButtonClick={onClose}
+			/>
+			<DialogBody sx={{ minHeight: '60vh' }}>
+				{root && root !== '/' ? (
+					<>
+						<PathSelectionInput
+							rootPath={root}
+							onChange={onPathChanged}
+							currentPath={currentPath}
+							startAdornment={
+								allowSwitchingRootPath ? (
+									<Tooltip
+										title={
+											<FormattedMessage id="pathSelectionDialog.changeRootButtonLabel" defaultMessage="Change root" />
+										}
+									>
+										<IconButton
+											sx={{ mr: 0.5 }}
+											onClick={() => {
+												setRoot('');
+												setCurrentPath('');
+											}}
+										>
+											<KeyboardArrowLeftRoundedIcon />
+										</IconButton>
+									</Tooltip>
+								) : (
+									UNDEFINED
+								)
+							}
+						/>
+						<FolderBrowserTreeView rootPath={root} onPathSelected={onPathChanged} selectedPath={currentPath} />
+					</>
+				) : (
+					<BasePathSelector
+						value=""
+						onChange={(e) => {
+							const path = e.target.value;
+							setRoot(path);
+							setCurrentPath(path);
+						}}
+					/>
+				)}
+			</DialogBody>
+			<DialogFooter>
+				{showCreateFolderOption && (
+					<SecondaryButton onClick={onCreateFolder} sx={{ marginRight: 'auto' }}>
+						<FormattedMessage id="pathSelectionDialog.createFolderButtonLabel" defaultMessage="Create Folder" />
+					</SecondaryButton>
+				)}
+				<SecondaryButton onClick={onClose}>
+					<FormattedMessage id="words.cancel" defaultMessage="Cancel" />
+				</SecondaryButton>
+				<PrimaryButton onClick={() => onOk?.({ path: stripXmlIndex ? withoutIndex(currentPath) : currentPath })}>
+					<FormattedMessage id="words.accept" defaultMessage="Accept" />
+				</PrimaryButton>
+			</DialogFooter>
+			<CreateFolderDialog
+				title={<FormattedMessage id="newFolder.title" defaultMessage="Create a New Folder" />}
+				path={currentPath}
+				isSubmitting={createFolderState.isSubmitting}
+				hasPendingChanges={createFolderState.hasPendingChanges}
+				isMinimized={createFolderState.isMinimized}
+				onWithPendingChangesCloseRequest={onWithPendingChangesCloseRequest}
+				open={openCreateFolderDialog}
+				onClose={onCloseCreateFolder}
+				onCreated={onFolderCreated}
+			/>
+		</>
+	);
 }
 
 export default PathSelectionDialog;

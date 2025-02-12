@@ -22,35 +22,35 @@ import React from 'react';
 import cardTitleStyles, { cardSubtitleStyles } from '../../../styles/card';
 
 export interface SiteCardSkeletonProps {
-  compact?: boolean;
+	compact?: boolean;
 }
 
 export function SiteCardSkeleton(props: SiteCardSkeletonProps) {
-  return (
-    <Card sx={{ width: '340px', position: 'relative', display: props.compact ? 'flex' : 'block' }}>
-      <CardHeader
-        avatar={<Skeleton variant="circular" width={40} height={40} />}
-        title={<Skeleton animation="wave" height={20} width="40%" />}
-        sx={{
-          height: '77px',
-          width: '100%',
-          '& .cardTitle': {
-            ...cardTitleStyles
-          },
-          '& .cardSubtitle': {
-            ...cardSubtitleStyles,
-            WebkitLineClamp: 1
-          }
-        }}
-        subheader={<Skeleton animation="wave" height={20} width="80%" />}
-      />
-      {!props.compact && <Skeleton animation="wave" variant="rectangular" sx={{ height: '226px' }} />}
-      <CardActions disableSpacing>
-        <Skeleton variant="circular" width={40} height={40} style={{ marginRight: '10px' }} />
-        <Skeleton variant="circular" width={40} height={40} />
-      </CardActions>
-    </Card>
-  );
+	return (
+		<Card sx={{ width: '340px', position: 'relative', display: props.compact ? 'flex' : 'block' }}>
+			<CardHeader
+				avatar={<Skeleton variant="circular" width={40} height={40} />}
+				title={<Skeleton animation="wave" height={20} width="40%" />}
+				sx={{
+					height: '77px',
+					width: '100%',
+					'& .cardTitle': {
+						...cardTitleStyles
+					},
+					'& .cardSubtitle': {
+						...cardSubtitleStyles,
+						WebkitLineClamp: 1
+					}
+				}}
+				subheader={<Skeleton animation="wave" height={20} width="80%" />}
+			/>
+			{!props.compact && <Skeleton animation="wave" variant="rectangular" sx={{ height: '226px' }} />}
+			<CardActions disableSpacing>
+				<Skeleton variant="circular" width={40} height={40} style={{ marginRight: '10px' }} />
+				<Skeleton variant="circular" width={40} height={40} />
+			</CardActions>
+		</Card>
+	);
 }
 
 export default SiteCardSkeleton;

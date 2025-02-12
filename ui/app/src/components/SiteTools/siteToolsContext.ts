@@ -17,8 +17,8 @@
 import { createContext } from 'react';
 
 export interface SiteToolsContextProps {
-  setTool(toolId: string): void;
-  activeToolId: string;
+	setTool(toolId: string): void;
+	activeToolId: string;
 }
 
 export const SiteToolsContext = createContext<SiteToolsContextProps>(undefined);

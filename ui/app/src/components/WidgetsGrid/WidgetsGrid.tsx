@@ -22,15 +22,15 @@ import useActiveSiteId from '../../hooks/useActiveSiteId';
 import useActiveUser from '../../hooks/useActiveUser';
 
 export interface WidgetsGridProps extends Grid2Props {
-  widgets: WidgetDescriptor[];
+	widgets: WidgetDescriptor[];
 }
 
 export function WidgetsGrid(props: WidgetsGridProps) {
-  const { widgets, ...gridProps } = props;
-  const site = useActiveSiteId();
-  const user = useActiveUser();
-  const userRoles = user.rolesBySite[site];
-  return <Grid {...gridProps}>{renderWidgets(widgets, { userRoles })}</Grid>;
+	const { widgets, ...gridProps } = props;
+	const site = useActiveSiteId();
+	const user = useActiveUser();
+	const userRoles = user.rolesBySite[site];
+	return <Grid {...gridProps}>{renderWidgets(widgets, { userRoles })}</Grid>;
 }
 
 export default WidgetsGrid;

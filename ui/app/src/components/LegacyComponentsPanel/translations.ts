@@ -17,16 +17,16 @@
 import { defineMessages } from 'react-intl';
 
 export const translations = defineMessages({
-  addComponent: {
-    id: 'legacyComponentsPanel.addComponent',
-    defaultMessage: 'Add Component'
-  },
-  components: {
-    id: 'words.components',
-    defaultMessage: 'Components'
-  },
-  done: {
-    id: 'words.done',
-    defaultMessage: 'Done'
-  }
+	addComponent: {
+		id: 'legacyComponentsPanel.addComponent',
+		defaultMessage: 'Add Component'
+	},
+	components: {
+		id: 'words.components',
+		defaultMessage: 'Components'
+	},
+	done: {
+		id: 'words.done',
+		defaultMessage: 'Done'
+	}
 });

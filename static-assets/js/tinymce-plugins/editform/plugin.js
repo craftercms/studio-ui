@@ -14,21 +14,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-tinymce.PluginManager.add('editform', function(editor, url) {
-  editor.ui.registry.addButton('editform', {
-    icon: 'edit-block',
-    tooltip: 'Edit',
-    onAction: () => {
-      const openEditForm = editor.getParam('openEditForm');
-      openEditForm?.();
-    }
-  });
+tinymce.PluginManager.add('editform', function (editor, url) {
+	editor.ui.registry.addButton('editform', {
+		icon: 'edit-block',
+		tooltip: 'Edit',
+		onAction: () => {
+			const openEditForm = editor.getParam('openEditForm');
+			openEditForm?.();
+		}
+	});
 
-  return {
-    getMetadata: function() {
-      return {
-        name: 'Edit Form'
-      };
-    }
-  };
+	return {
+		getMetadata: function () {
+			return {
+				name: 'Edit Form'
+			};
+		}
+	};
 });

@@ -19,46 +19,46 @@ import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 
 export interface PreviewDialogBaseProps {
-  type: 'image' | 'editor' | 'video' | 'page' | 'pdf' | 'audio';
-  title: string;
-  subtitle?: string;
-  mode?: string;
-  url?: string;
-  path?: string;
-  content?: string;
-  mimeType?: string;
-  backgroundModeIndex?: number;
-  showEdit?: boolean;
+	type: 'image' | 'editor' | 'video' | 'page' | 'pdf' | 'audio';
+	title: string;
+	subtitle?: string;
+	mode?: string;
+	url?: string;
+	path?: string;
+	content?: string;
+	mimeType?: string;
+	backgroundModeIndex?: number;
+	showEdit?: boolean;
 }
 
 export interface PreviewDialogProps extends PreviewDialogBaseProps, Omit<EnhancedDialogProps, 'title' | 'subtitle'> {}
 
 export interface PreviewDialogStateProps extends PreviewDialogBaseProps, EnhancedDialogState {
-  onClose?: StandardAction;
-  onClosed?: StandardAction;
-  onMinimize?: StandardAction;
-  onMaximize?: StandardAction;
-  onFullScreen?: StandardAction;
-  onCancelFullScreen?: StandardAction;
+	onClose?: StandardAction;
+	onClosed?: StandardAction;
+	onMinimize?: StandardAction;
+	onMaximize?: StandardAction;
+	onFullScreen?: StandardAction;
+	onCancelFullScreen?: StandardAction;
 }
 
 export interface PreviewDialogContainerProps extends PreviewDialogBaseProps, Pick<PreviewDialogProps, 'onClose'> {}
 
 export const backgroundModes = [
-  {
-    mode: 'default',
-    classKey: ''
-  },
-  {
-    mode: 'inverse',
-    classKey: 'containerBackgroundInverse'
-  },
-  {
-    mode: 'squaredLight',
-    classKey: 'containerBackgroundSquaredLight'
-  },
-  {
-    mode: 'squaredDark',
-    classKey: 'containerBackgroundSquaredDark'
-  }
+	{
+		mode: 'default',
+		classKey: ''
+	},
+	{
+		mode: 'inverse',
+		classKey: 'containerBackgroundInverse'
+	},
+	{
+		mode: 'squaredLight',
+		classKey: 'containerBackgroundSquaredLight'
+	},
+	{
+		mode: 'squaredDark',
+		classKey: 'containerBackgroundSquaredDark'
+	}
 ];

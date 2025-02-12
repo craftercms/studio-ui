@@ -18,29 +18,29 @@ import { LookupTable } from './LookupTable';
 import { FetchAuthTypeResponse } from '../services/auth';
 
 export interface User {
-  id: number;
-  firstName: string;
-  lastName: string;
-  email: string;
-  username: string;
-  enabled: boolean;
-  externallyManaged: boolean;
-  authenticationType?: FetchAuthTypeResponse;
+	id: number;
+	firstName: string;
+	lastName: string;
+	email: string;
+	username: string;
+	enabled: boolean;
+	externallyManaged: boolean;
+	authenticationType?: FetchAuthTypeResponse;
 }
 
 export interface EnhancedUser extends User {
-  rolesBySite: LookupTable<string[]>;
-  permissionsBySite: LookupTable<string[]>;
-  preferences: LookupTable;
+	rolesBySite: LookupTable<string[]>;
+	permissionsBySite: LookupTable<string[]>;
+	preferences: LookupTable;
 }
 
 export interface NewUser {
-  firstName: string;
-  lastName: string;
-  email: string;
-  username: string;
-  enabled: boolean;
-  password: string;
+	firstName: string;
+	lastName: string;
+	email: string;
+	username: string;
+	enabled: boolean;
+	password: string;
 }
 
 export default User;

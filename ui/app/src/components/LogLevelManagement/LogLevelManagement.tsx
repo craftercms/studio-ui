@@ -31,116 +31,116 @@ import RefreshRounded from '@mui/icons-material/RefreshRounded';
 import Tooltip from '@mui/material/Tooltip';
 
 const messages = defineMessages({
-  levelChangedSuccess: {
-    id: 'loggingLevelsManagement.levelChangedSuccessMessage',
-    defaultMessage: 'Logging level changed successfully'
-  }
+	levelChangedSuccess: {
+		id: 'loggingLevelsManagement.levelChangedSuccessMessage',
+		defaultMessage: 'Logging level changed successfully'
+	}
 });
 
 export function LogLevelManagement() {
-  const [fetching, setFetching] = useState(false);
-  const [filteredLoggers, setFilteredLoggers] = useState<Array<Logger>>(null);
-  const [loggerFilter, setLoggerFilter] = useState<string>('');
-  const [levelFilter, setLevelFilter] = useState<string>('');
-  const filtering$ = useDebouncedInput(() => fnRefs.current.applyFilters());
-  const { formatMessage } = useIntl();
-  const dispatch = useDispatch();
-  const fnRefs = useRef({
-    loggers: null as Array<Logger>,
-    applyFilters: null as Function,
-    fetchLoggers: null as Function
-  });
+	const [fetching, setFetching] = useState(false);
+	const [filteredLoggers, setFilteredLoggers] = useState<Array<Logger>>(null);
+	const [loggerFilter, setLoggerFilter] = useState<string>('');
+	const [levelFilter, setLevelFilter] = useState<string>('');
+	const filtering$ = useDebouncedInput(() => fnRefs.current.applyFilters());
+	const { formatMessage } = useIntl();
+	const dispatch = useDispatch();
+	const fnRefs = useRef({
+		loggers: null as Array<Logger>,
+		applyFilters: null as Function,
+		fetchLoggers: null as Function
+	});
 
-  fnRefs.current.applyFilters = () => {
-    const loggers = fnRefs.current.loggers;
-    if (loggers) {
-      let filtered = loggers;
-      const levelQuery = levelFilter.toLocaleLowerCase().trim();
-      const loggerQuery = loggerFilter.toLowerCase().trim();
-      if (levelQuery || loggerQuery) {
-        const filter =
-          levelQuery && loggerQuery
-            ? (logger) =>
-                logger.level.toLowerCase().includes(levelQuery) && logger.name.toLowerCase().includes(loggerQuery)
-            : levelQuery
-              ? (logger) => logger.level.toLowerCase().includes(levelQuery)
-              : (logger) => logger.name.toLowerCase().includes(loggerQuery);
-        filtered = loggers.filter(filter);
-      }
-      setFilteredLoggers(filtered);
-    }
-  };
+	fnRefs.current.applyFilters = () => {
+		const loggers = fnRefs.current.loggers;
+		if (loggers) {
+			let filtered = loggers;
+			const levelQuery = levelFilter.toLocaleLowerCase().trim();
+			const loggerQuery = loggerFilter.toLowerCase().trim();
+			if (levelQuery || loggerQuery) {
+				const filter =
+					levelQuery && loggerQuery
+						? (logger) =>
+								logger.level.toLowerCase().includes(levelQuery) && logger.name.toLowerCase().includes(loggerQuery)
+						: levelQuery
+							? (logger) => logger.level.toLowerCase().includes(levelQuery)
+							: (logger) => logger.name.toLowerCase().includes(loggerQuery);
+				filtered = loggers.filter(filter);
+			}
+			setFilteredLoggers(filtered);
+		}
+	};
 
-  fnRefs.current.fetchLoggers = () => {
-    setFetching(true);
-    fetchLoggersService().subscribe({
-      next(loggers) {
-        fnRefs.current.loggers = loggers;
-        fnRefs.current.applyFilters();
-        setFetching(false);
-      },
-      error({ response }) {
-        dispatch(showErrorDialog({ error: response }));
-        setFetching(false);
-      }
-    });
-  };
+	fnRefs.current.fetchLoggers = () => {
+		setFetching(true);
+		fetchLoggersService().subscribe({
+			next(loggers) {
+				fnRefs.current.loggers = loggers;
+				fnRefs.current.applyFilters();
+				setFetching(false);
+			},
+			error({ response }) {
+				dispatch(showErrorDialog({ error: response }));
+				setFetching(false);
+			}
+		});
+	};
 
-  useEffect(() => {
-    fnRefs.current.fetchLoggers();
-  }, []);
+	useEffect(() => {
+		fnRefs.current.fetchLoggers();
+	}, []);
 
-  const changeLevel = (logger: Logger, level: LoggerLevel) => {
-    setLogger(logger.name, level).subscribe({
-      next() {
-        fnRefs.current.fetchLoggers();
-        dispatch(
-          showSystemNotification({
-            message: formatMessage(messages.levelChangedSuccess),
-            options: { variant: 'success' }
-          })
-        );
-      },
-      error(response) {
-        dispatch(showErrorDialog({ error: response }));
-      }
-    });
-  };
+	const changeLevel = (logger: Logger, level: LoggerLevel) => {
+		setLogger(logger.name, level).subscribe({
+			next() {
+				fnRefs.current.fetchLoggers();
+				dispatch(
+					showSystemNotification({
+						message: formatMessage(messages.levelChangedSuccess),
+						options: { variant: 'success' }
+					})
+				);
+			},
+			error(response) {
+				dispatch(showErrorDialog({ error: response }));
+			}
+		});
+	};
 
-  return (
-    <Paper elevation={0}>
-      <GlobalAppToolbar
-        title={<FormattedMessage id="globalMenu.loggingLevelsEntryLabel" defaultMessage="Logging Levels" />}
-        rightContent={
-          <Tooltip title={<FormattedMessage id="word.refresh" defaultMessage="Refresh" />}>
-            <IconButton onClick={() => fnRefs.current.fetchLoggers()}>
-              <RefreshRounded />
-            </IconButton>
-          </Tooltip>
-        }
-      />
-      {fetching ? (
-        <LogLevelGridSkeleton />
-      ) : (
-        filteredLoggers && (
-          <LogLevelGrid
-            loggerFilter={loggerFilter}
-            levelFilter={levelFilter}
-            onLoggerFilterChange={(v) => {
-              setLoggerFilter(v);
-              filtering$.next(v);
-            }}
-            onLevelFilterChange={(v) => {
-              setLevelFilter(v);
-              filtering$.next(v);
-            }}
-            loggers={filteredLoggers}
-            onChangeLevel={changeLevel}
-          />
-        )
-      )}
-    </Paper>
-  );
+	return (
+		<Paper elevation={0}>
+			<GlobalAppToolbar
+				title={<FormattedMessage id="globalMenu.loggingLevelsEntryLabel" defaultMessage="Logging Levels" />}
+				rightContent={
+					<Tooltip title={<FormattedMessage id="word.refresh" defaultMessage="Refresh" />}>
+						<IconButton onClick={() => fnRefs.current.fetchLoggers()}>
+							<RefreshRounded />
+						</IconButton>
+					</Tooltip>
+				}
+			/>
+			{fetching ? (
+				<LogLevelGridSkeleton />
+			) : (
+				filteredLoggers && (
+					<LogLevelGrid
+						loggerFilter={loggerFilter}
+						levelFilter={levelFilter}
+						onLoggerFilterChange={(v) => {
+							setLoggerFilter(v);
+							filtering$.next(v);
+						}}
+						onLevelFilterChange={(v) => {
+							setLevelFilter(v);
+							filtering$.next(v);
+						}}
+						loggers={filteredLoggers}
+						onChangeLevel={changeLevel}
+					/>
+				)
+			)}
+		</Paper>
+	);
 }
 
 export default LogLevelManagement;

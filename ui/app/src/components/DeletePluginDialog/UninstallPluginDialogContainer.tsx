@@ -28,73 +28,73 @@ import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { LoadingState } from '../LoadingState';
 
 export function UninstallPluginDialogContainer(props: UninstallPluginDialogContainerProps) {
-  const { onClose, pluginId, onComplete, isSubmitting, onSubmittingAndOrPendingChange } = props;
-  const site = useActiveSiteId();
-  const dispatch = useDispatch();
-  const callbacksRef = useUpdateRefs({ onSubmittingAndOrPendingChange });
-  const [{ data, isFetching, error }, setState] = useSpreadState({
-    data: null,
-    isFetching: false,
-    error: null
-  });
+	const { onClose, pluginId, onComplete, isSubmitting, onSubmittingAndOrPendingChange } = props;
+	const site = useActiveSiteId();
+	const dispatch = useDispatch();
+	const callbacksRef = useUpdateRefs({ onSubmittingAndOrPendingChange });
+	const [{ data, isFetching, error }, setState] = useSpreadState({
+		data: null,
+		isFetching: false,
+		error: null
+	});
 
-  useEffect(() => {
-    setState({ isFetching: true });
-    const sub = fetchMarketplacePluginUsage(site, pluginId).subscribe({
-      next(response) {
-        setState({
-          data: response,
-          isFetching: false
-        });
-      },
-      error: ({ response: { response } }) => {
-        setState({
-          error: response,
-          isFetching: false
-        });
-      }
-    });
-    return () => {
-      sub.unsubscribe();
-    };
-  }, [site, pluginId, setState]);
+	useEffect(() => {
+		setState({ isFetching: true });
+		const sub = fetchMarketplacePluginUsage(site, pluginId).subscribe({
+			next(response) {
+				setState({
+					data: response,
+					isFetching: false
+				});
+			},
+			error: ({ response: { response } }) => {
+				setState({
+					error: response,
+					isFetching: false
+				});
+			}
+		});
+		return () => {
+			sub.unsubscribe();
+		};
+	}, [site, pluginId, setState]);
 
-  const onSubmit = (id: string) => {
-    onSubmittingAndOrPendingChange({
-      isSubmitting: true
-    });
+	const onSubmit = (id: string) => {
+		onSubmittingAndOrPendingChange({
+			isSubmitting: true
+		});
 
-    uninstallMarketplacePlugin(site, id, true).subscribe({
-      next: () => {
-        callbacksRef.current.onSubmittingAndOrPendingChange({
-          isSubmitting: false
-        });
-        onComplete?.();
-      },
-      error: ({ response: { response } }) => {
-        callbacksRef.current.onSubmittingAndOrPendingChange({
-          isSubmitting: false
-        });
-        dispatch(showErrorDialog({ error: response }));
-      }
-    });
-  };
+		uninstallMarketplacePlugin(site, id, true).subscribe({
+			next: () => {
+				callbacksRef.current.onSubmittingAndOrPendingChange({
+					isSubmitting: false
+				});
+				onComplete?.();
+			},
+			error: ({ response: { response } }) => {
+				callbacksRef.current.onSubmittingAndOrPendingChange({
+					isSubmitting: false
+				});
+				dispatch(showErrorDialog({ error: response }));
+			}
+		});
+	};
 
-  const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
+	const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
 
-  return error ? (
-    <ApiResponseErrorState error={error} />
-  ) : isFetching ? (
-    <LoadingState sxs={{ root: { width: 300, height: 250 } }} />
-  ) : data ? (
-    <Suspense fallback="">
-      <UninstallPluginDialogBody
-        isSubmitting={isSubmitting}
-        onCloseButtonClick={onCloseButtonClick}
-        pluginId={pluginId}
-        data={data}
-        onSubmit={() => onSubmit(pluginId)}
-      />
-    </Suspense>
-  ) : null;
+	return error ? (
+		<ApiResponseErrorState error={error} />
+	) : isFetching ? (
+		<LoadingState sxs={{ root: { width: 300, height: 250 } }} />
+	) : data ? (
+		<Suspense fallback="">
+			<UninstallPluginDialogBody
+				isSubmitting={isSubmitting}
+				onCloseButtonClick={onCloseButtonClick}
+				pluginId={pluginId}
+				data={data}
+				onSubmit={() => onSubmit(pluginId)}
+			/>
+		</Suspense>
+	) : null;
 }

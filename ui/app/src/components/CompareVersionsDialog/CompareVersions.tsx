@@ -149,23 +149,23 @@ import Box from '@mui/material/Box';
 }); */
 
 interface CompareVersionsProps {
-  versions: ContentInstance[];
+	versions: ContentInstance[];
 }
 
 export function CompareVersions(props: CompareVersionsProps) {
-  const [a, b] = props.versions;
-  const authoringUrl = useSelection<string>((state) => state.env.authoringBase);
-  return (
-    <Box
-      component="iframe"
-      title="Comparing versions"
-      sx={{
-        border: 'none',
-        height: '80vh'
-      }}
-      src={`${authoringUrl}/diff?site=${a.site}&path=${a.path}&oldPath=${b.path}&version=${a.versionNumber}&versionTO=${b.versionNumber}&mode=iframe&ui=next`}
-    />
-  );
+	const [a, b] = props.versions;
+	const authoringUrl = useSelection<string>((state) => state.env.authoringBase);
+	return (
+		<Box
+			component="iframe"
+			title="Comparing versions"
+			sx={{
+				border: 'none',
+				height: '80vh'
+			}}
+			src={`${authoringUrl}/diff?site=${a.site}&path=${a.path}&oldPath=${b.path}&version=${a.versionNumber}&versionTO=${b.versionNumber}&mode=iframe&ui=next`}
+		/>
+	);
 }
 
 /*export function CompareVersions(props: CompareVersionsProps) {

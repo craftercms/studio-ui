@@ -21,43 +21,43 @@ import Person from './Person';
 import LookupTable from './LookupTable';
 
 export interface ItemHistoryEntry {
-  author: Person;
-  committer: string;
-  comment: string;
-  modifiedDate: string;
-  oldPath: string;
-  path: string;
-  revertible: boolean;
-  versionNumber: string;
+	author: Person;
+	committer: string;
+	comment: string;
+	modifiedDate: string;
+	oldPath: string;
+	path: string;
+	revertible: boolean;
+	versionNumber: string;
 }
 
 export interface FetchContentVersion {
-  path: string;
-  versionNumber: string;
+	path: string;
+	versionNumber: string;
 }
 
 export interface CompareVersionsBranch {
-  compareVersions: ContentInstance[];
-  isFetching: Boolean;
-  error: ApiResponse;
+	compareVersions: ContentInstance[];
+	isFetching: Boolean;
+	error: ApiResponse;
 }
 
 export interface VersionsStateProps {
-  byId: LookupTable<ItemHistoryEntry>;
-  item: DetailedItem;
-  rootPath?: string;
-  isConfig?: boolean;
-  environment?: string;
-  module?: string;
-  error: ApiResponse;
-  isFetching: Boolean;
-  current: string;
-  versions: ItemHistoryEntry[];
-  allVersions: ItemHistoryEntry[];
-  count: number;
-  page: number;
-  limit: number;
-  selected: string[];
-  previous: string;
-  compareVersionsBranch: CompareVersionsBranch;
+	byId: LookupTable<ItemHistoryEntry>;
+	item: DetailedItem;
+	rootPath?: string;
+	isConfig?: boolean;
+	environment?: string;
+	module?: string;
+	error: ApiResponse;
+	isFetching: Boolean;
+	current: string;
+	versions: ItemHistoryEntry[];
+	allVersions: ItemHistoryEntry[];
+	count: number;
+	page: number;
+	limit: number;
+	selected: string[];
+	previous: string;
+	compareVersionsBranch: CompareVersionsBranch;
 }

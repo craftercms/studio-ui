@@ -26,21 +26,21 @@ import { goToNextPage } from '../../state/actions/preview';
 export interface PreviewForwardButtonProps extends IconButtonProps {}
 
 export function PreviewForwardButton(props: PreviewForwardButtonProps) {
-  const stack = useHistoryForwardStack();
-  const dispatch = useDispatch();
-  const onClick = () => {
-    dispatch(goToNextPage());
-  };
+	const stack = useHistoryForwardStack();
+	const dispatch = useDispatch();
+	const onClick = () => {
+		dispatch(goToNextPage());
+	};
 
-  return (
-    <Tooltip title={<FormattedMessage id="words.forward" defaultMessage="Forward" />}>
-      <span>
-        <IconButton disabled={stack.length === 0} onClick={onClick} {...props} size="large">
-          <ArrowForwardRoundedIcon />
-        </IconButton>
-      </span>
-    </Tooltip>
-  );
+	return (
+		<Tooltip title={<FormattedMessage id="words.forward" defaultMessage="Forward" />}>
+			<span>
+				<IconButton disabled={stack.length === 0} onClick={onClick} {...props} size="large">
+					<ArrowForwardRoundedIcon />
+				</IconButton>
+			</span>
+		</Tooltip>
+	);
 }
 
 export default PreviewForwardButton;

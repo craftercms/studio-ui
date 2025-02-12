@@ -22,32 +22,32 @@ import ContentType from '../models/ContentType';
 import { useEnhancedDialogState } from '../hooks/useEnhancedDialogState';
 
 export interface DeleteContentTypeButtonProps {
-  contentType: ContentType;
-  onComplete?(): void;
+	contentType: ContentType;
+	onComplete?(): void;
 }
 
 function DeleteContentTypeButton({ contentType, onComplete }: DeleteContentTypeButtonProps) {
-  const deleteContentTypeDialogState = useEnhancedDialogState();
-  return (
-    <>
-      <IconButton onClick={() => deleteContentTypeDialogState.onOpen()} size="large">
-        <DeleteRounded />
-      </IconButton>
-      <DeleteContentTypeDialog
-        open={deleteContentTypeDialogState.open}
-        onClose={deleteContentTypeDialogState.onClose}
-        isSubmitting={deleteContentTypeDialogState.isSubmitting}
-        hasPendingChanges={deleteContentTypeDialogState.hasPendingChanges}
-        isMinimized={deleteContentTypeDialogState.isMinimized}
-        onSubmittingAndOrPendingChange={deleteContentTypeDialogState.onSubmittingAndOrPendingChange}
-        contentType={contentType}
-        onComplete={() => {
-          deleteContentTypeDialogState.onClose();
-          onComplete?.();
-        }}
-      />
-    </>
-  );
+	const deleteContentTypeDialogState = useEnhancedDialogState();
+	return (
+		<>
+			<IconButton onClick={() => deleteContentTypeDialogState.onOpen()} size="large">
+				<DeleteRounded />
+			</IconButton>
+			<DeleteContentTypeDialog
+				open={deleteContentTypeDialogState.open}
+				onClose={deleteContentTypeDialogState.onClose}
+				isSubmitting={deleteContentTypeDialogState.isSubmitting}
+				hasPendingChanges={deleteContentTypeDialogState.hasPendingChanges}
+				isMinimized={deleteContentTypeDialogState.isMinimized}
+				onSubmittingAndOrPendingChange={deleteContentTypeDialogState.onSubmittingAndOrPendingChange}
+				contentType={contentType}
+				onComplete={() => {
+					deleteContentTypeDialogState.onClose();
+					onComplete?.();
+				}}
+			/>
+		</>
+	);
 }
 
 export default DeleteContentTypeButton;

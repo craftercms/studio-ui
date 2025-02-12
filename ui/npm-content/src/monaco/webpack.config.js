@@ -26,45 +26,45 @@ const targetPath = path.resolve(__dirname, '..', '..', '..', '..', 'static-asset
 rimraf.sync(`${targetPath}/*`);
 
 module.exports = {
-  mode: 'production',
-  entry: './src/monaco/index.js',
-  output: {
-    publicPath,
-    path: targetPath,
-    filename: `monaco.${pkg.dependencies['monaco-editor']}.js`
-  },
-  module: {
-    rules: [
-      {
-        test: /\.css$/,
-        use: ['style-loader', 'css-loader']
-      },
-      {
-        test: /\.ttf$/,
-        use: ['file-loader']
-      }
-    ]
-  },
-  plugins: [
-    new MonacoWebpackPlugin({
-      publicPath,
-      languages: [
-        'css',
-        'dockerfile',
-        'graphql',
-        'handlebars',
-        'html',
-        'java',
-        'javascript',
-        'json',
-        'less',
-        'markdown',
-        'scss',
-        'shell',
-        'typescript',
-        'xml',
-        'yaml'
-      ]
-    })
-  ]
+	mode: 'production',
+	entry: './src/monaco/index.js',
+	output: {
+		publicPath,
+		path: targetPath,
+		filename: `monaco.${pkg.dependencies['monaco-editor']}.js`
+	},
+	module: {
+		rules: [
+			{
+				test: /\.css$/,
+				use: ['style-loader', 'css-loader']
+			},
+			{
+				test: /\.ttf$/,
+				use: ['file-loader']
+			}
+		]
+	},
+	plugins: [
+		new MonacoWebpackPlugin({
+			publicPath,
+			languages: [
+				'css',
+				'dockerfile',
+				'graphql',
+				'handlebars',
+				'html',
+				'java',
+				'javascript',
+				'json',
+				'less',
+				'markdown',
+				'scss',
+				'shell',
+				'typescript',
+				'xml',
+				'yaml'
+			]
+		})
+	]
 };

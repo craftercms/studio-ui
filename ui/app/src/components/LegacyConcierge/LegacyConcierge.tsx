@@ -23,41 +23,41 @@ import { LegacyItem } from '../../models/Item';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 
 export function LegacyConcierge() {
-  // As it stands, this should be a hook, but creating as a component for the convenience of mounting it
-  // only once on the CrafterCMSNextBridge component. As a hook, it would be out of the StoreProvider.
-  const site = useActiveSiteId();
-  const dispatch = useDispatch();
-  useEffect(() => {
-    if (site) {
-      dispatch(fetchContentTypes());
-    }
-  }, [site, dispatch]);
+	// As it stands, this should be a hook, but creating as a component for the convenience of mounting it
+	// only once on the CrafterCMSNextBridge component. As a hook, it would be out of the StoreProvider.
+	const site = useActiveSiteId();
+	const dispatch = useDispatch();
+	useEffect(() => {
+		if (site) {
+			dispatch(fetchContentTypes());
+		}
+	}, [site, dispatch]);
 
-  useEffect(() => {
-    // @ts-ignore
-    if (window.amplify) {
-      const hostToGuest$ = getHostToGuestBus();
-      const subscription = hostToGuest$.pipe(filter((action) => action.type === reloadRequest.type)).subscribe(() => {
-        // @ts-ignore
-        CStudioAuthoring.Operations.refreshPreview?.();
-      });
+	useEffect(() => {
+		// @ts-ignore
+		if (window.amplify) {
+			const hostToGuest$ = getHostToGuestBus();
+			const subscription = hostToGuest$.pipe(filter((action) => action.type === reloadRequest.type)).subscribe(() => {
+				// @ts-ignore
+				CStudioAuthoring.Operations.refreshPreview?.();
+			});
 
-      const updateGuest = ({ contentTO: item }: { contentTO: LegacyItem }) => {
-        dispatch(guestPathUpdated({ path: item.uri }));
-      };
+			const updateGuest = ({ contentTO: item }: { contentTO: LegacyItem }) => {
+				dispatch(guestPathUpdated({ path: item.uri }));
+			};
 
-      // @ts-ignore
-      amplify.subscribe('SELECTED_CONTENT_SET', updateGuest);
+			// @ts-ignore
+			amplify.subscribe('SELECTED_CONTENT_SET', updateGuest);
 
-      return () => {
-        subscription.unsubscribe();
-        // @ts-ignore
-        amplify.unsubscribe('SELECTED_CONTENT_SET', updateGuest);
-      };
-    }
-  }, [dispatch]);
+			return () => {
+				subscription.unsubscribe();
+				// @ts-ignore
+				amplify.unsubscribe('SELECTED_CONTENT_SET', updateGuest);
+			};
+		}
+	}, [dispatch]);
 
-  return null;
+	return null;
 }
 
 export default LegacyConcierge;

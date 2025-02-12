@@ -44,229 +44,229 @@ const viewModes: MediaCardViewModes[] = ['card', 'compact', 'row'];
 const defaultPreselectedPaths = [];
 
 export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProps) {
-  const {
-    path,
-    onClose,
-    onSuccess,
-    multiSelect = false,
-    mimeTypes,
-    contentTypes,
-    numOfLoaderItems,
-    allowUpload = true,
-    initialParameters: initialParametersProp,
-    preselectedPaths = defaultPreselectedPaths,
-    disableChangePreselected = true
-  } = props;
-  const [items, setItems] = useState<SearchItem[]>();
-  const site = useActiveSiteId();
-  const { guestBase } = useEnv();
-  const dispatch = useDispatch();
-  const [keyword, setKeyword] = useState('');
-  const [selectedCard, setSelectedCard] = useState<MediaItem>();
-  const [searchParameters, setSearchParameters] = useSpreadState({
-    ...initialParameters,
-    ...initialParametersProp,
-    filters: {
-      ...initialParameters.filters,
-      ...initialParametersProp?.filters,
-      ...(mimeTypes && { 'mime-type': mimeTypes }),
-      ...(contentTypes && { 'content-type': contentTypes })
-    }
-  });
-  const [total, setTotal] = useState<number>();
-  const [selectedLookup, setSelectedLookup] = useSpreadState<LookupTable<MediaItem>>({});
-  const selectedArray = Object.keys(selectedLookup).filter((key) => selectedLookup[key]);
-  const browsePath = path.replace(/\/+$/, '');
-  const [currentPath, setCurrentPath] = useState(browsePath);
-  const [fetchingBrowsePathExists, setFetchingBrowsePathExists] = useState(false);
-  const [browsePathExists, setBrowsePathExists] = useState(false);
-  const [sortKeys, setSortKeys] = useState([]);
-  const { username } = useActiveUser();
-  const [viewMode, setViewMode] = useState<MediaCardViewModes>(getStoredBrowseDialogViewMode(username));
-  const [fetchingPreselectedItems, setFetchingPreselectedItems] = useState(false);
-  const disableSubmission = fetchingPreselectedItems || (!selectedArray.length && !selectedCard);
-  const preselectedLookup = createPresenceTable(preselectedPaths);
+	const {
+		path,
+		onClose,
+		onSuccess,
+		multiSelect = false,
+		mimeTypes,
+		contentTypes,
+		numOfLoaderItems,
+		allowUpload = true,
+		initialParameters: initialParametersProp,
+		preselectedPaths = defaultPreselectedPaths,
+		disableChangePreselected = true
+	} = props;
+	const [items, setItems] = useState<SearchItem[]>();
+	const site = useActiveSiteId();
+	const { guestBase } = useEnv();
+	const dispatch = useDispatch();
+	const [keyword, setKeyword] = useState('');
+	const [selectedCard, setSelectedCard] = useState<MediaItem>();
+	const [searchParameters, setSearchParameters] = useSpreadState({
+		...initialParameters,
+		...initialParametersProp,
+		filters: {
+			...initialParameters.filters,
+			...initialParametersProp?.filters,
+			...(mimeTypes && { 'mime-type': mimeTypes }),
+			...(contentTypes && { 'content-type': contentTypes })
+		}
+	});
+	const [total, setTotal] = useState<number>();
+	const [selectedLookup, setSelectedLookup] = useSpreadState<LookupTable<MediaItem>>({});
+	const selectedArray = Object.keys(selectedLookup).filter((key) => selectedLookup[key]);
+	const browsePath = path.replace(/\/+$/, '');
+	const [currentPath, setCurrentPath] = useState(browsePath);
+	const [fetchingBrowsePathExists, setFetchingBrowsePathExists] = useState(false);
+	const [browsePathExists, setBrowsePathExists] = useState(false);
+	const [sortKeys, setSortKeys] = useState([]);
+	const { username } = useActiveUser();
+	const [viewMode, setViewMode] = useState<MediaCardViewModes>(getStoredBrowseDialogViewMode(username));
+	const [fetchingPreselectedItems, setFetchingPreselectedItems] = useState(false);
+	const disableSubmission = fetchingPreselectedItems || (!selectedArray.length && !selectedCard);
+	const preselectedLookup = createPresenceTable(preselectedPaths);
 
-  const fetchItems = useCallback(() => {
-    // Since lookahead regex is not supported by opensearch, we are excluding the current path from the search using a
-    // negative filter in a query. This scenario only happens with pages, hence the `withIndex` function wrapping the
-    // current path.
-    search(site, {
-      ...prepareSearchParams(searchParameters),
-      path: `${currentPath}/[^/]+(/index\\.xml)?`,
-      query: `-localId:"${withIndex(currentPath)}"`
-    }).subscribe((response) => {
-      setTotal(response.total);
-      setItems(response.items);
-      setSortKeys(response.facets.map((facet) => facet.name));
-    });
-  }, [searchParameters, currentPath, site]);
+	const fetchItems = useCallback(() => {
+		// Since lookahead regex is not supported by opensearch, we are excluding the current path from the search using a
+		// negative filter in a query. This scenario only happens with pages, hence the `withIndex` function wrapping the
+		// current path.
+		search(site, {
+			...prepareSearchParams(searchParameters),
+			path: `${currentPath}/[^/]+(/index\\.xml)?`,
+			query: `-localId:"${withIndex(currentPath)}"`
+		}).subscribe((response) => {
+			setTotal(response.total);
+			setItems(response.items);
+			setSortKeys(response.facets.map((facet) => facet.name));
+		});
+	}, [searchParameters, currentPath, site]);
 
-  useEffect(() => {
-    const query = preselectedPaths?.map((path) => `localId:"${path}"`).join(' ');
-    setFetchingPreselectedItems(true);
-    search(site, { query }).subscribe({
-      next: ({ items }) => {
-        if (multiSelect) {
-          setSelectedLookup(createLookupTable(items, 'path'));
-        } else if (items.length) {
-          setSelectedCard(items[0]);
-        }
-        setFetchingPreselectedItems(false);
-      },
-      error: () => {
-        setFetchingPreselectedItems(false);
-      }
-    });
-  }, [site, preselectedPaths, multiSelect, setSelectedLookup]);
+	useEffect(() => {
+		const query = preselectedPaths?.map((path) => `localId:"${path}"`).join(' ');
+		setFetchingPreselectedItems(true);
+		search(site, { query }).subscribe({
+			next: ({ items }) => {
+				if (multiSelect) {
+					setSelectedLookup(createLookupTable(items, 'path'));
+				} else if (items.length) {
+					setSelectedCard(items[0]);
+				}
+				setFetchingPreselectedItems(false);
+			},
+			error: () => {
+				setFetchingPreselectedItems(false);
+			}
+		});
+	}, [site, preselectedPaths, multiSelect, setSelectedLookup]);
 
-  useEffect(() => {
-    let subscription;
-    if (!browsePathExists) {
-      setFetchingBrowsePathExists(true);
-      subscription = checkPathExistence(site, browsePath).subscribe((exists) => {
-        if (exists) {
-          fetchItems();
-          setBrowsePathExists(true);
-        }
-        setFetchingBrowsePathExists(false);
-      });
-    } else {
-      fetchItems();
-    }
+	useEffect(() => {
+		let subscription;
+		if (!browsePathExists) {
+			setFetchingBrowsePathExists(true);
+			subscription = checkPathExistence(site, browsePath).subscribe((exists) => {
+				if (exists) {
+					fetchItems();
+					setBrowsePathExists(true);
+				}
+				setFetchingBrowsePathExists(false);
+			});
+		} else {
+			fetchItems();
+		}
 
-    return () => {
-      subscription?.unsubscribe();
-    };
-  }, [fetchItems, site, browsePath, browsePathExists]);
+		return () => {
+			subscription?.unsubscribe();
+		};
+	}, [fetchItems, site, browsePath, browsePathExists]);
 
-  const onCardSelected = (item: MediaItem) => {
-    if (multiSelect) {
-      setSelectedLookup({ [item.path]: selectedLookup[item.path] ? null : item });
-    } else {
-      setSelectedCard(selectedCard?.path === item.path ? null : item);
-    }
-  };
+	const onCardSelected = (item: MediaItem) => {
+		if (multiSelect) {
+			setSelectedLookup({ [item.path]: selectedLookup[item.path] ? null : item });
+		} else {
+			setSelectedCard(selectedCard?.path === item.path ? null : item);
+		}
+	};
 
-  const onSearch = useCallback(
-    (keywords) => {
-      setSearchParameters({ keywords });
-    },
-    [setSearchParameters]
-  );
+	const onSearch = useCallback(
+		(keywords) => {
+			setSearchParameters({ keywords });
+		},
+		[setSearchParameters]
+	);
 
-  const onSearch$ = useDebouncedInput(onSearch, 400);
+	const onSearch$ = useDebouncedInput(onSearch, 400);
 
-  function handleSearchKeyword(keyword: string) {
-    setKeyword(keyword);
-    onSearch$.next(keyword);
-  }
+	function handleSearchKeyword(keyword: string) {
+		setKeyword(keyword);
+		onSearch$.next(keyword);
+	}
 
-  const onSelectButtonClick = () => {
-    onSuccess?.(multiSelect ? selectedArray.map((path) => selectedLookup[path]) : selectedCard);
-  };
+	const onSelectButtonClick = () => {
+		onSuccess?.(multiSelect ? selectedArray.map((path) => selectedLookup[path]) : selectedCard);
+	};
 
-  const onChangePage = (page: number) => {
-    setSearchParameters({ offset: page * searchParameters.limit });
-  };
+	const onChangePage = (page: number) => {
+		setSearchParameters({ offset: page * searchParameters.limit });
+	};
 
-  const onChangeRowsPerPage = (e) => {
-    setSearchParameters({ offset: 0, limit: e.target.value });
-  };
+	const onChangeRowsPerPage = (e) => {
+		setSearchParameters({ offset: 0, limit: e.target.value });
+	};
 
-  const onCheckboxChecked = (path: string, selected: boolean) => {
-    setSelectedLookup({ [path]: selected ? items.find((item) => item.path === path) : null });
-  };
+	const onCheckboxChecked = (path: string, selected: boolean) => {
+		setSelectedLookup({ [path]: selected ? items.find((item) => item.path === path) : null });
+	};
 
-  const onPathSelected = (path: string) => {
-    setCurrentPath(withoutIndex(path));
-  };
+	const onPathSelected = (path: string) => {
+		setCurrentPath(withoutIndex(path));
+	};
 
-  const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
+	const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
 
-  const onUpload = () => {
-    dispatch(
-      showSingleFileUploadDialog({
-        site,
-        path: currentPath,
-        fileTypes: mimeTypes,
-        onClose: closeSingleFileUploadDialog(),
-        onUploadComplete: batchActions([closeSingleFileUploadDialog(), dispatchDOMEvent({ id: 'imageUploaded' })])
-      })
-    );
+	const onUpload = () => {
+		dispatch(
+			showSingleFileUploadDialog({
+				site,
+				path: currentPath,
+				fileTypes: mimeTypes,
+				onClose: closeSingleFileUploadDialog(),
+				onUploadComplete: batchActions([closeSingleFileUploadDialog(), dispatchDOMEvent({ id: 'imageUploaded' })])
+			})
+		);
 
-    createCustomDocumentEventListener('imageUploaded', (response) => {
-      setTimeout(() => {
-        fetchItems();
-      }, 2000);
-    });
-  };
+		createCustomDocumentEventListener('imageUploaded', (response) => {
+			setTimeout(() => {
+				fetchItems();
+			}, 2000);
+		});
+	};
 
-  const onRefresh = () => {
-    fetchItems();
-  };
+	const onRefresh = () => {
+		fetchItems();
+	};
 
-  const switchViewMode = () => {
-    let currentIndex = viewModes.indexOf(viewMode);
-    let nextIndex;
+	const switchViewMode = () => {
+		let currentIndex = viewModes.indexOf(viewMode);
+		let nextIndex;
 
-    if (currentIndex === viewModes.length - 1) {
-      nextIndex = 0;
-    } else {
-      nextIndex = currentIndex + 1;
-    }
-    setStoredBrowseDialogViewMode(username, viewModes[nextIndex]);
-    setViewMode(viewModes[nextIndex]);
-  };
+		if (currentIndex === viewModes.length - 1) {
+			nextIndex = 0;
+		} else {
+			nextIndex = currentIndex + 1;
+		}
+		setStoredBrowseDialogViewMode(username, viewModes[nextIndex]);
+		setViewMode(viewModes[nextIndex]);
+	};
 
-  return fetchingBrowsePathExists ? (
-    <BrowseFilesDialogContainerSkeleton />
-  ) : browsePathExists ? (
-    <BrowseFilesDialogUI
-      viewMode={viewMode}
-      onToggleViewMode={switchViewMode}
-      currentPath={currentPath}
-      items={items}
-      path={browsePath}
-      guestBase={guestBase}
-      keyword={keyword}
-      selectedCard={selectedCard}
-      selectedArray={selectedArray}
-      multiSelect={multiSelect}
-      searchParameters={searchParameters}
-      setSearchParameters={setSearchParameters}
-      limit={searchParameters.limit}
-      offset={searchParameters.offset}
-      total={total}
-      sortKeys={sortKeys}
-      onCardSelected={onCardSelected}
-      onChangePage={onChangePage}
-      onChangeRowsPerPage={onChangeRowsPerPage}
-      onCheckboxChecked={onCheckboxChecked}
-      handleSearchKeyword={handleSearchKeyword}
-      onCloseButtonClick={onCloseButtonClick}
-      onPathSelected={onPathSelected}
-      onSelectButtonClick={onSelectButtonClick}
-      numOfLoaderItems={numOfLoaderItems}
-      onRefresh={onRefresh}
-      onUpload={onUpload}
-      allowUpload={allowUpload}
-      preselectedLookup={preselectedLookup}
-      disableChangePreselected={disableChangePreselected}
-      disableSubmission={disableSubmission}
-    />
-  ) : (
-    <EmptyState
-      sxs={{ root: { height: '60vh' } }}
-      title={
-        <FormattedMessage
-          id="browseFilesDialog.emptyStateMessage"
-          defaultMessage="Path `{path}` doesn't exist."
-          values={{ path: currentPath }}
-        />
-      }
-    />
-  );
+	return fetchingBrowsePathExists ? (
+		<BrowseFilesDialogContainerSkeleton />
+	) : browsePathExists ? (
+		<BrowseFilesDialogUI
+			viewMode={viewMode}
+			onToggleViewMode={switchViewMode}
+			currentPath={currentPath}
+			items={items}
+			path={browsePath}
+			guestBase={guestBase}
+			keyword={keyword}
+			selectedCard={selectedCard}
+			selectedArray={selectedArray}
+			multiSelect={multiSelect}
+			searchParameters={searchParameters}
+			setSearchParameters={setSearchParameters}
+			limit={searchParameters.limit}
+			offset={searchParameters.offset}
+			total={total}
+			sortKeys={sortKeys}
+			onCardSelected={onCardSelected}
+			onChangePage={onChangePage}
+			onChangeRowsPerPage={onChangeRowsPerPage}
+			onCheckboxChecked={onCheckboxChecked}
+			handleSearchKeyword={handleSearchKeyword}
+			onCloseButtonClick={onCloseButtonClick}
+			onPathSelected={onPathSelected}
+			onSelectButtonClick={onSelectButtonClick}
+			numOfLoaderItems={numOfLoaderItems}
+			onRefresh={onRefresh}
+			onUpload={onUpload}
+			allowUpload={allowUpload}
+			preselectedLookup={preselectedLookup}
+			disableChangePreselected={disableChangePreselected}
+			disableSubmission={disableSubmission}
+		/>
+	) : (
+		<EmptyState
+			sxs={{ root: { height: '60vh' } }}
+			title={
+				<FormattedMessage
+					id="browseFilesDialog.emptyStateMessage"
+					defaultMessage="Path `{path}` doesn't exist."
+					values={{ path: currentPath }}
+				/>
+			}
+		/>
+	);
 }
 
 export default BrowseFilesDialogContainer;
