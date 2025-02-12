@@ -5,7 +5,7 @@ build
 target
 .yarn
 .idea
-.min.*
+*.min.*
 
 # ui/app
 ui/app/src/vite-env.d.ts

@@ -25,6 +25,5 @@ module.exports = {
 	trailingComma: 'none',
 	bracketSpacing: true,
 	bracketSameLine: false,
-	arrowParens: 'always',
-	xmlWhitespaceSensitivity: 'preserve'
+	arrowParens: 'always'
 };
