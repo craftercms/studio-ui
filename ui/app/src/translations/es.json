@@ -14,6 +14,7 @@
   "2O2sfp": "Terminar",
   "3BsBwq": "Cambiar a {newProject}",
   "3Dfbln": "Configuración de formulario",
+  "3IFkI5": "Dejaste cambios no guardados en \"{title}\"",
   "3Rl/Oh": "Token de API",
   "4fHiNl": "Duplicar",
   "4JV8IB": "Advertencia de referencias rotas",
@@ -1293,6 +1294,7 @@
   "systemType.renderingTemplate": "Plantilla de renderizado",
   "systemType.script": "Guión",
   "systemType.taxonomy": "Taxonomia",
+  "T2KTsM": "Los cambios no guardados se restauraron en el editor.",
   "t4tJYh": "No se encontraron tokens",
   "tdAgh/": "La creación del proyecto continuará en segundo plano.",
   "TdTXXf": "Leer más",
@@ -1392,6 +1394,7 @@
   "widgetComponent.pluginLoadFailedMessageTitle": "Error al cargar el complemento",
   "Wirzeh": "Filtrar...",
   "withEmptyState.defaultEmptyStateMessage": "No se han encontrado resultados",
+  "WNzebf": "Dejaste cambios no guardados en \"{title}\". Puedes volver a la configuración ahora si deseas recuperar o ignorar para descartar los cambios.",
   "word.configuration": "Configuración",
   "word.refresh": "Refrescar",
   "word.upload": "Subir",
@@ -1606,6 +1609,7 @@
   "z+Sm5h": "No hay widgets configurados",
   "Z6hPZP": "Artículos en este paquete",
   "ZIX1sG": "Haga clic en Crear Token arriba para crear uno.",
+  "ZJTQQv": "Volver y recuperar cambios",
   "zQvVDJ": "Todos",
   "ZYiLj1": "No se encontraron tipos compatibles."
 }

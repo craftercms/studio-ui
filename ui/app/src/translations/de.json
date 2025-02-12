@@ -14,6 +14,7 @@
   "2O2sfp": "Fertig",
   "3BsBwq": "Wechseln Sie zu {newProject}",
   "3Dfbln": "Formulareinstellungen",
+  "3IFkI5": "Sie haben nicht gespeicherte Änderungen an \"{title}\" hinterlassen.",
   "3Rl/Oh": "API-Token",
   "4fHiNl": "Duplikat",
   "4JV8IB": "Warnung vor defekten Verweisen",
@@ -1293,6 +1294,7 @@
   "systemType.renderingTemplate": "Rendering-Vorlage",
   "systemType.script": "Skript",
   "systemType.taxonomy": "Taxonomie",
+  "T2KTsM": "Nicht gespeicherte Änderungen wurden im Editor wiederhergestellt.",
   "t4tJYh": "Keine Token gefunden",
   "tdAgh/": "Die Projekterstellung wird im Hintergrund fortgesetzt",
   "TdTXXf": "Mehr erfahren",
@@ -1392,6 +1394,7 @@
   "widgetComponent.pluginLoadFailedMessageTitle": "Laden des Plugins fehlgeschlagen",
   "Wirzeh": "Filter...",
   "withEmptyState.defaultEmptyStateMessage": "keine Ergebnisse gefunden",
+  "WNzebf": "Sie haben nicht gespeicherte Änderungen an \"{title}\" hinterlassen. Sie können jetzt zur Konfiguration zurückkehren, wenn Sie Änderungen wiederherstellen oder ignorieren möchten, um sie zu verwerfen.",
   "word.configuration": "Aufbau",
   "word.refresh": "Aktualisierung",
   "word.upload": "Hochladen",
@@ -1606,6 +1609,7 @@
   "z+Sm5h": "Keine Widgets konfiguriert.",
   "Z6hPZP": "Artikel in diesem Paket",
   "ZIX1sG": "Klicken Sie oben auf Token erstellen, um eines zu erstellen.",
+  "ZJTQQv": "Zurückgehen und Änderungen wiederherstellen",
   "zQvVDJ": "Alles",
   "ZYiLj1": "Es wurden keine kompatiblen Typen gefunden."
 }
