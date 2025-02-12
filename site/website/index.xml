@@ -15,7 +15,7 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 <page>
-  <internal-name>User Dashboard</internal-name>
+	<internal-name>User Dashboard</internal-name>
 	<content-type>/page/entry</content-type>
 	<placeInNav>true</placeInNav>
 	<display-template>/templates/web/entry.ftl</display-template>

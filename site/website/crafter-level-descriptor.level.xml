@@ -15,11 +15,11 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 <levelDescriptor xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <header xsi:nil="false">/static-assets/html/header.html</header>
-  <footer xsi:nil="false">/static-assets/html/footer.html</footer>
-  <css-group xsi:nil="true">
-    <css>/static-assets/css/style.css</css>
-  </css-group>
-  <content-type>/craftercms/component/level-descriptor</content-type>
-  <common-title>CrafterCMS</common-title>
+	<header xsi:nil="false">/static-assets/html/header.html</header>
+	<footer xsi:nil="false">/static-assets/html/footer.html</footer>
+	<css-group xsi:nil="true">
+		<css>/static-assets/css/style.css</css>
+	</css-group>
+	<content-type>/craftercms/component/level-descriptor</content-type>
+	<common-title>CrafterCMS</common-title>
 </levelDescriptor>

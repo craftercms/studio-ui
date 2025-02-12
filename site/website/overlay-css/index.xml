@@ -15,8 +15,8 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 <page>
-  <internal-name>Overlay CSS</internal-name>
-  <display-template>/templates/web/overlay-css.ftl</display-template>
-  <content-type>/page/overlay-css</content-type>
-  <merge-strategy>inherit-levels</merge-strategy>
+	<internal-name>Overlay CSS</internal-name>
+	<display-template>/templates/web/overlay-css.ftl</display-template>
+	<content-type>/page/overlay-css</content-type>
+	<merge-strategy>inherit-levels</merge-strategy>
 </page>

@@ -15,9 +15,9 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 <page>
-    <content-type>/acme-com/page/entry</content-type>
-    <file-name valid="true">index.xml</file-name>
-    <internal-name>Acme Home</internal-name>
-    <display-template>/templates/web/no-site.ftl</display-template>
-    <merge-strategy>inherit-levels</merge-strategy>
+	<content-type>/acme-com/page/entry</content-type>
+	<file-name valid="true">index.xml</file-name>
+	<internal-name>Acme Home</internal-name>
+	<display-template>/templates/web/no-site.ftl</display-template>
+	<merge-strategy>inherit-levels</merge-strategy>
 </page>

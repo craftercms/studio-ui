@@ -15,10 +15,10 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 <page>
-  <internal-name>CrafterCMS Preview</internal-name>
-  <content-type>/page/preview-landing</content-type>
-  <display-template>/templates/web/preview-landing.ftl</display-template>
-  <merge-strategy>inherit-levels</merge-strategy>
-  <image_s>/studio/static-assets/images/content_creation.svg</image_s>
-  <script_s>/studio/static-assets/scripts/preview-landing.umd.js</script_s>
+	<internal-name>CrafterCMS Preview</internal-name>
+	<content-type>/page/preview-landing</content-type>
+	<display-template>/templates/web/preview-landing.ftl</display-template>
+	<merge-strategy>inherit-levels</merge-strategy>
+	<image_s>/studio/static-assets/images/content_creation.svg</image_s>
+	<script_s>/studio/static-assets/scripts/preview-landing.umd.js</script_s>
 </page>
