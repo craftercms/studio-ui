@@ -1469,6 +1469,7 @@ const initializeCStudioForms = () => {
               }
 
               if (form.customController && !form.customController.onBeforeSave()) {
+                setButtonsEnabled(true);
                 return;
               }
 
@@ -3056,19 +3057,79 @@ const initializeCStudioForms = () => {
          * Load the form field controller and form configuration
          */
         LoadFormConfig: function (formId, cb) {
-          var configCb = {
-            success: function (formConfig) {
-              cb.success(undefined, formConfig);
-            },
-            failure: function () {
-              cb.failure();
-            }
-          };
-
           CStudioAuthoring.Service.lookupConfigurtion(
             CStudioAuthoringContext.site,
             '/content-types/' + formId + '/config.xml',
-            configCb
+            {
+              success(formConfig) {
+                if (formConfig?.controller === 'true') {
+                  const commonErrorMsg = 'The form will proceed as though no custom type controller exists.';
+                  // This is meant to mimic the `requireModule` behaviour used previously to fetch the controller.
+                  // Done this way due to the API requiring auth (token) which through a script tag wouldn't be present.
+                  // Not done/used anywhere else to justify factoring it, specially on this module (FE1) which is on its way out.
+                  craftercms.utils.ajax
+                    .getText(
+                      craftercms.services.contentTypes.getFetchLegacyFormControllerUrl(
+                        CStudioAuthoringContext.site,
+                        formId
+                      )
+                    )
+                    .subscribe({
+                      next(response) {
+                        try {
+                          // Create a Blob from the script text
+                          const blob = new Blob([response.response], { type: 'application/javascript' });
+                          // Generate a Blob URL for the script
+                          const blobUrl = URL.createObjectURL(blob);
+                          // Create a script element and set its src to the Blob URL
+                          const script = document.createElement('script');
+                          script.src = blobUrl;
+                          document.head.appendChild(script);
+                          script.onload = () => {
+                            // Revoke the Blob URL after execution to free memory
+                            URL.revokeObjectURL(blobUrl);
+                            const expectedModuleName = `${formId}-controller`;
+                            const moduleClass = CStudioAuthoring.Module.loadedModules[expectedModuleName];
+                            if (!moduleClass) {
+                              console.error(
+                                `The form controller file for "${formId}" loaded correctly but "${expectedModuleName}" was not found in the loaded modules.\n - Check above this message for errors thrown during execution of the script.\n - Check that the form controller registers itself with \`CStudioAuthoring.Module.moduleLoaded('${formId}-controller', ControllerClass);\`.\n${commonErrorMsg}`
+                              );
+                            }
+                            cb.success(moduleClass, formConfig);
+                          };
+                          script.onerror = (e) => {
+                            // This would be an odd occurrence since by this point the content already loaded.
+                            // This would likely be some sort of issue in the blob creation.
+                            console.error(
+                              `The form controller file for ${formId} failed to load. ${commonErrorMsg}`,
+                              e
+                            );
+                            cb.success(undefined, formConfig);
+                          };
+                        } catch (error) {
+                          console.error(
+                            `The form controller file for ${formId} failed to load and execute. ${commonErrorMsg}`,
+                            error
+                          );
+                          cb.success(undefined, formConfig);
+                        }
+                      },
+                      error(error) {
+                        console.error(
+                          `Error trying to load the form controller for ${formId}. Check that the file exists and its located in the same directory as the content type definition. ${commonErrorMsg}\n`,
+                          error
+                        );
+                        cb.success(undefined, formConfig);
+                      }
+                    });
+                } else {
+                  cb.success(undefined, formConfig);
+                }
+              },
+              failure(e) {
+                cb?.failure(e);
+              }
+            }
           );
         },
 

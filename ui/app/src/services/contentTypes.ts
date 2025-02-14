@@ -30,7 +30,7 @@ import {
 import { LookupTable } from '../models/LookupTable';
 import { camelize, capitalize, isBlank } from '../utils/string';
 import { forkJoin, Observable, of } from 'rxjs';
-import { errorSelectorApi1, get, getBinary, post, postJSON } from '../utils/ajax';
+import { errorSelectorApi1, get, getBinary, getText, post, postJSON } from '../utils/ajax';
 import { catchError, map, switchMap } from 'rxjs/operators';
 import { createLookupTable, nou, toQueryString } from '../utils/object';
 import { fetchItemsByPath } from './content';
@@ -595,4 +595,12 @@ export function dissociateTemplate(site: string, contentTypeId: string): Observa
 export function fetchPreviewImage(site: string, contentTypeId: string): Observable<any> {
   const qs = toQueryString({ siteId: site, contentTypeId });
   return getBinary(`/studio/api/2/configuration/content-type/preview_image${qs}`);
+}
+
+/**
+ * @deprecated Only for Forms Engine v1 (FE1) usage. FE1 gets replaced by FE2 in CrafterCMS v5.
+ **/
+export function getFetchLegacyFormControllerUrl(site: string, contentTypeId: string): string {
+  const qs = toQueryString({ siteId: site, contentTypeId });
+  return `/studio/api/2/configuration/content-type/form_controller${qs}`;
 }
