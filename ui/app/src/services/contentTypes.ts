@@ -596,3 +596,11 @@ export function fetchPreviewImage(site: string, contentTypeId: string): Observab
 	const qs = toQueryString({ siteId: site, contentTypeId });
 	return getBinary(`/studio/api/2/configuration/content-type/preview_image${qs}`);
 }
+
+/**
+ * @deprecated Only for Forms Engine v1 (FE1) usage. FE1 gets replaced by FE2 in CrafterCMS v5.
+ **/
+export function getFetchLegacyFormControllerUrl(site: string, contentTypeId: string): string {
+	const qs = toQueryString({ siteId: site, contentTypeId });
+	return `/studio/api/2/configuration/content-type/form_controller${qs}`;
+}
