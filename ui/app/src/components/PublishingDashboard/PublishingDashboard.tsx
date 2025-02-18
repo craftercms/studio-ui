@@ -37,10 +37,9 @@ export function PublishingDashboard(props: PublishingDashboardProps) {
   const { embedded, showAppsButton, onSubmittingAndOrPendingChange } = props;
   const user = useActiveUser();
   const site = useActiveSiteId();
-  const userRoles = user?.rolesBySite[site] ?? [];
   const userPermissions = user?.permissionsBySite[site] ?? [];
-  const allowedRole = userRoles.some((role) => role === 'developer' || role === 'admin');
   const hasPublishPermission = userPermissions?.includes('publish');
+  const hasPublishByCommitPermission = userPermissions?.includes('publish_by_commits');
   const {
     spacing,
     palette: { mode }
@@ -58,6 +57,7 @@ export function PublishingDashboard(props: PublishingDashboardProps) {
         container
         sx={{
           padding: spacing(2),
+          pb: 4,
           ...(embedded
             ? {}
             : {
@@ -78,7 +78,7 @@ export function PublishingDashboard(props: PublishingDashboardProps) {
           <Grid item xs={12}>
             <PublishOnDemandWidget
               siteId={site}
-              mode={allowedRole ? null : 'everything'}
+              mode={hasPublishByCommitPermission ? null : 'everything'}
               onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
             />
           </Grid>
