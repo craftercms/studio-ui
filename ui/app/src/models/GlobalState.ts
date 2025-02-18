@@ -69,6 +69,7 @@ import { RenameAssetStateProps } from '../components/RenameAssetDialog';
 import Person from './Person';
 import { BrokenReferencesDialogStateProps } from '../components/BrokenReferencesDialog/types';
 import AllowedContentTypesData from './AllowedContentTypesData';
+import type { FolderMoveAlertDialogStateProps } from '../components/FolderMoveAlert/FolderMoveAlertDialog';
 
 export type HighlightMode = 'all' | 'move';
 
@@ -250,6 +251,7 @@ export interface GlobalState {
     widget: WidgetDialogStateProps;
     uiBlocker: UIBlockerStateProps;
     brokenReferences: BrokenReferencesDialogStateProps;
+    folderMoveAlert: FolderMoveAlertDialogStateProps;
   };
   uiConfig: {
     error: ApiResponse;
