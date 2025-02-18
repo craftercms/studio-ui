@@ -47,6 +47,7 @@ import widget from './widget';
 import uiBlocker from './uiBlocker';
 import renameAsset from './renameAsset';
 import brokenReferences from './brokenReferences';
+import folderMoveAlert from './folderMoveAlertDialog';
 
 export default combineReducers({
   confirm,
@@ -80,5 +81,6 @@ export default combineReducers({
   unlockPublisher,
   widget,
   uiBlocker,
-  brokenReferences
+  brokenReferences,
+  folderMoveAlert
 });

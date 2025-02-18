@@ -50,6 +50,7 @@ import { ContentTypeFieldValidation, DetailedItem } from '../../models';
 import { RenameAssetStateProps } from '../../components/RenameAssetDialog';
 import { AjaxError } from 'rxjs/ajax';
 import { BrokenReferencesDialogStateProps } from '../../components/BrokenReferencesDialog/types';
+import type { FolderMoveAlertDialogStateProps } from '../../components/FolderMoveAlert/FolderMoveAlertDialog';
 
 // region History
 export const showHistoryDialog = /*#__PURE__*/ createAction<Partial<HistoryDialogStateProps>>('SHOW_HISTORY_DIALOG');
@@ -324,4 +325,12 @@ export const updateBrokenReferencesDialog = /*#__PURE__*/ createAction<Partial<B
   'UPDATE_BROKEN_REFERENCES_DIALOG'
 );
 
+// endregion
+
+// region FolderMoveAlertDialog
+export const showFolderMoveAlertDialog = /*#__PURE__*/ createAction<Partial<FolderMoveAlertDialogStateProps>>(
+  'SHOW_FOLDER_MOVE_ALERT_DIALOG'
+);
+export const closeFolderMoveAlertDialog = /*#__PURE__*/ createAction('CLOSE_FOLDER_MOVE_ALERT_DIALOG');
+export const folderMoveAlertDialogClosed = /*#__PURE__*/ createAction('FOLDER_MOVE_ALERT_DIALOG_CLOSED');
 // endregion

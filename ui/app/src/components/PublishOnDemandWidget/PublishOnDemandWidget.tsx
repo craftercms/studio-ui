@@ -57,6 +57,8 @@ import useDetailedItem from '../../hooks/useDetailedItem';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import usePermissionsBySite from '../../hooks/usePermissionsBySite';
 import { StandardAction } from '../../models';
+import Checkbox from '@mui/material/Checkbox';
+import Alert, { alertClasses } from '@mui/material/Alert';
 
 const useStyles = makeStyles()((theme) => ({
   content: {
@@ -180,6 +182,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
   const [initialPublishingTarget, setInitialPublishingTarget] = useState(null);
   const [publishingTargets, setPublishingTargets] = useState(null);
   const [publishingTargetsError, setPublishingTargetsError] = useState(null);
+  const [publishEverythingAck, setPublishEverythingAck] = useState(false);
   const { bulkPublishCommentRequired, publishByCommitCommentRequired, publishEverythingCommentRequired } = useSelection(
     (state) => state.uiConfig.publishing
   );
@@ -199,7 +202,8 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
   );
   const publishEverythingFormValid =
     publishEverythingFormData.publishingTarget !== '' &&
-    (!publishEverythingCommentRequired || !isBlank(publishEverythingFormData.comment));
+    (!publishEverythingCommentRequired || !isBlank(publishEverythingFormData.comment)) &&
+    publishEverythingAck;
   const fnRefs = useUpdateRefs({ onSubmittingAndOrPendingChange });
   // region currentFormData
   const currentFormData =
@@ -393,6 +397,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
   const onCancel = () => {
     nou(mode) && setSelectedMode(null);
     setDefaultPublishingTarget(publishingTargets, true);
+    setPublishEverythingAck(false);
     if (onCancelProp) {
       dispatch(onCancelProp);
     }
@@ -534,7 +539,20 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
                 bulkPublishCommentRequired={bulkPublishCommentRequired}
                 publishByCommitCommentRequired={publishByCommitCommentRequired}
               />
-              {selectedMode !== 'everything' && (
+              {selectedMode === 'everything' ? (
+                <Alert severity="warning" icon={false} sx={{ [`.${alertClasses.message}`]: { overflow: 'visible' } }}>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={publishEverythingAck}
+                        color="primary"
+                        onChange={(e, checked) => setPublishEverythingAck(checked)}
+                      />
+                    }
+                    label={<FormattedMessage defaultMessage="I understand the entire site will be published." />}
+                  />
+                </Alert>
+              ) : (
                 <div className={classes.noteContainer}>
                   <Typography variant="caption" className={classes.note}>
                     {selectedMode === 'studio' ? (
@@ -587,7 +605,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
       {selectedMode && (
         <DialogFooter>
           <SecondaryButton onClick={onCancel} disabled={isSubmitting}>
-            <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
+            <FormattedMessage defaultMessage="Reset" />
           </SecondaryButton>
           <PrimaryButton loading={isSubmitting} disabled={!currentFormValid} onClick={onSubmitForm}>
             <FormattedMessage id="words.publish" defaultMessage="Publish" />

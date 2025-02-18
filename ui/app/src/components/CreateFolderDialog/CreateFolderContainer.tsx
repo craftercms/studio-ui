@@ -40,6 +40,7 @@ import { useEnhancedDialogContext } from '../EnhancedDialog';
 import { applyFolderNameRules, lookupItemByPath } from '../../utils/content';
 import { useFetchItem } from '../../hooks/useFetchItem';
 import ApiResponse from '../../models/ApiResponse';
+import FolderMoveAlert from '../FolderMoveAlert/FolderMoveAlert';
 
 export function CreateFolderContainer(props: CreateFolderContainerProps) {
   const { onClose, onCreated, onRenamed, rename = false, value = '', allowBraces = false } = props;
@@ -66,13 +67,16 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
   const folderExists = rename
     ? name !== value && (itemExists || lookupItemByPath(newFolderPath, itemLookupTable) !== UNDEFINED)
     : itemExists || lookupItemByPath(newFolderPath, itemLookupTable) !== UNDEFINED;
-  const isValid = !isBlank(name) && !folderExists && (!rename || name !== value);
+  const [moveFolderAck, setMoveFolderAck] = useState(false);
+  const isValid = !isBlank(name) && !folderExists && (!rename || (name !== value && moveFolderAck));
 
   useEffect(() => {
     if (item && rename === false) {
       setSelectedItem(item);
     }
   }, [item, rename]);
+
+  const onMoveFolderAckChange = (e: React.ChangeEvent<HTMLInputElement>) => setMoveFolderAck(e.target.checked);
 
   const onError = (error: ApiResponse) => {
     dispatch(
@@ -119,6 +123,7 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
             setItemExists(false);
             fetchSandboxItem(site, pathToCheckExists).subscribe({
               next: (item) => {
+                // TODO: The following sequence of ifs can be simplified
                 if (item) {
                   setItemExists(true);
                   dispatch(updateCreateFolderDialog({ isSubmitting: false }));
@@ -237,6 +242,7 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
             }}
             onChange={(event) => onInputChanges(applyFolderNameRules(event.target.value, { allowBraces }))}
           />
+          {rename && <FolderMoveAlert initialExpanded checked={moveFolderAck} onChange={onMoveFolderAckChange} />}
         </form>
       </DialogBody>
       <DialogFooter>
