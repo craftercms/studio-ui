@@ -96,13 +96,13 @@ export function FolderMoveAlert({
                 <FormattedMessage defaultMessage="Make sure:" />
                 <Box sx={{ my: 0, pl: 2 }} component="ol">
                   <li>
-                    <FormattedMessage defaultMessage="To change references to point to the new paths." />
-                  </li>
-                  <li>
                     <FormattedMessage
-                      defaultMessage="Items in the {itemType} being {action} <b>must</b> be published individually or in bulk to complete the move in the staged or live project."
+                      defaultMessage="Items in the {itemType} being {action} <b>must</b> be published individually or in bulk to complete the move in the published staged or live project."
                       values={i18nValues}
                     />
+                  </li>
+                  <li>
+                    <FormattedMessage defaultMessage="Change references to point to the new paths." />
                   </li>
                 </Box>
               </Typography>

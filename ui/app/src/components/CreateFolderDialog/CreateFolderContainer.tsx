@@ -242,7 +242,7 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
             }}
             onChange={(event) => onInputChanges(applyFolderNameRules(event.target.value, { allowBraces }))}
           />
-          {rename && <FolderMoveAlert checked={moveFolderAck} onChange={onMoveFolderAckChange} />}
+          {rename && <FolderMoveAlert initialExpanded checked={moveFolderAck} onChange={onMoveFolderAckChange} />}
         </form>
       </DialogBody>
       <DialogFooter>
