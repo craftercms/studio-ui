@@ -154,12 +154,23 @@ const initialPublishEverythingFormData = {
 
 interface PublishOnDemandWidgetProps {
   siteId: string;
-  mode?: 'everything' | 'studio' | 'git';
+  mode?: PublishOnDemandMode | PublishOnDemandMode[];
   showHeader?: boolean;
   onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;
   onCancel?: StandardAction;
   onSuccess?: StandardAction;
 }
+
+const pickMode = (mode: PublishOnDemandWidgetProps['mode']) => {
+  if (!mode) {
+    return null;
+  } else if (Array.isArray(mode)) {
+    // If only one mode in the array, pre-select that. If more than one, don't pre-select anything.
+    return mode.length === 1 ? mode[0] : null;
+  } else {
+    return mode;
+  }
+};
 
 export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
   const {
@@ -173,7 +184,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
   const { classes } = useStyles();
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
-  const [selectedMode, setSelectedMode] = useState<PublishOnDemandMode>(mode ?? null);
+  const [selectedMode, setSelectedMode] = useState<PublishOnDemandMode>(() => pickMode(mode));
   const [isSubmitting, setIsSubmitting] = useState(false);
   const permissionsBySite = usePermissionsBySite();
   const hasPublishPermission = permissionsBySite[siteId]?.includes('publish');
@@ -307,7 +318,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
           })
         );
         setPublishGitFormData({ ...initialPublishGitFormData, publishingTarget });
-        nou(mode) && setSelectedMode(null);
+        setSelectedMode(pickMode(mode));
 
         if (onSuccessProp) {
           dispatch(onSuccessProp);
@@ -343,7 +354,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
           next() {
             setIsSubmitting(false);
             setPublishStudioFormData({ ...initialPublishStudioFormData, publishingTarget });
-            nou(mode) && setSelectedMode(null);
+            setSelectedMode(pickMode(mode));
             dispatch(
               showSystemNotification({
                 message: formatMessage(messages.bulkPublishStarted)
@@ -377,7 +388,8 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
           })
         );
         setPublishEverythingFormData({ ...initialPublishEverythingFormData, publishingTarget });
-        nou(mode) && setSelectedMode(null);
+        setSelectedMode(pickMode(mode));
+        setPublishEverythingAck(false);
         if (onSuccessProp) {
           dispatch(onSuccessProp);
         }
@@ -395,7 +407,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
   };
 
   const onCancel = () => {
-    nou(mode) && setSelectedMode(null);
+    setSelectedMode(pickMode(mode));
     setDefaultPublishingTarget(publishingTargets, true);
     setPublishEverythingAck(false);
     if (onCancelProp) {
@@ -464,7 +476,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
             <Paper elevation={0} className={classes.modeSelector}>
               <form>
                 <RadioGroup value={selectedMode ?? ''} onChange={handleChange}>
-                  {(nou(mode) || mode === 'studio') && (
+                  {(nou(mode) || mode.includes('studio')) && (
                     <FormControlLabel
                       disabled={isSubmitting}
                       value="studio"
@@ -483,7 +495,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
                       className={classes.byPathModeSelector}
                     />
                   )}
-                  {(nou(mode) || mode === 'git') && (
+                  {(nou(mode) || mode.includes('git')) && (
                     <FormControlLabel
                       disabled={isSubmitting}
                       value="git"
@@ -501,7 +513,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
                       }
                     />
                   )}
-                  {(nou(mode) || mode === 'everything') && (
+                  {(nou(mode) || mode.includes('everything')) && (
                     <FormControlLabel
                       disabled={isSubmitting}
                       value="everything"
