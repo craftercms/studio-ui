@@ -14,7 +14,7 @@ Please visit the link below to determine the version of this package you should 
 ## Resources
 
 | Topic | Link |
-|---|---|---|
+|---|---|
 | CrafterCMS Community Slack | https://craftercms.com/slack |
 | CrafterCMS documentation | https://docs.craftercms.org |
 | Crafter Studio UI Source Code | https://github.com/craftercms/studio-ui |
