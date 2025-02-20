@@ -24,7 +24,7 @@ const appPath = path.resolve(packagePath, '../app');
 const buildPath = path.join(packagePath, './build_tsc');
 
 const optional = [];
-const ignoreDeps = ['typescript'];
+const ignoreDeps = ['typescript', '@craftercms/npm-content'];
 const peerDeps = [
   '@emotion/css',
   '@emotion/react',
@@ -68,8 +68,8 @@ async function run() {
 
     Object.entries(appPackage.dependencies).forEach(([dep, version]) => {
       if (!ignoreDeps.includes(dep)) {
-        if (dep === '@craftercms/studio-ui') {
-          newPackageData.dependencies[dep] = pkg.version;
+        if (dep === '@craftercms/studio-ui' || dep === '@craftercms/uppy') {
+          newPackageData.dependencies[dep] = `^${pkg.version}`;
         } else if (optional.includes(dep)) {
           newPackageData.peerDependenciesMeta[dep] = {
             optional: true

@@ -602,16 +602,15 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         take(1)
       );
       if (type === guestCheckIn.type && !payload.__CRAFTERCMS_GUEST_LANDING__) {
-        const studioVersionStr = env.version.slice(0, 5);
-        const guestVersionStr = payload.version?.slice(0, 5);
-        const guestMinStudioVersionStr = payload.minStudioVersion?.slice(0, 5);
-        const minGuestVersionInt = versionStringToInt(minGuestVersion);
+        const studioVersionStr = env.version;
+        const guestVersionStr = payload.version;
+        const guestMinStudioVersionStr = payload.minStudioVersion;
         if (
           // If we don't receive the expected check-in mechanics, or the SDK version is less than the minimum
           // required by Studio, show the Snack requesting update of the SDK.
           !guestVersionStr ||
           !guestMinStudioVersionStr ||
-          versionStringToInt(guestVersionStr) < minGuestVersionInt
+          versionStringToInt(guestVersionStr) < versionStringToInt(minGuestVersion)
         ) {
           showGuestCompatibilityMessage({
             siteId,

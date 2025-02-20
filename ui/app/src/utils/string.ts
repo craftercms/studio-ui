@@ -276,6 +276,31 @@ export function isUUID(str: string): boolean {
   return /^[a-f\d]{8}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{12}$/i.test(str);
 }
 
-export function versionStringToInt(versionString: string): number {
-  return parseInt(versionString?.replace(/\./g, ''));
+/**
+ * Takes a string in any of our possible version formats and converts it to a number that can be compared coherently
+ * with other versions that went through this process. Examples:
+ * 4.2.22         => 004.002.022 => 4002022
+ * 5.0.0E         => 005.000.000 => 5000000
+ * 4.3.0-SNAPSHOT => 004.003.000 => 4003000
+ * @param versionStr {string} The version string to convert
+ * @return {number} The version converted to a number
+ **/
+export function versionStringToInt(versionStr: string): number {
+  // Use a regular expression to extract the three groups of digits
+  const match = versionStr.match(/(\d+)\.(\d+)\.(\d+)/);
+  if (!match) {
+    console.error('Version string does not match the expected format');
+    return 0;
+  }
+
+  // Destructure the matched groups: match[1] is major, match[2] is minor, match[3] is patch
+  let [, major, minor, patch] = match;
+
+  // Pad each number with leading zeros to ensure three digits
+  major = major.padStart(3, '0');
+  minor = minor.padStart(3, '0');
+  patch = patch.padStart(3, '0');
+
+  // Concatenate the padded strings & convert to a number
+  return Number(major + minor + patch);
 }
