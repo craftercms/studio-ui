@@ -1,87 +1,30 @@
 ![npm (scoped)](https://img.shields.io/npm/v/@craftercms/studio-ui?style=plastic)
 
-# studio-ui
-Studio UI is the authoring interface for CrafterCMS.
+# @craftercms/studio-ui
 
-docs.craftercms.org
-api
+Studio UI is the authoring user interface for CrafterCMS.
 
-See
-- https://github.com/craftercms/craftercms
-- https://docs.craftercms.org/en/3.1/developers/projects/studio/api/api-version1.html
-- https://app.swaggerhub.com/apis/craftercms/studio
+You can use this package to build authoring extensions or even build your own CrafterCMS interface!
+
+The package provides React components, utilities and API service abstractions to interact with CrafterCMS.
+
+To inspect this package, please browse https://github.com/craftercms/studio-ui/tree/develop/ui/app/src
+
+Most of the Crafter Studio APIs have an abstraction available in this package, which allows you to leverage all of Studio's API to build all kinds of authoring experiences. 
+
+We recommend using an editor that supports TypeScript, such as Visual Studio Code or IntelliJ IDEA, to take advantage of the TypeScript typings provided by this package.
+
+## Compatibility
+
+Please visit the link below to determine the version of this package you should use with your CrafterCMS installation:
+- https://craftercms.com/docs/current/reference/api/javascript-sdk.html
+
+## Resources
+
+- https://docs.craftercms.org
 - https://github.com/craftercms/studio-ui
-- https://github.com/craftercms/studio
-
-To inspect this package, please browse
-https://github.com/craftercms/studio-ui/tree/develop/ui/app/src
-
-
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
-## Available Scripts
-
-In the project directory, you can run:
-
-### `npm start`
-
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.<br>
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+- https://github.com/craftercms/authoring-ui-plugin-examples
+- https://craftercms.com/docs/current/_static/api/studio.html
+- https://github.com/craftercms/craftercms
+- https://craftercms.com
+- https://craftercms.com/slack

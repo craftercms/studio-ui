@@ -26,7 +26,8 @@ const plugins = [
   replace({
     preventAssignment: true,
     'process.env.NODE_ENV': JSON.stringify('production'),
-    'process.env.VERSION': JSON.stringify(pkg.version)
+    'process.env.VERSION': JSON.stringify(pkg.version),
+    'process.env.MIN_STUDIO_VERSION': JSON.stringify(pkg.craftercms.minStudioVersion),
   }),
   swc({ sourceMaps: true }),
   alias({

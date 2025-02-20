@@ -33,7 +33,7 @@ import SocketEventBase, {
   RepositoryEventPayload,
   WorkflowEventPayload
 } from '../../models/SocketEvent';
-import { DetailedItem, MarketplacePlugin } from '../../models';
+import { DetailedItem, MarketplacePlugin, Version } from '../../models';
 import { ProjectLifecycleEvent } from '../../models/ProjectLifecycleEvent';
 
 // region Item Events
@@ -139,6 +139,7 @@ export const storeInitialized = /*#__PURE__*/ createAction<{
   properties: LookupTable<any>;
   activeSiteId: string;
   activeEnvironment: string;
+  version: Version;
 }>('STORE_INITIALIZED');
 
 export const messageSharedWorker = /*#__PURE__*/ createAction<StandardAction>('MESSAGE_SHARED_WORKER');

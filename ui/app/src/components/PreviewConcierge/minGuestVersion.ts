@@ -14,6 +14,5 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-const list = ['4.3.0', '4.2.2', '4.2.0'];
-
-export default list;
+// The minimum `@craftercms/experience-builder` version that is compatible with the current version of the product.
+export default '4.3.0';

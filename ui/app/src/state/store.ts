@@ -51,6 +51,8 @@ import { SHARED_WORKER_NAME } from '../utils/constants';
 import { fetchActiveEnvironment } from '../services/environment';
 import { batchActions, dispatchDOMEvent } from './actions/misc';
 import { closeSingleFileUploadDialog } from './actions/dialogs';
+import { fetchVersion } from '../services/monitoring';
+import { Version } from '../models';
 
 export type EpicMiddlewareDependencies = { getIntl: () => IntlShape; worker: SharedWorker };
 
@@ -198,6 +200,7 @@ export function fetchStateInitialization(): Observable<{
   properties: LookupTable<any>;
   activeSiteId: string;
   activeEnvironment: string;
+  version: Version;
 }> {
   const siteCookieValue = getSiteCookie();
   return forkJoin({
@@ -214,7 +217,8 @@ export function fetchStateInitialization(): Observable<{
             map((siteExists) => (siteExists ? siteCookieValue : null))
           )
         : of(null),
-    activeEnvironment: fetchActiveEnvironment()
+    activeEnvironment: fetchActiveEnvironment(),
+    version: fetchVersion()
   });
 }
 

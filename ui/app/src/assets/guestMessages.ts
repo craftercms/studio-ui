@@ -164,9 +164,13 @@ export const guestMessages = defineMessages({
     id: 'desktopAssetUpload.uploadError',
     defaultMessage: 'Upload error. File was not uploaded'
   },
-  outdatedExpBuilderVersion: {
-    id: 'validations.outdatedExpBuilderVersion',
-    defaultMessage:
-      "Your application's Experience Builder package version is out of date. Please notify the development team to perform the necessary updates to avoid any possible issues."
+  outdatedGuestVersion: {
+    defaultMessage: "Your application's Experience Builder package version is out of date."
+  },
+  incompatibleGuestVersion: {
+    defaultMessage: 'Your Experience Builder version is not compatible with this version of CrafterCMS.'
+  },
+  compatibilityMessageAppend: {
+    defaultMessage: 'Please notify the development team to perform the necessary updates to avoid any possible issues.'
   }
 });

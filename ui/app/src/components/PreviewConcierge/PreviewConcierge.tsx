@@ -99,7 +99,7 @@ import { useDispatch, useStore } from 'react-redux';
 import { nnou } from '../../utils/object';
 import { findParentModelId, getModelIdFromInheritedField, isInheritedField } from '../../utils/model';
 import RubbishBin from '../RubbishBin/RubbishBin';
-import { useSnackbar } from 'notistack';
+import { ProviderContext, useSnackbar } from 'notistack';
 import {
   getStoredClipboard,
   getStoredEditModeChoice,
@@ -184,12 +184,13 @@ import { editControllerActionCreator, itemActionDispatcher } from '../../utils/i
 import useEnv from '../../hooks/useEnv';
 import { getOffsetLeft, getOffsetTop } from '@mui/material/Popover';
 import { isSameDay } from '../../utils/datetime';
-import compatibilityList from './compatibilityList';
+import minGuestVersion from './minGuestVersion';
 import ContentType from '../../models/ContentType';
 import { Dispatch } from 'redux';
 import { ActionCreatorWithOptionalPayload } from '@reduxjs/toolkit';
 import { ItemMegaMenuStateProps } from '../ItemMegaMenu';
 import StandardAction from '../../models/StandardAction';
+import { versionStringToInt } from '../../utils/string';
 
 const issueDescriptorRequest = (props: {
   site: string;
@@ -313,6 +314,36 @@ const issueDescriptorRequest = (props: {
     });
 };
 
+const showGuestCompatibilityMessage = ({
+  siteId,
+  username,
+  mainMessage,
+  messageAppend,
+  enqueueSnackbar,
+  consoleMessageShown
+}: {
+  siteId: string;
+  username: string;
+  mainMessage: string;
+  messageAppend: string;
+  enqueueSnackbar: ProviderContext['enqueueSnackbar'];
+  consoleMessageShown: boolean;
+}) => {
+  const xbOutdatedValidationDate = getStoredOutdatedXBValidationDate(siteId, username);
+  // Show only if message has not been shown today or ever.
+  if (!xbOutdatedValidationDate || !isSameDay(xbOutdatedValidationDate, new Date())) {
+    enqueueSnackbar([mainMessage, messageAppend].join(' '), { variant: 'warning' });
+    setStoredOutdatedXBValidationDate(siteId, username, new Date());
+  }
+  // Only show once per tab session (full reload will show it once again).
+  if (!consoleMessageShown) {
+    console.log(
+      `%c(i) Please check your @craftercms/experience-builder package version. \n    See https://craftercms.com/docs/current/reference/api/javascript-sdk.html`,
+      'color: #00f'
+    );
+  }
+};
+
 const dataSourceActionsListInitialState = {
   show: false,
   rect: null,
@@ -361,6 +392,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
     );
   };
   const env = useEnv();
+
+  const xbCompatConsoleWarningPrintedRef = useRef(false);
   const upToDateRefs = useUpdateRefs({
     store,
     item,
@@ -452,7 +485,6 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
       }
     },
     env,
-    xbCompatConsoleWarningPrinted: false,
     contentTypes$: contentTypes$Ref.current
   });
 
@@ -569,37 +601,41 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         filter((contentTypes) => Boolean(contentTypes)),
         take(1)
       );
-      switch (type) {
-        case guestSiteLoad.type:
-        case guestCheckIn.type:
-          if (type === guestCheckIn.type) {
-            const guestVersionStr = payload.version?.slice(0, 5);
-            if (guestVersionStr && env?.version) {
-              const stdVersionStr = env.version.slice(0, 5);
-              if (
-                // Only show once per tab session (full reload)
-                !upToDateRefs.current.xbCompatConsoleWarningPrinted &&
-                parseInt(stdVersionStr.replaceAll('.', '')) > parseInt(guestVersionStr.replaceAll('.', ''))
-              ) {
-                upToDateRefs.current.xbCompatConsoleWarningPrinted = true;
-                console.log(
-                  `%c(i) Please update your @craftercms/experience-builder package to \`${stdVersionStr}\`.\n` +
-                    `  - yarn add @craftercms/experience-builder@${stdVersionStr}\n` +
-                    `  - npm i @craftercms/experience-builder@${stdVersionStr}`,
-                  'color: #00f'
-                );
-              }
-            }
-            if (!compatibilityList.includes(guestVersionStr)) {
-              const xbOutdatedValidationDate = getStoredOutdatedXBValidationDate(siteId, user.username);
-              // If message has not been shown today or not shown at all
-              if (!xbOutdatedValidationDate || !isSameDay(xbOutdatedValidationDate, new Date())) {
-                enqueueSnackbar(formatMessage(guestMessages.outdatedExpBuilderVersion), { variant: 'warning' });
-                setStoredOutdatedXBValidationDate(siteId, user.username, new Date());
-              }
-            }
-          }
-          break;
+      if (type === guestCheckIn.type && !payload.__CRAFTERCMS_GUEST_LANDING__) {
+        const studioVersionStr = env.version.slice(0, 5);
+        const guestVersionStr = payload.version?.slice(0, 5);
+        const guestMinStudioVersionStr = payload.minStudioVersion?.slice(0, 5);
+        const minGuestVersionInt = versionStringToInt(minGuestVersion);
+        if (
+          // If we don't receive the expected check-in mechanics, or the SDK version is less than the minimum
+          // required by Studio, show the Snack requesting update of the SDK.
+          !guestVersionStr ||
+          !guestMinStudioVersionStr ||
+          versionStringToInt(guestVersionStr) < minGuestVersionInt
+        ) {
+          showGuestCompatibilityMessage({
+            siteId,
+            enqueueSnackbar,
+            username: user.username,
+            mainMessage: formatMessage(guestMessages.outdatedGuestVersion),
+            messageAppend: formatMessage(guestMessages.compatibilityMessageAppend),
+            consoleMessageShown: xbCompatConsoleWarningPrintedRef.current
+          });
+          xbCompatConsoleWarningPrintedRef.current = true;
+        } else if (
+          // Check Guest's report of minimum Studio version it is compatible with.
+          versionStringToInt(studioVersionStr) < versionStringToInt(guestMinStudioVersionStr)
+        ) {
+          showGuestCompatibilityMessage({
+            siteId,
+            enqueueSnackbar,
+            username: user.username,
+            mainMessage: formatMessage(guestMessages.incompatibleGuestVersion),
+            messageAppend: formatMessage(guestMessages.compatibilityMessageAppend),
+            consoleMessageShown: xbCompatConsoleWarningPrintedRef.current
+          });
+          xbCompatConsoleWarningPrintedRef.current = true;
+        }
       }
       switch (type) {
         // region Legacy preview sites messages
@@ -1284,7 +1320,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
     return () => {
       guestToHostSubscription.unsubscribe();
     };
-  }, [upToDateRefs]);
+  }, [upToDateRefs, xbCompatConsoleWarningPrintedRef]);
 
   // hostToHost$ subscription
   useEffect(() => {

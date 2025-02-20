@@ -275,3 +275,7 @@ export function isPath(str: string): boolean {
 export function isUUID(str: string): boolean {
   return /^[a-f\d]{8}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{12}$/i.test(str);
 }
+
+export function versionStringToInt(versionString: string): number {
+  return parseInt(versionString?.replace(/\./g, ''));
+}

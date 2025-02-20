@@ -511,7 +511,15 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
         dispatch(contentReady());
       });
 
-    post(guestCheckIn({ location, path, site, version: process.env.VERSION }));
+    post(
+      guestCheckIn({
+        location,
+        path,
+        site,
+        version: process.env.VERSION,
+        minStudioVersion: process.env.MIN_STUDIO_VERSION
+      })
+    );
     guestCheckIn$.next(true);
 
     return () => {

@@ -85,6 +85,7 @@ import { ProjectLifecycleEvent } from '../../models/ProjectLifecycleEvent';
 import { isDashboardAppUrl, isPreviewAppUrl, isProjectToolsAppUrl } from '../../utils/system';
 import { GlobalRoutes } from '../../env/routes';
 import { previewSwitch } from '../../services/security';
+import { fetchSystemVersionComplete } from '../actions/env';
 
 const msgs = defineMessages({
   siteSwitchedOnAnotherTab: {
@@ -104,7 +105,8 @@ const systemEpics: CrafterCMSEpic[] = [
     action$.pipe(
       ofType(storeInitialized.type),
       withLatestFrom(state$),
-      switchMap(([, state]) => {
+      switchMap(([action, state]) => {
+        const payload: ReturnType<typeof storeInitialized>['payload'] = action.payload;
         const hasActiveSite = Boolean(state.sites.active);
         const isActiveSiteAvailable = Boolean(state.sites.byId?.[state.sites.active]);
         const showToolsPanel =
@@ -113,6 +115,7 @@ const systemEpics: CrafterCMSEpic[] = [
           getStoredShowToolsPanel(state.sites.byId?.[state.sites.active].uuid, state.user.username);
         return [
           fetchGlobalMenu(),
+          fetchSystemVersionComplete(payload.version),
           ...(hasActiveSite
             ? [
                 startPublishingStatusFetcher(),
