@@ -20,10 +20,12 @@ const packagePath = process.cwd();
 const buildPath = path.join(packagePath, './build_tsc');
 
 const replace = require('replace-in-file');
-const options = {
-  files: `${buildPath}/**/*.js`,
-  from: 'process.env.VERSION',
-  to: `'${pkg.version}'`
-};
 
-replace(options).then(() => {});
+replace({
+  files: `${buildPath}/**/*.js`,
+  from: ['process.env.VERSION', 'process.env.MIN_STUDIO_VERSION'],
+  to: [`'${pkg.version}'`, `'${pkg.craftercms.minStudioVersion}'`]
+}).then(() => {
+  console.log(`\`process.env.VERSION\` replaced with "${pkg.version}"`);
+  console.log(`\`process.env.MIN_STUDIO_VERSION\` replaced with "${pkg.craftercms.minStudioVersion}"`);
+});

@@ -52,7 +52,7 @@ import { fetchActiveEnvironment } from '../services/environment';
 import { batchActions, dispatchDOMEvent } from './actions/misc';
 import { closeSingleFileUploadDialog } from './actions/dialogs';
 import { fetchVersion } from '../services/monitoring';
-import { Version } from '../models';
+import type { Version } from '../models';
 
 export type EpicMiddlewareDependencies = { getIntl: () => IntlShape; worker: SharedWorker };
 
