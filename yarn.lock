@@ -1351,7 +1351,7 @@ __metadata:
     rollup-plugin-swc3: "npm:^0.11.2"
     rxjs: "npm:^7.8.1"
     typescript: "npm:^5.7.3"
-    uuid: "npm:^10.0.0"
+    uuid: "npm:^11.1.0"
     yargs: "npm:^17.7.2"
   languageName: unknown
   linkType: soft
@@ -1520,7 +1520,7 @@ __metadata:
     slugify: "npm:^1.6.6"
     typescript: "npm:^5.7.3"
     uppy: "npm:^3.27.4"
-    uuid: "npm:^10.0.0"
+    uuid: "npm:^11.1.0"
     video.js: "npm:^8.21.1"
     vite: "npm:^6.2.0"
     zxcvbn: "npm:^4.4.2"
@@ -12953,6 +12953,15 @@ __metadata:
   bin:
     uuid: dist/bin/uuid
   checksum: 10/35aa60614811a201ff90f8ca5e9ecb7076a75c3821e17f0f5ff72d44e36c2d35fcbc2ceee9c4ac7317f4cc41895da30e74f3885e30313bee48fda6338f250538
+  languageName: node
+  linkType: hard
+
+"uuid@npm:^11.1.0":
+  version: 11.1.0
+  resolution: "uuid@npm:11.1.0"
+  bin:
+    uuid: dist/esm/bin/uuid
+  checksum: 10/d2da43b49b154d154574891ced66d0c83fc70caaad87e043400cf644423b067542d6f3eb641b7c819224a7cd3b4c2f21906acbedd6ec9c6a05887aa9115a9cf5
   languageName: node
   linkType: hard
 
