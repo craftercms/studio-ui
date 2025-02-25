@@ -85,7 +85,7 @@ function LauncherGlobalNav(props: LauncherGlobalNavProps) {
       <LauncherTile
         title={formatMessage(messages.docs)}
         icon={{ id: 'craftercms.icons.Docs' }}
-        link={`https://docs.craftercms.org/en/${getSimplifiedVersion(version)}/index.html`}
+        link={`https://craftercms.com/docs/current/index.html`}
         target="_blank"
         styles={props.tileStyles}
       />

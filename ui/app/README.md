@@ -10,7 +10,7 @@ The package provides React components, utilities, and API service abstractions t
 
 To inspect this package, please browse https://github.com/craftercms/studio-ui/tree/develop/ui/app/src
 
-Most of the Crafter Studio APIs have an abstraction available in this package, allowing you to leverage Studio's API to build all kinds of authoring experiences. 
+Most of the Crafter Studio APIs have an abstraction available in this package, allowing you to leverage Studio's API to build all kinds of authoring experiences.
 
 We recommend using an editor that supports TypeScript, such as Visual Studio Code or IntelliJ IDEA, to take advantage of the TypeScript typings provided by this package.
 
@@ -24,7 +24,7 @@ Please visit the link below to determine the version of this package you should 
 | Topic | Link |
 |---|---|
 | CrafterCMS Community Slack | https://craftercms.com/slack |
-| CrafterCMS documentation | https://docs.craftercms.org |
+| CrafterCMS documentation | https://craftercms.com/docs |
 | Crafter Studio UI Source Code | https://github.com/craftercms/studio-ui |
 | Authoring UI Plugin Examples |  https://github.com/craftercms/authoring-ui-plugin-examples |
 | Crafter Studio API | https://craftercms.com/docs/current/_static/api/studio.html |
