@@ -122,7 +122,7 @@
 		"@types/react-window-infinite-loader": "^1",
 		"@types/uuid": "^10.0.0",
 		"@types/zxcvbn": "^4.4.5",
-		"@typescript-eslint/eslint-plugin": "^7.18.0",
+		"@typescript-eslint/eslint-plugin": "^8.25.0",
 		"@typescript-eslint/parser": "^7.18.0",
 		"@vitejs/plugin-react": "^4.3.4",
 		"@vitejs/plugin-react-swc": "^3.7.2",
