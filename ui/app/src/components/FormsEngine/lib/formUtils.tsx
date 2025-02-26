@@ -24,7 +24,10 @@ import {
 	FormsEngineAtoms,
 	FormsEngineEditContextProps,
 	FormsEngineSourceMap,
-	StableFormContextProps
+	ItemContext,
+	StableFormContext,
+	StableFormContextProps,
+	StableGlobalContext
 } from './formsEngineContext';
 import { fetchContentXML, fetchDescriptorXML, fetchDetailedItem, lock, unlock } from '../../../services/content';
 import { AjaxError } from 'rxjs/ajax';
@@ -32,8 +35,8 @@ import { fetchAffectedPackages } from '../../../services/workflow';
 import { Dispatch as ReduxDispatch } from 'redux';
 import { IntlShape } from 'react-intl/src/types';
 import { showSystemNotification } from '../../../state/actions/system';
-import { atom, Atom, PrimitiveAtom } from 'jotai/index';
-import React, { ReactNode, RefObject, useRef } from 'react';
+import { atom, Atom, PrimitiveAtom, useAtomValue, useStore as useJotaiStore } from 'jotai/index';
+import React, { ReactNode, RefObject, useContext, useEffect, useRef } from 'react';
 import { fromString, getInnerHtml } from '../../../utils/xml';
 import { nanoid } from 'nanoid';
 import { popDialog, pushDialog } from '../../../state/actions/dialogStack';
@@ -61,6 +64,8 @@ import usePreviousValue from '../../../hooks/usePreviousValue';
 import useActiveSiteId from '../../../hooks/useActiveSiteId';
 import { areAllPairsEqual } from '../../../utils/array';
 import { deserializeContentDom } from './valueRetrievers';
+import useUpdateRefs from '../../../hooks/useUpdateRefs';
+import { unlockItem } from '../../../state/actions/content';
 
 /**
  * Returns the scroll container for the form's container.
@@ -289,6 +294,7 @@ export function fetchUpdateRequirements({
 			forkJoin([
 				fetchDetailedItem(siteId, path),
 				of(lockResult),
+				// TODO: Check if these two are redundant
 				fetchContentXML(siteId, path),
 				fetchDescriptorXML(siteId, path, { flatten: false })
 				// TODO: Assess removal:
@@ -491,4 +497,98 @@ export function getMessageForErrorSymbol(errorSymbol: unknown): ReactNode {
 		default:
 			return <FormattedMessage defaultMessage="An error occurred preparing the form" />;
 	}
+}
+
+export interface ShouldUnlockArguments {
+	isRepeatMode: boolean;
+	isCreateMode: boolean;
+	readonly: boolean;
+	isEmbedded: boolean;
+	isStackedForm: boolean;
+	isParentReadonly: boolean;
+}
+
+/**
+ * Determines if an item should be unlocked when its form is being unmounted.
+ **/
+export function shouldUnlockItem(props: ShouldUnlockArguments): boolean {
+	const { isRepeatMode, isCreateMode, readonly, isEmbedded, isStackedForm, isParentReadonly } = props;
+	return (
+		!isRepeatMode &&
+		!isCreateMode &&
+		!readonly &&
+		// Note these "Or" statements below build on top of the previous one (i.e. it only gets to the next if the previous is false).
+		// If it's not embedded, unlock the item.
+		(!isEmbedded ||
+			// If is embedded but not stacked, unlock as the embedded is the root form.
+			!isStackedForm ||
+			// If the parent form is readonly, release the lock to put the parent back in sync with its readonly mode.
+			isParentReadonly)
+	);
+}
+
+/**
+ * When the consumer component is being unmounted, checks if it should be unlocked and unlocks if so.
+ * @param props {FormsEngineProps}
+ **/
+export function useUnlockOnClose(props: FormsEngineProps) {
+	const { create, update, repeat, stackIndex = 0 } = props;
+	const itemPath = useContext(ItemContext)?.path;
+	const { atoms } = useContext(StableFormContext);
+	const { formsStackData } = useContext(StableGlobalContext);
+	const store = useJotaiStore();
+	const isEmbedded = Boolean(update?.modelId);
+	const isCreateMode = Boolean(create?.path);
+	const isRepeatMode = Boolean(repeat?.fieldId);
+	const isStackedForm = stackIndex > 0;
+	const dispatch = useDispatch();
+	const readonly = useAtomValue(atoms.readonly);
+	const unlockEffectRefs = useUpdateRefs<ShouldUnlockArguments & { dispatch: ReduxDispatch }>({
+		dispatch,
+		isRepeatMode,
+		isCreateMode,
+		readonly,
+		isEmbedded,
+		isStackedForm,
+		isParentReadonly: formsStackData[stackIndex - 1] ? store.get(formsStackData[stackIndex - 1].atoms.readonly) : false
+	});
+	useEffect(
+		() => () => {
+			if (shouldUnlockItem(unlockEffectRefs.current)) unlockEffectRefs.current.dispatch(unlockItem({ path: itemPath }));
+		},
+		[itemPath, unlockEffectRefs]
+	);
+}
+
+export function generateDefaultChangesComment(
+	contentTypeFields: LookupTable<ContentTypeField>,
+	fieldsToRenderSubset: ContentTypeField[],
+	changedFieldIds: Set<string>,
+	currentMessage: string
+): string | undefined {
+	let fieldsToRender = contentTypeFields;
+	if (fieldsToRenderSubset) {
+		fieldsToRender = {};
+		fieldsToRenderSubset.forEach((field) => {
+			fieldsToRender[field.id] = field;
+		});
+	}
+	const fieldsChangedNames: string[] = Array.from(changedFieldIds).flatMap(
+		(fieldId) => fieldsToRender[fieldId === XmlKeys.folderName ? XmlKeys.fileName : fieldId]?.name ?? []
+	);
+	const newMessage = produceChangedFieldsMessage(fieldsChangedNames);
+	if (
+		// If message is blank, no point in checking if the user has altered the message.
+		currentMessage !== '' &&
+		// A repeated field is reporting changes, no need to set
+		(currentMessage === newMessage ||
+			// The version comment hasn't been manually altered by the user (i.e. if the current message is the same
+			// as the message generated without the last field added to changedFieldIds, we can assume the message
+			// has not been altered by user input)
+			currentMessage !== produceChangedFieldsMessage(fieldsChangedNames.slice(0, -1)))
+	) {
+		// Do not set a new message
+		return;
+	}
+	return newMessage;
 }

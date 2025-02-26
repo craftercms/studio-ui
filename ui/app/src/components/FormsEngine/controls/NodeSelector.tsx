@@ -89,8 +89,8 @@ import { EmptyState } from '../../EmptyState';
 import { XmlKeys } from '../lib/formConsts';
 import useConsolidatedItemPickerData, {
 	ConsolidatedItemPickerData
-} from '../data-sources/useConsolidatedItemPickerData';
-import { useExtractItemPickerDataSources } from '../data-sources/useExtractItemPickerDataSources';
+} from '../dataSourceHooks/useConsolidatedItemPickerData';
+import { useExtractItemPickerDataSources } from '../dataSourceHooks/useExtractItemPickerDataSources';
 import { Dispatch as ReduxDispatch } from 'redux';
 
 const SortableList = lazy(() => import('../components/SortableList'));

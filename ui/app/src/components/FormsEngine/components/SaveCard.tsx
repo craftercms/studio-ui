@@ -50,7 +50,7 @@ export function SaveCard(props: SaveCardProps) {
 	const hasAffectedPackages = Boolean(affectedPackages?.length > 0);
 	const disableSave = isSubmitting || !hasPendingChanges || (hasAffectedPackages && !acceptedWorkflowCancellation);
 	return (
-		<Paper sx={{ p: 1 }} className="space-y-half">
+		<Paper sx={{ p: 1 }}>
 			{(!isEmbedded || !isStackedForm) && !isRepeatMode && (
 				// TODO: Should embedded components and repeats get a version comment? How would that work?
 				<TextField
@@ -68,7 +68,7 @@ export function SaveCard(props: SaveCardProps) {
 					title={formatMessage({
 						defaultMessage: 'The item is part of a publishing package. Editing it will cancel the entire package.'
 					})}
-					label={<FormattedMessage defaultMessage="Accept publish cancellation" />}
+					label={<FormattedMessage defaultMessage="Cancel affected packages" />}
 					control={
 						<Checkbox
 							size="small"

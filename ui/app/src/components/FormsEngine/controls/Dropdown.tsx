@@ -24,7 +24,7 @@ import useActiveSiteId from '../../../hooks/useActiveSiteId';
 import useUpdateRefs from '../../../hooks/useUpdateRefs';
 import ListSubheader from '@mui/material/ListSubheader';
 import Skeleton from '@mui/material/Skeleton';
-import { useKVPLoader } from '../data-sources/useKVPLoader';
+import { useKVPLoader } from '../dataSourceHooks/useKVPLoader';
 
 export interface DropdownProps extends ControlProps {
 	value: string;

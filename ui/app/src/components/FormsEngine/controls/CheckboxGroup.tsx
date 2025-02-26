@@ -21,7 +21,7 @@ import Checkbox, { CheckboxProps } from '@mui/material/Checkbox';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel, { formControlLabelClasses } from '@mui/material/FormControlLabel';
 import LookupTable from '../../../models/LookupTable';
-import { KVPLoaderItem, useKVPLoader } from '../data-sources/useKVPLoader';
+import { KVPLoaderItem, useKVPLoader } from '../dataSourceHooks/useKVPLoader';
 import useActiveSiteId from '../../../hooks/useActiveSiteId';
 import { useTheme } from '@mui/material/styles';
 import { typographyClasses } from '@mui/material/Typography';

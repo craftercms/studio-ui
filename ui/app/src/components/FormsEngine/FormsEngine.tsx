@@ -36,7 +36,7 @@ import {
 	StableGlobalContext,
 	StableGlobalContextProps
 } from './lib/formsEngineContext';
-import { fetchDetailedItemComplete, unlockItem } from '../../state/actions/content';
+import { fetchDetailedItemComplete } from '../../state/actions/content';
 import { catchError, of } from 'rxjs';
 import LoadingState from '../LoadingState';
 import Paper, { paperClasses } from '@mui/material/Paper';
@@ -86,12 +86,13 @@ import {
 	createReadonlyAtom,
 	displayFormBeingSavedSnack,
 	fetchUpdateRequirements,
+	generateDefaultChangesComment,
 	getScrollContainer,
 	getTargetHeight,
 	internalLockContentService,
 	internalUnlockContentService,
-	produceChangedFieldsMessage,
 	setFieldAtoms,
+	useUnlockOnClose,
 	useValidateFormProps
 } from './lib/formUtils';
 import { renderFieldControl } from './lib/controlHelpers';
@@ -596,7 +597,7 @@ function FormOrchestrator(props: FormsEngineProps) {
 	const tableOfContents = <TableOfContents fieldsToRender={fieldsToRender} containerRef={containerRef} />;
 	const effectRefs = useUpdateRefs({ fieldsToRender, versionCommentAtom: stableFormContext.atoms.versionComment });
 
-	// Version comment generator & change detection/tracking
+	// Changes comment generation & change detection/tracking
 	useEffect(() => {
 		const sub = fieldUpdates$.pipe(debounceTime(300)).subscribe(() => {
 			// String-type fields have auto-rollback detection; the fieldUpdates$ will emit anyway. Checking if the fieldId
@@ -604,33 +605,14 @@ function FormOrchestrator(props: FormsEngineProps) {
 			setHasPendingChanges(changedFieldIds.size > 0);
 			// No comment generation for content creation.
 			if (isCreateMode) return;
-			let fieldsToRender = contentType.fields;
-			if (effectRefs.current.fieldsToRender) {
-				fieldsToRender = {};
-				effectRefs.current.fieldsToRender.forEach((field) => {
-					fieldsToRender[field.id] = field;
-				});
-			}
-			const fieldsChanged = Array.from(changedFieldIds).flatMap(
-				(fieldId) => fieldsToRender[fieldId === XmlKeys.folderName ? XmlKeys.fileName : fieldId]?.name ?? []
-			);
 			const versionCommentAtom = effectRefs.current.versionCommentAtom;
-			const currentMessage = store.get(versionCommentAtom).trim();
-			const newMessage = produceChangedFieldsMessage(fieldsChanged);
-			if (
-				// If message is blank, no point in checking if the user has altered the message.
-				currentMessage !== '' &&
-				// A repeated field is reporting changes, no need to set
-				(currentMessage === newMessage ||
-					// The version comment hasn't been manually altered by the user (i.e. if the current message is the same
-					// as the message generated without the last field added to changedFieldIds, we can assume the message
-					// has not been altered by user input)
-					currentMessage !== produceChangedFieldsMessage(fieldsChanged.slice(0, -1)))
-			) {
-				// Do not set a new message
-				return;
-			}
-			store.set(versionCommentAtom, newMessage);
+			const newMessage = generateDefaultChangesComment(
+				contentType.fields,
+				effectRefs.current.fieldsToRender,
+				changedFieldIds,
+				store.get(versionCommentAtom).trim()
+			);
+			if (newMessage) store.set(versionCommentAtom, newMessage);
 		});
 		return () => {
 			sub.unsubscribe();
@@ -647,24 +629,7 @@ function FormOrchestrator(props: FormsEngineProps) {
 	}, [isSubmitting, hasPendingChanges, isStackedForm, updateSubmittingOrHasPendingChanges]);
 
 	// Unlock content when the form is closed.
-	useEffect(
-		() => () => {
-			if (
-				!isRepeatMode &&
-				!isCreateMode &&
-				!readonly &&
-				// Note these "Or" statements below build on top of the previous one (i.e. it only gets to the next if the previous is false).
-				// If it's not embedded, unlock the item.
-				(!isEmbedded ||
-					// If is embedded but not stacked, unlock as the embedded is the root form.
-					!isStackedForm ||
-					// If the parent form is readonly, release the lock to put the parent back in sync with its readonly mode.
-					store.get(formsStackData[stackIndex - 1].atoms.readonly))
-			)
-				dispatch(unlockItem({ path: item['path'] })); // TODO: Check. Getting expected unlocks. The dependencies changing don't imply unmount.
-		},
-		[dispatch, formsStackData, isRepeatMode, isCreateMode, isEmbedded, isStackedForm, item, readonly, stackIndex, store]
-	);
+	useUnlockOnClose(props);
 
 	const handleOpenDrawerSidebar = () => {
 		const scroller = getScrollContainer(containerRef.current);
@@ -686,21 +651,8 @@ function FormOrchestrator(props: FormsEngineProps) {
 		// Note: This is executed in the context of the parent form.
 		// Executed in the case of escape, backdrop click or form close button click.
 		const doClose = () => {
-			// Unlock item if necessary
+			// The child form item unlocking should be getting done by the FormOrchestrator of the unmounting form via useUnlockOnClose hook.
 			const childProps = formsStackData[formsStackData.length - 1].props;
-			// If it is not an "update" (e.g. repeat, create), should not unlock.
-			if (!childState.readonly && childProps.update) {
-				// No model id means it is a shared component and should be unlocked.
-				let shouldUnlock = !childProps.update.modelId;
-				if (!shouldUnlock) {
-					// This is an embedded component...
-					// Unlock only if the parent form is readonly since, unlocking the embedded means unlocking the parent
-					// document hence, if parent form is not readonly, it is being edited and shouldn't be unlocked.
-					// This logic assumes the form stack is sequential so the parent component would be right before in the state stack.
-					shouldUnlock = store.get(formsStackData[formsStackData.length - 2].atoms.readonly);
-				}
-				shouldUnlock && internalUnlockContentService(siteId, childProps.update?.path).subscribe();
-			}
 			// Only unlock scroll if this is the last item in the forms stack
 			childProps.stackIndex === 0 && (containerRef.current.style.overflowY = '');
 			contextApi.popForm();
@@ -850,7 +802,7 @@ function FormOrchestrator(props: FormsEngineProps) {
 										onClick={() => {
 											dispatch(
 												pushDialog({
-													component: 'craftercms.components.WorkflowCancellationDialog',
+													component: 'craftercms.components.ViewPackagesDialog',
 													props: { item } as ViewPackagesDialogProps
 												})
 											);
@@ -1082,3 +1034,13 @@ export default FormGuard;
 //     - Flush control cache?
 //     - Close after saving & options
 //     - Whether to open node selector items in edit if the main item area (instead of edit button) is clicked
+
+/*
+
+XML
+
+`{ someArray_o: { item: [{}, {}] } }` => `{ someArray_o: [{}, {}] }`
+"true" => true
+null => ""
+
+*/
