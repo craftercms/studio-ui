@@ -34,6 +34,7 @@ import {
 	showCreateFolderDialog,
 	showDeleteDialog,
 	showDependenciesDialog,
+	showFolderMoveAlertDialog,
 	showHistoryDialog,
 	showPreviewDialog,
 	showPublishDialog,
@@ -277,7 +278,7 @@ export function toContextMenuOptionsLookup<Keys extends string = AllItemActions>
 	formatMessage: IntlFormatters['formatMessage']
 ): Record<Keys, ContextMenuOption> {
 	const menuOptions: any = {};
-	// @ts-ignore - not sure why the type system is not picking up that the "values" are ContextMenuOptionDescriptor
+	// @ts-expect-error - not sure why the type system is not picking up that the "values" are ContextMenuOptionDescriptor
 	Object.entries(menuOptionDescriptors).forEach(([key, { id, label }]) => {
 		menuOptions[key] = { id, label: formatMessage(label) };
 	});
@@ -626,33 +627,39 @@ export const itemActionDispatcher = ({
 			}
 			case 'cut': {
 				const path = item.path;
-				fetchDependant(site, path).subscribe({
-					next(dependantItems) {
-						const actionToDispatch = batchActions([
-							setClipboard({
-								type: 'CUT',
-								paths: [item.path],
-								sourcePath: item.path
-							}),
-							emitSystemEvent(itemCut({ target: item.path })),
-							showCutItemSuccessNotification()
-						]);
+				if (item.systemType === 'folder') {
+					dispatch(showFolderMoveAlertDialog({ item }));
+				} else {
+					fetchDependant(site, path).subscribe({
+						next(dependantItems) {
+							const actionToDispatch = batchActions([
+								setClipboard({
+									type: 'CUT',
+									paths: [item.path],
+									sourcePath: item.path
+								}),
+								emitSystemEvent(itemCut({ target: item.path })),
+								showCutItemSuccessNotification()
+							]);
 
-						if (dependantItems?.length) {
-							fetchItemsByPath(
-								site,
-								dependantItems.map((item) => item.uri ?? item.path)
-							).subscribe((sandboxItems) => {
-								dispatch(showBrokenReferencesDialog({ path, references: sandboxItems, onContinue: actionToDispatch }));
-							});
-						} else {
-							dispatch(actionToDispatch);
+							if (dependantItems?.length) {
+								fetchItemsByPath(
+									site,
+									dependantItems.map((item) => item.uri ?? item.path)
+								).subscribe((sandboxItems) => {
+									dispatch(
+										showBrokenReferencesDialog({ path, references: sandboxItems, onContinue: actionToDispatch })
+									);
+								});
+							} else {
+								dispatch(actionToDispatch);
+							}
+						},
+						error({ response }) {
+							dispatch(showErrorDialog({ error: response }));
 						}
-					},
-					error({ response }) {
-						dispatch(showErrorDialog({ error: response }));
-					}
-				});
+					});
+				}
 				break;
 			}
 			case 'copy': {

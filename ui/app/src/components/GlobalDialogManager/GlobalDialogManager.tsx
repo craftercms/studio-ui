@@ -82,6 +82,7 @@ const CancelPackageDialog = lazy(() => import('../CancelPackageDialog'));
 const BulkCancelPackageDialog = lazy(() => import('../BulkCancelPackageDialog'));
 const PackageDetailsDialog = lazy(() => import('../PackageDetailsDialog'));
 const ViewPackagesDialog = lazy(() => import('../ViewPackagesDialog'));
+const FolderMoveAlertDialog = lazy(() => import('../FolderMoveAlert/FolderMoveAlertDialog'));
 // endregion
 
 // @formatter:off
@@ -742,6 +743,14 @@ function GlobalDialogManager() {
 				{/* region UIBlocker */}
 				<UIBlocker {...state.uiBlocker} />
 				{/* endregion */}
+
+			{/* region FolderMoveAlertDialog */}
+			<FolderMoveAlertDialog
+				{...state.folderMoveAlert}
+				onClose={createCallback(state.folderMoveAlert.onClose, dispatch)}
+				onClosed={createCallback(state.folderMoveAlert.onClosed, dispatch)}
+			/>
+			{/* endregion */}
 			</Suspense>
 		</>
 	);

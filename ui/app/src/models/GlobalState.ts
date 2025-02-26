@@ -72,6 +72,7 @@ import { BulkCancelPackageDialogStateProps } from '../components/BulkCancelPacka
 import { PublishingPackageResubmitDialogStateProps } from '../components/PublishingPackageResubmitDialog/types';
 import { PackageDetailsDialogStateProps } from '../components';
 import { ViewPackagesDialogStateProps } from '../components/ViewPackagesDialog';
+import type { FolderMoveAlertDialogStateProps } from '../components/FolderMoveAlert/FolderMoveAlertDialog';
 
 export type HighlightMode = 'all' | 'move';
 
@@ -268,6 +269,7 @@ export interface GlobalState {
 		publishingPackageResubmit: PublishingPackageResubmitDialogStateProps;
 		packageDetails: PackageDetailsDialogStateProps;
 		viewPackages: ViewPackagesDialogStateProps;
+		folderMoveAlert: FolderMoveAlertDialogStateProps;
 	};
 	uiConfig: {
 		error: ApiResponse;

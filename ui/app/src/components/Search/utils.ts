@@ -422,6 +422,15 @@ export const useSearchState = ({
 					})
 				);
 				break;
+			case 'PDF':
+				dispatch(
+					showPreviewDialog({
+						type: 'pdf',
+						title,
+						url: path
+					})
+				);
+				break;
 			default: {
 				let mode = 'txt';
 				if (type === 'Template') {

@@ -1214,28 +1214,6 @@ export function uploadToWebDAV(
 	);
 }
 
-export function uploadToCMIS(
-	site: string,
-	file: any,
-	path: string,
-	repositoryId: string,
-	xsrfArgumentName: string
-): Observable<StandardAction> {
-	return createFileUpload(
-		'/studio/api/2/cmis/upload',
-		file,
-		path,
-		{
-			name: file.name,
-			type: file.type,
-			siteId: site,
-			cmisPath: path,
-			cmisRepoId: repositoryId
-		},
-		xsrfArgumentName
-	);
-}
-
 export function getBulkUploadUrl(site: string, path: string): string {
 	const qs = toQueryString({
 		site,

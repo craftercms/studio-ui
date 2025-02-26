@@ -54,6 +54,9 @@
   * Removed `publishing/bulkGoLive`, `publishing/publishByCommits` and `publishing/publishAll` services, replaced by `publishing/publish`.
   * Removed `content/fetchWorkflowAffectedItems` service. Now workflow affected validation is checked against packages using `workflow/fetchAffectedPackages`.
   * Removed `publishing/clearLock` service.
+  * Removed `cmis` services.
+  * Removed `content/uploadToCMIS` service.
+  * Removed `models/CMIS` service.
 * `PublishingItem` interface changes:
   * `approver` is now `reviewer`, of type Person.
   * `comment` is removed, and now there's `reviewerComment` and `submitterComment`.
@@ -64,6 +67,8 @@
 * `PublishFormData` interface change: Added `title` prop.
 * `approvePublish` anb `rejectPublish` are no longer item actions in BaseItem's `availableActionsMap` property.
 * [SiteDashboard/utils] Renamed `getValidatedSelectionState` to `getItemsValidatedSelectionState`.
+* [common-api.js]
+  * Removed `CStudioAuthoring.Operations.uploadCMISAsset` and `CStudioAuthoring.Operations.openCMISUploadDialog`.
 
 ## 4.2.0
 

@@ -17,7 +17,6 @@ import { lazy } from 'react';
 import * as auditService from '../services/audit';
 import * as authService from '../services/auth';
 import * as awsService from '../services/aws';
-import * as cmisService from '../services/cmis';
 import * as configurationService from '../services/configuration';
 import * as contentService from '../services/content';
 import * as contentTypesService from '../services/contentTypes';
@@ -379,7 +378,6 @@ export const services = {
 	audit: auditService,
 	auth: authService,
 	aws: awsService,
-	cmis: cmisService,
 	configuration: configurationService,
 	content: contentService,
 	contentTypes: contentTypesService,

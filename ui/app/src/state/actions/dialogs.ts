@@ -52,6 +52,7 @@ import { CancelPackageDialogProps } from '../../components/CancelPackageDialog';
 import { PublishingPackageResubmitDialogStateProps } from '../../components/PublishingPackageResubmitDialog/types';
 import { PackageDetailsDialogProps } from '../../components';
 import { ViewPackagesDialogProps } from '../../components/ViewPackagesDialog';
+import { FolderMoveAlertDialogStateProps } from '../../components/FolderMoveAlert/FolderMoveAlertDialog';
 
 // region History
 export const showHistoryDialog = /*#__PURE__*/ createAction<Partial<HistoryDialogStateProps>>('SHOW_HISTORY_DIALOG');
@@ -371,4 +372,12 @@ export const closeViewPackagesDialog = /*#__PURE__*/ createAction<StandardAction
 
 export const viewPackagesDialogClosed = /*#__PURE__*/ createAction('VIEW_PACKAGES_DIALOG_CLOSED');
 
+// endregion
+
+// region FolderMoveAlertDialog
+export const showFolderMoveAlertDialog = /*#__PURE__*/ createAction<Partial<FolderMoveAlertDialogStateProps>>(
+	'SHOW_FOLDER_MOVE_ALERT_DIALOG'
+);
+export const closeFolderMoveAlertDialog = /*#__PURE__*/ createAction('CLOSE_FOLDER_MOVE_ALERT_DIALOG');
+export const folderMoveAlertDialogClosed = /*#__PURE__*/ createAction('FOLDER_MOVE_ALERT_DIALOG_CLOSED');
 // endregion
