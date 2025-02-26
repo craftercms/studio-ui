@@ -2811,13 +2811,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/x-tree-view@npm:^7.24.1":
-  version: 7.24.1
-  resolution: "@mui/x-tree-view@npm:7.24.1"
+"@mui/x-internals@npm:7.26.0":
+  version: 7.26.0
+  resolution: "@mui/x-internals@npm:7.26.0"
   dependencies:
     "@babel/runtime": "npm:^7.25.7"
     "@mui/utils": "npm:^5.16.6 || ^6.0.0"
-    "@mui/x-internals": "npm:7.24.1"
+  peerDependencies:
+    react: ^17.0.0 || ^18.0.0 || ^19.0.0
+  checksum: 10/4436915b33ea11a4bc6b90e6ebeb8fbc55e6d57749d58a8147b09e35550d1fef9ad3c8012a623019761796ed312a022f0f73da07abb3623635296516f18704e6
+  languageName: node
+  linkType: hard
+
+"@mui/x-tree-view@npm:^7.24.1":
+  version: 7.26.0
+  resolution: "@mui/x-tree-view@npm:7.26.0"
+  dependencies:
+    "@babel/runtime": "npm:^7.25.7"
+    "@mui/utils": "npm:^5.16.6 || ^6.0.0"
+    "@mui/x-internals": "npm:7.26.0"
     "@types/react-transition-group": "npm:^4.4.11"
     clsx: "npm:^2.1.1"
     prop-types: "npm:^15.8.1"
@@ -2834,7 +2846,7 @@ __metadata:
       optional: true
     "@emotion/styled":
       optional: true
-  checksum: 10/2e942fc3b337fd4426561cc584d64bb2aefc64fa5380869fa8884c553674c86f147c69c74e2992b40f582ae197d1df3cca9c91f3190ba0b1aaa8d136c1fcc517
+  checksum: 10/37cb654e287fe522f21349191e32d5a8946e78fdec183efeeac68ce72973ba33319c9fadec1bcb26a4cbfb34a679ff9380ca84243f47f6cfd75acfb51fd1156c
   languageName: node
   linkType: hard
 
