@@ -20,8 +20,8 @@ import GlobalState from '../../../models/GlobalState';
 import { FormattedMessage, useIntl } from 'react-intl';
 import useActiveSiteId from '../../../hooks/useActiveSiteId';
 import React, { useContext } from 'react';
-import { FormsEngineFormContextApi, ItemMetaContext, StableFormContext } from '../formsEngineContext';
-import { buildContentXml, createObjectWithSystemProps, extractValueAtoms, showAlert } from './formUtils';
+import { FormsEngineFormContextApi, ItemMetaContext, StableFormContext } from './formsEngineContext';
+import { createObjectWithSystemProps, extractAtomValues, showAlert } from './formUtils';
 import { FormSavePromiseResult, FormsEngineProps } from '../FormsEngine';
 import { XmlKeys } from './formConsts';
 import { fromString } from '../../../utils/xml';
@@ -30,6 +30,7 @@ import { writeContent } from '../../../services/content';
 import { AjaxError } from 'rxjs/ajax';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+import { buildContentXml } from './valueSerializers';
 
 export interface UseSaveFormProps {
 	createPath?: string;
@@ -59,7 +60,7 @@ export function useSaveForm(props: UseSaveFormProps) {
 	};
 	return () => {
 		// TODO: Run necessary validations to ensure the form is ready to be saved.
-		const values = extractValueAtoms(jotai, stableFormContext.atoms.valueByFieldId);
+		const values = extractAtomValues(jotai, stableFormContext.atoms.valueByFieldId);
 		// Repeat handled here. If true, execution ends inside if statement.
 		if (isRepeatMode) {
 			setHasPendingChanges(false);

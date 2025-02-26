@@ -35,7 +35,7 @@ import {
 	StableFormContextProps,
 	StableGlobalContext,
 	StableGlobalContextProps
-} from './formsEngineContext';
+} from './lib/formsEngineContext';
 import { fetchDetailedItemComplete, unlockItem } from '../../state/actions/content';
 import { catchError, of } from 'rxjs';
 import LoadingState from '../LoadingState';
@@ -53,12 +53,11 @@ import Grid from '@mui/material/Grid2';
 import Alert from '@mui/material/Alert';
 import { createErrorStatePropsFromApiResponse } from '../ApiResponseErrorState';
 import Button, { ButtonProps } from '@mui/material/Button';
-import { StickyBox } from './common/StickyBox';
+import { StickyBox } from './components/StickyBox';
 import MenuRounded from '@mui/icons-material/MenuRounded';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 import useEnhancedDialogContext from '../EnhancedDialog/useEnhancedDialogContext';
 import { ArrowUpward, EditOffOutlined } from '@mui/icons-material';
-import { createCleanValuesObject } from './validateFieldValue';
 import LookupTable from '../../models/LookupTable';
 import { RepeatItem } from './controls/Repeat';
 import SecondaryButton from '../SecondaryButton';
@@ -94,24 +93,25 @@ import {
 	produceChangedFieldsMessage,
 	setFieldAtoms,
 	useValidateFormProps
-} from './common/formUtils';
-import { renderFieldControl } from './common/supportingControls';
+} from './lib/formUtils';
+import { renderFieldControl } from './lib/controlHelpers';
 import {
 	ContentTypeNotFoundError,
 	ItemNotFoundError,
 	stackFormCountAtom,
 	UnknownError,
 	XmlKeys
-} from './common/formConsts';
-import FormLayout from './common/FormLayout';
-import TableOfContents from './common/TableOfContents';
-import CreateModeHeader from './common/CreateModeHeader';
-import RepeatModeHeader from './common/RepeatModeHeader';
-import EditModeHeader from './common/EditModeHeader';
-import SaveCard from './common/SaveCard';
-import SectionAccordion from './common/SectionAccordion';
-import { useSaveForm } from './common/useSaveForm';
-import { FormPrepError } from './common/FormPrepError';
+} from './lib/formConsts';
+import FormLayout from './components/FormLayout';
+import TableOfContents from './components/TableOfContents';
+import CreateModeHeader from './components/CreateModeHeader';
+import RepeatModeHeader from './components/RepeatModeHeader';
+import EditModeHeader from './components/EditModeHeader';
+import SaveCard from './components/SaveCard';
+import SectionAccordion from './components/SectionAccordion';
+import { useSaveForm } from './lib/useSaveForm';
+import { FormPrepError } from './components/FormPrepError';
+import { createCleanValuesObject } from './lib/valueRetrievers';
 
 export interface FormSavePromiseResult {
 	close: boolean;
@@ -167,7 +167,7 @@ export interface CreateModeProps {
 export type FormsEngineProps = BaseProps & (UpdateModeProps | RepeatModeProps | CreateModeProps);
 
 // Entry point for the form engine. It validates the props and continues if valid.
-function Firewall(props: FormsEngineProps) {
+function FormGuard(props: FormsEngineProps) {
 	try {
 		useValidateFormProps(props);
 	} catch (e) {
@@ -1049,9 +1049,9 @@ function FormOrchestrator(props: FormsEngineProps) {
 	);
 }
 
-export { Firewall as FormsEngine };
+export { FormGuard as FormsEngine };
 
-export default Firewall;
+export default FormGuard;
 
 // TODO:
 //  - Need Jotai store per form so fields with same id across forms don't collide. Same goes for sections (or other UI state) that could collide across forms.

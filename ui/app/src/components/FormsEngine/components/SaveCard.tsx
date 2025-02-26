@@ -1,10 +1,26 @@
+/*
+ * Copyright (C) 2007-2025 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 import { useAtom, useAtomValue } from 'jotai';
 import { useDispatch } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
 import React, { ChangeEvent, useContext, useState } from 'react';
-import { StableFormContext } from '../formsEngineContext';
+import { StableFormContext } from '../lib/formsEngineContext';
 import { ButtonProps } from '@mui/material/Button';
-import { showAlert } from './formUtils';
+import { showAlert } from '../lib/formUtils';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';

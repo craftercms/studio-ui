@@ -1,14 +1,30 @@
+/*
+ * Copyright (C) 2007-2025 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 import React, { RefObject, SyntheticEvent, useContext, useMemo, useState } from 'react';
 import { ContentTypeField } from '../../../models';
-import { FormsEngineAtoms, ItemMetaContext, StableFormContext } from '../formsEngineContext';
-import { getScrollContainer } from './formUtils';
+import { FormsEngineAtoms, ItemMetaContext, StableFormContext } from '../lib/formsEngineContext';
+import { getScrollContainer } from '../lib/formUtils';
 import useDebouncedInput from '../../../hooks/useDebouncedInput';
 import { TreeItem } from '@mui/x-tree-view/TreeItem';
 import SearchBar from '../../SearchBar';
 import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
 import Box from '@mui/material/Box';
 import { useAtomValue, useSetAtom, useStore as useJotaiStore } from 'jotai/index';
-import { isEmptyValue, isFieldRequired } from '../validateFieldValue';
+import { isEmptyValue, isFieldRequired } from '../lib/validators';
 import FieldEmptyStateIndicator from './FieldEmptyStateIndicator';
 import FieldRequiredStateIndicator from './FieldRequiredStateIndicator';
 import { atom } from 'jotai';

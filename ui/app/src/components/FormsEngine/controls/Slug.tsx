@@ -17,10 +17,10 @@
 import OutlinedInput, { OutlinedInputProps } from '@mui/material/OutlinedInput';
 import React, { useId } from 'react';
 import { applyContentNameRules } from '../../../utils/content';
-import { FormsEngineField } from '../common/FormsEngineField';
+import { FormsEngineField } from '../components/FormsEngineField';
 import InputAdornment from '@mui/material/InputAdornment';
 import { ControlProps } from '../types';
-import { useItemMetaContext, useStableFormContext } from '../formsEngineContext';
+import { useItemMetaContext, useStableFormContext } from '../lib/formsEngineContext';
 import { useAtom, useAtomValue } from 'jotai';
 import { PrimitiveAtom } from 'jotai/index';
 

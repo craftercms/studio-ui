@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2024 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2025 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -14,53 +14,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ElementType } from 'react';
-import { ContentTypeField } from '../../models';
-import { BuiltInControlType } from './controlMap';
-import ContentType from '../../models/ContentType';
-import LookupTable from '../../models/LookupTable';
-import { NodeSelectorItem } from './controls/NodeSelector';
-import { RepeatItem } from './controls/Repeat';
-import { systemFieldsNotInType, XmlKeys } from './common/formConsts';
+import LookupTable from '../../../models/LookupTable';
+import ContentType, { ContentTypeField } from '../../../models/ContentType';
+import type { BuiltInControlType } from './controlMap';
+import type { RepeatItem } from '../controls/Repeat';
+import type { NodeSelectorItem } from '../controls/NodeSelector';
+import { systemFieldsNotInType, XmlKeys } from './formConsts';
+import { deserialize } from '../../../utils/xml';
 
-export const validatorsMap: Record<BuiltInControlType, ElementType> = {
-	repeat: null,
-	'auto-filename': null,
-	'aws-file-upload': null,
-	'box-file-upload': null,
-	'checkbox-group': null,
-	checkbox: null,
-	'date-time': null,
-	disabled: null,
-	dropdown: null,
-	'file-name': null,
-	forcehttps: null,
-	'image-picker': null,
-	input: null,
-	'internal-name': null,
-	label: null,
-	'link-input': null,
-	'link-textarea': null,
-	'linked-dropdown': null,
-	'locale-selector': null,
-	'node-selector': null,
-	'numeric-input': null,
-	'page-nav-order': null,
-	rte: null,
-	textarea: null,
-	time: null,
-	'transcoded-video-picker': null,
-	uuid: null,
-	'video-picker': null
-};
+export type ValueRetriever<T = unknown> = (value: unknown, field: ContentTypeField) => T;
 
-type ValueRetriever<T = unknown> = (value: unknown, field: ContentTypeField) => T;
-
-const arrayFieldExtractor: ValueRetriever<unknown[]> = (value) =>
+export const arrayFieldExtractor: ValueRetriever<unknown[]> = (value) =>
 	// Controls needn't worry about packaging as `items: { item: [] }`, but when it first gets deserialised, it will have that format.
 	Array.isArray(value) ? value : ((value as Record<'item', unknown[]>)?.item ?? []);
-const textFieldExtractor: ValueRetriever<string> = (value) => (value && String(value)) ?? '';
-const booleanFieldExtractor: ValueRetriever<boolean> = (value) => (value === true || value === 'true') ?? false;
+
+export const textFieldExtractor: ValueRetriever<string> = (value) => (value && String(value)) ?? '';
+
+export const booleanFieldExtractor: ValueRetriever<boolean> = (value) => (value === true || value === 'true') ?? false;
 
 export const valueRetrieverLookup: Record<BuiltInControlType, ValueRetriever> = {
 	'auto-filename': textFieldExtractor,
@@ -92,36 +62,6 @@ export const valueRetrieverLookup: Record<BuiltInControlType, ValueRetriever> = 
 	uuid: textFieldExtractor,
 	'video-picker': textFieldExtractor
 };
-
-export interface FieldValidityState {
-	isValid: boolean;
-	messages: string[];
-}
-
-export function validateFieldValue(field: ContentTypeField, currentValue: unknown): FieldValidityState {
-	let isValid = false;
-	const isRequired = isFieldRequired(field);
-	const isEmpty = isEmptyValue(field, currentValue);
-	if (!isRequired && isEmpty) {
-		// If not required and its empty, then it's valid.
-		isValid = true;
-	} else if (!isEmpty) {
-		// FE2 TODO: Add other validation types (max length, etc)...
-		isValid = true;
-	}
-	return {
-		isValid,
-		messages: isValid ? null : ['This field is required.']
-	};
-}
-
-export function isEmptyValue(field: ContentTypeField, currentValue: unknown): boolean {
-	return (
-		!currentValue ||
-		(typeof currentValue === 'string' && currentValue.trim() === '') ||
-		(Array.isArray(currentValue) && currentValue.length === 0)
-	);
-}
 
 /**
  * Takes in the raw deserialized values from a content XML and returns a "clean" JSON-style object
@@ -196,8 +136,16 @@ export function retrieveFieldValue<T = unknown>(field: ContentTypeField, value: 
 	return retriever(value, field);
 }
 
-export function isFieldRequired(field: ContentTypeField): boolean {
-	return Boolean(field.validations?.required?.value);
+/** Takes in the CrafterCMS content XML document and returns a JS object with the values */
+export function deserializeContentDom(contentDom: XMLDocument | Element): LookupTable<unknown> {
+	if (!contentDom) return null;
+	return deserialize(contentDom, {
+		ignoreAttributes: true,
+		isArray(tagName: string, jPath: string) {
+			// Ideally, we would extract all collection types (item selector, repeat) that have
+			// this sort of syntax to avoid false positives.
+			// e.g.collectionFieldIds.map((fieldId) => `${rootTagName}.${fieldId}.item`).includes(jPath);
+			return jPath.endsWith('.item');
+		}
+	})[(contentDom as XMLDocument).documentElement?.tagName ?? (contentDom as Element).tagName];
 }
-
-export default validateFieldValue;

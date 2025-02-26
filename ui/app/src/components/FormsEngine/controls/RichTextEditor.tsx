@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
-import { FormsEngineField } from '../common/FormsEngineField';
+import { FormsEngineField } from '../components/FormsEngineField';
 import { ControlProps } from '../types';
 import useRTEConfig from '../../../hooks/useRTEConfig';
 import { initRichTextEditorConfig } from '../../../state/actions/preview';

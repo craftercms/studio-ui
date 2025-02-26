@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useItemContext, useItemMetaContext, useStableGlobalApiContext } from '../formsEngineContext';
+import { useItemContext, useItemMetaContext, useStableGlobalApiContext } from '../lib/formsEngineContext';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import AddRounded from '@mui/icons-material/AddRounded';
@@ -22,7 +22,7 @@ import DeleteOutlined from '@mui/icons-material/DeleteOutlined';
 import EditOutlined from '@mui/icons-material/EditOutlined';
 import HelpOutline from '@mui/icons-material/HelpOutline';
 import SearchRounded from '@mui/icons-material/SearchRounded';
-import { FormsEngineField } from '../common/FormsEngineField';
+import { FormsEngineField } from '../components/FormsEngineField';
 import { ControlProps } from '../types';
 import { MediaItem, Primitive } from '../../../models';
 import List from '@mui/material/List';
@@ -82,19 +82,19 @@ import useActiveUser from '../../../hooks/useActiveUser';
 import { processPathMacros } from '../../../utils/path';
 import { ensureSingleSlash } from '../../../utils/string';
 import { popDialog, pushDialog, pushNonDialog } from '../../../state/actions/dialogStack';
-import FieldBox from '../common/FieldBox';
-import { isTouchDevice, KeyDownEvent, sortableListKeyDownHandler } from '../common/sortableListUtil';
-import SortableListSkeleton from '../common/SortableListSkeleton';
+import FieldBox from '../components/FieldBox';
+import { isTouchDevice, KeyDownEvent, sortableListKeyDownHandler } from '../lib/sortableListUtil';
+import SortableListSkeleton from '../components/SortableListSkeleton';
 import { EmptyState } from '../../EmptyState';
-import { XmlKeys } from '../common/formConsts';
+import { XmlKeys } from '../lib/formConsts';
 import useConsolidatedItemPickerData, {
 	ConsolidatedItemPickerData
 } from '../data-sources/useConsolidatedItemPickerData';
 import { useExtractItemPickerDataSources } from '../data-sources/useExtractItemPickerDataSources';
 import { Dispatch as ReduxDispatch } from 'redux';
 
-const SortableList = lazy(() => import('../common/SortableList'));
-const TouchSortableList = lazy(() => import('../common/TouchSortableList'));
+const SortableList = lazy(() => import('../components/SortableList'));
+const TouchSortableList = lazy(() => import('../components/TouchSortableList'));
 
 // TODO: process path macros
 

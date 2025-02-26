@@ -15,7 +15,7 @@
  */
 
 import React, { useMemo } from 'react';
-import { FormsEngineField } from '../common/FormsEngineField';
+import { FormsEngineField } from '../components/FormsEngineField';
 import { ControlProps } from '../types';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';

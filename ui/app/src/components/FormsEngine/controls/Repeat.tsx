@@ -14,12 +14,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useStableGlobalApiContext } from '../formsEngineContext';
+import { useStableGlobalApiContext } from '../lib/formsEngineContext';
 import IconButton, { IconButtonProps } from '@mui/material/IconButton';
 import AddRounded from '@mui/icons-material/AddRounded';
 import DeleteOutlined from '@mui/icons-material/DeleteOutlined';
 import EditOutlined from '@mui/icons-material/EditOutlined';
-import { FormsEngineField } from '../common/FormsEngineField';
+import { FormsEngineField } from '../components/FormsEngineField';
 import { ControlProps } from '../types';
 import List from '@mui/material/List';
 import ListItemText from '@mui/material/ListItemText';
@@ -29,13 +29,13 @@ import { FormattedMessage } from 'react-intl';
 import Tooltip from '@mui/material/Tooltip';
 import { lazy, MouseEvent as ReactMouseEvent, Suspense, useMemo, useState } from 'react';
 import Avatar, { avatarClasses } from '@mui/material/Avatar';
-import { StackedButton } from '../common/StackedButton';
-import { isTouchDevice } from '../common/sortableListUtil';
+import { StackedButton } from '../components/StackedButton';
+import { isTouchDevice } from '../lib/sortableListUtil';
 import { DialogHeader } from '../../DialogHeader';
 import Dialog from '@mui/material/Dialog';
-import SortableListSkeleton from '../common/SortableListSkeleton';
-import type { TItem } from '../common/SortableList';
-import FieldBox from '../common/FieldBox';
+import SortableListSkeleton from '../components/SortableListSkeleton';
+import type { TItem } from '../components/SortableList';
+import FieldBox from '../components/FieldBox';
 import { buttonClasses } from '@mui/material/Button';
 
 export type RepeatItem = Record<string, unknown>;
@@ -44,8 +44,8 @@ export interface RepeatProps extends ControlProps {
 	value: RepeatItem[];
 }
 
-const SortableList = lazy(() => import('../common/SortableList'));
-const TouchSortableList = lazy(() => import('../common/TouchSortableList'));
+const SortableList = lazy(() => import('../components/SortableList'));
+const TouchSortableList = lazy(() => import('../components/TouchSortableList'));
 
 function getRepeatItemTitle(item: RepeatItem): string {
 	const keys = Object.keys(item);

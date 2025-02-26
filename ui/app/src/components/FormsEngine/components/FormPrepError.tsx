@@ -17,7 +17,7 @@
 import React, { ReactNode } from 'react';
 import { ErrorState } from '../../ErrorState';
 import { FormattedMessage } from 'react-intl';
-import { getMessageForErrorSymbol } from './formUtils';
+import { getMessageForErrorSymbol } from '../lib/formUtils';
 
 export const FormPrepError = (props: { error: unknown }): ReactNode => (
 	<ErrorState title={<FormattedMessage defaultMessage="Error" />} message={getMessageForErrorSymbol(props.error)} />

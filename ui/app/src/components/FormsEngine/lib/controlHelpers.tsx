@@ -21,14 +21,14 @@ import React, { ComponentType, ElementType, lazy, LazyExoticComponent, memo, Sus
 import useActiveSiteId from '../../../hooks/useActiveSiteId';
 import { Atom, useAtom } from 'jotai/index';
 import { buildFileUrl } from '../../../services/plugin';
-import { controlMap } from '../controlMap';
-import { UnknownControl } from './UnknownControl';
+import { controlMap } from './controlMap';
+import { UnknownControl } from '../components/UnknownControl';
 import ErrorBoundary from '../../ErrorBoundary';
-import { ControlSkeleton } from './ControlSkeleton';
+import { ControlSkeleton } from '../components/ControlSkeleton';
 import { ContentTypeField } from '../../../models';
 import ContentType from '../../../models/ContentType';
-import FormsEngineField from './FormsEngineField';
-import { FormsEngineAtoms } from '../formsEngineContext';
+import FormsEngineField from '../components/FormsEngineField';
+import { FormsEngineAtoms } from './formsEngineContext';
 
 // Note: These persist past the closing of the form.
 const lazyControlMap = new Map<string, LazyExoticComponent<ComponentType>>();

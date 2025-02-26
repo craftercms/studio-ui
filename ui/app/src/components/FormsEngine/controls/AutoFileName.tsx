@@ -16,9 +16,9 @@
 
 import OutlinedInput from '@mui/material/OutlinedInput';
 import React, { useEffect, useId } from 'react';
-import { FormsEngineField } from '../common/FormsEngineField';
+import { FormsEngineField } from '../components/FormsEngineField';
 import { ControlProps } from '../types';
-import { useItemMetaContext } from '../formsEngineContext';
+import { useItemMetaContext } from '../lib/formsEngineContext';
 
 export interface AutoFileNameProps extends ControlProps {
 	value: string;

@@ -22,7 +22,7 @@ import Accordion from '@mui/material/Accordion';
 import React, { ReactNode, useContext } from 'react';
 import { ContentTypeSection } from '../../../models';
 import { useTheme } from '@mui/material/styles';
-import { StableFormContext } from '../formsEngineContext';
+import { StableFormContext } from '../lib/formsEngineContext';
 import { useAtom } from 'jotai';
 
 export interface SectionAccordionProps {

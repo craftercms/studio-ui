@@ -1,9 +1,25 @@
+/*
+ * Copyright (C) 2007-2025 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 import React, { useContext } from 'react';
 import { useTheme } from '@mui/material/styles';
-import { ItemContext, ItemMetaContext, StableFormContext } from '../formsEngineContext';
+import { ItemContext, ItemMetaContext, StableFormContext } from '../lib/formsEngineContext';
 import { useAtomValue, useStore as useJotaiStore } from 'jotai/index';
 import useLocale from '../../../hooks/useLocale';
-import { getFieldAtomValue } from './formUtils';
+import { getFieldAtomValue } from '../lib/formUtils';
 import { SandboxItem } from '../../../models';
 import { prettyPrintPerson } from '../../../utils/object';
 import Container from '@mui/material/Container';
@@ -22,7 +38,7 @@ import IconButton from '@mui/material/IconButton';
 import { copyToClipboard } from '../../../utils/system';
 import ContentCopyRounded from '@mui/icons-material/ContentCopyRounded';
 import MenuOpenIcon from '@mui/icons-material/MenuOpenRounded';
-import { XmlKeys } from './formConsts';
+import { XmlKeys } from '../lib/formConsts';
 import { useAtom } from 'jotai';
 
 export function EditModeHeader({ isEmbedded }: { isEmbedded: boolean }) {

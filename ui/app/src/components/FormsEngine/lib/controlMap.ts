@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2024 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2025 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -50,30 +50,30 @@ export type BuiltInControlType =
 	| 'video-picker';
 
 export const controlMap: Record<BuiltInControlType, ElementType> = {
-	repeat: lazy(() => import('./controls/Repeat')),
-	'auto-filename': lazy(() => import('./controls/AutoFileName')),
+	repeat: lazy(() => import('../controls/Repeat')),
+	'auto-filename': lazy(() => import('../controls/AutoFileName')),
 	'aws-file-upload': null,
 	'box-file-upload': null,
-	'checkbox-group': lazy(() => import('./controls/CheckboxGroup')),
-	checkbox: lazy(() => import('./controls/Checkbox')),
+	'checkbox-group': lazy(() => import('../controls/CheckboxGroup')),
+	checkbox: lazy(() => import('../controls/Checkbox')),
 	'date-time': null,
 	disabled: null,
-	dropdown: lazy(() => import('./controls/Dropdown')),
-	'file-name': lazy(() => import('./controls/Slug')),
+	dropdown: lazy(() => import('../controls/Dropdown')),
+	'file-name': lazy(() => import('../controls/Slug')),
 	forcehttps: null, // TODO: probably not needed, getname returns `disabled`
-	'image-picker': lazy(() => import('./controls/ImagePicker')),
-	input: lazy(() => import('./controls/Text')),
+	'image-picker': lazy(() => import('../controls/ImagePicker')),
+	input: lazy(() => import('../controls/Text')),
 	'internal-name': null,
 	label: null,
 	'link-input': null,
 	'link-textarea': null,
 	'linked-dropdown': null,
 	'locale-selector': null,
-	'node-selector': lazy(() => import('./controls/NodeSelector')),
+	'node-selector': lazy(() => import('../controls/NodeSelector')),
 	'numeric-input': null,
 	'page-nav-order': null,
-	rte: lazy(() => import('./controls/RichTextEditor')),
-	textarea: lazy(() => import('./controls/Textarea')),
+	rte: lazy(() => import('../controls/RichTextEditor')),
+	textarea: lazy(() => import('../controls/Textarea')),
 	time: null,
 	'transcoded-video-picker': null,
 	uuid: null,

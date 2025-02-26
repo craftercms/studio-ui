@@ -15,7 +15,7 @@
  */
 
 import React, { ChangeEvent, useMemo, useState } from 'react';
-import { FormsEngineField } from '../common/FormsEngineField';
+import { FormsEngineField } from '../components/FormsEngineField';
 import { ControlProps } from '../types';
 import Checkbox, { CheckboxProps } from '@mui/material/Checkbox';
 import FormGroup from '@mui/material/FormGroup';

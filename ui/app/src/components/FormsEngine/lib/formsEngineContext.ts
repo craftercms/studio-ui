@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2024 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2025 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -15,15 +15,15 @@
  */
 
 import { Context, createContext, useContext } from 'react';
-import { DetailedItem, PublishPackage } from '../../models';
-import ContentType from '../../models/ContentType';
-import ApiResponse from '../../models/ApiResponse';
-import { FormsEngineProps } from './FormsEngine';
-import LookupTable from '../../models/LookupTable';
+import { DetailedItem, PublishPackage } from '../../../models';
+import ContentType from '../../../models/ContentType';
+import ApiResponse from '../../../models/ApiResponse';
+import { FormsEngineProps } from '../FormsEngine';
+import LookupTable from '../../../models/LookupTable';
 import type { Atom, PrimitiveAtom } from 'jotai';
-import { FieldValidityState } from './validateFieldValue';
+import { FieldValidityState } from './validators';
 import { Subject } from 'rxjs';
-import { CollapseToCAtomWithStorage } from './types';
+import { CollapseToCAtomWithStorage } from '../types';
 
 export type FormsEngineSourceMap = LookupTable<string>;
 

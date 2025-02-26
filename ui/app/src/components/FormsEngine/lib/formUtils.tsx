@@ -17,10 +17,7 @@
 import { ContentTypeField, ContentTypeSection } from '../../../models';
 import LookupTable from '../../../models/LookupTable';
 import ContentType from '../../../models/ContentType';
-import { BuiltInControlType } from '../controlMap';
-import { RepeatItem } from '../controls/Repeat';
-import { NodeSelectorItem } from '../controls/NodeSelector';
-import validateFieldValue, { FieldValidityState } from '../validateFieldValue';
+import validateFieldValue, { FieldValidityState } from './validators';
 import { catchError, forkJoin, map, Observable, of, Subject, switchMap } from 'rxjs';
 import {
 	FormRequirementsResponse,
@@ -28,7 +25,7 @@ import {
 	FormsEngineEditContextProps,
 	FormsEngineSourceMap,
 	StableFormContextProps
-} from '../formsEngineContext';
+} from './formsEngineContext';
 import { fetchContentXML, fetchDescriptorXML, fetchDetailedItem, lock, unlock } from '../../../services/content';
 import { AjaxError } from 'rxjs/ajax';
 import { fetchAffectedPackages } from '../../../services/workflow';
@@ -37,8 +34,7 @@ import { IntlShape } from 'react-intl/src/types';
 import { showSystemNotification } from '../../../state/actions/system';
 import { atom, Atom, PrimitiveAtom } from 'jotai/index';
 import React, { ReactNode, RefObject, useRef } from 'react';
-import { XMLBuilder } from 'fast-xml-parser';
-import { deserialize, fromString, getInnerHtml } from '../../../utils/xml';
+import { fromString, getInnerHtml } from '../../../utils/xml';
 import { nanoid } from 'nanoid';
 import { popDialog, pushDialog } from '../../../state/actions/dialogStack';
 import alertDialogUrl from '../../../assets/warning.svg';
@@ -64,82 +60,7 @@ import type { FormsEngineProps } from '../FormsEngine';
 import usePreviousValue from '../../../hooks/usePreviousValue';
 import useActiveSiteId from '../../../hooks/useActiveSiteId';
 import { areAllPairsEqual } from '../../../utils/array';
-
-/**
- * Formats a FormsEngine values object with "hints" for attributes or other specifics for the XML serialiser to serialise
- * the content as a CrafterCMS content xml.
- **/
-function prepareValuesForXmlSerialising(
-	fields: LookupTable<ContentTypeField>,
-	values: LookupTable<unknown>,
-	contentTypesLookup: LookupTable<ContentType>
-): LookupTable<unknown> {
-	const jObj = { ...values };
-	Object.entries(jObj).forEach(([id, value]) => {
-		const field = fields[id];
-		const fieldType = field?.type as BuiltInControlType;
-		switch (fieldType) {
-			case 'repeat':
-			case 'node-selector': {
-				const isRepeat = fieldType === 'repeat';
-				jObj[id] = {
-					'@:item-list': true,
-					item: isRepeat
-						? (value as RepeatItem[]).map((item) =>
-								prepareValuesForXmlSerialising(field.fields, item, contentTypesLookup)
-							)
-						: (value as NodeSelectorItem[]).map((item) => {
-								if (item.component == null) {
-									return item;
-								}
-								const contentType = contentTypesLookup[(item.component[XmlKeys.contentTypeId] as string)?.trim()];
-								if (!contentType) {
-									console.error(`Content type not found for embedded component`, item.component);
-									return item;
-								}
-								const component = prepareValuesForXmlSerialising(
-									contentType.fields,
-									item.component,
-									contentTypesLookup
-								);
-								component['@:id'] = component[XmlKeys.modelId];
-								return { ...item, '@:inline': true, component };
-							})
-				};
-				break;
-			}
-			case 'rte': {
-				jObj[id] = { __cdata__: value };
-				break;
-			}
-			case 'checkbox-group': {
-				jObj[id] = { item: value };
-				break;
-			}
-			default:
-				break;
-		}
-	});
-	return jObj;
-}
-
-/** Takes in a FormsEngine values object and creates the XML representation */
-export function buildContentXml(values: LookupTable<unknown>, contentTypesLookup: LookupTable<ContentType>): string {
-	const rootContentType: ContentType = contentTypesLookup[values[XmlKeys.contentTypeId] as string];
-	const rootObjectType = rootContentType.type;
-	const jObj = prepareValuesForXmlSerialising(rootContentType.fields, values, contentTypesLookup);
-	rootObjectType === 'component' && (jObj['@:id'] = jObj.objectId);
-	const builder = new XMLBuilder({
-		format: true,
-		indentBy: '\t',
-		ignoreAttributes: false,
-		attributeNamePrefix: '@:',
-		cdataPropName: '__cdata__',
-		suppressBooleanAttributes: false
-	});
-	const xml = builder.build({ [`${rootObjectType}`]: jObj });
-	return xml as string;
-}
+import { deserializeContentDom } from './valueRetrievers';
 
 /**
  * Returns the scroll container for the form's container.
@@ -195,20 +116,6 @@ export const internalUnlockContentService: (siteId: string, path: string) => Obs
 		map(() => ({ locked: false, lockError: null })),
 		catchError((error) => of({ locked: true, lockError: error.response?.response }))
 	);
-
-/** Takes in the CrafterCMS content XML document and JS object with the values */
-export const deserializeContentDom = (contentDom: XMLDocument | Element): LookupTable<unknown> => {
-	if (!contentDom) return null;
-	return deserialize(contentDom, {
-		ignoreAttributes: true,
-		isArray(tagName: string, jPath: string) {
-			// Ideally, we would extract all collection types (item selector, repeat) that have
-			// this sort of syntax to avoid false positives.
-			// e.g.collectionFieldIds.map((fieldId) => `${rootTagName}.${fieldId}.item`).includes(jPath);
-			return jPath.endsWith('.item');
-		}
-	})[(contentDom as XMLDocument).documentElement?.tagName ?? (contentDom as Element).tagName];
-};
 
 export function createSourceMap(descriptorXml: string): FormsEngineSourceMap {
 	const descriptorDom = fromString(descriptorXml);
@@ -343,7 +250,7 @@ export const getFieldAtomValue = (atom: Atom<unknown>, store: JotaiStore) => sto
 /**
  * Retrieves the values from the form atoms and returns them in a lookup table.
  */
-export const extractValueAtoms: (store: JotaiStore, valueAtoms: LookupTable<Atom<unknown>>) => LookupTable<unknown> = (
+export const extractAtomValues: (store: JotaiStore, valueAtoms: LookupTable<Atom<unknown>>) => LookupTable<unknown> = (
 	store,
 	valueAtoms
 ) =>

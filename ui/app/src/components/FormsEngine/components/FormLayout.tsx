@@ -24,7 +24,7 @@ import React, {
 	useLayoutEffect
 } from 'react';
 import { useTheme } from '@mui/material/styles';
-import { FormsEngineAtoms, ItemMetaContext, StableFormContext, StableGlobalContext } from '../formsEngineContext';
+import { FormsEngineAtoms, ItemMetaContext, StableFormContext, StableGlobalContext } from '../lib/formsEngineContext';
 import Box, { BoxProps } from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Divider from '@mui/material/Divider';
@@ -32,8 +32,8 @@ import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid2';
 import { useAtomValue, useStore as useJotaiStore } from 'jotai/index';
 import { UIBlocker } from '../../UIBlocker';
-import { getScrollContainer } from './formUtils';
-import { stackFormCountAtom } from './formConsts';
+import { getScrollContainer } from '../lib/formUtils';
+import { stackFormCountAtom } from '../lib/formConsts';
 import { createStore, useAtom } from 'jotai';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';

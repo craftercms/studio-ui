@@ -15,7 +15,7 @@
  */
 
 import React, { ChangeEvent, useId } from 'react';
-import { FormsEngineField } from '../common/FormsEngineField';
+import { FormsEngineField } from '../components/FormsEngineField';
 import { ControlProps } from '../types';
 import Switch from '@mui/material/Switch';
 
