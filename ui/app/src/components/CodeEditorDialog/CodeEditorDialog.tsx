@@ -22,22 +22,22 @@ import { CodeEditorDialogProps } from './utils';
 import EnhancedDialog from '../EnhancedDialog';
 
 export function CodeEditorDialog(props: CodeEditorDialogProps) {
-  const { formatMessage } = useIntl();
-  const { mode = 'text', path, readonly, contentType, onSuccess, onClose, onMinimize, onFullScreen, ...rest } = props;
-  const title = formatMessage(translations.title);
-  return (
-    <EnhancedDialog title={title} omitHeader maxWidth="xl" onMinimize={onMinimize} onClose={onClose} {...rest}>
-      <CodeEditorDialogContainer
-        path={path}
-        mode={mode}
-        title={title}
-        onMinimize={onMinimize}
-        readonly={readonly}
-        onFullScreen={props.isFullScreen ? props.onCancelFullScreen : props.onFullScreen}
-        onSuccess={onSuccess}
-      />
-    </EnhancedDialog>
-  );
+	const { formatMessage } = useIntl();
+	const { mode = 'text', path, readonly, contentType, onSuccess, onClose, onMinimize, onFullScreen, ...rest } = props;
+	const title = formatMessage(translations.title);
+	return (
+		<EnhancedDialog title={title} omitHeader maxWidth="xl" onMinimize={onMinimize} onClose={onClose} {...rest}>
+			<CodeEditorDialogContainer
+				path={path}
+				mode={mode}
+				title={title}
+				onMinimize={onMinimize}
+				readonly={readonly}
+				onFullScreen={props.isFullScreen ? props.onCancelFullScreen : props.onFullScreen}
+				onSuccess={onSuccess}
+			/>
+		</EnhancedDialog>
+	);
 }
 
 export default CodeEditorDialog;

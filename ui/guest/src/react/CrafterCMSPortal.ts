@@ -20,21 +20,21 @@ import { PropsWithChildren, useLayoutEffect, useRef } from 'react';
 export type CrafterCMSPortalProps = PropsWithChildren<{}>;
 
 export function CrafterCMSPortal(props: CrafterCMSPortalProps) {
-  const portalRef = useRef<HTMLElement>(null);
-  if (portalRef.current === null) {
-    portalRef.current = document.createElement('craftercms-portal');
-  }
+	const portalRef = useRef<HTMLElement>(null);
+	if (portalRef.current === null) {
+		portalRef.current = document.createElement('craftercms-portal');
+	}
 
-  useLayoutEffect(() => {
-    const body: HTMLElement = document.body;
-    const portal = portalRef.current;
-    body.appendChild(portal);
-    return () => {
-      body.removeChild(portal);
-    };
-  }, []);
+	useLayoutEffect(() => {
+		const body: HTMLElement = document.body;
+		const portal = portalRef.current;
+		body.appendChild(portal);
+		return () => {
+			body.removeChild(portal);
+		};
+	}, []);
 
-  return createPortal(props.children, portalRef.current) as JSX.Element;
+	return createPortal(props.children, portalRef.current) as JSX.Element;
 }
 
 export default CrafterCMSPortal;

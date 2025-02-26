@@ -19,42 +19,42 @@ import Person from './Person';
 import { PublishingTargets } from './Publishing';
 
 export interface DashboardPublishingPackage {
-  id: string;
-  label: string;
-  comment: string;
-  submitter: Person;
-  size: number;
-  publishingTarget: PublishingTargets;
-  schedule: string;
+	id: string;
+	label: string;
+	comment: string;
+	submitter: Person;
+	size: number;
+	publishingTarget: PublishingTargets;
+	schedule: string;
 }
 
 interface LegacyDeploymentHistoryDocument {
-  children: LegacyItem[];
-  endpoint: string;
-  internalName: string;
-  numOfChildren: number;
+	children: LegacyItem[];
+	endpoint: string;
+	internalName: string;
+	numOfChildren: number;
 }
 
 export interface LegacyDashboardItem {
-  total: number;
-  sortedBy: boolean;
-  ascending: 'true' | 'false';
-  documents: LegacyItem[];
+	total: number;
+	sortedBy: boolean;
+	ascending: 'true' | 'false';
+	documents: LegacyItem[];
 }
 
 export interface LegacyDeploymentHistoryResponse {
-  total: number;
-  offset: number;
-  limit: number;
-  documents: LegacyDeploymentHistoryDocument[];
+	total: number;
+	offset: number;
+	limit: number;
+	documents: LegacyDeploymentHistoryDocument[];
 }
 
 export type LegacyDeploymentHistoryType = 'page' | 'component' | 'document' | 'all';
 
 export interface LegacyDashboardPreferences {
-  filterBy?: string;
-  numItems?: number;
-  expanded?: boolean;
-  showUnpublished?: boolean;
-  excludeLiveItems?: boolean;
+	filterBy?: string;
+	numItems?: number;
+	expanded?: boolean;
+	showUnpublished?: boolean;
+	excludeLiveItems?: boolean;
 }

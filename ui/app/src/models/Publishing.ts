@@ -15,81 +15,159 @@
  */
 
 import LookupTable from './LookupTable';
+import { PackageApprovalState } from '../services/publishing';
 
 export type PublishingTargets = 'live' | 'staging';
 
 export interface Package {
-  id: string;
-  siteId: string;
-  schedule: string;
-  approver: string;
-  state: string;
-  environment: string;
-  comment: string;
+	id: number;
+	siteId: string;
+	schedule: string;
+	approver: string;
+	state: string;
+	environment: string;
+	comment: string;
 }
 
 export type Selected = LookupTable<boolean>;
 
 export interface File {
-  contentTypeClass: string;
-  mimeType: string;
-  path: string;
+	contentTypeClass: string;
+	mimeType: string;
+	path: string;
 }
 
 export interface CurrentFilters {
-  environment: string;
-  path: string;
-  state: Array<string>;
-  limit: number;
-  page: number;
+	target: string;
+	states?: number;
+	approvalStates: Array<PackageApprovalState>;
+	submitter: string;
+	reviewer: string;
+	isScheduled: boolean;
+	sort: string;
+	offset: number;
+	limit: number;
 }
 
-export type PublishingStatusCodes =
-  | 'ready'
-  | 'processing'
-  | 'publishing'
-  | 'queued'
-  | 'stopped'
-  | 'error'
-  | 'readyWithErrors';
+export type PublishingStatusCodes = 'ready' | 'publishing' | 'stopped';
 
 export interface PublishingStatus {
-  enabled: boolean;
-  status: PublishingStatusCodes;
-  lockOwner: string;
-  lockTTL: string;
-  published: boolean;
-  publishingTarget: string;
-  submissionId: string;
-  numberOfItems: number;
-  totalItems: number;
+	enabled: boolean;
+	published: boolean;
+	currentTask: {
+		taskId: {
+			siteId: string;
+			packageId: number;
+		};
+		type: string;
+		startTime: string;
+		endTime: string;
+		state: string;
+		stages: {
+			name: string;
+			state: string;
+			processed: number;
+			errors: boolean;
+		}[];
+	};
 }
 
 export interface PublishFormData {
-  path?: string;
-  commitIds?: string;
-  comment: string;
-  publishingTarget: string;
+	path?: string;
+	commitIds?: string;
+	title?: string;
+	comment: string;
+	publishingTarget: string;
 }
 
 export type PublishOnDemandMode = 'studio' | 'git' | 'everything';
 
 export interface PublishingTarget {
-  name: string;
-  order: number;
+	name: 'live' | 'staging';
+	order: number;
 }
 
-export interface PublishingParams {
-  items: string[];
-  publishingTarget: string;
-  optionalDependencies?: string[];
-  schedule?: string;
-  comment?: string;
-  sendEmailNotifications?: boolean;
+export interface PublishParams {
+	publishingTarget: string;
+	paths?: {
+		path: string;
+		includeChildren: boolean;
+		includeSoftDeps: boolean;
+	}[];
+	commitIds?: string[];
+	schedule?: string;
+	requestApproval?: boolean;
+	publishAll?: boolean;
+	title: string;
+	comment?: string;
 }
 
 export interface PublishingStats {
-  numberOfPublishes: number;
-  numberOfNewAndPublishedItems: number;
-  numberOfEditedAndPublishedItems: number;
+	numberOfPublishes: number;
+	numberOfNewAndPublishedItems: number;
+	numberOfEditedAndPublishedItems: number;
+}
+
+export interface PublishingPackageApproveParams {
+	comment: string;
+	schedule: string;
+	updateSchedule: boolean;
+}
+
+export type PackageActions = 'review' | 'cancel' | 'resubmit' | 'promote';
+
+export interface PublishingItem {
+	action: string;
+	id: number;
+	liveError: number;
+	livePreviousPath: string;
+	path: string;
+	publishState: number;
+	stagingError: number;
+	stagingPreviousPath: string;
+	userRequested: boolean;
+	itemMetadata: {
+		label: string;
+		systemType: string;
+		mimeType: string;
+	};
+}
+
+export interface PublishPackage {
+	id: number;
+	title: string;
+	submittedOn: string;
+	submitterComment: string;
+	reviewerComment: string;
+	reviewedOn: string;
+	target: PublishingTargets;
+	approvalState: string;
+	packageState: number;
+	schedule: string;
+	submitter: {
+		id: number;
+		username: string;
+		firstName: string;
+		lastName: string;
+		avatar: string;
+	};
+	submitterId: number;
+	reviewer: {
+		id: number;
+		username: string;
+		firstName: string;
+		lastName: string;
+		avatar: string;
+	};
+	reviewerId: number;
+	siteId: string;
+	liveError: number;
+	stagingError: number;
+	publishedOn: string;
+	packageType: string;
+	commitId: string;
+	publishedStagingCommitId: string;
+	publishedLiveCommitId: string;
+	itemCount: number;
+	availableActions: number;
 }

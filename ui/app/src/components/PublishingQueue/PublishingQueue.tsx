@@ -15,14 +15,13 @@
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { makeStyles } from 'tss-react/mui';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
-import { defineMessages, useIntl } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import PublishingPackage from './PublishingPackage';
-import { cancelPackage, fetchPackages, fetchPublishingTargets } from '../../services/publishing';
-import { CurrentFilters, Package, Selected } from '../../models/Publishing';
+import { fetchPackages, fetchPublishingTargets } from '../../services/publishing';
+import { CurrentFilters, PublishPackage, Selected } from '../../models/Publishing';
 import FilterDropdown from './FilterDropdown';
 import { setRequestForgeryToken } from '../../utils/auth';
 import TablePagination from '@mui/material/TablePagination';
@@ -31,450 +30,453 @@ import Typography from '@mui/material/Typography';
 import HighlightOffIcon from '@mui/icons-material/HighlightOffRounded';
 import RefreshIcon from '@mui/icons-material/RefreshRounded';
 import Button from '@mui/material/Button';
-import { BLOCKED, CANCELLED, COMPLETED, PROCESSING, READY_FOR_LIVE } from './constants';
 import ApiResponseErrorState from '../ApiResponseErrorState';
 import { useSpreadState } from '../../hooks/useSpreadState';
-import ConfirmDropdown from '../ConfirmDropdown';
-import { publishEvent, workflowEvent } from '../../state/actions/system';
+import {
+	publishEvent,
+	workflowEventApprove,
+	workflowEventCancel,
+	workflowEventDirectPublish,
+	workflowEventReject,
+	workflowEventSubmit
+} from '../../state/actions/system';
 import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
 import { LoadingState } from '../LoadingState';
+import Box from '@mui/material/Box';
+import { nnou } from '../../utils/object';
+import {
+	CANCELLED_MASK,
+	COMPLETED_MASK,
+	LIVE_COMPLETED_WITH_ERRORS_MASK,
+	LIVE_FAILED_MASK,
+	LIVE_SUCCESS_MASK,
+	PROCESSING_MASK,
+	READY_MASK,
+	STAGING_COMPLETED_WITH_ERRORS_MASK,
+	STAGING_FAILED_MASK,
+	STAGING_SUCCESS_MASK
+} from '../../utils/constants';
+import { getPackageStateLabel, isReady } from '../PublishPackageReviewDialog/utils';
+import { BulkCancelPackageDialog } from '../BulkCancelPackageDialog';
+import useEnhancedDialogState from '../../hooks/useEnhancedDialogState';
 
 const messages = defineMessages({
-  selectAll: {
-    id: 'publishingDashboard.selectAll',
-    defaultMessage: 'Select all on this page'
-  },
-  cancelSelected: {
-    id: 'publishingDashboard.cancelSelected',
-    defaultMessage: 'Cancel Selected'
-  },
-  cancel: {
-    id: 'publishingDashboard.no',
-    defaultMessage: 'No'
-  },
-  confirm: {
-    id: 'publishingDashboard.yes',
-    defaultMessage: 'Yes'
-  },
-  confirmAllHelper: {
-    id: 'publishingDashboard.confirmAllHelper',
-    defaultMessage: 'Set the state for all selected items to "Cancelled"?'
-  },
-  filters: {
-    id: 'publishingDashboard.filters',
-    defaultMessage: 'Filters'
-  },
-  noPackagesTitle: {
-    id: 'publishingDashboard.noPackagesTitle',
-    defaultMessage: 'No packages were found'
-  },
-  noPackagesSubtitle: {
-    id: 'publishingDashboard.noPackagesSubtitle',
-    defaultMessage: 'Try changing your query'
-  },
-  filteredBy: {
-    id: 'publishingDashboard.filteredBy',
-    defaultMessage:
-      'Showing: {state, select, all {} other {Status: {state}.}} {environment, select, all {} other {{environment} target.}} {path, select, none {} other {Filtered by {path}}}'
-  },
-  packagesSelected: {
-    id: 'publishingDashboard.packagesSelected',
-    defaultMessage: '{count, plural, one {{count} Package selected} other {{count} Packages selected}}'
-  },
-  previous: {
-    id: 'publishingDashboard.previous',
-    defaultMessage: 'Previous page'
-  },
-  next: {
-    id: 'publishingDashboard.next',
-    defaultMessage: 'Next page'
-  }
+	selectAll: {
+		id: 'publishingDashboard.selectAll',
+		defaultMessage: 'Select all on this page'
+	},
+	cancelSelected: {
+		id: 'publishingDashboard.cancelSelected',
+		defaultMessage: 'Cancel Selected'
+	},
+	cancel: {
+		id: 'publishingDashboard.no',
+		defaultMessage: 'No'
+	},
+	confirm: {
+		id: 'publishingDashboard.yes',
+		defaultMessage: 'Yes'
+	},
+	confirmAllHelper: {
+		id: 'publishingDashboard.confirmAllHelper',
+		defaultMessage: 'Set the state for all selected items to "Cancelled"?'
+	},
+	filters: {
+		id: 'publishingDashboard.filters',
+		defaultMessage: 'Filters'
+	},
+	noPackagesTitle: {
+		id: 'publishingDashboard.noPackagesTitle',
+		defaultMessage: 'No packages were found'
+	},
+	noPackagesSubtitle: {
+		id: 'publishingDashboard.noPackagesSubtitle',
+		defaultMessage: 'Try changing your query'
+	},
+	filteredBy: {
+		id: 'publishingDashboard.filteredBy',
+		defaultMessage:
+			'Showing: {state, select, all {} other {Status: {state}.}} {environment, select, all {} other {{environment} target.}}'
+	},
+	packagesSelected: {
+		id: 'publishingDashboard.packagesSelected',
+		defaultMessage: '{count, plural, one {{count} Package selected} other {{count} Packages selected}}'
+	},
+	previous: {
+		id: 'publishingDashboard.previous',
+		defaultMessage: 'Previous page'
+	},
+	next: {
+		id: 'publishingDashboard.next',
+		defaultMessage: 'Next page'
+	}
 });
 
-const useStyles = makeStyles()((theme) => ({
-  publishingQueue: {},
-  topBar: {
-    display: 'flex',
-    padding: '0 0 0 0',
-    alignItems: 'center',
-    borderBottom: '1px solid #dedede',
-    justifyContent: 'flex-end'
-  },
-  secondBar: {
-    background: theme.palette.divider,
-    padding: '10px',
-    borderBottom: '1px solid #dedede'
-  },
-  queueList: {},
-  package: {
-    padding: '20px',
-    '& .name': {
-      display: 'flex',
-      justifyContent: 'space-between'
-    },
-    '& .status': {
-      display: 'flex',
-      justifyContent: 'space-between'
-    },
-    '& .comment': {
-      display: 'flex',
-      justifyContent: 'space-between',
-      '& div:first-child': {
-        marginRight: '20px'
-      }
-    },
-    '& .files': {}
-  },
-  packagesSelected: {
-    marginRight: '10px',
-    display: 'flex',
-    alignItems: 'center'
-  },
-  clearSelected: {
-    marginLeft: '5px',
-    cursor: 'pointer'
-  },
-  selectAll: {
-    marginRight: 'auto'
-  },
-  button: {
-    margin: theme.spacing(1)
-  },
-  empty: {
-    padding: '40px 0'
-  },
-  cancelButton: {
-    paddingRight: '10px'
-  }
-}));
+export const allFiltersState =
+	READY_MASK +
+	PROCESSING_MASK +
+	LIVE_SUCCESS_MASK +
+	LIVE_FAILED_MASK +
+	LIVE_COMPLETED_WITH_ERRORS_MASK +
+	STAGING_SUCCESS_MASK +
+	STAGING_COMPLETED_WITH_ERRORS_MASK +
+	STAGING_FAILED_MASK +
+	COMPLETED_MASK +
+	CANCELLED_MASK;
 
 const currentFiltersInitialState: CurrentFilters = {
-  environment: '',
-  path: '',
-  state: [READY_FOR_LIVE, PROCESSING, COMPLETED, CANCELLED, BLOCKED],
-  limit: 5,
-  page: 0
+	target: '',
+	states: allFiltersState,
+	approvalStates: [],
+	submitter: '',
+	reviewer: '',
+	isScheduled: null,
+	sort: 'publishedOn ASC', // Example: field1 ASC, field2 DESC. Accepted fields 'schedule', 'publishedOn', 'reviewedOn'
+	offset: 0,
+	limit: 5
 };
 
 export interface PublishingQueueProps {
-  siteId: string;
-  readOnly?: boolean;
+	siteId: string;
+	readOnly?: boolean;
 }
 
 function getFilters(currentFilters: CurrentFilters) {
-  let filters: any = {};
-  if (currentFilters.environment) filters['environment'] = currentFilters.environment;
-  if (currentFilters.path) filters['path'] = currentFilters.path;
-  if (currentFilters.state.length) filters['states'] = currentFilters.state;
-  if (currentFilters.limit) filters['limit'] = currentFilters.limit;
-  if (currentFilters.page) filters['offset'] = currentFilters.page * currentFilters.limit;
-  return filters;
+	const filters: Partial<CurrentFilters> = {};
+	if (currentFilters.target) filters['target'] = currentFilters.target;
+	if (currentFilters.states) filters['states'] = currentFilters.states;
+	if (currentFilters.approvalStates.length) filters['approvalStates'] = currentFilters.approvalStates;
+	if (currentFilters.submitter) filters['submitter'] = currentFilters.submitter;
+	if (currentFilters.reviewer) filters['reviewer'] = currentFilters.reviewer;
+	if (nnou(currentFilters.isScheduled)) filters['isScheduled'] = currentFilters.isScheduled;
+	if (currentFilters.sort) filters['sort'] = currentFilters.sort;
+	if (currentFilters.limit) filters['limit'] = currentFilters.limit;
+	if (currentFilters.offset) filters['offset'] = currentFilters.offset;
+	return filters;
 }
 
 function renderCount(selected: Selected) {
-  let _selected: any = [];
-  Object.keys(selected).forEach((key) => {
-    if (selected[key]) {
-      _selected.push(key);
-    }
-  });
-  return _selected;
+	const _selected: string[] = [];
+	Object.keys(selected).forEach((key) => {
+		if (selected[key]) {
+			_selected.push(key);
+		}
+	});
+	return _selected;
 }
 
 function PublishingQueue(props: PublishingQueueProps) {
-  const { classes } = useStyles();
-  const [packages, setPackages] = useState(null);
-  const [isFetchingPackages, setIsFetchingPackages] = useState(false);
-  const [filesPerPackage, setFilesPerPackage] = useState(null);
-  const [selected, setSelected] = useState<Selected>({});
-  const [pending, setPending] = useState({});
-  const [count, setCount] = useState(0);
-  const [total, setTotal] = useState(0);
-  const [filters, setFilters] = useSpreadState({
-    environments: null,
-    states: currentFiltersInitialState.state
-  });
-  const [apiState, setApiState] = useSpreadState({
-    error: false,
-    errorResponse: null
-  });
-  const [currentFilters, setCurrentFilters] = useState(currentFiltersInitialState);
-  const { formatMessage } = useIntl();
-  const { siteId, readOnly } = props;
-  const hasReadyForLivePackages = (packages || []).filter((item: Package) => item.state === READY_FOR_LIVE).length > 0;
-  const areThereItemsSelected = Object.values(selected).some((value) => value);
+	const [packages, setPackages] = useState<PublishPackage[]>(null);
+	const [isFetchingPackages, setIsFetchingPackages] = useState(false);
+	const [selected, setSelected] = useState<Selected>({});
+	const selectedPackages: PublishPackage[] = packages?.filter((pkg) => selected[pkg.id]) ?? [];
+	const [pending, setPending] = useState({});
+	const [count, setCount] = useState(0);
+	const [total, setTotal] = useState(0);
+	const [filters, setFilters] = useSpreadState({
+		environments: null,
+		states: currentFiltersInitialState.states
+	});
+	const [apiState, setApiState] = useSpreadState({
+		error: false,
+		errorResponse: null
+	});
+	const [currentFilters, setCurrentFilters] = useState(currentFiltersInitialState);
+	const page = currentFilters.offset / currentFilters.limit;
+	const { formatMessage } = useIntl();
+	const { siteId, readOnly } = props;
+	const hasReadyForLivePackages =
+		(packages || []).filter((item: PublishPackage) => isReady(item.packageState)).length > 0;
+	const areThereItemsSelected = Object.values(selected).some((value) => value);
+	const bulkCancelPackageDialogState = useEnhancedDialogState();
 
-  const getPackages = useCallback(
-    (siteId: string) => {
-      setIsFetchingPackages(true);
-      if (currentFilters.state.length) {
-        fetchPackages(siteId, getFilters(currentFilters)).subscribe({
-          next: (packages) => {
-            setIsFetchingPackages(false);
-            setTotal(packages.total);
-            setPackages(packages);
-          },
-          error: ({ response }) => {
-            setIsFetchingPackages(false);
-            setApiState({ error: true, errorResponse: response.response });
-          }
-        });
-      }
-    },
-    [currentFilters, setApiState]
-  );
+	const getPackages = useCallback(
+		(siteId: string) => {
+			setIsFetchingPackages(true);
+			fetchPackages(siteId, getFilters(currentFilters)).subscribe({
+				next: (packages) => {
+					setIsFetchingPackages(false);
+					setTotal(packages.total);
+					setPackages(packages);
+				},
+				error: ({ response }) => {
+					setIsFetchingPackages(false);
+					setApiState({ error: true, errorResponse: response.response });
+				}
+			});
+		},
+		[currentFilters, setApiState]
+	);
 
-  setRequestForgeryToken();
+	setRequestForgeryToken();
 
-  useEffect(() => {
-    fetchPublishingTargets(siteId).subscribe({
-      next({ publishingTargets: targets }) {
-        let channels: string[] = [];
-        targets.forEach((channel) => {
-          channels.push(channel.name);
-        });
-        setFilters({ environments: channels });
-      },
-      error({ response }) {
-        setApiState({ error: true, errorResponse: response });
-      }
-    });
-  }, [siteId, setFilters, setApiState]);
+	useEffect(() => {
+		fetchPublishingTargets(siteId).subscribe({
+			next({ publishingTargets: targets }) {
+				let channels: string[] = [];
+				targets.forEach((channel) => {
+					channels.push(channel.name);
+				});
+				setFilters({ environments: channels });
+			},
+			error({ response }) {
+				setApiState({ error: true, errorResponse: response });
+			}
+		});
+	}, [siteId, setFilters, setApiState]);
 
-  useEffect(() => {
-    getPackages(siteId);
-  }, [currentFilters, siteId, getPackages]);
+	useEffect(() => {
+		getPackages(siteId);
+	}, [currentFilters, siteId, getPackages]);
 
-  useEffect(() => {
-    setCount(renderCount(selected).length);
-  }, [selected]);
+	useEffect(() => {
+		setCount(renderCount(selected).length);
+	}, [selected]);
 
-  useEffect(() => {
-    const events: string[] = [workflowEvent.type, publishEvent.type];
-    const hostToHost$ = getHostToHostBus();
-    const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
-      getPackages(siteId);
-    });
+	useEffect(() => {
+		const events: string[] = [
+			workflowEventSubmit.type,
+			workflowEventDirectPublish.type,
+			workflowEventApprove.type,
+			workflowEventReject.type,
+			workflowEventCancel.type,
+			publishEvent.type
+		];
+		const hostToHost$ = getHostToHostBus();
+		const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(() => {
+			getPackages(siteId);
+		});
 
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [siteId, getPackages]);
+		return () => {
+			subscription.unsubscribe();
+		};
+	}, [siteId, getPackages]);
 
-  function renderPackages() {
-    return packages.map((item: Package, index: number) => (
-      <PublishingPackage
-        id={item.id}
-        approver={item.approver}
-        schedule={item.schedule}
-        state={item.state}
-        comment={item.comment}
-        environment={item.environment}
-        key={index}
-        siteId={siteId}
-        selected={selected}
-        pending={pending}
-        setPending={setPending}
-        getPackages={getPackages}
-        setApiState={setApiState}
-        setSelected={setSelected}
-        filesPerPackage={filesPerPackage}
-        setFilesPerPackage={setFilesPerPackage}
-        readOnly={readOnly}
-      />
-    ));
-  }
+	function onCancelAll() {
+		if (count === 0) return false;
+		const _pending: Selected = {};
+		Object.keys(selected).forEach((key: string) => {
+			if (selected[key]) {
+				_pending[key] = true;
+			}
+		});
+		setPending(_pending);
+		bulkCancelPackageDialogState.onOpen();
+	}
 
-  function handleCancelAll() {
-    if (count === 0) return false;
-    let _pending: Selected = {};
-    Object.keys(selected).forEach((key: string) => {
-      if (selected[key]) {
-        _pending[key] = true;
-      }
-    });
-    setPending(_pending);
-    cancelPackage(siteId, Object.keys(_pending)).subscribe({
-      next() {
-        Object.keys(selected).forEach((key: string) => {
-          _pending[key] = false;
-        });
-        setPending({ ...pending, ..._pending });
-        clearSelected();
-        getPackages(siteId);
-      },
-      error({ response }) {
-        setApiState({ error: true, errorResponse: response });
-      }
-    });
-  }
+	const onCancelDialogSuccess = () => {
+		clearSelected();
+		getPackages(siteId);
+		bulkCancelPackageDialogState.onClose();
+	};
 
-  function clearSelected() {
-    setSelected({});
-  }
+	const onCancelDialogClosed = () => {
+		const _pending: Selected = {};
+		Object.keys(selected).forEach((key: string) => {
+			_pending[key] = false;
+		});
+		setPending({ ...pending, ..._pending });
+	};
 
-  function handleSelectAll(event: any) {
-    if (!packages || packages.length === 0) return false;
-    let _selected: Selected = {};
-    if (event.target.checked) {
-      packages.forEach((item: Package) => {
-        _selected[item.id] = item.state === READY_FOR_LIVE;
-        setSelected({ ...selected, ..._selected });
-      });
-    } else {
-      packages.forEach((item: Package) => {
-        _selected[item.id] = false;
-        setSelected({ ...selected, ..._selected });
-      });
-    }
-  }
+	function clearSelected() {
+		setSelected({});
+	}
 
-  function areAllSelected() {
-    if (packages?.length === 0 || !hasReadyForLivePackages) {
-      return false;
-    } else {
-      return !packages.some(
-        (item: Package) =>
-          // There is at least one that is not selected
-          item.state === READY_FOR_LIVE && !selected[item.id]
-      );
-    }
-  }
+	// select all packages
+	function handleSelectAll(event: any) {
+		if (!packages || packages.length === 0) return false;
+		let _selected: Selected = {};
+		if (event.target.checked) {
+			packages.forEach((item: PublishPackage) => {
+				_selected[item.id] = isReady(item.packageState);
+				setSelected({ ...selected, ..._selected });
+			});
+		} else {
+			packages.forEach((item) => {
+				_selected[item.id] = false;
+				setSelected({ ...selected, ..._selected });
+			});
+		}
+	}
 
-  function handleFilterChange(event: any) {
-    if (event.target.type === 'radio') {
-      clearSelected();
-      setCurrentFilters({ ...currentFilters, [event.target.name]: event.target.value, page: 0 });
-    } else if (event.target.type === 'checkbox') {
-      let state = [...currentFilters.state];
-      if (event.target.checked) {
-        if (event.target.value) {
-          state.push(event.target.value);
-        } else {
-          state = [...filters.states];
-        }
-      } else {
-        if (event.target.value) {
-          state.splice(state.indexOf(event.target.value), 1);
-        } else {
-          state = [];
-        }
-      }
-      setCurrentFilters({ ...currentFilters, state, page: 0 });
-    }
-  }
+	function areAllSelected() {
+		if (packages?.length === 0 || !hasReadyForLivePackages) {
+			return false;
+		} else {
+			return !packages.some(
+				(item: PublishPackage) =>
+					// There is at least one that is not selected
+					isReady(item.packageState) && !selected[item.id]
+			);
+		}
+	}
 
-  function handleEnterKey(path: string) {
-    setCurrentFilters({ ...currentFilters, path: path, page: 0 });
-  }
+	function handleFilterChange(event: any) {
+		if (event.target.type === 'radio') {
+			clearSelected();
+			setCurrentFilters({ ...currentFilters, [event.target.name]: event.target.value, offset: 0 });
+		} else if (event.target.type === 'checkbox') {
+			let states = currentFilters.states;
+			if (event.target.checked) {
+				// If target.value exists => specific state selected, else all states checked
+				if (event.target.value) {
+					states += parseInt(event.target.value);
+				} else {
+					states = allFiltersState;
+				}
+			} else {
+				// If target.value exists => specific state unchecked, else all states unchecked
+				if (event.target.value) {
+					states -= parseInt(event.target.value);
+				} else {
+					states = null;
+				}
+			}
+			setCurrentFilters({ ...currentFilters, states, offset: 0 });
+		}
+	}
 
-  function handleChangePage(event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null, newPage: number) {
-    setCurrentFilters({ ...currentFilters, page: newPage });
-  }
+	function handleChangePage(event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null, newPage: number) {
+		setCurrentFilters({ ...currentFilters, offset: newPage * currentFilters.limit });
+	}
 
-  function handleChangeRowsPerPage(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
-    setCurrentFilters({ ...currentFilters, page: 0, limit: parseInt(event.target.value, 10) });
-  }
+	function handleChangeRowsPerPage(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
+		setCurrentFilters({ ...currentFilters, offset: 0, limit: parseInt(event.target.value, 10) });
+	}
 
-  return (
-    <div className={classes.publishingQueue}>
-      <div className={classes.topBar}>
-        {currentFilters.state.includes(READY_FOR_LIVE) && (
-          <FormGroup className={classes.selectAll}>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  color="primary"
-                  checked={areAllSelected()}
-                  disabled={!packages || !hasReadyForLivePackages || readOnly}
-                  onClick={handleSelectAll}
-                />
-              }
-              label={formatMessage(messages.selectAll)}
-            />
-          </FormGroup>
-        )}
-        {count > 0 && currentFilters.state.includes(READY_FOR_LIVE) && (
-          <Typography variant="body2" className={classes.packagesSelected} color="textSecondary">
-            {formatMessage(messages.packagesSelected, { count: count })}
-            <HighlightOffIcon className={classes.clearSelected} onClick={clearSelected} />
-          </Typography>
-        )}
-        <Button variant="outlined" className={classes.button} onClick={() => getPackages(siteId)}>
-          <RefreshIcon />
-        </Button>
-        {currentFilters.state.includes(READY_FOR_LIVE) && (
-          <ConfirmDropdown
-            classes={{ button: classes.cancelButton }}
-            text={formatMessage(messages.cancelSelected)}
-            cancelText={formatMessage(messages.cancel)}
-            confirmText={formatMessage(messages.confirm)}
-            confirmHelperText={formatMessage(messages.confirmAllHelper)}
-            onConfirm={handleCancelAll}
-            disabled={!(hasReadyForLivePackages && areThereItemsSelected) || readOnly}
-            buttonProps={{
-              color: 'warning'
-            }}
-          />
-        )}
-        <FilterDropdown
-          className={classes.button}
-          text={formatMessage(messages.filters)}
-          handleFilterChange={handleFilterChange}
-          currentFilters={currentFilters}
-          handleEnterKey={handleEnterKey}
-          filters={filters}
-        />
-      </div>
-      {(currentFilters.state.length || currentFilters.path || currentFilters.environment) && (
-        <div className={classes.secondBar}>
-          <Typography variant="body2">
-            {formatMessage(messages.filteredBy, {
-              state: currentFilters.state ? <strong key="state">{currentFilters.state.join(', ')}</strong> : 'all',
-              path: currentFilters.path ? <strong key="path">{currentFilters.path}</strong> : 'none',
-              environment: currentFilters.environment ? (
-                <strong key="environment">{currentFilters.environment}</strong>
-              ) : (
-                'all'
-              )
-            })}
-          </Typography>
-        </div>
-      )}
-      {apiState.error && apiState.errorResponse ? (
-        <ApiResponseErrorState error={apiState.errorResponse} />
-      ) : (
-        <div className={classes.queueList}>
-          {packages === null && isFetchingPackages && <LoadingState />}
-          {packages && renderPackages()}
-          {packages !== null && packages.length === 0 && (
-            <div className={classes.empty}>
-              <EmptyState
-                title={formatMessage(messages.noPackagesTitle)}
-                subtitle={formatMessage(messages.noPackagesSubtitle)}
-              />
-            </div>
-          )}
-        </div>
-      )}
-      <TablePagination
-        rowsPerPageOptions={[3, 5, 10]}
-        component="div"
-        count={total}
-        rowsPerPage={currentFilters.limit}
-        page={currentFilters.page}
-        backIconButtonProps={{
-          'aria-label': formatMessage(messages.previous)
-        }}
-        nextIconButtonProps={{
-          'aria-label': formatMessage(messages.next)
-        }}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
-    </div>
-  );
+	return (
+		<div>
+			<Box
+				sx={{
+					display: 'flex',
+					padding: '0 0 0 0',
+					alignItems: 'center',
+					borderBottom: '1px solid #dedede',
+					justifyContent: 'flex-end'
+				}}
+			>
+				{isReady(currentFilters.states) && (
+					<FormGroup sx={{ marginRight: 'auto' }}>
+						<FormControlLabel
+							control={
+								<Checkbox
+									color="primary"
+									checked={areAllSelected()}
+									disabled={!packages || !hasReadyForLivePackages || readOnly}
+									onClick={handleSelectAll}
+								/>
+							}
+							label={formatMessage(messages.selectAll)}
+						/>
+					</FormGroup>
+				)}
+				{count > 0 && isReady(currentFilters.states) && (
+					<Typography
+						variant="body2"
+						sx={{ marginRight: '10px', display: 'flex', alignItems: 'center' }}
+						color="textSecondary"
+					>
+						{formatMessage(messages.packagesSelected, { count: count })}
+						<HighlightOffIcon sx={{ marginLeft: '5px', cursor: 'pointer' }} onClick={clearSelected} />
+					</Typography>
+				)}
+				<Button variant="outlined" sx={{ m: 1 }} onClick={() => getPackages(siteId)}>
+					<RefreshIcon />
+				</Button>
+				{isReady(currentFilters.states) && (
+					<Button
+						variant="outlined"
+						color="warning"
+						onClick={onCancelAll}
+						disabled={!(hasReadyForLivePackages && areThereItemsSelected) || readOnly}
+					>
+						<FormattedMessage defaultMessage="Cancel Selected" />
+					</Button>
+				)}
+				<FilterDropdown
+					sx={{ m: 1 }}
+					text={formatMessage(messages.filters)}
+					handleFilterChange={handleFilterChange}
+					currentFilters={currentFilters}
+					filters={filters}
+				/>
+			</Box>
+			{(currentFilters.states || currentFilters.target) && (
+				<Box
+					sx={{
+						background: (theme) => theme.palette.divider,
+						padding: '10px',
+						borderBottom: '1px solid #dedede'
+					}}
+				>
+					<Typography variant="body2">
+						{formatMessage(messages.filteredBy, {
+							state: currentFilters.states ? (
+								<strong key="state">{getPackageStateLabel(currentFilters.states)}</strong>
+							) : (
+								'all'
+							),
+							environment: currentFilters.target ? <strong key="environment">{currentFilters.target}</strong> : 'all'
+						})}
+					</Typography>
+				</Box>
+			)}
+			{apiState.error && apiState.errorResponse ? (
+				<ApiResponseErrorState error={apiState.errorResponse} />
+			) : (
+				<div>
+					{packages === null && isFetchingPackages && <LoadingState />}
+					{packages &&
+						packages.map((item: PublishPackage) => (
+							<PublishingPackage
+								pkg={item}
+								key={item.id}
+								siteId={siteId}
+								selected={selected}
+								pending={pending}
+								setPending={setPending}
+								getPackages={getPackages}
+								setApiState={setApiState}
+								setSelected={setSelected}
+								readOnly={readOnly}
+							/>
+						))}
+					{packages !== null && packages.length === 0 && (
+						<Box sx={{ padding: '40px 0' }}>
+							<EmptyState
+								title={formatMessage(messages.noPackagesTitle)}
+								subtitle={formatMessage(messages.noPackagesSubtitle)}
+							/>
+						</Box>
+					)}
+				</div>
+			)}
+			<TablePagination
+				rowsPerPageOptions={[3, 5, 10]}
+				component="div"
+				count={total}
+				rowsPerPage={currentFilters.limit}
+				page={page}
+				backIconButtonProps={{
+					'aria-label': formatMessage(messages.previous)
+				}}
+				nextIconButtonProps={{
+					'aria-label': formatMessage(messages.next)
+				}}
+				onPageChange={handleChangePage}
+				onRowsPerPageChange={handleChangeRowsPerPage}
+			/>
+			<BulkCancelPackageDialog
+				open={bulkCancelPackageDialogState.open}
+				onSuccess={onCancelDialogSuccess}
+				onClose={bulkCancelPackageDialogState.onClose}
+				onClosed={onCancelDialogClosed}
+				isSubmitting={bulkCancelPackageDialogState.isSubmitting}
+				packages={selectedPackages}
+			/>
+		</div>
+	);
 }
 
 export default PublishingQueue;

@@ -24,75 +24,75 @@ import ListItemButton, { ListItemButtonProps } from '@mui/material/ListItemButto
 import ListItem from '@mui/material/ListItem';
 
 interface DropDownMenuProps extends ButtonProps {
-  onMenuItemClick(e, optionId: string): void;
-  closeOnSelection?: boolean;
-  options: Array<{
-    id: string;
-    selected?: boolean;
-    primaryText: React.ReactNode;
-    secondaryText?: React.ReactNode;
-    disabled?: boolean;
-  }>;
-  menuProps?: Partial<Omit<MenuProps, 'open' | 'anchorEl' | 'onClose'>>;
-  listItemProps?: Partial<Omit<ListItemProps, 'button'>>;
-  listItemButtonProps?: Partial<ListItemButtonProps>;
-  listItemTextProps?: Partial<Omit<ListItemTextProps, 'primary' | 'secondary'>>;
+	onMenuItemClick(e, optionId: string): void;
+	closeOnSelection?: boolean;
+	options: Array<{
+		id: string;
+		selected?: boolean;
+		primaryText: React.ReactNode;
+		secondaryText?: React.ReactNode;
+		disabled?: boolean;
+	}>;
+	menuProps?: Partial<Omit<MenuProps, 'open' | 'anchorEl' | 'onClose'>>;
+	listItemProps?: Partial<Omit<ListItemProps, 'button'>>;
+	listItemButtonProps?: Partial<ListItemButtonProps>;
+	listItemTextProps?: Partial<Omit<ListItemTextProps, 'primary' | 'secondary'>>;
 }
 
 export function DropDownMenu(props: DropDownMenuProps) {
-  const {
-    options,
-    onMenuItemClick: onMenuItemClickProp,
-    onClick,
-    closeOnSelection = true,
-    menuProps,
-    listItemProps,
-    listItemTextProps,
-    listItemButtonProps,
-    ...buttonProps
-  } = props;
-  const buttonRef = useRef<HTMLButtonElement>();
-  const [open, setOpen] = useState(false);
-  const onClose = () => setOpen(false);
-  const onMenuItemClick = (e, option) => {
-    closeOnSelection && onClose();
-    onMenuItemClickProp?.(e, option.id);
-  };
-  return (
-    <>
-      <Button
-        endIcon={<KeyboardArrowDownRounded />}
-        {...buttonProps}
-        ref={buttonRef}
-        onClick={(e) => {
-          // @ts-ignore
-          if (onClick?.(e) !== false) {
-            setOpen(true);
-          }
-        }}
-      />
-      <Menu {...menuProps} open={open} anchorEl={buttonRef.current} onClose={onClose}>
-        {options?.map((option) => (
-          <ListItem
-            key={option.id}
-            disablePadding
-            secondaryAction={option.selected ? <CheckRounded /> : UNDEFINED}
-            {...listItemProps}
-          >
-            <ListItemButton
-              dense
-              {...listItemButtonProps}
-              selected={option.selected}
-              disabled={option.disabled}
-              onClick={(e) => onMenuItemClick(e, option)}
-            >
-              <ListItemText primary={option.primaryText} secondary={option.secondaryText} {...listItemTextProps} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </Menu>
-    </>
-  );
+	const {
+		options,
+		onMenuItemClick: onMenuItemClickProp,
+		onClick,
+		closeOnSelection = true,
+		menuProps,
+		listItemProps,
+		listItemTextProps,
+		listItemButtonProps,
+		...buttonProps
+	} = props;
+	const buttonRef = useRef<HTMLButtonElement>(undefined);
+	const [open, setOpen] = useState(false);
+	const onClose = () => setOpen(false);
+	const onMenuItemClick = (e, option) => {
+		closeOnSelection && onClose();
+		onMenuItemClickProp?.(e, option.id);
+	};
+	return (
+		<>
+			<Button
+				endIcon={<KeyboardArrowDownRounded />}
+				{...buttonProps}
+				ref={buttonRef}
+				onClick={(e) => {
+					// @ts-ignore
+					if (onClick?.(e) !== false) {
+						setOpen(true);
+					}
+				}}
+			/>
+			<Menu {...menuProps} open={open} anchorEl={buttonRef.current} onClose={onClose}>
+				{options?.map((option) => (
+					<ListItem
+						key={option.id}
+						disablePadding
+						secondaryAction={option.selected ? <CheckRounded /> : UNDEFINED}
+						{...listItemProps}
+					>
+						<ListItemButton
+							dense
+							{...listItemButtonProps}
+							selected={option.selected}
+							disabled={option.disabled}
+							onClick={(e) => onMenuItemClick(e, option)}
+						>
+							<ListItemText primary={option.primaryText} secondary={option.secondaryText} {...listItemTextProps} />
+						</ListItemButton>
+					</ListItem>
+				))}
+			</Menu>
+		</>
+	);
 }
 
 export default DropDownMenu;

@@ -18,13 +18,13 @@
  * Logout Plugin
  */
 CStudioAuthoring.ContextualNav.WcmLogoutMod = {
-  initialized: false,
-  /**
-   * initialize module
-   */
-  initialize: function () {
-    console.error("The `logout.js` script shouldn't be in use. Please check.");
-  }
+	initialized: false,
+	/**
+	 * initialize module
+	 */
+	initialize: function () {
+		console.error("The `logout.js` script shouldn't be in use. Please check.");
+	}
 };
 
 CStudioAuthoring.Module.moduleLoaded('logout', CStudioAuthoring.ContextualNav.WcmLogoutMod);

@@ -21,11 +21,11 @@ import ApiResponse from './ApiResponse';
  * non-serializables from AjaxError and allows typing of the `response` property.
  **/
 export interface SimpleAjaxError<T = ApiResponse> {
-  message: string;
-  name: string;
-  response: T;
-  responseType: string;
-  status: number;
+	message: string;
+	name: string;
+	response: T;
+	responseType: string;
+	status: number;
 }
 
 export default SimpleAjaxError;

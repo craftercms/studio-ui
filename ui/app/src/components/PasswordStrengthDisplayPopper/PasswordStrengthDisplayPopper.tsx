@@ -26,33 +26,33 @@ export type PasswordStrengthDisplayPopperFullSx = FullSxRecord<PasswordStrengthD
 export interface PasswordStrengthDisplayPopperProps extends PasswordStrengthDisplayProps, PopperProps {}
 
 function getStyles(): PasswordStrengthDisplayPopperFullSx {
-  return {
-    root: {
-      zIndex: (theme) => theme.zIndex.modal
-    },
-    paper: {
-      padding: '10px',
-      margin: '10px 0'
-    }
-  };
+	return {
+		root: {
+			zIndex: (theme) => theme.zIndex.modal
+		},
+		paper: {
+			padding: '10px',
+			margin: '10px 0'
+		}
+	};
 }
 
 export function PasswordStrengthDisplayPopper(props: PasswordStrengthDisplayPopperProps) {
-  const { value, passwordRequirementsMinComplexity, onValidStateChanged, sxs, ...rest } = props;
-  const sx = getStyles();
+	const { value, passwordRequirementsMinComplexity, onValidStateChanged, sxs, ...rest } = props;
+	const sx = getStyles();
 
-  return (
-    <Popper {...rest} sx={sx.root}>
-      <Paper elevation={3} sx={sx.paper}>
-        <PasswordStrengthDisplay
-          value={value}
-          passwordRequirementsMinComplexity={passwordRequirementsMinComplexity}
-          onValidStateChanged={onValidStateChanged}
-          sxs={sxs}
-        />
-      </Paper>
-    </Popper>
-  );
+	return (
+		<Popper {...rest} sx={sx.root}>
+			<Paper elevation={3} sx={sx.paper}>
+				<PasswordStrengthDisplay
+					value={value}
+					passwordRequirementsMinComplexity={passwordRequirementsMinComplexity}
+					onValidStateChanged={onValidStateChanged}
+					sxs={sxs}
+				/>
+			</Paper>
+		</Popper>
+	);
 }
 
 export default PasswordStrengthDisplayPopper;

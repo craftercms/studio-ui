@@ -31,12 +31,12 @@ import { createDefaultThemeOptions } from '../styles/theme';
 import getStore, { CrafterCMSStore } from '../state/store';
 import palette from '../styles/palette';
 import {
-  buildStoredLanguageKey,
-  dispatchLanguageChange,
-  getCurrentIntl,
-  getStoredLanguage,
-  intl$,
-  setStoredLanguage
+	buildStoredLanguageKey,
+	dispatchLanguageChange,
+	getCurrentIntl,
+	getStoredLanguage,
+	intl$,
+	setStoredLanguage
 } from '../utils/i18n';
 import { getHostToHostBus } from '../utils/subjects';
 import { StandardAction } from '../models/StandardAction';
@@ -67,231 +67,231 @@ const ErrorState = studioUIComponents.ErrorState;
  */
 
 interface CodebaseBridge {
-  React: typeof React;
-  ReactDOM: typeof ReactDOM;
-  ReactDOMClient: { createRoot: typeof createRoot };
-  components: { [key: string]: JSXElementConstructor<any> };
-  assets: { [key: string]: string };
-  util: object;
-  render: (
-    container: string | Element,
-    component: string | JSXElementConstructor<any>,
-    props: object,
-    isLegacy: boolean
-  ) => Promise<any>;
-  renderBackgroundUI: (options: Record<string, any>) => Promise<any>;
-  createLegacyCallbackListener: (id: string, listener: <Detail = any>(detail: Detail) => void) => () => void;
-  rxjs: object;
-  i18n: {
-    intl: IntlShape;
-    messages: Record<string, Record<string, MessageDescriptor>>;
-    translateElements: typeof translateElements;
-    getStoredLanguage: typeof getStoredLanguage;
-    setStoredLanguage: typeof setStoredLanguage;
-    buildStoredLanguageKey: typeof buildStoredLanguageKey;
-    dispatchLanguageChange: typeof dispatchLanguageChange;
-  };
-  services: Record<string, Record<string, (...args) => any>>;
-  mui: object;
-  system: {
-    createDefaultThemeOptions: typeof createDefaultThemeOptions;
-    palette: typeof palette;
-    store: CrafterCMSStore;
-    getHostToHostBus(): Subject<StandardAction>;
-    getStore(): Observable<CrafterCMSStore>;
-  };
+	React: typeof React;
+	ReactDOM: typeof ReactDOM;
+	ReactDOMClient: { createRoot: typeof createRoot };
+	components: { [key: string]: JSXElementConstructor<any> };
+	assets: { [key: string]: string };
+	util: object;
+	render: (
+		container: string | Element,
+		component: string | JSXElementConstructor<any>,
+		props: object,
+		isLegacy: boolean
+	) => Promise<any>;
+	renderBackgroundUI: (options: Record<string, any>) => Promise<any>;
+	createLegacyCallbackListener: (id: string, listener: <Detail = any>(detail: Detail) => void) => () => void;
+	rxjs: object;
+	i18n: {
+		intl: IntlShape;
+		messages: Record<string, Record<string, MessageDescriptor>>;
+		translateElements: typeof translateElements;
+		getStoredLanguage: typeof getStoredLanguage;
+		setStoredLanguage: typeof setStoredLanguage;
+		buildStoredLanguageKey: typeof buildStoredLanguageKey;
+		dispatchLanguageChange: typeof dispatchLanguageChange;
+	};
+	services: Record<string, Record<string, (...args) => any>>;
+	mui: object;
+	system: {
+		createDefaultThemeOptions: typeof createDefaultThemeOptions;
+		palette: typeof palette;
+		store: CrafterCMSStore;
+		getHostToHostBus(): Subject<StandardAction>;
+		getStore(): Observable<CrafterCMSStore>;
+	};
 }
 
 declare global {
-  interface Window {
-    /** @deprecated Please use `craftercms` instead */
-    CrafterCMSNext: CodebaseBridge;
-  }
+	interface Window {
+		/** @deprecated Please use `craftercms` instead */
+		CrafterCMSNext: CodebaseBridge;
+	}
 }
 
 export function updateIntl(nextIntl: IntlShape) {
-  if (window.CrafterCMSNext) {
-    window.CrafterCMSNext.i18n.intl = nextIntl;
-  }
+	if (window.CrafterCMSNext) {
+		window.CrafterCMSNext.i18n.intl = nextIntl;
+	}
 }
 
 export function createCodebaseBridge() {
-  const Bridge: CodebaseBridge = {
-    // React
-    React,
-    ReactDOM,
-    ReactDOMClient: { createRoot },
+	const Bridge: CodebaseBridge = {
+		// React
+		React,
+		ReactDOM,
+		ReactDOMClient: { createRoot },
 
-    rxjs,
+		rxjs,
 
-    components: {
-      ...studioUIComponents,
-      CrafterCMSNextBridge,
-      SearchPage: lazy(() => import('../pages/Search')),
-      Global: lazy(() => import('../pages/Global')),
-      Preview: lazy(() => import('../pages/Preview')),
-      SiteTools: lazy(() => import('../pages/SiteTools')),
-      Login: lazy(() => import('../pages/Login')),
-      PagesWidget: lazy(() => import('../components/PathNavigator/PathNavigator')),
-      DeleteContentTypeButton: lazy(() => import('../pages/DeleteContentTypeButton')),
-      PreviewCompatDialog: lazy(() => import('../components/PreviewCompatibilityDialog/PreviewCompatibilityDialog'))
-    },
+		components: {
+			...studioUIComponents,
+			CrafterCMSNextBridge,
+			SearchPage: lazy(() => import('../pages/Search')),
+			Global: lazy(() => import('../pages/Global')),
+			Preview: lazy(() => import('../pages/Preview')),
+			SiteTools: lazy(() => import('../pages/SiteTools')),
+			Login: lazy(() => import('../pages/Login')),
+			PagesWidget: lazy(() => import('../components/PathNavigator/PathNavigator')),
+			DeleteContentTypeButton: lazy(() => import('../pages/DeleteContentTypeButton')),
+			PreviewCompatDialog: lazy(() => import('../components/PreviewCompatibilityDialog/PreviewCompatibilityDialog'))
+		},
 
-    system: {
-      createDefaultThemeOptions,
-      palette,
-      store: null,
-      getHostToHostBus,
-      getStore
-    },
+		system: {
+			createDefaultThemeOptions,
+			palette,
+			store: null,
+			getHostToHostBus,
+			getStore
+		},
 
-    mui,
+		mui,
 
-    assets: {
-      logoIcon
-    },
+		assets: {
+			logoIcon
+		},
 
-    util: { ...utils, babel },
+		util: { ...utils, babel },
 
-    i18n: {
-      intl: getCurrentIntl(),
-      // @ts-expect-error `messages` is a module but the module return follows the Type above
-      messages,
-      translateElements,
-      getStoredLanguage,
-      setStoredLanguage,
-      dispatchLanguageChange,
-      buildStoredLanguageKey
-    },
+		i18n: {
+			intl: getCurrentIntl(),
+			// @ts-expect-error `messages` is a module but the module return follows the Type above
+			messages,
+			translateElements,
+			getStoredLanguage,
+			setStoredLanguage,
+			dispatchLanguageChange,
+			buildStoredLanguageKey
+		},
 
-    services,
+		services,
 
-    render(
-      container: string | Element,
-      component: string | JSXElementConstructor<any>,
-      props: object = {},
-      isLegacy = true
-    ): Promise<any> {
-      if (typeof component === 'string') {
-        if (!Boolean(Bridge.components[component])) {
-          console.warn(`The supplied component name ('${component}') is not a know component of CrafterCMSNext.`);
-        }
-      } else if (!Object.values(Bridge.components).includes(component)) {
-        console.warn('The supplied module is not a know component of CrafterCMSNext.');
-      }
+		render(
+			container: string | Element,
+			component: string | JSXElementConstructor<any>,
+			props: object = {},
+			isLegacy = true
+		): Promise<any> {
+			if (typeof component === 'string') {
+				if (!Boolean(Bridge.components[component])) {
+					console.warn(`The supplied component name ('${component}') is not a know component of CrafterCMSNext.`);
+				}
+			} else if (!Object.values(Bridge.components).includes(component)) {
+				console.warn('The supplied module is not a know component of CrafterCMSNext.');
+			}
 
-      const element = typeof container === 'string' ? document.querySelector(container) : container;
+			const element = typeof container === 'string' ? document.querySelector(container) : container;
 
-      let Component: JSXElementConstructor<any> =
-        typeof component === 'string' ? Bridge.components[component] : component;
+			let Component: JSXElementConstructor<any> =
+				typeof component === 'string' ? Bridge.components[component] : component;
 
-      if (nou(Component)) {
-        Component = function () {
-          return (
-            <ErrorState
-              imageUrl="/studio/static-assets/images/warning_state.svg"
-              message={`The supplied component name ('${component}') is not a know component of CrafterCMSNext. Please re-check supplied name ('${component}'), make sure you've build the app and created the component.`}
-            />
-          );
-        };
-      }
+			if (nou(Component)) {
+				Component = function () {
+					return (
+						<ErrorState
+							imageUrl="/studio/static-assets/images/warning_state.svg"
+							message={`The supplied component name ('${component}') is not a know component of CrafterCMSNext. Please re-check supplied name ('${component}'), make sure you've build the app and created the component.`}
+						/>
+					);
+				};
+			}
 
-      return new Promise((resolve, reject) => {
-        try {
-          const root = createRoot(element);
-          const unmount = (options) => {
-            root.unmount();
-            options.removeContainer && element.parentNode.removeChild(element);
-          };
-          root.render(
-            <CrafterCMSNextBridge
-              mountGlobalDialogManager={!isLegacy}
-              mountSnackbarProvider={!isLegacy}
-              mountCssBaseline={!isLegacy}
-            >
-              <Component {...props} />
-            </CrafterCMSNextBridge>
-          );
-          resolve({
-            unmount: (options) => {
-              options = Object.assign(
-                {
-                  delay: false,
-                  removeContainer: false
-                },
-                options || {}
-              );
-              if (options.delay) {
-                setTimeout(() => unmount(options), options.delay);
-              } else {
-                unmount(options);
-              }
-            }
-          });
-        } catch (e) {
-          reject(e);
-        }
-      });
-    },
+			return new Promise((resolve, reject) => {
+				try {
+					const root = createRoot(element);
+					const unmount = (options) => {
+						root.unmount();
+						options.removeContainer && element.parentNode.removeChild(element);
+					};
+					root.render(
+						<CrafterCMSNextBridge
+							mountGlobalDialogManager={!isLegacy}
+							mountSnackbarProvider={!isLegacy}
+							mountCssBaseline={!isLegacy}
+						>
+							<Component {...props} />
+						</CrafterCMSNextBridge>
+					);
+					resolve({
+						unmount: (options) => {
+							options = Object.assign(
+								{
+									delay: false,
+									removeContainer: false
+								},
+								options || {}
+							);
+							if (options.delay) {
+								setTimeout(() => unmount(options), options.delay);
+							} else {
+								unmount(options);
+							}
+						}
+					});
+				} catch (e) {
+					reject(e);
+				}
+			});
+		},
 
-    renderBackgroundUI(options) {
-      const { mountLegacyConcierge = false } = options ?? {};
-      const element = document.createElement('div');
-      const root = createRoot(element);
-      element.setAttribute('class', 'craftercms-background-ui');
-      document.body.appendChild(element);
-      return new Promise((resolve, reject) => {
-        try {
-          const unmount = () => {
-            root.unmount();
-            document.body.removeChild(element);
-          };
-          root.render(
-            <CrafterCMSNextBridge
-              mountCssBaseline={false}
-              mountLegacyConcierge={mountLegacyConcierge}
-              suspenseFallback=""
-            />
-          );
-          resolve({
-            unmount: (options) => {
-              options = Object.assign({ delay: false }, options || {});
-              if (options.delay) {
-                setTimeout(unmount, options.delay);
-              } else {
-                unmount();
-              }
-            }
-          });
-        } catch (e) {
-          reject(e);
-        }
-      });
-    },
+		renderBackgroundUI(options) {
+			const { mountLegacyConcierge = false } = options ?? {};
+			const element = document.createElement('div');
+			const root = createRoot(element);
+			element.setAttribute('class', 'craftercms-background-ui');
+			document.body.appendChild(element);
+			return new Promise((resolve, reject) => {
+				try {
+					const unmount = () => {
+						root.unmount();
+						document.body.removeChild(element);
+					};
+					root.render(
+						<CrafterCMSNextBridge
+							mountCssBaseline={false}
+							mountLegacyConcierge={mountLegacyConcierge}
+							suspenseFallback=""
+						/>
+					);
+					resolve({
+						unmount: (options) => {
+							options = Object.assign({ delay: false }, options || {});
+							if (options.delay) {
+								setTimeout(unmount, options.delay);
+							} else {
+								unmount();
+							}
+						}
+					});
+				} catch (e) {
+					reject(e);
+				}
+			});
+		},
 
-    createLegacyCallbackListener: createCustomDocumentEventListener
-  };
+		createLegacyCallbackListener: createCustomDocumentEventListener
+	};
 
-  const handler: ProxyHandler<CodebaseBridge> = {
-    get(target, prop, receiver) {
-      console.warn(
-        `CrafterCMSNext is deprecated and will be removed on an upcoming release. Please use the 'window.craftercms' global instead.`
-      );
-      return Reflect.get(target, prop, receiver);
-    }
-  };
+	const handler: ProxyHandler<CodebaseBridge> = {
+		get(target, prop, receiver) {
+			console.warn(
+				`CrafterCMSNext is deprecated and will be removed on an upcoming release. Please use the 'window.craftercms' global instead.`
+			);
+			return Reflect.get(target, prop, receiver);
+		}
+	};
 
-  const proxy = new Proxy(Bridge, handler);
+	const proxy = new Proxy(Bridge, handler);
 
-  window.CrafterCMSNext = proxy;
+	window.CrafterCMSNext = proxy;
 
-  // The login screen 1. doesn't need redux at all 2. there's no token yet (i.e. not loggeed in)
-  // and the store creation is dependent on successfully retrieving the JWT.
-  if (!window.location.pathname.includes('/studio/login')) {
-    getStore().subscribe((store) => {
-      Bridge.system.store = store;
-    });
-  }
+	// The login screen 1. doesn't need redux at all 2. there's no token yet (i.e. not loggeed in)
+	// and the store creation is dependent on successfully retrieving the JWT.
+	if (!window.location.pathname.includes('/studio/login')) {
+		getStore().subscribe((store) => {
+			Bridge.system.store = store;
+		});
+	}
 }
 
 intl$.subscribe(updateIntl);

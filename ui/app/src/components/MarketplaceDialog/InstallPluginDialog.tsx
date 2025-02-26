@@ -20,17 +20,17 @@ import { InstallPluginDialogProps } from './utils';
 import { InstallPluginDialogContainer } from './InstallPluginDialogContainer';
 
 export function InstallPluginDialog(props: InstallPluginDialogProps) {
-  return (
-    <Dialog
-      open={props.open}
-      onClose={props.onClose}
-      fullWidth
-      maxWidth="lg"
-      sx={{ [`.${dialogClasses.paper}`]: { height: '90vh' } }}
-    >
-      <InstallPluginDialogContainer {...props} />
-    </Dialog>
-  );
+	return (
+		<Dialog
+			open={props.open}
+			onClose={props.onClose}
+			fullWidth
+			maxWidth="lg"
+			sx={{ [`.${dialogClasses.paper}`]: { height: '90vh' } }}
+		>
+			<InstallPluginDialogContainer {...props} />
+		</Dialog>
+	);
 }
 
 export default InstallPluginDialog;

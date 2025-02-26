@@ -21,50 +21,50 @@ import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 
 export interface CodeEditorDialogBaseProps {
-  path: string;
-  mode?: string;
-  contentType?: string;
-  readonly?: boolean;
+	path: string;
+	mode?: string;
+	contentType?: string;
+	readonly?: boolean;
 }
 
 export interface CodeEditorDialogProps extends CodeEditorDialogBaseProps, EnhancedDialogProps {
-  onSuccess?(response?: any): void;
+	onSuccess?(response?: any): void;
 }
 
 export interface CodeEditorDialogStateProps extends CodeEditorDialogBaseProps, EnhancedDialogState {
-  onSuccess?: StandardAction;
-  onClose?: StandardAction;
-  onClosed?: StandardAction;
-  onMinimize?: StandardAction;
-  onMaximize?: StandardAction;
-  onFullScreen?: StandardAction;
-  onCancelFullScreen?: StandardAction;
+	onSuccess?: StandardAction;
+	onClose?: StandardAction;
+	onClosed?: StandardAction;
+	onMinimize?: StandardAction;
+	onMaximize?: StandardAction;
+	onFullScreen?: StandardAction;
+	onCancelFullScreen?: StandardAction;
 }
 
 export interface CodeEditorDialogContainerProps
-  extends CodeEditorDialogBaseProps,
-    Pick<CodeEditorDialogProps, 'onMinimize' | 'onSuccess' | 'onClose'> {
-  title: string;
-  onFullScreen(): void;
+	extends CodeEditorDialogBaseProps,
+		Pick<CodeEditorDialogProps, 'onMinimize' | 'onSuccess' | 'onClose'> {
+	title: string;
+	onFullScreen(): void;
 }
 
 export const contentTypePropsMap = {
-  fileName: 'file-name',
-  internalName: 'internal-name',
-  localeCode: 'locale-code'
+	fileName: 'file-name',
+	internalName: 'internal-name',
+	localeCode: 'locale-code'
 };
 
 export function getContentModelSnippets(
-  contentModel: { label: string; value: string },
-  fields: LookupTable<ContentTypeField>
+	contentModel: { label: string; value: string },
+	fields: LookupTable<ContentTypeField>
 ): { label: string; value: string }[] {
-  return Object.keys(fields).map((key) => ({
-    label: fields[key].name,
-    value: contentModel.value
-      .replace(
-        'VARIABLE_NAME',
-        contentTypePropsMap[fields[key].id] ? `["${contentTypePropsMap[fields[key].id]}"]` : fields[key].id
-      )
-      .replace('.[', '[')
-  }));
+	return Object.keys(fields).map((key) => ({
+		label: fields[key].name,
+		value: contentModel.value
+			.replace(
+				'VARIABLE_NAME',
+				contentTypePropsMap[fields[key].id] ? `["${contentTypePropsMap[fields[key].id]}"]` : fields[key].id
+			)
+			.replace('.[', '[')
+	}));
 }

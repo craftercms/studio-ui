@@ -15,8 +15,8 @@
  */
 
 export interface CMISItem {
-  itemId: string;
-  itemName: string;
-  mimeType: string;
-  size: number;
+	itemId: string;
+	itemName: string;
+	mimeType: string;
+	size: number;
 }

@@ -25,82 +25,80 @@ import Avatar from '@mui/material/Avatar';
 import User from '../../models/User';
 import { PagedArray } from '../../models/PagedArray';
 import Pagination from '../Pagination';
-import useStyles from './styles';
 import GlobalAppGridRow from '../GlobalAppGridRow';
 import GlobalAppGridCell from '../GlobalAppGridCell';
 import Box from '@mui/material/Box';
 
 export interface UsersGridUIProps {
-  users: PagedArray<User>;
-  onRowClicked(user: User): void;
-  onPageChange(page: number): void;
-  onRowsPerPageChange?: React.ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
+	users: PagedArray<User>;
+	onRowClicked(user: User): void;
+	onPageChange(page: number): void;
+	onRowsPerPageChange?: React.ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
 }
 
 export function UsersGridUI(props: UsersGridUIProps) {
-  const { users, onRowClicked, onPageChange, onRowsPerPageChange } = props;
-  const { classes } = useStyles();
-  return (
-    <Box display="flex" flexDirection="column">
-      <TableContainer>
-        <Table className={classes.tableRoot}>
-          <TableHead>
-            <GlobalAppGridRow className="hoverDisabled">
-              <GlobalAppGridCell align="center" className="avatar">
-                <span />
-              </GlobalAppGridCell>
-              <GlobalAppGridCell align="left" className="pl20 width20">
-                <Typography variant="subtitle2">
-                  <FormattedMessage id="words.name" defaultMessage="Name" />
-                </Typography>
-              </GlobalAppGridCell>
-              <GlobalAppGridCell align="left" className="width20">
-                <Typography variant="subtitle2">
-                  <FormattedMessage id="words.username" defaultMessage="Username" />
-                </Typography>
-              </GlobalAppGridCell>
-              <GlobalAppGridCell align="left" className="width60">
-                <Typography variant="subtitle2">
-                  <FormattedMessage id="words.email" defaultMessage="E-mail" />
-                </Typography>
-              </GlobalAppGridCell>
-            </GlobalAppGridRow>
-          </TableHead>
-          <TableBody>
-            {users?.map((user, i) => (
-              <GlobalAppGridRow key={user.id} onClick={() => onRowClicked(user)}>
-                <GlobalAppGridCell align="center" className="avatar">
-                  <Avatar className={classes.avatar}>
-                    {user.firstName.charAt(0)}
-                    {user.lastName?.charAt(0) ?? ''}
-                  </Avatar>
-                </GlobalAppGridCell>
-                <GlobalAppGridCell align="left" className="pl20 width20">
-                  {user.firstName} {user.lastName}
-                </GlobalAppGridCell>
-                <GlobalAppGridCell align="left" className="width20">
-                  <Typography variant="body2" noWrap title={user.username}>
-                    {user.username}
-                  </Typography>
-                </GlobalAppGridCell>
-                <GlobalAppGridCell align="left" className="width60">
-                  {user.email}
-                </GlobalAppGridCell>
-              </GlobalAppGridRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <Pagination
-        mode="table"
-        count={users.total}
-        rowsPerPage={users.limit}
-        page={users && Math.ceil(users.offset / users.limit)}
-        onPageChange={(e, page: number) => onPageChange(page)}
-        onRowsPerPageChange={onRowsPerPageChange}
-      />
-    </Box>
-  );
+	const { users, onRowClicked, onPageChange, onRowsPerPageChange } = props;
+	return (
+		<Box display="flex" flexDirection="column">
+			<TableContainer>
+				<Table sx={{ tableLayout: 'fixed' }}>
+					<TableHead>
+						<GlobalAppGridRow className="hoverDisabled">
+							<GlobalAppGridCell align="center" className="avatar">
+								<span />
+							</GlobalAppGridCell>
+							<GlobalAppGridCell align="left" className="pl20 width20">
+								<Typography variant="subtitle2">
+									<FormattedMessage id="words.name" defaultMessage="Name" />
+								</Typography>
+							</GlobalAppGridCell>
+							<GlobalAppGridCell align="left" className="width20">
+								<Typography variant="subtitle2">
+									<FormattedMessage id="words.username" defaultMessage="Username" />
+								</Typography>
+							</GlobalAppGridCell>
+							<GlobalAppGridCell align="left" className="width60">
+								<Typography variant="subtitle2">
+									<FormattedMessage id="words.email" defaultMessage="E-mail" />
+								</Typography>
+							</GlobalAppGridCell>
+						</GlobalAppGridRow>
+					</TableHead>
+					<TableBody>
+						{users?.map((user, i) => (
+							<GlobalAppGridRow key={user.id} onClick={() => onRowClicked(user)}>
+								<GlobalAppGridCell align="center" className="avatar">
+									<Avatar sx={{ margin: '0 auto' }}>
+										{user.firstName.charAt(0)}
+										{user.lastName?.charAt(0) ?? ''}
+									</Avatar>
+								</GlobalAppGridCell>
+								<GlobalAppGridCell align="left" className="pl20 width20">
+									{user.firstName} {user.lastName}
+								</GlobalAppGridCell>
+								<GlobalAppGridCell align="left" className="width20">
+									<Typography variant="body2" noWrap title={user.username}>
+										{user.username}
+									</Typography>
+								</GlobalAppGridCell>
+								<GlobalAppGridCell align="left" className="width60">
+									{user.email}
+								</GlobalAppGridCell>
+							</GlobalAppGridRow>
+						))}
+					</TableBody>
+				</Table>
+			</TableContainer>
+			<Pagination
+				mode="table"
+				count={users.total}
+				rowsPerPage={users.limit}
+				page={users && Math.ceil(users.offset / users.limit)}
+				onPageChange={(e, page: number) => onPageChange(page)}
+				onRowsPerPageChange={onRowsPerPageChange}
+			/>
+		</Box>
+	);
 }
 
 export default UsersGridUI;

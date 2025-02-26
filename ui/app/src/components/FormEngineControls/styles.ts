@@ -14,11 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { makeStyles } from 'tss-react/mui';
+import { PartialSxRecord } from '../../models';
 
-const useStyles = makeStyles()(() => ({
-  formControl: {},
-  inputLabel: {}
-}));
+const commonStyles: PartialSxRecord<'formControl' | 'inputLabel'> = {
+	formControl: {},
+	inputLabel: {}
+};
 
-export default useStyles;
+export default commonStyles;

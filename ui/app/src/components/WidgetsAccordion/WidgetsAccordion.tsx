@@ -30,71 +30,71 @@ import useActiveSite from '../../hooks/useActiveSite';
 import useActiveUser from '../../hooks/useActiveUser';
 
 export interface WidgetsAccordionProps {
-  id?: string;
-  title: string;
-  initialExpanded?: boolean;
-  widgets: WidgetDescriptor[];
-  icon?: SystemIconDescriptor;
-  sxs?: Partial<
-    Record<
-      'accordion' | 'accordionSummary' | 'accordionDetails' | 'widgetsGrid' | 'typography' | 'icon',
-      SxProps<Theme>
-    >
-  >;
+	id?: string;
+	title: string;
+	initialExpanded?: boolean;
+	widgets: WidgetDescriptor[];
+	icon?: SystemIconDescriptor;
+	sxs?: Partial<
+		Record<
+			'accordion' | 'accordionSummary' | 'accordionDetails' | 'widgetsGrid' | 'typography' | 'icon',
+			SxProps<Theme>
+		>
+	>;
 }
 
 export function WidgetsAccordion(props: WidgetsAccordionProps) {
-  const {
-    title,
-    id = `WidgetsAccordion:${props.title.replace(/\s/g, '')}`,
-    icon,
-    sxs,
-    initialExpanded = false
-  } = props;
-  const { uuid } = useActiveSite();
-  const user = useActiveUser();
-  const [open, setOpen] = useState(() => getStoredWidgetsAccordion(uuid, user.username, id)?.open ?? initialExpanded);
-  const theme = useTheme();
-  const expandedClass = accordionClasses.expanded;
-  const contentClass = accordionSummaryClasses.content;
-  useEffect(() => {
-    if (id) {
-      setStoredWidgetsAccordion(uuid, user.username, id, { open });
-    }
-  }, [id, open, user.username, uuid]);
-  return (
-    <Accordion
-      square
-      disableGutters
-      elevation={0}
-      expanded={open}
-      onChange={(e, isExpanded) => setOpen(isExpanded)}
-      sx={{
-        boxShadow: 0,
-        backgroundColor: 'inherit',
-        [`&.${expandedClass}`]: { margin: 'inherit' },
-        ...sxs?.accordion
-      }}
-    >
-      <AccordionSummary
-        expandIcon={<ExpandMore />}
-        sx={{
-          alignItems: 'center',
-          [`&, &.${expandedClass}`]: { minHeight: '48px' },
-          [`.${contentClass}, .${contentClass}.${expandedClass}`]: { margin: 0 },
-          ...sxs?.accordionSummary
-        }}
-      >
-        {icon && (
-          <SystemIcon icon={icon} sx={{ marginRight: '10px', color: theme.palette.action.active, ...sxs?.icon }} />
-        )}
-        <Typography sx={sxs?.typography}>{title}</Typography>
-      </AccordionSummary>
-      <AccordionDetails sx={{ padding: 0, ...sxs?.accordionDetails }}>
-        <WidgetsGrid container spacing={0} direction="column" widgets={props.widgets} sx={sxs?.widgetsGrid} />
-      </AccordionDetails>
-    </Accordion>
-  );
+	const {
+		title,
+		id = `WidgetsAccordion:${props.title.replace(/\s/g, '')}`,
+		icon,
+		sxs,
+		initialExpanded = false
+	} = props;
+	const { uuid } = useActiveSite();
+	const user = useActiveUser();
+	const [open, setOpen] = useState(() => getStoredWidgetsAccordion(uuid, user.username, id)?.open ?? initialExpanded);
+	const theme = useTheme();
+	const expandedClass = accordionClasses.expanded;
+	const contentClass = accordionSummaryClasses.content;
+	useEffect(() => {
+		if (id) {
+			setStoredWidgetsAccordion(uuid, user.username, id, { open });
+		}
+	}, [id, open, user.username, uuid]);
+	return (
+		<Accordion
+			square
+			disableGutters
+			elevation={0}
+			expanded={open}
+			onChange={(e, isExpanded) => setOpen(isExpanded)}
+			sx={{
+				boxShadow: 0,
+				backgroundColor: 'inherit',
+				[`&.${expandedClass}`]: { margin: 'inherit' },
+				...sxs?.accordion
+			}}
+		>
+			<AccordionSummary
+				expandIcon={<ExpandMore />}
+				sx={{
+					alignItems: 'center',
+					[`&, &.${expandedClass}`]: { minHeight: '48px' },
+					[`.${contentClass}, .${contentClass}.${expandedClass}`]: { margin: 0 },
+					...sxs?.accordionSummary
+				}}
+			>
+				{icon && (
+					<SystemIcon icon={icon} sx={{ marginRight: '10px', color: theme.palette.action.active, ...sxs?.icon }} />
+				)}
+				<Typography sx={sxs?.typography}>{title}</Typography>
+			</AccordionSummary>
+			<AccordionDetails sx={{ padding: 0, ...sxs?.accordionDetails }}>
+				<WidgetsGrid container spacing={0} direction="column" widgets={props.widgets} sx={sxs?.widgetsGrid} />
+			</AccordionDetails>
+		</Accordion>
+	);
 }
 
 export default WidgetsAccordion;

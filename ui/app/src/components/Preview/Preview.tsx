@@ -35,163 +35,163 @@ import { changeSite } from '../../state/actions/sites';
 import { changeCurrentUrl } from '../../state/actions/preview';
 
 const notValidSiteRedirect = (message: string, url: string) => {
-  alert(message);
-  window.location.href = url;
+	alert(message);
+	window.location.href = url;
 };
 
 function Preview() {
-  const { search } = useLocation();
-  const navigate = useNavigate();
-  const { currentUrlPath } = usePreviewNavigation();
-  const { previewLandingBase } = useEnv();
-  const { authoringBase } = useEnv();
-  const sites = useSiteLookup();
-  const site = useActiveSiteId();
-  const dispatch = useDispatch();
-  const priorState = useRef({
-    qs: undefined,
-    site,
-    currentUrlPath,
-    qsSite: undefined,
-    qsPage: undefined,
-    search: search,
-    mounted: false
-  });
-  const { formatMessage } = useIntl();
+	const { search } = useLocation();
+	const navigate = useNavigate();
+	const { currentUrlPath } = usePreviewNavigation();
+	const { previewLandingBase } = useEnv();
+	const { authoringBase } = useEnv();
+	const sites = useSiteLookup();
+	const site = useActiveSiteId();
+	const dispatch = useDispatch();
+	const priorState = useRef({
+		qs: undefined,
+		site,
+		currentUrlPath,
+		qsSite: undefined,
+		qsPage: undefined,
+		search: search,
+		mounted: false
+	});
+	const { formatMessage } = useIntl();
 
-  // region function validateSite() { ... }
-  const validateSite = useCallback(
-    (siteId: string) => {
-      if (siteId) {
-        const siteExists = sites[siteId];
+	// region function validateSite() { ... }
+	const validateSite = useCallback(
+		(siteId: string) => {
+			if (siteId) {
+				const siteExists = sites[siteId];
 
-        // If site doesn't exist, or its state is not 'READY', alert and navigate to sites page.
-        if (!siteExists) {
-          notValidSiteRedirect(
-            formatMessage({
-              defaultMessage: 'Project not found. Redirecting to projects list.'
-            }),
-            `${authoringBase}#${GlobalRoutes.Projects}`
-          );
-        } else if (sites[siteId].state !== 'READY') {
-          notValidSiteRedirect(
-            formatMessage({
-              defaultMessage: 'Project not initialized yet. Redirecting to projects list.'
-            }),
-            `${authoringBase}#${GlobalRoutes.Projects}`
-          );
-        }
-      }
-    },
-    [sites, authoringBase, formatMessage]
-  );
-  // endregion
+				// If site doesn't exist, or its state is not 'READY', alert and navigate to sites page.
+				if (!siteExists) {
+					notValidSiteRedirect(
+						formatMessage({
+							defaultMessage: 'Project not found. Redirecting to projects list.'
+						}),
+						`${authoringBase}#${GlobalRoutes.Projects}`
+					);
+				} else if (sites[siteId].state !== 'READY') {
+					notValidSiteRedirect(
+						formatMessage({
+							defaultMessage: 'Project not initialized yet. Redirecting to projects list.'
+						}),
+						`${authoringBase}#${GlobalRoutes.Projects}`
+					);
+				}
+			}
+		},
+		[sites, authoringBase, formatMessage]
+	);
+	// endregion
 
-  useEffect(() => {
-    const prev = priorState.current;
+	useEffect(() => {
+		const prev = priorState.current;
 
-    // Retrieve the stored query string (QS)
-    let qs = prev.qs;
-    // If nothing is stored or the search portion has changed...
-    if (!qs || prev.search !== search) {
-      // Parse the current QS
-      qs = queryString.parse(search) as LookupTable<string>;
-      // In case somehow 2 site or page arguments ended on the
-      // URL, only use the first one and issue a warning on the console
-      if (Array.isArray(qs.site)) {
-        console.warn('Multiple site params detected on the URL. Excess ignored.');
-        qs.site = qs.site[0];
-      }
-      if (Array.isArray(qs.page)) {
-        console.warn('Multiple page params detected on the URL. Excess ignored.');
-        qs.page = qs.page[0];
-      }
-      // Store the newly parsed search string and parsed QS
-      prev.search = search;
-      prev.qs = qs;
-    }
+		// Retrieve the stored query string (QS)
+		let qs = prev.qs;
+		// If nothing is stored or the search portion has changed...
+		if (!qs || prev.search !== search) {
+			// Parse the current QS
+			qs = queryString.parse(search) as LookupTable<string>;
+			// In case somehow 2 site or page arguments ended on the
+			// URL, only use the first one and issue a warning on the console
+			if (Array.isArray(qs.site)) {
+				console.warn('Multiple site params detected on the URL. Excess ignored.');
+				qs.site = qs.site[0];
+			}
+			if (Array.isArray(qs.page)) {
+				console.warn('Multiple page params detected on the URL. Excess ignored.');
+				qs.page = qs.page[0];
+			}
+			// Store the newly parsed search string and parsed QS
+			prev.search = search;
+			prev.qs = qs;
+		}
 
-    if (!prev.mounted) {
-      // If this is the very first render...
+		if (!prev.mounted) {
+			// If this is the very first render...
 
-      // If there is a site or page on the URL, sync the state to the URL.
-      if (qs.site || qs.page) {
-        validateSite(qs.site);
-        // Check if QS site differs from the one stored in the
-        // state (e.g. state may have been restored from a previous session)
-        if (qs.site && qs.site !== site) {
-          // At this point, there's a site on the QS for sure
-          if (qs.page) {
-            // If there is a also a page, change site and send to QS page
-            dispatch(changeSite(qs.site, qs.page));
-          } else {
-            // If there's no page, send to the homepage of the QS site
-            dispatch(changeSite(qs.site, '/'));
-          }
-        } else if (qs.page && qs.page !== currentUrlPath) {
-          // Change the current page to match the QS site
-          dispatch(changeCurrentUrl(qs.page));
-        }
-      }
+			// If there is a site or page on the URL, sync the state to the URL.
+			if (qs.site || qs.page) {
+				validateSite(qs.site);
+				// Check if QS site differs from the one stored in the
+				// state (e.g. state may have been restored from a previous session)
+				if (qs.site && qs.site !== site) {
+					// At this point, there's a site on the QS for sure
+					if (qs.page) {
+						// If there is a also a page, change site and send to QS page
+						dispatch(changeSite(qs.site, qs.page));
+					} else {
+						// If there's no page, send to the homepage of the QS site
+						dispatch(changeSite(qs.site, '/'));
+					}
+				} else if (qs.page && qs.page !== currentUrlPath) {
+					// Change the current page to match the QS site
+					dispatch(changeCurrentUrl(qs.page));
+				}
+			}
 
-      prev.mounted = true;
-    } else {
-      // Not the first render. Something changed and we're updating.
+			prev.mounted = true;
+		} else {
+			// Not the first render. Something changed and we're updating.
 
-      // Check if either the QS or the state has changed
-      const qsSiteChanged = qs.site !== prev.qsSite && qs.site !== site;
-      const siteChanged = site !== prev.site;
-      const qsUrlChanged = qs.page !== prev.qsPage && qs.page !== currentUrlPath;
-      const urlChanged = currentUrlPath !== prev.currentUrlPath;
-      const somethingDidChanged = qsSiteChanged || siteChanged || qsUrlChanged || urlChanged;
+			// Check if either the QS or the state has changed
+			const qsSiteChanged = qs.site !== prev.qsSite && qs.site !== site;
+			const siteChanged = site !== prev.site;
+			const qsUrlChanged = qs.page !== prev.qsPage && qs.page !== currentUrlPath;
+			const urlChanged = currentUrlPath !== prev.currentUrlPath;
+			const somethingDidChanged = qsSiteChanged || siteChanged || qsUrlChanged || urlChanged;
 
-      validateSite(qs.site);
-      // If nothing changed, skip...
-      if (somethingDidChanged) {
-        if ((siteChanged || urlChanged) && (currentUrlPath !== qs.page || site !== qs.site)) {
-          if (currentUrlPath !== previewLandingBase) {
-            // Encoding the `site` & `page` is necessary to avoid ambiguity with the router arguments. For example:
-            // - `.../#?site=editorial&page=/products?id=1&variant=2`: without encoding, the router would consider variant as a query parameter rather than part of the `page` arg path.
-            // - `.../#?site=editorial&page=%2Fproducts%3Fid%3D1%26variant%3D2`: removes the ambiguity.
-            navigate({ search: queryString.stringify({ site, page: currentUrlPath }, { encode: true }) });
-          }
-        } else if (qsSiteChanged && qsUrlChanged) {
-          dispatch(changeSite(qs.site, qs.page));
-        } else if (qsUrlChanged) {
-          dispatch(changeCurrentUrl(qs.page));
-        } else if (qsSiteChanged) {
-          dispatch(changeSite(qs.site, '/'));
-        }
+			validateSite(qs.site);
+			// If nothing changed, skip...
+			if (somethingDidChanged) {
+				if ((siteChanged || urlChanged) && (currentUrlPath !== qs.page || site !== qs.site)) {
+					if (currentUrlPath !== previewLandingBase) {
+						// Encoding the `site` & `page` is necessary to avoid ambiguity with the router arguments. For example:
+						// - `.../#?site=editorial&page=/products?id=1&variant=2`: without encoding, the router would consider variant as a query parameter rather than part of the `page` arg path.
+						// - `.../#?site=editorial&page=%2Fproducts%3Fid%3D1%26variant%3D2`: removes the ambiguity.
+						navigate({ search: queryString.stringify({ site, page: currentUrlPath }, { encode: true }) });
+					}
+				} else if (qsSiteChanged && qsUrlChanged) {
+					dispatch(changeSite(qs.site, qs.page));
+				} else if (qsUrlChanged) {
+					dispatch(changeCurrentUrl(qs.page));
+				} else if (qsSiteChanged) {
+					dispatch(changeSite(qs.site, '/'));
+				}
 
-        prev.currentUrlPath = currentUrlPath;
-        prev.site = site;
-      }
+				prev.currentUrlPath = currentUrlPath;
+				prev.site = site;
+			}
 
-      // The above conditions related to these are compound so safer to
-      // always update to avoid stale prev props
-      prev.qsPage = qs.page;
-      prev.qsSite = qs.site;
-    }
-  }, [currentUrlPath, dispatch, previewLandingBase, navigate, search, site, sites, validateSite]);
+			// The above conditions related to these are compound so safer to
+			// always update to avoid stale prev props
+			prev.qsPage = qs.page;
+			prev.qsSite = qs.site;
+		}
+	}, [currentUrlPath, dispatch, previewLandingBase, navigate, search, site, sites, validateSite]);
 
-  return (
-    <PreviewConcierge>
-      <Box
-        component="section"
-        sx={(theme) => ({
-          height: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          background: theme.palette.background.default
-        })}
-      >
-        <ToolBar />
-        <Host />
-        <ToolsPanel />
-        <ICEToolsPanel />
-      </Box>
-    </PreviewConcierge>
-  );
+	return (
+		<PreviewConcierge>
+			<Box
+				component="section"
+				sx={(theme) => ({
+					height: '100%',
+					display: 'flex',
+					flexDirection: 'column',
+					background: theme.palette.background.default
+				})}
+			>
+				<ToolBar />
+				<Host />
+				<ToolsPanel />
+				<ICEToolsPanel />
+			</Box>
+		</PreviewConcierge>
+	);
 }
 
 export default Preview;

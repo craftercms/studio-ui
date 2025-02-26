@@ -20,22 +20,22 @@ import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 
 interface SiteEncryptToolProps {
-  embedded?: boolean;
-  showAppsButton?: boolean;
-  onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;
+	embedded?: boolean;
+	showAppsButton?: boolean;
+	onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
 export function SiteEncryptTool(props: SiteEncryptToolProps) {
-  const site = useActiveSiteId();
+	const site = useActiveSiteId();
 
-  return (
-    <EncryptTool
-      site={site}
-      embedded={props.embedded}
-      showAppsButton={props.showAppsButton}
-      onSubmittingAndOrPendingChange={props.onSubmittingAndOrPendingChange}
-    />
-  );
+	return (
+		<EncryptTool
+			site={site}
+			embedded={props.embedded}
+			showAppsButton={props.showAppsButton}
+			onSubmittingAndOrPendingChange={props.onSubmittingAndOrPendingChange}
+		/>
+	);
 }
 
 export default SiteEncryptTool;

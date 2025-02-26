@@ -14,233 +14,202 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { DrawerProps } from '@mui/material';
+import { DrawerProps, Theme } from '@mui/material';
 import Drawer from '@mui/material/Drawer';
 import React, { useCallback, useRef, useState } from 'react';
-import { makeStyles } from 'tss-react/mui';
 import palette from '../../styles/palette';
-import { CSSObject as CSSProperties } from 'tss-react';
+import { PartialSxRecord } from '../../models';
+import { DrawerClasses } from '@mui/material/Drawer/drawerClasses';
+import { SxProps } from '@mui/system';
+import { SystemStyleObject } from '@mui/system/styleFunctionSx/styleFunctionSx';
+import Box from '@mui/material/Box';
 
 export type ResizeableDrawerClassKey =
-  | 'root'
-  | 'drawerBody'
-  | 'drawerPaper'
-  | 'drawerPaperLeft'
-  | 'drawerPaperRight'
-  | 'drawerPaperBelowToolbar'
-  | 'resizeHandle'
-  | 'resizeHandleActive'
-  | 'resizeHandleLeft'
-  | 'resizeHandleRight'
-  | 'resizingOverlay';
-
-export type ResizeableDrawerStyles = Partial<Record<ResizeableDrawerClassKey, CSSProperties>>;
+	| 'root'
+	| 'drawerBody'
+	| 'drawerPaper'
+	| 'drawerPaperLeft'
+	| 'drawerPaperRight'
+	| 'drawerPaperBelowToolbar'
+	| 'resizeHandle'
+	| 'resizeHandleActive'
+	| 'resizeHandleLeft'
+	| 'resizeHandleRight'
+	| 'resizingOverlay';
 
 interface ResizeableDrawerProps extends DrawerProps {
-  open: boolean;
-  width: number;
-  maxWidth?: number;
-  minWidth?: number;
-  belowToolbar?: boolean;
-  classes?: DrawerProps['classes'] & Partial<Record<ResizeableDrawerClassKey, string>>;
-  styles?: ResizeableDrawerStyles;
-  onWidthChange?(width: number): void;
-  onResizeStart?(): void;
-  onResizeStop?(): void;
+	open: boolean;
+	width: number;
+	maxWidth?: number;
+	minWidth?: number;
+	belowToolbar?: boolean;
+	classes?: DrawerProps['classes'] & Partial<Record<ResizeableDrawerClassKey, string>>;
+	sxs?: PartialSxRecord<ResizeableDrawerClassKey> & PartialSxRecord<keyof DrawerClasses>;
+	onWidthChange?(width: number): void;
+	onResizeStart?(): void;
+	onResizeStop?(): void;
 }
 
-const useStyles = makeStyles<ResizeableDrawerStyles, ResizeableDrawerClassKey>()(
-  (
-    theme,
-    {
-      root,
-      drawerBody,
-      drawerPaper,
-      drawerPaperBelowToolbar,
-      drawerPaperLeft,
-      drawerPaperRight,
-      resizeHandle,
-      resizeHandleLeft,
-      resizeHandleRight,
-      resizeHandleActive,
-      resizingOverlay
-    } = {} as any
-  ) => ({
-    root: {
-      flexShrink: 0,
-      ...root
-    },
-    drawerBody: {
-      width: '100%',
-      height: '100%',
-      overflowY: 'auto',
-      ...drawerBody
-    },
-    drawerPaper: {
-      bottom: 0,
-      overflow: 'hidden',
-      maxWidth: '95% !important',
-      backgroundColor: theme.palette.background.default,
-      ...drawerPaper
-    },
-    drawerPaperBelowToolbar: {
-      top: 65,
-      height: 'auto',
-      zIndex: theme.zIndex.appBar - 1,
-      ...drawerPaperBelowToolbar
-    },
-    drawerPaperLeft: {
-      borderRight: 'none',
-      ...drawerPaperLeft
-    },
-    drawerPaperRight: {
-      borderLeft: 'none',
-      ...drawerPaperRight
-    },
-    resizeHandle: {
-      width: '2px',
-      cursor: 'ew-resize',
-      padding: '4px 0 0',
-      position: 'absolute',
-      top: 0,
-      bottom: 0,
-      zIndex: 100,
-      backgroundColor: theme.palette.divider,
-      transition: 'width 200ms',
-      '&:hover': {
-        width: '4px',
-        visibility: 'visible',
-        backgroundColor: palette.blue.tint
-      },
-      ...resizeHandle
-    },
-    resizeHandleLeft: {
-      left: 0,
-      ...resizeHandleLeft
-    },
-    resizeHandleRight: {
-      right: 0,
-      ...resizeHandleRight
-    },
-    resizeHandleActive: {
-      width: '4px',
-      visibility: 'visible',
-      backgroundColor: palette.blue.tint,
-      ...resizeHandleActive
-    },
-    resizingOverlay: {
-      '&::before': {
-        content: '""',
-        position: 'fixed',
-        top: 0,
-        bottom: 0,
-        left: 0,
-        right: 0,
-        ...resizingOverlay
-      }
-    }
-  })
-);
-
 export function ResizeableDrawer(props: ResizeableDrawerProps) {
-  const { classes, cx } = useStyles(props.styles);
-  const [resizeActive, setResizeActive] = useState(false);
+	const [resizeActive, setResizeActive] = useState(false);
 
-  const drawerRef = useRef<HTMLDivElement>();
+	const drawerRef = useRef<HTMLDivElement>(undefined);
 
-  const {
-    open,
-    children,
-    width,
-    maxWidth = 500,
-    minWidth = 240,
-    onWidthChange,
-    onResizeStart,
-    onResizeStop,
-    className,
-    classes: propsClasses = {},
-    PaperProps,
-    anchor = 'left',
-    belowToolbar = false,
-    ...rest
-  } = props;
+	const {
+		open,
+		children,
+		width,
+		maxWidth = 500,
+		minWidth = 240,
+		onWidthChange,
+		onResizeStart,
+		onResizeStop,
+		className,
+		classes = {},
+		PaperProps,
+		anchor = 'left',
+		belowToolbar = false,
+		sxs = {},
+		...rest
+	} = props;
 
-  const {
-    root,
-    drawerBody,
-    drawerPaper,
-    drawerPaperBelowToolbar,
-    resizeHandle,
-    resizeHandleActive,
-    resizeHandleLeft,
-    resizeHandleRight,
-    ...drawerClasses
-  } = propsClasses;
+	const { ...drawerClasses } = classes;
 
-  const handleMouseMove = useCallback(
-    (e) => {
-      if (onWidthChange) {
-        e.preventDefault();
-        let newWidth =
-          (anchor === 'left'
-            ? e.clientX - drawerRef.current.getBoundingClientRect().left
-            : window.innerWidth - (e.clientX - drawerRef.current.getBoundingClientRect().left)) + 5;
-        newWidth = newWidth < minWidth ? minWidth : newWidth > maxWidth ? maxWidth : newWidth;
-        onWidthChange(newWidth);
-      }
-    },
-    [anchor, onWidthChange, maxWidth, minWidth]
-  );
+	const handleMouseMove = useCallback(
+		(e) => {
+			if (onWidthChange) {
+				e.preventDefault();
+				let newWidth =
+					(anchor === 'left'
+						? e.clientX - drawerRef.current.getBoundingClientRect().left
+						: window.innerWidth - (e.clientX - drawerRef.current.getBoundingClientRect().left)) + 5;
+				newWidth = newWidth < minWidth ? minWidth : newWidth > maxWidth ? maxWidth : newWidth;
+				onWidthChange(newWidth);
+			}
+		},
+		[anchor, onWidthChange, maxWidth, minWidth]
+	);
 
-  const handleMouseDown = onWidthChange
-    ? () => {
-        setResizeActive(true);
-        onResizeStart?.();
-        const handleMouseUp = () => {
-          setResizeActive(false);
-          onResizeStop?.();
-          document.removeEventListener('mouseup', handleMouseUp, true);
-          document.removeEventListener('mousemove', handleMouseMove, true);
-        };
-        document.addEventListener('mouseup', handleMouseUp, true);
-        document.addEventListener('mousemove', handleMouseMove, true);
-      }
-    : null;
+	const handleMouseDown = onWidthChange
+		? () => {
+				setResizeActive(true);
+				onResizeStart?.();
+				const handleMouseUp = () => {
+					setResizeActive(false);
+					onResizeStop?.();
+					document.removeEventListener('mouseup', handleMouseUp, true);
+					document.removeEventListener('mousemove', handleMouseMove, true);
+				};
+				document.addEventListener('mouseup', handleMouseUp, true);
+				document.addEventListener('mousemove', handleMouseMove, true);
+			}
+		: null;
 
-  return (
-    <Drawer
-      open={open}
-      ref={drawerRef}
-      anchor={anchor}
-      variant="persistent"
-      className={cx(classes.root, className)}
-      classes={{
-        ...drawerClasses,
-        paper: cx(
-          classes.drawerPaper,
-          belowToolbar && classes.drawerPaperBelowToolbar,
-          drawerPaper,
-          belowToolbar && drawerPaperBelowToolbar,
-          onWidthChange && (anchor === 'left' ? classes.drawerPaperLeft : classes.drawerPaperRight),
-          resizeActive && classes.resizingOverlay
-        )
-      }}
-      PaperProps={{ ...PaperProps, style: { width } }}
-      {...rest}
-    >
-      {onWidthChange && (
-        <div
-          onMouseDown={handleMouseDown}
-          className={cx(
-            classes.resizeHandle,
-            resizeActive && classes.resizeHandleActive,
-            anchor === 'left' ? classes.resizeHandleRight : classes.resizeHandleLeft
-          )}
-        />
-      )}
-      <section className={cx(classes.drawerBody, drawerBody)}>{children}</section>
-    </Drawer>
-  );
+	const drawerPaperSxProp = [
+		{
+			bottom: 0,
+			overflow: 'hidden',
+			maxWidth: '95% !important',
+			backgroundColor: (theme) => theme.palette.background.default,
+			...sxs?.paper,
+			...sxs?.drawerPaper
+		},
+		belowToolbar && {
+			top: 65,
+			height: 'auto',
+			zIndex: (theme) => theme.zIndex.appBar - 1,
+			...sxs?.drawerPaperBelowToolbar
+		},
+		onWidthChange &&
+			(anchor === 'left'
+				? {
+						borderRight: 'none',
+						...sxs?.drawerPaperLeft
+					}
+				: {
+						borderLeft: 'none',
+						...sxs?.drawerPaperRight
+					}),
+		resizeActive && {
+			'&::before': {
+				content: '""',
+				position: 'fixed',
+				top: 0,
+				bottom: 0,
+				left: 0,
+				right: 0,
+				...sxs?.resizingOverlay
+			}
+		}
+	];
+
+	return (
+		<Drawer
+			open={open}
+			ref={drawerRef}
+			anchor={anchor}
+			variant="persistent"
+			className={[className, classes?.root].filter(Boolean).join(' ')}
+			sx={{
+				flexShrink: 0,
+				...sxs?.root
+			}}
+			PaperProps={{
+				...PaperProps,
+				style: { width },
+				className: [classes?.drawerPaper, belowToolbar && classes?.drawerPaperBelowToolbar].filter(Boolean).join(' '),
+				sx: drawerPaperSxProp as SxProps<Theme>
+			}}
+			{...rest}
+		>
+			{onWidthChange && (
+				<Box
+					onMouseDown={handleMouseDown}
+					className={[
+						classes?.resizeHandle,
+						resizeActive && classes?.resizeHandleActive,
+						anchor === 'left' ? classes?.resizeHandleRight : classes?.resizeHandleLeft
+					]
+						.filter(Boolean)
+						.join(' ')}
+					sx={{
+						width: resizeActive ? '4px' : '2px',
+						cursor: 'ew-resize',
+						padding: '4px 0 0',
+						position: 'absolute',
+						top: 0,
+						bottom: 0,
+						zIndex: 100,
+						backgroundColor: (theme) => (resizeActive ? palette.blue.tint : theme.palette.divider),
+						transition: 'width 200ms',
+						visibility: 'visible',
+						'&:hover': {
+							width: '4px',
+							visibility: 'visible',
+							backgroundColor: palette.blue.tint
+						},
+						...(anchor === 'left'
+							? ({ right: 0, ...sxs?.resizeHandleRight } as SystemStyleObject<Theme>)
+							: ({ left: 0, ...sxs?.resizeHandleLeft } as SystemStyleObject<Theme>)),
+						...(sxs?.resizeHandle as SystemStyleObject<Theme>),
+						...(sxs?.resizeHandleActive as SystemStyleObject<Theme>)
+					}}
+				/>
+			)}
+			<Box
+				component="section"
+				className={classes?.drawerBody}
+				sx={{
+					width: '100%',
+					height: '100%',
+					overflowY: 'auto',
+					...sxs?.drawerBody
+				}}
+			>
+				{children}
+			</Box>
+		</Drawer>
+	);
 }
 
 export default ResizeableDrawer;

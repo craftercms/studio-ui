@@ -18,80 +18,80 @@ import { KeyboardShortcutsCategory } from '../components/KeyboardShortcutsDialog
 import { defineMessages } from 'react-intl';
 
 const messages = defineMessages({
-  shortcuts: {
-    id: 'words.shortcuts',
-    defaultMessage: 'Shortcuts'
-  },
-  toggleEditMode: {
-    id: 'shortcuts.toggleEditMode',
-    defaultMessage: 'Edit Mode ON/OFF'
-  },
-  toggleMoveMode: {
-    id: 'shortcuts.toggleMoveMode',
-    defaultMessage: 'Move Mode ON/OFF'
-  },
-  disableICE: {
-    id: 'shortcuts.disableICE',
-    defaultMessage: 'Disable ICE while held down (to click through)'
-  },
-  showShortcuts: {
-    id: 'shortcuts.showShortcuts',
-    defaultMessage: 'Show keyboard shortcuts'
-  },
-  editModePadding: {
-    id: 'shortcuts.editModePadding',
-    defaultMessage: 'Toggle edit mode padding'
-  },
-  reload: {
-    id: 'shortcuts.reloadPreview',
-    defaultMessage: 'Reload preview'
-  },
-  openForm: {
-    id: 'shortcuts.openForm',
-    defaultMessage: 'Open form for current item'
-  },
-  openItemMegaMenu: {
-    id: 'shortcuts.openItemMegaMenu',
-    defaultMessage: 'Open actions menu for current item'
-  }
+	shortcuts: {
+		id: 'words.shortcuts',
+		defaultMessage: 'Shortcuts'
+	},
+	toggleEditMode: {
+		id: 'shortcuts.toggleEditMode',
+		defaultMessage: 'Edit Mode ON/OFF'
+	},
+	toggleMoveMode: {
+		id: 'shortcuts.toggleMoveMode',
+		defaultMessage: 'Move Mode ON/OFF'
+	},
+	disableICE: {
+		id: 'shortcuts.disableICE',
+		defaultMessage: 'Disable ICE while held down (to click through)'
+	},
+	showShortcuts: {
+		id: 'shortcuts.showShortcuts',
+		defaultMessage: 'Show keyboard shortcuts'
+	},
+	editModePadding: {
+		id: 'shortcuts.editModePadding',
+		defaultMessage: 'Toggle edit mode padding'
+	},
+	reload: {
+		id: 'shortcuts.reloadPreview',
+		defaultMessage: 'Reload preview'
+	},
+	openForm: {
+		id: 'shortcuts.openForm',
+		defaultMessage: 'Open form for current item'
+	},
+	openItemMegaMenu: {
+		id: 'shortcuts.openItemMegaMenu',
+		defaultMessage: 'Open actions menu for current item'
+	}
 });
 
 export const previewKeyboardShortcuts: KeyboardShortcutsCategory[] = [
-  {
-    label: messages.shortcuts,
-    shortcuts: [
-      {
-        label: messages.toggleEditMode,
-        shortcut: 'e'
-      },
-      {
-        label: messages.toggleMoveMode,
-        shortcut: 'm'
-      },
-      {
-        label: messages.disableICE,
-        shortcut: 'z'
-      },
-      {
-        label: messages.editModePadding,
-        shortcut: 'p'
-      },
-      {
-        label: messages.reload,
-        shortcut: 'r'
-      },
-      {
-        label: messages.openForm,
-        shortcut: 'shift+e'
-      },
-      {
-        label: messages.openItemMegaMenu,
-        shortcut: 'a'
-      },
-      {
-        label: messages.showShortcuts,
-        shortcut: '?'
-      }
-    ]
-  }
+	{
+		label: messages.shortcuts,
+		shortcuts: [
+			{
+				label: messages.toggleEditMode,
+				shortcut: 'e'
+			},
+			{
+				label: messages.toggleMoveMode,
+				shortcut: 'm'
+			},
+			{
+				label: messages.disableICE,
+				shortcut: 'z'
+			},
+			{
+				label: messages.editModePadding,
+				shortcut: 'p'
+			},
+			{
+				label: messages.reload,
+				shortcut: 'r'
+			},
+			{
+				label: messages.openForm,
+				shortcut: 'shift+e'
+			},
+			{
+				label: messages.openItemMegaMenu,
+				shortcut: 'a'
+			},
+			{
+				label: messages.showShortcuts,
+				shortcut: '?'
+			}
+		]
+	}
 ];

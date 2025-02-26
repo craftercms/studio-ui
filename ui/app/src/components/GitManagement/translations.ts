@@ -17,30 +17,30 @@
 import { defineMessages } from 'react-intl';
 
 export const translations = defineMessages({
-  remoteCreateSuccessMessage: {
-    id: 'repositories.remoteCreateSuccessMessage',
-    defaultMessage: 'Remote repository created successfully.'
-  },
-  noConflicts: {
-    id: 'repositories.noConflicts',
-    defaultMessage: 'Local repository is free of conflicts.'
-  },
-  conflictsExist: {
-    id: 'repositories.conflictsExist',
-    defaultMessage: 'Repository operations are disabled while conflicts exist. Please resolve conflicts.'
-  },
-  pendingCommit: {
-    id: 'repositories.pendingCommit',
-    defaultMessage: 'Repo contains files pending commit. See Repository status below for details.'
-  },
-  unstagedFiles: {
-    id: 'repositories.unstagedFiles',
-    defaultMessage: 'There are unstaged files in your repository.'
-  },
-  fetchingStatus: {
-    id: 'repositories.fetching',
-    defaultMessage: 'Fetching repository status...'
-  }
+	remoteCreateSuccessMessage: {
+		id: 'repositories.remoteCreateSuccessMessage',
+		defaultMessage: 'Remote repository created successfully.'
+	},
+	noConflicts: {
+		id: 'repositories.noConflicts',
+		defaultMessage: 'Local repository is free of conflicts.'
+	},
+	conflictsExist: {
+		id: 'repositories.conflictsExist',
+		defaultMessage: 'Repository operations are disabled while conflicts exist. Please resolve conflicts.'
+	},
+	pendingCommit: {
+		id: 'repositories.pendingCommit',
+		defaultMessage: 'Repo contains files pending commit. See Repository status below for details.'
+	},
+	unstagedFiles: {
+		id: 'repositories.unstagedFiles',
+		defaultMessage: 'There are unstaged files in your repository.'
+	},
+	fetchingStatus: {
+		id: 'repositories.fetching',
+		defaultMessage: 'Fetching repository status...'
+	}
 });
 
 export default translations;

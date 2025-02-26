@@ -18,7 +18,6 @@
 import React, { useEffect, useId } from 'react';
 import useActiveSite from '../../hooks/useActiveSite';
 import { PathNavigatorTree } from '../PathNavigatorTree';
-import { makeStyles } from 'tss-react/mui';
 import { removeStoredPathNavigatorTree } from '../../utils/state';
 import useActiveUser from '../../hooks/useActiveUser';
 import { useDispatch } from 'react-redux';
@@ -31,84 +30,81 @@ import useUpdateRefs from '../../hooks/useUpdateRefs';
 import { useIntl } from 'react-intl';
 
 export interface FolderBrowserTreeViewProps {
-  rootPath: string;
-  selectedPath: string;
-  onPathSelected(path: string): void;
+	rootPath: string;
+	selectedPath: string;
+	onPathSelected(path: string): void;
 }
 
-const useStyles = makeStyles()((theme) => ({
-  pathNavTreeHeader: { '.MuiTypography-root': { fontWeight: theme.typography.fontWeightMedium } }
-}));
-
 export function FolderBrowserTreeView(props: FolderBrowserTreeViewProps) {
-  const { rootPath, selectedPath, onPathSelected } = props;
-  const { classes } = useStyles();
-  const { formatMessage } = useIntl();
-  const id = useId();
-  const tree = useSelection((state) => state.pathNavigatorTree[id]);
-  const { uuid, id: siteId } = useActiveSite();
-  const { username } = useActiveUser();
-  const dispatch = useDispatch();
-  const selectedPathWithIndex = withIndex(selectedPath);
-  const refs = useUpdateRefs({ tree });
-  useEffect(() => {
-    if (
-      // Simply checking that the tree has been initialized. Not using the very root object to
-      // avoid changes on its state to trigger this effect unnecessarily.
-      tree?.id === id
-    ) {
-      const path = selectedPath || rootPath;
-      // If it's `/site/website/*`, there's possibility of `index.xml` behaviours
-      if (path.startsWith('/site/website')) {
-        const paths = getIndividualPaths(path, rootPath);
-        forkJoin(
-          paths.map((p) => {
-            const withIndexXml = withIndex(p);
-            return withIndexXml in refs.current.tree.childrenByParentPath || p in refs.current.tree.childrenByParentPath
-              ? of(
-                  pathNavigatorTreeExpandPath({
-                    id,
-                    path: withIndexXml in refs.current.tree.childrenByParentPath ? withIndexXml : p
-                  })
-                )
-              : of(pathNavigatorTreeFetchPathChildren({ id, path: p, expand: true }));
-          })
-        ).subscribe((actions) => {
-          dispatch(actions.length === 1 ? actions[0] : batchActions(actions));
-        });
-      } else {
-        const actions = getIndividualPaths(path, rootPath).map((p) =>
-          p in refs.current.tree.childrenByParentPath
-            ? pathNavigatorTreeExpandPath({ id, path: p })
-            : pathNavigatorTreeFetchPathChildren({ id, path: p, expand: true })
-        );
-        actions.length && dispatch(actions.length === 1 ? actions[0] : batchActions(actions));
-      }
-    }
-  }, [refs, dispatch, id, rootPath, selectedPath, siteId, tree?.id]);
-  useEffect(() => {
-    return () => {
-      removeStoredPathNavigatorTree(uuid, username, id);
-    };
-  }, [id, uuid, username]);
-  return (
-    <PathNavigatorTree
-      id={id}
-      label={formatMessage({ id: 'words.path', defaultMessage: 'Path' })}
-      rootPath={rootPath}
-      collapsible={false}
-      initialCollapsed={false}
-      initialSystemTypes={['folder', 'page']}
-      active={{ [selectedPathWithIndex in (tree?.totalByPath ?? {}) ? selectedPathWithIndex : selectedPath]: true }}
-      onNodeClick={(e, path) => onPathSelected?.(path)}
-      classes={{ header: classes.pathNavTreeHeader }}
-      showNavigableAsLinks={false}
-      showPublishingTarget={false}
-      showWorkflowState={false}
-      showItemMenu={false}
-      limit={30}
-    />
-  );
+	const { rootPath, selectedPath, onPathSelected } = props;
+	const { formatMessage } = useIntl();
+	const id = useId();
+	const tree = useSelection((state) => state.pathNavigatorTree[id]);
+	const { uuid, id: siteId } = useActiveSite();
+	const { username } = useActiveUser();
+	const dispatch = useDispatch();
+	const selectedPathWithIndex = withIndex(selectedPath);
+	const refs = useUpdateRefs({ tree });
+	useEffect(() => {
+		if (
+			// Simply checking that the tree has been initialized. Not using the very root object to
+			// avoid changes on its state to trigger this effect unnecessarily.
+			tree?.id === id
+		) {
+			const path = selectedPath || rootPath;
+			// If it's `/site/website/*`, there's possibility of `index.xml` behaviours
+			if (path.startsWith('/site/website')) {
+				const paths = getIndividualPaths(path, rootPath);
+				forkJoin(
+					paths.map((p) => {
+						const withIndexXml = withIndex(p);
+						return withIndexXml in refs.current.tree.childrenByParentPath || p in refs.current.tree.childrenByParentPath
+							? of(
+									pathNavigatorTreeExpandPath({
+										id,
+										path: withIndexXml in refs.current.tree.childrenByParentPath ? withIndexXml : p
+									})
+								)
+							: of(pathNavigatorTreeFetchPathChildren({ id, path: p, expand: true }));
+					})
+				).subscribe((actions) => {
+					dispatch(actions.length === 1 ? actions[0] : batchActions(actions));
+				});
+			} else {
+				const actions = getIndividualPaths(path, rootPath).map((p) =>
+					p in refs.current.tree.childrenByParentPath
+						? pathNavigatorTreeExpandPath({ id, path: p })
+						: pathNavigatorTreeFetchPathChildren({ id, path: p, expand: true })
+				);
+				actions.length && dispatch(actions.length === 1 ? actions[0] : batchActions(actions));
+			}
+		}
+	}, [refs, dispatch, id, rootPath, selectedPath, siteId, tree?.id]);
+	useEffect(() => {
+		return () => {
+			removeStoredPathNavigatorTree(uuid, username, id);
+		};
+	}, [id, uuid, username]);
+	return (
+		<PathNavigatorTree
+			id={id}
+			label={formatMessage({ id: 'words.path', defaultMessage: 'Path' })}
+			rootPath={rootPath}
+			collapsible={false}
+			initialCollapsed={false}
+			initialSystemTypes={['folder', 'page']}
+			active={{ [selectedPathWithIndex in (tree?.totalByPath ?? {}) ? selectedPathWithIndex : selectedPath]: true }}
+			onNodeClick={(e, path) => onPathSelected?.(path)}
+			sxs={{
+				header: { '.MuiTypography-root': { fontWeight: 'bold' } }
+			}}
+			showNavigableAsLinks={false}
+			showPublishingTarget={false}
+			showWorkflowState={false}
+			showItemMenu={false}
+			limit={30}
+		/>
+	);
 }
 
 export default FolderBrowserTreeView;

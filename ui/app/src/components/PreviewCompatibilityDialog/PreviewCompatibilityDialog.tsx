@@ -26,90 +26,90 @@ import PrimaryButton from '../PrimaryButton';
 import { useUnmount } from '../../hooks/useUnmount';
 
 const translations = defineMessages({
-  go: {
-    id: 'words.go',
-    defaultMessage: 'Go'
-  },
-  stay: {
-    id: 'words.stay',
-    defaultMessage: 'Stay'
-  },
-  title: {
-    id: 'previewCompatDialog.title',
-    defaultMessage: 'Preview Compatibility Notice'
-  },
-  nextCompatibility: {
-    id: 'previewCompatDialog.nextCompatMessage',
-    defaultMessage: 'This page is compatible with the new editing experience. Would you like to go there now?'
-  },
-  legacyCompatibility: {
-    id: 'previewCompatDialog.legacyCompatMessage',
-    defaultMessage: 'This page is compatible with the previous editing experience. Would you like to go there now?'
-  },
-  rememberChoice: {
-    id: 'previewCompatDialog.rememberChoice',
-    defaultMessage: 'Remember choice'
-  }
+	go: {
+		id: 'words.go',
+		defaultMessage: 'Go'
+	},
+	stay: {
+		id: 'words.stay',
+		defaultMessage: 'Stay'
+	},
+	title: {
+		id: 'previewCompatDialog.title',
+		defaultMessage: 'Preview Compatibility Notice'
+	},
+	nextCompatibility: {
+		id: 'previewCompatDialog.nextCompatMessage',
+		defaultMessage: 'This page is compatible with the new editing experience. Would you like to go there now?'
+	},
+	legacyCompatibility: {
+		id: 'previewCompatDialog.legacyCompatMessage',
+		defaultMessage: 'This page is compatible with the previous editing experience. Would you like to go there now?'
+	},
+	rememberChoice: {
+		id: 'previewCompatDialog.rememberChoice',
+		defaultMessage: 'Remember choice'
+	}
 });
 
 interface PreviewCompatibilityDialogProps {
-  open: boolean;
-  onOk: () => any;
-  onCancel: () => any;
-  onClose?: () => any;
-  onClosed?: () => any;
-  isPreviewNext: boolean;
+	open: boolean;
+	onOk: () => any;
+	onCancel: () => any;
+	onClose?: () => any;
+	onClosed?: () => any;
+	isPreviewNext: boolean;
 }
 
 export function LegacyContainer(props) {
-  const [open, setOpen] = useState(true);
-  return (
-    <PreviewCompatibilityDialogContainer
-      {...props}
-      open={open}
-      onCancel={(options) => {
-        setOpen(false);
-        props.onCancel(options);
-      }}
-    />
-  );
+	const [open, setOpen] = useState(true);
+	return (
+		<PreviewCompatibilityDialogContainer
+			{...props}
+			open={open}
+			onCancel={(options) => {
+				setOpen(false);
+				props.onCancel(options);
+			}}
+		/>
+	);
 }
 
 export function PreviewCompatibilityDialogContainer(props: PreviewCompatibilityDialogProps) {
-  return (
-    <Dialog
-      open={props.open}
-      onClose={props.onClose}
-      aria-labelledby="previewCompatDialogTitle"
-      aria-describedby="previewCompatDialogBody"
-    >
-      <PreviewCompatibilityDialog {...props} />
-    </Dialog>
-  );
+	return (
+		<Dialog
+			open={props.open}
+			onClose={props.onClose}
+			aria-labelledby="previewCompatDialogTitle"
+			aria-describedby="previewCompatDialogBody"
+		>
+			<PreviewCompatibilityDialog {...props} />
+		</Dialog>
+	);
 }
 
 export function PreviewCompatibilityDialog(props: PreviewCompatibilityDialogProps) {
-  const { onOk, onCancel, isPreviewNext } = props;
-  const { formatMessage } = useIntl();
-  useUnmount(props.onClosed);
-  return (
-    <>
-      <DialogHeader id="previewCompatDialogTitle" title={formatMessage(translations.title)} />
-      <DialogBody id="previewCompatDialogBody">
-        <DialogContentText color="textPrimary">
-          {formatMessage(isPreviewNext ? translations.nextCompatibility : translations.legacyCompatibility)}
-        </DialogContentText>
-      </DialogBody>
-      <DialogFooter>
-        <SecondaryButton onClick={onCancel} style={{ marginRight: 5 }}>
-          {formatMessage(translations.stay)}
-        </SecondaryButton>
-        <PrimaryButton onClick={onOk} autoFocus>
-          {formatMessage(translations.go)}
-        </PrimaryButton>
-      </DialogFooter>
-    </>
-  );
+	const { onOk, onCancel, isPreviewNext } = props;
+	const { formatMessage } = useIntl();
+	useUnmount(props.onClosed);
+	return (
+		<>
+			<DialogHeader id="previewCompatDialogTitle" title={formatMessage(translations.title)} />
+			<DialogBody id="previewCompatDialogBody">
+				<DialogContentText color="textPrimary">
+					{formatMessage(isPreviewNext ? translations.nextCompatibility : translations.legacyCompatibility)}
+				</DialogContentText>
+			</DialogBody>
+			<DialogFooter>
+				<SecondaryButton onClick={onCancel} style={{ marginRight: 5 }}>
+					{formatMessage(translations.stay)}
+				</SecondaryButton>
+				<PrimaryButton onClick={onOk} autoFocus>
+					{formatMessage(translations.go)}
+				</PrimaryButton>
+			</DialogFooter>
+		</>
+	);
 }
 
 export default LegacyContainer;

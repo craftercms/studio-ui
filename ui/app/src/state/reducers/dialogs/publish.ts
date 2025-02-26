@@ -20,25 +20,25 @@ import { closePublishDialog, publishDialogClosed, showPublishDialog, updatePubli
 import { PublishDialogStateProps } from '../../../components/PublishDialog/utils';
 
 const initialState: PublishDialogStateProps = {
-  open: false,
-  isSubmitting: null,
-  isMinimized: null,
-  hasPendingChanges: null
+	open: false,
+	isSubmitting: null,
+	isMinimized: null,
+	hasPendingChanges: null
 };
 
 export default createReducer<GlobalState['dialogs']['publish']>(initialState, (builder) => {
-  builder
-    .addCase(showPublishDialog, (state, { payload }) => ({
-      ...state,
-      onClose: closePublishDialog(),
-      onClosed: publishDialogClosed(),
-      ...(payload as Partial<PublishDialogStateProps>),
-      open: true
-    }))
-    .addCase(updatePublishDialog, (state, { payload }) => ({
-      ...state,
-      ...(payload as Partial<PublishDialogStateProps>)
-    }))
-    .addCase(closePublishDialog, (state) => ({ ...state, open: false }))
-    .addCase(publishDialogClosed, () => initialState);
+	builder
+		.addCase(showPublishDialog, (state, { payload }) => ({
+			...state,
+			onClose: closePublishDialog(),
+			onClosed: publishDialogClosed(),
+			...(payload as Partial<PublishDialogStateProps>),
+			open: true
+		}))
+		.addCase(updatePublishDialog, (state, { payload }) => ({
+			...state,
+			...(payload as Partial<PublishDialogStateProps>)
+		}))
+		.addCase(closePublishDialog, (state) => ({ ...state, open: false }))
+		.addCase(publishDialogClosed, () => initialState);
 });

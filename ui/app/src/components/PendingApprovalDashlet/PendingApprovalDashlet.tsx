@@ -16,360 +16,374 @@
 
 import React, { ReactNode, useCallback, useEffect } from 'react';
 import {
-  CommonDashletProps,
-  getItemViewOption,
-  getValidatedSelectionState,
-  isPage,
-  previewPage,
-  useSelectionOptions,
-  useSpreadStateWithSelected,
-  WithSelectedState
+	CommonDashletProps,
+	getPackagesValidatedSelectionState,
+	useSpreadStateWithSelected,
+	WithSelectedState
 } from '../SiteDashboard/utils';
 import DashletCard from '../DashletCard/DashletCard';
 import {
-  DashletEmptyMessage,
-  DashletItemOptions,
-  getItemSkeleton,
-  List,
-  ListItemIcon,
-  Pager
+	DashletEmptyMessage,
+	getItemSkeleton,
+	List,
+	ListItemIcon,
+	Pager,
+	PersonAvatar
 } from '../DashletCard/dashletCommons';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import palette from '../../styles/palette';
 import ListItemText from '@mui/material/ListItemText';
 import Checkbox from '@mui/material/Checkbox';
-import { fetchPendingApproval } from '../../services/dashboard';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
-import { DetailedItem, LookupTable } from '../../models';
 import { LIVE_COLOUR, STAGING_COLOUR } from '../ItemPublishingTargetIcon/styles';
 import RefreshRounded from '@mui/icons-material/RefreshRounded';
-import ItemDisplay from '../ItemDisplay';
-import { ActionsBar } from '../ActionsBar';
-import { UNDEFINED } from '../../utils/constants';
-import { itemActionDispatcher } from '../../utils/itemActions';
-import useEnv from '../../hooks/useEnv';
+import { ActionsBar, ActionsBarAction } from '../ActionsBar';
+import { READY_MASK, UNDEFINED } from '../../utils/constants';
 import { useDispatch } from 'react-redux';
 import ListItemButton from '@mui/material/ListItemButton';
-import { deleteContentEvent, publishEvent, workflowEvent } from '../../state/actions/system';
+import {
+	deleteContentEvent,
+	publishEvent,
+	workflowEventApprove,
+	workflowEventCancel,
+	workflowEventDirectPublish,
+	workflowEventReject,
+	workflowEventSubmit
+} from '../../state/actions/system';
 import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
-import useSpreadState from '../../hooks/useSpreadState';
 import { LoadingIconButton } from '../LoadingIconButton';
 import Box from '@mui/material/Box';
 import { asLocalizedDateTime } from '../../utils/datetime';
 import useLocale from '../../hooks/useLocale';
-import SystemType from '../../models/SystemType';
-import DashletFilter from '../ActivityDashlet/DashletFilter';
-import useDashletFilterState from '../../hooks/useDashletFilterState';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
-import { reversePluckProps } from '../../utils/object';
+import { nnou, reversePluckProps } from '../../utils/object';
+import { fetchPackages, FetchPackagesResponse, PackageApprovalState } from '../../services/publishing';
+import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
+import IconButton from '@mui/material/IconButton';
+import PackageDetailsDialog from '../PackageDetailsDialog';
+import { generatePackageOptions, packageActionDispatcher } from '../../utils/packageActions';
+import { PublishPackage } from '../../models';
 
 interface PendingApprovalDashletProps extends CommonDashletProps {}
 
-interface PendingApprovalDashletState extends WithSelectedState<DetailedItem> {
-  loading: boolean;
-  loadingSkeleton: boolean;
-  total: number;
-  limit: number;
-  offset: number;
+interface PendingApprovalDashletState extends WithSelectedState<FetchPackagesResponse> {
+	total: number;
+	loading: boolean;
+	loadingSkeleton: boolean;
+	limit: number;
+	offset: number;
+	packageDetailsDialogId: number;
 }
 
 const messages = defineMessages({
-  staging: { id: 'words.staging', defaultMessage: 'Staging' },
-  live: { id: 'words.live', defaultMessage: 'Live' }
+	staging: { id: 'words.staging', defaultMessage: 'Staging' },
+	live: { id: 'words.live', defaultMessage: 'Live' }
 });
 
+const pendingApprovalState: PackageApprovalState[] = ['SUBMITTED'];
+
 export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
-  const { borderLeftColor = palette.purple.tint, onMinimize } = props;
-  const [
-    { items, total, loading, loadingSkeleton, isAllSelected, hasSelected, selected, selectedCount, limit, offset },
-    setState,
-    onSelectItem,
-    onSelectAll,
-    isSelected
-  ] = useSpreadStateWithSelected<PendingApprovalDashletState>({
-    items: null,
-    total: null,
-    loading: false,
-    loadingSkeleton: true,
-    selected: {},
-    isAllSelected: false,
-    hasSelected: false,
-    limit: 50,
-    offset: 0
-  });
-  const { formatMessage } = useIntl();
-  const currentPage = offset / limit;
-  const totalPages = total ? Math.ceil(total / limit) : 0;
-  const [itemsById, setItemsById] = useSpreadState<LookupTable<DetailedItem>>({});
-  const selectedItems = Object.values(itemsById)?.filter((item) => selected[item.id]) ?? [];
-  const selectionOptions = useSelectionOptions(Object.values(selectedItems), formatMessage, selectedCount);
-  const site = useActiveSiteId();
-  const locale = useLocale();
-  const { authoringBase } = useEnv();
-  const dispatch = useDispatch();
-  const filterState = useDashletFilterState('pendingApprovalDashlet');
-  const refs = useUpdateRefs({
-    items,
-    currentPage,
-    filterState,
-    loadPagesUntil: null as (pageNumber: number, itemTypes?: Array<SystemType>, backgroundRefresh?: boolean) => void
-  });
+	const { borderLeftColor = palette.purple.tint } = props;
+	const [
+		{
+			items: publishingPackages,
+			total,
+			loading,
+			loadingSkeleton,
+			isAllSelected,
+			hasSelected,
+			selected,
+			selectedCount,
+			limit,
+			offset,
+			packageDetailsDialogId
+		},
+		setState,
+		onSelectItem,
+		onSelectAll,
+		isSelected
+	] = useSpreadStateWithSelected<PendingApprovalDashletState>({
+		loading: false,
+		loadingSkeleton: true,
+		total: null,
+		limit: 50,
+		offset: 0,
+		packageDetailsDialogId: null
+	});
+	const { formatMessage } = useIntl();
+	const currentPage = offset / limit;
+	const totalPages = total ? Math.ceil(total / limit) : 0;
+	const selectedPackages = publishingPackages?.filter((pkg) => selected[pkg.id]) ?? [];
+	const selectionOptions = generatePackageOptions(selectedPackages) as ActionsBarAction[];
+	const isIndeterminate = hasSelected && !isAllSelected;
+	const site = useActiveSiteId();
+	const locale = useLocale();
+	const dispatch = useDispatch();
+	const refs = useUpdateRefs({
+		publishingPackages,
+		currentPage,
+		loadPagesUntil: null as (pageNumber: number, backgroundRefresh?: boolean) => void
+	});
 
-  const loadPage = useCallback(
-    (pageNumber: number, itemTypes?: Array<SystemType>, backgroundRefresh?: boolean) => {
-      const newOffset = pageNumber * limit;
-      setState({
-        loading: true,
-        loadingSkeleton: !backgroundRefresh
-      });
-      fetchPendingApproval(site, {
-        limit,
-        offset: newOffset,
-        itemType: refs.current.filterState.selectedTypes
-      }).subscribe((items) => {
-        setState({ items, total: items.total, offset: newOffset, loading: false });
-      });
-    },
-    [limit, setState, site, refs]
-  );
+	const loadPage = useCallback(
+		(pageNumber: number, backgroundRefresh?: boolean) => {
+			const newOffset = pageNumber * limit;
+			setState({
+				loading: true,
+				loadingSkeleton: !backgroundRefresh
+			});
 
-  const loadPagesUntil = useCallback(
-    (pageNumber: number, itemTypes?: Array<SystemType>, backgroundRefresh?: boolean) => {
-      setState({
-        loading: true,
-        loadingSkeleton: !backgroundRefresh,
-        ...(!backgroundRefresh && { items: null })
-      });
-      const totalLimit = pageNumber * limit;
-      fetchPendingApproval(site, {
-        limit: totalLimit + limit,
-        offset: 0,
-        itemType: refs.current.filterState.selectedTypes
-      }).subscribe((pendingApprovalItems) => {
-        const validatedState = getValidatedSelectionState(pendingApprovalItems, selected, limit);
-        setItemsById(validatedState.itemsById);
-        setState(validatedState.state);
-      });
-    },
-    [limit, selected, setState, site, setItemsById, refs]
-  );
-  refs.current.loadPagesUntil = loadPagesUntil;
+			fetchPackages(site, {
+				limit,
+				offset: newOffset,
+				states: READY_MASK,
+				approvalStates: pendingApprovalState
+			}).subscribe((packages) => {
+				setState({
+					items: packages,
+					total: packages.total,
+					offset: newOffset,
+					loading: false
+				});
+			});
+		},
+		[limit, setState, site]
+	);
 
-  const onRefresh = () => {
-    loadPagesUntil(currentPage, filterState.selectedTypes, true);
-  };
+	const loadPagesUntil = useCallback(
+		(pageNumber: number, backgroundRefresh?: boolean) => {
+			setState({
+				loading: true,
+				loadingSkeleton: !backgroundRefresh,
+				...(!backgroundRefresh && { items: null })
+			});
+			const totalLimit = pageNumber * limit;
+			fetchPackages(site, {
+				limit: totalLimit + limit,
+				offset: 0,
+				states: READY_MASK,
+				approvalStates: pendingApprovalState
+			}).subscribe((packages) => {
+				const validatedState = getPackagesValidatedSelectionState(packages, limit);
+				setState(validatedState);
+			});
+		},
+		[limit, setState, site]
+	);
+	refs.current.loadPagesUntil = loadPagesUntil;
 
-  useEffect(() => {
-    loadPage(0, refs.current.filterState.selectedTypes);
-  }, [loadPage, refs]);
+	const onRefresh = () => {
+		loadPagesUntil(currentPage, true);
+	};
 
-  useEffect(() => {
-    // To avoid re-fetching when it first loads
-    if (refs.current.items) {
-      refs.current.loadPagesUntil(refs.current.currentPage, filterState.selectedTypes);
-    }
-  }, [filterState?.selectedTypes, refs]);
+	useEffect(() => {
+		loadPage(0);
+	}, [loadPage, refs]);
 
-  const onOptionClicked = (option) => {
-    // Clear selection
-    setState({ selectedCount: 0, isAllSelected: false, selected: {}, hasSelected: false });
-    if (option !== 'clear') {
-      return itemActionDispatcher({
-        site,
-        authoringBase,
-        dispatch,
-        formatMessage,
-        option,
-        item: selectedItems.length > 1 ? selectedItems : selectedItems[0]
-      });
-    }
-  };
+	useEffect(() => {
+		// To avoid re-fetching when it first loads
+		if (refs.current.publishingPackages) {
+			refs.current.loadPagesUntil(refs.current.currentPage);
+		}
+	}, [refs]);
 
-  const onItemClick = (e, item) => {
-    if (isPage(item.systemType)) {
-      e.stopPropagation();
-      previewPage(site, authoringBase, item, dispatch, onMinimize);
-    } else if (item.availableActionsMap.view) {
-      e.stopPropagation();
+	const onOptionClicked = (option) => {
+		// Clear selection
+		setState({ selectedCount: 0, isAllSelected: false, selected: {}, hasSelected: false });
+		if (option !== 'clear') {
+			return packageActionDispatcher({
+				pkg: selectedPackages.length > 1 ? selectedPackages : selectedPackages[0],
+				option,
+				dispatch
+			});
+		}
+	};
 
-      itemActionDispatcher({
-        site,
-        authoringBase,
-        dispatch,
-        formatMessage,
-        option: getItemViewOption(item),
-        item
-      });
-    }
-  };
+	const onPackageDetailsClick = (packageId: number) => {
+		setState({ packageDetailsDialogId: packageId });
+	};
 
-  useEffect(() => {
-    if (items) {
-      const itemsObj = {};
-      items.forEach((item) => {
-        itemsObj[item.id] = item;
-      });
-      setItemsById(itemsObj);
-    }
-  }, [items, setItemsById]);
+	// region Item Updates Propagation
+	useEffect(() => {
+		const events = [
+			workflowEventSubmit.type,
+			workflowEventDirectPublish.type,
+			workflowEventApprove.type,
+			workflowEventReject.type,
+			workflowEventCancel.type,
+			publishEvent.type,
+			deleteContentEvent.type
+		];
+		const hostToHost$ = getHostToHostBus();
+		const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(() => {
+			loadPagesUntil(currentPage, true);
+		});
+		return () => {
+			subscription.unsubscribe();
+		};
+	}, [currentPage, loadPagesUntil]);
+	// endregion
 
-  // region Item Updates Propagation
-  useEffect(() => {
-    const events = [workflowEvent.type, publishEvent.type, deleteContentEvent.type];
-    const hostToHost$ = getHostToHostBus();
-    const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
-      loadPagesUntil(currentPage, filterState.selectedTypes, true);
-    });
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [currentPage, loadPagesUntil, filterState?.selectedTypes]);
-  // endregion
-
-  return (
-    <DashletCard
-      {...props}
-      borderLeftColor={borderLeftColor}
-      title={
-        <FormattedMessage
-          id="pendingApprovalDashlet.widgetTitle"
-          defaultMessage="Pending Approval <render_total>{total}</render_total>"
-          values={{
-            total,
-            render_total(total) {
-              return total ? `(${total})` : '';
-            }
-          }}
-        />
-      }
-      sxs={{
-        actionsBar: { padding: 0 },
-        content: { padding: 0 },
-        footer: {
-          justifyContent: 'space-between'
-        }
-      }}
-      actionsBar={
-        <ActionsBar
-          disabled={loading}
-          isChecked={isAllSelected}
-          isIndeterminate={hasSelected && !isAllSelected}
-          onCheckboxChange={onSelectAll}
-          onOptionClicked={onOptionClicked}
-          options={selectionOptions?.concat([
-            ...(selectedCount > 0
-              ? [
-                  {
-                    id: 'clear',
-                    label: formatMessage(
-                      {
-                        defaultMessage: 'Clear {count} selected'
-                      },
-                      { count: selectedCount }
-                    )
-                  }
-                ]
-              : [])
-          ])}
-          noSelectionContent={<DashletFilter selectedKeys={filterState.selectedKeys} onChange={filterState.onChange} />}
-          buttonProps={{ size: 'small' }}
-          sxs={{
-            root: { flexGrow: 1 },
-            container: { bgcolor: hasSelected ? 'action.selected' : UNDEFINED },
-            checkbox: { padding: '5px', borderRadius: 0 },
-            button: { minWidth: 50 }
-          }}
-        />
-      }
-      headerAction={
-        <LoadingIconButton onClick={onRefresh} loading={loading}>
-          <RefreshRounded />
-        </LoadingIconButton>
-      }
-      footer={
-        Boolean(items?.length) && (
-          <Pager
-            totalPages={totalPages}
-            totalItems={total}
-            currentPage={currentPage}
-            rowsPerPage={limit}
-            onPagePickerChange={(page) => loadPage(page, filterState.selectedTypes)}
-            onPageChange={(page) => loadPage(page, filterState.selectedTypes)}
-            onRowsPerPageChange={(rowsPerPage) => setState({ limit: rowsPerPage })}
-          />
-        )
-      }
-    >
-      {loading && loadingSkeleton && getItemSkeleton({ numOfItems: 3, showAvatar: false, showCheckbox: true })}
-      {Boolean(items?.length) && (
-        <List sx={{ pb: 0 }}>
-          {items.map((item, index) => (
-            <ListItemButton key={index} onClick={(e) => onSelectItem(e, item)} sx={{ pt: 0, pb: 0 }}>
-              <ListItemIcon>
-                <Checkbox edge="start" checked={isSelected(item)} onChange={(e) => onSelectItem(e, item)} />
-              </ListItemIcon>
-              <ListItemText
-                primary={
-                  <ItemDisplay
-                    item={item}
-                    titleDisplayProp="path"
-                    onClick={(e) =>
-                      isPage(item.systemType) || item.availableActionsMap.view ? onItemClick(e, item) : null
-                    }
-                    showNavigableAsLinks={isPage(item.systemType) || item.availableActionsMap.view}
-                  />
-                }
-                secondary={
-                  <FormattedMessage
-                    defaultMessage="Submitted {submittedDate} by {name} to {publishingTarget, select, live {go <render_target>live</render_target>} other {be <render_target>staged</render_target>}} {requestType, select, scheduled {on} other {}} {date}"
-                    values={{
-                      name: item.sandbox?.submitter?.username ?? item.sandbox?.modifier?.username,
-                      publishingTarget: item.stateMap.submittedToLive ? 'live' : 'staging',
-                      render_target(target: ReactNode[]) {
-                        return (
-                          <Box component="span" color={target[0] === 'live' ? LIVE_COLOUR : STAGING_COLOUR}>
-                            {messages[target[0] as string]
-                              ? formatMessage(messages[target[0] as string]).toLowerCase()
-                              : target[0]}
-                          </Box>
-                        );
-                      },
-                      requestType: item.live.dateScheduled || item.staging.dateScheduled ? 'scheduled' : 'asap',
-                      date:
-                        item.live.dateScheduled || item.staging.dateScheduled ? (
-                          asLocalizedDateTime(
-                            item.stateMap.submittedToLive ? item.live.dateScheduled : item.staging.dateScheduled,
-                            locale.localeCode,
-                            locale.dateTimeFormatOptions
-                          )
-                        ) : (
-                          <FormattedMessage defaultMessage="ASAP" />
-                        ),
-                      submittedDate: asLocalizedDateTime(
-                        item.sandbox?.dateSubmitted,
-                        locale.localeCode,
-                        reversePluckProps(locale.dateTimeFormatOptions, 'hour', 'minute', 'second')
-                      )
-                    }}
-                  />
-                }
-              />
-              <DashletItemOptions path={item.path} />
-            </ListItemButton>
-          ))}
-        </List>
-      )}
-      {total === 0 && (
-        <DashletEmptyMessage>
-          <FormattedMessage
-            id="pendingApprovalDashlet.noPendingItems"
-            defaultMessage="There are no items pending approval"
-          />
-        </DashletEmptyMessage>
-      )}
-    </DashletCard>
-  );
+	return (
+		<DashletCard
+			{...props}
+			borderLeftColor={borderLeftColor}
+			title={
+				<FormattedMessage
+					id="pendingApprovalDashlet.widgetTitle"
+					defaultMessage="Pending Approval <render_total>{total}</render_total>"
+					values={{
+						total,
+						render_total(total) {
+							return total ? `(${total})` : '';
+						}
+					}}
+				/>
+			}
+			sxs={{
+				actionsBar: { padding: 0 },
+				content: { padding: 0 },
+				footer: {
+					justifyContent: 'space-between'
+				}
+			}}
+			actionsBar={
+				<ActionsBar
+					disabled={loading}
+					isChecked={isAllSelected}
+					isIndeterminate={isIndeterminate}
+					onCheckboxChange={onSelectAll}
+					onOptionClicked={onOptionClicked}
+					options={selectionOptions?.concat([
+						...(selectedCount > 0
+							? [
+									{
+										id: 'clear',
+										label: formatMessage(
+											{
+												defaultMessage: 'Clear {count} selected'
+											},
+											{ count: selectedCount }
+										)
+									}
+								]
+							: [])
+					])}
+					buttonProps={{ size: 'small' }}
+					sxs={{
+						root: { flexGrow: 1 },
+						container: { bgcolor: selectedCount > 0 ? 'action.selected' : UNDEFINED },
+						checkbox: { padding: '5px', borderRadius: 0 },
+						button: { minWidth: 50 }
+					}}
+				/>
+			}
+			headerAction={
+				<LoadingIconButton onClick={onRefresh} loading={loading}>
+					<RefreshRounded />
+				</LoadingIconButton>
+			}
+			footer={
+				Boolean(publishingPackages?.length) && (
+					<Pager
+						totalPages={totalPages}
+						totalItems={total}
+						currentPage={currentPage}
+						rowsPerPage={limit}
+						onPagePickerChange={(page) => loadPage(page)}
+						onPageChange={(page) => loadPage(page)}
+						onRowsPerPageChange={(rowsPerPage) => setState({ limit: rowsPerPage })}
+					/>
+				)
+			}
+		>
+			{loading && loadingSkeleton && getItemSkeleton({ numOfItems: 3, showAvatar: false, showCheckbox: true })}
+			{Boolean(publishingPackages?.length) && (
+				<List sx={{ pb: 0 }}>
+					{publishingPackages.map((pkg, index) => (
+						<ListItemButton key={index} onClick={(e) => onSelectItem(e, pkg as PublishPackage)} sx={{ pt: 0, pb: 0 }}>
+							<ListItemIcon>
+								<Checkbox
+									edge="start"
+									checked={isSelected(pkg)}
+									onClick={(e) => onSelectItem(e, pkg as PublishPackage)}
+								/>
+							</ListItemIcon>
+							{pkg.submitter && (
+								<PersonAvatar
+									person={pkg.submitter}
+									sx={{
+										display: 'inline-flex',
+										mr: 1,
+										width: 30,
+										height: 30,
+										fontSize: '1.1rem'
+									}}
+								/>
+							)}
+							<ListItemText
+								primary={
+									<FormattedMessage
+										defaultMessage="<bold>{title}</bold> awaiting approval ({total} items)"
+										values={{
+											title: pkg.title,
+											total: pkg.itemCount,
+											bold: (chunks: React.ReactNode) => <strong>{chunks}</strong>
+										}}
+									/>
+								}
+								secondary={
+									<FormattedMessage
+										defaultMessage="Submitted by {name} to go {publishingTarget, select, live { <render_target>live</render_target>} other {<render_target>staging</render_target>}} on {submittedDate}"
+										values={{
+											name: pkg.submitter?.username,
+											publishingTarget: pkg.target,
+											render_target(target: ReactNode[]) {
+												return (
+													<Box component="span" color={target[0] === 'live' ? LIVE_COLOUR : STAGING_COLOUR}>
+														{messages[target[0] as string]
+															? formatMessage(messages[target[0] as string]).toLowerCase()
+															: target[0]}
+													</Box>
+												);
+											},
+											submittedDate: asLocalizedDateTime(
+												pkg.schedule ?? pkg.submittedOn,
+												locale.localeCode,
+												reversePluckProps(locale.dateTimeFormatOptions, 'hour', 'minute', 'second')
+											)
+										}}
+									/>
+								}
+							/>
+							<IconButton
+								onClick={(e) => {
+									e.stopPropagation();
+									onPackageDetailsClick(pkg.id);
+								}}
+							>
+								<ChevronRightRoundedIcon />
+							</IconButton>
+						</ListItemButton>
+					))}
+				</List>
+			)}
+			{total === 0 && (
+				<DashletEmptyMessage>
+					<FormattedMessage
+						id="pendingApprovalDashlet.noPendingItems"
+						defaultMessage="There are no items pending approval"
+					/>
+				</DashletEmptyMessage>
+			)}
+			<PackageDetailsDialog
+				open={nnou(packageDetailsDialogId)}
+				onClose={() => setState({ packageDetailsDialogId: null })}
+				packageId={packageDetailsDialogId}
+			/>
+		</DashletCard>
+	);
 }
 
 export default PendingApprovalDashlet;

@@ -23,20 +23,20 @@ import StandardAction from '../../models/StandardAction';
 import ToolsPanelListItemButton from '../ToolsPanelListItemButton';
 
 export interface ToolsPanelListItemDispatchButtonProps extends Omit<ListItemButtonProps, 'title' | 'onClick'> {
-  title: TranslationOrText;
-  subtitle?: string;
-  icon?: SystemIconDescriptor;
-  secondaryActionIcon?: React.ReactNode;
-  onClick?: StandardAction;
-  onSecondaryActionClick?: StandardAction;
+	title: TranslationOrText;
+	subtitle?: string;
+	icon?: SystemIconDescriptor;
+	secondaryActionIcon?: React.ReactNode;
+	onClick?: StandardAction;
+	onSecondaryActionClick?: StandardAction;
 }
 
 export function ToolsPanelListItemDispatchButton(props: ToolsPanelListItemDispatchButtonProps) {
-  const { onClick: onClickProp, onSecondaryActionClick: onSecondaryActionClickProp, ...otherProps } = props;
-  const dispatch = useDispatch();
-  const onClick = () => dispatch(onClickProp);
-  const onSecondaryActionClick = () => dispatch(onSecondaryActionClickProp);
-  return <ToolsPanelListItemButton onClick={onClick} onSecondaryActionClick={onSecondaryActionClick} {...otherProps} />;
+	const { onClick: onClickProp, onSecondaryActionClick: onSecondaryActionClickProp, ...otherProps } = props;
+	const dispatch = useDispatch();
+	const onClick = () => dispatch(onClickProp);
+	const onSecondaryActionClick = () => dispatch(onSecondaryActionClickProp);
+	return <ToolsPanelListItemButton onClick={onClick} onSecondaryActionClick={onSecondaryActionClick} {...otherProps} />;
 }
 
 export default ToolsPanelListItemDispatchButton;

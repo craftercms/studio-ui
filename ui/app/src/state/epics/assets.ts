@@ -16,9 +16,9 @@
 
 import { ofType } from 'redux-observable';
 import {
-  FETCH_ASSETS_PANEL_ITEMS,
-  fetchAssetsPanelItemsComplete,
-  fetchAssetsPanelItemsFailed
+	FETCH_ASSETS_PANEL_ITEMS,
+	fetchAssetsPanelItemsComplete,
+	fetchAssetsPanelItemsFailed
 } from '../actions/preview';
 import { map, switchMap, withLatestFrom } from 'rxjs/operators';
 import { catchAjaxError } from '../../utils/ajax';
@@ -28,15 +28,15 @@ import GlobalState from '../../models/GlobalState';
 import { CrafterCMSEpic } from '../store';
 
 export default [
-  (action$, state$: Observable<GlobalState>) =>
-    action$.pipe(
-      ofType(FETCH_ASSETS_PANEL_ITEMS),
-      withLatestFrom(state$),
-      switchMap(([, state]) =>
-        search(state.sites.active, state.preview.assets.query).pipe(
-          map(fetchAssetsPanelItemsComplete),
-          catchAjaxError(fetchAssetsPanelItemsFailed)
-        )
-      )
-    )
+	(action$, state$: Observable<GlobalState>) =>
+		action$.pipe(
+			ofType(FETCH_ASSETS_PANEL_ITEMS),
+			withLatestFrom(state$),
+			switchMap(([, state]) =>
+				search(state.sites.active, state.preview.assets.query).pipe(
+					map(fetchAssetsPanelItemsComplete),
+					catchAjaxError(fetchAssetsPanelItemsFailed)
+				)
+			)
+		)
 ] as CrafterCMSEpic[];

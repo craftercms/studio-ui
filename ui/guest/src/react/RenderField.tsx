@@ -24,62 +24,62 @@ import { getCachedContentType } from '../contentController';
 import ContentInstance from '@craftercms/studio-ui/models/ContentInstance';
 
 export type RenderFieldProps<P, V = any, F = V> = Omit<FieldProps<P>, 'children'> & {
-  renderTarget?: string;
-  render?: (value: V, fieldId: string, model: ContentInstance) => F;
+	renderTarget?: string;
+	render?: (value: V, fieldId: string, model: ContentInstance) => F;
 };
 
 export const RenderField = forwardRef<any, RenderFieldProps<{}>>(function <P = {}>(props, ref) {
-  // region const { ... } = props
-  const {
-    model: modelProp,
-    fieldId,
-    index,
-    component = 'div',
-    componentProps = {},
-    // The renderTarget property for the field value. Can be multiple (CSVs),
-    // just like fieldId. Should have a 1-to-1 correspondence with fieldId.
-    renderTarget = 'children',
-    render = props.format ?? ((value) => value),
-    ...other
-  } = props;
-  // endregion
-  if (props.format) {
-    console.error(
-      'RenderField component prop `format` was renamed to `render`. Support for `format` will be removed in later versions. Please use `render` instead.'
-    );
-  }
-  const { props: ice, model } = useICE({ model: modelProp, fieldId, index, ref });
-  const Component = component as ComponentType<P>;
-  const passDownProps = Object.assign({}, other as unknown, ice, componentProps) as P;
-  const fields = fieldId.replace(/\s/g, '').split(',');
-  const targets = renderTarget.replace(/\s/g, '').split(',');
-  targets.forEach((target, targetIndex) => {
-    const fieldId = fields[targetIndex];
-    setProperty(
-      passDownProps as {},
-      target,
-      render(nnou(index) ? extractCollectionItem(model, fieldId, index) : getModelValue(model, fieldId), fieldId, model)
-    );
-  });
+	// region const { ... } = props
+	const {
+		model: modelProp,
+		fieldId,
+		index,
+		component = 'div',
+		componentProps = {},
+		// The renderTarget property for the field value. Can be multiple (CSVs),
+		// just like fieldId. Should have a 1-to-1 correspondence with fieldId.
+		renderTarget = 'children',
+		render = props.format ?? ((value) => value),
+		...other
+	} = props;
+	// endregion
+	if (props.format) {
+		console.error(
+			'RenderField component prop `format` was renamed to `render`. Support for `format` will be removed in later versions. Please use `render` instead.'
+		);
+	}
+	const { props: ice, model } = useICE({ model: modelProp, fieldId, index, ref });
+	const Component = component as ComponentType<P>;
+	const passDownProps = Object.assign({}, other as unknown, ice, componentProps) as P;
+	const fields = fieldId.replace(/\s/g, '').split(',');
+	const targets = renderTarget.replace(/\s/g, '').split(',');
+	targets.forEach((target, targetIndex) => {
+		const fieldId = fields[targetIndex];
+		setProperty(
+			passDownProps as {},
+			target,
+			render(nnou(index) ? extractCollectionItem(model, fieldId, index) : getModelValue(model, fieldId), fieldId, model)
+		);
+	});
 
-  // `data-craftercms-field` attribute is added to all fields for the elements to get the XB on hover cursor styles.
-  // `data-craftercms-type="collection"` attribute is added to node-selector and repeat fields for the elements to get
-  // the XB padding mode styles.
-  const contentTypeId = model.craftercms.contentTypeId;
-  const contentType = getCachedContentType(contentTypeId);
-  const field = contentType?.fields[fieldId];
-  passDownProps['data-craftercms-field'] = '';
-  if (field && ['node-selector', 'repeat'].includes(field.type)) {
-    passDownProps['data-craftercms-type'] = 'collection';
-  }
+	// `data-craftercms-field` attribute is added to all fields for the elements to get the XB on hover cursor styles.
+	// `data-craftercms-type="collection"` attribute is added to node-selector and repeat fields for the elements to get
+	// the XB padding mode styles.
+	const contentTypeId = model.craftercms.contentTypeId;
+	const contentType = getCachedContentType(contentTypeId);
+	const field = contentType?.fields[fieldId];
+	passDownProps['data-craftercms-field'] = '';
+	if (field && ['node-selector', 'repeat'].includes(field.type)) {
+		passDownProps['data-craftercms-type'] = 'collection';
+	}
 
-  return <Component {...passDownProps} />;
+	return <Component {...passDownProps} />;
 });
 
 RenderField.propTypes = {
-  ...Field.propTypes,
-  render: PropTypes.func,
-  renderTarget: PropTypes.string
+	...Field.propTypes,
+	render: PropTypes.func,
+	renderTarget: PropTypes.string
 };
 
 export default RenderField;

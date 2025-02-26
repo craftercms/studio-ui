@@ -21,18 +21,18 @@ import Skeleton from '@mui/material/Skeleton';
 import { rand } from '../../PathNavigator/utils';
 
 export function RepoStatusSkeleton() {
-  return (
-    <Box sx={{ p: 2 }}>
-      <section style={{ width: '100%' }}>
-        <Typography variant="h5">
-          <Skeleton variant="text" width="30%" />
-        </Typography>
-        {new Array(rand(5, 15)).fill(null).map((_, index) => (
-          <Skeleton key={index} variant="text" width={`${rand(20, 90)}%`} style={{ margin: '10px 0' }} />
-        ))}
-      </section>
-    </Box>
-  );
+	return (
+		<Box sx={{ p: 2 }}>
+			<section style={{ width: '100%' }}>
+				<Typography variant="h5">
+					<Skeleton variant="text" width="30%" />
+				</Typography>
+				{new Array(rand(5, 15)).fill(null).map((_, index) => (
+					<Skeleton key={index} variant="text" width={`${rand(20, 90)}%`} style={{ margin: '10px 0' }} />
+				))}
+			</section>
+		</Box>
+	);
 }
 
 export default RepoStatusSkeleton;

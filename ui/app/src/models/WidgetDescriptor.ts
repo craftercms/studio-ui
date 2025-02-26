@@ -17,11 +17,11 @@
 import PluginFileBuilder from './PluginFileBuilder';
 
 export interface WidgetDescriptor {
-  id: string;
-  uiKey?: string | number;
-  permittedRoles?: string[];
-  plugin?: PluginFileBuilder;
-  configuration?: any;
+	id: string;
+	uiKey?: string | number;
+	permittedRoles?: string[];
+	plugin?: PluginFileBuilder;
+	configuration?: any;
 }
 
 export default WidgetDescriptor;

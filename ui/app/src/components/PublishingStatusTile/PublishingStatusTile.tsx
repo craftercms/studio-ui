@@ -15,88 +15,86 @@
  */
 
 import { useIntl } from 'react-intl';
-import { makeStyles } from 'tss-react/mui';
-import { CSSObject as CSSProperties } from 'tss-react';
 import Typography from '@mui/material/Typography';
 import * as React from 'react';
-import { ElementType } from 'react';
 import Skeleton from '@mui/material/Skeleton';
 import { PublishingStatus } from '../../models/Publishing';
 import PublishingStatusAvatar from '../PublishingStatusAvatar/PublishingStatusAvatar';
-import { getPublishingStatusText } from '../PublishingStatusDisplay';
+import { getPublishingStatusState, getPublishingStatusText } from '../PublishingStatusDisplay';
+import Box from '@mui/material/Box';
+import { PartialSxRecord } from '../../models';
+import { SystemStyleObject } from '@mui/system/styleFunctionSx/styleFunctionSx';
+import { Theme } from '@mui/material';
 
-type PublishingStatusTileClassKey = 'root' | 'avatar' | 'text';
+export type PublishingStatusTileClassKey = 'root' | 'avatar' | 'text';
 
-type PublishingStatusTileStyles = Partial<Record<PublishingStatusTileClassKey, CSSProperties>>;
-
-export interface PublishingStatusTileProps
-  extends React.HTMLAttributes<HTMLDivElement | HTMLButtonElement>,
-    Pick<PublishingStatus, 'status' | 'enabled'> {
-  isFetching?: boolean;
-  styles?: PublishingStatusTileStyles;
-  classes?: Partial<Record<PublishingStatusTileClassKey, string>>;
+export interface PublishingStatusTileProps extends React.HTMLAttributes<HTMLDivElement | HTMLButtonElement> {
+	publishingStatus: PublishingStatus;
+	isFetching?: boolean;
+	classes?: Partial<Record<PublishingStatusTileClassKey, string>>;
+	sxs?: PartialSxRecord<PublishingStatusTileClassKey>;
 }
 
-const usePublishingStatusTileStyles = makeStyles<PublishingStatusTileStyles, PublishingStatusTileClassKey>()(
-  (theme, { root, avatar, text } = {} as PublishingStatusTileStyles) => ({
-    root: {
-      width: '120px',
-      height: '100px',
-      display: 'flex',
-      alignItems: 'center',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      textAlign: 'center',
-      border: 'none',
-      borderRadius: theme.shape.borderRadius,
-      borderTop: 'none',
-      background: theme.palette.background.paper,
-      margin: 5,
-      'button&': {
-        cursor: 'pointer',
-        '&:hover, &:focus': {
-          background: theme.palette.action.hover,
-          boxShadow: theme.shadows[2]
-        }
-      },
-      ...root
-    },
-    avatar: {
-      margin: 5,
-      ...avatar
-    },
-    text: {
-      width: '100%',
-      ...text
-    }
-  })
-);
-
 const PublishingStatusTile = React.forwardRef<HTMLDivElement | HTMLButtonElement, PublishingStatusTileProps>(
-  function (props, ref) {
-    const { classes, cx } = usePublishingStatusTileStyles(props.styles);
-    const { formatMessage } = useIntl();
-    const { enabled, status, onClick, isFetching, classes: propClasses, ...rest } = props;
-    const Component = onClick ? ('button' as ElementType) : ('div' as ElementType);
-    const statusText = getPublishingStatusText(props, formatMessage);
-    return (
-      <Component
-        ref={ref}
-        {...rest}
-        onClick={onClick}
-        className={cx(classes.root, propClasses?.root, !isFetching && status)}
-      >
-        <PublishingStatusAvatar
-          enabled={enabled}
-          status={isFetching ? null : status}
-          className={cx(classes.avatar, propClasses?.avatar)}
-        />
-        <Typography className={cx(classes.text, propClasses?.text)} noWrap title={statusText} color="textPrimary">
-          {isFetching ? <Skeleton /> : statusText}
-        </Typography>
-      </Component>
-    );
-  }
+	function (props, ref) {
+		const { formatMessage } = useIntl();
+		const { publishingStatus, onClick, isFetching, sxs, ...rest } = props;
+		const status = getPublishingStatusState(publishingStatus);
+		const statusText = getPublishingStatusText(publishingStatus, formatMessage);
+		return (
+			<Box
+				component={onClick ? 'button' : 'div'}
+				ref={ref}
+				{...rest}
+				onClick={onClick}
+				className={[!isFetching && status, props.classes?.root].filter(Boolean).join(' ')}
+				sx={(theme) => ({
+					width: '120px',
+					height: '100px',
+					display: 'flex',
+					alignItems: 'center',
+					flexDirection: 'column',
+					justifyContent: 'center',
+					textAlign: 'center',
+					border: 'none',
+					borderRadius: '4px',
+					borderTop: 'none',
+					background: theme.palette.background.paper,
+					margin: '5px',
+					'button&': {
+						cursor: 'pointer',
+						'&:hover, &:focus': {
+							background: theme.palette.action.hover,
+							boxShadow: theme.shadows[2]
+						}
+					},
+					...(sxs?.root as SystemStyleObject<Theme>)
+				})}
+			>
+				<PublishingStatusAvatar
+					enabled={publishingStatus.enabled}
+					status={isFetching ? null : status}
+					className={props.classes?.avatar}
+					sx={{
+						margin: '5px',
+						...sxs?.avatar
+					}}
+				/>
+				<Typography
+					className={props.classes?.text}
+					sx={{
+						width: '100%',
+						...sxs?.text
+					}}
+					noWrap
+					title={statusText}
+					color="textPrimary"
+				>
+					{isFetching ? <Skeleton /> : statusText}
+				</Typography>
+			</Box>
+		);
+	}
 );
 
 export default PublishingStatusTile;

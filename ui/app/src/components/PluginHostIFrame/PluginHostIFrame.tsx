@@ -26,36 +26,36 @@ type CompletePluginFileBuilder = Required<PluginFileBuilder>;
 type Optional = 'site' | 'id' | 'file';
 
 export interface PluginHostIFrameProps extends IframeHTMLAttributes<HTMLIFrameElement> {
-  sx?: BoxProps['sx'];
-  plugin: Omit<CompletePluginFileBuilder, Optional> & Partial<Pick<CompletePluginFileBuilder, Optional>>;
+	sx?: BoxProps['sx'];
+	plugin: Omit<CompletePluginFileBuilder, Optional> & Partial<Pick<CompletePluginFileBuilder, Optional>>;
 }
 
 export const PluginHostIFrame = forwardRef<HTMLIFrameElement, PluginHostIFrameProps>((props, ref) => {
-  const {
-    sx,
-    plugin: { type, name, id, file, site },
-    ...other
-  } = props;
-  const siteId = useActiveSiteId();
-  return (
-    <Box
-      title="Studio plugin host frame"
-      {...other}
-      sx={typeof sx === 'object' ? { width: '100%', height: '100%', border: 'none', ...sx } : sx}
-      ref={ref}
-      component="iframe"
-      src={`/studio/plugin${toQueryString(
-        {
-          site: site || siteId,
-          type,
-          name,
-          file,
-          pluginId: id
-        },
-        { skipNull: true, skipEmptyString: true }
-      )}`}
-    />
-  );
+	const {
+		sx,
+		plugin: { type, name, id, file, site },
+		...other
+	} = props;
+	const siteId = useActiveSiteId();
+	return (
+		<Box
+			title="Studio plugin host frame"
+			{...other}
+			sx={typeof sx === 'object' ? { width: '100%', height: '100%', border: 'none', ...sx } : sx}
+			ref={ref}
+			component="iframe"
+			src={`/studio/plugin${toQueryString(
+				{
+					site: site || siteId,
+					type,
+					name,
+					file,
+					pluginId: id
+				},
+				{ skipNull: true, skipEmptyString: true }
+			)}`}
+		/>
+	);
 });
 
 export default PluginHostIFrame;

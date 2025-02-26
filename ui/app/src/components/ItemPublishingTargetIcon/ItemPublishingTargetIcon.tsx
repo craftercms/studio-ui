@@ -18,52 +18,43 @@ import Tooltip from '@mui/material/Tooltip';
 import PublishingTargetIcon from '@mui/icons-material/FiberManualRecordRounded';
 import * as React from 'react';
 import { getItemPublishingTargetText } from '../ItemDisplay/utils';
-import { CSSObject as CSSProperties } from 'tss-react';
 import { DetailedItem, SandboxItem } from '../../models/Item';
-import { useStyles } from './styles';
 import { SvgIconProps } from '@mui/material/SvgIcon';
+import { PartialSxRecord } from '../../models';
+import palette from '../../styles/palette';
+import { LIVE_COLOUR, STAGING_COLOUR } from './styles';
 
 export type ItemPublishingTargetIconClassKey =
-  | 'root'
-  | 'publishingTargetLive'
-  | 'publishingTargetStaged'
-  | 'publishingIcon';
-export type ItemPublishingTargetIconStyles = Partial<Record<ItemPublishingTargetIconClassKey, CSSProperties>>;
-
+	| 'root'
+	| 'publishingTargetLive'
+	| 'publishingTargetStaged'
+	| 'publishingIcon';
 export interface ItemPublishingTargetIconProps {
-  item: DetailedItem | SandboxItem;
-  classes?: Partial<Record<ItemPublishingTargetIconClassKey, string>>;
-  className?: string;
-  styles?: ItemPublishingTargetIconStyles;
-  displayTooltip?: boolean;
-  fontSize?: SvgIconProps['fontSize'];
+	item: DetailedItem | SandboxItem;
+	classes?: Partial<Record<ItemPublishingTargetIconClassKey, string>>;
+	sxs?: PartialSxRecord<ItemPublishingTargetIconClassKey>;
+	className?: string;
+	displayTooltip?: boolean;
+	fontSize?: SvgIconProps['fontSize'];
 }
 
 export function ItemPublishingTargetIcon(props: ItemPublishingTargetIconProps) {
-  const { item, classes: propClasses, styles, className, displayTooltip = true, fontSize } = props;
-  const { classes, cx } = useStyles(styles);
-
-  return (
-    <Tooltip
-      title={displayTooltip ? getItemPublishingTargetText(item.stateMap) : ''}
-      open={displayTooltip ? void 0 : false}
-    >
-      <PublishingTargetIcon
-        fontSize={fontSize}
-        className={cx(
-          classes.root,
-          classes.publishingIcon,
-          propClasses?.root,
-          className,
-          item.stateMap.live
-            ? classes.publishingTargetLive
-            : item.stateMap.staged
-              ? classes.publishingTargetStaged
-              : false
-        )}
-      />
-    </Tooltip>
-  );
+	const { item, classes, sxs, className, displayTooltip = true, fontSize } = props;
+	return (
+		<Tooltip
+			title={displayTooltip ? getItemPublishingTargetText(item.stateMap) : ''}
+			open={displayTooltip ? void 0 : false}
+		>
+			<PublishingTargetIcon
+				fontSize={fontSize}
+				className={[className, classes?.root].join(' ')}
+				sx={{
+					color: item.stateMap.live ? LIVE_COLOUR : item.stateMap.staged ? STAGING_COLOUR : palette.gray.medium2,
+					...sxs?.root
+				}}
+			/>
+		</Tooltip>
+	);
 }
 
 export default ItemPublishingTargetIcon;

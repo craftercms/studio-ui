@@ -15,6 +15,6 @@
  */
 
 export interface Status {
-  uptime: number;
-  startup: string;
+	uptime: number;
+	startup: string;
 }

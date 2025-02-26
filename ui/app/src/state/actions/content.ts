@@ -23,7 +23,7 @@ import StandardAction from '../../models/StandardAction';
 // region Quick Create
 export const fetchQuickCreateList = /*#__PURE__*/ createAction('FETCH_QUICK_CREATE_LIST');
 export const fetchQuickCreateListComplete = /*#__PURE__*/ createAction<QuickCreateItem[]>(
-  'FETCH_QUICK_CREATE_LIST_COMPLETE'
+	'FETCH_QUICK_CREATE_LIST_COMPLETE'
 );
 export const fetchQuickCreateListFailed = /*#__PURE__*/ createAction('FETCH_QUICK_CREATE_LIST_FAILED');
 // endregion
@@ -35,7 +35,7 @@ export const fetchDetailedItem = /*#__PURE__*/ createAction<{ path: string }>('F
 export const reloadDetailedItem = /*#__PURE__*/ createAction<{ path: string }>('RELOAD_DETAILED_ITEM');
 
 export const completeDetailedItem = /*#__PURE__*/ createAction<{ path: string; force?: boolean }>(
-  'COMPLETE_DETAILED_ITEM'
+	'COMPLETE_DETAILED_ITEM'
 );
 
 export const fetchDetailedItemComplete = /*#__PURE__*/ createAction<DetailedItem>('FETCH_DETAILED_ITEM_COMPLETE');
@@ -45,7 +45,7 @@ export const fetchDetailedItemFailed = /*#__PURE__*/ createAction<AjaxError>('FE
 export const fetchDetailedItems = /*#__PURE__*/ createAction<{ paths: string[] }>('COMPLETE_DETAILED_ITEMS');
 
 export const fetchDetailedItemsComplete = /*#__PURE__*/ createAction<{ items: DetailedItem[] }>(
-  'FETCH_DETAILED_ITEMS_COMPLETE'
+	'FETCH_DETAILED_ITEMS_COMPLETE'
 );
 
 export const fetchDetailedItemsFailed = /*#__PURE__*/ createAction<AjaxError>('FETCH_DETAILED_ITEMS_FAILED');
@@ -67,10 +67,10 @@ export type FetchSandboxItemCompletePayload = { item: SandboxItem };
 export type FetchSandboxItemsCompletePayload = { items: SandboxItem[] };
 
 export const fetchSandboxItemComplete =
-  /*#__PURE__*/ createAction<FetchSandboxItemCompletePayload>('FETCH_SANDBOX_ITEM_COMPLETE');
+	/*#__PURE__*/ createAction<FetchSandboxItemCompletePayload>('FETCH_SANDBOX_ITEM_COMPLETE');
 
 export const fetchSandboxItemsComplete =
-  /*#__PURE__*/ createAction<FetchSandboxItemsCompletePayload>('FETCH_SANDBOX_ITEMS_COMPLETE');
+	/*#__PURE__*/ createAction<FetchSandboxItemsCompletePayload>('FETCH_SANDBOX_ITEMS_COMPLETE');
 
 export const fetchSandboxItemFailed = /*#__PURE__*/ createAction<AjaxError>('FETCH_SANDBOX_ITEM_FAILED');
 
@@ -85,15 +85,15 @@ export const updateItemsByPath = /*#__PURE__*/ createAction<{ items: SandboxItem
 // region Clipboard
 
 export const setClipboard = /*#__PURE__*/ createAction<{
-  type: 'CUT' | 'COPY';
-  paths?: string[];
-  sourcePath: string;
+	type: 'CUT' | 'COPY';
+	paths?: string[];
+	sourcePath: string;
 }>('SET_CLIPBOARD');
 
 export const restoreClipboard = /*#__PURE__*/ createAction<{
-  type: 'CUT' | 'COPY';
-  paths?: string[];
-  sourcePath: string;
+	type: 'CUT' | 'COPY';
+	paths?: string[];
+	sourcePath: string;
 }>('RESTORE_CLIPBOARD');
 
 export const clearClipboard = /*#__PURE__*/ createAction('CLEAR_CLIPBOARD');
@@ -105,17 +105,17 @@ export const clearClipboard = /*#__PURE__*/ createAction('CLEAR_CLIPBOARD');
 export const duplicateItem = /*#__PURE__*/ createAction<{ path: string; onSuccess: StandardAction }>('DUPLICATE_ITEM');
 
 export const duplicateAsset = /*#__PURE__*/ createAction<{ path: string; onSuccess: StandardAction }>(
-  'DUPLICATE_ASSET'
+	'DUPLICATE_ASSET'
 );
 
 export const duplicateWithPolicyValidation = /*#__PURE__*/ createAction<{ path: string; type: 'item' | 'asset' }>(
-  'DUPLICATE_WITH_POLICY_VALIDATION'
+	'DUPLICATE_WITH_POLICY_VALIDATION'
 );
 
 export const pasteItem = /*#__PURE__*/ createAction<{ path: string }>('PASTE_ITEM');
 
 export const pasteItemWithPolicyValidation = /*#__PURE__*/ createAction<{ path: string }>(
-  'PASTE_ITEM_WITH_POLICY_VALIDATION'
+	'PASTE_ITEM_WITH_POLICY_VALIDATION'
 );
 
 export const unlockItem = /*#__PURE__*/ createAction<{ path: string; notify?: boolean }>('UNLOCK_ITEM');
@@ -132,15 +132,15 @@ export const lockItemFailed = /*#__PURE__*/ createAction('LOCK_ITEM_FAILED');
 
 // This action's semantic is to unlock the item only if the lock owner is the current user.
 export const conditionallyUnlockItem = /*#__PURE__*/ createAction<{ path: string; notify?: boolean }>(
-  'CONDITIONALLY_UNLOCK_ITEM'
+	'CONDITIONALLY_UNLOCK_ITEM'
 );
 
 export const deleteController = /*#__PURE__*/ createAction<{ item: DetailedItem; onSuccess?: StandardAction }>(
-  'DELETE_CONTROLLER'
+	'DELETE_CONTROLLER'
 );
 
 export const deleteTemplate = /*#__PURE__*/ createAction<{ item: DetailedItem; onSuccess?: StandardAction }>(
-  'DELETE_TEMPLATE'
+	'DELETE_TEMPLATE'
 );
 
 // endregion

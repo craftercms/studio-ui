@@ -15,98 +15,98 @@
  */
 
 CStudioForms.Controls.Label =
-  CStudioForms.Controls.Label ||
-  function (id, form, owner, properties, constraints) {
-    this.owner = owner;
-    this.owner.registerField(this);
-    this.errors = [];
-    this.properties = properties;
-    this.constraints = constraints;
-    this.inputEl = null;
-    this.countEl = null;
-    this.required = false;
-    this.value = '_not-set';
-    this.form = form;
-    this.id = id;
-    this.supportedPostFixes = ['_s'];
+	CStudioForms.Controls.Label ||
+	function (id, form, owner, properties, constraints) {
+		this.owner = owner;
+		this.owner.registerField(this);
+		this.errors = [];
+		this.properties = properties;
+		this.constraints = constraints;
+		this.inputEl = null;
+		this.countEl = null;
+		this.required = false;
+		this.value = '_not-set';
+		this.form = form;
+		this.id = id;
+		this.supportedPostFixes = ['_s'];
 
-    return this;
-  };
+		return this;
+	};
 
 YAHOO.extend(CStudioForms.Controls.Label, CStudioForms.CStudioFormField, {
-  getLabel: function () {
-    return CMgs.format(langBundle, 'label');
-  },
+	getLabel: function () {
+		return CMgs.format(langBundle, 'label');
+	},
 
-  render: function (config, containerEl) {
-    // we need to make the general layout of a control inherit from common
-    // you should be able to override it -- but most of the time it wil be the same
-    containerEl.id = this.id;
+	render: function (config, containerEl) {
+		// we need to make the general layout of a control inherit from common
+		// you should be able to override it -- but most of the time it wil be the same
+		containerEl.id = this.id;
 
-    var titleEl = document.createElement('span');
+		var titleEl = document.createElement('span');
 
-    YAHOO.util.Dom.addClass(titleEl, 'cstudio-form-field-title');
-    titleEl.innerHTML = '&nbsp;';
-    containerEl.appendChild(titleEl);
+		YAHOO.util.Dom.addClass(titleEl, 'cstudio-form-field-title');
+		titleEl.innerHTML = '&nbsp;';
+		containerEl.appendChild(titleEl);
 
-    var controlWidgetContainerEl = document.createElement('div');
-    YAHOO.util.Dom.addClass(controlWidgetContainerEl, 'datum');
-    YAHOO.util.Dom.addClass(controlWidgetContainerEl, 'cstudio-form-control-input-container');
-    containerEl.appendChild(controlWidgetContainerEl);
+		var controlWidgetContainerEl = document.createElement('div');
+		YAHOO.util.Dom.addClass(controlWidgetContainerEl, 'datum');
+		YAHOO.util.Dom.addClass(controlWidgetContainerEl, 'cstudio-form-control-input-container');
+		containerEl.appendChild(controlWidgetContainerEl);
 
-    var text = '';
-    var renderAsHTML = false;
-    for (var i = 0; i < config.properties.length; i++) {
-      var prop = config.properties[i];
+		var text = '';
+		var renderAsHTML = false;
+		for (var i = 0; i < config.properties.length; i++) {
+			var prop = config.properties[i];
 
-      if (prop.name === 'text') {
-        text = prop.value;
-      } else if (prop.name === 'renderAsHTML') {
-        renderAsHTML = prop.value;
-      }
-    }
+			if (prop.name === 'text') {
+				text = prop.value;
+			} else if (prop.name === 'renderAsHTML') {
+				renderAsHTML = prop.value;
+			}
+		}
 
-    if (renderAsHTML) {
-      controlWidgetContainerEl.innerHTML = text;
-    } else {
-      controlWidgetContainerEl.textContent = text;
-    }
-  },
+		if (renderAsHTML) {
+			controlWidgetContainerEl.innerHTML = text;
+		} else {
+			controlWidgetContainerEl.textContent = text;
+		}
+	},
 
-  getValue: function () {
-    return this.value;
-  },
+	getValue: function () {
+		return this.value;
+	},
 
-  setValue: function (value) {
-    this.value = value;
-  },
+	setValue: function (value) {
+		this.value = value;
+	},
 
-  getName: function () {
-    return 'label';
-  },
+	getName: function () {
+		return 'label';
+	},
 
-  getSupportedProperties: function () {
-    return [
-      {
-        label: CMgs.format(langBundle, 'text'),
-        name: 'text',
-        type: 'string'
-      },
-      {
-        label: CMgs.format(langBundle, 'renderAsHTML'),
-        name: 'renderAsHTML',
-        type: 'boolean'
-      }
-    ];
-  },
+	getSupportedProperties: function () {
+		return [
+			{
+				label: CMgs.format(langBundle, 'text'),
+				name: 'text',
+				type: 'string'
+			},
+			{
+				label: CMgs.format(langBundle, 'renderAsHTML'),
+				name: 'renderAsHTML',
+				type: 'boolean'
+			}
+		];
+	},
 
-  getSupportedConstraints: function () {
-    return [];
-  },
+	getSupportedConstraints: function () {
+		return [];
+	},
 
-  getSupportedPostFixes: function () {
-    return this.supportedPostFixes;
-  }
+	getSupportedPostFixes: function () {
+		return this.supportedPostFixes;
+	}
 });
 
 CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-label', CStudioForms.Controls.Label);

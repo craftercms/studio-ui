@@ -24,52 +24,52 @@ import { getStoredPreviewBackgroundMode, setStoredPreviewBackgroundMode } from '
 import useActiveUser from '../../hooks/useActiveUser';
 
 export function PreviewDialog(props: PreviewDialogProps) {
-  const { title, subtitle = props.url, type, url, path, content, mode, mimeType, showEdit, ...rest } = props;
-  const { username } = useActiveUser();
-  const [backgroundModeIndex, setBackgroundModeIndex] = useState(getStoredPreviewBackgroundMode(username) ?? 0);
-  const { formatMessage } = useIntl();
+	const { title, subtitle = props.url, type, url, path, content, mode, mimeType, showEdit, ...rest } = props;
+	const { username } = useActiveUser();
+	const [backgroundModeIndex, setBackgroundModeIndex] = useState(getStoredPreviewBackgroundMode(username) ?? 0);
+	const { formatMessage } = useIntl();
 
-  return (
-    <EnhancedDialog
-      maxWidth="xl"
-      title={title}
-      dialogHeaderProps={{
-        subtitle: <span title={subtitle}>{subtitle}</span>,
-        subtitleTypographyProps: {
-          noWrap: true
-        },
-        sxs: {
-          subtitleWrapper: {
-            maxWidth: '100%'
-          }
-        },
-        rightActions: [
-          (type === 'image' || type === 'video') && {
-            icon: { id: '@mui/icons-material/ColorLensOutlined' },
-            onClick: () => {
-              const index = (backgroundModeIndex + 1) % backgroundModes.length;
-              setBackgroundModeIndex(index);
-              setStoredPreviewBackgroundMode(username, index);
-            },
-            tooltip: formatMessage(translations.toggleBackgroundColor)
-          }
-        ].filter(Boolean)
-      }}
-      {...rest}
-    >
-      <PreviewDialogContainer
-        type={type}
-        title={title}
-        url={url}
-        path={path}
-        content={content}
-        mode={mode}
-        mimeType={mimeType}
-        backgroundModeIndex={backgroundModeIndex}
-        showEdit={showEdit}
-      />
-    </EnhancedDialog>
-  );
+	return (
+		<EnhancedDialog
+			maxWidth="xl"
+			title={title}
+			dialogHeaderProps={{
+				subtitle: <span title={subtitle}>{subtitle}</span>,
+				subtitleTypographyProps: {
+					noWrap: true
+				},
+				sxs: {
+					subtitleWrapper: {
+						maxWidth: '100%'
+					}
+				},
+				rightActions: [
+					(type === 'image' || type === 'video') && {
+						icon: { id: '@mui/icons-material/ColorLensOutlined' },
+						onClick: () => {
+							const index = (backgroundModeIndex + 1) % backgroundModes.length;
+							setBackgroundModeIndex(index);
+							setStoredPreviewBackgroundMode(username, index);
+						},
+						tooltip: formatMessage(translations.toggleBackgroundColor)
+					}
+				].filter(Boolean)
+			}}
+			{...rest}
+		>
+			<PreviewDialogContainer
+				type={type}
+				title={title}
+				url={url}
+				path={path}
+				content={content}
+				mode={mode}
+				mimeType={mimeType}
+				backgroundModeIndex={backgroundModeIndex}
+				showEdit={showEdit}
+			/>
+		</EnhancedDialog>
+	);
 }
 
 export default PreviewDialog;

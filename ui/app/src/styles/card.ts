@@ -14,25 +14,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { CSSObject } from 'tss-react';
+import { CSSProperties } from 'react';
 
-const cardTitleStyles: CSSObject = {
-  fontWeight: 600,
-  lineHeight: '1.5rem',
-  overflow: 'hidden',
-  display: '-webkit-box',
-  WebkitLineClamp: 1,
-  WebkitBoxOrient: 'vertical',
-  marginBottom: 0,
-  wordBreak: 'break-all'
+const cardTitleStyles: CSSProperties = {
+	fontWeight: 600,
+	lineHeight: '1.5rem',
+	overflow: 'hidden',
+	display: '-webkit-box',
+	WebkitLineClamp: 1,
+	WebkitBoxOrient: 'vertical',
+	marginBottom: 0,
+	wordBreak: 'break-all'
 };
 
-export const cardSubtitleStyles: CSSObject = {
-  overflow: 'hidden',
-  display: '-webkit-box',
-  WebkitLineClamp: 2,
-  WebkitBoxOrient: 'vertical',
-  wordBreak: 'break-all'
+export const cardSubtitleStyles: CSSProperties = {
+	overflow: 'hidden',
+	display: '-webkit-box',
+	WebkitLineClamp: 2,
+	WebkitBoxOrient: 'vertical',
+	wordBreak: 'break-all'
 };
 
 export default cardTitleStyles;

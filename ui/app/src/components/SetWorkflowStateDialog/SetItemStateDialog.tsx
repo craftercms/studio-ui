@@ -20,20 +20,20 @@ import { SetItemStateDialogContainer } from './SetItemStateDialogContainer';
 import { StatesToUpdate } from '../../services/workflow';
 
 export interface SetItemStateDialogProps {
-  open: boolean;
-  title: React.ReactNode;
-  onClose(): void;
-  onClosed?(): void;
-  onConfirm(update: StatesToUpdate): void;
+	open: boolean;
+	title: React.ReactNode;
+	onClose(): void;
+	onClosed?(): void;
+	onConfirm(update: StatesToUpdate): void;
 }
 
 export function SetItemStateDialog(props: SetItemStateDialogProps) {
-  const { open, onClose } = props;
-  return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <SetItemStateDialogContainer {...props} />
-    </Dialog>
-  );
+	const { open, onClose } = props;
+	return (
+		<Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+			<SetItemStateDialogContainer {...props} />
+		</Dialog>
+	);
 }
 
 export default SetItemStateDialog;

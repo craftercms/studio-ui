@@ -21,20 +21,20 @@ import { FormattedMessage } from 'react-intl';
 import BrokenReferencesDialogContainer from './BrokenReferencesDialogContainer';
 
 export function BrokenReferencesDialog(props: BrokenReferencesDialogProps) {
-  const { path, references, error, onContinue, ...rest } = props;
+	const { path, references, error, onContinue, ...rest } = props;
 
-  return (
-    <EnhancedDialog
-      title={<FormattedMessage defaultMessage="Broken References Warning" />}
-      subtitle={
-        <FormattedMessage defaultMessage="Proceeding would cause items listed below to have broken references" />
-      }
-      {...rest}
-      maxWidth="sm"
-    >
-      <BrokenReferencesDialogContainer path={path} references={references} onContinue={onContinue} error={error} />
-    </EnhancedDialog>
-  );
+	return (
+		<EnhancedDialog
+			title={<FormattedMessage defaultMessage="Broken References Warning" />}
+			subtitle={
+				<FormattedMessage defaultMessage="Proceeding would cause items listed below to have broken references" />
+			}
+			{...rest}
+			maxWidth="sm"
+		>
+			<BrokenReferencesDialogContainer path={path} references={references} onContinue={onContinue} error={error} />
+		</EnhancedDialog>
+	);
 }
 
 export default BrokenReferencesDialog;

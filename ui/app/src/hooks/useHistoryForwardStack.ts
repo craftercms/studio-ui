@@ -18,9 +18,9 @@ import GlobalState from '../models/GlobalState';
 import { useSelector } from 'react-redux';
 
 export function useHistoryForwardStack(): GlobalState['previewNavigation']['historyForwardStack'] {
-  return useSelector<GlobalState, GlobalState['previewNavigation']['historyForwardStack']>(
-    (state) => state.previewNavigation.historyForwardStack
-  );
+	return useSelector<GlobalState, GlobalState['previewNavigation']['historyForwardStack']>(
+		(state) => state.previewNavigation.historyForwardStack
+	);
 }
 
 export default useHistoryForwardStack;

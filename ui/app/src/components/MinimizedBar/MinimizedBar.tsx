@@ -25,63 +25,63 @@ import LinearProgress from '@mui/material/LinearProgress';
 import MinimizedBarPortal from '../MinimizedBarPortal/MinimizedBarPortal';
 
 export interface MinimizedBarProps {
-  open: boolean;
-  title: ReactNode;
-  subtitle?: string;
-  status?: 'indeterminate' | number;
-  onMaximize?(): void;
+	open: boolean;
+	title: ReactNode;
+	subtitle?: string;
+	status?: 'indeterminate' | number;
+	onMaximize?(): void;
 }
 
 export function MinimizedBar(props: MinimizedBarProps) {
-  const { open, title, onMaximize, subtitle, status } = props;
-  return open ? (
-    <MinimizedBarPortal>
-      <Slide direction="left" in mountOnEnter unmountOnExit>
-        <Paper
-          elevation={4}
-          sx={(theme) => ({
-            display: 'flex',
-            padding: `${theme.spacing(2)} ${theme.spacing(2.5)}`,
-            alignItems: 'center',
-            marginLeft: '20px',
-            position: 'relative',
-            border: `1px solid ${theme.palette.divider}`
-          })}
-        >
-          <Box>
-            <Typography variant="body1" children={title} />
-            {subtitle && (
-              <Typography
-                variant="body2"
-                sx={{
-                  fontSize: '14px',
-                  marginLeft: '15px'
-                }}
-                children={subtitle}
-              />
-            )}
-          </Box>
-          {onMaximize ? (
-            <IconButton aria-label="Maximize" onClick={onMaximize} children={<MaximizeIcon />} size="large" />
-          ) : null}
-          {status && (
-            <LinearProgress
-              sx={{
-                position: 'absolute',
-                bottom: '0',
-                width: '100%',
-                left: '0',
-                borderBottomLeftRadius: '3px',
-                borderBottomRightRadius: '3px'
-              }}
-              variant={status === 'indeterminate' ? 'indeterminate' : 'determinate'}
-              value={status === 'indeterminate' ? null : status}
-            />
-          )}
-        </Paper>
-      </Slide>
-    </MinimizedBarPortal>
-  ) : null;
+	const { open, title, onMaximize, subtitle, status } = props;
+	return open ? (
+		<MinimizedBarPortal>
+			<Slide direction="left" in mountOnEnter unmountOnExit>
+				<Paper
+					elevation={4}
+					sx={(theme) => ({
+						display: 'flex',
+						padding: `${theme.spacing(2)} ${theme.spacing(2.5)}`,
+						alignItems: 'center',
+						marginLeft: '20px',
+						position: 'relative',
+						border: `1px solid ${theme.palette.divider}`
+					})}
+				>
+					<Box>
+						<Typography variant="body1" children={title} />
+						{subtitle && (
+							<Typography
+								variant="body2"
+								sx={{
+									fontSize: '14px',
+									marginLeft: '15px'
+								}}
+								children={subtitle}
+							/>
+						)}
+					</Box>
+					{onMaximize ? (
+						<IconButton aria-label="Maximize" onClick={onMaximize} children={<MaximizeIcon />} size="large" />
+					) : null}
+					{status && (
+						<LinearProgress
+							sx={{
+								position: 'absolute',
+								bottom: '0',
+								width: '100%',
+								left: '0',
+								borderBottomLeftRadius: '3px',
+								borderBottomRightRadius: '3px'
+							}}
+							variant={status === 'indeterminate' ? 'indeterminate' : 'determinate'}
+							value={status === 'indeterminate' ? null : status}
+						/>
+					)}
+				</Paper>
+			</Slide>
+		</MinimizedBarPortal>
+	) : null;
 }
 
 export default MinimizedBar;

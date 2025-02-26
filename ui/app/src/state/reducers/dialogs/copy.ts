@@ -20,31 +20,31 @@ import { closeCopyDialog, copyDialogClosed, showCopyDialog, updateCopyDialog } f
 import { CopyDialogStateProps } from '../../../components/CopyDialog/utils';
 
 const initialState: CopyDialogStateProps = {
-  hasPendingChanges: false,
-  isMinimized: false,
-  isSubmitting: false,
-  site: null,
-  open: false,
-  item: null
+	hasPendingChanges: false,
+	isMinimized: false,
+	isSubmitting: false,
+	site: null,
+	open: false,
+	item: null
 };
 
 export default createReducer<GlobalState['dialogs']['copy']>(initialState, (builder) => {
-  builder
-    .addCase(showCopyDialog, (state, { payload }) => ({
-      ...state,
-      onClose: closeCopyDialog(),
-      onClosed: copyDialogClosed(),
-      onOk: closeCopyDialog(),
-      ...(payload as Partial<CopyDialogStateProps>),
-      open: true
-    }))
-    .addCase(closeCopyDialog, (state) => ({
-      ...state,
-      open: false
-    }))
-    .addCase(updateCopyDialog, (state, { payload }) => ({
-      ...state,
-      ...(payload as Partial<CopyDialogStateProps>)
-    }))
-    .addCase(copyDialogClosed, () => initialState);
+	builder
+		.addCase(showCopyDialog, (state, { payload }) => ({
+			...state,
+			onClose: closeCopyDialog(),
+			onClosed: copyDialogClosed(),
+			onOk: closeCopyDialog(),
+			...(payload as Partial<CopyDialogStateProps>),
+			open: true
+		}))
+		.addCase(closeCopyDialog, (state) => ({
+			...state,
+			open: false
+		}))
+		.addCase(updateCopyDialog, (state, { payload }) => ({
+			...state,
+			...(payload as Partial<CopyDialogStateProps>)
+		}))
+		.addCase(copyDialogClosed, () => initialState);
 });

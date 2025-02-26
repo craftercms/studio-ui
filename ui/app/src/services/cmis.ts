@@ -23,38 +23,38 @@ import { CMISItem } from '../models/CMIS';
 type ReturnType = { items: CMISItem[] };
 
 export function list(
-  siteId: string,
-  cmisRepoId: string,
-  options: { path?: string; offset?: number; limit?: number } = {}
+	siteId: string,
+	cmisRepoId: string,
+	options: { path?: string; offset?: number; limit?: number } = {}
 ): Observable<CMISItem[]> {
-  const qs = toQueryString({
-    siteId,
-    cmisRepoId,
-    ...options
-  });
-  return get<ReturnType>(`/studio/api/2/cmis/list${qs}`).pipe(map((response) => response?.response?.items));
+	const qs = toQueryString({
+		siteId,
+		cmisRepoId,
+		...options
+	});
+	return get<ReturnType>(`/studio/api/2/cmis/list${qs}`).pipe(map((response) => response?.response?.items));
 }
 
 export function search(
-  siteId: string,
-  cmisRepoId: string,
-  searchTerm: string,
-  options: { path?: string; offset?: number; limit?: number } = {}
+	siteId: string,
+	cmisRepoId: string,
+	searchTerm: string,
+	options: { path?: string; offset?: number; limit?: number } = {}
 ): Observable<CMISItem[]> {
-  const qs = toQueryString({
-    siteId,
-    cmisRepoId,
-    searchTerm,
-    ...options
-  });
-  return get<ReturnType>(`/studio/api/2/cmis/search${qs}`).pipe(map((response) => response?.response?.items));
+	const qs = toQueryString({
+		siteId,
+		cmisRepoId,
+		searchTerm,
+		...options
+	});
+	return get<ReturnType>(`/studio/api/2/cmis/search${qs}`).pipe(map((response) => response?.response?.items));
 }
 
 export function clone(siteId: string, cmisRepoId: string, cmisPath: string, studioPath: string): Observable<true> {
-  return postJSON(`/studio/api/2/cmis/clone`, {
-    siteId,
-    cmisRepoId,
-    cmisPath,
-    studioPath
-  }).pipe(map(() => true));
+	return postJSON(`/studio/api/2/cmis/clone`, {
+		siteId,
+		cmisRepoId,
+		cmisPath,
+		studioPath
+	}).pipe(map(() => true));
 }

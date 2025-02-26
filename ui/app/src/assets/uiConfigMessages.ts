@@ -17,36 +17,36 @@
 import { defineMessages } from 'react-intl';
 
 defineMessages({
-  siteTools: {
-    id: 'siteTools.title',
-    defaultMessage: 'Project Tools'
-  },
-  siteDashboard: {
-    id: 'words.dashboard',
-    defaultMessage: 'Dashboard'
-  },
-  configuration: {
-    id: 'words.configuration',
-    defaultMessage: 'Configuration'
-  },
-  workflowStates: {
-    id: 'workflowStates.title',
-    defaultMessage: 'Workflow States'
-  },
-  publishing: {
-    id: 'words.publishing',
-    defaultMessage: 'Publishing'
-  },
-  remoteRepositories: {
-    id: 'remoteRepositories.title',
-    defaultMessage: 'Remote Repositories'
-  },
-  preview: {
-    id: 'words.preview',
-    defaultMessage: 'Preview'
-  },
-  site: {
-    id: 'launcher.siteSectionTitle',
-    defaultMessage: 'Project <muted>• {siteName}</muted>'
-  }
+	siteTools: {
+		id: 'siteTools.title',
+		defaultMessage: 'Project Tools'
+	},
+	siteDashboard: {
+		id: 'words.dashboard',
+		defaultMessage: 'Dashboard'
+	},
+	configuration: {
+		id: 'words.configuration',
+		defaultMessage: 'Configuration'
+	},
+	workflowStates: {
+		id: 'workflowStates.title',
+		defaultMessage: 'Workflow States'
+	},
+	publishing: {
+		id: 'words.publishing',
+		defaultMessage: 'Publishing'
+	},
+	remoteRepositories: {
+		id: 'remoteRepositories.title',
+		defaultMessage: 'Remote Repositories'
+	},
+	preview: {
+		id: 'words.preview',
+		defaultMessage: 'Preview'
+	},
+	site: {
+		id: 'launcher.siteSectionTitle',
+		defaultMessage: 'Project <muted>• {siteName}</muted>'
+	}
 });

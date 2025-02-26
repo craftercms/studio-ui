@@ -21,69 +21,69 @@ import Monaco from '../models/Monaco';
 import { ProjectToolsRoutes } from '../env/routes';
 
 export type SystemLinkId =
-  | 'preview'
-  | 'siteTools'
-  | 'siteSearch'
-  | 'siteDashboard'
-  | 'siteToolsDialog'
-  | 'siteSearchDialog'
-  | 'siteDashboardDialog';
+	| 'preview'
+	| 'siteTools'
+	| 'siteSearch'
+	| 'siteDashboard'
+	| 'siteToolsDialog'
+	| 'siteSearchDialog'
+	| 'siteDashboardDialog';
 
 export function getSystemLink({
-  systemLinkId,
-  authoringBase,
-  site,
-  page = '/'
+	systemLinkId,
+	authoringBase,
+	site,
+	page = '/'
 }: {
-  systemLinkId: SystemLinkId;
-  authoringBase: string;
-  site: string;
-  page?: string;
+	systemLinkId: SystemLinkId;
+	authoringBase: string;
+	site: string;
+	page?: string;
 }) {
-  return {
-    preview: `${authoringBase}${PREVIEW_URL_PATH}#/?page=${page}&site=${site}`,
-    siteTools: `${authoringBase}${ProjectToolsRoutes.ProjectTools}`,
-    siteSearch: `${authoringBase}${ProjectToolsRoutes.Search}`,
-    siteDashboard: `${authoringBase}${ProjectToolsRoutes.SiteDashboard}`
-  }[systemLinkId];
+	return {
+		preview: `${authoringBase}${PREVIEW_URL_PATH}#/?page=${page}&site=${site}`,
+		siteTools: `${authoringBase}${ProjectToolsRoutes.ProjectTools}`,
+		siteSearch: `${authoringBase}${ProjectToolsRoutes.Search}`,
+		siteDashboard: `${authoringBase}${ProjectToolsRoutes.SiteDashboard}`
+	}[systemLinkId];
 }
 
 export function copyToClipboard(textToCopy: string): Promise<void> {
-  // Clipboard is only available on user-initiated callbacks over non-secure contexts (e.g. not https).
-  return (
-    navigator.clipboard?.writeText(textToCopy) ??
-    new Promise((resolve, reject) =>
-      reject('Copying to clipboard is only available in secure contexts or user-initiated callbacks.')
-    )
-  );
+	// Clipboard is only available on user-initiated callbacks over non-secure contexts (e.g. not https).
+	return (
+		navigator.clipboard?.writeText(textToCopy) ??
+		new Promise((resolve, reject) =>
+			reject('Copying to clipboard is only available in secure contexts or user-initiated callbacks.')
+		)
+	);
 }
 
 let monaco$: ReplaySubject<Monaco>;
 export function withMonaco(onReady: (api: Monaco) => void): void {
-  if (!monaco$) {
-    monaco$ = new ReplaySubject(1);
-    const script = document.createElement('script');
-    script.src = '/studio/static-assets/libs/monaco/monaco.0.48.0.js';
-    script.onload = () => {
-      // @ts-ignore
-      monaco$.next(window.monaco);
-    };
-    script.onerror = () => {
-      console.error('Monaco editor could not be loaded');
-    };
-    document.head.appendChild(script);
-  }
-  monaco$.asObservable().pipe(take(1)).subscribe(onReady);
+	if (!monaco$) {
+		monaco$ = new ReplaySubject(1);
+		const script = document.createElement('script');
+		script.src = '/studio/static-assets/libs/monaco/monaco.0.48.0.js';
+		script.onload = () => {
+			// @ts-ignore
+			monaco$.next(window.monaco);
+		};
+		script.onerror = () => {
+			console.error('Monaco editor could not be loaded');
+		};
+		document.head.appendChild(script);
+	}
+	monaco$.asObservable().pipe(take(1)).subscribe(onReady);
 }
 
 export function isPreviewAppUrl(pathname = window.location.pathname): boolean {
-  return pathname.includes(`/preview`);
+	return pathname.includes(`/preview`);
 }
 
 export function isDashboardAppUrl(pathname = window.location.pathname): boolean {
-  return pathname.includes(ProjectToolsRoutes.SiteDashboard);
+	return pathname.includes(ProjectToolsRoutes.SiteDashboard);
 }
 
 export function isProjectToolsAppUrl(pathname = window.location.pathname): boolean {
-  return pathname.includes(ProjectToolsRoutes.ProjectTools);
+	return pathname.includes(ProjectToolsRoutes.ProjectTools);
 }

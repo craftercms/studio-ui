@@ -38,14 +38,11 @@ import { ItemMenuStateProps } from '../components/ItemActionsMenu';
 import { ItemMegaMenuStateProps } from '../components/ItemMegaMenu';
 import { LauncherStateProps } from '../components/Launcher';
 import { PublishingStatusDialogStateProps } from '../components/PublishingStatusDialog';
-import TranslationOrText from './TranslationOrText';
 import { SystemIconDescriptor } from '../components/SystemIcon';
 import { AjaxError } from 'rxjs/ajax';
 import { PathNavigatorTreeStateProps } from '../components/PathNavigatorTree';
-import { UnlockPublisherDialogStateProps } from '../components/UnlockPublisherDialog';
 import { WidgetDialogStateProps } from '../components/WidgetDialog/utils';
 import { CodeEditorDialogStateProps } from '../components/CodeEditorDialog/utils';
-import { SystemLinkId } from '../utils/system';
 import { PublishDialogStateProps } from '../components/PublishDialog/utils';
 import { DeleteDialogStateProps } from '../components/DeleteDialog/utils';
 import { CreateFolderStateProps } from '../components/CreateFolderDialog/utils';
@@ -55,8 +52,6 @@ import { ViewVersionDialogStateProps } from '../components/ViewVersionDialog/uti
 import { CompareVersionsDialogStateProps } from '../components/CompareVersionsDialog/utils';
 import { ConfirmDialogStateProps } from '../components/ConfirmDialog/utils';
 import { ChangeContentTypeDialogStateProps } from '../components/ChangeContentTypeDialog/utils';
-import { WorkflowCancellationDialogStateProps } from '../components/WorkflowCancellationDialog/utils';
-import { RejectDialogStateProps } from '../components/RejectDialog/utils';
 import { CreateFileStateProps } from '../components/CreateFileDialog/utils';
 import { UploadDialogStateProps } from '../components/UploadDialog/util';
 import { PreviewDialogStateProps } from '../components/PreviewDialog/utils';
@@ -69,40 +64,46 @@ import { RenameAssetStateProps } from '../components/RenameAssetDialog';
 import Person from './Person';
 import { BrokenReferencesDialogStateProps } from '../components/BrokenReferencesDialog/types';
 import AllowedContentTypesData from './AllowedContentTypesData';
+import { PublishingPackageReviewDialogStateProps } from '../components/PublishPackageReviewDialog/types';
+import { CancelPackageDialogStateProps } from '../components/CancelPackageDialog';
+import { BulkCancelPackageDialogStateProps } from '../components/BulkCancelPackageDialog';
+import { PublishingPackageResubmitDialogStateProps } from '../components/PublishingPackageResubmitDialog/types';
+import { PackageDetailsDialogStateProps } from '../components';
+import { ViewPackagesDialogStateProps } from '../components/ViewPackagesDialog';
 
 export type HighlightMode = 'all' | 'move';
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
-  page: any;
-  pageNumber: number;
-  count: number;
-  query: ElasticParams;
+	page: any;
+	pageNumber: number;
+	count: number;
+	query: ElasticParams;
 }
 
 export interface EditSelection {
-  modelId: string;
-  fieldId: string[];
-  index: string | number;
-  coordinates: { x: number; y: number };
+	modelId: string;
+	fieldId: string[];
+	index: string | number;
+	coordinates: { x: number; y: number };
 }
 
 export interface GuestData {
-  url: string;
-  origin: string;
-  models: LookupTable<ContentInstance>;
-  hierarchyMap: ModelHierarchyMap;
-  modelIdByPath: LookupTable<string>;
-  modelId: string;
-  path: string;
-  selected: EditSelection[];
-  itemBeingDragged: number;
-  /**
-   * Stores the modifier person for the main XB model from the moment is loaded (guest check's in) onwards.
-   * used to determine if the content item was modified in the background and it editing should be disabled.
-   */
-  mainModelModifier: Person;
-  allowedContentTypes: LookupTable<AllowedContentTypesData>;
-  contentTypesUpdated: boolean;
+	url: string;
+	origin: string;
+	models: LookupTable<ContentInstance>;
+	hierarchyMap: ModelHierarchyMap;
+	modelIdByPath: LookupTable<string>;
+	modelId: string;
+	path: string;
+	selected: EditSelection[];
+	itemBeingDragged: number;
+	/**
+	 * Stores the modifier person for the main XB model from the moment is loaded (guest check's in) onwards.
+	 * used to determine if the content item was modified in the background and it editing should be disabled.
+	 */
+	mainModelModifier: Person;
+	allowedContentTypes: LookupTable<AllowedContentTypesData>;
+	contentTypesUpdated: boolean;
 }
 
 // TODO:
@@ -115,187 +116,190 @@ export interface GuestData {
 // }
 
 export interface Clipboard {
-  type: 'CUT' | 'COPY';
-  paths?: string[];
-  sourcePath: string;
+	type: 'CUT' | 'COPY';
+	paths?: string[];
+	sourcePath: string;
 }
 
 export interface GlobalState {
-  auth: {
-    error: ApiResponse;
-    active: boolean;
-    expiresAt: number;
-    isFetching: boolean;
-  };
-  user: EnhancedUser;
-  sites: {
-    active: string;
-    isFetching: boolean;
-    byId: LookupTable<Site>;
-  };
-  content: {
-    quickCreate: {
-      error: ApiResponse;
-      isFetching: boolean;
-      items: QuickCreateItem[];
-    };
-    itemsByPath: LookupTable<DetailedItem>;
-    clipboard: Clipboard;
-    itemsBeingFetchedByPath: LookupTable<boolean>;
-  };
-  contentTypes: EntityState<ContentType>;
-  env: {
-    authoringBase: string;
-    logoutUrl: string;
-    guestBase: string;
-    xsrfHeader: string;
-    xsrfArgument: string;
-    siteCookieName: string;
-    previewLandingBase: string;
-    version: string;
-    packageBuild: string;
-    packageVersion: string;
-    packageBuildDate: string;
-    useBaseDomain: boolean;
-    activeEnvironment: string;
-    socketConnected: boolean;
-  };
-  preview: {
-    editMode: boolean;
-    highlightMode: HighlightMode;
-    showToolsPanel: boolean;
-    toolsPanelPageStack: WidgetDescriptor[];
-    toolsPanelWidth: number;
-    icePanelWidth: number;
-    icePanelStack: WidgetDescriptor[];
-    hostSize: WidthAndHeight;
-    guest: GuestData;
-    assets: PagedEntityState<MediaItem>;
-    audiencesPanel: {
-      isFetching: boolean;
-      isApplying: boolean;
-      error: ApiResponse;
-      model: ContentInstance;
-      applied: boolean;
-    };
-    components: PagedEntityState<ContentInstance>;
-    dropTargets: {
-      selectedContentType: string;
-      byId: LookupTable<ContentTypeDropTarget>;
-    };
-    toolsPanel: {
-      widgets: WidgetDescriptor[];
-    };
-    toolbar: {
-      leftSection: {
-        widgets: WidgetDescriptor[];
-      };
-      middleSection: {
-        widgets: WidgetDescriptor[];
-      };
-      rightSection: {
-        widgets: WidgetDescriptor[];
-      };
-    };
-    icePanel: {
-      widgets: WidgetDescriptor[];
-    };
-    richTextEditor: LookupTable;
-    editModePadding: boolean;
-    windowSize: number;
-    xbDetectionTimeoutMs: number;
-    error: {
-      code: number;
-      message: string;
-    };
-  };
-  previewNavigation: {
-    currentUrlPath: string;
-    historyBackStack: string[];
-    historyForwardStack: string[];
-    // Flags when the back/forwards buttons were pressed (null otherwise) to determinate how to modify history stacks.
-    historyNavigationType: 'back' | 'forward';
-  };
-  versions: VersionsStateProps;
-  dialogs: {
-    confirm: ConfirmDialogStateProps;
-    error: ErrorDialogStateProps;
-    minimizedTabs: MinimizedDialogsStateProps;
-    newContent: NewContentDialogStateProps;
-    history: HistoryDialogStateProps;
-    viewVersion: ViewVersionDialogStateProps;
-    compareVersions: CompareVersionsDialogStateProps;
-    publish: PublishDialogStateProps;
-    dependencies: DependenciesDialogStateProps;
-    delete: DeleteDialogStateProps;
-    edit: LegacyFormDialogStateProps;
-    codeEditor: CodeEditorDialogStateProps;
-    workflowCancellation: WorkflowCancellationDialogStateProps;
-    reject: RejectDialogStateProps;
-    createFolder: CreateFolderStateProps;
-    createFile: CreateFileStateProps;
-    renameAsset: RenameAssetStateProps;
-    copy: CopyDialogStateProps;
-    upload: UploadDialogStateProps;
-    singleFileUpload: SingleFileUploadDialogStateProps;
-    preview: PreviewDialogStateProps;
-    editSite: EditSiteDialogStateProps;
-    pathSelection: PathSelectionDialogStateProps;
-    changeContentType: ChangeContentTypeDialogStateProps;
-    itemMenu: ItemMenuStateProps;
-    itemMegaMenu: ItemMegaMenuStateProps;
-    launcher: LauncherStateProps;
-    publishingStatus: PublishingStatusDialogStateProps;
-    unlockPublisher: UnlockPublisherDialogStateProps;
-    widget: WidgetDialogStateProps;
-    uiBlocker: UIBlockerStateProps;
-    brokenReferences: BrokenReferencesDialogStateProps;
-  };
-  uiConfig: {
-    error: ApiResponse;
-    isFetching: boolean;
-    currentSite: string;
-    siteLocales: {
-      error: ApiResponse;
-      isFetching: boolean;
-      localeCodes: string[];
-      defaultLocaleCode: string;
-    };
-    upload: {
-      timeout: number;
-      maxActiveUploads: number;
-      maxSimultaneousUploads: number;
-    };
-    locale: {
-      localeCode: string;
-      dateTimeFormatOptions: Intl.DateTimeFormatOptions;
-    };
-    publishing: {
-      publishCommentRequired: boolean;
-      deleteCommentRequired: boolean;
-      bulkPublishCommentRequired: boolean;
-      publishByCommitCommentRequired: boolean;
-      publishEverythingCommentRequired: boolean;
-      submissionCommentMaxLength: number;
-    };
-    cdataEscapedFieldPatterns: string[];
-    references: LookupTable;
-    xml: string;
-    remoteGitBranch: string;
-  };
-  pathNavigator: LookupTable<PathNavigatorStateProps>;
-  pathNavigatorTree: LookupTable<PathNavigatorTreeStateProps>;
-  dashboard: {
-    widgets?: WidgetDescriptor[];
-    mainSection?: {
-      widgets: WidgetDescriptor[];
-    };
-  };
-  globalNavigation: {
-    error: AjaxError;
-    items: Array<{ icon: SystemIconDescriptor; id: string; label: string }>;
-    isFetching: boolean;
-  };
+	auth: {
+		error: ApiResponse;
+		active: boolean;
+		expiresAt: number;
+		isFetching: boolean;
+	};
+	user: EnhancedUser;
+	sites: {
+		active: string;
+		isFetching: boolean;
+		byId: LookupTable<Site>;
+	};
+	content: {
+		quickCreate: {
+			error: ApiResponse;
+			isFetching: boolean;
+			items: QuickCreateItem[];
+		};
+		itemsByPath: LookupTable<DetailedItem>;
+		clipboard: Clipboard;
+		itemsBeingFetchedByPath: LookupTable<boolean>;
+	};
+	contentTypes: EntityState<ContentType>;
+	env: {
+		authoringBase: string;
+		logoutUrl: string;
+		guestBase: string;
+		xsrfHeader: string;
+		xsrfArgument: string;
+		siteCookieName: string;
+		previewLandingBase: string;
+		version: string;
+		packageBuild: string;
+		packageVersion: string;
+		packageBuildDate: string;
+		useBaseDomain: boolean;
+		activeEnvironment: string;
+		socketConnected: boolean;
+	};
+	preview: {
+		editMode: boolean;
+		highlightMode: HighlightMode;
+		showToolsPanel: boolean;
+		toolsPanelPageStack: WidgetDescriptor[];
+		toolsPanelWidth: number;
+		icePanelWidth: number;
+		icePanelStack: WidgetDescriptor[];
+		hostSize: WidthAndHeight;
+		guest: GuestData;
+		assets: PagedEntityState<MediaItem>;
+		audiencesPanel: {
+			isFetching: boolean;
+			isApplying: boolean;
+			error: ApiResponse;
+			model: ContentInstance;
+			applied: boolean;
+		};
+		components: PagedEntityState<ContentInstance>;
+		dropTargets: {
+			selectedContentType: string;
+			byId: LookupTable<ContentTypeDropTarget>;
+		};
+		toolsPanel: {
+			widgets: WidgetDescriptor[];
+		};
+		toolbar: {
+			leftSection: {
+				widgets: WidgetDescriptor[];
+			};
+			middleSection: {
+				widgets: WidgetDescriptor[];
+			};
+			rightSection: {
+				widgets: WidgetDescriptor[];
+			};
+		};
+		icePanel: {
+			widgets: WidgetDescriptor[];
+		};
+		richTextEditor: LookupTable;
+		editModePadding: boolean;
+		windowSize: number;
+		xbDetectionTimeoutMs: number;
+		error: {
+			code: number;
+			message: string;
+		};
+	};
+	previewNavigation: {
+		currentUrlPath: string;
+		historyBackStack: string[];
+		historyForwardStack: string[];
+		// Flags when the back/forwards buttons were pressed (null otherwise) to determinate how to modify history stacks.
+		historyNavigationType: 'back' | 'forward';
+	};
+	versions: VersionsStateProps;
+	dialogs: {
+		confirm: ConfirmDialogStateProps;
+		error: ErrorDialogStateProps;
+		minimizedTabs: MinimizedDialogsStateProps;
+		newContent: NewContentDialogStateProps;
+		history: HistoryDialogStateProps;
+		viewVersion: ViewVersionDialogStateProps;
+		compareVersions: CompareVersionsDialogStateProps;
+		publish: PublishDialogStateProps;
+		publishingPackageApproval: PublishingPackageReviewDialogStateProps;
+		dependencies: DependenciesDialogStateProps;
+		delete: DeleteDialogStateProps;
+		edit: LegacyFormDialogStateProps;
+		codeEditor: CodeEditorDialogStateProps;
+		createFolder: CreateFolderStateProps;
+		createFile: CreateFileStateProps;
+		renameAsset: RenameAssetStateProps;
+		copy: CopyDialogStateProps;
+		upload: UploadDialogStateProps;
+		singleFileUpload: SingleFileUploadDialogStateProps;
+		preview: PreviewDialogStateProps;
+		editSite: EditSiteDialogStateProps;
+		pathSelection: PathSelectionDialogStateProps;
+		changeContentType: ChangeContentTypeDialogStateProps;
+		itemMenu: ItemMenuStateProps;
+		itemMegaMenu: ItemMegaMenuStateProps;
+		launcher: LauncherStateProps;
+		publishingStatus: PublishingStatusDialogStateProps;
+		widget: WidgetDialogStateProps;
+		uiBlocker: UIBlockerStateProps;
+		brokenReferences: BrokenReferencesDialogStateProps;
+		cancelPackage: CancelPackageDialogStateProps;
+		bulkCancelPackage: BulkCancelPackageDialogStateProps;
+		publishingPackageResubmit: PublishingPackageResubmitDialogStateProps;
+		packageDetails: PackageDetailsDialogStateProps;
+		viewPackages: ViewPackagesDialogStateProps;
+	};
+	uiConfig: {
+		error: ApiResponse;
+		isFetching: boolean;
+		currentSite: string;
+		siteLocales: {
+			error: ApiResponse;
+			isFetching: boolean;
+			localeCodes: string[];
+			defaultLocaleCode: string;
+		};
+		upload: {
+			timeout: number;
+			maxActiveUploads: number;
+			maxSimultaneousUploads: number;
+		};
+		locale: {
+			localeCode: string;
+			dateTimeFormatOptions: Intl.DateTimeFormatOptions;
+		};
+		publishing: {
+			publishCommentRequired: boolean;
+			deleteCommentRequired: boolean;
+			bulkPublishCommentRequired: boolean;
+			publishByCommitCommentRequired: boolean;
+			publishEverythingCommentRequired: boolean;
+			submissionCommentMaxLength: number;
+		};
+		cdataEscapedFieldPatterns: string[];
+		references: LookupTable;
+		xml: string;
+		remoteGitBranch: string;
+	};
+	pathNavigator: LookupTable<PathNavigatorStateProps>;
+	pathNavigatorTree: LookupTable<PathNavigatorTreeStateProps>;
+	dashboard: {
+		widgets?: WidgetDescriptor[];
+		mainSection?: {
+			widgets: WidgetDescriptor[];
+		};
+	};
+	globalNavigation: {
+		error: AjaxError;
+		items: Array<{ icon: SystemIconDescriptor; id: string; label: string }>;
+		isFetching: boolean;
+	};
 }
 
 export default GlobalState;

@@ -21,41 +21,41 @@ import { LegacyItem } from '../models/Item';
 import { toQueryString } from '../utils/object';
 
 export interface FetchDependenciesResponse {
-  hardDependencies: string[];
-  softDependencies: string[];
+	hardDependencies: string[];
+	softDependencies: string[];
 }
 
-export function fetchDependencies(siteId: string, items: any): Observable<FetchDependenciesResponse> {
-  return postJSON('/studio/api/2/dependency/dependencies', {
-    siteId,
-    paths: items
-  }).pipe(map((response) => response?.response?.items));
+export function fetchDependencies(siteId: string, paths: string[]): Observable<FetchDependenciesResponse> {
+	return postJSON('/studio/api/2/dependency/dependencies', {
+		siteId,
+		paths
+	}).pipe(map((response) => response?.response?.items));
 }
 
 export function fetchSimpleDependencies(site: string, path: string): Observable<LegacyItem[]> {
-  return post(
-    `/studio/api/1/services/api/1/dependency/get-simple-dependencies.json${toQueryString({ site, path })}`
-  ).pipe(
-    map((response) => response?.response),
-    catchError(errorSelectorApi1)
-  );
+	return post(
+		`/studio/api/1/services/api/1/dependency/get-simple-dependencies.json${toQueryString({ site, path })}`
+	).pipe(
+		map((response) => response?.response),
+		catchError(errorSelectorApi1)
+	);
 }
 
 export function fetchDependant(site: string, path: string): Observable<LegacyItem[]> {
-  return post(`/studio/api/1/services/api/1/dependency/get-dependant.json${toQueryString({ site, path })}`).pipe(
-    map((response) => response?.response),
-    catchError(errorSelectorApi1)
-  );
+	return post(`/studio/api/1/services/api/1/dependency/get-dependant.json${toQueryString({ site, path })}`).pipe(
+		map((response) => response?.response),
+		catchError(errorSelectorApi1)
+	);
 }
 
 export interface FetchDeleteDependenciesResponse {
-  childItems: string[];
-  dependentItems: string[];
+	childItems: string[];
+	dependentItems: string[];
 }
 
 export function fetchDeleteDependencies(siteId: string, paths: string[]): Observable<FetchDeleteDependenciesResponse> {
-  return postJSON('/studio/api/2/content/get_delete_package', {
-    siteId,
-    paths
-  }).pipe(map((response) => response?.response?.items));
+	return postJSON('/studio/api/2/content/get_delete_package', {
+		siteId,
+		paths
+	}).pipe(map((response) => response?.response?.items));
 }

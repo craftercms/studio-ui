@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <!--
   ~ Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
   ~
@@ -14,10 +14,9 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
-
 <page>
-  <internal-name>Overlay Hook</internal-name>
-  <display-template>/templates/web/overlayhook.ftl</display-template>
-  <content-type>/page/overlayhook</content-type>
-  <merge-strategy>inherit-levels</merge-strategy>
+	<internal-name>Overlay Hook</internal-name>
+	<display-template>/templates/web/overlayhook.ftl</display-template>
+	<content-type>/page/overlayhook</content-type>
+	<merge-strategy>inherit-levels</merge-strategy>
 </page>

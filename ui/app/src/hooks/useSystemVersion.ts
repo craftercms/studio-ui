@@ -27,15 +27,15 @@ let /* private */ systemVersionRequested = false;
  * `systemVersionRequested` private to control whether it's been requested.
  **/
 export function useSystemVersion() {
-  const dispatch = useDispatch();
-  const env = useEnv();
-  useEffect(() => {
-    if (!systemVersionRequested && env.version === null) {
-      systemVersionRequested = true;
-      dispatch(fetchSystemVersion());
-    }
-  }, [dispatch, env.version]);
-  return env.version;
+	const dispatch = useDispatch();
+	const env = useEnv();
+	useEffect(() => {
+		if (!systemVersionRequested && env.version === null) {
+			systemVersionRequested = true;
+			dispatch(fetchSystemVersion());
+		}
+	}, [dispatch, env.version]);
+	return env.version;
 }
 
 export default useSystemVersion;

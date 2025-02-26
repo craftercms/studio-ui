@@ -20,15 +20,15 @@ import { getCurrentIntl, intl$ } from '../../utils/i18n';
 import { delay } from 'rxjs/operators';
 
 export function I18nProvider(props: PropsWithChildren<{}>) {
-  const [intl, setIntl] = useState<IntlShape>(getCurrentIntl());
-  useEffect(() => {
-    // When plugins load and register translations, react may be
-    // in the middle of a render cycle (via Widget) and throws
-    // if we dispatch this immediately — hence the delay.
-    const sub = intl$.pipe(delay(0)).subscribe(setIntl);
-    return () => sub.unsubscribe();
-  }, []);
-  return <RawIntlProvider children={props.children} value={intl} />;
+	const [intl, setIntl] = useState<IntlShape>(getCurrentIntl());
+	useEffect(() => {
+		// When plugins load and register translations, react may be
+		// in the middle of a render cycle (via Widget) and throws
+		// if we dispatch this immediately — hence the delay.
+		const sub = intl$.pipe(delay(0)).subscribe(setIntl);
+		return () => sub.unsubscribe();
+	}, []);
+	return <RawIntlProvider children={props.children} value={intl} />;
 }
 
 export default I18nProvider;

@@ -18,7 +18,7 @@ import GlobalState from '../models/GlobalState';
 import { useSelector } from 'react-redux';
 
 export function useActiveUser(): GlobalState['user'] {
-  return useSelector<GlobalState, GlobalState['user']>((state) => state.user);
+	return useSelector<GlobalState, GlobalState['user']>((state) => state.user);
 }
 
 export default useActiveUser;

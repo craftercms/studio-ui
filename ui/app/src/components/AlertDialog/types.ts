@@ -16,27 +16,27 @@
 
 import { ReactNode } from 'react';
 import { DialogProps } from '@mui/material/Dialog';
-import { ConfirmDialogStateStyles } from '../ConfirmDialog';
 import { PartialSxRecord } from '../../models';
 
+export type AlertDialogClassKey = 'root' | 'image' | 'body' | 'title' | 'footer';
+
 export interface AlertDialogBaseProps {
-  title?: ReactNode;
-  body?: ReactNode;
-  hideBackdrop?: boolean;
-  imageUrl?: string;
-  disableEnforceFocus?: boolean;
-  disableEscapeKeyDown?: boolean;
-  disableBackdropClick?: boolean;
-  maxWidth?: DialogProps['maxWidth'];
-  styles?: ConfirmDialogStateStyles;
-  buttons?: ReactNode;
-  sxs?: PartialSxRecord<'root' | 'image' | 'body' | 'title' | 'footer'>;
+	title?: ReactNode;
+	body?: ReactNode;
+	hideBackdrop?: boolean;
+	imageUrl?: string;
+	disableEnforceFocus?: boolean;
+	disableEscapeKeyDown?: boolean;
+	disableBackdropClick?: boolean;
+	maxWidth?: DialogProps['maxWidth'];
+	buttons?: ReactNode;
+	sxs?: PartialSxRecord<AlertDialogClassKey>;
 }
 
 export interface AlertDialogProps extends AlertDialogBaseProps, Omit<DialogProps, 'title' | 'classes'> {
-  onClosed?(): void;
+	onClosed?(): void;
 }
 
 export interface AlertDialogContainerProps
-  extends AlertDialogBaseProps,
-    Pick<AlertDialogProps, 'onClosed' | 'children'> {}
+	extends AlertDialogBaseProps,
+		Pick<AlertDialogProps, 'onClosed' | 'children'> {}

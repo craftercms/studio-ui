@@ -19,55 +19,55 @@ import { setGlobalHeaders } from './ajax';
 import { SITE_COOKIE_NAME, XSRF_TOKEN_COOKIE_NAME, XSRF_TOKEN_HEADER_NAME } from './constants';
 
 export function getRequestForgeryToken(cookieName = XSRF_TOKEN_COOKIE_NAME): string {
-  return Cookies.get(cookieName);
+	return Cookies.get(cookieName);
 }
 
 export function getRequestForgeryTokenHeaderName(): string {
-  return XSRF_TOKEN_HEADER_NAME;
+	return XSRF_TOKEN_HEADER_NAME;
 }
 
 export function getRequestForgeryTokenParamName(): string {
-  return '_csrf';
+	return '_csrf';
 }
 
 export function setRequestForgeryToken(headerName = XSRF_TOKEN_HEADER_NAME): void {
-  const token = getRequestForgeryToken();
-  setGlobalHeaders({ [headerName]: token });
+	const token = getRequestForgeryToken();
+	setGlobalHeaders({ [headerName]: token });
 }
 
 export function setJwt(token: string): void {
-  setGlobalHeaders(getJwtHeaders(token));
+	setGlobalHeaders(getJwtHeaders(token));
 }
 
 export function getJwtHeaders(token: string): object {
-  return { Authorization: `Bearer ${token}` };
+	return { Authorization: `Bearer ${token}` };
 }
 
 export function getXSRFToken(): string {
-  return Cookies.get(XSRF_TOKEN_COOKIE_NAME);
+	return Cookies.get(XSRF_TOKEN_COOKIE_NAME);
 }
 
 export function getCookieDomain(useBaseDomain: boolean = false): string {
-  let domainName = window.location.hostname;
-  if (useBaseDomain) {
-    let segments = domainName.split('.');
-    return segments.length <= 2 ? domainName : segments.slice(-2).join('.');
-  } else {
-    return domainName;
-  }
+	let domainName = window.location.hostname;
+	if (useBaseDomain) {
+		let segments = domainName.split('.');
+		return segments.length <= 2 ? domainName : segments.slice(-2).join('.');
+	} else {
+		return domainName;
+	}
 }
 
 export function setSiteCookie(value: string, useBaseDomain: boolean = false): void {
-  Cookies.set(SITE_COOKIE_NAME, value, {
-    domain: getCookieDomain(useBaseDomain),
-    path: '/'
-  });
+	Cookies.set(SITE_COOKIE_NAME, value, {
+		domain: getCookieDomain(useBaseDomain),
+		path: '/'
+	});
 }
 
 export function getSiteCookie(cookieName: string = SITE_COOKIE_NAME): string {
-  return Cookies.get(cookieName) || null;
+	return Cookies.get(cookieName) || null;
 }
 
 export function removeSiteCookie(): void {
-  Cookies.remove(SITE_COOKIE_NAME);
+	Cookies.remove(SITE_COOKIE_NAME);
 }

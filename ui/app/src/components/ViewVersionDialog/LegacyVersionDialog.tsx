@@ -17,21 +17,21 @@
 import { VersionViewProps } from './utils';
 import { useSelection } from '../../hooks/useSelection';
 import React from 'react';
-import { getLegacyDialogStyles } from './ViewVersionDialog';
+import Box from '@mui/material/Box';
 
 export function LegacyVersionDialog(props: VersionViewProps) {
-  const { version } = props;
-  const { classes } = getLegacyDialogStyles();
-  const authoringUrl = useSelection<string>((state) => state.env.authoringBase);
-  return (
-    <iframe
-      title="View version"
-      className={classes.iframe}
-      src={`${authoringUrl}/diff?site=${version.site}&path=${encodeURIComponent(version.path)}&version=${
-        version.versionNumber
-      }&versionTO=${version.versionNumber}&mode=iframe&ui=next`}
-    />
-  );
+	const { version } = props;
+	const authoringUrl = useSelection<string>((state) => state.env.authoringBase);
+	return (
+		<Box
+			component="iframe"
+			title="View version"
+			sx={{ border: 'none', height: '80vh' }}
+			src={`${authoringUrl}/diff?site=${version.site}&path=${encodeURIComponent(version.path)}&version=${
+				version.versionNumber
+			}&versionTO=${version.versionNumber}&mode=iframe&ui=next`}
+		/>
+	);
 }
 
 export default LegacyVersionDialog;

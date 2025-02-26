@@ -17,24 +17,24 @@
 import React, { useState } from 'react';
 import Dialog from '@mui/material/Dialog';
 import CommitResolutionDialogContainer, {
-  CommitResolutionDialogContainerProps
+	CommitResolutionDialogContainerProps
 } from './CommitResolutionDialogContainer';
 import { useOnClose } from '../../hooks/useOnClose';
 
 export function CommitResolutionDialog(props: CommitResolutionDialogContainerProps) {
-  const { open, onClose } = props;
-  const [disableQuickDismiss, setDisableQuickDismiss] = useState(false);
-  const onCloseHandler = useOnClose({
-    onClose,
-    disableBackdropClick: disableQuickDismiss,
-    disableEscapeKeyDown: disableQuickDismiss
-  });
+	const { open, onClose } = props;
+	const [disableQuickDismiss, setDisableQuickDismiss] = useState(false);
+	const onCloseHandler = useOnClose({
+		onClose,
+		disableBackdropClick: disableQuickDismiss,
+		disableEscapeKeyDown: disableQuickDismiss
+	});
 
-  return (
-    <Dialog open={open} onClose={onCloseHandler} fullWidth maxWidth="sm">
-      <CommitResolutionDialogContainer {...props} setDisableQuickDismiss={setDisableQuickDismiss} />
-    </Dialog>
-  );
+	return (
+		<Dialog open={open} onClose={onCloseHandler} fullWidth maxWidth="sm">
+			<CommitResolutionDialogContainer {...props} setDisableQuickDismiss={setDisableQuickDismiss} />
+		</Dialog>
+	);
 }
 
 export default CommitResolutionDialog;

@@ -35,14 +35,15 @@ export default defineConfig(({ mode }) => ({
       '/studio/api': proxyConfig,
       '/studio/static-assets': proxyConfig,
       '/studio/refresh.json': proxyConfig,
-      '/studio/1/plugin/file': proxyConfig
+      '/studio/1/plugin/file': proxyConfig,
+      '/static-assets': proxyConfig
     }
   },
   build: {
     minify: false,
     outDir: '../../static-assets/app',
     emptyOutDir: true,
-    sourceMap: true,
+    sourceMap: 'inline',
     rollupOptions: {
       input: {
         main: 'index.html',

@@ -23,62 +23,60 @@ import TableBody from '@mui/material/TableBody';
 import Skeleton from '@mui/material/Skeleton';
 import { rand } from '../PathNavigator/utils';
 import React from 'react';
-import useStyles from './styles';
 import GlobalAppGridRow from '../GlobalAppGridRow';
 import GlobalAppGridCell from '../GlobalAppGridCell';
 
 export interface UsersGridSkeletonTableProps {
-  numOfItems?: number;
+	numOfItems?: number;
 }
 
 export const UsersGridSkeletonTable = React.memo((props: UsersGridSkeletonTableProps) => {
-  const { numOfItems = 5 } = props;
-  const items = new Array(numOfItems).fill(null);
-  const { classes } = useStyles();
-  return (
-    <TableContainer>
-      <Table className={classes.tableRoot}>
-        <TableHead>
-          <GlobalAppGridRow>
-            <GlobalAppGridCell align="center" className="avatar">
-              <span />
-            </GlobalAppGridCell>
-            <GlobalAppGridCell align="left" className="width20">
-              <Typography variant="subtitle2">
-                <FormattedMessage id="words.name" defaultMessage="Name" />
-              </Typography>
-            </GlobalAppGridCell>
-            <GlobalAppGridCell align="left" className="width20">
-              <Typography variant="subtitle2">
-                <FormattedMessage id="words.username" defaultMessage="Username" />
-              </Typography>
-            </GlobalAppGridCell>
-            <GlobalAppGridCell align="left" className="width60">
-              <Typography variant="subtitle2">
-                <FormattedMessage id="words.email" defaultMessage="E-mail" />
-              </Typography>
-            </GlobalAppGridCell>
-          </GlobalAppGridRow>
-        </TableHead>
-        <TableBody>
-          {items?.map((width, index) => (
-            <GlobalAppGridRow key={index}>
-              <GlobalAppGridCell align="center" className="avatar">
-                <Skeleton className={classes.avatar} variant="circular" width={40} height={40} />
-              </GlobalAppGridCell>
-              <GlobalAppGridCell component="th" scope="row" className="width20">
-                <Skeleton variant="text" width={`${rand(70, 90)}%`} />
-              </GlobalAppGridCell>
-              <GlobalAppGridCell align="left" className="width20">
-                <Skeleton variant="text" width={`${rand(70, 90)}%`} />
-              </GlobalAppGridCell>
-              <GlobalAppGridCell align="left" className="width60">
-                <Skeleton variant="text" width={`${rand(70, 90)}%`} />
-              </GlobalAppGridCell>
-            </GlobalAppGridRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  );
+	const { numOfItems = 5 } = props;
+	const items = new Array(numOfItems).fill(null);
+	return (
+		<TableContainer>
+			<Table sx={{ tableLayout: 'fixed' }}>
+				<TableHead>
+					<GlobalAppGridRow>
+						<GlobalAppGridCell align="center" className="avatar">
+							<span />
+						</GlobalAppGridCell>
+						<GlobalAppGridCell align="left" className="width20">
+							<Typography variant="subtitle2">
+								<FormattedMessage id="words.name" defaultMessage="Name" />
+							</Typography>
+						</GlobalAppGridCell>
+						<GlobalAppGridCell align="left" className="width20">
+							<Typography variant="subtitle2">
+								<FormattedMessage id="words.username" defaultMessage="Username" />
+							</Typography>
+						</GlobalAppGridCell>
+						<GlobalAppGridCell align="left" className="width60">
+							<Typography variant="subtitle2">
+								<FormattedMessage id="words.email" defaultMessage="E-mail" />
+							</Typography>
+						</GlobalAppGridCell>
+					</GlobalAppGridRow>
+				</TableHead>
+				<TableBody>
+					{items?.map((width, index) => (
+						<GlobalAppGridRow key={index}>
+							<GlobalAppGridCell align="center" className="avatar">
+								<Skeleton sx={{ margin: '0 auto' }} variant="circular" width={40} height={40} />
+							</GlobalAppGridCell>
+							<GlobalAppGridCell component="th" scope="row" className="width20">
+								<Skeleton variant="text" width={`${rand(70, 90)}%`} />
+							</GlobalAppGridCell>
+							<GlobalAppGridCell align="left" className="width20">
+								<Skeleton variant="text" width={`${rand(70, 90)}%`} />
+							</GlobalAppGridCell>
+							<GlobalAppGridCell align="left" className="width60">
+								<Skeleton variant="text" width={`${rand(70, 90)}%`} />
+							</GlobalAppGridCell>
+						</GlobalAppGridRow>
+					))}
+				</TableBody>
+			</Table>
+		</TableContainer>
+	);
 });

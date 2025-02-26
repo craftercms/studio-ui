@@ -25,55 +25,55 @@ import { IconButton, Tooltip } from '@mui/material';
 import { useWithPendingChangesCloseRequest } from '../../hooks/useWithPendingChangesCloseRequest';
 
 interface WidgetDialogIconButtonProps {
-  title: TranslationOrText;
-  icon: SystemIconDescriptor;
-  widget: WidgetDescriptor;
+	title: TranslationOrText;
+	icon: SystemIconDescriptor;
+	widget: WidgetDescriptor;
 }
 
 export function WidgetDialogIconButton(props: WidgetDialogIconButtonProps) {
-  const title = usePossibleTranslation(props.title);
-  const {
-    open,
-    onOpen,
-    onClose,
-    hasPendingChanges,
-    isSubmitting,
-    isMinimized,
-    onMinimize,
-    onMaximize,
-    onSubmittingAndOrPendingChange
-  } = useEnhancedDialogState();
-  const widgetDialogPendingChangesCloseRequest = useWithPendingChangesCloseRequest(onClose);
+	const title = usePossibleTranslation(props.title);
+	const {
+		open,
+		onOpen,
+		onClose,
+		hasPendingChanges,
+		isSubmitting,
+		isMinimized,
+		onMinimize,
+		onMaximize,
+		onSubmittingAndOrPendingChange
+	} = useEnhancedDialogState();
+	const widgetDialogPendingChangesCloseRequest = useWithPendingChangesCloseRequest(onClose);
 
-  const openEmbeddedApp = () => {
-    if (isMinimized) {
-      onMaximize();
-    }
-    onOpen();
-  };
+	const openEmbeddedApp = () => {
+		if (isMinimized) {
+			onMaximize();
+		}
+		onOpen();
+	};
 
-  return (
-    <>
-      <Tooltip title={title}>
-        <IconButton onClick={openEmbeddedApp}>
-          <SystemIcon icon={props.icon} fontIconProps={{ fontSize: 'small' }} />
-        </IconButton>
-      </Tooltip>
-      <WidgetDialog
-        title={title}
-        open={open}
-        onClose={() => onClose()}
-        widget={props.widget}
-        hasPendingChanges={hasPendingChanges}
-        onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
-        onWithPendingChangesCloseRequest={widgetDialogPendingChangesCloseRequest}
-        onMaximize={onMaximize}
-        onMinimize={onMinimize}
-        isMinimized={isMinimized}
-        isSubmitting={isSubmitting}
-      />
-    </>
-  );
+	return (
+		<>
+			<Tooltip title={title}>
+				<IconButton onClick={openEmbeddedApp}>
+					<SystemIcon icon={props.icon} fontIconProps={{ fontSize: 'small' }} />
+				</IconButton>
+			</Tooltip>
+			<WidgetDialog
+				title={title}
+				open={open}
+				onClose={() => onClose()}
+				widget={props.widget}
+				hasPendingChanges={hasPendingChanges}
+				onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
+				onWithPendingChangesCloseRequest={widgetDialogPendingChangesCloseRequest}
+				onMaximize={onMaximize}
+				onMinimize={onMinimize}
+				isMinimized={isMinimized}
+				isSubmitting={isSubmitting}
+			/>
+		</>
+	);
 }
 
 export default WidgetDialogIconButton;

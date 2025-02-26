@@ -21,9 +21,9 @@ import { styled } from '@mui/material/styles';
 import { Typography } from '@mui/material';
 
 export const UltraStyledTypography = styled(Typography)(({ theme }) => ({
-  color: theme.palette.text.primary,
-  letterSpacing: 'unset',
-  fontSize: theme.typography.fontSize
+	color: theme.palette.text.primary,
+	letterSpacing: 'unset',
+	fontSize: theme.typography.fontSize
 }));
 
 export default UltraStyledTypography;

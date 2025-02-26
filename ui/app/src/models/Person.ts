@@ -15,10 +15,10 @@
  */
 
 export interface Person {
-  username: string;
-  firstName: string;
-  lastName: string;
-  avatar: string;
+	username: string;
+	firstName: string;
+	lastName: string;
+	avatar: string;
 }
 
 export default Person;

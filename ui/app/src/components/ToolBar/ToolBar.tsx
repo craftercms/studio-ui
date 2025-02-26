@@ -31,70 +31,70 @@ import useCurrentPreviewItem from '../../hooks/useCurrentPreviewItem';
 import { useTheme } from '@mui/material';
 
 const translations = defineMessages({
-  openToolsPanel: {
-    id: 'openToolsPanel.label',
-    defaultMessage: 'Open tools panel'
-  },
-  toggleSidebarTooltip: {
-    id: 'common.toggleSidebarTooltip',
-    defaultMessage: 'Toggle sidebar'
-  },
-  itemMenu: {
-    id: 'previewToolbar.itemMenu',
-    defaultMessage: 'Item menu'
-  }
+	openToolsPanel: {
+		id: 'openToolsPanel.label',
+		defaultMessage: 'Open tools panel'
+	},
+	toggleSidebarTooltip: {
+		id: 'common.toggleSidebarTooltip',
+		defaultMessage: 'Toggle sidebar'
+	},
+	itemMenu: {
+		id: 'previewToolbar.itemMenu',
+		defaultMessage: 'Item menu'
+	}
 });
 
 export function ToolBar() {
-  const { formatMessage } = useIntl();
-  const dispatch = useDispatch();
-  const site = useActiveSiteId();
-  const user = useActiveUser();
-  const userRoles = user.rolesBySite[site];
-  const { showToolsPanel, toolbar } = usePreviewState();
-  const item = useCurrentPreviewItem();
-  const uiConfig = useSiteUIConfig();
-  const theme = useTheme();
+	const { formatMessage } = useIntl();
+	const dispatch = useDispatch();
+	const site = useActiveSiteId();
+	const user = useActiveUser();
+	const userRoles = user.rolesBySite[site];
+	const { showToolsPanel, toolbar } = usePreviewState();
+	const item = useCurrentPreviewItem();
+	const uiConfig = useSiteUIConfig();
+	const theme = useTheme();
 
-  useEffect(() => {
-    if (uiConfig.xml && !toolbar.leftSection && !toolbar.middleSection && !toolbar.rightSection) {
-      dispatch(initToolbarConfig({ configXml: uiConfig.xml }));
-    }
-  }, [uiConfig.xml, toolbar, dispatch]);
+	useEffect(() => {
+		if (uiConfig.xml && !toolbar.leftSection && !toolbar.middleSection && !toolbar.rightSection) {
+			dispatch(initToolbarConfig({ configXml: uiConfig.xml }));
+		}
+	}, [uiConfig.xml, toolbar, dispatch]);
 
-  return (
-    <ViewToolbar
-      styles={{
-        appBar: {
-          borderBottom: 'none',
-          background: theme.palette.background.default
-        }
-      }}
-    >
-      <section>
-        <Tooltip title={formatMessage(translations.toggleSidebarTooltip)}>
-          <LogoAndMenuBundleButton
-            aria-label={formatMessage(translations.openToolsPanel)}
-            onClick={() => dispatch(showToolsPanel ? closeToolsPanel() : openToolsPanel())}
-          />
-        </Tooltip>
-        <Suspense fallback="">
-          {renderWidgets(toolbar.leftSection?.widgets, { userRoles, overrideProps: { site, item } })}
-        </Suspense>
-      </section>
-      <section>
-        <Suspense fallback="">
-          {renderWidgets(toolbar.middleSection?.widgets, { userRoles, overrideProps: { site, item } })}
-        </Suspense>
-      </section>
-      <section>
-        <Suspense fallback="">
-          {renderWidgets(toolbar.rightSection?.widgets, { userRoles, overrideProps: { site, item } })}
-        </Suspense>
-        <LauncherOpenerButton />
-      </section>
-    </ViewToolbar>
-  );
+	return (
+		<ViewToolbar
+			sxs={{
+				appBar: {
+					borderBottom: '5px',
+					background: theme.palette.background.default
+				}
+			}}
+		>
+			<section>
+				<Tooltip title={formatMessage(translations.toggleSidebarTooltip)}>
+					<LogoAndMenuBundleButton
+						aria-label={formatMessage(translations.openToolsPanel)}
+						onClick={() => dispatch(showToolsPanel ? closeToolsPanel() : openToolsPanel())}
+					/>
+				</Tooltip>
+				<Suspense fallback="">
+					{renderWidgets(toolbar.leftSection?.widgets, { userRoles, overrideProps: { site, item } })}
+				</Suspense>
+			</section>
+			<section>
+				<Suspense fallback="">
+					{renderWidgets(toolbar.middleSection?.widgets, { userRoles, overrideProps: { site, item } })}
+				</Suspense>
+			</section>
+			<section>
+				<Suspense fallback="">
+					{renderWidgets(toolbar.rightSection?.widgets, { userRoles, overrideProps: { site, item } })}
+				</Suspense>
+				<LauncherOpenerButton />
+			</section>
+		</ViewToolbar>
+	);
 }
 
 export default ToolBar;

@@ -21,32 +21,32 @@ import EnhancedDialog from '../EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
 
 export function DeleteDialog(props: DeleteDialogProps) {
-  const { items, isSubmitting, onSuccess, isFetching, childItems, dependentItems, error, ...rest } = props;
-  return (
-    <EnhancedDialog
-      title={<FormattedMessage id="deleteDialog.title" defaultMessage="Delete" />}
-      dialogHeaderProps={{
-        subtitle: (
-          <FormattedMessage
-            id="deleteDialog.subtitle"
-            defaultMessage="Selected items will be deleted along with their child items. Please review dependent items before deleting as these will end-up with broken link references."
-          />
-        )
-      }}
-      isSubmitting={isSubmitting}
-      {...rest}
-    >
-      <DeleteDialogContainer
-        items={items}
-        onSuccess={onSuccess}
-        isFetching={isFetching}
-        childItems={childItems}
-        dependentItems={dependentItems}
-        isSubmitting={isSubmitting}
-        error={error}
-      />
-    </EnhancedDialog>
-  );
+	const { items, isSubmitting, onSuccess, isFetching, childItems, dependentItems, error, ...rest } = props;
+	return (
+		<EnhancedDialog
+			title={<FormattedMessage id="deleteDialog.title" defaultMessage="Delete" />}
+			dialogHeaderProps={{
+				subtitle: (
+					<FormattedMessage
+						id="deleteDialog.subtitle"
+						defaultMessage="Selected items will be deleted along with their child items. Please review dependent items before deleting as these will end-up with broken link references."
+					/>
+				)
+			}}
+			isSubmitting={isSubmitting}
+			{...rest}
+		>
+			<DeleteDialogContainer
+				items={items}
+				onSuccess={onSuccess}
+				isFetching={isFetching}
+				childItems={childItems}
+				dependentItems={dependentItems}
+				isSubmitting={isSubmitting}
+				error={error}
+			/>
+		</EnhancedDialog>
+	);
 }
 
 export default DeleteDialog;

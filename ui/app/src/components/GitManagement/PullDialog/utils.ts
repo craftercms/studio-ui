@@ -20,18 +20,18 @@ import ApiResponse from '../../../models/ApiResponse';
 import { PullResponse } from '../../../services/repositories';
 
 export interface PullFromRemoteBaseProps {
-  remoteName: string;
-  mergeStrategies: MergeStrategy[];
+	remoteName: string;
+	mergeStrategies: MergeStrategy[];
 }
 
 export interface PullFromRemoteDialogProps extends PullFromRemoteBaseProps, EnhancedDialogProps {
-  onPullSuccess?(result: PullResponse): void;
-  onPullError?(response: ApiResponse): void;
+	onPullSuccess?(result: PullResponse): void;
+	onPullError?(response: ApiResponse): void;
 }
 
 export interface PullFromRemoteDialogContainerProps
-  extends PullFromRemoteBaseProps,
-    Pick<PullFromRemoteDialogProps, 'onClose' | 'onPullSuccess' | 'onPullError' | 'isSubmitting'> {
-  disabled?: boolean;
-  onPullStart?(): void;
+	extends PullFromRemoteBaseProps,
+		Pick<PullFromRemoteDialogProps, 'onClose' | 'onPullSuccess' | 'onPullError' | 'isSubmitting'> {
+	disabled?: boolean;
+	onPullStart?(): void;
 }

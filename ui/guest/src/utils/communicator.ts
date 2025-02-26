@@ -19,28 +19,28 @@ import { filter, map, share } from 'rxjs/operators';
 import StandardAction from '@craftercms/studio-ui/models/StandardAction';
 
 export const message$: Observable<StandardAction> =
-  typeof window === 'undefined'
-    ? new Subject<StandardAction>()
-    : fromEvent<MessageEvent>(window, 'message').pipe(
-        filter((e) => Boolean(e.data?.type)),
-        map((e) => e.data),
-        share()
-      );
+	typeof window === 'undefined'
+		? new Subject<StandardAction>()
+		: fromEvent<MessageEvent>(window, 'message').pipe(
+				filter((e) => Boolean(e.data?.type)),
+				map((e) => e.data),
+				share()
+			);
 
 const meta = { craftercms: true, source: 'guest' };
 const prepareAction = (type: string | StandardAction, payload?: any) =>
-  typeof type === 'object' ? { ...type, meta } : { type, payload, meta };
+	typeof type === 'object' ? { ...type, meta } : { type, payload, meta };
 
 interface PostFunction {
-  (action: StandardAction): void;
-  (type: string, payload?: any): void;
+	(action: StandardAction): void;
+	(type: string, payload?: any): void;
 }
 
 export const post: PostFunction =
-  typeof window === 'undefined'
-    ? () => void 0
-    : (type, payload?) => window.parent.postMessage(prepareAction(type, payload), '*');
+	typeof window === 'undefined'
+		? () => void 0
+		: (type, payload?) => window.parent.postMessage(prepareAction(type, payload), '*');
 
 export function fromTopic(type: string): Observable<StandardAction> {
-  return message$.pipe(filter((e) => e.type === type));
+	return message$.pipe(filter((e) => e.type === type));
 }

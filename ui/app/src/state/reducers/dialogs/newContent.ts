@@ -19,27 +19,27 @@ import { closeNewContentDialog, newContentDialogClosed, showNewContentDialog } f
 import { NewContentDialogStateProps } from '../../../components/NewContentDialog/utils';
 
 const initialState: NewContentDialogStateProps = {
-  open: false,
-  isSubmitting: null,
-  isMinimized: null,
-  hasPendingChanges: null,
-  compact: false,
-  item: null,
-  rootPath: '/site/website'
+	open: false,
+	isSubmitting: null,
+	isMinimized: null,
+	hasPendingChanges: null,
+	compact: false,
+	item: null,
+	rootPath: '/site/website'
 };
 
 export default createReducer<NewContentDialogStateProps>(initialState, (builder) => {
-  builder
-    .addCase(showNewContentDialog, (state, { payload }) => ({
-      ...state,
-      onClose: closeNewContentDialog(),
-      onClosed: newContentDialogClosed(),
-      ...(payload as Partial<NewContentDialogStateProps>),
-      open: true
-    }))
-    .addCase(closeNewContentDialog, (state) => ({
-      ...state,
-      open: false
-    }))
-    .addCase(newContentDialogClosed, () => initialState);
+	builder
+		.addCase(showNewContentDialog, (state, { payload }) => ({
+			...state,
+			onClose: closeNewContentDialog(),
+			onClosed: newContentDialogClosed(),
+			...(payload as Partial<NewContentDialogStateProps>),
+			open: true
+		}))
+		.addCase(closeNewContentDialog, (state) => ({
+			...state,
+			open: false
+		}))
+		.addCase(newContentDialogClosed, () => initialState);
 });

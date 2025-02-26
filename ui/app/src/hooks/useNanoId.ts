@@ -18,7 +18,7 @@ import { useMemo } from 'react';
 import { nanoid } from 'nanoid';
 
 export function useNanoId() {
-  return useMemo(() => nanoid(), []);
+	return useMemo(() => nanoid(), []);
 }
 
 export default useNanoId;

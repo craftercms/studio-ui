@@ -22,7 +22,6 @@ import ResizeableDrawer from '../ResizeableDrawer/ResizeableDrawer';
 import { renderWidgets } from '../Widget';
 import { WidgetDescriptor } from '../../models';
 import { Suspencified } from '../Suspencified/Suspencified';
-import { makeStyles } from 'tss-react/mui';
 import { useSelection } from '../../hooks/useSelection';
 import { usePreviewState } from '../../hooks/usePreviewState';
 import { useActiveUser } from '../../hooks/useActiveUser';
@@ -36,88 +35,72 @@ import { LoadingState, LoadingStateProps } from '../LoadingState';
 import { EmptyState } from '../EmptyState';
 
 defineMessages({
-  previewSiteExplorerPanelTitle: {
-    id: 'previewSiteExplorerPanel.title',
-    defaultMessage: 'Project Explorer'
-  }
+	previewSiteExplorerPanelTitle: {
+		id: 'previewSiteExplorerPanel.title',
+		defaultMessage: 'Project Explorer'
+	}
 });
 
-const useStyles = makeStyles()((theme) => ({
-  emptyState: {
-    margin: `${theme.spacing(4)} ${theme.spacing(1)}`
-  },
-  emptyStateImage: {
-    width: '50%',
-    marginBottom: theme.spacing(1)
-  },
-  loadingViewRoot: {
-    flex: 1,
-    flexDirection: 'row'
-  },
-  drawerBody: {
-    paddingBottom: 50
-  }
-}));
-
 export function ToolsPanel() {
-  const dispatch = useDispatch();
-  const { id: siteId, uuid } = useActiveSite();
-  const { classes } = useStyles();
-  const { showToolsPanel, toolsPanel, toolsPanelWidth, windowSize } = usePreviewState();
-  const toolsPanelPageStack = useSelection<WidgetDescriptor[]>((state) => state.preview.toolsPanelPageStack);
-  const uiConfig = useSiteUIConfig();
-  const { username } = useActiveUser();
-  const { rolesBySite } = useActiveUser();
-  const isLoading = uiConfig.isFetching;
-  const isEmpty = toolsPanel?.widgets == null || toolsPanel.widgets.length === 0;
-  const onWidthChange = (width: number) => dispatch(updateToolsPanelWidth({ width }));
-  const loadingStateProps: LoadingStateProps = { styles: { graphic: { width: '90px' } } };
+	const dispatch = useDispatch();
+	const { id: siteId, uuid } = useActiveSite();
+	const { showToolsPanel, toolsPanel, toolsPanelWidth, windowSize } = usePreviewState();
+	const toolsPanelPageStack = useSelection<WidgetDescriptor[]>((state) => state.preview.toolsPanelPageStack);
+	const uiConfig = useSiteUIConfig();
+	const { username } = useActiveUser();
+	const { rolesBySite } = useActiveUser();
+	const isLoading = uiConfig.isFetching;
+	const isEmpty = toolsPanel?.widgets == null || toolsPanel.widgets.length === 0;
+	const onWidthChange = (width: number) => dispatch(updateToolsPanelWidth({ width }));
+	const loadingStateProps: LoadingStateProps = { sxs: { graphic: { width: '90px' } } };
 
-  useEffect(() => {
-    if (nnou(uiConfig.xml) && !toolsPanel) {
-      const storedPage = getStoredPreviewToolsPanelPage(uuid, username);
-      const toolsPanelWidth = getStoredPreviewToolsPanelWidth(siteId, username);
-      dispatch(initToolsPanelConfig({ configXml: uiConfig.xml, storedPage, toolsPanelWidth }));
-    }
-  }, [uiConfig.xml, toolsPanel, dispatch, uuid, username, siteId]);
+	useEffect(() => {
+		if (nnou(uiConfig.xml) && !toolsPanel) {
+			const storedPage = getStoredPreviewToolsPanelPage(uuid, username);
+			const toolsPanelWidth = getStoredPreviewToolsPanelWidth(siteId, username);
+			dispatch(initToolsPanelConfig({ configXml: uiConfig.xml, storedPage, toolsPanelWidth }));
+		}
+	}, [uiConfig.xml, toolsPanel, dispatch, uuid, username, siteId]);
 
-  return (
-    <ResizeableDrawer
-      belowToolbar
-      open={showToolsPanel}
-      width={toolsPanelWidth}
-      maxWidth={windowSize}
-      classes={{ drawerBody: classes.drawerBody }}
-      onWidthChange={onWidthChange}
-      onResizeStart={() => blockPreviewIframePointerEvents(true)}
-      onResizeStop={() => blockPreviewIframePointerEvents(false)}
-      styles={{
-        resizeHandle: { backgroundColor: 'transparent' },
-        drawerPaperBelowToolbar: { top: '64px' }
-      }}
-    >
-      {uiConfig.error ? (
-        <ApiResponseErrorState error={uiConfig.error} />
-      ) : isLoading ? (
-        <LoadingState {...loadingStateProps} />
-      ) : isEmpty ? (
-        <EmptyState
-          sxs={{ title: { textAlign: 'center' } }}
-          title={<FormattedMessage defaultMessage="No widgets configured" />}
-          subtitle={
-            <FormattedMessage defaultMessage="Add configuration > widgets to `craftercms.components.ToolsPanel` on `ui.xml`" />
-          }
-        />
-      ) : (
-        <Suspencified loadingStateProps={loadingStateProps}>
-          {renderWidgets(
-            toolsPanelPageStack.length ? toolsPanelPageStack.slice(toolsPanelPageStack.length - 1) : toolsPanel.widgets,
-            { userRoles: rolesBySite[siteId] }
-          )}
-        </Suspencified>
-      )}
-    </ResizeableDrawer>
-  );
+	return (
+		<ResizeableDrawer
+			belowToolbar
+			open={showToolsPanel}
+			width={toolsPanelWidth}
+			maxWidth={windowSize}
+			sxs={{
+				drawerBody: {
+					paddingBottom: '50px'
+				},
+				resizeHandle: { backgroundColor: 'transparent' },
+				drawerPaperBelowToolbar: { top: '64px' }
+			}}
+			onWidthChange={onWidthChange}
+			onResizeStart={() => blockPreviewIframePointerEvents(true)}
+			onResizeStop={() => blockPreviewIframePointerEvents(false)}
+		>
+			{uiConfig.error ? (
+				<ApiResponseErrorState error={uiConfig.error} />
+			) : isLoading ? (
+				<LoadingState {...loadingStateProps} />
+			) : isEmpty ? (
+				<EmptyState
+					sxs={{ title: { textAlign: 'center' } }}
+					title={<FormattedMessage defaultMessage="No widgets configured" />}
+					subtitle={
+						<FormattedMessage defaultMessage="Add configuration > widgets to `craftercms.components.ToolsPanel` on `ui.xml`" />
+					}
+				/>
+			) : (
+				<Suspencified loadingStateProps={loadingStateProps}>
+					{renderWidgets(
+						toolsPanelPageStack.length ? toolsPanelPageStack.slice(toolsPanelPageStack.length - 1) : toolsPanel.widgets,
+						{ userRoles: rolesBySite[siteId] }
+					)}
+				</Suspencified>
+			)}
+		</ResizeableDrawer>
+	);
 }
 
 export default ToolsPanel;

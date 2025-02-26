@@ -24,28 +24,28 @@ import PrimaryButton from '../PrimaryButton';
 import { NewRemoteRepositoryDialogUIProps } from './utils';
 
 export function NewRemoteRepositoryDialogUI(props: NewRemoteRepositoryDialogUIProps) {
-  const { inputs, setInputs, isSubmitting, isValid, onCloseButtonClick, onCreate } = props;
+	const { inputs, setInputs, isSubmitting, isValid, onCloseButtonClick, onCreate } = props;
 
-  const onSubmit = (e) => {
-    e.preventDefault();
-    onCreate();
-  };
+	const onSubmit = (e) => {
+		e.preventDefault();
+		onCreate();
+	};
 
-  return (
-    <form onSubmit={onSubmit} noValidate>
-      <DialogBody>
-        <NewRemoteRepositoryForm inputs={inputs} setInputs={setInputs} />
-      </DialogBody>
-      <DialogFooter>
-        <SecondaryButton onClick={onCloseButtonClick} disabled={isSubmitting}>
-          <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
-        </SecondaryButton>
-        <PrimaryButton type="submit" disabled={isSubmitting || !isValid} loading={isSubmitting}>
-          <FormattedMessage id="words.create" defaultMessage="Create" />
-        </PrimaryButton>
-      </DialogFooter>
-    </form>
-  );
+	return (
+		<form onSubmit={onSubmit} noValidate>
+			<DialogBody>
+				<NewRemoteRepositoryForm inputs={inputs} setInputs={setInputs} />
+			</DialogBody>
+			<DialogFooter>
+				<SecondaryButton onClick={onCloseButtonClick} disabled={isSubmitting}>
+					<FormattedMessage id="words.cancel" defaultMessage="Cancel" />
+				</SecondaryButton>
+				<PrimaryButton type="submit" disabled={isSubmitting || !isValid} loading={isSubmitting}>
+					<FormattedMessage id="words.create" defaultMessage="Create" />
+				</PrimaryButton>
+			</DialogFooter>
+		</form>
+	);
 }
 
 export default NewRemoteRepositoryDialogUI;

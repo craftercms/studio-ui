@@ -15,7 +15,6 @@
  */
 
 import React from 'react';
-import { makeStyles } from 'tss-react/mui';
 import { ViewVersionDialogProps } from './utils';
 import ViewVersionDialogContainer from './ViewVersionDialogContainer';
 import EnhancedDialog from '../EnhancedDialog/EnhancedDialog';
@@ -46,13 +45,6 @@ import Slide from '@mui/material/Slide';
     marginBottom: '10px'
   }
 })); */
-
-export const getLegacyDialogStyles = makeStyles()(() => ({
-  iframe: {
-    border: 'none',
-    height: '80vh'
-  }
-}));
 
 /*function VersionView(props: VersionViewProps) {
   const { version, contentTypes } = props.resource.read();
@@ -107,26 +99,26 @@ export const getLegacyDialogStyles = makeStyles()(() => ({
 } */
 
 export function ViewVersionDialog(props: ViewVersionDialogProps) {
-  const { rightActions, leftActions, contentTypesBranch, error, isFetching, version, ...rest } = props;
+	const { rightActions, leftActions, contentTypesBranch, error, isFetching, version, ...rest } = props;
 
-  return (
-    <EnhancedDialog
-      title={<FormattedMessage id="viewVersionDialog.headerTitle" defaultMessage="Viewing item version" />}
-      dialogHeaderProps={{
-        leftActions,
-        rightActions
-      }}
-      TransitionComponent={Slide}
-      {...rest}
-    >
-      <ViewVersionDialogContainer
-        version={version}
-        contentTypesBranch={contentTypesBranch}
-        error={error}
-        isFetching={isFetching}
-      />
-    </EnhancedDialog>
-  );
+	return (
+		<EnhancedDialog
+			title={<FormattedMessage id="viewVersionDialog.headerTitle" defaultMessage="Viewing item version" />}
+			dialogHeaderProps={{
+				leftActions,
+				rightActions
+			}}
+			TransitionComponent={Slide}
+			{...rest}
+		>
+			<ViewVersionDialogContainer
+				version={version}
+				contentTypesBranch={contentTypesBranch}
+				error={error}
+				isFetching={isFetching}
+			/>
+		</EnhancedDialog>
+	);
 }
 
 export default ViewVersionDialog;

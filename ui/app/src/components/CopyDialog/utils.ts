@@ -20,48 +20,48 @@ import { DetailedItem } from '../../models';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 
 export interface CopyDialogBaseProps {
-  site: string;
-  item: DetailedItem;
+	site: string;
+	item: DetailedItem;
 }
 
 export interface CopyDialogCallbacks {
-  onOk?(response: { paths: string[] }): void;
+	onOk?(response: { paths: string[] }): void;
 }
 
 export interface CopyDialogStateProps extends CopyDialogBaseProps, EnhancedDialogState {
-  onClose?: StandardAction;
-  onClosed?: StandardAction;
-  onOk?: StandardAction;
+	onClose?: StandardAction;
+	onClosed?: StandardAction;
+	onOk?: StandardAction;
 }
 
 export const messages = defineMessages({
-  copy: {
-    id: 'copyItems.copy',
-    defaultMessage: 'Copy'
-  },
-  cancel: {
-    id: 'copyItems.cancel',
-    defaultMessage: 'Cancel'
-  },
-  selectAll: {
-    id: 'copyItems.selectAll',
-    defaultMessage: 'Select All'
-  },
-  deselectAll: {
-    id: 'copyItems.deselectAll',
-    defaultMessage: 'Deselect All'
-  },
-  fetching: {
-    id: 'words.fetching',
-    defaultMessage: 'Fetching'
-  },
-  copyDialogTitle: {
-    id: 'itemActions.copyDialogTitle',
-    defaultMessage: 'Copy'
-  },
-  copyDialogSubtitle: {
-    id: 'itemActions.copyDialogSubtitle',
-    defaultMessage:
-      'Please select any of the sub-pages you would like to batch copy. When pasting, any selected sub-pages and their positional hierarchy will be retained.'
-  }
+	copy: {
+		id: 'copyItems.copy',
+		defaultMessage: 'Copy'
+	},
+	cancel: {
+		id: 'copyItems.cancel',
+		defaultMessage: 'Cancel'
+	},
+	selectAll: {
+		id: 'copyItems.selectAll',
+		defaultMessage: 'Select All'
+	},
+	deselectAll: {
+		id: 'copyItems.deselectAll',
+		defaultMessage: 'Deselect All'
+	},
+	fetching: {
+		id: 'words.fetching',
+		defaultMessage: 'Fetching'
+	},
+	copyDialogTitle: {
+		id: 'itemActions.copyDialogTitle',
+		defaultMessage: 'Copy'
+	},
+	copyDialogSubtitle: {
+		id: 'itemActions.copyDialogSubtitle',
+		defaultMessage:
+			'Please select any of the sub-pages you would like to batch copy. When pasting, any selected sub-pages and their positional hierarchy will be retained.'
+	}
 });

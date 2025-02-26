@@ -15,8 +15,6 @@
  */
 
 import React from 'react';
-import { Theme } from '@mui/material/styles';
-import { makeStyles } from 'tss-react/mui';
 import IconButton from '@mui/material/IconButton';
 import { defineMessages, useIntl } from 'react-intl';
 import Typography from '@mui/material/Typography';
@@ -27,90 +25,86 @@ import GridViewIcon from '@mui/icons-material/GridOnRounded';
 import ViewToolbar from '../ViewToolbar';
 import Tooltip from '@mui/material/Tooltip';
 import LogoAndMenuBundleButton from '../LogoAndMenuBundleButton';
+import Box from '@mui/material/Box';
 
 const translations = defineMessages({
-  showHideFilters: {
-    id: 'searchToolBar.showHideFilters',
-    defaultMessage: 'Show/hide filters'
-  },
-  search: {
-    id: 'words.search',
-    defaultMessage: 'Search'
-  },
-  changeViewButtonTip: {
-    id: 'searchToolBar.changeViewButtonTooltip',
-    defaultMessage: 'Change view'
-  },
-  toggleSidebarTooltip: {
-    id: 'words.filters',
-    defaultMessage: 'Filters'
-  }
+	showHideFilters: {
+		id: 'searchToolBar.showHideFilters',
+		defaultMessage: 'Show/hide filters'
+	},
+	search: {
+		id: 'words.search',
+		defaultMessage: 'Search'
+	},
+	changeViewButtonTip: {
+		id: 'searchToolBar.changeViewButtonTooltip',
+		defaultMessage: 'Change view'
+	},
+	toggleSidebarTooltip: {
+		id: 'words.filters',
+		defaultMessage: 'Filters'
+	}
 });
 
-const useStyles = makeStyles()((theme: Theme) => ({
-  searchBarContainer: {
-    width: '30%',
-    [theme.breakpoints.up('md')]: {
-      minWidth: '500px'
-    }
-  },
-  searchPaper: {
-    flex: 1
-  }
-}));
-
 export interface SiteSearchToolBarProps {
-  keyword: string[] | string;
-  showActionButton?: boolean;
-  showTitle?: boolean;
-  currentView: string;
-  embedded: boolean;
-  handleChangeView(): void;
-  onChange(value: string): void;
-  onMenuIconClick(): void;
+	keyword: string[] | string;
+	showActionButton?: boolean;
+	showTitle?: boolean;
+	currentView: string;
+	embedded: boolean;
+	handleChangeView(): void;
+	onChange(value: string): void;
+	onMenuIconClick(): void;
 }
 
 export function SiteSearchToolBar(props: SiteSearchToolBarProps) {
-  const { onChange, keyword, showActionButton, showTitle, handleChangeView, currentView, onMenuIconClick, embedded } =
-    props;
-  const { formatMessage } = useIntl();
-  const { classes } = useStyles();
-  return (
-    <ViewToolbar>
-      <section>
-        <Tooltip title={formatMessage(translations.toggleSidebarTooltip)}>
-          <LogoAndMenuBundleButton
-            aria-label={formatMessage(translations.showHideFilters)}
-            onClick={onMenuIconClick}
-            showCrafterIcon={!embedded}
-          />
-        </Tooltip>
-        {showTitle && (
-          <Typography variant="h5" component="h2" color="textPrimary">
-            {formatMessage(translations.search)}
-          </Typography>
-        )}
-      </section>
-      <section className={classes.searchBarContainer}>
-        <SearchBar
-          onChange={onChange}
-          keyword={keyword}
-          showActionButton={showActionButton}
-          showDecoratorIcon
-          classes={{ root: classes.searchPaper }}
-          autoFocus
-        />
-      </section>
-      <section>
-        <Tooltip title={formatMessage(translations.changeViewButtonTip)}>
-          <IconButton onClick={handleChangeView} size="large">
-            {currentView === 'grid' ? <ListViewIcon /> : <GridViewIcon />}
-          </IconButton>
-        </Tooltip>
-        {!embedded && <LauncherOpenerButton />}
-      </section>
-    </ViewToolbar>
-  );
+	const { onChange, keyword, showActionButton, showTitle, handleChangeView, currentView, onMenuIconClick, embedded } =
+		props;
+	const { formatMessage } = useIntl();
+	return (
+		<ViewToolbar>
+			<section>
+				<Tooltip title={formatMessage(translations.toggleSidebarTooltip)}>
+					<LogoAndMenuBundleButton
+						aria-label={formatMessage(translations.showHideFilters)}
+						onClick={onMenuIconClick}
+						showCrafterIcon={!embedded}
+					/>
+				</Tooltip>
+				{showTitle && (
+					<Typography variant="h5" component="h2" color="textPrimary">
+						{formatMessage(translations.search)}
+					</Typography>
+				)}
+			</section>
+			<Box
+				component="section"
+				sx={(theme) => ({
+					width: '30%',
+					[theme.breakpoints.up('md')]: {
+						minWidth: '500px'
+					}
+				})}
+			>
+				<SearchBar
+					onChange={onChange}
+					keyword={keyword}
+					showActionButton={showActionButton}
+					showDecoratorIcon
+					sxs={{ root: { flex: 1 } }}
+					autoFocus
+				/>
+			</Box>
+			<section>
+				<Tooltip title={formatMessage(translations.changeViewButtonTip)}>
+					<IconButton onClick={handleChangeView} size="large">
+						{currentView === 'grid' ? <ListViewIcon /> : <GridViewIcon />}
+					</IconButton>
+				</Tooltip>
+				{!embedded && <LauncherOpenerButton />}
+			</section>
+		</ViewToolbar>
+	);
 }
 
 export default SiteSearchToolBar;

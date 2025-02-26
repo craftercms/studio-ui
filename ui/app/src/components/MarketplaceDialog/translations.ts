@@ -17,8 +17,8 @@
 import { defineMessages } from 'react-intl';
 
 export const translations = defineMessages({
-  installing: {
-    id: 'installPluginDialog.installing',
-    defaultMessage: 'Installing "{name}"'
-  }
+	installing: {
+		id: 'installPluginDialog.installing',
+		defaultMessage: 'Installing "{name}"'
+	}
 });

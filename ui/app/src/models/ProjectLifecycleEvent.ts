@@ -15,7 +15,7 @@
  */
 
 export interface ProjectLifecycleEvent<T = 'SITE_READY_EVENT' | 'SITE_DELETING_EVENT' | 'SITE_DELETED_EVENT'> {
-  timestamp: number;
-  siteUuid: string;
-  eventType: T;
+	timestamp: number;
+	siteUuid: string;
+	eventType: T;
 }

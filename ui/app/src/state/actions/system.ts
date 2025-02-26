@@ -24,14 +24,14 @@ import { Site } from '../../models/Site';
 import LookupTable from '../../models/LookupTable';
 import { UIBlockerStateProps } from '../../components/UIBlocker';
 import SocketEventBase, {
-  DeleteContentEventsPayload,
-  ContentEventPayload,
-  DeleteContentEventPayload,
-  LockContentEventPayload,
-  MoveContentEventPayload,
-  PublishEventPayload,
-  RepositoryEventPayload,
-  WorkflowEventPayload
+	DeleteContentEventsPayload,
+	ContentEventPayload,
+	DeleteContentEventPayload,
+	LockContentEventPayload,
+	MoveContentEventPayload,
+	PublishEventPayload,
+	RepositoryEventPayload,
+	WorkflowEventPayload
 } from '../../models/SocketEvent';
 import { DetailedItem, MarketplacePlugin } from '../../models';
 import { ProjectLifecycleEvent } from '../../models/ProjectLifecycleEvent';
@@ -58,7 +58,13 @@ export const publishEvent = /*#__PURE__*/ createAction<PublishEventPayload>('PUB
 
 export const repositoryEvent = /*#__PURE__*/ createAction<RepositoryEventPayload>('REPOSITORY_EVENT');
 
-export const workflowEvent = /*#__PURE__*/ createAction<WorkflowEventPayload>('WORKFLOW_EVENT');
+export const workflowEventSubmit = /*#__PURE__*/ createAction<WorkflowEventPayload>('WORKFLOW_EVENT_SUBMIT');
+export const workflowEventDirectPublish = /*#__PURE__*/ createAction<WorkflowEventPayload>(
+	'WORKFLOW_EVENT_DIRECT_PUBLISH'
+);
+export const workflowEventApprove = /*#__PURE__*/ createAction<WorkflowEventPayload>('WORKFLOW_EVENT_APPROVE');
+export const workflowEventReject = /*#__PURE__*/ createAction<WorkflowEventPayload>('WORKFLOW_EVENT_REJECT');
+export const workflowEventCancel = /*#__PURE__*/ createAction<WorkflowEventPayload>('WORKFLOW_EVENT_CANCEL');
 
 export const moveContentEvent = /*#__PURE__*/ createAction<MoveContentEventPayload>('MOVE_CONTENT_EVENT');
 
@@ -67,30 +73,30 @@ export const moveContentEvent = /*#__PURE__*/ createAction<MoveContentEventPaylo
 // region Notifications
 
 export const showDeleteItemSuccessNotification = /*#__PURE__*/ createAction<StandardAction<{ items: DetailedItem[] }>>(
-  'SHOW_DELETE_ITEM_SUCCESS_NOTIFICATION'
+	'SHOW_DELETE_ITEM_SUCCESS_NOTIFICATION'
 );
 
 export const showPublishItemSuccessNotification = /*#__PURE__*/ createAction<
-  StandardAction<{
-    items: DetailedItem[];
-    type: string;
-    schedule: string;
-    environment: string;
-  }>
+	StandardAction<{
+		items: DetailedItem[];
+		type: string;
+		schedule: string;
+		environment: string;
+	}>
 >('SHOW_PUBLISH_ITEM_SUCCESS_NOTIFICATION');
 
 export const showCreateItemSuccessNotification = /*#__PURE__*/ createAction('SHOW_CREATE_ITEM_SUCCESS_NOTIFICATION');
 
 export const showCreateFolderSuccessNotification = /*#__PURE__*/ createAction(
-  'SHOW_CREATE_FOLDER_SUCCESS_NOTIFICATION'
+	'SHOW_CREATE_FOLDER_SUCCESS_NOTIFICATION'
 );
 
 export const showEditItemSuccessNotification = /*#__PURE__*/ createAction('SHOW_EDIT_ITEM_SUCCESS_NOTIFICATION');
 
 export const showCopyItemSuccessNotification = /*#__PURE__*/ createAction<
-  StandardAction<{
-    paths: string[];
-  }>
+	StandardAction<{
+		paths: string[];
+	}>
 >('SHOW_COPY_ITEM_SUCCESS_NOTIFICATION');
 
 export const showCutItemSuccessNotification = /*#__PURE__*/ createAction('SHOW_CUT_ITEM_SUCCESS_NOTIFICATION');
@@ -100,18 +106,18 @@ export const showPasteItemSuccessNotification = /*#__PURE__*/ createAction('SHOW
 export const showUnlockItemSuccessNotification = /*#__PURE__*/ createAction('SHOW_UNLOCK_ITEM_SUCCESS_NOTIFICATION');
 
 export const showDuplicatedItemSuccessNotification = /*#__PURE__*/ createAction(
-  'SHOW_DUPLICATED_ITEM_SUCCESS_NOTIFICATION'
+	'SHOW_DUPLICATED_ITEM_SUCCESS_NOTIFICATION'
 );
 
 export const showRevertItemSuccessNotification = /*#__PURE__*/ createAction('SHOW_REVERT_ITEM_SUCCESS_NOTIFICATION');
 
 export const showRejectItemSuccessNotification = /*#__PURE__*/ createAction<{ count?: number }>(
-  'SHOW_REJECT_ITEM_SUCCESS_NOTIFICATION'
+	'SHOW_REJECT_ITEM_SUCCESS_NOTIFICATION'
 );
 
 export const showSystemNotification = /*#__PURE__*/ createAction<{
-  message: string;
-  options?: OptionsObject;
+	message: string;
+	options?: OptionsObject;
 }>('SHOW_SYSTEM_NOTIFICATION');
 
 // endregion
@@ -119,7 +125,7 @@ export const showSystemNotification = /*#__PURE__*/ createAction<{
 export const emitSystemEvent = /*#__PURE__*/ createAction<StandardAction>('SYSTEM_EVENT');
 
 export const emitSystemEvents = /*#__PURE__*/ createAction<{ siteId: string; events: StandardAction[] }>(
-  'SYSTEM_EVENTS'
+	'SYSTEM_EVENTS'
 );
 
 export const pluginInstalled = /*#__PURE__*/ createAction<MarketplacePlugin>('PLUGIN_INSTALLED');
@@ -133,12 +139,12 @@ export const contentTypeUpdated = /*#__PURE__*/ createAction<StandardAction>('CO
 export const contentTypeDeleted = /*#__PURE__*/ createAction<StandardAction>('CONTENT_TYPE_DELETED');
 
 export const storeInitialized = /*#__PURE__*/ createAction<{
-  auth: ObtainAuthTokenResponse;
-  user: User;
-  sites: Array<Site>;
-  properties: LookupTable<any>;
-  activeSiteId: string;
-  activeEnvironment: string;
+	auth: ObtainAuthTokenResponse;
+	user: User;
+	sites: Array<Site>;
+	properties: LookupTable<any>;
+	activeSiteId: string;
+	activeEnvironment: string;
 }>('STORE_INITIALIZED');
 
 export const messageSharedWorker = /*#__PURE__*/ createAction<StandardAction>('MESSAGE_SHARED_WORKER');
@@ -146,7 +152,7 @@ export const messageSharedWorker = /*#__PURE__*/ createAction<StandardAction>('M
 export const fetchGlobalMenu = /*#__PURE__*/ createAction('FETCH_GLOBAL_MENU');
 
 export const fetchGlobalMenuComplete =
-  /*#__PURE__*/ createAction<GlobalState['globalNavigation']['items']>('FETCH_GLOBAL_MENU_COMPLETE');
+	/*#__PURE__*/ createAction<GlobalState['globalNavigation']['items']>('FETCH_GLOBAL_MENU_COMPLETE');
 
 export const fetchGlobalMenuFailed = /*#__PURE__*/ createAction('FETCH_GLOBAL_MENU_FAILED');
 
@@ -156,17 +162,17 @@ export const unblockUI = /*#__PURE__*/ createAction('UNBLOCK_UI');
 export const openSiteSocket = /*#__PURE__*/ createAction<{ site: string; xsrfToken: string }>('OPEN_SITE_SOCKET');
 export const closeSiteSocket = /*#__PURE__*/ createAction<{ site: string }>('CLOSE_SITE_SOCKET');
 export const siteSocketStatus = /*#__PURE__*/ createAction<{ siteId: string; connected: boolean }>(
-  'SITE_SOCKET_STATUS'
+	'SITE_SOCKET_STATUS'
 );
 export const globalSocketStatus = /*#__PURE__*/ createAction<{ connected: boolean }>('GLOBAL_SOCKET_STATUS');
 
 // region projects events
 
 export const newProjectReady =
-  /*#__PURE__*/ createAction<ProjectLifecycleEvent<'SITE_READY_EVENT'>>('SITE_READY_EVENT');
+	/*#__PURE__*/ createAction<ProjectLifecycleEvent<'SITE_READY_EVENT'>>('SITE_READY_EVENT');
 export const projectBeingDeleted =
-  /*#__PURE__*/ createAction<ProjectLifecycleEvent<'SITE_DELETING_EVENT'>>('SITE_DELETING_EVENT');
+	/*#__PURE__*/ createAction<ProjectLifecycleEvent<'SITE_DELETING_EVENT'>>('SITE_DELETING_EVENT');
 export const projectDeleted =
-  /*#__PURE__*/ createAction<ProjectLifecycleEvent<'SITE_DELETED_EVENT'>>('SITE_DELETED_EVENT');
+	/*#__PURE__*/ createAction<ProjectLifecycleEvent<'SITE_DELETED_EVENT'>>('SITE_DELETED_EVENT');
 
 // endregion

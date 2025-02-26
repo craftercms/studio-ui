@@ -19,20 +19,20 @@ import React from 'react';
 import ConfigurationSamplePreviewDialogContainer from './ConfigurationSamplePreviewDialogContainer';
 
 export interface ConfigurationSamplePreviewDialogProps {
-  open: boolean;
-  content: string;
-  onClose(): void;
-  onClosed?(): void;
-  onUseSampleClick(type: 'replace' | 'append'): void;
+	open: boolean;
+	content: string;
+	onClose(): void;
+	onClosed?(): void;
+	onUseSampleClick(type: 'replace' | 'append'): void;
 }
 
 export function ConfigurationSamplePreviewDialog(props: ConfigurationSamplePreviewDialogProps) {
-  const { open, onClose } = props;
-  return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
-      <ConfigurationSamplePreviewDialogContainer {...props} />
-    </Dialog>
-  );
+	const { open, onClose } = props;
+	return (
+		<Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
+			<ConfigurationSamplePreviewDialogContainer {...props} />
+		</Dialog>
+	);
 }
 
 export default ConfigurationSamplePreviewDialog;

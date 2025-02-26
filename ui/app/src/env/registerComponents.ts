@@ -23,19 +23,19 @@ import { components as registry } from '../utils/constants';
 let registered = false;
 
 export const registerComponents = () => {
-  if (registered) {
-    return false;
-  }
-  registerRoundedIcons();
-  registerOutlinedIcons();
-  Object.entries(components).forEach(([name, component]) => {
-    if (name === 'LegacySiteDashboard') {
-      registry.set('craftercms.components.Dashboard', component);
-    }
-    registry.set(`craftercms.components.${name}`, component);
-  });
-  Object.entries(icons).forEach(([name, component]) => {
-    registry.set(`craftercms.icons.${name}`, component);
-  });
-  return true;
+	if (registered) {
+		return false;
+	}
+	registerRoundedIcons();
+	registerOutlinedIcons();
+	Object.entries(components).forEach(([name, component]) => {
+		if (name === 'LegacySiteDashboard') {
+			registry.set('craftercms.components.Dashboard', component);
+		}
+		registry.set(`craftercms.components.${name}`, component);
+	});
+	Object.entries(icons).forEach(([name, component]) => {
+		registry.set(`craftercms.icons.${name}`, component);
+	});
+	return true;
 };

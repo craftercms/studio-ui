@@ -17,48 +17,48 @@
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
 import {
-  closeCodeEditorDialog,
-  codeEditorDialogClosed,
-  showCodeEditorDialog,
-  updateCodeEditorDialog
+	closeCodeEditorDialog,
+	codeEditorDialogClosed,
+	showCodeEditorDialog,
+	updateCodeEditorDialog
 } from '../../actions/dialogs';
 import { CodeEditorDialogStateProps } from '../../../components/CodeEditorDialog/utils';
 import { commonDialogProps } from '../../../utils/state';
 import { changeSiteComplete } from '../../actions/sites';
 
 const initialState: CodeEditorDialogStateProps = commonDialogProps({
-  path: null,
-  contentType: null,
-  readonly: false,
-  isFullScreen: false,
-  isMinimized: false
+	path: null,
+	contentType: null,
+	readonly: false,
+	isFullScreen: false,
+	isMinimized: false
 });
 
 export default createReducer<GlobalState['dialogs']['codeEditor']>(initialState, (builder) => {
-  builder
-    .addCase(showCodeEditorDialog, (state, { payload }) => {
-      return state.open
-        ? state
-        : {
-            ...state,
-            onClose: closeCodeEditorDialog(),
-            onClosed: codeEditorDialogClosed(),
-            onMinimize: updateCodeEditorDialog({ isMinimized: true }),
-            onMaximize: updateCodeEditorDialog({ isMinimized: false }),
-            onFullScreen: updateCodeEditorDialog({ isFullScreen: true }),
-            onCancelFullScreen: updateCodeEditorDialog({ isFullScreen: false }),
-            ...(payload as Partial<CodeEditorDialogStateProps>),
-            open: true
-          };
-    })
-    .addCase(updateCodeEditorDialog, (state, { payload }) => ({
-      ...state,
-      ...(payload as Partial<CodeEditorDialogStateProps>)
-    }))
-    .addCase(closeCodeEditorDialog, (state) => ({
-      ...state,
-      open: false
-    }))
-    .addCase(codeEditorDialogClosed, () => initialState)
-    .addCase(changeSiteComplete, () => initialState);
+	builder
+		.addCase(showCodeEditorDialog, (state, { payload }) => {
+			return state.open
+				? state
+				: {
+						...state,
+						onClose: closeCodeEditorDialog(),
+						onClosed: codeEditorDialogClosed(),
+						onMinimize: updateCodeEditorDialog({ isMinimized: true }),
+						onMaximize: updateCodeEditorDialog({ isMinimized: false }),
+						onFullScreen: updateCodeEditorDialog({ isFullScreen: true }),
+						onCancelFullScreen: updateCodeEditorDialog({ isFullScreen: false }),
+						...(payload as Partial<CodeEditorDialogStateProps>),
+						open: true
+					};
+		})
+		.addCase(updateCodeEditorDialog, (state, { payload }) => ({
+			...state,
+			...(payload as Partial<CodeEditorDialogStateProps>)
+		}))
+		.addCase(closeCodeEditorDialog, (state) => ({
+			...state,
+			open: false
+		}))
+		.addCase(codeEditorDialogClosed, () => initialState)
+		.addCase(changeSiteComplete, () => initialState);
 });

@@ -17,7 +17,7 @@
 import { DetailedItem, SandboxItem } from './Item';
 
 export interface FetchItemsByPathArray<T = SandboxItem | DetailedItem> extends Array<T> {
-  missingItems: string[];
+	missingItems: string[];
 }
 
 export default FetchItemsByPathArray;

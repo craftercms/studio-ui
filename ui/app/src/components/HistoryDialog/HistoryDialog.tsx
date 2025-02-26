@@ -15,58 +15,18 @@
  */
 
 import React from 'react';
-import { makeStyles } from 'tss-react/mui';
 import { EnhancedDialog } from '../EnhancedDialog';
 import { HistoryDialogContainer } from './HistoryDialogContainer';
 import { HistoryDialogProps } from './utils';
 import { FormattedMessage } from 'react-intl';
 
-export const historyStyles = makeStyles()(() => ({
-  dialogBody: {
-    overflow: 'auto',
-    minHeight: '50vh'
-  },
-  dialogFooter: {
-    padding: 0
-  }
-}));
-
-export const paginationStyles = makeStyles()((theme) => ({
-  pagination: {
-    marginLeft: 'auto',
-    background: theme.palette.background.paper,
-    color: theme.palette.text.primary,
-    '& p': {
-      padding: 0
-    },
-    '& svg': {
-      top: 'inherit'
-    },
-    '& .hidden': {
-      display: 'none'
-    }
-  },
-  toolbar: {
-    padding: 0,
-    display: 'flex',
-    justifyContent: 'space-between',
-    paddingLeft: '20px',
-    '& .MuiTablePagination-spacer': {
-      display: 'none'
-    },
-    '& .MuiTablePagination-spacer + p': {
-      display: 'none'
-    }
-  }
-}));
-
 export function HistoryDialog(props: HistoryDialogProps) {
-  const { versionsBranch, error, ...rest } = props;
-  return (
-    <EnhancedDialog title={<FormattedMessage id="historyDialog.headerTitle" defaultMessage="Item History" />} {...rest}>
-      <HistoryDialogContainer versionsBranch={versionsBranch} error={error} />
-    </EnhancedDialog>
-  );
+	const { versionsBranch, error, ...rest } = props;
+	return (
+		<EnhancedDialog title={<FormattedMessage id="historyDialog.headerTitle" defaultMessage="Item History" />} {...rest}>
+			<HistoryDialogContainer versionsBranch={versionsBranch} error={error} />
+		</EnhancedDialog>
+	);
 }
 
 export default HistoryDialog;

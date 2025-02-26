@@ -15,9 +15,9 @@
  */
 
 export interface AllowedContentTypesData<T = true> {
-  embedded?: T;
-  shared?: T;
-  sharedExisting?: T;
+	embedded?: T;
+	shared?: T;
+	sharedExisting?: T;
 }
 
 export default AllowedContentTypesData;

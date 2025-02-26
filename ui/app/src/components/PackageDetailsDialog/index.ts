@@ -17,3 +17,5 @@
 export { default } from './PackageDetailsDialog';
 
 export * from './PackageDetailsDialog';
+
+export * from './PackageDetailsDialogContainer';

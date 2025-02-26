@@ -21,40 +21,40 @@ import { FormattedMessage } from 'react-intl';
 import ToolsPanelEmbeddedAppViewButton from '../ToolsPanelEmbeddedAppViewButton';
 
 export function SiteToolsPanel() {
-  const siteTools = useReference('craftercms.siteTools');
-  return (
-    <>
-      {siteTools?.tools?.length ? (
-        siteTools.tools.map((tool, index) => (
-          <ToolsPanelEmbeddedAppViewButton
-            key={index}
-            title={tool.title}
-            icon={tool.icon}
-            widget={{
-              ...tool.widget,
-              configuration: { ...tool.widget?.configuration, embedded: true },
-              uiKey: String(index)
-            }}
-          />
-        ))
-      ) : (
-        <EmptyState
-          title={
-            <FormattedMessage
-              id="siteTools.toolListingNotConfigured"
-              defaultMessage="The project tools list has not been set"
-            />
-          }
-          subtitle={
-            <FormattedMessage
-              id="siteTools.toolListingNotConfiguredSubtitle"
-              defaultMessage="Please set the craftercms.siteTools reference on the ui.xml"
-            />
-          }
-        />
-      )}
-    </>
-  );
+	const siteTools = useReference('craftercms.siteTools');
+	return (
+		<>
+			{siteTools?.tools?.length ? (
+				siteTools.tools.map((tool, index) => (
+					<ToolsPanelEmbeddedAppViewButton
+						key={index}
+						title={tool.title}
+						icon={tool.icon}
+						widget={{
+							...tool.widget,
+							configuration: { ...tool.widget?.configuration, embedded: true },
+							uiKey: String(index)
+						}}
+					/>
+				))
+			) : (
+				<EmptyState
+					title={
+						<FormattedMessage
+							id="siteTools.toolListingNotConfigured"
+							defaultMessage="The project tools list has not been set"
+						/>
+					}
+					subtitle={
+						<FormattedMessage
+							id="siteTools.toolListingNotConfiguredSubtitle"
+							defaultMessage="Please set the craftercms.siteTools reference on the ui.xml"
+						/>
+					}
+				/>
+			)}
+		</>
+	);
 }
 
 export default SiteToolsPanel;

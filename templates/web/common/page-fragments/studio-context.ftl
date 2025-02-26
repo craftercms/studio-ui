@@ -17,88 +17,88 @@
 <script>
 (function (origin) {
 
-  function getSiteId() {
-    const urlParams = new URLSearchParams(window.location.hash);
-    return urlParams.get('site') ?? "${envConfig.site}";
-  }
-  const siteId = getSiteId();
+	function getSiteId() {
+		const urlParams = new URLSearchParams(window.location.hash);
+		return urlParams.get('site') ?? "${envConfig.site}";
+	}
+	const siteId = getSiteId();
 
-  /**
-   * contextual variables
-   * note: these are all fixed at the moment but will be dynamic
-   */
-  <#outputformat "HTML">
-  CStudioAuthoringContext = {
-    user: "${envConfig.user}",
-    role: "${envConfig.role}",
-    site: siteId,
-    siteId,
-    authenticationType: "${envConfig.authenticationType}",
-    baseUri: `${'$'}{origin}/studio`,
-    authoringAppBaseUri: `${'$'}{origin}/studio`,
-    formServerUri: `${'$'}{origin}/form`,
-    previewAppBaseUri: origin,
-    contextMenuOffsetPage: false,
-    homeUri: `${'$'}{origin}/site-dashboard`,
-    navContext: 'default',
-    cookieDomain: "${cookieDomain!'UNSET'}",
-    isPreview: false,
-    liveAppBaseUri: '',
-    graphQLBaseURI: `${'$'}{origin}/api/1/site/graphql`,
-    xsrfHeaderName: "${_csrf.headerName}",
-    xsrfParameterName: "${_csrf.parameterName}",
-    passwordRequirementsMinComplexity: ${envConfig.passwordRequirementsMinComplexity}
-  };
-  </#outputformat>
+	/**
+	 * contextual variables
+	 * note: these are all fixed at the moment but will be dynamic
+	 */
+	<#outputformat "HTML">
+	CStudioAuthoringContext = {
+		user: "${envConfig.user}",
+		role: "${envConfig.role}",
+		site: siteId,
+		siteId,
+		authenticationType: "${envConfig.authenticationType}",
+		baseUri: `${'$'}{origin}/studio`,
+		authoringAppBaseUri: `${'$'}{origin}/studio`,
+		formServerUri: `${'$'}{origin}/form`,
+		previewAppBaseUri: origin,
+		contextMenuOffsetPage: false,
+		homeUri: `${'$'}{origin}/site-dashboard`,
+		navContext: 'default',
+		cookieDomain: "${cookieDomain!'UNSET'}",
+		isPreview: false,
+		liveAppBaseUri: '',
+		graphQLBaseURI: `${'$'}{origin}/api/1/site/graphql`,
+		xsrfHeaderName: "${_csrf.headerName}",
+		xsrfParameterName: "${_csrf.parameterName}",
+		passwordRequirementsMinComplexity: ${envConfig.passwordRequirementsMinComplexity}
+	};
+	</#outputformat>
 
-  window.addEventListener(
-    'hashchange',
-    function (e) {
-      e.preventDefault();
-      const newSiteId = getSiteId();
-      CStudioAuthoringContext.site = newSiteId;
-      CStudioAuthoringContext.siteId = newSiteId;
-    },
-    false
-  );
+	window.addEventListener(
+		'hashchange',
+		function (e) {
+			e.preventDefault();
+			const newSiteId = getSiteId();
+			CStudioAuthoringContext.site = newSiteId;
+			CStudioAuthoringContext.siteId = newSiteId;
+		},
+		false
+	);
 
-  if (CStudioAuthoringContext.role === '') {
-    document.location = CStudioAuthoringContext.baseUri;
-  }
+	if (CStudioAuthoringContext.role === '') {
+		document.location = CStudioAuthoringContext.baseUri;
+	}
 
-  var lang = (
-    localStorage.getItem(CStudioAuthoringContext.user + '_crafterStudioLanguage') ||
-    localStorage.getItem('crafterStudioLanguage') ||
-    'en'
-  );
+	var lang = (
+		localStorage.getItem(CStudioAuthoringContext.user + '_crafterStudioLanguage') ||
+		localStorage.getItem('crafterStudioLanguage') ||
+		'en'
+	);
 
-  $('html').attr('lang', lang);
-  CStudioAuthoringContext.lang = lang;
+	$('html').attr('lang', lang);
+	CStudioAuthoringContext.lang = lang;
 
-  $(function () {
-    var
-      isChromium = window.chrome,
-      vendorName = window.navigator.vendor,
-      isOpera = window.navigator.userAgent.indexOf('OPR') > -1,
-      isIEedge = window.navigator.userAgent.indexOf('Edge') > -1;
+	$(function () {
+		var
+			isChromium = window.chrome,
+			vendorName = window.navigator.vendor,
+			isOpera = window.navigator.userAgent.indexOf('OPR') > -1,
+			isIEedge = window.navigator.userAgent.indexOf('Edge') > -1;
 
-    if (isChromium !== null && isChromium !== undefined && vendorName === 'Google Inc.' && isOpera == false && isIEedge == false) {
-      isChromium = true;
-    } else {
-      isChromium = false;
-      var isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
-    }
+		if (isChromium !== null && isChromium !== undefined && vendorName === 'Google Inc.' && isOpera == false && isIEedge == false) {
+			isChromium = true;
+		} else {
+			isChromium = false;
+			var isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+		}
 
-    if (!(isChromium || isFirefox)) {
-      $('body').addClass('iewarning').prepend(`
-      <div class='ccms-iewarning'>
-        Your browser is currently not supported, please use
-        <a style='color: #24ddff;' target='_blank' href='https://www.google.com/chrome/browser/desktop/index.html'>Chrome</a>
-        or <a style='color: #24ddff;' target='_blank' href='https://www.mozilla.org/en-US/firefox/new/?scene=2'>Firefox</a>.
-      </div>`
-      );
-    }
-  });
+		if (!(isChromium || isFirefox)) {
+			$('body').addClass('iewarning').prepend(`
+		<div class='ccms-iewarning'>
+			Your browser is currently not supported, please use
+			<a style='color: #24ddff;' target='_blank' href='https://www.google.com/chrome/browser/desktop/index.html'>Chrome</a>
+			or <a style='color: #24ddff;' target='_blank' href='https://www.mozilla.org/en-US/firefox/new/?scene=2'>Firefox</a>.
+		</div>`
+			);
+		}
+	});
 
 })(window.location.origin);
 </script>

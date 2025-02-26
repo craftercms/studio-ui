@@ -15,84 +15,88 @@
  */
 
 import React, { ElementType, PropsWithChildren, ReactNode } from 'react';
-import { makeStyles } from 'tss-react/mui';
 import Typography from '@mui/material/Typography';
 import Gears from '../Gears/Gears';
-import { CSSObject as CSSProperties } from 'tss-react';
+import { PartialSxRecord } from '../../models';
+import Box, { BoxProps } from '@mui/material/Box';
+import { SystemStyleObject } from '@mui/system/styleFunctionSx/styleFunctionSx';
+import { Theme } from '@mui/material';
 
 type LoadingStateClassKey = 'root' | 'title' | 'subtitle' | 'graphic' | 'graphicRoot';
 
-type LoadingStateStyles = Partial<Record<LoadingStateClassKey, CSSProperties>>;
-
-const useStyles = makeStyles<LoadingStateStyles, LoadingStateClassKey>()(
-  (theme, { root, graphicRoot, title, subtitle, graphic } = {} as LoadingStateStyles) => ({
-    root: {
-      display: 'flex',
-      textAlign: 'center',
-      alignItems: 'center',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      margin: `${theme.spacing(2)} auto`,
-      minHeight: '100%',
-      ...root
-    },
-    graphicRoot: {
-      display: 'flex',
-      justifyContent: 'center',
-      ...graphicRoot
-    },
-    title: {
-      marginTop: '40px',
-      marginBottom: '15px',
-      ...title
-    },
-    subtitle: {
-      marginBottom: '10px',
-      ...subtitle
-    },
-    graphic: {
-      width: 120,
-      ...graphic
-    }
-  })
-);
-
 export interface LoadingStateProps {
-  title?: ReactNode;
-  subtitle?: ReactNode;
-  graphic?: ElementType;
-  graphicProps?: any;
-  classes?: Partial<Record<LoadingStateClassKey, string>>;
-  styles?: LoadingStateStyles;
+	title?: ReactNode;
+	subtitle?: ReactNode;
+	graphic?: ElementType;
+	graphicProps?: any;
+	classes?: Partial<Record<LoadingStateClassKey, string>>;
+	sxs?: PartialSxRecord<LoadingStateClassKey>;
+	sx?: BoxProps['sx'];
 }
 
 export type ConditionalLoadingStateProps = LoadingStateProps & PropsWithChildren<{ isLoading: boolean }>;
 
 export function LoadingState(props: LoadingStateProps) {
-  const { classes, cx } = useStyles(props.styles);
-  const { graphic: Graphic = Gears, classes: propClasses } = props;
-  return (
-    <div className={cx(classes.root, propClasses?.root)}>
-      {props.title && (
-        <Typography variant="h6" component="h3" className={cx(classes.title, propClasses?.title)}>
-          {props.title}
-        </Typography>
-      )}
-      {props.subtitle && (
-        <Typography variant="subtitle1" component="p" className={cx(classes.subtitle, propClasses?.subtitle)}>
-          {props.subtitle}
-        </Typography>
-      )}
-      <div className={cx(classes.graphicRoot, propClasses?.graphicRoot)}>
-        <Graphic className={cx(classes.graphic, propClasses?.graphic)} {...props.graphicProps} />
-      </div>
-    </div>
-  );
+	const { graphic: Graphic = Gears, classes, sxs } = props;
+	return (
+		<Box
+			className={classes?.root}
+			sx={{
+				display: 'flex',
+				textAlign: 'center',
+				alignItems: 'center',
+				flexDirection: 'column',
+				justifyContent: 'center',
+				margin: (theme) => `${theme.spacing(2)} auto`,
+				minHeight: '100%',
+				...(props.sx as SystemStyleObject<Theme>),
+				...(sxs?.root as SystemStyleObject<Theme>)
+			}}
+		>
+			{props.title && (
+				<Typography
+					variant="h6"
+					component="h3"
+					className={classes?.title}
+					sx={{
+						marginTop: '40px',
+						marginBottom: '15px',
+						...sxs?.title
+					}}
+				>
+					{props.title}
+				</Typography>
+			)}
+			{props.subtitle && (
+				<Typography
+					variant="subtitle1"
+					component="p"
+					className={classes?.subtitle}
+					sx={{
+						marginBottom: '10px',
+						...sxs?.subtitle
+					}}
+				>
+					{props.subtitle}
+				</Typography>
+			)}
+			<Box
+				className={classes?.graphicRoot}
+				sx={{
+					display: 'flex',
+					justifyContent: 'center',
+					...sxs?.graphicRoot
+				}}
+			>
+				<Graphic className={classes?.graphic} sxs={{ root: { width: 120, ...sxs?.graphic } }} {...props.graphicProps} />
+			</Box>
+		</Box>
+	);
 }
 
 export function ConditionalLoadingState(props: ConditionalLoadingStateProps) {
-  const { children, isLoading, ...loadingStateProps } = props;
-  return isLoading ? <LoadingState {...loadingStateProps} /> : <>{children}</>;
+	const { children, isLoading, ...loadingStateProps } = props;
+	return isLoading ? <LoadingState {...loadingStateProps} /> : <>{children}</>;
 }
 
 export default LoadingState;

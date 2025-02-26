@@ -17,12 +17,12 @@
 import { ContentTypeField } from './ContentType';
 
 export interface Control<T = any> {
-  field: ContentTypeField;
-  value: T;
-  onChange(...args): any;
-  disabled: boolean;
+	field: ContentTypeField;
+	value: T;
+	onChange(...args): any;
+	disabled: boolean;
 }
 
 export interface DateTimeControl extends Control {
-  timeZone?: string;
+	timeZone?: string;
 }

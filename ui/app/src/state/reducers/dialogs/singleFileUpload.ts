@@ -17,38 +17,38 @@
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
 import {
-  closeSingleFileUploadDialog,
-  showSingleFileUploadDialog,
-  singleFileUploadDialogClosed,
-  updateSingleFileUploadDialog
+	closeSingleFileUploadDialog,
+	showSingleFileUploadDialog,
+	singleFileUploadDialogClosed,
+	updateSingleFileUploadDialog
 } from '../../actions/dialogs';
 import { SingleFileUploadDialogStateProps } from '../../../components/SingleFileUploadDialog';
 
 const initialState: SingleFileUploadDialogStateProps = {
-  open: false,
-  path: null,
-  site: null,
-  isSubmitting: null,
-  isMinimized: null,
-  hasPendingChanges: null
+	open: false,
+	path: null,
+	site: null,
+	isSubmitting: null,
+	isMinimized: null,
+	hasPendingChanges: null
 };
 
 export default createReducer<GlobalState['dialogs']['singleFileUpload']>(initialState, (builder) => {
-  builder
-    .addCase(showSingleFileUploadDialog, (state, { payload }) => ({
-      ...state,
-      onClose: closeSingleFileUploadDialog(),
-      onClosed: singleFileUploadDialogClosed(),
-      ...(payload as Partial<SingleFileUploadDialogStateProps>),
-      open: true
-    }))
-    .addCase(closeSingleFileUploadDialog, (state) => ({
-      ...state,
-      open: false
-    }))
-    .addCase(updateSingleFileUploadDialog, (state, { payload }) => ({
-      ...state,
-      ...(payload as Partial<SingleFileUploadDialogStateProps>)
-    }))
-    .addCase(singleFileUploadDialogClosed, () => initialState);
+	builder
+		.addCase(showSingleFileUploadDialog, (state, { payload }) => ({
+			...state,
+			onClose: closeSingleFileUploadDialog(),
+			onClosed: singleFileUploadDialogClosed(),
+			...(payload as Partial<SingleFileUploadDialogStateProps>),
+			open: true
+		}))
+		.addCase(closeSingleFileUploadDialog, (state) => ({
+			...state,
+			open: false
+		}))
+		.addCase(updateSingleFileUploadDialog, (state, { payload }) => ({
+			...state,
+			...(payload as Partial<SingleFileUploadDialogStateProps>)
+		}))
+		.addCase(singleFileUploadDialogClosed, () => initialState);
 });

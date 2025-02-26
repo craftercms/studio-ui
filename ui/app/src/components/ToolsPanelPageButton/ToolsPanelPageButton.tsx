@@ -23,28 +23,28 @@ import { SystemIconDescriptor } from '../SystemIcon';
 import ToolsPanelTarget from '../../models/ToolsPanelTarget';
 
 export interface ToolsPanelPageButtonProps {
-  title: string;
-  subtitle: string;
-  target?: ToolsPanelTarget;
-  icon: SystemIconDescriptor;
+	title: string;
+	subtitle: string;
+	target?: ToolsPanelTarget;
+	icon: SystemIconDescriptor;
 }
 
 export function ToolsPanelPageButton(props: ToolsPanelPageButtonProps) {
-  const { target = 'toolsPanel' } = props;
-  const dispatch = useDispatch();
-  const pushPage = target === 'toolsPanel' ? pushToolsPanelPage : pushIcePanelPage;
-  const turnPage = () => {
-    dispatch(
-      pushPage(
-        createWidgetDescriptor({
-          id: 'craftercms.components.ToolsPanelPage',
-          permittedRoles: [],
-          configuration: props
-        })
-      )
-    );
-  };
-  return <ToolsPanelListItemButton {...props} onClick={turnPage} />;
+	const { target = 'toolsPanel' } = props;
+	const dispatch = useDispatch();
+	const pushPage = target === 'toolsPanel' ? pushToolsPanelPage : pushIcePanelPage;
+	const turnPage = () => {
+		dispatch(
+			pushPage(
+				createWidgetDescriptor({
+					id: 'craftercms.components.ToolsPanelPage',
+					permittedRoles: [],
+					configuration: props
+				})
+			)
+		);
+	};
+	return <ToolsPanelListItemButton {...props} onClick={turnPage} />;
 }
 
 export default ToolsPanelPageButton;

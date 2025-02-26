@@ -15,10 +15,10 @@
  */
 
 interface QuickCreateItem {
-  path: string;
-  label: string;
-  siteId: string;
-  contentTypeId: string;
+	path: string;
+	label: string;
+	siteId: string;
+	contentTypeId: string;
 }
 
 export default QuickCreateItem;

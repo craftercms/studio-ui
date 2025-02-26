@@ -20,7 +20,7 @@ import { useSelector } from 'react-redux';
 type Type = GlobalState['dialogs']['launcher'];
 
 export function useLauncherState(): Type {
-  return useSelector<GlobalState, Type>((state) => state.dialogs.launcher);
+	return useSelector<GlobalState, Type>((state) => state.dialogs.launcher);
 }
 
 export default useLauncherState;

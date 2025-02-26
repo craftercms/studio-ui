@@ -17,8 +17,8 @@
 import { CrafterCMSGlobal } from '../env/craftercms';
 
 export interface NonReactWidgetRecord {
-  main(context: { craftercms: CrafterCMSGlobal; element: HTMLElement; configuration: object }): void;
-  main(context: { craftercms: CrafterCMSGlobal; element: HTMLElement; configuration: object }): () => void;
+	main(context: { craftercms: CrafterCMSGlobal; element: HTMLElement; configuration: object }): void;
+	main(context: { craftercms: CrafterCMSGlobal; element: HTMLElement; configuration: object }): () => void;
 }
 
 export default NonReactWidgetRecord;

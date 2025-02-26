@@ -16,240 +16,202 @@
 
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import Button from '@mui/material/Button';
-import React, { useState } from 'react';
+import React from 'react';
 import Popover from '@mui/material/Popover';
 import { defineMessages, useIntl } from 'react-intl';
 import Typography from '@mui/material/Typography';
-import TextField from '@mui/material/TextField';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Radio from '@mui/material/Radio';
 import { CurrentFilters } from '../../models/Publishing';
-import SearchIcon from '@mui/icons-material/SearchRounded';
 import { Checkbox, FormGroup, Theme } from '@mui/material';
-import { makeStyles } from 'tss-react/mui';
 import Box from '@mui/material/Box';
-
-const useStyles = makeStyles()((theme: Theme) => ({
-  paper: {
-    width: '300px'
-  },
-  header: {
-    background: theme.palette.mode === 'dark' ? theme.palette.background.default : theme.palette.grey['100'],
-    padding: '10px'
-  },
-  body: {
-    padding: '10px',
-    position: 'relative'
-  },
-  formControl: {
-    width: '100%',
-    padding: '5px 15px 20px 15px'
-  },
-  search: {
-    width: '100%',
-    margin: 'auto',
-    position: 'relative'
-  },
-  searchIcon: {
-    width: theme.spacing(7),
-    color: '#828282',
-    height: '41px;',
-    position: 'absolute',
-    pointerEvents: 'none',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 1
-  },
-  searchTextField: {
-    '& input': {
-      paddingLeft: '50px'
-    }
-  }
-}));
+import { SxProps } from '@mui/system';
+import { packageStatesMap } from '../PublishPackageReviewDialog/utils';
+import { allFiltersState } from './PublishingQueue';
 
 const messages: any = defineMessages({
-  pathExpression: {
-    id: 'publishingDashboard.pathExpression',
-    defaultMessage: 'Path Expression'
-  },
-  environment: {
-    id: 'common.publishingTarget',
-    defaultMessage: 'Publishing Target'
-  },
-  state: {
-    id: 'publishingDashboard.state',
-    defaultMessage: 'State'
-  },
-  all: {
-    id: 'publishingDashboard.all',
-    defaultMessage: 'All'
-  },
-  READY_FOR_LIVE: {
-    id: 'publishingDashboard.READY_FOR_LIVE',
-    defaultMessage: 'Ready for Live'
-  },
-  PROCESSING: {
-    id: 'publishingDashboard.PROCESSING',
-    defaultMessage: 'Processing'
-  },
-  COMPLETED: {
-    id: 'publishingDashboard.COMPLETED',
-    defaultMessage: 'Completed'
-  },
-  CANCELLED: {
-    id: 'publishingDashboard.CANCELLED',
-    defaultMessage: 'Cancelled'
-  },
-  BLOCKED: {
-    id: 'publishingDashboard.BLOCKED',
-    defaultMessage: 'Blocked'
-  }
+	pathExpression: {
+		id: 'publishingDashboard.pathExpression',
+		defaultMessage: 'Path Expression'
+	},
+	environment: {
+		id: 'common.publishingTarget',
+		defaultMessage: 'Publishing Target'
+	},
+	state: {
+		id: 'publishingDashboard.state',
+		defaultMessage: 'State'
+	},
+	all: {
+		id: 'publishingDashboard.all',
+		defaultMessage: 'All'
+	},
+	ready: {
+		id: 'publishingDashboard.ready',
+		defaultMessage: 'Ready for Live'
+	},
+	processing: {
+		id: 'publishingDashboard.processing',
+		defaultMessage: 'Processing'
+	},
+	liveSuccess: {
+		id: 'publishingDashboard.liveSuccess',
+		defaultMessage: 'Live Success'
+	},
+	liveCompletedWithErrors: {
+		id: 'publishingDashboard.liveCompletedWithErrors',
+		defaultMessage: 'Live Completed with Errors'
+	},
+	liveFailed: {
+		id: 'publishingDashboard.liveFailed',
+		defaultMessage: 'Live Failed'
+	},
+	stagingSuccess: {
+		id: 'publishingDashboard.stagingSuccess',
+		defaultMessage: 'Staging Success'
+	},
+	stagingCompletedWithErrors: {
+		id: 'publishingDashboard.stagingCompletedWithErrors',
+		defaultMessage: 'Staging Completed with Errors'
+	},
+	stagingFailed: {
+		id: 'publishingDashboard.stagingFailed',
+		defaultMessage: 'Staging Failed'
+	},
+	completed: {
+		id: 'publishingDashboard.completed',
+		defaultMessage: 'Completed'
+	},
+	cancelled: {
+		id: 'publishingDashboard.cancelled',
+		defaultMessage: 'Cancelled'
+	}
 });
 
 interface FilterDropdownProps {
-  text: string;
-  className: any;
-  currentFilters: CurrentFilters;
-  filters: any;
-
-  handleFilterChange(event: any): any;
-
-  handleEnterKey(path: string): any;
+	text: string;
+	className?: any;
+	sx?: SxProps<Theme>;
+	currentFilters: CurrentFilters;
+	filters: any;
+	handleFilterChange(event: any): any;
 }
 
 export function FilterDropdown(props: FilterDropdownProps) {
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const { classes } = useStyles();
-  const { text, className, handleFilterChange, handleEnterKey, currentFilters, filters } = props;
-  const [path, setPath] = useState('');
-  const { formatMessage } = useIntl();
+	const [anchorEl, setAnchorEl] = React.useState(null);
+	const { text, className, handleFilterChange, currentFilters, filters, sx } = props;
+	const { formatMessage } = useIntl();
 
-  const handleClick = (event: any) => {
-    setAnchorEl(event.currentTarget);
-  };
+	const handleClick = (event: any) => {
+		setAnchorEl(event.currentTarget);
+	};
 
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+	const handleClose = () => {
+		setAnchorEl(null);
+	};
 
-  const onKeyPress = (event: React.KeyboardEvent, path: string) => {
-    if (event.charCode === 13) {
-      handleEnterKey(path);
-    }
-  };
-
-  return (
-    <div>
-      <Button variant="outlined" onClick={handleClick} className={className}>
-        {text} <ArrowDropDownIcon />
-      </Button>
-      <Popover
-        id="publishingFilterDropdown"
-        anchorEl={anchorEl}
-        classes={{ paper: classes.paper }}
-        keepMounted
-        open={Boolean(anchorEl)}
-        onClose={handleClose}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'right'
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'right'
-        }}
-      >
-        <section>
-          <header className={classes.header}>
-            <Typography variant="body1">
-              <strong>{formatMessage(messages.pathExpression)}</strong>
-            </Typography>
-          </header>
-          <Box className={classes.body} display="flex" alignItems="center">
-            <div className={classes.searchIcon}>
-              <SearchIcon />
-            </div>
-            <TextField
-              id="path"
-              name="path"
-              className={classes.searchTextField}
-              slotProps={{
-                inputLabel: { shrink: true }
-              }}
-              fullWidth
-              placeholder="e.g. /SOME/PATH/*"
-              onChange={(event) => setPath(event.target.value)}
-              onKeyPress={(event) => onKeyPress(event, path)}
-              value={path}
-            />
-          </Box>
-        </section>
-        <section>
-          <header className={classes.header}>
-            <Typography variant="body1">
-              <strong>{formatMessage(messages.environment)}</strong>
-            </Typography>
-          </header>
-          <div className={classes.formControl}>
-            <RadioGroup
-              aria-label={formatMessage(messages.environment)}
-              name="environment"
-              value={currentFilters.environment}
-              onChange={handleFilterChange}
-            >
-              <FormControlLabel value="" control={<Radio color="primary" />} label={formatMessage(messages.all)} />
-              {filters.environments &&
-                filters.environments.map((filter: string, index: number) => (
-                  <FormControlLabel key={index} value={filter} control={<Radio color="primary" />} label={filter} />
-                ))}
-            </RadioGroup>
-          </div>
-        </section>
-        <section>
-          <header className={classes.header}>
-            <Typography variant="body1" sx={{ ml: '5px' }}>
-              <FormControlLabel
-                value=""
-                label={<strong>{formatMessage(messages.state)}</strong>}
-                control={
-                  <Checkbox
-                    color="primary"
-                    value=""
-                    indeterminate={
-                      currentFilters.state.length > 0 && currentFilters.state.length !== filters.states.length
-                    }
-                    checked={currentFilters.state.length === filters.states.length}
-                    onChange={handleFilterChange}
-                  />
-                }
-              />
-            </Typography>
-          </header>
-          <div className={classes.formControl}>
-            <FormGroup>
-              {filters.states.map((filter: string, index: number) => (
-                <FormControlLabel
-                  key={index}
-                  value={filter}
-                  control={
-                    <Checkbox
-                      color="primary"
-                      value={filter}
-                      checked={currentFilters.state.includes(filter)}
-                      onChange={handleFilterChange}
-                    />
-                  }
-                  label={formatMessage(messages[filter])}
-                />
-              ))}
-            </FormGroup>
-          </div>
-        </section>
-      </Popover>
-    </div>
-  );
+	return (
+		<div>
+			<Button variant="outlined" onClick={handleClick} sx={sx} className={className}>
+				{text} <ArrowDropDownIcon />
+			</Button>
+			<Popover
+				id="publishingFilterDropdown"
+				anchorEl={anchorEl}
+				slotProps={{ paper: { sx: { width: '300px' } } }}
+				keepMounted
+				open={Boolean(anchorEl)}
+				onClose={handleClose}
+				anchorOrigin={{
+					vertical: 'bottom',
+					horizontal: 'right'
+				}}
+				transformOrigin={{
+					vertical: 'top',
+					horizontal: 'right'
+				}}
+			>
+				<section>
+					<Box
+						component="header"
+						sx={(theme) => ({
+							background: theme.palette.mode === 'dark' ? theme.palette.background.default : theme.palette.grey['100'],
+							padding: '10px'
+						})}
+					>
+						<Typography variant="body1">
+							<strong>{formatMessage(messages.environment)}</strong>
+						</Typography>
+					</Box>
+					<Box sx={{ width: '100%', padding: '5px 15px 20px 15px' }}>
+						<RadioGroup
+							aria-label={formatMessage(messages.environment)}
+							name="target"
+							value={currentFilters.target}
+							onChange={handleFilterChange}
+						>
+							<FormControlLabel value="" control={<Radio color="primary" />} label={formatMessage(messages.all)} />
+							{filters.environments &&
+								filters.environments.map((filter: string, index: number) => (
+									<FormControlLabel key={index} value={filter} control={<Radio color="primary" />} label={filter} />
+								))}
+						</RadioGroup>
+					</Box>
+				</section>
+				<section>
+					<Box
+						component="header"
+						sx={(theme) => ({
+							background: theme.palette.mode === 'dark' ? theme.palette.background.default : theme.palette.grey['100'],
+							padding: '10px'
+						})}
+					>
+						<Typography variant="body1" sx={{ ml: '5px' }}>
+							<FormControlLabel
+								value=""
+								label={<strong>{formatMessage(messages.state)}</strong>}
+								control={
+									<Checkbox
+										color="primary"
+										value=""
+										indeterminate={
+											currentFilters.states !== null &&
+											currentFilters.states !== 0 &&
+											currentFilters.states !== allFiltersState
+										}
+										checked={currentFilters.states === allFiltersState}
+										onChange={handleFilterChange}
+									/>
+								}
+							/>
+						</Typography>
+					</Box>
+					<Box sx={{ width: '100%', padding: '5px 15px 20px 15px' }}>
+						<FormGroup>
+							{Object.entries(packageStatesMap).map(([key, { mask, validation }]) => {
+								return (
+									<FormControlLabel
+										key={key}
+										value={mask}
+										control={
+											<Checkbox
+												color="primary"
+												value={mask}
+												checked={validation(currentFilters.states)}
+												onChange={handleFilterChange}
+											/>
+										}
+										label={formatMessage(messages[key])}
+									/>
+								);
+							})}
+						</FormGroup>
+					</Box>
+				</section>
+			</Popover>
+		</div>
+	);
 }
 
 export default FilterDropdown;

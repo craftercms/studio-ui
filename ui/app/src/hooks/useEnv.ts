@@ -18,7 +18,7 @@ import GlobalState from '../models/GlobalState';
 import { useSelector } from 'react-redux';
 
 export function useEnv(): GlobalState['env'] {
-  return useSelector<GlobalState, GlobalState['env']>((state) => state.env);
+	return useSelector<GlobalState, GlobalState['env']>((state) => state.env);
 }
 
 export default useEnv;

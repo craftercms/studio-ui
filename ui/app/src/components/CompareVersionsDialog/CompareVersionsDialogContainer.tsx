@@ -18,47 +18,35 @@ import { CompareVersionsDialogContainerProps } from './utils';
 import React from 'react';
 import { CompareVersions } from './CompareVersions';
 import DialogBody from '../DialogBody/DialogBody';
-import { makeStyles } from 'tss-react/mui';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { LoadingState } from '../LoadingState';
 import { EmptyState } from '../EmptyState';
 import { FormattedMessage } from 'react-intl';
 
-const useStyles = makeStyles()(() => ({
-  dialogBody: {
-    overflow: 'auto',
-    minHeight: '50vh'
-  },
-  noPadding: {
-    padding: 0
-  },
-  singleItemSelector: {
-    marginBottom: '10px'
-  },
-  typography: {
-    lineHeight: '1.5'
-  }
-}));
-
 export function CompareVersionsDialogContainer(props: CompareVersionsDialogContainerProps) {
-  const { versionsBranch } = props;
-  const { compareVersionsBranch } = versionsBranch;
-  const { classes, cx } = useStyles();
+	const { versionsBranch } = props;
+	const { compareVersionsBranch } = versionsBranch;
 
-  return (
-    <DialogBody className={cx(classes.dialogBody, classes.noPadding)}>
-      {compareVersionsBranch &&
-        (compareVersionsBranch.error ? (
-          <ApiResponseErrorState error={compareVersionsBranch.error} />
-        ) : compareVersionsBranch.isFetching ? (
-          <LoadingState />
-        ) : compareVersionsBranch.compareVersions?.length > 0 ? (
-          <CompareVersions versions={compareVersionsBranch.compareVersions} />
-        ) : (
-          <EmptyState title={<FormattedMessage defaultMessage="No versions found" />} />
-        ))}
-    </DialogBody>
-  );
+	return (
+		<DialogBody
+			sx={{
+				overflow: 'auto',
+				minHeight: '50vh',
+				padding: 0
+			}}
+		>
+			{compareVersionsBranch &&
+				(compareVersionsBranch.error ? (
+					<ApiResponseErrorState error={compareVersionsBranch.error} />
+				) : compareVersionsBranch.isFetching ? (
+					<LoadingState />
+				) : compareVersionsBranch.compareVersions?.length > 0 ? (
+					<CompareVersions versions={compareVersionsBranch.compareVersions} />
+				) : (
+					<EmptyState title={<FormattedMessage defaultMessage="No versions found" />} />
+				))}
+		</DialogBody>
+	);
 }
 
 export default CompareVersionsDialogContainer;

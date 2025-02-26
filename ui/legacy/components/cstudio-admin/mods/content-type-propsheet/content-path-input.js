@@ -15,100 +15,100 @@
  */
 
 (function () {
-  const { React, ReactDOM } = CrafterCMSNext;
-  const { useState } = React;
+	const { React, ReactDOM } = CrafterCMSNext;
+	const { useState } = React;
 
-  function Selector({ initialValue, updateFn, defaultValue, rootPath, validations }) {
-    const [value, setValue] = useState(initialValue);
+	function Selector({ initialValue, updateFn, defaultValue, rootPath, validations }) {
+		const [value, setValue] = useState(initialValue);
 
-    const onChange = (value) => {
-      setValue(value);
-      updateFn(value);
-    };
+		const onChange = (value) => {
+			setValue(value);
+			updateFn(value);
+		};
 
-    const onBlur = () => {
-      let path = value;
-      if (!validations.regex.test(value)) {
-        path = rootPath + value;
-      }
-      onChange(value ? path : defaultValue);
-    };
+		const onBlur = () => {
+			let path = value;
+			if (!validations.regex.test(value)) {
+				path = rootPath + value;
+			}
+			onChange(value ? path : defaultValue);
+		};
 
-    const checkForMacros = (value) => {
-      let isMacro = value.indexOf('{');
-      if (isMacro !== -1) {
-        value = value.substring(0, isMacro);
-        value = value.endsWith('/') ? value.substring(0, value.length - 1) : value;
-      }
-      return value;
-    };
+		const checkForMacros = (value) => {
+			let isMacro = value.indexOf('{');
+			if (isMacro !== -1) {
+				value = value.substring(0, isMacro);
+				value = value.endsWith('/') ? value.substring(0, value.length - 1) : value;
+			}
+			return value;
+		};
 
-    const openPathBrowser = () => {
-      let unmount;
-      const dialogContainer = document.createElement('div');
-      CrafterCMSNext.render(dialogContainer, 'PathSelectionDialog', {
-        open: true,
-        rootPath,
-        initialPath: value ? checkForMacros(value) : rootPath,
-        onClose: () => unmount(),
-        onOk: ({ path }) => {
-          unmount();
-          onChange(path);
-        }
-      }).then((done) => (unmount = done.unmount));
-    };
+		const openPathBrowser = () => {
+			let unmount;
+			const dialogContainer = document.createElement('div');
+			CrafterCMSNext.render(dialogContainer, 'PathSelectionDialog', {
+				open: true,
+				rootPath,
+				initialPath: value ? checkForMacros(value) : rootPath,
+				onClose: () => unmount(),
+				onOk: ({ path }) => {
+					unmount();
+					onChange(path);
+				}
+			}).then((done) => (unmount = done.unmount));
+		};
 
-    return (
-      <>
-        <input
-          type="text"
-          value={value}
-          className="content-path-input--input"
-          placeholder={defaultValue}
-          onBlur={validations?.regex ? onBlur : null}
-          onChange={(e) => onChange(e.target.value)}
-        />
-        <button className="content-path-input--icon" onClick={openPathBrowser}>
-          <i className="fa fa-search" aria-hidden="true" />
-        </button>
-      </>
-    );
-  }
+		return (
+			<>
+				<input
+					type="text"
+					value={value}
+					className="content-path-input--input"
+					placeholder={defaultValue}
+					onBlur={validations?.regex ? onBlur : null}
+					onChange={(e) => onChange(e.target.value)}
+				/>
+				<button className="content-path-input--icon" onClick={openPathBrowser}>
+					<i className="fa fa-search" aria-hidden="true" />
+				</button>
+			</>
+		);
+	}
 
-  function ContentPathInput(fieldName, container) {
-    this.fieldName = fieldName;
-    this.container = container;
-    this.value = '';
-  }
+	function ContentPathInput(fieldName, container) {
+		this.fieldName = fieldName;
+		this.container = container;
+		this.value = '';
+	}
 
-  ContentPathInput.prototype = {
-    render(initialValue, updateFn, fName, itemId, defaultValue, typeControl, disabled, properties) {
-      const element = $('<div class="repository-selector"/>').appendTo(this.container)[0];
+	ContentPathInput.prototype = {
+		render(initialValue, updateFn, fName, itemId, defaultValue, typeControl, disabled, properties) {
+			const element = $('<div class="repository-selector"/>').appendTo(this.container)[0];
 
-      const onChange = (value) => {
-        updateFn(null, { fieldName: this.fieldName, value });
-      };
+			const onChange = (value) => {
+				updateFn(null, { fieldName: this.fieldName, value });
+			};
 
-      ReactDOM.render(
-        <Selector
-          initialValue={initialValue}
-          rootPath={properties.rootPath}
-          updateFn={onChange}
-          defaultValue={defaultValue}
-          validations={properties.validations}
-        />,
-        element
-      );
+			ReactDOM.render(
+				<Selector
+					initialValue={initialValue}
+					rootPath={properties.rootPath}
+					updateFn={onChange}
+					defaultValue={defaultValue}
+					validations={properties.validations}
+				/>,
+				element
+			);
 
-      this.value = value;
-    },
-    getValue() {
-      return this.value;
-    }
-  };
+			this.value = value;
+		},
+		getValue() {
+			return this.value;
+		}
+	};
 
-  CStudioAuthoring.Module.moduleLoaded(
-    'cstudio-console-tools-content-types-proptype-content-path-input',
-    ContentPathInput
-  );
+	CStudioAuthoring.Module.moduleLoaded(
+		'cstudio-console-tools-content-types-proptype-content-path-input',
+		ContentPathInput
+	);
 })();

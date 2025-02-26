@@ -19,14 +19,14 @@ import AuditManagement from '../AuditManagement';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 
 interface SiteAuditManagementProps {
-  embedded?: boolean;
-  showAppsButton?: boolean;
+	embedded?: boolean;
+	showAppsButton?: boolean;
 }
 
 export function SiteAuditManagement(props: SiteAuditManagementProps) {
-  const { embedded, showAppsButton = !embedded } = props;
-  const site = useActiveSiteId();
-  return <AuditManagement site={site} embedded={embedded} showAppsButton={showAppsButton} />;
+	const { embedded, showAppsButton = !embedded } = props;
+	const site = useActiveSiteId();
+	return <AuditManagement site={site} embedded={embedded} showAppsButton={showAppsButton} />;
 }
 
 export default SiteAuditManagement;

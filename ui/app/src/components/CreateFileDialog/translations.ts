@@ -17,15 +17,15 @@
 import { defineMessages } from 'react-intl';
 
 export const translations = defineMessages({
-  placeholder: {
-    id: 'createFileDialog.placeholder',
-    defaultMessage: 'Please type a name'
-  },
-  policyError: {
-    defaultMessage: 'File "{fileName}" doesn\'t comply with project policies: {detail}'
-  },
-  fetchingDependentItems: {
-    id: 'renameAssetDialog.fetchingDependentItems',
-    defaultMessage: 'Fetching dependent items'
-  }
+	placeholder: {
+		id: 'createFileDialog.placeholder',
+		defaultMessage: 'Please type a name'
+	},
+	policyError: {
+		defaultMessage: 'File "{fileName}" doesn\'t comply with project policies: {detail}'
+	},
+	fetchingDependentItems: {
+		id: 'renameAssetDialog.fetchingDependentItems',
+		defaultMessage: 'Fetching dependent items'
+	}
 });

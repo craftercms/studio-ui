@@ -22,37 +22,37 @@ import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDial
 import React from 'react';
 
 export interface EditUserBaseProps {
-  user: User;
-  passwordRequirementsMinComplexity: number;
+	user: User;
+	passwordRequirementsMinComplexity: number;
 }
 
 export interface EditUserDialogProps extends EditUserBaseProps, EnhancedDialogProps {
-  onUserEdited(): void;
-  onSubmittingAndOrPendingChange(value: onSubmittingAndOrPendingChangeProps): void;
+	onUserEdited(): void;
+	onSubmittingAndOrPendingChange(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
 export interface EditUserDialogContainerProps
-  extends EditUserBaseProps,
-    Pick<
-      EditUserDialogProps,
-      'onClose' | 'isSubmitting' | 'onSubmittingAndOrPendingChange' | 'onUserEdited' | 'open'
-    > {}
+	extends EditUserBaseProps,
+		Pick<
+			EditUserDialogProps,
+			'onClose' | 'isSubmitting' | 'onSubmittingAndOrPendingChange' | 'onUserEdited' | 'open'
+		> {}
 
 export interface EditUserDialogUIProps {
-  user: User;
-  inProgress: boolean;
-  submitOk: boolean;
-  dirty: boolean;
-  openResetPassword: boolean;
-  sites: Site[];
-  passwordRequirementsMinComplexity: number;
-  rolesBySite: LookupTable<string[]>;
-  onInputChange(value: object): void;
-  onEnableChange(value: object): void;
-  onCancelForm(): void;
-  onSave(): void;
-  onCloseButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
-  onCloseResetPasswordDialog(): void;
-  onDelete(username: string): void;
-  onResetPassword(value: boolean): void;
+	user: User;
+	inProgress: boolean;
+	submitOk: boolean;
+	dirty: boolean;
+	openResetPassword: boolean;
+	sites: Site[];
+	passwordRequirementsMinComplexity: number;
+	rolesBySite: LookupTable<string[]>;
+	onInputChange(value: object): void;
+	onEnableChange(value: object): void;
+	onCancelForm(): void;
+	onSave(): void;
+	onCloseButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
+	onCloseResetPasswordDialog(): void;
+	onDelete(username: string): void;
+	onResetPassword(value: boolean): void;
 }

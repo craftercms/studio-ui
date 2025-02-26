@@ -22,41 +22,41 @@ import { LegacyFormDialogStateProps } from '../../../components/LegacyFormDialog
 import { changeSiteComplete } from '../../actions/sites';
 
 const initialState: LegacyFormDialogStateProps = {
-  open: false,
-  isMinimized: null,
-  path: null,
-  site: null,
-  authoringBase: null,
-  inProgress: true,
-  isSubmitting: false
+	open: false,
+	isMinimized: null,
+	path: null,
+	site: null,
+	authoringBase: null,
+	inProgress: true,
+	isSubmitting: false
 };
 
 export default createReducer<GlobalState['dialogs']['edit']>(initialState, (builder) => {
-  builder
-    .addCase(showEditDialog, (state, { payload }) => {
-      // Should the dialog be opened already, 1. we don't need to reopen 2. if it's opened with a different form, we
-      // don't want to override and possibly lose form edits that are unsaved. Currently, the epic validates and shows
-      // a message to the user stating to please close the other form before opening a new one.
-      return state.open || nnou(state.path)
-        ? state
-        : {
-            ...state,
-            onClose: closeEditDialog(),
-            onClosed: editDialogClosed(),
-            onMinimize: updateEditDialogConfig({ isMinimized: true }),
-            onMaximize: updateEditDialogConfig({ isMinimized: false }),
-            ...payload,
-            open: true
-          };
-    })
-    .addCase(updateEditDialogConfig, (state, { payload }: { payload: Partial<LegacyFormDialogStateProps> }) => ({
-      ...state,
-      ...payload
-    }))
-    .addCase(closeEditDialog, (state) => ({
-      ...state,
-      open: false
-    }))
-    .addCase(editDialogClosed, () => initialState)
-    .addCase(changeSiteComplete, () => initialState);
+	builder
+		.addCase(showEditDialog, (state, { payload }) => {
+			// Should the dialog be opened already, 1. we don't need to reopen 2. if it's opened with a different form, we
+			// don't want to override and possibly lose form edits that are unsaved. Currently, the epic validates and shows
+			// a message to the user stating to please close the other form before opening a new one.
+			return state.open || nnou(state.path)
+				? state
+				: {
+						...state,
+						onClose: closeEditDialog(),
+						onClosed: editDialogClosed(),
+						onMinimize: updateEditDialogConfig({ isMinimized: true }),
+						onMaximize: updateEditDialogConfig({ isMinimized: false }),
+						...payload,
+						open: true
+					};
+		})
+		.addCase(updateEditDialogConfig, (state, { payload }: { payload: Partial<LegacyFormDialogStateProps> }) => ({
+			...state,
+			...payload
+		}))
+		.addCase(closeEditDialog, (state) => ({
+			...state,
+			open: false
+		}))
+		.addCase(editDialogClosed, () => initialState)
+		.addCase(changeSiteComplete, () => initialState);
 });

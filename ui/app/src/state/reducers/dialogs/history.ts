@@ -21,30 +21,30 @@ import { HistoryDialogStateProps } from '../../../components/HistoryDialog/utils
 import { revertContentFailed } from '../../actions/versions';
 
 const initialState: HistoryDialogStateProps = {
-  open: false,
-  isSubmitting: null,
-  isMinimized: null,
-  hasPendingChanges: null,
-  error: null
+	open: false,
+	isSubmitting: null,
+	isMinimized: null,
+	hasPendingChanges: null,
+	error: null
 };
 
 export default createReducer<GlobalState['dialogs']['history']>(initialState, (builder) => {
-  builder
-    .addCase(showHistoryDialog, (state, { payload }) => ({
-      ...state,
-      onClose: closeHistoryDialog(),
-      onClosed: historyDialogClosed(),
-      ...(payload as Partial<HistoryDialogStateProps>),
-      open: true
-    }))
-    .addCase(closeHistoryDialog, (state) => ({ ...state, open: false }))
-    .addCase(historyDialogClosed, (state) => initialState)
-    .addCase(historyDialogUpdate, (state, { payload }) => ({
-      ...state,
-      ...(payload as Partial<HistoryDialogStateProps>)
-    }))
-    .addCase(revertContentFailed, (state, { payload }) => ({
-      ...state,
-      error: payload.response
-    }));
+	builder
+		.addCase(showHistoryDialog, (state, { payload }) => ({
+			...state,
+			onClose: closeHistoryDialog(),
+			onClosed: historyDialogClosed(),
+			...(payload as Partial<HistoryDialogStateProps>),
+			open: true
+		}))
+		.addCase(closeHistoryDialog, (state) => ({ ...state, open: false }))
+		.addCase(historyDialogClosed, (state) => initialState)
+		.addCase(historyDialogUpdate, (state, { payload }) => ({
+			...state,
+			...(payload as Partial<HistoryDialogStateProps>)
+		}))
+		.addCase(revertContentFailed, (state, { payload }) => ({
+			...state,
+			error: payload.response
+		}));
 });

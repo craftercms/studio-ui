@@ -15,87 +15,85 @@
  */
 
 import React from 'react';
-import { makeStyles } from 'tss-react/mui';
 import GitAuthForm from '../GitAuthForm';
 import Grid from '@mui/material/Grid2';
 import TextField from '@mui/material/TextField';
 import { FormattedMessage } from 'react-intl';
 import { SiteState } from '../../models/Site';
 
-const useStyles = makeStyles()(() => ({
-  gitInfo: {
-    width: '100%',
-    '& .MuiGrid-item': {
-      padding: '12px'
-    }
-  }
-}));
-
 export interface NewRemoteRepositoryFormProps {
-  inputs: Partial<SiteState>;
-  setInputs(inputs): void;
+	inputs: Partial<SiteState>;
+	setInputs(inputs): void;
 }
 
 export function NewRemoteRepositoryForm(props: NewRemoteRepositoryFormProps) {
-  const { classes } = useStyles();
-  const { inputs, setInputs } = props;
+	const { inputs, setInputs } = props;
 
-  const handleInputChange = (e: any) => {
-    setInputs({ [e.target.name]: e.target.value });
-  };
+	const handleInputChange = (e: any) => {
+		setInputs({ [e.target.name]: e.target.value });
+	};
 
-  return (
-    <Grid container spacing={3} className={classes.gitInfo}>
-      <Grid size={12}>
-        <TextField
-          id="remoteName"
-          name="remoteName"
-          label={<FormattedMessage id="repositories.remoteName" defaultMessage="Remote Git Repository Name" />}
-          slotProps={{
-            inputLabel: { shrink: true }
-          }}
-          required
-          placeholder="origin"
-          autoFocus
-          fullWidth
-          onChange={handleInputChange}
-          value={inputs.remoteName}
-          error={inputs.submitted && !inputs.remoteName}
-          helperText={
-            <FormattedMessage
-              id="repositories.repoRemoteNameHelper"
-              defaultMessage="Name the remote that will refer to the source repo to pull from."
-            />
-          }
-        />
-      </Grid>
-      <Grid size={12}>
-        <TextField
-          id="remoteUrl"
-          name="remoteUrl"
-          label={<FormattedMessage id="repositories.remoteUrl" defaultMessage="Remote Repository URL" />}
-          slotProps={{
-            inputLabel: { shrink: true }
-          }}
-          required
-          fullWidth
-          placeholder={'e.g. https://github.com/craftercms/craftercms-react-blueprint.git'}
-          onChange={handleInputChange}
-          value={inputs.remoteUrl}
-          error={inputs.submitted && !inputs.remoteUrl}
-          helperText={
-            <FormattedMessage
-              id="repositories.repoRemoteUrlHelper"
-              defaultMessage="The git repository URL to create from."
-            />
-          }
-        />
-      </Grid>
-      <Grid size={12}>
-        <GitAuthForm inputs={inputs} setInputs={setInputs} handleInputChange={handleInputChange} />
-      </Grid>
-    </Grid>
-  );
+	return (
+		<Grid
+			container
+			spacing={3}
+			sx={{
+				width: '100%',
+				'& .MuiGrid-item': {
+					padding: '12px'
+				}
+			}}
+		>
+			<Grid size={12}>
+				<TextField
+					id="remoteName"
+					name="remoteName"
+					label={<FormattedMessage id="repositories.remoteName" defaultMessage="Remote Git Repository Name" />}
+					slotProps={{
+						inputLabel: { shrink: true }
+					}}
+					required
+					placeholder="origin"
+					autoFocus
+					fullWidth
+					onChange={handleInputChange}
+					value={inputs.remoteName}
+					error={inputs.submitted && !inputs.remoteName}
+					helperText={
+						<FormattedMessage
+							id="repositories.repoRemoteNameHelper"
+							defaultMessage="Name the remote that will refer to the source repo to pull from."
+						/>
+					}
+				/>
+			</Grid>
+			<Grid size={12}>
+				<TextField
+					id="remoteUrl"
+					name="remoteUrl"
+					label={<FormattedMessage id="repositories.remoteUrl" defaultMessage="Remote Repository URL" />}
+					slotProps={{
+						inputLabel: { shrink: true }
+					}}
+					required
+					fullWidth
+					placeholder={'e.g. https://github.com/craftercms/craftercms-react-blueprint.git'}
+					onChange={handleInputChange}
+					value={inputs.remoteUrl}
+					error={inputs.submitted && !inputs.remoteUrl}
+					helperText={
+						<FormattedMessage
+							id="repositories.repoRemoteUrlHelper"
+							defaultMessage="The git repository URL to create from."
+						/>
+					}
+				/>
+			</Grid>
+			<Grid size={12}>
+				<GitAuthForm inputs={inputs} setInputs={setInputs} handleInputChange={handleInputChange} />
+			</Grid>
+		</Grid>
+	);
 }
 
 export default NewRemoteRepositoryForm;

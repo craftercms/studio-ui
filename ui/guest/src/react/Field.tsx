@@ -22,63 +22,63 @@ import { useICE } from './hooks';
 import { getCachedContentType } from '../contentController';
 
 export type FieldProps<P = {}> = PropsWithChildren<
-  P & {
-    model: ContentInstance;
-    index?: ICEProps['index'];
-    fieldId?: ICEProps['fieldId'];
-    component?: ElementType<P>;
-    componentProps?: Partial<P>;
-  }
+	P & {
+		model: ContentInstance;
+		index?: ICEProps['index'];
+		fieldId?: ICEProps['fieldId'];
+		component?: ElementType<P>;
+		componentProps?: Partial<P>;
+	}
 >;
 
 // Field component is a slightly lighter/simpler version of RenderField. It has less options to render (e.g. no renderTarget, render)
 // Registers the zone but doesn't render the field value, so values don't get repainted when changed.
 export const Field = forwardRef<any, FieldProps>(function <P = {}>(props: FieldProps<P>, ref) {
-  const { model: modelProp, fieldId, index, component = 'div', componentProps, ...other } = props;
-  const { props: ice, model } = useICE({
-    model: modelProp,
-    fieldId: fieldId === '__CRAFTERCMS_FAKE_FIELD__' ? void 0 : fieldId,
-    index,
-    ref
-  });
-  const Component = component as ComponentType<P>;
+	const { model: modelProp, fieldId, index, component = 'div', componentProps, ...other } = props;
+	const { props: ice, model } = useICE({
+		model: modelProp,
+		fieldId: fieldId === '__CRAFTERCMS_FAKE_FIELD__' ? void 0 : fieldId,
+		index,
+		ref
+	});
+	const Component = component as ComponentType<P>;
 
-  const passDownProps = {
-    ...other,
-    ...ice,
-    ...componentProps,
-    // If the component is an html element, `model` would end up written as an
-    // attribute model="[object Object]".
-    ...(typeof component === 'string' ? {} : { model })
-  } as P;
+	const passDownProps = {
+		...other,
+		...ice,
+		...componentProps,
+		// If the component is an html element, `model` would end up written as an
+		// attribute model="[object Object]".
+		...(typeof component === 'string' ? {} : { model })
+	} as P;
 
-  // `data-craftercms-field` attribute is added to all fields for the elements to get the XB on hover cursor styles.
-  // `data-craftercms-type="collection"` attribute is added to node-selector and repeat fields for the elements to get
-  // the XB padding mode styles.
-  const contentTypeId = model.craftercms.contentTypeId;
-  const contentType = getCachedContentType(contentTypeId);
-  const field = contentType?.fields[fieldId];
-  passDownProps['data-craftercms-field'] = '';
-  if (field && ['node-selector', 'repeat'].includes(field.type)) {
-    passDownProps['data-craftercms-type'] = 'collection';
-  }
+	// `data-craftercms-field` attribute is added to all fields for the elements to get the XB on hover cursor styles.
+	// `data-craftercms-type="collection"` attribute is added to node-selector and repeat fields for the elements to get
+	// the XB padding mode styles.
+	const contentTypeId = model.craftercms.contentTypeId;
+	const contentType = getCachedContentType(contentTypeId);
+	const field = contentType?.fields[fieldId];
+	passDownProps['data-craftercms-field'] = '';
+	if (field && ['node-selector', 'repeat'].includes(field.type)) {
+		passDownProps['data-craftercms-type'] = 'collection';
+	}
 
-  return <Component {...passDownProps} />;
+	return <Component {...passDownProps} />;
 });
 
 Field.propTypes = {
-  model: (props, propName, componentName) => {
-    if (!props[propName] || !props[propName].craftercms) {
-      return new Error(
-        `Invalid "${propName}" prop supplied to ${componentName}. Model prop should be a ContentInstance.`
-      );
-    }
-  },
-  fieldId: PropTypes.string.isRequired,
-  index: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-  // @ts-ignore
-  component: PropTypes.elementType,
-  componentProps: PropTypes.object
+	model: (props, propName, componentName) => {
+		if (!props[propName] || !props[propName].craftercms) {
+			return new Error(
+				`Invalid "${propName}" prop supplied to ${componentName}. Model prop should be a ContentInstance.`
+			);
+		}
+	},
+	fieldId: PropTypes.string.isRequired,
+	index: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+	// @ts-ignore
+	component: PropTypes.elementType,
+	componentProps: PropTypes.object
 };
 
 export default Field;

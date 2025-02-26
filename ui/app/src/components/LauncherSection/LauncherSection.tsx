@@ -23,29 +23,29 @@ import { useActiveUser } from '../../hooks/useActiveUser';
 import { useSiteLookup } from '../../hooks/useSiteLookup';
 
 export interface LauncherSectionProps {
-  title: TranslationOrText;
-  widgets: WidgetDescriptor[];
+	title: TranslationOrText;
+	widgets: WidgetDescriptor[];
 }
 
 function LauncherSection(props: LauncherSectionProps) {
-  const site = useActiveSiteId();
-  const sites = useSiteLookup();
-  const user = useActiveUser();
-  return (
-    <LauncherSectionUI
-      {...props}
-      site={site}
-      user={user}
-      translationValues={{
-        siteName: sites[site]?.name ?? '',
-        muted: (value) => (
-          <span className="muted" key={value[0]}>
-            {value[0]}
-          </span>
-        )
-      }}
-    />
-  );
+	const site = useActiveSiteId();
+	const sites = useSiteLookup();
+	const user = useActiveUser();
+	return (
+		<LauncherSectionUI
+			{...props}
+			site={site}
+			user={user}
+			translationValues={{
+				siteName: sites[site]?.name ?? '',
+				muted: (value) => (
+					<span className="muted" key={value[0]}>
+						{value[0]}
+					</span>
+				)
+			}}
+		/>
+	);
 }
 
 export default LauncherSection;

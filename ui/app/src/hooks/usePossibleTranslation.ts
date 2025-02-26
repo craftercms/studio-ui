@@ -23,34 +23,34 @@ import { getPossibleTranslation } from '../utils/i18n';
 export function usePossibleTranslation(title: string): string;
 export function usePossibleTranslation(title: string, values: Record<string, PrimitiveType>): string;
 export function usePossibleTranslation(
-  title: string,
-  // TODO: Fix FormatXMLElementFn generics
-  values?: Record<string, PrimitiveType | FormatXMLElementFn<any, any>>
+	title: string,
+	// TODO: Fix FormatXMLElementFn generics
+	values?: Record<string, PrimitiveType | FormatXMLElementFn<any, any>>
 ): string;
 export function usePossibleTranslation(descriptor: MessageDescriptor): string;
 export function usePossibleTranslation(descriptor: MessageDescriptor, values: Record<string, PrimitiveType>): string;
 export function usePossibleTranslation(
-  descriptor: MessageDescriptor,
-  // TODO: Fix FormatXMLElementFn generics
-  values?: Record<string, PrimitiveType | FormatXMLElementFn<any, any>>
+	descriptor: MessageDescriptor,
+	// TODO: Fix FormatXMLElementFn generics
+	values?: Record<string, PrimitiveType | FormatXMLElementFn<any, any>>
 ): string | ReactNode[];
 export function usePossibleTranslation(titleOrDescriptor: TranslationOrText): string;
 export function usePossibleTranslation(
-  titleOrDescriptor: TranslationOrText,
-  values: Record<string, PrimitiveType>
+	titleOrDescriptor: TranslationOrText,
+	values: Record<string, PrimitiveType>
 ): string;
 export function usePossibleTranslation(
-  titleOrDescriptor: TranslationOrText,
-  // TODO: Fix FormatXMLElementFn generics
-  values?: Record<string, PrimitiveType | FormatXMLElementFn<any, any>>
+	titleOrDescriptor: TranslationOrText,
+	// TODO: Fix FormatXMLElementFn generics
+	values?: Record<string, PrimitiveType | FormatXMLElementFn<any, any>>
 ): string | ReactNode[];
 export function usePossibleTranslation(
-  titleOrDescriptor: TranslationOrText,
-  // TODO: Fix FormatXMLElementFn generics
-  values?: Record<string, PrimitiveType | FormatXMLElementFn<any, any>>
+	titleOrDescriptor: TranslationOrText,
+	// TODO: Fix FormatXMLElementFn generics
+	values?: Record<string, PrimitiveType | FormatXMLElementFn<any, any>>
 ): string | ReactNode[] {
-  const { formatMessage } = useIntl();
-  return getPossibleTranslation(titleOrDescriptor, formatMessage, values);
+	const { formatMessage } = useIntl();
+	return getPossibleTranslation(titleOrDescriptor, formatMessage, values);
 }
 
 export default usePossibleTranslation;

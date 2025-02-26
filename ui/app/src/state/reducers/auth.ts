@@ -18,65 +18,65 @@ import { GlobalState } from '../../models/GlobalState';
 import { createReducer } from '@reduxjs/toolkit';
 import { sessionTimeout } from '../actions/user';
 import {
-  login,
-  loginFailed,
-  logoutComplete,
-  refreshAuthToken,
-  refreshAuthTokenComplete,
-  refreshAuthTokenFailed,
-  sharedWorkerUnauthenticated
+	login,
+	loginFailed,
+	logoutComplete,
+	refreshAuthToken,
+	refreshAuthTokenComplete,
+	refreshAuthTokenFailed,
+	sharedWorkerUnauthenticated
 } from '../actions/auth';
 import { storeInitialized } from '../actions/system';
 
 export const initialState: GlobalState['auth'] = {
-  error: null,
-  active: false,
-  expiresAt: null,
-  isFetching: false
+	error: null,
+	active: false,
+	expiresAt: null,
+	isFetching: false
 };
 
 const reducer = createReducer<GlobalState['auth']>(initialState, (builder) => {
-  builder
-    .addCase(storeInitialized, (state, { payload }) => ({
-      ...state,
-      active: true,
-      expiresAt: payload.auth.expiresAt
-    }))
-    .addCase(refreshAuthToken, (state) => ({
-      ...state,
-      isFetching: true
-    }))
-    .addCase(refreshAuthTokenComplete, (state, { payload }) => ({
-      ...state,
-      active: true,
-      isFetching: false,
-      expiresAt: payload.expiresAt
-    }))
-    .addCase(refreshAuthTokenFailed, (state) => ({
-      ...state,
-      active: false,
-      isFetching: false
-    }))
-    .addCase(sessionTimeout, () => initialState)
-    .addCase(sharedWorkerUnauthenticated, () => initialState)
-    .addCase(login, (state) => ({ ...state, isFetching: true }))
-    .addCase(loginFailed, (state, action) => ({
-      ...state,
-      isFetching: false,
-      error:
-        action.payload?.status === 401
-          ? {
-              code: 6004,
-              message: 'Incorrect password',
-              remedialAction: 'Please use correct password'
-            }
-          : {
-              code: 1000,
-              message: 'Internal System Failure',
-              remedialAction: 'Please try again momentarily or contact support'
-            }
-    }))
-    .addCase(logoutComplete, () => initialState);
+	builder
+		.addCase(storeInitialized, (state, { payload }) => ({
+			...state,
+			active: true,
+			expiresAt: payload.auth.expiresAt
+		}))
+		.addCase(refreshAuthToken, (state) => ({
+			...state,
+			isFetching: true
+		}))
+		.addCase(refreshAuthTokenComplete, (state, { payload }) => ({
+			...state,
+			active: true,
+			isFetching: false,
+			expiresAt: payload.expiresAt
+		}))
+		.addCase(refreshAuthTokenFailed, (state) => ({
+			...state,
+			active: false,
+			isFetching: false
+		}))
+		.addCase(sessionTimeout, () => initialState)
+		.addCase(sharedWorkerUnauthenticated, () => initialState)
+		.addCase(login, (state) => ({ ...state, isFetching: true }))
+		.addCase(loginFailed, (state, action) => ({
+			...state,
+			isFetching: false,
+			error:
+				action.payload?.status === 401
+					? {
+							code: 6004,
+							message: 'Incorrect password',
+							remedialAction: 'Please use correct password'
+						}
+					: {
+							code: 1000,
+							message: 'Internal System Failure',
+							remedialAction: 'Please try again momentarily or contact support'
+						}
+		}))
+		.addCase(logoutComplete, () => initialState);
 });
 
 export default reducer;

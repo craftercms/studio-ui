@@ -15,7 +15,6 @@
  */
 
 import React from 'react';
-import { makeStyles } from 'tss-react/mui';
 import palette from '../../styles/palette';
 import Grid from '@mui/material/Grid2';
 import Typography from '@mui/material/Typography';
@@ -23,58 +22,47 @@ import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
 import GlobalState from '../../models/GlobalState';
 
-const useStyles = makeStyles()(() => ({
-  countContainer: {
-    padding: '5px'
-  },
-  submissionCommentCount: {
-    fontSize: '14px',
-    color: palette.gray.medium4
-  }
-}));
-
 interface CharCountStatusContainerProps {
-  commentLength: number;
+	commentLength: number;
 }
 
 interface CharCountStatusProps {
-  commentLength: number;
-  commentMaxLength: number;
+	commentLength: number;
+	commentMaxLength: number;
 }
 
 function CharCountStatus(props: CharCountStatusProps) {
-  const { classes } = useStyles();
-  const { commentLength, commentMaxLength } = props;
+	const { commentLength, commentMaxLength } = props;
 
-  return (
-    <Grid container direction="row" justifyContent="space-between" className={classes.countContainer}>
-      <Grid>
-        <Typography className={classes.submissionCommentCount}>
-          <FormattedMessage
-            id="deleteDialog.maxCharacters"
-            defaultMessage="Max {maxLength} characters"
-            values={{ maxLength: commentMaxLength }}
-          />
-        </Typography>
-      </Grid>
+	return (
+		<Grid container direction="row" justifyContent="space-between" sx={{ padding: '5px' }}>
+			<Grid>
+				<Typography sx={{ fontSize: '14px', color: palette.gray.medium4 }}>
+					<FormattedMessage
+						id="deleteDialog.maxCharacters"
+						defaultMessage="Max {maxLength} characters"
+						values={{ maxLength: commentMaxLength }}
+					/>
+				</Typography>
+			</Grid>
 
-      <Grid>
-        <Typography className={classes.submissionCommentCount}>
-          {commentLength}/{commentMaxLength}
-        </Typography>
-      </Grid>
-    </Grid>
-  );
+			<Grid>
+				<Typography sx={{ fontSize: '14px', color: palette.gray.medium4 }}>
+					{commentLength}/{commentMaxLength}
+				</Typography>
+			</Grid>
+		</Grid>
+	);
 }
 
 export function CharCountStatusContainer(props: CharCountStatusContainerProps) {
-  const { commentLength } = props;
+	const { commentLength } = props;
 
-  const commentMaxLength = useSelector<GlobalState, number>(
-    (state) => state.uiConfig.publishing.submissionCommentMaxLength
-  );
+	const commentMaxLength = useSelector<GlobalState, number>(
+		(state) => state.uiConfig.publishing.submissionCommentMaxLength
+	);
 
-  return <CharCountStatus commentLength={commentLength} commentMaxLength={commentMaxLength}></CharCountStatus>;
+	return <CharCountStatus commentLength={commentLength} commentMaxLength={commentMaxLength}></CharCountStatus>;
 }
 
 export default CharCountStatus;

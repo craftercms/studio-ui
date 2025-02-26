@@ -19,79 +19,71 @@ import { defineMessages, useIntl } from 'react-intl';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import React from 'react';
-import { makeStyles } from 'tss-react/mui';
-
-const useStyles = makeStyles()(() => ({
-  select: {
-    width: '100%',
-    '&.last': {
-      marginTop: '10px'
-    }
-  }
-}));
 
 const messages = defineMessages({
-  asc: {
-    id: 'searchFilter.asc',
-    defaultMessage: 'Ascending'
-  },
-  desc: {
-    id: 'searchFilter.desc',
-    defaultMessage: 'Descending'
-  },
-  moreRelevantFirst: {
-    id: 'searchFilter.byRelevanceDescMessage',
-    defaultMessage: 'Most relevant first'
-  },
-  lessRelevantFirst: {
-    id: 'searchFilter.byRelevanceAscMessage',
-    defaultMessage: 'Less relevant first'
-  }
+	asc: {
+		id: 'searchFilter.asc',
+		defaultMessage: 'Ascending'
+	},
+	desc: {
+		id: 'searchFilter.desc',
+		defaultMessage: 'Descending'
+	},
+	moreRelevantFirst: {
+		id: 'searchFilter.byRelevanceDescMessage',
+		defaultMessage: 'Most relevant first'
+	},
+	lessRelevantFirst: {
+		id: 'searchFilter.byRelevanceAscMessage',
+		defaultMessage: 'Less relevant first'
+	}
 });
 
 interface SortOrderProps {
-  sortBy?: string;
-  sortOrder?: string;
-  handleFilterChange(filter: FilterType, isFilter?: boolean): any;
+	sortBy?: string;
+	sortOrder?: string;
+	handleFilterChange(filter: FilterType, isFilter?: boolean): any;
 }
 
 export function SiteSearchSortOrder(props: SortOrderProps) {
-  const { classes, cx } = useStyles();
-  const { formatMessage } = useIntl();
-  const { handleFilterChange, sortBy, sortOrder = 'desc' } = props;
-  // sortBy === undefined: this means the current filter is the default === _score
-  const isRelevance = sortBy === '_score' || sortBy === undefined;
-  const options = isRelevance
-    ? [
-        {
-          name: formatMessage(messages.moreRelevantFirst),
-          value: 'desc'
-        },
-        {
-          name: formatMessage(messages.lessRelevantFirst),
-          value: 'asc'
-        }
-      ]
-    : [
-        {
-          name: formatMessage(messages.asc),
-          value: 'asc'
-        },
-        {
-          name: formatMessage(messages.desc),
-          value: 'desc'
-        }
-      ];
-  return (
-    <Select
-      value={sortOrder}
-      className={cx(classes.select, 'last')}
-      onChange={(event) => handleFilterChange({ name: 'sortOrder', value: event.target.value })}
-    >
-      <MenuItem value={options[0].value}>{options[0].name}</MenuItem>
-      <MenuItem value={options[1].value}>{options[1].name}</MenuItem>
-    </Select>
-  );
+	const { formatMessage } = useIntl();
+	const { handleFilterChange, sortBy, sortOrder = 'desc' } = props;
+	// sortBy === undefined: this means the current filter is the default === _score
+	const isRelevance = sortBy === '_score' || sortBy === undefined;
+	const options = isRelevance
+		? [
+				{
+					name: formatMessage(messages.moreRelevantFirst),
+					value: 'desc'
+				},
+				{
+					name: formatMessage(messages.lessRelevantFirst),
+					value: 'asc'
+				}
+			]
+		: [
+				{
+					name: formatMessage(messages.asc),
+					value: 'asc'
+				},
+				{
+					name: formatMessage(messages.desc),
+					value: 'desc'
+				}
+			];
+	return (
+		<Select
+			value={sortOrder}
+			sx={{
+				width: '100%',
+				marginTop: '10px'
+			}}
+			onChange={(event) => handleFilterChange({ name: 'sortOrder', value: event.target.value })}
+		>
+			<MenuItem value={options[0].value}>{options[0].name}</MenuItem>
+			<MenuItem value={options[1].value}>{options[1].name}</MenuItem>
+		</Select>
+	);
 }
 
 export default SiteSearchSortOrder;

@@ -18,30 +18,29 @@ import TextField from '@mui/material/TextField';
 import React from 'react';
 import FormControl from '@mui/material/FormControl';
 import { Control } from '../../models/FormsEngine';
-import useStyles from './styles';
+import commonStyles from './styles';
 
 export function Input(props: Control) {
-  const { field, value = '', onChange, disabled } = props;
-  const { classes } = useStyles();
+	const { field, value = '', onChange, disabled } = props;
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onChange(e.target.value);
-  };
+	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		onChange(e.target.value);
+	};
 
-  return (
-    <FormControl variant="outlined" className={classes.formControl} fullWidth>
-      <TextField
-        id={field.id}
-        type="text"
-        placeholder="auto"
-        fullWidth
-        label={field.name}
-        value={value}
-        onChange={handleInputChange}
-        disabled={disabled}
-      />
-    </FormControl>
-  );
+	return (
+		<FormControl variant="outlined" sx={commonStyles.formControl} fullWidth>
+			<TextField
+				id={field.id}
+				type="text"
+				placeholder="auto"
+				fullWidth
+				label={field.name}
+				value={value}
+				onChange={handleInputChange}
+				disabled={disabled}
+			/>
+		</FormControl>
+	);
 }
 
 export default Input;

@@ -20,20 +20,20 @@ import { TypographyProps } from '@mui/material/Typography';
 import { ChipProps, ListProps } from '@mui/material';
 
 export interface KeyboardShortcutsDialogProps extends EnhancedDialogProps {
-  shortcuts: KeyboardShortcutsCategory[];
-  sxs?: Partial<{
-    categoryTitle: TypographyProps['sx'];
-    shortcutChip: ChipProps['sx'];
-    shortcutsList: ListProps['sx'];
-  }>;
+	shortcuts: KeyboardShortcutsCategory[];
+	sxs?: Partial<{
+		categoryTitle: TypographyProps['sx'];
+		shortcutChip: ChipProps['sx'];
+		shortcutsList: ListProps['sx'];
+	}>;
 }
 
 export interface KeyboardShortcutDescriptor {
-  label: MessageDescriptor | string;
-  shortcut: string;
+	label: MessageDescriptor | string;
+	shortcut: string;
 }
 
 export interface KeyboardShortcutsCategory {
-  label: MessageDescriptor | string;
-  shortcuts: KeyboardShortcutDescriptor[];
+	label: MessageDescriptor | string;
+	shortcuts: KeyboardShortcutDescriptor[];
 }

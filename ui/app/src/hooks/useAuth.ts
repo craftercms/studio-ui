@@ -18,7 +18,7 @@ import GlobalState from '../models/GlobalState';
 import { useSelector } from 'react-redux';
 
 export function useAuth(): GlobalState['auth'] {
-  return useSelector<GlobalState, GlobalState['auth']>((state) => state.auth);
+	return useSelector<GlobalState, GlobalState['auth']>((state) => state.auth);
 }
 
 export default useAuth;

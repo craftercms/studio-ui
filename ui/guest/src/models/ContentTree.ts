@@ -15,13 +15,13 @@
  */
 
 export interface RenderTree {
-  id: string;
-  name: string;
-  children: RenderTree[];
-  type: string;
-  modelId?: string;
-  parentId?: string;
-  embeddedParentPath?: string;
-  fieldId?: string;
-  index?: string | number;
+	id: string;
+	name: string;
+	children: RenderTree[];
+	type: string;
+	modelId?: string;
+	parentId?: string;
+	embeddedParentPath?: string;
+	fieldId?: string;
+	index?: string | number;
 }

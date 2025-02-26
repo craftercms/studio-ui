@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <!--
   ~ Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
   ~
@@ -14,9 +14,9 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
-
 <page>
-	<content-type>/page/diff</content-type>	<display-template>/templates/web/diff.ftl</display-template>
+	<content-type>/page/diff</content-type>
+	<display-template>/templates/web/diff.ftl</display-template>
 	<merge-strategy>inherit-levels</merge-strategy>
 	<objectGroupId>2074</objectGroupId>
 	<objectId>20747fa3-693d-ebd8-0aa8-5109a588fced</objectId>

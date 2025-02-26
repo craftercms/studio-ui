@@ -17,9 +17,9 @@ import React from 'react';
 import { GlobalAppContextProvider, GlobalApp, GlobalAppProps } from '../components/GlobalApp';
 
 export default function Global(props: GlobalAppProps) {
-  return (
-    <GlobalAppContextProvider>
-      <GlobalApp {...props} />
-    </GlobalAppContextProvider>
-  );
+	return (
+		<GlobalAppContextProvider>
+			<GlobalApp {...props} />
+		</GlobalAppContextProvider>
+	);
 }

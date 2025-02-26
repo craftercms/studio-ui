@@ -22,46 +22,46 @@ import { filterOptionsLookup } from '../components/ActivityDashlet/DashletFilter
 import useActiveSite from './useActiveSite';
 
 export function useDashletFilterState(storageKey: string): {
-  selectedKeys: FilterSystemTypeGroups[];
-  onChange(e: Event, key: FilterSystemTypeGroups): void;
-  selectedTypes: SystemType[];
+	selectedKeys: FilterSystemTypeGroups[];
+	onChange(e: Event, key: FilterSystemTypeGroups): void;
+	selectedTypes: SystemType[];
 } {
-  const { uuid } = useActiveSite();
-  const [selectedKeys, setSelectedKeys] = useState<FilterSystemTypeGroups[]>(
-    () => getDashletFilterSystemTypeGroups(uuid, storageKey) ?? ['all']
-  );
-  const getUpdatedKeys = (key: FilterSystemTypeGroups) => {
-    let updatedKeys =
-      key === 'all'
-        ? [key]
-        : selectedKeys.includes(key)
-          ? selectedKeys.filter((k) => k !== key)
-          : [...selectedKeys.filter((k) => k !== 'all'), key];
-    if (updatedKeys.length === 0) {
-      updatedKeys = ['all'];
-    }
-    return updatedKeys;
-  };
+	const { uuid } = useActiveSite();
+	const [selectedKeys, setSelectedKeys] = useState<FilterSystemTypeGroups[]>(
+		() => getDashletFilterSystemTypeGroups(uuid, storageKey) ?? ['all']
+	);
+	const getUpdatedKeys = (key: FilterSystemTypeGroups) => {
+		let updatedKeys =
+			key === 'all'
+				? [key]
+				: selectedKeys.includes(key)
+					? selectedKeys.filter((k) => k !== key)
+					: [...selectedKeys.filter((k) => k !== 'all'), key];
+		if (updatedKeys.length === 0) {
+			updatedKeys = ['all'];
+		}
+		return updatedKeys;
+	};
 
-  const selectedTypes = useMemo(() => {
-    const types = [];
-    selectedKeys.forEach((key) => {
-      key && types.push(...filterOptionsLookup[key].types);
-    });
-    return types;
-  }, [selectedKeys]);
+	const selectedTypes = useMemo(() => {
+		const types = [];
+		selectedKeys.forEach((key) => {
+			key && types.push(...filterOptionsLookup[key].types);
+		});
+		return types;
+	}, [selectedKeys]);
 
-  const onChange = (e: Event, key: FilterSystemTypeGroups) => {
-    const newKeys = getUpdatedKeys(key);
-    setSelectedKeys(newKeys);
-    setDashletFilterSystemTypeGroups(uuid, storageKey, newKeys);
-  };
+	const onChange = (e: Event, key: FilterSystemTypeGroups) => {
+		const newKeys = getUpdatedKeys(key);
+		setSelectedKeys(newKeys);
+		setDashletFilterSystemTypeGroups(uuid, storageKey, newKeys);
+	};
 
-  return {
-    selectedKeys,
-    onChange,
-    selectedTypes
-  };
+	return {
+		selectedKeys,
+		onChange,
+		selectedTypes
+	};
 }
 
 export default useDashletFilterState;

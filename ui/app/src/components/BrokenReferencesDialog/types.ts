@@ -21,21 +21,21 @@ import React from 'react';
 import { ApiResponse, SandboxItem } from '../../models';
 
 export interface BrokenReferencesDialogBaseProps {
-  path?: string;
-  references?: SandboxItem[];
-  error?: ApiResponse;
+	path?: string;
+	references?: SandboxItem[];
+	error?: ApiResponse;
 }
 
 export interface BrokenReferencesDialogProps extends BrokenReferencesDialogBaseProps, EnhancedDialogProps {
-  onContinue?(response?: any): any;
+	onContinue?(response?: any): any;
 }
 
 export interface BrokenReferencesDialogStateProps extends BrokenReferencesDialogBaseProps, EnhancedDialogState {
-  onClose?: StandardAction;
-  onClosed?: StandardAction;
-  onContinue?: StandardAction;
+	onClose?: StandardAction;
+	onClosed?: StandardAction;
+	onContinue?: StandardAction;
 }
 
 export interface BrokenReferencesDialogContainerProps
-  extends BrokenReferencesDialogBaseProps,
-    Pick<BrokenReferencesDialogProps, 'onContinue' | 'onClose'> {}
+	extends BrokenReferencesDialogBaseProps,
+		Pick<BrokenReferencesDialogProps, 'onContinue' | 'onClose'> {}

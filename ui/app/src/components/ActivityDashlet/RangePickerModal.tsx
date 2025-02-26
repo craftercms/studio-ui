@@ -31,115 +31,115 @@ import React, { useState } from 'react';
 import moment, { Moment } from 'moment-timezone';
 
 interface RangePickerModalProps {
-  open: boolean;
-  onAccept?(from: Date, to: Date): void;
-  onClose(): void;
-  onSwitchToTimelineClick?(): void;
+	open: boolean;
+	onAccept?(from: Date, to: Date): void;
+	onClose(): void;
+	onSwitchToTimelineClick?(): void;
 }
 
 export function RangePickerModal(props: RangePickerModalProps) {
-  const { open, onAccept, onClose, onSwitchToTimelineClick } = props;
-  // Can't ever have data before the release of CrafterCMS 4.0.0
-  const minDate = new Date('2022-03-30T00:00:00.000Z');
-  const today = new Date();
-  const [fromPickerOpen, setFromPickerOpen] = useState(false);
-  const [toPickerOpen, setToPickerOpen] = useState(false);
-  const [{ pickerDateFrom, pickerDateTo }, setState] = useSpreadState({
-    openRangePicker: true,
-    dateFrom: null,
-    dateTo: null,
-    pickerDateFrom: null,
-    pickerDateTo: null
-  });
-  const onDatePickerChange = (field, value) => {
-    value.setSeconds(0);
-    value.setMilliseconds(0);
-    setState({ [field]: value });
-  };
-  const onRangePickerAccept = () => {
-    // Because of the reverse chronological nature of the timeline, people
-    // may confuse or have a different mental model of what to/from is.
-    // Here we make sure dates are always coherent with what's expected on the back.
-    if (pickerDateFrom < pickerDateTo) {
-      onAccept(pickerDateFrom, pickerDateTo);
-    } else {
-      onAccept(pickerDateTo, pickerDateFrom);
-    }
-  };
-  const openFromPicker = () => setFromPickerOpen(true);
-  const closeFromPicker = () => setFromPickerOpen(false);
-  const openToPicker = () => setToPickerOpen(true);
-  const closeToPicker = () => setToPickerOpen(false);
-  return (
-    <Dialog open={open} onClose={onClose} aria-labelledby="rangePickerModalTitle">
-      <DialogTitle id="rangePickerModalTitle">
-        <FormattedMessage id="activityDashlet.selectRangeModalTitle" defaultMessage="Select Date Range" />
-      </DialogTitle>
-      <DialogContent>
-        <Box sx={{ pt: 1 }}>
-          <LocalizationProvider dateAdapter={DateAdapter}>
-            <Stack direction="row" spacing={1}>
-              <DateTimePicker
-                open={fromPickerOpen}
-                onOpen={openFromPicker}
-                onClose={closeFromPicker}
-                onAccept={closeFromPicker}
-                label={<FormattedMessage id="words.from" defaultMessage="From" />}
-                minDate={moment(minDate)}
-                slotProps={{
-                  textField: {
-                    onClick: openFromPicker,
-                    inputProps: { onChange: (e) => e.preventDefault() }
-                  }
-                }}
-                value={moment(pickerDateFrom)}
-                onChange={(arg) => {
-                  let newValue: Moment = arg as any;
-                  newValue.isValid() && onDatePickerChange('pickerDateFrom', newValue.toDate());
-                }}
-              />
-              <DateTimePicker
-                open={toPickerOpen}
-                onOpen={openToPicker}
-                onClose={closeToPicker}
-                onAccept={closeToPicker}
-                maxDate={moment(today)}
-                minDate={moment(minDate)}
-                label={<FormattedMessage id="words.to" defaultMessage="To" />}
-                slotProps={{
-                  textField: {
-                    onClick: openToPicker,
-                    inputProps: { onChange: (e) => e.preventDefault() }
-                  }
-                }}
-                value={moment(pickerDateTo)}
-                onChange={(arg) => {
-                  let newValue: Moment = arg as any;
-                  newValue.isValid() && onDatePickerChange('pickerDateTo', newValue.toDate());
-                }}
-              />
-            </Stack>
-          </LocalizationProvider>
-        </Box>
-      </DialogContent>
-      <DialogActions>
-        {onSwitchToTimelineClick && (
-          <SecondaryButton onClick={onSwitchToTimelineClick} sx={{ mr: 'auto' }}>
-            <FormattedMessage id="activityDashlet.switchToTimeline" defaultMessage="Switch to timeline" />
-          </SecondaryButton>
-        )}
-        <SecondaryButton onClick={onClose}>
-          <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
-        </SecondaryButton>
-        <PrimaryButton
-          disabled={!(pickerDateFrom && pickerDateTo && pickerDateFrom.getTime() !== pickerDateTo.getTime())}
-          onClick={onRangePickerAccept}
-        >
-          <FormattedMessage id="words.accept" defaultMessage="Accept" />
-        </PrimaryButton>
-      </DialogActions>
-    </Dialog>
-  );
+	const { open, onAccept, onClose, onSwitchToTimelineClick } = props;
+	// Can't ever have data before the release of CrafterCMS 4.0.0
+	const minDate = new Date('2022-03-30T00:00:00.000Z');
+	const today = new Date();
+	const [fromPickerOpen, setFromPickerOpen] = useState(false);
+	const [toPickerOpen, setToPickerOpen] = useState(false);
+	const [{ pickerDateFrom, pickerDateTo }, setState] = useSpreadState({
+		openRangePicker: true,
+		dateFrom: null,
+		dateTo: null,
+		pickerDateFrom: null,
+		pickerDateTo: null
+	});
+	const onDatePickerChange = (field, value) => {
+		value.setSeconds(0);
+		value.setMilliseconds(0);
+		setState({ [field]: value });
+	};
+	const onRangePickerAccept = () => {
+		// Because of the reverse chronological nature of the timeline, people
+		// may confuse or have a different mental model of what to/from is.
+		// Here we make sure dates are always coherent with what's expected on the back.
+		if (pickerDateFrom < pickerDateTo) {
+			onAccept(pickerDateFrom, pickerDateTo);
+		} else {
+			onAccept(pickerDateTo, pickerDateFrom);
+		}
+	};
+	const openFromPicker = () => setFromPickerOpen(true);
+	const closeFromPicker = () => setFromPickerOpen(false);
+	const openToPicker = () => setToPickerOpen(true);
+	const closeToPicker = () => setToPickerOpen(false);
+	return (
+		<Dialog open={open} onClose={onClose} aria-labelledby="rangePickerModalTitle">
+			<DialogTitle id="rangePickerModalTitle">
+				<FormattedMessage id="activityDashlet.selectRangeModalTitle" defaultMessage="Select Date Range" />
+			</DialogTitle>
+			<DialogContent>
+				<Box sx={{ pt: 1 }}>
+					<LocalizationProvider dateAdapter={DateAdapter}>
+						<Stack direction="row" spacing={1}>
+							<DateTimePicker
+								open={fromPickerOpen}
+								onOpen={openFromPicker}
+								onClose={closeFromPicker}
+								onAccept={closeFromPicker}
+								label={<FormattedMessage id="words.from" defaultMessage="From" />}
+								minDate={moment(minDate)}
+								slotProps={{
+									textField: {
+										onClick: openFromPicker,
+										inputProps: { onChange: (e) => e.preventDefault() }
+									}
+								}}
+								value={moment(pickerDateFrom)}
+								onChange={(arg) => {
+									let newValue: Moment = arg as any;
+									newValue.isValid() && onDatePickerChange('pickerDateFrom', newValue.toDate());
+								}}
+							/>
+							<DateTimePicker
+								open={toPickerOpen}
+								onOpen={openToPicker}
+								onClose={closeToPicker}
+								onAccept={closeToPicker}
+								maxDate={moment(today)}
+								minDate={moment(minDate)}
+								label={<FormattedMessage id="words.to" defaultMessage="To" />}
+								slotProps={{
+									textField: {
+										onClick: openToPicker,
+										inputProps: { onChange: (e) => e.preventDefault() }
+									}
+								}}
+								value={moment(pickerDateTo)}
+								onChange={(arg) => {
+									let newValue: Moment = arg as any;
+									newValue.isValid() && onDatePickerChange('pickerDateTo', newValue.toDate());
+								}}
+							/>
+						</Stack>
+					</LocalizationProvider>
+				</Box>
+			</DialogContent>
+			<DialogActions>
+				{onSwitchToTimelineClick && (
+					<SecondaryButton onClick={onSwitchToTimelineClick} sx={{ mr: 'auto' }}>
+						<FormattedMessage id="activityDashlet.switchToTimeline" defaultMessage="Switch to timeline" />
+					</SecondaryButton>
+				)}
+				<SecondaryButton onClick={onClose}>
+					<FormattedMessage id="words.cancel" defaultMessage="Cancel" />
+				</SecondaryButton>
+				<PrimaryButton
+					disabled={!(pickerDateFrom && pickerDateTo && pickerDateFrom.getTime() !== pickerDateTo.getTime())}
+					onClick={onRangePickerAccept}
+				>
+					<FormattedMessage id="words.accept" defaultMessage="Accept" />
+				</PrimaryButton>
+			</DialogActions>
+		</Dialog>
+	);
 }
 
 export default RangePickerModal;

@@ -25,49 +25,49 @@ import { Theme } from '@mui/material/styles';
 import Icon from '@mui/icons-material/SpaceBarRounded';
 
 export interface PaddingModeSwitchProps extends ListItemProps {
-  sxs?: Partial<Record<'listItemIcon' | 'listItemText' | 'switch' | 'helperText', SxProps<Theme>>>;
-  showHelperText?: boolean;
-  showIcon?: boolean;
+	sxs?: Partial<Record<'listItemIcon' | 'listItemText' | 'switch' | 'helperText', SxProps<Theme>>>;
+	showHelperText?: boolean;
+	showIcon?: boolean;
 }
 
 export function PaddingModeSwitchListItem(props: PaddingModeSwitchProps) {
-  const { sxs, showHelperText = false, showIcon = true, ...listItemProps } = props;
-  const dispatch = useDispatch();
-  const { editModePadding } = usePreviewState();
-  const onEditModePaddingChange = (e) => {
-    dispatch(setEditModePadding({ editModePadding: e.target.checked }));
-  };
-  return (
-    <>
-      <ListItem {...listItemProps}>
-        {showIcon && (
-          <ListItemIcon sx={sxs?.listItemIcon}>
-            <Icon sx={{ mr: 0.5 }} />
-          </ListItemIcon>
-        )}
-        <ListItemText
-          sx={sxs?.listItemText}
-          id="paddingModeSwitchLabel"
-          primary={<FormattedMessage id="settingsPanel.editModePaddingLabel" defaultMessage="Padding mode (p)" />}
-        />
-        <Switch
-          sx={sxs?.switch}
-          edge="end"
-          checked={editModePadding}
-          onChange={onEditModePaddingChange}
-          inputProps={{ 'aria-labelledby': 'paddingModeSwitchLabel' }}
-        />
-      </ListItem>
-      {showHelperText && (
-        <FormHelperText sx={{ pb: 0.5, pr: 2, pl: 2, pt: 0, mt: 0, ...sxs?.helperText }}>
-          <FormattedMessage
-            id="settingsPanel.editModePaddingHelp"
-            defaultMessage="Adds padding to collections for easier interaction in edit-mode. Press `p` at any point to toggle on/off."
-          />
-        </FormHelperText>
-      )}
-    </>
-  );
+	const { sxs, showHelperText = false, showIcon = true, ...listItemProps } = props;
+	const dispatch = useDispatch();
+	const { editModePadding } = usePreviewState();
+	const onEditModePaddingChange = (e) => {
+		dispatch(setEditModePadding({ editModePadding: e.target.checked }));
+	};
+	return (
+		<>
+			<ListItem {...listItemProps}>
+				{showIcon && (
+					<ListItemIcon sx={sxs?.listItemIcon}>
+						<Icon sx={{ mr: 0.5 }} />
+					</ListItemIcon>
+				)}
+				<ListItemText
+					sx={sxs?.listItemText}
+					id="paddingModeSwitchLabel"
+					primary={<FormattedMessage id="settingsPanel.editModePaddingLabel" defaultMessage="Padding mode (p)" />}
+				/>
+				<Switch
+					sx={sxs?.switch}
+					edge="end"
+					checked={editModePadding}
+					onChange={onEditModePaddingChange}
+					inputProps={{ 'aria-labelledby': 'paddingModeSwitchLabel' }}
+				/>
+			</ListItem>
+			{showHelperText && (
+				<FormHelperText sx={{ pb: 0.5, pr: 2, pl: 2, pt: 0, mt: 0, ...sxs?.helperText }}>
+					<FormattedMessage
+						id="settingsPanel.editModePaddingHelp"
+						defaultMessage="Adds padding to collections for easier interaction in edit-mode. Press `p` at any point to toggle on/off."
+					/>
+				</FormHelperText>
+			)}
+		</>
+	);
 }
 
 export default PaddingModeSwitchListItem;

@@ -23,21 +23,21 @@ import { createCustomDocumentEventListener } from '../utils/dom';
 import { EnhancedDialogProps as DialogProps } from '../components/EnhancedDialog';
 
 export function useWithPendingChangesCloseRequest(onClose: DialogProps['onClose']): DialogProps['onClose'] {
-  const dispatch = useDispatch();
-  const { formatMessage } = useIntl();
-  return (e, reason) => {
-    const customEventId = 'dialogDismissConfirm';
-    dispatch(
-      showConfirmDialog({
-        title: formatMessage(translations.pendingChanges),
-        onOk: batchActions([dispatchDOMEvent({ id: customEventId, type: 'success' }), closeConfirmDialog()]),
-        onCancel: batchActions([dispatchDOMEvent({ id: customEventId, type: 'cancel' }), closeConfirmDialog()])
-      })
-    );
-    createCustomDocumentEventListener(customEventId, ({ type }) => {
-      type === 'success' && onClose(e, reason);
-    });
-  };
+	const dispatch = useDispatch();
+	const { formatMessage } = useIntl();
+	return (e, reason) => {
+		const customEventId = 'dialogDismissConfirm';
+		dispatch(
+			showConfirmDialog({
+				title: formatMessage(translations.pendingChanges),
+				onOk: batchActions([dispatchDOMEvent({ id: customEventId, type: 'success' }), closeConfirmDialog()]),
+				onCancel: batchActions([dispatchDOMEvent({ id: customEventId, type: 'cancel' }), closeConfirmDialog()])
+			})
+		);
+		createCustomDocumentEventListener(customEventId, ({ type }) => {
+			type === 'success' && onClose(e, reason);
+		});
+	};
 }
 
 export default useWithPendingChangesCloseRequest;

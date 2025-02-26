@@ -18,7 +18,6 @@ import { defineMessages, useIntl } from 'react-intl';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/KeyboardArrowDown';
 import { camelize } from '../../utils/string';
-import { makeStyles } from 'tss-react/mui';
 import { Filter as FilterType, SearchFacet } from '../../models/Search';
 import CheckIcon from '@mui/icons-material/Check';
 import { LookupTable } from '../../models/LookupTable';
@@ -27,7 +26,6 @@ import SiteSearchSortOrder from '../SiteSearchSortOrder';
 import SiteSearchFilter from '../SiteSearchFilter';
 import PathSelector from '../SiteSearchPathSelector';
 import Button from '@mui/material/Button';
-import palette from '../../styles/palette';
 import MuiAccordion, { accordionClasses } from '@mui/material/Accordion';
 import MuiAccordionSummary, { accordionSummaryClasses } from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -37,314 +35,299 @@ import { styled } from '@mui/material/styles';
 import useContentTypes from '../../hooks/useContentTypes';
 import { getMimeTypeTranslation } from '../../utils/mimeTypes';
 import Box from '@mui/material/Box';
+import { SORT_AUTO } from '../Search/utils';
+import { SxProps } from '@mui/system';
+import { Theme } from '@mui/material';
 
 interface SiteSearchFiltersProps {
-  className: any;
-  facets: SearchFacet[];
-  sortBy?: string;
-  sortOrder?: string;
-  mode: string;
-  checkedFilters: object;
-  selectedPath: string;
-  setSelectedPath(path: string): void;
-  clearFilters(): void;
-  setCheckedFilters(checkedFilters: object): any;
-  handleFilterChange(filter: FilterType, isFilter?: boolean): any;
-  handleClearClick(filter: string): void;
+	className?: string;
+	facets: SearchFacet[];
+	sx?: SxProps<Theme>;
+	sortBy?: string;
+	sortOrder?: string;
+	mode: string;
+	checkedFilters: object;
+	selectedPath: string;
+	setSelectedPath(path: string): void;
+	clearFilters(): void;
+	setCheckedFilters(checkedFilters: object): any;
+	handleFilterChange(filter: FilterType, isFilter?: boolean): any;
+	handleClearClick(filter: string): void;
 }
 
 const AccordionSummary = styled(MuiAccordionSummary)(() => ({
-  [`&.${accordionSummaryClasses.expanded}`]: {
-    minHeight: 0,
-    [`& .${accordionSummaryClasses.content}`]: {
-      margin: '12px 0'
-    }
-  }
+	[`&.${accordionSummaryClasses.expanded}`]: {
+		minHeight: 0,
+		[`& .${accordionSummaryClasses.content}`]: {
+			margin: '12px 0'
+		}
+	}
 }));
 
 const Accordion = styled(MuiAccordion)(() => ({
-  [`&.${accordionClasses.expanded}`]: { margin: 'auto' }
-}));
-
-const useStyles = makeStyles()((theme) => ({
-  header: {
-    width: '100%',
-    padding: '10px 15px 10px 20px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    border: 'none',
-    color: theme.palette.mode === 'dark' ? palette.white : ''
-  },
-  accordionTitle: {
-    display: 'flex',
-    fontWeight: 600,
-    alignItems: 'center'
-  },
-  divider: {
-    width: 'auto',
-    margin: '0 10px'
-  }
+	[`&.${accordionClasses.expanded}`]: { margin: 'auto' }
 }));
 
 const messages: any = defineMessages({
-  path: {
-    id: 'words.path',
-    defaultMessage: 'Path'
-  },
-  sortBy: {
-    id: 'searchFilter.sortBy',
-    defaultMessage: 'Sort By'
-  },
-  relevance: {
-    id: 'words.relevance',
-    defaultMessage: 'Relevance'
-  },
-  internalName: {
-    id: 'searchFilter.internalName',
-    defaultMessage: 'Name'
-  },
-  width: {
-    id: 'words.width',
-    defaultMessage: 'Width'
-  },
-  contentType: {
-    id: 'searchFilter.contentType',
-    defaultMessage: 'Content Type'
-  },
-  mimeType: {
-    id: 'searchFilter.mimeType',
-    defaultMessage: 'MIME Type'
-  },
-  size: {
-    id: 'searchFilter.size',
-    defaultMessage: 'Content Size'
-  },
-  lastEditDate: {
-    id: 'searchFilter.lastEditDate',
-    defaultMessage: 'Last Edit Date'
-  },
-  height: {
-    id: 'words.height',
-    defaultMessage: 'Height'
-  },
-  clearFilters: {
-    id: 'searchFilter.clearFilters',
-    defaultMessage: 'Clear Filters'
-  },
-  expandAll: {
-    id: 'common.expandAll',
-    defaultMessage: 'Expand All'
-  },
-  collapseAll: {
-    id: 'common.collapseAll',
-    defaultMessage: 'Collapse All'
-  }
+	path: {
+		id: 'words.path',
+		defaultMessage: 'Path'
+	},
+	sortBy: {
+		id: 'searchFilter.sortBy',
+		defaultMessage: 'Sort By'
+	},
+	relevance: {
+		id: 'words.relevance',
+		defaultMessage: 'Relevance'
+	},
+	internalName: {
+		id: 'searchFilter.internalName',
+		defaultMessage: 'Name'
+	},
+	width: {
+		id: 'words.width',
+		defaultMessage: 'Width'
+	},
+	contentType: {
+		id: 'searchFilter.contentType',
+		defaultMessage: 'Content Type'
+	},
+	mimeType: {
+		id: 'searchFilter.mimeType',
+		defaultMessage: 'MIME Type'
+	},
+	size: {
+		id: 'searchFilter.size',
+		defaultMessage: 'Content Size'
+	},
+	lastEditDate: {
+		id: 'searchFilter.lastEditDate',
+		defaultMessage: 'Last Edit Date'
+	},
+	height: {
+		id: 'words.height',
+		defaultMessage: 'Height'
+	},
+	clearFilters: {
+		id: 'searchFilter.clearFilters',
+		defaultMessage: 'Clear Filters'
+	},
+	expandAll: {
+		id: 'common.expandAll',
+		defaultMessage: 'Expand All'
+	},
+	collapseAll: {
+		id: 'common.collapseAll',
+		defaultMessage: 'Collapse All'
+	}
 });
 
 const filterToFacet = (filterKey, filterValue) => {
-  const isMultiple = typeof filterValue === 'object';
-  const isDate = !isMultiple && filterValue.includes('TODATE');
-  const isRange = !isMultiple && !isDate && filterValue.includes('TO');
-  const name = filterKey;
-  let values = {};
+	const isMultiple = typeof filterValue === 'object';
+	const isDate = !isMultiple && filterValue.includes('TODATE');
+	const isRange = !isMultiple && !isDate && filterValue.includes('TO');
+	const name = filterKey;
+	let values = {};
 
-  if (isMultiple) {
-    Object.keys(filterValue).forEach((value) => {
-      values[value] = 0;
-    });
-  } else if (isDate) {
-    const deserializedValue = filterValue.match(/(.+)TODATE(.+)ID(.+)/);
-    const id = deserializedValue[3].replace(filterKey, '');
-    const from = deserializedValue[1] === 'null' ? null : deserializedValue[1];
-    const to = deserializedValue[2] === 'null' ? null : deserializedValue[2];
+	if (isMultiple) {
+		Object.keys(filterValue).forEach((value) => {
+			values[value] = 0;
+		});
+	} else if (isDate) {
+		const deserializedValue = filterValue.match(/(.+)TODATE(.+)ID(.+)/);
+		const id = deserializedValue[3].replace(filterKey, '');
+		const from = deserializedValue[1] === 'null' ? null : deserializedValue[1];
+		const to = deserializedValue[2] === 'null' ? null : deserializedValue[2];
 
-    values[id] = {
-      count: 0,
-      from,
-      to
-    };
-  } else {
-    const deserializedValue = filterValue.match(/(.+)?TO(.+)?/);
-    const rangeStart = deserializedValue[1];
-    const rangeEnd = deserializedValue[2];
-    const id = `${rangeStart ?? '*'}-${rangeEnd ?? '*'}`;
+		values[id] = {
+			count: 0,
+			from,
+			to
+		};
+	} else {
+		const deserializedValue = filterValue.match(/(.+)?TO(.+)?/);
+		const rangeStart = deserializedValue[1];
+		const rangeEnd = deserializedValue[2];
+		const id = `${rangeStart ?? '*'}-${rangeEnd ?? '*'}`;
 
-    values[id] = {
-      count: 0,
-      from: rangeStart ?? null,
-      to: rangeEnd ?? null
-    };
-  }
+		values[id] = {
+			count: 0,
+			from: rangeStart ?? null,
+			to: rangeEnd ?? null
+		};
+	}
 
-  return {
-    date: isDate,
-    multiple: isMultiple,
-    name,
-    range: isRange,
-    values
-  };
+	return {
+		date: isDate,
+		multiple: isMultiple,
+		name,
+		range: isRange,
+		values
+	};
 };
 
 export function SiteSearchFilters(props: SiteSearchFiltersProps) {
-  const { classes } = useStyles();
-  // region const { ... } = props
-  const {
-    sortBy,
-    sortOrder,
-    facets,
-    handleFilterChange,
-    mode,
-    checkedFilters,
-    setCheckedFilters,
-    clearFilters,
-    handleClearClick,
-    selectedPath,
-    setSelectedPath
-  } = props;
-  // endregion
-  const { formatMessage } = useIntl();
-  const [expanded, setExpanded] = useSpreadState({
-    sortBy: false,
-    path: false
-  });
-  const contentTypes = useContentTypes();
+	// region const { ... } = props
+	const {
+		sortBy,
+		sortOrder,
+		facets,
+		handleFilterChange,
+		mode,
+		checkedFilters,
+		setCheckedFilters,
+		clearFilters,
+		handleClearClick,
+		selectedPath,
+		setSelectedPath,
+		sx
+	} = props;
+	// endregion
+	const { formatMessage } = useIntl();
+	const [expanded, setExpanded] = useSpreadState({
+		sortBy: false,
+		path: false
+	});
+	const contentTypes = useContentTypes();
 
-  let filterKeys: string[] = [];
-  let facetsLookupTable: LookupTable = {};
-  const facetLabelLookup: LookupTable = {};
-  const parsedSelectedPath = selectedPath?.trim().replace('.+', '').replace(/\/$/, '');
-  // Don't want the root path set everytime select path changes. Only when select mode is first detected for it to get set once.
-  // TODO: Ultimately, the rootPath should change to be driven by a different explicit prop other than `mode`.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const rootPath = useMemo(() => (mode === 'select' ? parsedSelectedPath : null), [mode]);
+	let filterKeys: string[] = [];
+	let facetsLookupTable: LookupTable = {};
+	const facetLabelLookup: LookupTable = {};
+	const parsedSelectedPath = selectedPath?.trim().replace('.+', '').replace(/\/$/, '');
+	// Don't want the root path set everytime select path changes. Only when select mode is first detected for it to get set once.
+	// TODO: Ultimately, the rootPath should change to be driven by a different explicit prop other than `mode`.
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	const rootPath = useMemo(() => (mode === 'select' ? parsedSelectedPath : null), [mode]);
 
-  const addFacetValuesLabels = (facet) => {
-    Object.keys(facet.values).forEach((value) => {
-      let label = value;
-      if (facet.name === 'content-type') {
-        label = contentTypes?.[value]?.name ?? value;
-      } else if (facet.name === 'mime-type') {
-        label = getMimeTypeTranslation(value, formatMessage);
-      }
-      facetLabelLookup[value] = label;
-    });
-  };
+	const addFacetValuesLabels = (facet) => {
+		Object.keys(facet.values).forEach((value) => {
+			let label = value;
+			if (facet.name === 'content-type') {
+				label = contentTypes?.[value]?.name ?? value;
+			} else if (facet.name === 'mime-type') {
+				label = getMimeTypeTranslation(value, formatMessage);
+			}
+			facetLabelLookup[value] = label;
+		});
+	};
 
-  facets.forEach((facet) => {
-    filterKeys.push(facet.name);
-    facetsLookupTable[facet.name] = facet;
-    addFacetValuesLabels(facet);
-  });
+	facets.forEach((facet) => {
+		filterKeys.push(facet.name);
+		facetsLookupTable[facet.name] = facet;
+		addFacetValuesLabels(facet);
+	});
 
-  // Add filters already selected not coming from facets
-  Object.keys(checkedFilters).forEach((filterKey) => {
-    if (!filterKeys.includes(filterKey)) {
-      filterKeys.push(filterKey);
-      facetsLookupTable[filterKey] = filterToFacet(filterKey, checkedFilters[filterKey]);
-    }
-  });
+	// Add filters already selected not coming from facets
+	Object.keys(checkedFilters).forEach((filterKey) => {
+		if (!filterKeys.includes(filterKey)) {
+			filterKeys.push(filterKey);
+			facetsLookupTable[filterKey] = filterToFacet(filterKey, checkedFilters[filterKey]);
+		}
+	});
 
-  const handleExpandClick = (item: string) => {
-    setExpanded({ [item]: !expanded[item] });
-  };
+	const handleExpandClick = (item: string) => {
+		setExpanded({ [item]: !expanded[item] });
+	};
 
-  const pathToFilter = (path: string) => {
-    if (path) {
-      if (path.endsWith('/')) {
-        return `${path}.+`;
-      } else {
-        return `${path}/.+`;
-      }
-    } else {
-      return undefined;
-    }
-  };
+	const pathToFilter = (path: string) => {
+		if (path) {
+			if (path.endsWith('/')) {
+				return `${path}.+`;
+			} else {
+				return `${path}/.+`;
+			}
+		} else {
+			return undefined;
+		}
+	};
 
-  const onPathSelected = (path: string) => {
-    handleFilterChange({
-      name: 'path',
-      value: pathToFilter(path)
-    });
-    setSelectedPath(path);
-  };
+	const onPathSelected = (path: string) => {
+		handleFilterChange({
+			name: 'path',
+			value: pathToFilter(path)
+		});
+		setSelectedPath(path);
+	};
 
-  const expandCollapseAll = (expand: boolean) => {
-    const state: any = {};
-    state.path = expand;
-    state.sortBy = expand;
-    filterKeys.forEach((key) => {
-      state[key] = expand;
-    });
-    setExpanded(state);
-  };
+	const expandCollapseAll = (expand: boolean) => {
+		const state: any = {};
+		state.path = expand;
+		state.sortBy = expand;
+		filterKeys.forEach((key) => {
+			state[key] = expand;
+		});
+		setExpanded(state);
+	};
 
-  return (
-    <Box>
-      <Box sx={{ p: 1, display: 'flex', justifyContent: 'space-evenly' }}>
-        <Button size="small" onClick={() => expandCollapseAll(true)}>
-          {formatMessage(messages.expandAll)}
-        </Button>
-        <Button size="small" onClick={() => expandCollapseAll(false)}>
-          {formatMessage(messages.collapseAll)}
-        </Button>
-        <Button
-          size="small"
-          disabled={Object.keys(checkedFilters).length === 0 && !Boolean(selectedPath)}
-          onClick={clearFilters}
-        >
-          {formatMessage(messages.clearFilters)}
-        </Button>
-      </Box>
-      <Divider className={classes.divider} />
-      <Accordion expanded={expanded.sortBy} elevation={0} onChange={() => handleExpandClick('sortBy')}>
-        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography className={classes.accordionTitle}>
-            {formatMessage(messages.sortBy)}
-            {sortBy && <CheckIcon />}
-          </Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <>
-            <SiteSearchSortBy sortBy={sortBy} filterKeys={filterKeys} handleFilterChange={handleFilterChange} />
-            <SiteSearchSortOrder sortOrder={sortOrder} sortBy={sortBy} handleFilterChange={handleFilterChange} />
-          </>
-        </AccordionDetails>
-      </Accordion>
-      <Accordion expanded={expanded.path} elevation={0} onChange={() => handleExpandClick('path')}>
-        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography className={classes.accordionTitle}>
-            {formatMessage(messages.path)}
-            {selectedPath && <CheckIcon />}
-          </Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <PathSelector value={parsedSelectedPath} onPathSelected={onPathSelected} rootPath={rootPath} />
-        </AccordionDetails>
-      </Accordion>
-      {filterKeys.map((key: string) => (
-        <Accordion key={key} expanded={expanded[key] ?? false} elevation={0} onChange={() => handleExpandClick(key)}>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography className={classes.accordionTitle}>
-              {formatMessage(messages[camelize(key)])}
-              {checkedFilters[key] && <CheckIcon />}
-            </Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <SiteSearchFilter
-              facet={key}
-              handleFilterChange={handleFilterChange}
-              checkedFilters={checkedFilters}
-              setCheckedFilters={setCheckedFilters}
-              facetsLookupTable={facetsLookupTable}
-              facetLabelLookup={facetLabelLookup}
-              handleClearClick={handleClearClick}
-            />
-          </AccordionDetails>
-        </Accordion>
-      ))}
-    </Box>
-  );
+	return (
+		<Box>
+			<Box sx={{ p: 1, display: 'flex', justifyContent: 'space-evenly', ...sx }}>
+				<Button size="small" onClick={() => expandCollapseAll(true)}>
+					{formatMessage(messages.expandAll)}
+				</Button>
+				<Button size="small" onClick={() => expandCollapseAll(false)}>
+					{formatMessage(messages.collapseAll)}
+				</Button>
+				<Button
+					size="small"
+					disabled={Object.keys(checkedFilters).length === 0 && !Boolean(selectedPath)}
+					onClick={clearFilters}
+				>
+					{formatMessage(messages.clearFilters)}
+				</Button>
+			</Box>
+			<Divider sx={{ width: 'auto', margin: '0 10px' }} />
+			<Accordion expanded={expanded.sortBy} elevation={0} onChange={() => handleExpandClick('sortBy')}>
+				<AccordionSummary expandIcon={<ExpandMoreIcon />}>
+					<Typography sx={{ display: 'flex', fontWeight: 600, alignItems: 'center' }}>
+						{formatMessage(messages.sortBy)}
+						{sortBy && <CheckIcon />}
+					</Typography>
+				</AccordionSummary>
+				<AccordionDetails>
+					<>
+						<SiteSearchSortBy sortBy={sortBy} filterKeys={filterKeys} handleFilterChange={handleFilterChange} />
+						{sortBy && sortBy !== SORT_AUTO && (
+							<SiteSearchSortOrder sortOrder={sortOrder} sortBy={sortBy} handleFilterChange={handleFilterChange} />
+						)}
+					</>
+				</AccordionDetails>
+			</Accordion>
+			<Accordion expanded={expanded.path} elevation={0} onChange={() => handleExpandClick('path')}>
+				<AccordionSummary expandIcon={<ExpandMoreIcon />}>
+					<Typography sx={{ display: 'flex', fontWeight: 600, alignItems: 'center' }}>
+						{formatMessage(messages.path)}
+						{selectedPath && <CheckIcon />}
+					</Typography>
+				</AccordionSummary>
+				<AccordionDetails>
+					<PathSelector value={parsedSelectedPath} onPathSelected={onPathSelected} rootPath={rootPath} />
+				</AccordionDetails>
+			</Accordion>
+			{filterKeys.map((key: string) => (
+				<Accordion key={key} expanded={expanded[key] ?? false} elevation={0} onChange={() => handleExpandClick(key)}>
+					<AccordionSummary expandIcon={<ExpandMoreIcon />}>
+						<Typography sx={{ display: 'flex', fontWeight: 600, alignItems: 'center' }}>
+							{formatMessage(messages[camelize(key)])}
+							{checkedFilters[key] && <CheckIcon />}
+						</Typography>
+					</AccordionSummary>
+					<AccordionDetails>
+						<SiteSearchFilter
+							facet={key}
+							handleFilterChange={handleFilterChange}
+							checkedFilters={checkedFilters}
+							setCheckedFilters={setCheckedFilters}
+							facetsLookupTable={facetsLookupTable}
+							facetLabelLookup={facetLabelLookup}
+							handleClearClick={handleClearClick}
+						/>
+					</AccordionDetails>
+				</Accordion>
+			))}
+		</Box>
+	);
 }
 
 export default SiteSearchFilters;

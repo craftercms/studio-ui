@@ -20,26 +20,26 @@ import { SandboxItem } from '../../models/Item';
 import { FullSxRecord, PartialSxRecord } from '../../models/CustomRecord';
 
 export interface UninstallPluginDialogBaseProps {
-  pluginId: string;
+	pluginId: string;
 }
 
 export interface UninstallPluginDialogProps extends UninstallPluginDialogBaseProps, EnhancedDialogProps {
-  onSubmittingAndOrPendingChange(value: onSubmittingAndOrPendingChangeProps): void;
-  onComplete?();
+	onSubmittingAndOrPendingChange(value: onSubmittingAndOrPendingChangeProps): void;
+	onComplete?();
 }
 
 export interface UninstallPluginDialogContainerProps
-  extends UninstallPluginDialogBaseProps,
-    Pick<UninstallPluginDialogProps, 'onComplete' | 'onClose' | 'isSubmitting' | 'onSubmittingAndOrPendingChange'> {}
+	extends UninstallPluginDialogBaseProps,
+		Pick<UninstallPluginDialogProps, 'onComplete' | 'onClose' | 'isSubmitting' | 'onSubmittingAndOrPendingChange'> {}
 
 export interface UninstallPluginDialogBodyProps {
-  isSubmitting: boolean;
-  pluginId: string;
-  data: SandboxItem[];
-  password?: string;
-  sx?: UninstallPluginDialogBodyPartialSx;
-  onCloseButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
-  onSubmit(): void;
+	isSubmitting: boolean;
+	pluginId: string;
+	data: SandboxItem[];
+	password?: string;
+	sx?: UninstallPluginDialogBodyPartialSx;
+	onCloseButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
+	onSubmit(): void;
 }
 
 export type UninstallPluginDialogBodyClassKey = 'content' | 'emphasisedText' | 'loadingStateWrapper';

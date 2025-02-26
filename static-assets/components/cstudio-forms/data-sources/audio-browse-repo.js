@@ -15,126 +15,126 @@
  */
 
 CStudioForms.Datasources.AudioBrowseRepo =
-  CStudioForms.Datasources.AudioBrowseRepo ||
-  function (id, form, properties, constraints) {
-    this.id = id;
-    this.form = form;
-    this.properties = properties;
-    this.constraints = constraints;
-    this.selectItemsCount = -1;
-    this.useSearch = false;
-    this.formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
-    this.messages = CrafterCMSNext.i18n.messages.audioDSMessages;
+	CStudioForms.Datasources.AudioBrowseRepo ||
+	function (id, form, properties, constraints) {
+		this.id = id;
+		this.form = form;
+		this.properties = properties;
+		this.constraints = constraints;
+		this.selectItemsCount = -1;
+		this.useSearch = false;
+		this.formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
+		this.messages = CrafterCMSNext.i18n.messages.audioDSMessages;
 
-    for (var i = 0; i < properties.length; i++) {
-      if (properties[i].name == 'repoPath') {
-        this.repoPath = properties[i].value;
-      } else if (properties[i].name === 'useSearch') {
-        this.useSearch = properties[i].value === 'true';
-      }
-    }
-    this.mimeTypes = ['audio/mpeg', 'audio/mp3', 'audio/ogg', 'audio/wav'];
+		for (var i = 0; i < properties.length; i++) {
+			if (properties[i].name == 'repoPath') {
+				this.repoPath = properties[i].value;
+			} else if (properties[i].name === 'useSearch') {
+				this.useSearch = properties[i].value === 'true';
+			}
+		}
+		this.mimeTypes = ['audio/mpeg', 'audio/mp3', 'audio/ogg', 'audio/wav'];
 
-    return this;
-  };
+		return this;
+	};
 
 YAHOO.extend(CStudioForms.Datasources.AudioBrowseRepo, CStudioForms.CStudioFormDatasource, {
-  insertAudioAction: function (callback) {
-    const _self = this;
+	insertAudioAction: function (callback) {
+		const _self = this;
 
-    if (this.useSearch) {
-      const searchContext = {
-        keywords: '',
-        filters: {
-          'mime-type': this.mimeTypes
-        },
-        sortBy: 'internalName',
-        sortOrder: 'asc',
-        mode: 'select' // open search not in default but in select mode
-      };
+		if (this.useSearch) {
+			const searchContext = {
+				keywords: '',
+				filters: {
+					'mime-type': this.mimeTypes
+				},
+				sortBy: 'internalName',
+				sortOrder: 'asc',
+				mode: 'select' // open search not in default but in select mode
+			};
 
-      if (this.repoPath) {
-        searchContext.path = this.repoPath.endsWith('/') ? `${this.repoPath}.+` : `${this.repoPath}/.+`;
-      }
+			if (this.repoPath) {
+				searchContext.path = this.repoPath.endsWith('/') ? `${this.repoPath}.+` : `${this.repoPath}/.+`;
+			}
 
-      CStudioAuthoring.Operations.openSearch(
-        searchContext,
-        true,
-        {
-          success(searchId, selectedTOs) {
-            const path = selectedTOs[0].path;
-            const url = this.context.createPreviewUrl(path);
-            const audioData = {
-              previewUrl: url,
-              relativeUrl: path,
-              fileExtension: path.substring(path.lastIndexOf('.') + 1)
-            };
-            callback.success(audioData);
-          },
-          failure() {},
-          context: _self
-        },
-        null
-      );
-    } else {
-      const multiSelect = _self.selectItemsCount === -1 || _self.selectItemsCount > 1;
-      CStudioAuthoring.Operations.openBrowseFilesDialog({
-        path: _self.processPathsForMacros(_self.repoPath),
-        multiSelect,
-        mimeTypes: this.mimeTypes,
-        onSuccess: (result) => {
-          const items = Array.isArray(result) ? result : [result];
-          items.forEach(({ path }) => {
-            const url = CStudioAuthoringContext.previewAppBaseUri + path;
-            const videoData = {
-              previewUrl: url,
-              relativeUrl: path,
-              fileExtension: url.substring(url.lastIndexOf('.') + 1)
-            };
-            callback.success(videoData);
-          });
-        }
-      });
-    }
-  },
+			CStudioAuthoring.Operations.openSearch(
+				searchContext,
+				true,
+				{
+					success(searchId, selectedTOs) {
+						const path = selectedTOs[0].path;
+						const url = this.context.createPreviewUrl(path);
+						const audioData = {
+							previewUrl: url,
+							relativeUrl: path,
+							fileExtension: path.substring(path.lastIndexOf('.') + 1)
+						};
+						callback.success(audioData);
+					},
+					failure() {},
+					context: _self
+				},
+				null
+			);
+		} else {
+			const multiSelect = _self.selectItemsCount === -1 || _self.selectItemsCount > 1;
+			CStudioAuthoring.Operations.openBrowseFilesDialog({
+				path: _self.processPathsForMacros(_self.repoPath),
+				multiSelect,
+				mimeTypes: this.mimeTypes,
+				onSuccess: (result) => {
+					const items = Array.isArray(result) ? result : [result];
+					items.forEach(({ path }) => {
+						const url = CStudioAuthoringContext.previewAppBaseUri + path;
+						const videoData = {
+							previewUrl: url,
+							relativeUrl: path,
+							fileExtension: url.substring(url.lastIndexOf('.') + 1)
+						};
+						callback.success(videoData);
+					});
+				}
+			});
+		}
+	},
 
-  /**
-   * create preview URL
-   */
-  createPreviewUrl(audioPath) {
-    return `${CStudioAuthoringContext.previewAppBaseUri}${audioPath}`;
-  },
+	/**
+	 * create preview URL
+	 */
+	createPreviewUrl(audioPath) {
+		return `${CStudioAuthoringContext.previewAppBaseUri}${audioPath}`;
+	},
 
-  getLabel: function () {
-    return this.formatMessage(this.messages.browseLabel);
-  },
+	getLabel: function () {
+		return this.formatMessage(this.messages.browseLabel);
+	},
 
-  getInterface: function () {
-    return 'audio';
-  },
+	getInterface: function () {
+		return 'audio';
+	},
 
-  getName: function () {
-    return 'audio-browse-repo';
-  },
+	getName: function () {
+		return 'audio-browse-repo';
+	},
 
-  getSupportedProperties: function () {
-    return [
-      { label: CMgs.format(langBundle, 'repositoryPath'), name: 'repoPath', type: 'string' },
-      {
-        label: CMgs.format(langBundle, 'useSearch'),
-        name: 'useSearch',
-        type: 'boolean',
-        defaultValue: 'false'
-      }
-    ];
-  },
+	getSupportedProperties: function () {
+		return [
+			{ label: CMgs.format(langBundle, 'repositoryPath'), name: 'repoPath', type: 'string' },
+			{
+				label: CMgs.format(langBundle, 'useSearch'),
+				name: 'useSearch',
+				type: 'boolean',
+				defaultValue: 'false'
+			}
+		];
+	},
 
-  getSupportedConstraints: function () {
-    return [{ label: CMgs.format(langBundle, 'required'), name: 'required', type: 'boolean' }];
-  }
+	getSupportedConstraints: function () {
+		return [{ label: CMgs.format(langBundle, 'required'), name: 'required', type: 'boolean' }];
+	}
 });
 
 CStudioAuthoring.Module.moduleLoaded(
-  'cstudio-forms-controls-audio-browse-repo',
-  CStudioForms.Datasources.AudioBrowseRepo
+	'cstudio-forms-controls-audio-browse-repo',
+	CStudioForms.Datasources.AudioBrowseRepo
 );

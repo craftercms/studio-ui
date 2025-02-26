@@ -17,76 +17,44 @@
 import * as React from 'react';
 import Paper from '@mui/material/Paper';
 import { PublishingStatusDialogContainer } from '../PublishingStatusDialog';
-import { clearLock, start, stop } from '../../services/publishing';
+import { enable } from '../../services/publishing';
 import { fetchPublishingStatus } from '../../state/actions/publishingStatus';
 import { useDispatch } from 'react-redux';
 import { useSelection } from '../../hooks/useSelection';
-import { batchActions } from '../../state/actions/misc';
-import { showSystemNotification } from '../../state/actions/system';
-import { defineMessages, useIntl } from 'react-intl';
-
-const messages = defineMessages({
-  publisherUnlocked: {
-    id: 'publishingStatus.publisherUnlocked',
-    defaultMessage: 'Publisher Unlocked'
-  }
-});
 
 type PublishingStatusWidgetProps = {
-  siteId: string;
+	siteId: string;
 };
 
 export function PublishingStatusWidget(props: PublishingStatusWidgetProps) {
-  const { siteId } = props;
-  const state = useSelection((state) => state.dialogs.publishingStatus);
-  const { enabled, status, lockOwner, published, lockTTL, numberOfItems, publishingTarget, submissionId, totalItems } =
-    state;
-  const dispatch = useDispatch();
-  const { formatMessage } = useIntl();
+	const { siteId } = props;
+	const state = useSelection((state) => state.dialogs.publishingStatus);
+	const { enabled, published, currentTask } = state;
+	const dispatch = useDispatch();
 
-  const onStartStop = () => {
-    const action = state.enabled ? stop : start;
+	const onStartStop = () => {
+		enable(siteId, !state.enabled).subscribe(() => {
+			dispatch(fetchPublishingStatus());
+		});
+	};
 
-    action(siteId).subscribe(() => {
-      dispatch(fetchPublishingStatus());
-    });
-  };
+	const onRefresh = () => {
+		dispatch(fetchPublishingStatus());
+	};
 
-  const onUnlock = () => {
-    clearLock(siteId).subscribe(() => {
-      dispatch(
-        batchActions([
-          showSystemNotification({ message: formatMessage(messages.publisherUnlocked) }),
-          fetchPublishingStatus()
-        ])
-      );
-    });
-  };
-
-  const onRefresh = () => {
-    dispatch(fetchPublishingStatus());
-  };
-
-  return (
-    <Paper elevation={2}>
-      <PublishingStatusDialogContainer
-        enabled={enabled}
-        published={published}
-        status={status}
-        lockOwner={lockOwner}
-        lockTTL={lockTTL}
-        isFetching={!state}
-        onClose={null}
-        onRefresh={onRefresh}
-        onStartStop={onStartStop}
-        onUnlock={lockOwner ? onUnlock : null}
-        numberOfItems={numberOfItems}
-        publishingTarget={publishingTarget}
-        submissionId={submissionId}
-        totalItems={totalItems}
-      />
-    </Paper>
-  );
+	return (
+		<Paper elevation={2}>
+			<PublishingStatusDialogContainer
+				enabled={enabled}
+				published={published}
+				currentTask={currentTask}
+				isFetching={!state}
+				onClose={null}
+				onRefresh={onRefresh}
+				onStartStop={onStartStop}
+			/>
+		</Paper>
+	);
 }
 
 export default PublishingStatusWidget;

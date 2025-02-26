@@ -17,8 +17,8 @@
 import { Action } from 'redux';
 
 export interface StandardAction<PayloadType = any, ActionType extends string = string> extends Action<ActionType> {
-  [extraProps: string]: unknown;
-  payload?: PayloadType;
+	[extraProps: string]: unknown;
+	payload?: PayloadType;
 }
 
 export default StandardAction;

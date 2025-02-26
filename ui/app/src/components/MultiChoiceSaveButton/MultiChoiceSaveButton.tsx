@@ -22,62 +22,62 @@ import { defineMessages, useIntl } from 'react-intl';
 type CommonSaveOptions = 'save' | 'saveAndClose' | 'saveAndMinimize';
 
 export interface MultiChoiceSaveButtonProps {
-  options?: Array<CommonSaveOptions | SplitButtonOption>;
-  storageKey?: string;
-  disabled?: boolean;
-  disablePortal?: boolean;
-  loading?: boolean;
-  defaultSelected?: string;
-  onClick(e: Event, type: CommonSaveOptions): void;
+	options?: Array<CommonSaveOptions | SplitButtonOption>;
+	storageKey?: string;
+	disabled?: boolean;
+	disablePortal?: boolean;
+	loading?: boolean;
+	defaultSelected?: string;
+	onClick(e: Event, type: CommonSaveOptions): void;
 }
 
 const translations = defineMessages({
-  save: {
-    id: 'words.save',
-    defaultMessage: 'Save'
-  },
-  saveAndClose: {
-    id: 'multiChoiceSaveButton.saveAndClose',
-    defaultMessage: 'Save & Close'
-  },
-  saveAndMinimize: {
-    id: 'multiChoiceSaveButton.saveAndMinimize',
-    defaultMessage: 'Save & Minimize'
-  }
+	save: {
+		id: 'words.save',
+		defaultMessage: 'Save'
+	},
+	saveAndClose: {
+		id: 'multiChoiceSaveButton.saveAndClose',
+		defaultMessage: 'Save & Close'
+	},
+	saveAndMinimize: {
+		id: 'multiChoiceSaveButton.saveAndMinimize',
+		defaultMessage: 'Save & Minimize'
+	}
 });
 
 export function MultiChoiceSaveButton(props: MultiChoiceSaveButtonProps) {
-  const {
-    options = ['save', 'saveAndClose', 'saveAndMinimize'],
-    storageKey,
-    disabled,
-    disablePortal,
-    loading,
-    defaultSelected = 'saveAndClose',
-    onClick
-  } = props;
-  const { formatMessage } = useIntl();
+	const {
+		options = ['save', 'saveAndClose', 'saveAndMinimize'],
+		storageKey,
+		disabled,
+		disablePortal,
+		loading,
+		defaultSelected = 'saveAndClose',
+		onClick
+	} = props;
+	const { formatMessage } = useIntl();
 
-  return (
-    <SplitButton
-      options={options.map((option) => {
-        if (typeof option === 'string') {
-          return {
-            id: option as string,
-            label: formatMessage(translations[option]),
-            callback: (e) => onClick(e, option)
-          };
-        } else {
-          return option;
-        }
-      })}
-      disablePortal={disablePortal}
-      disabled={disabled}
-      loading={loading}
-      defaultSelected={defaultSelected}
-      storageKey={storageKey}
-    />
-  );
+	return (
+		<SplitButton
+			options={options.map((option) => {
+				if (typeof option === 'string') {
+					return {
+						id: option as string,
+						label: formatMessage(translations[option]),
+						callback: (e) => onClick(e, option)
+					};
+				} else {
+					return option;
+				}
+			})}
+			disablePortal={disablePortal}
+			disabled={disabled}
+			loading={loading}
+			defaultSelected={defaultSelected}
+			storageKey={storageKey}
+		/>
+	);
 }
 
 export default MultiChoiceSaveButton;

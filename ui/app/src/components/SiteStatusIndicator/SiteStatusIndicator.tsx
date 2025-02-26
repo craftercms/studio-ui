@@ -21,27 +21,27 @@ import { CircularProgress, CircularProgressProps } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 
 export interface SiteStatusIndicatorProps extends CircularProgressProps {
-  state: Site['state'];
+	state: Site['state'];
 }
 
 export const SiteStatusIndicator = (props: SiteStatusIndicatorProps) => {
-  const { state, size = 30, sx, color, ...rest } = props;
+	const { state, size = 30, sx, color, ...rest } = props;
 
-  const stateMessage =
-    state === 'INITIALIZING' ? (
-      <FormattedMessage defaultMessage="Initializing" />
-    ) : state === 'DELETING' ? (
-      <FormattedMessage defaultMessage="Deleting" />
-    ) : (
-      <></>
-    );
-  const stateColor = color ?? state === 'DELETING' ? 'error' : 'primary';
+	const stateMessage =
+		state === 'INITIALIZING' ? (
+			<FormattedMessage defaultMessage="Initializing" />
+		) : state === 'DELETING' ? (
+			<FormattedMessage defaultMessage="Deleting" />
+		) : (
+			<></>
+		);
+	const stateColor = (color ?? state === 'DELETING') ? 'error' : 'primary';
 
-  return (
-    <Tooltip title={stateMessage}>
-      <CircularProgress size={size} sx={sx} color={stateColor} {...rest} />
-    </Tooltip>
-  );
+	return (
+		<Tooltip title={stateMessage}>
+			<CircularProgress size={size} sx={sx} color={stateColor} {...rest} />
+		</Tooltip>
+	);
 };
 
 export default SiteStatusIndicator;

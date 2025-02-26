@@ -17,8 +17,7 @@
 import * as React from 'react';
 import MenuItem from '@mui/material/MenuItem';
 import { FormattedMessage } from 'react-intl';
-import Select from '@mui/material/Select';
-import useStyles from './styles';
+import Select, { selectClasses } from '@mui/material/Select';
 import { isBlank } from '../../utils/string';
 import { changeSite } from '../../state/actions/sites';
 import { setSiteCookie } from '../../utils/auth';
@@ -31,62 +30,91 @@ import useMinimizedDialogWarning from '../../hooks/useMinimizedDialogWarning';
 import SiteStatusIndicator from '../SiteStatusIndicator/SiteStatusIndicator';
 import { previewSwitch } from '../../services/security';
 import { BaseSelectProps } from '@mui/material/Select/Select';
+import { PartialSxRecord } from '../../models';
 
 export interface SiteSwitcherSelectProps extends BaseSelectProps {
-  site: string;
+	site: string;
+	sxs?: PartialSxRecord<'menuRoot' | 'menuItem' | 'input' | 'select'>;
 }
 
 function SiteSwitcherSelect(props: SiteSwitcherSelectProps) {
-  const { site, ...rest } = props;
-  const sites = useSiteList();
-  const { classes, cx: clsx } = useStyles();
-  const { authoringBase, useBaseDomain } = useEnv();
-  const dispatch = useDispatch();
-  const checkMinimized = useMinimizedDialogWarning();
+	const { site, sxs, ...rest } = props;
+	const sites = useSiteList();
+	const { authoringBase, useBaseDomain } = useEnv();
+	const dispatch = useDispatch();
+	const checkMinimized = useMinimizedDialogWarning();
 
-  const onSiteChange = ({ target: { value } }) => {
-    if (!isBlank(value) && site !== value && !checkMinimized()) {
-      if (window.location.href.includes(PREVIEW_URL_PATH)) {
-        dispatch(changeSite(value));
-      } else {
-        setSiteCookie(value, useBaseDomain);
-        previewSwitch().subscribe(() => {
-          window.location.href = getSystemLink({
-            site: value,
-            systemLinkId: 'preview',
-            authoringBase
-          });
-        });
-      }
-    }
-  };
+	const onSiteChange = ({ target: { value } }) => {
+		if (!isBlank(value) && site !== value && !checkMinimized()) {
+			if (window.location.href.includes(PREVIEW_URL_PATH)) {
+				dispatch(changeSite(value));
+			} else {
+				setSiteCookie(value, useBaseDomain);
+				previewSwitch().subscribe(() => {
+					window.location.href = getSystemLink({
+						site: value,
+						systemLinkId: 'preview',
+						authoringBase
+					});
+				});
+			}
+		}
+	};
 
-  return (
-    <Select
-      displayEmpty
-      variant="standard"
-      {...rest}
-      className={clsx(classes.menuRoot, props.className)}
-      classes={{
-        ...props.classes,
-        select: clsx(classes.input, props.classes?.select, classes.menu)
-      }}
-      value={site}
-      onChange={onSiteChange}
-    >
-      {sites.length === 0 && (
-        <MenuItem value="">
-          <FormattedMessage id="siteSwitcherSelected.siteSelectorNoSiteSelected" defaultMessage="Choose site" />
-        </MenuItem>
-      )}
-      {sites.map(({ id, name, state }) => (
-        <MenuItem key={id} value={id} className={classes.menuItem} disabled={state !== 'READY'}>
-          {name}
-          {state !== 'READY' && <SiteStatusIndicator state={state} size={16} sx={{ float: 'right', ml: 1 }} />}
-        </MenuItem>
-      ))}
-    </Select>
-  );
+	return (
+		<Select
+			displayEmpty
+			variant="standard"
+			{...rest}
+			className={props.className}
+			sx={{
+				maxWidth: 150,
+				background: 'transparent',
+				'&.MuiInput-underline::before': {
+					display: 'none'
+				},
+				'&.MuiInput-underline::after': {
+					display: 'none'
+				},
+				...sxs?.menuRoot,
+				[`& .${selectClasses.select}`]: {
+					border: 'none',
+					background: 'transparent',
+					padding: '10px 10px',
+					'&:focus:invalid, &:focus': {
+						border: 'none',
+						boxShadow: 'none'
+					},
+					...sxs?.select
+				}
+			}}
+			value={site}
+			onChange={onSiteChange}
+		>
+			{sites.length === 0 && (
+				<MenuItem value="">
+					<FormattedMessage id="siteSwitcherSelected.siteSelectorNoSiteSelected" defaultMessage="Choose site" />
+				</MenuItem>
+			)}
+			{sites.map(({ id, name, state }) => (
+				<MenuItem
+					key={id}
+					value={id}
+					sx={{
+						maxWidth: 390,
+						whiteSpace: 'nowrap',
+						overflow: 'hidden',
+						textOverflow: 'ellipsis',
+						display: 'block'
+					}}
+					disabled={state !== 'READY'}
+				>
+					{name}
+					{state !== 'READY' && <SiteStatusIndicator state={state} size={16} sx={{ float: 'right', ml: 1 }} />}
+				</MenuItem>
+			))}
+		</Select>
+	);
 }
 
 export default SiteSwitcherSelect;

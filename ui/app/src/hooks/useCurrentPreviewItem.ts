@@ -19,9 +19,9 @@ import { usePreviewGuest } from './usePreviewGuest';
 import { GuestData } from '../models/GlobalState';
 
 export function useCurrentPreviewItem() {
-  const { path } = usePreviewGuest() ?? ({} as GuestData);
-  const items = useItemsByPath();
-  return items?.[path];
+	const { path } = usePreviewGuest() ?? ({} as GuestData);
+	const items = useItemsByPath();
+	return items?.[path];
 }
 
 export default useCurrentPreviewItem;

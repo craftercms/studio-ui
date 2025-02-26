@@ -18,33 +18,34 @@ import { SandboxItem } from './Item';
 
 // Omitting UNKNOWN, APPROVE & APPROVE_SCHEDULED for now.
 export type Activities =
-  | 'CREATE'
-  | 'UPDATE'
-  | 'DELETE'
-  | 'MOVE'
-  | 'REQUEST_PUBLISH'
-  | 'REJECT'
-  | 'REVERT'
-  | 'PUBLISHED'
-  | 'INITIAL_PUBLISH'
-  // TODO - Change when backend is updated
-  //  PUBLISH is what the backend sends for APPROVE & APPROVE_SCHEDULED.
-  //  The latter are never sent back currently.
-  | 'PUBLISH'
-  | 'PUBLISH_ALL';
+	| 'CREATE'
+	| 'UPDATE'
+	| 'DELETE'
+	| 'MOVE'
+	| 'REQUEST_PUBLISH'
+	| 'APPROVE'
+	| 'REJECT_PUBLISH_PACKAGE'
+	| 'REVERT'
+	| 'PUBLISHED'
+	| 'INITIAL_PUBLISH'
+	| 'CANCEL_PUBLISH_PACKAGE'
+	// TODO - Change when backend is updated
+	//  PUBLISH is what the backend sends for APPROVE & APPROVE_SCHEDULED.
+	//  The latter are never sent back currently.
+	| 'PUBLISH_ALL';
 
 export interface Activity {
-  id: number;
-  person: {
-    username: string;
-    firstName: string;
-    lastName: string;
-    avatar: string;
-  };
-  actionType: Activities;
-  actionTimestamp: string;
-  item: Pick<SandboxItem, 'path' | 'label' | 'previewUrl' | 'systemType'>;
-  package: any; // TODO: Type package
+	id: number;
+	person: {
+		username: string;
+		firstName: string;
+		lastName: string;
+		avatar: string;
+	};
+	actionType: Activities;
+	actionTimestamp: string;
+	item: Pick<SandboxItem, 'path' | 'label' | 'previewUrl' | 'systemType'>;
+	package: any; // TODO: Type package
 }
 
 export default Activity;

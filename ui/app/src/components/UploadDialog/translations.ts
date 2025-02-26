@@ -17,24 +17,24 @@
 import { defineMessages } from 'react-intl';
 
 export const translations = defineMessages({
-  title: {
-    id: 'uploadDialog.title',
-    defaultMessage: 'Upload'
-  },
-  uploadInProgress: {
-    id: 'uploadDialog.uploadInProgress',
-    defaultMessage:
-      'Uploads are still in progress. Leaving this page would stop the pending uploads. Are you sure you wish to leave?'
-  },
-  uploadInProgressConfirmation: {
-    id: 'uploadDialog.uploadInProgressConfirmation',
-    defaultMessage:
-      'Uploads are still in progress. Closing this modal would stop the pending uploads. Are you sure you wish to close it?'
-  },
-  noDuplicates: {
-    id: 'uppyCore.noDuplicates',
-    defaultMessage: "Cannot add the duplicate file “%'{fileName}'”, it already exists"
-  }
+	title: {
+		id: 'uploadDialog.title',
+		defaultMessage: 'Upload'
+	},
+	uploadInProgress: {
+		id: 'uploadDialog.uploadInProgress',
+		defaultMessage:
+			'Uploads are still in progress. Leaving this page would stop the pending uploads. Are you sure you wish to leave?'
+	},
+	uploadInProgressConfirmation: {
+		id: 'uploadDialog.uploadInProgressConfirmation',
+		defaultMessage:
+			'Uploads are still in progress. Closing this modal would stop the pending uploads. Are you sure you wish to close it?'
+	},
+	noDuplicates: {
+		id: 'uppyCore.noDuplicates',
+		defaultMessage: "Cannot add the duplicate file “%'{fileName}'”, it already exists"
+	}
 });
 
 export default translations;

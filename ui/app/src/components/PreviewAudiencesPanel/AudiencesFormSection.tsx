@@ -21,19 +21,19 @@ import FormHelperText from '@mui/material/FormHelperText';
 import Divider from '@mui/material/Divider';
 
 type AudiencesFormSectionProps = PropsWithChildren<{
-  field: ContentTypeField;
-  showDivider?: boolean;
+	field: ContentTypeField;
+	showDivider?: boolean;
 }>;
 
 export function AudiencesFormSection(props: AudiencesFormSectionProps) {
-  const { field, showDivider, children } = props;
-  return (
-    <>
-      <Grid size={12}>
-        {children}
-        <FormHelperText>{field.helpText}</FormHelperText>
-      </Grid>
-      {showDivider && <Divider style={{ margin: '15px 0' }} />}
-    </>
-  );
+	const { field, showDivider, children } = props;
+	return (
+		<>
+			<Grid size={12}>
+				{children}
+				<FormHelperText>{field.helpText}</FormHelperText>
+			</Grid>
+			{showDivider && <Divider style={{ margin: '15px 0' }} />}
+		</>
+	);
 }

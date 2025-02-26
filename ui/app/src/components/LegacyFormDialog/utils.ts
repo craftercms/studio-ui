@@ -18,53 +18,53 @@ import { PropsWithChildren } from 'react';
 import StandardAction from '../../models/StandardAction';
 
 export interface LegacyFormDialogBaseProps {
-  open?: boolean;
-  path: string;
-  selectedFields?: string[];
-  authoringBase: string;
-  site?: string;
-  isHidden?: boolean;
-  modelId?: string;
-  readonly?: boolean;
-  changeTemplate?: string;
-  contentTypeId?: string;
-  isNewContent?: boolean;
-  inProgress?: boolean;
-  pendingChanges?: boolean;
-  isSubmitting?: boolean;
-  disableHeader?: boolean;
-  iceGroupId?: string;
-  newEmbedded?: {
-    contentType: string;
-    index: number;
-    datasource: string;
-    fieldId: string;
-  };
-  index?: string | number;
+	open?: boolean;
+	path: string;
+	selectedFields?: string[];
+	authoringBase: string;
+	site?: string;
+	isHidden?: boolean;
+	modelId?: string;
+	readonly?: boolean;
+	changeTemplate?: string;
+	contentTypeId?: string;
+	isNewContent?: boolean;
+	inProgress?: boolean;
+	pendingChanges?: boolean;
+	isSubmitting?: boolean;
+	disableHeader?: boolean;
+	iceGroupId?: string;
+	newEmbedded?: {
+		contentType: string;
+		index: number;
+		datasource: string;
+		fieldId: string;
+	};
+	index?: string | number;
 }
 
 export type LegacyFormDialogProps = PropsWithChildren<
-  LegacyFormDialogBaseProps & {
-    isMinimized?: boolean;
-    onMaximize?(): any;
-    onMinimize?(): any;
-    onClose?(): any;
-    onClosed?(): any;
-    onSaveSuccess?(response?: any): any;
-  }
+	LegacyFormDialogBaseProps & {
+		isMinimized?: boolean;
+		onMaximize?(): any;
+		onMinimize?(): any;
+		onClose?(): any;
+		onClosed?(): any;
+		onSaveSuccess?(response?: any): any;
+	}
 >;
 
 export interface LegacyFormDialogStateProps extends LegacyFormDialogBaseProps {
-  isMinimized?: boolean;
-  onSaveSuccess?: StandardAction;
-  onClose?: StandardAction;
-  onClosed?: StandardAction;
-  onMaximize?: StandardAction;
-  onMinimize?: StandardAction;
+	isMinimized?: boolean;
+	onSaveSuccess?: StandardAction;
+	onClose?: StandardAction;
+	onClosed?: StandardAction;
+	onMaximize?: StandardAction;
+	onMinimize?: StandardAction;
 }
 
 export interface LegacyFormDialogContainerProps
-  extends LegacyFormDialogBaseProps,
-    Pick<LegacyFormDialogProps, 'onMinimize' | 'onClose' | 'onClosed' | 'onSaveSuccess'> {
-  setIframeLoaded(loaded: boolean): void;
+	extends LegacyFormDialogBaseProps,
+		Pick<LegacyFormDialogProps, 'onMinimize' | 'onClose' | 'onClosed' | 'onSaveSuccess'> {
+	setIframeLoaded(loaded: boolean): void;
 }

@@ -18,12 +18,6 @@ export { default } from './PublishDialog';
 
 export * from './PublishDialog';
 
-export * from './PublishDialogContentUI';
-
-export * from './PublishDialogUI';
-
 export * from './PublishDialogContainer';
-
-export * from './PublishDialogForm';
 
 export * from './utils';

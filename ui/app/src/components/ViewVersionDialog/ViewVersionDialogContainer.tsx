@@ -22,19 +22,19 @@ import ApiResponseErrorState from '../ApiResponseErrorState';
 import { LoadingState } from '../LoadingState';
 
 export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProps) {
-  const { error, isFetching, version } = props;
+	const { error, isFetching, version } = props;
 
-  return (
-    <DialogBody sx={{ p: 0 }}>
-      {error ? (
-        <ApiResponseErrorState error={error} />
-      ) : isFetching ? (
-        <LoadingState />
-      ) : version ? (
-        <LegacyVersionDialog version={version} />
-      ) : null}
-    </DialogBody>
-  );
+	return (
+		<DialogBody sx={{ p: 0 }}>
+			{error ? (
+				<ApiResponseErrorState error={error} />
+			) : isFetching ? (
+				<LoadingState />
+			) : version ? (
+				<LegacyVersionDialog version={version} />
+			) : null}
+		</DialogBody>
+	);
 }
 
 export default ViewVersionDialogContainer;

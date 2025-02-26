@@ -16,67 +16,65 @@
 
 import Typography from '@mui/material/Typography';
 import { renderWidgets } from '../Widget';
-import { WidgetDescriptor } from '../../models';
+import { PartialSxRecord, WidgetDescriptor } from '../../models';
 import React, { PropsWithChildren } from 'react';
 import TranslationOrText from '../../models/TranslationOrText';
-import { makeStyles } from 'tss-react/mui';
 import { EnhancedUser } from '../../models/User';
 import { FormatXMLElementFn, PrimitiveType } from 'intl-messageformat';
-import { CSSObject as CSSProperties } from 'tss-react';
 import { usePossibleTranslation } from '../../hooks/usePossibleTranslation';
+import Box from '@mui/material/Box';
 
 export type LauncherSectionUIClassKey = 'title' | 'nav';
 
-export type LauncherSectionUIStyles = Partial<Record<LauncherSectionUIClassKey, CSSProperties>>;
-
 export type LauncherSectionUIProps = PropsWithChildren<{
-  title: TranslationOrText;
-  user?: EnhancedUser;
-  site?: string;
-  widgets?: WidgetDescriptor[];
-  // TODO: Fix FormatXMLElementFn generics
-  translationValues?: Record<string, PrimitiveType | FormatXMLElementFn<any, any>>;
-  styles?: LauncherSectionUIStyles;
-  classes?: Partial<Record<LauncherSectionUIClassKey, string>>;
+	title: TranslationOrText;
+	user?: EnhancedUser;
+	site?: string;
+	widgets?: WidgetDescriptor[];
+	// TODO: Fix FormatXMLElementFn generics
+	translationValues?: Record<string, PrimitiveType | FormatXMLElementFn<any, any>>;
+	classes?: Partial<Record<LauncherSectionUIClassKey, string>>;
+	sxs?: PartialSxRecord<LauncherSectionUIClassKey>;
 }>;
 
-const useStyles = makeStyles<LauncherSectionUIStyles, LauncherSectionUIClassKey>()(
-  (theme, { title, nav } = {} as LauncherSectionUIStyles) => ({
-    title: {
-      textTransform: 'uppercase',
-      fontWeight: 600,
-      margin: '0 0 10px 0',
-      '& > .muted': {
-        textTransform: 'none',
-        marginLeft: '0.315em',
-        color: theme.palette.text.secondary
-      },
-      ...title
-    },
-    nav: {
-      display: 'flex',
-      flexWrap: 'wrap',
-      ...nav
-    }
-  })
-);
-
 export function LauncherSectionUI(props: LauncherSectionUIProps) {
-  const { classes, cx } = useStyles(props.styles);
-  const title = usePossibleTranslation(props.title, props.translationValues);
-  const { children } = props;
-  return (
-    <>
-      {title && (
-        <Typography variant="subtitle1" component="h2" className={cx(classes.title, props.classes?.title)}>
-          {title}
-        </Typography>
-      )}
-      <nav className={cx(classes.nav, props.classes?.nav)}>
-        {children ? children : renderWidgets(props.widgets, { userRoles: props.user.rolesBySite[props.site] })}
-      </nav>
-    </>
-  );
+	const title = usePossibleTranslation(props.title, props.translationValues);
+	const { children, sxs } = props;
+	return (
+		<>
+			{title && (
+				<Typography
+					variant="subtitle1"
+					component="h2"
+					className={props.classes?.title}
+					sx={{
+						textTransform: 'uppercase',
+						fontWeight: 600,
+						margin: '0 0 10px 0',
+						'& > .muted': {
+							textTransform: 'none',
+							marginLeft: '0.315em',
+							color: (theme) => theme.palette.text.secondary
+						},
+						...sxs?.title
+					}}
+				>
+					{title}
+				</Typography>
+			)}
+			<Box
+				component="nav"
+				className={props.classes?.nav}
+				sx={{
+					display: 'flex',
+					flexWrap: 'wrap',
+					...sxs?.nav
+				}}
+			>
+				{children ? children : renderWidgets(props.widgets, { userRoles: props.user.rolesBySite[props.site] })}
+			</Box>
+		</>
+	);
 }
 
 export default LauncherSectionUI;

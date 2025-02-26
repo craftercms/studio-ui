@@ -18,7 +18,7 @@ import PluginDescriptor from './PluginDescriptor';
 import PluginFileBuilder from './PluginFileBuilder';
 
 export interface PluginDescriptorWithSource extends PluginDescriptor {
-  source: PluginFileBuilder;
+	source: PluginFileBuilder;
 }
 
 export default PluginDescriptorWithSource;

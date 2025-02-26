@@ -28,64 +28,64 @@ import { useTheme } from '@mui/material/styles';
 import useActiveUser from '../../hooks/useActiveUser';
 
 interface PublishingDashboardProps {
-  embedded?: boolean;
-  showAppsButton?: boolean;
-  onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;
+	embedded?: boolean;
+	showAppsButton?: boolean;
+	onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
 export function PublishingDashboard(props: PublishingDashboardProps) {
-  const { embedded, showAppsButton, onSubmittingAndOrPendingChange } = props;
-  const user = useActiveUser();
-  const site = useActiveSiteId();
-  const userRoles = user?.rolesBySite[site] ?? [];
-  const userPermissions = user?.permissionsBySite[site] ?? [];
-  const allowedRole = userRoles.some((role) => role === 'developer' || role === 'admin');
-  const hasPublishPermission = userPermissions?.includes('publish');
-  const {
-    spacing,
-    palette: { mode }
-  } = useTheme();
-  return (
-    <Box component="section" sx={{ bgcolor: `grey.${mode === 'light' ? 100 : 800}`, height: '100%', pb: 3 }}>
-      {!embedded && (
-        <GlobalAppToolbar
-          title={<FormattedMessage id="publishingDashboard.title" defaultMessage="Publishing Dashboard" />}
-          showAppsButton={showAppsButton}
-        />
-      )}
-      <Grid
-        gap={2}
-        container
-        sx={{
-          padding: spacing(2),
-          ...(embedded
-            ? {}
-            : {
-                height: 'calc(100% - 65px)', // full viewport height - toolbar height
-                overflowY: 'auto'
-              })
-        }}
-      >
-        <Grid size={12}>
-          <PublishingStatusWidget siteId={site} />
-        </Grid>
-        {userPermissions.includes('get_publishing_queue') && (
-          <Grid size={12}>
-            <PublishingQueueWidget siteId={site} readOnly={!hasPublishPermission} />
-          </Grid>
-        )}
-        {hasPublishPermission && (
-          <Grid size={12}>
-            <PublishOnDemandWidget
-              siteId={site}
-              mode={allowedRole ? null : 'everything'}
-              onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
-            />
-          </Grid>
-        )}
-      </Grid>
-    </Box>
-  );
+	const { embedded, showAppsButton, onSubmittingAndOrPendingChange } = props;
+	const user = useActiveUser();
+	const site = useActiveSiteId();
+	const userRoles = user?.rolesBySite[site] ?? [];
+	const userPermissions = user?.permissionsBySite[site] ?? [];
+	const allowedRole = userRoles.some((role) => role === 'developer' || role === 'admin');
+	const hasPublishPermission = userPermissions?.includes('publish');
+	const {
+		spacing,
+		palette: { mode }
+	} = useTheme();
+	return (
+		<Box component="section" sx={{ bgcolor: `grey.${mode === 'light' ? 100 : 800}`, height: '100%', pb: 3 }}>
+			{!embedded && (
+				<GlobalAppToolbar
+					title={<FormattedMessage id="publishingDashboard.title" defaultMessage="Publishing Dashboard" />}
+					showAppsButton={showAppsButton}
+				/>
+			)}
+			<Grid
+				gap={2}
+				container
+				sx={{
+					padding: spacing(2),
+					...(embedded
+						? {}
+						: {
+								height: 'calc(100% - 65px)', // full viewport height - toolbar height
+								overflowY: 'auto'
+							})
+				}}
+			>
+				<Grid size={12}>
+					<PublishingStatusWidget siteId={site} />
+				</Grid>
+				{userPermissions.includes('get_publishing_queue') && (
+					<Grid size={12}>
+						<PublishingQueueWidget siteId={site} readOnly={!hasPublishPermission} />
+					</Grid>
+				)}
+				{hasPublishPermission && (
+					<Grid size={12}>
+						<PublishOnDemandWidget
+							siteId={site}
+							mode={allowedRole ? null : 'everything'}
+							onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
+						/>
+					</Grid>
+				)}
+			</Grid>
+		</Box>
+	);
 }
 
 export default PublishingDashboard;

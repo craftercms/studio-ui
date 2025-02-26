@@ -21,22 +21,22 @@ import EnhancedDialog from '../EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
 
 export function CreateUserDialog(props: CreateUserDialogProps) {
-  const { passwordRequirementsMinComplexity, onSubmittingAndOrPendingChange, isSubmitting, onCreateSuccess, ...rest } =
-    props;
-  return (
-    <EnhancedDialog
-      title={<FormattedMessage id="CreateUserDialog.title" defaultMessage="Create User" />}
-      isSubmitting={isSubmitting}
-      {...rest}
-    >
-      <CreateUserDialogContainer
-        passwordRequirementsMinComplexity={passwordRequirementsMinComplexity}
-        onCreateSuccess={onCreateSuccess}
-        onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
-        isSubmitting={isSubmitting}
-      />
-    </EnhancedDialog>
-  );
+	const { passwordRequirementsMinComplexity, onSubmittingAndOrPendingChange, isSubmitting, onCreateSuccess, ...rest } =
+		props;
+	return (
+		<EnhancedDialog
+			title={<FormattedMessage id="CreateUserDialog.title" defaultMessage="Create User" />}
+			isSubmitting={isSubmitting}
+			{...rest}
+		>
+			<CreateUserDialogContainer
+				passwordRequirementsMinComplexity={passwordRequirementsMinComplexity}
+				onCreateSuccess={onCreateSuccess}
+				onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
+				isSubmitting={isSubmitting}
+			/>
+		</EnhancedDialog>
+	);
 }
 
 export default CreateUserDialog;

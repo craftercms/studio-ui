@@ -23,54 +23,54 @@ import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { useWithPendingChangesCloseRequest } from '../../hooks/useWithPendingChangesCloseRequest';
 
 interface ToolsPanelEmbeddedAppViewButtonProps extends Omit<ToolsPanelListItemButtonProps, 'onClick'> {
-  widget: WidgetDescriptor;
+	widget: WidgetDescriptor;
 }
 
 export function ToolsPanelEmbeddedAppViewButton(props: ToolsPanelEmbeddedAppViewButtonProps) {
-  const {
-    open,
-    onOpen,
-    onClose,
-    hasPendingChanges,
-    isSubmitting,
-    isMinimized,
-    onMinimize,
-    onMaximize,
-    onSubmittingAndOrPendingChange
-  } = useEnhancedDialogState();
-  const title = usePossibleTranslation(props.title);
-  const widgetDialogPendingChangesCloseRequest = useWithPendingChangesCloseRequest(onClose);
+	const {
+		open,
+		onOpen,
+		onClose,
+		hasPendingChanges,
+		isSubmitting,
+		isMinimized,
+		onMinimize,
+		onMaximize,
+		onSubmittingAndOrPendingChange
+	} = useEnhancedDialogState();
+	const title = usePossibleTranslation(props.title);
+	const widgetDialogPendingChangesCloseRequest = useWithPendingChangesCloseRequest(onClose);
 
-  const openEmbeddedApp = () => {
-    if (isMinimized) {
-      onMaximize();
-    }
-    onOpen();
-  };
+	const openEmbeddedApp = () => {
+		if (isMinimized) {
+			onMaximize();
+		}
+		onOpen();
+	};
 
-  return (
-    <>
-      <ToolsPanelListItemButton {...props} onClick={openEmbeddedApp} />
-      <WidgetDialog
-        title={title}
-        open={open}
-        onClose={onClose}
-        widget={props.widget}
-        extraProps={{
-          onMinimize,
-          onMaximize,
-          onClose
-        }}
-        hasPendingChanges={hasPendingChanges}
-        onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
-        onWithPendingChangesCloseRequest={widgetDialogPendingChangesCloseRequest}
-        onMaximize={onMaximize}
-        onMinimize={onMinimize}
-        isMinimized={isMinimized}
-        isSubmitting={isSubmitting}
-      />
-    </>
-  );
+	return (
+		<>
+			<ToolsPanelListItemButton {...props} onClick={openEmbeddedApp} />
+			<WidgetDialog
+				title={title}
+				open={open}
+				onClose={onClose}
+				widget={props.widget}
+				extraProps={{
+					onMinimize,
+					onMaximize,
+					onClose
+				}}
+				hasPendingChanges={hasPendingChanges}
+				onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
+				onWithPendingChangesCloseRequest={widgetDialogPendingChangesCloseRequest}
+				onMaximize={onMaximize}
+				onMinimize={onMinimize}
+				isMinimized={isMinimized}
+				isSubmitting={isSubmitting}
+			/>
+		</>
+	);
 }
 
 export default ToolsPanelEmbeddedAppViewButton;

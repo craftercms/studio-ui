@@ -17,55 +17,55 @@
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
 import {
-  closeDeleteDialog,
-  deleteDialogClosed,
-  fetchDeleteDependencies,
-  fetchDeleteDependenciesComplete,
-  fetchDeleteDependenciesFailed,
-  showDeleteDialog,
-  updateDeleteDialog
+	closeDeleteDialog,
+	deleteDialogClosed,
+	fetchDeleteDependencies,
+	fetchDeleteDependenciesComplete,
+	fetchDeleteDependenciesFailed,
+	showDeleteDialog,
+	updateDeleteDialog
 } from '../../actions/dialogs';
 import { DeleteDialogStateProps } from '../../../components/DeleteDialog/utils';
 
 const initialState: DeleteDialogStateProps = {
-  open: false,
-  isSubmitting: null,
-  isMinimized: null,
-  hasPendingChanges: null,
-  items: null,
-  isFetching: false,
-  childItems: null,
-  dependentItems: null,
-  error: null
+	open: false,
+	isSubmitting: null,
+	isMinimized: null,
+	hasPendingChanges: null,
+	items: null,
+	isFetching: false,
+	childItems: null,
+	dependentItems: null,
+	error: null
 };
 
 export default createReducer<GlobalState['dialogs']['delete']>(initialState, (builder) => {
-  builder
-    .addCase(showDeleteDialog, (state, { payload }) => ({
-      ...state,
-      onClose: closeDeleteDialog(),
-      onClosed: deleteDialogClosed(),
-      ...(payload as Partial<DeleteDialogStateProps>),
-      open: true
-    }))
-    .addCase(updateDeleteDialog, (state, { payload }) => ({
-      ...state,
-      ...(payload as Partial<DeleteDialogStateProps>)
-    }))
-    .addCase(closeDeleteDialog, (state) => ({ ...state, open: false }))
-    .addCase(deleteDialogClosed, () => initialState)
-    .addCase(fetchDeleteDependencies, (state) => ({
-      ...state,
-      isFetching: true
-    }))
-    .addCase(fetchDeleteDependenciesComplete, (state, { payload }) => ({
-      ...state,
-      isFetching: false,
-      ...payload
-    }))
-    .addCase(fetchDeleteDependenciesFailed, (state, { payload }) => ({
-      ...state,
-      isFetching: false,
-      error: payload.response
-    }));
+	builder
+		.addCase(showDeleteDialog, (state, { payload }) => ({
+			...state,
+			onClose: closeDeleteDialog(),
+			onClosed: deleteDialogClosed(),
+			...(payload as Partial<DeleteDialogStateProps>),
+			open: true
+		}))
+		.addCase(updateDeleteDialog, (state, { payload }) => ({
+			...state,
+			...(payload as Partial<DeleteDialogStateProps>)
+		}))
+		.addCase(closeDeleteDialog, (state) => ({ ...state, open: false }))
+		.addCase(deleteDialogClosed, () => initialState)
+		.addCase(fetchDeleteDependencies, (state) => ({
+			...state,
+			isFetching: true
+		}))
+		.addCase(fetchDeleteDependenciesComplete, (state, { payload }) => ({
+			...state,
+			isFetching: false,
+			...payload
+		}))
+		.addCase(fetchDeleteDependenciesFailed, (state, { payload }) => ({
+			...state,
+			isFetching: false,
+			error: payload.response
+		}));
 });

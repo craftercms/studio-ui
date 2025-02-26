@@ -21,34 +21,34 @@ import { PullFromRemoteDialogProps } from './utils';
 import { FormattedMessage } from 'react-intl';
 
 export function PullDialog(props: PullFromRemoteDialogProps) {
-  const { remoteName, mergeStrategies, onPullSuccess, onPullError, ...rest } = props;
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const computedIsSubmitting = isSubmitting || rest.isSubmitting;
-  return (
-    <EnhancedDialog
-      title={
-        <FormattedMessage id="pullDialog.pullFrom" defaultMessage="Pull from {remoteName}" values={{ remoteName }} />
-      }
-      maxWidth="xs"
-      {...rest}
-      isSubmitting={computedIsSubmitting}
-    >
-      <PullDialogContainer
-        remoteName={remoteName}
-        isSubmitting={computedIsSubmitting}
-        mergeStrategies={mergeStrategies}
-        onPullStart={() => setIsSubmitting(true)}
-        onPullSuccess={(result) => {
-          setIsSubmitting(false);
-          onPullSuccess?.(result);
-        }}
-        onPullError={(result) => {
-          setIsSubmitting(false);
-          onPullError?.(result);
-        }}
-      />
-    </EnhancedDialog>
-  );
+	const { remoteName, mergeStrategies, onPullSuccess, onPullError, ...rest } = props;
+	const [isSubmitting, setIsSubmitting] = useState(false);
+	const computedIsSubmitting = isSubmitting || rest.isSubmitting;
+	return (
+		<EnhancedDialog
+			title={
+				<FormattedMessage id="pullDialog.pullFrom" defaultMessage="Pull from {remoteName}" values={{ remoteName }} />
+			}
+			maxWidth="xs"
+			{...rest}
+			isSubmitting={computedIsSubmitting}
+		>
+			<PullDialogContainer
+				remoteName={remoteName}
+				isSubmitting={computedIsSubmitting}
+				mergeStrategies={mergeStrategies}
+				onPullStart={() => setIsSubmitting(true)}
+				onPullSuccess={(result) => {
+					setIsSubmitting(false);
+					onPullSuccess?.(result);
+				}}
+				onPullError={(result) => {
+					setIsSubmitting(false);
+					onPullError?.(result);
+				}}
+			/>
+		</EnhancedDialog>
+	);
 }
 
 export default PullDialog;

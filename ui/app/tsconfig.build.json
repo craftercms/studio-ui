@@ -1,33 +1,30 @@
 {
-  "extends": "./tsconfig.json",
-  "compilerOptions": {
-    "baseUrl": "src",
-    "rootDir": "src",
-    "outDir": "build_tsc",
-    "module": "esnext",
-    "target": "ES2022",
-    "removeComments": false,
-    "sourceMap": false,
-    "noEmit": false,
-    "declaration": true,
-    "declarationMap": false,
-    "composite": true,
-    "jsx": "react"
-  },
-  "include": [
-    "src",
-    "src/**/*.json"
-  ],
-  "exclude": [
-    "src/tests",
-    "node_modules",
-    "../../node_modules",
-    "src/shared-worker.ts",
-    "src/translations/src",
-    "src/translations/whitelists",
-    "src/**/*.ignore.*",
-    "src/**/*.test.ts",
-    "src/main.*.tsx",
-    "src/main.tsx",
-  ]
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"baseUrl": "src",
+		"rootDir": "src",
+		"outDir": "build_tsc",
+		"module": "esnext",
+		"target": "ES2022",
+		"removeComments": false,
+		"sourceMap": false,
+		"noEmit": false,
+		"declaration": true,
+		"declarationMap": false,
+		"composite": true,
+		"jsx": "react"
+	},
+	"include": ["src", "src/**/*.json"],
+	"exclude": [
+		"src/tests",
+		"node_modules",
+		"../../node_modules",
+		"src/shared-worker.ts",
+		"src/translations/src",
+		"src/translations/whitelists",
+		"src/**/*.ignore.*",
+		"src/**/*.test.ts",
+		"src/main.*.tsx",
+		"src/main.tsx"
+	]
 }

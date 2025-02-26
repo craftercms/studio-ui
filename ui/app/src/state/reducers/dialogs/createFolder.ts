@@ -17,39 +17,39 @@
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
 import {
-  closeCreateFolderDialog,
-  createFolderDialogClosed,
-  showCreateFolderDialog,
-  updateCreateFolderDialog
+	closeCreateFolderDialog,
+	createFolderDialogClosed,
+	showCreateFolderDialog,
+	updateCreateFolderDialog
 } from '../../actions/dialogs';
 
 import { CreateFolderStateProps } from '../../../components/CreateFolderDialog/utils';
 
 const initialState: CreateFolderStateProps = {
-  open: false,
-  isSubmitting: null,
-  isMinimized: null,
-  hasPendingChanges: null
+	open: false,
+	isSubmitting: null,
+	isMinimized: null,
+	hasPendingChanges: null
 };
 
 export default createReducer<GlobalState['dialogs']['createFolder']>(initialState, (builder) => {
-  builder
-    .addCase(showCreateFolderDialog, (state, { payload }) => ({
-      ...state,
-      onClose: closeCreateFolderDialog(),
-      onClosed: createFolderDialogClosed(),
-      onCreated: closeCreateFolderDialog(),
-      onRenamed: closeCreateFolderDialog(),
-      ...(payload as Partial<CreateFolderStateProps>),
-      open: true
-    }))
-    .addCase(updateCreateFolderDialog, (state, { payload }) => ({
-      ...state,
-      ...(payload as Partial<CreateFolderStateProps>)
-    }))
-    .addCase(closeCreateFolderDialog, (state) => ({
-      ...state,
-      open: false
-    }))
-    .addCase(createFolderDialogClosed, () => initialState);
+	builder
+		.addCase(showCreateFolderDialog, (state, { payload }) => ({
+			...state,
+			onClose: closeCreateFolderDialog(),
+			onClosed: createFolderDialogClosed(),
+			onCreated: closeCreateFolderDialog(),
+			onRenamed: closeCreateFolderDialog(),
+			...(payload as Partial<CreateFolderStateProps>),
+			open: true
+		}))
+		.addCase(updateCreateFolderDialog, (state, { payload }) => ({
+			...state,
+			...(payload as Partial<CreateFolderStateProps>)
+		}))
+		.addCase(closeCreateFolderDialog, (state) => ({
+			...state,
+			open: false
+		}))
+		.addCase(createFolderDialogClosed, () => initialState);
 });

@@ -21,26 +21,23 @@ import { useSelection } from '../../hooks/useSelection';
 import { useShowPublishingStatusDialog } from '../../hooks/useShowPublishingStatusDialog';
 
 export interface PublishingStatusButtonProps extends IconButtonProps {
-  variant?: PublishingStatusButtonUIProps['variant'];
+	variant?: PublishingStatusButtonUIProps['variant'];
 }
 
 export const PublishingStatusButton = forwardRef<HTMLButtonElement, PublishingStatusButtonProps>((props, ref) => {
-  const { enabled, status, isFetching, totalItems, numberOfItems } = useSelection(
-    (state) => state.dialogs.publishingStatus
-  );
-  const onShowDialog = useShowPublishingStatusDialog();
-  return (
-    <PublishingStatusButtonUI
-      {...props}
-      ref={ref}
-      enabled={enabled}
-      status={status}
-      isFetching={isFetching}
-      totalItems={totalItems}
-      numberOfItems={numberOfItems}
-      onClick={onShowDialog}
-    />
-  );
+	const { enabled, published, currentTask, isFetching } = useSelection((state) => state.dialogs.publishingStatus);
+	const onShowDialog = useShowPublishingStatusDialog();
+	return (
+		<PublishingStatusButtonUI
+			{...props}
+			ref={ref}
+			enabled={enabled}
+			published={published}
+			currentTask={currentTask}
+			isFetching={isFetching}
+			onClick={onShowDialog}
+		/>
+	);
 });
 
 export default PublishingStatusButton;

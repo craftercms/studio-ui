@@ -24,82 +24,82 @@ import Typography from '@mui/material/Typography';
 import React from 'react';
 
 export interface BasePathDescriptor {
-  id: string;
-  path: string;
-  label?: string;
+	id: string;
+	path: string;
+	label?: string;
 }
 
 export interface BasePathSelectorProps {
-  value: string;
-  basePaths?: Array<BasePathDescriptor>;
-  onChange: RadioGroupProps['onChange'];
-  sx?: RadioGroupProps['sx'];
+	value: string;
+	basePaths?: Array<BasePathDescriptor>;
+	onChange: RadioGroupProps['onChange'];
+	sx?: RadioGroupProps['sx'];
 }
 
 const messages = defineMessages({
-  content: {
-    id: 'words.content',
-    defaultMessage: 'Content'
-  },
-  assets: {
-    id: 'words.assets',
-    defaultMessage: 'Assets'
-  },
-  templates: {
-    id: 'words.templates',
-    defaultMessage: 'Templates'
-  },
-  scripts: {
-    id: 'words.scripts',
-    defaultMessage: 'Scripts'
-  }
+	content: {
+		id: 'words.content',
+		defaultMessage: 'Content'
+	},
+	assets: {
+		id: 'words.assets',
+		defaultMessage: 'Assets'
+	},
+	templates: {
+		id: 'words.templates',
+		defaultMessage: 'Templates'
+	},
+	scripts: {
+		id: 'words.scripts',
+		defaultMessage: 'Scripts'
+	}
 });
 
 const defaultBasePaths: BasePathDescriptor[] = [
-  {
-    id: 'content',
-    path: '/site'
-  },
-  {
-    id: 'assets',
-    path: '/static-assets'
-  },
-  {
-    id: 'templates',
-    path: '/templates'
-  },
-  {
-    id: 'scripts',
-    path: '/scripts'
-  }
+	{
+		id: 'content',
+		path: '/site'
+	},
+	{
+		id: 'assets',
+		path: '/static-assets'
+	},
+	{
+		id: 'templates',
+		path: '/templates'
+	},
+	{
+		id: 'scripts',
+		path: '/scripts'
+	}
 ];
 
 export function BasePathSelector(props: BasePathSelectorProps) {
-  const { basePaths = defaultBasePaths, value = '', onChange, sx } = props;
-  const { formatMessage } = useIntl();
-  return (
-    <FormControl sx={sx}>
-      <RadioGroup value={value} onChange={onChange}>
-        {basePaths.map((basePath) => (
-          <FormControlLabel
-            value={basePath.path}
-            key={basePath.path}
-            control={<Radio size="small" />}
-            label={
-              <>
-                {basePath.label ??
-                  (messages[basePath.id] ? formatMessage(messages[basePath.id]) : capitalize(basePath.id))}
-                :{' '}
-                <Typography color="text.secondary" variant="body2" component="span">
-                  {basePath.path}
-                </Typography>
-              </>
-            }
-          />
-        ))}
-      </RadioGroup>
-    </FormControl>
-  );
+	const { basePaths = defaultBasePaths, value = '', onChange, sx } = props;
+	const { formatMessage } = useIntl();
+	return (
+		<FormControl sx={sx}>
+			<RadioGroup value={value} onChange={onChange}>
+				{basePaths.map((basePath) => (
+					<FormControlLabel
+						value={basePath.path}
+						key={basePath.path}
+						control={<Radio size="small" />}
+						label={
+							<>
+								{basePath.label ??
+									(messages[basePath.id] ? formatMessage(messages[basePath.id]) : capitalize(basePath.id))}
+								:{' '}
+								<Typography color="text.secondary" variant="body2" component="span">
+									{basePath.path}
+								</Typography>
+							</>
+						}
+					/>
+				))}
+			</RadioGroup>
+		</FormControl>
+	);
 }
 
 export default BasePathSelector;

@@ -16,7 +16,6 @@
 
 import React, { ReactNode, useRef } from 'react';
 import LookupTable from '../../models/LookupTable';
-import useStyles from './styles';
 import Paper from '@mui/material/Paper';
 import Checkbox from '@mui/material/Checkbox';
 import Typography from '@mui/material/Typography';
@@ -30,134 +29,173 @@ import { FormattedMessage } from 'react-intl';
 import TransferListItem from './TransferListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import { PaginationOptions } from '../../models';
-import InfiniteScroll from 'react-infinite-scroller';
+import InfiniteLoader from 'react-window-infinite-loader';
+import { FixedSizeList } from 'react-window';
+import AutoSizer from 'react-virtualized-auto-sizer';
 import Box from '@mui/material/Box';
 
 export interface TransferListColumnProps {
-  title: ReactNode;
-  emptyStateMessage?: ReactNode;
-  items: TransferListItem[];
-  onItemClick(item: TransferListItem, e: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
-  checkedList: LookupTable<boolean>;
-  inProgressIds: (string | number)[];
-  isAllChecked?: boolean;
-  onCheckAllClicked?(items: TransferListItem[], checked: boolean): void;
-  disabled?: boolean;
-  disabledItems?: LookupTable<boolean>;
-  filterKeyword: string;
-  setFilterKeyword(keyword: string): void;
-  onFilter?(keyword: string);
-  onFetchMore?(options?: Partial<PaginationOptions & { keyword?: string }>): void;
-  hasMoreItems?: boolean;
+	title: ReactNode;
+	emptyStateMessage?: ReactNode;
+	items: TransferListItem[];
+	onItemClick(item: TransferListItem, e: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
+	checkedList: LookupTable<boolean>;
+	inProgressIds: (string | number)[];
+	isAllChecked?: boolean;
+	onCheckAllClicked?(items: TransferListItem[], checked: boolean): void;
+	disabled?: boolean;
+	disabledItems?: LookupTable<boolean>;
+	filterKeyword: string;
+	setFilterKeyword(keyword: string): void;
+	onFilter?(keyword: string);
+	onFetchMore?(options?: Partial<PaginationOptions & { keyword?: string }>): void;
+	hasMoreItems?: boolean;
 }
 
 export function TransferListColumn(props: TransferListColumnProps) {
-  const {
-    title,
-    items,
-    onItemClick,
-    checkedList,
-    isAllChecked,
-    onCheckAllClicked,
-    inProgressIds,
-    emptyStateMessage,
-    disabled = false,
-    disabledItems,
-    filterKeyword: keyword,
-    setFilterKeyword: setKeyword,
-    onFilter,
-    onFetchMore,
-    hasMoreItems
-  } = props;
-  const { classes } = useStyles();
-  const listRef = useRef();
+	const {
+		title,
+		items,
+		onItemClick,
+		checkedList,
+		isAllChecked,
+		onCheckAllClicked,
+		inProgressIds,
+		emptyStateMessage,
+		disabled = false,
+		disabledItems,
+		filterKeyword: keyword,
+		setFilterKeyword: setKeyword,
+		onFilter,
+		onFetchMore,
+		hasMoreItems
+	} = props;
+	const listRef = useRef(undefined);
 
-  const onSearch = (value) => {
-    onFilter?.(value);
-    setKeyword(value);
-  };
+	// If there are more items to be loaded then add an extra row to hold a loading indicator.
+	const currentItemsCount = items ? (hasMoreItems ? items.length + 1 : items.length) : 0;
+	// Every row is loaded except for our loading indicator row.
+	const isItemLoaded = (index) => !hasMoreItems || index < items?.length;
 
-  return (
-    <Paper className={classes.listPaper}>
-      <header className={classes.listHeader}>
-        {!disabled && onCheckAllClicked && (
-          <Checkbox
-            disabled={items?.length === 0}
-            checked={isAllChecked}
-            onChange={(event) => onCheckAllClicked(items, event.target.checked)}
-          />
-        )}
-        {title && <Typography color="textSecondary">{title}</Typography>}
-        <SearchBar
-          keyword={keyword}
-          onChange={onSearch}
-          classes={{ root: classes.searchBar }}
-          showActionButton={Boolean(keyword)}
-        />
-      </header>
-      <List dense component="div" role="list" className={classes.list} ref={listRef}>
-        {items ? (
-          items.length === 0 ? (
-            <EmptyState
-              title={
-                <FormattedMessage
-                  id="transferListColumn.noResults"
-                  defaultMessage="No results, try to change the query"
-                />
-              }
-            />
-          ) : (
-            <InfiniteScroll
-              initialLoad={false}
-              pageStart={0}
-              loadMore={() => {
-                onFetchMore({ keyword });
-              }}
-              // hasMoreItems may be null (using fixed data), in that case infinite scroll will be 'disabled'
-              hasMore={Boolean(hasMoreItems)}
-              loader={
-                <Box key={0} display="flex" justifyContent="center" m={1}>
-                  <CircularProgress size={16} />
-                </Box>
-              }
-              useWindow={false}
-              getScrollParent={() => listRef.current}
-            >
-              {items.map((item, i) => (
-                <ListItemButton
-                  disabled={disabled || inProgressIds.includes(item.id) || disabledItems?.[item.id]}
-                  key={item.id}
-                  role="listitem"
-                  onClick={(e) => onItemClick(item, e)}
-                >
-                  {!disabled && (
-                    <ListItemIcon>
-                      {inProgressIds.includes(item.id) ? (
-                        <CircularProgress size={42} />
-                      ) : (
-                        <Checkbox
-                          checked={(checkedList[item.id] && !disabledItems?.[item.id]) ?? false}
-                          tabIndex={-1}
-                          disableRipple
-                        />
-                      )}
-                    </ListItemIcon>
-                  )}
-                  <ListItemText
-                    primary={item.title}
-                    secondary={item.subtitle}
-                    primaryTypographyProps={{ noWrap: true, title: item.title }}
-                  />
-                </ListItemButton>
-              ))}
-            </InfiniteScroll>
-          )
-        ) : (
-          emptyStateMessage && <EmptyState title={emptyStateMessage} />
-        )}
-      </List>
-    </Paper>
-  );
+	const onSearch = (value) => {
+		onFilter?.(value);
+		setKeyword(value);
+	};
+
+	return (
+		<Paper sx={{ flexBasis: '50%', overflow: 'hidden' }}>
+			<Box
+				component="header"
+				sx={{
+					display: 'flex',
+					padding: '15px 16px',
+					alignItems: 'center',
+					borderBottom: (theme) => `1px solid ${theme.palette.divider}`
+				}}
+			>
+				{!disabled && onCheckAllClicked && (
+					<Checkbox
+						disabled={items?.length === 0}
+						checked={isAllChecked}
+						onChange={(event) => onCheckAllClicked(items, event.target.checked)}
+					/>
+				)}
+				{title && <Typography color="textSecondary">{title}</Typography>}
+				<SearchBar
+					keyword={keyword}
+					onChange={onSearch}
+					sxs={{
+						root: {
+							width: '100%',
+							marginLeft: '20px'
+						}
+					}}
+					showActionButton={Boolean(keyword)}
+				/>
+			</Box>
+			<List dense component="div" role="list" sx={{ height: '310px', overflow: 'auto' }} ref={listRef}>
+				{items ? (
+					items.length === 0 ? (
+						<EmptyState
+							title={
+								<FormattedMessage
+									id="transferListColumn.noResults"
+									defaultMessage="No results, try to change the query"
+								/>
+							}
+						/>
+					) : (
+						<InfiniteLoader
+							isItemLoaded={isItemLoaded}
+							loadMoreItems={() => {
+								onFetchMore({ keyword });
+							}}
+							itemCount={currentItemsCount}
+						>
+							{({ onItemsRendered, ref }) => (
+								<AutoSizer>
+									{({ height, width }) => (
+										<FixedSizeList
+											className="List"
+											height={height}
+											itemCount={currentItemsCount}
+											itemSize={60.03}
+											onItemsRendered={onItemsRendered}
+											ref={ref}
+											width={width}
+										>
+											{({ index, style }) => {
+												let content;
+												if (!isItemLoaded(index)) {
+													content = (
+														<Box key={0} display="flex" justifyContent="center" m={1}>
+															<CircularProgress size={16} />
+														</Box>
+													);
+												} else {
+													const item = items[index];
+													content = (
+														<ListItemButton
+															disabled={disabled || inProgressIds.includes(item.id) || disabledItems?.[item.id]}
+															key={item.id}
+															role="listitem"
+															onClick={(e) => onItemClick(item, e)}
+														>
+															{!disabled && (
+																<ListItemIcon>
+																	{inProgressIds.includes(item.id) ? (
+																		<CircularProgress size={42} />
+																	) : (
+																		<Checkbox
+																			checked={(checkedList[item.id] && !disabledItems?.[item.id]) ?? false}
+																			tabIndex={-1}
+																			disableRipple
+																		/>
+																	)}
+																</ListItemIcon>
+															)}
+															<ListItemText
+																primary={item.title}
+																secondary={item.subtitle}
+																primaryTypographyProps={{ noWrap: true, title: item.title }}
+															/>
+														</ListItemButton>
+													);
+												}
+												return <div style={style}>{content}</div>;
+											}}
+										</FixedSizeList>
+									)}
+								</AutoSizer>
+							)}
+						</InfiniteLoader>
+					)
+				) : (
+					emptyStateMessage && <EmptyState title={emptyStateMessage} />
+				)}
+			</List>
+		</Paper>
+	);
 }
 
 export default TransferListColumn;

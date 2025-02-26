@@ -25,166 +25,178 @@ import TableContainer from '@mui/material/TableContainer';
 import React from 'react';
 import Checkbox from '@mui/material/Checkbox';
 import ItemDisplay from '../ItemDisplay';
-import useStyles from './styles';
 import { SandboxItem } from '../../models/Item';
 import { PagedArray } from '../../models/PagedArray';
 import Pagination from '../Pagination';
 import LookupTable from '../../models/LookupTable';
 
 export interface WorkflowStatesGridUIProps {
-  itemStates: PagedArray<SandboxItem>;
-  selectedItems: LookupTable<SandboxItem>;
-  allItemsSelected: boolean;
-  hasThisPageItemsChecked: boolean;
-  isThisPageIndeterminate: boolean;
-  onToggleSelectedItems(): void;
-  onItemSelected(item: SandboxItem, value: boolean): void;
-  onPageChange(page: number): void;
-  onRowSelected(item: SandboxItem): void;
-  onRowsPerPageChange?: React.ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
+	itemStates: PagedArray<SandboxItem>;
+	selectedItems: LookupTable<SandboxItem>;
+	allItemsSelected: boolean;
+	hasThisPageItemsChecked: boolean;
+	isThisPageIndeterminate: boolean;
+	onToggleSelectedItems(): void;
+	onItemSelected(item: SandboxItem, value: boolean): void;
+	onPageChange(page: number): void;
+	onRowSelected(item: SandboxItem): void;
+	onRowsPerPageChange?: React.ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
 }
 
 export function ItemStatesGridUI(props: WorkflowStatesGridUIProps) {
-  const {
-    itemStates,
-    onPageChange,
-    onRowsPerPageChange,
-    selectedItems,
-    onItemSelected,
-    onRowSelected,
-    onToggleSelectedItems,
-    allItemsSelected,
-    hasThisPageItemsChecked,
-    isThisPageIndeterminate
-  } = props;
-  const { classes, cx: clsx } = useStyles();
-
-  return (
-    <>
-      <TableContainer className={classes.tableContainer}>
-        <Table size="small">
-          <TableHead>
-            <GlobalAppGridRow className="hoverDisabled">
-              <GlobalAppGridCell align="center">
-                <Checkbox
-                  checked={allItemsSelected || hasThisPageItemsChecked}
-                  indeterminate={hasThisPageItemsChecked ? isThisPageIndeterminate : false}
-                  onClick={(e) => onToggleSelectedItems()}
-                />
-              </GlobalAppGridCell>
-              <GlobalAppGridCell className="width60 pl0">
-                <Typography variant="subtitle2">
-                  <FormattedMessage id="words.item" defaultMessage="Item" />
-                </Typography>
-              </GlobalAppGridCell>
-              <GlobalAppGridCell className="width20">
-                <Typography variant="subtitle2">
-                  <FormattedMessage id="words.processing" defaultMessage="Processing" />
-                </Typography>
-              </GlobalAppGridCell>
-              <GlobalAppGridCell className="width40">
-                <Typography variant="subtitle2">
-                  <FormattedMessage id="words.locked" defaultMessage="Locked" />
-                </Typography>
-              </GlobalAppGridCell>
-              <GlobalAppGridCell className="width20">
-                <Typography variant="subtitle2">
-                  <FormattedMessage id="words.live" defaultMessage="Live" />
-                </Typography>
-              </GlobalAppGridCell>
-              <GlobalAppGridCell className="width20">
-                <Typography variant="subtitle2">
-                  <FormattedMessage id="words.staged" defaultMessage="Staged" />
-                </Typography>
-              </GlobalAppGridCell>
-            </GlobalAppGridRow>
-          </TableHead>
-          <TableBody>
-            {itemStates.map((item) => (
-              <GlobalAppGridRow
-                key={item.id}
-                onClick={() => onRowSelected(item)}
-                className={clsx((Boolean(selectedItems[item.path]) || allItemsSelected) && classes.rowSelected)}
-              >
-                <GlobalAppGridCell align="center">
-                  <Checkbox
-                    checked={allItemsSelected || Boolean(selectedItems[item.path])}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                    }}
-                    onChange={(e) => {
-                      onItemSelected(item, e.target.checked);
-                    }}
-                  />
-                </GlobalAppGridCell>
-                <GlobalAppGridCell className="ellipsis maxWidth300 pl0">
-                  <ItemDisplay item={item} />
-                  <Typography
-                    title={item.path}
-                    variant="caption"
-                    component="p"
-                    className={clsx(classes.itemPath, classes.ellipsis)}
-                  >
-                    {item.path}
-                  </Typography>
-                </GlobalAppGridCell>
-                <GlobalAppGridCell>
-                  <Typography variant="body2">
-                    {item.stateMap.systemProcessing ? (
-                      <FormattedMessage id="words.yes" defaultMessage="Yes" />
-                    ) : (
-                      <FormattedMessage id="words.no" defaultMessage="No" />
-                    )}
-                  </Typography>
-                </GlobalAppGridCell>
-                <GlobalAppGridCell>
-                  <Typography variant="body2" className={classes.ellipsis} title={item.lockOwner?.username}>
-                    {item.stateMap.locked ? (
-                      <FormattedMessage
-                        id="itemStates.lockedBy"
-                        defaultMessage="By {owner}"
-                        values={{
-                          owner: item.lockOwner?.username
-                        }}
-                      />
-                    ) : (
-                      <FormattedMessage id="words.no" defaultMessage="No" />
-                    )}
-                  </Typography>
-                </GlobalAppGridCell>
-                <GlobalAppGridCell>
-                  <Typography variant="body2">
-                    {item.stateMap.live ? (
-                      <FormattedMessage id="words.yes" defaultMessage="Yes" />
-                    ) : (
-                      <FormattedMessage id="words.no" defaultMessage="No" />
-                    )}
-                  </Typography>
-                </GlobalAppGridCell>
-                <GlobalAppGridCell>
-                  <Typography variant="body2">
-                    {item.stateMap.staged ? (
-                      <FormattedMessage id="words.yes" defaultMessage="Yes" />
-                    ) : (
-                      <FormattedMessage id="words.no" defaultMessage="No" />
-                    )}
-                  </Typography>
-                </GlobalAppGridCell>
-              </GlobalAppGridRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <Pagination
-        mode="table"
-        count={itemStates.total}
-        rowsPerPage={itemStates.limit}
-        page={itemStates && Math.ceil(itemStates.offset / itemStates.limit)}
-        onPageChange={(e, page: number) => onPageChange(page)}
-        onRowsPerPageChange={onRowsPerPageChange}
-      />
-    </>
-  );
+	const {
+		itemStates,
+		onPageChange,
+		onRowsPerPageChange,
+		selectedItems,
+		onItemSelected,
+		onRowSelected,
+		onToggleSelectedItems,
+		allItemsSelected,
+		hasThisPageItemsChecked,
+		isThisPageIndeterminate
+	} = props;
+	return (
+		<>
+			<TableContainer>
+				<Table size="small">
+					<TableHead>
+						<GlobalAppGridRow className="hoverDisabled">
+							<GlobalAppGridCell align="center">
+								<Checkbox
+									checked={allItemsSelected || hasThisPageItemsChecked}
+									indeterminate={hasThisPageItemsChecked ? isThisPageIndeterminate : false}
+									onClick={(e) => onToggleSelectedItems()}
+								/>
+							</GlobalAppGridCell>
+							<GlobalAppGridCell className="width60 pl0">
+								<Typography variant="subtitle2">
+									<FormattedMessage id="words.item" defaultMessage="Item" />
+								</Typography>
+							</GlobalAppGridCell>
+							<GlobalAppGridCell className="width20">
+								<Typography variant="subtitle2">
+									<FormattedMessage id="words.processing" defaultMessage="Processing" />
+								</Typography>
+							</GlobalAppGridCell>
+							<GlobalAppGridCell className="width40">
+								<Typography variant="subtitle2">
+									<FormattedMessage id="words.locked" defaultMessage="Locked" />
+								</Typography>
+							</GlobalAppGridCell>
+							<GlobalAppGridCell className="width20">
+								<Typography variant="subtitle2">
+									<FormattedMessage id="words.live" defaultMessage="Live" />
+								</Typography>
+							</GlobalAppGridCell>
+							<GlobalAppGridCell className="width20">
+								<Typography variant="subtitle2">
+									<FormattedMessage id="words.staged" defaultMessage="Staged" />
+								</Typography>
+							</GlobalAppGridCell>
+						</GlobalAppGridRow>
+					</TableHead>
+					<TableBody>
+						{itemStates.map((item) => (
+							<GlobalAppGridRow
+								key={item.id}
+								onClick={() => onRowSelected(item)}
+								sx={{
+									backgroundColor: Boolean(selectedItems[item.path]) || allItemsSelected ? 'action.selected' : 'inherit'
+								}}
+							>
+								<GlobalAppGridCell align="center">
+									<Checkbox
+										checked={allItemsSelected || Boolean(selectedItems[item.path])}
+										onClick={(e) => {
+											e.stopPropagation();
+										}}
+										onChange={(e) => {
+											onItemSelected(item, e.target.checked);
+										}}
+									/>
+								</GlobalAppGridCell>
+								<GlobalAppGridCell className="ellipsis maxWidth300 pl0">
+									<ItemDisplay item={item} />
+									<Typography
+										title={item.path}
+										variant="caption"
+										component="p"
+										sx={{
+											color: (theme) => theme.palette.text.secondary,
+											overflow: 'hidden',
+											textOverflow: 'ellipsis',
+											whiteSpace: 'nowrap'
+										}}
+									>
+										{item.path}
+									</Typography>
+								</GlobalAppGridCell>
+								<GlobalAppGridCell>
+									<Typography variant="body2">
+										{item.stateMap.systemProcessing ? (
+											<FormattedMessage id="words.yes" defaultMessage="Yes" />
+										) : (
+											<FormattedMessage id="words.no" defaultMessage="No" />
+										)}
+									</Typography>
+								</GlobalAppGridCell>
+								<GlobalAppGridCell>
+									<Typography
+										variant="body2"
+										sx={{
+											overflow: 'hidden',
+											textOverflow: 'ellipsis',
+											whiteSpace: 'nowrap'
+										}}
+										title={item.lockOwner?.username}
+									>
+										{item.stateMap.locked ? (
+											<FormattedMessage
+												id="itemStates.lockedBy"
+												defaultMessage="By {owner}"
+												values={{
+													owner: item.lockOwner?.username
+												}}
+											/>
+										) : (
+											<FormattedMessage id="words.no" defaultMessage="No" />
+										)}
+									</Typography>
+								</GlobalAppGridCell>
+								<GlobalAppGridCell>
+									<Typography variant="body2">
+										{item.stateMap.live ? (
+											<FormattedMessage id="words.yes" defaultMessage="Yes" />
+										) : (
+											<FormattedMessage id="words.no" defaultMessage="No" />
+										)}
+									</Typography>
+								</GlobalAppGridCell>
+								<GlobalAppGridCell>
+									<Typography variant="body2">
+										{item.stateMap.staged ? (
+											<FormattedMessage id="words.yes" defaultMessage="Yes" />
+										) : (
+											<FormattedMessage id="words.no" defaultMessage="No" />
+										)}
+									</Typography>
+								</GlobalAppGridCell>
+							</GlobalAppGridRow>
+						))}
+					</TableBody>
+				</Table>
+			</TableContainer>
+			<Pagination
+				mode="table"
+				count={itemStates.total}
+				rowsPerPage={itemStates.limit}
+				page={itemStates && Math.ceil(itemStates.offset / itemStates.limit)}
+				onPageChange={(e, page: number) => onPageChange(page)}
+				onRowsPerPageChange={onRowsPerPageChange}
+			/>
+		</>
+	);
 }
 
 export default ItemStatesGridUI;

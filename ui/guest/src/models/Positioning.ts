@@ -15,41 +15,41 @@
  */
 
 export interface Coordinates {
-  x: number;
-  y: number;
+	x: number;
+	y: number;
 }
 
 export interface DropMarkerPositionArgs {
-  arrangement: string;
-  insertPosition: string;
-  refElementRect: DOMRect;
-  nextOrPrevRect: DOMRect;
-  refElement: Element;
+	arrangement: string;
+	insertPosition: string;
+	refElementRect: DOMRect;
+	nextOrPrevRect: DOMRect;
+	refElement: Element;
 }
 
 export interface DropMarkerPosition {
-  height?: number;
-  width?: number;
-  top: number;
-  left: number;
+	height?: number;
+	width?: number;
+	top: number;
+	left: number;
 }
 
 export interface Highlight {
-  id: number;
-  rect: DOMRect;
-  label: string;
+	id: number;
+	rect: DOMRect;
+	label: string;
 }
 
 export interface InRectStats {
-  inRectTop: boolean;
-  inRectRight: boolean;
-  inRectBottom: boolean;
-  inRectLeft: boolean;
-  inRect: boolean;
-  inInnerRectTop: boolean;
-  inInnerRectRight: boolean;
-  inInnerRectBottom: boolean;
-  inInnerRectLeft: boolean;
-  inInnerRect: boolean;
-  percents: Coordinates;
+	inRectTop: boolean;
+	inRectRight: boolean;
+	inRectBottom: boolean;
+	inRectLeft: boolean;
+	inRect: boolean;
+	inInnerRectTop: boolean;
+	inInnerRectRight: boolean;
+	inInnerRectBottom: boolean;
+	inInnerRectLeft: boolean;
+	inInnerRect: boolean;
+	percents: Coordinates;
 }

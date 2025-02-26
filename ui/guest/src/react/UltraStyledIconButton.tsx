@@ -21,14 +21,14 @@ import { svgIconClasses } from '@mui/material/SvgIcon';
 // The idea of this component is to be as specific as possible to avoid guest site styles to break ours.
 
 export const UltraStyledIconButton = styled(IconButton)({
-  boxShadow: 'none !important',
-  border: 'none !important',
-  color: 'inherit !important',
-  height: 'inherit !important',
-  width: 'inherit !important',
-  [`& .${svgIconClasses.root}`]: {
-    fontSize: 21
-  }
+	boxShadow: 'none !important',
+	border: 'none !important',
+	color: 'inherit !important',
+	height: 'inherit !important',
+	width: 'inherit !important',
+	[`& .${svgIconClasses.root}`]: {
+		fontSize: 21
+	}
 });
 
 export default UltraStyledIconButton;

@@ -15,70 +15,70 @@
  */
 
 body {
-  background-color: #fafafa;
-  text-align: center;
+	background-color: #fafafa;
+	text-align: center;
 }
 
 a {
-  color: #0176b1;
-  text-decoration: none;
+	color: #0176b1;
+	text-decoration: none;
 }
 
 a:hover {
-  color: #005986;
+	color: #005986;
 }
 
 input {
-  font-size: 9px;
+	font-size: 9px;
 
-  border: 1px solid #534a3d;
-  padding: 2px;
-  color: #999999;
-  margin-bottom: 6px;
+	border: 1px solid #534a3d;
+	padding: 2px;
+	color: #999999;
+	margin-bottom: 6px;
 }
 
 .yui-panel-container.shadow .underlay {
-  display: none;
+	display: none;
 }
 
 .yui-skin-sam .yui-panel {
-  border-style: none;
+	border-style: none;
 }
 
 .login-panel {
-  background: transparent url('./images/bar_bg1.gif') no-repeat;
+	background: transparent url('./images/bar_bg1.gif') no-repeat;
 }
 
 .login-button {
-  background-color: #f0f0f0;
+	background-color: #f0f0f0;
 }
 
 #footer {
-  border-width: 1px 0 0 0;
-  border-style: dotted;
-  border-color: #000;
-  clear: both;
-  margin: 30px 30px 30px 30px;
-  padding: 10px 0 0 0;
-  height: 30px;
+	border-width: 1px 0 0 0;
+	border-style: dotted;
+	border-color: #000;
+	clear: both;
+	margin: 30px 30px 30px 30px;
+	padding: 10px 0 0 0;
+	height: 30px;
 }
 
 .login-copyright {
-  float: right;
+	float: right;
 }
 
 .login-contact {
-  float: left;
+	float: left;
 }
 
 .login-logo {
-  margin-left: 200px;
-  height: 40px;
-  width: 450px;
+	margin-left: 200px;
+	height: 40px;
+	width: 450px;
 
-  background: transparent url('./images/app-logo.png') no-repeat;
+	background: transparent url('./images/app-logo.png') no-repeat;
 }
 
 .errorStyle {
-  color: red;
+	color: red;
 }

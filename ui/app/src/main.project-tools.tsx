@@ -31,9 +31,9 @@ createCodebaseBridge();
 
 const footerData = JSON.parse(document.getElementById('siteToolsFooterData').textContent);
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <CrafterCMSNextBridge>
-      <SiteTools footerHtml={unescapeHTML(footerData.description)} />
-    </CrafterCMSNextBridge>
-  </StrictMode>
+	<StrictMode>
+		<CrafterCMSNextBridge>
+			<SiteTools footerHtml={unescapeHTML(footerData.description)} />
+		</CrafterCMSNextBridge>
+	</StrictMode>
 );

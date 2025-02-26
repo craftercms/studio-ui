@@ -14,54 +14,53 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { makeStyles } from 'tss-react/mui';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import React, { PropsWithChildren } from 'react';
-import { CSSObject as CSSProperties } from 'tss-react';
+import { PartialSxRecord } from '../../models';
+import { Theme } from '@mui/material';
+import { SystemStyleObject } from '@mui/system/styleFunctionSx/styleFunctionSx';
 
 export type ViewToolbarClassKey = 'appBar' | 'toolbar';
 
-export type ViewToolbarStyles = Partial<Record<ViewToolbarClassKey, CSSProperties>>;
-
 type ViewToolbarProps = PropsWithChildren<{
-  elevation?: number;
-  styles?: ViewToolbarStyles;
-  classes?: Partial<Record<ViewToolbarClassKey, string>>;
+	elevation?: number;
+	classes?: Partial<Record<ViewToolbarClassKey, string>>;
+	sxs?: PartialSxRecord<ViewToolbarClassKey>;
 }>;
 
-const useStyles = makeStyles<ViewToolbarStyles, ViewToolbarClassKey>()((theme, { appBar, toolbar } = {} as any) => ({
-  appBar: {
-    borderBottom: `1px solid ${theme.palette.divider}`,
-    background: theme.palette.background.paper,
-    color: theme.palette.text.primary,
-    ...appBar
-  },
-  toolbar: {
-    paddingLeft: theme.spacing(1.5),
-    paddingRight: theme.spacing(1.5),
-    placeContent: 'center space-between',
-    '& > section': {
-      display: 'flex',
-      alignItems: 'center'
-    },
-    ...toolbar
-  }
-}));
-
 export const ViewToolbar = React.memo<ViewToolbarProps>(function (props) {
-  const { classes, cx } = useStyles(props.styles);
-  const { children, elevation = 0 } = props;
-  return (
-    <AppBar
-      color="inherit"
-      position="relative"
-      elevation={elevation}
-      className={cx(classes.appBar, props.classes?.appBar)}
-    >
-      <Toolbar className={cx(classes.toolbar, props.classes?.toolbar)}>{children}</Toolbar>
-    </AppBar>
-  );
+	const { children, elevation = 0, sxs } = props;
+	return (
+		<AppBar
+			color="inherit"
+			position="relative"
+			elevation={elevation}
+			className={props.classes?.appBar}
+			sx={(theme) => ({
+				borderBottom: `1px solid ${theme.palette.divider}`,
+				background: theme.palette.background.paper,
+				color: theme.palette.text.primary,
+				...(sxs?.appBar as SystemStyleObject<Theme>)
+			})}
+		>
+			<Toolbar
+				className={props.classes?.toolbar}
+				sx={(theme) => ({
+					paddingLeft: `${theme.spacing(1.5)} !important`,
+					paddingRight: `${theme.spacing(1.5)} !important`,
+					placeContent: 'center space-between',
+					'& > section': {
+						display: 'flex',
+						alignItems: 'center'
+					},
+					...(sxs?.toolbar as SystemStyleObject<Theme>)
+				})}
+			>
+				{children}
+			</Toolbar>
+		</AppBar>
+	);
 });
 
 export default ViewToolbar;

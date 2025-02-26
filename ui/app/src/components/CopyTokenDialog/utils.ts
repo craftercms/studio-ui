@@ -17,11 +17,11 @@ import { Token } from '../../models/Token';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 
 export interface CopyTokenBaseProps {
-  token: Token;
+	token: Token;
 }
 
 export interface CopyTokenProps extends CopyTokenBaseProps, EnhancedDialogProps {
-  onCopy?(): void;
+	onCopy?(): void;
 }
 
 export interface CopyTokenContainerProps extends CopyTokenBaseProps, Pick<CopyTokenProps, 'onClose' | 'onCopy'> {}

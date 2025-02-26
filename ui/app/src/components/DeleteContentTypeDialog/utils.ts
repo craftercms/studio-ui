@@ -20,23 +20,23 @@ import React from 'react';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 
 export interface DeleteContentTypeBaseProps {
-  contentType: ContentType;
+	contentType: ContentType;
 }
 
 export interface DeleteContentTypeDialogProps extends DeleteContentTypeBaseProps, EnhancedDialogProps {
-  onSubmittingAndOrPendingChange(value: onSubmittingAndOrPendingChangeProps): void;
-  onComplete?();
+	onSubmittingAndOrPendingChange(value: onSubmittingAndOrPendingChangeProps): void;
+	onComplete?();
 }
 
 export interface DeleteContentTypeDialogContainerProps
-  extends DeleteContentTypeBaseProps,
-    Pick<DeleteContentTypeDialogProps, 'onComplete' | 'onClose' | 'isSubmitting' | 'onSubmittingAndOrPendingChange'> {}
+	extends DeleteContentTypeBaseProps,
+		Pick<DeleteContentTypeDialogProps, 'onComplete' | 'onClose' | 'isSubmitting' | 'onSubmittingAndOrPendingChange'> {}
 
 export interface DeleteContentTypeDialogBodyProps {
-  submitting: boolean;
-  contentType: ContentType;
-  data: FetchContentTypeUsageResponse;
-  password?: string;
-  onCloseButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
-  onSubmit(): void;
+	submitting: boolean;
+	contentType: ContentType;
+	data: FetchContentTypeUsageResponse;
+	password?: string;
+	onCloseButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
+	onSubmit(): void;
 }

@@ -19,43 +19,43 @@ import { ErrorStateProps } from '../ErrorState/ErrorState';
 import { renderErrorState } from '../ErrorState/util';
 
 export type ErrorBoundaryProps = PropsWithChildren<{
-  onReset?(): void;
-  errorStateProps?: ErrorStateProps;
+	onReset?(): void;
+	errorStateProps?: ErrorStateProps;
 }>;
 
 export class ErrorBoundary extends React.Component<ErrorBoundaryProps> {
-  state = { error: null };
+	state = { error: null };
 
-  static getDerivedStateFromError(error) {
-    return { error };
-  }
+	static getDerivedStateFromError(error) {
+		return { error };
+	}
 
-  componentDidCatch(error, errorInfo) {
-    // TODO: Log to an error reporting service
-  }
+	componentDidCatch(error, errorInfo) {
+		// TODO: Log to an error reporting service
+	}
 
-  reset() {
-    this.setState({ error: null });
-  }
+	reset() {
+		this.setState({ error: null });
+	}
 
-  render() {
-    const errorStateProps = {
-      ...this.props.errorStateProps,
-      onBack: (e) => {
-        this.props.errorStateProps?.onButtonClick?.(e);
-        if (this.props.onReset) {
-          this.props.onReset();
-          // Move the ErrorBoundary's reset to the next cycle so any
-          // clean up performed by the ErrorBoundary's children "onReset"
-          // is applied and the error boundary is not re-shown immediately
-          setTimeout(() => this.reset());
-        } else {
-          this.reset();
-        }
-      }
-    };
-    return this.state.error ? renderErrorState(this.state.error, errorStateProps) : this.props.children;
-  }
+	render() {
+		const errorStateProps = {
+			...this.props.errorStateProps,
+			onBack: (e) => {
+				this.props.errorStateProps?.onButtonClick?.(e);
+				if (this.props.onReset) {
+					this.props.onReset();
+					// Move the ErrorBoundary's reset to the next cycle so any
+					// clean up performed by the ErrorBoundary's children "onReset"
+					// is applied and the error boundary is not re-shown immediately
+					setTimeout(() => this.reset());
+				} else {
+					this.reset();
+				}
+			}
+		};
+		return this.state.error ? renderErrorState(this.state.error, errorStateProps) : this.props.children;
+	}
 }
 
 export default ErrorBoundary;

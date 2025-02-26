@@ -20,40 +20,40 @@ CStudioAuthoring.Utils.addJavascript('/static-assets/components/cstudio-forms/fo
  * In-Context Editing (ICE)
  */
 CStudioAuthoring.IceTools = CStudioAuthoring.IceTools || {
-  IceToolsOffEvent: new YAHOO.util.CustomEvent('cstudio-ice-tools-off', CStudioAuthoring),
-  IceToolsOnEvent: new YAHOO.util.CustomEvent('cstudio-ice-tools-on', CStudioAuthoring),
+	IceToolsOffEvent: new YAHOO.util.CustomEvent('cstudio-ice-tools-off', CStudioAuthoring),
+	IceToolsOnEvent: new YAHOO.util.CustomEvent('cstudio-ice-tools-on', CStudioAuthoring),
 
-  initialized: false,
+	initialized: false,
 
-  /**
-   * initialize module
-   */
-  initialize: function (config) {
-    var iceOn;
+	/**
+	 * initialize module
+	 */
+	initialize: function (config) {
+		var iceOn;
 
-    if (this.initialized == false) {
-      iceOn = !!sessionStorage.getItem('ice-on'); // cast string value to a boolean
+		if (this.initialized == false) {
+			iceOn = !!sessionStorage.getItem('ice-on'); // cast string value to a boolean
 
-      if (iceOn) {
-        this.IceToolsOnEvent.fire();
-      }
+			if (iceOn) {
+				this.IceToolsOnEvent.fire();
+			}
 
-      this.initialized = true;
-    }
-  },
+			this.initialized = true;
+		}
+	},
 
-  turnEditOn: function () {
-    /*if(!!(sessionStorage.getItem('pto-on') == false)) {   // cast string value to a boolean
+	turnEditOn: function () {
+		/*if(!!(sessionStorage.getItem('pto-on') == false)) {   // cast string value to a boolean
 			CStudioAuthoring.PreviewTools.turnToolsOn();
 		}*/
-    sessionStorage.setItem('ice-on', 'on');
-    this.IceToolsOnEvent.fire();
-  },
+		sessionStorage.setItem('ice-on', 'on');
+		this.IceToolsOnEvent.fire();
+	},
 
-  turnEditOff: function () {
-    sessionStorage.setItem('ice-on', '');
-    this.IceToolsOffEvent.fire();
-  }
+	turnEditOff: function () {
+		sessionStorage.setItem('ice-on', '');
+		this.IceToolsOffEvent.fire();
+	}
 };
 
 CStudioAuthoring.Module.moduleLoaded('ice-tools', CStudioAuthoring.IceTools);

@@ -19,15 +19,15 @@ import List from '@mui/material/List';
 import PathNavigatorSkeletonItem from './PathNavigatorSkeletonItem';
 
 export function PathNavigatorSkeletonList(props: { numOfItems?: number }) {
-  const { numOfItems = 5 } = props;
-  const items = new Array(numOfItems).fill(null);
-  return (
-    <List component="nav" disablePadding>
-      {items.map((value, i) => (
-        <PathNavigatorSkeletonItem key={i} />
-      ))}
-    </List>
-  );
+	const { numOfItems = 5 } = props;
+	const items = new Array(numOfItems).fill(null);
+	return (
+		<List component="nav" disablePadding>
+			{items.map((value, i) => (
+				<PathNavigatorSkeletonItem key={i} />
+			))}
+		</List>
+	);
 }
 
 export default PathNavigatorSkeletonList;

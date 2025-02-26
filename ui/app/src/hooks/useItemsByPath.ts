@@ -18,7 +18,7 @@ import GlobalState from '../models/GlobalState';
 import { useSelection } from './useSelection';
 
 export function useItemsByPath(): GlobalState['content']['itemsByPath'] {
-  return useSelection((state) => state.content.itemsByPath);
+	return useSelection((state) => state.content.itemsByPath);
 }
 
 export default useItemsByPath;

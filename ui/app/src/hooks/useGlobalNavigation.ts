@@ -22,14 +22,14 @@ import { nou } from '../utils/object';
 import { fetchGlobalMenu } from '../state/actions/system';
 
 export function useGlobalNavigation(): GlobalState['globalNavigation'] {
-  const dispatch = useDispatch();
-  const data = useSelection((state) => state.globalNavigation);
-  useEffect(() => {
-    if (nou(data.items) && nou(data.error) && !data.isFetching) {
-      dispatch(fetchGlobalMenu());
-    }
-  }, [data.error, data.isFetching, data.items, dispatch]);
-  return data;
+	const dispatch = useDispatch();
+	const data = useSelection((state) => state.globalNavigation);
+	useEffect(() => {
+		if (nou(data.items) && nou(data.error) && !data.isFetching) {
+			dispatch(fetchGlobalMenu());
+		}
+	}, [data.error, data.isFetching, data.items, dispatch]);
+	return data;
 }
 
 export default useGlobalNavigation;

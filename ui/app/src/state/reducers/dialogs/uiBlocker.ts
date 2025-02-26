@@ -21,11 +21,11 @@ import { blockUI, unblockUI } from '../../actions/system';
 const initialState: UIBlockerStateProps = { open: false, progress: 'indeterminate' };
 
 export default createReducer<UIBlockerStateProps>(initialState, (builder) => {
-  builder
-    .addCase(blockUI, (state, { payload }) => ({
-      ...state,
-      ...(payload as Partial<UIBlockerStateProps>),
-      open: true
-    }))
-    .addCase(unblockUI, () => initialState);
+	builder
+		.addCase(blockUI, (state, { payload }) => ({
+			...state,
+			...(payload as Partial<UIBlockerStateProps>),
+			open: true
+		}))
+		.addCase(unblockUI, () => initialState);
 });

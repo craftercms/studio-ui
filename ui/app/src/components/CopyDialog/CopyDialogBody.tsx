@@ -31,104 +31,104 @@ import { useDispatch } from 'react-redux';
 import { updateCopyDialog } from '../../state/actions/dialogs';
 
 export interface CopyDialogBodyProps
-  extends CopyDialogCallbacks,
-    Pick<CopyDialogBaseProps, 'site' | 'item'>,
-    Pick<EnhancedDialogProps, 'onClose'> {
-  disabled: boolean;
+	extends CopyDialogCallbacks,
+		Pick<CopyDialogBaseProps, 'site' | 'item'>,
+		Pick<EnhancedDialogProps, 'onClose'> {
+	disabled: boolean;
 }
 
 export function CopyDialogBody(props: CopyDialogBodyProps) {
-  const { onOk, item, site, onClose, disabled } = props;
-  const { formatMessage } = useIntl();
-  const dispatch = useDispatch();
-  const [data, setData] = useState<{
-    item: LegacyItem;
-    parents: LookupTable<string>;
-    children: LookupTable<Array<string>>;
-    paths: string[];
-  }>(null);
+	const { onOk, item, site, onClose, disabled } = props;
+	const { formatMessage } = useIntl();
+	const dispatch = useDispatch();
+	const [data, setData] = useState<{
+		item: LegacyItem;
+		parents: LookupTable<string>;
+		children: LookupTable<Array<string>>;
+		paths: string[];
+	}>(null);
 
-  const [selected, setSelected] = useState([]);
+	const [selected, setSelected] = useState([]);
 
-  const onItemSelected = (checked: boolean, node: LegacyItem) => {
-    if (checked) {
-      const nextSelected = [...selected, node.uri];
-      if (data.parents[node.uri] && !selected.includes(data.parents[node.uri])) {
-        nextSelected.push(data.parents[node.uri]);
-      }
-      setSelected(nextSelected);
-    } else {
-      setSelected(selected.filter((path) => path !== node.uri && !data.children[node.uri]?.includes(path)));
-    }
-  };
+	const onItemSelected = (checked: boolean, node: LegacyItem) => {
+		if (checked) {
+			const nextSelected = [...selected, node.uri];
+			if (data.parents[node.uri] && !selected.includes(data.parents[node.uri])) {
+				nextSelected.push(data.parents[node.uri]);
+			}
+			setSelected(nextSelected);
+		} else {
+			setSelected(selected.filter((path) => path !== node.uri && !data.children[node.uri]?.includes(path)));
+		}
+	};
 
-  const onToggleSelectAll = () => {
-    if (data.paths.length === selected.length) {
-      setSelected([]);
-    } else {
-      setSelected(data.paths);
-    }
-  };
+	const onToggleSelectAll = () => {
+		if (data.paths.length === selected.length) {
+			setSelected([]);
+		} else {
+			setSelected(data.paths);
+		}
+	};
 
-  const onCopy = () => {
-    onOk?.({ paths: selected });
-  };
+	const onCopy = () => {
+		onOk?.({ paths: selected });
+	};
 
-  useEffect(() => {
-    // Disable dismissing the dialog until the data has finished fetching. The call is expensive; don't want people
-    // dismissing by mistake.
-    dispatch(updateCopyDialog({ isSubmitting: true }));
-    fetchLegacyItemsTree(site, item.path, { depth: 1000, order: 'default' }).subscribe({
-      next(item: LegacyItem) {
-        let paths = [];
-        let children = {};
-        let parents = {};
-        function process(parent: LegacyItem) {
-          paths.push(parent.uri);
-          if (parent.children.length) {
-            children[parent.uri] = [];
-            parent.children.forEach((item: LegacyItem) => {
-              parents[item.uri] = parent.uri;
-              children[parent.uri].push(item.uri);
-              if (item.children) {
-                process(item);
-              }
-            });
-          }
-        }
-        process(item);
-        setSelected(paths);
-        setData({ item, parents, children, paths });
-        dispatch(updateCopyDialog({ isSubmitting: false }));
-      }
-    });
-  }, [dispatch, item.path, site]);
+	useEffect(() => {
+		// Disable dismissing the dialog until the data has finished fetching. The call is expensive; don't want people
+		// dismissing by mistake.
+		dispatch(updateCopyDialog({ isSubmitting: true }));
+		fetchLegacyItemsTree(site, item.path, { depth: 1000, order: 'default' }).subscribe({
+			next(item: LegacyItem) {
+				let paths = [];
+				let children = {};
+				let parents = {};
+				function process(parent: LegacyItem) {
+					paths.push(parent.uri);
+					if (parent.children.length) {
+						children[parent.uri] = [];
+						parent.children.forEach((item: LegacyItem) => {
+							parents[item.uri] = parent.uri;
+							children[parent.uri].push(item.uri);
+							if (item.children) {
+								process(item);
+							}
+						});
+					}
+				}
+				process(item);
+				setSelected(paths);
+				setData({ item, parents, children, paths });
+				dispatch(updateCopyDialog({ isSubmitting: false }));
+			}
+		});
+	}, [dispatch, item.path, site]);
 
-  return (
-    <>
-      <DialogBody minHeight>
-        {data ? (
-          <ItemSelectorTree
-            item={data.item}
-            paths={data.paths}
-            selected={selected}
-            handleSelect={onItemSelected}
-            toggleSelectAll={onToggleSelectAll}
-          />
-        ) : (
-          <Typography children={formatMessage(messages.fetching) + '...'} />
-        )}
-      </DialogBody>
-      <DialogFooter>
-        <SecondaryButton disabled={disabled} onClick={(e) => onClose(e, null)}>
-          {formatMessage(messages.cancel)}
-        </SecondaryButton>
-        <PrimaryButton disabled={disabled || selected.length === 0} autoFocus onClick={onCopy}>
-          {formatMessage(messages.copy)}
-        </PrimaryButton>
-      </DialogFooter>
-    </>
-  );
+	return (
+		<>
+			<DialogBody minHeight>
+				{data ? (
+					<ItemSelectorTree
+						item={data.item}
+						paths={data.paths}
+						selected={selected}
+						handleSelect={onItemSelected}
+						toggleSelectAll={onToggleSelectAll}
+					/>
+				) : (
+					<Typography children={formatMessage(messages.fetching) + '...'} />
+				)}
+			</DialogBody>
+			<DialogFooter>
+				<SecondaryButton disabled={disabled} onClick={(e) => onClose(e, null)}>
+					{formatMessage(messages.cancel)}
+				</SecondaryButton>
+				<PrimaryButton disabled={disabled || selected.length === 0} autoFocus onClick={onCopy}>
+					{formatMessage(messages.copy)}
+				</PrimaryButton>
+			</DialogFooter>
+		</>
+	);
 }
 
 export default CopyDialogBody;

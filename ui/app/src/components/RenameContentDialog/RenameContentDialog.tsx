@@ -27,55 +27,55 @@ import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDial
 import { ensureSingleSlash, isBlank } from '../../utils/string';
 
 export interface RenameContentDialogProps extends EnhancedDialogProps {
-  path: string;
-  value?: string;
-  onRenamed(name: string): void;
-  onSubmittingAndOrPendingChange(value: onSubmittingAndOrPendingChangeProps): void;
+	path: string;
+	value?: string;
+	onRenamed(name: string): void;
+	onSubmittingAndOrPendingChange(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
 export function RenameContentDialog(props: RenameContentDialogProps) {
-  const { path, value, onRenamed, onSubmittingAndOrPendingChange, ...dialogProps } = props;
-  const [dependantItems, setDependantItems] = useState<DetailedItem[]>(null);
-  const [fetchingDependantItems, setFetchingDependantItems] = useState(false);
-  const [error, setError] = useState(null);
-  const siteId = useActiveSiteId();
-  const pendingChangesCloseRequest = useWithPendingChangesCloseRequest(dialogProps.onClose);
+	const { path, value, onRenamed, onSubmittingAndOrPendingChange, ...dialogProps } = props;
+	const [dependantItems, setDependantItems] = useState<DetailedItem[]>(null);
+	const [fetchingDependantItems, setFetchingDependantItems] = useState(false);
+	const [error, setError] = useState(null);
+	const siteId = useActiveSiteId();
+	const pendingChangesCloseRequest = useWithPendingChangesCloseRequest(dialogProps.onClose);
 
-  useEffect(() => {
-    if (!isBlank(value) && !isBlank(path)) {
-      setFetchingDependantItems(true);
-      fetchDependant(siteId, ensureSingleSlash(`${path}/${value}`)).subscribe({
-        next: (response) => {
-          const dependants = parseLegacyItemToDetailedItem(response);
-          setDependantItems(dependants);
-          setFetchingDependantItems(false);
-        },
-        error: ({ response }) => {
-          setError(response);
-          setFetchingDependantItems(false);
-        }
-      });
-    }
-  }, [path, value, siteId]);
+	useEffect(() => {
+		if (!isBlank(value) && !isBlank(path)) {
+			setFetchingDependantItems(true);
+			fetchDependant(siteId, ensureSingleSlash(`${path}/${value}`)).subscribe({
+				next: (response) => {
+					const dependants = parseLegacyItemToDetailedItem(response);
+					setDependantItems(dependants);
+					setFetchingDependantItems(false);
+				},
+				error: ({ response }) => {
+					setError(response);
+					setFetchingDependantItems(false);
+				}
+			});
+		}
+	}, [path, value, siteId]);
 
-  return (
-    <EnhancedDialog
-      title={<FormattedMessage defaultMessage="Rename Content" />}
-      onWithPendingChangesCloseRequest={pendingChangesCloseRequest}
-      maxWidth={dependantItems?.length > 0 ? 'md' : 'xs'}
-      {...dialogProps}
-    >
-      <RenameContentDialogContainer
-        path={path}
-        value={value}
-        dependantItems={dependantItems}
-        fetchingDependantItems={fetchingDependantItems}
-        onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
-        onRenamed={onRenamed}
-        error={error}
-      />
-    </EnhancedDialog>
-  );
+	return (
+		<EnhancedDialog
+			title={<FormattedMessage defaultMessage="Rename Content" />}
+			onWithPendingChangesCloseRequest={pendingChangesCloseRequest}
+			maxWidth={dependantItems?.length > 0 ? 'md' : 'xs'}
+			{...dialogProps}
+		>
+			<RenameContentDialogContainer
+				path={path}
+				value={value}
+				dependantItems={dependantItems}
+				fetchingDependantItems={fetchingDependantItems}
+				onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
+				onRenamed={onRenamed}
+				error={error}
+			/>
+		</EnhancedDialog>
+	);
 }
 
 export default RenameContentDialog;

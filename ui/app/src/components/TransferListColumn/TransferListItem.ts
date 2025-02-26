@@ -15,9 +15,9 @@
  */
 
 export interface TransferListItem {
-  id: string | number;
-  title: string;
-  subtitle?: string;
+	id: string | number;
+	title: string;
+	subtitle?: string;
 }
 
 export default TransferListItem;

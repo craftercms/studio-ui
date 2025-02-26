@@ -22,50 +22,48 @@ import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 import TableBody from '@mui/material/TableBody';
 import Skeleton from '@mui/material/Skeleton';
-import useStyles from './styles';
 import GlobalAppGridRow from '../../GlobalAppGridRow';
 import GlobalAppGridCell from '../../GlobalAppGridCell';
 import { rand } from '../../PathNavigator/utils';
 
 export interface LoggingLevelsGridSkeletonTableProps {
-  numOfItems?: number;
+	numOfItems?: number;
 }
 
 export const LogLevelGridSkeleton = React.memo((props: LoggingLevelsGridSkeletonTableProps) => {
-  const { numOfItems = 10 } = props;
-  const items = new Array(numOfItems).fill(null);
-  const { classes } = useStyles();
+	const { numOfItems = 10 } = props;
+	const items = new Array(numOfItems).fill(null);
 
-  return (
-    <TableContainer>
-      <Table className={classes.tableRoot}>
-        <TableHead>
-          <GlobalAppGridRow className="hoverDisabled">
-            <GlobalAppGridCell>
-              <Typography variant="subtitle2">
-                <FormattedMessage id="words.logger" defaultMessage="Logger" />
-              </Typography>
-            </GlobalAppGridCell>
-            <GlobalAppGridCell className="width20">
-              <Typography variant="subtitle2">
-                <FormattedMessage id="loggingLevels.currentLevel" defaultMessage="Current Level" />
-              </Typography>
-            </GlobalAppGridCell>
-          </GlobalAppGridRow>
-        </TableHead>
-        <TableBody>
-          {items.map((item, index) => (
-            <GlobalAppGridRow key={index}>
-              <GlobalAppGridCell align="left">
-                <Skeleton variant="text" width={`${rand(40, 60)}%`} />
-              </GlobalAppGridCell>
-              <GlobalAppGridCell align="left">
-                <Skeleton variant="text" width="30%" />
-              </GlobalAppGridCell>
-            </GlobalAppGridRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  );
+	return (
+		<TableContainer>
+			<Table sx={{ tableLayout: 'fixed' }}>
+				<TableHead>
+					<GlobalAppGridRow className="hoverDisabled">
+						<GlobalAppGridCell>
+							<Typography variant="subtitle2">
+								<FormattedMessage id="words.logger" defaultMessage="Logger" />
+							</Typography>
+						</GlobalAppGridCell>
+						<GlobalAppGridCell className="width20">
+							<Typography variant="subtitle2">
+								<FormattedMessage id="loggingLevels.currentLevel" defaultMessage="Current Level" />
+							</Typography>
+						</GlobalAppGridCell>
+					</GlobalAppGridRow>
+				</TableHead>
+				<TableBody>
+					{items.map((item, index) => (
+						<GlobalAppGridRow key={index}>
+							<GlobalAppGridCell align="left">
+								<Skeleton variant="text" width={`${rand(40, 60)}%`} />
+							</GlobalAppGridCell>
+							<GlobalAppGridCell align="left">
+								<Skeleton variant="text" width="30%" />
+							</GlobalAppGridCell>
+						</GlobalAppGridRow>
+					))}
+				</TableBody>
+			</Table>
+		</TableContainer>
+	);
 });

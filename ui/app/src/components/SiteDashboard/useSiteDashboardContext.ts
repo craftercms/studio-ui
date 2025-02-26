@@ -19,7 +19,7 @@ import { createContext, useContext } from 'react';
 export const SiteDashboardContext = createContext(void 0);
 
 export function useSiteDashboardContext() {
-  return useContext(SiteDashboardContext);
+	return useContext(SiteDashboardContext);
 }
 
 export default useSiteDashboardContext;

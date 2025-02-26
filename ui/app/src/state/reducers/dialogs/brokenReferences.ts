@@ -18,38 +18,38 @@ import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
 import { BrokenReferencesDialogStateProps } from '../../../components/BrokenReferencesDialog/types';
 import {
-  brokenReferencesDialogClosed,
-  closeBrokenReferencesDialog,
-  fetchBrokenReferencesFailed,
-  showBrokenReferencesDialog,
-  updateBrokenReferencesDialog
+	brokenReferencesDialogClosed,
+	closeBrokenReferencesDialog,
+	fetchBrokenReferencesFailed,
+	showBrokenReferencesDialog,
+	updateBrokenReferencesDialog
 } from '../../actions/dialogs';
 
 const initialState: BrokenReferencesDialogStateProps = {
-  open: false,
-  isSubmitting: null,
-  isMinimized: null,
-  hasPendingChanges: null,
-  error: null
+	open: false,
+	isSubmitting: null,
+	isMinimized: null,
+	hasPendingChanges: null,
+	error: null
 };
 
 export default createReducer<GlobalState['dialogs']['brokenReferences']>(initialState, (builder) => {
-  builder
-    .addCase(showBrokenReferencesDialog, (state, { payload }) => ({
-      ...state,
-      onClose: closeBrokenReferencesDialog(),
-      onClosed: brokenReferencesDialogClosed(),
-      ...(payload as Partial<BrokenReferencesDialogStateProps>),
-      open: true
-    }))
-    .addCase(closeBrokenReferencesDialog, (state) => ({ ...state, open: false }))
-    .addCase(brokenReferencesDialogClosed, () => initialState)
-    .addCase(updateBrokenReferencesDialog, (state, { payload }) => ({
-      ...state,
-      ...(payload as Partial<BrokenReferencesDialogStateProps>)
-    }))
-    .addCase(fetchBrokenReferencesFailed, (state, { payload }) => ({
-      ...state,
-      error: payload.response
-    }));
+	builder
+		.addCase(showBrokenReferencesDialog, (state, { payload }) => ({
+			...state,
+			onClose: closeBrokenReferencesDialog(),
+			onClosed: brokenReferencesDialogClosed(),
+			...(payload as Partial<BrokenReferencesDialogStateProps>),
+			open: true
+		}))
+		.addCase(closeBrokenReferencesDialog, (state) => ({ ...state, open: false }))
+		.addCase(brokenReferencesDialogClosed, () => initialState)
+		.addCase(updateBrokenReferencesDialog, (state, { payload }) => ({
+			...state,
+			...(payload as Partial<BrokenReferencesDialogStateProps>)
+		}))
+		.addCase(fetchBrokenReferencesFailed, (state, { payload }) => ({
+			...state,
+			error: payload.response
+		}));
 });

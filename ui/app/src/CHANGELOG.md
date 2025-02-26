@@ -6,6 +6,26 @@
   * Removed `pages/QuickCreateMenu` component.
   * Removed `SuspenseWithEmptyState` and `WithEmptyState` components.
   * Removed `resource` prop from StoreProvider
+  * Removed `styles` prop from `ErrorState`, `ApiResponseErrorState`, `BlueprintForm`, `LoadingState`, `ConfirmDialog`, `AlertDialog`
+  `LauncherSection`, `AceEditor`, `ItemDisplay`, `PasswordRequirementsDisplay`, `PublishDialogForm`, `ItemStateIcon`, `ResizeableDrawer`,
+  `GlobalAppToolbar`, `ViewToolbar`, `PublishingStatusAvatar`, `ItemPublishingTargetIcon` and `EmptyState`. Replaced by`sxs` prop.
+  * Removed `sectionStyles` and `tileStyles` props from `LauncherGlobalNav`. Replaced with `sectionSxs` and `tileSxs`.
+  * Added `sxs` prop to `CrafterCMSLogo`, `SiteSwitcherSelect`, `ConfirmDialog`, `ContextMenu`, `BlueprintForm`, `ErrorState`,
+  `GlobalAppToolbar`, `ItemActionsMenu`, `ItemDisplay`, `ItemMegaMenuUI`, `ItemPublishingTargetIcon`, `ItemStateIcon`, `LauncherSectionUI`,
+  `LauncherSiteCard`, `LauncherTile`, `LoadingState`, `LoginForm`, `LogoAndMenuBundleButton`, `PagesSearchAhead`, `PasswordRequirementsDisplay`,
+  `PathNavigator`, `PathNavigatorBreadcrumbs`, `PathNavigatorHeader`, `PathNavigatorList`, `PathNavigatorUI`, `PathNavigatorTree`,
+  `PathNavigatorTreeItem`, `PathNavigatorTreeUI`, `PublishDialogForm`, `PublishingStatusAvatar`, `PublishingStatusTile`, `ResizeableDrawer`,
+  `SearchBar`, `SingleItemSelector`, `SiteTools`, `ToolPanel`, `ViewToolbar` and `CrafterCMSIcon`.
+  * Added `sx` prop to `FilterDropdown`, `PathNavigatorHeader`, `SiteTools`, `SiteSearchFilters` and `PublishingStatusAvatar`.
+  * Removed `RejectDialog` component. Now handled by `PublishingPackageReviewDialog`.
+  * Removed `emailOnApprove` option from `PublishDialog` form.
+  * Removed `PublishDialog/styles.ts` file.
+  * `PackageDetailsDialog`: Updated `packageId` prop to be of type `number`.
+  * `PublishOnDemandForm`: Removed `bulkPublishCommentRequired` and `publishByCommitCommentRequired` props.
+  * `PublishingQueue/FilterDropdown`: Removed `filterStates` prop.
+  * `PackageDetailsDialog`: Update packageId prop to be of type number.
+  * Removed `WorkflowCancellationDialog`. Replaced by `ViewPackagesDialog`.
+  * Removed `UnlockPublisherDialog` component.
 * [hooks]
   * Removed `useLogicResource` hook.
   * Removed `useSelectorResource` hook.
@@ -19,6 +39,28 @@
   * @mui/x-data-grid
   * @mui/x-date-pickers
   * @mui/x-tree-view
+* [services]
+  * `publishing/fetchPackages` filters param updated to be a Partial of `target`, `states`, `approvalStates`, `submitter`, `reviewer`, `isScheduled`, `sort`, `offset` and `limit`.
+  `environment` is now `target` and `path` was removed from filters param.
+  * `publishing/fetchPackage`: `packageId` is now of type `number`.
+  * Updated `workflow/approve`: Now it receives `packageId` as a parameter.
+  * Updated `workflow/reject`: Now it receives `packageId` as a parameter instead of `items`.
+  * Removed `workflow/publish` and `workflow/requestPublish`, replaced by `publishing/publish` and `publishing/publish`.
+  * Removed `publishing/cancelPackage` service, replaced by `workflow/cancel`.
+  * Removed `publishing/start` and `publishing/stop` services, replaced by `publishing/enable`.
+  * Removed `publishing/bulkGoLive`, `publishing/publishByCommits` and `publishing/publishAll` services, replaced by `publishing/publish`.
+  * Removed `content/fetchWorkflowAffectedItems` service. Now workflow affected validation is checked against packages using `workflow/fetchAffectedPackages`.
+  * Removed `publishing/clearLock` service.
+* `PublishingItem` interface changes:
+  * `approver` is now `reviewer`, of type Person.
+  * `comment` is removed, and now there's `reviewerComment` and `submitterComment`.
+  * `environment` is now `target`.
+  * `items` is now of type `PublishingItem[]`.
+  * `state` is now `approvalState`.
+  * Added `title`, `submittedOn`, `reviewedOn`,`packageState`, `reviewer`, `liveError`, `stagingError`, `publishedOn`, `packageType`, `commitId`, `publishedStagingCommitId` and `publishedLiveCommitId` props.
+* `PublishFormData` interface change: Added `title` prop.
+* `approvePublish` anb `rejectPublish` are no longer item actions in BaseItem's `availableActionsMap` property.
+* [SiteDashboard/utils] Renamed `getValidatedSelectionState` to `getItemsValidatedSelectionState`.
 
 ## 4.2.0
 
@@ -67,7 +109,7 @@
 * Upgraded target compilation to ES2022, dropping many code transforms for features that are supported by most modern browsers such as nullish coalescing, optional chaining, object spreading and destructuring.
 * The `allowedContentTypes` ContentTypeField validation changed from being an array to a Record<contentTypeId, { embedded?: true; shared?: true; sharedExisting?: true; }>
 * Remove legacy `browseCMIS` dialog and `openCMISBrowse` function from common-api.
-* Remove `CMIS-repo`, `CMIS-upload`, `img-cmis-repo`, `img-CMIS-upload`, `video-cmis-repo` and `video-CMIS-upload` datasources. 
+* Remove `CMIS-repo`, `CMIS-upload`, `img-cmis-repo`, `img-CMIS-upload`, `video-cmis-repo` and `video-CMIS-upload` datasources.
 * `ICEConfig` TypeScript `interface` changed to be `type`. It now accepts either the (model) or (modelId & path).
 * The `acecode` TinyMCE plugin (for code-highlighted Rich Text Editor code editing), renders the code exactly as Tiny provides without decoding entities.
 * `compareVersion` action creator was removed as the action is no longer in use and handled.

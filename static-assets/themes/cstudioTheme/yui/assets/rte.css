@@ -21,11 +21,11 @@
 
 /** RTE only - Place holder image **/
 .crafterEmbed {
-  background: #fafafa url('../../../../components/cstudio-form/images/placeholder.png') no-repeat center center !important;
-  border: 2px solid #333;
-  -moz-border-radius: 6px;
-  width: 300px;
-  height: 120px;
+	background: #fafafa url('../../../../components/cstudio-form/images/placeholder.png') no-repeat center center !important;
+	border: 2px solid #333;
+	-moz-border-radius: 6px;
+	width: 300px;
+	height: 120px;
 }
 /** End of Place hold image **/
 
@@ -38,52 +38,52 @@ table.cstudioTableLayout thead,
 table.cstudioTableLayout tr,
 table.cstudioTableLayout th,
 table.cstudioTableLayout td {
-  border: 1px solid #ccc !important;
+	border: 1px solid #ccc !important;
 }
 /** End of Table Layout styles **/
 
 /** Right-Click property box for RTE**/
 div.componentPropertyBox {
-  background-color: #ffffff;
-  border: 1px solid #808080;
+	background-color: #ffffff;
+	border: 1px solid #808080;
 }
 .componentPropertyBox span {
-  color: #444444 !important;
-  cursor: pointer;
-  font-size: 12px;
-  line-height: 15px;
-  /*padding: 0 10px;*/
-  text-align: left;
+	color: #444444 !important;
+	cursor: pointer;
+	font-size: 12px;
+	line-height: 15px;
+	/*padding: 0 10px;*/
+	text-align: left;
 }
 
 .componentPropertyBox ul,
 .componentPropertyBox li {
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
 }
 .componentPropertyBox li:hover {
-  background-color: #e2e2e2;
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
+	background-color: #e2e2e2;
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
 }
 
 .componentPropertyBox a {
-  color: #444444 !important;
-  padding-left: 10px;
-  display: block;
+	color: #444444 !important;
+	padding-left: 10px;
+	display: block;
 }
 
 .componentPropertyBox a:hover {
-  background-color: #e2e2e2;
-  display: block;
+	background-color: #e2e2e2;
+	display: block;
 }
 /** End of styles for Right-Click property box for RTE**/
 
 /** for display of widgets within RTE **/
 .crComponent {
-  padding: 0 1px 0 1px;
+	padding: 0 1px 0 1px;
 }
 
 /** For display of table layout within RTE wigets in RTE mode**/
@@ -91,5 +91,5 @@ div.componentPropertyBox {
 .cstudioComponent table tr,
 .cstudioComponent table th,
 .cstudioComponent table td {
-  border: none !important;
+	border: none !important;
 }

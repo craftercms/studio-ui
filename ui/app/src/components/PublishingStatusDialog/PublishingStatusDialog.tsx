@@ -20,27 +20,12 @@ import { PublishingStatusDialogProps } from './utils';
 import EnhancedDialog from '../EnhancedDialog';
 
 function PublishingStatusDialog(props: PublishingStatusDialogProps) {
-  const {
-    status,
-    published,
-    enabled,
-    lockOwner,
-    lockTTL,
-    numberOfItems,
-    totalItems,
-    publishingTarget,
-    submissionId,
-    onRefresh,
-    onUnlock,
-    onStartStop,
-    isFetching,
-    ...rest
-  } = props;
-  return (
-    <EnhancedDialog omitHeader={true} maxWidth="xs" {...rest}>
-      <PublishingStatusDialogContainer {...props} />
-    </EnhancedDialog>
-  );
+	const { published, enabled, currentTask, onRefresh, onStartStop, isFetching, ...rest } = props;
+	return (
+		<EnhancedDialog omitHeader={true} maxWidth="xs" {...rest}>
+			<PublishingStatusDialogContainer {...props} />
+		</EnhancedDialog>
+	);
 }
 
 export default PublishingStatusDialog;

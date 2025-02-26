@@ -18,7 +18,7 @@ import GlobalState from '../models/GlobalState';
 import { useSelection } from './useSelection';
 
 export function useItemsBeingFetchedByPath(): GlobalState['content']['itemsBeingFetchedByPath'] {
-  return useSelection((state) => state.content.itemsBeingFetchedByPath);
+	return useSelection((state) => state.content.itemsBeingFetchedByPath);
 }
 
 export default useItemsBeingFetchedByPath;

@@ -23,48 +23,46 @@ import TableBody from '@mui/material/TableBody';
 import Skeleton from '@mui/material/Skeleton';
 import { rand } from '../PathNavigator/utils';
 import React from 'react';
-import { useStyles } from './styles';
 import GlobalAppGridCell from '../GlobalAppGridCell/GlobalAppGridCell';
 import GlobalAppGridRow from '../GlobalAppGridRow';
 
 export interface GroupsGridSkeletonTableProps {
-  numOfItems?: number;
+	numOfItems?: number;
 }
 
 export const GroupsGridSkeletonTable = React.memo((props: GroupsGridSkeletonTableProps) => {
-  const { numOfItems = 5 } = props;
-  const items = new Array(numOfItems).fill(null);
-  const { classes } = useStyles();
-  return (
-    <TableContainer>
-      <Table className={classes.tableRoot}>
-        <TableHead>
-          <GlobalAppGridRow className="hoverDisabled">
-            <GlobalAppGridCell align="left" className="width25">
-              <Typography variant="subtitle2">
-                <FormattedMessage id="words.name" defaultMessage="Name" />
-              </Typography>
-            </GlobalAppGridCell>
-            <GlobalAppGridCell align="left">
-              <Typography variant="subtitle2">
-                <FormattedMessage id="words.description" defaultMessage="Description" />
-              </Typography>
-            </GlobalAppGridCell>
-          </GlobalAppGridRow>
-        </TableHead>
-        <TableBody>
-          {items?.map((width, index) => (
-            <GlobalAppGridRow key={index}>
-              <GlobalAppGridCell align="left" className="width25">
-                <Skeleton variant="text" width={`${rand(70, 90)}%`} />
-              </GlobalAppGridCell>
-              <GlobalAppGridCell align="left">
-                <Skeleton variant="text" width={`${rand(70, 90)}%`} />
-              </GlobalAppGridCell>
-            </GlobalAppGridRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  );
+	const { numOfItems = 5 } = props;
+	const items = new Array(numOfItems).fill(null);
+	return (
+		<TableContainer>
+			<Table sx={{ tableLayout: 'fixed' }}>
+				<TableHead>
+					<GlobalAppGridRow className="hoverDisabled">
+						<GlobalAppGridCell align="left" className="width25">
+							<Typography variant="subtitle2">
+								<FormattedMessage id="words.name" defaultMessage="Name" />
+							</Typography>
+						</GlobalAppGridCell>
+						<GlobalAppGridCell align="left">
+							<Typography variant="subtitle2">
+								<FormattedMessage id="words.description" defaultMessage="Description" />
+							</Typography>
+						</GlobalAppGridCell>
+					</GlobalAppGridRow>
+				</TableHead>
+				<TableBody>
+					{items?.map((width, index) => (
+						<GlobalAppGridRow key={index}>
+							<GlobalAppGridCell align="left" className="width25">
+								<Skeleton variant="text" width={`${rand(70, 90)}%`} />
+							</GlobalAppGridCell>
+							<GlobalAppGridCell align="left">
+								<Skeleton variant="text" width={`${rand(70, 90)}%`} />
+							</GlobalAppGridCell>
+						</GlobalAppGridRow>
+					))}
+				</TableBody>
+			</Table>
+		</TableContainer>
+	);
 });

@@ -15,8 +15,8 @@
  */
 
 export interface TranslationConfig {
-  localeCodes: string[];
-  defaultLocaleCode: string;
+	localeCodes: string[];
+	defaultLocaleCode: string;
 }
 
 export default TranslationConfig;

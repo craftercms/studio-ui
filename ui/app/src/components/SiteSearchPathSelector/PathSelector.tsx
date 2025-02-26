@@ -18,134 +18,124 @@ import { defineMessages, useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
 import React, { useEffect, useState } from 'react';
 import {
-  closePathSelectionDialog,
-  pathSelectionDialogClosed,
-  showPathSelectionDialog
+	closePathSelectionDialog,
+	pathSelectionDialogClosed,
+	showPathSelectionDialog
 } from '../../state/actions/dialogs';
 import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
 import InputBase from '@mui/material/InputBase';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
-import { makeStyles } from 'tss-react/mui';
 import Paper from '@mui/material/Paper';
 import SiteExplorer from '../../icons/SiteExplorer';
 import { createCustomDocumentEventListener } from '../../utils/dom';
 
-const useStyles = makeStyles()((theme) => ({
-  pathSelectorInputRoot: {
-    flexGrow: 1
-  },
-  pathSelectorWrapper: {
-    flex: 1,
-    minHeight: 40,
-    display: 'flex',
-    cursor: 'pointer',
-    padding: '0 0 0 10px',
-    '&:hover:not(.disabled)': {
-      borderColor: theme.palette.action.active
-    },
-    '&.disabled': {
-      opacity: 0.7,
-      cursor: 'default'
-    }
-  },
-  invisibleInput: {
-    border: 0,
-    padding: '0 0 0 5px',
-    height: '100%',
-    cursor: 'pointer',
-    background: 'none',
-    '&:focus': {
-      borderColor: 'none',
-      boxShadow: 'inherit'
-    },
-    '&:disabled': {
-      cursor: 'default'
-    }
-  }
-}));
-
 const messages = defineMessages({
-  searchIn: {
-    id: 'pathSelector.inputPlaceholderText',
-    defaultMessage: 'Select path'
-  }
+	searchIn: {
+		id: 'pathSelector.inputPlaceholderText',
+		defaultMessage: 'Select path'
+	}
 });
 
 export interface PathSelectorProps {
-  value: string;
-  disabled?: boolean;
-  stripXmlIndex?: boolean;
-  /** The minimum outer path allowed */
-  rootPath?: string;
-  onPathSelected(path: string): void;
+	value: string;
+	disabled?: boolean;
+	stripXmlIndex?: boolean;
+	/** The minimum outer path allowed */
+	rootPath?: string;
+	onPathSelected(path: string): void;
 }
 
 export function PathSelector(props: PathSelectorProps) {
-  const { onPathSelected, value, disabled = false, stripXmlIndex = true, rootPath } = props;
-  const { formatMessage } = useIntl();
-  const dispatch = useDispatch();
-  const { classes, cx } = useStyles();
-  const [path, setPath] = useState<string>(value ?? '');
+	const { onPathSelected, value, disabled = false, stripXmlIndex = true, rootPath } = props;
+	const { formatMessage } = useIntl();
+	const dispatch = useDispatch();
+	const [path, setPath] = useState<string>(value ?? '');
 
-  useEffect(() => {
-    setPath(value ?? '');
-  }, [value]);
+	useEffect(() => {
+		setPath(value ?? '');
+	}, [value]);
 
-  const onClean = (e) => {
-    e.stopPropagation();
-    e.preventDefault();
-    let cleanPath = rootPath ?? '';
-    setPath(cleanPath);
-    onPathSelected(cleanPath);
-  };
+	const onClean = (e) => {
+		e.stopPropagation();
+		e.preventDefault();
+		let cleanPath = rootPath ?? '';
+		setPath(cleanPath);
+		onPathSelected(cleanPath);
+	};
 
-  const onOpenPathSelectionDialog = () => {
-    const callbackId = 'pathSelectionDialogCallback';
-    const callbackAccept = 'accept';
-    dispatch(
-      showPathSelectionDialog({
-        rootPath: rootPath ?? `/${path.split('/')[1] ?? ''}`,
-        initialPath: path,
-        showCreateFolderOption: false,
-        allowSwitchingRootPath: !Boolean(rootPath),
-        stripXmlIndex,
-        onClosed: batchActions([dispatchDOMEvent({ id: callbackId, action: 'close' }), pathSelectionDialogClosed()]),
-        onOk: batchActions([dispatchDOMEvent({ id: callbackId, action: callbackAccept }), closePathSelectionDialog()])
-      })
-    );
-    createCustomDocumentEventListener(callbackId, (detail) => {
-      if (detail.action === callbackAccept) {
-        const path = detail.path;
-        setPath(path);
-        onPathSelected(path);
-      }
-    });
-  };
+	const onOpenPathSelectionDialog = () => {
+		const callbackId = 'pathSelectionDialogCallback';
+		const callbackAccept = 'accept';
+		dispatch(
+			showPathSelectionDialog({
+				rootPath: rootPath ?? `/${path.split('/')[1] ?? ''}`,
+				initialPath: path,
+				showCreateFolderOption: false,
+				allowSwitchingRootPath: !Boolean(rootPath),
+				stripXmlIndex,
+				onClosed: batchActions([dispatchDOMEvent({ id: callbackId, action: 'close' }), pathSelectionDialogClosed()]),
+				onOk: batchActions([dispatchDOMEvent({ id: callbackId, action: callbackAccept }), closePathSelectionDialog()])
+			})
+		);
+		createCustomDocumentEventListener(callbackId, (detail) => {
+			if (detail.action === callbackAccept) {
+				const path = detail.path;
+				setPath(path);
+				onPathSelected(path);
+			}
+		});
+	};
 
-  return (
-    <Paper
-      variant="outlined"
-      onClick={disabled ? null : onOpenPathSelectionDialog}
-      className={cx(classes.pathSelectorWrapper, disabled && 'disabled')}
-    >
-      <InputBase
-        classes={{ root: classes.pathSelectorInputRoot, input: classes.invisibleInput }}
-        disabled={disabled}
-        readOnly
-        value={path}
-        placeholder={formatMessage(messages.searchIn)}
-        startAdornment={disabled ? null : <SiteExplorer sx={{ color: 'text.secondary' }} />}
-        endAdornment={
-          !disabled && value ? (
-            <IconButton onClick={onClean} size="small">
-              <CloseIcon />
-            </IconButton>
-          ) : null
-        }
-      />
-    </Paper>
-  );
+	return (
+		<Paper
+			variant="outlined"
+			onClick={disabled ? null : onOpenPathSelectionDialog}
+			sx={{
+				flex: 1,
+				minHeight: 40,
+				display: 'flex',
+				cursor: disabled ? 'default' : 'pointer',
+				padding: '0 0 0 10px',
+				opacity: disabled ? 0.7 : 1,
+				'&:hover:not(.disabled)': {
+					borderColor: (theme) => theme.palette.action.active
+				}
+			}}
+		>
+			<InputBase
+				sx={{ flexGrow: 1 }}
+				inputProps={{
+					sx: {
+						border: 0,
+						padding: '0 0 0 5px',
+						height: '100%',
+						cursor: 'pointer',
+						background: 'none',
+						'&:focus': {
+							borderColor: 'none',
+							boxShadow: 'inherit'
+						},
+						'&:disabled': {
+							cursor: 'default'
+						}
+					}
+				}}
+				disabled={disabled}
+				readOnly
+				value={path}
+				placeholder={formatMessage(messages.searchIn)}
+				startAdornment={disabled ? null : <SiteExplorer sx={{ color: 'text.secondary' }} />}
+				endAdornment={
+					!disabled && value ? (
+						<IconButton onClick={onClean} size="small">
+							<CloseIcon />
+						</IconButton>
+					) : null
+				}
+			/>
+		</Paper>
+	);
 }
 
 export default PathSelector;

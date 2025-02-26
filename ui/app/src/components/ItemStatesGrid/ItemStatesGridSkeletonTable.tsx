@@ -27,73 +27,73 @@ import { FormattedMessage } from 'react-intl';
 import Typography from '@mui/material/Typography';
 
 export interface WorkflowStatesGridSkeletonTableProps {
-  numOfItems?: number;
+	numOfItems?: number;
 }
 
 export const ItemStatesGridSkeletonTable = React.memo((props: WorkflowStatesGridSkeletonTableProps) => {
-  const { numOfItems = 10 } = props;
-  const items = new Array(numOfItems).fill(null);
+	const { numOfItems = 10 } = props;
+	const items = new Array(numOfItems).fill(null);
 
-  return (
-    <TableContainer>
-      <Table size="small">
-        <TableHead>
-          <GlobalAppGridRow className="hoverDisabled">
-            <GlobalAppGridCell align="center">
-              <Skeleton variant="circular" width={42} height={42} />
-            </GlobalAppGridCell>
-            <GlobalAppGridCell className="width60 pl0">
-              <Typography variant="subtitle2">
-                <FormattedMessage id="words.item" defaultMessage="Item" />
-              </Typography>
-            </GlobalAppGridCell>
-            <GlobalAppGridCell className="width20">
-              <Typography variant="subtitle2">
-                <FormattedMessage id="words.processing" defaultMessage="Processing" />
-              </Typography>
-            </GlobalAppGridCell>
-            <GlobalAppGridCell className="width40">
-              <Typography variant="subtitle2">
-                <FormattedMessage id="workflowStates.locked" defaultMessage="Locked" />
-              </Typography>
-            </GlobalAppGridCell>
-            <GlobalAppGridCell className="width20">
-              <Typography variant="subtitle2">
-                <FormattedMessage id="words.live" defaultMessage="Live" />
-              </Typography>
-            </GlobalAppGridCell>
-            <GlobalAppGridCell className="width20">
-              <Typography variant="subtitle2">
-                <FormattedMessage id="words.staged" defaultMessage="Staged" />
-              </Typography>
-            </GlobalAppGridCell>
-          </GlobalAppGridRow>
-        </TableHead>
-        <TableBody>
-          {items.map((item, index) => (
-            <GlobalAppGridRow key={index}>
-              <GlobalAppGridCell align="center">
-                <Skeleton variant="circular" width={42} height={42} />
-              </GlobalAppGridCell>
-              <GlobalAppGridCell className="maxWidth300 pl0">
-                <Skeleton variant="text" width={`${rand(80, 100)}%`} />
-              </GlobalAppGridCell>
-              <GlobalAppGridCell>
-                <Skeleton variant="text" width="30px" />
-              </GlobalAppGridCell>
-              <GlobalAppGridCell>
-                <Skeleton variant="text" width={`${rand(40, 60)}%`} />
-              </GlobalAppGridCell>
-              <GlobalAppGridCell>
-                <Skeleton variant="text" width="30px" />
-              </GlobalAppGridCell>
-              <GlobalAppGridCell>
-                <Skeleton variant="text" width="30px" />
-              </GlobalAppGridCell>
-            </GlobalAppGridRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  );
+	return (
+		<TableContainer>
+			<Table size="small">
+				<TableHead>
+					<GlobalAppGridRow className="hoverDisabled">
+						<GlobalAppGridCell align="center">
+							<Skeleton variant="circular" width={42} height={42} />
+						</GlobalAppGridCell>
+						<GlobalAppGridCell className="width60 pl0">
+							<Typography variant="subtitle2">
+								<FormattedMessage id="words.item" defaultMessage="Item" />
+							</Typography>
+						</GlobalAppGridCell>
+						<GlobalAppGridCell className="width20">
+							<Typography variant="subtitle2">
+								<FormattedMessage id="words.processing" defaultMessage="Processing" />
+							</Typography>
+						</GlobalAppGridCell>
+						<GlobalAppGridCell className="width40">
+							<Typography variant="subtitle2">
+								<FormattedMessage id="workflowStates.locked" defaultMessage="Locked" />
+							</Typography>
+						</GlobalAppGridCell>
+						<GlobalAppGridCell className="width20">
+							<Typography variant="subtitle2">
+								<FormattedMessage id="words.live" defaultMessage="Live" />
+							</Typography>
+						</GlobalAppGridCell>
+						<GlobalAppGridCell className="width20">
+							<Typography variant="subtitle2">
+								<FormattedMessage id="words.staged" defaultMessage="Staged" />
+							</Typography>
+						</GlobalAppGridCell>
+					</GlobalAppGridRow>
+				</TableHead>
+				<TableBody>
+					{items.map((item, index) => (
+						<GlobalAppGridRow key={index}>
+							<GlobalAppGridCell align="center">
+								<Skeleton variant="circular" width={42} height={42} />
+							</GlobalAppGridCell>
+							<GlobalAppGridCell className="maxWidth300 pl0">
+								<Skeleton variant="text" width={`${rand(80, 100)}%`} />
+							</GlobalAppGridCell>
+							<GlobalAppGridCell>
+								<Skeleton variant="text" width="30px" />
+							</GlobalAppGridCell>
+							<GlobalAppGridCell>
+								<Skeleton variant="text" width={`${rand(40, 60)}%`} />
+							</GlobalAppGridCell>
+							<GlobalAppGridCell>
+								<Skeleton variant="text" width="30px" />
+							</GlobalAppGridCell>
+							<GlobalAppGridCell>
+								<Skeleton variant="text" width="30px" />
+							</GlobalAppGridCell>
+						</GlobalAppGridRow>
+					))}
+				</TableBody>
+			</Table>
+		</TableContainer>
+	);
 });

@@ -20,38 +20,38 @@ import AlertTitle from '@mui/material/AlertTitle';
 import { CustomContentProps, SnackbarContent } from 'notistack';
 
 type AdditionalVariantProps = Partial<{
-  alertTitle: ReactNode;
-  alertVariant: AlertProps['variant'];
-  alertSx: AlertProps['sx'];
-  variant: AlertProps['severity'];
+	alertTitle: ReactNode;
+	alertVariant: AlertProps['variant'];
+	alertSx: AlertProps['sx'];
+	variant: AlertProps['severity'];
 }>;
 
 declare module 'notistack' {
-  interface VariantOverrides {
-    warning: AdditionalVariantProps;
-    error: AdditionalVariantProps;
-    success: AdditionalVariantProps;
-    info: AdditionalVariantProps;
-  }
+	interface VariantOverrides {
+		warning: AdditionalVariantProps;
+		error: AdditionalVariantProps;
+		success: AdditionalVariantProps;
+		info: AdditionalVariantProps;
+	}
 }
 
 export const NotistackVariant = React.forwardRef<HTMLDivElement, CustomContentProps & AdditionalVariantProps>(
-  function (props, ref) {
-    const { id, variant, alertTitle, alertVariant, alertSx } = props;
-    return (
-      <SnackbarContent ref={ref}>
-        <Alert
-          action={typeof props.action === 'function' ? props.action(id) : props.action}
-          severity={variant}
-          variant={alertVariant}
-          sx={{ width: '100%', flexWrap: 'wrap', ...alertSx }}
-        >
-          {alertTitle && <AlertTitle children={alertTitle} />}
-          {props.message}
-        </Alert>
-      </SnackbarContent>
-    );
-  }
+	function (props, ref) {
+		const { id, variant, alertTitle, alertVariant, alertSx } = props;
+		return (
+			<SnackbarContent ref={ref}>
+				<Alert
+					action={typeof props.action === 'function' ? props.action(id) : props.action}
+					severity={variant}
+					variant={alertVariant}
+					sx={{ width: '100%', flexWrap: 'wrap', ...alertSx }}
+				>
+					{alertTitle && <AlertTitle children={alertTitle} />}
+					{props.message}
+				</Alert>
+			</SnackbarContent>
+		);
+	}
 );
 
 export default NotistackVariant;

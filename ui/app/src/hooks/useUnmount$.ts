@@ -19,14 +19,14 @@ import { Observable } from 'rxjs';
 import { useEffect } from 'react';
 
 export function useUnmount$(): Observable<void> {
-  const { subject, observable } = useObservable<void>();
-  useEffect(() => {
-    return () => {
-      subject.next();
-      subject.complete();
-    };
-  }, [subject]);
-  return observable;
+	const { subject, observable } = useObservable<void>();
+	useEffect(() => {
+		return () => {
+			subject.next();
+			subject.complete();
+		};
+	}, [subject]);
+	return observable;
 }
 
 export default useUnmount$;

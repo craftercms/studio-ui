@@ -17,25 +17,25 @@
 const htmlparser = require('htmlparser2');
 
 const //
-  fs = require('fs'),
-  ncp = require('ncp').ncp,
-  rimraf = require('rimraf'),
-  APP_DIR = __dirname.replace('/scripts', ''),
-  PATH_BUILD = `${APP_DIR}/build`,
-  TEMPLATES = `../../templates`,
-  DEST = `../../static-assets/next`,
-  indexContents = fs.readFileSync(`${PATH_BUILD}/index.html`).toString();
+	fs = require('fs'),
+	ncp = require('ncp').ncp,
+	rimraf = require('rimraf'),
+	APP_DIR = __dirname.replace('/scripts', ''),
+	PATH_BUILD = `${APP_DIR}/build`,
+	TEMPLATES = `../../templates`,
+	DEST = `../../static-assets/next`,
+	indexContents = fs.readFileSync(`${PATH_BUILD}/index.html`).toString();
 
 let jsNextScriptsFileContent = '<#include "/templates/web/common/js-global-context.ftl" />\n';
 
 const parser = new htmlparser.Parser({
-  onopentag(name, attributes) {
-    if (name === 'script') {
-      jsNextScriptsFileContent += `<script src="${attributes.src}"></script>\n`;
-    } else if (name === 'link' && attributes.rel.includes('stylesheet')) {
-      jsNextScriptsFileContent += `<link href="${attributes.href}" rel="stylesheet"/>\n`;
-    }
-  }
+	onopentag(name, attributes) {
+		if (name === 'script') {
+			jsNextScriptsFileContent += `<script src="${attributes.src}"></script>\n`;
+		} else if (name === 'link' && attributes.rel.includes('stylesheet')) {
+			jsNextScriptsFileContent += `<link href="${attributes.href}" rel="stylesheet"/>\n`;
+		}
+	}
 });
 
 parser.write(indexContents);
@@ -49,18 +49,18 @@ rimraf.sync(`${DEST}/static`);
 
 console.log(`Copying worker into to ${DEST}`);
 ncp(`${PATH_BUILD}/shared-worker.js`, `${DEST}/shared-worker.js`, (err) => {
-  if (err) {
-    console.error(err);
-  } else {
-    console.log('Worker script copied.');
-  }
+	if (err) {
+		console.error(err);
+	} else {
+		console.log('Worker script copied.');
+	}
 });
 
 console.log(`Copying build files to ${DEST}/static`);
 ncp(`${PATH_BUILD}/static`, `${DEST}/static`, (err) => {
-  if (err) {
-    console.error(err);
-  } else {
-    console.log('App code copied.');
-  }
+	if (err) {
+		console.error(err);
+	} else {
+		console.log('App code copied.');
+	}
 });

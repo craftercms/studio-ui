@@ -22,52 +22,52 @@ import SingleFileUploadDialogUI from './SingleFileUploadDialogUI';
 import { updateSingleFileUploadDialog } from '../../state/actions/dialogs';
 
 export function SingleFileUploadDialogContainer(props: SingleFileUploadDialogContainerProps) {
-  const { onUploadComplete, onUploadStart, onUploadError, ...rest } = props;
-  const dispatch = useDispatch();
-  const onStart = useCallback(() => {
-    onUploadStart?.();
-    dispatch(
-      updateSingleFileUploadDialog({
-        isSubmitting: true
-      })
-    );
-  }, [dispatch, onUploadStart]);
+	const { onUploadComplete, onUploadStart, onUploadError, ...rest } = props;
+	const dispatch = useDispatch();
+	const onStart = useCallback(() => {
+		onUploadStart?.();
+		dispatch(
+			updateSingleFileUploadDialog({
+				isSubmitting: true
+			})
+		);
+	}, [dispatch, onUploadStart]);
 
-  const onComplete = useCallback(
-    (result) => {
-      dispatch(
-        updateSingleFileUploadDialog({
-          isSubmitting: false
-        })
-      );
-      onUploadComplete?.(result);
-    },
-    [dispatch, onUploadComplete]
-  );
+	const onComplete = useCallback(
+		(result) => {
+			dispatch(
+				updateSingleFileUploadDialog({
+					isSubmitting: false
+				})
+			);
+			onUploadComplete?.(result);
+		},
+		[dispatch, onUploadComplete]
+	);
 
-  const onError = useCallback(
-    ({ file, error, response }) => {
-      dispatch(
-        updateSingleFileUploadDialog({
-          isSubmitting: false
-        })
-      );
+	const onError = useCallback(
+		({ file, error, response }) => {
+			dispatch(
+				updateSingleFileUploadDialog({
+					isSubmitting: false
+				})
+			);
 
-      onUploadError?.({ file, error, response });
-    },
-    [dispatch, onUploadError]
-  );
+			onUploadError?.({ file, error, response });
+		},
+		[dispatch, onUploadError]
+	);
 
-  return (
-    <DialogBody>
-      <SingleFileUploadDialogUI
-        onUploadComplete={onComplete}
-        onUploadStart={onStart}
-        onUploadError={onError}
-        {...rest}
-      />
-    </DialogBody>
-  );
+	return (
+		<DialogBody>
+			<SingleFileUploadDialogUI
+				onUploadComplete={onComplete}
+				onUploadStart={onStart}
+				onUploadError={onError}
+				{...rest}
+			/>
+		</DialogBody>
+	);
 }
 
 export default SingleFileUploadDialogContainer;

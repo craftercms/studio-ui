@@ -19,19 +19,19 @@ import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 
 export interface CreateFileBaseProps {
-  type: 'controller' | 'template';
-  path: string;
-  allowBraces?: boolean;
+	type: 'controller' | 'template';
+	path: string;
+	allowBraces?: boolean;
 }
 
 export interface CreateFileProps extends CreateFileBaseProps, EnhancedDialogProps {
-  onCreated?(response: { path: string; fileName: string; mode: string; openOnSuccess: boolean }): void;
+	onCreated?(response: { path: string; fileName: string; mode: string; openOnSuccess: boolean }): void;
 }
 
 export interface CreateFileStateProps extends CreateFileBaseProps, EnhancedDialogState {
-  onClose?: StandardAction;
-  onClosed?: StandardAction;
-  onCreated?: StandardAction;
+	onClose?: StandardAction;
+	onClosed?: StandardAction;
+	onCreated?: StandardAction;
 }
 
 export interface CreateFileContainerProps extends CreateFileBaseProps, Pick<CreateFileProps, 'onCreated' | 'onClose'> {}

@@ -15,116 +15,116 @@
  */
 
 CStudioForms.Datasources.WebDAVUpload =
-  CStudioForms.Datasources.WebDAVUpload ||
-  function (id, form, properties, constraints) {
-    this.id = id;
-    this.form = form;
-    this.properties = properties;
-    this.constraints = constraints;
+	CStudioForms.Datasources.WebDAVUpload ||
+	function (id, form, properties, constraints) {
+		this.id = id;
+		this.form = form;
+		this.properties = properties;
+		this.constraints = constraints;
 
-    for (var i = 0; i < properties.length; i++) {
-      if (properties[i].name == 'repoPath') {
-        this.repoPath = properties[i].value;
-      }
-      if (properties[i].name === 'profileId') {
-        this.profileId = properties[i].value;
-      }
-    }
+		for (var i = 0; i < properties.length; i++) {
+			if (properties[i].name == 'repoPath') {
+				this.repoPath = properties[i].value;
+			}
+			if (properties[i].name === 'profileId') {
+				this.profileId = properties[i].value;
+			}
+		}
 
-    this.messages = {
-      words: CrafterCMSNext.i18n.messages.words
-    };
+		this.messages = {
+			words: CrafterCMSNext.i18n.messages.words
+		};
 
-    return this;
-  };
+		return this;
+	};
 
 YAHOO.extend(CStudioForms.Datasources.WebDAVUpload, CStudioForms.CStudioFormDatasource, {
-  itemsAreContentReferences: true,
+	itemsAreContentReferences: true,
 
-  /**
-   * action called when user clicks insert file
-   */
-  add: function (control, multiple) {
-    var me = this;
+	/**
+	 * action called when user clicks insert file
+	 */
+	add: function (control, multiple) {
+		var me = this;
 
-    var site = CStudioAuthoringContext.site;
-    var path = this.repoPath;
+		var site = CStudioAuthoringContext.site;
+		var path = this.repoPath;
 
-    for (var i = 0; i < this.properties.length; i++) {
-      if (this.properties[i].name === 'repoPath') {
-        path = this.properties[i].value;
-        path = this.processPathsForMacros(path);
-      }
-    }
+		for (var i = 0; i < this.properties.length; i++) {
+			if (this.properties[i].name === 'repoPath') {
+				path = this.properties[i].value;
+				path = this.processPathsForMacros(path);
+			}
+		}
 
-    var datasourceDef = this.form.definition.datasources,
-      newElTitle = '';
+		var datasourceDef = this.form.definition.datasources,
+			newElTitle = '';
 
-    for (var x = 0; x < datasourceDef.length; x++) {
-      if (datasourceDef[x].id == this.id) {
-        newElTitle = datasourceDef[x].title;
-      }
-    }
+		for (var x = 0; x < datasourceDef.length; x++) {
+			if (datasourceDef[x].id == this.id) {
+				newElTitle = datasourceDef[x].title;
+			}
+		}
 
-    const create = $(
-      `<li class="cstudio-form-controls-create-element">
+		const create = $(
+			`<li class="cstudio-form-controls-create-element">
         <a class="cstudio-form-control-node-selector-add-container-item">
           ${CrafterCMSNext.i18n.intl.formatMessage(me.messages.words.upload)} - ${CrafterCMSNext.util.string.escapeHTML(
-        newElTitle
-      )}
+						newElTitle
+					)}
         </a>
       </li>`
-    );
+		);
 
-    create.find('a').on('click', function () {
-      CStudioAuthoring.Operations.uploadWebDAVAsset(site, path, me.profileId, {
-        success: function (fileData) {
-          if (control) {
-            var item = fileData,
-              fileName = item.name,
-              fileExtension = fileName.split('.').pop();
+		create.find('a').on('click', function () {
+			CStudioAuthoring.Operations.uploadWebDAVAsset(site, path, me.profileId, {
+				success: function (fileData) {
+					if (control) {
+						var item = fileData,
+							fileName = item.name,
+							fileExtension = fileName.split('.').pop();
 
-            control.insertItem(item.url, fileName, fileExtension, null, me.id);
-            if (control._renderItems) {
-              control._renderItems();
-            }
-            CStudioAuthoring.Utils.decreaseFormDialog();
-          }
-        },
-        failure: function () {
-          if (control) {
-            control.failure('An error occurred while uploading the file.');
-          }
-        },
-        context: this
-      });
-    });
+						control.insertItem(item.url, fileName, fileExtension, null, me.id);
+						if (control._renderItems) {
+							control._renderItems();
+						}
+						CStudioAuthoring.Utils.decreaseFormDialog();
+					}
+				},
+				failure: function () {
+					if (control) {
+						control.failure('An error occurred while uploading the file.');
+					}
+				},
+				context: this
+			});
+		});
 
-    control.$dropdownMenu.append(create);
-  },
+		control.$dropdownMenu.append(create);
+	},
 
-  getLabel: function () {
-    return CMgs.format(langBundle, 'fileUploadedWebDavRepository');
-  },
+	getLabel: function () {
+		return CMgs.format(langBundle, 'fileUploadedWebDavRepository');
+	},
 
-  getInterface: function () {
-    return 'item';
-  },
+	getInterface: function () {
+		return 'item';
+	},
 
-  getName: function () {
-    return 'WebDAV-upload';
-  },
+	getName: function () {
+		return 'WebDAV-upload';
+	},
 
-  getSupportedProperties: function () {
-    return [
-      { label: CMgs.format(langBundle, 'repositoryPath'), name: 'repoPath', type: 'string' },
-      { label: CMgs.format(langBundle, 'profileId'), name: 'profileId', type: 'string' }
-    ];
-  },
+	getSupportedProperties: function () {
+		return [
+			{ label: CMgs.format(langBundle, 'repositoryPath'), name: 'repoPath', type: 'string' },
+			{ label: CMgs.format(langBundle, 'profileId'), name: 'profileId', type: 'string' }
+		];
+	},
 
-  getSupportedConstraints: function () {
-    return [];
-  }
+	getSupportedConstraints: function () {
+		return [];
+	}
 });
 
 CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-WebDAV-upload', CStudioForms.Datasources.WebDAVUpload);

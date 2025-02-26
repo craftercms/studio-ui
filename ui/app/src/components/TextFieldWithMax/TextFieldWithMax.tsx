@@ -21,23 +21,23 @@ import GlobalState from '../../models/GlobalState';
 import CharCountStatus from '../CharCountStatus/CharCountStatus';
 
 export type TextFieldWithMaxProps = TextFieldProps & {
-  maxLength?: number;
+	maxLength?: number;
 };
 
 function TextFieldWithMax(props: TextFieldWithMaxProps) {
-  // This value will be used by default, if a custom value is needed,
-  // maxLength prop needs to be supplied.
-  const configMaxLength = useSelector<GlobalState, number>(
-    (state) => state.uiConfig.publishing.submissionCommentMaxLength
-  );
-  const maxLength = props.maxLength ? props.maxLength : configMaxLength;
-  const value = props.value ?? props.defaultValue ?? '';
-  return (
-    <>
-      <TextField {...props} slotProps={{ ...props.slotProps, htmlInput: { maxLength } }} />
-      <CharCountStatus commentLength={(value as string).length} commentMaxLength={maxLength} />
-    </>
-  );
+	// This value will be used by default, if a custom value is needed,
+	// maxLength prop needs to be supplied.
+	const configMaxLength = useSelector<GlobalState, number>(
+		(state) => state.uiConfig.publishing.submissionCommentMaxLength
+	);
+	const maxLength = props.maxLength ? props.maxLength : configMaxLength;
+	const value = props.value ?? props.defaultValue ?? '';
+	return (
+		<>
+			<TextField {...props} slotProps={{ ...props.slotProps, htmlInput: { maxLength } }} />
+			<CharCountStatus commentLength={(value as string).length} commentMaxLength={maxLength} />
+		</>
+	);
 }
 
 export default TextFieldWithMax;

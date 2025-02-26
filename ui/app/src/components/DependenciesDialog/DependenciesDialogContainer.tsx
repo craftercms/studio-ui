@@ -32,145 +32,145 @@ import DependenciesDialogUI from './DependenciesDialogUI';
 import useMount from '../../hooks/useMount';
 
 export function DependenciesDialogContainer(props: DependenciesDialogContainerProps) {
-  const { item, dependenciesShown = 'depends-on-me', rootPath } = props;
-  const [dialog, setDialog] = useSpreadState({
-    ...dialogInitialState,
-    item,
-    dependenciesShown
-  });
-  const [deps, setDeps] = useState(null);
-  const [error, setError] = useState<ApiResponse>(null);
-  const siteId = useActiveSiteId();
-  const authoringBase = useSelection<string>((state) => state.env.authoringBase);
-  const [contextMenu, setContextMenu] = useSpreadState({
-    el: null,
-    dependency: null
-  });
-  const dispatch = useDispatch();
+	const { item, dependenciesShown = 'depends-on-me', rootPath } = props;
+	const [dialog, setDialog] = useSpreadState({
+		...dialogInitialState,
+		item,
+		dependenciesShown
+	});
+	const [deps, setDeps] = useState(null);
+	const [error, setError] = useState<ApiResponse>(null);
+	const siteId = useActiveSiteId();
+	const authoringBase = useSelection<string>((state) => state.env.authoringBase);
+	const [contextMenu, setContextMenu] = useSpreadState({
+		el: null,
+		dependency: null
+	});
+	const dispatch = useDispatch();
 
-  const handleEditorDisplay = (item: DetailedItem) => {
-    openItemEditor(item, authoringBase, siteId, dispatch);
-  };
+	const handleEditorDisplay = (item: DetailedItem) => {
+		openItemEditor(item, authoringBase, siteId, dispatch);
+	};
 
-  const handleHistoryDisplay = (item: DetailedItem) => {
-    dispatch(
-      batchActions([
-        fetchItemVersions({
-          item,
-          rootPath: getRootPath(item.path)
-        }),
-        showHistoryDialog({})
-      ])
-    );
-  };
+	const handleHistoryDisplay = (item: DetailedItem) => {
+		dispatch(
+			batchActions([
+				fetchItemVersions({
+					item,
+					rootPath: getRootPath(item.path)
+				}),
+				showHistoryDialog({})
+			])
+		);
+	};
 
-  const getDepsItems = useCallback(
-    (siteId: string, path: string, dependenciesShown: string, newItem?: boolean) => {
-      if (dependenciesShown === 'depends-on') {
-        if (dialog.dependantItems === null || newItem) {
-          fetchDependant(siteId, path).subscribe({
-            next: (response) => {
-              const dependantItems = parseLegacyItemToSandBoxItem(response);
-              setDialog({
-                dependantItems,
-                ...(newItem ? { dependencies: null } : {})
-              });
-              setDeps(dependantItems);
-            },
-            error: (error) => {
-              setError(error.response?.response ?? error);
-            }
-          });
-        } else {
-          setDeps(dialog.dependantItems);
-        }
-      } else {
-        if (dialog.dependencies === null || newItem) {
-          fetchSimpleDependencies(siteId, path).subscribe(
-            (response) => {
-              const dependencies = parseLegacyItemToSandBoxItem(response);
-              setDialog({
-                dependencies,
-                ...(newItem ? { dependantItems: null } : {})
-              });
-              setDeps(dependencies);
-            },
-            (error) => setError(error)
-          );
-        } else {
-          setDeps(dialog.dependencies);
-        }
-      }
-    },
-    [dialog.dependantItems, dialog.dependencies, setDialog]
-  );
+	const getDepsItems = useCallback(
+		(siteId: string, path: string, dependenciesShown: string, newItem?: boolean) => {
+			if (dependenciesShown === 'depends-on') {
+				if (dialog.dependantItems === null || newItem) {
+					fetchDependant(siteId, path).subscribe({
+						next: (response) => {
+							const dependantItems = parseLegacyItemToSandBoxItem(response);
+							setDialog({
+								dependantItems,
+								...(newItem ? { dependencies: null } : {})
+							});
+							setDeps(dependantItems);
+						},
+						error: (error) => {
+							setError(error.response?.response ?? error);
+						}
+					});
+				} else {
+					setDeps(dialog.dependantItems);
+				}
+			} else {
+				if (dialog.dependencies === null || newItem) {
+					fetchSimpleDependencies(siteId, path).subscribe(
+						(response) => {
+							const dependencies = parseLegacyItemToSandBoxItem(response);
+							setDialog({
+								dependencies,
+								...(newItem ? { dependantItems: null } : {})
+							});
+							setDeps(dependencies);
+						},
+						(error) => setError(error)
+					);
+				} else {
+					setDeps(dialog.dependencies);
+				}
+			}
+		},
+		[dialog.dependantItems, dialog.dependencies, setDialog]
+	);
 
-  useEffect(() => {
-    setDialog({ item });
-  }, [item, setDialog]);
+	useEffect(() => {
+		setDialog({ item });
+	}, [item, setDialog]);
 
-  useEffect(() => {
-    setDialog({ dependenciesShown });
-  }, [dependenciesShown, setDialog]);
+	useEffect(() => {
+		setDialog({ dependenciesShown });
+	}, [dependenciesShown, setDialog]);
 
-  useMount(() => {
-    getDepsItems(siteId, item.path, dependenciesShown, true);
-  });
+	useMount(() => {
+		getDepsItems(siteId, item.path, dependenciesShown, true);
+	});
 
-  const setCompactView = (active: boolean) => {
-    setDialog({ compactView: active });
-  };
+	const setCompactView = (active: boolean) => {
+		setDialog({ compactView: active });
+	};
 
-  const setShowTypes = (showTypes: string) => {
-    setDialog({ showTypes });
-  };
+	const setShowTypes = (showTypes: string) => {
+		setDialog({ showTypes });
+	};
 
-  const setItem = (item: DetailedItem) => {
-    setDialog({ item });
-    getDepsItems(siteId, item.path, dialog.dependenciesShown, true);
-  };
+	const setItem = (item: DetailedItem) => {
+		setDialog({ item });
+		getDepsItems(siteId, item.path, dialog.dependenciesShown, true);
+	};
 
-  const setDependenciesShow = (dependenciesShown: DependenciesDialogBaseProps['dependenciesShown']) => {
-    setDeps(null);
-    setDialog({ dependenciesShown });
-    getDepsItems(siteId, dialog.item.path, dependenciesShown);
-  };
+	const setDependenciesShow = (dependenciesShown: DependenciesDialogBaseProps['dependenciesShown']) => {
+		setDeps(null);
+		setDialog({ dependenciesShown });
+		getDepsItems(siteId, dialog.item.path, dependenciesShown);
+	};
 
-  const handleContextMenuClick = (event: React.MouseEvent<HTMLButtonElement>, dependency: DetailedItem) => {
-    setContextMenu({
-      el: event.currentTarget,
-      dependency
-    });
-  };
+	const handleContextMenuClick = (event: React.MouseEvent<HTMLButtonElement>, dependency: DetailedItem) => {
+		setContextMenu({
+			el: event.currentTarget,
+			dependency
+		});
+	};
 
-  const handleContextMenuClose = () => {
-    setContextMenu({
-      el: null,
-      dependency: null
-    });
-  };
+	const handleContextMenuClose = () => {
+		setContextMenu({
+			el: null,
+			dependency: null
+		});
+	};
 
-  return (
-    <DependenciesDialogUI
-      dependencies={deps}
-      item={dialog.item}
-      rootPath={rootPath}
-      setItem={setItem}
-      compactView={dialog.compactView}
-      setCompactView={setCompactView}
-      showTypes={dialog.showTypes}
-      setShowTypes={setShowTypes}
-      dependenciesShown={dialog.dependenciesShown}
-      setDependenciesShown={setDependenciesShow}
-      isEditableItem={isEditableAsset}
-      handleEditorDisplay={handleEditorDisplay}
-      handleHistoryDisplay={handleHistoryDisplay}
-      contextMenu={contextMenu}
-      handleContextMenuClick={handleContextMenuClick}
-      handleContextMenuClose={handleContextMenuClose}
-      error={error}
-    />
-  );
+	return (
+		<DependenciesDialogUI
+			dependencies={deps}
+			item={dialog.item}
+			rootPath={rootPath}
+			setItem={setItem}
+			compactView={dialog.compactView}
+			setCompactView={setCompactView}
+			showTypes={dialog.showTypes}
+			setShowTypes={setShowTypes}
+			dependenciesShown={dialog.dependenciesShown}
+			setDependenciesShown={setDependenciesShow}
+			isEditableItem={isEditableAsset}
+			handleEditorDisplay={handleEditorDisplay}
+			handleHistoryDisplay={handleHistoryDisplay}
+			contextMenu={contextMenu}
+			handleContextMenuClick={handleContextMenuClick}
+			handleContextMenuClose={handleContextMenuClose}
+			error={error}
+		/>
+	);
 }
 
 export default DependenciesDialogContainer;

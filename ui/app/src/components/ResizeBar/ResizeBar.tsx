@@ -15,48 +15,62 @@
  */
 
 import React, { useCallback, useState } from 'react';
-import useStyles from './styles';
+import Box from '@mui/material/Box';
+import palette from '../../styles/palette';
 
 export interface ResizeBarProps {
-  onWidthChange(width: number): void;
-  element?: HTMLElement;
+	onWidthChange(width: number): void;
+	element?: HTMLElement;
 }
 
 export function ResizeBar(props: ResizeBarProps) {
-  const { classes, cx: clsx } = useStyles();
-  const [resizeActive, setResizeActive] = useState(false);
-  const { onWidthChange, element } = props;
+	const [resizeActive, setResizeActive] = useState(false);
+	const { onWidthChange, element } = props;
 
-  const handleMouseMove = useCallback(
-    (e) => {
-      e.preventDefault();
-      if (element) {
-        const containerOffsetLeft = element.getBoundingClientRect().left;
-        const newWidth = e.clientX - containerOffsetLeft - 5;
+	const handleMouseMove = useCallback(
+		(e) => {
+			e.preventDefault();
+			if (element) {
+				const containerOffsetLeft = element.getBoundingClientRect().left;
+				const newWidth = e.clientX - containerOffsetLeft - 5;
 
-        onWidthChange(newWidth);
-      }
-    },
-    [element, onWidthChange]
-  );
+				onWidthChange(newWidth);
+			}
+		},
+		[element, onWidthChange]
+	);
 
-  const handleMouseDown = () => {
-    setResizeActive(true);
-    const handleMouseUp = () => {
-      setResizeActive(false);
-      document.removeEventListener('mouseup', handleMouseUp, true);
-      document.removeEventListener('mousemove', handleMouseMove, true);
-    };
-    document.addEventListener('mouseup', handleMouseUp, true);
-    document.addEventListener('mousemove', handleMouseMove, true);
-  };
+	const handleMouseDown = () => {
+		setResizeActive(true);
+		const handleMouseUp = () => {
+			setResizeActive(false);
+			document.removeEventListener('mouseup', handleMouseUp, true);
+			document.removeEventListener('mousemove', handleMouseMove, true);
+		};
+		document.addEventListener('mouseup', handleMouseUp, true);
+		document.addEventListener('mousemove', handleMouseMove, true);
+	};
 
-  return (
-    <div
-      onMouseDown={handleMouseDown}
-      className={clsx(classes.resizeHandle, resizeActive && classes.resizeHandleActive)}
-    />
-  );
+	return (
+		<Box
+			onMouseDown={handleMouseDown}
+			sx={{
+				width: resizeActive ? '4px' : '2px',
+				minWidth: '2px',
+				margin: '0px 5px',
+				cursor: 'ew-resize',
+				padding: '4px 0 0',
+				backgroundColor: resizeActive ? palette.blue.tint : 'rgba(0, 0, 0, 0.12)',
+				transition: 'width 200ms',
+				visibility: resizeActive ? 'visible' : 'hidden',
+				'&:hover': {
+					width: '4px',
+					visibility: 'visible',
+					backgroundColor: palette.blue.tint
+				}
+			}}
+		/>
+	);
 }
 
 export default ResizeBar;

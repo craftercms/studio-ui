@@ -20,15 +20,15 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import useRef from './useUpdateRefs';
 
 export function useDebouncedInput<T = string>(observer: (keywords: T) => any, time: number = 250): Subject<T> {
-  const subject$Ref = React.useRef(new Subject<T>());
-  const observerRef = useRef(observer);
-  useEffect(() => {
-    const subscription = subject$Ref.current.pipe(debounceTime(time), distinctUntilChanged()).subscribe((value) => {
-      observerRef.current(value);
-    });
-    return () => subscription.unsubscribe();
-  }, [time]);
-  return subject$Ref.current;
+	const subject$Ref = React.useRef(new Subject<T>());
+	const observerRef = useRef(observer);
+	useEffect(() => {
+		const subscription = subject$Ref.current.pipe(debounceTime(time), distinctUntilChanged()).subscribe((value) => {
+			observerRef.current(value);
+		});
+		return () => subscription.unsubscribe();
+	}, [time]);
+	return subject$Ref.current;
 }
 
 export default useDebouncedInput;

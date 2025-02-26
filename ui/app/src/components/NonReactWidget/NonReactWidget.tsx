@@ -20,14 +20,14 @@ import { NonReactWidgetRecord } from '../../models/NonReactWidgetRecord';
 import { useMount } from '../../hooks/useMount';
 
 interface NonReactWidgetProps {
-  widget: NonReactWidgetRecord;
-  configuration: any;
+	widget: NonReactWidgetRecord;
+	configuration: any;
 }
 
 function NonReactWidget(props: NonReactWidgetProps) {
-  const ref = useRef();
-  useMount(() => props.widget.main({ craftercms, element: ref.current, configuration: props.configuration ?? {} }));
-  return <div ref={ref} />;
+	const ref = useRef(undefined);
+	useMount(() => props.widget.main({ craftercms, element: ref.current, configuration: props.configuration ?? {} }));
+	return <div ref={ref} />;
 }
 
 export default NonReactWidget;

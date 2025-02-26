@@ -21,22 +21,22 @@ import EnhancedDialog from '../EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
 
 export function NewRemoteRepositoryDialog(props: NewRemoteRepositoryDialogProps) {
-  const { onCreateSuccess, isSubmitting, onCreateError, onSubmittingAndOrPendingChange, ...rest } = props;
+	const { onCreateSuccess, isSubmitting, onCreateError, onSubmittingAndOrPendingChange, ...rest } = props;
 
-  return (
-    <EnhancedDialog
-      title={<FormattedMessage id="repositories.newRemoteDialogTitle" defaultMessage="New Remote Repository" />}
-      isSubmitting={isSubmitting}
-      {...rest}
-    >
-      <NewRemoteRepositoryDialogContainer
-        isSubmitting={isSubmitting}
-        onCreateSuccess={onCreateSuccess}
-        onCreateError={onCreateError}
-        onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
-      />
-    </EnhancedDialog>
-  );
+	return (
+		<EnhancedDialog
+			title={<FormattedMessage id="repositories.newRemoteDialogTitle" defaultMessage="New Remote Repository" />}
+			isSubmitting={isSubmitting}
+			{...rest}
+		>
+			<NewRemoteRepositoryDialogContainer
+				isSubmitting={isSubmitting}
+				onCreateSuccess={onCreateSuccess}
+				onCreateError={onCreateError}
+				onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
+			/>
+		</EnhancedDialog>
+	);
 }
 
 export default NewRemoteRepositoryDialog;

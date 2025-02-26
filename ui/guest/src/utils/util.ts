@@ -21,49 +21,49 @@ import { ContentInstance, SandboxItem } from '@craftercms/studio-ui/models';
 
 export const foo = (...args: any[]) => void null;
 export const //
-  X_AXIS = 'X',
-  Y_AXIS = 'Y',
-  HORIZONTAL = 'horizontal',
-  VERTICAL = 'vertical',
-  TOLERANCE_PERCENTS = { x: 5, y: 5 },
-  DEFAULT_RECORD_DATA: ICERecord = {
-    id: null,
-    modelId: null,
-    fieldId: null,
-    index: null,
-    recordType: null
-  };
+	X_AXIS = 'X',
+	Y_AXIS = 'Y',
+	HORIZONTAL = 'horizontal',
+	VERTICAL = 'vertical',
+	TOLERANCE_PERCENTS = { x: 5, y: 5 },
+	DEFAULT_RECORD_DATA: ICERecord = {
+		id: null,
+		modelId: null,
+		fieldId: null,
+		index: null,
+		recordType: null
+	};
 
 export function not(condition: boolean): boolean {
-  return !condition;
+	return !condition;
 }
 
 export function createLocationArgument() {
-  return pluckProps(
-    window.location,
-    'hash',
-    'host',
-    'hostname',
-    'href',
-    'origin',
-    'pathname',
-    'port',
-    'protocol',
-    'search'
-  );
+	return pluckProps(
+		window.location,
+		'hash',
+		'host',
+		'hostname',
+		'href',
+		'origin',
+		'pathname',
+		'port',
+		'protocol',
+		'search'
+	);
 }
 
 export function isEditActionAvailable(args: {
-  record: ElementRecord | ICERecord;
-  models: LookupTable<ContentInstance>;
-  sandboxItemsByPath: LookupTable<SandboxItem>;
-  parentModelId: string | null;
+	record: ElementRecord | ICERecord;
+	models: LookupTable<ContentInstance>;
+	sandboxItemsByPath: LookupTable<SandboxItem>;
+	parentModelId: string | null;
 }): boolean {
-  const { record, models, sandboxItemsByPath, parentModelId } = args;
-  const model = models[record.modelId];
-  let path = model.craftercms.path;
-  if (!path) {
-    path = models[parentModelId].craftercms.path;
-  }
-  return sandboxItemsByPath[path]?.availableActionsMap.edit;
+	const { record, models, sandboxItemsByPath, parentModelId } = args;
+	const model = models[record.modelId];
+	let path = model.craftercms.path;
+	if (!path) {
+		path = models[parentModelId].craftercms.path;
+	}
+	return sandboxItemsByPath[path]?.availableActionsMap.edit;
 }

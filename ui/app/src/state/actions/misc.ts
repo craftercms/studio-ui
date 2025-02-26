@@ -23,34 +23,38 @@ export const batchActions = /*#__PURE__*/ createAction<StandardAction[]>('BATCH_
 
 // region dispatch DOM Event
 export const dispatchDOMEvent = /*#__PURE__*/ createAction<{ id: string } & { [key: string | number]: any }>(
-  'DISPATCH_DOM_EVENT'
+	'DISPATCH_DOM_EVENT'
 );
 // endregion
 
 // region TemplateActions
 
 export const changeContentType = /*#__PURE__*/ createAction<{
-  originalContentTypeId: string;
-  path: string;
-  newContentTypeId?: string;
+	originalContentTypeId: string;
+	path: string;
+	newContentTypeId?: string;
 }>('CHANGE_CONTENT_TYPE');
 
 export const editContentTypeTemplate = /*#__PURE__*/ createAction<{ contentTypeId: string }>(
-  'EDIT_CONTENT_TYPE_TEMPLATE'
+	'EDIT_CONTENT_TYPE_TEMPLATE'
 );
 
 export interface EditFilePayload {
-  path: string;
-  fileName: string;
-  mode: string;
-  contentType?: string;
-  // The `openOnSuccess` really belongs to CreateFileDialog onCreated (success)
-  // payload; it's added here to integrate with it
-  openOnSuccess?: boolean;
+	path: string;
+	fileName: string;
+	mode: string;
+	contentType?: string;
+	// The `openOnSuccess` really belongs to CreateFileDialog onCreated (success)
+	// payload; it's added here to integrate with it
+	openOnSuccess?: boolean;
 }
 
 export const editTemplate = /*#__PURE__*/ createAction<EditFilePayload>('EDIT_TEMPLATE');
 
 export const editController = /*#__PURE__*/ createAction<EditFilePayload>('EDIT_CONTROLLER');
+
+export const createFile = /*#__PURE__*/ createAction<{ path: string; fileName: string; onCreated: StandardAction }>(
+	'CREATE_FILE'
+);
 
 // endregion

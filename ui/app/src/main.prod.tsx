@@ -20,17 +20,17 @@ import CrafterCMSNextBridge from './components/CrafterCMSNextBridge';
 import Global from './pages/Global';
 
 interface FreemarkerData {
-  passwordRequirementsMinComplexity: number;
-  footerHtml: string;
+	passwordRequirementsMinComplexity: number;
+	footerHtml: string;
 }
 
 const json = document.getElementById('bootData').innerHTML;
 const props: FreemarkerData = JSON.parse(json);
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <CrafterCMSNextBridge>
-      <Global {...props} />
-    </CrafterCMSNextBridge>
-  </StrictMode>
+	<StrictMode>
+		<CrafterCMSNextBridge>
+			<Global {...props} />
+		</CrafterCMSNextBridge>
+	</StrictMode>
 );

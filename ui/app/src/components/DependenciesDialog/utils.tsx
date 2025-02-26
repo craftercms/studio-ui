@@ -24,74 +24,74 @@ import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import ApiResponse from '../../models/ApiResponse';
 
 export interface DependenciesDialogBaseProps {
-  // TODO: This should be a mandatory prop. Dialog crashes without it.
-  item?: DetailedItem;
-  rootPath: string;
-  // TODO: Revisit/improve these keys. Seem not to be in use outside the
-  //  Dialog, but don't want to change at this stage (release is close).
-  dependenciesShown?: 'depends-on' | 'depends-on-me';
+	// TODO: This should be a mandatory prop. Dialog crashes without it.
+	item?: DetailedItem;
+	rootPath: string;
+	// TODO: Revisit/improve these keys. Seem not to be in use outside the
+	//  Dialog, but don't want to change at this stage (release is close).
+	dependenciesShown?: 'depends-on' | 'depends-on-me';
 }
 
 export interface DependenciesDialogProps extends DependenciesDialogBaseProps, EnhancedDialogProps {}
 
 export interface DependenciesDialogStateProps extends DependenciesDialogBaseProps, EnhancedDialogState {
-  onClose?: StandardAction;
-  onClosed?: StandardAction;
+	onClose?: StandardAction;
+	onClosed?: StandardAction;
 }
 
 export interface DependenciesDialogContainerProps extends DependenciesDialogBaseProps {}
 
 export interface DependenciesListProps {
-  dependencies: DetailedItem[];
-  compactView: boolean;
-  showTypes: string;
-  renderAction?(dependency: DetailedItem): ReactNode;
+	dependencies: DetailedItem[];
+	compactView: boolean;
+	showTypes: string;
+	renderAction?(dependency: DetailedItem): ReactNode;
 }
 
 export interface DependenciesDialogUIProps {
-  dependencies: DetailedItem[];
-  item: DetailedItem;
-  rootPath: string;
-  setItem: Function;
-  compactView: boolean;
-  setCompactView: Function;
-  showTypes: string;
-  setShowTypes: Function;
-  dependenciesShown: string;
-  setDependenciesShown: Function;
-  isEditableItem: Function;
-  handleEditorDisplay(item: DetailedItem): void;
-  handleHistoryDisplay(item: DetailedItem): void;
-  contextMenu: any;
-  error: ApiResponse;
+	dependencies: DetailedItem[];
+	item: DetailedItem;
+	rootPath: string;
+	setItem: Function;
+	compactView: boolean;
+	setCompactView: Function;
+	showTypes: string;
+	setShowTypes: Function;
+	dependenciesShown: string;
+	setDependenciesShown: Function;
+	isEditableItem: Function;
+	handleEditorDisplay(item: DetailedItem): void;
+	handleHistoryDisplay(item: DetailedItem): void;
+	contextMenu: any;
+	error: ApiResponse;
 
-  handleContextMenuClick(event: React.MouseEvent<HTMLButtonElement>, dependency: DetailedItem): void;
+	handleContextMenuClick(event: React.MouseEvent<HTMLButtonElement>, dependency: DetailedItem): void;
 
-  handleContextMenuClose(): void;
+	handleContextMenuClose(): void;
 }
 
 export const dialogInitialState = {
-  dependantItems: null,
-  dependencies: null,
-  compactView: false,
-  showTypes: 'all-deps'
+	dependantItems: null,
+	dependencies: null,
+	compactView: false,
+	showTypes: 'all-deps'
 };
 
 export const assetsTypes = {
-  'all-deps': {
-    label: <FormattedMessage id="dependenciesDialog.allDeps" defaultMessage="Show all dependencies" />,
-    filter: () => true
-  },
-  'content-items': {
-    label: <FormattedMessage id="dependenciesDialog.contentItems" defaultMessage="Content items only" />,
-    filter: (dependency: SandboxItem) => dependency.systemType === 'component' || dependency.systemType === 'page'
-  },
-  assets: {
-    label: <FormattedMessage id="dependenciesDialog.assets" defaultMessage="Assets only" />,
-    filter: (dependency: SandboxItem) => isAsset(dependency.path)
-  },
-  code: {
-    label: <FormattedMessage id="dependenciesDialog.code" defaultMessage="Code only" />,
-    filter: (dependency: SandboxItem) => isCode(dependency.path)
-  }
+	'all-deps': {
+		label: <FormattedMessage id="dependenciesDialog.allDeps" defaultMessage="Show all dependencies" />,
+		filter: () => true
+	},
+	'content-items': {
+		label: <FormattedMessage id="dependenciesDialog.contentItems" defaultMessage="Content items only" />,
+		filter: (dependency: SandboxItem) => dependency.systemType === 'component' || dependency.systemType === 'page'
+	},
+	assets: {
+		label: <FormattedMessage id="dependenciesDialog.assets" defaultMessage="Assets only" />,
+		filter: (dependency: SandboxItem) => isAsset(dependency.path)
+	},
+	code: {
+		label: <FormattedMessage id="dependenciesDialog.code" defaultMessage="Code only" />,
+		filter: (dependency: SandboxItem) => isCode(dependency.path)
+	}
 };

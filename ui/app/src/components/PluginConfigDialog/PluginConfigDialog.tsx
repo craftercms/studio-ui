@@ -21,25 +21,25 @@ import { EnhancedDialog } from '../EnhancedDialog';
 import { PluginConfigDialogContainer } from './PluginConfigDialogContainer';
 
 export function PluginConfigDialog(props: PluginConfigDialogProps) {
-  const { pluginId, isSubmitting, onSubmittingAndOrPendingChange, onSaved, onClose, ...rest } = props;
+	const { pluginId, isSubmitting, onSubmittingAndOrPendingChange, onSaved, onClose, ...rest } = props;
 
-  return (
-    <EnhancedDialog
-      title={<FormattedMessage id="pluginConfigDialog.title" defaultMessage="Plugin Configuration" />}
-      maxWidth="xl"
-      isSubmitting={isSubmitting}
-      onClose={onClose}
-      {...rest}
-    >
-      <PluginConfigDialogContainer
-        pluginId={pluginId}
-        onSaved={onSaved}
-        onClose={onClose}
-        isSubmitting={isSubmitting}
-        onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
-      />
-    </EnhancedDialog>
-  );
+	return (
+		<EnhancedDialog
+			title={<FormattedMessage id="pluginConfigDialog.title" defaultMessage="Plugin Configuration" />}
+			maxWidth="xl"
+			isSubmitting={isSubmitting}
+			onClose={onClose}
+			{...rest}
+		>
+			<PluginConfigDialogContainer
+				pluginId={pluginId}
+				onSaved={onSaved}
+				onClose={onClose}
+				isSubmitting={isSubmitting}
+				onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
+			/>
+		</EnhancedDialog>
+	);
 }
 
 export default PluginConfigDialog;

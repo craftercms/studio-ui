@@ -21,23 +21,23 @@ import EnhancedDialog from '../EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
 
 export function CreateTokenDialog(props: CreateTokenDialogProps) {
-  const { onCreated, isSubmitting, onSubmittingAndOrPendingChange, ...rest } = props;
+	const { onCreated, isSubmitting, onSubmittingAndOrPendingChange, ...rest } = props;
 
-  return (
-    <EnhancedDialog
-      title={<FormattedMessage id="createTokenDialog.title" defaultMessage="Create Access Token" />}
-      subtitle={<FormattedMessage defaultMessage="Authorize an external application to access CrafterCMS APIs" />}
-      maxWidth="xs"
-      isSubmitting={isSubmitting}
-      {...rest}
-    >
-      <CreateTokenDialogContainer
-        onCreated={onCreated}
-        isSubmitting={isSubmitting}
-        onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
-      />
-    </EnhancedDialog>
-  );
+	return (
+		<EnhancedDialog
+			title={<FormattedMessage id="createTokenDialog.title" defaultMessage="Create Access Token" />}
+			subtitle={<FormattedMessage defaultMessage="Authorize an external application to access CrafterCMS APIs" />}
+			maxWidth="xs"
+			isSubmitting={isSubmitting}
+			{...rest}
+		>
+			<CreateTokenDialogContainer
+				onCreated={onCreated}
+				isSubmitting={isSubmitting}
+				onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
+			/>
+		</EnhancedDialog>
+	);
 }
 
 export default CreateTokenDialog;

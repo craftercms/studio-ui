@@ -20,27 +20,27 @@ import { storeInitialized } from '../actions/system';
 import { fetchMyPermissionsInSiteComplete, fetchMyRolesInSiteComplete } from '../actions/user';
 
 const reducer = createReducer<EnhancedUser>(null, (builder) => {
-  builder
-    .addCase(storeInitialized, (state, { payload }) => ({
-      ...payload.user,
-      rolesBySite: {},
-      permissionsBySite: {},
-      preferences: null // TODO: is this needed?
-    }))
-    .addCase(fetchMyRolesInSiteComplete, (state, { payload }) => ({
-      ...state,
-      rolesBySite: {
-        ...state.rolesBySite,
-        [payload.site]: payload.roles
-      }
-    }))
-    .addCase(fetchMyPermissionsInSiteComplete, (state, { payload }) => ({
-      ...state,
-      permissionsBySite: {
-        ...state.permissionsBySite,
-        [payload.site]: payload.permissions
-      }
-    }));
+	builder
+		.addCase(storeInitialized, (state, { payload }) => ({
+			...payload.user,
+			rolesBySite: {},
+			permissionsBySite: {},
+			preferences: null // TODO: is this needed?
+		}))
+		.addCase(fetchMyRolesInSiteComplete, (state, { payload }) => ({
+			...state,
+			rolesBySite: {
+				...state.rolesBySite,
+				[payload.site]: payload.roles
+			}
+		}))
+		.addCase(fetchMyPermissionsInSiteComplete, (state, { payload }) => ({
+			...state,
+			permissionsBySite: {
+				...state.permissionsBySite,
+				[payload.site]: payload.permissions
+			}
+		}));
 });
 
 export default reducer;

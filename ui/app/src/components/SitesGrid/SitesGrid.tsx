@@ -18,57 +18,56 @@ import Grid from '@mui/material/Grid2';
 import React from 'react';
 import { Site } from '../../models/Site';
 import SiteCard from '../SiteCard/SiteCard';
-import { useSitesGridStyles } from './styles';
 import LookupTable from '../../models/LookupTable';
 import { PublishingStatus } from '../../models/Publishing';
+import Box from '@mui/material/Box';
 
 interface SitesGridProps {
-  sites: Site[];
-  onSiteClick(site: Site): void;
-  onDeleteSiteClick(site: Site): void;
-  onEditSiteClick(site: Site): void;
-  onPublishButtonClick(
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-    site: Site,
-    status: PublishingStatus
-  ): void;
-  onDuplicateSiteClick(siteId: string): void;
-  currentView: 'grid' | 'list';
-  disabledSitesLookup: LookupTable<boolean>;
+	sites: Site[];
+	onSiteClick(site: Site): void;
+	onDeleteSiteClick(site: Site): void;
+	onEditSiteClick(site: Site): void;
+	onPublishButtonClick(
+		event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+		site: Site,
+		status: PublishingStatus
+	): void;
+	onDuplicateSiteClick(siteId: string): void;
+	currentView: 'grid' | 'list';
+	disabledSitesLookup: LookupTable<boolean>;
 }
 
 export function SitesGrid(props: SitesGridProps) {
-  const {
-    sites,
-    onSiteClick,
-    onDeleteSiteClick,
-    onEditSiteClick,
-    onDuplicateSiteClick,
-    currentView,
-    onPublishButtonClick,
-    disabledSitesLookup
-  } = props;
-  const { classes } = useSitesGridStyles();
-  return (
-    <section className={classes.root}>
-      <Grid container spacing={3}>
-        {sites.map((site) => (
-          <Grid key={site.id}>
-            <SiteCard
-              site={site}
-              onSiteClick={onSiteClick}
-              onDeleteSiteClick={onDeleteSiteClick}
-              onEditSiteClick={onEditSiteClick}
-              onDuplicateSiteClick={onDuplicateSiteClick}
-              onPublishButtonClick={onPublishButtonClick}
-              compact={currentView === 'list'}
-              disabled={disabledSitesLookup[site.id]}
-            />
-          </Grid>
-        ))}
-      </Grid>
-    </section>
-  );
+	const {
+		sites,
+		onSiteClick,
+		onDeleteSiteClick,
+		onEditSiteClick,
+		onDuplicateSiteClick,
+		currentView,
+		onPublishButtonClick,
+		disabledSitesLookup
+	} = props;
+	return (
+		<Box component="section" sx={{ display: 'flex', flexDirection: 'column', padding: '20px' }}>
+			<Grid container spacing={3}>
+				{sites.map((site) => (
+					<Grid key={site.id}>
+						<SiteCard
+							site={site}
+							onSiteClick={onSiteClick}
+							onDeleteSiteClick={onDeleteSiteClick}
+							onEditSiteClick={onEditSiteClick}
+							onDuplicateSiteClick={onDuplicateSiteClick}
+							onPublishButtonClick={onPublishButtonClick}
+							compact={currentView === 'list'}
+							disabled={disabledSitesLookup[site.id]}
+						/>
+					</Grid>
+				))}
+			</Grid>
+		</Box>
+	);
 }
 
 export default SitesGrid;

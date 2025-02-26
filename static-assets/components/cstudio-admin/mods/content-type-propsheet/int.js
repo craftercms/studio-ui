@@ -15,61 +15,61 @@
  */
 
 CStudioAdminConsole.Tool.ContentTypes.PropertyType.Int =
-  CStudioAdminConsole.Tool.ContentTypes.PropertyType.Int ||
-  function (fieldName, containerEl) {
-    this.fieldName = fieldName;
-    this.containerEl = containerEl;
-    this.formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
-    this.contentTypesMessages = CrafterCMSNext.i18n.messages.contentTypesMessages;
-    return this;
-  };
+	CStudioAdminConsole.Tool.ContentTypes.PropertyType.Int ||
+	function (fieldName, containerEl) {
+		this.fieldName = fieldName;
+		this.containerEl = containerEl;
+		this.formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
+		this.contentTypesMessages = CrafterCMSNext.i18n.messages.contentTypesMessages;
+		return this;
+	};
 
 YAHOO.extend(
-  CStudioAdminConsole.Tool.ContentTypes.PropertyType.Int,
-  CStudioAdminConsole.Tool.ContentTypes.PropertyType,
-  {
-    render: function (value, updateFn) {
-      var _self = this;
-      var containerEl = this.containerEl;
-      var valueEl = document.createElement('input');
-      YAHOO.util.Dom.addClass(valueEl, 'content-type-property-sheet-property-value');
-      containerEl.appendChild(valueEl);
-      valueEl.value = value;
-      valueEl.fieldName = this.fieldName;
+	CStudioAdminConsole.Tool.ContentTypes.PropertyType.Int,
+	CStudioAdminConsole.Tool.ContentTypes.PropertyType,
+	{
+		render: function (value, updateFn) {
+			var _self = this;
+			var containerEl = this.containerEl;
+			var valueEl = document.createElement('input');
+			YAHOO.util.Dom.addClass(valueEl, 'content-type-property-sheet-property-value');
+			containerEl.appendChild(valueEl);
+			valueEl.value = value;
+			valueEl.fieldName = this.fieldName;
 
-      $(valueEl).on('focus', function () {
-        valueEl.setAttribute('type', 'number');
-      });
+			$(valueEl).on('focus', function () {
+				valueEl.setAttribute('type', 'number');
+			});
 
-      $(valueEl).on('blur', function (e) {
-        valueEl.setAttribute('type', 'text');
+			$(valueEl).on('blur', function (e) {
+				valueEl.setAttribute('type', 'text');
 
-        const integerValue = parseInt($(valueEl).val());
-        if (!isNaN(integerValue)) {
-          $(valueEl).val(integerValue); // Make sure that value is integer
-        }
-        if (updateFieldFn) {
-          updateFieldFn(e, this);
-        }
-      });
+				const integerValue = parseInt($(valueEl).val());
+				if (!isNaN(integerValue)) {
+					$(valueEl).val(integerValue); // Make sure that value is integer
+				}
+				if (updateFieldFn) {
+					updateFieldFn(e, this);
+				}
+			});
 
-      if (updateFn) {
-        var updateFieldFn = function (event, el) {
-          updateFn(event, el);
-          CStudioAdminConsole.Tool.ContentTypes.visualization.render();
-        };
-      }
+			if (updateFn) {
+				var updateFieldFn = function (event, el) {
+					updateFn(event, el);
+					CStudioAdminConsole.Tool.ContentTypes.visualization.render();
+				};
+			}
 
-      this.valueEl = valueEl;
-    },
+			this.valueEl = valueEl;
+		},
 
-    getValue: function () {
-      return this.valueEl.value;
-    }
-  }
+		getValue: function () {
+			return this.valueEl.value;
+		}
+	}
 );
 
 CStudioAuthoring.Module.moduleLoaded(
-  'cstudio-console-tools-content-types-proptype-int',
-  CStudioAdminConsole.Tool.ContentTypes.PropertyType.Int
+	'cstudio-console-tools-content-types-proptype-int',
+	CStudioAdminConsole.Tool.ContentTypes.PropertyType.Int
 );

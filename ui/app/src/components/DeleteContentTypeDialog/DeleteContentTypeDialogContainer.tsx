@@ -29,92 +29,92 @@ import ApiResponseErrorState from '../ApiResponseErrorState';
 import LoadingState from '../LoadingState';
 
 const messages = defineMessages({
-  deleteComplete: {
-    id: 'deleteContentTypeDialog.contentTypeDeletedMessage',
-    defaultMessage: 'Content type deleted successfully'
-  },
-  deleteFailed: {
-    id: 'deleteContentTypeDialog.contentTypeDeleteFailedMessage',
-    defaultMessage: 'Error deleting content type'
-  }
+	deleteComplete: {
+		id: 'deleteContentTypeDialog.contentTypeDeletedMessage',
+		defaultMessage: 'Content type deleted successfully'
+	},
+	deleteFailed: {
+		id: 'deleteContentTypeDialog.contentTypeDeleteFailedMessage',
+		defaultMessage: 'Error deleting content type'
+	}
 });
 
 export function DeleteContentTypeDialogContainer(props: DeleteContentTypeDialogContainerProps) {
-  const { onClose, contentType, onComplete, isSubmitting, onSubmittingAndOrPendingChange } = props;
-  const site = useActiveSiteId();
-  const { formatMessage } = useIntl();
-  const dispatch = useDispatch();
-  const functionRefs = useUpdateRefs({
-    onSubmittingAndOrPendingChange
-  });
-  const [{ data, isFetching, error }, setState] = useSpreadState({
-    data: null,
-    isFetching: false,
-    error: null
-  });
+	const { onClose, contentType, onComplete, isSubmitting, onSubmittingAndOrPendingChange } = props;
+	const site = useActiveSiteId();
+	const { formatMessage } = useIntl();
+	const dispatch = useDispatch();
+	const functionRefs = useUpdateRefs({
+		onSubmittingAndOrPendingChange
+	});
+	const [{ data, isFetching, error }, setState] = useSpreadState({
+		data: null,
+		isFetching: false,
+		error: null
+	});
 
-  useEffect(() => {
-    setState({ isFetching: true });
-    const sub = fetchContentTypeUsage(site, contentType.id).subscribe({
-      next(response) {
-        setState({
-          data: response,
-          isFetching: false,
-          error: null
-        });
-      },
-      error(e) {
-        setState({
-          error: e,
-          isFetching: false
-        });
-      }
-    });
-    return () => {
-      sub.unsubscribe();
-    };
-  }, [site, contentType.id, setState]);
+	useEffect(() => {
+		setState({ isFetching: true });
+		const sub = fetchContentTypeUsage(site, contentType.id).subscribe({
+			next(response) {
+				setState({
+					data: response,
+					isFetching: false,
+					error: null
+				});
+			},
+			error(e) {
+				setState({
+					error: e,
+					isFetching: false
+				});
+			}
+		});
+		return () => {
+			sub.unsubscribe();
+		};
+	}, [site, contentType.id, setState]);
 
-  const onSubmit = () => {
-    functionRefs.current.onSubmittingAndOrPendingChange({
-      isSubmitting: true
-    });
-    deleteContentType(site, contentType.id).subscribe({
-      next() {
-        functionRefs.current.onSubmittingAndOrPendingChange({
-          isSubmitting: false
-        });
-        dispatch(showSystemNotification({ message: formatMessage(messages.deleteComplete) }));
-        onComplete?.();
-      },
-      error(e) {
-        functionRefs.current.onSubmittingAndOrPendingChange({
-          isSubmitting: false
-        });
-        const response = e.response?.response ?? e.response;
-        dispatch(
-          showSystemNotification({
-            message: response?.message ?? formatMessage(messages.deleteFailed),
-            options: { variant: 'error' }
-          })
-        );
-      }
-    });
-  };
+	const onSubmit = () => {
+		functionRefs.current.onSubmittingAndOrPendingChange({
+			isSubmitting: true
+		});
+		deleteContentType(site, contentType.id).subscribe({
+			next() {
+				functionRefs.current.onSubmittingAndOrPendingChange({
+					isSubmitting: false
+				});
+				dispatch(showSystemNotification({ message: formatMessage(messages.deleteComplete) }));
+				onComplete?.();
+			},
+			error(e) {
+				functionRefs.current.onSubmittingAndOrPendingChange({
+					isSubmitting: false
+				});
+				const response = e.response?.response ?? e.response;
+				dispatch(
+					showSystemNotification({
+						message: response?.message ?? formatMessage(messages.deleteFailed),
+						options: { variant: 'error' }
+					})
+				);
+			}
+		});
+	};
 
-  const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
+	const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
 
-  return error ? (
-    <ApiResponseErrorState error={error} />
-  ) : isFetching ? (
-    <LoadingState styles={{ root: { width: 300, height: 250 } }} />
-  ) : data ? (
-    <DeleteContentTypeDialogBody
-      submitting={isSubmitting}
-      onCloseButtonClick={onCloseButtonClick}
-      data={data}
-      contentType={contentType}
-      onSubmit={onSubmit}
-    />
-  ) : null;
+	return error ? (
+		<ApiResponseErrorState error={error} />
+	) : isFetching ? (
+		<LoadingState sxs={{ root: { width: 300, height: 250 } }} />
+	) : data ? (
+		<DeleteContentTypeDialogBody
+			submitting={isSubmitting}
+			onCloseButtonClick={onCloseButtonClick}
+			data={data}
+			contentType={contentType}
+			onSubmit={onSubmit}
+		/>
+	) : null;
 }

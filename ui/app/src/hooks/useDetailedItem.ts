@@ -23,16 +23,16 @@ import { completeDetailedItem } from '../state/actions/content';
 import { lookupItemByPath } from '../utils/content';
 
 export function useDetailedItem(path: string): DetailedItem {
-  const dispatch = useDispatch();
-  const itemsByPath = useSelection((state) => state.content.itemsByPath);
-  const item = path ? lookupItemByPath(path, itemsByPath) : null;
-  const beingFetching = useSelection((state) => state.content.itemsBeingFetchedByPath[path]);
-  useEffect(() => {
-    if (nou(item) && path && beingFetching === undefined) {
-      dispatch(completeDetailedItem({ path }));
-    }
-  }, [beingFetching, dispatch, item, path]);
-  return item;
+	const dispatch = useDispatch();
+	const itemsByPath = useSelection((state) => state.content.itemsByPath);
+	const item = path ? lookupItemByPath(path, itemsByPath) : null;
+	const beingFetching = useSelection((state) => state.content.itemsBeingFetchedByPath[path]);
+	useEffect(() => {
+		if (nou(item) && path && beingFetching === undefined) {
+			dispatch(completeDetailedItem({ path }));
+		}
+	}, [beingFetching, dispatch, item, path]);
+	return item;
 }
 
 export default useDetailedItem;

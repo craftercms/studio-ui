@@ -26,64 +26,64 @@ import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { LoadingState } from '../LoadingState';
 
 export function DeleteDialogUI(props: DeleteDialogUIProps) {
-  const {
-    items,
-    childItems,
-    dependentItems,
-    error,
-    submitError,
-    setSubmitError,
-    isFetching,
-    selectedItems,
-    comment,
-    onCommentChange,
-    isDisabled,
-    isSubmitting,
-    onSubmit,
-    onCloseButtonClick,
-    isConfirmDeleteChecked,
-    isCommentRequired,
-    isSubmitButtonDisabled,
-    onItemClicked,
-    onSelectAllClicked,
-    onConfirmDeleteChange,
-    onEditDependantClick
-  } = props;
-  return (
-    <>
-      <DialogBody minHeight>
-        {error || submitError ? (
-          <ApiResponseErrorState error={error ?? submitError} onButtonClick={() => setSubmitError(null)} />
-        ) : isFetching || (!childItems && !dependentItems) ? (
-          <LoadingState />
-        ) : (
-          <DeleteDialogUIBody
-            isDisabled={isDisabled}
-            onItemClicked={onItemClicked}
-            onSelectAllClicked={onSelectAllClicked}
-            selectedItems={selectedItems}
-            items={items}
-            childItems={childItems}
-            dependentItems={dependentItems}
-            comment={comment}
-            onCommentChange={onCommentChange}
-            isCommentRequired={isCommentRequired}
-            onConfirmDeleteChange={onConfirmDeleteChange}
-            isConfirmDeleteChecked={isConfirmDeleteChecked}
-            onEditDependantClick={onEditDependantClick}
-          />
-        )}
-      </DialogBody>
-      <DialogFooter>
-        <SecondaryButton onClick={onCloseButtonClick} disabled={isDisabled}>
-          <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
-        </SecondaryButton>
-        <PrimaryButton onClick={onSubmit} disabled={isSubmitButtonDisabled || isDisabled} loading={isSubmitting}>
-          <FormattedMessage id="words.delete" defaultMessage="Delete" />
-        </PrimaryButton>
-      </DialogFooter>
-    </>
-  );
+	const {
+		items,
+		childItems,
+		dependentItems,
+		error,
+		submitError,
+		setSubmitError,
+		isFetching,
+		selectedItems,
+		comment,
+		onCommentChange,
+		isDisabled,
+		isSubmitting,
+		onSubmit,
+		onCloseButtonClick,
+		isConfirmDeleteChecked,
+		isCommentRequired,
+		isSubmitButtonDisabled,
+		onItemClicked,
+		onSelectAllClicked,
+		onConfirmDeleteChange,
+		onEditDependantClick
+	} = props;
+	return (
+		<>
+			<DialogBody minHeight>
+				{error || submitError ? (
+					<ApiResponseErrorState error={error ?? submitError} onButtonClick={() => setSubmitError(null)} />
+				) : isFetching || (!childItems && !dependentItems) ? (
+					<LoadingState />
+				) : (
+					<DeleteDialogUIBody
+						isDisabled={isDisabled}
+						onItemClicked={onItemClicked}
+						onSelectAllClicked={onSelectAllClicked}
+						selectedItems={selectedItems}
+						items={items}
+						childItems={childItems}
+						dependentItems={dependentItems}
+						comment={comment}
+						onCommentChange={onCommentChange}
+						isCommentRequired={isCommentRequired}
+						onConfirmDeleteChange={onConfirmDeleteChange}
+						isConfirmDeleteChecked={isConfirmDeleteChecked}
+						onEditDependantClick={onEditDependantClick}
+					/>
+				)}
+			</DialogBody>
+			<DialogFooter>
+				<SecondaryButton onClick={onCloseButtonClick} disabled={isDisabled}>
+					<FormattedMessage id="words.cancel" defaultMessage="Cancel" />
+				</SecondaryButton>
+				<PrimaryButton onClick={onSubmit} disabled={isSubmitButtonDisabled || isDisabled} loading={isSubmitting}>
+					<FormattedMessage id="words.delete" defaultMessage="Delete" />
+				</PrimaryButton>
+			</DialogFooter>
+		</>
+	);
 }
 
 export default DeleteDialogUI;

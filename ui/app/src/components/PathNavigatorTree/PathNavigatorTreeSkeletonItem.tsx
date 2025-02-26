@@ -17,25 +17,20 @@
 import Skeleton from '@mui/material/Skeleton';
 import { rand } from '../PathNavigator/utils';
 import * as React from 'react';
-import { makeStyles } from 'tss-react/mui';
+import Box from '@mui/material/Box';
 
 export interface PathNavigatorTreeSkeletonItemProps {
-  textWidth?: string;
-  classes?: Partial<Record<'root', string>>;
+	textWidth?: string;
+	classes?: Partial<Record<'root', string>>;
 }
 
-const useStyles = makeStyles()(() => ({
-  root: { display: 'flex' }
-}));
-
 export function PathNavigatorTreeSkeletonItem(props: PathNavigatorTreeSkeletonItemProps) {
-  const { classes, cx } = useStyles();
-  return (
-    <div className={cx(classes.root, props.classes?.root)}>
-      <Skeleton variant="circular" width="20px" style={{ marginRight: '10px' }} />
-      <Skeleton variant="text" style={{ margin: '0 10px', width: props.textWidth ?? `${rand(60, 95)}%` }} />
-    </div>
-  );
+	return (
+		<Box className={props.classes?.root} sx={{ display: 'flex', padding: '5px 5px' }}>
+			<Skeleton variant="circular" width="20px" style={{ marginRight: '10px' }} />
+			<Skeleton variant="text" style={{ margin: '0 10px', width: props.textWidth ?? `${rand(60, 95)}%` }} />
+		</Box>
+	);
 }
 
 export default PathNavigatorTreeSkeletonItem;

@@ -14,32 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { makeStyles } from 'tss-react/mui';
 import palette from '../../styles/palette';
-import { ItemPublishingTargetIconClassKey, ItemPublishingTargetIconStyles } from './ItemPublishingTargetIcon';
 
 export const LIVE_COLOUR = palette.green.main;
 export const STAGING_COLOUR = palette.blue.main;
-
-export const useStyles = makeStyles<ItemPublishingTargetIconStyles, ItemPublishingTargetIconClassKey>()(
-  (
-    _theme,
-    { root, publishingTargetLive, publishingTargetStaged, publishingIcon } = {} as ItemPublishingTargetIconStyles
-  ) => ({
-    root: {
-      color: palette.gray.medium2,
-      ...root
-    },
-    publishingTargetLive: {
-      color: LIVE_COLOUR,
-      ...publishingTargetLive
-    },
-    publishingTargetStaged: {
-      color: STAGING_COLOUR,
-      ...publishingTargetStaged
-    },
-    publishingIcon: {
-      ...publishingIcon
-    }
-  })
-);

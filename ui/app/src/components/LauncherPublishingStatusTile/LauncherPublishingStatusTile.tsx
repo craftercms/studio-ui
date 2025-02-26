@@ -25,25 +25,28 @@ import { publishingStatusMessages } from '../PublishingStatusDisplay';
 import useShowPublishingStatusDialog from '../../hooks/useShowPublishingStatusDialog';
 
 function LauncherPublishingStatusTile() {
-  const state = useSelection((state) => state.dialogs.publishingStatus);
-  const onShowDialog = useShowPublishingStatusDialog();
-  const { formatMessage } = useIntl();
-  const dispatch = useDispatch();
+	const state = useSelection((state) => state.dialogs.publishingStatus);
+	const onShowDialog = useShowPublishingStatusDialog();
+	const { formatMessage } = useIntl();
+	const dispatch = useDispatch();
 
-  return (
-    <Tooltip title={formatMessage(publishingStatusMessages.publishingStatus)} disableFocusListener disableTouchListener>
-      <PublishingStatusTile
-        enabled={state.enabled}
-        status={state.status}
-        isFetching={state.isFetching}
-        styles={{ root: { background: 'transparent' } }}
-        onClick={() => {
-          dispatch(closeLauncher());
-          onShowDialog();
-        }}
-      />
-    </Tooltip>
-  );
+	return (
+		<Tooltip title={formatMessage(publishingStatusMessages.publishingStatus)} disableFocusListener disableTouchListener>
+			<PublishingStatusTile
+				publishingStatus={{
+					enabled: state.enabled,
+					published: state.published,
+					currentTask: state.currentTask
+				}}
+				isFetching={state.isFetching}
+				sxs={{ root: { background: 'transparent' } }}
+				onClick={() => {
+					dispatch(closeLauncher());
+					onShowDialog();
+				}}
+			/>
+		</Tooltip>
+	);
 }
 
 export default LauncherPublishingStatusTile;

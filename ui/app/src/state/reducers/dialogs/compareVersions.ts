@@ -17,39 +17,39 @@
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
 import {
-  closeCompareVersionsDialog,
-  compareVersionsDialogClosed,
-  showCompareVersionsDialog,
-  showHistoryDialog
+	closeCompareVersionsDialog,
+	compareVersionsDialogClosed,
+	showCompareVersionsDialog,
+	showHistoryDialog
 } from '../../actions/dialogs';
 import { CompareVersionsDialogStateProps } from '../../../components/CompareVersionsDialog/utils';
 
 const initialState: CompareVersionsDialogStateProps = {
-  open: false,
-  isSubmitting: null,
-  isMinimized: null,
-  hasPendingChanges: null,
-  isFetching: null,
-  error: null
+	open: false,
+	isSubmitting: null,
+	isMinimized: null,
+	hasPendingChanges: null,
+	isFetching: null,
+	error: null
 };
 
 export default createReducer<GlobalState['dialogs']['compareVersions']>(initialState, (builder) => {
-  builder
-    .addCase(showCompareVersionsDialog, (state, { payload }) => ({
-      ...state,
-      onClose: closeCompareVersionsDialog(),
-      onClosed: compareVersionsDialogClosed(),
-      ...(payload as Partial<CompareVersionsDialogStateProps>),
-      open: true,
-      isFetching: true
-    }))
-    .addCase(closeCompareVersionsDialog, (state) => ({
-      ...state,
-      open: false
-    }))
-    .addCase(compareVersionsDialogClosed, () => initialState)
-    .addCase(showHistoryDialog, (state) => ({
-      ...state,
-      open: false
-    }));
+	builder
+		.addCase(showCompareVersionsDialog, (state, { payload }) => ({
+			...state,
+			onClose: closeCompareVersionsDialog(),
+			onClosed: compareVersionsDialogClosed(),
+			...(payload as Partial<CompareVersionsDialogStateProps>),
+			open: true,
+			isFetching: true
+		}))
+		.addCase(closeCompareVersionsDialog, (state) => ({
+			...state,
+			open: false
+		}))
+		.addCase(compareVersionsDialogClosed, () => initialState)
+		.addCase(showHistoryDialog, (state) => ({
+			...state,
+			open: false
+		}));
 });

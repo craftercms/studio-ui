@@ -21,50 +21,50 @@ import { Version } from '../../models/monitoring/Version';
 import { siteSocketStatus, storeInitialized } from '../actions/system';
 
 interface GlobalBootData {
-  xsrfHeader: string;
-  xsrfArgument: string;
-  useBaseDomain: boolean;
+	xsrfHeader: string;
+	xsrfArgument: string;
+	useBaseDomain: boolean;
 }
 
 const json = import.meta.env.DEV ? '' : document.getElementById('globalBootData').textContent;
 const data: GlobalBootData = import.meta.env.DEV ? {} : JSON.parse(json);
 
 export const envInitialState: GlobalState['env'] = ((origin: string) => ({
-  authoringBase: import.meta.env.VITE_AUTHORING_BASE ?? `${origin}/studio`,
-  logoutUrl: import.meta.env.VITE_AUTHORING_BASE
-    ? `${import.meta.env.VITE_AUTHORING_BASE}/logout`
-    : `${origin}/studio/logout`,
-  guestBase: import.meta.env.VITE_GUEST_BASE ?? origin,
-  xsrfHeader: data.xsrfHeader ?? 'X-XSRF-TOKEN',
-  xsrfArgument: data.xsrfArgument ?? '_csrf',
-  useBaseDomain: data.useBaseDomain ?? false,
-  siteCookieName: 'crafterSite',
-  previewLandingBase: import.meta.env.VITE_PREVIEW_LANDING ?? `${origin}/studio/preview-landing`,
-  version: null,
-  packageBuild: null,
-  packageVersion: null,
-  packageBuildDate: null,
-  activeEnvironment: null,
-  socketConnected: false
+	authoringBase: import.meta.env.VITE_AUTHORING_BASE ?? `${origin}/studio`,
+	logoutUrl: import.meta.env.VITE_AUTHORING_BASE
+		? `${import.meta.env.VITE_AUTHORING_BASE}/logout`
+		: `${origin}/studio/logout`,
+	guestBase: import.meta.env.VITE_GUEST_BASE ?? origin,
+	xsrfHeader: data.xsrfHeader ?? 'X-XSRF-TOKEN',
+	xsrfArgument: data.xsrfArgument ?? '_csrf',
+	useBaseDomain: data.useBaseDomain ?? false,
+	siteCookieName: 'crafterSite',
+	previewLandingBase: import.meta.env.VITE_PREVIEW_LANDING ?? `${origin}/studio/preview-landing`,
+	version: null,
+	packageBuild: null,
+	packageVersion: null,
+	packageBuildDate: null,
+	activeEnvironment: null,
+	socketConnected: false
 }))(window.location.origin);
 
 const reducer = createReducer<GlobalState['env']>(envInitialState, (builder) => {
-  builder
-    .addCase(fetchSystemVersionComplete, (state, { payload }: { payload: Version }) => ({
-      ...state,
-      version: payload.packageVersion.replace('-SNAPSHOT', ''),
-      packageBuild: payload.packageBuild,
-      packageVersion: payload.packageVersion,
-      packageBuildDate: payload.packageBuildDate
-    }))
-    .addCase(storeInitialized, (state, { payload }) => ({
-      ...state,
-      activeEnvironment: payload.activeEnvironment
-    }))
-    .addCase(siteSocketStatus, (state, { payload }) => ({
-      ...state,
-      socketConnected: payload.connected
-    }));
+	builder
+		.addCase(fetchSystemVersionComplete, (state, { payload }: { payload: Version }) => ({
+			...state,
+			version: payload.packageVersion.replace('-SNAPSHOT', ''),
+			packageBuild: payload.packageBuild,
+			packageVersion: payload.packageVersion,
+			packageBuildDate: payload.packageBuildDate
+		}))
+		.addCase(storeInitialized, (state, { payload }) => ({
+			...state,
+			activeEnvironment: payload.activeEnvironment
+		}))
+		.addCase(siteSocketStatus, (state, { payload }) => ({
+			...state,
+			socketConnected: payload.connected
+		}));
 });
 
 export default reducer;

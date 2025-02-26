@@ -17,43 +17,43 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
-  asset: {
-    id: 'systemType.asset',
-    defaultMessage: 'Asset'
-  },
-  component: {
-    id: 'systemType.component',
-    defaultMessage: 'Component'
-  },
-  page: {
-    id: 'systemType.page',
-    defaultMessage: 'Page'
-  },
-  folder: {
-    id: 'systemType.folder',
-    defaultMessage: 'Folder'
-  },
-  levelDescriptor: {
-    id: 'systemType.levelDescriptor',
-    defaultMessage: 'Level Descriptor'
-  },
-  renderingTemplate: {
-    id: 'systemType.renderingTemplate',
-    defaultMessage: 'Rendering Template'
-  },
-  script: {
-    id: 'systemType.script',
-    defaultMessage: 'Script'
-  },
-  taxonomy: {
-    id: 'systemType.taxonomy',
-    defaultMessage: 'Taxonomy'
-  },
-  configuration: {
-    defaultMessage: 'Configuration'
-  },
-  unknown: {
-    id: 'words.unknown',
-    defaultMessage: 'Unknown'
-  }
+	asset: {
+		id: 'systemType.asset',
+		defaultMessage: 'Asset'
+	},
+	component: {
+		id: 'systemType.component',
+		defaultMessage: 'Component'
+	},
+	page: {
+		id: 'systemType.page',
+		defaultMessage: 'Page'
+	},
+	folder: {
+		id: 'systemType.folder',
+		defaultMessage: 'Folder'
+	},
+	levelDescriptor: {
+		id: 'systemType.levelDescriptor',
+		defaultMessage: 'Level Descriptor'
+	},
+	renderingTemplate: {
+		id: 'systemType.renderingTemplate',
+		defaultMessage: 'Rendering Template'
+	},
+	script: {
+		id: 'systemType.script',
+		defaultMessage: 'Script'
+	},
+	taxonomy: {
+		id: 'systemType.taxonomy',
+		defaultMessage: 'Taxonomy'
+	},
+	configuration: {
+		defaultMessage: 'Configuration'
+	},
+	unknown: {
+		id: 'words.unknown',
+		defaultMessage: 'Unknown'
+	}
 });

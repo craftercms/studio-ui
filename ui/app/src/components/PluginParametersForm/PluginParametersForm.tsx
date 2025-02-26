@@ -31,65 +31,65 @@ export type PluginParametersFormFullSx = FullSxRecord<PluginParametersFormClassK
 export type PluginParametersFormPartialSx = PartialSxRecord<PluginParametersFormClassKey>;
 
 function getSx(sx?: PluginParametersFormPartialSx): PluginParametersFormFullSx {
-  return {
-    root: {
-      height: '100%',
-      overflow: 'auto',
-      ...sx?.root
-    },
-    header: {
-      display: 'flex',
-      padding: '20px',
-      alignItems: 'center',
-      ...sx?.header
-    },
-    backButton: {
-      color: '#4F4F4F',
-      backgroundColor: '#FFFFFF',
-      marginRight: '30px',
-      '&:hover': {
-        backgroundColor: '#FFFFFF'
-      },
-      ...sx?.backButton
-    }
-  };
+	return {
+		root: {
+			height: '100%',
+			overflow: 'auto',
+			...sx?.root
+		},
+		header: {
+			display: 'flex',
+			padding: '20px',
+			alignItems: 'center',
+			...sx?.header
+		},
+		backButton: {
+			color: '#4F4F4F',
+			backgroundColor: '#FFFFFF',
+			marginRight: '30px',
+			'&:hover': {
+				backgroundColor: '#FFFFFF'
+			},
+			...sx?.backButton
+		}
+	};
 }
 
 export interface PluginParametersFormProps {
-  plugin: MarketplacePlugin;
-  fields: LookupTable<string>;
-  submitted: boolean;
-  onPluginFieldChange(key: string, value: string): void;
-  onCancel(): void;
+	plugin: MarketplacePlugin;
+	fields: LookupTable<string>;
+	submitted: boolean;
+	onPluginFieldChange(key: string, value: string): void;
+	onCancel(): void;
 }
 
 export function PluginParametersForm(props: PluginParametersFormProps) {
-  const { plugin, fields, submitted, onCancel, onPluginFieldChange } = props;
-  const sx = getSx();
+	const { plugin, fields, submitted, onCancel, onPluginFieldChange } = props;
+	const sx = getSx();
 
-  const handleInputChange = (e, type) => {
-    e.persist();
-    onPluginFieldChange(e.target.name, e.target.value);
-  };
+	const handleInputChange = (e, type) => {
+		e.persist();
+		onPluginFieldChange(e.target.name, e.target.value);
+	};
 
-  return (
-    <Box sx={sx.root}>
-      <Box sx={sx.header}>
-        <Fab aria-label="back" sx={sx.backButton} onClick={onCancel}>
-          <ArrowBackIcon />
-        </Fab>
-        <Typography variant="h5" component="h1">
-          {plugin.name} <FormattedMessage id="word.configuration" defaultMessage="Configuration" />
-        </Typography>
-      </Box>
-      <PluginFormEngine
-        fields={fields}
-        submitted={submitted}
-        handleInputChange={handleInputChange}
-        parameters={plugin.parameters}
-      />
-    </Box>
-  );
+	return (
+		<Box sx={sx.root}>
+			<Box sx={sx.header}>
+				<Fab aria-label="back" sx={sx.backButton} onClick={onCancel}>
+					<ArrowBackIcon />
+				</Fab>
+				<Typography variant="h5" component="h1">
+					{plugin.name} <FormattedMessage id="word.configuration" defaultMessage="Configuration" />
+				</Typography>
+			</Box>
+			<PluginFormEngine
+				fields={fields}
+				submitted={submitted}
+				handleInputChange={handleInputChange}
+				parameters={plugin.parameters}
+			/>
+		</Box>
+	);
 }
 
 export default PluginParametersForm;

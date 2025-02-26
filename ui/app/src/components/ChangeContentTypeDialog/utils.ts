@@ -20,22 +20,22 @@ import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 
 export interface ChangeContentTypeDialogBaseProps {
-  item: DetailedItem;
-  rootPath: string;
-  compact: boolean;
-  selectedContentType: string;
+	item: DetailedItem;
+	rootPath: string;
+	compact: boolean;
+	selectedContentType: string;
 }
 
 export interface ChangeContentTypeDialogProps extends ChangeContentTypeDialogBaseProps, EnhancedDialogProps {
-  onContentTypeSelected?(response?: any): any;
+	onContentTypeSelected?(response?: any): any;
 }
 
 export interface ChangeContentTypeDialogStateProps extends ChangeContentTypeDialogBaseProps, EnhancedDialogState {
-  onContentTypeSelected?: StandardAction;
-  onClose?: StandardAction;
-  onClosed?: StandardAction;
+	onContentTypeSelected?: StandardAction;
+	onClose?: StandardAction;
+	onClosed?: StandardAction;
 }
 
 export interface ChangeContentTypeDialogContainerProps
-  extends ChangeContentTypeDialogBaseProps,
-    Pick<ChangeContentTypeDialogProps, 'onContentTypeSelected'> {}
+	extends ChangeContentTypeDialogBaseProps,
+		Pick<ChangeContentTypeDialogProps, 'onContentTypeSelected'> {}

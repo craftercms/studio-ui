@@ -15,8 +15,8 @@
  */
 
 export interface Logger {
-  level: LoggerLevel;
-  name: string;
+	level: LoggerLevel;
+	name: string;
 }
 
 export type LoggerLevel = 'off' | 'fatal' | 'error' | 'warn' | 'info' | 'debug' | 'trace' | 'all';

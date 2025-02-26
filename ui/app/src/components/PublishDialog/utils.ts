@@ -20,89 +20,128 @@ import StandardAction from '../../models/StandardAction';
 import { GoLiveResponse } from '../../services/publishing';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
-import React, { ReactNode } from 'react';
+import { PublishingTarget } from '../../models/Publishing';
+import { useMemo, useState } from 'react';
+import { DependencyDataState } from './PublishDialogContainer';
 import LookupTable from '../../models/LookupTable';
-import { DependencySelectionProps } from '../DependencySelection/DependencySelection';
-import { FetchDependenciesResponse } from '../../services/dependencies';
-import { PublishingTarget } from '../../models';
+import { buildPathTrees, PathTreeNode } from './buildPathTrees';
 
 export interface ExtendedGoLiveResponse extends GoLiveResponse {
-  schedule: 'now' | 'custom';
-  publishingTarget: string;
-  type: 'submit' | 'publish';
-  items: DetailedItem[];
+	schedule: 'now' | 'custom';
+	publishingTarget: string;
+	type: 'submit' | 'publish';
+	items: DetailedItem[];
 }
 
 export interface PublishDialogBaseProps {
-  items?: DetailedItem[];
-  // if null it means the dialog should determinate which one to use
-  scheduling?: 'now' | 'custom';
+	items?: DetailedItem[];
+	// if null it means the dialog should determinate which one to use
+	scheduling?: 'now' | 'custom';
 }
 
 export interface PublishDialogProps extends PublishDialogBaseProps, EnhancedDialogProps {
-  onSuccess?(response?: ExtendedGoLiveResponse): any;
+	onSuccess?(response?: ExtendedGoLiveResponse): void;
 }
 
 export interface PublishDialogStateProps extends PublishDialogBaseProps, EnhancedDialogState {
-  onClose?: StandardAction;
-  onClosed?: StandardAction;
-  onSuccess?: StandardAction;
+	onClose?: StandardAction;
+	onClosed?: StandardAction;
+	onSuccess?: StandardAction;
 }
 
 export interface PublishDialogContainerProps
-  extends PublishDialogBaseProps,
-    Pick<PublishDialogProps, 'isSubmitting' | 'onSuccess' | 'onClose'> {}
+	extends PublishDialogBaseProps,
+		Pick<PublishDialogProps, 'isSubmitting' | 'onSuccess' | 'onClose'> {}
 
 export interface InternalDialogState {
-  emailOnApprove: boolean;
-  requestApproval: boolean;
-  publishingTarget: string;
-  submissionComment: string;
-  scheduling: 'now' | 'custom';
-  scheduledDateTime: any;
-  publishingChannel: string;
-  error: ApiResponse;
-  fetchingDependencies: boolean;
+	packageTitle: string;
+	requestApproval: boolean;
+	publishingTarget: PublishingTarget['name'] | '';
+	submissionComment: string;
+	scheduling: 'now' | 'custom';
+	scheduledDateTime: Date;
+	error: ApiResponse;
+	fetchingItems: boolean;
 }
 
-export interface PublishDialogUIProps {
-  items: DetailedItem[];
-  publishingTargets: PublishingTarget[];
-  isFetching: boolean;
-  error: ApiResponse;
-  published: boolean;
-  publishingTargetsStatus: string;
-  onPublishingChannelsFailRetry(): void;
-  onCloseButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
-  handleSubmit: any;
-  isSubmitting: boolean;
-  submitDisabled: boolean;
-  state: InternalDialogState;
-  selectedItems: LookupTable<boolean>;
-  onItemClicked: DependencySelectionProps['onItemClicked'];
-  dependencies: FetchDependenciesResponse;
-  onSelectAll(): void;
-  onSelectAllSoftDependencies(): void;
-  onClickShowAllDeps?: any;
-  isRequestPublish?: boolean;
-  showRequestApproval: boolean;
-  classes?: any;
-  submitLabel: ReactNode;
-  mixedPublishingDates?: boolean;
-  mixedPublishingTargets?: boolean;
-  submissionCommentRequired: boolean;
-  onPublishingArgumentChange(e: React.ChangeEvent<HTMLInputElement>): void;
+interface usePublishStateProps {
+	mainItems: DetailedItem[];
 }
 
-export const updateCheckedList = (path: string[], isChecked: boolean, checked: any) => {
-  const nextChecked = { ...checked };
-  (Array.isArray(path) ? path : [path]).forEach((u) => {
-    nextChecked[u] = isChecked;
-  });
-  return nextChecked;
+interface usePublishStateReturn {
+	itemsDataSummary: {
+		itemMap: Record<string, DetailedItem>;
+		itemPaths: string[];
+		allItemsInSubmittedState: boolean;
+		allItemsHavePublishPermission: boolean;
+		incompleteDetailedItemPaths: string[];
+	};
+	dependencyData: DependencyDataState;
+	setDependencyData: (data: DependencyDataState) => void;
+	selectedDependenciesMap: LookupTable<boolean>;
+	setSelectedDependenciesMap: (map: LookupTable<boolean>) => void;
+	selectedDependenciesPaths: string[];
+	dependencyPaths: string[];
+	trees: PathTreeNode[];
+	parentTreeNodePaths: string[];
+	itemsAndDependenciesPaths: string[];
+	dependencyItemMap: Record<string, DetailedItem>;
+	itemsAndDependenciesMap: Record<string, DetailedItem>;
+}
+
+export const usePublishState = ({ mainItems }: usePublishStateProps): usePublishStateReturn => {
+	const [dependencyData, setDependencyData] = useState<DependencyDataState>(null);
+	const [selectedDependenciesMap, setSelectedDependenciesMap] = useState<LookupTable<boolean>>({});
+	const selectedDependenciesPaths = Object.keys(selectedDependenciesMap).filter(
+		(path) => selectedDependenciesMap[path]
+	);
+	const itemsDataSummary = useMemo(() => {
+		let allItemsInSubmittedState = true;
+		let allItemsHavePublishPermission = true;
+		const itemPaths = [];
+		const itemMap: Record<string, DetailedItem> = {};
+		const incompleteDetailedItemPaths = [];
+		mainItems.forEach((item) => {
+			itemMap[item.path] = item;
+			itemPaths.push(item.path);
+			allItemsHavePublishPermission = allItemsHavePublishPermission && item.availableActionsMap.publish;
+			allItemsInSubmittedState = allItemsInSubmittedState && item.stateMap.submitted;
+			if (item.live == null || item.staging == null) {
+				incompleteDetailedItemPaths.push(item.path);
+			}
+		});
+		return {
+			itemMap,
+			itemPaths,
+			allItemsInSubmittedState,
+			allItemsHavePublishPermission,
+			incompleteDetailedItemPaths
+		};
+	}, [mainItems]);
+	const dependencyPaths = dependencyData?.paths;
+	const [trees, parentTreeNodePaths, itemsAndDependenciesPaths] = useMemo(() => {
+		const treeItemPaths = itemsDataSummary.itemPaths.concat(dependencyPaths ?? []);
+		const treeBuilderResult = buildPathTrees(treeItemPaths);
+		return [...treeBuilderResult, treeItemPaths] as [PathTreeNode[], string[], string[]];
+	}, [dependencyPaths, itemsDataSummary.itemPaths]);
+	const dependencyItemMap = dependencyData?.itemsByPath;
+	const itemsAndDependenciesMap = useMemo(
+		() => ({ ...itemsDataSummary.itemMap, ...dependencyItemMap }),
+		[itemsDataSummary.itemMap, dependencyItemMap]
+	);
+
+	return {
+		itemsDataSummary,
+		dependencyData,
+		setDependencyData,
+		selectedDependenciesMap,
+		setSelectedDependenciesMap,
+		selectedDependenciesPaths,
+		dependencyPaths,
+		trees,
+		parentTreeNodePaths,
+		itemsAndDependenciesPaths,
+		dependencyItemMap,
+		itemsAndDependenciesMap
+	};
 };
-
-export const paths = (checked: any) =>
-  Object.entries({ ...checked })
-    .filter(([, value]) => value === true)
-    .map(([key]) => key);

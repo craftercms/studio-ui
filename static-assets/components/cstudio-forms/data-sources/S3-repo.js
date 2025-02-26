@@ -15,102 +15,102 @@
  */
 
 CStudioForms.Datasources.S3Repo =
-  CStudioForms.Datasources.S3Repo ||
-  function (id, form, properties, constraints) {
-    this.id = id;
-    this.form = form;
-    this.properties = properties;
-    this.constraints = constraints;
+	CStudioForms.Datasources.S3Repo ||
+	function (id, form, properties, constraints) {
+		this.id = id;
+		this.form = form;
+		this.properties = properties;
+		this.constraints = constraints;
 
-    for (var i = 0; i < properties.length; i++) {
-      if (properties[i].name === 'path') {
-        this.path = properties[i].value;
-      }
-      if (properties[i].name === 'profileId') {
-        this.profileId = properties[i].value;
-      }
-    }
+		for (var i = 0; i < properties.length; i++) {
+			if (properties[i].name === 'path') {
+				this.path = properties[i].value;
+			}
+			if (properties[i].name === 'profileId') {
+				this.profileId = properties[i].value;
+			}
+		}
 
-    this.messages = {
-      words: CrafterCMSNext.i18n.messages.words
-    };
+		this.messages = {
+			words: CrafterCMSNext.i18n.messages.words
+		};
 
-    return this;
-  };
+		return this;
+	};
 
 YAHOO.extend(CStudioForms.Datasources.S3Repo, CStudioForms.CStudioFormDatasource, {
-  add: function (control, multiple) {
-    var _self = this;
+	add: function (control, multiple) {
+		var _self = this;
 
-    var datasourceDef = this.form.definition.datasources,
-      newElTitle = '';
+		var datasourceDef = this.form.definition.datasources,
+			newElTitle = '';
 
-    for (var x = 0; x < datasourceDef.length; x++) {
-      if (datasourceDef[x].id === this.id) {
-        newElTitle = datasourceDef[x].title;
-      }
-    }
+		for (var x = 0; x < datasourceDef.length; x++) {
+			if (datasourceDef[x].id === this.id) {
+				newElTitle = datasourceDef[x].title;
+			}
+		}
 
-    const create = $(
-      `<li class="cstudio-form-controls-create-element">
+		const create = $(
+			`<li class="cstudio-form-controls-create-element">
         <a class="cstudio-form-control-node-selector-add-container-item">
           ${CrafterCMSNext.i18n.intl.formatMessage(
-            _self.messages.words.browse
-          )} - ${CrafterCMSNext.util.string.escapeHTML(newElTitle)}
+						_self.messages.words.browse
+					)} - ${CrafterCMSNext.util.string.escapeHTML(newElTitle)}
         </a>
       </li>`
-    );
+		);
 
-    create.find('a').on('click', function () {
-      CStudioAuthoring.Operations.openS3Browse(
-        _self.profileId,
-        _self.processPathsForMacros(_self.path),
-        'select',
-        true,
-        {
-          success: function (searchId, selectedTOs) {
-            for (var i = 0; i < selectedTOs.length; i++) {
-              var item = selectedTOs[i];
-              var uri = item.browserUri;
-              var fileName = item.internalName;
-              var fileExtension = fileName.split('.').pop();
+		create.find('a').on('click', function () {
+			CStudioAuthoring.Operations.openS3Browse(
+				_self.profileId,
+				_self.processPathsForMacros(_self.path),
+				'select',
+				true,
+				{
+					success: function (searchId, selectedTOs) {
+						for (var i = 0; i < selectedTOs.length; i++) {
+							var item = selectedTOs[i];
+							var uri = item.browserUri;
+							var fileName = item.internalName;
+							var fileExtension = fileName.split('.').pop();
 
-              control.insertItem(uri, uri, fileExtension, null, _self.id);
-              if (control._renderItems) {
-                control._renderItems();
-              }
-            }
-          },
-          failure: function () {}
-        }
-      );
-    });
+							control.insertItem(uri, uri, fileExtension, null, _self.id);
+							if (control._renderItems) {
+								control._renderItems();
+							}
+						}
+					},
+					failure: function () {}
+				}
+			);
+		});
 
-    control.$dropdownMenu.append(create);
-  },
+		control.$dropdownMenu.append(create);
+	},
 
-  getLabel: function () {
-    return CMgs.format(langBundle, 'fileS3Repository');
-  },
+	getLabel: function () {
+		return CMgs.format(langBundle, 'fileS3Repository');
+	},
 
-  getInterface: function () {
-    return 'item';
-  },
+	getInterface: function () {
+		return 'item';
+	},
 
-  getName: function () {
-    return 'S3-repo';
-  },
+	getName: function () {
+		return 'S3-repo';
+	},
 
-  getSupportedProperties: function () {
-    return [
-      { label: CMgs.format(langBundle, 'repositoryPath'), name: 'path', type: 'string' },
-      { label: CMgs.format(langBundle, 'profileId'), name: 'profileId', type: 'string' }
-    ];
-  },
+	getSupportedProperties: function () {
+		return [
+			{ label: CMgs.format(langBundle, 'repositoryPath'), name: 'path', type: 'string' },
+			{ label: CMgs.format(langBundle, 'profileId'), name: 'profileId', type: 'string' }
+		];
+	},
 
-  getSupportedConstraints: function () {
-    return [];
-  }
+	getSupportedConstraints: function () {
+		return [];
+	}
 });
 
 CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-S3-repo', CStudioForms.Datasources.S3Repo);

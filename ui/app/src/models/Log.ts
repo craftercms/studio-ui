@@ -15,11 +15,11 @@
  */
 
 export interface Log {
-  exception: string;
-  site: string;
-  level: string;
-  thread: string;
-  message: string;
-  timestamp: string;
-  timestampm: number;
+	exception: string;
+	site: string;
+	level: string;
+	thread: string;
+	message: string;
+	timestamp: string;
+	timestampm: number;
 }

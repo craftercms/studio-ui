@@ -21,31 +21,31 @@ import useActiveSiteId from './useActiveSiteId';
 import { showPublishingStatusDialog, showWidgetDialog } from '../state/actions/dialogs';
 
 export function useShowPublishingStatusDialog() {
-  const { formatMessage } = useIntl();
-  const dispatch = useDispatch();
-  const user = useActiveUser();
-  const site = useActiveSiteId();
-  const userRoles = user?.rolesBySite[site] ?? [];
-  const userPermissions = user?.permissionsBySite[site] ?? [];
+	const { formatMessage } = useIntl();
+	const dispatch = useDispatch();
+	const user = useActiveUser();
+	const site = useActiveSiteId();
+	const userRoles = user?.rolesBySite[site] ?? [];
+	const userPermissions = user?.permissionsBySite[site] ?? [];
 
-  return () => {
-    dispatch(
-      // If user has either of these permissions or roles, then he'll see more than one widget, and it's worth showing the
-      // Publishing Dashboard. Otherwise, just show the simple status dialog.
-      userPermissions.some((permission) => permission === 'get_publishing_queue' || permission === 'publish') ||
-        userRoles.some((role) => role === 'developer' || role === 'admin')
-        ? showWidgetDialog({
-            title: formatMessage({ defaultMessage: 'Publishing' }),
-            widget: {
-              id: 'craftercms.components.PublishingDashboard',
-              configuration: {
-                embedded: true
-              }
-            }
-          })
-        : showPublishingStatusDialog({})
-    );
-  };
+	return () => {
+		dispatch(
+			// If user has either of these permissions or roles, then he'll see more than one widget, and it's worth showing the
+			// Publishing Dashboard. Otherwise, just show the simple status dialog.
+			userPermissions.some((permission) => permission === 'get_publishing_queue' || permission === 'publish') ||
+				userRoles.some((role) => role === 'developer' || role === 'admin')
+				? showWidgetDialog({
+						title: formatMessage({ defaultMessage: 'Publishing' }),
+						widget: {
+							id: 'craftercms.components.PublishingDashboard',
+							configuration: {
+								embedded: true
+							}
+						}
+					})
+				: showPublishingStatusDialog({})
+		);
+	};
 }
 
 export default useShowPublishingStatusDialog;

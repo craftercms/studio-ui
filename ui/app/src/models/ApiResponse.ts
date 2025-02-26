@@ -15,22 +15,22 @@
  */
 
 export interface ApiResponse {
-  code?: number | string;
-  message?: string;
-  remedialAction?: string;
-  documentationUrl?: string;
+	code?: number | string;
+	message?: string;
+	remedialAction?: string;
+	documentationUrl?: string;
 }
 
 export type Api2ResponseFormat<T> = {
-  response: ApiResponse;
-  validationErrors?: Array<{ field: string; message: string }>;
+	response: ApiResponse;
+	validationErrors?: Array<{ field: string; message: string }>;
 } & T;
 
 export type Api2BulkResponseFormat<T> = {
-  limit: number;
-  offset: number;
-  total: number;
-  response: ApiResponse;
+	limit: number;
+	offset: number;
+	total: number;
+	response: ApiResponse;
 } & T;
 
 export default ApiResponse;

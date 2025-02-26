@@ -20,7 +20,7 @@ import { reversePluckProps } from '../../../utils/object';
 import { MinimizedTab } from '../../../models/MinimizedTab';
 
 interface Payload {
-  id: string;
+	id: string;
 }
 
 export const pushTab = /*#__PURE__*/ createAction<MinimizedTab>('PUSH_TAB');
@@ -30,16 +30,16 @@ export const popTab = /*#__PURE__*/ createAction<Payload>('POP_TAB');
 export const updateTab = /*#__PURE__*/ createAction<Partial<MinimizedTab> & Payload>('UPDATE_TAB');
 
 export default createReducer<GlobalState['dialogs']['minimizedTabs']>({}, (builder) => {
-  builder
-    .addCase(pushTab, (state, { payload }) => ({
-      ...state,
-      [payload.id]: {
-        ...payload
-      }
-    }))
-    .addCase(popTab, (state, { payload }) => reversePluckProps(state, payload.id))
-    .addCase(updateTab, (state, { payload }) => ({
-      ...state,
-      [payload.id]: { ...state[payload.id], ...payload }
-    }));
+	builder
+		.addCase(pushTab, (state, { payload }) => ({
+			...state,
+			[payload.id]: {
+				...payload
+			}
+		}))
+		.addCase(popTab, (state, { payload }) => reversePluckProps(state, payload.id))
+		.addCase(updateTab, (state, { payload }) => ({
+			...state,
+			[payload.id]: { ...state[payload.id], ...payload }
+		}));
 });

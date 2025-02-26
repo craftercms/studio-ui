@@ -25,92 +25,92 @@ import { rand } from '../PathNavigator/utils';
 import Box, { BoxProps } from '@mui/material/Box';
 
 export interface ActionsBarAction {
-  id: string;
-  label: TranslationOrText;
+	id: string;
+	label: TranslationOrText;
 }
 
 interface ActionsBarProps {
-  options: ActionsBarAction[];
-  noSelectionContent?: ReactElement;
-  numOfSkeletonItems?: number;
-  isLoading?: boolean;
-  isIndeterminate: boolean;
-  showCheckbox?: boolean;
-  isChecked: boolean;
-  classes?: Partial<Record<'root' | 'container' | 'checkbox' | 'button', string>>;
-  onOptionClicked(optionId: string): void;
-  onCheckboxChange: CheckboxProps['onChange'];
-  buttonProps?: Omit<ButtonProps, 'onClick'>;
-  sxs?: Partial<{
-    root: BoxProps['sx'];
-    checkbox: BoxProps['sx'];
-    button: BoxProps['sx'];
-    container: BoxProps['sx'];
-  }>;
-  disabled?: boolean;
+	options: ActionsBarAction[];
+	noSelectionContent?: ReactElement;
+	numOfSkeletonItems?: number;
+	isLoading?: boolean;
+	isIndeterminate: boolean;
+	showCheckbox?: boolean;
+	isChecked: boolean;
+	classes?: Partial<Record<'root' | 'container' | 'checkbox' | 'button', string>>;
+	onOptionClicked(optionId: string): void;
+	onCheckboxChange: CheckboxProps['onChange'];
+	buttonProps?: Omit<ButtonProps, 'onClick'>;
+	sxs?: Partial<{
+		root: BoxProps['sx'];
+		checkbox: BoxProps['sx'];
+		button: BoxProps['sx'];
+		container: BoxProps['sx'];
+	}>;
+	disabled?: boolean;
 }
 
 export function ActionsBar(props: ActionsBarProps) {
-  const { formatMessage } = useIntl();
-  const {
-    options,
-    noSelectionContent,
-    onOptionClicked,
-    isIndeterminate,
-    onCheckboxChange,
-    showCheckbox = true,
-    isChecked,
-    isLoading = false,
-    numOfSkeletonItems = 5,
-    buttonProps,
-    sxs,
-    disabled = false
-  } = props;
-  return (
-    <Box className={props.classes?.root} sx={{ bgcolor: 'background.paper', ...sxs?.root }}>
-      <Box sx={{ bgcolor: 'action.selected', ...sxs?.container }}>
-        {showCheckbox && (
-          <Checkbox
-            disabled={disabled}
-            sx={{ width: 48, ...sxs?.checkbox }}
-            color="primary"
-            indeterminate={isIndeterminate}
-            checked={isChecked}
-            className={props.classes?.checkbox}
-            onChange={onCheckboxChange}
-          />
-        )}
-        {!isLoading && !isIndeterminate && !isChecked && noSelectionContent}
-        {isLoading
-          ? new Array(numOfSkeletonItems).fill(null).map((nothing, index) => (
-              <Button
-                key={index}
-                color="primary"
-                className={props.classes?.button}
-                sx={sxs?.button}
-                disabled={disabled}
-                {...buttonProps}
-              >
-                <Skeleton animation="pulse" height="12px" width={`${rand(40, 60)}px`} />
-              </Button>
-            ))
-          : options?.map((option: ActionsBarAction) => (
-              <Button
-                key={option.id}
-                color="primary"
-                variant="text"
-                className={props.classes?.button}
-                sx={sxs?.button}
-                disabled={disabled}
-                {...buttonProps}
-                onClick={() => onOptionClicked(option.id)}
-              >
-                {getPossibleTranslation(option.label, formatMessage)}
-              </Button>
-            ))}
-      </Box>
-    </Box>
-  );
+	const { formatMessage } = useIntl();
+	const {
+		options,
+		noSelectionContent,
+		onOptionClicked,
+		isIndeterminate,
+		onCheckboxChange,
+		showCheckbox = true,
+		isChecked,
+		isLoading = false,
+		numOfSkeletonItems = 5,
+		buttonProps,
+		sxs,
+		disabled = false
+	} = props;
+	return (
+		<Box className={props.classes?.root} sx={{ bgcolor: 'background.paper', ...sxs?.root }}>
+			<Box sx={{ bgcolor: 'action.selected', ...sxs?.container }}>
+				{showCheckbox && (
+					<Checkbox
+						disabled={disabled}
+						sx={{ width: 48, ...sxs?.checkbox }}
+						color="primary"
+						indeterminate={isIndeterminate}
+						checked={isChecked}
+						className={props.classes?.checkbox}
+						onChange={onCheckboxChange}
+					/>
+				)}
+				{!isLoading && !isIndeterminate && !isChecked && noSelectionContent}
+				{isLoading
+					? new Array(numOfSkeletonItems).fill(null).map((nothing, index) => (
+							<Button
+								key={index}
+								color="primary"
+								className={props.classes?.button}
+								sx={sxs?.button}
+								disabled={disabled}
+								{...buttonProps}
+							>
+								<Skeleton animation="pulse" height="12px" width={`${rand(40, 60)}px`} />
+							</Button>
+						))
+					: options?.map((option: ActionsBarAction) => (
+							<Button
+								key={option.id}
+								color="primary"
+								variant="text"
+								className={props.classes?.button}
+								sx={sxs?.button}
+								disabled={disabled}
+								{...buttonProps}
+								onClick={() => onOptionClicked(option.id)}
+							>
+								{getPossibleTranslation(option.label, formatMessage)}
+							</Button>
+						))}
+			</Box>
+		</Box>
+	);
 }
 
 export default ActionsBar;

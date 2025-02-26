@@ -15,36 +15,25 @@
  */
 
 import { Theme } from '@mui/material/styles';
-import { PublishingStatusTileProps } from '../PublishingStatusTile';
 import { PublishingStatusCodes } from '../../models';
 
-export const getPublishingStatusCodeColor = (code: PublishingStatusTileProps['status'], theme: Theme) => {
-  switch (code) {
-    case 'ready':
-    case 'queued':
-    case 'processing':
-    case 'publishing': {
-      return theme.palette.success.main;
-    }
-    case 'error':
-    case 'stopped': {
-      return theme.palette.error.main;
-    }
-    case 'readyWithErrors': {
-      return theme.palette.warning.main;
-    }
-  }
-  // region Compiler hints
-  // Var below is for typescript to complain if we ever add/remove codes.
-  // eslint-disable-next-line no-unreachable,@typescript-eslint/no-unused-vars
-  const control: Record<PublishingStatusCodes, any> = {
-    error: undefined,
-    processing: undefined,
-    publishing: undefined,
-    queued: undefined,
-    ready: undefined,
-    readyWithErrors: undefined,
-    stopped: undefined
-  };
-  // endregion
+export const getPublishingStatusCodeColor = (code: PublishingStatusCodes, theme: Theme) => {
+	switch (code) {
+		case 'ready':
+		case 'publishing': {
+			return theme.palette.success.main;
+		}
+		case 'stopped': {
+			return theme.palette.error.main;
+		}
+	}
+	// region Compiler hints
+	// Var below is for typescript to complain if we ever add/remove codes.
+	// eslint-disable-next-line no-unreachable,@typescript-eslint/no-unused-vars
+	const control: Record<PublishingStatusCodes, any> = {
+		publishing: undefined,
+		ready: undefined,
+		stopped: undefined
+	};
+	// endregion
 };

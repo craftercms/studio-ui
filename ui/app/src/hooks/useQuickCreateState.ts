@@ -18,7 +18,7 @@ import GlobalState from '../models/GlobalState';
 import { useSelection } from './useSelection';
 
 export function useQuickCreateState(): GlobalState['content']['quickCreate'] {
-  return useSelection((state) => state.content.quickCreate);
+	return useSelection((state) => state.content.quickCreate);
 }
 
 export default useQuickCreateState;

@@ -21,30 +21,30 @@ import { DeleteContentTypeDialogContainer } from './DeleteContentTypeDialogConta
 import { EnhancedDialog } from '../EnhancedDialog';
 
 function DeleteContentTypeDialog(props: DeleteContentTypeDialogProps) {
-  const { contentType, onSubmittingAndOrPendingChange, isSubmitting, onComplete, ...rest } = props;
-  return (
-    <EnhancedDialog
-      title={<FormattedMessage id="deleteContentTypeDialog.headerTitle" defaultMessage="Delete Content Type" />}
-      dialogHeaderProps={{
-        subtitle: (
-          <FormattedMessage
-            id="deleteContentTypeDialog.headerSubtitle"
-            defaultMessage={`Please confirm the deletion of "{name}"`}
-            values={{ name: contentType.name }}
-          />
-        )
-      }}
-      isSubmitting={isSubmitting}
-      {...rest}
-    >
-      <DeleteContentTypeDialogContainer
-        contentType={contentType}
-        isSubmitting={isSubmitting}
-        onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
-        onComplete={onComplete}
-      />
-    </EnhancedDialog>
-  );
+	const { contentType, onSubmittingAndOrPendingChange, isSubmitting, onComplete, ...rest } = props;
+	return (
+		<EnhancedDialog
+			title={<FormattedMessage id="deleteContentTypeDialog.headerTitle" defaultMessage="Delete Content Type" />}
+			dialogHeaderProps={{
+				subtitle: (
+					<FormattedMessage
+						id="deleteContentTypeDialog.headerSubtitle"
+						defaultMessage={`Please confirm the deletion of "{name}"`}
+						values={{ name: contentType.name }}
+					/>
+				)
+			}}
+			isSubmitting={isSubmitting}
+			{...rest}
+		>
+			<DeleteContentTypeDialogContainer
+				contentType={contentType}
+				isSubmitting={isSubmitting}
+				onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
+				onComplete={onComplete}
+			/>
+		</EnhancedDialog>
+	);
 }
 
 export default DeleteContentTypeDialog;

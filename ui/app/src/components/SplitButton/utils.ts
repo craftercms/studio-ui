@@ -17,30 +17,30 @@
 import { MutableRefObject } from 'react';
 
 export interface SplitButtonOption {
-  id: string;
-  label: string;
-  callback(e): void;
+	id: string;
+	label: string;
+	callback(e): void;
 }
 
 export interface SplitButtonProps {
-  options: SplitButtonOption[];
-  defaultSelected?: string;
-  disablePortal?: boolean;
-  disabled?: boolean;
-  loading?: boolean;
-  storageKey?: string;
+	options: SplitButtonOption[];
+	defaultSelected?: string;
+	disablePortal?: boolean;
+	disabled?: boolean;
+	loading?: boolean;
+	storageKey?: string;
 }
 
 export interface SplitButtonUIProps {
-  options: SplitButtonOption[];
-  disablePortal?: boolean;
-  loading?: boolean;
-  disabled?: boolean;
-  anchorRef: MutableRefObject<HTMLDivElement>;
-  selectedIndex: number;
-  open: boolean;
-  handleClick(e): void;
-  handleToggle(e): void;
-  handleClose(e): void;
-  handleMenuItemClick(e, index): void;
+	options: SplitButtonOption[];
+	disablePortal?: boolean;
+	loading?: boolean;
+	disabled?: boolean;
+	anchorRef: MutableRefObject<HTMLDivElement>;
+	selectedIndex: number;
+	open: boolean;
+	handleClick(e): void;
+	handleToggle(e): void;
+	handleClose(e): void;
+	handleMenuItemClick(e, index): void;
 }

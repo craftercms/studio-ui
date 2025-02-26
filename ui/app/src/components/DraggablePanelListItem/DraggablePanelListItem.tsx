@@ -27,81 +27,81 @@ import { getAvatarWithIconColors } from '../../utils/contentType';
 import ListItem from '@mui/material/ListItem';
 
 interface PanelListItemProps {
-  primaryText: string;
-  secondaryText?: string;
-  avatarSrc?: string;
-  avatarColorBase?: string;
-  onDragStart?: (...args: any) => any;
-  onDragEnd?: (...args: any) => any;
-  onMenu?: (e: React.MouseEvent<HTMLButtonElement>) => void;
-  isBeingDragged?: boolean;
+	primaryText: string;
+	secondaryText?: string;
+	avatarSrc?: string;
+	avatarColorBase?: string;
+	onDragStart?: (...args: any) => any;
+	onDragEnd?: (...args: any) => any;
+	onMenu?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+	isBeingDragged?: boolean;
 }
 
 export function DraggablePanelListItem(props: PanelListItemProps) {
-  const {
-    onMenu,
-    primaryText,
-    avatarSrc,
-    avatarColorBase,
-    secondaryText,
-    onDragStart,
-    onDragEnd,
-    isBeingDragged = false
-  } = props;
-  const hasMenu = Boolean(onMenu);
-  const theme = useTheme();
-  const { backgroundColor, textColor } = getAvatarWithIconColors(avatarColorBase ?? primaryText, theme, darken);
-  const [over, setOver] = useState(false);
-  return (
-    <ListItemButton
-      role="option"
-      component={ListItem}
-      disableRipple
-      key={secondaryText}
-      draggable
-      onDragStart={onDragStart}
-      onDragEnd={onDragEnd}
-      onMouseEnter={() => setOver(true)}
-      onMouseLeave={() => setOver(false)}
-      sx={{
-        pl: 1.5,
-        pr: hasMenu ? 6 : undefined,
-        border: `1px solid ${isBeingDragged ? backgroundColor : 'transparent'}`,
-        borderRadius: isBeingDragged ? 2 : 0,
-        cursor: isBeingDragged ? 'grabbing' : 'grab'
-      }}
-      secondaryAction={
-        hasMenu ? (
-          <IconButton edge="end" onClick={onMenu} size="small">
-            <MoreVertRounded />
-          </IconButton>
-        ) : null
-      }
-    >
-      <ListItemAvatar sx={{ minWidth: 0 }}>
-        <Avatar
-          alt=""
-          src={avatarSrc}
-          sx={{
-            mr: 1.5,
-            width: 30,
-            height: 30,
-            backgroundColor: over || avatarSrc ? 'transparent' : backgroundColor,
-            transition: 'background-color 0.25s ease-in-out'
-          }}
-        >
-          <DragIndicatorRounded
-            fontSize="small"
-            sx={{
-              color: over ? backgroundColor : textColor,
-              transition: 'color 0.25s ease-in-out'
-            }}
-          />
-        </Avatar>
-      </ListItemAvatar>
-      <ListItemText primary={primaryText} secondary={secondaryText} />
-    </ListItemButton>
-  );
+	const {
+		onMenu,
+		primaryText,
+		avatarSrc,
+		avatarColorBase,
+		secondaryText,
+		onDragStart,
+		onDragEnd,
+		isBeingDragged = false
+	} = props;
+	const hasMenu = Boolean(onMenu);
+	const theme = useTheme();
+	const { backgroundColor, textColor } = getAvatarWithIconColors(avatarColorBase ?? primaryText, theme, darken);
+	const [over, setOver] = useState(false);
+	return (
+		<ListItemButton
+			role="option"
+			component={ListItem}
+			disableRipple
+			key={secondaryText}
+			draggable
+			onDragStart={onDragStart}
+			onDragEnd={onDragEnd}
+			onMouseEnter={() => setOver(true)}
+			onMouseLeave={() => setOver(false)}
+			sx={{
+				pl: 1.5,
+				pr: hasMenu ? 6 : undefined,
+				border: `1px solid ${isBeingDragged ? backgroundColor : 'transparent'}`,
+				borderRadius: isBeingDragged ? 2 : 0,
+				cursor: isBeingDragged ? 'grabbing' : 'grab'
+			}}
+			secondaryAction={
+				hasMenu ? (
+					<IconButton edge="end" onClick={onMenu} size="small">
+						<MoreVertRounded />
+					</IconButton>
+				) : null
+			}
+		>
+			<ListItemAvatar sx={{ minWidth: 0 }}>
+				<Avatar
+					alt=""
+					src={avatarSrc}
+					sx={{
+						mr: 1.5,
+						width: 30,
+						height: 30,
+						backgroundColor: over || avatarSrc ? 'transparent' : backgroundColor,
+						transition: 'background-color 0.25s ease-in-out'
+					}}
+				>
+					<DragIndicatorRounded
+						fontSize="small"
+						sx={{
+							color: over ? backgroundColor : textColor,
+							transition: 'color 0.25s ease-in-out'
+						}}
+					/>
+				</Avatar>
+			</ListItemAvatar>
+			<ListItemText primary={primaryText} secondary={secondaryText} />
+		</ListItemButton>
+	);
 }
 
 export default DraggablePanelListItem;

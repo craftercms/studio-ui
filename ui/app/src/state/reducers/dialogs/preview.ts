@@ -20,37 +20,37 @@ import { closePreviewDialog, previewDialogClosed, showPreviewDialog, updatePrevi
 import { PreviewDialogStateProps } from '../../../components/PreviewDialog/utils';
 
 const initialState: PreviewDialogStateProps = {
-  open: false,
-  isSubmitting: null,
-  isMinimized: null,
-  isFullScreen: null,
-  hasPendingChanges: null,
-  type: null,
-  title: null,
-  url: null,
-  content: null
+	open: false,
+	isSubmitting: null,
+	isMinimized: null,
+	isFullScreen: null,
+	hasPendingChanges: null,
+	type: null,
+	title: null,
+	url: null,
+	content: null
 };
 
 export default createReducer<GlobalState['dialogs']['preview']>(initialState, (builder) => {
-  builder
-    .addCase(showPreviewDialog, (state, { payload }) => ({
-      ...state,
-      onClose: closePreviewDialog(),
-      onClosed: previewDialogClosed(),
-      onFullScreen: updatePreviewDialog({ isFullScreen: true }),
-      onCancelFullScreen: updatePreviewDialog({ isFullScreen: false }),
-      onMinimize: updatePreviewDialog({ isMinimized: true }),
-      onMaximize: updatePreviewDialog({ isMinimized: false }),
-      ...(payload as Partial<PreviewDialogStateProps>),
-      open: true
-    }))
-    .addCase(updatePreviewDialog, (state, { payload }) => ({
-      ...state,
-      ...(payload as Partial<PreviewDialogStateProps>)
-    }))
-    .addCase(closePreviewDialog, (state) => ({
-      ...state,
-      open: false
-    }))
-    .addCase(previewDialogClosed, () => initialState);
+	builder
+		.addCase(showPreviewDialog, (state, { payload }) => ({
+			...state,
+			onClose: closePreviewDialog(),
+			onClosed: previewDialogClosed(),
+			onFullScreen: updatePreviewDialog({ isFullScreen: true }),
+			onCancelFullScreen: updatePreviewDialog({ isFullScreen: false }),
+			onMinimize: updatePreviewDialog({ isMinimized: true }),
+			onMaximize: updatePreviewDialog({ isMinimized: false }),
+			...(payload as Partial<PreviewDialogStateProps>),
+			open: true
+		}))
+		.addCase(updatePreviewDialog, (state, { payload }) => ({
+			...state,
+			...(payload as Partial<PreviewDialogStateProps>)
+		}))
+		.addCase(closePreviewDialog, (state) => ({
+			...state,
+			open: false
+		}))
+		.addCase(previewDialogClosed, () => initialState);
 });

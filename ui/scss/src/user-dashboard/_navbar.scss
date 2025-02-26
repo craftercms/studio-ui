@@ -15,32 +15,32 @@
  */
 
 .navbar {
-  margin-bottom: 0;
+	margin-bottom: 0;
 
-  .navbar-brand {
-    padding: 0;
+	.navbar-brand {
+		padding: 0;
 
-    > img {
-      width: 125px;
-      margin: 10px;
-    }
-  }
+		> img {
+			width: 125px;
+			margin: 10px;
+		}
+	}
 
-  .nav-link {
-    .tooltip {
-      .tooltip-arrow {
-        border-bottom-color: #949494;
-      }
+	.nav-link {
+		.tooltip {
+			.tooltip-arrow {
+				border-bottom-color: #949494;
+			}
 
-      .tooltip-inner {
-        color: #fff;
-        background-color: #949494;
-        min-width: 82px;
-      }
-    }
-  }
+			.tooltip-inner {
+				color: #fff;
+				background-color: #949494;
+				min-width: 82px;
+			}
+		}
+	}
 }
 
 .navbar-default {
-  box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+	box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.12);
 }

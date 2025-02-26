@@ -29,31 +29,31 @@ let guestToGuest$: Subject<StandardAction>;
 // region Exports
 
 export function getHostToGuestBus(): Subject<StandardAction> {
-  if (!hostToGuest$) {
-    hostToGuest$ = new Subject<StandardAction>();
-  }
-  return hostToGuest$;
+	if (!hostToGuest$) {
+		hostToGuest$ = new Subject<StandardAction>();
+	}
+	return hostToGuest$;
 }
 
 export function getGuestToHostBus(): Subject<StandardAction> {
-  if (!guestToHost$) {
-    guestToHost$ = new Subject<StandardAction>();
-  }
-  return guestToHost$;
+	if (!guestToHost$) {
+		guestToHost$ = new Subject<StandardAction>();
+	}
+	return guestToHost$;
 }
 
 export function getHostToHostBus(): Subject<StandardAction> {
-  if (!hostToHost$) {
-    hostToHost$ = new Subject<StandardAction>();
-  }
-  return hostToHost$;
+	if (!hostToHost$) {
+		hostToHost$ = new Subject<StandardAction>();
+	}
+	return hostToHost$;
 }
 
 export function getGuestToGuestBus(): Subject<StandardAction> {
-  if (!guestToGuest$) {
-    guestToGuest$ = new Subject<StandardAction>();
-  }
-  return guestToGuest$;
+	if (!guestToGuest$) {
+		guestToGuest$ = new Subject<StandardAction>();
+	}
+	return guestToGuest$;
 }
 
 // endregion

@@ -19,14 +19,14 @@ import LegacyIFrame, { LegacyIFrameProps } from '../LegacyIFrame/LegacyIFrame';
 import { ProjectToolsRoutes } from '../../env/routes';
 
 interface LegacyDashboardFrameProps {
-  dashboardOnly?: boolean;
-  iframeProps?: LegacyIFrameProps['iframeProps'];
+	dashboardOnly?: boolean;
+	iframeProps?: LegacyIFrameProps['iframeProps'];
 }
 
 function LegacyDashboardFrame(props: LegacyDashboardFrameProps) {
-  const { dashboardOnly = true, iframeProps } = props;
-  const path = `${ProjectToolsRoutes.SiteDashboard}${[dashboardOnly && '?mode=embedded'].filter(Boolean).join('')}`;
-  return <LegacyIFrame path={path} title="Site Dashboard" iframeProps={iframeProps} />;
+	const { dashboardOnly = true, iframeProps } = props;
+	const path = `${ProjectToolsRoutes.SiteDashboard}${[dashboardOnly && '?mode=embedded'].filter(Boolean).join('')}`;
+	return <LegacyIFrame path={path} title="Site Dashboard" iframeProps={iframeProps} />;
 }
 
 export default LegacyDashboardFrame;

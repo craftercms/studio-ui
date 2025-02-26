@@ -15,32 +15,32 @@
  */
 
 (function () {
-  class EncryptTool {
-    constructor(config, el) {
-      this.containerEl = el;
-      this.config = config;
-      this.types = [];
-    }
+	class EncryptTool {
+		constructor(config, el) {
+			this.containerEl = el;
+			this.config = config;
+			this.types = [];
+		}
 
-    initialize(config) {
-      this.config = config;
-    }
+		initialize(config) {
+			this.config = config;
+		}
 
-    renderWorkarea() {
-      const workarea = document.querySelector('#cstudio-admin-console-workarea');
-      const el = document.createElement('div');
-      el.className = 'cstudio-admin-console-workarea-container';
+		renderWorkarea() {
+			const workarea = document.querySelector('#cstudio-admin-console-workarea');
+			const el = document.createElement('div');
+			el.className = 'cstudio-admin-console-workarea-container';
 
-      $(workarea).html('');
-      workarea.appendChild(el);
+			$(workarea).html('');
+			workarea.appendChild(el);
 
-      CrafterCMSNext.render(el, 'EncryptTool', {
-        site: CStudioAuthoringContext.site
-      });
-      // TODO: This should be removed when ContentTypes and WorkflowStates are Reactified
-      CStudioAuthoring.ContextualNav.AdminConsoleNav.initActions([]);
-    }
-  }
+			CrafterCMSNext.render(el, 'EncryptTool', {
+				site: CStudioAuthoringContext.site
+			});
+			// TODO: This should be removed when ContentTypes and WorkflowStates are Reactified
+			CStudioAuthoring.ContextualNav.AdminConsoleNav.initActions([]);
+		}
+	}
 
-  CStudioAuthoring.Module.moduleLoaded('cstudio-console-tools-encrypt-tool', EncryptTool);
+	CStudioAuthoring.Module.moduleLoaded('cstudio-console-tools-encrypt-tool', EncryptTool);
 })();

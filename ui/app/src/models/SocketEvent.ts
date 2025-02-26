@@ -17,11 +17,11 @@
 import Person from './Person';
 
 export interface SocketEventBase {
-  siteId: string;
-  timestamp: number;
-  eventType: string;
-  targetPath?: string;
-  user: Person | null;
+	siteId: string;
+	timestamp: number;
+	eventType: string;
+	targetPath?: string;
+	user: Person | null;
 }
 
 export type ContentEventPayload = SocketEventBase & { targetPath: string };

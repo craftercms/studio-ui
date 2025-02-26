@@ -19,14 +19,14 @@ export const GROUP_DESCRIPTION_MAX_LENGTH = 1024;
 export const GROUP_NAME_MIN_LENGTH = 3;
 
 export const validateGroupNameMinLength = (value: string) => {
-  return value.trim() !== '' && value.trim().length < GROUP_NAME_MIN_LENGTH;
+	return value.trim() !== '' && value.trim().length < GROUP_NAME_MIN_LENGTH;
 };
 
 export const validateRequiredField = (value: string, isDirty: boolean) => {
-  return isDirty && value.trim() === '';
+	return isDirty && value.trim() === '';
 };
 
 export const isInvalidGroupName = (groupName: string): boolean => {
-  const groupNameRegex = /^[a-zA-Z][\w.-]*$/g;
-  return Boolean(groupName) && !groupNameRegex.test(groupName);
+	const groupNameRegex = /^[a-zA-Z][\w.-]*$/g;
+	return Boolean(groupName) && !groupNameRegex.test(groupName);
 };

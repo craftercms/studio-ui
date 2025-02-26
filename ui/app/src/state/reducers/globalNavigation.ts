@@ -20,27 +20,27 @@ import { changeSiteComplete } from '../actions/sites';
 import { fetchGlobalMenu, fetchGlobalMenuComplete, fetchGlobalMenuFailed } from '../actions/system';
 
 const initialState: GlobalState['globalNavigation'] = {
-  error: null,
-  items: null,
-  isFetching: false
+	error: null,
+	items: null,
+	isFetching: false
 };
 
 const reducer = createReducer<GlobalState['globalNavigation']>(initialState, (builder) => {
-  builder
-    .addCase(changeSiteComplete, (state) => ({ ...initialState, ...state }))
-    .addCase(fetchGlobalMenu, (state) => ({ ...state, isFetching: true }))
-    .addCase(fetchGlobalMenuComplete, (state, { payload }) => ({
-      ...state,
-      error: null,
-      items: payload,
-      isFetching: false
-    }))
-    .addCase(fetchGlobalMenuFailed, (state, { payload }) => ({
-      ...state,
-      error: payload,
-      items: state.items,
-      isFetching: false
-    }));
+	builder
+		.addCase(changeSiteComplete, (state) => ({ ...initialState, ...state }))
+		.addCase(fetchGlobalMenu, (state) => ({ ...state, isFetching: true }))
+		.addCase(fetchGlobalMenuComplete, (state, { payload }) => ({
+			...state,
+			error: null,
+			items: payload,
+			isFetching: false
+		}))
+		.addCase(fetchGlobalMenuFailed, (state, { payload }) => ({
+			...state,
+			error: payload,
+			items: state.items,
+			isFetching: false
+		}));
 });
 
 export default reducer;

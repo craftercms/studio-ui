@@ -15,22 +15,22 @@
   -->
 
 <html>
-    <body>
-    	<p>Hello!</p>
-    	<p>
-    		Forgot your password? To create a new one, click the link below or copy and paste it in your browser:
-    		<br/>
-    		<a href="${authoringUrl}/${serviceUrl}?token=${token?url}">${authoringUrl}/${serviceUrl}?token=${token?url}</a>
-    	</p>
-    	<p>
-			The reset password link expires soon. If the link has expired please request a new link.
-		</p>
+<body>
+<p>Hello!</p>
+<p>
+	Forgot your password? To create a new one, click the link below or copy and paste it in your browser:
+	<br/>
+	<a href="${authoringUrl}/${serviceUrl}?token=${token?url}">${authoringUrl}/${serviceUrl}?token=${token?url}</a>
+</p>
+<p>
+	The reset password link expires soon. If the link has expired please request a new link.
+</p>
 
-		<p>
-		Thanks,
+<p>
+	Thanks,
 
-		Crafter Studio Admin.
-		</p>
+	Crafter Studio Admin.
+</p>
 
-    </body>
+</body>
 </html>

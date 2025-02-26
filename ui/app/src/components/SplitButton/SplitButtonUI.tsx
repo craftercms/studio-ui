@@ -28,69 +28,69 @@ import { SplitButtonUIProps } from './utils';
 import LoadingButton from '@mui/lab/LoadingButton';
 
 export function SplitButtonUI(props: SplitButtonUIProps) {
-  const {
-    options,
-    disablePortal,
-    disabled,
-    anchorRef,
-    selectedIndex,
-    handleClick,
-    open,
-    handleToggle,
-    handleClose,
-    handleMenuItemClick,
-    loading
-  } = props;
+	const {
+		options,
+		disablePortal,
+		disabled,
+		anchorRef,
+		selectedIndex,
+		handleClick,
+		open,
+		handleToggle,
+		handleClose,
+		handleMenuItemClick,
+		loading
+	} = props;
 
-  return (
-    <>
-      <ButtonGroup disabled={disabled} variant="contained" color="primary" ref={anchorRef} aria-label="split button">
-        <LoadingButton color="primary" variant="contained" loading={loading} onClick={handleClick}>
-          {options[selectedIndex].label}
-        </LoadingButton>
-        {options.length > 1 && (
-          <Button
-            disabled={loading}
-            color="primary"
-            size="small"
-            aria-controls={open ? 'split-button-menu' : undefined}
-            aria-expanded={open ? 'true' : undefined}
-            aria-label="select option"
-            aria-haspopup="menu"
-            onClick={handleToggle}
-          >
-            <ArrowDropDownIcon />
-          </Button>
-        )}
-      </ButtonGroup>
-      <Popper open={open} anchorEl={anchorRef.current} role={undefined} transition disablePortal={disablePortal}>
-        {({ TransitionProps, placement }) => (
-          <Grow
-            {...TransitionProps}
-            style={{
-              transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom'
-            }}
-          >
-            <Paper>
-              <ClickAwayListener onClickAway={handleClose}>
-                <MenuList id="split-button-menu">
-                  {options.map((option, index) => (
-                    <MenuItem
-                      key={option.label}
-                      selected={index === selectedIndex}
-                      onClick={(event) => handleMenuItemClick(event, index)}
-                    >
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </MenuList>
-              </ClickAwayListener>
-            </Paper>
-          </Grow>
-        )}
-      </Popper>
-    </>
-  );
+	return (
+		<>
+			<ButtonGroup disabled={disabled} variant="contained" color="primary" ref={anchorRef} aria-label="split button">
+				<LoadingButton color="primary" variant="contained" loading={loading} onClick={handleClick}>
+					{options[selectedIndex].label}
+				</LoadingButton>
+				{options.length > 1 && (
+					<Button
+						disabled={loading}
+						color="primary"
+						size="small"
+						aria-controls={open ? 'split-button-menu' : undefined}
+						aria-expanded={open ? 'true' : undefined}
+						aria-label="select option"
+						aria-haspopup="menu"
+						onClick={handleToggle}
+					>
+						<ArrowDropDownIcon />
+					</Button>
+				)}
+			</ButtonGroup>
+			<Popper open={open} anchorEl={anchorRef.current} role={undefined} transition disablePortal={disablePortal}>
+				{({ TransitionProps, placement }) => (
+					<Grow
+						{...TransitionProps}
+						style={{
+							transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom'
+						}}
+					>
+						<Paper>
+							<ClickAwayListener onClickAway={handleClose}>
+								<MenuList id="split-button-menu">
+									{options.map((option, index) => (
+										<MenuItem
+											key={option.label}
+											selected={index === selectedIndex}
+											onClick={(event) => handleMenuItemClick(event, index)}
+										>
+											{option.label}
+										</MenuItem>
+									))}
+								</MenuList>
+							</ClickAwayListener>
+						</Paper>
+					</Grow>
+				)}
+			</Popper>
+		</>
+	);
 }
 
 export default SplitButtonUI;

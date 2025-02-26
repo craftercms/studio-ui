@@ -21,22 +21,22 @@ import EnhancedDialog from '../EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
 
 export function EditSiteDialog(props: EditSiteDialogProps) {
-  const { site, onSaveSuccess, onSiteImageChange, isSubmitting, ...rest } = props;
-  return (
-    <EnhancedDialog
-      title={<FormattedMessage id="editSiteDialog.title" defaultMessage="Edit Project" />}
-      maxWidth="md"
-      isSubmitting={isSubmitting}
-      {...rest}
-    >
-      <EditSiteDialogContainer
-        site={site}
-        onSaveSuccess={onSaveSuccess}
-        onSiteImageChange={onSiteImageChange}
-        isSubmitting={isSubmitting}
-      />
-    </EnhancedDialog>
-  );
+	const { site, onSaveSuccess, onSiteImageChange, isSubmitting, ...rest } = props;
+	return (
+		<EnhancedDialog
+			title={<FormattedMessage id="editSiteDialog.title" defaultMessage="Edit Project" />}
+			maxWidth="md"
+			isSubmitting={isSubmitting}
+			{...rest}
+		>
+			<EditSiteDialogContainer
+				site={site}
+				onSaveSuccess={onSaveSuccess}
+				onSiteImageChange={onSiteImageChange}
+				isSubmitting={isSubmitting}
+			/>
+		</EnhancedDialog>
+	);
 }
 
 export default EditSiteDialog;

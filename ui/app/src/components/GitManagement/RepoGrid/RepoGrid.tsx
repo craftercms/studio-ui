@@ -38,225 +38,225 @@ import RepoGridSkeleton from './RepoGridSkeleton';
 import { ApiResponse } from '../../../models';
 
 export interface RepoGridProps {
-  repositories: Array<Repository>;
-  disableActions: boolean;
-  onPullSuccess(result: PullResponse): void;
-  onPullError(response: ApiResponse): void;
-  fetchRepositories(): void;
+	repositories: Array<Repository>;
+	disableActions: boolean;
+	onPullSuccess(result: PullResponse): void;
+	onPullError(response: ApiResponse): void;
+	fetchRepositories(): void;
 }
 
 const messages = defineMessages({
-  mergeStrategyNone: {
-    id: 'repositories.mergeStrategyNone',
-    defaultMessage: 'None'
-  },
-  mergeStrategyOurs: {
-    id: 'repositories.mergeStrategyOurs',
-    defaultMessage: 'Accept Ours'
-  },
-  mergeStrategyTheirs: {
-    id: 'repositories.mergeStrategyTheirs',
-    defaultMessage: 'Accept Theirs'
-  },
-  remoteDeleteSuccessMessage: {
-    id: 'repositories.remoteDeleteSuccessMessage',
-    defaultMessage: 'Remote repository deleted successfully.'
-  },
-  pullSuccessMessage: {
-    id: 'repositories.pullSuccessMessage',
-    defaultMessage: 'Successfully pulled {numberOfCommits} commits. Would you like to publish this now?'
-  },
-  pullSuccessNoChangesMessage: {
-    id: 'repositories.pullSuccessNoChangesMessage',
-    defaultMessage: 'Pull successful: already up to date.'
-  },
-  pushSuccessMessage: {
-    id: 'repositories.pushSuccessMessage',
-    defaultMessage: 'Successfully pushed.'
-  }
+	mergeStrategyNone: {
+		id: 'repositories.mergeStrategyNone',
+		defaultMessage: 'None'
+	},
+	mergeStrategyOurs: {
+		id: 'repositories.mergeStrategyOurs',
+		defaultMessage: 'Accept Ours'
+	},
+	mergeStrategyTheirs: {
+		id: 'repositories.mergeStrategyTheirs',
+		defaultMessage: 'Accept Theirs'
+	},
+	remoteDeleteSuccessMessage: {
+		id: 'repositories.remoteDeleteSuccessMessage',
+		defaultMessage: 'Remote repository deleted successfully.'
+	},
+	pullSuccessMessage: {
+		id: 'repositories.pullSuccessMessage',
+		defaultMessage: 'Successfully pulled {numberOfCommits} commits. Would you like to publish this now?'
+	},
+	pullSuccessNoChangesMessage: {
+		id: 'repositories.pullSuccessNoChangesMessage',
+		defaultMessage: 'Pull successful: already up to date.'
+	},
+	pushSuccessMessage: {
+		id: 'repositories.pushSuccessMessage',
+		defaultMessage: 'Successfully pushed.'
+	}
 });
 
 export function RepoGrid(props: RepoGridProps) {
-  const { repositories, disableActions, onPullSuccess: onPullSuccessProp, onPullError, fetchRepositories } = props;
-  const [repositoriesPushDialogBranches, setRepositoriesPushDialogBranches] = useState([]);
-  const [pullRemoteName, setPullRemoteName] = useState(null);
-  const [pushRemoteName, setPushRemoteName] = useState(null);
-  const { formatMessage } = useIntl();
-  const mergeStrategies: MergeStrategy[] = [
-    {
-      key: 'none',
-      value: formatMessage(messages.mergeStrategyNone)
-    },
-    {
-      key: 'ours',
-      value: formatMessage(messages.mergeStrategyOurs)
-    },
-    {
-      key: 'theirs',
-      value: formatMessage(messages.mergeStrategyTheirs)
-    }
-  ];
-  const siteId = useActiveSiteId();
-  const dispatch = useDispatch();
-  const pushToRemoteDialogState = useEnhancedDialogState();
-  const pullFromRemoteDialogState = useEnhancedDialogState();
-  const { enqueueSnackbar } = useSnackbar();
-  const publishCommitDialogState = useEnhancedDialogState();
-  const [postPullState, setPostPullState] = useSpreadState({
-    openPostPullSnack: false,
-    mergeCommitId: '',
-    commitsMerged: 0
-  });
+	const { repositories, disableActions, onPullSuccess: onPullSuccessProp, onPullError, fetchRepositories } = props;
+	const [repositoriesPushDialogBranches, setRepositoriesPushDialogBranches] = useState([]);
+	const [pullRemoteName, setPullRemoteName] = useState(null);
+	const [pushRemoteName, setPushRemoteName] = useState(null);
+	const { formatMessage } = useIntl();
+	const mergeStrategies: MergeStrategy[] = [
+		{
+			key: 'none',
+			value: formatMessage(messages.mergeStrategyNone)
+		},
+		{
+			key: 'ours',
+			value: formatMessage(messages.mergeStrategyOurs)
+		},
+		{
+			key: 'theirs',
+			value: formatMessage(messages.mergeStrategyTheirs)
+		}
+	];
+	const siteId = useActiveSiteId();
+	const dispatch = useDispatch();
+	const pushToRemoteDialogState = useEnhancedDialogState();
+	const pullFromRemoteDialogState = useEnhancedDialogState();
+	const { enqueueSnackbar } = useSnackbar();
+	const publishCommitDialogState = useEnhancedDialogState();
+	const [postPullState, setPostPullState] = useSpreadState({
+		openPostPullSnack: false,
+		mergeCommitId: '',
+		commitsMerged: 0
+	});
 
-  const onClickPull = (remoteName: string, branches: string[]) => {
-    setPullRemoteName(remoteName);
-    pullFromRemoteDialogState.onOpen();
-  };
+	const onClickPull = (remoteName: string, branches: string[]) => {
+		setPullRemoteName(remoteName);
+		pullFromRemoteDialogState.onOpen();
+	};
 
-  const onClickPush = (remoteName: string, branches: string[]) => {
-    setRepositoriesPushDialogBranches(branches);
-    setPushRemoteName(remoteName);
-    pushToRemoteDialogState.onOpen();
-  };
+	const onClickPush = (remoteName: string, branches: string[]) => {
+		setRepositoriesPushDialogBranches(branches);
+		setPushRemoteName(remoteName);
+		pushToRemoteDialogState.onOpen();
+	};
 
-  const onPullSuccess = (result: PullResponse) => {
-    onPullSuccessProp(result);
-    pullFromRemoteDialogState.onClose();
-    if (result.mergeCommitId) {
-      setPostPullState({ openPostPullSnack: true, ...result });
-    } else {
-      dispatch(
-        showSystemNotification({
-          message: formatMessage(messages.pullSuccessNoChangesMessage)
-        })
-      );
-    }
-  };
+	const onPullSuccess = (result: PullResponse) => {
+		onPullSuccessProp(result);
+		pullFromRemoteDialogState.onClose();
+		if (result.mergeCommitId) {
+			setPostPullState({ openPostPullSnack: true, ...result });
+		} else {
+			dispatch(
+				showSystemNotification({
+					message: formatMessage(messages.pullSuccessNoChangesMessage)
+				})
+			);
+		}
+	};
 
-  const onPushSuccess = () => {
-    pushToRemoteDialogState.onResetState();
-    dispatch(
-      showSystemNotification({
-        message: formatMessage(messages.pushSuccessMessage)
-      })
-    );
-  };
+	const onPushSuccess = () => {
+		pushToRemoteDialogState.onResetState();
+		dispatch(
+			showSystemNotification({
+				message: formatMessage(messages.pushSuccessMessage)
+			})
+		);
+	};
 
-  const onPushError = (response) => {
-    pushToRemoteDialogState.onClose();
-    dispatch(showErrorDialog({ error: response }));
-  };
+	const onPushError = (response) => {
+		pushToRemoteDialogState.onClose();
+		dispatch(showErrorDialog({ error: response }));
+	};
 
-  const deleteRemote = (remoteName: string) => {
-    deleteRemoteService(siteId, remoteName).subscribe(
-      () => {
-        fetchRepositories();
-        dispatch(
-          showSystemNotification({
-            message: formatMessage(messages.remoteDeleteSuccessMessage)
-          })
-        );
-      },
-      ({ response }) => {
-        dispatch(showErrorDialog({ error: response }));
-      }
-    );
-  };
+	const deleteRemote = (remoteName: string) => {
+		deleteRemoteService(siteId, remoteName).subscribe(
+			() => {
+				fetchRepositories();
+				dispatch(
+					showSystemNotification({
+						message: formatMessage(messages.remoteDeleteSuccessMessage)
+					})
+				);
+			},
+			({ response }) => {
+				dispatch(showErrorDialog({ error: response }));
+			}
+		);
+	};
 
-  const onClosePostPullSnack = () => setPostPullState({ openPostPullSnack: false });
+	const onClosePostPullSnack = () => setPostPullState({ openPostPullSnack: false });
 
-  return (
-    <>
-      {repositories ? (
-        <RepoGridUI
-          repositories={repositories}
-          disableActions={disableActions}
-          onPullClick={onClickPull}
-          onPushClick={onClickPush}
-          onDeleteRemote={deleteRemote}
-        />
-      ) : (
-        <RepoGridSkeleton />
-      )}
-      <Snackbar
-        autoHideDuration={10000}
-        onClose={onClosePostPullSnack}
-        open={postPullState.openPostPullSnack}
-        sx={{ maxWidth: '500px' }}
-      >
-        <SnackbarContent
-          sx={{ [`.${snackbarContentClasses.message}`]: { width: '100%' } }}
-          message={
-            <>
-              {formatMessage(messages.pullSuccessMessage, { numberOfCommits: postPullState.commitsMerged })}
-              <InputBase
-                sx={{ display: 'block', mt: 1, borderRadius: 1, pr: 0.5, pl: 0.5 }}
-                autoFocus
-                value={postPullState.mergeCommitId}
-                readOnly
-                onClick={(e) => {
-                  (e.target as HTMLInputElement).select();
-                  copyToClipboard(postPullState.mergeCommitId).then(function () {
-                    enqueueSnackbar('Copied');
-                  });
-                }}
-              />
-            </>
-          }
-          action={
-            <>
-              <Button
-                size="small"
-                onClick={() => {
-                  publishCommitDialogState.onOpen();
-                  setPostPullState({ openPostPullSnack: false });
-                }}
-              >
-                <FormattedMessage id="words.yes" defaultMessage="Yes" />
-              </Button>
-              <Button size="small" onClick={onClosePostPullSnack}>
-                <FormattedMessage id="words.no" defaultMessage="No" />
-              </Button>
-            </>
-          }
-        />
-      </Snackbar>
-      {/* region PullDialog */}
-      <PullDialog
-        open={pullFromRemoteDialogState.open}
-        onClose={pullFromRemoteDialogState.onClose}
-        remoteName={pullRemoteName}
-        mergeStrategies={mergeStrategies}
-        onPullSuccess={onPullSuccess}
-        onPullError={onPullError}
-        isMinimized={pullFromRemoteDialogState.isMinimized}
-        isSubmitting={pullFromRemoteDialogState.isSubmitting}
-        hasPendingChanges={pullFromRemoteDialogState.hasPendingChanges}
-      />
-      {/* endregion */}
-      {/* region PushDialog */}
-      <PushDialog
-        open={pushToRemoteDialogState.open}
-        branches={repositoriesPushDialogBranches}
-        remoteName={pushRemoteName}
-        onClose={pushToRemoteDialogState.onClose}
-        onPushSuccess={onPushSuccess}
-        onPushError={onPushError}
-        isMinimized={pushToRemoteDialogState.isMinimized}
-        isSubmitting={pushToRemoteDialogState.isSubmitting}
-        hasPendingChanges={pushToRemoteDialogState.hasPendingChanges}
-        onSubmittingChange={pushToRemoteDialogState.onSubmittingChange}
-      />
-      {/* endregion */}
-      <PublishCommitDialog
-        commitId={postPullState.mergeCommitId}
-        open={publishCommitDialogState.open}
-        hasPendingChanges={publishCommitDialogState.hasPendingChanges}
-        onSubmittingAndOrPendingChange={publishCommitDialogState.onSubmittingAndOrPendingChange}
-        onClose={publishCommitDialogState.onClose}
-      />
-    </>
-  );
+	return (
+		<>
+			{repositories ? (
+				<RepoGridUI
+					repositories={repositories}
+					disableActions={disableActions}
+					onPullClick={onClickPull}
+					onPushClick={onClickPush}
+					onDeleteRemote={deleteRemote}
+				/>
+			) : (
+				<RepoGridSkeleton />
+			)}
+			<Snackbar
+				autoHideDuration={10000}
+				onClose={onClosePostPullSnack}
+				open={postPullState.openPostPullSnack}
+				sx={{ maxWidth: '500px' }}
+			>
+				<SnackbarContent
+					sx={{ [`.${snackbarContentClasses.message}`]: { width: '100%' } }}
+					message={
+						<>
+							{formatMessage(messages.pullSuccessMessage, { numberOfCommits: postPullState.commitsMerged })}
+							<InputBase
+								sx={{ display: 'block', mt: 1, borderRadius: 1, pr: 0.5, pl: 0.5 }}
+								autoFocus
+								value={postPullState.mergeCommitId}
+								readOnly
+								onClick={(e) => {
+									(e.target as HTMLInputElement).select();
+									copyToClipboard(postPullState.mergeCommitId).then(function () {
+										enqueueSnackbar('Copied');
+									});
+								}}
+							/>
+						</>
+					}
+					action={
+						<>
+							<Button
+								size="small"
+								onClick={() => {
+									publishCommitDialogState.onOpen();
+									setPostPullState({ openPostPullSnack: false });
+								}}
+							>
+								<FormattedMessage id="words.yes" defaultMessage="Yes" />
+							</Button>
+							<Button size="small" onClick={onClosePostPullSnack}>
+								<FormattedMessage id="words.no" defaultMessage="No" />
+							</Button>
+						</>
+					}
+				/>
+			</Snackbar>
+			{/* region PullDialog */}
+			<PullDialog
+				open={pullFromRemoteDialogState.open}
+				onClose={pullFromRemoteDialogState.onClose}
+				remoteName={pullRemoteName}
+				mergeStrategies={mergeStrategies}
+				onPullSuccess={onPullSuccess}
+				onPullError={onPullError}
+				isMinimized={pullFromRemoteDialogState.isMinimized}
+				isSubmitting={pullFromRemoteDialogState.isSubmitting}
+				hasPendingChanges={pullFromRemoteDialogState.hasPendingChanges}
+			/>
+			{/* endregion */}
+			{/* region PushDialog */}
+			<PushDialog
+				open={pushToRemoteDialogState.open}
+				branches={repositoriesPushDialogBranches}
+				remoteName={pushRemoteName}
+				onClose={pushToRemoteDialogState.onClose}
+				onPushSuccess={onPushSuccess}
+				onPushError={onPushError}
+				isMinimized={pushToRemoteDialogState.isMinimized}
+				isSubmitting={pushToRemoteDialogState.isSubmitting}
+				hasPendingChanges={pushToRemoteDialogState.hasPendingChanges}
+				onSubmittingChange={pushToRemoteDialogState.onSubmittingChange}
+			/>
+			{/* endregion */}
+			<PublishCommitDialog
+				commitId={postPullState.mergeCommitId}
+				open={publishCommitDialogState.open}
+				hasPendingChanges={publishCommitDialogState.hasPendingChanges}
+				onSubmittingAndOrPendingChange={publishCommitDialogState.onSubmittingAndOrPendingChange}
+				onClose={publishCommitDialogState.onClose}
+			/>
+		</>
+	);
 }
 
 export default RepoGrid;

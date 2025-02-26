@@ -35,134 +35,134 @@ export type ConfirmDropdownFullSx = FullSxRecord<ConfirmDropdownClassKey>;
 export type ConfirmDropdownPartialSx = PartialSxRecord<ConfirmDropdownClassKey>;
 
 interface ConfirmDropdownProps {
-  text?: ReactNode;
-  cancelText: ReactNode;
-  confirmText: ReactNode;
-  confirmHelperText?: ReactNode;
-  disabled?: boolean;
-  buttonVariant?: ButtonTypeMap['props']['variant'];
-  classes?: Partial<Record<ConfirmDropdownClassKey, string>>;
-  sx?: ConfirmDropdownPartialSx;
-  size?: IconButtonProps['size'];
-  icon?: OverridableComponent<SvgIconTypeMap>;
-  iconColor?: IconButtonProps['color'];
-  iconTooltip?: React.ReactNode;
-  buttonProps?: ButtonProps;
-  onConfirm(): any;
-  onCancel?(): any;
+	text?: ReactNode;
+	cancelText: ReactNode;
+	confirmText: ReactNode;
+	confirmHelperText?: ReactNode;
+	disabled?: boolean;
+	buttonVariant?: ButtonTypeMap['props']['variant'];
+	classes?: Partial<Record<ConfirmDropdownClassKey, string>>;
+	sx?: ConfirmDropdownPartialSx;
+	size?: IconButtonProps['size'];
+	icon?: OverridableComponent<SvgIconTypeMap>;
+	iconColor?: IconButtonProps['color'];
+	iconTooltip?: React.ReactNode;
+	buttonProps?: ButtonProps;
+	onConfirm(): any;
+	onCancel?(): any;
 }
 
 function getStyles(sx: ConfirmDropdownPartialSx): ConfirmDropdownFullSx {
-  return {
-    button: {
-      ...sx?.button
-    },
-    menuPaper: {
-      maxWidth: '250px',
-      ...sx?.menuPaper
-    },
-    helperText: {
-      py: 1,
-      px: 2,
-      ...sx?.helperText
-    }
-  } as Record<ConfirmDropdownClassKey, SxProps<Theme>>;
+	return {
+		button: {
+			...sx?.button
+		},
+		menuPaper: {
+			maxWidth: '250px',
+			...sx?.menuPaper
+		},
+		helperText: {
+			py: 1,
+			px: 2,
+			...sx?.helperText
+		}
+	} as Record<ConfirmDropdownClassKey, SxProps<Theme>>;
 }
 
 export function ConfirmDropdown(props: ConfirmDropdownProps) {
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const sx = getStyles(props.sx);
-  const {
-    onConfirm,
-    onCancel,
-    text,
-    cancelText,
-    confirmText,
-    confirmHelperText,
-    disabled = false,
-    buttonVariant = 'outlined',
-    icon: Icon,
-    iconColor,
-    iconTooltip,
-    size = 'medium',
-    buttonProps = {}
-  } = props;
+	const [anchorEl, setAnchorEl] = React.useState(null);
+	const sx = getStyles(props.sx);
+	const {
+		onConfirm,
+		onCancel,
+		text,
+		cancelText,
+		confirmText,
+		confirmHelperText,
+		disabled = false,
+		buttonVariant = 'outlined',
+		icon: Icon,
+		iconColor,
+		iconTooltip,
+		size = 'medium',
+		buttonProps = {}
+	} = props;
 
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+	const handleClose = () => {
+		setAnchorEl(null);
+	};
 
-  const handleConfirm = () => {
-    handleClose();
-    onConfirm();
-  };
+	const handleConfirm = () => {
+		handleClose();
+		onConfirm();
+	};
 
-  const handleCancel = () => {
-    handleClose();
-    onCancel?.();
-  };
+	const handleCancel = () => {
+		handleClose();
+		onCancel?.();
+	};
 
-  // Not memorizing causes the menu to get misplaced upon opening.
-  const iconButton = useMemo(
-    () =>
-      Icon ? (
-        <IconButton color={iconColor} onClick={(e) => setAnchorEl(e.currentTarget)} size={size} disabled={disabled}>
-          <Icon />
-        </IconButton>
-      ) : null,
-    [Icon, disabled, iconColor, size]
-  );
+	// Not memorizing causes the menu to get misplaced upon opening.
+	const iconButton = useMemo(
+		() =>
+			Icon ? (
+				<IconButton color={iconColor} onClick={(e) => setAnchorEl(e.currentTarget)} size={size} disabled={disabled}>
+					<Icon />
+				</IconButton>
+			) : null,
+		[Icon, disabled, iconColor, size]
+	);
 
-  return (
-    <>
-      {Icon ? (
-        iconTooltip ? (
-          <Tooltip title={disabled ? '' : iconTooltip}>{iconButton}</Tooltip>
-        ) : (
-          iconButton
-        )
-      ) : (
-        <Button
-          variant={buttonVariant}
-          {...buttonProps}
-          className={props.classes?.button}
-          sx={sx.button}
-          onClick={(e) => setAnchorEl(e.currentTarget)}
-          disabled={disabled}
-          endIcon={<ArrowDown />}
-        >
-          {text}
-        </Button>
-      )}
-      <Menu
-        anchorEl={anchorEl}
-        classes={{ paper: props.classes?.menuPaper }}
-        sx={{
-          [`& .${menuClasses['paper']}`]: {
-            ...sx.menuPaper
-          }
-        }}
-        open={Boolean(anchorEl)}
-        onClose={handleClose}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'right'
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'right'
-        }}
-      >
-        {confirmHelperText && (
-          <Typography variant="body1" sx={sx.helperText} className={props.classes?.helperText}>
-            {confirmHelperText}
-          </Typography>
-        )}
-        <MenuItem onClick={handleCancel}>{cancelText}</MenuItem>
-        <MenuItem onClick={handleConfirm}>{confirmText}</MenuItem>
-      </Menu>
-    </>
-  );
+	return (
+		<>
+			{Icon ? (
+				iconTooltip ? (
+					<Tooltip title={disabled ? '' : iconTooltip}>{iconButton}</Tooltip>
+				) : (
+					iconButton
+				)
+			) : (
+				<Button
+					variant={buttonVariant}
+					{...buttonProps}
+					className={props.classes?.button}
+					sx={sx.button}
+					onClick={(e) => setAnchorEl(e.currentTarget)}
+					disabled={disabled}
+					endIcon={<ArrowDown />}
+				>
+					{text}
+				</Button>
+			)}
+			<Menu
+				anchorEl={anchorEl}
+				classes={{ paper: props.classes?.menuPaper }}
+				sx={{
+					[`& .${menuClasses['paper']}`]: {
+						...sx.menuPaper
+					}
+				}}
+				open={Boolean(anchorEl)}
+				onClose={handleClose}
+				anchorOrigin={{
+					vertical: 'bottom',
+					horizontal: 'right'
+				}}
+				transformOrigin={{
+					vertical: 'top',
+					horizontal: 'right'
+				}}
+			>
+				{confirmHelperText && (
+					<Typography variant="body1" sx={sx.helperText} className={props.classes?.helperText}>
+						{confirmHelperText}
+					</Typography>
+				)}
+				<MenuItem onClick={handleCancel}>{cancelText}</MenuItem>
+				<MenuItem onClick={handleConfirm}>{confirmText}</MenuItem>
+			</Menu>
+		</>
+	);
 }
 
 export default ConfirmDropdown;

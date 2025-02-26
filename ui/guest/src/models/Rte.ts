@@ -18,14 +18,14 @@ import { EditorOptions } from 'tinymce';
 import LookupTable from '@craftercms/studio-ui/models/LookupTable';
 
 export interface TinymceOptions extends EditorOptions {
-  code_editor_inline?: boolean;
-  code_editor_wrap?: boolean;
-  craftercms_paste_cleanup?: boolean;
+	code_editor_inline?: boolean;
+	code_editor_wrap?: boolean;
+	craftercms_paste_cleanup?: boolean;
 }
 
 export interface RteSetup {
-  id?: string;
-  tinymceOptions?: TinymceOptions;
+	id?: string;
+	tinymceOptions?: TinymceOptions;
 }
 
 export type RteConfig = LookupTable<RteSetup>;
