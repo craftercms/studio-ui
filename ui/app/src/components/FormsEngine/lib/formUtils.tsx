@@ -27,7 +27,8 @@ import {
 	ItemContext,
 	StableFormContext,
 	StableFormContextProps,
-	StableGlobalContext
+	StableGlobalContext,
+	StableGlobalContextProps
 } from './formsEngineContext';
 import { fetchContentXML, fetchDescriptorXML, fetchDetailedItem, lock, unlock } from '../../../services/content';
 import { AjaxError } from 'rxjs/ajax';
@@ -405,6 +406,10 @@ export function setFieldAtoms(
 
 export type SystemPropsObject = Record<XmlKeys, string | boolean>;
 
+/**
+ * Creates an object with all the base content item system props (objectId, content-type, etc.)
+ * Assigns the supplied values if provided.
+ **/
 export function createObjectWithSystemProps(
 	contentType: ContentType,
 	mixin?: Partial<SystemPropsObject>
@@ -560,6 +565,10 @@ export function useUnlockOnClose(props: FormsEngineProps) {
 	);
 }
 
+/**
+ * Generates a simple "save comment" stating the fields that having been modified.
+ * TODO: plugin AI, or improve/revise comment generation.
+ **/
 export function generateDefaultChangesComment(
 	contentTypeFields: LookupTable<ContentTypeField>,
 	fieldsToRenderSubset: ContentTypeField[],
@@ -591,4 +600,36 @@ export function generateDefaultChangesComment(
 		return;
 	}
 	return newMessage;
+}
+
+/**
+ * Creates a summary of the state the current stacked form being rendered (last one on the stack)
+ **/
+export function getCurrentChildFormStateSummary(
+	store: JotaiStore,
+	formsStackData: StableGlobalContextProps['formsStackData']
+): {
+	isSubmitting: boolean;
+	hasPendingChanges: boolean;
+	readonly: boolean;
+} {
+	return {
+		isSubmitting: store.get(formsStackData[formsStackData.length - 1].atoms.isSubmitting),
+		hasPendingChanges: store.get(formsStackData[formsStackData.length - 1].atoms.hasPendingChanges),
+		readonly: store.get(formsStackData[formsStackData.length - 1].atoms.readonly)
+	};
+}
+
+/**
+ * Creates a unique `key` (to be used as the key prop on a ReactNode[]) for stacked forms.
+ **/
+export function createStackedFormKey(currentStackedFormProps: FormsEngineProps, stackFormCount: number): string {
+	if (currentStackedFormProps.update) {
+		return `${currentStackedFormProps.update.path}_${currentStackedFormProps.update.modelId ?? ''}_${stackFormCount}`;
+	} else if (currentStackedFormProps.create) {
+		return `${currentStackedFormProps.create.path}_${currentStackedFormProps.create.contentTypeId}_${stackFormCount}`;
+	} else if (currentStackedFormProps.repeat) {
+		return `${currentStackedFormProps.repeat.fieldId}_${stackFormCount}`;
+	}
+	return;
 }

@@ -84,9 +84,11 @@ import {
 	createFormStackData,
 	createObjectWithSystemProps,
 	createReadonlyAtom,
+	createStackedFormKey,
 	displayFormBeingSavedSnack,
 	fetchUpdateRequirements,
 	generateDefaultChangesComment,
+	getCurrentChildFormStateSummary,
 	getScrollContainer,
 	getTargetHeight,
 	internalLockContentService,
@@ -275,9 +277,7 @@ function FormBootstrap(props: FormsEngineProps) {
 	api.updateProps(stackIndex, props);
 
 	useEffect(() => {
-		if (!liveUpdatedItem) {
-			setReady(false);
-		}
+		if (!liveUpdatedItem) setReady(false);
 	}, [liveUpdatedItem]);
 
 	useEffect(() => {
@@ -287,9 +287,7 @@ function FormBootstrap(props: FormsEngineProps) {
 	// Fetch/prepare requirements
 	useEffect(() => {
 		// Guard statement: If content types are not loaded, we can't proceed.
-		if (!contentTypesLoaded) {
-			return;
-		}
+		if (!contentTypesLoaded) return;
 		// TODO: If props are changed, things can be left off... previous item locked, edits get lost, etc. Not sure how much support for prop changes we should implement.
 		const isChildForm = stackIndex > 0;
 		// In the form stack, the present form being opened would be in the last position [length-1], the parent form state would be on [length-2] if it is nested (e.g. Root => Component(L1) => Repeat(L2)|Component(L2)). Otherwise,the parent should be the root.
@@ -408,7 +406,8 @@ function FormBootstrap(props: FormsEngineProps) {
 		} else if (
 			create // Create mode (stacked or not)
 		) {
-			const contentType = effectRefs.current.contentTypesById[create.contentTypeId];
+			const contentTypesById = effectRefs.current.contentTypesById;
+			const contentType = contentTypesById[create.contentTypeId];
 			if (!contentType) {
 				return setPrepError(ContentTypeNotFoundError);
 			}
@@ -441,7 +440,7 @@ function FormBootstrap(props: FormsEngineProps) {
 				path: update.path,
 				modelId: update.modelId,
 				readonly: readonlyProp,
-				contentTypesById
+				contentTypesById: effectRefs.current.contentTypesById
 			})
 				.pipe(
 					catchError((error: AjaxError | symbol) => {
@@ -475,7 +474,7 @@ function FormBootstrap(props: FormsEngineProps) {
 					const values = createCleanValuesObject(
 						requirements.contentType.fields,
 						requirements.contentObject,
-						contentTypesById,
+						effectRefs.current.contentTypesById,
 						(fieldId, value) => {
 							setFieldAtoms(
 								stableFormContextRef,
@@ -500,7 +499,6 @@ function FormBootstrap(props: FormsEngineProps) {
 			return () => subscription.unsubscribe();
 		}
 	}, [
-		contentTypesById,
 		contentTypesLoaded,
 		create,
 		dispatch,
@@ -643,11 +641,7 @@ function FormOrchestrator(props: FormsEngineProps) {
 	};
 	const handleCloseDrawerForm: DrawerProps['onClose'] = () => {
 		if (!hasStackedForms) return;
-		const childState = {
-			isSubmitting: store.get(formsStackData[formsStackData.length - 1].atoms.isSubmitting),
-			hasPendingChanges: store.get(formsStackData[formsStackData.length - 1].atoms.hasPendingChanges),
-			readonly: store.get(formsStackData[formsStackData.length - 1].atoms.readonly)
-		};
+		const childState = getCurrentChildFormStateSummary(store, formsStackData);
 		// Note: This is executed in the context of the parent form.
 		// Executed in the case of escape, backdrop click or form close button click.
 		const doClose = () => {
@@ -667,16 +661,7 @@ function FormOrchestrator(props: FormsEngineProps) {
 	};
 
 	const currentStackedFormProps = hasStackedForms ? formsStackData[formsStackData.length - 1].props : null;
-	let stackedFormKey = undefined;
-	if (hasStackedForms) {
-		if (currentStackedFormProps.update) {
-			stackedFormKey = `${currentStackedFormProps.update.path}_${currentStackedFormProps.update.modelId ?? ''}_${stackFormCount}`;
-		} else if (currentStackedFormProps.create) {
-			stackedFormKey = `${currentStackedFormProps.create.path}_${currentStackedFormProps.create.contentTypeId}_${stackFormCount}`;
-		} else if (currentStackedFormProps.repeat) {
-			stackedFormKey = `${currentStackedFormProps.repeat.fieldId}_${stackFormCount}`;
-		}
-	}
+	const stackedFormKey = hasStackedForms ? createStackedFormKey(currentStackedFormProps, stackFormCount) : undefined;
 
 	const updateEditEnablement = (enableEdit: boolean, callback?: (lockResult: FormsEngineEditContextProps) => void) => {
 		if (enablingEditInProgress || isCreateMode) return;
@@ -687,9 +672,7 @@ function FormOrchestrator(props: FormsEngineProps) {
 			service(siteId, item.path).subscribe((lockResult) => {
 				setEnablingEditInProgress(false);
 				setHasPendingChanges(false);
-				if (restoreValues) {
-					formContextApi.rollback();
-				}
+				if (restoreValues) formContextApi.rollback();
 				setLockStatus({
 					locked: lockResult.locked,
 					lockError: lockResult.lockError,
@@ -1034,13 +1017,3 @@ export default FormGuard;
 //     - Flush control cache?
 //     - Close after saving & options
 //     - Whether to open node selector items in edit if the main item area (instead of edit button) is clicked
-
-/*
-
-XML
-
-`{ someArray_o: { item: [{}, {}] } }` => `{ someArray_o: [{}, {}] }`
-"true" => true
-null => ""
-
-*/
