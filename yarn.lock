@@ -2733,15 +2733,16 @@ __metadata:
   linkType: hard
 
 "@mui/x-data-grid@npm:^7.24.1":
-  version: 7.24.1
-  resolution: "@mui/x-data-grid@npm:7.24.1"
+  version: 7.27.1
+  resolution: "@mui/x-data-grid@npm:7.27.1"
   dependencies:
     "@babel/runtime": "npm:^7.25.7"
     "@mui/utils": "npm:^5.16.6 || ^6.0.0"
-    "@mui/x-internals": "npm:7.24.1"
+    "@mui/x-internals": "npm:7.26.0"
     clsx: "npm:^2.1.1"
     prop-types: "npm:^15.8.1"
     reselect: "npm:^5.1.1"
+    use-sync-external-store: "npm:^1.0.0"
   peerDependencies:
     "@emotion/react": ^11.9.0
     "@emotion/styled": ^11.8.1
@@ -2754,7 +2755,7 @@ __metadata:
       optional: true
     "@emotion/styled":
       optional: true
-  checksum: 10/c502eded88b56aa3fa2c4958952584517201e136517ba515fa2c400a860c732eff6ca68ba64c33d7ca645b5d02e0af3df3cf985488253aa8299351883587d1b7
+  checksum: 10/7f7e82a09901ff01685511df9d41c6cb00ab6709137d6cff14c2798f0a6857de4dd7981a42aaefe0a1be6bb13eac442cc993d50552f877df0d7f3062511da212
   languageName: node
   linkType: hard
 
@@ -13085,7 +13086,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"use-sync-external-store@npm:^1.4.0":
+"use-sync-external-store@npm:^1.0.0, use-sync-external-store@npm:^1.4.0":
   version: 1.4.0
   resolution: "use-sync-external-store@npm:1.4.0"
   peerDependencies:
