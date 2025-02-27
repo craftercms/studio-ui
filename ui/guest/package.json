@@ -53,7 +53,7 @@
 		"@craftercms/content": "4.2.2",
 		"@craftercms/ice": "4.2.2",
 		"@craftercms/npm-content": "workspace:^",
-		"@craftercms/search": "4.2.2",
+		"@craftercms/search": "4.3.0",
 		"@craftercms/studio-ui": "workspace:^",
 		"@emotion/css": "^11.13.5",
 		"@emotion/react": "^11.14.0",
