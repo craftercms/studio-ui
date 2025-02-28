@@ -51,7 +51,7 @@
 	"dependencies": {
 		"@craftercms/classes": "4.2.2",
 		"@craftercms/content": "4.2.2",
-		"@craftercms/ice": "4.2.2",
+		"@craftercms/ice": "4.3.0",
 		"@craftercms/npm-content": "workspace:^",
 		"@craftercms/search": "4.2.2",
 		"@craftercms/studio-ui": "workspace:^",
