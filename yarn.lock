@@ -2785,8 +2785,8 @@ __metadata:
   linkType: hard
 
 "@mui/x-data-grid@npm:^7.24.1":
-  version: 7.27.1
-  resolution: "@mui/x-data-grid@npm:7.27.1"
+  version: 7.27.2
+  resolution: "@mui/x-data-grid@npm:7.27.2"
   dependencies:
     "@babel/runtime": "npm:^7.25.7"
     "@mui/utils": "npm:^5.16.6 || ^6.0.0"
@@ -2807,7 +2807,7 @@ __metadata:
       optional: true
     "@emotion/styled":
       optional: true
-  checksum: 10/7f7e82a09901ff01685511df9d41c6cb00ab6709137d6cff14c2798f0a6857de4dd7981a42aaefe0a1be6bb13eac442cc993d50552f877df0d7f3062511da212
+  checksum: 10/f5edf193132a8c3ee182879e47732b2b19a84f815c6194403e87343488e820c5df5c04e32247b03378fcbbe352f56e2649e341e4c4d0d9c032adeea7d732c9b1
   languageName: node
   linkType: hard
 
