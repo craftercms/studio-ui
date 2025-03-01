@@ -66,6 +66,10 @@ export function GlobalApp(props: GlobalAppProps) {
 	const { passwordRequirementsMinComplexity } = props;
 	const globalNavigation = useGlobalNavigation();
 
+	if (!globalNavigation.items) {
+		return <LoadingState sxs={{ root: { height: '100%', margin: 0 } }} />;
+	}
+
 	const router = createHashRouter(
 		createRoutesFromElements(
 			<Route path="/" element={<GlobalAppInternal {...props} />}>
@@ -88,23 +92,7 @@ export function GlobalApp(props: GlobalAppProps) {
 					path={GlobalRoutes.Settings}
 					element={<AccountManagement passwordRequirementsMinComplexity={passwordRequirementsMinComplexity} />}
 				/>
-				<Route
-					path="/"
-					element={
-						globalNavigation.items ? (
-							<Navigate to={`${urlMapping[globalNavigation.items[0].id].replace('#', '')}`} />
-						) : (
-							<LoadingState
-								sxs={{
-									root: {
-										height: '100%',
-										margin: 0
-									}
-								}}
-							/>
-						)
-					}
-				/>
+				<Route path="/" element={<Navigate to={`${urlMapping[globalNavigation.items[0].id].replace('#', '')}`} />} />
 				<Route path="*" element={<RouteNotFound />} />
 			</Route>
 		)
