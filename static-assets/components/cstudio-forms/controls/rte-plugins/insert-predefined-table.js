@@ -60,8 +60,8 @@ CStudioForms.Controls.RTE.InsertPredefinedTable = CStudioForms.Controls.RTE.Inse
 		return {
 			longname: 'Crafter Studio Insert Predefined Table',
 			author: 'CrafterCMS',
-			authorurl: 'https://craftercms.org',
-			infourl: 'https://craftercms.org',
+			authorurl: 'https://craftercms.com',
+			infourl: 'https://craftercms.com',
 			version: '1.0'
 		};
 	}

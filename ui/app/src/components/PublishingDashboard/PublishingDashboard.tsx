@@ -26,6 +26,7 @@ import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDial
 import Box from '@mui/material/Box';
 import { useTheme } from '@mui/material/styles';
 import useActiveUser from '../../hooks/useActiveUser';
+import type { PublishOnDemandMode } from '../../models';
 
 interface PublishingDashboardProps {
 	embedded?: boolean;
@@ -37,10 +38,13 @@ export function PublishingDashboard(props: PublishingDashboardProps) {
 	const { embedded, showAppsButton, onSubmittingAndOrPendingChange } = props;
 	const user = useActiveUser();
 	const site = useActiveSiteId();
-	const userRoles = user?.rolesBySite[site] ?? [];
 	const userPermissions = user?.permissionsBySite[site] ?? [];
-	const allowedRole = userRoles.some((role) => role === 'developer' || role === 'admin');
+	// TODO: These permission checks should be on the PublishOnDemand widget itself. Dashboard should only check for `publish` permission to render the widget or not.
 	const hasPublishPermission = userPermissions?.includes('publish');
+	const hasPublishByCommitPermission = userPermissions?.includes('publish_by_commits');
+	const allowedPublishOnDemandModes: PublishOnDemandMode[] = [];
+	if (hasPublishPermission) allowedPublishOnDemandModes.push('everything', 'studio');
+	if (hasPublishByCommitPermission) allowedPublishOnDemandModes.push('git');
 	const {
 		spacing,
 		palette: { mode }
@@ -58,6 +62,7 @@ export function PublishingDashboard(props: PublishingDashboardProps) {
 				container
 				sx={{
 					padding: spacing(2),
+					pb: 4,
 					...(embedded
 						? {}
 						: {
@@ -78,7 +83,7 @@ export function PublishingDashboard(props: PublishingDashboardProps) {
 					<Grid size={12}>
 						<PublishOnDemandWidget
 							siteId={site}
-							mode={allowedRole ? null : 'everything'}
+							mode={allowedPublishOnDemandModes}
 							onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
 						/>
 					</Grid>

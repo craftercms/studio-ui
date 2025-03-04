@@ -1448,6 +1448,7 @@ export function duplicate(siteId: string, path: string): Observable<any> {
 export function deleteItems(
 	siteId: string,
 	items: string[],
+	title: string,
 	comment: string,
 	optionalDependencies?: string[]
 ): Observable<boolean> {
@@ -1455,6 +1456,7 @@ export function deleteItems(
 		siteId,
 		items,
 		optionalDependencies,
+		title,
 		comment
 	}).pipe(map(() => true));
 }

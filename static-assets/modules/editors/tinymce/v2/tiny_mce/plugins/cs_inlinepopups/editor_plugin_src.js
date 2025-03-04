@@ -27,8 +27,8 @@
 			return {
 				longname: 'Crafter Studio Inline Popups Customization',
                 author: 'CrafterCMS',
-                authorurl: 'https://craftercms.org',
-                infourl: 'https://craftercms.org',
+                authorurl: 'https://craftercms.com',
+                infourl: 'https://craftercms.com',
                 version: "1.0"
 			};
 		}
@@ -58,7 +58,7 @@
 			if (parentWindow && DOM.get(parentWindow.id + '_ifr')) {
 				parentWindow.focussedElement = DOM.get(parentWindow.id + '_ifr').contentWindow.document.activeElement;
 			}
-			
+
 			// Only store selection if the type is a normal window
 			if (!f.type)
 				t.bookmark = ed.selection.getBookmark(1);
@@ -78,25 +78,25 @@
 					f.height = 270;
 					f.opaque = true;
 					break;
-				case "link.htm": 
-					f.height = 244; 
+				case "link.htm":
+					f.height = 244;
 					p.authoringObj = CStudioAuthoring;	// insert the variable in the scope of the plugin
 					p.contextObj = CStudioAuthoringContext;  // insert the variable in the scope of the plugin
 					break;
-				case "anchor.htm": 
-					f.height = 148; 
+				case "anchor.htm":
+					f.height = 148;
 					break;
-				case "table.htm": 
-					f.height = 370; 
+				case "table.htm":
+					f.height = 370;
 					break;
-				case "row.htm": 
-					f.height = 295; 
+				case "row.htm":
+					f.height = 295;
 					break;
-				case "cell.htm": 
-					f.height = 320; 
+				case "cell.htm":
+					f.height = 320;
 					break;
-				case "image.htm": 
-					f.height = 295; 
+				case "image.htm":
+					f.height = 295;
 					p.contextObj = CStudioAuthoringContext;
 					break;
 				default:
@@ -152,17 +152,17 @@
 				opt += ' mceMovable';
 
 			// Create DOM objects
-			t._addAll(DOM.doc.body, 
-				['div', {id : id, role : 'dialog', 'aria-labelledby': f.type ? id + '_content' : id + '_title', 'class' : (f.opaque ? 'opaque' : '') + ' ' + (ed.settings.inlinepopups_skin || 'clearlooks2') + (tinymce2.isIE && window.getSelection ? ' ie9' : ''), style : 'width:100px;height:100px'}, 
+			t._addAll(DOM.doc.body,
+				['div', {id : id, role : 'dialog', 'aria-labelledby': f.type ? id + '_content' : id + '_title', 'class' : (f.opaque ? 'opaque' : '') + ' ' + (ed.settings.inlinepopups_skin || 'clearlooks2') + (tinymce2.isIE && window.getSelection ? ' ie9' : ''), style : 'width:100px;height:100px'},
 					['div', {id : id + '_wrapper', 'class' : 'mceWrapper' + opt},
-						['div', {id : id + '_top', 'class' : 'mceTop'}, 
+						['div', {id : id + '_top', 'class' : 'mceTop'},
 							['div', {'class' : 'mceLeft'}],
 							['div', {'class' : 'mceCenter'}],
 							['div', {'class' : 'mceRight'}],
 							['span', {id : id + '_title'}, f.title || '']
 						],
 
-						['div', {id : id + '_middle', 'class' : 'mceMiddle'}, 
+						['div', {id : id + '_middle', 'class' : 'mceMiddle'},
 							['div', {id : id + '_left', 'class' : 'mceLeft', tabindex : '0'}],
 							['span', {id : id + '_content'}],
 							['div', {id : id + '_right', 'class' : 'mceRight', tabindex : '0'}]
@@ -253,7 +253,7 @@
 
 				DOM.add(id + '_middle', 'div', {'class' : 'mceIcon'});
 				DOM.setHTML(id + '_content', f.content.replace('\n', '<br />'));
-				
+
 				Event.add(id, 'keyup', function(evt) {
 					var VK_ESCAPE = 27;
 					if (evt.keyCode === VK_ESCAPE) {
@@ -330,7 +330,7 @@
 					}
 				}
 			});
-			
+
 			// Make sure the tab order loops within the dialog.
 			Event.add([id + '_left', id + '_right'], 'focus', function(evt) {
 				var iframe = DOM.get(id + '_ifr');
@@ -346,7 +346,7 @@
 					DOM.get(id + '_ok').focus();
 				}
 			});
-			
+
 			// Add window
 			w = t.windows[id] = {
 				id : id,
@@ -405,7 +405,7 @@
 				DOM.removeClass(t.lastId, 'mceFocus');
 				DOM.addClass(id, 'mceFocus');
 				t.lastId = id;
-				
+
 				if (w.focussedElement) {
 					w.focussedElement.focus();
 				} else if (DOM.get(id + '_ok')) {
@@ -550,7 +550,7 @@
 
 					dw = v;
 				}
-	
+
 				if (dh < (v = w.features.min_height - sz.h)) {
 					if (dy !== 0)
 						dy += dh - v;
@@ -569,7 +569,7 @@
 				if (dx + dy !== 0) {
 					if (sx + dx < 0)
 						dx = 0;
-	
+
 					if (sy + dy < 0)
 						dy = 0;
 
@@ -606,7 +606,7 @@
 				t.parent(win);
 				return;
 			} else {
-				// if it's an inline popup with no type (e.g not an alert), then unsubscribe 
+				// if it's an inline popup with no type (e.g not an alert), then unsubscribe
 				if (w.features && !w.features.type) {
 					amplify.unsubscribe('/rte/clicked', w.features.clickSubscription);
 					amplify.unsubscribe('/rte/blurred', w.features.blurSubscription);
@@ -620,7 +620,7 @@
 				if (!t.mouseEvent)
 					// If there wasn't a mouse event, then a keyboard action (pressing Esc) is triggering the close
 					// In this case, set the focus back on the editor (since the forms-engine.js doesn't manage keyboard events ATM)
-					t.editor.focus();	
+					t.editor.focus();
 			} else {
 				if (t.count == 1) {
 					DOM.hide('mceModalBlocker'); // Hide block overlay if there's only one overlay over the RTE
@@ -645,7 +645,7 @@
 			}
 			t.mouseEvent = false;	// Reset mouseEvent flag
 		},
-		
+
 		// Find front most window
 		_frontWindow : function() {
 			var fw, ix = 0;

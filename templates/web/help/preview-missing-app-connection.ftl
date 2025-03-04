@@ -13,6 +13,7 @@
 <body>
 
 <div class="py-24 sm:py-32">
+
 	<div class="mx-auto max-w-7xl px-6 lg:px-8">
 		<div class="mx-auto max-w-2xl lg:text-center">
 			<h2 class="text-base font-semibold leading-7 text-red-600 dark:text-red-400">CrafterCMS</h2>
@@ -35,7 +36,7 @@
 						Lack of Integration with Experience Builder (XB)
 					</dt>
 					<dd class="mt-2 text-base leading-7 text-gray-600 dark:text-gray-300">
-						The preview application must integrate with XB by leveraging the libraries provided by CrafterCMS. Refer to <a href="https://docs.craftercms.org" class="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300">the documentation</a> related to your specific application type (e.g., templated, SPA, SSR) to enable all of XB's features, such as inline editing and drag-and-drop functionality.
+						The preview application must integrate with XB by leveraging the libraries provided by CrafterCMS. Refer to <a href="https://craftercms.com/docs" class="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300">the documentation</a> related to your specific application type (e.g., templated, SPA, SSR) to enable all of XB's features, such as inline editing and drag-and-drop functionality.
 					</dd>
 				</div>
 				<div class="relative pl-16">
