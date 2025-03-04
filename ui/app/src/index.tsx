@@ -17,5 +17,3 @@
 export * from './components';
 
 export * from './models';
-export { getPersonFullName } from './utils/object';
-export { consolidateSx } from './utils/system';

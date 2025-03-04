@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ContentTypeField, ContentTypeSection } from '../../../models';
+import { ContentTypeField, ContentTypeSection, PublishPackage } from '../../../models';
 import LookupTable from '../../../models/LookupTable';
 import ContentType from '../../../models/ContentType';
 import validateFieldValue, { FieldValidityState } from './validators';
@@ -23,6 +23,7 @@ import {
 	FormRequirementsResponse,
 	FormsEngineAtoms,
 	FormsEngineEditContextProps,
+	FormsEngineItemMetaContextProps,
 	FormsEngineSourceMap,
 	ItemContext,
 	StableFormContext,
@@ -64,9 +65,10 @@ import type { FormsEngineProps } from '../FormsEngine';
 import usePreviousValue from '../../../hooks/usePreviousValue';
 import useActiveSiteId from '../../../hooks/useActiveSiteId';
 import { areAllPairsEqual } from '../../../utils/array';
-import { deserializeContentDom } from './valueRetrievers';
+import { deserializeContentDoc } from './valueRetrievers';
 import useUpdateRefs from '../../../hooks/useUpdateRefs';
 import { unlockItem } from '../../../state/actions/content';
+import ApiResponse from '../../../models/ApiResponse';
 
 /**
  * Returns the scroll container for the form's container.
@@ -321,10 +323,11 @@ export function fetchUpdateRequirements({
 				contentDom = contentDom.querySelector(`[id="${modelId}"]`);
 				contentType = contentTypesById[getInnerHtml(contentDom.querySelector(':scope > content-type'))];
 			}
-			const contentObject = deserializeContentDom(contentDom);
+			const contentObject = deserializeContentDoc(contentDom);
 			const sourceMap = createSourceMap(descriptorXml);
 			const props: FormRequirementsResponse = {
 				item,
+				contentXml,
 				contentObject,
 				sourceMap,
 				locked: lockResult.locked,
@@ -632,4 +635,74 @@ export function createStackedFormKey(currentStackedFormProps: FormsEngineProps, 
 		return `${currentStackedFormProps.repeat.fieldId}_${stackFormCount}`;
 	}
 	return;
+}
+
+export function getNodeIndex(element: Element): number {
+	let index = 0;
+	let sibling = element.previousElementSibling;
+	while (sibling) {
+		index++;
+		sibling = sibling.previousElementSibling;
+	}
+	return index;
+}
+
+export function prepareEmbeddedItemForm(props: {
+	contentType: ContentType;
+	locked: boolean;
+	lockError: ApiResponse;
+	affectedPackages: PublishPackage[];
+	update: FormsEngineProps['update'];
+	parentStackData: StableFormContextProps;
+	stableFormContextRef: RefObject<StableFormContextProps>;
+	parentPathInSite: string;
+}): { atoms: FormsEngineAtoms; values: LookupTable<unknown>; itemMeta: FormsEngineItemMetaContextProps } {
+	const {
+		contentType,
+		update,
+		parentStackData,
+		stableFormContextRef,
+		parentPathInSite,
+		locked,
+		lockError,
+		affectedPackages
+	} = props;
+	const atoms = createFormsEngineAtoms({
+		expandedStateBySectionId: buildSectionExpandedStateAtoms(contentType.sections)
+	});
+	const values = update.values;
+	Object.entries(values).forEach(([fieldId, value]) => {
+		// System fields (e.g. content-type, display-template, etc.) are not part of the content type, but are part of the content object. We don't need atoms or validity checks for these.
+		if (!contentType.fields[fieldId]) return;
+		const [valueAtom, validityAtom] = createFieldAtoms(contentType.fields[fieldId], value, stableFormContextRef);
+		atoms.valueByFieldId[fieldId] = valueAtom;
+		atoms.validationByFieldId[fieldId] = validityAtom;
+	});
+	const lockResultAtom = atom<FormsEngineEditContextProps>({
+		locked,
+		lockError,
+		affectedPackages
+	});
+	atoms.lockResult = lockResultAtom;
+	atoms.readonly = createReadonlyAtom(lockResultAtom);
+	const xmlDoc = fromString(parentStackData.itemMeta.contentXml);
+	const element = xmlDoc.querySelector(`[id="${update.modelId}"]`);
+	const fieldId = element.parentElement.parentElement.tagName; // <root><fieldId><item><component/></item></fieldId></root>, so (component.parentElement = item).parentElement = fieldId
+	const index = getNodeIndex(element.parentElement); // Get the position of the `item` tag
+	const contentObject = (
+		parentStackData.itemMeta.contentObject[fieldId] as { item: Array<{ component: LookupTable<unknown> }> }
+	).item[index].component;
+	return {
+		atoms,
+		values,
+		itemMeta: {
+			id: values[XmlKeys.modelId] as string,
+			path: update.path,
+			sourceMap: null,
+			pathInSite: parentPathInSite,
+			contentType,
+			contentXml: element.outerHTML,
+			contentObject
+		}
+	};
 }

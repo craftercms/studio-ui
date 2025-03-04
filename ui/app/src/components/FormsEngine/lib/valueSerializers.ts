@@ -23,6 +23,10 @@ import { BuiltInControlType } from './controlMap';
 import { RepeatItem } from '../controls/Repeat';
 import { XMLBuilder } from 'fast-xml-parser';
 
+const attributeNamePrefix = '@:';
+const cdataPropName = '__cdata__';
+const textNodeName = '#text';
+
 /**
  * Formats a FormsEngine values object with "hints" for attributes or other specifics for the XML serialiser to serialise
  * the content as a CrafterCMS content xml.
@@ -34,8 +38,11 @@ function prepareValuesForXmlSerialising(
 ): LookupTable<unknown> {
 	const jObj = { ...values };
 	Object.entries(jObj).forEach(([id, value]) => {
+		// System props are not in the model, hence field might be undefined at times.
 		const field = fields[id];
 		const fieldType = field?.type as BuiltInControlType;
+		const fieldAttributes = {};
+		// Field type specific hinting...
 		switch (fieldType) {
 			case 'repeat':
 			case 'node-selector': {
@@ -46,25 +53,34 @@ function prepareValuesForXmlSerialising(
 				break;
 			}
 			case 'rte': {
-				jObj[id] = { __cdata__: value };
+				// TODO: CDATA wrap based on config
+				jObj[id] = { [cdataPropName]: value };
 				break;
 			}
 			case 'checkbox-group': {
 				jObj[id] = prepareArray(field, value);
 				break;
 			}
-			default:
-				// Leave value as is...
-				break;
+		}
+		if (field?.properties.tokenize?.value) {
+			fieldAttributes[createAttrHint('tokenize')] = true;
+		}
+		// TODO: Carry/implement attributes (no-default, remote, others?)
+		if (Object.keys(fieldAttributes).length) {
+			jObj[id] =
+				typeof jObj[id] === 'object'
+					? { ...fieldAttributes, ...jObj[id] }
+					: { ...fieldAttributes, [textNodeName]: value };
 		}
 	});
 	return jObj;
 }
 
-interface XmlNuancedArrayFormat<T = unknown> {
-	'@:item-list': true;
+type XmlNuancedArrayFormat<T = unknown> = {
+	[P in `${typeof attributeNamePrefix}item-list`]: true;
+} & {
 	item: T[];
-}
+};
 
 function prepareNodeSelector(
 	field: ContentTypeField,
@@ -87,8 +103,8 @@ function prepareNodeSelector(
 				item.component,
 				contentTypesLookup
 			) as unknown as NodeSelectorItem['component'];
-			component['@:id'] = component[XmlKeys.modelId];
-			return { ...item, '@:inline': true, component };
+			component[createAttrHint('id')] = component[XmlKeys.modelId];
+			return { ...item, [createAttrHint('inline')]: true, component };
 		})
 	};
 }
@@ -112,19 +128,24 @@ function prepareArray(field: ContentTypeField, value: unknown) {
 	};
 }
 
+function createAttrHint(attributeName: string): string {
+	return `${attributeNamePrefix}${attributeName}`;
+}
+
 /** Takes in a FormsEngine values object and creates the XML representation */
 export function buildContentXml(values: LookupTable<unknown>, contentTypesLookup: LookupTable<ContentType>): string {
 	const rootContentType: ContentType = contentTypesLookup[values[XmlKeys.contentTypeId] as string];
 	const rootObjectType = rootContentType.type;
 	const jObj = prepareValuesForXmlSerialising(rootContentType.fields, values, contentTypesLookup);
-	rootObjectType === 'component' && (jObj['@:id'] = jObj.objectId);
+	rootObjectType === 'component' && (jObj[createAttrHint('id')] = jObj.objectId);
 	const builder = new XMLBuilder({
 		format: true,
 		indentBy: '\t',
 		ignoreAttributes: false,
-		attributeNamePrefix: '@:',
-		cdataPropName: '__cdata__',
-		suppressBooleanAttributes: false
+		suppressBooleanAttributes: false,
+		attributeNamePrefix,
+		cdataPropName,
+		textNodeName
 	});
 	const xml = builder.build({ [`${rootObjectType}`]: jObj });
 	return xml as string;

@@ -43,7 +43,10 @@ export interface FormsEngineFormApiContextProps {
 }
 
 export interface FormRequirementsResponse
-	extends Pick<FormsEngineItemMetaContextProps, 'sourceMap' | 'pathInSite' | 'contentType' | 'contentObject'>,
+	extends Pick<
+			FormsEngineItemMetaContextProps,
+			'sourceMap' | 'pathInSite' | 'contentType' | 'contentObject' | 'contentXml'
+		>,
 		FormsEngineEditContextProps {
 	item: DetailedItem;
 	contentObject: LookupTable<unknown>;
@@ -56,8 +59,8 @@ export interface FormsEngineItemMetaContextProps {
 	sourceMap: FormsEngineSourceMap;
 	pathInSite: string;
 	contentType: ContentType;
-	/** The raw deserialised XML content document */
-	contentObject: LookupTable<unknown>;
+	contentObject: LookupTable<unknown>; // The raw deserialised XML content document.
+	contentXml: string; // The raw XML content document.
 }
 
 // Contains information related to lock status and whether packages are affected by editing the content item

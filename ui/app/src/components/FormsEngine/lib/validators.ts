@@ -15,7 +15,7 @@
  */
 
 import type { ElementType } from 'react';
-import type { ContentTypeField } from '../../../models';
+import type { ContentTypeField } from '../../../models/ContentType';
 import type { BuiltInControlType } from './controlMap';
 
 export const validatorsMap: Record<BuiltInControlType, ElementType> = {

@@ -71,7 +71,7 @@ export const valueRetrieverLookup: Record<BuiltInControlType, ValueRetriever> = 
  * @param contentTypesLookup A lookup table of content types
  * @param fieldCallback A callback to run for each field
  **/
-export function createCleanValuesObject(
+export function createParsedValuesObject(
 	contentTypeFields: LookupTable<ContentTypeField> | ContentTypeField[],
 	xmlDeserializedValues: LookupTable<unknown>,
 	contentTypesLookup: LookupTable<ContentType>,
@@ -85,13 +85,13 @@ export function createCleanValuesObject(
 		}
 	});
 	(Array.isArray(contentTypeFields) ? contentTypeFields : Object.values(contentTypeFields)).forEach((field) => {
-		values[field.id] = createCleanValueForField(xmlDeserializedValues[field.id], field, contentTypesLookup);
+		values[field.id] = createParsedValueForField(xmlDeserializedValues[field.id], field, contentTypesLookup);
 		fieldCallback?.(field.id, values[field.id]);
 	});
 	return values;
 }
 
-export function createCleanValueForField<T = unknown>(
+export function createParsedValueForField<T = unknown>(
 	xmlDeserializedValue: unknown,
 	field: ContentTypeField,
 	contentTypesLookup: LookupTable<ContentType>
@@ -101,7 +101,7 @@ export function createCleanValueForField<T = unknown>(
 	switch (controlType) {
 		case 'repeat': {
 			return (value as Array<RepeatItem>).map((item) =>
-				createCleanValuesObject(field.fields, item, contentTypesLookup)
+				createParsedValuesObject(field.fields, item, contentTypesLookup)
 			) as T;
 		}
 		case 'node-selector': {
@@ -110,7 +110,7 @@ export function createCleanValueForField<T = unknown>(
 					return item.component
 						? {
 								...item,
-								component: createCleanValuesObject(
+								component: createParsedValuesObject(
 									contentTypesLookup[(item.component[XmlKeys.contentTypeId] as string).trim()].fields,
 									item.component,
 									contentTypesLookup
@@ -136,16 +136,14 @@ export function retrieveFieldValue<T = unknown>(field: ContentTypeField, value: 
 	return retriever(value, field);
 }
 
-/** Takes in the CrafterCMS content XML document and returns a JS object with the values */
-export function deserializeContentDom(contentDom: XMLDocument | Element): LookupTable<unknown> {
+/** Takes in the CrafterCMS content XML and returns a JS object with the values */
+export function deserializeContentDoc(contentDom: XMLDocument | Element): LookupTable<unknown> {
 	if (!contentDom) return null;
 	return deserialize(contentDom, {
 		ignoreAttributes: true,
-		isArray(tagName: string, jPath: string) {
-			// Ideally, we would extract all collection types (item selector, repeat) that have
-			// this sort of syntax to avoid false positives.
-			// e.g.collectionFieldIds.map((fieldId) => `${rootTagName}.${fieldId}.item`).includes(jPath);
-			return jPath.endsWith('.item');
-		}
+		// Ideally, we would extract all collection types (item selector, repeat) that have
+		// this sort of syntax to avoid false positives.
+		// e.g.collectionFieldIds.map((fieldId) => `${rootTagName}.${fieldId}.item`).includes(jPath);
+		isArray: (tagName: string, jPath: string) => jPath.endsWith('.item')
 	})[(contentDom as XMLDocument).documentElement?.tagName ?? (contentDom as Element).tagName];
 }

@@ -106,17 +106,8 @@ export function pickShowContentFormAction(oldProps: ReturnType<typeof showEditDi
 				props: {
 					formProps: {
 						...(oldProps.isNewContent
-							? {
-									create: {
-										path: oldProps.path,
-										contentTypeId: oldProps.contentTypeId
-									}
-								}
-							: {
-									update: {
-										path: oldProps.path
-									}
-								}),
+							? { create: { path: oldProps.path, contentTypeId: oldProps.contentTypeId } }
+							: { update: { path: oldProps.path } }),
 						readonly: oldProps.readonly ?? false
 					} as FormsEngineProps
 				}

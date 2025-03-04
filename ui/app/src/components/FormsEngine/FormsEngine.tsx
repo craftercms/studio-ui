@@ -64,7 +64,6 @@ import SecondaryButton from '../SecondaryButton';
 import Fab from '@mui/material/Fab';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
 import { Fade } from '@mui/material';
-import { displayWithPendingChangesConfirm } from '../GlobalDialogManager';
 import AlertTitle from '@mui/material/AlertTitle';
 import { pushDialog } from '../../state/actions/dialogStack';
 import useFetchSandboxItems from '../../hooks/useFetchSandboxItems';
@@ -79,7 +78,6 @@ import { AjaxError } from 'rxjs/ajax';
 import { ViewPackagesDialogProps } from '../ViewPackagesDialog';
 import {
 	buildSectionExpandedStateAtoms,
-	createFieldAtoms,
 	createFormsEngineAtoms,
 	createFormStackData,
 	createObjectWithSystemProps,
@@ -93,6 +91,7 @@ import {
 	getTargetHeight,
 	internalLockContentService,
 	internalUnlockContentService,
+	prepareEmbeddedItemForm,
 	setFieldAtoms,
 	useUnlockOnClose,
 	useValidateFormProps
@@ -114,7 +113,9 @@ import SaveCard from './components/SaveCard';
 import SectionAccordion from './components/SectionAccordion';
 import { useSaveForm } from './lib/useSaveForm';
 import { FormPrepError } from './components/FormPrepError';
-import { createCleanValuesObject } from './lib/valueRetrievers';
+import { createParsedValuesObject } from './lib/valueRetrievers';
+import { fromString } from '../../utils/xml';
+import { displayWithPendingChangesConfirm } from '../../utils/ui';
 
 export interface FormSavePromiseResult {
 	close: boolean;
@@ -329,7 +330,7 @@ function FormBootstrap(props: FormsEngineProps) {
 				readonly: createReadonlyAtom(lockResultAtom),
 				expandedStateBySectionId: buildSectionExpandedStateAtoms(contentType.sections)
 			});
-			const atomValueCreator: Parameters<typeof createCleanValuesObject>[3] = (fieldId, value) => {
+			const atomValueCreator: Parameters<typeof createParsedValuesObject>[3] = (fieldId, value) => {
 				setFieldAtoms(
 					stableFormContextRef,
 					contentType,
@@ -341,10 +342,17 @@ function FormBootstrap(props: FormsEngineProps) {
 			};
 			const values =
 				repeat.values ??
-				createCleanValuesObject(fieldsToRender, {}, effectRefs.current.contentTypesById, atomValueCreator);
+				createParsedValuesObject(fieldsToRender, {}, effectRefs.current.contentTypesById, atomValueCreator);
 
 			// If repeat.values was provided, `createCleanValuesObject` didn't run; hence, atomValueCreator needs to be run manually.
 			repeat.values && Object.keys(values).forEach((fieldId) => atomValueCreator(fieldId, values[fieldId]));
+
+			const xmlDoc = fromString(parentStackData.itemMeta.contentXml);
+			const fieldId = repeat.fieldId;
+			const index = repeat.index;
+			const element = xmlDoc.querySelector(`:scope > ${fieldId}`).children[index];
+			const contentObject = (parentStackData.itemMeta.contentObject[fieldId] as { item: Array<LookupTable<unknown>> })
+				.item[index];
 
 			initializeState(atoms, values, {
 				id: parentId,
@@ -352,8 +360,8 @@ function FormBootstrap(props: FormsEngineProps) {
 				sourceMap: null,
 				pathInSite: parentPathInSite,
 				contentType: parentContentType,
-				// TODO: is this the right contentObject?
-				contentObject: null
+				contentObject,
+				contentXml: element.outerHTML
 			});
 		} else if (
 			// An embedded component is being opened as a stacked form.
@@ -362,44 +370,28 @@ function FormBootstrap(props: FormsEngineProps) {
 		) {
 			const contentType = effectRefs.current.contentTypesById[update.values[XmlKeys.contentTypeId] as string];
 			if (!contentType) return setPrepError(ContentTypeNotFoundError);
-			const parentLockResult = store.get(parentAtoms.lockResult);
-			const isParentLocked = parentLockResult.locked;
 			const isParentReadonly = store.get(parentAtoms.readonly);
 			const readonly = readonlyProp ?? isParentReadonly;
-			const atoms = createFormsEngineAtoms({
-				expandedStateBySectionId: buildSectionExpandedStateAtoms(contentType.sections)
-			});
-			const values = update.values;
-			Object.entries(values).forEach(([fieldId, value]) => {
-				// System fields (e.g. content-type, display-template, etc.) are not part of the content type, but are part of the content object. We don't need atoms or validity checks for these.
-				if (!contentType.fields[fieldId]) return;
-				const [valueAtom, validityAtom] = createFieldAtoms(contentType.fields[fieldId], value, stableFormContextRef);
-				atoms.valueByFieldId[fieldId] = valueAtom;
-				atoms.validationByFieldId[fieldId] = validityAtom;
-			});
-			const setStateValues = (locked: boolean, lockError: ApiResponse, affectedPackages: PublishPackage[]) => {
-				const lockResultAtom = atom<FormsEngineEditContextProps>({
+			const parentLockResult = store.get(parentAtoms.lockResult);
+			const isParentLocked = parentLockResult.locked;
+			const invokePrepareFn = (locked: boolean, lockError: ApiResponse, affectedPackages: PublishPackage[]) => {
+				const requirements = prepareEmbeddedItemForm({
+					contentType,
 					locked,
 					lockError,
-					affectedPackages
+					affectedPackages,
+					update,
+					parentStackData,
+					stableFormContextRef,
+					parentPathInSite
 				});
-				atoms.lockResult = lockResultAtom;
-				atoms.readonly = createReadonlyAtom(lockResultAtom);
-				initializeState(atoms, values, {
-					id: values[XmlKeys.modelId] as string,
-					path: update.path,
-					sourceMap: null,
-					pathInSite: parentPathInSite,
-					contentType: contentType,
-					// TODO: source contentObject (from parent?)
-					contentObject: {}
-				});
+				initializeState(requirements.atoms, requirements.values, requirements.itemMeta);
 			};
 			if (readonly === isParentReadonly) {
-				setStateValues(isParentLocked, parentLockResult.lockError, parentLockResult.affectedPackages);
+				invokePrepareFn(isParentLocked, parentLockResult.lockError, parentLockResult.affectedPackages);
 			} else {
 				const sub = internalLockContentService(siteId, update.path).subscribe((result) => {
-					setStateValues(result.locked, result.lockError, result.affectedPackages);
+					invokePrepareFn(result.locked, result.lockError, result.affectedPackages);
 				});
 				return () => sub.unsubscribe();
 			}
@@ -421,7 +413,7 @@ function FormBootstrap(props: FormsEngineProps) {
 				expandedStateBySectionId: buildSectionExpandedStateAtoms(contentType.sections)
 			});
 			const contentObject = createObjectWithSystemProps(contentType);
-			const values = createCleanValuesObject(contentType.fields, contentObject, contentTypesById, (fieldId, value) => {
+			const values = createParsedValuesObject(contentType.fields, contentObject, contentTypesById, (fieldId, value) => {
 				setFieldAtoms(stableFormContextRef, contentType, contentType.fields, fieldId, atoms, value);
 			});
 			initializeState(atoms, values, {
@@ -432,7 +424,8 @@ function FormBootstrap(props: FormsEngineProps) {
 				sourceMap: null,
 				pathInSite: create.path,
 				contentType,
-				contentObject
+				contentObject,
+				contentXml: null
 			});
 		} /* if (isUpdateMode) */ else {
 			const subscription = fetchUpdateRequirements({
@@ -471,7 +464,7 @@ function FormBootstrap(props: FormsEngineProps) {
 						readonly: createReadonlyAtom(lockResultAtom),
 						expandedStateBySectionId: buildSectionExpandedStateAtoms(requirements.contentType.sections)
 					});
-					const values = createCleanValuesObject(
+					const values = createParsedValuesObject(
 						requirements.contentType.fields,
 						requirements.contentObject,
 						effectRefs.current.contentTypesById,
@@ -493,6 +486,7 @@ function FormBootstrap(props: FormsEngineProps) {
 						sourceMap: requirements.sourceMap,
 						pathInSite: requirements.pathInSite,
 						contentType: requirements.contentType,
+						contentXml: requirements.contentXml,
 						contentObject: requirements.contentObject
 					});
 				});
@@ -990,30 +984,34 @@ export default FormGuard;
 
 // TODO:
 //  - Need Jotai store per form so fields with same id across forms don't collide. Same goes for sections (or other UI state) that could collide across forms.
+//  - Inherited non overridable if not in the model
+//  - Implement default value checks
+//  - Carry/implement current attributes (no-default, remote, others?). See valueSerializers => prepareValuesForXmlSerialising
 // 	- Consider API that provides all form requirements: form def xml, context xml, sandbox/detailed item, affected workflow, lock(?)
 //  - Russ: "Some people push the save button just to have the modified date changed"
 //  - Implement the various constraints/validation checks
-//  - PathNav and other ares to open new edit form
-//  - Edit template & controller
-//  - Update Audience Targeting panel to use new form engine controls
+//  - PathNav and other areas to open new edit form
 //  - Store collapsed ToC state & add to preference manager
-//  - AI
-//  - Field diff & rollback
-//  - Edit template on form
-//  - View/edit content type?
 //  - Enabling editing (from read only to edit mode) for embedded components considering deeper nesting that 1 too
-//  - AI to summarise changes for the save comment
-//  - Control guidelines: autoFocus
-//  - API to retrieve inherited props from an item that doesn't yet exist (is being created)
-//  - Rollback confirm with diff
 //  - Docs notes:
 //    - Controls should manage autoFocus; make sure their internal controls reacts to changes in autoFocus or use effect to focus programmatically
 //    - Should test controls in a root form and in a nested form
-//  - Settings:
-//     - Enable tabbing through control menu button
-//     - Permanently hide ToC (though also controlled by the tab bar button)
-//     - Colour blind mode:
-//        - required field indicators to show check instead of asterisk when valid
-//     - Flush control cache?
-//     - Close after saving & options
-//     - Whether to open node selector items in edit if the main item area (instead of edit button) is clicked
+//  - Use the "cdata config" to apply cdata
+//  - Where do we put the "config" to determine whether to use new or old form engine?
+//  - FOR LATER...
+//    - AI
+//    - Edit template & controller
+//    - Update Audience Targeting panel to use new form engine controls
+//    - Field diff
+//    - View/edit content type
+//    - AI to summarise changes for the save comment
+//    - API to retrieve inherited props from an item that doesn't yet exist (is being created)
+//    - Rollback confirm with diff
+//    - Settings:
+//       - Enable tabbing through control menu button
+//       - Permanently hide ToC (though also controlled by the tab bar button)
+//       - Colour blind mode:
+//          - required field indicators to show check instead of asterisk when valid
+//       - Flush control cache?
+//       - Close after saving & options
+//       - Whether to open node selector items in edit if the main item area (instead of edit button) is clicked
