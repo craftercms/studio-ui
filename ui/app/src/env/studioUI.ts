@@ -57,6 +57,7 @@ import * as stateUtil from '../utils/state';
 import * as stringUtil from '../utils/string';
 import * as subjectsUtil from '../utils/subjects';
 import * as systemUtil from '../utils/system';
+import * as uiUtil from '../utils/ui';
 export const components = {
 	AboutCrafterCMSView: lazy(() => import('../components/AboutCrafterCMSView')),
 	AccountManagement: lazy(() => import('../components/AccountManagement')),
@@ -136,12 +137,8 @@ export const components = {
 	FolderBrowserTreeView: lazy(() => import('../components/FolderBrowserTreeView')),
 	FolderMoveAlert: lazy(() => import('../components/FolderMoveAlert')),
 	FormEngineControls: lazy(() => import('../components/FormEngineControls')),
-	FormsEngine: lazy(() => import('../components/FormsEngine')),
-	// TODO: Genearate script ignore or adjust for these
-	// 	components: lazy(() => import('../components/FormsEngine/components')),
-	// 	controls: lazy(() => import('../components/FormsEngine/controls')),
-	// 	dataSourceHooks: lazy(() => import('../components/FormsEngine/dataSourceHooks')),
-	// 	lib: lazy(() => import('../components/FormsEngine/lib')),
+	FormsEngine: lazy(() => import('../components/FormsEngine/FormsEngine')),
+	FormsEngineDialog: lazy(() => import('../components/FormsEngine/FormsEngineDialog')),
 	Gears: lazy(() => import('../components/Gears')),
 	GitAuthForm: lazy(() => import('../components/GitAuthForm')),
 	GitManagement: lazy(() => import('../components/GitManagement')),
@@ -270,7 +267,6 @@ export const components = {
 	PublishingStatusWidget: lazy(() => import('../components/PublishingStatusWidget')),
 	QuickCreate: lazy(() => import('../components/QuickCreate')),
 	RecentlyPublishedDashlet: lazy(() => import('../components/RecentlyPublishedDashlet')),
-	// RejectDialog: lazy(() => import('../components/RejectDialog')),
 	RenameAssetDialog: lazy(() => import('../components/RenameAssetDialog')),
 	RenameContentDialog: lazy(() => import('../components/RenameContentDialog')),
 	RenameDialogBody: lazy(() => import('../components/RenameDialogBody')),
@@ -434,5 +430,6 @@ export const utils = {
 	state: stateUtil,
 	string: stringUtil,
 	subjects: subjectsUtil,
-	system: systemUtil
+	system: systemUtil,
+	ui: uiUtil
 };

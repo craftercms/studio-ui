@@ -93,11 +93,6 @@ export * from './FolderBrowserTreeView';
 export * from './FolderMoveAlert';
 export * from './FormEngineControls';
 export * from './FormsEngine';
-// TODO:
-//  export * from './FormsEngine/components';
-//  export * from './FormsEngine/controls';
-//  export * from './FormsEngine/dataSourceHooks';
-//  export * from './FormsEngine/lib';
 export * from './Gears';
 export * from './GitAuthForm';
 export * from './GitManagement';
@@ -226,8 +221,6 @@ export * from './PublishingStatusTile';
 export * from './PublishingStatusWidget';
 export * from './QuickCreate';
 export * from './RecentlyPublishedDashlet';
-// TODO:
-// 	export * from './RejectDialog';
 export * from './RenameAssetDialog';
 export * from './RenameContentDialog';
 export * from './RenameDialogBody';

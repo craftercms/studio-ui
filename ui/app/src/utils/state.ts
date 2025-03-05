@@ -452,3 +452,11 @@ export function getPublishingPackagePreferredView(username: string): 'tree' | 'l
 export function removePublishingPackagePreferredView(username: string) {
 	window.localStorage.removeItem(`craftercms.${username}.publishingPackagePreferredView`);
 }
+
+export function getFormsEngineCollapseToCKey(username: string): string {
+	return `craftercms.${username}.formsEngine.collapsedToC`;
+}
+
+export function getFormsEngineCloseAfterSave(username: string): string {
+	return `craftercms.${username}.formsEngine.closeAfterSave`;
+}

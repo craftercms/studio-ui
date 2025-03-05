@@ -15,12 +15,10 @@
  */
 
 import { useAtom, useAtomValue } from 'jotai';
-import { useDispatch } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
 import React, { ChangeEvent, useContext, useState } from 'react';
 import { StableFormContext } from '../lib/formsEngineContext';
 import { ButtonProps } from '@mui/material/Button';
-import { showAlert } from '../lib/formUtils';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -38,7 +36,6 @@ export interface SaveCardProps {
 }
 
 export function SaveCard(props: SaveCardProps) {
-	const dispatch = useDispatch();
 	const { formatMessage } = useIntl();
 	const { isEmbedded, isStackedForm, isRepeatMode, onSave } = props;
 	const stableFormContext = useContext(StableFormContext);
@@ -46,6 +43,7 @@ export function SaveCard(props: SaveCardProps) {
 	const isSubmitting = useAtomValue(stableFormContext.atoms.isSubmitting);
 	const [versionComment, setVersionComment] = useAtom(stableFormContext.atoms.versionComment);
 	const hasPendingChanges = useAtomValue(stableFormContext.atoms.hasPendingChanges);
+	const [closeAfterSave, setCloseAfterSave] = useAtom(stableFormContext.atoms.closeAfterSave);
 	const [acceptedWorkflowCancellation, setAcceptedWorkflowCancellation] = useState(false);
 	const hasAffectedPackages = Boolean(affectedPackages?.length > 0);
 	const disableSave = isSubmitting || !hasPendingChanges || (hasAffectedPackages && !acceptedWorkflowCancellation);
@@ -83,11 +81,7 @@ export function SaveCard(props: SaveCardProps) {
 			<FormControlLabel
 				label={<FormattedMessage defaultMessage="Close after saving" />}
 				control={
-					<Checkbox
-						size="small"
-						checked={false}
-						onClick={() => showAlert({ dispatch, message: 'Not implemented yet.' })}
-					/>
+					<Checkbox size="small" checked={closeAfterSave} onChange={(e, checked) => setCloseAfterSave(checked)} />
 				}
 			/>
 			{/*

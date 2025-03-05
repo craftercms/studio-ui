@@ -64,29 +64,28 @@ function createLengthBlock({ length, max, min }: { length: number; max: number; 
 	) : null;
 }
 
-export interface FormsEngineFieldProps
-	extends PropsWithChildren<{
-		field: ContentTypeField;
-		autoFocus?: boolean;
-		htmlFor?: string;
-		value?: unknown;
-		min?: number;
-		max?: number;
-		length?: number;
-		action?: ReactNode;
-		isValid?: boolean;
-		sx?: FormControlProps['sx'];
-		menu?: false;
-		menuOptions?: Array<
-			| {
-					id: string;
-					text: ReactNode;
-					icon?: SystemIconDescriptor;
-			  }
-			| 'divider'
-		>;
-		onMenuOptionClick?(e: SyntheticEvent, optionId: string, closeMenu: () => void): void;
-	}> {}
+export type FormsEngineFieldProps = PropsWithChildren<{
+	field: ContentTypeField;
+	autoFocus?: boolean;
+	htmlFor?: string;
+	value?: unknown;
+	min?: number;
+	max?: number;
+	length?: number;
+	action?: ReactNode;
+	isValid?: boolean;
+	sx?: FormControlProps['sx'];
+	menu?: false;
+	menuOptions?: Array<
+		| {
+				id: string;
+				text: ReactNode;
+				icon?: SystemIconDescriptor;
+		  }
+		| 'divider'
+	>;
+	onMenuOptionClick?(e: SyntheticEvent, optionId: string, closeMenu: () => void): void;
+}>;
 
 export const FormsEngineField = forwardRef<HTMLDivElement, FormsEngineFieldProps>(function (props, ref) {
 	const {

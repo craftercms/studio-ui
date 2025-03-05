@@ -116,6 +116,7 @@ import { FormPrepError } from './components/FormPrepError';
 import { createParsedValuesObject } from './lib/valueRetrievers';
 import { fromString } from '../../utils/xml';
 import { displayWithPendingChangesConfirm } from '../../utils/ui';
+import useActiveUser from '../../hooks/useActiveUser';
 
 export interface FormSavePromiseResult {
 	close: boolean;
@@ -239,7 +240,8 @@ function FormBootstrap(props: FormsEngineProps) {
 	const store = useJotaiStore();
 	const theme = useTheme();
 	const { isFullScreen = false } = useEnhancedDialogContext() ?? {};
-	const effectRefs = useUpdateRefs({ contentTypesById });
+	const username = useActiveUser()?.username;
+	const effectRefs = useUpdateRefs({ contentTypesById, username });
 	const stableFormContextRef = useRef<StableFormContextProps>(formsStackData[stackIndex]);
 
 	const contextApi = useMemo<FormsEngineFormApiContextProps>(() => {
@@ -325,7 +327,7 @@ function FormBootstrap(props: FormsEngineProps) {
 				lockError: parentLockResult.lockError,
 				affectedPackages: parentLockResult.affectedPackages
 			});
-			const atoms = createFormsEngineAtoms({
+			const atoms = createFormsEngineAtoms(effectRefs.current.username, {
 				lockResult: lockResultAtom,
 				readonly: createReadonlyAtom(lockResultAtom),
 				expandedStateBySectionId: buildSectionExpandedStateAtoms(contentType.sections)
@@ -376,6 +378,7 @@ function FormBootstrap(props: FormsEngineProps) {
 			const isParentLocked = parentLockResult.locked;
 			const invokePrepareFn = (locked: boolean, lockError: ApiResponse, affectedPackages: PublishPackage[]) => {
 				const requirements = prepareEmbeddedItemForm({
+					username,
 					contentType,
 					locked,
 					lockError,
@@ -408,8 +411,9 @@ function FormBootstrap(props: FormsEngineProps) {
 				lockError: null,
 				affectedPackages: null
 			});
-			const atoms: FormsEngineAtoms = createFormsEngineAtoms({
+			const atoms: FormsEngineAtoms = createFormsEngineAtoms(effectRefs.current.username, {
 				lockResult: lockResultAtom,
+				readonly: atom(false),
 				expandedStateBySectionId: buildSectionExpandedStateAtoms(contentType.sections)
 			});
 			const contentObject = createObjectWithSystemProps(contentType);
@@ -459,7 +463,7 @@ function FormBootstrap(props: FormsEngineProps) {
 						lockError: requirements.lockError,
 						affectedPackages: requirements.affectedPackages
 					});
-					const atoms = createFormsEngineAtoms({
+					const atoms = createFormsEngineAtoms(effectRefs.current.username, {
 						lockResult: lockResultAtom,
 						readonly: createReadonlyAtom(lockResultAtom),
 						expandedStateBySectionId: buildSectionExpandedStateAtoms(requirements.contentType.sections)
@@ -984,8 +988,8 @@ export default FormGuard;
 
 // TODO:
 //  - Need Jotai store per form so fields with same id across forms don't collide. Same goes for sections (or other UI state) that could collide across forms.
-//  - Inherited non overridable if not in the model
-//  - Implement default value checks
+//  - Reconcile/consolidate rte settings for form & XB
+//  - Implement default value & default value checks
 //  - Carry/implement current attributes (no-default, remote, others?). See valueSerializers => prepareValuesForXmlSerialising
 // 	- Consider API that provides all form requirements: form def xml, context xml, sandbox/detailed item, affected workflow, lock(?)
 //  - Russ: "Some people push the save button just to have the modified date changed"
@@ -999,6 +1003,7 @@ export default FormGuard;
 //  - Use the "cdata config" to apply cdata
 //  - Where do we put the "config" to determine whether to use new or old form engine?
 //  - FOR LATER...
+//    - Inherited non overridable if not in the model
 //    - AI
 //    - Edit template & controller
 //    - Update Audience Targeting panel to use new form engine controls

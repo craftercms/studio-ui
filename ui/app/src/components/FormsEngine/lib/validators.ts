@@ -17,6 +17,8 @@
 import type { ElementType } from 'react';
 import type { ContentTypeField } from '../../../models/ContentType';
 import type { BuiltInControlType } from './controlMap';
+import LookupTable from '../../../models/LookupTable';
+import { XmlKeys } from './formConsts';
 
 export const validatorsMap: Record<BuiltInControlType, ElementType> = {
 	repeat: null,
@@ -73,7 +75,7 @@ export function validateFieldValue(field: ContentTypeField, currentValue: unknow
 
 export function isEmptyValue(field: ContentTypeField, currentValue: unknown): boolean {
 	return (
-		!currentValue ||
+		currentValue == null ||
 		(typeof currentValue === 'string' && currentValue.trim() === '') ||
 		(Array.isArray(currentValue) && currentValue.length === 0)
 	);
@@ -81,6 +83,13 @@ export function isEmptyValue(field: ContentTypeField, currentValue: unknown): bo
 
 export function isFieldRequired(field: ContentTypeField): boolean {
 	return Boolean(field.validations?.required?.value);
+}
+
+export function checkMinimumSaveRequirementsFulfilled(values: LookupTable<unknown>): boolean {
+	return (
+		[values[XmlKeys.fileName], values[XmlKeys.folderName]].join('').trim() === '' ||
+		values[XmlKeys.internalName].toString().trim() === ''
+	);
 }
 
 export default validateFieldValue;

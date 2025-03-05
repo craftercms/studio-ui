@@ -23,7 +23,7 @@ import LookupTable from '../../../models/LookupTable';
 import type { Atom, PrimitiveAtom } from 'jotai';
 import { FieldValidityState } from './validators';
 import { Subject } from 'rxjs';
-import { CollapseToCAtomWithStorage } from '../types';
+import { AtomWithStorage } from '../types';
 
 export type FormsEngineSourceMap = LookupTable<string>;
 
@@ -79,11 +79,12 @@ export interface FormsEngineAtoms {
 	valueByFieldId: LookupTable<PrimitiveAtom<unknown>>;
 	validationByFieldId: LookupTable<Atom<FieldValidityState>>;
 	versionComment: PrimitiveAtom<string>;
-	collapseToC: CollapseToCAtomWithStorage; // Note: `collapseToC` is an atomWithStorage
+	collapseToC: AtomWithStorage; // Note: `collapseToC` is an atomWithStorage
 	useCollapsedToC: Atom<boolean>;
 	isLargeContainer: PrimitiveAtom<boolean>;
 	expandedStateBySectionId: LookupTable<PrimitiveAtom<boolean>>;
 	tableOfContentsDrawerOpen: PrimitiveAtom<boolean>;
+	closeAfterSave: AtomWithStorage;
 }
 
 // Contains information to restore the state of a form when it comes back to being the active form on the stack

@@ -34,4 +34,4 @@ export type JotaiStore = ReturnType<typeof createStore>;
 // Jotai hides this type, so we need to redefine it here.
 export type SetStateActionWithReset<Value> = Value | typeof RESET | ((prev: Value) => Value | typeof RESET);
 
-export type CollapseToCAtomWithStorage = WritableAtom<boolean, [SetStateActionWithReset<boolean>], boolean>;
+export type AtomWithStorage<T = boolean> = WritableAtom<T, [SetStateActionWithReset<T>], T>;

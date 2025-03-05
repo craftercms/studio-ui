@@ -47,7 +47,7 @@ import PrimaryButton from '../../PrimaryButton';
 import { FormattedMessage } from 'react-intl';
 import { AlertDialogProps } from '../../AlertDialog';
 import { Theme } from '@mui/material/styles';
-import { CollapseToCAtomWithStorage, JotaiStore } from '../types';
+import { AtomWithStorage, JotaiStore } from '../types';
 import {
 	ContentTypeNotFoundError,
 	InvalidParamsError,
@@ -69,6 +69,7 @@ import { deserializeContentDoc } from './valueRetrievers';
 import useUpdateRefs from '../../../hooks/useUpdateRefs';
 import { unlockItem } from '../../../state/actions/content';
 import ApiResponse from '../../../models/ApiResponse';
+import { getFormsEngineCloseAfterSave, getFormsEngineCollapseToCKey } from '../../../utils/state';
 
 /**
  * Returns the scroll container for the form's container.
@@ -347,22 +348,26 @@ export function fetchUpdateRequirements({
 /**
  * Creates a FormsEngineAtoms object with default values. Allows overriding defaults via `mixin` argument.
  **/
-export function createFormsEngineAtoms(mixin?: Partial<FormsEngineAtoms>): FormsEngineAtoms {
+export function createFormsEngineAtoms(
+	username: string,
+	mixin: Partial<FormsEngineAtoms> & Pick<FormsEngineAtoms, 'readonly' | 'lockResult'>
+): FormsEngineAtoms {
 	const atoms: FormsEngineAtoms = {
 		isSubmitting: atom(false),
 		hasPendingChanges: atom(false),
 		valueByFieldId: {},
 		validationByFieldId: {},
-		lockResult: null,
-		readonly: null,
 		versionComment: atom(''),
 		expandedStateBySectionId: {},
 		tableOfContentsDrawerOpen: atom(false),
 		isLargeContainer: atom(false),
-		collapseToC: atomWithStorage('craftercms.formsEngine.collapsedToC', false, undefined, {
-			getOnInit: true
-		}) as unknown as CollapseToCAtomWithStorage,
 		useCollapsedToC: atom((get) => (get(atoms.isLargeContainer) ? get(atoms.collapseToC) : true)),
+		collapseToC: atomWithStorage(getFormsEngineCollapseToCKey(username), false, undefined, {
+			getOnInit: true
+		}) as unknown as AtomWithStorage,
+		closeAfterSave: atomWithStorage(getFormsEngineCloseAfterSave(username), true, undefined, {
+			getOnInit: true
+		}) as unknown as AtomWithStorage,
 		...mixin
 	};
 	return atoms;
@@ -648,6 +653,7 @@ export function getNodeIndex(element: Element): number {
 }
 
 export function prepareEmbeddedItemForm(props: {
+	username: string;
 	contentType: ContentType;
 	locked: boolean;
 	lockError: ApiResponse;
@@ -658,6 +664,7 @@ export function prepareEmbeddedItemForm(props: {
 	parentPathInSite: string;
 }): { atoms: FormsEngineAtoms; values: LookupTable<unknown>; itemMeta: FormsEngineItemMetaContextProps } {
 	const {
+		username,
 		contentType,
 		update,
 		parentStackData,
@@ -667,7 +674,14 @@ export function prepareEmbeddedItemForm(props: {
 		lockError,
 		affectedPackages
 	} = props;
-	const atoms = createFormsEngineAtoms({
+	const lockResultAtom = atom<FormsEngineEditContextProps>({
+		locked,
+		lockError,
+		affectedPackages
+	});
+	const atoms = createFormsEngineAtoms(username, {
+		lockResult: lockResultAtom,
+		readonly: createReadonlyAtom(lockResultAtom),
 		expandedStateBySectionId: buildSectionExpandedStateAtoms(contentType.sections)
 	});
 	const values = update.values;
@@ -678,13 +692,6 @@ export function prepareEmbeddedItemForm(props: {
 		atoms.valueByFieldId[fieldId] = valueAtom;
 		atoms.validationByFieldId[fieldId] = validityAtom;
 	});
-	const lockResultAtom = atom<FormsEngineEditContextProps>({
-		locked,
-		lockError,
-		affectedPackages
-	});
-	atoms.lockResult = lockResultAtom;
-	atoms.readonly = createReadonlyAtom(lockResultAtom);
 	const xmlDoc = fromString(parentStackData.itemMeta.contentXml);
 	const element = xmlDoc.querySelector(`[id="${update.modelId}"]`);
 	const fieldId = element.parentElement.parentElement.tagName; // <root><fieldId><item><component/></item></fieldId></root>, so (component.parentElement = item).parentElement = fieldId

@@ -294,7 +294,7 @@ export function SortableList({ items, onChange }: { items: TItem[]; onChange(ite
 					return;
 				}
 
-				// Using `flushSync` so we can query the DOM straight after this line
+				// Using `flushSync` so we can query the DOM straight after this line (apply changes immediately)
 				flushSync(() => {
 					onChangeRef.current(
 						reorderWithEdge({
