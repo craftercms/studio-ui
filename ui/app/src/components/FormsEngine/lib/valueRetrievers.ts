@@ -131,7 +131,7 @@ export function retrieveFieldValue<T = unknown>(field: ContentTypeField, value: 
 	const retriever: ValueRetriever<T> | undefined = valueRetrieverLookup[field.type];
 	if (!retriever) {
 		console.warn(`No value retriever for field ${field.id} of type ${field.type}`);
-		return Array.isArray(value) ? (arrayFieldExtractor(value, field) as T) : (value as T);
+		return value as T;
 	}
 	return retriever(value, field);
 }

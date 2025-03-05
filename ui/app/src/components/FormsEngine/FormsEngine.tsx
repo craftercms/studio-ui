@@ -1003,6 +1003,7 @@ export default FormGuard;
 //  - Use the "cdata config" to apply cdata
 //  - Where do we put the "config" to determine whether to use new or old form engine?
 //  - FOR LATER...
+//    - Allow overriding/extending validators, retrievers, [and maybe] controlMap through plugins
 //    - Inherited non overridable if not in the model
 //    - AI
 //    - Edit template & controller
