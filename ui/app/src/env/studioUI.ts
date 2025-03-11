@@ -17,7 +17,6 @@ import { lazy } from 'react';
 import * as auditService from '../services/audit';
 import * as authService from '../services/auth';
 import * as awsService from '../services/aws';
-import * as cmisService from '../services/cmis';
 import * as configurationService from '../services/configuration';
 import * as contentService from '../services/content';
 import * as contentTypesService from '../services/contentTypes';
@@ -52,11 +51,13 @@ import * as itemActionsUtil from '../utils/itemActions';
 import * as mimeTypesUtil from '../utils/mimeTypes';
 import * as modelUtil from '../utils/model';
 import * as objectUtil from '../utils/object';
+import * as packageActionsUtil from '../utils/packageActions';
 import * as pathUtil from '../utils/path';
 import * as stateUtil from '../utils/state';
 import * as stringUtil from '../utils/string';
 import * as subjectsUtil from '../utils/subjects';
 import * as systemUtil from '../utils/system';
+import * as uiUtil from '../utils/ui';
 export const components = {
 	AboutCrafterCMSView: lazy(() => import('../components/AboutCrafterCMSView')),
 	AccountManagement: lazy(() => import('../components/AccountManagement')),
@@ -76,6 +77,8 @@ export const components = {
 	BasePathSelector: lazy(() => import('../components/BasePathSelector')),
 	BrokenReferencesDialog: lazy(() => import('../components/BrokenReferencesDialog')),
 	BrowseFilesDialog: lazy(() => import('../components/BrowseFilesDialog')),
+	BulkCancelPackageDialog: lazy(() => import('../components/BulkCancelPackageDialog')),
+	CancelPackageDialog: lazy(() => import('../components/CancelPackageDialog')),
 	ChangeContentTypeDialog: lazy(() => import('../components/ChangeContentTypeDialog')),
 	CharCountStatus: lazy(() => import('../components/CharCountStatus')),
 	CodeEditorDialog: lazy(() => import('../components/CodeEditorDialog')),
@@ -132,7 +135,10 @@ export const components = {
 	ErrorState: lazy(() => import('../components/ErrorState')),
 	ExpiringDashlet: lazy(() => import('../components/ExpiringDashlet')),
 	FolderBrowserTreeView: lazy(() => import('../components/FolderBrowserTreeView')),
+	FolderMoveAlert: lazy(() => import('../components/FolderMoveAlert')),
 	FormEngineControls: lazy(() => import('../components/FormEngineControls')),
+	FormsEngine: lazy(() => import('../components/FormsEngine/FormsEngine')),
+	FormsEngineDialog: lazy(() => import('../components/FormsEngine/FormsEngineDialog')),
 	Gears: lazy(() => import('../components/Gears')),
 	GitAuthForm: lazy(() => import('../components/GitAuthForm')),
 	GitManagement: lazy(() => import('../components/GitManagement')),
@@ -205,6 +211,7 @@ export const components = {
 	NonReactWidget: lazy(() => import('../components/NonReactWidget')),
 	NotistackVariant: lazy(() => import('../components/NotistackVariant')),
 	PackageDetailsDialog: lazy(() => import('../components/PackageDetailsDialog')),
+	PackageItems: lazy(() => import('../components/PackageItems')),
 	PaddingModeSwitchListItem: lazy(() => import('../components/PaddingModeSwitchListItem')),
 	PagesSearchAhead: lazy(() => import('../components/PagesSearchAhead')),
 	Pagination: lazy(() => import('../components/Pagination')),
@@ -247,8 +254,10 @@ export const components = {
 	PublishDialog: lazy(() => import('../components/PublishDialog')),
 	PublishOnDemandForm: lazy(() => import('../components/PublishOnDemandForm')),
 	PublishOnDemandWidget: lazy(() => import('../components/PublishOnDemandWidget')),
+	PublishPackageReviewDialog: lazy(() => import('../components/PublishPackageReviewDialog')),
 	PublisherStatusDashlet: lazy(() => import('../components/PublisherStatusDashlet')),
 	PublishingDashboard: lazy(() => import('../components/PublishingDashboard')),
+	PublishingPackageResubmitDialog: lazy(() => import('../components/PublishingPackageResubmitDialog')),
 	PublishingQueue: lazy(() => import('../components/PublishingQueue')),
 	PublishingStatusAvatar: lazy(() => import('../components/PublishingStatusAvatar')),
 	PublishingStatusButton: lazy(() => import('../components/PublishingStatusButton')),
@@ -325,6 +334,7 @@ export const components = {
 	UsersGrid: lazy(() => import('../components/UsersGrid')),
 	VersionList: lazy(() => import('../components/VersionList')),
 	VideoPlayer: lazy(() => import('../components/VideoPlayer')),
+	ViewPackagesDialog: lazy(() => import('../components/ViewPackagesDialog')),
 	ViewToolbar: lazy(() => import('../components/ViewToolbar')),
 	ViewVersionDialog: lazy(() => import('../components/ViewVersionDialog')),
 	Widget: lazy(() => import('../components/Widget')),
@@ -370,13 +380,15 @@ export const icons = {
 	RepeatGroupItem: lazy(() => import('../icons/RepeatGroupItem')),
 	SiteExplorer: lazy(() => import('../icons/SiteExplorer')),
 	Sites: lazy(() => import('../icons/Sites')),
-	Sleep: lazy(() => import('../icons/Sleep'))
+	Sleep: lazy(() => import('../icons/Sleep')),
+	TreeOutlined: lazy(() => import('../icons/TreeOutlined')),
+	TreeRounded: lazy(() => import('../icons/TreeRounded')),
+	Unlock: lazy(() => import('../icons/Unlock'))
 };
 export const services = {
 	audit: auditService,
 	auth: authService,
 	aws: awsService,
-	cmis: cmisService,
 	configuration: configurationService,
 	content: contentService,
 	contentTypes: contentTypesService,
@@ -413,9 +425,11 @@ export const utils = {
 	mimeTypes: mimeTypesUtil,
 	model: modelUtil,
 	object: objectUtil,
+	packageActions: packageActionsUtil,
 	path: pathUtil,
 	state: stateUtil,
 	string: stringUtil,
 	subjects: subjectsUtil,
-	system: systemUtil
+	system: systemUtil,
+	ui: uiUtil
 };

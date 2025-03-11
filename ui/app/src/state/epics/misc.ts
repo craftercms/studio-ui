@@ -26,9 +26,9 @@ import {
 	editController,
 	editTemplate
 } from '../actions/misc';
-import { changeContentType, createFile, fetchSandboxItem } from '../../services/content';
+import { changeContentType, createFile, fetchContentItem } from '../../services/content';
 import { showCodeEditorDialog, showEditDialog, showViewPackagesDialog } from '../actions/dialogs';
-import { reloadDetailedItem } from '../actions/content';
+import { reloadContentItem } from '../actions/content';
 import { blockUI, showEditItemSuccessNotification, unblockUI } from '../actions/system';
 import { CrafterCMSEpic } from '../store';
 import { translations } from '../../components/ItemActionsMenu/translations';
@@ -54,7 +54,7 @@ const epics = [
 								path,
 								authoringBase: state.env.authoringBase,
 								changeTemplate: newContentTypeId,
-								onSaveSuccess: batchActions([showEditItemSuccessNotification(), reloadDetailedItem({ path })])
+								onSaveSuccess: batchActions([showEditItemSuccessNotification(), reloadContentItem({ path })])
 							})
 						)
 					);
@@ -91,31 +91,34 @@ const epics = [
 				const destinationPath = editContentTypeTemplate.type === type ? getParentPath(path) : payload.path;
 				return merge(
 					of(blockUI({ message: getIntl().formatMessage(translations.verifyingAffectedWorkflows) })),
-					fetchSandboxItem(state.sites.active, path).pipe(
+					fetchContentItem(state.sites.active, path).pipe(
 						map((item) =>
-							item
-								? isInActiveWorkflow(item)
-									? batchActions([
-											showViewPackagesDialog({
-												item,
-												onContinue: showCodeEditorDialog({
-													path,
-													mode,
-													contentType
-												})
-											}),
-											unblockUI()
-										])
-									: batchActions([
-											showCodeEditorDialog({
-												site: state.sites.active,
+							isInActiveWorkflow(item)
+								? batchActions([
+										showViewPackagesDialog({
+											item,
+											onContinue: showCodeEditorDialog({
 												path,
 												mode,
 												contentType
-											}),
-											unblockUI()
-										])
-								: createFileAction({
+											})
+										}),
+										unblockUI()
+									])
+								: batchActions([
+										showCodeEditorDialog({
+											site: state.sites.active,
+											path,
+											mode,
+											contentType
+										}),
+										unblockUI()
+									])
+						),
+						catchError(({ response }) => {
+							if (response.response.code === 7000) {
+								return of(
+									createFileAction({
 										path: destinationPath,
 										fileName,
 										onCreated: batchActions(
@@ -133,16 +136,17 @@ const epics = [
 											].filter(Boolean)
 										)
 									})
-						),
-						catchError(({ response }) => {
-							return of(
-								batchActions([
-									showErrorDialog({
-										error: response.response
-									}),
-									unblockUI()
-								])
-							);
+								);
+							} else {
+								return of(
+									batchActions([
+										showErrorDialog({
+											error: response.response
+										}),
+										unblockUI()
+									])
+								);
+							}
 						})
 					)
 				);

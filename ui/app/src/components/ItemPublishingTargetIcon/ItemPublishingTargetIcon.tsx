@@ -18,7 +18,7 @@ import Tooltip from '@mui/material/Tooltip';
 import PublishingTargetIcon from '@mui/icons-material/FiberManualRecordRounded';
 import * as React from 'react';
 import { getItemPublishingTargetText } from '../ItemDisplay/utils';
-import { DetailedItem, SandboxItem } from '../../models/Item';
+import { ContentItem } from '../../models/Item';
 import { SvgIconProps } from '@mui/material/SvgIcon';
 import { PartialSxRecord } from '../../models';
 import palette from '../../styles/palette';
@@ -30,7 +30,7 @@ export type ItemPublishingTargetIconClassKey =
 	| 'publishingTargetStaged'
 	| 'publishingIcon';
 export interface ItemPublishingTargetIconProps {
-	item: DetailedItem | SandboxItem;
+	item: Pick<ContentItem, 'stateMap'>;
 	classes?: Partial<Record<ItemPublishingTargetIconClassKey, string>>;
 	sxs?: PartialSxRecord<ItemPublishingTargetIconClassKey>;
 	className?: string;

@@ -53,7 +53,7 @@ import VersionList from '../VersionList';
 import DialogFooter from '../DialogFooter/DialogFooter';
 import { HistoryDialogPagination } from './HistoryDialogPagination';
 import useSelection from '../../hooks/useSelection';
-import useFetchSandboxItems from '../../hooks/useFetchSandboxItems';
+import useFetchContentItems from '../../hooks/useFetchContentItems';
 import { UNDEFINED } from '../../utils/constants';
 import { ErrorBoundary } from '../ErrorBoundary';
 import { LoadingState } from '../LoadingState';
@@ -70,7 +70,7 @@ import { isComparableAsset } from '../../utils/content';
 export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
 	const { versionsBranch, error } = props;
 	const { count, page, limit, current, rootPath, isConfig } = versionsBranch;
-	useFetchSandboxItems([versionsBranch.item.path]);
+	useFetchContentItems([versionsBranch.item.path]);
 	// TODO: It'd be best for the dialog to directly receive a live item. Must change versions branch to only hold the path.
 	const item = useSelection((state) => state.content.itemsByPath[versionsBranch.item.path]);
 	const path = item?.path ?? '';

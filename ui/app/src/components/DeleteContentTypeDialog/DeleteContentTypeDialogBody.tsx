@@ -27,7 +27,7 @@ import SecondaryButton from '../SecondaryButton/SecondaryButton';
 import PrimaryButton from '../PrimaryButton/PrimaryButton';
 import LoadingState from '../LoadingState/LoadingState';
 import ContentTypeUsageReport from './ContentTypeUsageReport';
-import { SandboxItem } from '../../models/Item';
+import { ContentItem } from '../../models/Item';
 import { DeleteContentTypeDialogBodyProps } from './utils';
 import Box from '@mui/material/Box';
 
@@ -49,7 +49,7 @@ const messages = defineMessages({
 export function DeleteContentTypeDialogBody(props: DeleteContentTypeDialogBodyProps) {
 	const { onCloseButtonClick, data, contentType, onSubmit: onSubmitProp, password = 'delete', submitting } = props;
 	const { formatMessage } = useIntl();
-	const dataEntries = Object.entries(data) as Array<[keyof FetchContentTypeUsageResponse, SandboxItem[]]>;
+	const dataEntries = Object.entries(data) as Array<[keyof FetchContentTypeUsageResponse, ContentItem[]]>;
 	const entriesWithItems = dataEntries.filter(([, items]) => items.length > 0);
 	const noUsages = entriesWithItems.length === 0;
 	const hasUsages = !noUsages;

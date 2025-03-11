@@ -17,6 +17,8 @@
 import LookupTable from '../models/LookupTable';
 import { PagedArray } from '../models';
 
+export const fooArray = [];
+
 export function forEach<T = any, R = undefined>(
 	array: T[],
 	fn: (item: T, index: number, array: T[]) => R | 'continue' | 'break' | undefined,
@@ -87,3 +89,6 @@ export function createPagedArray<T = any>(array: T[], response): PagedArray<T> {
 		limit: response.limit
 	});
 }
+
+export const areAllPairsEqual: (tuples: [unknown, unknown][]) => boolean = (touples) =>
+	!touples.some(([a, b]) => a !== b);

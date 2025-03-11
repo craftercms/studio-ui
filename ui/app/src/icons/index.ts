@@ -50,3 +50,6 @@ export { default as RepeatGroupItem } from './RepeatGroupItem';
 export { default as SiteExplorer } from './SiteExplorer';
 export { default as Sites } from './Sites';
 export { default as Sleep } from './Sleep';
+export { default as TreeOutlined } from './TreeOutlined';
+export { default as TreeRounded } from './TreeRounded';
+export { default as Unlock } from './Unlock';

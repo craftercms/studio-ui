@@ -28,6 +28,7 @@ import SystemIcon from '../SystemIcon';
 import Box from '@mui/material/Box';
 import { PartialSxRecord } from '../../models/CustomRecord';
 import { CSSSelectorObjectOrCssVariables } from '@mui/system/styleFunctionSx/styleFunctionSx';
+import { consolidateSx } from '../../utils/system';
 
 export type MediaCardViewModes = 'card' | 'compact' | 'row';
 
@@ -109,7 +110,7 @@ function MediaCard(props: MediaCardProps) {
 			onDragStart={onDragStart}
 			onDragEnd={onDragEnd}
 			onClick={onClick}
-			sx={[
+			sx={consolidateSx(
 				{ position: 'relative' },
 				viewMode === 'row' && {
 					display: 'flex',
@@ -117,8 +118,8 @@ function MediaCard(props: MediaCardProps) {
 					[`& .${cardHeaderClasses.root}`]: { flexGrow: 1 },
 					[`& .${cardMediaClasses.root}`]: { paddingTop: '0 !important', height: '80px !important', width: '80px' }
 				},
-				sxs?.root as CSSSelectorObjectOrCssVariables
-			]}
+				sxs?.root
+			)}
 		>
 			<CardHeader
 				classes={{ root: props.classes?.cardHeader }}

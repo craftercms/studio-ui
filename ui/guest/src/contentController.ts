@@ -46,8 +46,8 @@ import { parseDescriptor, preParseSearchResults } from '@craftercms/content';
 import { crafterConf } from '@craftercms/classes';
 import { getDefaultValue } from '@craftercms/studio-ui/utils/contentType';
 import { ModelHierarchyDescriptor, ModelHierarchyMap, modelsToLookup } from '@craftercms/studio-ui/utils/content';
-import { SandboxItem, StandardAction } from '@craftercms/studio-ui/models';
-import { fetchSandboxItemComplete } from '@craftercms/studio-ui/state/actions/content';
+import { ContentItem, StandardAction } from '@craftercms/studio-ui/models';
+import { fetchContentItemComplete } from '@craftercms/studio-ui/state/actions/content';
 
 // if (process.env.NODE_ENV === 'development') {
 // TODO: Notice
@@ -79,8 +79,8 @@ const models$ = new BehaviorSubject<LookupTable<ContentInstance>>({
 	/* 'modelId': { ...modelData } */
 });
 
-const items$ = new BehaviorSubject<LookupTable<SandboxItem>>({
-	/* 'path': { ...sandboxItem } */
+const items$ = new BehaviorSubject<LookupTable<ContentItem>>({
+	/* 'path': { ...contentItem } */
 });
 
 const permissions$ = new BehaviorSubject<string[]>([]);
@@ -124,11 +124,11 @@ export function getCachedModelsByPath(): LookupTable<string> {
 	return paths$.value;
 }
 
-export function getCachedSandboxItems(): LookupTable<SandboxItem> {
+export function getCachedContentItems(): LookupTable<ContentItem> {
 	return items$.value;
 }
 
-export function getCachedSandboxItem(path: string): SandboxItem {
+export function getCachedContentItem(path: string): ContentItem {
 	return items$.value[path];
 }
 
@@ -768,12 +768,12 @@ export interface FetchGuestModelCompletePayload {
 	modelLookup: LookupTable<ContentInstance>;
 	modelIdByPath: LookupTable<string>;
 	hierarchyMap: ModelHierarchyMap;
-	sandboxItems: SandboxItem[];
+	contentItems: ContentItem[];
 	permissions: string[];
 }
 
 fromTopic(fetchGuestModelComplete.type).subscribe((action: StandardAction<FetchGuestModelCompletePayload>) => {
-	const { modelLookup, hierarchyMap, modelIdByPath, sandboxItems, permissions } = action.payload;
+	const { modelLookup, hierarchyMap, modelIdByPath, contentItems, permissions } = action.payload;
 	Object.keys(modelIdByPath).forEach((path) => {
 		requestedPaths[path] = true;
 	});
@@ -802,11 +802,20 @@ fromTopic(fetchGuestModelComplete.type).subscribe((action: StandardAction<FetchG
 	});
 	models$.next(nextModels);
 	paths$.next({ ...paths$.value, ...modelIdByPath });
-	items$.next({ ...items$.value, ...createLookupTable(sandboxItems, 'path') });
+	items$.next({ ...items$.value, ...createLookupTable(contentItems, 'path') });
 	permissions$.next(permissions);
 });
 
-merge(fromTopic(updateFieldValueOperationComplete.type), fromTopic(fetchSandboxItemComplete.type))
+fromTopic(fetchContentItemComplete.type)
+	.pipe(map((action) => action?.payload))
+	.subscribe((item) => {
+		items$.next({
+			...items$.value,
+			[item.path]: item
+		});
+	});
+
+fromTopic(updateFieldValueOperationComplete.type)
 	.pipe(map((action) => action?.payload))
 	.subscribe(({ item }) => {
 		items$.next({

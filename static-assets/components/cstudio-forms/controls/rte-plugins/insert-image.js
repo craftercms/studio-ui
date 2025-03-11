@@ -184,7 +184,6 @@ CStudioForms.Controls.RTE.ImageInsert = CStudioForms.Controls.RTE.ImageInsert ||
 		}
 		return null;
 	},
-
 	/**
 	 * Returns information about the plugin as a name/value array.
 	 * The current keys are longname, author, authorurl, infourl and version.
@@ -195,8 +194,8 @@ CStudioForms.Controls.RTE.ImageInsert = CStudioForms.Controls.RTE.ImageInsert ||
 		return {
 			longname: 'Crafter Studio Insert Image',
 			author: 'CrafterCMS',
-			authorurl: 'https://craftercms.org',
-			infourl: 'https://craftercms.org',
+			authorurl: 'https://craftercms.com',
+			infourl: 'https://craftercms.com',
 			version: '1.0'
 		};
 	}

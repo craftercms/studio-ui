@@ -38,7 +38,6 @@ export const translations = defineMessages({
 		defaultMessage: 'Item saved successfully'
 	},
 	pendingChanges: {
-		id: 'codeEditor.pendingChangesConfirmation',
 		defaultMessage: 'Close without saving changes?'
 	}
 });

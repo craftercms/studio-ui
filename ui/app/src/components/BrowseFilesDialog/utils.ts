@@ -70,6 +70,8 @@ export interface BrowseFilesDialogUIProps {
 	preselectedLookup?: LookupTable<boolean>;
 	disableChangePreselected?: BrowseFilesDialogBaseProps['disableChangePreselected'];
 	disableSubmission?: boolean;
+	allSelected: boolean;
+	someSelected: boolean;
 	onCardSelected(item: MediaItem): void;
 	onPreviewImage?(item: MediaItem): void;
 	onCheckboxChecked(path: string, selected: boolean): void;
@@ -82,6 +84,7 @@ export interface BrowseFilesDialogUIProps {
 	onRefresh(): void;
 	onUpload(): void;
 	onToggleViewMode?(): void;
+	onSelectAll(): void;
 }
 
 export const initialParameters: ElasticParams = {

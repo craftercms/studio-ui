@@ -14,9 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BaseItem, DetailedItem, ItemActionsMap, ItemStateMap, LegacyItem, SandboxItem } from '../models/Item';
+import { ContentItem, ItemActionsMap, ItemStateMap, LegacyItem } from '../models/Item';
 import { getStateMapFromLegacyItem } from './state';
-import { nnou, nou, reversePluckProps } from './object';
+import { nnou, nou } from './object';
 import { ContentType, ContentTypeField } from '../models/ContentType';
 import LookupTable from '../models/LookupTable';
 import ContentInstance, { ContentInstanceBase } from '../models/ContentInstance';
@@ -148,7 +148,8 @@ export function isImage(path: string): boolean {
 	);
 }
 
-export function isItemLockedForMe(item: DetailedItem | SandboxItem | LegacyItem, username: string): boolean {
+// TODO: check why is LegacyItem accepted.
+export function isItemLockedForMe(item: ContentItem | LegacyItem, username: string): boolean {
 	return item ? isLockedState(item.state) && item.lockOwner.username !== username : true;
 }
 
@@ -156,7 +157,7 @@ export function isBlobUrl(url: string): boolean {
 	return url.startsWith('blob:');
 }
 
-export function isInActiveWorkflow(item: DetailedItem | SandboxItem): boolean {
+export function isInActiveWorkflow(item: ContentItem): boolean {
 	return item.stateMap.scheduled || item.stateMap.submitted;
 }
 
@@ -169,7 +170,7 @@ export function getComputedEditMode({
 	username,
 	editMode
 }: {
-	item: DetailedItem;
+	item: ContentItem;
 	username: string;
 	editMode: boolean;
 }): boolean {
@@ -228,7 +229,14 @@ function getLegacyItemSystemType(item: LegacyItem): SystemType {
 	}
 }
 
-export function parseLegacyItemToBaseItem(item: LegacyItem): BaseItem {
+export function parseLegacyItemToContentItem(item: LegacyItem): ContentItem;
+export function parseLegacyItemToContentItem(item: LegacyItem[]): ContentItem[];
+export function parseLegacyItemToContentItem(item: LegacyItem | LegacyItem[]): ContentItem | ContentItem[] {
+	if (Array.isArray(item)) {
+		// If no internalName then skipping (e.g. level descriptors)
+		return item.flatMap((i) => (i.internalName || i.name ? [parseLegacyItemToContentItem(i)] : []));
+	}
+
 	const stateMap = getStateMapFromLegacyItem(item);
 	const state = getStateBitmap(stateMap);
 	return {
@@ -244,25 +252,8 @@ export function parseLegacyItemToBaseItem(item: LegacyItem): BaseItem {
 		state,
 		stateMap,
 		lockOwner: null,
-		disabled: null,
 		localeCode: 'en',
 		translationSourceId: null,
-		availableActions: null,
-		availableActionsMap: null,
-		childrenCount: 0
-	};
-}
-
-export function parseLegacyItemToSandBoxItem(item: LegacyItem): SandboxItem;
-export function parseLegacyItemToSandBoxItem(item: LegacyItem[]): SandboxItem[];
-export function parseLegacyItemToSandBoxItem(item: LegacyItem | LegacyItem[]): SandboxItem | SandboxItem[] {
-	if (Array.isArray(item)) {
-		// If no internalName then skipping (e.g. level descriptors)
-		return item.flatMap((i) => (i.internalName || i.name ? [parseLegacyItemToSandBoxItem(i)] : []));
-	}
-
-	return {
-		...parseLegacyItemToBaseItem(item),
 		creator: null,
 		dateCreated: null,
 		modifier: {
@@ -272,85 +263,29 @@ export function parseLegacyItemToSandBoxItem(item: LegacyItem | LegacyItem[]): S
 			avatar: null
 		},
 		dateModified: item.lastEditDate,
-		dateSubmitted: null,
-		sizeInBytes: null,
-		expiresOn: null,
-		submitter: null
-	};
-}
-
-export function parseLegacyItemToDetailedItem(item: LegacyItem): DetailedItem;
-export function parseLegacyItemToDetailedItem(item: LegacyItem[]): DetailedItem[];
-export function parseLegacyItemToDetailedItem(item: LegacyItem | LegacyItem[]): DetailedItem | DetailedItem[] {
-	if (Array.isArray(item)) {
-		// If no internalName then skipping (e.g. level descriptors)
-		return item.flatMap((i) => (i.internalName || i.name ? [parseLegacyItemToDetailedItem(i)] : []));
-	}
-
-	return {
-		...parseLegacyItemToBaseItem(item),
-		sandbox: {
-			creator: null,
-			dateCreated: null,
-			modifier: {
+		availableActions: null,
+		availableActionsMap: null,
+		childrenCount: 0,
+		staging: {
+			dateScheduled: item.scheduledDate,
+			dateLastPublished: item.publishedDate ?? item.eventDate,
+			publisher: {
 				username: item.user,
 				firstName: null,
 				lastName: null,
 				avatar: null
-			},
-			dateModified: item.lastEditDate,
-			dateSubmitted: null,
-			sizeInBytes: null,
-			expiresOn: null,
-			submitter: null
-		},
-		staging: {
-			dateScheduled: item.scheduledDate,
-			datePublished: item.publishedDate ?? item.eventDate,
-			publisher: item.user,
-			expiresOn: null
+			}
 		},
 		live: {
 			dateScheduled: item.scheduledDate,
-			datePublished: item.publishedDate ?? item.eventDate,
-			publisher: item.user,
-			expiresOn: null
+			dateLastPublished: item.publishedDate ?? item.eventDate,
+			publisher: {
+				username: item.user,
+				firstName: null,
+				lastName: null,
+				avatar: null
+			}
 		}
-	};
-}
-
-export function parseSandBoxItemToDetailedItem(item: SandboxItem): DetailedItem;
-export function parseSandBoxItemToDetailedItem(item: SandboxItem[]): DetailedItem[];
-export function parseSandBoxItemToDetailedItem(
-	item: SandboxItem,
-	detailedItemComplement: Pick<DetailedItem, 'live' | 'staging'>
-): DetailedItem;
-export function parseSandBoxItemToDetailedItem(
-	item: SandboxItem[],
-	detailedItemComplementByPath: LookupTable<Pick<DetailedItem, 'live' | 'staging'>>
-): DetailedItem[];
-export function parseSandBoxItemToDetailedItem(
-	item: SandboxItem | SandboxItem[],
-	detailedItemComplement?: Pick<DetailedItem, 'live' | 'staging'> | LookupTable<Pick<DetailedItem, 'live' | 'staging'>>
-): DetailedItem | DetailedItem[] {
-	if (Array.isArray(item)) {
-		// including level descriptors to avoid issues on pathNavigator;
-		return item.map((i) => parseSandBoxItemToDetailedItem(i, detailedItemComplement?.[i.path]));
-	}
-	return {
-		sandbox: {
-			creator: item.creator,
-			dateCreated: item.dateCreated,
-			modifier: item.modifier,
-			dateModified: item.dateModified,
-			dateSubmitted: item.dateSubmitted,
-			sizeInBytes: item.sizeInBytes,
-			expiresOn: item.expiresOn,
-			submitter: item.submitter
-		},
-		staging: (detailedItemComplement?.staging as DetailedItem['staging']) ?? null,
-		live: (detailedItemComplement?.live as DetailedItem['live']) ?? null,
-		...(reversePluckProps(item, 'creator', 'dateCreated', 'modifier', 'dateModified', 'sizeInBytes') as BaseItem)
 	};
 }
 
@@ -566,17 +501,17 @@ export function parseElementByContentType(
 			}
 			return array;
 		}
-		case 'html':
+		case 'rte':
 			return unescapeHTML(getInnerHtml(element));
 		case 'checkbox-group': {
 			const deserialized = deserialize(element);
 			const extract = deserialized[element.tagName].item;
 			return nou(extract) ? [] : Array.isArray(extract) ? extract : [extract];
 		}
-		case 'text':
+		case 'input':
 		case 'textarea':
 			return getInnerHtml(element, { applyLegacyUnescaping: true });
-		case 'image':
+		case 'image-picker':
 		case 'date-time':
 		case 'time':
 			return getInnerHtml(element);
@@ -586,13 +521,13 @@ export function parseElementByContentType(
 			} else {
 				return getInnerHtml(element);
 			}
-		case 'boolean':
-		case 'page-nav-order':
+		case 'checkbox':
+		case 'page-nav-order': // FE2 TODO: This seems wrong, check
 			return getInnerHtml(element) === 'true';
 		case 'numeric-input':
 			return getInnerHtmlNumber(element, parseFloat);
 		default:
-			!['transcoded-video', 'transcoded-video-picker', 'taxonomy-selector'].includes(type) &&
+			!['transcoded-video', 'transcoded-video-picker', 'taxonomy-selector', 'video-picker'].includes(type) &&
 				console.log(
 					`%c[parseElementByContentType] Missing type "${type}" on switch statement for field "${field.id}".`,
 					'color: blue',
@@ -642,6 +577,7 @@ export const createModelHierarchyDescriptor: (
 
 let contentTypeMissingWarningQueue = [];
 let contentTypeMissingWarningTimeout: NodeJS.Timeout;
+
 export function createModelHierarchyDescriptorMap(
 	normalizedModels: LookupTable<ContentInstance>,
 	contentTypes: LookupTable<ContentType>
@@ -738,6 +674,7 @@ export function createModelHierarchyDescriptorMap(
 			}
 		});
 	}
+
 	// endregion
 	Object.values(normalizedModels).forEach((model) => {
 		process(model, model, getFields(model.craftercms.contentTypeId));
@@ -869,7 +806,7 @@ export function denormalizeModel(
 	return model;
 }
 
-export function getNumOfMenuOptionsForItem(item: DetailedItem): number {
+export function getNumOfMenuOptionsForItem(item: ContentItem): number {
 	if (isNavigable(item)) {
 		return isRootPath(item.path) ? 11 : 16;
 	} else if (isFolder(item)) {
@@ -989,7 +926,7 @@ export const createItemActionMap: (availableActions: number) => ItemActionsMap =
  * lookupTable {Record<string, T>} The map-like object containing all items in which to look the path up
  * @returns {T} The item if found, undefined otherwise
  **/
-export function lookupItemByPath<T = DetailedItem>(path: string, lookupTable: LookupTable<T>): T {
+export function lookupItemByPath<T = ContentItem>(path: string, lookupTable: LookupTable<T>): T {
 	return lookupTable[withIndex(path)] ?? lookupTable[withoutIndex(path)];
 }
 
@@ -1060,10 +997,7 @@ export function getEditorMode(mimeType: string): 'ftl' | 'groovy' | 'javascript'
 	}
 }
 
-export function prepareVirtualItemProps(item: SandboxItem): SandboxItem;
-export function prepareVirtualItemProps(item: DetailedItem): DetailedItem;
-export function prepareVirtualItemProps(item: SandboxItem | DetailedItem): SandboxItem | DetailedItem;
-export function prepareVirtualItemProps(item: SandboxItem | DetailedItem): SandboxItem | DetailedItem {
+export function prepareVirtualItemProps(item: ContentItem): ContentItem {
 	return {
 		...item,
 		stateMap: createItemStateMap(item.state),
@@ -1071,21 +1005,21 @@ export function prepareVirtualItemProps(item: SandboxItem | DetailedItem): Sandb
 	};
 }
 
-export function getDateScheduled(item: DetailedItem): string {
+export function getDateScheduled(item: ContentItem): string {
 	return item.live?.dateScheduled ?? item.staging?.dateScheduled ?? null;
 }
 
-export function getDatePublished(item: DetailedItem): string {
-	return item.live?.datePublished ?? item.staging?.datePublished ?? null;
+export function getDatePublished(item: ContentItem): string {
+	return item.live?.dateLastPublished ?? item.staging?.dateLastPublished ?? null;
 }
 
-export function getComputedPublishingTarget(item: DetailedItem): PublishingTargets | null {
+export function getComputedPublishingTarget(item: ContentItem): PublishingTargets | null {
 	// prettier-ignore
 	return item.stateMap.submittedToLive
-    ? 'live'
-    : item.stateMap.submittedToStaging
-      ? 'staging'
-      : null;
+		? 'live'
+		: item.stateMap.submittedToStaging
+			? 'staging'
+			: null;
 }
 
 export function applyFolderNameRules(name: string, options?: { allowBraces: boolean }): string {
@@ -1121,7 +1055,7 @@ export function applyContentNameRules(name: string): string {
 }
 
 export const openItemEditor = (
-	item: DetailedItem,
+	item: ContentItem,
 	authoringBase: string,
 	siteId: string,
 	dispatch: Dispatch<AnyAction>,

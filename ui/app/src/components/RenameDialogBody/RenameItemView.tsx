@@ -24,7 +24,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import React, { ReactNode } from 'react';
-import { DetailedItem } from '../../models';
+import { ContentItem } from '../../models';
 import { fetchRenameAssetDependants } from '../../state/actions/dialogs';
 import useEnv from '../../hooks/useEnv';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
@@ -39,7 +39,7 @@ export interface RenameItemViewProps {
 	name: string;
 	disabled: boolean;
 	newNameExists: boolean;
-	dependantItems: DetailedItem[];
+	dependantItems: ContentItem[];
 	isSubmitting: boolean;
 	confirmBrokenReferences: boolean;
 	setConfirmBrokenReferences: (value: boolean) => void;
@@ -69,7 +69,7 @@ export function RenameItemView(props: RenameItemViewProps) {
 	const siteId = useActiveSiteId();
 	const dispatch = useDispatch();
 
-	const handleEditorDisplay = (item: DetailedItem) => {
+	const handleEditorDisplay = (item: ContentItem) => {
 		openItemEditor(item, authoringBase, siteId, dispatch, fetchRenameAssetDependants());
 	};
 

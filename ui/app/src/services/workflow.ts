@@ -18,7 +18,7 @@ import { Observable } from 'rxjs';
 import { get, postJSON } from '../utils/ajax';
 import { map } from 'rxjs/operators';
 import { toQueryString } from '../utils/object';
-import { SandboxItem } from '../models/Item';
+import { ContentItem } from '../models/Item';
 import { PagedArray } from '../models/PagedArray';
 import { createItemActionMap, createItemStateMap } from '../utils/content';
 import PaginationOptions from '../models/PaginationOptions';
@@ -30,7 +30,7 @@ export function fetchItemStates(
 	path?: string,
 	states?: number,
 	options?: PaginationOptions
-): Observable<PagedArray<SandboxItem>> {
+): Observable<PagedArray<ContentItem>> {
 	const qs = toQueryString({ siteId, path, states, ...options });
 	return get(`/studio/api/2/workflow/item_states${qs}`).pipe(
 		map((response) => {

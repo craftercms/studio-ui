@@ -72,7 +72,64 @@ export interface ContentTypeField {
 	type: string;
 	sortable?: boolean;
 	validations: Partial<ContentTypeFieldValidations>;
-	properties?: LookupTable;
+	properties?: Partial<
+		{ plugin: LegacyFormDefinitionField['plugin'] } & Record<
+			// These are just some of the possibilities...
+			| 'size'
+			| 'maxlength'
+			| 'readonly'
+			| 'allowEditWithoutWarning'
+			| 'tokenize'
+			| 'escapeContent'
+			| 'minSize'
+			| 'maxSize'
+			| 'itemManager'
+			| 'disableFlattening'
+			| 'useSingleValueFilename'
+			| 'contentTypes'
+			| 'tags'
+			| 'useMVS'
+			| 'rows'
+			| 'allowResize'
+			| 'width'
+			| 'height'
+			| 'thumbnailWidth'
+			| 'thumbnailHeight'
+			| 'imageManager'
+			| 'forceRootBlockPTag'
+			| 'forcePTags'
+			| 'forceBRTags'
+			| 'supportedChannels'
+			| 'rteConfiguration'
+			| 'videoManager'
+			| 'datasource'
+			| 'selectAll'
+			| 'listDirection'
+			| 'showDate'
+			| 'showTime'
+			| 'showClear'
+			| 'showNowLink'
+			| 'populate'
+			| 'allowPastDate'
+			| 'populateDateExp'
+			| 'useCustomTimezone'
+			| 'readonlyEdit'
+			| 'cols'
+			| 'minOccurs'
+			| 'maxOccurs'
+			| 'emptyvalue'
+			| 'maxValue'
+			| 'minValue'
+			| 'autoGrow'
+			| 'fileManager'
+			| string,
+			{
+				name: string;
+				value: string | boolean | number;
+				type: string;
+			}
+		>
+	>;
 	defaultValue: any;
 	fields?: LookupTable<ContentTypeField>;
 	values?: { label: string; value: string }[];
@@ -92,9 +149,10 @@ export interface ContentTypeRepeatField extends ContentTypeField {
 
 export interface DataSource {
 	id: string;
-	name: string;
-
-	[prop: string]: any;
+	type: string;
+	title: string;
+	interface: string;
+	properties: LookupTable;
 }
 
 export type LegacyComponentType = 'component' | 'page' | 'file';
@@ -135,6 +193,12 @@ export interface LegacyFormDefinitionField {
 	type: string;
 	fields?: {
 		field: LegacyFormDefinitionField | Array<LegacyFormDefinitionField>;
+	};
+	plugin: {
+		type: string;
+		name: string;
+		filename: string;
+		pluginId: string;
 	};
 	// Repeat groups carry these both at the top and inside of "properties" (duplicated)
 	minOccurs?: string;
@@ -201,14 +265,16 @@ export interface LegacyContentType {
 }
 
 export interface ComponentsDatasource extends LegacyDataSource {
-	allowEmbedded: boolean;
-	allowShared: boolean;
-	baseBrowsePath: string;
-	baseRepositoryPath: string;
-	contentTypes: string;
-	enableBrowse: boolean;
-	enableSearch: boolean;
-	tags: string;
+	properties: LegacyDataSource['properties'] & {
+		allowEmbedded: boolean;
+		allowShared: boolean;
+		baseBrowsePath: string;
+		baseRepositoryPath: string;
+		contentTypes: string;
+		enableBrowse: boolean;
+		enableSearch: boolean;
+		tags: string;
+	};
 }
 
 export default ContentType;

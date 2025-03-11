@@ -16,7 +16,7 @@
 
 import * as React from 'react';
 import { ElementType, forwardRef } from 'react';
-import { DetailedItem, SandboxItem } from '../../models/Item';
+import { ContentItem } from '../../models/Item';
 import palette from '../../styles/palette';
 import Typography, { TypographyProps } from '@mui/material/Typography';
 import { isPreviewable } from '../PathNavigator/utils';
@@ -39,9 +39,9 @@ export interface ItemDisplayProps<LabelTypographyComponent extends React.Element
 	showNavigableAsLinks?: boolean;
 	classes?: Partial<Record<ItemDisplayClassKey, string>>;
 	sxs?: PartialSxRecord<ItemDisplayClassKey>;
-	item: DetailedItem | SandboxItem;
+	item: ContentItem;
 	labelTypographyProps?: TypographyProps<LabelTypographyComponent, { component?: LabelTypographyComponent }>;
-	isNavigableFn?: (item: DetailedItem | SandboxItem) => boolean;
+	isNavigableFn?: (item: ContentItem) => boolean;
 	labelComponent?: ElementType;
 	labelDisplayProp?: 'label' | 'path' | 'previewUrl';
 	titleDisplayProp?: 'label' | 'path' | 'previewUrl';

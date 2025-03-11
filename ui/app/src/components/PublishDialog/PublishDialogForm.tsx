@@ -28,7 +28,6 @@ import { HelpOutlineOutlined } from '@mui/icons-material';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
 import RadioGroup from '@mui/material/RadioGroup';
-import Alert from '@mui/material/Alert';
 import Radio from '@mui/material/Radio';
 import Collapse from '@mui/material/Collapse';
 import DateTimeTimezonePicker from '../DateTimeTimezonePicker';
@@ -89,8 +88,6 @@ export interface PublishDialogFormProps {
 	showRequestApproval?: boolean;
 	isRequestPublish?: boolean;
 	disabled?: boolean;
-	mixedPublishingDates?: boolean;
-	mixedPublishingTargets?: boolean;
 	isPromote?: boolean;
 	onFetchedPublishedTargets?: ({ published, targets }: { published: boolean; targets: PublishingTarget[] }) => void;
 	sxs?: PartialSxRecord<PublishDialogFormSxKeys>;
@@ -106,8 +103,6 @@ export function PublishDialogForm(props: PublishDialogFormProps) {
 		isRequestPublish,
 		disabled = false,
 		isPromote = false,
-		mixedPublishingDates = false,
-		mixedPublishingTargets = false,
 		onFetchedPublishedTargets,
 		sxs
 	} = props;
@@ -226,14 +221,6 @@ export function PublishDialogForm(props: PublishDialogFormProps) {
 					name="scheduling"
 					sx={{ paddingTop: '10px', fontSize: '14px', ...sxs?.radioGroup }}
 				>
-					{mixedPublishingDates && (
-						<Alert severity="warning" sx={{ marginBottom: '10px', ...sxs?.mixedDatesWarningMessage }}>
-							<FormattedMessage
-								id="publishForm.mixedPublishingDates"
-								defaultMessage="Items have mixed publishing date/time schedules."
-							/>
-						</Alert>
-					)}
 					<FormControlLabel
 						value="now"
 						control={
@@ -380,14 +367,6 @@ export function PublishDialogForm(props: PublishDialogFormProps) {
 							)}
 						</Typography>
 					</Box>
-				)}
-				{mixedPublishingTargets && (
-					<Alert severity="warning" sx={{ marginTop: '10px', ...sxs?.mixedTargetsWarningMessage }}>
-						<FormattedMessage
-							id="publishForm.mixedPublishingTargets"
-							defaultMessage="Items have mixed publishing targets."
-						/>
-					</Alert>
 				)}
 			</FormControl>
 		</Box>

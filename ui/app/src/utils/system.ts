@@ -19,6 +19,11 @@ import { ReplaySubject } from 'rxjs';
 import { take } from 'rxjs/operators';
 import Monaco from '../models/Monaco';
 import { ProjectToolsRoutes } from '../env/routes';
+import type { SxProps } from '@mui/system';
+import type { Theme } from '@mui/material/styles';
+import { showEditDialog } from '../state/actions/dialogs';
+import { pushDialog } from '../state/actions/dialogStack';
+import type { FormsEngineProps } from '../components/FormsEngine/FormsEngine';
 
 export type SystemLinkId =
 	| 'preview'
@@ -86,4 +91,25 @@ export function isDashboardAppUrl(pathname = window.location.pathname): boolean 
 
 export function isProjectToolsAppUrl(pathname = window.location.pathname): boolean {
 	return pathname.includes(ProjectToolsRoutes.ProjectTools);
+}
+
+export function consolidateSx(...sxs: SxProps<Theme>[]): SxProps<Theme> {
+	return sxs.flatMap((item) => item ?? []);
+}
+
+export function pickShowContentFormAction(oldProps: ReturnType<typeof showEditDialog>['payload']) {
+	const useLegacy = window.localStorage.getItem('useLegacyFormEngine') ?? false;
+	return useLegacy
+		? showEditDialog(oldProps)
+		: pushDialog({
+				component: 'craftercms.components.FormsEngineDialog',
+				props: {
+					formProps: {
+						...(oldProps.isNewContent
+							? { create: { path: oldProps.path, contentTypeId: oldProps.contentTypeId } }
+							: { update: { path: oldProps.path } }),
+						readonly: oldProps.readonly ?? false
+					} as FormsEngineProps
+				}
+			});
 }

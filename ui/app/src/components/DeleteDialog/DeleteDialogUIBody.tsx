@@ -30,18 +30,20 @@ import List from '@mui/material/List';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import InfoIcon from '@mui/icons-material/InfoOutlined';
+import TextField from '@mui/material/TextField';
 
 export function DeleteDialogUIBody(props: DeleteDialogContentUIProps) {
 	const {
 		items,
 		childItems,
 		dependentItems,
+		title,
 		comment,
 		selectedItems,
 		isCommentRequired = false,
 		isDisabled,
 		isConfirmDeleteChecked,
-		onCommentChange,
+		onInputChange,
 		onItemClicked,
 		onSelectAllClicked,
 		onConfirmDeleteChange,
@@ -78,7 +80,7 @@ export function DeleteDialogUIBody(props: DeleteDialogContentUIProps) {
 					</ListItem>
 					{dependentItems.length ? (
 						<List>
-							{dependentItems.map((path) => {
+							{dependentItems.map(({ path }) => {
 								return (
 									<ListItem
 										dense
@@ -134,18 +136,27 @@ export function DeleteDialogUIBody(props: DeleteDialogContentUIProps) {
 						title={<FormattedMessage id="deleteDialog.childItemsText" defaultMessage="Child Items" />}
 						subtitle={<FormattedMessage id="deleteDialog.willGetDeleted" defaultMessage="Will get deleted" />}
 						emptyMessage={<FormattedMessage id="deleteDialog.emptyChildItems" defaultMessage="No child items" />}
-						paths={childItems}
+						paths={childItems.map(({ path }) => path)}
 						displayItemTitle={false}
 					/>
 				</Box>
 			</Grid>
 			<Grid size={{ xs: 12, sm: 5 }}>
 				<form noValidate autoComplete="off">
+					<TextField
+						label={<FormattedMessage defaultMessage="Title" />}
+						autoFocus
+						fullWidth
+						sx={{ mb: 2 }}
+						value={title}
+						onChange={(e) => onInputChange(e, 'title')}
+						required
+					/>
 					<TextFieldWithMax
 						label={<FormattedMessage id="deleteDialog.submissionCommentLabel" defaultMessage="Submission Comment" />}
 						multiline
 						value={comment}
-						onChange={onCommentChange}
+						onChange={(e) => onInputChange(e, 'comment')}
 						required={isCommentRequired}
 						disabled={isDisabled}
 						sx={{ width: '100%' }}

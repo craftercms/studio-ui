@@ -29,7 +29,7 @@ import * as React from 'react';
 import { useMemo } from 'react';
 import { getItemStateId, getItemStateText } from '../ItemDisplay/utils';
 import palette from '../../styles/palette';
-import { DetailedItem, ItemStates, SandboxItem } from '../../models/Item';
+import { ContentItem, ItemStates } from '../../models/Item';
 import { SvgIconProps } from '@mui/material/SvgIcon';
 import { PartialSxRecord } from '../../models';
 
@@ -49,7 +49,7 @@ export type ItemStateIconClassKey =
 	| 'stateNotInWorkflow';
 
 export interface ItemStateIconProps {
-	item: DetailedItem | SandboxItem;
+	item: Pick<ContentItem, 'systemType' | 'stateMap' | 'lockOwner'>;
 	classes?: Partial<Record<ItemStateIconClassKey, string>>;
 	sxs?: PartialSxRecord<ItemStateIconClassKey>;
 	className?: string;

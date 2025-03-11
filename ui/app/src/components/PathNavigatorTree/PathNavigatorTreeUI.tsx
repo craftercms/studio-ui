@@ -21,7 +21,7 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import { StateStylingProps } from '../../models/UiConfig';
 import PathNavigatorTreeItem, { PathNavigatorTreeItemProps } from './PathNavigatorTreeItem';
 import LookupTable from '../../models/LookupTable';
-import { DetailedItem } from '../../models/Item';
+import { ContentItem } from '../../models/Item';
 import { SystemIconDescriptor } from '../SystemIcon';
 import RefreshRounded from '@mui/icons-material/RefreshRounded';
 import { FormattedMessage } from 'react-intl';
@@ -48,7 +48,7 @@ export interface PathNavigatorTreeUIProps
 	container?: Partial<StateStylingProps>;
 	rootPath: string;
 	isRootPathMissing: boolean;
-	itemsByPath: LookupTable<DetailedItem>;
+	itemsByPath: LookupTable<ContentItem>;
 	onIconClick(path: string): void;
 	onLabelClick(event: React.MouseEvent<Element, MouseEvent>, path: string): void;
 	onChangeCollapsed(collapsed: boolean): void;

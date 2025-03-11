@@ -24,7 +24,7 @@ import Paper from '@mui/material/Paper';
 import ItemDisplay from '../ItemDisplay';
 import PagesSearchAhead from '../PagesSearchAhead';
 import SingleItemSelector from '../SingleItemSelector';
-import { DetailedItem } from '../../models/Item';
+import { ContentItem } from '../../models/Item';
 import MoreRounded from '@mui/icons-material/MoreVertRounded';
 import Popover, { getOffsetLeft, getOffsetTop } from '@mui/material/Popover';
 import { withIndex, withoutIndex } from '../../utils/path';
@@ -48,7 +48,7 @@ import { Subscription } from 'rxjs';
 export interface AddressBarProps {
 	site: string;
 	url: string;
-	item?: DetailedItem;
+	item?: ContentItem;
 }
 
 export function PreviewAddressBar(props: AddressBarProps) {

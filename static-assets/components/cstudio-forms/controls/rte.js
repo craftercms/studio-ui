@@ -325,12 +325,7 @@ CStudioAuthoring.Module.requireModule(
 						editorContainerPL = parseFloat($editorContainer.css('padding-left').replace('px', ''));
 
 					const imageDatasources = this.imageManagerName ? this.imageManagerName.split(',') : [];
-					const imageUploadDatasources = [
-						'img-CMIS-upload',
-						'img-desktop-upload',
-						'img-S3-upload',
-						'img-WebDAV-upload'
-					];
+					const imageUploadDatasources = ['img-desktop-upload', 'img-S3-upload', 'img-WebDAV-upload'];
 					this.editorImageDatasources = this.form.definition.datasources.filter(
 						(datasource) =>
 							datasource.interface === 'image' &&

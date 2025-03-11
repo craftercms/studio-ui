@@ -533,17 +533,17 @@ export const dragAndDropMessages = defineMessages({
 	contentTypeNotFound: {
 		id: 'dragAndDropMessages.contentTypeNotFound',
 		defaultMessage:
-			'The content type id was not found in your template. Drag and drop will be impaired. More info at docs.craftercms.org/en/3.1/system-administrators/upgrade/index.html.'
+			'The content type id was not found in your template. Drag and drop will be impaired. More info at https://craftercms.com/docs/current/by-role/developer/upgrade/upgrading-in-context-editing.html.'
 	},
 	pathNotFound: {
 		id: 'dragAndDropMessages.pathNotFound',
 		defaultMessage:
-			'Path is missing. Drag and drop will be impaired. More info at docs.craftercms.org/en/3.1/system-administrators/upgrade/index.html.'
+			'Path is missing. Drag and drop will be impaired. More info at https://craftercms.com/docs/current/by-role/developer/upgrade/upgrading-in-context-editing.html.'
 	},
 	objectIdNotFound: {
 		id: 'dragAndDropMessages.objectIdNotFound',
 		defaultMessage:
-			'Object id is missing. Drag and drop will be impaired. More info at docs.craftercms.org/en/3.1/system-administrators/upgrade/index.html.'
+			'Object id is missing. Drag and drop will be impaired. More info at https://craftercms.com/docs/current/by-role/developer/upgrade/upgrading-in-context-editing.html.'
 	}
 });
 

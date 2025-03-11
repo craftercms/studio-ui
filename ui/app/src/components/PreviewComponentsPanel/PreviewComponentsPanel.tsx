@@ -55,7 +55,7 @@ import { nou } from '../../utils/object';
 import Tooltip from '@mui/material/Tooltip';
 import Skeleton from '@mui/material/Skeleton';
 import { ItemTypeIcon } from '../ItemTypeIcon';
-import { SandboxItem } from '../../models';
+import { ContentItem } from '../../models';
 import Avatar from '@mui/material/Avatar';
 import { getAvatarWithIconColors } from '../../utils/contentType';
 import { darken, useTheme } from '@mui/material/styles';
@@ -419,7 +419,7 @@ export function PreviewComponentsPanel() {
 						<Avatar component="div" sx={{ backgroundColor: menuContext?.backgroundColor, ml: 1 }}>
 							<ItemTypeIcon
 								fontSize="medium"
-								item={{ systemType: menuContext?.contentType.type ?? '', mimeType: '' } as SandboxItem}
+								item={{ systemType: menuContext?.contentType.type ?? '', mimeType: '' } as ContentItem}
 								sx={{ color: menuContext?.textColor }}
 							/>
 						</Avatar>

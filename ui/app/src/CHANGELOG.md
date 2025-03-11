@@ -2,6 +2,8 @@
 
 ## 5.0.0
 * [utils/resource] Removed `createFakeResource`, `createResource` and `createResourceBundle` utils.
+* [utils/content]:
+  * Removed `parseLegacyItemToBaseItem`, `parseLegacyItemToSandBoxItem` and `parseLegacyItemToDetailedItem`. Replaced by `parseLegacyItemToContentItem`.
 * [components]
   * Removed `pages/QuickCreateMenu` component.
   * Removed `SuspenseWithEmptyState` and `WithEmptyState` components.
@@ -26,12 +28,16 @@
   * `PackageDetailsDialog`: Update packageId prop to be of type number.
   * Removed `WorkflowCancellationDialog`. Replaced by `ViewPackagesDialog`.
   * Removed `UnlockPublisherDialog` component.
+  * `PackageItems`: Component no longer shows the publishing target icon for items.
 * [hooks]
   * Removed `useLogicResource` hook.
   * Removed `useSelectorResource` hook.
   * Removed `useQuickCreateListResource` hook.
   * Removed `useSystemVersionResource` hook.
   * Removed `useResolveWhenNoNullResource` hook.
+  * Renamed `useDetailedItem` to `useContentItem`.
+  * Removed `useDetailedItems` hook. Use `useFetchContentItems` instead.
+  * Renamed `useFetchSandboxItems` to `useFetchContentItems`.
 * Upgrade to the latest version to date of the following libraries:
   * @mui/icons-material
   * @mui/lab
@@ -59,8 +65,26 @@
   * `state` is now `approvalState`.
   * Added `title`, `submittedOn`, `reviewedOn`,`packageState`, `reviewer`, `liveError`, `stagingError`, `publishedOn`, `packageType`, `commitId`, `publishedStagingCommitId` and `publishedLiveCommitId` props.
 * `PublishFormData` interface change: Added `title` prop.
+* ExpiredItem interface change: changed `sandboxItem` prop to `contentItem`.
+* Removed `SandboxItem` and `DetailedItem` interfaces, replaced by `ContentItem`.
+* `DeleteDialogBaseProps` and `FetchDeleteDependenciesResponse` interfaces: Update `childItems` and `dependentItems` to be of type `LightItem[]`.
+* `CalculatedPackageResponse` interface: Update `hardDependencies`, `softDependencies` and `items` to be of type `LightItem[]`.
 * `approvePublish` anb `rejectPublish` are no longer item actions in BaseItem's `availableActionsMap` property.
 * [SiteDashboard/utils] Renamed `getValidatedSelectionState` to `getItemsValidatedSelectionState`.
+* [state]
+  * `actions/content`:
+    * Renamed `fetchDetailedItem` action to `fetchContentItem`. Action string changed from `FETCH_DETAILED_ITEM` to `FETCH_CONTENT_ITEM`.
+    * Renamed `reloadDetailedItem` action to `reloadContentItem`. Action string changed from `RELOAD_DETAILED_ITEM` to `RELOAD_CONTENT_ITEM`.
+    * Renamed `fetchDetailedItemComplete` action to `fetchContentItemComplete`. Action string changed from `FETCH_DETAILED_ITEM_COMPLETE` to `FETCH_CONTENT_ITEM_COMPLETE`.
+    * Renamed `fetchSandboxItems` to `fetchContentItems`. Action string changed from `FETCH_SANDBOX_ITEMS` to `FETCH_CONTENT_ITEMS`.
+    * Renamed `fetchSandboxItemsComplete` to `fetchContentItemsComplete`. Action string changed from `FETCH_SANDBOX_ITEMS_COMPLETE` to `FETCH_CONTENT_ITEMS_COMPLETE`.
+    * Removed `fetchSandboxItem` action. Replaced by `fetchContentItem`.
+    * Removed `fetchContentItemComplete` action. Replaced by `fetchContentItemComplete`.
+    * Removed `fetchDetailedItems` action. Replaced by `fetchContentItems`.
+    * Removed `fetchDetailedItemsComplete` action. Replaced by `fetchContentItemsComplete`.
+    * Removed `completeDetailedItem` action.
+* [common-api.js]
+  * Removed `CStudioAuthoring.Operations.uploadCMISAsset` and `CStudioAuthoring.Operations.openCMISUploadDialog`.
 * Removed LegacyVersionDialog and the entire associated `/studio/diff` route
 
 ## 4.2.0

@@ -17,7 +17,7 @@
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { setPreviewEditMode } from '../../state/actions/preview';
-import { DetailedItem } from '../../models/Item';
+import { ContentItem } from '../../models/Item';
 import { usePreviewState } from '../../hooks/usePreviewState';
 import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
@@ -29,7 +29,7 @@ import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import DragIndicatorRoundedIcon from '@mui/icons-material/DragIndicatorRounded';
 
 export interface EditModesSwitcherProps {
-	item: DetailedItem;
+	item: ContentItem;
 	disabled?: boolean;
 }
 
