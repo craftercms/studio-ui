@@ -172,7 +172,7 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
 			if (itemsByPath[path]) {
 				setLoadingActionsBar(true);
 				fetchItemByPath(siteId, path).subscribe((item) => {
-					dispatch(fetchContentItemComplete(item));
+					dispatch(fetchContentItemComplete({ item }));
 					setLoadingActionsBar(false);
 				});
 			}

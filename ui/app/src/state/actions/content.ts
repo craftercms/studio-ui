@@ -34,7 +34,9 @@ export const fetchContentItem = /*#__PURE__*/ createAction<{ path: string }>('FE
 
 export const reloadContentItem = /*#__PURE__*/ createAction<{ path: string }>('RELOAD_CONTENT_ITEM');
 
-export const fetchContentItemComplete = /*#__PURE__*/ createAction<ContentItem>('FETCH_CONTENT_ITEM_COMPLETE');
+export const fetchContentItemComplete = /*#__PURE__*/ createAction<{ item: ContentItem }>(
+	'FETCH_CONTENT_ITEM_COMPLETE'
+);
 
 export const fetchContentItemFailed = /*#__PURE__*/ createAction<AjaxError>('FETCH_CONTENT_ITEM_FAILED');
 

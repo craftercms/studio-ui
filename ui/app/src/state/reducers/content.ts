@@ -158,7 +158,7 @@ const reducer = createReducer<ContentState>(initialState, (builder) => {
 				delete state.itemsBeingFetchedByPath[path];
 			});
 		})
-		.addCase(fetchContentItemComplete, (state, { payload: item }) => {
+		.addCase(fetchContentItemComplete, (state, { payload: { item } }) => {
 			const path = item.path;
 			state.itemsByPath[path] = item;
 			state.itemsBeingFetchedByPath[path] = false;

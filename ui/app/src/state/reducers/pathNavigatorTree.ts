@@ -298,7 +298,7 @@ const reducer = createReducer<GlobalState['pathNavigatorTree']>({}, (builder) =>
 		.addCase(changeSiteComplete, () => ({}))
 		.addCase(fetchSiteUiConfig, () => ({}))
 		// region fetchContentItemComplete
-		.addCase(fetchContentItemComplete, (state, { payload: item }) => {
+		.addCase(fetchContentItemComplete, (state, { payload: { item } }) => {
 			const path = item.path;
 			Object.values(state).forEach((tree) => {
 				if (path in tree.totalByPath) {

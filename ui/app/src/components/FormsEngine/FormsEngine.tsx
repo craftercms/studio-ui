@@ -457,7 +457,7 @@ function FormBootstrap(props: FormsEngineProps) {
 					if (typeof requirements === 'symbol') {
 						return setPrepError(requirements);
 					}
-					dispatch(fetchContentItemComplete(requirements.item));
+					dispatch(fetchContentItemComplete({ item: requirements.item }));
 					const lockResultAtom = atom<FormsEngineEditContextProps>({
 						locked: requirements.locked,
 						lockError: requirements.lockError,

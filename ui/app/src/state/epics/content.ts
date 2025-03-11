@@ -187,7 +187,7 @@ const content: CrafterCMSEpic[] = [
 			),
 			mergeMap(([{ payload }, state]) =>
 				fetchContentItemService(state.sites.active, payload.path).pipe(
-					map(fetchContentItemComplete),
+					map((item) => fetchContentItemComplete({ item })),
 					catchAjaxError(fetchContentItemFailed)
 				)
 			)
@@ -200,7 +200,7 @@ const content: CrafterCMSEpic[] = [
 			withLatestFrom(state$),
 			mergeMap(([{ payload }, state]) =>
 				fetchContentItemService(state.sites.active, payload.path).pipe(
-					map((item) => (item ? fetchContentItemComplete(item) : contentItemsMissing({ paths: [payload.path] }))),
+					map((item) => (item ? fetchContentItemComplete({ item }) : contentItemsMissing({ paths: [payload.path] }))),
 					catchAjaxError(fetchContentItemFailed)
 				)
 			)
@@ -559,9 +559,9 @@ const content: CrafterCMSEpic[] = [
 			switchMap(([{ payload }, state]) =>
 				fetchContentItemService(state.sites.active, payload.targetPath).pipe(
 					tap((item) => {
-						getHostToGuestBus().next(fetchContentItemComplete(item));
+						getHostToGuestBus().next(fetchContentItemComplete({ item }));
 					}),
-					map((item) => fetchContentItemComplete(item)),
+					map((item) => fetchContentItemComplete({ item })),
 					catchAjaxError(fetchContentItemFailed)
 				)
 			)
