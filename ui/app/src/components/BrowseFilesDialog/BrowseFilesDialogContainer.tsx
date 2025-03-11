@@ -71,6 +71,10 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
   const [total, setTotal] = useState<number>();
   const [selectedLookup, setSelectedLookup] = useSpreadState<LookupTable<MediaItem>>({});
   const selectedArray = Object.keys(selectedLookup).filter((key) => selectedLookup[key]);
+  const selectedInCurrentPage = items?.filter((item) => selectedArray.includes(item.path));
+  const allSelectedInCurrentPage = items?.length > 0 && selectedInCurrentPage.length === items.length;
+  const someSelectedInCurrentPage =
+    (items?.length > 0 && selectedInCurrentPage.length > 0 && selectedInCurrentPage.length < items?.length) ?? false;
   const browsePath = path.replace(/\/+$/, '');
   const [currentPath, setCurrentPath] = useState(browsePath);
   const [fetchingBrowsePathExists, setFetchingBrowsePathExists] = useState(false);
@@ -121,6 +125,16 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
       setSelectedLookup({ [item.path]: selectedLookup[item.path] ? null : item });
     } else {
       setSelectedCard(selectedCard?.path === item.path ? null : item);
+    }
+  };
+
+  const onSelectAll = () => {
+    if (multiSelect) {
+      const newSelectedLookup = { ...selectedLookup };
+      items.forEach((item) => {
+        newSelectedLookup[item.path] = allSelectedInCurrentPage ? null : item;
+      });
+      setSelectedLookup(newSelectedLookup);
     }
   };
 
@@ -227,6 +241,9 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
       onRefresh={onRefresh}
       onUpload={onUpload}
       allowUpload={allowUpload}
+      onSelectAll={onSelectAll}
+      allSelected={allSelectedInCurrentPage}
+      someSelected={someSelectedInCurrentPage}
     />
   ) : (
     <EmptyState
