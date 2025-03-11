@@ -50,6 +50,7 @@ import ListViewIcon from '@mui/icons-material/ViewStreamRounded';
 import GridViewIcon from '@mui/icons-material/GridOnRounded';
 import ReorderRoundedIcon from '@mui/icons-material/ReorderRounded';
 import { SORT_AUTO } from '../Search/utils';
+import Checkbox from '@mui/material/Checkbox';
 
 export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
 	// region const { ... } = props;
@@ -85,7 +86,10 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
 		onToggleViewMode,
 		preselectedLookup = {},
 		disableChangePreselected = true,
-		disableSubmission
+		disableSubmission,
+		allSelected,
+		someSelected,
+		onSelectAll
 	} = props;
 	// endregion
 	const { formatMessage } = useIntl();
@@ -120,6 +124,14 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
 						>
 							<Toolbar disableGutters variant="dense">
 								<Box sx={{ flexGrow: 1, display: 'flex' }}>
+									{multiSelect && (
+										<>
+											<Tooltip title={<FormattedMessage defaultMessage="Select All on this page" />}>
+												<Checkbox checked={allSelected} indeterminate={someSelected} onChange={onSelectAll} />
+											</Tooltip>
+											<Divider orientation="vertical" flexItem sx={{ marginTop: '-3px', marginBottom: '-3px' }} />
+										</>
+									)}
 									<Tooltip title={<FormattedMessage id="word.refresh" defaultMessage="Refresh" />}>
 										<IconButton onClick={onRefresh}>
 											<RefreshIcon />
