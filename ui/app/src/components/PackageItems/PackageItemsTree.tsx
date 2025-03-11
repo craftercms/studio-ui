@@ -68,7 +68,7 @@ export function PackageItemsTree(props: PackageItemsTreeProps) {
 		>
 			{trees.map((node) =>
 				renderTreeNode({
-					// TODO: update pending publishing stuff ticket
+					// TODO: Review casting requirement of ItemDisplay when using LightItem
 					itemMap: itemMap as unknown as LookupTable<ContentItem>,
 					node,
 					dependencyTypeMap: {},

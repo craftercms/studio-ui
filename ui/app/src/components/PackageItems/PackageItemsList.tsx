@@ -84,7 +84,7 @@ export function PackageItemsList(props: PackageItemsListProps) {
 												<ListItemText
 													primary={
 														<ItemDisplay
-															// TODO: update pending publishing stuff ticket
+															// TODO: Review casting requirement of ItemDisplay when using LightItem
 															item={item as unknown as ContentItem}
 															titleDisplayProp="path"
 															showWorkflowState={false}
