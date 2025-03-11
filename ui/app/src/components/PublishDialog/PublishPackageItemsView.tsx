@@ -218,6 +218,7 @@ export function PublishPackageItemsView(props: PublishItemsProps) {
 													primary={
 														<Box display="flex">
 															<ItemDisplay
+																// TODO: update pending publishing stuff ticket
 																// @ts-expect-error items from itemMap (LightItems) do not contain lockOwner and stateMap
 																// props, but with showWorkflowState and showPublishingTarget set to false, a LightItem
 																// is sufficient.

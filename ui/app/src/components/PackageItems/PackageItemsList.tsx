@@ -84,6 +84,7 @@ export function PackageItemsList(props: PackageItemsListProps) {
 												<ListItemText
 													primary={
 														<ItemDisplay
+															// TODO: update pending publishing stuff ticket
 															item={item as unknown as ContentItem}
 															titleDisplayProp="path"
 															showWorkflowState={false}

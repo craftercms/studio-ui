@@ -68,6 +68,7 @@ export function PackageItemsTree(props: PackageItemsTreeProps) {
 		>
 			{trees.map((node) =>
 				renderTreeNode({
+					// TODO: update pending publishing stuff ticket
 					itemMap: itemMap as unknown as LookupTable<ContentItem>,
 					node,
 					dependencyTypeMap: {},
