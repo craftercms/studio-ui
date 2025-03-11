@@ -52,19 +52,24 @@ export interface ViewComponentProps extends Pick<ViewComponentBaseProps, 'xml' |
 	editorProps?: EditorProps;
 }
 
+// TODO: double check this map with FE2 updates.
 export const typesViewMap = {
 	'file-name': FileNameView,
 	text: TextView,
 	textarea: TextView,
 	html: TextView,
+	rte: TextView,
+	input: TextView,
 	'node-selector': NodeSelector,
 	'checkbox-group': CheckboxGroupView,
 	repeat: RepeatGroupView,
 	image: ImageView,
+	'image-picker': ImageView,
 	'video-picker': VideoView,
 	time: TimeView,
 	'date-time': DateTimeView,
 	boolean: BooleanView,
+	checkbox: BooleanView,
 	'page-nav-order': BooleanView,
 	'numeric-input': NumberView,
 	dropdown: TextView

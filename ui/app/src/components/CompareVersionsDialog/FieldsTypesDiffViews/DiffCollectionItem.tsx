@@ -126,8 +126,8 @@ export function DiffCollectionItem(props: DiffCollectionItemProps) {
 					width: '100%',
 					py: 1,
 					px: 1.25,
-					marginLeft: !isSelectionMode && 0,
-					cursor: disableHighlight && 'default'
+					marginLeft: 0,
+					...(disableHighlight && { cursor: 'default' })
 				}}
 			/>
 			{!hideState && state === 'changed' && (

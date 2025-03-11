@@ -310,8 +310,10 @@ export const systemPropsList = [
 
 export const systemPropMap = {
 	fileName: 'fileName',
+	'file-name': 'fileName',
 	placeInNav: 'placeInNav',
 	internalName: 'label',
+	'internal-name': 'label',
 	'content-type': 'contentTypeId',
 	createdDate: 'dateCreated',
 	createdDate_dt: 'dateCreated',

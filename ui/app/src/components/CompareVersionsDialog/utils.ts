@@ -133,19 +133,24 @@ export const getContentInstanceXmlItemFromIndex = (xml: string, index: number): 
 	return doc ? serialize(doc) : '';
 };
 
+// TODO: double check this map with FE2 updates.
 export const typesDiffMap: Record<string, ElementType> = {
 	'file-name': FileNameDiffView,
 	text: TextDiffView,
 	textarea: TextDiffView,
 	html: TextDiffView,
+	rte: TextDiffView,
+	input: TextDiffView,
 	'node-selector': ContentInstanceComponents,
 	'checkbox-group': CheckboxGroupDiffView,
 	repeat: RepeatGroupItems,
 	image: ImageDiffView,
+	'image-picker': ImageDiffView,
 	'video-picker': VideoDiffView,
 	time: TimeDiffView,
 	'date-time': DateTimeDiffView,
 	boolean: BooleanDiffView,
+	checkbox: BooleanDiffView,
 	'page-nav-order': BooleanDiffView,
 	'numeric-input': NumberDiffView,
 	dropdown: TextDiffView
