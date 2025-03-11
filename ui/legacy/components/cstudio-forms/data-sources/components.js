@@ -267,7 +267,7 @@
 
 		_editShared(key, control, datasource, index, callback) {
 			craftercms.getStore().dispatch({ type: 'BLOCK_UI' });
-			craftercms.services.content.fetchSandboxItem(CStudioAuthoringContext.site, key).subscribe({
+			craftercms.services.content.fetchContentItem(CStudioAuthoringContext.site, key).subscribe({
 				next(sandboxItem) {
 					const readonly = !sandboxItem.availableActionsMap.edit;
 					const action =

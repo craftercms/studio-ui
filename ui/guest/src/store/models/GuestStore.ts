@@ -63,7 +63,7 @@ export interface GuestState {
 	uploading: LookupTable;
 	// TODO: Move items and instances to state and out of content controller.
 	// models: LookupTable<ContentInstance>;
-	// itemsByPath: LookupTable<SandboxItem>;
+	// itemsByPath: LookupTable<ContentItem>;
 	lockedPaths: LookupTable<{ user: Person }>;
 	externallyModifiedPaths: LookupTable<{ user: Person }>;
 	contentTypes: LookupTable<ContentType>;

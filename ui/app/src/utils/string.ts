@@ -15,6 +15,7 @@
  */
 
 import Person from '../models/Person';
+import { alpha } from '@mui/material/styles';
 
 /**
  * Converts a string separated by dashes into a
@@ -209,15 +210,18 @@ export function stripCData(str: string): string {
 	return str.replace(/<!\[CDATA\[|\]\]>/gi, '');
 }
 
-export function toColor(str: string) {
-	var hash = 0;
+export function toColor(str: string, alphaValue?: number) {
+	let hash = 0;
 	for (let i = 0; i < str.length; i++) {
 		hash = str.charCodeAt(i) + ((hash << 5) - hash);
 	}
-	var color = '#';
-	for (let j = 0; j < 3; j++) {
-		var value = (hash >> (j * 8)) & 0xff;
+	let color = '#';
+	for (let value: number, j = 0; j < 3; j++) {
+		value = (hash >> (j * 8)) & 0xff;
 		color += ('00' + value.toString(16)).substr(-2);
+	}
+	if (alphaValue) {
+		color = alpha(color, alphaValue);
 	}
 	return color;
 }

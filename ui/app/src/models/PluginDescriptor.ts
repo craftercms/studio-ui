@@ -28,6 +28,7 @@ export interface PluginDescriptor {
 	widgets?: Record<string, WidgetRecord>;
 	scripts?: Array<string | object>;
 	stylesheets?: Array<string | object>;
+	utils?: Record<string, unknown>;
 	// themes: Array<{ id: string; name: string; themeOptions: ThemeOptions[] }>;
 }
 

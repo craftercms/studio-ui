@@ -16,7 +16,7 @@
 
 import { TreeItem, treeItemClasses } from '@mui/x-tree-view/TreeItem';
 import React, { useState } from 'react';
-import { DetailedItem } from '../../models/Item';
+import { ContentItem } from '../../models/Item';
 import LookupTable from '../../models/LookupTable';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Typography } from '@mui/material';
@@ -41,7 +41,7 @@ import Box from '@mui/material/Box';
 export interface PathNavigatorTreeItemProps
 	extends Pick<PathNavigatorTreeStateProps, 'keywordByPath' | 'totalByPath' | 'childrenByParentPath' | 'errorByPath'> {
 	path: string;
-	itemsByPath: LookupTable<DetailedItem>;
+	itemsByPath: LookupTable<ContentItem>;
 	active?: Record<string, boolean>;
 	classes?: Partial<Record<PathNavigatorTreeBreadcrumbsClassKey, string>>;
 	sxs?: PartialSxRecord<PathNavigatorTreeBreadcrumbsClassKey>;

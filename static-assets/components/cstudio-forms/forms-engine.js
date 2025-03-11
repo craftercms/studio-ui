@@ -1053,9 +1053,11 @@ const initializeCStudioForms = () => {
 
 					const getInitialConfiguration = () => {
 						Promise.all([
+							// Load form-definition.xml
 							new Promise((resolve) => {
 								CStudioForms.Util.loadFormDefinition(formId, { success: resolve });
 							}),
+							// Load config.xml
 							new Promise((resolve) => {
 								CStudioForms.Util.LoadFormConfig(formId, {
 									success: (ctrlCls, formConfig) =>
@@ -1065,16 +1067,19 @@ const initializeCStudioForms = () => {
 										})
 								});
 							}),
+							// Load the model's SandboxItem
 							new Promise((resolve) => {
 								path.includes('.xml')
 									? CrafterCMSNext.services.content
-											.fetchSandboxItem(CStudioAuthoringContext.site, decodeURI(path))
+											.fetchContentItem(CStudioAuthoringContext.site, decodeURI(path))
 											.subscribe((item) => resolve({ item }))
 									: resolve(null);
 							}),
+							// Load the (legacy) content type
 							new Promise((resolve) => {
 								CStudioAuthoring.Service.lookupContentType(CStudioAuthoringContext.site, formId, { success: resolve });
 							}),
+							// Load the content xml
 							new Promise((resolve) => {
 								if (isEdit) {
 									if (isInclude) {
@@ -2602,9 +2607,8 @@ const initializeCStudioForms = () => {
 					YAHOO.util.Dom.addClass(fieldContainerEl, 'cstudio-form-field-container');
 					sectionEl.appendChild(fieldContainerEl);
 
-					// initialize each control
 					var cb = {
-						moduleLoaded: function (moduleName, moduleClass, moduleConfig) {
+						moduleLoaded(moduleName, moduleClass, moduleConfig) {
 							try {
 								var fieldId = moduleConfig.config.field.id;
 								if (repeatField) {
@@ -2703,18 +2707,26 @@ const initializeCStudioForms = () => {
 						lastTwo: lastTwo
 					};
 
-					CStudioAuthoring.Module.requireModule(
-						pluginInfo.prefix,
-						pluginInfo.path,
-						{
-							config: {
-								field: field,
-								repeatField: repeatField,
-								repeatIndex: repeatIndex
-							}
-						},
-						cb
-					);
+					const moduleConfig = {
+						config: {
+							field: field,
+							repeatField: repeatField,
+							repeatIndex: repeatIndex
+						}
+					};
+
+					if (pluginInfo.isPlugin) {
+						import(`/studio${pluginInfo.path}`)
+							.then(() => {
+								const moduleName = pluginInfo.prefix;
+								cb.moduleLoaded.call(cb, moduleName, CStudioAuthoring.Module.loadedModules[moduleName], moduleConfig);
+							})
+							.catch((error) => {
+								console.error(error);
+							});
+					} else {
+						CStudioAuthoring.Module.requireModule(pluginInfo.prefix, pluginInfo.path, moduleConfig, cb);
+					}
 
 					if (pluginInfo.missingProp.length > 0) {
 						pluginError.control.push(pluginInfo.missingProp);

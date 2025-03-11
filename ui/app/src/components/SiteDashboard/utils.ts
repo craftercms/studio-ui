@@ -15,10 +15,9 @@
  */
 
 import { PREVIEW_URL_PATH, UNDEFINED } from '../../utils/constants';
-import Person from '../../models/Person';
 import { Dispatch, SetStateAction, useMemo } from 'react';
 import useSpreadState from '../../hooks/useSpreadState';
-import { DetailedItem, PagedArray, PublishPackage } from '../../models';
+import { ContentItem, PagedArray, PublishPackage } from '../../models';
 import { AnyAction } from '@reduxjs/toolkit';
 import { changeCurrentUrl } from '../../state/actions/preview';
 import { getSystemLink } from '../../utils/system';
@@ -37,10 +36,6 @@ export interface CommonDashletProps {
 
 export function parseDashletContentHeight(contentHeight: string | number): number {
 	return contentHeight ? parseInt(`${contentHeight}`.replace('px', '')) : UNDEFINED;
-}
-
-export function getPersonFullName(person: Person): string {
-	return `${person.firstName} ${person.lastName}`;
 }
 
 export interface WithSelectedStateItem {
@@ -120,7 +115,7 @@ export function isPage(systemType) {
 export function previewPage(
 	site,
 	authoringBase,
-	item: DetailedItem,
+	item: ContentItem,
 	dispatch: Dispatch<AnyAction>,
 	onWidgetModeAction?: Function
 ) {
@@ -141,7 +136,7 @@ export function previewPage(
 }
 
 export function useSelectionOptions(
-	items: DetailedItem[],
+	items: ContentItem[],
 	formatMessage: IntlShape['formatMessage'],
 	selectedCount: number
 ): ActionsBarAction[] {

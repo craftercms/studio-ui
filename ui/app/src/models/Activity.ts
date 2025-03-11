@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SandboxItem } from './Item';
+import { ContentItem } from './Item';
 
 // Omitting UNKNOWN, APPROVE & APPROVE_SCHEDULED for now.
 export type Activities =
@@ -44,7 +44,7 @@ export interface Activity {
 	};
 	actionType: Activities;
 	actionTimestamp: string;
-	item: Pick<SandboxItem, 'path' | 'label' | 'previewUrl' | 'systemType'>;
+	item: Pick<ContentItem, 'path' | 'label' | 'previewUrl' | 'systemType'>;
 	package: any; // TODO: Type package
 }
 

@@ -20,7 +20,7 @@ import FolderMoveAlert from './FolderMoveAlert';
 import { batchActions } from '../../state/actions/misc';
 import { setClipboard } from '../../state/actions/content';
 import { emitSystemEvent, itemCut, showCutItemSuccessNotification } from '../../state/actions/system';
-import { SandboxItem } from '../../models';
+import { ContentItem } from '../../models';
 import { FormattedMessage } from 'react-intl';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
@@ -32,11 +32,11 @@ import { closeFolderMoveAlertDialog } from '../../state/actions/dialogs';
 import Tooltip from '@mui/material/Tooltip';
 
 export interface FolderMoveAlertDialogProps extends EnhancedDialogProps {
-	item: SandboxItem;
+	item: ContentItem;
 }
 
 export interface FolderMoveAlertDialogStateProps extends EnhancedDialogState {
-	item: SandboxItem;
+	item: ContentItem;
 	onClose?: StandardAction;
 	onClosed?: StandardAction;
 }

@@ -160,16 +160,19 @@ export function wrapElementInAuxDocument(element: Element): XMLDocument {
 	return fromString(`<?xml version="1.0" encoding="UTF-8"?>${element.outerHTML}`);
 }
 
+export const xmlDeclaration = '<?xml version="1.0" encoding="UTF-8"?>';
 export function newXMLDocument(rootTagName = 'root'): XMLDocument {
 	// With the document.implementation.createDocument, new elements then inserted into the xml document
-	// end up with an undesirable namespace and serialization looses the case, so sticking with creating from string.
-	return fromString(`<?xml version="1.0" encoding="UTF-8"?><${rootTagName} />`);
+	// end up with an undesirable namespace and serialization, loss of case, hence sticking with creating from string.
+	return fromString(`${xmlDeclaration}<${rootTagName} />`);
 }
 
+// Having this "factory" avoids repeatedly creating a document every time this method gets invoked.
+let elementFactory: XMLDocument;
 export function createElement(tagName: string): Element;
 export function createElement(tagName: string, options: ElementCreationOptions): Element;
 export function createElement(tagName: string, options?: ElementCreationOptions): Element {
-	return newXMLDocument().createElement(tagName, options);
+	return (elementFactory ?? (elementFactory = newXMLDocument())).createElement(tagName, options);
 }
 
 export function deserialize(xml: string): any;

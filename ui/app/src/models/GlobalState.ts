@@ -30,7 +30,7 @@ import { ApiResponse } from './ApiResponse';
 import { VersionsStateProps } from './Version';
 import QuickCreateItem from './content/QuickCreateItem';
 import { PathNavigatorStateProps } from '../components/PathNavigator';
-import { DetailedItem } from './Item';
+import { ContentItem } from './Item';
 import { CopyDialogStateProps } from '../components/CopyDialog/utils';
 import { PathSelectionDialogStateProps } from '../components/PathSelectionDialog/PathSelectionDialog';
 import { WidgetDescriptor } from './WidgetDescriptor';
@@ -64,6 +64,8 @@ import { RenameAssetStateProps } from '../components/RenameAssetDialog';
 import Person from './Person';
 import { BrokenReferencesDialogStateProps } from '../components/BrokenReferencesDialog/types';
 import AllowedContentTypesData from './AllowedContentTypesData';
+import { Editor } from '@tinymce/tinymce-react';
+import { ElementType } from 'react';
 import { PublishingPackageReviewDialogStateProps } from '../components/PublishPackageReviewDialog/types';
 import { CancelPackageDialogStateProps } from '../components/CancelPackageDialog';
 import { BulkCancelPackageDialogStateProps } from '../components/BulkCancelPackageDialog';
@@ -122,6 +124,14 @@ export interface Clipboard {
 	sourcePath: string;
 }
 
+export interface DialogStackItem<P = unknown> {
+	id: string;
+	component: string | ElementType<P>;
+	allowMinimize?: boolean;
+	allowFullScreen?: boolean;
+	props: P;
+}
+
 export interface GlobalState {
 	auth: {
 		error: ApiResponse;
@@ -141,7 +151,7 @@ export interface GlobalState {
 			isFetching: boolean;
 			items: QuickCreateItem[];
 		};
-		itemsByPath: LookupTable<DetailedItem>;
+		itemsByPath: LookupTable<ContentItem>;
 		clipboard: Clipboard;
 		itemsBeingFetchedByPath: LookupTable<boolean>;
 	};
@@ -202,7 +212,7 @@ export interface GlobalState {
 		icePanel: {
 			widgets: WidgetDescriptor[];
 		};
-		richTextEditor: LookupTable;
+		richTextEditor: LookupTable<{ id: string; tinymceOptions: Editor['props']['init'] }>;
 		editModePadding: boolean;
 		windowSize: number;
 		xbDetectionTimeoutMs: number;
@@ -219,6 +229,10 @@ export interface GlobalState {
 		historyNavigationType: 'back' | 'forward';
 	};
 	versions: VersionsStateProps;
+	dialogStack: {
+		ids: string[];
+		byId: LookupTable<DialogStackItem<unknown>>;
+	};
 	dialogs: {
 		confirm: ConfirmDialogStateProps;
 		error: ErrorDialogStateProps;

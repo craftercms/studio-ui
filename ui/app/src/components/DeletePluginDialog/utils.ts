@@ -16,7 +16,7 @@
 
 import { EnhancedDialogProps } from '../EnhancedDialog';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
-import { SandboxItem } from '../../models/Item';
+import { ContentItem } from '../../models/Item';
 import { FullSxRecord, PartialSxRecord } from '../../models/CustomRecord';
 
 export interface UninstallPluginDialogBaseProps {
@@ -35,7 +35,7 @@ export interface UninstallPluginDialogContainerProps
 export interface UninstallPluginDialogBodyProps {
 	isSubmitting: boolean;
 	pluginId: string;
-	data: SandboxItem[];
+	data: ContentItem[];
 	password?: string;
 	sx?: UninstallPluginDialogBodyPartialSx;
 	onCloseButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;

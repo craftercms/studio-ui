@@ -15,7 +15,7 @@
  */
 
 import React, { ChangeEvent, ElementType, useEffect, useState } from 'react';
-import { DetailedItem } from '../../models/Item';
+import { ContentItem } from '../../models/Item';
 import ContextMenu, { ContextMenuOption } from '../ContextMenu/ContextMenu';
 import { useDispatch } from 'react-redux';
 import { withIndex, withoutIndex } from '../../utils/path';
@@ -93,11 +93,11 @@ export interface PathNavigatorProps {
 	container?: Partial<StateStylingProps>;
 	classes?: Partial<Record<PathNavigatorClassKey, string>>;
 	sxs?: PartialSxRecord<PathNavigatorClassKey>;
-	onItemClicked?(item: DetailedItem, event?: React.MouseEvent): void;
-	computeActiveItems?: (items: DetailedItem[]) => string[];
+	onItemClicked?(item: ContentItem, event?: React.MouseEvent): void;
+	computeActiveItems?: (items: ContentItem[]) => string[];
 	createItemClickedHandler?: (
-		defaultHandler: (item: DetailedItem, event?: React.MouseEvent) => void
-	) => (item: DetailedItem) => void;
+		defaultHandler: (item: ContentItem, event?: React.MouseEvent) => void
+	) => (item: ContentItem) => void;
 }
 
 export interface PathNavigatorStateProps {
@@ -240,7 +240,7 @@ export function PathNavigator(props: PathNavigatorProps) {
 		return <PathNavigatorSkeleton renderBody={storedState ? !storedState.collapsed : !initialCollapsed} />;
 	}
 
-	const onPathSelected = (item: DetailedItem) => {
+	const onPathSelected = (item: ContentItem) => {
 		dispatch(
 			pathNavigatorFetchPath({
 				id,
@@ -250,7 +250,7 @@ export function PathNavigator(props: PathNavigatorProps) {
 		);
 	};
 
-	const onPreview = (item: DetailedItem) => {
+	const onPreview = (item: ContentItem) => {
 		if (isEditableViaFormEditor(item)) {
 			dispatch(showEditDialog({ path: item.path, authoringBase, site: siteId, readonly: true }));
 		} else if (isImage(item) || isVideo(item) || isPdfDocument(item.mimeType)) {
@@ -296,7 +296,7 @@ export function PathNavigator(props: PathNavigatorProps) {
 		);
 	};
 
-	const onSelectItem = (item: DetailedItem, checked: boolean) => {
+	const onSelectItem = (item: ContentItem, checked: boolean) => {
 		dispatch(
 			checked
 				? pathNavigatorItemChecked({ id, item })
@@ -325,7 +325,7 @@ export function PathNavigator(props: PathNavigatorProps) {
 		);
 	};
 
-	const onOpenItemMenu = (element: Element, item: DetailedItem) => {
+	const onOpenItemMenu = (element: Element, item: ContentItem) => {
 		const anchorRect = element.getBoundingClientRect();
 		const top = anchorRect.top + getOffsetTop(anchorRect, 'top');
 		const left = anchorRect.left + getOffsetLeft(anchorRect, 'left');
@@ -353,7 +353,7 @@ export function PathNavigator(props: PathNavigatorProps) {
 
 	const onItemClicked = onItemClickedProp
 		? onItemClickedProp
-		: createItemClickedHandler((item: DetailedItem, e) => {
+		: createItemClickedHandler((item: ContentItem, e) => {
 				if (isNavigable(item)) {
 					const url = getSystemLink({
 						site: siteId,
@@ -373,7 +373,7 @@ export function PathNavigator(props: PathNavigatorProps) {
 				}
 			});
 
-	const onBreadcrumbSelected = (item: DetailedItem) => {
+	const onBreadcrumbSelected = (item: ContentItem) => {
 		if (withoutIndex(item.path) !== withoutIndex(state.currentPath)) {
 			dispatch(pathNavigatorConditionallySetPath({ id, path: item.path, keyword }));
 		}

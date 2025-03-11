@@ -38,6 +38,9 @@ import IconButton from '@mui/material/IconButton';
 import CloseRounded from '@mui/icons-material/CloseRounded';
 import useAuth from '../../hooks/useAuth';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
+import { EnhancedDialogProps } from '../EnhancedDialog';
+import { DialogStackItem } from '../../models/GlobalState';
+import DialogStackItemContainer from './DialogStackItemContainer';
 
 // region const ... = lazy(() => import('...'));
 const ViewVersionDialog = lazy(() => import('../ViewVersionDialog'));
@@ -115,6 +118,7 @@ function createCallback(action: StandardAction, dispatch: Dispatch): (output?: u
 
 function GlobalDialogManager() {
 	const state = useSelection((state) => state.dialogs);
+	const stack = useSelection((state) => state.dialogStack);
 	const contentTypesBranch = useSelection((state) => state.contentTypes);
 	const versionsBranch = useSelection((state) => state.versions);
 	const { enqueueSnackbar, closeSnackbar } = useSnackbar();
@@ -152,7 +156,7 @@ function GlobalDialogManager() {
 				)
 			)
 			.subscribe((site) => {
-				if (!Boolean(document.querySelector('[data-dialog-id="create-site-dialog"]'))) {
+				if (!document.querySelector('[data-dialog-id="create-site-dialog"]')) {
 					const siteId = site.id;
 					enqueueSnackbar(
 						<FormattedMessage defaultMessage={`Project "{siteId}" has been created.`} values={{ siteId }} />,
@@ -182,8 +186,8 @@ function GlobalDialogManager() {
 	useEffect(() => {
 		const isIframe = window.location !== window.parent.location;
 		if (!isIframe && authActive && !socketConnected && activeSiteId !== null) {
-			let timeout: NodeJS.Timeout, key: SnackbarKey;
-			timeout = setTimeout(() => {
+			let key: SnackbarKey;
+			const timeout = setTimeout(() => {
 				fetch(`${authoringBase}/help/socket-connection-error`)
 					.then((r) => {
 						if (r.ok) {
@@ -248,384 +252,391 @@ function GlobalDialogManager() {
 	]);
 
 	return (
-		<Suspense fallback="">
-			{/* region Confirm */}
-			<ConfirmDialog
-				{...state.confirm}
-				onOk={createCallback(state.confirm.onOk, dispatch)}
-				onCancel={createCallback(state.confirm.onCancel, dispatch)}
-				onClose={createCallback(state.confirm.onClose, dispatch)}
-				onClosed={createCallback(state.confirm.onClosed, dispatch)}
-			/>
-			{/* endregion */}
-
-			{/* region Error */}
-			<ErrorDialog
-				{...state.error}
-				onClose={createCallback(state.error.onClose, dispatch)}
-				onClosed={createCallback(state.error.onClosed, dispatch)}
-				onDismiss={createCallback(state.error.onDismiss, dispatch)}
-			/>
-			{/* endregion */}
-
-			{/* region Edit (LegacyFormDialog) */}
-			<LegacyFormDialog
-				{...state.edit}
-				onClose={createCallback(state.edit.onClose, dispatch)}
-				onMinimize={createCallback(state.edit.onMinimize, dispatch)}
-				onMaximize={createCallback(state.edit.onMaximize, dispatch)}
-				onClosed={createCallback(state.edit.onClosed, dispatch)}
-				onSaveSuccess={createCallback(state.edit.onSaveSuccess, dispatch)}
-			/>
-			{/* endregion */}
-
-			{/* region Code Editor */}
-			<CodeEditorDialog
-				{...state.codeEditor}
-				onClose={createCallback(state.codeEditor.onClose, dispatch)}
-				onMinimize={createCallback(state.codeEditor.onMinimize, dispatch)}
-				onMaximize={createCallback(state.codeEditor.onMaximize, dispatch)}
-				onClosed={createCallback(state.codeEditor.onClosed, dispatch)}
-				onSuccess={createCallback(state.codeEditor.onSuccess, dispatch)}
-				onFullScreen={createCallback(state.codeEditor.onFullScreen, dispatch)}
-				onCancelFullScreen={createCallback(state.codeEditor.onCancelFullScreen, dispatch)}
-				onWithPendingChangesCloseRequest={useWithPendingChangesCloseRequest(
-					createCallback(state.codeEditor.onClose, dispatch)
-				)}
-			/>
-			{/* endregion */}
-
-			{/* region Publish */}
-			<PublishDialog
-				{...state.publish}
-				onClose={createCallback(state.publish.onClose, dispatch)}
-				onClosed={createCallback(state.publish.onClosed, dispatch)}
-				onSuccess={createCallback(state.publish.onSuccess, dispatch)}
-				onWithPendingChangesCloseRequest={useWithPendingChangesCloseRequest(
-					createCallback(state.publish.onClose, dispatch)
-				)}
-			/>
-			{/* endregion */}
-
-			{/* region Package Review */}
-			<PublishingPackageReviewDialog
-				{...state.publishingPackageApproval}
-				onClose={createCallback(state.publishingPackageApproval.onClose, dispatch)}
-				onClosed={createCallback(state.publishingPackageApproval.onClosed, dispatch)}
-				onSuccess={createCallback(state.publishingPackageApproval.onSuccess, dispatch)}
-				onWithPendingChangesCloseRequest={useWithPendingChangesCloseRequest(
-					createCallback(state.publishingPackageApproval.onClose, dispatch)
-				)}
-			/>
-			{/* endregion */}
-
-			{/* region Package Resubmit */}
-			<PublishingPackageResubmitDialog
-				{...state.publishingPackageResubmit}
-				onClose={createCallback(state.publishingPackageResubmit.onClose, dispatch)}
-				onClosed={createCallback(state.publishingPackageResubmit.onClosed, dispatch)}
-				onSuccess={createCallback(state.publishingPackageResubmit.onSuccess, dispatch)}
-				onWithPendingChangesCloseRequest={useWithPendingChangesCloseRequest(
-					createCallback(state.publishingPackageResubmit.onClose, dispatch)
-				)}
-			/>
-			{/* endregion */}
-
-			{/* region Create Content */}
-			<NewContentDialog
-				{...state.newContent}
-				onContentTypeSelected={createCallback(state.newContent.onContentTypeSelected, dispatch)}
-				onClose={createCallback(state.newContent.onClose, dispatch)}
-				onClosed={createCallback(state.newContent.onClosed, dispatch)}
-			/>
-			{/* endregion */}
-
-			{/* region Change ContentType */}
-			<ChangeContentTypeDialog
-				{...state.changeContentType}
-				onContentTypeSelected={createCallback(state.changeContentType.onContentTypeSelected, dispatch)}
-				onClose={createCallback(state.changeContentType.onClose, dispatch)}
-				onClosed={createCallback(state.changeContentType.onClosed, dispatch)}
-			/>
-			{/* endregion */}
-
-			{/* region Dependencies */}
-			<DependenciesDialog
-				{...state.dependencies}
-				onClose={createCallback(state.dependencies.onClose, dispatch)}
-				onClosed={createCallback(state.dependencies.onClosed, dispatch)}
-			/>
-			{/* endregion */}
-
-			{/* region Delete */}
-			<DeleteDialog
-				{...state.delete}
-				onClose={createCallback(state.delete.onClose, dispatch)}
-				onClosed={createCallback(state.delete.onClosed, dispatch)}
-				onSuccess={createCallback(state.delete.onSuccess, dispatch)}
-				onWithPendingChangesCloseRequest={useWithPendingChangesCloseRequest(
-					createCallback(state.delete.onClose, dispatch)
-				)}
-			/>
-			{/* endregion */}
-
-			{/* region History */}
-			<HistoryDialog
-				{...state.history}
-				versionsBranch={versionsBranch}
-				onClose={createCallback(state.history.onClose, dispatch)}
-				onClosed={createCallback(state.history.onClosed, dispatch)}
-			/>
-			{/* endregion */}
-
-			{/* region View Versions */}
-			<ViewVersionDialog
-				{...state.viewVersion}
-				rightActions={state.viewVersion.rightActions?.map((action) => ({
-					...action,
-					onClick: createCallback(action.onClick, dispatch)
-				}))}
-				leftActions={state.viewVersion.leftActions?.map((action) => ({
-					...action,
-					onClick: createCallback(action.onClick, dispatch)
-				}))}
-				contentTypesBranch={contentTypesBranch}
-				onClose={createCallback(state.viewVersion.onClose, dispatch)}
-				onClosed={createCallback(state.viewVersion.onClosed, dispatch)}
-			/>
-			{/* endregion */}
-
-			{/* region Compare Versions */}
-			<CompareVersionsDialog
-				{...state.compareVersions}
-				leftActions={state.compareVersions.leftActions?.map((action) => ({
-					...action,
-					onClick: createCallback(action.onClick, dispatch)
-				}))}
-				rightActions={state.compareVersions.rightActions?.map((action) => ({
-					...action,
-					onClick: createCallback(action.onClick, dispatch)
-				}))}
-				contentTypesBranch={contentTypesBranch}
-				selectedA={versionsBranch?.selected[0] ? versionsBranch.byId[versionsBranch.selected[0]] : null}
-				selectedB={versionsBranch?.selected[1] ? versionsBranch.byId[versionsBranch.selected[1]] : null}
-				versionsBranch={versionsBranch}
-				onClose={createCallback(state.compareVersions.onClose, dispatch)}
-				onClosed={createCallback(state.compareVersions.onClosed, dispatch)}
-			/>
-			{/* endregion */}
-
-			{/* region Auth Monitor */}
-			<AuthMonitor />
-			{/* endregion */}
-
-			{/* region Broken References */}
-			<BrokenReferencesDialog
-				{...state.brokenReferences}
-				onClose={createCallback(state.brokenReferences.onClose, dispatch)}
-				onClosed={createCallback(state.brokenReferences.onClosed, dispatch)}
-				onContinue={createCallback(state.brokenReferences.onContinue, dispatch)}
-			/>
-			{/* endregion */}
-
-			{/* region Create Folder */}
-			<CreateFolderDialog
-				{...state.createFolder}
-				onClose={createCallback(state.createFolder.onClose, dispatch)}
-				onClosed={createCallback(state.createFolder.onClosed, dispatch)}
-				onCreated={createCallback(state.createFolder.onCreated, dispatch)}
-				onRenamed={createCallback(state.createFolder.onRenamed, dispatch)}
-				onWithPendingChangesCloseRequest={useWithPendingChangesCloseRequest(
-					createCallback(state.createFolder.onClose, dispatch)
-				)}
-			/>
-			{/* endregion */}
-
-			{/* region Create File */}
-			<CreateFileDialog
-				{...state.createFile}
-				onClose={createCallback(state.createFile.onClose, dispatch)}
-				onClosed={createCallback(state.createFile.onClosed, dispatch)}
-				onCreated={createCallback(state.createFile.onCreated, dispatch)}
-				onWithPendingChangesCloseRequest={useWithPendingChangesCloseRequest(
-					createCallback(state.createFile.onClose, dispatch)
-				)}
-			/>
-			{/* endregion */}
-
-			{/* region Rename Asset */}
-			<RenameAssetDialog
-				{...state.renameAsset}
-				onClose={createCallback(state.renameAsset.onClose, dispatch)}
-				onClosed={createCallback(state.renameAsset.onClosed, dispatch)}
-				onRenamed={createCallback(state.renameAsset.onRenamed, dispatch)}
-				onWithPendingChangesCloseRequest={useWithPendingChangesCloseRequest(
-					createCallback(state.renameAsset.onClose, dispatch)
-				)}
-			/>
-			{/* endregion */}
-
-			{/* region Copy Items */}
-			<CopyItemsDialog
-				{...state.copy}
-				onClose={createCallback(state.copy.onClose, dispatch)}
-				onClosed={createCallback(state.copy.onClosed, dispatch)}
-				onOk={createCallback(state.copy.onOk, dispatch)}
-			/>
-			{/* endregion */}
-
-			{/* region Bulk Upload */}
-			<BulkUploadDialog
-				{...state.upload}
-				onClose={createCallback(state.upload.onClose, dispatch)}
-				onClosed={createCallback(state.upload.onClosed, dispatch)}
-				onFileAdded={createCallback(state.upload.onFileAdded, dispatch)}
-				onUploadSuccess={createCallback(state.upload.onUploadSuccess, dispatch)}
-			/>
-			{/* endregion */}
-
-			{/* region Single File Upload */}
-			<SingleFileUploadDialog
-				{...state.singleFileUpload}
-				onClose={createCallback(state.singleFileUpload.onClose, dispatch)}
-				onClosed={createCallback(state.singleFileUpload.onClosed, dispatch)}
-				onUploadStart={createCallback(state.singleFileUpload.onUploadStart, dispatch)}
-				onUploadComplete={createCallback(state.singleFileUpload.onUploadComplete, dispatch)}
-				onUploadError={createCallback(state.singleFileUpload.onUploadError, dispatch)}
-			/>
-			{/* endregion */}
-
-			{/* region PreviewDialog */}
-			<PreviewDialog
-				{...state.preview}
-				onMinimize={createCallback(state.preview.onMinimize, dispatch)}
-				onMaximize={createCallback(state.preview.onMaximize, dispatch)}
-				onClose={createCallback(state.preview.onClose, dispatch)}
-				onClosed={createCallback(state.preview.onClosed, dispatch)}
-				onFullScreen={createCallback(state.preview.onFullScreen, dispatch)}
-				onCancelFullScreen={createCallback(state.preview.onCancelFullScreen, dispatch)}
-			/>
-			{/* endregion */}
-
-			{/* region Edit Site */}
-			<EditSiteDialog
-				{...state.editSite}
-				onClose={createCallback(state.editSite.onClose, dispatch)}
-				onClosed={createCallback(state.editSite.onClosed, dispatch)}
-				onSaveSuccess={createCallback(state.editSite.onSaveSuccess, dispatch)}
-				onSiteImageChange={createCallback(state.editSite.onSiteImageChange, dispatch)}
-				onWithPendingChangesCloseRequest={useWithPendingChangesCloseRequest(
-					createCallback(state.editSite.onClose, dispatch)
-				)}
-			/>
-			{/* endregion */}
-
-			{/* region Path Selection */}
-			<PathSelectionDialog
-				{...state.pathSelection}
-				onClose={createCallback(state.pathSelection.onClose, dispatch)}
-				onClosed={createCallback(state.pathSelection.onClosed, dispatch)}
-				onOk={createCallback(state.pathSelection.onOk, dispatch)}
-			/>
-			{/* endregion */}
-
-			{/* region Item Menu */}
-			<ItemMenu {...state.itemMenu} onClose={createCallback(state.itemMenu.onClose, dispatch)} />
-			{/* endregion */}
-
-			{/* region Item Mega Menu */}
-			<ItemMegaMenu
-				{...state.itemMegaMenu}
-				onClose={createCallback(state.itemMegaMenu.onClose, dispatch)}
-				onClosed={createCallback(state.itemMegaMenu.onClosed, dispatch)}
-			/>
-			{/* endregion */}
-
-			{/* region Launcher */}
-			<Launcher {...state.launcher} />
-			{/* endregion */}
-
-			{/* region Publishing Status Dialog */}
-			<PublishingStatusDialog
-				{...state.publishingStatus}
-				onClose={createCallback(state.publishingStatus.onClose, dispatch)}
-				onRefresh={createCallback(state.publishingStatus.onRefresh, dispatch)}
-			/>
-			{/* endregion */}
-
-			{/* region Widget Dialog */}
-			<WidgetDialog
-				{...state.widget}
-				onClose={createCallback(state.widget.onClose, dispatch)}
-				onMinimize={createCallback(state.widget.onMinimize, dispatch)}
-				onMaximize={createCallback(state.widget.onMaximize, dispatch)}
-				onClosed={createCallback(state.widget.onClosed, dispatch)}
-				onWithPendingChangesCloseRequest={useWithPendingChangesCloseRequest(
-					createCallback(state.widget.onClose, dispatch)
-				)}
-			/>
-			{/* endregion */}
-
-			{/* region Minimized Tabs */}
-			{Object.values(state.minimizedTabs).map((tab) => (
-				<MinimizedBar
-					key={tab.id}
-					open={tab.minimized}
-					title={tab.title}
-					subtitle={tab.subtitle}
-					status={tab.status}
-					onMaximize={createCallback(tab.onMaximized, dispatch)}
-				/>
+		<>
+			{stack.ids.map((id) => (
+				<Suspense key={id} fallback={<UIBlocker open />}>
+					<DialogStackItemContainer {...(stack.byId[id] as DialogStackItem<EnhancedDialogProps>)} />
+				</Suspense>
 			))}
-			{/* endregion */}
+			<Suspense fallback="">
+				{/* region Confirm */}
+				<ConfirmDialog
+					{...state.confirm}
+					onOk={createCallback(state.confirm.onOk, dispatch)}
+					onCancel={createCallback(state.confirm.onCancel, dispatch)}
+					onClose={createCallback(state.confirm.onClose, dispatch)}
+					onClosed={createCallback(state.confirm.onClosed, dispatch)}
+				/>
+				{/* endregion */}
 
-			{/* region Cancel Package Dialog */}
-			<CancelPackageDialog
-				{...state.cancelPackage}
-				onClose={createCallback(state.cancelPackage.onClose, dispatch)}
-				onClosed={createCallback(state.cancelPackage.onClosed, dispatch)}
-				onSuccess={createCallback(state.cancelPackage.onSuccess, dispatch)}
-			/>
-			{/* endregion */}
+				{/* region Error */}
+				<ErrorDialog
+					{...state.error}
+					onClose={createCallback(state.error.onClose, dispatch)}
+					onClosed={createCallback(state.error.onClosed, dispatch)}
+					onDismiss={createCallback(state.error.onDismiss, dispatch)}
+				/>
+				{/* endregion */}
 
-			{/* region Bulk Cancel Package Dialog */}
-			<BulkCancelPackageDialog
-				{...state.bulkCancelPackage}
-				onClose={createCallback(state.bulkCancelPackage.onClose, dispatch)}
-				onClosed={createCallback(state.bulkCancelPackage.onClosed, dispatch)}
-				onSuccess={createCallback(state.bulkCancelPackage.onSuccess, dispatch)}
-			/>
-			{/* endregion */}
+				{/* region Edit (LegacyFormDialog) */}
+				<LegacyFormDialog
+					{...state.edit}
+					onClose={createCallback(state.edit.onClose, dispatch)}
+					onMinimize={createCallback(state.edit.onMinimize, dispatch)}
+					onMaximize={createCallback(state.edit.onMaximize, dispatch)}
+					onClosed={createCallback(state.edit.onClosed, dispatch)}
+					onSaveSuccess={createCallback(state.edit.onSaveSuccess, dispatch)}
+				/>
+				{/* endregion */}
 
-			{/* region Package Details Dialog */}
-			<PackageDetailsDialog
-				{...state.packageDetails}
-				onClose={createCallback(state.packageDetails.onClose, dispatch)}
-				onClosed={createCallback(state.packageDetails.onClosed, dispatch)}
-			/>
-			{/* endregion */}
+				{/* region Code Editor */}
+				<CodeEditorDialog
+					{...state.codeEditor}
+					onClose={createCallback(state.codeEditor.onClose, dispatch)}
+					onMinimize={createCallback(state.codeEditor.onMinimize, dispatch)}
+					onMaximize={createCallback(state.codeEditor.onMaximize, dispatch)}
+					onClosed={createCallback(state.codeEditor.onClosed, dispatch)}
+					onSuccess={createCallback(state.codeEditor.onSuccess, dispatch)}
+					onFullScreen={createCallback(state.codeEditor.onFullScreen, dispatch)}
+					onCancelFullScreen={createCallback(state.codeEditor.onCancelFullScreen, dispatch)}
+					onWithPendingChangesCloseRequest={useWithPendingChangesCloseRequest(
+						createCallback(state.codeEditor.onClose, dispatch)
+					)}
+				/>
+				{/* endregion */}
 
-			{/* region View Packages Dialog */}
-			<ViewPackagesDialog
-				{...state.viewPackages}
-				onClose={createCallback(state.viewPackages.onClose, dispatch)}
-				onClosed={createCallback(state.viewPackages.onClosed, dispatch)}
-				onContinue={createCallback(state.viewPackages.onContinue, dispatch)}
-			/>
-			{/* endregion */}
+				{/* region Publish */}
+				<PublishDialog
+					{...state.publish}
+					onClose={createCallback(state.publish.onClose, dispatch)}
+					onClosed={createCallback(state.publish.onClosed, dispatch)}
+					onSuccess={createCallback(state.publish.onSuccess, dispatch)}
+					onWithPendingChangesCloseRequest={useWithPendingChangesCloseRequest(
+						createCallback(state.publish.onClose, dispatch)
+					)}
+				/>
+				{/* endregion */}
 
-			{/* region UIBlocker */}
-			<UIBlocker {...state.uiBlocker} />
-			{/* endregion */}
+				{/* region Package Review */}
+				<PublishingPackageReviewDialog
+					{...state.publishingPackageApproval}
+					onClose={createCallback(state.publishingPackageApproval.onClose, dispatch)}
+					onClosed={createCallback(state.publishingPackageApproval.onClosed, dispatch)}
+					onSuccess={createCallback(state.publishingPackageApproval.onSuccess, dispatch)}
+					onWithPendingChangesCloseRequest={useWithPendingChangesCloseRequest(
+						createCallback(state.publishingPackageApproval.onClose, dispatch)
+					)}
+				/>
+				{/* endregion */}
 
-			{/* region FolderMoveAlertDialog */}
-			<FolderMoveAlertDialog
-				{...state.folderMoveAlert}
-				onClose={createCallback(state.folderMoveAlert.onClose, dispatch)}
-				onClosed={createCallback(state.folderMoveAlert.onClosed, dispatch)}
-			/>
-			{/* endregion */}
-		</Suspense>
+				{/* region Package Resubmit */}
+				<PublishingPackageResubmitDialog
+					{...state.publishingPackageResubmit}
+					onClose={createCallback(state.publishingPackageResubmit.onClose, dispatch)}
+					onClosed={createCallback(state.publishingPackageResubmit.onClosed, dispatch)}
+					onSuccess={createCallback(state.publishingPackageResubmit.onSuccess, dispatch)}
+					onWithPendingChangesCloseRequest={useWithPendingChangesCloseRequest(
+						createCallback(state.publishingPackageResubmit.onClose, dispatch)
+					)}
+				/>
+				{/* endregion */}
+
+				{/* region Create Content */}
+				<NewContentDialog
+					{...state.newContent}
+					onContentTypeSelected={createCallback(state.newContent.onContentTypeSelected, dispatch)}
+					onClose={createCallback(state.newContent.onClose, dispatch)}
+					onClosed={createCallback(state.newContent.onClosed, dispatch)}
+				/>
+				{/* endregion */}
+
+				{/* region Change ContentType */}
+				<ChangeContentTypeDialog
+					{...state.changeContentType}
+					onContentTypeSelected={createCallback(state.changeContentType.onContentTypeSelected, dispatch)}
+					onClose={createCallback(state.changeContentType.onClose, dispatch)}
+					onClosed={createCallback(state.changeContentType.onClosed, dispatch)}
+				/>
+				{/* endregion */}
+
+				{/* region Dependencies */}
+				<DependenciesDialog
+					{...state.dependencies}
+					onClose={createCallback(state.dependencies.onClose, dispatch)}
+					onClosed={createCallback(state.dependencies.onClosed, dispatch)}
+				/>
+				{/* endregion */}
+
+				{/* region Delete */}
+				<DeleteDialog
+					{...state.delete}
+					onClose={createCallback(state.delete.onClose, dispatch)}
+					onClosed={createCallback(state.delete.onClosed, dispatch)}
+					onSuccess={createCallback(state.delete.onSuccess, dispatch)}
+					onWithPendingChangesCloseRequest={useWithPendingChangesCloseRequest(
+						createCallback(state.delete.onClose, dispatch)
+					)}
+				/>
+				{/* endregion */}
+
+				{/* region History */}
+				<HistoryDialog
+					{...state.history}
+					versionsBranch={versionsBranch}
+					onClose={createCallback(state.history.onClose, dispatch)}
+					onClosed={createCallback(state.history.onClosed, dispatch)}
+				/>
+				{/* endregion */}
+
+				{/* region View Versions */}
+				<ViewVersionDialog
+					{...state.viewVersion}
+					rightActions={state.viewVersion.rightActions?.map((action) => ({
+						...action,
+						onClick: createCallback(action.onClick, dispatch)
+					}))}
+					leftActions={state.viewVersion.leftActions?.map((action) => ({
+						...action,
+						onClick: createCallback(action.onClick, dispatch)
+					}))}
+					contentTypesBranch={contentTypesBranch}
+					onClose={createCallback(state.viewVersion.onClose, dispatch)}
+					onClosed={createCallback(state.viewVersion.onClosed, dispatch)}
+				/>
+				{/* endregion */}
+
+				{/* region Compare Versions */}
+				<CompareVersionsDialog
+					{...state.compareVersions}
+					leftActions={state.compareVersions.leftActions?.map((action) => ({
+						...action,
+						onClick: createCallback(action.onClick, dispatch)
+					}))}
+					rightActions={state.compareVersions.rightActions?.map((action) => ({
+						...action,
+						onClick: createCallback(action.onClick, dispatch)
+					}))}
+					contentTypesBranch={contentTypesBranch}
+					selectedA={versionsBranch?.selected[0] ? versionsBranch.byId[versionsBranch.selected[0]] : null}
+					selectedB={versionsBranch?.selected[1] ? versionsBranch.byId[versionsBranch.selected[1]] : null}
+					versionsBranch={versionsBranch}
+					onClose={createCallback(state.compareVersions.onClose, dispatch)}
+					onClosed={createCallback(state.compareVersions.onClosed, dispatch)}
+				/>
+				{/* endregion */}
+
+				{/* region Auth Monitor */}
+				<AuthMonitor />
+				{/* endregion */}
+
+				{/*  region Broken References */}
+				<BrokenReferencesDialog
+					{...state.brokenReferences}
+					onClose={createCallback(state.brokenReferences.onClose, dispatch)}
+					onClosed={createCallback(state.brokenReferences.onClosed, dispatch)}
+					onContinue={createCallback(state.brokenReferences.onContinue, dispatch)}
+				/>
+				{/* endregion */}
+
+				{/* region Create Folder */}
+				<CreateFolderDialog
+					{...state.createFolder}
+					onClose={createCallback(state.createFolder.onClose, dispatch)}
+					onClosed={createCallback(state.createFolder.onClosed, dispatch)}
+					onCreated={createCallback(state.createFolder.onCreated, dispatch)}
+					onRenamed={createCallback(state.createFolder.onRenamed, dispatch)}
+					onWithPendingChangesCloseRequest={useWithPendingChangesCloseRequest(
+						createCallback(state.createFolder.onClose, dispatch)
+					)}
+				/>
+				{/* endregion */}
+
+				{/* region Create File */}
+				<CreateFileDialog
+					{...state.createFile}
+					onClose={createCallback(state.createFile.onClose, dispatch)}
+					onClosed={createCallback(state.createFile.onClosed, dispatch)}
+					onCreated={createCallback(state.createFile.onCreated, dispatch)}
+					onWithPendingChangesCloseRequest={useWithPendingChangesCloseRequest(
+						createCallback(state.createFile.onClose, dispatch)
+					)}
+				/>
+				{/* endregion */}
+
+				{/* region Rename Asset */}
+				<RenameAssetDialog
+					{...state.renameAsset}
+					onClose={createCallback(state.renameAsset.onClose, dispatch)}
+					onClosed={createCallback(state.renameAsset.onClosed, dispatch)}
+					onRenamed={createCallback(state.renameAsset.onRenamed, dispatch)}
+					onWithPendingChangesCloseRequest={useWithPendingChangesCloseRequest(
+						createCallback(state.renameAsset.onClose, dispatch)
+					)}
+				/>
+				{/* endregion */}
+
+				{/* region Copy Items */}
+				<CopyItemsDialog
+					{...state.copy}
+					onClose={createCallback(state.copy.onClose, dispatch)}
+					onClosed={createCallback(state.copy.onClosed, dispatch)}
+					onOk={createCallback(state.copy.onOk, dispatch)}
+				/>
+				{/* endregion */}
+
+				{/* region Bulk Upload */}
+				<BulkUploadDialog
+					{...state.upload}
+					onClose={createCallback(state.upload.onClose, dispatch)}
+					onClosed={createCallback(state.upload.onClosed, dispatch)}
+					onFileAdded={createCallback(state.upload.onFileAdded, dispatch)}
+					onUploadSuccess={createCallback(state.upload.onUploadSuccess, dispatch)}
+				/>
+				{/* endregion */}
+
+				{/* region Single File Upload */}
+				<SingleFileUploadDialog
+					{...state.singleFileUpload}
+					onClose={createCallback(state.singleFileUpload.onClose, dispatch)}
+					onClosed={createCallback(state.singleFileUpload.onClosed, dispatch)}
+					onUploadStart={createCallback(state.singleFileUpload.onUploadStart, dispatch)}
+					onUploadComplete={createCallback(state.singleFileUpload.onUploadComplete, dispatch)}
+					onUploadError={createCallback(state.singleFileUpload.onUploadError, dispatch)}
+				/>
+				{/* endregion */}
+
+				{/* region PreviewDialog */}
+				<PreviewDialog
+					{...state.preview}
+					onMinimize={createCallback(state.preview.onMinimize, dispatch)}
+					onMaximize={createCallback(state.preview.onMaximize, dispatch)}
+					onClose={createCallback(state.preview.onClose, dispatch)}
+					onClosed={createCallback(state.preview.onClosed, dispatch)}
+					onFullScreen={createCallback(state.preview.onFullScreen, dispatch)}
+					onCancelFullScreen={createCallback(state.preview.onCancelFullScreen, dispatch)}
+				/>
+				{/* endregion */}
+
+				{/* region Edit Site */}
+				<EditSiteDialog
+					{...state.editSite}
+					onClose={createCallback(state.editSite.onClose, dispatch)}
+					onClosed={createCallback(state.editSite.onClosed, dispatch)}
+					onSaveSuccess={createCallback(state.editSite.onSaveSuccess, dispatch)}
+					onSiteImageChange={createCallback(state.editSite.onSiteImageChange, dispatch)}
+					onWithPendingChangesCloseRequest={useWithPendingChangesCloseRequest(
+						createCallback(state.editSite.onClose, dispatch)
+					)}
+				/>
+				{/* endregion */}
+
+				{/* region Path Selection */}
+				<PathSelectionDialog
+					{...state.pathSelection}
+					onClose={createCallback(state.pathSelection.onClose, dispatch)}
+					onClosed={createCallback(state.pathSelection.onClosed, dispatch)}
+					onOk={createCallback(state.pathSelection.onOk, dispatch)}
+				/>
+				{/* endregion */}
+
+				{/* region Item Menu */}
+				<ItemMenu {...state.itemMenu} onClose={createCallback(state.itemMenu.onClose, dispatch)} />
+				{/* endregion */}
+
+				{/* region Item Mega Menu */}
+				<ItemMegaMenu
+					{...state.itemMegaMenu}
+					onClose={createCallback(state.itemMegaMenu.onClose, dispatch)}
+					onClosed={createCallback(state.itemMegaMenu.onClosed, dispatch)}
+				/>
+				{/* endregion */}
+
+				{/* region Launcher */}
+				<Launcher {...state.launcher} />
+				{/* endregion */}
+
+				{/* region Publishing Status Dialog */}
+				<PublishingStatusDialog
+					{...state.publishingStatus}
+					onClose={createCallback(state.publishingStatus.onClose, dispatch)}
+					onRefresh={createCallback(state.publishingStatus.onRefresh, dispatch)}
+				/>
+				{/* endregion */}
+
+				{/* region Widget Dialog */}
+				<WidgetDialog
+					{...state.widget}
+					onClose={createCallback(state.widget.onClose, dispatch)}
+					onMinimize={createCallback(state.widget.onMinimize, dispatch)}
+					onMaximize={createCallback(state.widget.onMaximize, dispatch)}
+					onClosed={createCallback(state.widget.onClosed, dispatch)}
+					onWithPendingChangesCloseRequest={useWithPendingChangesCloseRequest(
+						createCallback(state.widget.onClose, dispatch)
+					)}
+				/>
+				{/* endregion */}
+
+				{/* region Minimized Tabs */}
+				{Object.values(state.minimizedTabs).map((tab) => (
+					<MinimizedBar
+						key={tab.id}
+						open={tab.minimized}
+						title={tab.title}
+						subtitle={tab.subtitle}
+						status={tab.status}
+						onMaximize={createCallback(tab.onMaximized, dispatch)}
+					/>
+				))}
+				{/* endregion */}
+
+				{/* region Cancel Package Dialog */}
+				<CancelPackageDialog
+					{...state.cancelPackage}
+					onClose={createCallback(state.cancelPackage.onClose, dispatch)}
+					onClosed={createCallback(state.cancelPackage.onClosed, dispatch)}
+					onSuccess={createCallback(state.cancelPackage.onSuccess, dispatch)}
+				/>
+				{/* endregion */}
+
+				{/* region Bulk Cancel Package Dialog */}
+				<BulkCancelPackageDialog
+					{...state.bulkCancelPackage}
+					onClose={createCallback(state.bulkCancelPackage.onClose, dispatch)}
+					onClosed={createCallback(state.bulkCancelPackage.onClosed, dispatch)}
+					onSuccess={createCallback(state.bulkCancelPackage.onSuccess, dispatch)}
+				/>
+				{/* endregion */}
+
+				{/* region Package Details Dialog */}
+				<PackageDetailsDialog
+					{...state.packageDetails}
+					onClose={createCallback(state.packageDetails.onClose, dispatch)}
+					onClosed={createCallback(state.packageDetails.onClosed, dispatch)}
+				/>
+				{/* endregion */}
+
+				{/* region View Packages Dialog */}
+				<ViewPackagesDialog
+					{...state.viewPackages}
+					onClose={createCallback(state.viewPackages.onClose, dispatch)}
+					onClosed={createCallback(state.viewPackages.onClosed, dispatch)}
+					onContinue={createCallback(state.viewPackages.onContinue, dispatch)}
+				/>
+				{/* endregion */}
+
+				{/* region UIBlocker */}
+				<UIBlocker {...state.uiBlocker} />
+				{/* endregion */}
+
+				{/* region FolderMoveAlertDialog */}
+				<FolderMoveAlertDialog
+					{...state.folderMoveAlert}
+					onClose={createCallback(state.folderMoveAlert.onClose, dispatch)}
+					onClosed={createCallback(state.folderMoveAlert.onClosed, dispatch)}
+				/>
+				{/* endregion */}
+			</Suspense>
+		</>
 	);
 }
 

@@ -33,7 +33,7 @@ import SocketEventBase, {
 	RepositoryEventPayload,
 	WorkflowEventPayload
 } from '../../models/SocketEvent';
-import { DetailedItem, MarketplacePlugin } from '../../models';
+import { ContentItem, MarketplacePlugin } from '../../models';
 import { ProjectLifecycleEvent } from '../../models/ProjectLifecycleEvent';
 
 // region Item Events
@@ -72,13 +72,13 @@ export const moveContentEvent = /*#__PURE__*/ createAction<MoveContentEventPaylo
 
 // region Notifications
 
-export const showDeleteItemSuccessNotification = /*#__PURE__*/ createAction<StandardAction<{ items: DetailedItem[] }>>(
+export const showDeleteItemSuccessNotification = /*#__PURE__*/ createAction<StandardAction<{ items: ContentItem[] }>>(
 	'SHOW_DELETE_ITEM_SUCCESS_NOTIFICATION'
 );
 
 export const showPublishItemSuccessNotification = /*#__PURE__*/ createAction<
 	StandardAction<{
-		items: DetailedItem[];
+		items: ContentItem[];
 		type: string;
 		schedule: string;
 		environment: string;

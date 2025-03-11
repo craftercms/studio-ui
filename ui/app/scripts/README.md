@@ -9,7 +9,7 @@ https://github.com/craftercms/studio-ui/tree/develop/ui/app/src
 
 Other resources:
 - https://github.com/craftercms/craftercms
-- https://docs.craftercms.org/en/3.1/developers/projects/studio/api/api-version1.html
+- https://craftercms.com/docs/current/reference/modules/studio/index.html#rest-api
 - https://app.swaggerhub.com/apis/craftercms/studio
 - https://github.com/craftercms/studio-ui
 - https://github.com/craftercms/studio

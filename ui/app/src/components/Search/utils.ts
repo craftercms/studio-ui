@@ -15,7 +15,7 @@
  */
 
 import { ElasticParams, MediaItem, SearchResult } from '../../models/Search';
-import { AllItemActions, DetailedItem } from '../../models/Item';
+import { AllItemActions, ContentItem } from '../../models/Item';
 import { generateMultipleItemOptions, generateSingleItemOptions, itemActionDispatcher } from '../../utils/itemActions';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
@@ -36,7 +36,8 @@ import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
 import { fetchContentXML } from '../../services/content';
 import { getPreviewURLFromPath } from '../../utils/path';
-import useFetchSandboxItems from '../../hooks/useFetchSandboxItems';
+import { IconButtonProps } from '@mui/material/IconButton';
+import useFetchContentItems from '../../hooks/useFetchContentItems';
 
 export const drawerWidth = 300;
 
@@ -62,28 +63,26 @@ export const actionsToBeShown: AllItemActions[] = [
 	'history'
 ];
 
-export interface URLDrivenSearchProps {
+export interface BaseSearchProps {
+	mode: 'default' | 'select';
+	embedded: boolean;
+	onClose(): void;
+	onSelect(path: string, selected: boolean): void;
+	onAcceptSelection(paths: string[], items: MediaItem[]): void;
+}
+
+export interface URLDrivenSearchProps extends Partial<BaseSearchProps> {
 	location: Location;
-	mode?: 'default' | 'select';
-	embedded?: boolean;
-	onClose?(): void;
-	onSelect?(path: string, selected: boolean): any;
-	onAcceptSelection?(items: string[]): any;
 }
 
 export interface SearchParameters extends Partial<ElasticParams> {
 	path?: string;
 }
 
-export interface SearchProps {
-	mode?: 'default' | 'select';
-	embedded?: boolean;
+export interface SearchProps extends Partial<BaseSearchProps> {
 	initialParameters?: SearchParameters;
 	preselectedPaths?: string[];
 	disableChangePreselected?: boolean;
-	onClose?(): void;
-	onSelect?(path: string, selected: boolean): any;
-	onAcceptSelection?(items: string[]): any;
 }
 
 export interface CheckedFilter {
@@ -156,18 +155,17 @@ export const deserializeSearchFilters = (filters) => {
 	return deserializedFilters;
 };
 
-interface UseSearchStateHookProps {
+export interface UseSearchStateHookProps extends Pick<BaseSearchProps, 'onSelect'> {
 	searchParameters: ElasticParams;
 	preselectedPaths?: string[];
 	disableChangePreselected?: SearchProps['disableChangePreselected'];
-	onSelect?(path: string, selected: boolean): any;
 }
 
-interface useSearchStateReturn {
+export interface UseSearchStateReturn {
 	selected: string[];
 	areAllSelected: boolean;
 	selectionOptions: ContextMenuOption[];
-	itemsByPath: LookupTable<DetailedItem>;
+	itemsByPath: LookupTable<ContentItem>;
 	guestBase: string;
 	searchResults: SearchResult;
 	selectedPath: string;
@@ -176,7 +174,7 @@ interface useSearchStateReturn {
 	currentView: 'grid' | 'list';
 	isFetching: boolean;
 	onActionClicked(option: AllItemActions, event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
-	onHeaderButtonClick(event: any, item: MediaItem): void;
+	onHeaderButtonClick(event: Parameters<IconButtonProps['onClick']>[0], item: MediaItem): void;
 	handleClearSelected(): void;
 	handleSelect(path: string, isSelected: boolean): void;
 	handleSelectAll(checked: boolean): void;
@@ -208,7 +206,7 @@ export const useSearchState = ({
 	preselectedPaths = [],
 	disableChangePreselected = true,
 	onSelect
-}: UseSearchStateHookProps): useSearchStateReturn => {
+}: UseSearchStateHookProps): UseSearchStateReturn => {
 	const { formatMessage } = useIntl();
 	const dispatch = useDispatch();
 	const clipboard = useSelection((state) => state.content.clipboard);
@@ -217,7 +215,7 @@ export const useSearchState = ({
 	const [selected, setSelected] = useState<string[]>(preselectedPaths);
 	const [searchResults, setSearchResults] = useState<SearchResult>(null);
 	const [selectedPath, setSelectedPath] = useState<string>(searchParameters.path ?? '');
-	useFetchSandboxItems(selected);
+	useFetchContentItems(selected);
 	const { itemsBeingFetchedByPath, itemsByPath } = useSelection((state) => state.content);
 	const isFetching = selected.some((path) => itemsBeingFetchedByPath[path]);
 	const [drawerOpen, setDrawerOpen] = useState(window.innerWidth > 960);
@@ -257,13 +255,13 @@ export const useSearchState = ({
 
 	const onActionClicked = (option: AllItemActions, event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
 		if (selected.length > 1) {
-			const detailedItems = [];
+			const contentItems = [];
 			selected.forEach((path) => {
-				itemsByPath?.[path] && detailedItems.push(itemsByPath[path]);
+				itemsByPath?.[path] && contentItems.push(itemsByPath[path]);
 			});
 			itemActionDispatcher({
 				site,
-				item: detailedItems,
+				item: contentItems,
 				option,
 				authoringBase,
 				dispatch,
@@ -297,7 +295,7 @@ export const useSearchState = ({
 				numOfLoaderItems: getNumOfMenuOptionsForItem({
 					path: item.path,
 					systemType: getSystemTypeFromPath(item.path)
-				} as DetailedItem)
+				} as ContentItem)
 			})
 		);
 	};

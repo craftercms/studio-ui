@@ -18,9 +18,9 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { DetailedItem, SandboxItem } from '../../models/Item';
+import { ContentItem } from '../../models/Item';
 import { getParentPath, getRootPath, withoutIndex } from '../../utils/path';
-import { createFolder, fetchSandboxItem, renameFolder } from '../../services/content';
+import { checkPathExistence, createFolder, renameFolder } from '../../services/content';
 import { batchActions } from '../../state/actions/misc';
 import { updateCreateFolderDialog } from '../../state/actions/dialogs';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
@@ -57,13 +57,13 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
 	const site = useActiveSiteId();
 	const { formatMessage } = useIntl();
 	const [openSelector, setOpenSelector] = useState(false);
-	const [selectedItem, setSelectedItem] = useState<DetailedItem>(null);
+	const [selectedItem, setSelectedItem] = useState<ContentItem>(null);
 	const path = useMemo(() => {
 		return selectedItem ? withoutIndex(selectedItem.path) : withoutIndex(props.path);
 	}, [props.path, selectedItem]);
-	// When folder name changes, path prop will still be the previous one, and useDetailedItem will try to re-fetch the
+	// When folder name changes, path prop will still be the previous one, and useFetchItem will try to re-fetch the
 	// non-existing item (old folder name path), so we will only re-fetch when the actual path prop of the component
-	// changes (useDetailedItemNoState).
+	// changes.
 	const item = useFetchItem(path);
 	const itemLookupTable = useItemsByPath();
 	const newFolderPath = `${rename ? getParentPath(path) : path}/${name}`;
@@ -155,13 +155,13 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
 					}
 					const pathToCheckExists = modifiedValue ?? `${parentPath}/${name}`;
 					setItemExists(false);
-					return fetchSandboxItem(site, pathToCheckExists).pipe(map((item) => [validationResult, item]));
+					return checkPathExistence(site, pathToCheckExists).pipe(map((exists) => [validationResult, exists]));
 				})
 			)
 			.subscribe({
-				next([{ modifiedValue, message }, item]) {
+				next([{ modifiedValue, message }, exists]) {
 					// Note: Block of guard statements (each if ends function)
-					if (item) {
+					if (exists) {
 						setItemExists(true);
 						dispatch(updateCreateFolderDialog({ isSubmitting: false }));
 						return;
@@ -208,7 +208,7 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
 			dispatch(updateCreateFolderDialog({ hasPendingChanges: newHasPendingChanges }));
 	};
 
-	const itemSelectorFilterChildren = useMemo(() => (item: SandboxItem) => item.availableActionsMap.createFolder, []);
+	const itemSelectorFilterChildren = useMemo(() => (item: ContentItem) => item.availableActionsMap.createFolder, []);
 
 	const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
 

@@ -87,7 +87,7 @@ import { contentEvent, lockContentEvent } from '@craftercms/studio-ui/state/acti
 import { NotFunction, ReducerWithInitialState } from '@reduxjs/toolkit/src/createReducer';
 import StandardAction from '@craftercms/studio-ui/models/StandardAction';
 import { getParentModelId } from '../../utils/ice';
-import { getCachedModels, getCachedSandboxItems, modelHierarchyMap } from '../../contentController';
+import { getCachedModels, getCachedContentItems, modelHierarchyMap } from '../../contentController';
 import { isEditActionAvailable } from '../../utils/util';
 
 type CaseReducer<S = GuestState, A extends GuestStandardAction = GuestStandardAction> = Reducer<S, A>;
@@ -163,7 +163,7 @@ const reducerForAssetDragStarted: CaseReducer<
 			!isEditActionAvailable({
 				record,
 				models: getCachedModels(),
-				sandboxItemsByPath: getCachedSandboxItems(),
+				contentItemsByPath: getCachedContentItems(),
 				parentModelId: getParentModelId(record.modelId, getCachedModels(), modelHierarchyMap)
 			})
 		) {
@@ -599,7 +599,7 @@ const reducer = createReducer(initialState, {
 			return isEditActionAvailable({
 				record: iceRecord,
 				models: getCachedModels(),
-				sandboxItemsByPath: getCachedSandboxItems(),
+				contentItemsByPath: getCachedContentItems(),
 				parentModelId: getParentModelId(iceRecord.modelId, getCachedModels(), modelHierarchyMap)
 			});
 		});
@@ -636,7 +636,7 @@ const reducer = createReducer(initialState, {
 					!isEditActionAvailable({
 						record,
 						models: getCachedModels(),
-						sandboxItemsByPath: getCachedSandboxItems(),
+						contentItemsByPath: getCachedContentItems(),
 						parentModelId: getParentModelId(record.modelId, getCachedModels(), modelHierarchyMap)
 					}) || hierarchyMap[record.modelId]?.children.includes(instanceId)
 				);
@@ -820,7 +820,7 @@ const reducer = createReducer(initialState, {
 	) => {
 		const lockedPaths = { ...state.lockedPaths };
 		// const itemsByPath = { ...state.itemsByPath };
-		payload.sandboxItems.forEach((item) => {
+		payload.contentItems.forEach((item) => {
 			if (item.stateMap.locked) {
 				lockedPaths[item.path] = { user: item.lockOwner };
 			}

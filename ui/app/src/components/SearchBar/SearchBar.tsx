@@ -14,14 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useRef, useState } from 'react';
+import React, { CSSProperties, useRef, useState } from 'react';
 import IconButton from '@mui/material/IconButton';
 import InputBase, { inputBaseClasses, InputBaseProps } from '@mui/material/InputBase';
 import SearchIcon from '@mui/icons-material/SearchRounded';
 import CloseIcon from '@mui/icons-material/Close';
 import { defineMessages, useIntl } from 'react-intl';
-import { Paper } from '@mui/material';
+import Paper, { PaperProps } from '@mui/material/Paper';
 import { PartialSxRecord } from '../../models';
+import { consolidateSx } from '../../utils/system';
 
 const messages = defineMessages({
 	placeholder: {
@@ -33,6 +34,8 @@ const messages = defineMessages({
 export type SearchBarClassKey = 'root' | 'inputRoot' | 'inputInput' | 'actionIcon';
 
 interface SearchBarProps {
+	sx?: PaperProps['sx'];
+	dense?: boolean;
 	keyword: string[] | string;
 	showActionButton?: boolean;
 	actionButtonIcon?: any;
@@ -44,6 +47,7 @@ interface SearchBarProps {
 	disabled?: boolean;
 	classes?: Partial<Record<SearchBarClassKey, string>>;
 	sxs?: PartialSxRecord<SearchBarClassKey>;
+	styles?: Partial<Record<SearchBarClassKey, CSSProperties>>;
 	onBlur?(): void;
 	onClick?(e: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
 	onChange(value: string, event: React.SyntheticEvent): void;
@@ -70,7 +74,8 @@ export function SearchBar(props: SearchBarProps) {
 		onDecoratorButtonClick,
 		onBlur,
 		onClick,
-		sxs
+		sxs,
+		dense
 	} = props;
 	const [focus, setFocus] = useState(false);
 	const { formatMessage } = useIntl();
@@ -82,31 +87,35 @@ export function SearchBar(props: SearchBarProps) {
 			variant={focus ? 'elevation' : 'outlined'}
 			elevation={focus ? 4 : 0}
 			className={[focus && 'focus', showActionButton && 'noPadded', props.classes?.root].filter(Boolean).join(' ')}
-			sx={{
-				position: 'relative',
-				background: (theme) => props.backgroundColor ?? theme.palette.background.default,
-				display: 'flex',
-				alignItems: 'center',
-				padding: '0 12px',
-				borderRadius: '5px',
-				'&.focus': {
-					backgroundColor: (theme) => theme.palette.background.paper,
-					border: '1px solid transparent'
+			sx={consolidateSx(
+				{
+					position: 'relative',
+					background: (theme) => props.backgroundColor ?? theme.palette.background.default,
+					display: 'flex',
+					alignItems: 'center',
+					padding: '0 12px',
+					borderRadius: '5px',
+					'&.focus': {
+						backgroundColor: (theme) => theme.palette.background.paper,
+						border: '1px solid transparent'
+					},
+					'&.noPadded': {
+						padding: '0 0 0 12px'
+					},
+					...sxs?.root
 				},
-				'&.noPadded': {
-					padding: '0 0 0 12px'
-				},
-				...sxs?.root
-			}}
+				props.sx
+			)}
 		>
 			{showDecoratorIcon && onDecoratorButtonClick ? (
 				<IconButton onClick={onDecoratorButtonClick} size="large">
 					<DecoratorIcon sx={{ color: (theme) => theme.palette.text.secondary }} />
 				</IconButton>
 			) : (
-				<DecoratorIcon sx={{ color: (theme) => theme.palette.text.secondary }} />
+				<DecoratorIcon sx={{ color: (theme) => theme.palette.text.secondary }} fontSize="small" />
 			)}
 			<InputBase
+				size="small"
 				onChange={(e) => onChange(e.target.value, e)}
 				onKeyDown={onKeyDown}
 				onKeyPress={(e) => onKeyPress?.(e.key)}
@@ -123,24 +132,30 @@ export function SearchBar(props: SearchBarProps) {
 					root: props.classes?.inputRoot,
 					input: props.classes?.inputInput
 				}}
-				sx={{
-					flexGrow: 1,
-					background: 'transparent',
-					'&:focus': {
-						backgroundColor: (theme) => theme.palette.background.paper
-					},
-					...sxs?.inputRoot,
-					[`& .${inputBaseClasses.input}`]: {
-						background: 'none',
-						border: 'none',
-						width: '100%',
-						padding: '10px 5px',
+				sx={consolidateSx(
+					{
+						flexGrow: 1,
+						background: 'transparent',
 						'&:focus': {
-							boxShadow: 'none'
-						},
-						...sxs?.inputInput
+							backgroundColor: (theme) => theme.palette.background.paper
+						}
+					},
+					sxs?.inputRoot,
+					{
+						[`& .${inputBaseClasses.input}`]: consolidateSx(
+							{
+								background: 'none',
+								border: 'none',
+								width: '100%',
+								padding: (theme) => (dense ? theme.spacing(0.7, 0.625) : theme.spacing(1.25, 0.625)),
+								'&:focus': {
+									boxShadow: 'none'
+								}
+							},
+							sxs?.inputInput
+						)
 					}
-				}}
+				)}
 				inputProps={{
 					'aria-label': finalPlaceholder,
 					ref: inputRef
@@ -158,16 +173,19 @@ export function SearchBar(props: SearchBarProps) {
 						)(e, inputRef.current);
 					}}
 					sx={{ padding: '6px' }}
-					size="large"
+					size="small"
 				>
 					<ActionButtonIcon
+						fontSize="small"
 						className={props.classes?.actionIcon}
-						sx={{
-							fontSize: '25px',
-							color: (theme) => theme.palette.text.secondary,
-							cursor: 'pointer',
-							...sxs?.actionIcon
-						}}
+						sx={consolidateSx(
+							{
+								fontSize: '25px',
+								color: (theme) => theme.palette.text.secondary,
+								cursor: 'pointer'
+							},
+							sxs?.actionIcon
+						)}
 					/>
 				</IconButton>
 			)}
