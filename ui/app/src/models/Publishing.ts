@@ -17,6 +17,7 @@
 import LookupTable from './LookupTable';
 import { PackageApprovalState } from '../services/publishing';
 import Person from './Person';
+import { LightItem } from './Item';
 
 export type PublishingTargets = 'live' | 'staging';
 
@@ -128,9 +129,9 @@ export interface PublishingItem {
 	stagingPreviousPath: string;
 	userRequested: boolean;
 	itemMetadata: {
-		label: string;
-		systemType: string;
-		mimeType: string;
+		label: LightItem['label'];
+		systemType: LightItem['systemType'];
+		mimeType: LightItem['mimeType'];
 	};
 }
 

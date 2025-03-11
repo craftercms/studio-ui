@@ -15,7 +15,7 @@
  */
 
 import React, { useState } from 'react';
-import { ContentItem } from '../../models';
+import { ContentItem, LightItem } from '../../models';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import ItemDisplay from '../ItemDisplay';
@@ -25,17 +25,16 @@ import IconButton from '@mui/material/IconButton';
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
 import InfiniteLoader from 'react-window-infinite-loader';
 import { FixedSizeList as List } from 'react-window';
-import { PackageItem } from './PackageItems';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import Box from '@mui/material/Box';
 
 export interface PackageItemsListProps {
-	items: PackageItem[];
+	items: LightItem[];
 	totalItems: number;
 	hasNextPage: boolean;
 	isNextPageLoading: boolean;
 	loadNextPage(): void;
-	onOpenMenu(e: React.MouseEvent<HTMLButtonElement>, item: PackageItem): void;
+	onOpenMenu(e: React.MouseEvent<HTMLButtonElement>, item: LightItem): void;
 }
 
 export function PackageItemsList(props: PackageItemsListProps) {
