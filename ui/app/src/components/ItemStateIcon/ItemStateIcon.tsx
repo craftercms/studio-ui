@@ -49,7 +49,7 @@ export type ItemStateIconClassKey =
 	| 'stateNotInWorkflow';
 
 export interface ItemStateIconProps {
-	item: Pick<ContentItem, 'mimeType' | 'systemType' | 'stateMap' | 'lockOwner'>;
+	item: Pick<ContentItem, 'systemType' | 'stateMap' | 'lockOwner'>;
 	classes?: Partial<Record<ItemStateIconClassKey, string>>;
 	sxs?: PartialSxRecord<ItemStateIconClassKey>;
 	className?: string;
