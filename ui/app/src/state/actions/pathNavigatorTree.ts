@@ -15,7 +15,7 @@
  */
 
 import { createAction } from '@reduxjs/toolkit';
-import { DetailedItem } from '../../models/Item';
+import { ContentItem } from '../../models/Item';
 import { AjaxError } from 'rxjs/ajax';
 import { GetChildrenResponse } from '../../models/GetChildrenResponse';
 import { GetChildrenOptions } from '../../models/GetChildrenOptions';
@@ -54,7 +54,7 @@ export const pathNavigatorTreeRestore = /*#__PURE__*/ createAction<PayloadWithId
 export type PathNavigatorTreeRestoreCompletePayload = PayloadWithId<{
 	expanded: string[];
 	collapsed: boolean;
-	items: DetailedItem[];
+	items: ContentItem[];
 	children: LookupTable<GetChildrenResponse>;
 }>;
 
@@ -145,7 +145,7 @@ export const pathNavigatorTreeUpdate = /*#__PURE__*/ createAction<
 	PayloadWithId<{
 		expanded?: string[];
 		collapsed?: boolean;
-		items?: DetailedItem[];
+		items?: ContentItem[];
 		data?: LookupTable<GetChildrenResponse>;
 		sortStrategy?: GetChildrenOptions['sortStrategy'];
 		order?: GetChildrenOptions['order'];

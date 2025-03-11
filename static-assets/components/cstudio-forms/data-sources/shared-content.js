@@ -279,7 +279,7 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
 	edit: function (key, control, index, callback) {
 		var _self = this;
 		craftercms.getStore().dispatch({ type: 'BLOCK_UI' });
-		craftercms.services.content.fetchSandboxItem(CStudioAuthoringContext.site, key).subscribe({
+		craftercms.services.content.fetchContentItem(CStudioAuthoringContext.site, key).subscribe({
 			next(sandboxItem) {
 				const readonly = !sandboxItem.availableActionsMap.edit;
 				const action =

@@ -36,7 +36,7 @@ import {
 	StableGlobalContext,
 	StableGlobalContextProps
 } from './lib/formsEngineContext';
-import { fetchDetailedItemComplete } from '../../state/actions/content';
+import { fetchContentItemComplete } from '../../state/actions/content';
 import { catchError, of } from 'rxjs';
 import LoadingState from '../LoadingState';
 import Paper, { paperClasses } from '@mui/material/Paper';
@@ -66,7 +66,7 @@ import useUpdateRefs from '../../hooks/useUpdateRefs';
 import { Fade } from '@mui/material';
 import AlertTitle from '@mui/material/AlertTitle';
 import { pushDialog } from '../../state/actions/dialogStack';
-import useFetchSandboxItems from '../../hooks/useFetchSandboxItems';
+import useFetchContentItems from '../../hooks/useFetchContentItems';
 import ErrorBoundary from '../ErrorBoundary';
 import { debounceTime } from 'rxjs/operators';
 import { atom, createStore, Provider, useAtom, useAtomValue, useStore as useJotaiStore } from 'jotai';
@@ -457,7 +457,7 @@ function FormBootstrap(props: FormsEngineProps) {
 					if (typeof requirements === 'symbol') {
 						return setPrepError(requirements);
 					}
-					dispatch(fetchDetailedItemComplete(requirements.item));
+					dispatch(fetchContentItemComplete({ item: requirements.item }));
 					const lockResultAtom = atom<FormsEngineEditContextProps>({
 						locked: requirements.locked,
 						lockError: requirements.lockError,
@@ -616,7 +616,7 @@ function FormOrchestrator(props: FormsEngineProps) {
 	}, [changedFieldIds, contentType.fields, effectRefs, setHasPendingChanges, fieldUpdates$, store, isCreateMode]);
 
 	const sourceMapPaths = useMemo(() => Object.values(sourceMap ?? []).sort(), [sourceMap]);
-	useFetchSandboxItems(sourceMapPaths);
+	useFetchContentItems(sourceMapPaths);
 
 	// If rendered in a dialog, update the dialog's isSubmitting and hasPendingChanges. Only the root form.
 	// Stacked forms have their own changes and submit state management.

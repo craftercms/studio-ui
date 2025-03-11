@@ -30,7 +30,7 @@ import { ApiResponse } from './ApiResponse';
 import { VersionsStateProps } from './Version';
 import QuickCreateItem from './content/QuickCreateItem';
 import { PathNavigatorStateProps } from '../components/PathNavigator';
-import { DetailedItem } from './Item';
+import { ContentItem } from './Item';
 import { CopyDialogStateProps } from '../components/CopyDialog/utils';
 import { PathSelectionDialogStateProps } from '../components/PathSelectionDialog/PathSelectionDialog';
 import { WidgetDescriptor } from './WidgetDescriptor';
@@ -151,7 +151,7 @@ export interface GlobalState {
 			isFetching: boolean;
 			items: QuickCreateItem[];
 		};
-		itemsByPath: LookupTable<DetailedItem>;
+		itemsByPath: LookupTable<ContentItem>;
 		clipboard: Clipboard;
 		itemsBeingFetchedByPath: LookupTable<boolean>;
 	};

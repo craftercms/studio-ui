@@ -17,7 +17,7 @@
 import { createAction } from '@reduxjs/toolkit';
 import QuickCreateItem from '../../models/content/QuickCreateItem';
 import { AjaxError } from 'rxjs/ajax';
-import { DetailedItem, SandboxItem } from '../../models/Item';
+import { ContentItem } from '../../models/Item';
 import StandardAction from '../../models/StandardAction';
 
 // region Quick Create
@@ -28,59 +28,38 @@ export const fetchQuickCreateListComplete = /*#__PURE__*/ createAction<QuickCrea
 export const fetchQuickCreateListFailed = /*#__PURE__*/ createAction('FETCH_QUICK_CREATE_LIST_FAILED');
 // endregion
 
-// region Detailed Item
+// region Content Item
 
-export const fetchDetailedItem = /*#__PURE__*/ createAction<{ path: string }>('FETCH_DETAILED_ITEM');
+export const fetchContentItem = /*#__PURE__*/ createAction<{ path: string }>('FETCH_CONTENT_ITEM');
 
-export const reloadDetailedItem = /*#__PURE__*/ createAction<{ path: string }>('RELOAD_DETAILED_ITEM');
+export const reloadContentItem = /*#__PURE__*/ createAction<{ path: string }>('RELOAD_CONTENT_ITEM');
 
-export const completeDetailedItem = /*#__PURE__*/ createAction<{ path: string; force?: boolean }>(
-	'COMPLETE_DETAILED_ITEM'
+export const fetchContentItemComplete = /*#__PURE__*/ createAction<{ item: ContentItem }>(
+	'FETCH_CONTENT_ITEM_COMPLETE'
 );
 
-export const fetchDetailedItemComplete = /*#__PURE__*/ createAction<DetailedItem>('FETCH_DETAILED_ITEM_COMPLETE');
-
-export const fetchDetailedItemFailed = /*#__PURE__*/ createAction<AjaxError>('FETCH_DETAILED_ITEM_FAILED');
-
-export const fetchDetailedItems = /*#__PURE__*/ createAction<{ paths: string[] }>('COMPLETE_DETAILED_ITEMS');
-
-export const fetchDetailedItemsComplete = /*#__PURE__*/ createAction<{ items: DetailedItem[] }>(
-	'FETCH_DETAILED_ITEMS_COMPLETE'
-);
-
-export const fetchDetailedItemsFailed = /*#__PURE__*/ createAction<AjaxError>('FETCH_DETAILED_ITEMS_FAILED');
+export const fetchContentItemFailed = /*#__PURE__*/ createAction<AjaxError>('FETCH_CONTENT_ITEM_FAILED');
 
 // endregion
 
-// region Sandbox Item
+// region Content Items
 
-export type FetchSandboxItemPayload = { path: string };
+export type FetchContentItemsPayload = { paths: string[] };
 
-export type FetchSandboxItemsPayload = { paths: string[] };
+export const fetchContentItems = /*#__PURE__*/ createAction<FetchContentItemsPayload>('FETCH_CONTENT_ITEMS');
 
-export const fetchSandboxItem = /*#__PURE__*/ createAction<FetchSandboxItemPayload>('FETCH_SANDBOX_ITEM');
+export type FetchContentItemsCompletePayload = { items: ContentItem[] };
 
-export const fetchSandboxItems = /*#__PURE__*/ createAction<FetchSandboxItemsPayload>('FETCH_SANDBOX_ITEMS');
+export const fetchContentItemsComplete =
+	/*#__PURE__*/ createAction<FetchContentItemsCompletePayload>('FETCH_CONTENT_ITEMS_COMPLETE');
 
-export type FetchSandboxItemCompletePayload = { item: SandboxItem };
+export const fetchContentItemsFailed = /*#__PURE__*/ createAction<AjaxError>('FETCH_CONTENT_ITEMS_FAILED');
 
-export type FetchSandboxItemsCompletePayload = { items: SandboxItem[] };
-
-export const fetchSandboxItemComplete =
-	/*#__PURE__*/ createAction<FetchSandboxItemCompletePayload>('FETCH_SANDBOX_ITEM_COMPLETE');
-
-export const fetchSandboxItemsComplete =
-	/*#__PURE__*/ createAction<FetchSandboxItemsCompletePayload>('FETCH_SANDBOX_ITEMS_COMPLETE');
-
-export const fetchSandboxItemFailed = /*#__PURE__*/ createAction<AjaxError>('FETCH_SANDBOX_ITEM_FAILED');
-
-export const fetchSandboxItemsFailed = /*#__PURE__*/ createAction<AjaxError>('FETCH_SANDBOX_ITEMS_FAILED');
-
-export const sandboxItemsMissing = /*#__PURE__*/ createAction<{ paths: string[] }>('SANDBOX_ITEMS_MISSING');
+export const contentItemsMissing = /*#__PURE__*/ createAction<{ paths: string[] }>('CONTENT_ITEMS_MISSING');
 
 // endregion
 
-export const updateItemsByPath = /*#__PURE__*/ createAction<{ items: SandboxItem[] }>('UPDATE_ITEMS_BY_PATH');
+export const updateItemsByPath = /*#__PURE__*/ createAction<{ items: ContentItem[] }>('UPDATE_ITEMS_BY_PATH');
 
 // region Clipboard
 
@@ -135,11 +114,11 @@ export const conditionallyUnlockItem = /*#__PURE__*/ createAction<{ path: string
 	'CONDITIONALLY_UNLOCK_ITEM'
 );
 
-export const deleteController = /*#__PURE__*/ createAction<{ item: DetailedItem; onSuccess?: StandardAction }>(
+export const deleteController = /*#__PURE__*/ createAction<{ item: ContentItem; onSuccess?: StandardAction }>(
 	'DELETE_CONTROLLER'
 );
 
-export const deleteTemplate = /*#__PURE__*/ createAction<{ item: DetailedItem; onSuccess?: StandardAction }>(
+export const deleteTemplate = /*#__PURE__*/ createAction<{ item: ContentItem; onSuccess?: StandardAction }>(
 	'DELETE_TEMPLATE'
 );
 

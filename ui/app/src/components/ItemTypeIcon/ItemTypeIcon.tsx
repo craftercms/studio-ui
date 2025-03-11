@@ -36,14 +36,14 @@ import TextIcon from '@mui/icons-material/SubjectRounded';
 import FolderIcon from '@mui/icons-material/FolderOpenRounded';
 import TaxonomyIcon from '@mui/icons-material/LocalOfferOutlined';
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
-import { SandboxItem } from '../../models/Item';
+import { ContentItem } from '../../models/Item';
 import { IntlFormatters, useIntl } from 'react-intl';
 import { messages } from './translations';
 import { SvgIconProps } from '@mui/material/SvgIcon';
 import { BoxProps } from '@mui/material/Box';
 
 export interface ItemTypeIconProps extends SvgIconProps {
-	item: Pick<SandboxItem, 'systemType' | 'mimeType'>;
+	item: Pick<ContentItem, 'systemType' | 'mimeType'>;
 	tooltipProps?: Partial<TooltipProps>;
 	sxs?: Partial<{
 		icon: BoxProps['sx'];
@@ -51,7 +51,7 @@ export interface ItemTypeIconProps extends SvgIconProps {
 }
 
 export function getItemTypeText(
-	item: Pick<SandboxItem, 'systemType' | 'mimeType'>,
+	item: Pick<ContentItem, 'systemType' | 'mimeType'>,
 	formatMessage: IntlFormatters['formatMessage']
 ) {
 	return messages[item.systemType]

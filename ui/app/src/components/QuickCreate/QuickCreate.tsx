@@ -31,7 +31,7 @@ import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
 import QuickCreateItem from '../../models/content/QuickCreateItem';
 import palette from '../../styles/palette';
 import Tooltip from '@mui/material/Tooltip';
-import { DetailedItem } from '../../models/Item';
+import { ContentItem } from '../../models/Item';
 import { useSelection } from '../../hooks/useSelection';
 import { usePreviewState } from '../../hooks/usePreviewState';
 import { useItemsByPath } from '../../hooks/useItemsByPath';
@@ -57,7 +57,7 @@ const translations = defineMessages({
 
 interface QuickCreateMenuProps {
 	open: boolean;
-	item?: DetailedItem;
+	item?: ContentItem;
 	anchorEl: HTMLElement;
 	onNewContentSelected?(): void;
 	onQuickCreateItemSelected?(props: {
@@ -246,7 +246,7 @@ const QuickCreateMenuButton = forwardRef<HTMLButtonElement, QuickCreateMenuButto
 	);
 });
 
-const QuickCreate = forwardRef<HTMLButtonElement, { item?: DetailedItem }>((props, ref) => {
+const QuickCreate = forwardRef<HTMLButtonElement, { item?: ContentItem }>((props, ref) => {
 	const { item } = props;
 	const [anchorEl, setAnchorEl] = useState(null);
 	const [currentPreviewItemPath, setCurrentPreviewItemPath] = useState<string>(null);

@@ -80,7 +80,7 @@ export function DeleteDialogUIBody(props: DeleteDialogContentUIProps) {
 					</ListItem>
 					{dependentItems.length ? (
 						<List>
-							{dependentItems.map((path) => {
+							{dependentItems.map(({ path }) => {
 								return (
 									<ListItem
 										dense
@@ -136,7 +136,7 @@ export function DeleteDialogUIBody(props: DeleteDialogContentUIProps) {
 						title={<FormattedMessage id="deleteDialog.childItemsText" defaultMessage="Child Items" />}
 						subtitle={<FormattedMessage id="deleteDialog.willGetDeleted" defaultMessage="Will get deleted" />}
 						emptyMessage={<FormattedMessage id="deleteDialog.emptyChildItems" defaultMessage="No child items" />}
-						paths={childItems}
+						paths={childItems.map(({ path }) => path)}
 						displayItemTitle={false}
 					/>
 				</Box>

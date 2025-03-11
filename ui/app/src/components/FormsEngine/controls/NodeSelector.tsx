@@ -75,7 +75,7 @@ import { useDispatch } from 'react-redux';
 import { nanoid } from 'nanoid';
 import useUpdateRefs from '../../../hooks/useUpdateRefs';
 import { SearchProps } from '../../Search';
-import useFetchSandboxItems from '../../../hooks/useFetchSandboxItems';
+import useFetchContentItems from '../../../hooks/useFetchContentItems';
 import useItemsByPath from '../../../hooks/useItemsByPath';
 import ItemDisplay from '../../ItemDisplay';
 import useActiveUser from '../../../hooks/useActiveUser';
@@ -457,7 +457,7 @@ const showSearchDialog = ({
 
 function NodeSelector(props: NodeSelectorProps) {
 	const { field, contentType, value, setValue, readonly, autoFocus } = props;
-	useFetchSandboxItems(value.flatMap((item) => item.include ?? []));
+	useFetchContentItems(value.flatMap((item) => item.include ?? []));
 	const [sortMode, setSortMode] = useState(false);
 	const useTouchSorting = useMemo(() => isTouchDevice(), []);
 	const handleCancelReorder = () => setSortMode(false);

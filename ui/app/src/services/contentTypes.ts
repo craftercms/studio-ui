@@ -33,8 +33,8 @@ import { forkJoin, Observable, of } from 'rxjs';
 import { errorSelectorApi1, get, getBinary, post, postJSON } from '../utils/ajax';
 import { catchError, map, switchMap } from 'rxjs/operators';
 import { createLookupTable, nou, toQueryString } from '../utils/object';
-import { fetchItemsByPath } from './content';
-import { SandboxItem } from '../models/Item';
+import { fetchContentItems } from './content';
+import { ContentItem } from '../models/Item';
 import { fetchConfigurationDOM, fetchConfigurationJSON, writeConfiguration } from './configuration';
 import { beautify, deserialize, entityEncodingTagValueProcessor, serialize } from '../utils/xml';
 import { stripDuplicateSlashes } from '../utils/path';
@@ -524,7 +524,7 @@ export function fetchLegacyContentTypes(site: string, path?: string): Observable
 	);
 }
 
-export interface FetchContentTypeUsageResponse<T = SandboxItem> {
+export interface FetchContentTypeUsageResponse<T = ContentItem> {
 	templates: T[];
 	scripts: T[];
 	content: T[];
@@ -540,7 +540,7 @@ export function fetchContentTypeUsage(site: string, contentTypeId: string): Obse
 			usage.templates.length + usage.scripts.length + usage.content.length === 0
 				? // @ts-ignore - avoiding creating new object with the exact same structure just for typescript's sake
 					of(usage as FetchContentTypeUsageResponse)
-				: fetchItemsByPath(site, [...usage.templates, ...usage.scripts, ...usage.content]).pipe(
+				: fetchContentItems(site, [...usage.templates, ...usage.scripts, ...usage.content]).pipe(
 						map((items) => {
 							const itemLookup = createLookupTable(items, 'path');
 							const mapper = (path) => itemLookup[path];
