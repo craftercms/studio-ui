@@ -26,7 +26,7 @@ import {
 	editController,
 	editTemplate
 } from '../actions/misc';
-import { changeContentType, createFile, fetchContentItems } from '../../services/content';
+import { changeContentType, createFile, fetchContentItem } from '../../services/content';
 import { showCodeEditorDialog, showEditDialog, showViewPackagesDialog } from '../actions/dialogs';
 import { reloadContentItem } from '../actions/content';
 import { blockUI, showEditItemSuccessNotification, unblockUI } from '../actions/system';
@@ -91,32 +91,34 @@ const epics = [
 				const destinationPath = editContentTypeTemplate.type === type ? getParentPath(path) : payload.path;
 				return merge(
 					of(blockUI({ message: getIntl().formatMessage(translations.verifyingAffectedWorkflows) })),
-					fetchContentItems(state.sites.active, [path]).pipe(
-						map((items) => items[0]),
+					fetchContentItem(state.sites.active, path).pipe(
 						map((item) =>
-							item
-								? isInActiveWorkflow(item)
-									? batchActions([
-											showViewPackagesDialog({
-												item,
-												onContinue: showCodeEditorDialog({
-													path,
-													mode,
-													contentType
-												})
-											}),
-											unblockUI()
-										])
-									: batchActions([
-											showCodeEditorDialog({
-												site: state.sites.active,
+							isInActiveWorkflow(item)
+								? batchActions([
+										showViewPackagesDialog({
+											item,
+											onContinue: showCodeEditorDialog({
 												path,
 												mode,
 												contentType
-											}),
-											unblockUI()
-										])
-								: createFileAction({
+											})
+										}),
+										unblockUI()
+									])
+								: batchActions([
+										showCodeEditorDialog({
+											site: state.sites.active,
+											path,
+											mode,
+											contentType
+										}),
+										unblockUI()
+									])
+						),
+						catchError(({ response }) => {
+							if (response.response.code === 7000) {
+								return of(
+									createFileAction({
 										path: destinationPath,
 										fileName,
 										onCreated: batchActions(
@@ -134,16 +136,17 @@ const epics = [
 											].filter(Boolean)
 										)
 									})
-						),
-						catchError(({ response }) => {
-							return of(
-								batchActions([
-									showErrorDialog({
-										error: response.response
-									}),
-									unblockUI()
-								])
-							);
+								);
+							} else {
+								return of(
+									batchActions([
+										showErrorDialog({
+											error: response.response
+										}),
+										unblockUI()
+									])
+								);
+							}
 						})
 					)
 				);

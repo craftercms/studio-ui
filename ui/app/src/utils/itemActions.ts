@@ -42,7 +42,7 @@ import {
 	showUploadDialog,
 	showViewPackagesDialog
 } from '../state/actions/dialogs';
-import { fetchContentItem, fetchContentItems, fetchLegacyItemsTree } from '../services/content';
+import { checkPathExistence, fetchContentItem, fetchContentItems, fetchLegacyItemsTree } from '../services/content';
 import {
 	batchActions,
 	changeContentType,
@@ -669,10 +669,9 @@ export const itemActionDispatcher = ({
 						message: `${formatMessage(translations.processing)}...`
 					})
 				);
-				fetchContentItems(site, [item.path]).subscribe({
-					next(items) {
-						const item = items?.[0];
-						if (item) {
+				checkPathExistence(site, item.path).subscribe({
+					next(exists) {
+						if (exists) {
 							dispatch(
 								batchActions([
 									unblockUI(),

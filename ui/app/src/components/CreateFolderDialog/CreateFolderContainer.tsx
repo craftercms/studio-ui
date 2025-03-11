@@ -20,7 +20,7 @@ import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { ContentItem } from '../../models/Item';
 import { getParentPath, getRootPath, withoutIndex } from '../../utils/path';
-import { createFolder, fetchContentItems, renameFolder } from '../../services/content';
+import { checkPathExistence, createFolder, renameFolder } from '../../services/content';
 import { batchActions } from '../../state/actions/misc';
 import { updateCreateFolderDialog } from '../../state/actions/dialogs';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
@@ -121,11 +121,10 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
 					if (allowed) {
 						const pathToCheckExists = modifiedValue ?? `${parentPath}/${name}`;
 						setItemExists(false);
-						fetchContentItems(site, [pathToCheckExists]).subscribe({
-							next: (items) => {
-								const item = items?.[0];
+						checkPathExistence(site, pathToCheckExists).subscribe({
+							next: (exists) => {
 								// TODO: The following sequence of ifs can be simplified
-								if (item) {
+								if (exists) {
 									setItemExists(true);
 									dispatch(updateCreateFolderDialog({ isSubmitting: false }));
 								} else {
