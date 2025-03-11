@@ -77,9 +77,9 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
 	const [selectedLookup, setSelectedLookup] = useSpreadState<LookupTable<MediaItem>>({});
 	const selectedArray = Object.keys(selectedLookup).filter((key) => selectedLookup[key]);
 	const selectedInCurrentPage = items?.filter((item) => selectedArray.includes(item.path));
-	const allSelectedInCurrentPage = (items && selectedInCurrentPage.length === items.length) ?? false;
+	const allSelectedInCurrentPage = items?.length > 0 && selectedInCurrentPage.length === items.length;
 	const someSelectedInCurrentPage =
-		(items && selectedInCurrentPage.length > 0 && selectedInCurrentPage.length < items?.length) ?? false;
+		(items?.length > 0 && selectedInCurrentPage.length > 0 && selectedInCurrentPage.length < items?.length) ?? false;
 	const browsePath = path.replace(/\/+$/, '');
 	const [currentPath, setCurrentPath] = useState(browsePath);
 	const [fetchingBrowsePathExists, setFetchingBrowsePathExists] = useState(false);
@@ -108,20 +108,22 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
 
 	useEffect(() => {
 		const query = preselectedPaths?.map((path) => `localId:"${path}"`).join(' ');
-		setFetchingPreselectedItems(true);
-		search(site, { query }).subscribe({
-			next: ({ items }) => {
-				if (multiSelect) {
-					setSelectedLookup(createLookupTable(items, 'path'));
-				} else if (items.length) {
-					setSelectedCard(items[0]);
+		if (query) {
+			setFetchingPreselectedItems(true);
+			search(site, { query }).subscribe({
+				next: ({ items }) => {
+					if (multiSelect) {
+						setSelectedLookup(createLookupTable(items, 'path'));
+					} else if (items.length) {
+						setSelectedCard(items[0]);
+					}
+					setFetchingPreselectedItems(false);
+				},
+				error: () => {
+					setFetchingPreselectedItems(false);
 				}
-				setFetchingPreselectedItems(false);
-			},
-			error: () => {
-				setFetchingPreselectedItems(false);
-			}
-		});
+			});
+		}
 	}, [site, preselectedPaths, multiSelect, setSelectedLookup]);
 
 	useEffect(() => {
