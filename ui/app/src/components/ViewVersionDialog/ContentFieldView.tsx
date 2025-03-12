@@ -91,7 +91,7 @@ export function ContentFieldView(props: ContentFieldViewProps) {
 			height: monacoEditorHeight
 		}
 	};
-	const noContentSet = ViewComponent !== Boolean && !content;
+	const noContentSet = ViewComponent !== BooleanView && !content;
 
 	return (
 		<Box sx={{ flexGrow: 1 }}>

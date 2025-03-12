@@ -33,10 +33,17 @@ export interface TextDiffViewProps extends Pick<DiffViewComponentBaseProps, 'aXm
 export function TextDiffView(props: TextDiffViewProps) {
 	const { aXml, bXml, field, editorProps } = props;
 	const contentTypes = useContentTypes();
-	const contentA =
-		aXml && field ? parseElementByContentType(fromString(aXml).querySelector(field.id), field, contentTypes, {}) : aXml;
-	const contentB =
-		bXml && field ? parseElementByContentType(fromString(bXml).querySelector(field.id), field, contentTypes, {}) : bXml;
+	const parseXmlContent = (xmlString, fieldId) => {
+		if (!xmlString || !fieldId) return null;
+		try {
+			return parseElementByContentType(fromString(xmlString).querySelector(fieldId), field, contentTypes, {});
+		} catch (error) {
+			console.error(`Error parsing XML for field ${fieldId}:`, error);
+			return xmlString;
+		}
+	};
+	const contentA = aXml && field ? parseXmlContent(aXml, field.id) : aXml;
+	const contentB = bXml && field ? parseXmlContent(bXml, field.id) : bXml;
 	const [{ fieldsViewState }] = useVersionsDialogContext();
 	const cleanText = field && fieldsViewState[field.id]?.cleanText;
 	const originalContent = cleanText ? removeTags(contentA ?? '') : contentA;
