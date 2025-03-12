@@ -3239,8 +3239,8 @@ const initializeCStudioForms = () => {
                   cb.success(undefined, formConfig);
                 }
               },
-              failure: function () {
-                cb.failure();
+              failure(e) {
+                cb?.failure(e);
               }
             }
           );
