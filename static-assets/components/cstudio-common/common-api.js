@@ -2589,52 +2589,6 @@ var nodeOpen = false,
         );
       },
 
-      uploadCMISAsset: function (site, path, repositoryId, uploadCb, fileTypes) {
-        CStudioAuthoring.Operations.openCMISUploadDialog(site, path, repositoryId, uploadCb, fileTypes);
-      },
-
-      /**
-       *  opens a dialog to upload an asset
-       */
-      openCMISUploadDialog: function (site, path, repositoryId, callback, fileTypes) {
-        var serviceUri = CStudioAuthoring.Service.writeCMISContentUri;
-
-        var openUploadDialogCb = {
-          moduleLoaded: function (moduleName, dialogClass, moduleConfig) {
-            dialogClass.showDialog(
-              moduleConfig.site,
-              moduleConfig.path,
-              moduleConfig.repo,
-              moduleConfig.serviceUri,
-              moduleConfig.callback,
-              moduleConfig.fileTypes
-            );
-          }
-        };
-
-        var moduleConfig = {
-          path: encodeURI(path),
-          site: site,
-          repo: repositoryId,
-          serviceUri: serviceUri,
-          fileTypes: fileTypes,
-          callback: callback
-        };
-
-        CSA.Utils.addCss('/static-assets/themes/cstudioTheme/css/icons.css');
-
-        CStudioAuthoring.Module.requireModule(
-          'upload-cmis-dialog',
-          '/static-assets/components/cstudio-dialogs/uploadCMIS-dialog.js',
-          moduleConfig,
-          openUploadDialogCb
-        );
-      },
-
-      uploadS3Asset: function (site, path, profileId, uploadCb, params) {
-        CStudioAuthoring.Operations.openS3UploadDialog(site, path, profileId, uploadCb, params);
-      },
-
       /**
        *  opens a dialog to upload an asset
        */
@@ -2820,9 +2774,6 @@ var nodeOpen = false,
       allowedContentTypesForPath: '/api/1/services/api/1/content/get-content-types.json',
 
       lookupFoldersServiceUri: '/api/1/services/api/1/content/get-pages.json', // NEED A SERVICE
-
-      //CMIS
-      writeCMISContentUri: '/api/2/cmis/upload',
 
       //WEBDAV
       writeWebDAVContentUri: '/api/2/webdav/upload',
