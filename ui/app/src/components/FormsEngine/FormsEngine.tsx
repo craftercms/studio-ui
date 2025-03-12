@@ -143,7 +143,7 @@ export interface BaseProps extends Partial<UpdateModeProps & RepeatModeProps & C
 		xml?: string;
 		values: LookupTable<unknown>;
 		versionComment: string;
-	}): Promise<FormSavePromiseResult> | undefined;
+	}): Promise<FormSavePromiseResult> | void;
 }
 
 export interface UpdateModeProps {
@@ -988,6 +988,8 @@ export default FormGuard;
 
 // TODO:
 //  - Need Jotai store per form so fields with same id across forms don't collide. Same goes for sections (or other UI state) that could collide across forms.
+//  - On editorial, saving home observed orderDefault_f get lost. Why? Also objectGroupId. Do we need to keep objectGroupId?
+//  - Folder name getting added for components
 //  - Reconcile/consolidate rte settings for form & XB
 //  - Implement default value & default value checks
 //  - Carry/implement current attributes (no-default, remote, others?). See valueSerializers => prepareValuesForXmlSerialising

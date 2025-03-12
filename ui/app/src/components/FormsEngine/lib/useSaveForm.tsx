@@ -46,7 +46,8 @@ export interface UseSaveFormProps {
 	onClose?(): void;
 }
 
-const defaultOnSave: FormsEngineProps['onSave'] = () => Promise.resolve({ close: false });
+const wrapOnSaveProp: (onSaveProp: FormsEngineProps['onSave']) => FormsEngineProps['onSave'] = (onSaveProp) => (args) =>
+	onSaveProp?.(args) ?? Promise.resolve({ close: false });
 
 export function useSaveForm(props: UseSaveFormProps) {
 	const jotai = useJotaiStore();
@@ -62,7 +63,7 @@ export function useSaveForm(props: UseSaveFormProps) {
 	const closeAfterSave = useAtomValue(stableFormContext.atoms.closeAfterSave);
 	const versionComment = useAtomValue(stableFormContext.atoms.versionComment);
 	const setHasPendingChanges = useSetAtom(stableFormContext.atoms.hasPendingChanges);
-	const onSave = props.onSave ?? defaultOnSave;
+	const onSave = wrapOnSaveProp(props.onSave);
 	return () => {
 		const values = extractAtomValues(jotai, stableFormContext.atoms.valueByFieldId);
 		const onSavePromiseHandler = ({ close }: FormSavePromiseResult) => {
@@ -76,7 +77,7 @@ export function useSaveForm(props: UseSaveFormProps) {
 		};
 		// Repeat handled here. If true, execution ends inside if statement.
 		if (isRepeatMode) {
-			onSave?.({ values, versionComment })?.then(onSavePromiseHandler);
+			(onSave?.({ values, versionComment }) as Promise<FormSavePromiseResult>)?.then(onSavePromiseHandler);
 			return;
 		}
 		// Put system properties in before creating the XML
@@ -101,7 +102,7 @@ export function useSaveForm(props: UseSaveFormProps) {
 		// Embedded handled here. If true, execution ends inside if statement.
 		if (isEmbedded) {
 			const dom = fromString(xml);
-			onSave?.({ dom, xml, values, versionComment })?.then(onSavePromiseHandler);
+			(onSave?.({ dom, xml, values, versionComment }) as Promise<FormSavePromiseResult>)?.then(onSavePromiseHandler);
 			return;
 		}
 		setIsSubmitting(true);
@@ -113,10 +114,12 @@ export function useSaveForm(props: UseSaveFormProps) {
 		}
 		// TODO: Temporary playground save path. Remove.
 		// path = '/site/website/fe2-save-result.xml';
+		// TODO: validateActionPolicy. See FE1 saveFn.
+		// TODO: write-content url on FE1 sends phase, path, fileName, contentType QSAs. Important?
 		writeContent(siteId, path, xml).subscribe({
 			next() {
 				const dom = fromString(xml);
-				onSave?.({ dom, xml, values, versionComment })?.then(onSavePromiseHandler);
+				(onSave?.({ dom, xml, values, versionComment }) as Promise<FormSavePromiseResult>)?.then(onSavePromiseHandler);
 			},
 			error(error: AjaxError) {
 				setIsSubmitting(false);

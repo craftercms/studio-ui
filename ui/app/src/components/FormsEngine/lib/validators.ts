@@ -87,8 +87,8 @@ export function isFieldRequired(field: ContentTypeField): boolean {
 
 export function checkMinimumSaveRequirementsFulfilled(values: LookupTable<unknown>): boolean {
 	return (
-		[values[XmlKeys.fileName], values[XmlKeys.folderName]].join('').trim() === '' ||
-		values[XmlKeys.internalName].toString().trim() === ''
+		[values[XmlKeys.fileName], values[XmlKeys.folderName]].join('').trim() !== '' &&
+		values[XmlKeys.internalName].toString().trim() !== ''
 	);
 }
 
