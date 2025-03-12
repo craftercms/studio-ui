@@ -570,8 +570,9 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 						if (
 							// If it is locked, want the flow to go through the `else` statement even for these types of field — so people can unlock if they are the owner.
 							!isLocked &&
-							// FE2 TODO: types changed to be what they are on xml
-							['html', 'text', 'textarea'].includes(type)
+							// FE2 TODO: types changed to be what they are on xml. Test/review thoroughly.
+							// ['html', 'text', 'textarea'].includes(type)
+							['rte', 'input', 'textarea'].includes(type)
 						) {
 							if (!window.tinymce) {
 								alert(
@@ -611,8 +612,9 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 											pathToLock,
 											record,
 											validations,
-											// FE2 TODO: Changed the mapping of rte to html, this probably breaks now
-											type === 'html' ? setup : {}
+											// FE2 TODO: Changed the mapping of rte to html, this probably breaks now. Test/review thoroughly.
+											// type === 'html' ? setup : {}
+											type === 'rte' ? setup : {}
 										)
 									)
 								);
@@ -876,10 +878,9 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 			switchMap(([, state]) => {
 				if (nullOrUndefined((state.dragContext.dragged as SearchItem).path)) {
 					console.error('No path found for this drag asset.');
-				} else {
-					return initializeDragSubjects(state$);
+					return NEVER;
 				}
-				return NEVER;
+				return initializeDragSubjects(state$);
 			})
 		);
 	},

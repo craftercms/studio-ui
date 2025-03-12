@@ -89,6 +89,7 @@ import StandardAction from '@craftercms/studio-ui/models/StandardAction';
 import { getParentModelId } from '../../utils/ice';
 import { getCachedModels, getCachedContentItems, modelHierarchyMap } from '../../contentController';
 import { isEditActionAvailable } from '../../utils/util';
+import type { BuiltInControlType } from '@craftercms/studio-ui/components/FormsEngine/lib/controlMap';
 
 type CaseReducer<S = GuestState, A extends GuestStandardAction = GuestStandardAction> = Reducer<S, A>;
 
@@ -150,11 +151,11 @@ const reducerForAssetDragStarted: CaseReducer<
 	if (nullOrUndefined(asset)) {
 		return state;
 	}
-	let type: string;
+	let type: BuiltInControlType;
 	const isFromDesktop = action.type === desktopAssetDragStarted.type;
 	const property: 'type' | 'mimeType' = isFromDesktop ? 'type' : 'mimeType';
 	if (asset[property].includes('image/')) {
-		type = 'image';
+		type = 'image-picker';
 	} else if (asset[property].includes('video/')) {
 		type = 'video-picker';
 	}

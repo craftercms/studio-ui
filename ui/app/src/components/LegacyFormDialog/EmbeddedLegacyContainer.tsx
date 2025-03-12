@@ -52,6 +52,7 @@ import { nnou } from '../../utils/object';
 import { useFetchItem } from '../../hooks/useFetchItem';
 import Box from '@mui/material/Box';
 
+// FE2 TODO: for removal after FE1 removal
 export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyEditor(
 	props: LegacyFormDialogContainerProps,
 	ref
