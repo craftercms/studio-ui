@@ -2551,10 +2551,6 @@ var nodeOpen = false,
         CStudioAuthoring.Operations.openWebDAVUploadDialog(site, path, profileId, uploadCb, fileTypes);
       },
 
-      uploadS3Asset: function (site, path, profileId, uploadCb, params) {
-        CStudioAuthoring.Operations.openS3UploadDialog(site, path, profileId, uploadCb, params);
-      },
-
       /**
        *  opens a dialog to upload an asset
        */
@@ -2591,6 +2587,10 @@ var nodeOpen = false,
           moduleConfig,
           openUploadDialogCb
         );
+      },
+
+      uploadS3Asset: function (site, path, profileId, uploadCb, params) {
+        CStudioAuthoring.Operations.openS3UploadDialog(site, path, profileId, uploadCb, params);
       },
 
       /**
