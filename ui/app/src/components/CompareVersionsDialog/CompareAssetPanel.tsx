@@ -23,6 +23,7 @@ import Divider from '@mui/material/Divider';
 import ImageView from '../ViewVersionDialog/FieldTypesViews/ImageView';
 import VideoView from '../ViewVersionDialog/FieldTypesViews/VideoView';
 import { PDFView } from '../ViewVersionDialog/AssetTypesViews/PDFView';
+import { ContentItem } from '../../models';
 
 const typesDiffMap = {
 	image: ImageView,
@@ -73,7 +74,13 @@ function AssetDiffView(props: AssetDiffViewProps) {
 	);
 }
 
-export function CompareAssetPanel(props) {
+export interface CompareAssetPanelProps {
+	a: AssetDiffViewProps['aContent'];
+	b: AssetDiffViewProps['bContent'];
+	item: ContentItem;
+}
+
+export function CompareAssetPanel(props: CompareAssetPanelProps) {
 	const { a, b, item } = props;
 	const assetType = useMemo(() => {
 		if (isImage(item)) {

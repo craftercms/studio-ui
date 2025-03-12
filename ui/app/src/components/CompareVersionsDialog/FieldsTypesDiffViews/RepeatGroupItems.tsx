@@ -29,18 +29,16 @@ import { useVersionsDialogContext } from '../VersionsDialogContext';
 import useContentTypes from '../../../hooks/useContentTypes';
 import { parseElementByContentType } from '../../../utils/content';
 
-export interface RepeatGroupItemsProps {
+export type ItemDiffState = 'changed' | 'unchanged' | 'new' | 'deleted';
+type RepItemDiffSide = 'a' | 'b';
+
+export interface RepeatGroupItemsProps extends DiffViewComponentBaseProps {
 	contentA: ContentInstance[];
 	contentB: ContentInstance[];
 	aXml: string;
 	bXml: string;
 	field: ContentTypeField;
 }
-
-export type ItemDiffState = 'changed' | 'unchanged' | 'new' | 'deleted';
-type RepItemDiffSide = 'a' | 'b';
-
-export interface RepeatGroupItemsProps extends DiffViewComponentBaseProps {}
 
 export function RepeatGroupItems(props: RepeatGroupItemsProps) {
 	const { aXml, bXml, field } = props;

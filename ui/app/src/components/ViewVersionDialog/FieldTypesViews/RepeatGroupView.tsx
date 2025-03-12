@@ -31,9 +31,16 @@ export function RepeatGroupView(props: RepeatGroupViewProps) {
 	const { xml, field } = props;
 	const [, contextApiRef] = useVersionsDialogContext();
 	const contentTypes = useContentTypes();
-	const content = xml
-		? parseElementByContentType(fromString(xml).querySelector(field.id), field, contentTypes, {})
-		: [];
+	const parseRepeatGroupContent = (xmlString) => {
+		if (!xmlString) return [];
+		try {
+			return parseElementByContentType(fromString(xmlString).querySelector(field.id), field, contentTypes, {});
+		} catch (error) {
+			console.error(`Error parsing XML for repeat group ${field.id}:`, error);
+			return [];
+		}
+	};
+	const content = xml ? parseRepeatGroupContent(xml) : [];
 
 	const onSelectStateItem = (item: ContentInstance) => {
 		const fields = field.fields;

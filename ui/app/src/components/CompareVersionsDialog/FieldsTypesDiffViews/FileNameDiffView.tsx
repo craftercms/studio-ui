@@ -27,10 +27,21 @@ export interface FileNameDiffViewProps extends Pick<DiffViewComponentBaseProps, 
 
 export function FileNameDiffView(props: FileNameDiffViewProps) {
 	const { aXml, bXml, editorProps } = props;
-	const pathA = fromString(aXml).querySelector('file-name').textContent;
-	const pathB = fromString(bXml).querySelector('file-name').textContent;
-	const fileNameA = getContentFileNameFromPath(pathA);
-	const fileNameB = getContentFileNameFromPath(pathB);
+	// Default values in case of parsing issues
+	let fileNameA = '';
+	let fileNameB = '';
+	try {
+		const pathA = fromString(aXml).querySelector('file-name').textContent;
+		fileNameA = getContentFileNameFromPath(pathA);
+	} catch (error) {
+		console.error('Error parsing file name from A XML:', error);
+	}
+	try {
+		const pathB = fromString(bXml).querySelector('file-name').textContent;
+		fileNameB = getContentFileNameFromPath(pathB);
+	} catch (error) {
+		console.error('Error parsing file name from B XML:', error);
+	}
 
 	return <TextDiffView aXml={fileNameA} bXml={fileNameB} editorProps={editorProps} />;
 }

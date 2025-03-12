@@ -34,7 +34,7 @@ export function NodeSelector(props: NodeSelectorViewProps) {
 	const [, contextApiRef] = useVersionsDialogContext();
 	const contentTypes = useContentTypes();
 	const content = xml
-		? parseElementByContentType(fromString(xml).querySelector(field.id), field, contentTypes, {})
+		? parseElementByContentType(fromString(xml).querySelector(field.id) || null, field, contentTypes, {})
 		: [];
 
 	const getItemLabel = (item: ContentInstance): string => {

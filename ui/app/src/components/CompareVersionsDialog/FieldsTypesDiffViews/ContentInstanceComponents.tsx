@@ -117,7 +117,7 @@ export function ContentInstanceComponents(props: ContentInstanceComponentsProps)
 		const contentTypeId =
 			(embeddedA?.content as ContentInstance)?.craftercms.contentTypeId ??
 			(embeddedB?.content as ContentInstance)?.craftercms.contentTypeId;
-		const fields = contentTypes[contentTypeId].fields;
+		const fields = contentTypes[contentTypeId]?.fields ?? {};
 		// It may happen that one of the embedded components we're comparing is null (doesn't exist at a specific version),
 		// in that scenario we use a mock (empty) content instance.
 		contextApiRef.current.setState({
@@ -143,7 +143,7 @@ export function ContentInstanceComponents(props: ContentInstanceComponentsProps)
 	const onViewEmbedded = (id: string) => {
 		const { embeddedA, embeddedB } = getEmbeddedVersions(id);
 		const embeddedComponent = embeddedA ?? embeddedB;
-		const fields = contentTypes[(embeddedComponent.content as ContentInstance).craftercms.contentTypeId].fields;
+		const fields = contentTypes[(embeddedComponent.content as ContentInstance).craftercms.contentTypeId]?.fields ?? {};
 
 		contextApiRef.current.setState({
 			compareSlideOutState: {

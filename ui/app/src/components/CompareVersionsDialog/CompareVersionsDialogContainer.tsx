@@ -339,7 +339,12 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
 						>
 							<ErrorBoundary>
 								{isAsset ? (
-									<CompareAssetPanel a={selectionContent.a.content} b={selectionContent.b.content} item={item} />
+									<CompareAssetPanel
+										// both 'a' and 'b' content will be string in case of asset.
+										a={selectionContent.a.content as string}
+										b={selectionContent.b.content as string}
+										item={item}
+									/>
 								) : accordionView ? (
 									contentTypeFields
 										.filter((field) => (showOnlyChanges ? fieldIdsWithChanges.includes(field.id) : true))

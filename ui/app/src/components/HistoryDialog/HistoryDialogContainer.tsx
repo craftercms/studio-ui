@@ -154,6 +154,7 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
 	const handleViewItem = (version: ItemHistoryEntry) => {
 		const versionPath = Boolean(version.path) && path !== version.path ? version.path : path;
 
+		// If diff is supported, but the item is an asset, we don't show the ViewVersionDialog, instead we show the Preview dialog.
 		if (isDiffSupported && item?.systemType !== 'asset') {
 			dispatch(
 				batchActions([
