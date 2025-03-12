@@ -2450,6 +2450,10 @@ var nodeOpen = false,
         });
       },
 
+      uploadS3Asset: function (site, path, profileId, uploadCb, params) {
+        CStudioAuthoring.Operations.openS3UploadDialog(site, path, profileId, uploadCb, params);
+      },
+
       /**
        *  opens a dialog to upload an asset
        */
