@@ -22,6 +22,7 @@ import { generatePlaceholderImageDataUrl } from './content';
 import { toColor } from './string';
 import { darken } from '@mui/material/styles';
 import { Theme } from '@mui/material';
+import type { BuiltInControlType } from '../components/FormsEngine/lib/controlMap';
 import { defineMessages, IntlShape } from 'react-intl';
 
 const messages = defineMessages({
@@ -121,8 +122,8 @@ export function getDefaultValue(field: ContentTypeField): string | number | bool
 	if (field.defaultValue) {
 		return field.defaultValue;
 	} else if (field.validations.required?.value) {
-		switch (field.type) {
-			case 'image': {
+		switch (field.type as BuiltInControlType) {
+			case 'image-picker': {
 				const width = field.validations.width?.value ?? field.validations.minWidth?.value ?? 150;
 				const height = field.validations.height?.value ?? field.validations.minHeight?.value ?? width;
 				return generatePlaceholderImageDataUrl({
@@ -134,7 +135,7 @@ export function getDefaultValue(field: ContentTypeField): string | number | bool
 					textPositionX: width / 2
 				});
 			}
-			case 'text':
+			case 'input':
 			case 'textarea': {
 				const maxLength = parseInt(field.validations.maxLength?.value);
 				const textGen = new Jabber();
@@ -142,14 +143,14 @@ export function getDefaultValue(field: ContentTypeField): string | number | bool
 					? `${textGen.createParagraph(50).substring(0, maxLength)}.`.replace(/\.+/, '.')
 					: textGen.createParagraph(10);
 			}
-			case 'html': {
+			case 'rte': {
 				const textGen = new Jabber();
 				return textGen.createParagraph(10);
 			}
 			case 'numeric-input': {
 				return field.validations.minValue?.value ?? 1;
 			}
-			case 'boolean': {
+			case 'checkbox': {
 				return 'false';
 			}
 			case 'date-time': {

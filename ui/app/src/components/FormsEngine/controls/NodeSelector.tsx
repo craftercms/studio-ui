@@ -499,7 +499,7 @@ function NodeSelector(props: NodeSelectorProps) {
 				},
 				onSave({ values }) {
 					const key = isEmbedded
-						? ((values[XmlKeys.fileName] || values.objectId) as string)
+						? ((values[XmlKeys.fileName] || values.objectId) as string).replace(/\.xml$/, '')
 						: // TODO: What if it was moved? i.e. changed its file-name/folder-name
 							item.include;
 					const newItem: NodeSelectorItem = {
