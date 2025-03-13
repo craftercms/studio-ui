@@ -1787,15 +1787,15 @@ var nodeOpen = false,
         animator = new crafter.studio.Animator($modal.find('.studio-ice-dialog'));
 
         !callback &&
-        (callback = {
-          success: function () {
-            if (CStudioAuthoringContext.isPreview) {
-              CStudioAuthoringContext.Service.refreshPreview();
-            } else {
-              window.location.reload();
+          (callback = {
+            success: function () {
+              if (CStudioAuthoringContext.isPreview) {
+                CStudioAuthoringContext.Service.refreshPreview();
+              } else {
+                window.location.reload();
+              }
             }
-          }
-        });
+          });
 
         $modal.appendTo(topWindow.document.body);
 
@@ -1870,8 +1870,8 @@ var nodeOpen = false,
           editorId = CStudioAuthoring.Utils.generateUUID(),
           $modal = $(
             '<div><div class="no-ice-mask"></div><div class="studio-ice-dialog studio-ice-container" id="studio-ice-container-' +
-            editorId +
-            '" style="display:none;"><div class="bd"></div></div></div>'
+              editorId +
+              '" style="display:none;"><div class="bd"></div></div></div>'
           ),
           template =
             '<iframe name="diffDialog" id="in-context-edit-editor-' +
@@ -2203,33 +2203,86 @@ var nodeOpen = false,
         var CSA = CStudioAuthoring,
           uri = path.replace('//', '/'),
           params = { site: site || CStudioAuthoringContext.site, path: path };
-        craftercms.getStore().dispatch({ type: 'UNBLOCK_UI' });
-        if (uri.indexOf('/site') === 0) {
-          CSA.Operations.openContentWebForm(
-            formId,
-            path,
-            nodeRef,
-            path,
-            true,
-            asPopup,
-            callback,
-            auxParams,
-            isFlattenedInclude
-          );
-        } else if (CStudioAuthoring.Utils.isEditableFormAsset(mimeType)) {
-          CStudioAuthoring.Operations.openCodeEditor({
-            path: uri,
-            mode: CrafterCMSNext.util.content.getEditorMode(mimeType),
-            onSuccess: () => {
-              if (CStudioAuthoringContext.isPreview) {
-                CStudioAuthoring.Operations.refreshPreview();
-              } else {
-                CStudioAuthoring.SelectedContent.init();
+        function doEdit() {
+          if (uri.indexOf('/site') === 0) {
+            CSA.Operations.openContentWebForm(
+              formId,
+              path,
+              nodeRef,
+              path,
+              true,
+              asPopup,
+              callback,
+              auxParams,
+              isFlattenedInclude
+            );
+          } else if (CStudioAuthoring.Utils.isEditableFormAsset(mimeType)) {
+            CStudioAuthoring.Operations.openCodeEditor({
+              path: uri,
+              mode: CrafterCMSNext.util.content.getEditorMode(mimeType),
+              onSuccess: () => {
+                if (CStudioAuthoringContext.isPreview) {
+                  CStudioAuthoring.Operations.refreshPreview();
+                } else {
+                  CStudioAuthoring.SelectedContent.init();
+                }
+                callback.success && callback.success(nodeRef);
               }
-              callback.success && callback.success(nodeRef);
-            }
-          });
+            });
+          }
         }
+        craftercms.getStore().dispatch({ type: 'BLOCK_UI' });
+        CrafterCMSNext.services.content.fetchWorkflowAffectedItems(params.site, params.path).subscribe({
+          next: (items) => {
+            craftercms.getStore().dispatch({ type: 'UNBLOCK_UI' });
+            if (items && items.length) {
+              const eventIdSuccess = 'workflowCancellationDialogContinue';
+              const eventIdCancel = 'workflowCancellationDialogCancel';
+              let unsubscribe, cancelUnsubscribe;
+              unsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, () => {
+                doEdit();
+                cancelUnsubscribe();
+              });
+              cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdCancel, () => {
+                unsubscribe();
+              });
+              CrafterCMSNext.system.store.dispatch({
+                type: 'SHOW_WORKFLOW_CANCELLATION_DIALOG',
+                payload: {
+                  items,
+                  onContinue: {
+                    type: 'BATCH_ACTIONS',
+                    payload: [
+                      {
+                        type: 'DISPATCH_DOM_EVENT',
+                        payload: { id: eventIdSuccess }
+                      },
+                      { type: 'CLOSE_WORKFLOW_CANCELLATION_DIALOG' }
+                    ]
+                  },
+                  onClosed: {
+                    type: 'BATCH_ACTIONS',
+                    payload: [
+                      {
+                        type: 'DISPATCH_DOM_EVENT',
+                        payload: { id: eventIdCancel }
+                      },
+                      { type: 'WORKFLOW_CANCELLATION_DIALOG_CLOSED' }
+                    ]
+                  }
+                }
+              });
+            } else {
+              doEdit();
+            }
+          },
+          error(error) {
+            CrafterCMSNext.system.store.dispatch({
+              type: 'CLOSE_WORKFLOW_CANCELLATION_DIALOG'
+            });
+            callback.failure(error);
+          }
+        });
       },
 
       /**
@@ -4164,8 +4217,8 @@ var nodeOpen = false,
           newScript.src = script;
           newScript.onerror = onError
             ? function (e) {
-              onError(e);
-            }
+                onError(e);
+              }
             : null;
           if (script.indexOf('undefined.js') === -1) {
             headID.appendChild(newScript);
@@ -6072,12 +6125,12 @@ var nodeOpen = false,
           typeof arguments[0] === 'object'
             ? arguments[0]
             : {
-              title: arguments[0],
-              body: arguments[1],
-              onOk: arguments[2],
-              okButtonText: arguments[3],
-              cancelButtonText: arguments[4]
-            };
+                title: arguments[0],
+                body: arguments[1],
+                onOk: arguments[2],
+                okButtonText: arguments[3],
+                cancelButtonText: arguments[4]
+              };
 
         const confirmDialogEvent = 'commonAPIConfirmDialogEvent';
 
@@ -6270,13 +6323,13 @@ var nodeOpen = false,
         if ($container.length === 0) {
           $container = $(
             '<div class="cstudio-image-popup-overlay" style="display: none;">' +
-            '<div class="cstudio-image-pop-up">' +
-            '<div>' +
-            '<span class="close fa fa-close"></span>' +
-            '</div>' +
-            '<div class="media-container"></div>' +
-            '</div>' +
-            '</div>'
+              '<div class="cstudio-image-pop-up">' +
+              '<div>' +
+              '<span class="close fa fa-close"></span>' +
+              '</div>' +
+              '<div class="media-container"></div>' +
+              '</div>' +
+              '</div>'
           );
 
           $('body').append($container);
@@ -7203,9 +7256,9 @@ CStudioAuthoring.InContextEdit = {
     let topWindow = getTopLegacyWindow();
     amplify.publish('FORM_ENGINE_MESSAGE_POSTED', message);
     topWindow.iceDialogs &&
-    topWindow.iceDialogs.forEach(({ iframe }) => {
-      iframe && iframe.contentWindow && iframe.contentWindow.postMessage(message, location.origin);
-    });
+      topWindow.iceDialogs.forEach(({ iframe }) => {
+        iframe && iframe.contentWindow && iframe.contentWindow.postMessage(message, location.origin);
+      });
   },
 
   registerDialog: function (editorId, context) {
@@ -7427,10 +7480,10 @@ CStudioAuthoring.InContextEdit = {
               CStudioAuthoring.Module.requireModule(
                 'medium-panel-' + CStudioAuthoringContext.channel,
                 '/static-assets/components/cstudio-preview-tools/mods/agent-plugins/' +
-                channel.value +
-                '/' +
-                CStudioAuthoringContext.channel +
-                '.js',
+                  channel.value +
+                  '/' +
+                  CStudioAuthoringContext.channel +
+                  '.js',
                 0,
                 cb
               );
