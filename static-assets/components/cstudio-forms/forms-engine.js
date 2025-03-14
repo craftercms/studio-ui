@@ -1529,8 +1529,22 @@ const initializeCStudioForms = () => {
 									action
 								});
 							} else {
-								const saveContent = () => {
-									CrafterCMSNext.util.ajax.post(serviceUrl, xml).subscribe(
+								const _saveContent = () => {
+									const service$ = me.affectedPackages?.length
+										? craftercms.services.workflow
+												.cancelPackages(CStudioAuthoringContext.site, {
+													packageIds: affectedPackages.map((p) => p.id),
+													// TODO: Correct comment generation
+													comment: `Cancel packages to write on "${form.path}`
+												})
+												.pipe(
+													craftercms.libs.rxjs.switchMap(() => {
+														return CrafterCMSNext.util.ajax.post(serviceUrl, xml);
+													})
+												)
+										: CrafterCMSNext.util.ajax.post(serviceUrl, xml);
+
+									service$.subscribe(
 										function () {
 											CStudioForms.currentValidFolder = CStudioForms.updatedModel?.['folder-name'];
 											YAHOO.util.Event.removeListener(window, 'beforeunload', unloadFn, me);
@@ -1686,6 +1700,49 @@ const initializeCStudioForms = () => {
 											setButtonsEnabled(true);
 										}
 									);
+								};
+								const saveContent = () => {
+									// Before saving, check if the item is part of a package in active workflow. If so, show a dialog to review the
+									// packages before continuing with the cancellation of the packages and saving the item.
+									const item = me.item;
+									if (affectedPackages?.length) {
+										const store = craftercms.getStore();
+										const callbackId = 'viewPackagesDialogCallback';
+										store.dispatch({
+											type: 'SHOW_VIEW_PACKAGES_DIALOG',
+											payload: {
+												item,
+												onContinue: {
+													type: 'BATCH_ACTIONS',
+													payload: [
+														{
+															type: 'DISPATCH_DOM_EVENT',
+															payload: { id: callbackId, type: 'onContinue' }
+														}
+													]
+												},
+												onClose: {
+													type: 'BATCH_ACTIONS',
+													payload: [
+														{
+															type: 'DISPATCH_DOM_EVENT',
+															payload: { id: callbackId, type: 'onClose' }
+														},
+														{ type: 'CLOSE_VIEW_PACKAGES_DIALOG' }
+													]
+												}
+											}
+										});
+
+										craftercms.utils.dom.createCustomDocumentEventListener(callbackId, ({ type }) => {
+											if (type === 'onContinue') {
+												_saveContent();
+											}
+											setButtonsEnabled(true);
+										});
+									} else {
+										_saveContent();
+									}
 								};
 								CrafterCMSNext.services.sites
 									.validateActionPolicy(CStudioAuthoringContext.site, {
@@ -2836,6 +2893,48 @@ const initializeCStudioForms = () => {
 					if (formDef.pageLocation) {
 						$('.page-header h1 .location').text(formDef.pageLocation);
 					}
+
+					const _self = this;
+					const store = craftercms.getStore();
+					craftercms.libs.rxjs
+						.forkJoin([
+							craftercms.services.workflow.fetchAffectedPackages(CStudioAuthoringContext.site, form.path),
+							craftercms.services.content.fetchSandboxItem(CStudioAuthoringContext.site, form.path)
+						])
+						.subscribe(([affectedPackages, item]) => {
+							_self.affectedPackages = affectedPackages;
+							_self.item = item;
+							if (affectedPackages?.length) {
+								const workflowWarningEl = document.querySelector('.page-header .in-workflow-warning');
+
+								const { createElement } = craftercms.libs.React;
+								const root = craftercms.libs.ReactDOMClient.createRoot(workflowWarningEl);
+								root.render(
+									createElement(craftercms.components.CrafterThemeProvider, {
+										children: createElement(craftercms.libs.MaterialUI.Alert, {
+											variant: 'outlined',
+											severity: 'warning',
+											children: formatMessage(formEngineMessages.inWorkflowWarning),
+											sx: { mb: 2 },
+											action: createElement(craftercms.libs.MaterialUI.Button, {
+												color: 'inherit',
+												size: 'small',
+												children: 'Review',
+												onClick: () => {
+													store.dispatch({
+														type: 'SHOW_VIEW_PACKAGES_DIALOG',
+														payload: {
+															item
+														}
+													});
+												}
+											})
+										})
+									})
+								);
+							}
+						});
+
 					$('.page-description').text(formDef.description);
 					$('#cstudio-form-expand-all').text(CMgs.format(formsLangBundle, 'expandAll'));
 					$('#cstudio-form-collapse-all').text(CMgs.format(formsLangBundle, 'collapseAll'));
