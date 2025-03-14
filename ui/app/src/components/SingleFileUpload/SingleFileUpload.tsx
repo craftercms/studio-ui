@@ -285,7 +285,9 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
             setConfirm({ body: message });
             setSuggestedName(modifiedName);
           } else {
-            uppy.upload();
+            setTimeout(() => {
+              uppy.upload().then(() => {});
+            }, 0);
             setDescription(`${formatMessage(messages.uploadingFile)}:`);
             onUploadStart?.();
           }
