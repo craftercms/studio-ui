@@ -1713,13 +1713,8 @@ const initializeCStudioForms = () => {
 											payload: {
 												item,
 												onContinue: {
-													type: 'BATCH_ACTIONS',
-													payload: [
-														{
-															type: 'DISPATCH_DOM_EVENT',
-															payload: { id: callbackId, type: 'onContinue' }
-														}
-													]
+													type: 'DISPATCH_DOM_EVENT',
+													payload: { id: callbackId, type: 'onContinue' }
 												},
 												onClose: {
 													type: 'BATCH_ACTIONS',
