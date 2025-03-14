@@ -41,7 +41,7 @@ export function getSystemLink({
   page?: string;
 }) {
   return {
-    preview: `${authoringBase}${PREVIEW_URL_PATH}#/?page=${page}&site=${site}`,
+    preview: `${authoringBase}${PREVIEW_URL_PATH}#/?page=${encodeURIComponent(page)}&site=${site}`,
     siteTools: `${authoringBase}${ProjectToolsRoutes.ProjectTools}`,
     siteSearch: `${authoringBase}${ProjectToolsRoutes.Search}`,
     siteDashboard: `${authoringBase}${ProjectToolsRoutes.SiteDashboard}`
