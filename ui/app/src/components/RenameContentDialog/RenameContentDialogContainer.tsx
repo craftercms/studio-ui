@@ -23,7 +23,7 @@ import SecondaryButton from '../SecondaryButton';
 import { FormattedMessage } from 'react-intl';
 import PrimaryButton from '../PrimaryButton';
 import { useEnhancedDialogContext } from '../EnhancedDialog';
-import { DetailedItem } from '../../models';
+import { ContentItem } from '../../models';
 import { DialogBody } from '../DialogBody';
 import { AjaxError } from 'rxjs/ajax';
 import useDebouncedInput from '../../hooks/useDebouncedInput';
@@ -36,7 +36,7 @@ export interface RenameContentDialogContainerProps
 		RenameContentDialogProps,
 		'path' | 'value' | 'onRenamed' | 'onClose' | 'onSubmittingAndOrPendingChange'
 	> {
-	dependantItems: DetailedItem[];
+	dependantItems: ContentItem[];
 	fetchingDependantItems: boolean;
 	error: AjaxError;
 }

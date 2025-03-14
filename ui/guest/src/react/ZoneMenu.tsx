@@ -35,7 +35,7 @@ import {
 	getCachedModel,
 	getCachedModels,
 	getCachedPermissions,
-	getCachedSandboxItem,
+	getCachedContentItem,
 	getModelIdFromInheritedField,
 	insertItem,
 	isInheritedField,
@@ -156,10 +156,10 @@ export function ZoneMenu(props: ZoneMenuProps) {
 	// If the current modelId is not being referenced by any other model (no parentModelId found), we use modelId.
 	const containerModelId = findParentModelId(componentId ?? modelId, modelHierarchyMap, models) ?? modelId;
 	const containerItemAvailableActions = models[containerModelId]
-		? getCachedSandboxItem(models[containerModelId].craftercms.path).availableActionsMap
+		? getCachedContentItem(models[containerModelId].craftercms.path).availableActionsMap
 		: null;
 	const containerHasEditAction = containerItemAvailableActions?.edit ?? false;
-	const itemAvailableActions = getCachedSandboxItem(componentPath ?? modelPath).availableActionsMap;
+	const itemAvailableActions = getCachedContentItem(componentPath ?? modelPath).availableActionsMap;
 	const hasEditAction = itemAvailableActions.edit;
 
 	const isMovable =
@@ -238,7 +238,7 @@ export function ZoneMenu(props: ZoneMenuProps) {
 			path,
 			site: activeSite,
 			username,
-			localItem: getCachedSandboxItem(path)
+			localItem: getCachedContentItem(path)
 		}).subscribe(subscriber);
 	};
 

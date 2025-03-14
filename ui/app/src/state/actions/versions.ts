@@ -15,11 +15,11 @@
  */
 
 import { createAction } from '@reduxjs/toolkit';
-import { DetailedItem, FetchContentVersion, ItemHistoryEntry } from '../../models';
+import { ContentItem, FetchContentVersion, ItemHistoryEntry } from '../../models';
 import { AjaxError, AjaxResponse } from 'rxjs/ajax';
 
 export interface HistoryConfigProps {
-	item: Partial<DetailedItem>;
+	item: Partial<ContentItem>;
 	rootPath?: string;
 	environment?: string;
 	module?: string;
@@ -31,7 +31,7 @@ export const fetchItemVersionsComplete = /*#__PURE__*/ createAction<ItemHistoryE
 export const fetchItemVersionsFailed = /*#__PURE__*/ createAction<AjaxError>('FETCH_ITEM_VERSIONS_FAILED');
 export const versionsChangePage = /*#__PURE__*/ createAction<{ page: number }>('VERSIONS_CHANGE_PAGE');
 export const versionsChangeLimit = /*#__PURE__*/ createAction<{ limit: number }>('VERSIONS_CHANGE_LIMIT');
-export const versionsChangeItem = /*#__PURE__*/ createAction<{ item: DetailedItem }>('VERSIONS_CHANGE_ITEM');
+export const versionsChangeItem = /*#__PURE__*/ createAction<{ item: ContentItem }>('VERSIONS_CHANGE_ITEM');
 export const compareToPreviousVersion = /*#__PURE__*/ createAction<{ id: string }>('COMPARE_TO_PREVIOUS_VERSION');
 export const resetVersionsState = /*#__PURE__*/ createAction('RESET_VERSIONS_STATE');
 export const compareBothVersions = /*#__PURE__*/ createAction<{ versions: string[] }>('COMPARE_BOTH_VERSIONS');

@@ -21,7 +21,7 @@ import {
 	checkPathExistence,
 	fetchChildrenByPath,
 	fetchChildrenByPaths,
-	fetchItemsByPath,
+	fetchContentItems,
 	fetchItemWithChildrenByPath
 } from '../../services/content';
 import { getIndividualPaths, getParentPath, getRootPath, withIndex, withoutIndex } from '../../utils/path';
@@ -164,7 +164,7 @@ export default [
 
 				return requests.length
 					? forkJoin([
-							fetchItemsByPath(state.sites.active, paths, { castAsDetailedItem: true }),
+							fetchContentItems(state.sites.active, paths),
 							fetchChildrenByPaths(state.sites.active, optionsByPath)
 						]).pipe(
 							map(([items, children]) =>
@@ -341,7 +341,7 @@ export default [
 					const parentsPath = getIndividualPaths(path, state.pathNavigator[id].rootPath);
 					if (parentsPath.length > 1) {
 						return forkJoin([
-							fetchItemsByPath(site, parentsPath, { castAsDetailedItem: true }),
+							fetchContentItems(site, parentsPath),
 							fetchChildrenByPath(site, path, {
 								excludes,
 								limit,
@@ -440,7 +440,7 @@ export default [
             // Case (c) - Content epics load any item that's on the state already
             navigator.currentPath === getParentPath(parentPathOfTargetPath)
           ) {
-            actions.push(fetchSandboxItem({ path: parentPathOfTargetPath }));
+            actions.push(fetchContentItem({ path: parentPathOfTargetPath }));
           } */
 				});
 				return refreshRequests.length ? [pathNavigatorBulkRefresh({ requests: refreshRequests })] : NEVER;

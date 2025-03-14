@@ -28,8 +28,11 @@ import {
 	closeHistoryDialog,
 	closeNewContentDialog,
 	closePublishDialog,
+	closeRenameAssetDialog,
 	closeSingleFileUploadDialog,
 	closeViewVersionDialog,
+	fetchBrokenReferences,
+	fetchBrokenReferencesFailed,
 	fetchContentVersion,
 	fetchContentVersionComplete,
 	fetchContentVersionFailed,
@@ -44,13 +47,10 @@ import {
 	showConfirmDialog,
 	showEditDialog,
 	showPreviewDialog,
+	updateBrokenReferencesDialog,
 	updateCodeEditorDialog,
 	updateEditDialogConfig,
-	updatePreviewDialog,
-	closeRenameAssetDialog,
-	fetchBrokenReferences,
-	updateBrokenReferencesDialog,
-	fetchBrokenReferencesFailed
+	updatePreviewDialog
 } from '../actions/dialogs';
 import { fetchDeleteDependencies as fetchDeleteDependenciesService, fetchDependant } from '../../services/dependencies';
 import { fetchContentXML, fetchItemVersion } from '../../services/content';
@@ -65,9 +65,8 @@ import infoGraphic from '../../assets/information.svg';
 import { nnou, nou } from '../../utils/object';
 import { getHostToGuestBus } from '../../utils/subjects';
 import { unlockItem } from '../actions/content';
-import { parseLegacyItemToDetailedItem } from '../../utils/content';
+import { parseLegacyItemToContentItem } from '../../utils/content';
 import { LegacyItem } from '../../models';
-import { parseLegacyItemToSandBoxItem } from '../../utils/content';
 
 function getDialogNameFromType(type: string): string {
 	let name = getDialogActionNameFromType(type);
@@ -255,7 +254,7 @@ const dialogEpics: CrafterCMSEpic[] = [
 				fetchDependant(state.sites.active, state.dialogs.renameAsset.path).pipe(
 					takeUntil(action$.pipe(ofType(closeRenameAssetDialog.type))),
 					map((response: LegacyItem[]) => {
-						const dependants = parseLegacyItemToDetailedItem(response);
+						const dependants = parseLegacyItemToContentItem(response);
 						return fetchRenameAssetDependantsComplete({ dependants });
 					}),
 					catchAjaxError(fetchRenameAssetDependantsFailed)
@@ -271,7 +270,7 @@ const dialogEpics: CrafterCMSEpic[] = [
 			switchMap(([, state]) =>
 				fetchDependant(state.sites.active, state.dialogs.brokenReferences.path).pipe(
 					map((response: LegacyItem[]) => {
-						const references = parseLegacyItemToSandBoxItem(response);
+						const references = parseLegacyItemToContentItem(response);
 						return updateBrokenReferencesDialog({ references });
 					}),
 					catchAjaxError(fetchBrokenReferencesFailed)

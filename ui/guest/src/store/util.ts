@@ -16,7 +16,7 @@
 
 import { SyntheticEvent } from 'react';
 import { EditingStatus } from '../constants';
-import { fetchSandboxItem, lock } from '@craftercms/studio-ui/services/content';
+import { fetchContentItem, lock } from '@craftercms/studio-ui/services/content';
 import { catchError, filter, switchMap, take, tap } from 'rxjs/operators';
 import { message$, post } from '../utils/communicator';
 import {
@@ -26,7 +26,7 @@ import {
 } from '@craftercms/studio-ui/state/actions/preview';
 import { unlockItem } from '@craftercms/studio-ui/state/actions/content';
 import { forkJoin, NEVER, Observable, of } from 'rxjs';
-import { SandboxItem } from '@craftercms/studio-ui/models';
+import { ContentItem } from '@craftercms/studio-ui/models';
 import { GuestState } from './models/GuestStore';
 import { ElementRecord, ICERecord } from '../models/InContextEditing';
 import { getCachedModel, getCachedModels, modelHierarchyMap } from '../contentController';
@@ -56,7 +56,7 @@ export interface BeforeWriteProps<T = 'continue', S = never> {
 	username: string;
 	stop$?: Observable<S> | S[];
 	continue$?: Observable<T> | T[];
-	localItem: SandboxItem;
+	localItem: ContentItem;
 }
 
 /**
@@ -69,7 +69,7 @@ export function beforeWrite$<T extends any = 'continue', S extends any = never>(
 ): Observable<T | S> {
 	const { site, username, path, continue$ = of('continue') as Observable<T>, stop$ = NEVER, localItem } = props;
 	return lock(site, path).pipe(
-		switchMap(() => forkJoin([fetchSandboxItem(site, path), fetchAffectedPackages(site, path)])),
+		switchMap(() => forkJoin([fetchContentItem(site, path), fetchAffectedPackages(site, path)])),
 		switchMap(([item, affectedPackages]) => {
 			if (item.stateMap.submitted || item.stateMap.scheduled) {
 				post(requestWorkflowCancellationDialog({ item, siteId: site }));

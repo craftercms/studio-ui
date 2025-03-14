@@ -24,12 +24,12 @@ import {
 	MarketplaceSite,
 	PagedArray,
 	PluginRecord,
-	SandboxItem
+	ContentItem
 } from '../models';
 import { map, switchMap } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
 import { pluckProps, toQueryString } from '../utils/object';
-import { fetchItemsByPath } from './content';
+import { fetchContentItems } from './content';
 
 export function fetchBlueprints(options?: {
 	type?: string;
@@ -99,11 +99,11 @@ export function setPluginConfiguration(siteId: string, pluginId: string, content
 	return postJSON('/studio/api/2/plugin/write_configuration', { siteId, pluginId, content }).pipe(map(() => true));
 }
 
-export function fetchMarketplacePluginUsage(siteId: string, pluginId: string): Observable<SandboxItem[]> {
+export function fetchMarketplacePluginUsage(siteId: string, pluginId: string): Observable<ContentItem[]> {
 	const qs = toQueryString({ siteId, pluginId });
 	return get(`/studio/api/2/marketplace/usage${qs}`).pipe(
 		map((response) => response?.response?.items),
-		switchMap((items) => (items.length === 0 ? of(items) : fetchItemsByPath(siteId, items)))
+		switchMap((items) => (items.length === 0 ? of(items) : fetchContentItems(siteId, items)))
 	);
 }
 

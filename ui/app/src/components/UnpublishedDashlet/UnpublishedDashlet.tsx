@@ -46,12 +46,11 @@ import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import { asLocalizedDateTime } from '../../utils/datetime';
 import ItemDisplay from '../ItemDisplay';
-import { DetailedItem, LookupTable, SandboxItem } from '../../models';
+import { ContentItem, LookupTable } from '../../models';
 import ActionsBar from '../ActionsBar';
 import { UNDEFINED } from '../../utils/constants';
 import { itemActionDispatcher } from '../../utils/itemActions';
 import { useDispatch } from 'react-redux';
-import { parseSandBoxItemToDetailedItem } from '../../utils/content';
 import ListItemButton from '@mui/material/ListItemButton';
 import {
 	contentEvent,
@@ -73,7 +72,7 @@ import useDashletFilterState from '../../hooks/useDashletFilterState';
 
 interface UnpublishedDashletProps extends CommonDashletProps {}
 
-interface UnpublishedDashletState extends WithSelectedState<SandboxItem> {
+interface UnpublishedDashletState extends WithSelectedState<ContentItem> {
 	total: number;
 	loading: boolean;
 	loadingSkeleton: boolean;
@@ -103,7 +102,7 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
 	});
 	const currentPage = offset / limit;
 	const totalPages = total ? Math.ceil(total / limit) : 0;
-	const [itemsById, setItemsById] = useState<LookupTable<DetailedItem>>({});
+	const [itemsById, setItemsById] = useState<LookupTable<ContentItem>>({});
 	const itemsByPathRef = useUpdateRefs(itemsById);
 	const selectedItems = Object.values(itemsById)?.filter((item) => selected[item.id]) ?? [];
 	const selectionOptions = useSelectionOptions(selectedItems, formatMessage, selectedCount);
@@ -195,7 +194,7 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
 		if (items) {
 			const itemsObj = {};
 			items.forEach((item) => {
-				itemsObj[item.id] = parseSandBoxItemToDetailedItem(item);
+				itemsObj[item.id] = item;
 			});
 			setItemsById({ ...itemsByPathRef.current, ...itemsObj });
 		}

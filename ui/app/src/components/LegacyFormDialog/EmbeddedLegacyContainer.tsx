@@ -52,6 +52,7 @@ import { nnou } from '../../utils/object';
 import { useFetchItem } from '../../hooks/useFetchItem';
 import Box from '@mui/material/Box';
 
+// FE2 TODO: for removal after FE1 removal
 export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyEditor(
 	props: LegacyFormDialogContainerProps,
 	ref
@@ -82,9 +83,9 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
 	const iframeRef = useRef(null);
 	const dispatch = useDispatch();
 	const [error, setError] = useState<ApiResponse>(null);
-	// When filename, path prop will still be the previous one, and useDetailedItem will try to re-fetch the
+	// When filename, path prop will still be the previous one, and useFetchItem will try to re-fetch the
 	// non-existing item (old filename path), so we will only re-fetch when the actual path prop of the component
-	// changes (useDetailedItemNoState).
+	// changes.
 	const item = useFetchItem(path);
 	const availableActions = item?.availableActions;
 	let fieldsIndexes;

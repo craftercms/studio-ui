@@ -24,6 +24,8 @@ import type { Theme } from '@mui/material/styles';
 import { showEditDialog } from '../state/actions/dialogs';
 import { pushDialog } from '../state/actions/dialogStack';
 import type { FormsEngineProps } from '../components/FormsEngine/FormsEngine';
+import { getHostToGuestBus } from './subjects';
+import { reloadRequest } from '../state/actions/preview';
 
 export type SystemLinkId =
 	| 'preview'
@@ -46,7 +48,7 @@ export function getSystemLink({
 	page?: string;
 }) {
 	return {
-		preview: `${authoringBase}${PREVIEW_URL_PATH}#/?page=${page}&site=${site}`,
+		preview: `${authoringBase}${PREVIEW_URL_PATH}#/?page=${encodeURIComponent(page)}&site=${site}`,
 		siteTools: `${authoringBase}${ProjectToolsRoutes.ProjectTools}`,
 		siteSearch: `${authoringBase}${ProjectToolsRoutes.Search}`,
 		siteDashboard: `${authoringBase}${ProjectToolsRoutes.SiteDashboard}`
@@ -98,7 +100,7 @@ export function consolidateSx(...sxs: SxProps<Theme>[]): SxProps<Theme> {
 }
 
 export function pickShowContentFormAction(oldProps: ReturnType<typeof showEditDialog>['payload']) {
-	const useLegacy = window.localStorage.getItem('useLegacyFormEngine') ?? false;
+	const useLegacy = window.localStorage.getItem('useLegacyFormEngine') === 'true';
 	return useLegacy
 		? showEditDialog(oldProps)
 		: pushDialog({
@@ -108,7 +110,11 @@ export function pickShowContentFormAction(oldProps: ReturnType<typeof showEditDi
 						...(oldProps.isNewContent
 							? { create: { path: oldProps.path, contentTypeId: oldProps.contentTypeId } }
 							: { update: { path: oldProps.path } }),
-						readonly: oldProps.readonly ?? false
+						readonly: oldProps.readonly ?? false,
+						onSave() {
+							if (isPreviewAppUrl()) getHostToGuestBus().next(reloadRequest());
+							// FE2 TODO: handling oldProps.onSaveSuccess required?
+						}
 					} as FormsEngineProps
 				}
 			});

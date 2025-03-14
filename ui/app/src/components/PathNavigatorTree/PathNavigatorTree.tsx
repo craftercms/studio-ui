@@ -48,7 +48,7 @@ import { showItemMegaMenu, showPreviewDialog } from '../../state/actions/dialogs
 import { getStoredPathNavigatorTree } from '../../utils/state';
 import GlobalState from '../../models/GlobalState';
 import PathNavigatorSkeleton from '../PathNavigator/PathNavigatorSkeleton';
-import { DetailedItem } from '../../models/Item';
+import { ContentItem } from '../../models/Item';
 import { SystemIconDescriptor } from '../SystemIcon';
 import { useSelection } from '../../hooks/useSelection';
 import { useEnv } from '../../hooks/useEnv';
@@ -308,7 +308,7 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
 		dispatch(pathNavigatorTreeFetchPathPage({ id, path }));
 	};
 
-	const onPreview = (item: DetailedItem) => {
+	const onPreview = (item: ContentItem) => {
 		if (isEditableViaFormEditor(item)) {
 			dispatch(pickShowContentFormAction({ path: item.path, authoringBase, site: siteId, readonly: true }));
 		} else if (isMediaContent(item.mimeType) || isPdfDocument(item.mimeType)) {
