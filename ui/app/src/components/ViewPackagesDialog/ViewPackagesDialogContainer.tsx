@@ -125,7 +125,7 @@ export function ViewPackagesDialogContainer(props: ViewPackagesDialogContainerPr
 								</SecondaryButton>
 							)}
 							{onContinue && (
-								<PrimaryButton onClick={(e) => onContinueClick(e)} autoFocus>
+								<PrimaryButton onClick={onContinueClick} autoFocus>
 									<FormattedMessage id="workflowCancellation.continue" defaultMessage="Continue" />
 								</PrimaryButton>
 							)}

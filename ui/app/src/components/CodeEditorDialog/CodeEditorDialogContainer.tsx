@@ -99,7 +99,6 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 			const value = editorRef.current.getValue();
 			const isConfig = path.startsWith('/config');
 			const module = isConfig ? (path.split('/')[2] as 'studio') : null;
-
 			const service$ = isConfig
 				? writeConfiguration(site, path.replace(`/config/${module}`, ''), module, value)
 				: writeContent(site, path, value, { unlock: false });

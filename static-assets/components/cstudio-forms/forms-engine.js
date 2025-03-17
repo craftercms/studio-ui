@@ -1067,7 +1067,7 @@ const initializeCStudioForms = () => {
 										})
 								});
 							}),
-							// Load the model's SandboxItem
+							// Load the model's ContentItem
 							new Promise((resolve) => {
 								path.includes('.xml')
 									? CrafterCMSNext.services.content
@@ -1529,6 +1529,7 @@ const initializeCStudioForms = () => {
 									action
 								});
 							} else {
+								const affectedPackages = me.affectedPackages;
 								const saveContent = () => {
 									const service$ = me.affectedPackages?.length
 										? craftercms.services.workflow
@@ -2894,7 +2895,7 @@ const initializeCStudioForms = () => {
 					craftercms.libs.rxjs
 						.forkJoin([
 							craftercms.services.workflow.fetchAffectedPackages(CStudioAuthoringContext.site, form.path),
-							craftercms.services.content.fetchSandboxItem(CStudioAuthoringContext.site, form.path)
+							craftercms.services.content.fetchContentItem(CStudioAuthoringContext.site, form.path)
 						])
 						.subscribe(([affectedPackages, item]) => {
 							_self.affectedPackages = affectedPackages;
