@@ -287,9 +287,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
           } else {
             // When uploading large files to aws/s3, something causes requests to fail and get retried n times before finally stating it failed; despite the file seemingly actually getting uploaded.
             // This setTimeout avoids that behaviour issue. The mechanism of failure or why this avoids it is unknown.
-            setTimeout(() => {
-              uppy.upload();
-            });
+            setTimeout(() => uppy.upload());
             setDescription(`${formatMessage(messages.uploadingFile)}:`);
             onUploadStart?.();
           }
