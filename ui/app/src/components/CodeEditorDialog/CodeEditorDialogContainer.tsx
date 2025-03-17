@@ -93,7 +93,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 		}, 150);
 	};
 
-	const _save = (callback?: () => void) => {
+	const save = (callback?: () => void) => {
 		if (!isLockedForMe && !readonly) {
 			dispatch(updateCodeEditorDialog({ isSubmitting: true }));
 			const value = editorRef.current.getValue();
@@ -133,7 +133,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 		}
 	};
 
-	const save = (callback?: () => void) => {
+	const checkItemWorkflow = (callback?: () => void) => {
 		// Before saving, check if the item is part of a package in active workflow. If so, show a dialog to review the
 		// packages before continuing with the cancellation of the packages and saving the item.
 		if (affectedPackages?.length) {
@@ -147,15 +147,15 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 			);
 			createCustomDocumentEventListener(callbackId, ({ type }) => {
 				if (type === 'close') return;
-				_save(callback);
+				save(callback);
 			});
 		} else {
-			_save(callback);
+			save(callback);
 		}
 	};
 
-	const onSave = () => {
-		save(() => setContent(editorRef.current.getValue()));
+	const onSaveButtonClick = () => {
+		checkItemWorkflow(() => setContent(editorRef.current.getValue()));
 	};
 
 	const onAddSnippet = (event) => {
@@ -180,13 +180,13 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 	const onMultiChoiceSaveButtonClick = (e, type) => {
 		switch (type) {
 			case 'save':
-				onSave();
+				onSaveButtonClick();
 				break;
 			case 'saveAndClose':
-				save(() => onCloseButtonClick(null));
+				checkItemWorkflow(() => onCloseButtonClick(null));
 				break;
 			case 'saveAndMinimize':
-				save(() => {
+				checkItemWorkflow(() => {
 					setContent(editorRef.current.getValue());
 					onMinimize?.();
 				});
@@ -198,12 +198,12 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 		editor.commands.addCommand({
 			name: 'saveToCrafter',
 			bindKey: { win: 'Ctrl-S', mac: 'Command-S' },
-			exec: () => fnRefs.current.onSave(),
+			exec: () => fnRefs.current.onSaveButtonClick(),
 			readOnly: false
 		});
 	};
 
-	const fnRefs = useUpToDateRefs({ onSave, onClose });
+	const fnRefs = useUpToDateRefs({ onSaveButtonClick, onClose });
 
 	// add content model variables
 	useEffect(() => {

@@ -1529,7 +1529,7 @@ const initializeCStudioForms = () => {
 									action
 								});
 							} else {
-								const _saveContent = () => {
+								const saveContent = () => {
 									const service$ = me.affectedPackages?.length
 										? craftercms.services.workflow
 												.cancelPackages(CStudioAuthoringContext.site, {
@@ -1701,7 +1701,7 @@ const initializeCStudioForms = () => {
 										}
 									);
 								};
-								const saveContent = () => {
+								const checkItemWorkflow = () => {
 									// Before saving, check if the item is part of a package in active workflow. If so, show a dialog to review the
 									// packages before continuing with the cancellation of the packages and saving the item.
 									const item = me.item;
@@ -1731,12 +1731,12 @@ const initializeCStudioForms = () => {
 
 										craftercms.utils.dom.createCustomDocumentEventListener(callbackId, ({ type }) => {
 											if (type === 'onContinue') {
-												_saveContent();
+												saveContent();
 											}
 											setButtonsEnabled(true);
 										});
 									} else {
-										_saveContent();
+										saveContent();
 									}
 								};
 								CrafterCMSNext.services.sites
@@ -1754,14 +1754,14 @@ const initializeCStudioForms = () => {
 														path: modifiedValue
 													}),
 													onOk: () => {
-														saveContent();
+														checkItemWorkflow();
 													},
 													onCancel: () => {
 														setButtonsEnabled(true);
 													}
 												});
 											} else {
-												saveContent();
+												checkItemWorkflow();
 											}
 										} else {
 											setButtonsEnabled(true);

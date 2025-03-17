@@ -56,7 +56,7 @@ export function ViewPackagesDialogContainer(props: ViewPackagesDialogContainerPr
 		dispatch(showPackageDetailsDialog({ packageId }));
 	};
 
-	const onContinueClick = (e) => {
+	const onContinueClick = (e: React.MouseEvent) => {
 		onContinue();
 		onClose(e, null);
 	};
@@ -125,7 +125,7 @@ export function ViewPackagesDialogContainer(props: ViewPackagesDialogContainerPr
 								</SecondaryButton>
 							)}
 							{onContinue && (
-								<PrimaryButton onClick={onContinueClick} autoFocus>
+								<PrimaryButton onClick={(e) => onContinueClick(e)} autoFocus>
 									<FormattedMessage id="workflowCancellation.continue" defaultMessage="Continue" />
 								</PrimaryButton>
 							)}
