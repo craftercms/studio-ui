@@ -285,9 +285,11 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
             setConfirm({ body: message });
             setSuggestedName(modifiedName);
           } else {
+            // When uploading larges files to aws-s3, there's a problem causing the requests to reset. This setTimeout
+            // is to avoid the issue.
             setTimeout(() => {
-              uppy.upload().then(() => {});
-            }, 0);
+              uppy.upload();
+            });
             setDescription(`${formatMessage(messages.uploadingFile)}:`);
             onUploadStart?.();
           }
@@ -308,7 +310,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
   }, [onUploadStart, formatMessage, path, site, uppy]);
 
   const onConfirm = () => {
-    uppy.upload().then(() => {});
+    uppy.upload();
     setSuggestedName(null);
     setDescription(`${formatMessage(messages.uploadingFile)}:`);
     onUploadStart?.();
