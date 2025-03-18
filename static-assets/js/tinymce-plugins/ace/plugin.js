@@ -131,6 +131,7 @@
             let value = aceEditor.getValue();
             editorTextareaEl.value = value;
             editor.setContent(value);
+            editor.fire('external_change');
           });
 
           editor.container.classList.add('hidden');
@@ -200,8 +201,6 @@
         if (inlineMode) {
           aceModes.inline.getSession().setValue(aceEditor.getValue());
         }
-
-        editor.fire('external_change');
       });
     };
   });
