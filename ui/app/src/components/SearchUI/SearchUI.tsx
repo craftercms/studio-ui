@@ -123,7 +123,7 @@ const useStyles = makeStyles()((theme) => ({
   },
   searchHelperBar: {
     display: 'flex',
-    padding: '0 6px 0 20px',
+    padding: '0 6px',
     alignItems: 'center',
     background: theme.palette.background.paper,
     borderBottom: `1px solid ${theme.palette.divider}`
