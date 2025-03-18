@@ -21,10 +21,7 @@ import SiteSearchFilters from '../SiteSearchFilters';
 import { ElasticParams, Filter, MediaItem } from '../../models/Search';
 import { CheckedFilter, drawerWidth, SearchProps, UseSearchStateReturn } from '../Search/utils';
 import LookupTable from '../../models/LookupTable';
-import FormGroup from '@mui/material/FormGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
-import Typography from '@mui/material/Typography';
 import { translations } from '../Search/translations';
 import TablePagination, { tablePaginationClasses } from '@mui/material/TablePagination';
 import ApiResponseErrorState from '../ApiResponseErrorState';
@@ -42,6 +39,7 @@ import { UNDEFINED } from '../../utils/constants';
 import { LoadingState } from '../LoadingState';
 import Box from '@mui/material/Box';
 import { drawerClasses } from '@mui/material';
+import Tooltip from '@mui/material/Tooltip';
 
 export interface SearchUIProps
 	extends Required<Pick<SearchProps, 'mode' | 'embedded' | 'onClose' | 'onAcceptSelection'>>,
@@ -227,24 +225,15 @@ export function SearchUI(props: SearchUIProps) {
 				<Box
 					sx={(theme) => ({
 						display: 'flex',
-						padding: '0 6px 0 20px',
+						padding: '0 6px',
 						alignItems: 'center',
 						background: theme.palette.background.paper,
 						borderBottom: `1px solid ${theme.palette.divider}`
 					})}
 				>
-					<FormGroup>
-						<FormControlLabel
-							control={
-								<Checkbox
-									color="primary"
-									checked={areAllSelected}
-									onClick={(e) => handleSelectAll((e.target as HTMLInputElement).checked)}
-								/>
-							}
-							label={<Typography color="textPrimary">{formatMessage(translations.selectAll)}</Typography>}
-						/>
-					</FormGroup>
+					<Tooltip title={<FormattedMessage defaultMessage="Select All on this page" />}>
+						<Checkbox checked={areAllSelected} onChange={(e) => handleSelectAll(e.target.checked)} />
+					</Tooltip>
 					<TablePagination
 						rowsPerPageOptions={[9, 15, 21]}
 						sx={{
