@@ -44,6 +44,7 @@ import IconButton from '@mui/material/IconButton';
 import MoreVertRounded from '@mui/icons-material/MoreVertRounded';
 import { UNDEFINED } from '../../utils/constants';
 import { LoadingState } from '../LoadingState';
+import Tooltip from '@mui/material/Tooltip';
 
 export interface SearchUIProps {
   selectedPath: string;
@@ -372,18 +373,9 @@ export function SearchUI(props: SearchUIProps) {
         }
       >
         <div className={classes.searchHelperBar}>
-          <FormGroup>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  color="primary"
-                  checked={areAllSelected}
-                  onClick={(e: any) => handleSelectAll(e.target.checked)}
-                />
-              }
-              label={<Typography color="textPrimary">{formatMessage(translations.selectAll)}</Typography>}
-            />
-          </FormGroup>
+          <Tooltip title={<FormattedMessage defaultMessage="Select All on this page" />}>
+            <Checkbox checked={areAllSelected} onChange={(e) => handleSelectAll(e.target.checked)} />
+          </Tooltip>
           <TablePagination
             rowsPerPageOptions={[9, 15, 21]}
             className={classes.pagination}

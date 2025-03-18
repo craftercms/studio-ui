@@ -29,10 +29,6 @@ export const translations = defineMessages({
     id: 'search.videoProcessed',
     defaultMessage: 'Video is being processed, preview will be available when processing is complete'
   },
-  selectAll: {
-    id: 'search.selectAll',
-    defaultMessage: 'Select all on this page'
-  },
   resultsSelected: {
     id: 'search.resultsSelected',
     defaultMessage: '{count, plural, one {{count} item selected} other {{count} items selected}}'
