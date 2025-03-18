@@ -31,7 +31,7 @@ import {
 	StableGlobalContext,
 	StableGlobalContextProps
 } from './formsEngineContext';
-import { fetchContentXML, fetchDescriptorXML, fetchDetailedItem, lock, unlock } from '../../../services/content';
+import { fetchContentXML, fetchDescriptorXML, fetchContentItem, lock, unlock } from '../../../services/content';
 import { AjaxError } from 'rxjs/ajax';
 import { fetchAffectedPackages } from '../../../services/workflow';
 import { Dispatch as ReduxDispatch } from 'redux';
@@ -296,7 +296,7 @@ export function fetchUpdateRequirements({
 	).pipe(
 		switchMap((lockResult) =>
 			forkJoin([
-				fetchDetailedItem(siteId, path),
+				fetchContentItem(siteId, path),
 				of(lockResult),
 				// TODO: Check if these two are redundant
 				fetchContentXML(siteId, path),

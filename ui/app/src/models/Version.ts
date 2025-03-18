@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { DetailedItem } from './Item';
+import { ContentItem } from './Item';
 import ApiResponse from './ApiResponse';
 import ContentInstance from './ContentInstance';
 import Person from './Person';
@@ -44,7 +44,7 @@ export interface CompareVersionsBranch {
 
 export interface VersionsStateProps {
 	byId: LookupTable<ItemHistoryEntry>;
-	item: DetailedItem;
+	item: ContentItem;
 	rootPath?: string;
 	isConfig?: boolean;
 	environment?: string;

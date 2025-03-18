@@ -51,7 +51,7 @@ import useUpdateRefs from '../../hooks/useUpdateRefs';
 import { hasInitialPublish as hasInitialPublishService } from '../../services/sites';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import Box from '@mui/material/Box';
-import useDetailedItem from '../../hooks/useDetailedItem';
+import useContentItem from '../../hooks/useContentItem';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import usePermissionsBySite from '../../hooks/usePermissionsBySite';
 import { StandardAction } from '../../models';
@@ -143,7 +143,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 	const permissionsBySite = usePermissionsBySite();
 	const hasPublishPermission = permissionsBySite[siteId]?.includes('publish');
 	const [hasInitialPublish, setHasInitialPublish] = useState(false);
-	const initialPublishItem = useDetailedItem('/site/website/index.xml');
+	const initialPublishItem = useContentItem('/site/website/index.xml');
 	const [initialPublishingTarget, setInitialPublishingTarget] = useState(null);
 	const [publishingTargets, setPublishingTargets] = useState(null);
 	const [publishingTargetsError, setPublishingTargetsError] = useState(null);

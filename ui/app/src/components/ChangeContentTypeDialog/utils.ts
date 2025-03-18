@@ -14,13 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { DetailedItem } from '../../models/Item';
+import { ContentItem } from '../../models/Item';
 import StandardAction from '../../models/StandardAction';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 
 export interface ChangeContentTypeDialogBaseProps {
-	item: DetailedItem;
+	item: ContentItem;
 	rootPath: string;
 	compact: boolean;
 	selectedContentType: string;

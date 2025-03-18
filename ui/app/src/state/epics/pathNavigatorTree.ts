@@ -49,7 +49,7 @@ import {
 	checkPathExistence,
 	fetchChildrenByPath,
 	fetchChildrenByPaths,
-	fetchItemsByPath
+	fetchContentItems
 } from '../../services/content';
 import { catchAjaxError } from '../../utils/ajax';
 import { removeStoredPathNavigatorTree, setStoredPathNavigatorTree } from '../../utils/state';
@@ -144,7 +144,7 @@ export default [
 					paths.push(state.pathNavigatorTree[id].rootPath);
 				}
 				return forkJoin([
-					fetchItemsByPath(state.sites.active, paths, { castAsDetailedItem: true }),
+					fetchContentItems(state.sites.active, paths),
 					fetchChildrenByPaths(
 						state.sites.active,
 						createPresenceTable(expanded, (value) => ({
@@ -223,7 +223,7 @@ export default [
 				});
 				return requests.length
 					? forkJoin([
-							fetchItemsByPath(state.sites.active, paths, { castAsDetailedItem: true }),
+							fetchContentItems(state.sites.active, paths),
 							fetchChildrenByPaths(state.sites.active, optionsByPath)
 						]).pipe(
 							map(([items, children]) => {
@@ -441,7 +441,7 @@ export default [
 							!sortingOptionsSet
 						) {
 							// Reloading the item done by content epics
-							// actions.push(fetchSandboxItem({ path }));
+							// actions.push(fetchContentItem({ path }));
 						} else if (
 							// If an entry for the folder exists, fetch
 							parentPath in tree.totalByPath ||
@@ -452,7 +452,7 @@ export default [
 							pathToUpdate in tree.childrenByParentPath &&
 								idsToRefreshChildrenOnly.push({ id, path: pathToUpdate, expand: false });
 							// Update child count done by content epics.
-							// fetchSandboxItem({ path: parentPath })
+							// fetchContentItem({ path: parentPath })
 						}
 					}
 				);
@@ -513,7 +513,7 @@ export default [
 									idsToRefreshChildrenOnly.push({ id, path: pathToFetch, expand: false });
 								}
 								// Re-fetching the item done by content epics.
-								// fetchSandboxItem({ path: path })
+								// fetchContentItem({ path: path })
 							}
 						});
 					}

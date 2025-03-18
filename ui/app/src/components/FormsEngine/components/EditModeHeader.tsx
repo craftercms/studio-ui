@@ -20,7 +20,7 @@ import { ItemContext, ItemMetaContext, StableFormContext } from '../lib/formsEng
 import { useAtomValue, useStore as useJotaiStore } from 'jotai/index';
 import useLocale from '../../../hooks/useLocale';
 import { getFieldAtomValue } from '../lib/formUtils';
-import { SandboxItem } from '../../../models';
+import { ContentItem } from '../../../models';
 import { prettyPrintPerson } from '../../../utils/object';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
@@ -55,17 +55,17 @@ export function EditModeHeader({ isEmbedded }: { isEmbedded: boolean }) {
 	const itemLabel = isEmbedded
 		? (getFieldAtomValue(atoms.valueByFieldId[XmlKeys.internalName], store) as string)
 		: item.label;
-	const typeIconItem: Pick<SandboxItem, 'systemType' | 'mimeType'> = isEmbedded
+	const typeIconItem: Pick<ContentItem, 'systemType' | 'mimeType'> = isEmbedded
 		? { systemType: 'component', mimeType: 'application/xml' }
 		: item;
-	const formattedCreator = prettyPrintPerson(item.sandbox.creator);
+	const formattedCreator = prettyPrintPerson(item.creator);
 	const formattedCreationDate = new Intl.DateTimeFormat(localeConf.localeCode, {
 		dateStyle: 'short'
-	}).format(new Date(item.sandbox.dateCreated));
-	const formattedModifier = prettyPrintPerson(item.sandbox.modifier);
+	}).format(new Date(item.dateCreated));
+	const formattedModifier = prettyPrintPerson(item.modifier);
 	const formattedModifiedDate = new Intl.DateTimeFormat(localeConf.localeCode, {
 		dateStyle: 'short'
-	}).format(new Date(item.sandbox.dateModified));
+	}).format(new Date(item.dateModified));
 	// TODO: Tabs will be done at a later phase.
 	// const [activeTab, setActiveTab] = useAtom(activeTabAtom);
 	// const handleTabChange: TabsProps['onChange'] = (e, value) => setActiveTab(value);

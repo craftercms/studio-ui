@@ -15,7 +15,7 @@
  */
 
 import { Context, createContext, useContext } from 'react';
-import { DetailedItem, PublishPackage } from '../../../models';
+import { ContentItem, PublishPackage } from '../../../models';
 import ContentType from '../../../models/ContentType';
 import ApiResponse from '../../../models/ApiResponse';
 import { FormsEngineProps } from '../FormsEngine';
@@ -48,7 +48,7 @@ export interface FormRequirementsResponse
 			'sourceMap' | 'pathInSite' | 'contentType' | 'contentObject' | 'contentXml'
 		>,
 		FormsEngineEditContextProps {
-	item: DetailedItem;
+	item: ContentItem;
 	contentObject: LookupTable<unknown>;
 }
 
@@ -124,7 +124,7 @@ StableGlobalContext.displayName = 'StableGlobalContext';
 export const StableFormContext = createContext<StableFormContextProps>(undefined);
 StableFormContext.displayName = 'StableFormContext';
 
-export const ItemContext = createContext<DetailedItem>(undefined);
+export const ItemContext = createContext<ContentItem>(undefined);
 ItemContext.displayName = 'ItemContext';
 
 export const ItemMetaContext = createContext<FormsEngineItemMetaContextProps>(undefined);

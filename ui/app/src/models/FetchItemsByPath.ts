@@ -16,5 +16,4 @@
 
 export interface FetchItemsByPathOptions {
 	preferContent?: boolean;
-	castAsDetailedItem?: boolean;
 }

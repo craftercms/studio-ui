@@ -69,7 +69,7 @@ export function PagesSearchAhead(props: PagesSearchAheadProps) {
 		inputValue: keyword,
 		disableCloseOnSelect: true,
 		onInputChange: (e, value, reason) => {
-			if (reason === 'reset') {
+			if (reason === 'reset' || reason === 'selectOption') {
 				const previewUrl = getPreviewURLFromPath(value);
 				setKeyword(previewUrl);
 				onEnter(previewUrl);

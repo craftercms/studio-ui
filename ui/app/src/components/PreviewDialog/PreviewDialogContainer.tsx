@@ -33,7 +33,7 @@ import { hasEditAction, isBlobUrl } from '../../utils/content';
 import { useSelection } from '../../hooks/useSelection';
 import useItemsByPath from '../../hooks/useItemsByPath';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
-import { fetchSandboxItem } from '../../state/actions/content';
+import { fetchContentItem } from '../../state/actions/content';
 import useItemsBeingFetchedByPath from '../../hooks/useItemsBeingFetchedByPath';
 import palette from '../../styles/palette';
 
@@ -49,7 +49,7 @@ export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
 
 	useEffect(() => {
 		if (type === 'editor' && path && !items[path] && !itemsBeingFetchedByPath[path]) {
-			dispatch(fetchSandboxItem({ path }));
+			dispatch(fetchContentItem({ path }));
 		}
 	}, [siteId, items, path, type, dispatch, itemsBeingFetchedByPath]);
 

@@ -28,11 +28,15 @@ export function serialize(doc: Node): string {
 	return new XMLSerializer().serializeToString(doc);
 }
 
-interface BeautifyOptions {
+export interface BeautifyOptions {
 	tabWidth: number;
 	printWidth: number;
-	xmlWhitespaceSensitivity: 'ignore' | 'strict';
 	xmlSelfClosingSpace: boolean;
+	xmlWhitespaceSensitivity: 'strict' | 'preserve' | 'ignore';
+	xmlSortAttributesByKey: boolean;
+	xmlQuoteAttributes: 'preserve' | 'single' | 'double';
+	singleAttributePerLine: boolean;
+	bracketSameLine: boolean;
 }
 
 export function beautify(xml: string): Promise<string>;
@@ -41,10 +45,13 @@ export function beautify(xml: string, options?: Partial<BeautifyOptions>): Promi
 	return format(xml, {
 		tabWidth: 2,
 		printWidth: +Infinity,
+		// @prettier/plugin-xml v3.3.1 breaks xmlWhitespaceSensitivity behaviour: encoded entities started
+		// to get spaces in between the encoded `<`, `>`, and tag name, breaking the decoding.
+		// Setting xmlWhitespaceSensitivity to 'preserve' would prevent the issue, but it has consequences
+		// on the desired format result. See https://github.com/prettier/plugin-xml/issues/784.
 		xmlWhitespaceSensitivity: 'ignore',
 		xmlSelfClosingSpace: true,
 		...options,
-		// @ts-ignore
 		parser: 'xml',
 		plugins: [prettierXmlPlugin]
 	});

@@ -75,7 +75,7 @@ import { useDispatch } from 'react-redux';
 import { nanoid } from 'nanoid';
 import useUpdateRefs from '../../../hooks/useUpdateRefs';
 import { SearchProps } from '../../Search';
-import useFetchSandboxItems from '../../../hooks/useFetchSandboxItems';
+import useFetchContentItems from '../../../hooks/useFetchContentItems';
 import useItemsByPath from '../../../hooks/useItemsByPath';
 import ItemDisplay from '../../ItemDisplay';
 import useActiveUser from '../../../hooks/useActiveUser';
@@ -457,7 +457,7 @@ const showSearchDialog = ({
 
 function NodeSelector(props: NodeSelectorProps) {
 	const { field, contentType, value, setValue, readonly, autoFocus } = props;
-	useFetchSandboxItems(value.flatMap((item) => item.include ?? []));
+	useFetchContentItems(value.flatMap((item) => item.include ?? []));
 	const [sortMode, setSortMode] = useState(false);
 	const useTouchSorting = useMemo(() => isTouchDevice(), []);
 	const handleCancelReorder = () => setSortMode(false);
@@ -499,7 +499,7 @@ function NodeSelector(props: NodeSelectorProps) {
 				},
 				onSave({ values }) {
 					const key = isEmbedded
-						? ((values[XmlKeys.fileName] || values.objectId) as string)
+						? ((values[XmlKeys.fileName] || values.objectId) as string).replace(/\.xml$/, '')
 						: // TODO: What if it was moved? i.e. changed its file-name/folder-name
 							item.include;
 					const newItem: NodeSelectorItem = {

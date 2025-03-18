@@ -29,10 +29,10 @@ import { DeleteDialogContainerProps, DeleteDialogContentUIProps } from './utils'
 import { useSelection } from '../../hooks/useSelection';
 import LookupTable from '../../models/LookupTable';
 import { createPresenceTable } from '../../utils/array';
-import { DetailedItem } from '../../models/Item';
+import { ContentItem } from '../../models/Item';
 import { isBlank } from '../../utils/string';
 import { ApiResponse } from '../../models';
-import useFetchSandboxItems from '../../hooks/useFetchSandboxItems';
+import useFetchContentItems from '../../hooks/useFetchContentItems';
 
 function createCheckedList(selectedItems: LookupTable<boolean>, excludedPaths?: string[]) {
 	return Object.entries(selectedItems)
@@ -40,7 +40,7 @@ function createCheckedList(selectedItems: LookupTable<boolean>, excludedPaths?: 
 		.map(([path]) => path);
 }
 
-function createCheckedLookup(items: Array<DetailedItem | string>, setChecked = true) {
+function createCheckedLookup(items: Array<ContentItem | string>, setChecked = true) {
 	const isString = typeof items[0] === 'string';
 	return items.reduce((checked, item) => {
 		// @ts-ignore - `isString` above pre-checks the type, typescript doesn't realise this is safe by this point.
@@ -66,7 +66,7 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
 		isBlank(title) ||
 		!confirmChecked;
 	const authoringBase = useSelection((state) => state.env.authoringBase);
-	useFetchSandboxItems(dependentItems ?? []);
+	const dependentItemsPaths = dependentItems?.map((item) => item.path) ?? [];
 
 	const onSubmit = () => {
 		const paths = createCheckedList(selectedItems);
@@ -115,7 +115,7 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
 		// Clean the state, only keep checked items
 		!nextChecked[path] && delete nextChecked[path];
 		// If there aren't any checked main items, uncheck everything.
-		const checkedMainItems = createCheckedList(nextChecked, dependentItems);
+		const checkedMainItems = createCheckedList(nextChecked, dependentItemsPaths);
 		checkedMainItems.length === 0 && (nextChecked = {});
 		fetchOrCleanDependencies(nextChecked);
 		setSelectedItems(nextChecked);
@@ -146,7 +146,7 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
 	};
 
 	const onEditDependantClick = (e, path) => {
-		let paths = createCheckedList(selectedItems, dependentItems);
+		let paths = createCheckedList(selectedItems, dependentItemsPaths);
 		// We don't have a good way of knowing if the dependant item cleared it's dependency and if it's checked, it
 		// needs to get removed from selectedItems after the edit is complete and the item is not even listed as a dependency.
 		// Until we find a better way around that, will uncheck when the edit button is pressed.

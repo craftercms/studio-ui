@@ -52,6 +52,7 @@ import { forEach } from '@craftercms/studio-ui/utils/array';
 import { isSimple, popPiece, removeLastPiece } from '@craftercms/studio-ui/utils/string';
 import { addAnimation } from '../utils/dom';
 import { emptyCollectionClass } from '../constants';
+import type { BuiltInControlType } from '@craftercms/studio-ui/components/FormsEngine/lib/controlMap';
 
 export function GuestProxy() {
 	const draggable = useSelector<GuestState['draggable']>((state) => state.draggable);
@@ -456,9 +457,9 @@ export function GuestProxy() {
 					);
 					const model = getCachedModel(modelIdToEdit);
 					const contentType = getCachedContentType(model.craftercms.contentTypeId);
-					const fieldType = ContentType.getField(contentType, fieldId).type;
+					const fieldType: BuiltInControlType = ContentType.getField(contentType, fieldId).type as BuiltInControlType;
 
-					if (fieldType === 'image') {
+					if (fieldType === 'image-picker') {
 						// At this time all the items in updatedField have the same tagName, use first item
 						const tagName = updatedField[0].tagName.toLowerCase();
 						if (tagName === 'img') {

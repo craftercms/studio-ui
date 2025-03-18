@@ -37,15 +37,10 @@ import { ComponentsContentTypeParams, ContentInstancePage } from '../models/Sear
 import Core from '@uppy/core';
 import XHRUpload from '@uppy/xhr-upload';
 import { getRequestForgeryToken } from '../utils/auth';
-import { DetailedItem, LegacyItem, SandboxItem } from '../models/Item';
+import { ContentItem, LegacyItem } from '../models/Item';
 import { ItemHistoryEntry } from '../models/Version';
 import { GetChildrenOptions } from '../models/GetChildrenOptions';
-import {
-	generateComponentPath,
-	parseContentXML,
-	parseSandBoxItemToDetailedItem,
-	prepareVirtualItemProps
-} from '../utils/content';
+import { generateComponentPath, parseContentXML, prepareVirtualItemProps } from '../utils/content';
 import QuickCreateItem from '../models/content/QuickCreateItem';
 import ApiResponse from '../models/ApiResponse';
 import { fetchContentTypes } from './contentTypes';
@@ -99,42 +94,16 @@ export function fetchDescriptorDOM(
 	return fetchDescriptorXML(site, path, options).pipe(map(fromString));
 }
 
-// region fetchSandboxItem(...
-export function fetchSandboxItem(site: string, path: string): Observable<SandboxItem>;
-export function fetchSandboxItem(
-	site: string,
-	path: string,
-	options: FetchItemsByPathOptions & { castAsDetailedItem?: false }
-): Observable<SandboxItem>;
-export function fetchSandboxItem(
-	site: string,
-	path: string,
-	options: FetchItemsByPathOptions & { castAsDetailedItem: true }
-): Observable<DetailedItem>;
-export function fetchSandboxItem(
-	site: string,
-	path: string,
-	options?: FetchItemsByPathOptions
-): Observable<SandboxItem | DetailedItem> {
-	return fetchItemsByPath(site, [path], options).pipe(map((items) => items[0]));
-}
-// endregion
-
-export function fetchDetailedItem(
+export function fetchContentItem(
 	siteId: string,
 	path: string,
 	options?: { preferContent: boolean }
-): Observable<DetailedItem> {
+): Observable<ContentItem> {
 	const { preferContent } = { preferContent: true, ...options };
 	const qs = toQueryString({ siteId, path, preferContent });
 	return get(`/studio/api/2/content/item_by_path${qs}`).pipe(
-		pluck('response', 'item'),
-		map((item: DetailedItem) => prepareVirtualItemProps(item))
+		map(({ response }) => prepareVirtualItemProps(response?.item))
 	);
-}
-
-export function fetchDetailedItems(site: string, paths: string[]): Observable<DetailedItem[]> {
-	return forkJoin(paths.map((path) => fetchDetailedItem(site, path)));
 }
 
 export function fetchContentInstanceLookup(
@@ -1332,69 +1301,46 @@ export function fetchChildrenByPaths(
 			);
 }
 
-// region export function fetchItemsByPath(...
-export function fetchItemsByPath(siteId: string, paths: string[]): Observable<FetchItemsByPathArray<SandboxItem>>;
-export function fetchItemsByPath(
-	siteId: string,
-	paths: string[],
-	options: FetchItemsByPathOptions & { castAsDetailedItem: false }
-): Observable<FetchItemsByPathArray<SandboxItem>>;
-export function fetchItemsByPath(
-	siteId: string,
-	paths: string[],
-	options: FetchItemsByPathOptions & { castAsDetailedItem: true }
-): Observable<FetchItemsByPathArray<DetailedItem>>;
-export function fetchItemsByPath(
+// region export function fetchContentItems(...
+export function fetchContentItems(siteId: string, paths: string[]): Observable<FetchItemsByPathArray<ContentItem>>;
+export function fetchContentItems(
 	siteId: string,
 	paths: string[],
 	options: FetchItemsByPathOptions
-): Observable<FetchItemsByPathArray<SandboxItem>>;
-export function fetchItemsByPath(
+): Observable<FetchItemsByPathArray<ContentItem>>;
+export function fetchContentItems(
 	siteId: string,
 	paths: string[],
 	options?: FetchItemsByPathOptions
-): Observable<FetchItemsByPathArray<SandboxItem | DetailedItem>> {
+): Observable<FetchItemsByPathArray<ContentItem>> {
 	if (!paths?.length) {
-		return of([] as FetchItemsByPathArray<SandboxItem | DetailedItem>);
+		return of([] as FetchItemsByPathArray<ContentItem>);
 	}
-	const { castAsDetailedItem = false, preferContent = true } = options ?? {};
+	const { preferContent = true } = options ?? {};
 	return postJSON('/studio/api/2/content/sandbox_items_by_path', { siteId, paths, preferContent }).pipe(
 		pluck('response'),
 		map(({ items, missingItems }) =>
-			Object.assign(
-				items.map((item) =>
-					prepareVirtualItemProps(castAsDetailedItem ? parseSandBoxItemToDetailedItem(item) : item)
-				) as SandboxItem[] | DetailedItem[],
-				{ missingItems }
-			)
+			Object.assign(items.map((item) => prepareVirtualItemProps(item)) as ContentItem[], {
+				missingItems
+			})
 		)
 	);
 }
 // endregion
 
 // region export function fetchItemByPath(...
-export function fetchItemByPath(siteId: string, path: string): Observable<SandboxItem>;
-export function fetchItemByPath(
-	siteId: string,
-	path: string,
-	options: FetchItemsByPathOptions & { castAsDetailedItem: false }
-): Observable<SandboxItem>;
-export function fetchItemByPath(
-	siteId: string,
-	path: string,
-	options: FetchItemsByPathOptions & { castAsDetailedItem: true }
-): Observable<DetailedItem>;
+export function fetchItemByPath(siteId: string, path: string): Observable<ContentItem>;
 export function fetchItemByPath(
 	siteId: string,
 	path: string,
 	options: FetchItemsByPathOptions
-): Observable<SandboxItem>;
+): Observable<ContentItem>;
 export function fetchItemByPath(
 	siteId: string,
 	path: string,
 	options?: FetchItemsByPathOptions
-): Observable<SandboxItem | DetailedItem> {
-	return fetchItemsByPath(siteId, [path], options).pipe(
+): Observable<ContentItem> {
+	return fetchContentItems(siteId, [path], options).pipe(
 		tap((items) => {
 			if (items[0] === void 0) {
 				// Fake out the 404 which the backend won't return for this bulk API
@@ -1424,7 +1370,7 @@ export function fetchItemWithChildrenByPath(
 	options?: Partial<GetChildrenOptions>
 ): Observable<GetItemWithChildrenResponse> {
 	return forkJoin({
-		item: fetchItemByPath(siteId, path, { castAsDetailedItem: true }),
+		item: fetchItemByPath(siteId, path),
 		children: fetchChildrenByPath(siteId, path, options)
 	});
 }

@@ -17,10 +17,10 @@
 import { useStore } from 'react-redux';
 import { useEffect, useRef } from 'react';
 import { UNDEFINED } from '../utils/constants';
-import { fetchSandboxItems } from '../state/actions/content';
+import { fetchContentItems } from '../state/actions/content';
 import { Store } from 'redux';
 
-export function useFetchSandboxItems(paths: string[]): void {
+export function useFetchContentItems(paths: string[]): void {
 	const store: Store = useStore();
 	const storeRef = useRef(store);
 	useEffect(
@@ -29,7 +29,7 @@ export function useFetchSandboxItems(paths: string[]): void {
 			const state = store.getState();
 			const { itemsByPath, itemsBeingFetchedByPath } = state.content;
 			const pathsToFetch = paths.filter((path) => !itemsByPath[path] && itemsBeingFetchedByPath[path] === UNDEFINED);
-			pathsToFetch.length && store.dispatch(fetchSandboxItems({ paths: pathsToFetch }));
+			pathsToFetch.length && store.dispatch(fetchContentItems({ paths: pathsToFetch }));
 		},
 		// Interested in renewing the effect when paths change, not when the paths array instance changes
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -37,4 +37,4 @@ export function useFetchSandboxItems(paths: string[]): void {
 	);
 }
 
-export default useFetchSandboxItems;
+export default useFetchContentItems;

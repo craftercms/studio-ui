@@ -15,7 +15,7 @@
  */
 
 import React, { ReactNode, useMemo } from 'react';
-import { DetailedItem } from '../../models/Item';
+import { ContentItem } from '../../models/Item';
 import { useLocale } from '../../hooks/useLocale';
 import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -41,7 +41,7 @@ export interface SelectionListProps {
 	title: ReactNode;
 	subtitle?: ReactNode;
 	emptyMessage?: ReactNode;
-	items?: DetailedItem[];
+	items?: ContentItem[];
 	paths?: string[];
 	displayItemTitle: boolean;
 	// Optional since list may not have checkboxes
@@ -208,7 +208,7 @@ export function SelectionList(props: SelectionListProps) {
 															[item.stateMap.submittedToLive ? 'live' : 'staged']:
 																item.stateMap.submittedToLive || item.stateMap.submittedToStaging
 														}
-													} as DetailedItem
+													} as ContentItem
 												}
 											/>
 											<Typography variant="body2" color="textSecondary">

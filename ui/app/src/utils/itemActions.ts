@@ -15,7 +15,7 @@
  */
 
 import { translations } from '../components/ItemActionsMenu/translations';
-import { AllItemActions, DetailedItem, LegacyItem } from '../models/Item';
+import { AllItemActions, ContentItem, LegacyItem } from '../models/Item';
 import { ContextMenuOption } from '../components/ContextMenu';
 import { getControllerPath, getRootPath, withoutIndex } from './path';
 import {
@@ -42,7 +42,7 @@ import {
 	showUploadDialog,
 	showViewPackagesDialog
 } from '../state/actions/dialogs';
-import { fetchItemsByPath, fetchLegacyItemsTree, fetchSandboxItem } from '../services/content';
+import { checkPathExistence, fetchContentItem, fetchContentItems, fetchLegacyItemsTree } from '../services/content';
 import {
 	batchActions,
 	changeContentType,
@@ -70,7 +70,7 @@ import {
 	duplicateWithPolicyValidation,
 	pasteItem,
 	pasteItemWithPolicyValidation,
-	reloadDetailedItem,
+	reloadContentItem,
 	setClipboard,
 	unlockItem
 } from '../state/actions/content';
@@ -286,7 +286,7 @@ export function toContextMenuOptionsLookup<Keys extends string = AllItemActions>
 }
 
 export function generateSingleItemOptions(
-	item: DetailedItem,
+	item: ContentItem,
 	formatMessage: IntlFormatters['formatMessage'],
 	options?: Partial<{
 		hasClipboard: boolean;
@@ -448,7 +448,7 @@ export function generateSingleItemOptions(
 }
 
 export function generateMultipleItemOptions(
-	items: DetailedItem[],
+	items: ContentItem[],
 	formatMessage: IntlFormatters['formatMessage'],
 	options?: {
 		includeOnly: AllItemActions[];
@@ -498,7 +498,7 @@ export const itemActionDispatcher = ({
 	extraPayload
 }: {
 	site: string;
-	item: DetailedItem | DetailedItem[];
+	item: ContentItem | ContentItem[];
 	option: AllItemActions;
 	authoringBase: string;
 	dispatch: Dispatch;
@@ -508,8 +508,8 @@ export const itemActionDispatcher = ({
 	event?: React.MouseEvent<Element, MouseEvent>;
 	extraPayload?: any;
 }) => {
-	let item: DetailedItem;
-	let items: DetailedItem[];
+	let item: ContentItem;
+	let items: ContentItem[];
 	if (Array.isArray(itemOrItems)) {
 		items = itemOrItems;
 	} else {
@@ -643,12 +643,12 @@ export const itemActionDispatcher = ({
 							]);
 
 							if (dependantItems?.length) {
-								fetchItemsByPath(
+								fetchContentItems(
 									site,
 									dependantItems.map((item) => item.uri ?? item.path)
-								).subscribe((sandboxItems) => {
+								).subscribe((contentItems) => {
 									dispatch(
-										showBrokenReferencesDialog({ path, references: sandboxItems, onContinue: actionToDispatch })
+										showBrokenReferencesDialog({ path, references: contentItems, onContinue: actionToDispatch })
 									);
 								});
 							} else {
@@ -669,9 +669,9 @@ export const itemActionDispatcher = ({
 						message: `${formatMessage(translations.processing)}...`
 					})
 				);
-				fetchSandboxItem(site, item.path).subscribe({
-					next(item) {
-						if (item) {
+				checkPathExistence(site, item.path).subscribe({
+					next(exists) {
+						if (exists) {
 							dispatch(
 								batchActions([
 									unblockUI(),
@@ -743,7 +743,7 @@ export const itemActionDispatcher = ({
 			}
 			case 'paste': {
 				if (clipboard.type === 'CUT') {
-					fetchSandboxItem(site, clipboard.sourcePath).subscribe((clipboardItem) => {
+					fetchContentItem(site, clipboard.sourcePath).subscribe((clipboardItem) => {
 						if (isInActiveWorkflow(clipboardItem)) {
 							dispatch(
 								showViewPackagesDialog({
@@ -939,7 +939,7 @@ export const itemActionDispatcher = ({
 					scheduling: schedulingMap[option],
 					onSuccess: batchActions([
 						showPublishItemSuccessNotification(),
-						...items.map((item) => reloadDetailedItem({ path: item.path })),
+						...items.map((item) => reloadContentItem({ path: item.path })),
 						closePublishDialog(),
 						fetchPublishingStatus(),
 						...(onActionSuccess ? [onActionSuccess] : [])
