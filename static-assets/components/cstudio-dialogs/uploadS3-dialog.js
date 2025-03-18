@@ -184,7 +184,7 @@ CStudioAuthoring.Dialogs.UploadS3Dialog = CStudioAuthoring.Dialogs.UploadS3Dialo
 				$('#uploadCancelButton').attr('disabled', true);
 			},
 			onComplete: function ({ successful }) {
-				let uploaded = JSON.parse(successful[0].response.body.response).item;
+				let uploaded = successful[0].response.body.item;
 
 				$('#uploadCancelButton').attr('disabled', false);
 				me.uploadingFile = false;

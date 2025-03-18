@@ -26,7 +26,7 @@ import '@uppy/file-input/src/style.scss';
 import { getGlobalHeaders } from '../../utils/ajax';
 import { validateActionPolicy } from '../../services/sites';
 import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
-import { UppyFile } from '@uppy/utils';
+import { UppyFile, Meta, Body } from '@uppy/utils/lib/UppyFile';
 import { useDispatch } from 'react-redux';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
@@ -117,7 +117,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 	const { formatMessage } = useIntl();
 	const dispatch = useDispatch();
 	const [description, setDescription] = useState<string>(formatMessage(messages.selectFileMessage));
-	const [file, setFile] = useState<UppyFile>(null);
+	const [file, setFile] = useState<UppyFile<Meta, Body>>(null);
 	const fileRef = useRef(null);
 	const [suggestedName, setSuggestedName] = useState(null);
 	const suggestedNameRef = useRef(null);
@@ -199,19 +199,22 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 				fieldName: 'file',
 				timeout: upload.timeout,
 				headers: getGlobalHeaders(),
-				getResponseError: (responseText) => getResponseError(responseText, formatMessage),
-				getResponseData: (responseText, response) => response
+				onAfterResponse: (response) => {
+					if (response.status !== 200) {
+						throw getResponseError(response.responseText, formatMessage);
+					}
+				}
 			});
 
 		return () => {
 			// https://uppy.io/docs/uppy/#uppy-close
 			instance.cancelAll();
-			instance.close();
+			instance.destroy();
 		};
 	}, [uppy, formTarget, url, upload.timeout, path, site, formatMessage]);
 
 	useEffect(() => {
-		const onUploadSuccess = (file) => {
+		const onUploadSuccess = () => {
 			setDescription(`${formatMessage(messages.uploadedFile)}:`);
 		};
 
@@ -249,7 +252,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 	}, [onError, uppy]);
 
 	useEffect(() => {
-		const onFileAdded = (file: UppyFile) => {
+		const onFileAdded = (file: UppyFile<Meta, Body>) => {
 			setError(null);
 			setDescription(`${formatMessage(messages.validatingFile)}:`);
 			setFile(file);
