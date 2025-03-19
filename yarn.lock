@@ -4408,9 +4408,9 @@ __metadata:
   linkType: hard
 
 "@stomp/stompjs@npm:^7.0.0":
-  version: 7.0.0
-  resolution: "@stomp/stompjs@npm:7.0.0"
-  checksum: 10/f60db460e0cb3a48ddb0aa6ee7cd3fd3de6cffadccce153a791580ee7c0c89a1bc5e90d612cab621d539c237bece361f3f019e48f2de847789074373eaca037d
+  version: 7.0.1
+  resolution: "@stomp/stompjs@npm:7.0.1"
+  checksum: 10/dc4a13231cd0301a9bcc9c8d3f990a7468309e0a80feb2eceb4c3a99bdcb26aacc0641055133852ad98593acd17d052cdb1a9213813a42be2e305d96b077d591
   languageName: node
   linkType: hard
 
