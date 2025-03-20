@@ -28,7 +28,7 @@ import useLocale from '../../hooks/useLocale';
 import CompareArrowsIcon from '@mui/icons-material/CompareArrowsRounded';
 import { ViewVersionDialogProps } from '../ViewVersionDialog/utils';
 import { Backdrop } from '@mui/material';
-import Drawer from '@mui/material/Drawer';
+import Drawer, { drawerClasses } from '@mui/material/Drawer';
 import Box from '@mui/material/Box';
 import { DialogHeader } from '../DialogHeader';
 import ViewVersionDialogContainer from '../ViewVersionDialog/ViewVersionDialogContainer';
@@ -193,10 +193,7 @@ export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
 					open={Boolean(state.compareSlideOutState?.open || state.viewSlideOutState?.open)}
 					anchor="right"
 					variant="persistent"
-					sx={{
-						'& > .MuiDrawer-root': { position: 'absolute' },
-						'& > .MuiPaper-root': { width: '90%', position: 'absolute' }
-					}}
+					sx={{ [`& > .${drawerClasses.paper}`]: { width: '90%', position: 'absolute' } }}
 				>
 					{/* region Compare */}
 					{state.compareSlideOutState.open && (
