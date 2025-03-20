@@ -24,6 +24,7 @@ import ImageView from '../ViewVersionDialog/FieldTypesViews/ImageView';
 import VideoView from '../ViewVersionDialog/FieldTypesViews/VideoView';
 import { PDFView } from '../ViewVersionDialog/AssetTypesViews/PDFView';
 import { ContentItem } from '../../models';
+import { FormattedMessage } from 'react-intl';
 
 const typesDiffMap = {
 	image: ImageView,
@@ -48,7 +49,9 @@ function AssetDiffView(props: AssetDiffViewProps) {
 		renderContent,
 		noContent = (
 			<Box>
-				<Typography color="textSecondary">no content set</Typography>
+				<Typography color="textSecondary">
+					<FormattedMessage defaultMessage="No content set" />
+				</Typography>
 			</Box>
 		)
 	} = props;
