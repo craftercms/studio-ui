@@ -16,7 +16,7 @@
 
 import { ContentTypeField, Primitive } from '../../models';
 import Box from '@mui/material/Box';
-import React from 'react';
+import React, { ElementType } from 'react';
 import { fromString, serialize } from '../../utils/xml';
 import { nnou } from '../../utils/object';
 import { countLines } from '../../utils/string';
@@ -38,6 +38,7 @@ import { EditorProps } from '@monaco-editor/react';
 import { ViewComponentBaseProps } from './utils';
 import { getContentInstanceXmlValueFromProp } from '../../utils/content';
 import FileNameView from './FieldTypesViews/FileNameView';
+import type { BuiltInControlType } from '../FormsEngine/lib/controlMap';
 
 export interface ContentFieldViewProps {
 	content: Primitive;
@@ -52,28 +53,24 @@ export interface ViewComponentProps extends Pick<ViewComponentBaseProps, 'xml' |
 	editorProps?: EditorProps;
 }
 
-// TODO: double check this map with FE2 updates.
 export const typesViewMap = {
 	'file-name': FileNameView,
-	text: TextView,
+	'auto-filename': FileNameView,
 	textarea: TextView,
-	html: TextView,
 	rte: TextView,
 	input: TextView,
 	'node-selector': NodeSelector,
 	'checkbox-group': CheckboxGroupView,
 	repeat: RepeatGroupView,
-	image: ImageView,
 	'image-picker': ImageView,
 	'video-picker': VideoView,
 	time: TimeView,
 	'date-time': DateTimeView,
-	boolean: BooleanView,
 	checkbox: BooleanView,
 	'page-nav-order': BooleanView,
 	'numeric-input': NumberView,
 	dropdown: TextView
-};
+} as Record<Partial<BuiltInControlType>, ElementType>;
 
 export function ContentFieldView(props: ContentFieldViewProps) {
 	const { content, field, xml = '', dynamicHeight } = props;

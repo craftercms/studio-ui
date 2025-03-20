@@ -24,6 +24,8 @@ import { LookupTable } from '../../models/LookupTable';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { ContentInstance, ItemHistoryEntry } from '../../models';
+import type { BuiltInControlType } from '../FormsEngine/lib/controlMap';
+import { ElementType } from 'react';
 
 export interface ViewVersionDialogBaseProps {
 	error: ApiResponse;
@@ -63,8 +65,7 @@ export interface ViewComponentBaseProps {
 
 export const textViewLanguageMap = {
 	'file-name': 'text',
-	text: 'text',
 	textarea: 'text',
-	html: 'html',
+	rte: 'html',
 	dropdown: 'text'
-};
+} as Record<Partial<BuiltInControlType>, ElementType>;
