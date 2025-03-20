@@ -137,7 +137,7 @@ export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
 						? getDialogHeaderActions({
 								xmlMode: compareXml,
 								contentActionLabel: formatMessage(translations.compareContent),
-								xmlActionLabel: formatMessage(translations.compareXml),
+								xmlActionLabel: 'XML',
 								onClickContent: () => setCompareXml(false),
 								onClickXml: () => setCompareXml(true)
 							})
@@ -205,7 +205,7 @@ export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
 								rightActions={getDialogHeaderActions({
 									xmlMode: state.compareSlideOutState.compareXml,
 									contentActionLabel: formatMessage(translations.compareContent),
-									xmlActionLabel: formatMessage(translations.compareXml),
+									xmlActionLabel: 'XML',
 									onClickContent: () => contextRef.current.setCompareSlideOutState({ compareXml: false }),
 									onClickXml: () => contextRef.current.setCompareSlideOutState({ compareXml: true })
 								})}
@@ -234,7 +234,7 @@ export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
 									},
 									{
 										icon: { id: '@mui/icons-material/CodeRounded' },
-										text: formatMessage(translations.compareXml),
+										text: 'XML',
 										onClick: () => contextRef.current.setViewSlideOutState({ showXml: true }),
 										sx: {
 											color: (theme) =>
