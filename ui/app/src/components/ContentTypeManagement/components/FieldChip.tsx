@@ -135,7 +135,11 @@ export function FieldChip(props: FieldChipProps) {
 							onFieldSelected={onFieldSelected}
 						/>
 					))}
-					<TypeBuilderAddButton>
+					<TypeBuilderAddButton
+						onClick={() => {
+							/* TODO: invoke field addition prop */
+						}}
+					>
 						<FormattedMessage defaultMessage="Add Field" />
 					</TypeBuilderAddButton>
 				</Box>
