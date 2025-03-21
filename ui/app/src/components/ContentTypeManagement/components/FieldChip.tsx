@@ -70,7 +70,6 @@ export function FieldChip(props: FieldChipProps) {
 		bgcolor: 'action.selected',
 		'&:hover': { bgcolor: 'action.selected' }
 	};
-	// theme.unstable_sx()
 	return (
 		<Root
 			disabled={isSelected}

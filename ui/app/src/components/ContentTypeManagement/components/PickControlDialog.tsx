@@ -45,7 +45,7 @@ export interface PickControlDialogProps extends EnhancedDialogProps {}
 
 const fieldTypes = Object.values(controlDescriptors).sort((a, b) => (a?.name > b?.name ? 1 : -1));
 
-function PickControlDialogBody({ open, onClose }: PickControlDialogProps) {
+function PickControlDialogBody({ onClose }: PickControlDialogProps) {
 	const [searchTerm, setSearchTerm] = useState('');
 
 	const handleSearchChange: SearchBarProps['onChange'] = (value) => {
@@ -85,11 +85,12 @@ function PickControlDialogBody({ open, onClose }: PickControlDialogProps) {
 	);
 }
 
-// Usage example
-export default function PickControlDialog({ ...dialogProps }: PickControlDialogProps) {
+export function PickControlDialog({ ...dialogProps }: PickControlDialogProps) {
 	return (
 		<EnhancedDialog open title={<FormattedMessage defaultMessage="Pick a Control" />} maxWidth="sm" {...dialogProps}>
 			<PickControlDialogBody {...dialogProps} />
 		</EnhancedDialog>
 	);
 }
+
+export default PickControlDialog;
