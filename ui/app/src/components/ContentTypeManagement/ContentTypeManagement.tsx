@@ -44,10 +44,12 @@ export interface ContentTypeManagementProps {
 	onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
-// dispatch(emitSystemEvent(contentTypeCreated()));
-// dispatch(emitSystemEvent(contentTypeDeleted()));
-// onClose?.();
-// onMinimize?.();
+// TODO:
+//   dispatch(emitSystemEvent(contentTypeCreated()));
+//   dispatch(emitSystemEvent(contentTypeDeleted()));
+//   onClose?.();
+//   onMinimize?.();
+//   Remove or finalise the feedback alert
 
 export function ContentTypeManagement(props: ContentTypeManagementProps) {
 	const { embedded = false, showAppsButton } = props;

@@ -100,8 +100,13 @@ function CreateTypeDialogBody({ onAccept }: CreateTypeDialogBaseProps) {
 						onChange={handleChange}
 						autoFocus
 					>
-						<MenuItem value="page">Page</MenuItem>
-						<MenuItem value="component">Component</MenuItem>
+						<MenuItem value="page">
+							<FormattedMessage defaultMessage="Page" />
+						</MenuItem>
+						<MenuItem value="component">
+							<FormattedMessage defaultMessage="Component" />
+						</MenuItem>
+						{/* Post v5 TODO: List archetypes from config */}
 					</Select>
 				</FormControl>
 				<TextField
