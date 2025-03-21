@@ -21,26 +21,20 @@ import { ChangeContentTypeDialogProps } from './utils';
 import ChangeContentTypeDialogContainer from './ChangeContentTypeDialogContainer';
 
 export function ChangeContentTypeDialog(props: ChangeContentTypeDialogProps) {
-	const { item, onContentTypeSelected, compact, rootPath, selectedContentType, ...rest } = props;
+	const { item, onContentTypeSelected, initialCompact, ...rest } = props;
 	return (
 		<EnhancedDialog
-			title={<FormattedMessage id="changeContentTypeDialog.title" defaultMessage="Choose Content Type" />}
+			maxWidth="lg"
 			dialogHeaderProps={{
-				subtitle: (
-					<FormattedMessage
-						id="changeContentTypeDialog.subtitle"
-						defaultMessage="The following starter templates are available for use within this section."
-					/>
-				)
+				title: <FormattedMessage defaultMessage="Change Content Type" />,
+				subtitle: <FormattedMessage defaultMessage="The item can only be changed to the types below." />
 			}}
 			{...rest}
 		>
 			<ChangeContentTypeDialogContainer
 				item={item}
+				initialCompact={initialCompact}
 				onContentTypeSelected={onContentTypeSelected}
-				compact={compact}
-				rootPath={rootPath}
-				selectedContentType={selectedContentType}
 			/>
 		</EnhancedDialog>
 	);

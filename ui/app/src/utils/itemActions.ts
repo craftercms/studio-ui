@@ -593,12 +593,19 @@ export const itemActionDispatcher = ({
 						component: 'craftercms.components.NewContentDialog',
 						props: {
 							item,
-							rootPath: getRootPath(item.path),
 							onContentTypeSelected(response) {
 								dispatch(updateDialogState({ id, props: { open: false } }));
-								dispatch(pickShowContentFormAction(response));
+								dispatch(
+									pickShowContentFormAction({
+										authoringBase,
+										site,
+										path: response.path,
+										contentTypeId: response.contentType.id,
+										isNewContent: true
+									})
+								);
 							}
-						} as NewContentDialogProps
+						} as Partial<NewContentDialogProps>
 					})
 				);
 				break;

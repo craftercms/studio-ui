@@ -28,6 +28,7 @@ import { isEmptyValue, isFieldRequired } from '../lib/validators';
 import FieldEmptyStateIndicator from './FieldEmptyStateIndicator';
 import FieldRequiredStateIndicator from './FieldRequiredStateIndicator';
 import { atom } from 'jotai';
+import { fooArray } from '../../../utils/array';
 
 export interface TableOfContentsProps {
 	containerRef: RefObject<HTMLDivElement>;
@@ -111,7 +112,7 @@ export function TableOfContents({ containerRef, fieldsToRender }: TableOfContent
 				}}
 			/>
 			<SimpleTreeView
-				selectedItems={[]}
+				selectedItems={fooArray}
 				expansionTrigger="iconContainer"
 				onItemExpansionToggle={handleSectionExpansionToggleClick}
 				expandedItems={expandedSectionIds}
@@ -120,9 +121,9 @@ export function TableOfContents({ containerRef, fieldsToRender }: TableOfContent
 					fieldsToRender?.map(createFieldTreeItem) ??
 					contentTypeSections.map((section) => (
 						<TreeItem
-							key={section.title}
-							itemId={section.title}
-							data-section-id={section.title}
+							key={section.id}
+							itemId={section.id}
+							data-section-id={section.id}
 							label={section.title}
 							onClick={handleSectionClick}
 							children={section.fields.map((fieldId) => createFieldTreeItem(contentTypeFields[fieldId]))}

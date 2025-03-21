@@ -280,6 +280,7 @@ export function getCodeEditorSrc({
 	return `${authoringBase}/legacy/form${qs}`;
 }
 
+// TODO: Dupe of ensureSingleSlash
 export function stripDuplicateSlashes(str: string): string {
 	return str.replace(/\/+/g, '/');
 }

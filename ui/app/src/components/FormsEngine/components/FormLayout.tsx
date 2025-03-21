@@ -35,8 +35,8 @@ import { UIBlocker } from '../../UIBlocker';
 import { getScrollContainer } from '../lib/formUtils';
 import { stackFormCountAtom } from '../lib/formConsts';
 import { createStore, useAtom } from 'jotai';
-import { Subject } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
+import { getMarginSxProps } from '../../../utils/ui';
+import { useResizeObserver } from '../../../hooks/useResizeObserver';
 
 export type FormLayoutProps = PropsWithChildren<{
 	targetHeight: string;
@@ -125,27 +125,14 @@ export const FormLayout = forwardRef<HTMLDivElement, FormLayoutProps>(function (
 	}, [containerRef, hasStackedForms]);
 
 	// Resize observer attached to the [scroll] container
-	useLayoutEffect(() => {
-		if (containerRef.current) {
-			const resize$ = new Subject<void>();
-			const container: HTMLElement = getScrollContainer(containerRef.current);
-			const setValues = (rect: DOMRect) => {
-				const width = rect.width;
-				container.style.setProperty('--container-width', `${width}px`);
-				container.style.setProperty('--container-height', `${rect.height}px`);
-				setIsLargeContainer(width >= theme.breakpoints.values.lg);
-			};
-			const resizeObserver = new ResizeObserver(() => resize$.next());
-			const subscription = resize$.pipe(debounceTime(300)).subscribe(() => {
-				setValues(container.getBoundingClientRect());
-			});
-			resizeObserver.observe(containerRef.current);
-			return () => {
-				resizeObserver.disconnect();
-				subscription.unsubscribe();
-			};
-		}
-	}, [containerRef, setIsLargeContainer, theme.breakpoints.values.lg]);
+	useResizeObserver(containerRef, () => {
+		const container = containerRef.current;
+		const rect: DOMRect = container.getBoundingClientRect();
+		const width = rect.width;
+		container.style.setProperty('--container-width', `${width}px`);
+		container.style.setProperty('--container-height', `${rect.height}px`);
+		setIsLargeContainer(width >= theme.breakpoints.values.lg);
+	});
 
 	return (
 		<Box
@@ -159,10 +146,7 @@ export const FormLayout = forwardRef<HTMLDivElement, FormLayoutProps>(function (
 				flexDirection: 'column',
 				position: 'relative',
 				overflow: 'auto',
-				'.space-y > :not([hidden]) ~ :not([hidden])': { mt: 1 },
-				'.space-y-half > :not([hidden]) ~ :not([hidden])': { mt: 0.5 },
-				'.space-x > :not([hidden]) ~ :not([hidden])': { ml: 1 },
-				'.space-y-2 > :not([hidden]) ~ :not([hidden])': { mt: 2 }
+				...getMarginSxProps()
 			}}
 		>
 			<UIBlockerOverlay />

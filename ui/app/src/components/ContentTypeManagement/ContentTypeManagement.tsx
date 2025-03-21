@@ -14,18 +14,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import GlobalAppToolbar from '../GlobalAppToolbar';
-import { FormattedMessage } from 'react-intl';
-import React, { useEffect, useState } from 'react';
-import LegacyIFrame from '../LegacyIFrame';
-import Box from '@mui/material/Box';
-import LoadingState from '../LoadingState/LoadingState';
-import { fromEvent } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import React, { createElement, useEffect, useState } from 'react';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
+import EditTypeView, { EditTypeAppProps } from './components/EditTypeView';
+import ContentType from '../../models/ContentType';
+import { TypeListProps } from './components/TypeList';
+import { TypeListingView } from './components/TypeListingView';
 import { useDispatch } from 'react-redux';
 import { contentTypeCreated, contentTypeDeleted, emitSystemEvent } from '../../state/actions/system';
+import { filter, fromEvent } from 'rxjs';
+import Box from '@mui/material/Box';
+import GlobalAppToolbar from '../GlobalAppToolbar/GlobalAppToolbar';
+import { FormattedMessage } from 'react-intl';
+import LoadingState from '../LoadingState/LoadingState';
+import LegacyIFrame from '../LegacyIFrame';
 import { ProjectToolsRoutes } from '../../env/routes';
+import Alert from '@mui/material/Alert';
+import Button from '@mui/material/Button';
+import Fade from '@mui/material/Fade';
+import { FeedbackOutlined } from '@mui/icons-material';
+import useContentTypeList from '../../hooks/useContentTypeList';
 
 export interface ContentTypeManagementProps {
 	embedded?: boolean;
@@ -36,15 +44,102 @@ export interface ContentTypeManagementProps {
 	onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
+// dispatch(emitSystemEvent(contentTypeCreated()));
+// dispatch(emitSystemEvent(contentTypeDeleted()));
+// onClose?.();
+// onMinimize?.();
+
 export function ContentTypeManagement(props: ContentTypeManagementProps) {
+	const { embedded = false, showAppsButton } = props;
+
+	const [view, setView] = useState<'list' | 'edit' | 'create'>('list');
+	const [selectedType, setSelectedType] = useState<ContentType>(null);
+	const [useLegacy, setUseLegacy] = useState(false);
+
+	const handleTypeSelected: TypeListProps['onCardClick'] = (_, item) => {
+		setSelectedType(item);
+		setView('edit');
+	};
+	const handleBackToList: EditTypeAppProps['onClose'] = () => {
+		setSelectedType(null);
+		setView('list');
+	};
+	// const handleCreateNewType:
+
+	// TODO: Temp. For development purposes. Remove.
+	// const types = useContentTypeList();
+	// useEffect(() => {
+	// 	const type = types?.find((type) => type.id === '/page/article');
+	// 	if (type) {
+	// 		setSelectedType(type);
+	// 		setView('edit');
+	// 	}
+	// }, [types]);
+
+	return (
+		<>
+			{view === 'list' && (
+				<>
+					<Alert
+						severity={useLegacy ? 'warning' : 'info'}
+						action={
+							<>
+								{useLegacy && (
+									<Button
+										color="error"
+										component="a"
+										startIcon={<FeedbackOutlined />}
+										href={`mailto:roy.art@craftercms.com?subject=${encodeURIComponent('New Content Type Tool Feedback')}&body=${encodeURIComponent('My Feedback: (this could go to studio@craftercms.com)')}`}
+									>
+										Why did you switch?
+									</Button>
+								)}
+								<Button onClick={() => setUseLegacy(!useLegacy)}>
+									{useLegacy ? 'Use New Tool' : 'Use Legacy Tool'}
+								</Button>
+							</>
+						}
+						sx={{ height: 38, borderRadius: 0, py: 0 }}
+						slotProps={{
+							action: { sx: { pt: 0 } },
+							message: { sx: { display: 'flex', alignItems: 'center' } },
+							icon: { sx: { display: 'flex', alignItems: 'center' } }
+						}}
+					>
+						{useLegacy ? "You're using the legacy Content Type UX" : "You're viewing the new Content Type UX"}
+					</Alert>
+					{useLegacy ? (
+						createElement(LegacyTypeManagement, props)
+					) : (
+						<Fade in>
+							<TypeListingView
+								sx={{ height: 'calc(100% - 38px)' }}
+								renderAppBar={!embedded}
+								onTypeSelected={handleTypeSelected}
+								showOpenLauncherButton={showAppsButton}
+							/>
+						</Fade>
+					)}
+				</>
+			)}
+			{view === 'edit' && (
+				<Fade in>
+					<EditTypeView type={selectedType} onClose={handleBackToList} />
+				</Fade>
+			)}
+		</>
+	);
+}
+
+function LegacyTypeManagement(props: ContentTypeManagementProps) {
 	const { embedded = false, showAppsButton, onClose, onMinimize, mountMode, onSubmittingAndOrPendingChange } = props;
 	const [loading, setLoading] = useState(true);
 	const dispatch = useDispatch();
 
 	useEffect(() => {
-		const messagesSubscription = fromEvent(window, 'message')
+		const messagesSubscription = fromEvent<MessageEvent>(window, 'message')
 			.pipe(
-				filter((e: any) =>
+				filter((e) =>
 					[
 						'CONTENT_TYPES_ON_SAVED',
 						'CONTENT_TYPES_ON_CREATED',
@@ -53,7 +148,7 @@ export function ContentTypeManagement(props: ContentTypeManagementProps) {
 					].includes(e.data?.type)
 				)
 			)
-			.subscribe((e: any) => {
+			.subscribe((e) => {
 				switch (e.data.type) {
 					case 'CONTENT_TYPES_ON_SAVED': {
 						switch (e.data.saveType) {
@@ -84,8 +179,9 @@ export function ContentTypeManagement(props: ContentTypeManagementProps) {
 			messagesSubscription.unsubscribe();
 		};
 	}, [dispatch, onSubmittingAndOrPendingChange, embedded, onClose, onMinimize]);
+
 	return (
-		<Box height="100%" display="flex" flexDirection="column">
+		<Box height="calc(100% - 38px)" display="flex" flexDirection="column">
 			{!embedded && (
 				<GlobalAppToolbar
 					title={<FormattedMessage id="componentsMessages.contentTypes" defaultMessage="Content Types" />}

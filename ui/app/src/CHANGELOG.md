@@ -29,6 +29,13 @@
   * Removed `WorkflowCancellationDialog`. Replaced by `ViewPackagesDialog`.
   * Removed `UnlockPublisherDialog` component.
   * `PackageItems`: Component no longer shows the publishing target icon for items.
+  * [ChangeContentTypeDialog] `rootPath`, `compact`, `selectedContentType` props removed. Prop `initialCompact` added.
+  * [ContentTypesFilter] Completely redone. Props are now same as @mui/material/SelectProps
+  * [NewContentCard] Removed
+  * [ContentTypesGrid] Removed
+  * [ContentTypesLoader] Removed
+  * [NewContentDialog] Props `rootPath`, `copact` removed. Prop `initialCompact` added.
+    * Prop `onContentTypeSelected` changed its signature from sending an object with `authoringBase`, `path`, `isNewContent`, `contentTypeId`, `onSaveSuccess` to `{ path: string; contentType: ContentType }`
 * [hooks]
   * Removed `useLogicResource` hook.
   * Removed `useSelectorResource` hook.

@@ -57,11 +57,10 @@ import { StickyBox } from './components/StickyBox';
 import MenuRounded from '@mui/icons-material/MenuRounded';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 import useEnhancedDialogContext from '../EnhancedDialog/useEnhancedDialogContext';
-import { ArrowUpward, EditOffOutlined } from '@mui/icons-material';
+import { EditOffOutlined } from '@mui/icons-material';
 import LookupTable from '../../models/LookupTable';
 import { RepeatItem } from './controls/Repeat';
 import SecondaryButton from '../SecondaryButton';
-import Fab from '@mui/material/Fab';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
 import { Fade } from '@mui/material';
 import AlertTitle from '@mui/material/AlertTitle';
@@ -111,12 +110,13 @@ import RepeatModeHeader from './components/RepeatModeHeader';
 import EditModeHeader from './components/EditModeHeader';
 import SaveCard from './components/SaveCard';
 import SectionAccordion from './components/SectionAccordion';
-import { useSaveForm } from './lib/useSaveForm';
+import useSaveForm from './lib/useSaveForm';
 import { FormPrepError } from './components/FormPrepError';
 import { createParsedValuesObject } from './lib/valueRetrievers';
 import { fromString } from '../../utils/xml';
 import { displayWithPendingChangesConfirm } from '../../utils/ui';
 import useActiveUser from '../../hooks/useActiveUser';
+import FormBackToTop from './components/FormBackToTop';
 
 export interface FormSavePromiseResult {
 	close: boolean;
@@ -830,13 +830,7 @@ function FormOrchestrator(props: FormsEngineProps) {
 							))
 						)}
 						{/* Spacer & back to top */}
-						<Box minHeight={100} justifyContent="center" alignItems="center" display="flex">
-							<Tooltip title={<FormattedMessage defaultMessage="Back to top" />}>
-								<Fab onClick={() => containerRef.current.scroll({ top: 0, behavior: 'smooth' })}>
-									<ArrowUpward />
-								</Fab>
-							</Tooltip>
-						</Box>
+						<FormBackToTop containerRef={containerRef} />
 					</Grid>
 					<Grid size="grow">
 						<StickyBox className="space-y">

@@ -68,7 +68,7 @@ export const ControlWrapper = memo(function (props: ControlWrapperProps) {
 	const [value, setValue] = useAtom(atom);
 	const fieldId = field.id;
 	let Control: ElementType<ControlProps>;
-	if (field.properties.plugin) {
+	if (field.properties?.plugin) {
 		const url = buildFileUrl(
 			siteId,
 			field.properties.plugin.type,
