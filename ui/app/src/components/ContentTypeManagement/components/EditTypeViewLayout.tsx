@@ -72,6 +72,7 @@ export const EditTypeViewLayout = forwardRef<HTMLDivElement, EditAppLayoutProps>
 							</IconButton>
 						</Tooltip>
 						<Typography variant="h5" component="h1" noWrap>
+							{/* TODO: Make title dynamic based on create/edit */}
 							<FormattedMessage defaultMessage="New Content Type" />
 						</Typography>
 					</Box>
