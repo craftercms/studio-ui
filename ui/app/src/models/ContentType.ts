@@ -180,6 +180,10 @@ export interface ContentType {
 	dataSources: DataSource[];
 }
 
+/**
+ * A ContentType that may be brand new (hasn't been stored) or existing. The `NEW` property present
+ * denotes a new content type that hasn't been saved yet.
+ **/
 export interface PossibleContentTypeDraft extends ContentType {
 	NEW?: true;
 }

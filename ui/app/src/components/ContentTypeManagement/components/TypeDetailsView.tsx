@@ -32,7 +32,7 @@ import UnfoldLess from '@mui/icons-material/UnfoldLessRounded';
 import SectionAccordion from '../../FormsEngine/components/SectionAccordion';
 import { accordionClasses } from '@mui/material/Accordion';
 import Button from '@mui/material/Button';
-import TypeDetailsVIewHeader, { TypeDetailsHeaderProps } from './TypeDetailsVIewHeader';
+import TypeDetailsViewHeader, { TypeDetailsViewHeaderProps } from './TypeDetailsViewHeader';
 import LookupTable from '../../../models/LookupTable';
 import { defaultDataSourcesSection } from '../descriptors/controls';
 import { EnhancedDialog, EnhancedDialogProps } from '../../EnhancedDialog';
@@ -54,7 +54,7 @@ export interface TypeDetailsViewProps {
 	onFieldSelected: FieldChipProps['onFieldSelected'];
 	onDataSourceSelected(dataSource: DataSource): void;
 	onSectionSelected(section: ContentTypeSection): void;
-	onEditTypeAction: TypeDetailsHeaderProps['onActionClick'];
+	onEditTypeAction: TypeDetailsViewHeaderProps['onActionClick'];
 	onInsertSection: SectionInsertionProps['onInsertSection'];
 }
 
@@ -115,7 +115,7 @@ export function TypeDetailsView(props: TypeDetailsViewProps) {
 		<ErrorBoundary>
 			<Provider store={store}>
 				<StableFormContext.Provider value={stableFormContextRef.current}>
-					<TypeDetailsVIewHeader type={type} onActionClick={onEditTypeAction} />
+					<TypeDetailsViewHeader type={type} onActionClick={onEditTypeAction} />
 
 					<Box display="flex" justifyContent="space-between" mt={(theme) => `${theme.spacing(1)} !important`}>
 						<TypeBuilderAddButton onClick={() => setOpenSectionInserter(true)}>

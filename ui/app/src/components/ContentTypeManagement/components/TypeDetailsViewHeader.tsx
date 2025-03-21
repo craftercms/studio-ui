@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import ContentType, { PossibleContentTypeDraft } from '../../../models/ContentType';
+import { PossibleContentTypeDraft } from '../../../models/ContentType';
 import { useDispatch } from 'react-redux';
 import Button, { ButtonProps } from '@mui/material/Button';
 import { pushDialog } from '../../../state/actions/dialogStack';
@@ -28,12 +28,12 @@ import React from 'react';
 
 export type TypeDetailsHeaderActionTarget = 'properties' | 'template' | 'jsController' | 'groovyController' | 'deleted';
 
-export interface TypeDetailsHeaderProps {
+export interface TypeDetailsViewHeaderProps {
 	type: PossibleContentTypeDraft;
 	onActionClick(event: Parameters<ButtonProps['onClick']>[0], target: TypeDetailsHeaderActionTarget): void;
 }
 
-export function TypeDetailsVIewHeader({ type, onActionClick }: TypeDetailsHeaderProps) {
+export function TypeDetailsViewHeader({ type, onActionClick }: TypeDetailsViewHeaderProps) {
 	const dispatch = useDispatch();
 	const handleDeleteType: ButtonProps['onClick'] = (e) => {
 		dispatch(
@@ -99,4 +99,4 @@ export function TypeDetailsVIewHeader({ type, onActionClick }: TypeDetailsHeader
 	);
 }
 
-export default TypeDetailsVIewHeader;
+export default TypeDetailsViewHeader;
