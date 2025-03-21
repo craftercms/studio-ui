@@ -29,9 +29,6 @@ import { ContentTypeField } from '../../../models';
 import useIsDarkModeTheme from '../../../hooks/useIsDarkModeTheme';
 import LookupTable from '../../../models/LookupTable';
 import Asterisk from '../../../icons/Asterisk';
-// import system from '@mui/system';
-
-// function composeFieldPath(...pieces: string[]): string {return pieces.filter(Boolean).join('.');}
 
 function composeFieldPath(fieldPath: string, fieldId: string): string {
 	return fieldPath ? `${fieldPath}.${fieldId}` : fieldId;
