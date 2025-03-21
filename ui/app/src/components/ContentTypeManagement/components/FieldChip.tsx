@@ -121,6 +121,7 @@ export function FieldChip(props: FieldChipProps) {
 					</Typography>
 					{error && <Asterisk fontSize="small" sx={{}} />}
 				</Box>
+				{/* TODO: Render the field type label */}
 				<Typography variant="body2">{capitalize(field.type).replaceAll('-', ' ')}</Typography>
 			</Box>
 			{isRepeat && (
