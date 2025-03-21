@@ -15,21 +15,7 @@
  */
 
 import React, { useState } from 'react';
-import {
-	Box,
-	Button,
-	Dialog,
-	DialogActions,
-	DialogContent,
-	DialogTitle,
-	InputAdornment,
-	ListItem,
-	ListItemIcon,
-	ListItemText,
-	TextField,
-	Typography
-} from '@mui/material';
-import SearchIcon from '@mui/icons-material/Search';
+import { Box, ListItemIcon, ListItemText } from '@mui/material';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import { EnhancedDialog, EnhancedDialogProps } from '../../EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
