@@ -74,7 +74,7 @@ export function TypeCard(props: TypeCardProps) {
 						title: skeleton ? undefined : type.name,
 						sx: { fontWeight: 'normal' }
 					},
-					subheader: { variant: 'body2', noWrap: 'true', title: skeleton ? undefined : type.id },
+					subheader: { variant: 'body2', noWrap: true, title: skeleton ? undefined : type.id },
 					content: { sx: { overflow: 'hidden' } }
 				}}
 			/>
