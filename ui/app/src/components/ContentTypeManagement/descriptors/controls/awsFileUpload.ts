@@ -15,7 +15,7 @@
  */
 
 import { createVirtualSection, PartialContentType } from '../../utils';
-import { foo } from '../../../../utils/object';
+import { immutableEmptyObject } from '../../../../utils/object';
 
 export const awsFileUploadDescriptor: PartialContentType = {
 	id: 'aws-file-upload',
@@ -31,21 +31,21 @@ export const awsFileUploadDescriptor: PartialContentType = {
 			type: 'input',
 			name: 'Path',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		},
 		readonly: {
 			id: 'readonly',
 			type: 'checkbox',
 			name: 'Read Only',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		},
 		required: {
 			id: 'required',
 			type: 'checkbox',
 			name: 'Required',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		}
 	}
 };

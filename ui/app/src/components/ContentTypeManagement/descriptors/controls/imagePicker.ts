@@ -15,7 +15,7 @@
  */
 
 import { createVirtualSection, PartialContentType } from '../../utils';
-import { foo } from '../../../../utils/object';
+import { immutableEmptyObject } from '../../../../utils/object';
 
 export const imagePickerDescriptor: PartialContentType = {
 	id: 'image-picker',
@@ -34,35 +34,35 @@ export const imagePickerDescriptor: PartialContentType = {
 			type: 'checkbox',
 			name: 'Read Only',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		},
 		thumbnailWidth: {
 			id: 'thumbnailWidth',
 			type: 'numeric-input',
 			name: 'Thumbnail Width',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		},
 		thumbnailHeight: {
 			id: 'thumbnailHeight',
 			type: 'numeric-input',
 			name: 'Thumbnail Height',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		},
 		datasource: {
 			id: 'datasource',
 			type: 'dropdown',
 			name: 'Data Source',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		},
 		required: {
 			id: 'required',
 			type: 'checkbox',
 			name: 'Required',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		}
 	}
 };

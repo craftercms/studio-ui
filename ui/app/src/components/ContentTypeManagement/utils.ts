@@ -24,7 +24,7 @@ import {
 } from '../../models';
 import LookupTable from '../../models/LookupTable';
 import ContentType, { SerializeToXmlContentTypeStructure } from '../../models/ContentType';
-import { foo, fooFn, pluckProps } from '../../utils/object';
+import { immutableEmptyObject, noOp, pluckProps } from '../../utils/object';
 import { commonControlFieldsDescriptors, defaultDataSourcesSection } from './descriptors/controls';
 import {
 	FormsEngineFormApiContextProps,
@@ -291,7 +291,7 @@ export function createVirtualDataSourceFields(type: ContentType): LookupTable<Co
 			type: dataSource.type,
 			name: dataSource.title,
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		};
 	}
 	return dataSourceFields;
@@ -300,10 +300,10 @@ export function createVirtualDataSourceFields(type: ContentType): LookupTable<Co
 export const fooStableGlobalContext: StableGlobalContextProps = Object.freeze<StableGlobalContextProps>({
 	formsStackData: [],
 	api: {
-		pushForm: fooFn,
-		popForm: fooFn,
-		updateProps: fooFn,
-		setStateCache: fooFn
+		pushForm: noOp,
+		popForm: noOp,
+		updateProps: noOp,
+		setStateCache: noOp
 	}
 });
 

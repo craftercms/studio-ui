@@ -92,7 +92,7 @@ export function TypeListControlBar(props: TypeListControlBarProps) {
 					{
 						mr: 2,
 						background: 'transparent',
-						[`&::before`]: { borderBottom: 'none' }
+						'&::before': { borderBottom: 'none' }
 					},
 					slotProps?.contentTypesFilter?.sx
 				)}

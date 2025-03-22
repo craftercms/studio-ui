@@ -166,6 +166,7 @@ function FieldBreadcrumbs(props: FieldFormViewProps): JSX.Element {
 		fieldPathIds.length > 1 && (
 			<Breadcrumbs separator={<NavigateNextIcon fontSize="small" />}>
 				{fieldPathIds.map((id) => (
+					// TODO: Render field names instead of ids
 					<Typography variant="body2" key={id} children={id} />
 				))}
 			</Breadcrumbs>

@@ -15,7 +15,7 @@
  */
 
 import { createVirtualSection } from '../../utils';
-import { foo } from '../../../../utils/object';
+import { immutableEmptyObject } from '../../../../utils/object';
 
 export const forceHttpsDescriptor = {
 	id: 'forcehttps',
@@ -28,7 +28,7 @@ export const forceHttpsDescriptor = {
 			type: 'checkbox',
 			name: 'Read Only',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		}
 	}
 };

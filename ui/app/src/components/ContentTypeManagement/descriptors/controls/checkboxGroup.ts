@@ -15,7 +15,7 @@
  */
 
 import { createVirtualSection, PartialContentType } from '../../utils';
-import { foo } from '../../../../utils/object';
+import { immutableEmptyObject } from '../../../../utils/object';
 
 export const checkboxGroupDescriptor: PartialContentType = {
 	id: 'checkbox-group',
@@ -31,35 +31,35 @@ export const checkboxGroupDescriptor: PartialContentType = {
 			type: 'repeat',
 			name: 'Options',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		},
 		readonly: {
 			id: 'readonly',
 			type: 'checkbox',
 			name: 'Read Only',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		},
 		required: {
 			id: 'required',
 			type: 'checkbox',
 			name: 'Required',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		},
 		minSize: {
 			id: 'minSize',
 			type: 'numeric-input',
 			name: 'Minimum Selected',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		},
 		maxSize: {
 			id: 'maxSize',
 			type: 'numeric-input',
 			name: 'Maximum Selected',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		}
 	}
 };

@@ -15,7 +15,7 @@
  */
 
 import { createVirtualSection, PartialContentType } from '../../utils';
-import { foo } from '../../../../utils/object';
+import { immutableEmptyObject } from '../../../../utils/object';
 
 export const nodeSelectorDescriptor: PartialContentType = {
 	id: 'node-selector',
@@ -31,28 +31,28 @@ export const nodeSelectorDescriptor: PartialContentType = {
 			type: 'checkbox',
 			name: 'Read Only',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		},
 		minSize: {
 			id: 'minSize',
 			type: 'numeric-input',
 			name: 'Minimum Size',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		},
 		maxSize: {
 			id: 'maxSize',
 			type: 'numeric-input',
 			name: 'Maximum Size',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		},
 		required: {
 			id: 'required',
 			type: 'checkbox',
 			name: 'Required',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		}
 	}
 };

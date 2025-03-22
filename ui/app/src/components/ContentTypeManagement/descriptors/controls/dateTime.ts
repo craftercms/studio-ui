@@ -15,7 +15,7 @@
  */
 
 import { createVirtualSection, PartialContentType } from '../../utils';
-import { foo } from '../../../../utils/object';
+import { immutableEmptyObject } from '../../../../utils/object';
 
 export const dateTimeDescriptor: PartialContentType = {
 	id: 'date-time',
@@ -34,42 +34,42 @@ export const dateTimeDescriptor: PartialContentType = {
 			type: 'checkbox',
 			name: 'Read Only',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		},
 		showNowLink: {
 			id: 'showNowLink',
 			type: 'checkbox',
 			name: 'Show Now Link',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		},
 		showClear: {
 			id: 'showClear',
 			type: 'checkbox',
 			name: 'Show Clear',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		},
 		showDate: {
 			id: 'showDate',
 			type: 'checkbox',
 			name: 'Show Date',
 			defaultValue: true,
-			validations: foo
+			validations: immutableEmptyObject
 		},
 		showTime: {
 			id: 'showTime',
 			type: 'checkbox',
 			name: 'Show Time',
 			defaultValue: true,
-			validations: foo
+			validations: immutableEmptyObject
 		},
 		required: {
 			id: 'required',
 			type: 'checkbox',
 			name: 'Required',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		}
 	}
 };

@@ -28,7 +28,7 @@ import { isEmptyValue, isFieldRequired } from '../lib/validators';
 import FieldEmptyStateIndicator from './FieldEmptyStateIndicator';
 import FieldRequiredStateIndicator from './FieldRequiredStateIndicator';
 import { atom } from 'jotai';
-import { fooArray } from '../../../utils/array';
+import { immutableEmptyArray } from '../../../utils/array';
 
 export interface TableOfContentsProps {
 	containerRef: RefObject<HTMLDivElement>;
@@ -112,7 +112,7 @@ export function TableOfContents({ containerRef, fieldsToRender }: TableOfContent
 				}}
 			/>
 			<SimpleTreeView
-				selectedItems={fooArray}
+				selectedItems={immutableEmptyArray}
 				expansionTrigger="iconContainer"
 				onItemExpansionToggle={handleSectionExpansionToggleClick}
 				expandedItems={expandedSectionIds}

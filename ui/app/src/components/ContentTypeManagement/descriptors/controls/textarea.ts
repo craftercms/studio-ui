@@ -15,7 +15,7 @@
  */
 
 import { createVirtualSection } from '../../utils';
-import { foo } from '../../../../utils/object';
+import { immutableEmptyObject } from '../../../../utils/object';
 
 export const textareaDescriptor = {
 	id: 'textarea',
@@ -31,42 +31,42 @@ export const textareaDescriptor = {
 			type: 'numeric-input',
 			name: 'Height',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		},
 		width: {
 			id: 'width',
 			type: 'numeric-input',
 			name: 'Width',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		},
 		maxlength: {
 			id: 'maxlength',
 			type: 'numeric-input',
 			name: 'Maximum Length',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		},
 		readonly: {
 			id: 'readonly',
 			type: 'checkbox',
 			name: 'Read Only',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		},
 		tokenize: {
 			id: 'tokenize',
 			type: 'checkbox',
 			name: 'Tokenize for Indexing',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		},
 		required: {
 			id: 'required',
 			type: 'checkbox',
 			name: 'Required',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		}
 	}
 };

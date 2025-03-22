@@ -40,7 +40,7 @@ import { ContentItem } from '../models/Item';
 import { fetchConfigurationDOM, fetchConfigurationJSON, writeConfiguration } from './configuration';
 import { beautify, deserialize, entityEncodingTagValueProcessor, serialize } from '../utils/xml';
 import { Api2ResponseFormat } from '../models/ApiResponse';
-import { asArray, fooArray } from '../utils/array';
+import { asArray, immutableEmptyArray } from '../utils/array';
 import { fromPromise } from 'rxjs/internal/observable/innerFrom';
 import AllowedContentTypesData from '../models/AllowedContentTypesData';
 import { createFormDefinitionPathFromTypeId } from '../utils/contentType';
@@ -126,7 +126,7 @@ export function parseComponentsDataSourceContentTypesProperty(
 	contentTypesPropertyValue: string,
 	validations: Partial<ContentTypeFieldValidations> = {}
 ): Partial<ParseComponentsDataSourceContentTypesPropertyOutput> {
-	const value = contentTypesPropertyValue?.split(',') ?? fooArray;
+	const value = contentTypesPropertyValue?.split(',') ?? immutableEmptyArray;
 	validations.allowedContentTypes = validations.allowedContentTypes ?? {
 		id: 'allowedContentTypes',
 		level: 'required',
@@ -217,7 +217,7 @@ function getFieldValidations(
 						} else if (mappedPropName) {
 							validations[mappedPropName] = {
 								id: mappedPropName,
-								value: prop.value?.split(',') ?? fooArray,
+								value: prop.value?.split(',') ?? immutableEmptyArray,
 								level: 'required'
 							};
 						}

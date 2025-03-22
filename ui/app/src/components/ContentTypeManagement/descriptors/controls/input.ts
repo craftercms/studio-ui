@@ -15,7 +15,7 @@
  */
 
 import { createVirtualSection, PartialContentType } from '../../utils';
-import { foo } from '../../../../utils/object';
+import { immutableEmptyObject } from '../../../../utils/object';
 
 export const inputDescriptor: PartialContentType = {
 	id: 'input',
@@ -35,42 +35,42 @@ export const inputDescriptor: PartialContentType = {
 			type: 'numeric-input',
 			name: 'maxLength',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		},
 		readonly: {
 			id: 'readonly',
 			type: 'checkbox',
 			name: 'readonly',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		},
 		tokenize: {
 			id: 'tokenize',
 			type: 'checkbox',
 			name: 'Tokenize for Indexing',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		},
 		escapeContent: {
 			id: 'escapeContent',
 			type: 'checkbox',
 			name: 'escapeContent',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		},
 		required: {
 			id: 'required',
 			type: 'checkbox',
 			name: 'required',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		},
 		pattern: {
 			id: 'pattern',
 			type: 'input',
 			name: 'pattern',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		}
 	}
 };

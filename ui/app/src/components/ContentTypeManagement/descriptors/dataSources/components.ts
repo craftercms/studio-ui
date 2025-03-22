@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { foo } from '../../../../utils/object';
+import { immutableEmptyObject } from '../../../../utils/object';
 
 export const componentsDataSourceDescriptor = {
 	allowEmbedded: {
@@ -22,56 +22,56 @@ export const componentsDataSourceDescriptor = {
 		type: 'checkbox',
 		name: '',
 		defaultValue: undefined,
-		validations: foo
+		validations: immutableEmptyObject
 	},
 	allowShared: {
 		id: 'allowShared',
 		type: 'checkbox',
 		name: '',
 		defaultValue: undefined,
-		validations: foo
+		validations: immutableEmptyObject
 	},
 	enableBrowse: {
 		id: 'enableBrowse',
 		type: 'checkbox',
 		name: '',
 		defaultValue: undefined,
-		validations: foo
+		validations: immutableEmptyObject
 	},
 	enableSearch: {
 		id: 'enableSearch',
 		type: 'checkbox',
 		name: '',
 		defaultValue: undefined,
-		validations: foo
+		validations: immutableEmptyObject
 	},
 	baseRepoPath: {
 		id: 'baseRepoPath',
 		type: '',
 		name: '',
 		defaultValue: undefined,
-		validations: foo
+		validations: immutableEmptyObject
 	},
 	baseBrowsePath: {
 		id: 'baseBrowsePath',
 		type: '',
 		name: '',
 		defaultValue: undefined,
-		validations: foo
+		validations: immutableEmptyObject
 	},
 	contentTypes: {
 		id: 'contentTypes',
 		type: '',
 		name: '',
 		defaultValue: undefined,
-		validations: foo
+		validations: immutableEmptyObject
 	},
 	tags: {
 		id: 'tags',
 		type: '',
 		name: '',
 		defaultValue: undefined,
-		validations: foo
+		validations: immutableEmptyObject
 	}
 };
 

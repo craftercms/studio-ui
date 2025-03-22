@@ -15,7 +15,7 @@
  */
 
 import { createVirtualSection } from '../../utils';
-import { foo } from '../../../../utils/object';
+import { immutableEmptyObject } from '../../../../utils/object';
 
 export const dropdownDescriptor = {
 	id: 'dropdown',
@@ -31,28 +31,28 @@ export const dropdownDescriptor = {
 			type: 'repeat',
 			name: 'Options',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		},
 		readonly: {
 			id: 'readonly',
 			type: 'checkbox',
 			name: 'Read Only',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		},
 		allowEmpty: {
 			id: 'allowEmpty',
 			type: 'checkbox',
 			name: 'Allow Empty',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		},
 		required: {
 			id: 'required',
 			type: 'checkbox',
 			name: 'Required',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		}
 	}
 };

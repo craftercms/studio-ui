@@ -15,7 +15,7 @@
  */
 
 import { createVirtualSection } from '../../utils';
-import { foo } from '../../../../utils/object';
+import { immutableEmptyObject } from '../../../../utils/object';
 
 export const labelDescriptor = {
 	id: 'label',
@@ -28,7 +28,7 @@ export const labelDescriptor = {
 			type: 'input',
 			name: 'Text',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		}
 	}
 };

@@ -15,7 +15,7 @@
  */
 
 import { createVirtualSection, PartialContentType } from '../../utils';
-import { foo } from '../../../../utils/object';
+import { immutableEmptyObject } from '../../../../utils/object';
 
 export const fileNameDescriptor: PartialContentType = {
 	id: 'file-name',
@@ -31,21 +31,21 @@ export const fileNameDescriptor: PartialContentType = {
 			type: 'numeric-input',
 			name: 'maxLength',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		},
 		readonly: {
 			id: 'readonly',
 			type: 'checkbox',
 			name: 'readonly',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		},
 		allowEditWithoutWarning: {
 			id: 'allowEditWithoutWarning',
 			type: 'checkbox',
 			name: 'Allow Edit Without Warning',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		},
 		required: {
 			id: 'required',
@@ -53,6 +53,13 @@ export const fileNameDescriptor: PartialContentType = {
 			name: 'Required',
 			defaultValue: true,
 			validations: { required: { id: 'required', value: true, level: 'required' } }
+		},
+		tokenize: {
+			id: 'tokenize',
+			type: 'checkbox',
+			name: 'Tokenize',
+			defaultValue: true,
+			validations: immutableEmptyObject
 		}
 	}
 };

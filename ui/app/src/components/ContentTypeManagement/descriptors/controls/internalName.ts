@@ -15,7 +15,7 @@
  */
 
 import { createVirtualSection, PartialContentType } from '../../utils';
-import { foo } from '../../../../utils/object';
+import { immutableEmptyObject } from '../../../../utils/object';
 import { XmlKeys } from '../../../FormsEngine/lib/formConsts';
 
 // TODO: Why is internal name a control type? Doesn't seem to be in use.
@@ -34,14 +34,14 @@ export const internalNameDescriptor: PartialContentType = {
 			type: 'checkbox',
 			name: 'maxLength',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		},
 		required: {
 			id: 'required',
 			type: 'checkbox',
 			name: 'Required',
 			defaultValue: true,
-			validations: foo
+			validations: immutableEmptyObject
 		}
 	}
 };

@@ -16,7 +16,7 @@
 
 import ContentType from '../../../models/ContentType';
 import { XmlKeys } from '../../FormsEngine/lib/formConsts';
-import { foo } from '../../../utils/object';
+import { immutableEmptyObject } from '../../../utils/object';
 import { createEmptyTypeStructure } from '../utils';
 import LookupTable from '../../../models/LookupTable';
 
@@ -45,7 +45,7 @@ export function initializeTypeForCreate(
 						description: '',
 						helpText: '',
 						defaultValue: undefined,
-						validations: foo
+						validations: immutableEmptyObject
 					},
 					[XmlKeys.internalName]: {
 						id: XmlKeys.internalName,
@@ -54,7 +54,7 @@ export function initializeTypeForCreate(
 						description: '',
 						helpText: '',
 						defaultValue: undefined,
-						validations: foo
+						validations: immutableEmptyObject
 					},
 					...mixin?.fields
 				},
@@ -83,7 +83,7 @@ export function initializeTypeForCreate(
 						description: '',
 						helpText: '',
 						defaultValue: undefined,
-						validations: foo
+						validations: immutableEmptyObject
 					},
 					[XmlKeys.internalName]: {
 						id: XmlKeys.internalName,
@@ -92,7 +92,7 @@ export function initializeTypeForCreate(
 						description: '',
 						helpText: '',
 						defaultValue: undefined,
-						validations: foo
+						validations: immutableEmptyObject
 					},
 					[XmlKeys.placeInNav]: {
 						id: XmlKeys.placeInNav,
@@ -101,16 +101,16 @@ export function initializeTypeForCreate(
 						description: '',
 						helpText: '',
 						defaultValue: undefined,
-						validations: foo
+						validations: immutableEmptyObject
 					},
 					navLabel: {
-						id: XmlKeys.internalName,
+						id: 'navLabel',
 						type: 'input',
 						name: 'Nav Label',
 						description: '',
 						helpText: '',
 						defaultValue: undefined,
-						validations: foo
+						validations: immutableEmptyObject
 					},
 					...mixin?.fields
 				},
@@ -131,10 +131,10 @@ export function initializeTypeForCreate(
 				mergeStrategy: 'inherit-levels',
 				...archetypeMap?.[archetype],
 				fields: {
-					...archetypeMap?.[archetype].fields,
+					...archetypeMap?.[archetype]?.fields,
 					...mixin?.fields
 				},
-				sections: [...(archetypeMap?.[archetype].sections ?? []), ...(mixin?.sections ?? [])]
+				sections: [...(archetypeMap?.[archetype]?.sections ?? []), ...(mixin?.sections ?? [])]
 			});
 	}
 }

@@ -90,6 +90,7 @@ export function ColorPicker(props: ColorPickerProps) {
 	const handleOpen = () => setOpen(true);
 	const handleClose = () => setOpen(false);
 	const throttledSetValue = useMemo(() => throttle(setValue), [setValue]);
+	// TODO: Verify other react-colorful inputs have the same onChange signature
 	const handleChange = (value: string) => {
 		setColour(value);
 		throttledSetValue(value);

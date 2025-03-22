@@ -45,7 +45,7 @@ import timeDescriptor from './time';
 import transcodedVideoPickerDescriptor from './transcodedVideoPicker';
 import uuidDescriptor from './uuid';
 import videoPickerDescriptor from './videoPicker';
-import { foo } from '../../../../utils/object';
+import { immutableEmptyObject } from '../../../../utils/object';
 import { ContentTypeField } from '../../../../models/ContentType';
 import LookupTable from '../../../../models/LookupTable';
 import colorPickerDescriptor from './colorPicker';
@@ -63,35 +63,35 @@ export const systemFieldsDescriptors: LookupTable<ContentTypeField> = {
 		type: 'label',
 		name: 'Unique Identifier',
 		defaultValue: undefined,
-		validations: foo
+		validations: immutableEmptyObject
 	},
 	[XmlKeys.fileName]: {
 		id: XmlKeys.fileName,
 		type: 'file-name',
 		name: 'Page URL',
 		defaultValue: undefined,
-		validations: foo
+		validations: immutableEmptyObject
 	},
 	[XmlKeys.internalName]: {
 		id: XmlKeys.internalName,
 		type: 'input',
 		name: 'Internal Name',
 		defaultValue: undefined,
-		validations: foo
+		validations: immutableEmptyObject
 	},
 	[XmlKeys.disabled]: {
 		id: XmlKeys.disabled,
 		type: 'checkbox',
 		name: 'Disabled',
 		defaultValue: undefined,
-		validations: foo
+		validations: immutableEmptyObject
 	},
 	[XmlKeys.placeInNav]: {
 		id: XmlKeys.placeInNav,
 		type: 'page-nav-order',
 		name: 'Place in Navigation',
 		defaultValue: undefined,
-		validations: foo
+		validations: immutableEmptyObject
 	}
 };
 
@@ -126,7 +126,7 @@ export const commonControlFieldsDescriptors: LookupTable<ContentTypeField> = {
 		name: 'Description',
 		description: 'A description shown to the user on the form',
 		defaultValue: undefined,
-		validations: foo
+		validations: immutableEmptyObject
 	},
 	help: {
 		id: 'help',
@@ -134,14 +134,14 @@ export const commonControlFieldsDescriptors: LookupTable<ContentTypeField> = {
 		name: 'Help',
 		description: 'An expanded description or help text with rich text capabilities',
 		defaultValue: undefined,
-		validations: foo
+		validations: immutableEmptyObject
 	},
 	defaultValue: {
 		id: 'defaultValue',
 		type: 'textarea',
 		name: 'Default Value',
 		defaultValue: undefined,
-		validations: foo
+		validations: immutableEmptyObject
 	}
 };
 
@@ -211,7 +211,7 @@ export const typeBasicDetailsDescriptor: PartialContentType = {
 			description: '',
 			helpText: '',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		},
 		name: {
 			id: 'name',
@@ -220,7 +220,7 @@ export const typeBasicDetailsDescriptor: PartialContentType = {
 			description: '',
 			helpText: '',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		},
 		description: {
 			id: 'description',
@@ -229,7 +229,7 @@ export const typeBasicDetailsDescriptor: PartialContentType = {
 			description: '',
 			helpText: '',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		},
 		type: {
 			id: 'type',
@@ -238,7 +238,7 @@ export const typeBasicDetailsDescriptor: PartialContentType = {
 			description: '',
 			helpText: '',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		},
 		quickCreate: {
 			id: 'quickCreate',
@@ -247,7 +247,7 @@ export const typeBasicDetailsDescriptor: PartialContentType = {
 			description: '',
 			helpText: '',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		},
 		quickCreatePath: {
 			id: 'quickCreatePath',
@@ -256,7 +256,7 @@ export const typeBasicDetailsDescriptor: PartialContentType = {
 			description: '',
 			helpText: '',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		},
 		displayTemplate: {
 			id: 'displayTemplate',
@@ -265,7 +265,7 @@ export const typeBasicDetailsDescriptor: PartialContentType = {
 			description: '',
 			helpText: '',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		},
 		mergeStrategy: {
 			id: 'mergeStrategy',
@@ -274,7 +274,7 @@ export const typeBasicDetailsDescriptor: PartialContentType = {
 			description: 'Inheritance description...',
 			helpText: '',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		},
 		hasJsController: {
 			id: 'hasJsController',
@@ -283,7 +283,7 @@ export const typeBasicDetailsDescriptor: PartialContentType = {
 			description: '',
 			helpText: '',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		},
 		thumbnailFileName: {
 			id: 'thumbnailFileName',
@@ -292,7 +292,7 @@ export const typeBasicDetailsDescriptor: PartialContentType = {
 			description: '',
 			helpText: '',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		},
 		isHeadless: {
 			id: 'isHeadless',
@@ -302,7 +302,7 @@ export const typeBasicDetailsDescriptor: PartialContentType = {
 				'Check this to authorize this content type to leave the display template field empty as it is a headless type',
 			helpText: '',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		},
 		paths: {
 			id: 'paths',
@@ -311,7 +311,7 @@ export const typeBasicDetailsDescriptor: PartialContentType = {
 			description: '',
 			helpText: '',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		}
 	}
 };
@@ -340,7 +340,7 @@ export const sectionDescriptor: PartialContentType = {
 			description: '',
 			helpText: '',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		},
 		description: {
 			id: 'description',
@@ -349,7 +349,7 @@ export const sectionDescriptor: PartialContentType = {
 			description: '',
 			helpText: '',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		},
 		color: {
 			id: 'color',
@@ -359,7 +359,7 @@ export const sectionDescriptor: PartialContentType = {
 				'Pick the color that this section should feature in the form. A small amount of transparency can help with dark mode.',
 			helpText: '',
 			defaultValue: undefined,
-			validations: foo,
+			validations: immutableEmptyObject,
 			properties: {
 				alpha: {
 					name: 'Alpha',
@@ -380,7 +380,7 @@ export const sectionDescriptor: PartialContentType = {
 			description: 'Check this to show the section expanded when the content type is displayed in the content form',
 			helpText: '',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		}
 		// TODO: create control for managing fields(?)
 		// fields: {

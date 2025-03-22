@@ -15,7 +15,7 @@
  */
 
 import { createVirtualSection } from '../../utils';
-import { foo } from '../../../../utils/object';
+import { immutableEmptyObject } from '../../../../utils/object';
 
 export const repeatDescriptor = {
 	id: 'repeat',
@@ -31,28 +31,28 @@ export const repeatDescriptor = {
 			type: 'numeric-input',
 			name: 'Minimum Occurrences',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		},
 		maxOccurs: {
 			id: 'maxOccurs',
 			type: 'numeric-input',
 			name: 'Maximum Occurrences',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		},
 		readonly: {
 			id: 'readonly',
 			type: 'checkbox',
 			name: 'Read Only',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		},
 		required: {
 			id: 'required',
 			type: 'checkbox',
 			name: 'Required',
 			defaultValue: undefined,
-			validations: foo
+			validations: immutableEmptyObject
 		}
 	}
 };
