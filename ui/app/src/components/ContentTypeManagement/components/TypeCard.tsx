@@ -84,7 +84,9 @@ export function TypeCard(props: TypeCardProps) {
 	return (
 		<Card {...cardProps} sx={consolidateSx(baseCardSx, !hasActionArea && styleOverrides?.actionArea, sx)}>
 			{hasActionArea ? (
-				<CardActionArea sx={styleOverrides?.actionArea} onClick={(e) => onClick(e, type)} children={cardBody} />
+				<CardActionArea sx={styleOverrides?.actionArea} onClick={(e) => onClick(e, type)}>
+					{cardBody}
+				</CardActionArea>
 			) : (
 				cardBody
 			)}
