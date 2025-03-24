@@ -31,7 +31,7 @@ import { EmptyState } from '../../EmptyState';
 import LookupTable from '../../../models/LookupTable';
 import DiffCollectionItem from './DiffCollectionItem';
 import { useVersionsDialogContext } from '../VersionsDialogContext';
-import { mockContentInstance, parseElementByContentType } from '../../../utils/content';
+import { getMockContentInstance, parseElementByContentType } from '../../../utils/content';
 import useContentTypes from '../../../hooks/useContentTypes';
 import { fromString } from '../../../utils/xml';
 
@@ -84,14 +84,14 @@ export function ContentInstanceComponents(props: ContentInstanceComponentsProps)
 			embeddedA:
 				embeddedAIndex !== -1
 					? {
-							content: contentA[embeddedAIndex] ?? mockContentInstance,
+							content: contentA[embeddedAIndex] ?? getMockContentInstance(),
 							xml: getContentInstanceXmlItemFromIndex(aXml, embeddedAIndex)
 						}
 					: null,
 			embeddedB:
 				embeddedBIndex !== -1
 					? {
-							content: contentB[embeddedBIndex] ?? mockContentInstance,
+							content: contentB[embeddedBIndex] ?? getMockContentInstance(),
 							xml: getContentInstanceXmlItemFromIndex(bXml, embeddedBIndex)
 						}
 					: null

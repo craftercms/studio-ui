@@ -1214,16 +1214,18 @@ export function getContentInstanceFileName(model: ContentInstance) {
 	return getContentFileNameFromPath(path);
 }
 
-export const mockContentInstance = {
-	craftercms: {
-		id: null,
-		path: null,
-		label: null,
-		dateCreated: null,
-		dateModified: null,
-		contentTypeId: null,
-		disabled: false
-	}
+export const getMockContentInstance = () => {
+	return {
+		craftercms: {
+			id: null,
+			path: null,
+			label: null,
+			dateCreated: null,
+			dateModified: null,
+			contentTypeId: null,
+			disabled: false
+		}
+	};
 };
 
 export const isComparableAsset = (item) => {
