@@ -37,7 +37,10 @@
   * [NewContentDialog] Props `rootPath`, `copact` removed. Prop `initialCompact` added.
     * Prop `onContentTypeSelected` changed its signature from sending an object with `authoringBase`, `path`, `isNewContent`, `contentTypeId`, `onSaveSuccess` to `{ path: string; contentType: ContentType }`
   * [CompareVersions] Removed.
-  * [EnhancedDialog] Removed unused `id` prop.    
+  * [EnhancedDialog] Removed unused `id` prop.
+  * [CompareVersionsDialog] Added `subtitle`, `selectionContent`, and `fields` properties.
+  * [ViewVersionDialog] Added `onClose` property.
+  * [ViewVersionDialogContainer] Added `contentTypesBranch`, `showXml` and `data` properties.
 * [hooks]
   * Removed `useLogicResource` hook.
   * Removed `useSelectorResource` hook.
