@@ -102,7 +102,7 @@ export function ViewVersionDialog(props: ViewVersionDialogProps) {
 					...getDialogHeaderActions({
 						xmlMode: showXml,
 						contentActionLabel: formatMessage(translations.compareContent),
-						xmlActionLabel: formatMessage(translations.compareXml),
+						xmlActionLabel: 'XML',
 						onClickContent: () => setShowXml(false),
 						onClickXml: () => setShowXml(true)
 					}),
@@ -160,7 +160,7 @@ export function ViewVersionDialog(props: ViewVersionDialogProps) {
 						rightActions={getDialogHeaderActions({
 							xmlMode: state.viewSlideOutState.showXml,
 							contentActionLabel: formatMessage(translations.compareContent),
-							xmlActionLabel: formatMessage(translations.compareXml),
+							xmlActionLabel: 'XML',
 							onClickContent: () => contextRef.current.setViewSlideOutState({ showXml: false }),
 							onClickXml: () => contextRef.current.setViewSlideOutState({ showXml: true })
 						})}
