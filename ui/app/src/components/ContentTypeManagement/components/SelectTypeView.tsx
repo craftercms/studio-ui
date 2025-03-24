@@ -39,7 +39,7 @@ export interface SelectContentTypeProps {
 
 export function SelectTypeView(props: SelectContentTypeProps) {
 	const { slotProps, contentTypesList, initialCompact = false, initialObjectTypeFilter = 'all', sx } = props;
-	const [compact, setCompact] = useState(initialCompact);
+	const [compact, setCompact] = useState(initialCompact); // TODO: Add preference storage. Note this is used in several places, not just type builder.
 	const [keywords, setKeywords] = useState('');
 	const [filteredTypes, setFilteredTypes] = useState<ContentType[]>();
 	const [objectTypeFilter, setObjectTypeFilter] = useState<ObjectTypeOption>(initialObjectTypeFilter);
