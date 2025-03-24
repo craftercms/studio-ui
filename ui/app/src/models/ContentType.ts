@@ -15,13 +15,7 @@
  */
 
 import { LookupTable } from './LookupTable';
-
-export interface ContentTypeSection {
-	title: string;
-	fields: string[];
-	description: string;
-	expandByDefault: boolean;
-}
+import { XmlKeys } from '../components/FormsEngine/lib/formConsts';
 
 export interface ContentTypeFieldValidation<T = any> {
 	id: ValidationKeys;
@@ -73,6 +67,7 @@ export interface ContentTypeField {
 	sortable?: boolean;
 	validations: Partial<ContentTypeFieldValidations>;
 	properties?: Partial<
+		// region
 		{ plugin: LegacyFormDefinitionField['plugin'] } & Record<
 			// These are just some of the possibilities...
 			| 'size'
@@ -129,6 +124,7 @@ export interface ContentTypeField {
 				type: string;
 			}
 		>
+		// endregion
 	>;
 	defaultValue: any;
 	fields?: LookupTable<ContentTypeField>;
@@ -160,14 +156,57 @@ export type LegacyComponentType = 'component' | 'page' | 'file';
 export interface ContentType {
 	id: string;
 	name: string;
+	description: string;
 	type: LegacyComponentType;
 	quickCreate: boolean;
 	quickCreatePath: string;
 	displayTemplate: string;
+	mergeStrategy: string;
+	// ∨∨∨ Added during TypeBuilder 2 ∨∨∨
+	// icon
+	hasJsController: boolean; // TODO: Should this one be the file name, like `thumbnailFileName`?
+	thumbnailFileName: string;
+	isHeadless: boolean; // TODO: Consider removing this property.
+	// TODO: Renaming this property to something more meaningful. "Paths" of what?? e.g. allowedCreationPaths?
+	//  Possibly split into `allowedTypeCreationBlacklist` and `allowedTypeCreationWhitelist`?
+	//  `creationPathBlacklist`, `creationPathWhitelist`?
+	paths: {
+		excludes?: Array<{ pattern: string }>;
+		includes?: Array<{ pattern: string }>;
+	};
+	// ^^^ Added during TypeBuilder 2 ^^^
 	sections: ContentTypeSection[];
 	fields: LookupTable<ContentTypeField>;
 	dataSources: DataSource[];
-	mergeStrategy: string;
+}
+
+/**
+ * A ContentType that may be brand new (hasn't been stored) or existing. The `NEW` property present
+ * denotes a new content type that hasn't been saved yet.
+ **/
+export interface PossibleContentTypeDraft extends ContentType {
+	NEW?: true;
+}
+
+export interface ContentTypeBasicDetails {
+	controller: boolean;
+	imageThumbnail: string;
+	[XmlKeys.templateNotRequired]: boolean;
+	paths: {
+		excludes: Array<{ pattern: string }>;
+		includes: Array<{ pattern: string }>;
+	};
+}
+
+export interface ContentTypeSection {
+	// ∨∨∨ Added during TypeBuilder 2 ∨∨∨
+	id: string;
+	color: string;
+	// ^^^ Added during TypeBuilder 2 ^^^
+	title: string;
+	fields: string[];
+	description: string;
+	expandByDefault: boolean;
 }
 
 export interface LegacyFormDefinitionProperty {
@@ -178,40 +217,42 @@ export interface LegacyFormDefinitionProperty {
 }
 
 export interface LegacyFormDefinitionField {
-	constraints: {
-		constraint: LegacyFormDefinitionProperty | Array<LegacyFormDefinitionProperty>;
-	};
-	defaultValue: string;
+	id: string;
+	title: string;
 	description: string;
+	defaultValue: string;
+	type: string;
 	help: string;
 	iceId: string;
-	id: string;
-	properties: {
-		property: LegacyFormDefinitionProperty | Array<LegacyFormDefinitionProperty>;
-	};
-	title: string;
-	type: string;
-	fields?: {
-		field: LegacyFormDefinitionField | Array<LegacyFormDefinitionField>;
-	};
+	constraints: { constraint: LegacyFormDefinitionProperty | Array<LegacyFormDefinitionProperty> };
+	properties: { property: LegacyFormDefinitionProperty | Array<LegacyFormDefinitionProperty> };
+	fields?: { field: LegacyFormDefinitionField | Array<LegacyFormDefinitionField> };
 	plugin: {
 		type: string;
 		name: string;
 		filename: string;
 		pluginId: string;
 	};
-	// Repeat groups carry these both at the top and inside of "properties" (duplicated)
+	// Repeat groups carry these both at the top and inside "properties" (duplicated)
 	minOccurs?: string;
 	maxOccurs?: string;
 }
 
 export interface LegacyFormDefinitionSection {
+	// ∨∨∨ Added during TypeBuilder 2 ∨∨∨
+	color?: string;
+	// ^^^ Added during TypeBuilder 2 ^^^
 	defaultOpen: 'true' | 'false';
 	description: string;
 	fields: {
 		field: LegacyFormDefinitionField | Array<LegacyFormDefinitionField>;
 	};
 	title: string;
+}
+
+// With the TypeBuilder 2, we added ids to sections
+export interface LegacyFormDefinitionSectionWithId extends LegacyFormDefinitionSection {
+	id: string;
 }
 
 export interface LegacyDataSource {
@@ -222,21 +263,70 @@ export interface LegacyDataSource {
 	properties: { property: LegacyFormDefinitionProperty[] | LegacyFormDefinitionProperty };
 }
 
+// Note: nearly identical to `LegacyFormDefinition`
+export interface SerializeToXmlContentTypeStructure {
+	'content-type': string;
+	title: string;
+	description: string;
+	objectType: string;
+	imageThumbnail: string;
+	// ∨∨∨ config.xml ∨∨∨
+	controller: 'true' | 'false';
+	quickCreate: 'true' | 'false';
+	quickCreatePath: string;
+	paths: {
+		excludes?: Array<{ pattern: string }>;
+		includes?: Array<{ pattern: string }>;
+	};
+	// ^^^ config.xml ^^^
+	// TODO: Can we move these to the root or drop `label` and `type`?
+	properties: {
+		property: [
+			{
+				name: 'display-template';
+				value: string;
+				label: 'Display Template';
+				type: 'template';
+			},
+			{
+				name: 'no-template-required';
+				value: 'true' | 'false';
+				label: 'No Template Required';
+				type: 'boolean';
+			},
+			{
+				name: 'merge-strategy';
+				value: string;
+				label: 'Merge Strategy';
+				type: 'string';
+			}
+		];
+	};
+	sections: { section: Array<LegacyFormDefinitionSectionWithId> };
+	datasources: { datasource: Array<LegacyDataSource> };
+}
+
+// Note: nearly identical to SerializeToXmlContentTypeObject
+// TODO: Changes in TypeBuilder2 XML may require revisiting as this is likely a deserialized XML response.
+//   If this is simply the backend deserializing *form-definition.xml*, we *might* be able to merge the two or for one to extend from the other.
 export interface LegacyFormDefinition {
 	// As returned by `/studio/api/1/services/api/1/site/get-configuration.json?site=${site}&path=/content-types/.../form-definition.xml`
-	title: string; // e.g. Page - Home
 	'content-type': string; // e.g. /page/home
+	title: string; // e.g. Page - Home
 	description: string; // e.g. ""
-	imageThumbnail: string; // e.g. page-home.png
 	objectType: string; // e.g. page
+	imageThumbnail: string; // e.g. page-home.png
 	quickCreate: 'true' | 'false';
 	quickCreatePath: string; // e.g. /site/pages
-	sections: {
-		section: LegacyFormDefinitionSection | Array<LegacyFormDefinitionSection>;
+	// ∨∨∨ config.xml ∨∨∨
+	controller: 'true' | 'false';
+	paths: {
+		excludes: { pattern: string } | Array<{ pattern: string }>;
+		includes: { pattern: string } | Array<{ pattern: string }>;
 	};
-	properties: {
-		property: LegacyFormDefinitionProperty[] | LegacyFormDefinitionProperty;
-	};
+	// ^^^ config.xml ^^^
+	sections: { section: LegacyFormDefinitionSection | Array<LegacyFormDefinitionSection> };
+	properties: { property: LegacyFormDefinitionProperty | Array<LegacyFormDefinitionProperty> };
 	datasources: { datasource: LegacyDataSource | Array<LegacyDataSource> };
 }
 
@@ -246,13 +336,13 @@ export interface LegacyContentType {
 	contentAsFolder: boolean;
 	copyDepedencyPattern: string[];
 	deleteDependencyPattern: string[];
-	form: string;
+	form: string; // The type id (legacyType.form === legacyType.name)
 	formPath: string;
 	imageThumbnail: string;
 	label: string;
 	lastUpdated: string;
 	modelInstancePath: string;
-	name: string;
+	name: string; // The type id (legacyType.form === legacyType.name)
 	noThumbnail: boolean;
 	nodeRef: any;
 	pathExcludes: string[];

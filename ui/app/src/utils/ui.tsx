@@ -19,6 +19,8 @@ import { FormattedMessage } from 'react-intl';
 import { nanoid } from 'nanoid';
 import { popDialog, pushDialog } from '../state/actions/dialogStack';
 import type { ConfirmDialogProps } from '../components';
+import type { Theme } from '@mui/material';
+import type { SxProps } from '@mui/system';
 
 export const displayWithPendingChangesConfirm = (
 	dispatch: ReduxDispatch,
@@ -43,3 +45,10 @@ export const displayWithPendingChangesConfirm = (
 		})
 	);
 };
+
+export const getMarginSxProps: () => SxProps<Theme> = () => ({
+	'.space-y > :not([hidden]) ~ :not([hidden])': { mt: 1 },
+	'.space-y-half > :not([hidden]) ~ :not([hidden])': { mt: 0.5 },
+	'.space-x > :not([hidden]) ~ :not([hidden])': { ml: 1 },
+	'.space-y-2 > :not([hidden]) ~ :not([hidden])': { mt: 2 }
+});

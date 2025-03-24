@@ -85,7 +85,7 @@ export function getScrollContainer(container: HTMLElement): HTMLElement {
 export const buildSectionExpandedStateAtoms = (contentTypeSections: ContentTypeSection[]) => {
 	return contentTypeSections.reduce(
 		(sectionExpandedState, section) => {
-			sectionExpandedState[section.title] = atom(section.expandByDefault);
+			sectionExpandedState[section.id] = atom(section.expandByDefault);
 			return sectionExpandedState;
 		},
 		{} as Record<string, PrimitiveAtom<boolean>>
@@ -250,7 +250,10 @@ export function showAlert({
 
 export function useShowAlert() {
 	const dispatch = useDispatch();
-	return (props: Parameters<typeof showAlert>[0]) => showAlert({ ...props, dispatch });
+	return (messageOrProps: string | Omit<Parameters<typeof showAlert>[0], 'dispatch'>) => {
+		const props = typeof messageOrProps === 'string' ? { message: messageOrProps } : messageOrProps;
+		showAlert({ ...props, dispatch });
+	};
 }
 
 /** Retrieves the value of an atom from the supplied jotai store */
@@ -435,9 +438,12 @@ export function createObjectWithSystemProps(
 		[XmlKeys.dateModified]: mixin?.[XmlKeys.dateModified] ?? dateIsoString,
 		[XmlKeys.dateModifiedDt]: mixin?.[XmlKeys.dateModifiedDt] ?? dateIsoString,
 		[XmlKeys.savedAsDraft]: mixin?.[XmlKeys.savedAsDraft] ?? 'false',
-		// TODO: folderName? fileName?
 		[XmlKeys.folderName]: mixin?.[XmlKeys.folderName] ?? '',
-		[XmlKeys.fileName]: mixin?.[XmlKeys.fileName] ?? 'index.xml'
+		// TODO: folderName? fileName?
+		[XmlKeys.fileName]: mixin?.[XmlKeys.fileName] ?? 'index.xml',
+		// TODO: These are part of the type
+		[XmlKeys.disabled]: mixin?.[XmlKeys.disabled] ?? false,
+		[XmlKeys.placeInNav]: mixin?.[XmlKeys.placeInNav] ?? false
 	};
 	return contentObject;
 }

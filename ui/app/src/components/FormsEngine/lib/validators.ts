@@ -48,7 +48,8 @@ export const validatorsMap: Record<BuiltInControlType, ElementType> = {
 	time: null,
 	'transcoded-video-picker': null,
 	uuid: null,
-	'video-picker': null
+	'video-picker': null,
+	colorPicker: undefined
 };
 
 export interface FieldValidityState {

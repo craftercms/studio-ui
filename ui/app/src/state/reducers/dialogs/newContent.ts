@@ -23,9 +23,8 @@ const initialState: NewContentDialogStateProps = {
 	isSubmitting: null,
 	isMinimized: null,
 	hasPendingChanges: null,
-	compact: false,
-	item: null,
-	rootPath: '/site/website'
+	initialCompact: false,
+	item: null
 };
 
 export default createReducer<NewContentDialogStateProps>(initialState, (builder) => {

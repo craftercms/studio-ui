@@ -15,24 +15,27 @@
  */
 
 import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import React, { PropsWithChildren } from 'react';
+import Toolbar, { ToolbarProps } from '@mui/material/Toolbar';
+import React, { forwardRef, PropsWithChildren, Ref } from 'react';
 import { PartialSxRecord } from '../../models';
 import { Theme } from '@mui/material';
 import { SystemStyleObject } from '@mui/system/styleFunctionSx/styleFunctionSx';
+import { consolidateSx } from '../../utils/system';
 
 export type ViewToolbarClassKey = 'appBar' | 'toolbar';
 
-type ViewToolbarProps = PropsWithChildren<{
+export type ViewToolbarProps = PropsWithChildren<{
 	elevation?: number;
 	classes?: Partial<Record<ViewToolbarClassKey, string>>;
 	sxs?: PartialSxRecord<ViewToolbarClassKey>;
+	slotProps?: Partial<{ toolbar: Partial<ToolbarProps> }>;
 }>;
 
-export const ViewToolbar = React.memo<ViewToolbarProps>(function (props) {
-	const { children, elevation = 0, sxs } = props;
+const ViewToolbar = forwardRef<HTMLDivElement, ViewToolbarProps>(function (props, ref) {
+	const { children, elevation = 0, sxs, slotProps } = props;
 	return (
 		<AppBar
+			ref={ref}
 			color="inherit"
 			position="relative"
 			elevation={elevation}
@@ -45,17 +48,21 @@ export const ViewToolbar = React.memo<ViewToolbarProps>(function (props) {
 			})}
 		>
 			<Toolbar
+				{...slotProps?.toolbar}
 				className={props.classes?.toolbar}
-				sx={(theme) => ({
-					paddingLeft: `${theme.spacing(1.5)} !important`,
-					paddingRight: `${theme.spacing(1.5)} !important`,
-					placeContent: 'center space-between',
-					'& > section': {
-						display: 'flex',
-						alignItems: 'center'
-					},
-					...(sxs?.toolbar as SystemStyleObject<Theme>)
-				})}
+				sx={consolidateSx(
+					(theme) => ({
+						paddingLeft: `${theme.spacing(1.5)} !important`,
+						paddingRight: `${theme.spacing(1.5)} !important`,
+						placeContent: 'center space-between',
+						'& > section': {
+							display: 'flex',
+							alignItems: 'center'
+						},
+						...(sxs?.toolbar as SystemStyleObject<Theme>)
+					}),
+					slotProps?.toolbar?.sx
+				)}
 			>
 				{children}
 			</Toolbar>
@@ -63,4 +70,8 @@ export const ViewToolbar = React.memo<ViewToolbarProps>(function (props) {
 	);
 });
 
-export default ViewToolbar;
+const Memo = React.memo<ViewToolbarProps & { ref?: Ref<HTMLDivElement> }>(ViewToolbar);
+
+export { Memo as ViewToolbar };
+
+export default Memo;

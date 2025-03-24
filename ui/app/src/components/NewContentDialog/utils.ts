@@ -14,33 +14,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { LegacyContentType } from '../../models/ContentType';
+import { ContentType } from '../../models/ContentType';
 import { ContentItem } from '../../models/Item';
 import StandardAction from '../../models/StandardAction';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 
-export interface ContentTypesGridProps {
-	contentTypes: LegacyContentType[];
-	isCompact: boolean;
-	selectedContentType?: string;
-	onTypeOpen(data: LegacyContentType): void;
-}
-
 export interface NewContentDialogBaseProps {
 	item: ContentItem;
-	rootPath: string;
-	compact: boolean;
+	initialCompact: boolean;
 }
 
 export interface NewContentDialogProps extends NewContentDialogBaseProps, EnhancedDialogProps {
-	onContentTypeSelected?(response: {
-		authoringBase: string;
-		path: string;
-		isNewContent: boolean;
-		contentTypeId: string;
-		onSaveSuccess: StandardAction;
-	}): void;
+	onContentTypeSelected?(response: { path: string; contentType: ContentType }): void;
 }
 
 export interface NewContentDialogStateProps extends NewContentDialogBaseProps, EnhancedDialogState {

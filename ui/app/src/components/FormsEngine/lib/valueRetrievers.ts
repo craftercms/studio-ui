@@ -30,6 +30,10 @@ export const arrayFieldExtractor: ValueRetriever<unknown[]> = (value) =>
 
 export const textFieldExtractor: ValueRetriever<string> = (value) => (value && String(value)) ?? '';
 
+export const textOrNullExtractor: ValueRetriever<string> = (value) => (value && String(value)) || null;
+
+export const numberFieldExtractor: ValueRetriever<number> = (value) => (value != null && Number(value)) ?? null;
+
 export const booleanFieldExtractor: ValueRetriever<boolean> = (value) => (value === true || value === 'true') ?? false;
 
 export const valueRetrieverLookup: Record<BuiltInControlType, ValueRetriever> = {
@@ -53,14 +57,15 @@ export const valueRetrieverLookup: Record<BuiltInControlType, ValueRetriever> = 
 	'locale-selector': textFieldExtractor,
 	repeat: arrayFieldExtractor,
 	'node-selector': arrayFieldExtractor,
-	'numeric-input': textFieldExtractor, // Should this parse to number?
+	'numeric-input': numberFieldExtractor,
 	'page-nav-order': null,
 	rte: textFieldExtractor,
 	textarea: textFieldExtractor,
 	time: null,
 	'transcoded-video-picker': textFieldExtractor,
 	uuid: textFieldExtractor,
-	'video-picker': textFieldExtractor
+	'video-picker': textFieldExtractor,
+	colorPicker: textOrNullExtractor
 };
 
 /**

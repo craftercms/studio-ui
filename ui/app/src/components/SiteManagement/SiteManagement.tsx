@@ -41,7 +41,7 @@ import GlobalAppToolbar from '../GlobalAppToolbar';
 import Button from '@mui/material/Button';
 import { getStoredGlobalMenuSiteViewPreference, setStoredGlobalMenuSiteViewPreference } from '../../utils/state';
 import { hasGlobalPermissions } from '../../services/users';
-import { foo } from '../../utils/object';
+import { immutableEmptyObject } from '../../utils/object';
 import { useEnv } from '../../hooks/useEnv';
 import { useActiveUser } from '../../hooks/useActiveUser';
 import { useSpreadState } from '../../hooks/useSpreadState';
@@ -86,7 +86,7 @@ export function SiteManagement() {
 	const { byId: sitesById, isFetching, active } = useSitesBranch();
 	const sitesList = sitesById ? Object.values(sitesById) : null;
 	const [selectedSiteStatus, setSelectedSiteStatus] = useState<PublishingStatus>(null);
-	const [permissionsLookup, setPermissionsLookup] = useState<LookupTable<boolean>>(foo);
+	const [permissionsLookup, setPermissionsLookup] = useState<LookupTable<boolean>>(immutableEmptyObject);
 	const duplicateSiteDialogState = useEnhancedDialogState();
 	const [duplicateSiteId, setDuplicateSiteId] = useState(null);
 	const [isDuplicateDialogFromCreateDialog, setIsDuplicateDialogFromCreateDialog] = useState(false);

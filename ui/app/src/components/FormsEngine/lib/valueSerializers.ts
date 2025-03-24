@@ -21,7 +21,7 @@ import ContentType from '../../../models/ContentType';
 import { XmlKeys } from './formConsts';
 import { BuiltInControlType } from './controlMap';
 import { RepeatItem } from '../controls/Repeat';
-import { XMLBuilder } from 'fast-xml-parser';
+import { XMLBuilder, XmlBuilderOptions } from 'fast-xml-parser';
 
 const attributeNamePrefix = '@:';
 const cdataPropName = '__cdata__';
@@ -132,21 +132,28 @@ function createAttrHint(attributeName: string): string {
 	return `${attributeNamePrefix}${attributeName}`;
 }
 
-/** Takes in a FormsEngine values object and creates the XML representation */
-export function buildContentXml(values: LookupTable<unknown>, contentTypesLookup: LookupTable<ContentType>): string {
-	const rootContentType: ContentType = contentTypesLookup[values[XmlKeys.contentTypeId] as string];
-	const rootObjectType = rootContentType.type;
-	const jObj = prepareValuesForXmlSerialising(rootContentType.fields, values, contentTypesLookup);
-	rootObjectType === 'component' && (jObj[createAttrHint('id')] = jObj.objectId);
-	const builder = new XMLBuilder({
+// TODO: Move to utils/xml.ts?
+export function getXmlBuilder(options?: Partial<XmlBuilderOptions>): XMLBuilder {
+	return new XMLBuilder({
 		format: true,
 		indentBy: '\t',
 		ignoreAttributes: false,
 		suppressBooleanAttributes: false,
 		attributeNamePrefix,
 		cdataPropName,
-		textNodeName
+		textNodeName,
+		...options
 	});
+}
+
+// TODO: Move to content.ts?
+/** Takes in a FormsEngine values object and creates the XML representation */
+export function buildContentXml(values: LookupTable<unknown>, contentTypesLookup: LookupTable<ContentType>): string {
+	const rootContentType: ContentType = contentTypesLookup[values[XmlKeys.contentTypeId] as string];
+	const rootObjectType = rootContentType.type;
+	const jObj = prepareValuesForXmlSerialising(rootContentType.fields, values, contentTypesLookup);
+	rootObjectType === 'component' && (jObj[createAttrHint('id')] = jObj.objectId);
+	const builder = getXmlBuilder();
 	const xml = builder.build({ [`${rootObjectType}`]: jObj });
 	return xml as string;
 }

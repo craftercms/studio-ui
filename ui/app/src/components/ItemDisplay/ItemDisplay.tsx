@@ -83,7 +83,7 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
 	const inWorkflow = isInWorkflow(item.stateMap) || item.systemType === 'folder';
 	return (
 		<Box
-			component="span"
+			component={component}
 			ref={ref}
 			{...rest}
 			className={[classes?.root, rest?.className].filter(Boolean).join(' ')}

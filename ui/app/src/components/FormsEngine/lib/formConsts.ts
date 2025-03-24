@@ -23,7 +23,10 @@ export const NoSiteIdError = Symbol('NoSiteIdError');
 export const UnknownError = Symbol('UnknownError');
 export const PropsChangedError = Symbol('PropsChangedError');
 
+// TODO: should be defined in GlobalFormContext
 export const stackFormCountAtom = atom(0);
+
+// TODO: Is `navLabel` a system field? Add here if so.
 
 export enum XmlKeys {
 	modelId = 'objectId',
@@ -33,6 +36,8 @@ export enum XmlKeys {
 	fileName = 'file-name',
 	folderName = 'folder-name',
 	internalName = 'internal-name',
+	disabled = 'disabled',
+	placeInNav = 'placeInNav',
 	templateNotRequired = 'no-template-required',
 	dateCreated = 'createdDate',
 	dateCreatedDt = 'createdDate_dt',

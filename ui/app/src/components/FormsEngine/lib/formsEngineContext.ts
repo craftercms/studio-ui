@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Context, createContext, useContext } from 'react';
+import { createContext } from 'react';
 import { ContentItem, PublishPackage } from '../../../models';
 import ContentType from '../../../models/ContentType';
 import ApiResponse from '../../../models/ApiResponse';
@@ -24,6 +24,7 @@ import type { Atom, PrimitiveAtom } from 'jotai';
 import { FieldValidityState } from './validators';
 import { Subject } from 'rxjs';
 import { AtomWithStorage } from '../types';
+import { createUseContextHook } from '../../../utils/system';
 
 export type FormsEngineSourceMap = LookupTable<string>;
 
@@ -113,56 +114,35 @@ export interface StableFormContextProps {
 	state: FormsEngineCachedStackedFormState;
 }
 
-export const FormsEngineFormContextApi = createContext<FormsEngineFormApiContextProps>(undefined);
+export const FormsEngineFormContextApi = /*#__PURE__*/ createContext<FormsEngineFormApiContextProps>(undefined);
 FormsEngineFormContextApi.displayName = 'FormsEngineFormContextApi';
 
 // Single instance context, shared between all forms of a root
-export const StableGlobalContext = createContext<StableGlobalContextProps>(undefined);
+export const StableGlobalContext = /*#__PURE__*/ createContext<StableGlobalContextProps>(undefined);
 StableGlobalContext.displayName = 'StableGlobalContext';
 
 // Each form (e.g. root form and stacked child form) has one
-export const StableFormContext = createContext<StableFormContextProps>(undefined);
+export const StableFormContext = /*#__PURE__*/ createContext<StableFormContextProps>(undefined);
 StableFormContext.displayName = 'StableFormContext';
 
-export const ItemContext = createContext<ContentItem>(undefined);
+export const ItemContext = /*#__PURE__*/ createContext<ContentItem>(undefined);
 ItemContext.displayName = 'ItemContext';
 
-export const ItemMetaContext = createContext<FormsEngineItemMetaContextProps>(undefined);
+export const ItemMetaContext = /*#__PURE__*/ createContext<FormsEngineItemMetaContextProps>(undefined);
 ItemMetaContext.displayName = 'ItemMetaContext';
 
-function createUseContextHook<T>(name: string, context: Context<T>): () => T;
-function createUseContextHook<T, K extends keyof T>(
-	name: string,
-	context: Context<T>,
-	selector: (instance: T) => T[K]
-): () => T[K];
-function createUseContextHook<T, K extends keyof T>(
-	name: string,
-	context: Context<T>,
-	selector?: (instance: T) => T[K]
-): () => T | T[K] {
-	const contextName = context.displayName ?? name.replace('use', '');
-	return () => {
-		const instance = useContext(context);
-		if (instance === undefined) {
-			throw new Error(`${name} must be used within a ${contextName}`);
-		}
-		return selector?.(instance) ?? instance;
-	};
-}
+export const useFormApiContext = /*#__PURE__*/ createUseContextHook('useFormApiContext', FormsEngineFormContextApi);
 
-export const useFormApiContext = createUseContextHook('useFormApiContext', FormsEngineFormContextApi);
+export const useStableGlobalContext = /*#__PURE__*/ createUseContextHook('useStableGlobalContext', StableGlobalContext);
 
-export const useStableGlobalContext = createUseContextHook('useStableGlobalContext', StableGlobalContext);
-
-export const useStableGlobalApiContext = createUseContextHook<StableGlobalContextProps, 'api'>(
+export const useStableGlobalApiContext = /*#__PURE__*/ createUseContextHook<StableGlobalContextProps, 'api'>(
 	'useStableGlobalApiContext',
 	StableGlobalContext,
 	(instance) => instance.api
 );
 
-export const useStableFormContext = createUseContextHook('useStableFormContext', StableFormContext);
+export const useStableFormContext = /*#__PURE__*/ createUseContextHook('useStableFormContext', StableFormContext);
 
-export const useItemContext = createUseContextHook('useItemContext', ItemContext);
+export const useItemContext = /*#__PURE__*/ createUseContextHook('useItemContext', ItemContext);
 
-export const useItemMetaContext = createUseContextHook('useItemMetaContext', ItemMetaContext);
+export const useItemMetaContext = /*#__PURE__*/ createUseContextHook('useItemMetaContext', ItemMetaContext);
