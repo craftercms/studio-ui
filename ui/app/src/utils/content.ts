@@ -1181,13 +1181,8 @@ export function getContentInstanceValueFromProp(model: ContentInstance, prop: st
 	}
 }
 
-export const systemPropToXmlMap = {
-	fileName: 'file-name',
-	internalName: 'internal-name'
-};
-
 export function getContentInstanceXmlValueFromProp(xml: string, prop: string): string {
-	const selectionProp = systemPropToXmlMap[prop] ?? prop;
+	const selectionProp = XmlKeys[prop] ?? prop;
 	const doc = fromString(xml).querySelector(selectionProp);
 	return doc ? serialize(doc) : '';
 }

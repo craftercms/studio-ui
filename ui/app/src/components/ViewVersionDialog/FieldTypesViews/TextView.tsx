@@ -22,7 +22,7 @@ import { removeTags } from '../../CompareVersionsDialog';
 import { textViewLanguageMap, ViewComponentBaseProps } from '../utils';
 import { fromString } from '../../../utils/xml';
 import { ContentTypeField } from '../../../models';
-import { systemPropToXmlMap } from '../../../utils/content';
+import { XmlKeys } from '../../FormsEngine/lib/formConsts';
 
 export interface TextViewProps extends Pick<ViewComponentBaseProps, 'xml'> {
 	field?: ContentTypeField;
@@ -31,7 +31,7 @@ export interface TextViewProps extends Pick<ViewComponentBaseProps, 'xml'> {
 
 export function TextView(props: TextViewProps) {
 	const { xml, field, editorProps } = props;
-	const xmlFieldId = systemPropToXmlMap[field?.id] || field?.id;
+	const xmlFieldId = XmlKeys[field?.id] || field?.id;
 	const content = field && xml ? (fromString(xml).querySelector(xmlFieldId)?.textContent ?? '') : (xml ?? '');
 	const [{ fieldsViewState }] = useVersionsDialogContext();
 	const cleanText = field && fieldsViewState[field.id]?.cleanText;
