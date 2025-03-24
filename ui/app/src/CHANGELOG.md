@@ -36,6 +36,8 @@
   * [ContentTypesLoader] Removed
   * [NewContentDialog] Props `rootPath`, `copact` removed. Prop `initialCompact` added.
     * Prop `onContentTypeSelected` changed its signature from sending an object with `authoringBase`, `path`, `isNewContent`, `contentTypeId`, `onSaveSuccess` to `{ path: string; contentType: ContentType }`
+  * [CompareVersions] Removed.
+  * [EnhancedDialog] Removed unused `id` prop.    
 * [hooks]
   * Removed `useLogicResource` hook.
   * Removed `useSelectorResource` hook.
@@ -52,6 +54,9 @@
   * @mui/x-data-grid
   * @mui/x-date-pickers
   * @mui/x-tree-view
+* Moved getPersonFullName to utils/object
+* FE2 TODO: image=>image-picker, text=>input, etc services/contentType typeMap removed
+* Removed WidgetDialogContextType, WidgetDialogContext, useWidgetDialogContext. Use `useEnhancedDialogContext` instead.
 * [services]
   * `publishing/fetchPackages` filters param updated to be a Partial of `target`, `states`, `approvalStates`, `submitter`, `reviewer`, `isScheduled`, `sort`, `offset` and `limit`.
   `environment` is now `target` and `path` was removed from filters param.
@@ -64,6 +69,13 @@
   * Removed `publishing/bulkGoLive`, `publishing/publishByCommits` and `publishing/publishAll` services, replaced by `publishing/publish`.
   * Removed `content/fetchWorkflowAffectedItems` service. Now workflow affected validation is checked against packages using `workflow/fetchAffectedPackages`.
   * Removed `publishing/clearLock` service.
+  * Removed `cmis` services.
+  * Removed `content/uploadToCMIS` service.
+  * Removed `models/CMIS` service.
+  * Renamed `content/fetchDetailedItem` to `fetchContentItem`.
+  * Renamed `content/fetchItemsByPath` to `fetchContentItems`.
+  * Removed `content/fetchSandboxItem`. Replaced by `fetchContentItem`.
+  * Removed `content/fetchDetailedItems`. Replaced by `fetchContentItems`.
 * `PublishingItem` interface changes:
   * `approver` is now `reviewer`, of type Person.
   * `comment` is removed, and now there's `reviewerComment` and `submitterComment`.
