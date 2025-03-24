@@ -20,6 +20,7 @@ import { DiffEditorProps } from '@monaco-editor/react';
 import { fromString } from '../../../utils/xml';
 import { getContentFileNameFromPath } from '../../../utils/content';
 import TextDiffView from './TextDiffView';
+import { XmlKeys } from '../../FormsEngine/lib/formConsts';
 
 export interface FileNameDiffViewProps extends Pick<DiffViewComponentBaseProps, 'aXml' | 'bXml'> {
 	editorProps?: DiffEditorProps;
@@ -31,13 +32,13 @@ export function FileNameDiffView(props: FileNameDiffViewProps) {
 	let fileNameA = '';
 	let fileNameB = '';
 	try {
-		const pathA = fromString(aXml).querySelector('file-name').textContent;
+		const pathA = fromString(aXml).querySelector(XmlKeys.fileName).textContent;
 		fileNameA = getContentFileNameFromPath(pathA);
 	} catch (error) {
 		console.error('Error parsing file name from A XML:', error);
 	}
 	try {
-		const pathB = fromString(bXml).querySelector('file-name').textContent;
+		const pathB = fromString(bXml).querySelector(XmlKeys.fileName).textContent;
 		fileNameB = getContentFileNameFromPath(pathB);
 	} catch (error) {
 		console.error('Error parsing file name from B XML:', error);

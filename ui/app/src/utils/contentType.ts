@@ -24,18 +24,19 @@ import { darken } from '@mui/material/styles';
 import { Theme } from '@mui/material';
 import type { BuiltInControlType } from '../components/FormsEngine/lib/controlMap';
 import { defineMessages, IntlShape } from 'react-intl';
+import { XmlKeys } from '../components/FormsEngine/lib/formConsts';
 
 const messages = defineMessages({
-	'display-template': {
+	[XmlKeys.displayTemplate]: {
 		defaultMessage: 'Display template'
 	},
-	'no-template-required': {
+	[XmlKeys.templateNotRequired]: {
 		defaultMessage: 'No template required'
 	},
-	lastModifiedDate: {
+	[XmlKeys.dateModified]: {
 		defaultMessage: 'Last modified date'
 	},
-	createdDate: {
+	[XmlKeys.dateCreated]: {
 		defaultMessage: 'Created date'
 	}
 });
@@ -207,22 +208,22 @@ export function getAvatarWithIconColors(
 export function getStudioContentInternalFields(formatMessage: IntlShape['formatMessage']): ContentTypeField[] {
 	return [
 		{
-			id: 'no-template-required',
-			name: formatMessage(messages['no-template-required']),
+			id: XmlKeys.templateNotRequired,
+			name: formatMessage(messages[XmlKeys.templateNotRequired]),
 			type: 'boolean',
 			validations: {},
 			defaultValue: ''
 		},
 		{
-			id: 'lastModifiedDate',
-			name: formatMessage(messages['lastModifiedDate']),
+			id: XmlKeys.dateModified,
+			name: formatMessage(messages[XmlKeys.dateModified]),
 			type: 'date-time',
 			validations: {},
 			defaultValue: ''
 		},
 		{
-			id: 'createdDate',
-			name: formatMessage(messages['createdDate']),
+			id: XmlKeys.dateCreated,
+			name: formatMessage(messages[XmlKeys.dateCreated]),
 			type: 'date-time',
 			validations: {},
 			defaultValue: ''

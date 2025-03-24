@@ -81,6 +81,7 @@ import { showCodeEditorDialog, showEditDialog } from '../state/actions/dialogs';
 import { Dispatch } from 'react';
 import { AnyAction } from 'redux';
 import { findParentModelId, getModelIdFromInheritedField, isInheritedField } from './model';
+import { XmlKeys } from '../components/FormsEngine/lib/formConsts';
 
 export function isEditableAsset(path: string) {
 	return (
@@ -309,16 +310,13 @@ export const systemPropsList = [
 ];
 
 export const systemPropMap = {
-	fileName: 'fileName',
-	'file-name': 'fileName',
-	placeInNav: 'placeInNav',
-	internalName: 'label',
-	'internal-name': 'label',
-	'content-type': 'contentTypeId',
-	createdDate: 'dateCreated',
-	createdDate_dt: 'dateCreated',
-	lastModifiedDate: 'dateModified',
-	lastModifiedDate_dt: 'dateModified',
+	[XmlKeys.fileName]: 'fileName',
+	[XmlKeys.internalName]: 'label',
+	[XmlKeys.contentTypeId]: 'contentTypeId',
+	[XmlKeys.dateCreated]: 'dateCreated',
+	[XmlKeys.dateCreatedDt]: 'dateCreated',
+	[XmlKeys.dateModified]: 'dateModified',
+	[XmlKeys.dateModifiedDt]: 'dateModified',
 	disabled: 'disabled',
 	orderDefault_f: 'orderInNav'
 };
@@ -361,11 +359,11 @@ export function parseContentXML(
 	}
 	if (nnou(doc)) {
 		current.craftercms.label = getInnerHtml(
-			doc.querySelector(':scope > internal-name') ?? doc.querySelector(':scope > file-name'),
+			doc.querySelector(':scope > internal-name') ?? doc.querySelector(`:scope > ${XmlKeys.fileName}`),
 			{ applyLegacyUnescaping: true }
 		);
-		current.craftercms.dateCreated = getInnerHtml(doc.querySelector(':scope > createdDate_dt'));
-		current.craftercms.dateModified = getInnerHtml(doc.querySelector(':scope > lastModifiedDate_dt'));
+		current.craftercms.dateCreated = getInnerHtml(doc.querySelector(`:scope > ${XmlKeys.dateCreatedDt}`));
+		current.craftercms.dateModified = getInnerHtml(doc.querySelector(`:scope > ${XmlKeys.dateModifiedDt}`));
 		current.craftercms.disabled = getInnerHtml(doc.querySelector(':scope > disabled'), { trim: true }) === 'true';
 	}
 	id && (instanceLookup[id] = current);

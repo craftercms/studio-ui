@@ -20,6 +20,7 @@ import { EditorProps } from '@monaco-editor/react';
 import { fromString } from '../../../utils/xml';
 import { getContentFileNameFromPath } from '../../../utils/content';
 import TextView from './TextView';
+import { XmlKeys } from '../../FormsEngine/lib/formConsts';
 
 export interface FileNameViewProps extends Pick<ViewComponentBaseProps, 'xml'> {
 	editorProps?: EditorProps;
@@ -27,7 +28,7 @@ export interface FileNameViewProps extends Pick<ViewComponentBaseProps, 'xml'> {
 
 export function FileNameView(props: FileNameViewProps) {
 	const { xml, editorProps } = props;
-	const path = fromString(xml).querySelector('file-name').textContent;
+	const path = fromString(xml).querySelector(`${XmlKeys.fileName}`).textContent;
 	const fileName = getContentFileNameFromPath(path);
 
 	return <TextView xml={fileName} editorProps={editorProps} />;
