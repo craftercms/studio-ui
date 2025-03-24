@@ -22,6 +22,8 @@ import LookupTable from '../../../models/LookupTable';
 
 type OutOfTheBoxArchetype = 'page' | 'component';
 
+// TODO: In the future, we may allow extending OOTB archetypes and defining custom ones through config.
+
 // In the future, it could receive a "template" coming from config to extend OOTB archetypes or start from a custom one
 // initializeTypeForCreate(archetype: string, template: ContentType): ContentType
 export function initializeTypeForCreate(
