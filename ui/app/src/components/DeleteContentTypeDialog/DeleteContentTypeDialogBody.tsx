@@ -104,7 +104,7 @@ export function DeleteContentTypeDialogBody(props: DeleteContentTypeDialogBodyPr
 									name: contentType.name,
 									b: (message) => {
 										return (
-											<Box component="strong" sx={{ fontWeight: 600 }}>
+											<Box key="" component="strong" sx={{ fontWeight: 600 }}>
 												{message}
 											</Box>
 										);

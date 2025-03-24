@@ -21,6 +21,7 @@ import { map, switchMap } from 'rxjs/operators';
 import { LookupTable } from '../../models/LookupTable';
 import { ContentType } from '../../models/ContentType';
 import { fetchContentInstance, insertInstance } from '../../services/content';
+import { createFormDefinitionPathFromTypeId } from '../../utils/contentType';
 
 export const legacyXmlModelToMap = (dom) => {
 	let map = {};
@@ -128,7 +129,7 @@ export const unEscapeXml = (value) => {
 };
 
 export const legacyLoadFormDefinition = (siteId: string, contentType: string): Observable<unknown> => {
-	return fetchConfigurationJSON(siteId, `/content-types/${contentType}/form-definition.xml`, 'studio').pipe(
+	return fetchConfigurationJSON(siteId, createFormDefinitionPathFromTypeId(contentType), 'studio').pipe(
 		map((config) => {
 			let def = config.form;
 			def.contentType = contentType;

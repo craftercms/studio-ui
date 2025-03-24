@@ -280,6 +280,15 @@ export function isUUID(str: string): boolean {
 	return /^[a-f\d]{8}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{12}$/i.test(str);
 }
 
+export function isEmpty(str: string): boolean {
+	if (str == null) return true;
+	return str.trim() === '';
+}
+
+export function toBooleanString(bool: boolean): 'true' | 'false' {
+	return bool ? 'true' : 'false';
+}
+
 /**
  * Counts the number of lines in a given text based on the break lines it has.
  *

@@ -17,7 +17,7 @@
 import { DialogStackItem } from '../../models';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 import { useDispatch } from 'react-redux';
-import React, { ElementType, useMemo } from 'react';
+import React, { createElement, ElementType, useMemo } from 'react';
 import { components } from '../../utils/constants';
 import AlertDialog from '../AlertDialog';
 import infoImgUrl from '../../assets/information.svg';
@@ -25,90 +25,99 @@ import PrimaryButton from '../PrimaryButton';
 import { FormattedMessage } from 'react-intl';
 import { popDialog, updateDialogState } from '../../state/actions/dialogStack';
 import { displayWithPendingChangesConfirm } from '../../utils/ui';
+import useUpdateRefs from '../../hooks/useUpdateRefs';
 
 export function DialogStackItemContainer(props: DialogStackItem<EnhancedDialogProps>) {
-	const { id, component, allowMinimize = false, allowFullScreen = false } = props;
-	const dispatch = useDispatch();
-	const Dialog = useMemo(() => {
-		if (typeof component === 'string') {
-			if (components.has(component)) {
-				return components.get(component) as ElementType<EnhancedDialogProps>;
-			} else {
-				return (props: EnhancedDialogProps) => (
-					<AlertDialog
-						open={props.open}
-						body={`Unknown component id "${component}". The component is not registered or the id is incorrect.`}
-						imageUrl={infoImgUrl}
-						buttons={
-							<PrimaryButton fullWidth onClick={(e) => props.onClose(e, undefined)}>
-								<FormattedMessage defaultMessage="Accept" />
-							</PrimaryButton>
-						}
-					/>
-				);
-			}
+	const { component } = props;
+	const DialogComponent = useMemo(() => pickDialogComponent(component), [component]);
+	const callbackProps = useCreateCallbackProps(props);
+	return createElement(DialogComponent, { ...props.props, ...callbackProps });
+}
+
+function pickDialogComponent(component: string | ElementType) {
+	if (typeof component === 'string') {
+		if (components.has(component)) {
+			return components.get(component) as ElementType<EnhancedDialogProps>;
 		} else {
-			return component as ElementType<EnhancedDialogProps>;
+			return createUnknownComponent(component);
 		}
-	}, [component]);
-	const onClose: EnhancedDialogProps['onClose'] = () => {
-		dispatch(updateDialogState({ id, props: { open: false } }));
-	};
-	const onMaximize: EnhancedDialogProps['onMaximize'] = allowMinimize
-		? () => {
-				dispatch(updateDialogState({ id, props: { isMinimized: false } }));
+	} else {
+		return component as ElementType<EnhancedDialogProps>;
+	}
+}
+
+function createUnknownComponent(component: string) {
+	return (props: EnhancedDialogProps) => (
+		<AlertDialog
+			open={props.open}
+			body={`Unknown component id "${component}". The component is not registered or the id is incorrect.`}
+			imageUrl={infoImgUrl}
+			buttons={
+				<PrimaryButton fullWidth onClick={(e) => props.onClose(e, undefined)}>
+					<FormattedMessage defaultMessage="Accept" />
+				</PrimaryButton>
 			}
-		: undefined;
-	const onMinimize: EnhancedDialogProps['onMinimize'] = allowMinimize
-		? () => {
-				dispatch(updateDialogState({ id, props: { isMinimized: true } }));
-			}
-		: undefined;
-	const onFullScreen: EnhancedDialogProps['onFullScreen'] = allowFullScreen
-		? () => {
-				dispatch(updateDialogState({ id, props: { isFullScreen: true } }));
-			}
-		: undefined;
-	const onCancelFullScreen: EnhancedDialogProps['onCancelFullScreen'] = allowFullScreen
-		? () => {
-				dispatch(updateDialogState({ id, props: { isFullScreen: false } }));
-			}
-		: undefined;
-	// TODO: Review type discrepancy
-	// @ts-expect-error: Discrepancy in types (EnhancedDialogProps['onTransitionExited'] !== props.props.onTransitionEnd).
-	const onTransitionExited: EnhancedDialogProps['onTransitionExited'] = (e) => {
-		props.props.onTransitionEnd?.(e);
-		if (!props.props.open && !props.props.keepMounted) {
-			dispatch(popDialog({ id }));
-		}
-	};
-	const onWithPendingChangesCloseRequest: EnhancedDialogProps['onWithPendingChangesCloseRequest'] = (e, reason) => {
-		displayWithPendingChangesConfirm(dispatch, () => onClose(e, reason));
-	};
-	const updateSubmittingOrHasPendingChanges = (changes: { isSubmitting?: boolean; hasPendingChanges?: boolean }) => {
-		dispatch(
-			updateDialogState({
-				id,
-				props: {
-					isSubmitting: changes.isSubmitting ?? props.props.isSubmitting,
-					hasPendingChanges: changes.hasPendingChanges ?? props.props.hasPendingChanges
-				} as Partial<EnhancedDialogProps>
-			})
-		);
-	};
-	return (
-		<Dialog
-			{...props.props}
-			onClose={onClose}
-			onMaximize={onMaximize}
-			onMinimize={onMinimize}
-			onFullScreen={onFullScreen}
-			onCancelFullScreen={onCancelFullScreen}
-			onTransitionExited={onTransitionExited}
-			updateSubmittingOrHasPendingChanges={updateSubmittingOrHasPendingChanges}
-			onWithPendingChangesCloseRequest={onWithPendingChangesCloseRequest}
 		/>
 	);
+}
+
+/* private */ function useCreateCallbackProps(props: DialogStackItem<EnhancedDialogProps>) {
+	const { id, allowMinimize = false, allowFullScreen = false } = props;
+	const dispatch = useDispatch();
+	const propsRef = useUpdateRefs(props.props);
+	return useMemo(() => {
+		const onClose: EnhancedDialogProps['onClose'] = () => dispatch(updateDialogState({ id, props: { open: false } }));
+
+		const onMaximize: EnhancedDialogProps['onMaximize'] = allowMinimize
+			? () => dispatch(updateDialogState({ id, props: { isMinimized: false } }))
+			: undefined;
+
+		const onMinimize: EnhancedDialogProps['onMinimize'] = allowMinimize
+			? () => dispatch(updateDialogState({ id, props: { isMinimized: true } }))
+			: undefined;
+
+		const onFullScreen: EnhancedDialogProps['onFullScreen'] = allowFullScreen
+			? () => dispatch(updateDialogState({ id, props: { isFullScreen: true } }))
+			: undefined;
+
+		const onCancelFullScreen: EnhancedDialogProps['onCancelFullScreen'] = allowFullScreen
+			? () => dispatch(updateDialogState({ id, props: { isFullScreen: false } }))
+			: undefined;
+
+		// TODO: Review type discrepancy
+		// @ts-expect-error: Discrepancy in types (EnhancedDialogProps['onTransitionExited'] !== propsRef.current.onTransitionEnd).
+		const onTransitionExited: EnhancedDialogProps['onTransitionExited'] = (e) => {
+			propsRef.current.onTransitionEnd?.(e);
+			if (!propsRef.current.open && !propsRef.current.keepMounted) {
+				dispatch(popDialog({ id }));
+			}
+		};
+
+		const onWithPendingChangesCloseRequest: EnhancedDialogProps['onWithPendingChangesCloseRequest'] = (e, reason) =>
+			displayWithPendingChangesConfirm(dispatch, () => onClose(e, reason));
+
+		const updateSubmittingOrHasPendingChanges = (changes: { isSubmitting?: boolean; hasPendingChanges?: boolean }) =>
+			dispatch(
+				updateDialogState({
+					id,
+					props: {
+						isSubmitting: changes.isSubmitting ?? propsRef.current.isSubmitting,
+						hasPendingChanges: changes.hasPendingChanges ?? propsRef.current.hasPendingChanges
+					} as Partial<EnhancedDialogProps>
+				})
+			);
+
+		return {
+			onClose,
+			onMaximize,
+			onMinimize,
+			onFullScreen,
+			onCancelFullScreen,
+			onTransitionExited,
+			onWithPendingChangesCloseRequest,
+			updateSubmittingOrHasPendingChanges
+		};
+	}, [id, allowFullScreen, allowMinimize, dispatch, propsRef]);
 }
 
 export default DialogStackItemContainer;

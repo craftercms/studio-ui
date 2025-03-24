@@ -26,6 +26,7 @@ import { pushDialog } from '../state/actions/dialogStack';
 import type { FormsEngineProps } from '../components/FormsEngine/FormsEngine';
 import { getHostToGuestBus } from './subjects';
 import { reloadRequest } from '../state/actions/preview';
+import { Context, useContext } from 'react';
 
 export type SystemLinkId =
 	| 'preview'
@@ -48,7 +49,7 @@ export function getSystemLink({
 	page?: string;
 }) {
 	return {
-		preview: `${authoringBase}${PREVIEW_URL_PATH}#/?page=${page}&site=${site}`,
+		preview: `${authoringBase}${PREVIEW_URL_PATH}#/?page=${encodeURIComponent(page)}&site=${site}`,
 		siteTools: `${authoringBase}${ProjectToolsRoutes.ProjectTools}`,
 		siteSearch: `${authoringBase}${ProjectToolsRoutes.Search}`,
 		siteDashboard: `${authoringBase}${ProjectToolsRoutes.SiteDashboard}`
@@ -105,6 +106,8 @@ export function pickShowContentFormAction(oldProps: ReturnType<typeof showEditDi
 		? showEditDialog(oldProps)
 		: pushDialog({
 				component: 'craftercms.components.FormsEngineDialog',
+				allowFullScreen: true,
+				allowMinimize: true,
 				props: {
 					formProps: {
 						...(oldProps.isNewContent
@@ -118,4 +121,25 @@ export function pickShowContentFormAction(oldProps: ReturnType<typeof showEditDi
 					} as FormsEngineProps
 				}
 			});
+}
+
+export function createUseContextHook<T>(name: string, context: Context<T>): () => T;
+export function createUseContextHook<T, K extends keyof T>(
+	name: string,
+	context: Context<T>,
+	selector: (instance: T) => T[K]
+): () => T[K];
+export function createUseContextHook<T, K extends keyof T>(
+	name: string,
+	context: Context<T>,
+	selector?: (instance: T) => T[K]
+): () => T | T[K] {
+	const contextName = context.displayName ?? name.replace('use', '');
+	return () => {
+		const instance = useContext(context);
+		if (instance === undefined) {
+			throw new Error(`${name} must be used within a ${contextName}`);
+		}
+		return selector?.(instance) ?? instance;
+	};
 }
