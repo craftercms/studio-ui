@@ -25,7 +25,7 @@ import { useDispatch } from 'react-redux';
 import { alpha } from '@mui/material';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
-import { UppyFile, Meta, Body } from '@uppy/utils/lib/UppyFile';
+import type { UppyFile, Meta, Body } from '@uppy/utils/lib/UppyFile';
 import { ensureSingleSlash } from '../../utils/string';
 import { UppyDashboardProps } from './UppyDashboardProps';
 import useMediaQuery from '@mui/material/useMediaQuery';
