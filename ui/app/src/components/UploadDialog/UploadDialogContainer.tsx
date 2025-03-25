@@ -30,8 +30,8 @@ import DialogBody from '../DialogBody/DialogBody';
 import UppyDashboard from '../UppyDashboard';
 import useSiteUIConfig from '../../hooks/useSiteUIConfig';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
-import { Meta, Body } from '@uppy/utils/lib/UppyFile';
-import { XHRUploadOptions as UppyXHRUploadOptions } from '@uppy/xhr-upload';
+import type { Meta, Body } from '@uppy/utils/lib/UppyFile';
+import type { XHRUploadOptions as UppyXHRUploadOptions } from '@uppy/xhr-upload';
 import { nnou } from '../../utils/object';
 
 const mixHeaders = (headers: Record<string, any>) => Object.assign({}, getGlobalHeaders(), headers);
