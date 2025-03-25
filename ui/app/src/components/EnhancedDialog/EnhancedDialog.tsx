@@ -105,7 +105,12 @@ export function EnhancedDialog(props: EnhancedDialogProps) {
           />
         )}
         <Suspencified>
-          {React.Children.map(children, (child) => React.cloneElement(child as React.ReactElement, { onClose }))}
+          {React.Children.map(children, (child) =>
+            React.cloneElement(
+              child as React.ReactElement<{ onClose(event, reason: 'backdropClick' | 'escapeKeyDown'): void }>,
+              { onClose }
+            )
+          )}
         </Suspencified>
         <OnClosedInvoker onClosed={onClosed} />
       </MuiDialog>

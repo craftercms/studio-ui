@@ -125,7 +125,7 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
     [items, selectedItems]
   );
 
-  const rootRef = useRef<HTMLDivElement>();
+  const rootRef = useRef<HTMLDivElement>(undefined);
 
   const fetchStates = useCallback(() => {
     let stateBitmap = getStateBitmap(filtersLookup as ItemStateMap);

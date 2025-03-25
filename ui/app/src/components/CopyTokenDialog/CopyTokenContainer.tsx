@@ -43,7 +43,7 @@ export function CopyTokenContainer(props: CopyTokenContainerProps) {
   const { onClose, token, onCopy } = props;
   const { classes } = useStyles();
   // TODO: Ref not in use. Remove?
-  const inputRef = useRef<HTMLInputElement>();
+  const inputRef = useRef<HTMLInputElement>(undefined);
 
   const copyToken = () => {
     copyToClipboard(token.token).then(() => onCopy());
