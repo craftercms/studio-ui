@@ -16,8 +16,8 @@
 
 import { Uppy } from '@uppy/core';
 import React from 'react';
-import { UppyFile, Meta, Body } from '@uppy/utils/lib/UppyFile';
-import { DashboardOptions } from '@uppy/dashboard';
+import type { UppyFile, Meta, Body } from '@uppy/utils/lib/UppyFile';
+import type { DashboardOptions } from '@uppy/dashboard';
 
 export interface UppyDashboardProps {
 	uppy: Uppy<{ site: string }>;
