@@ -14,7 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-body.#{$class-prefix}-dnd-enabled {
+@use '../variables' as variables;
+@use '../../../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/variables' as
+	bootstrap-variables;
+
+body.#{variables.$class-prefix}-dnd-enabled {
 	.affix,
 	.navbar-fixed-bottom,
 	.navbar-fixed-top {
@@ -25,10 +29,10 @@ body.#{$class-prefix}-dnd-enabled {
 		z-index: 101 !important;
 		padding: 10px !important;
 		position: relative !important;
-		border-color: $crimson !important;
-		border-radius: $border-radius-base !important;
+		border-color: variables.$crimson !important;
+		border-radius: bootstrap-variables.$border-radius-base !important;
 		background-color: rgba(255, 255, 255, 0.7) !important;
-		box-shadow: 0 0 10px 0 rgba($crimson, 0.4) !important;
+		box-shadow: 0 0 10px 0 rgba(variables.$crimson, 0.4) !important;
 
 		.ui-sortable-handle {
 			position: relative;
@@ -55,7 +59,7 @@ body.#{$class-prefix}-dnd-enabled {
 	[data-studio-component] {
 	}
 
-	.#{$class-prefix}-div-mouse {
+	.#{variables.$class-prefix}-div-mouse {
 		background-color: white;
 		z-index: 1000;
 		min-width: 100px;
@@ -66,32 +70,32 @@ body.#{$class-prefix}-dnd-enabled {
 		z-index: 1050;
 	}
 
-	.#{$class-prefix}-component-drag-target {
+	.#{variables.$class-prefix}-component-drag-target {
 		&.ui-draggable-dragging {
 			color: #fff;
 			padding: 5px 10px;
 			text-align: center;
-			background: $brand-primary;
-			border-radius: $border-radius-base;
+			background: variables.$brand-primary;
+			border-radius: bootstrap-variables.$border-radius-base;
 			cursor: move;
 		}
 	}
 
-	.#{$class-prefix}-draggable-over {
+	.#{variables.$class-prefix}-draggable-over {
 		background-color: rgba(255, 255, 255, 0.9) !important;
-		box-shadow: 0 0 5px 5px rgba(lighten($crimson, 10%), 0.4) !important;
+		box-shadow: 0 0 5px 5px rgba(lighten(variables.$crimson, 10%), 0.4) !important;
 	}
 
-	&.#{$class-prefix}-pointer-enabled {
-		.#{$class-prefix}-pointer-over {
+	&.#{variables.$class-prefix}-pointer-enabled {
+		.#{variables.$class-prefix}-pointer-over {
 			background-color: rgba(255, 255, 255, 0.9) !important;
-			box-shadow: 0 0 5px 5px rgba(lighten($crimson, 10%), 0.4) !important;
+			box-shadow: 0 0 5px 5px rgba(lighten(variables.$crimson, 10%), 0.4) !important;
 		}
 	}
 }
 
-.#{$class-prefix}-components-panel {
-	@extend .studio-view;
+.#{variables.$class-prefix}-components-panel {
+	@extend .studio-view !optional;
 
 	top: 0;
 	right: 0;
@@ -114,7 +118,7 @@ body.#{$class-prefix}-dnd-enabled {
 		margin: 0;
 	}
 
-	.#{$class-prefix}-panel-title {
+	.#{variables.$class-prefix}-panel-title {
 		font-size: 1.4em;
 		padding: 10px;
 		font-weight: bold;
@@ -130,7 +134,7 @@ body.#{$class-prefix}-dnd-enabled {
 		color: #fff !important;
 	}
 
-	.#{$class-prefix}-component-search {
+	.#{variables.$class-prefix}-component-search {
 		padding: 0 10px;
 
 		input[type='search'] {
@@ -143,7 +147,7 @@ body.#{$class-prefix}-dnd-enabled {
 		}
 	}
 
-	.#{$class-prefix}-components-container {
+	.#{variables.$class-prefix}-components-container {
 		left: 0;
 		right: 0;
 		bottom: 0;
@@ -152,17 +156,17 @@ body.#{$class-prefix}-dnd-enabled {
 		position: absolute;
 		overflow: auto;
 
-		.#{$class-prefix}-category {
+		.#{variables.$class-prefix}-category {
 			margin-bottom: 12px;
 			box-shadow: 1px 0 2px rgba(0, 0, 0, 0.1);
-			border-radius: $border-radius-base;
+			border-radius: bootstrap-variables.$border-radius-base;
 
-			.#{$class-prefix}-category-name {
+			.#{variables.$class-prefix}-category-name {
 				padding: 5px 10px;
 				font-size: 1.1em;
-				border-bottom: 1px solid $gray-lighter;
-				border-top-left-radius: $border-radius-base;
-				border-top-right-radius: $border-radius-base;
+				border-bottom: 1px solid bootstrap-variables.$gray-lighter;
+				border-top-left-radius: bootstrap-variables.$border-radius-base;
+				border-top-right-radius: bootstrap-variables.$border-radius-base;
 				background: #f0f0f0;
 				font-weight: bold;
 
@@ -178,8 +182,8 @@ body.#{$class-prefix}-dnd-enabled {
 				border-top: none;
 				padding: 0;
 				margin: 0;
-				border-bottom-left-radius: $border-radius-base;
-				border-bottom-right-radius: $border-radius-base;
+				border-bottom-left-radius: bootstrap-variables.$border-radius-base;
+				border-bottom-right-radius: bootstrap-variables.$border-radius-base;
 
 				> sli {
 					border-bottom: 1px solid #f0f0f0;
@@ -204,10 +208,10 @@ body.#{$class-prefix}-dnd-enabled {
 				}
 			}
 
-			&.#{$class-prefix}-collapse {
-				.#{$class-prefix}-category-name {
-					border-bottom-left-radius: $border-radius-base;
-					border-bottom-right-radius: $border-radius-base;
+			&.#{variables.$class-prefix}-collapse {
+				.#{variables.$class-prefix}-category-name {
+					border-bottom-left-radius: bootstrap-variables.$border-radius-base;
+					border-bottom-right-radius: bootstrap-variables.$border-radius-base;
 				}
 
 				sul {
@@ -257,7 +261,7 @@ body.#{$class-prefix}-dnd-enabled {
 }
 
 .studio-component-drag-target.studio-component-over {
-	box-shadow: 0 0 3px 3px rgba(lighten($crimson, 10%), 0.2) !important;
+	box-shadow: 0 0 3px 3px rgba(lighten(variables.$crimson, 10%), 0.2) !important;
 }
 
 .studio-component-drag-target.ui-draggable.ui-draggable-handle.ui-draggable-dragging {

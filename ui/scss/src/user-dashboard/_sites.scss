@@ -14,6 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+@use '../../../../static-assets/libs/bootstrap/scss/mixins' as mixins;
+@use '../variables' as variables;
+@use '../../../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/variables' as
+	bootstrap-variables;
+
 .sites-view {
 	.site-message {
 		position: relative;
@@ -31,7 +36,7 @@
 	padding: 15px 20px;
 	background-color: #fff;
 	border-bottom: 1px solid #e7e7e7;
-	@include clearfix;
+	@include mixins.clearfix;
 
 	h1 {
 		margin: 0;
@@ -64,7 +69,7 @@
 }
 
 .green .modal-body .notificationBody .icon {
-	color: $success-green;
+	color: variables.$success-green;
 }
 
 .createSitesBtn {
@@ -161,11 +166,11 @@
 		}
 	}
 
-	@media (min-width: $screen-md-min) {
+	@media (min-width: bootstrap-variables.$screen-md-min) {
 		width: 40%;
 		margin: auto;
 	}
-	@media (min-width: $screen-lg-min) {
+	@media (min-width: bootstrap-variables.$screen-lg-min) {
 		width: 35%;
 		margin: auto;
 	}

@@ -14,6 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+@use '../../../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/variables' as
+	bootstrap-variables;
+
 .iframe {
 	.cstudio-navbar {
 		display: none;
@@ -1160,7 +1163,7 @@ table {
 		}
 	}
 
-	@media (max-width: $screen-xs-max) {
+	@media (max-width: bootstrap-variables.$screen-xs-max) {
 		.flex-viewport li.list-gallery {
 			height: auto;
 		}
@@ -1183,7 +1186,7 @@ table {
 		}
 	}
 
-	@media (min-width: $screen-sm-min) and (max-width: $screen-sm-max) {
+	@media (min-width: bootstrap-variables.$screen-sm-min) and (max-width: bootstrap-variables.$screen-sm-max) {
 		.flex-viewport li.list-gallery {
 			height: 190px;
 		}

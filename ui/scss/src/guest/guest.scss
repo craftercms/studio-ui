@@ -15,7 +15,7 @@
  */
 
 @use 'sass:meta';
-@use '../variables';
+@use '../variables' as variables;
 @use '../util/animate';
 
 @use 'elements';

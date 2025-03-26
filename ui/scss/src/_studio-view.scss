@@ -17,6 +17,7 @@
 @use 'variables';
 @use '../../../static-assets/libs/bootstrap/scss/mixins';
 @use '../../../static-assets/libs/bootstrap/scss/mixins/clearfix';
+@use '../../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/variables' as bootstrap-variables;
 
 .yui-skin-cstudioTheme {
 	overflow-x: hidden;
@@ -275,7 +276,7 @@
 
 	table.item-listing {
 		width: 100%;
-		border-radius: $border-radius-base;
+		border-radius: bootstrap-variables.$border-radius-base;
 
 		tr {
 		}
@@ -425,8 +426,8 @@ table.scroll-body {
 	margin-left: -45%;
 	background-color: #fff;
 	border: 1px solid #e7e7e7;
-	border-bottom-left-radius: $border-radius-base;
-	border-bottom-right-radius: $border-radius-base;
+	border-bottom-left-radius: bootstrap-variables.$border-radius-base;
+	border-bottom-right-radius: bootstrap-variables.$border-radius-base;
 	transition:
 		height 0.25s,
 		transform 0.25s;
