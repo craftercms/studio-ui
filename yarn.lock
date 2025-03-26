@@ -1639,7 +1639,7 @@ __metadata:
     eslint-plugin-formatjs: "npm:^4.13.3"
     eslint-plugin-react-hooks: "npm:^5.1.0"
     eslint-plugin-react-refresh: "npm:^0.4.19"
-    fast-xml-parser: "npm:^4.5.3"
+    fast-xml-parser: "npm:^5.0.9"
     globals: "npm:^15.14.0"
     graphiql: "npm:^3.8.3"
     graphql: "npm:^16.10.0"
@@ -8068,14 +8068,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-xml-parser@npm:^4.5.3":
-  version: 4.5.3
-  resolution: "fast-xml-parser@npm:4.5.3"
+"fast-xml-parser@npm:^5.0.9":
+  version: 5.0.9
+  resolution: "fast-xml-parser@npm:5.0.9"
   dependencies:
-    strnum: "npm:^1.1.1"
+    strnum: "npm:^2.0.5"
   bin:
     fxparser: src/cli/cli.js
-  checksum: 10/ca22bf9d65c10b8447c1034c13403e90ecee210e2b3852690df3d8a42b8a46ec655fae7356096abd98a15b89ddaf11878587b1773e0c3be4cbc2ac4af4c7bf95
+  checksum: 10/d5d7357f7c6dad86306ea0052f602a656e95c853b94128a7568a5f6168af1395c71251473e5dd23f1ec7062443a215ae65123915787c00d975c5b03cc6bade1d
   languageName: node
   linkType: hard
 
@@ -12901,10 +12901,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"strnum@npm:^1.1.1":
-  version: 1.1.2
-  resolution: "strnum@npm:1.1.2"
-  checksum: 10/ccd6297a1fdaf0fc8ea0ea904acdae76878d49a4b0d98a70155df4bc081fd88eac5ec99fb150f3d1d1af065c1898d38420705259ba6c39aa850c671bcd54e35d
+"strnum@npm:^2.0.5":
+  version: 2.0.5
+  resolution: "strnum@npm:2.0.5"
+  checksum: 10/5a9939e395dcf3f2ce0c4741c454b0e8c6492a395a6115edee287671f5c339126e2d2bddaeba757900a4a32b680ca5532bdba350514dc3770a5165b1dd5ac145
   languageName: node
   linkType: hard
 
