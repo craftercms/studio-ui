@@ -108,7 +108,7 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
                 <Box sx={{ flexGrow: 1, display: 'flex' }}>
                   {multiSelect && (
                     <>
-                      <Tooltip title={<FormattedMessage defaultMessage="Select All on this page" />}>
+                      <Tooltip title={<FormattedMessage defaultMessage="Select all on this page" />}>
                         <Checkbox checked={allSelected} indeterminate={someSelected} onChange={onSelectAll} />
                       </Tooltip>
                       <Divider orientation="vertical" flexItem className={classes.actionsBarDivider} />

@@ -370,7 +370,7 @@ export function SearchUI(props: SearchUIProps) {
         }
       >
         <div className={classes.searchHelperBar}>
-          <Tooltip title={<FormattedMessage defaultMessage="Select All on this page" />}>
+          <Tooltip title={<FormattedMessage defaultMessage="Select all on this page" />}>
             <Checkbox checked={areAllSelected} onChange={(e) => handleSelectAll(e.target.checked)} />
           </Tooltip>
           <TablePagination
