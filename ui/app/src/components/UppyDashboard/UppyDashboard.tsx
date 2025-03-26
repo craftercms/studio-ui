@@ -25,7 +25,7 @@ import { useDispatch } from 'react-redux';
 import { alpha } from '@mui/material';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
-import { UppyFile, Meta, Body } from '@uppy/utils/lib/UppyFile';
+import { UppyFile } from '@uppy/utils';
 import { ensureSingleSlash } from '../../utils/string';
 import { UppyDashboardProps } from './UppyDashboardProps';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -150,8 +150,6 @@ export function UppyDashboard(props: UppyDashboardProps) {
 			...options,
 			inline: true,
 			target: ref.current,
-			// @ts-expect-error validateActionPolicy is a prop of @craftercms/uppy/plugins/Dashboard, and not in the type definition
-			// of uppy's dashboard.
 			validateActionPolicy,
 			onPendingChanges: function () {
 				functionsRef.current.onPendingChanges.apply(null, arguments);
@@ -185,8 +183,7 @@ export function UppyDashboard(props: UppyDashboardProps) {
 					close: formatMessage(translations.close),
 					proceed: formatMessage(translations.proceed),
 					proceedSingle: formatMessage(translations.proceedSingle)
-				},
-				pluralize: (n: number) => (n === 1 ? 0 : 1)
+				}
 			},
 			maxActiveUploads,
 			externalMessages: {
@@ -205,7 +202,7 @@ export function UppyDashboard(props: UppyDashboardProps) {
 			}
 		});
 
-		const onUploadSuccess = (file: UppyFile<Meta, Body>) => {
+		const onUploadSuccess = (file: UppyFile<Record<string, unknown>>) => {
 			onItemsUploaded$.next(file.id);
 			targetsRef.current.push(file.id);
 		};
