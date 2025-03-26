@@ -14,10 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 type IsPreReact19 = 2 extends Parameters<React.FunctionComponent<any>>['length'] ? true : false;
-type ReactJSX = true extends IsPreReact19 ? JSX : React.JSX;
 type ReactJSXElement = true extends IsPreReact19 ? JSX.Element : React.JSX.Element;
-type ReactJSXIntrinsicElements = true extends IsPreReact19 ? JSX.IntrinsicElements : React.JSX.IntrinsicElements;
+
 type CustomElementProps = React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>;
+
 // React v18
 namespace JSX {
   interface IntrinsicElements {
@@ -26,6 +26,7 @@ namespace JSX {
     'craftercms-asset-uploader-mask-container': CustomElementProps;
   }
 }
+
 // React v19
 declare namespace React {
   namespace JSX {
