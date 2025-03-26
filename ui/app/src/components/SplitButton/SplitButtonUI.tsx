@@ -25,7 +25,6 @@ import MenuList from '@mui/material/MenuList';
 import MenuItem from '@mui/material/MenuItem';
 import Popper from '@mui/material/Popper';
 import { SplitButtonUIProps } from './utils';
-import LoadingButton from '@mui/lab/LoadingButton';
 
 export function SplitButtonUI(props: SplitButtonUIProps) {
 	const {
@@ -45,9 +44,9 @@ export function SplitButtonUI(props: SplitButtonUIProps) {
 	return (
 		<>
 			<ButtonGroup disabled={disabled} variant="contained" color="primary" ref={anchorRef} aria-label="split button">
-				<LoadingButton color="primary" variant="contained" loading={loading} onClick={handleClick}>
+				<Button color="primary" variant="contained" loading={loading} onClick={handleClick}>
 					{options[selectedIndex].label}
-				</LoadingButton>
+				</Button>
 				{options.length > 1 && (
 					<Button
 						disabled={loading}

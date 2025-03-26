@@ -15,12 +15,12 @@
  */
 
 import * as React from 'react';
-import LoadingButton, { LoadingButtonProps } from '@mui/lab/LoadingButton';
+import Button, { ButtonProps } from '@mui/material/Button';
 
-export interface PrimaryButtonProps extends LoadingButtonProps {}
+export interface PrimaryButtonProps extends ButtonProps {}
 
 const PrimaryButton = React.forwardRef<HTMLButtonElement, PrimaryButtonProps>((props, ref) => {
-	return <LoadingButton ref={ref} {...props} variant="contained" color="primary" />;
+	return <Button ref={ref} {...props} variant="contained" color="primary" />;
 });
 
 export default PrimaryButton;
