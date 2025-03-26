@@ -25,21 +25,21 @@ import TableContainer from '@mui/material/TableContainer';
 import React from 'react';
 import Checkbox from '@mui/material/Checkbox';
 import ItemDisplay from '../ItemDisplay';
-import { SandboxItem } from '../../models/Item';
+import { ContentItem } from '../../models/Item';
 import { PagedArray } from '../../models/PagedArray';
 import Pagination from '../Pagination';
 import LookupTable from '../../models/LookupTable';
 
 export interface WorkflowStatesGridUIProps {
-	itemStates: PagedArray<SandboxItem>;
-	selectedItems: LookupTable<SandboxItem>;
+	itemStates: PagedArray<ContentItem>;
+	selectedItems: LookupTable<ContentItem>;
 	allItemsSelected: boolean;
 	hasThisPageItemsChecked: boolean;
 	isThisPageIndeterminate: boolean;
 	onToggleSelectedItems(): void;
-	onItemSelected(item: SandboxItem, value: boolean): void;
+	onItemSelected(item: ContentItem, value: boolean): void;
 	onPageChange(page: number): void;
-	onRowSelected(item: SandboxItem): void;
+	onRowSelected(item: ContentItem): void;
 	onRowsPerPageChange?: React.ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
 }
 

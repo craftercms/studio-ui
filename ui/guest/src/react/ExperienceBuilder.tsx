@@ -22,7 +22,7 @@ import {
 	contentTypes$,
 	flushRequestedPaths,
 	getCachedModels,
-	getCachedSandboxItems,
+	getCachedContentItems,
 	modelHierarchyMap,
 	operations$
 } from '../contentController';
@@ -647,7 +647,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
 							const isEditable = isEditActionAvailable({
 								record: elementRecord,
 								models: getCachedModels(),
-								sandboxItemsByPath: getCachedSandboxItems(),
+								contentItemsByPath: getCachedContentItems(),
 								parentModelId: getParentModelId(elementRecord.modelId, getCachedModels(), modelHierarchyMap)
 							});
 							let zoneMarkerModeStyles: Record<string, SxProps<Theme>>;

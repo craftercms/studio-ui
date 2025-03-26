@@ -356,7 +356,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
 		// Retrieve all SandboxItems to determine if the user has the edit permissions.
 		this._renderItemsSubscription?.unsubscribe();
 		this._renderItemsSubscription = craftercms.services.content
-			.fetchItemsByPath(CStudioAuthoringContext.site, sharedItems)
+			.fetchContentItems(CStudioAuthoringContext.site, sharedItems)
 			.subscribe((sandboxItems) => {
 				itemsContainerEl.innerHTML = '';
 				var tar = new YAHOO.util.DDTarget(itemsContainerEl);

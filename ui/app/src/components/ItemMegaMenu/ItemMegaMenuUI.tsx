@@ -26,7 +26,7 @@ import React, { ReactNode } from 'react';
 import Popover, { PopoverOrigin, PopoverPosition, PopoverProps, PopoverReference } from '@mui/material/Popover';
 import palette from '../../styles/palette';
 import { SystemIconDescriptor } from '../SystemIcon';
-import { DetailedItem } from '../../models/Item';
+import { ContentItem } from '../../models/Item';
 import { ContextMenuOption } from '../ContextMenu/ContextMenu';
 import GlobalState from '../../models/GlobalState';
 import Skeleton from '@mui/material/Skeleton';
@@ -67,7 +67,7 @@ export interface ItemMegaMenuUIProps {
 	sxs?: PartialSxRecord<ItemMegaMenuUIClassKey>;
 	isLoading?: boolean;
 	numOfLoaderItems?: number;
-	item: DetailedItem;
+	item: ContentItem;
 	options: ContextMenuOption[][];
 	editorialOptions: ContextMenuOption[];
 	nonEditorialOptions: ContextMenuOption[][];
@@ -305,9 +305,9 @@ export function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
 								defaultMessage="{edited} {date} {byLabel} {by}"
 								values={{
 									date: new Intl.DateTimeFormat(locale.localeCode, locale.dateTimeFormatOptions).format(
-										new Date(item?.sandbox.dateModified)
+										new Date(item?.dateModified)
 									),
-									by: item?.sandbox.modifier?.username ?? '',
+									by: item?.modifier?.username ?? '',
 									edited: (
 										<Box
 											component="span"
@@ -317,7 +317,7 @@ export function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
 											<FormattedMessage id="words.edited" defaultMessage="Edited" />
 										</Box>
 									),
-									byLabel: item?.sandbox.modifier?.username ? (
+									byLabel: item?.modifier?.username ? (
 										<Box
 											component="span"
 											className={classes?.itemEditedText}

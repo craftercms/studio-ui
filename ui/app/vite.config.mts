@@ -33,17 +33,21 @@ export default defineConfig(({ mode }) => ({
     port: 3000,
     proxy: {
       '/studio/api': proxyConfig,
+      '/static-assets': proxyConfig,
       '/studio/static-assets': proxyConfig,
       '/studio/refresh.json': proxyConfig,
       '/studio/1/plugin/file': proxyConfig,
-      '/static-assets': proxyConfig
+      '/studio/events': { target: 'ws://localhost:8080', changeOrigin: true, secure: true }
     }
+  },
+  optimizeDeps: {
+    include: ['@mui/material/*']
   },
   build: {
     minify: false,
     outDir: '../../static-assets/app',
     emptyOutDir: true,
-    sourceMap: 'inline',
+    sourceMap: true,
     rollupOptions: {
       input: {
         main: 'index.html',

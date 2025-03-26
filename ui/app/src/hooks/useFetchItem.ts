@@ -16,19 +16,15 @@
 
 import { useEffect, useState } from 'react';
 import useActiveSiteId from './useActiveSiteId';
-import { fetchDetailedItem, fetchSandboxItem } from '../services/content';
-import { DetailedItem } from '../models/Item';
+import { fetchContentItem } from '../services/content';
+import { ContentItem } from '../models/Item';
 
-export function useFetchItem(path: string, detailed: boolean = false): DetailedItem {
+export function useFetchItem(path: string): ContentItem {
 	const [item, setItem] = useState(null);
 	const siteId = useActiveSiteId();
 	useEffect(() => {
-		if (detailed) {
-			fetchDetailedItem(siteId, path).subscribe(setItem);
-		} else {
-			fetchSandboxItem(siteId, path, { castAsDetailedItem: true }).subscribe(setItem);
-		}
-	}, [siteId, path, detailed]);
+		fetchContentItem(siteId, path).subscribe(setItem);
+	}, [siteId, path]);
 	return item;
 }
 

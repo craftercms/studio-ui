@@ -39,7 +39,7 @@ import { isItemLockedForMe, isLockedState } from '../../utils/content';
 import { useContentTypes } from '../../hooks/useContentTypes';
 import { useActiveUser } from '../../hooks/useActiveUser';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
-import { useDetailedItem } from '../../hooks/useDetailedItem';
+import { useContentItem } from '../../hooks/useContentItem';
 import { useReferences } from '../../hooks/useReferences';
 import { getHostToGuestBus } from '../../utils/subjects';
 import { reloadRequest } from '../../state/actions/preview';
@@ -53,7 +53,7 @@ import { writeConfiguration } from '../../services/configuration';
 export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps) {
 	const { path, onMinimize, onClose, mode, readonly, contentType, onFullScreen, onSuccess } = props;
 	const { open, isSubmitting } = useEnhancedDialogContext();
-	const item = useDetailedItem(path);
+	const item = useContentItem(path);
 	const site = useActiveSiteId();
 	const user = useActiveUser();
 	const [loading, setLoading] = useState(false);

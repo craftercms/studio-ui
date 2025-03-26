@@ -27,26 +27,25 @@ export function createFakeResource<T>(result: T): Resource<T> {
 }
 
 export function createResource<T>(factoryFn: () => Promise<T>): Resource<T> {
-	let result,
-		promise,
-		resource,
-		status = 'pending';
-	promise = factoryFn().then(
-		(response) => {
-			status = 'success';
-			result = response;
-		},
-		(error) => {
-			status = 'error';
-			result = error;
-		}
-	);
-	resource = {
+	let result: T;
+	let status: 'pending' | 'error' | 'success' = 'pending';
+	const resource: { complete: boolean; error: boolean; read(): T } = {
 		complete: false,
 		error: false,
 		read() {
 			if (status === 'pending') {
-				throw promise;
+				throw factoryFn().then(
+					(response) => {
+						status = 'success';
+						result = response;
+						return response;
+					},
+					(error) => {
+						status = 'error';
+						result = error;
+						return result;
+					}
+				);
 			} else if (status === 'error') {
 				resource.complete = true;
 				resource.error = true;
@@ -60,9 +59,9 @@ export function createResource<T>(factoryFn: () => Promise<T>): Resource<T> {
 	return resource;
 }
 
-export function createResourceBundle<T>(): [Resource<T>, (value?: unknown) => void, (reason?: any) => void] {
-	let resolve, reject;
-	let promise = new Promise<T>((resolvePromise, rejectPromise) => {
+export function createResourceBundle<T>(): [Resource<T>, (value?: T | Promise<T>) => void, (reason?: unknown) => void] {
+	let resolve: (value?: T | Promise<T>) => void, reject: (reason?: unknown) => void;
+	const promise = new Promise<T>((resolvePromise, rejectPromise) => {
 		resolve = resolvePromise;
 		reject = rejectPromise;
 	});

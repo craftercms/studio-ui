@@ -35,7 +35,7 @@
 						Configuration Issues
 					</dt>
 					<dd class="mt-2 text-base leading-7 text-gray-600 dark:text-gray-300">
-						Studio servers might be fronted by reverse proxies or load balancers, which are not proxying WebSockets correctly. Check with your system administrator to ensure the WebSocket protocol and socket URL are correctly configured and mapped. Examples of correctly configuring reverse proxies are in <a href="https://docs.craftercms.org" class="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300">the documentation</a>.
+						Studio servers might be fronted by reverse proxies or load balancers, which are not proxying WebSockets correctly. Check with your system administrator to ensure the WebSocket protocol and socket URL are correctly configured and mapped. Examples of correctly configuring reverse proxies are in <a href="https://craftercms.com/docs" class="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300">the documentation</a>.
 					</dd>
 				</div>
 			</dl>

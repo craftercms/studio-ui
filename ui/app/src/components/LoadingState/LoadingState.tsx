@@ -14,13 +14,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ElementType, PropsWithChildren, ReactNode } from 'react';
+import React, { ElementType, PropsWithChildren, ReactNode, useEffect, useState } from 'react';
 import Typography from '@mui/material/Typography';
 import Gears from '../Gears/Gears';
 import { PartialSxRecord } from '../../models';
-import Box, { BoxProps } from '@mui/material/Box';
-import { SystemStyleObject } from '@mui/system/styleFunctionSx/styleFunctionSx';
-import { Theme } from '@mui/material';
+import Box from '@mui/material/Box';
+import { SxProps } from '@mui/system';
+import { Theme } from '@mui/material/styles';
+import { consolidateSx } from '../../utils/system';
 
 type LoadingStateClassKey = 'root' | 'title' | 'subtitle' | 'graphic' | 'graphicRoot';
 
@@ -31,27 +32,38 @@ export interface LoadingStateProps {
 	graphicProps?: any;
 	classes?: Partial<Record<LoadingStateClassKey, string>>;
 	sxs?: PartialSxRecord<LoadingStateClassKey>;
-	sx?: BoxProps['sx'];
+	sx?: SxProps<Theme>;
+	revealTimeout?: number;
 }
 
 export type ConditionalLoadingStateProps = LoadingStateProps & PropsWithChildren<{ isLoading: boolean }>;
 
 export function LoadingState(props: LoadingStateProps) {
-	const { graphic: Graphic = Gears, classes, sxs } = props;
+	const { graphic: Graphic = Gears, classes, revealTimeout = 300, sxs } = props;
+	const [reveal, setReveal] = useState(revealTimeout === 0);
+	useEffect(() => {
+		const timeout = setTimeout(() => {
+			setReveal(true);
+		}, revealTimeout);
+		return () => clearTimeout(timeout);
+	}, [revealTimeout]);
 	return (
 		<Box
 			className={classes?.root}
-			sx={{
-				display: 'flex',
-				textAlign: 'center',
-				alignItems: 'center',
-				flexDirection: 'column',
-				justifyContent: 'center',
-				margin: (theme) => `${theme.spacing(2)} auto`,
-				minHeight: '100%',
-				...(props.sx as SystemStyleObject<Theme>),
-				...(sxs?.root as SystemStyleObject<Theme>)
-			}}
+			sx={consolidateSx(
+				{
+					display: 'flex',
+					textAlign: 'center',
+					alignItems: 'center',
+					flexDirection: 'column',
+					justifyContent: 'center',
+					margin: (theme) => `${theme.spacing(2)} auto`,
+					minHeight: '100%',
+					visibility: reveal ? undefined : 'hidden'
+				},
+				sxs?.root,
+				props.sx
+			)}
 		>
 			{props.title && (
 				<Typography

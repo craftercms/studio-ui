@@ -28,11 +28,15 @@ export function serialize(doc: Node): string {
 	return new XMLSerializer().serializeToString(doc);
 }
 
-interface BeautifyOptions {
+export interface BeautifyOptions {
 	tabWidth: number;
 	printWidth: number;
-	xmlWhitespaceSensitivity: 'ignore' | 'strict';
 	xmlSelfClosingSpace: boolean;
+	xmlWhitespaceSensitivity: 'strict' | 'preserve' | 'ignore';
+	xmlSortAttributesByKey: boolean;
+	xmlQuoteAttributes: 'preserve' | 'single' | 'double';
+	singleAttributePerLine: boolean;
+	bracketSameLine: boolean;
 }
 
 export function beautify(xml: string): Promise<string>;
@@ -41,10 +45,13 @@ export function beautify(xml: string, options?: Partial<BeautifyOptions>): Promi
 	return format(xml, {
 		tabWidth: 2,
 		printWidth: +Infinity,
+		// @prettier/plugin-xml v3.3.1 breaks xmlWhitespaceSensitivity behaviour: encoded entities started
+		// to get spaces in between the encoded `<`, `>`, and tag name, breaking the decoding.
+		// Setting xmlWhitespaceSensitivity to 'preserve' would prevent the issue, but it has consequences
+		// on the desired format result. See https://github.com/prettier/plugin-xml/issues/784.
 		xmlWhitespaceSensitivity: 'ignore',
 		xmlSelfClosingSpace: true,
 		...options,
-		// @ts-ignore
 		parser: 'xml',
 		plugins: [prettierXmlPlugin]
 	});
@@ -160,16 +167,19 @@ export function wrapElementInAuxDocument(element: Element): XMLDocument {
 	return fromString(`<?xml version="1.0" encoding="UTF-8"?>${element.outerHTML}`);
 }
 
+export const xmlDeclaration = '<?xml version="1.0" encoding="UTF-8"?>';
 export function newXMLDocument(rootTagName = 'root'): XMLDocument {
 	// With the document.implementation.createDocument, new elements then inserted into the xml document
-	// end up with an undesirable namespace and serialization looses the case, so sticking with creating from string.
-	return fromString(`<?xml version="1.0" encoding="UTF-8"?><${rootTagName} />`);
+	// end up with an undesirable namespace and serialization, loss of case, hence sticking with creating from string.
+	return fromString(`${xmlDeclaration}<${rootTagName} />`);
 }
 
+// Having this "factory" avoids repeatedly creating a document every time this method gets invoked.
+let elementFactory: XMLDocument;
 export function createElement(tagName: string): Element;
 export function createElement(tagName: string, options: ElementCreationOptions): Element;
 export function createElement(tagName: string, options?: ElementCreationOptions): Element {
-	return newXMLDocument().createElement(tagName, options);
+	return (elementFactory ?? (elementFactory = newXMLDocument())).createElement(tagName, options);
 }
 
 export function deserialize(xml: string): any;

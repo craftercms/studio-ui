@@ -29,7 +29,7 @@ import palette from '../../styles/palette';
 import DialogBody from '../DialogBody/DialogBody';
 import DialogHeader from '../DialogHeader';
 import SingleItemSelector from '../SingleItemSelector';
-import { DetailedItem } from '../../models/Item';
+import { ContentItem } from '../../models/Item';
 import ActionsBar from '../ActionsBar';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useUnmount } from '../../hooks/useUnmount';
@@ -132,8 +132,8 @@ interface ContentLocalizationDialogProps {
 	open: boolean;
 	locales: any;
 	rootPath: string;
-	item: DetailedItem;
-	onItemChange?(item: DetailedItem): void;
+	item: ContentItem;
+	onItemChange?(item: ContentItem): void;
 	onClose?(): void;
 	onClosed?(): void;
 }

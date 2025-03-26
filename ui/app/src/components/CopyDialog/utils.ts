@@ -16,12 +16,12 @@
 
 import StandardAction from '../../models/StandardAction';
 import { defineMessages } from 'react-intl';
-import { DetailedItem } from '../../models';
+import { ContentItem } from '../../models';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 
 export interface CopyDialogBaseProps {
 	site: string;
-	item: DetailedItem;
+	item: ContentItem;
 }
 
 export interface CopyDialogCallbacks {

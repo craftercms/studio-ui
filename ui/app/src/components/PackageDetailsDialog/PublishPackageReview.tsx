@@ -14,12 +14,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { PublishPackage, SandboxItem } from '../../models';
+import { PublishPackage, ContentItem } from '../../models';
 import { Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import Box from '@mui/material/Box';
 import { PersonAvatar } from '../DashletCard/dashletCommons';
-import { getPersonFullName } from '../SiteDashboard';
+import { getPersonFullName } from '../../utils/object';
 import ItemPublishingTargetIcon from '../ItemPublishingTargetIcon';
 import React from 'react';
 
@@ -62,7 +62,7 @@ export function PublishPackageReview(props: PublishPackageReviewProps) {
 				<FormattedMessage defaultMessage="Publishing Target" />
 			</Typography>
 			<Box sx={{ display: 'flex', alignItems: 'center', mb: 2, gap: 1 }}>
-				<ItemPublishingTargetIcon item={statusItems[publishPackage.target] as SandboxItem} />
+				<ItemPublishingTargetIcon item={statusItems[publishPackage.target] as ContentItem} />
 				<Typography variant="body1" component="span">
 					{publishPackage.target === 'live' ? (
 						<FormattedMessage defaultMessage="Live" />

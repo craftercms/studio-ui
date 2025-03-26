@@ -32,7 +32,6 @@ import { UNDEFINED } from '../../utils/constants';
 import { getInitials, toColor } from '../../utils/string';
 import Person from '../../models/Person';
 import Avatar from '@mui/material/Avatar';
-import { getPersonFullName } from '../SiteDashboard/utils';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { FormattedMessage } from 'react-intl';
@@ -45,6 +44,7 @@ import { showItemMegaMenu } from '../../state/actions/dialogs';
 import IconButton, { IconButtonProps } from '@mui/material/IconButton';
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
 import Tooltip from '@mui/material/Tooltip';
+import { getPersonFullName } from '../../utils/object';
 
 export const actionsToBeShown: AllItemActions[] = [
 	'edit',

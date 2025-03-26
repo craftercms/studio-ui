@@ -14,11 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
-import Box from '@mui/material/Box';
+import React, { CSSProperties } from 'react';
+import Box, { BoxProps } from '@mui/material/Box';
 import { nnou } from '../../utils/object';
 
+export type IFrameClassKey = 'iframe' | 'iframeWithBorder' | 'iframeWithBorderLandscape' | 'iframeWithBorderPortrait';
+
 interface IFrameProps {
+	sx?: BoxProps['sx'];
+	styles?: Partial<Record<IFrameClassKey, CSSProperties>>;
 	url: string;
 	title: string;
 	width?: string | number;
@@ -29,27 +33,31 @@ interface IFrameProps {
 }
 
 export function IFrame(props: IFrameProps) {
-	const { url, title, width, height, border, className, onLoadComplete } = props;
+	const { url, title, width, height, border, className, onLoadComplete, sx: sxProp } = props;
+	let sx: BoxProps['sx'] = [
+		{
+			width: '100%',
+			maxWidth: '100%',
+			border: 'none',
+			height: '100%',
+			transition: 'width .25s ease, height .25s ease'
+		},
+		nnou(border) && {
+			borderRadius: '20px',
+			borderColor: '#000',
+			borderStyle: 'solid',
+			borderWidth: border === 'landscape' ? '50px 10px' : '10px 50px'
+		}
+	];
+	if (sxProp) {
+		sx = sx.concat(sxProp);
+	}
 	return (
 		<Box
 			component="iframe"
 			style={{ width, height }}
 			className={className}
-			sx={[
-				{
-					width: '100%',
-					maxWidth: '100%',
-					border: 'none',
-					height: '100%',
-					transition: 'width .25s ease, height .25s ease'
-				},
-				nnou(border) && {
-					borderRadius: '20px',
-					borderColor: '#000',
-					borderStyle: 'solid',
-					borderWidth: border === 'landscape' ? '50px 10px' : '10px 50px'
-				}
-			]}
+			sx={sx}
 			title={title}
 			onLoad={onLoadComplete}
 			src={url || 'about:blank'}

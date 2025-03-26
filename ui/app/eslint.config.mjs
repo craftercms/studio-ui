@@ -26,61 +26,49 @@ import { FlatCompat } from '@eslint/eslintrc';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const compat = new FlatCompat({
-  baseDirectory: __dirname,
-  recommendedConfig: js.configs.recommended,
-  allConfig: js.configs.all
+	baseDirectory: __dirname,
+	recommendedConfig: js.configs.recommended,
+	allConfig: js.configs.all
 });
 
 export default [
-  {
-    ignores: ['**/dist', '**/build', '**/build_tsc', '**/target', '**/*.js', '**/*.mjs']
-  },
-  ...fixupConfigRules(
-    compat.extends(
-      'eslint:recommended',
-      'plugin:@typescript-eslint/recommended',
-      'plugin:react-hooks/recommended',
-      'plugin:prettier/recommended',
-      'prettier'
-    )
-  ).map((config) => ({
-    ...config,
-    files: ['**/*.ts', '**/*.tsx']
-  })),
-  {
-    files: ['**/*.ts', '**/*.tsx'],
-    plugins: {
-      'react-refresh': reactRefresh
-    },
-    languageOptions: {
-      globals: {
-        ...globals.browser
-      },
-
-      parser: tsParser
-    },
-    rules: {
-      'react-refresh/only-export-components': [
-        'warn',
-        {
-          allowConstantExport: true
-        }
-      ],
-      'prettier/prettier': ['error'],
-      'spaced-comment': [
-        'error',
-        'always',
-        {
-          line: {
-            markers: ['/', '#']
-          },
-          block: {
-            markers: ['!', '*', '#', 'function', 'const', 'if', 'export', 'interface', '#__PURE__', '@__PURE__'],
-            exceptions: ['!', '*', '#'],
-            balanced: false
-          }
-        }
-      ]
-    }
-  }
+	{ ignores: ['**/dist', '**/build', '**/build_tsc', '**/target', '**/*.js', '**/*.mjs'] },
+	...fixupConfigRules(
+		compat.extends(
+			'eslint:recommended',
+			'plugin:@typescript-eslint/recommended',
+			'plugin:react-hooks/recommended',
+			'plugin:prettier/recommended',
+			'prettier'
+		)
+	).map((config) => ({
+		...config,
+		files: ['**/*.ts', '**/*.tsx']
+	})),
+	{
+		files: ['**/*.ts', '**/*.tsx'],
+		plugins: { 'react-refresh': reactRefresh },
+		languageOptions: {
+			globals: { ...globals.browser },
+			parser: tsParser
+		},
+		rules: {
+			'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
+			'prettier/prettier': ['error'],
+			'spaced-comment': [
+				'error',
+				'always',
+				{
+					line: { markers: ['/', '#'] },
+					block: {
+						markers: ['!', '*', '#', 'function', 'const', 'if', 'export', 'interface', '#__PURE__', '@__PURE__'],
+						exceptions: ['!', '*', '#'],
+						balanced: false
+					}
+				}
+			],
+			// Enable the TypeScript-specific rule with allowShortCircuit option
+			'@typescript-eslint/no-unused-expressions': ['error', { allowShortCircuit: true }]
+		}
+	}
 ];

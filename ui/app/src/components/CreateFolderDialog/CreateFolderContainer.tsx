@@ -18,9 +18,9 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { DetailedItem, SandboxItem } from '../../models/Item';
+import { ContentItem } from '../../models/Item';
 import { getParentPath, getRootPath, withoutIndex } from '../../utils/path';
-import { createFolder, fetchSandboxItem, renameFolder } from '../../services/content';
+import { checkPathExistence, createFolder, renameFolder } from '../../services/content';
 import { batchActions } from '../../state/actions/misc';
 import { updateCreateFolderDialog } from '../../state/actions/dialogs';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
@@ -40,6 +40,13 @@ import { useEnhancedDialogContext } from '../EnhancedDialog';
 import { applyFolderNameRules, lookupItemByPath } from '../../utils/content';
 import { useFetchItem } from '../../hooks/useFetchItem';
 import ApiResponse from '../../models/ApiResponse';
+import FolderMoveAlert from '../FolderMoveAlert/FolderMoveAlert';
+import Alert from '@mui/material/Alert';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+import Typography from '@mui/material/Typography';
+import { cancelPackages, fetchAffectedPackages } from '../../services/workflow';
+import { switchMap, map } from 'rxjs/operators';
 
 export function CreateFolderContainer(props: CreateFolderContainerProps) {
 	const { onClose, onCreated, onRenamed, rename = false, value = '', allowBraces = false } = props;
@@ -50,13 +57,13 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
 	const site = useActiveSiteId();
 	const { formatMessage } = useIntl();
 	const [openSelector, setOpenSelector] = useState(false);
-	const [selectedItem, setSelectedItem] = useState<DetailedItem>(null);
+	const [selectedItem, setSelectedItem] = useState<ContentItem>(null);
 	const path = useMemo(() => {
 		return selectedItem ? withoutIndex(selectedItem.path) : withoutIndex(props.path);
 	}, [props.path, selectedItem]);
-	// When folder name changes, path prop will still be the previous one, and useDetailedItem will try to re-fetch the
+	// When folder name changes, path prop will still be the previous one, and useFetchItem will try to re-fetch the
 	// non-existing item (old folder name path), so we will only re-fetch when the actual path prop of the component
-	// changes (useDetailedItemNoState).
+	// changes.
 	const item = useFetchItem(path);
 	const itemLookupTable = useItemsByPath();
 	const newFolderPath = `${rename ? getParentPath(path) : path}/${name}`;
@@ -66,23 +73,48 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
 	const folderExists = rename
 		? name !== value && (itemExists || lookupItemByPath(newFolderPath, itemLookupTable) !== UNDEFINED)
 		: itemExists || lookupItemByPath(newFolderPath, itemLookupTable) !== UNDEFINED;
-	const isValid = !isBlank(name) && !folderExists && (!rename || name !== value);
+	const [moveFolderAck, setMoveFolderAck] = useState(false);
+	const [fetchingAffectedPackages, setFetchingAffectedPackages] = useState(false);
+	const [packagesInWorkflow, setPackagesInWorkflow] = useState(undefined);
+	const containsItemsInWorkflow = packagesInWorkflow?.length > 0;
+	const [cancelPackagesAck, setCancelPackagesAck] = useState(false);
+	const isValid =
+		!isBlank(name) &&
+		!folderExists &&
+		(!rename ||
+			(name !== value &&
+				moveFolderAck &&
+				!fetchingAffectedPackages &&
+				(!containsItemsInWorkflow || cancelPackagesAck)));
 
 	useEffect(() => {
-		if (item && rename === false) {
-			setSelectedItem(item);
-		}
+		if (item && rename === false) setSelectedItem(item);
 	}, [item, rename]);
 
+	useEffect(() => {
+		if (!rename) {
+			setPackagesInWorkflow(undefined);
+			return;
+		}
+		// If renaming, check if the folder contains items in workflow
+		setFetchingAffectedPackages(true);
+		fetchAffectedPackages(site, path, true).subscribe({
+			next(packages) {
+				setFetchingAffectedPackages(false);
+				setPackagesInWorkflow(packages);
+			},
+			error() {
+				setFetchingAffectedPackages(false);
+			}
+		});
+	}, [path, rename, site]);
+
+	const onMoveFolderAckChange = (e: React.ChangeEvent<HTMLInputElement>) => setMoveFolderAck(e.target.checked);
+
+	const onCancelPackagesAckChange = (e: React.ChangeEvent<HTMLInputElement>) => setCancelPackagesAck(e.target.checked);
+
 	const onError = (error: ApiResponse) => {
-		dispatch(
-			batchActions([
-				showErrorDialog({ error }),
-				updateCreateFolderDialog({
-					isSubmitting: false
-				})
-			])
-		);
+		dispatch(batchActions([showErrorDialog({ error }), updateCreateFolderDialog({ isSubmitting: false })]));
 	};
 
 	const onRenameFolder = (site: string, path: string, name: string) => {
@@ -106,47 +138,53 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
 	};
 
 	const onSubmit = () => {
+		if (!name) return;
 		dispatch(updateCreateFolderDialog({ isSubmitting: true }));
-		if (name) {
-			const parentPath = rename ? getParentPath(path) : path;
-			validateActionPolicy(site, {
-				type: rename ? 'RENAME' : 'CREATE',
-				target: `${parentPath}/${name}`
-			}).subscribe({
-				next: ({ allowed, modifiedValue, message }) => {
-					if (allowed) {
-						const pathToCheckExists = modifiedValue ?? `${parentPath}/${name}`;
-						setItemExists(false);
-						fetchSandboxItem(site, pathToCheckExists).subscribe({
-							next: (item) => {
-								if (item) {
-									setItemExists(true);
-									dispatch(updateCreateFolderDialog({ isSubmitting: false }));
-								} else {
-									if (modifiedValue) {
-										setConfirm({ body: message });
-									} else {
-										if (rename) {
-											onRenameFolder(site, path, name);
-										} else {
-											onCreateFolder(site, path, name);
-										}
-									}
-								}
-							},
-							error: onError
-						});
-					} else {
+		const parentPath = rename ? getParentPath(path) : path;
+		validateActionPolicy(site, { type: rename ? 'RENAME' : 'CREATE', target: `${parentPath}/${name}` })
+			.pipe(
+				switchMap((validationResult) => {
+					const { allowed, modifiedValue, message } = validationResult;
+					if (!allowed) {
 						setConfirm({
 							error: true,
 							body: formatMessage(translations.policyError, { fileName: name, detail: message })
 						});
 						dispatch(updateCreateFolderDialog({ isSubmitting: false }));
+						return [];
 					}
+					const pathToCheckExists = modifiedValue ?? `${parentPath}/${name}`;
+					setItemExists(false);
+					return checkPathExistence(site, pathToCheckExists).pipe(map((exists) => [validationResult, exists]));
+				})
+			)
+			.subscribe({
+				next([{ modifiedValue, message }, exists]) {
+					// Note: Block of guard statements (each if ends function)
+					if (exists) {
+						setItemExists(true);
+						dispatch(updateCreateFolderDialog({ isSubmitting: false }));
+						return;
+					} else if (modifiedValue) {
+						setConfirm({ body: message });
+						return;
+					} else if (!rename) {
+						onCreateFolder(site, path, name);
+						return;
+					} else if (!containsItemsInWorkflow) {
+						onRenameFolder(site, path, name);
+						return;
+					}
+					// Note: By this point, is a rename and containsItemsInWorkflow
+					const packageIds: number[] = packagesInWorkflow.map((pkg) => pkg.id);
+					// TODO: Correct comment generation
+					cancelPackages(site, { packageIds, comment: `Cancel packages to rename folder "${path}"` }).subscribe({
+						next: () => onRenameFolder(site, path, name),
+						error: onError
+					});
 				},
 				error: onError
 			});
-		}
 	};
 
 	const onConfirm = () => {
@@ -170,7 +208,7 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
 			dispatch(updateCreateFolderDialog({ hasPendingChanges: newHasPendingChanges }));
 	};
 
-	const itemSelectorFilterChildren = useMemo(() => (item: SandboxItem) => item.availableActionsMap.createFolder, []);
+	const itemSelectorFilterChildren = useMemo(() => (item: ContentItem) => item.availableActionsMap.createFolder, []);
 
 	const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
 
@@ -237,13 +275,27 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
 						}}
 						onChange={(event) => onInputChanges(applyFolderNameRules(event.target.value, { allowBraces }))}
 					/>
+					{rename && containsItemsInWorkflow && (
+						<Alert severity="warning" icon={false} sx={{ mb: 1 }}>
+							<FormControlLabel
+								disableTypography
+								control={<Checkbox onChange={onCancelPackagesAckChange} />}
+								label={
+									<Typography>
+										<FormattedMessage defaultMessage="The folder contains items which take part in one or more publishing packages. Renaming it will cancel the packages." />
+									</Typography>
+								}
+							/>
+						</Alert>
+					)}
+					{rename && <FolderMoveAlert initialExpanded checked={moveFolderAck} onChange={onMoveFolderAckChange} />}
 				</form>
 			</DialogBody>
 			<DialogFooter>
 				<SecondaryButton onClick={onCloseButtonClick} disabled={isSubmitting}>
 					<FormattedMessage id="words.cancel" defaultMessage="Cancel" />
 				</SecondaryButton>
-				<PrimaryButton onClick={onSubmit} disabled={isSubmitting || !isValid} loading={isSubmitting}>
+				<PrimaryButton onClick={onSubmit} disabled={!isValid} loading={isSubmitting}>
 					{rename ? (
 						<FormattedMessage id="words.rename" defaultMessage="Rename" />
 					) : (

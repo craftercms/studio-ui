@@ -15,15 +15,16 @@
  */
 
 import * as React from 'react';
-import { ReactNode, useMemo } from 'react';
+import { ReactNode, useMemo, useRef } from 'react';
 import { useOnClose } from '../../hooks/useOnClose';
 import MuiDialog, { DialogProps as MuiDialogProps } from '@mui/material/Dialog';
 import { useUnmount } from '../../hooks/useUnmount';
 import DialogHeader, { DialogHeaderProps } from '../DialogHeader';
 import MinimizedBar from '../MinimizedBar';
-import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
-import { EnhancedDialogContext } from './useEnhancedDialogContext';
+import { EnhancedDialogState, onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
+import { EnhancedDialogContext, EnhancedDialogContextProps } from './useEnhancedDialogContext';
 import Suspencified from '../Suspencified';
+import useUpdateRefs from '../../hooks/useUpdateRefs';
 
 export interface EnhancedDialogProps extends Omit<MuiDialogProps, 'title'>, EnhancedDialogState {
 	title?: ReactNode;
@@ -34,6 +35,7 @@ export interface EnhancedDialogProps extends Omit<MuiDialogProps, 'title'>, Enha
 	onFullScreen?(): void;
 	onCancelFullScreen?(): void;
 	onWithPendingChangesCloseRequest?: MuiDialogProps['onClose'];
+	updateSubmittingOrHasPendingChanges?(changes: onSubmittingAndOrPendingChangeProps): void;
 	omitHeader?: boolean;
 	dialogHeaderProps?: Partial<DialogHeaderProps>;
 }
@@ -53,6 +55,7 @@ export function EnhancedDialog(props: EnhancedDialogProps) {
 		onMinimize,
 		onMaximize,
 		onWithPendingChangesCloseRequest,
+		updateSubmittingOrHasPendingChanges,
 		children,
 		dialogHeaderProps,
 		omitHeader = false,
@@ -72,13 +75,26 @@ export function EnhancedDialog(props: EnhancedDialogProps) {
 		disableBackdropClick: isSubmitting,
 		disableEscapeKeyDown: isSubmitting
 	});
-	const context = useMemo<EnhancedDialogState>(
+	const callbackRefs = useUpdateRefs({ onClose, updateSubmittingOrHasPendingChanges });
+	const stableRefs = useRef({
+		// When context is recreated, `stableRefs` remain stable and won't trigger
+		// effects or have closure issues on the consumer components.
+		onClose(e, reason) {
+			callbackRefs.current.onClose?.(e, reason);
+		},
+		updateSubmittingOrHasPendingChanges(changes: onSubmittingAndOrPendingChangeProps) {
+			callbackRefs.current.updateSubmittingOrHasPendingChanges?.(changes);
+		}
+	});
+	const context = useMemo<EnhancedDialogContextProps>(
 		() => ({
 			open,
 			isMinimized,
 			isFullScreen,
 			isSubmitting,
-			hasPendingChanges
+			hasPendingChanges,
+			onClose: stableRefs.current.onClose,
+			updateSubmittingOrHasPendingChanges: stableRefs.current.updateSubmittingOrHasPendingChanges
 		}),
 		[hasPendingChanges, isFullScreen, isMinimized, isSubmitting, open]
 	);

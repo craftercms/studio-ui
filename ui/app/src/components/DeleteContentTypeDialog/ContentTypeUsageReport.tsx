@@ -22,12 +22,12 @@ import Typography from '@mui/material/Typography';
 import * as React from 'react';
 import { ReactNode } from 'react';
 import { FetchContentTypeUsageResponse } from '../../services/contentTypes';
-import { SandboxItem } from '../../models/Item';
+import { ContentItem } from '../../models/Item';
 
 type ContentTypeUsageReportClassKey = 'listHeader' | 'listItem';
 
 export interface ContentTypeUsageReportProps {
-	entries: Array<[keyof FetchContentTypeUsageResponse, SandboxItem[]]>;
+	entries: Array<[keyof FetchContentTypeUsageResponse, ContentItem[]]>;
 	classes?: Partial<Record<ContentTypeUsageReportClassKey, string>>;
 	messages: {
 		templates: ReactNode;

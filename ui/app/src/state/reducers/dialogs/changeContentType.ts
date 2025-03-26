@@ -27,10 +27,8 @@ const initialState: ChangeContentTypeDialogStateProps = {
 	isSubmitting: null,
 	isMinimized: null,
 	hasPendingChanges: null,
-	compact: false,
-	item: null,
-	rootPath: '/site/website',
-	selectedContentType: null
+	initialCompact: false,
+	item: null
 };
 
 export default createReducer<ChangeContentTypeDialogStateProps>(initialState, (builder) => {
@@ -39,7 +37,6 @@ export default createReducer<ChangeContentTypeDialogStateProps>(initialState, (b
 			...state,
 			onClose: closeChangeContentTypeDialog(),
 			onClosed: changeContentTypeDialogClosed(),
-			onDismiss: closeChangeContentTypeDialog(),
 			...(payload as Partial<ChangeContentTypeDialogStateProps>),
 			open: true
 		}))

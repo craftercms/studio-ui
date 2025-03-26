@@ -17,7 +17,7 @@
 import { get, postJSON } from '../utils/ajax';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { LegacyItem } from '../models/Item';
+import { LegacyItem, LightItem } from '../models/Item';
 import { pluckProps, toQueryString } from '../utils/object';
 import {
 	PublishingItem,
@@ -111,10 +111,10 @@ export function publish(siteId: string, data: PublishParams): Observable<string>
 }
 
 export interface CalculatedPackageResponse {
-	hardDependencies: string[];
-	softDependencies: string[];
+	hardDependencies: LightItem[];
+	softDependencies: LightItem[];
 	deletedItems: string[];
-	items: string[];
+	items: LightItem[];
 }
 
 export function calculatePackage(

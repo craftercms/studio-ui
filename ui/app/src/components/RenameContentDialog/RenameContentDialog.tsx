@@ -17,14 +17,14 @@
 import { EnhancedDialog, EnhancedDialogProps } from '../EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
 import React, { useEffect, useState } from 'react';
-import { DetailedItem } from '../../models';
 import RenameContentDialogContainer from './RenameContentDialogContainer';
 import { fetchDependant } from '../../services/dependencies';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
-import { parseLegacyItemToDetailedItem } from '../../utils/content';
+import { parseLegacyItemToContentItem } from '../../utils/content';
 import useWithPendingChangesCloseRequest from '../../hooks/useWithPendingChangesCloseRequest';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 import { ensureSingleSlash, isBlank } from '../../utils/string';
+import { ContentItem } from '../../models';
 
 export interface RenameContentDialogProps extends EnhancedDialogProps {
 	path: string;
@@ -35,7 +35,7 @@ export interface RenameContentDialogProps extends EnhancedDialogProps {
 
 export function RenameContentDialog(props: RenameContentDialogProps) {
 	const { path, value, onRenamed, onSubmittingAndOrPendingChange, ...dialogProps } = props;
-	const [dependantItems, setDependantItems] = useState<DetailedItem[]>(null);
+	const [dependantItems, setDependantItems] = useState<ContentItem[]>(null);
 	const [fetchingDependantItems, setFetchingDependantItems] = useState(false);
 	const [error, setError] = useState(null);
 	const siteId = useActiveSiteId();
@@ -46,7 +46,7 @@ export function RenameContentDialog(props: RenameContentDialogProps) {
 			setFetchingDependantItems(true);
 			fetchDependant(siteId, ensureSingleSlash(`${path}/${value}`)).subscribe({
 				next: (response) => {
-					const dependants = parseLegacyItemToDetailedItem(response);
+					const dependants = parseLegacyItemToContentItem(response);
 					setDependantItems(dependants);
 					setFetchingDependantItems(false);
 				},

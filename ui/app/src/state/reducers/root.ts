@@ -30,6 +30,7 @@ import uiConfig from './uiConfig';
 import dashboard from './dashboard';
 import globalNavigation from './globalNavigation';
 import { combineReducers } from 'redux';
+import dialogStack from './dialogStack';
 
 const reducer = combineReducers({
 	auth,
@@ -40,6 +41,7 @@ const reducer = combineReducers({
 	previewNavigation,
 	contentTypes,
 	dialogs,
+	dialogStack,
 	versions,
 	content,
 	pathNavigator,

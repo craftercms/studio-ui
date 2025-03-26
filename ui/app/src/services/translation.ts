@@ -17,12 +17,12 @@
 import { forkJoin, Observable, Observer } from 'rxjs';
 import { get, postJSON } from '../utils/ajax';
 import { map } from 'rxjs/operators';
-import { fetchSandboxItem } from './content';
+import { fetchContentItem } from './content';
 import TranslationConfig from '../models/TranslationConfig';
 
 export function fetchItemLocales(site: string, path: string): Observable<any> {
 	return forkJoin({
-		item: fetchSandboxItem(site, path),
+		item: fetchContentItem(site, path),
 		locales: fetchTargetLocales(site, path)
 	}).pipe(
 		map(({ item, locales }) => ({

@@ -19,6 +19,7 @@ import { LookupTable } from '../models/LookupTable';
 import { MutableRefObject } from 'react';
 import { EntityState } from '../models/EntityState';
 import queryString, { StringifyOptions } from 'query-string';
+import Person from '../models/Person';
 
 export function pluckProps<T extends object, K extends keyof T>(
 	source: T,
@@ -74,6 +75,19 @@ export function createLookupTable<T>(list: T[], idProp: string = 'id'): LookupTa
 		table[retrieveProperty(item as any, idProp)] = item;
 	});
 	return table;
+}
+
+/**
+ * { K: V } => { V: K }
+ **/
+export function reverseLookupTable<K extends string | number | symbol, V extends string | number | symbol>(
+	original: Record<K, V>
+): Record<V, K> {
+	const reversed = {} as Record<V, K>;
+	Object.entries(original ?? {}).forEach(([key, value]) => {
+		reversed[value as V] = key as K;
+	});
+	return reversed;
 }
 
 export function flattenHierarchical<T>(root: T | T[], childrenProp = 'children'): T[] {
@@ -265,9 +279,9 @@ export function deepCopy<T extends object = any>(target: T): T {
 	return JSON.parse(JSON.stringify(target));
 }
 
-export const foo = {};
+export const immutableEmptyObject = Object.freeze({});
 
-export const fooFn = () => undefined;
+export const noOp = Object.freeze(() => undefined);
 
 export function isApiResponse(source: object): boolean {
 	source = source ?? {};
@@ -283,4 +297,32 @@ export function isAjaxError(source: object): boolean {
 		Object.prototype.hasOwnProperty.call(source, 'status') &&
 		Object.prototype.hasOwnProperty.call(source, 'name')
 	);
+}
+
+export function prettyPrintPerson(
+	person: Person,
+	format: 'username' | 'name' | 'fullName' | 'firstInitial+last' = 'fullName'
+): { display: string; tooltip: string } {
+	let display;
+	const tooltip = `"${person.firstName} ${person.lastName}"<${person.username}>`;
+	switch (format) {
+		case 'username':
+			display = person.username;
+			break;
+		case 'firstInitial+last':
+			display = `${person.firstName[0]}. ${person.lastName}`;
+			break;
+		case 'fullName':
+			display = getPersonFullName(person);
+			break;
+		case 'name':
+		default:
+			display = person.firstName;
+			break;
+	}
+	return { display, tooltip };
+}
+
+export function getPersonFullName(person: Person): string {
+	return `${person.firstName} ${person.lastName}`;
 }
