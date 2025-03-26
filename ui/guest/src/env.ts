@@ -21,16 +21,4 @@ declare global {
     tinymce: any;
     ace: AceAjax.Ace;
   }
-  type CrafterCMSCustomElementProps = React.DetailedHTMLProps<
-    Omit<React.HTMLAttributes<HTMLDivElement>, 'className'> & { class?: string },
-    HTMLDivElement
-  >;
-  namespace JSX {
-    interface IntrinsicElements {
-      'craftercms-zone-marker': CrafterCMSCustomElementProps;
-      'craftercms-asset-uploader-mask-container': CrafterCMSCustomElementProps;
-      'craftercms-asset-uploader-mask': CrafterCMSCustomElementProps;
-      'craftercms-field-instance-switcher': CrafterCMSCustomElementProps;
-    }
-  }
 }

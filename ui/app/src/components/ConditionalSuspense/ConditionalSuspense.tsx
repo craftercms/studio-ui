@@ -22,9 +22,9 @@ export type ConditionalSuspenseProps = PropsWithChildren<{
   fallback?: ReactNode;
 }>;
 
-export function ConditionalSuspense(props: ConditionalSuspenseProps): JSX.Element {
+export function ConditionalSuspense(props: ConditionalSuspenseProps): ReactJSXElement {
   const { children, isLoading, fallback = <LoadingState /> } = props;
-  return (isLoading ? fallback : children) as JSX.Element;
+  return (isLoading ? fallback : children) as ReactJSXElement;
 }
 
 export default ConditionalSuspense;

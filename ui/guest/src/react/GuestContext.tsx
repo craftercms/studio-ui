@@ -65,7 +65,7 @@ export function useIsAuthoring(): boolean {
   return Boolean(context?.editMode && context.hasHost);
 }
 
-export function GuestContextProvider(props): JSX.Element {
+export function GuestContextProvider(props): ReactJSXElement {
   const value = useMemo(() => props.value, [props.value]);
   return <GuestContext.Provider {...props} value={value} />;
 }

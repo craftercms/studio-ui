@@ -42,7 +42,7 @@ interface PluginCardProps {
   inUse?: boolean;
   usePermission?: boolean;
   beingInstalled?: boolean;
-  useLabel?: string | JSX.Element;
+  useLabel?: string | ReactJSXElement;
   disableCardActionClick?: boolean;
   onPluginSelected(plugin: MarketplacePlugin, view: number): any;
   onDetails(plugin: MarketplacePlugin, index?: number): any;

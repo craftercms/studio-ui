@@ -34,11 +34,8 @@ export function AssetUploaderMask(props: AssetUploaderMaskProps) {
   }, [rect]);
 
   return (
-    // @ts-expect-error craftercms-asset-uploader-mask-container does not exist on type JSX.IntrinsicElements
     <craftercms-asset-uploader-mask-container style={zoneStyle}>
-      {/* @ts-expect-error craftercms-asset-uploader-mask does not exist on type JSX.IntrinsicElements */}
       <craftercms-asset-uploader-mask style={{ height: `${100 - progress}%` }} />
-      {/* @ts-expect-error craftercms-asset-uploader-mask-container does not exist on type JSX.IntrinsicElements */}
     </craftercms-asset-uploader-mask-container>
   );
 }

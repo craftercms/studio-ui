@@ -123,5 +123,5 @@ export default EnhancedDialog;
 
 function OnClosedInvoker({ onClosed }: { onClosed }) {
   useUnmount(onClosed);
-  return null as JSX.Element;
+  return null as ReactJSXElement;
 }

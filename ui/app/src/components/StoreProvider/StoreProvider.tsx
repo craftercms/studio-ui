@@ -23,8 +23,8 @@ type StoreProviderPropsA = PropsWithChildren<{ resource: Resource<CrafterCMSStor
 type StoreProviderPropsB = PropsWithChildren<{ store: CrafterCMSStore }>;
 export type StoreProviderProps = StoreProviderPropsA | StoreProviderPropsB;
 
-export function StoreProvider(props: StoreProviderPropsA): JSX.Element;
-export function StoreProvider(props: StoreProviderPropsB): JSX.Element;
+export function StoreProvider(props: StoreProviderPropsA): ReactJSXElement;
+export function StoreProvider(props: StoreProviderPropsB): ReactJSXElement;
 export function StoreProvider(
   props: PropsWithChildren<{ store?: CrafterCMSStore; resource?: Resource<CrafterCMSStore> }>
 ) {

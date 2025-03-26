@@ -171,7 +171,7 @@ interface PluginDetailsViewProps {
   selectedImageSlideIndex?: number;
   changeImageSlideInterval?: number;
   isMarketplacePlugin?: boolean;
-  useLabel?: string | JSX.Element;
+  useLabel?: string | ReactJSXElement;
   usePermission?: boolean;
   inUse?: boolean;
   beingInstalled?: boolean;

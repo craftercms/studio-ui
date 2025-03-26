@@ -34,7 +34,7 @@ export function CrafterCMSPortal(props: CrafterCMSPortalProps) {
     };
   }, []);
 
-  return createPortal(props.children, portalRef.current) as JSX.Element;
+  return createPortal(props.children, portalRef.current) as ReactJSXElement;
 }
 
 export default CrafterCMSPortal;

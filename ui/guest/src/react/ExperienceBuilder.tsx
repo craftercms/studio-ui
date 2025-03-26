@@ -733,9 +733,9 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
   );
 }
 
-export function ExperienceBuilder(props: GenericXBProps<{ model: ContentInstance }>): JSX.Element;
-export function ExperienceBuilder(props: GenericXBProps<{ path: string }>): JSX.Element;
-export function ExperienceBuilder(props: ExperienceBuilderProps): JSX.Element {
+export function ExperienceBuilder(props: GenericXBProps<{ model: ContentInstance }>): ReactJSXElement;
+export function ExperienceBuilder(props: GenericXBProps<{ path: string }>): ReactJSXElement;
+export function ExperienceBuilder(props: ExperienceBuilderProps): ReactJSXElement{
   let { children, isAuthoring = false, path, model } = props as CompleteGuestProps;
   let store = useMemo(() => isAuthoring && createGuestStore(), [isAuthoring]);
   path = path || prop(model, 'path');
@@ -744,7 +744,7 @@ export function ExperienceBuilder(props: ExperienceBuilderProps): JSX.Element {
       <ExperienceBuilderInternal {...props} path={path} />
     </Provider>
   ) : (
-    (children as JSX.Element)
+    (children as ReactJSXElement)
   );
 }
 
