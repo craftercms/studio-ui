@@ -36,7 +36,6 @@ import { showErrorDialog } from '../reducers/dialogs/error';
 import { getFileNameFromPath, getParentPath } from '../../utils/path';
 import { popPiece } from '../../utils/string';
 import { associateTemplate } from '../actions/preview';
-import { isInActiveWorkflow } from '../../utils/content';
 
 const epics = [
 	(action$, state$: Observable<GlobalState>) =>
@@ -93,27 +92,15 @@ const epics = [
 					of(blockUI({ message: getIntl().formatMessage(translations.verifyingAffectedWorkflows) })),
 					fetchContentItem(state.sites.active, path).pipe(
 						map((item) =>
-							isInActiveWorkflow(item)
-								? batchActions([
-										showViewPackagesDialog({
-											item,
-											onContinue: showCodeEditorDialog({
-												path,
-												mode,
-												contentType
-											})
-										}),
-										unblockUI()
-									])
-								: batchActions([
-										showCodeEditorDialog({
-											site: state.sites.active,
-											path,
-											mode,
-											contentType
-										}),
-										unblockUI()
-									])
+							batchActions([
+								showCodeEditorDialog({
+									site: state.sites.active,
+									path,
+									mode,
+									contentType
+								}),
+								unblockUI()
+							])
 						),
 						catchError(({ response }) => {
 							if (response.response.code === 7000) {

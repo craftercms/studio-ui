@@ -2203,86 +2203,33 @@ var nodeOpen = false,
         var CSA = CStudioAuthoring,
           uri = path.replace('//', '/'),
           params = { site: site || CStudioAuthoringContext.site, path: path };
-        function doEdit() {
-          if (uri.indexOf('/site') === 0) {
-            CSA.Operations.openContentWebForm(
-              formId,
-              path,
-              nodeRef,
-              path,
-              true,
-              asPopup,
-              callback,
-              auxParams,
-              isFlattenedInclude
-            );
-          } else if (CStudioAuthoring.Utils.isEditableFormAsset(mimeType)) {
-            CStudioAuthoring.Operations.openCodeEditor({
-              path: uri,
-              mode: CrafterCMSNext.util.content.getEditorMode(mimeType),
-              onSuccess: () => {
-                if (CStudioAuthoringContext.isPreview) {
-                  CStudioAuthoring.Operations.refreshPreview();
-                } else {
-                  CStudioAuthoring.SelectedContent.init();
-                }
-                callback.success && callback.success(nodeRef);
+        
+        if (uri.indexOf('/site') === 0) {
+          CSA.Operations.openContentWebForm(
+            formId,
+            path,
+            nodeRef,
+            path,
+            true,
+            asPopup,
+            callback,
+            auxParams,
+            isFlattenedInclude
+          );
+        } else if (CStudioAuthoring.Utils.isEditableFormAsset(mimeType)) {
+          CStudioAuthoring.Operations.openCodeEditor({
+            path: uri,
+            mode: CrafterCMSNext.util.content.getEditorMode(mimeType),
+            onSuccess: () => {
+              if (CStudioAuthoringContext.isPreview) {
+                CStudioAuthoring.Operations.refreshPreview();
+              } else {
+                CStudioAuthoring.SelectedContent.init();
               }
-            });
-          }
-        }
-        craftercms.getStore().dispatch({ type: 'BLOCK_UI' });
-        CrafterCMSNext.services.content.fetchWorkflowAffectedItems(params.site, params.path).subscribe({
-          next: (items) => {
-            craftercms.getStore().dispatch({ type: 'UNBLOCK_UI' });
-            if (items && items.length) {
-              const eventIdSuccess = 'workflowCancellationDialogContinue';
-              const eventIdCancel = 'workflowCancellationDialogCancel';
-              let unsubscribe, cancelUnsubscribe;
-              unsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, () => {
-                doEdit();
-                cancelUnsubscribe();
-              });
-              cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdCancel, () => {
-                unsubscribe();
-              });
-              CrafterCMSNext.system.store.dispatch({
-                type: 'SHOW_WORKFLOW_CANCELLATION_DIALOG',
-                payload: {
-                  items,
-                  onContinue: {
-                    type: 'BATCH_ACTIONS',
-                    payload: [
-                      {
-                        type: 'DISPATCH_DOM_EVENT',
-                        payload: { id: eventIdSuccess }
-                      },
-                      { type: 'CLOSE_WORKFLOW_CANCELLATION_DIALOG' }
-                    ]
-                  },
-                  onClosed: {
-                    type: 'BATCH_ACTIONS',
-                    payload: [
-                      {
-                        type: 'DISPATCH_DOM_EVENT',
-                        payload: { id: eventIdCancel }
-                      },
-                      { type: 'WORKFLOW_CANCELLATION_DIALOG_CLOSED' }
-                    ]
-                  }
-                }
-              });
-            } else {
-              doEdit();
+              callback.success && callback.success(nodeRef);
             }
-          },
-          error(error) {
-            CrafterCMSNext.system.store.dispatch({
-              type: 'CLOSE_WORKFLOW_CANCELLATION_DIALOG'
-            });
-            callback.failure(error);
-          }
-        });
+          });
+        }
       },
 
       /**

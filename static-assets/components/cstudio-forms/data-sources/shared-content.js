@@ -286,11 +286,7 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
 					readonly || !sandboxItem.availableActionsMap.edit
 						? CStudioAuthoring.Operations.viewContent
 						: CStudioAuthoring.Operations.editContent;
-				// CStudioAuthoring.Operations.editContent shows the UI blocker too, so no point
-				// hiding it yet in the case of an edit.
-				if (action === CStudioAuthoring.Operations.viewContent) {
-					craftercms.getStore().dispatch({ type: 'UNBLOCK_UI' });
-				}
+				craftercms.getStore().dispatch({ type: 'UNBLOCK_UI' });
 				action(
 					sandboxItem.contentTypeId,
 					CStudioAuthoringContext.siteId,
