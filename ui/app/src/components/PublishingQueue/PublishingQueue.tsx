@@ -44,7 +44,6 @@ import { LoadingState } from '../LoadingState';
 
 const messages = defineMessages({
   selectAll: {
-    id: 'publishingDashboard.selectAll',
     defaultMessage: 'Select all on this page'
   },
   cancelSelected: {
