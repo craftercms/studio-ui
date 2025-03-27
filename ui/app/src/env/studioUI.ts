@@ -132,6 +132,7 @@ export const components = {
   ErrorState: lazy(() => import('../components/ErrorState')),
   ExpiringDashlet: lazy(() => import('../components/ExpiringDashlet')),
   FolderBrowserTreeView: lazy(() => import('../components/FolderBrowserTreeView')),
+  FolderMoveAlert: lazy(() => import('../components/FolderMoveAlert')),
   FormEngineControls: lazy(() => import('../components/FormEngineControls')),
   Gears: lazy(() => import('../components/Gears')),
   GitAuthForm: lazy(() => import('../components/GitAuthForm')),
