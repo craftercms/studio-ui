@@ -59,7 +59,7 @@
 		"@emotion/react": "^11.14.0",
 		"@emotion/styled": "^11.14.0",
 		"@mui/icons-material": "^6.4.6",
-		"@mui/material": "^6.4.6",
+		"@mui/material": "^7.0.0",
 		"@reduxjs/toolkit": "^2.6.0",
 		"@rollup/plugin-alias": "^5.1.1",
 		"@types/react-dom": "^19.0.4",
