@@ -14,7 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-interface Window {
-  tinymce: any;
-  ace: AceAjax.Ace;
+import { type TinyMCE } from 'tinymce';
+
+declare global {
+  interface Window {
+    tinymce: TinyMCE;
+    ace: AceAjax.Ace;
+  }
 }

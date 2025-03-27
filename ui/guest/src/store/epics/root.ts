@@ -148,10 +148,10 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
           return NEVER;
         } else if (nullOrUndefined(iceId)) {
           // When the drag starts on a child element of the item, it passes through here.
-          console.error('No ice id found for this drag instance.', record, state.draggable);
+          console.warn('No ice id found for this drag instance.', record, state.draggable);
         } else if (not(iceId)) {
           // Items that browser make draggable by default (images, etc).
-          console.warn("Element is draggable but wasn't set draggable by craftercms");
+          console.warn("Element is draggable but wasn't set draggable by XB");
         } else {
           post(instanceDragBegun(iceId));
           if (event) {
