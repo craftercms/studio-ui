@@ -21,22 +21,12 @@ export const uuidDescriptor = {
 	id: 'uuid',
 	name: 'UUID',
 	description: 'Unique identifier',
-	sections: [
-		createVirtualSection({ title: 'Options', fields: ['readonly'] }),
-		createVirtualSection({ title: 'Constraints', fields: ['required'] })
-	],
+	sections: [createVirtualSection({ title: 'Options', fields: ['hidden'] })],
 	fields: {
-		readonly: {
-			id: 'readonly',
+		hidden: {
+			id: 'hidden',
 			type: 'checkbox',
-			name: 'Read Only',
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		},
-		required: {
-			id: 'required',
-			type: 'checkbox',
-			name: 'Required',
+			name: 'Hidden',
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}

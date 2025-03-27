@@ -22,21 +22,15 @@ export const numericInputDescriptor: PartialContentType = {
 	name: 'Numeric Input',
 	description: 'Input field that accepts numbers',
 	sections: [
-		createVirtualSection({ title: 'Options', fields: ['readonly'] }),
-		createVirtualSection({ title: 'Constraints', fields: ['required', 'minValue', 'maxValue'] })
+		createVirtualSection({ title: 'Options', fields: ['maxValue', 'minValue', 'readonly', 'tokenize'] }),
+		createVirtualSection({ title: 'Constraints', fields: ['required', 'pattern'] })
 	],
 	fields: {
-		readonly: {
-			id: 'readonly',
-			type: 'checkbox',
-			name: 'Read Only',
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		},
-		required: {
-			id: 'required',
-			type: 'checkbox',
-			name: 'Required',
+		// TODO: There should be a correlation between maxValue and MinValue, to avoid max < min and vice versa
+		maxValue: {
+			id: 'maxValue',
+			type: 'numeric-input',
+			name: 'Maximum Value',
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
@@ -47,10 +41,31 @@ export const numericInputDescriptor: PartialContentType = {
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
-		maxValue: {
-			id: 'maxValue',
-			type: 'numeric-input',
-			name: 'Maximum Value',
+		readonly: {
+			id: 'readonly',
+			type: 'checkbox',
+			name: 'Read Only',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		tokenize: {
+			id: 'tokenize',
+			type: 'checkbox',
+			name: 'Tokenize for Indexing',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		required: {
+			id: 'required',
+			type: 'checkbox',
+			name: 'Required',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		pattern: {
+			id: 'pattern',
+			type: 'input',
+			name: 'Match Pattern',
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}

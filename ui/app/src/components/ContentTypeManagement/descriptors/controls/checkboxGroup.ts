@@ -22,14 +22,30 @@ export const checkboxGroupDescriptor: PartialContentType = {
 	name: 'Checkbox Group',
 	description: 'Multiple checkbox inputs',
 	sections: [
-		createVirtualSection({ title: 'Options', fields: ['options', 'readonly'] }),
-		createVirtualSection({ title: 'Constraints', fields: ['required', 'minSize', 'maxSize'] })
+		createVirtualSection({ title: 'Options', fields: ['datasource', 'selectAll', 'listDirection', 'readonly'] }),
+		createVirtualSection({ title: 'Constraints', fields: ['minSize'] })
 	],
 	fields: {
-		options: {
-			id: 'options',
-			type: 'repeat',
-			name: 'Options',
+		// TODO: check this type
+		datasource: {
+			id: 'datasource',
+			type: 'dropdown',
+			name: 'Data Source',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		selectAll: {
+			id: 'selectAll',
+			type: 'checkbox',
+			name: 'Show select all',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		// TODO: check this type
+		listDirection: {
+			id: 'listDirection',
+			type: 'dropdown',
+			name: 'List Direction',
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
@@ -40,24 +56,10 @@ export const checkboxGroupDescriptor: PartialContentType = {
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
-		required: {
-			id: 'required',
-			type: 'checkbox',
-			name: 'Required',
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		},
 		minSize: {
 			id: 'minSize',
 			type: 'numeric-input',
 			name: 'Minimum Selected',
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		},
-		maxSize: {
-			id: 'maxSize',
-			type: 'numeric-input',
-			name: 'Maximum Selected',
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}

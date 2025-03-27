@@ -22,10 +22,17 @@ export const transcodedVideoPickerDescriptor: PartialContentType = {
 	name: 'Transcoded Video Picker',
 	description: 'Select transcoded video',
 	sections: [
-		createVirtualSection({ title: 'Options', fields: ['readonly'] }),
+		createVirtualSection({ title: 'Options', fields: ['videoManager', 'readonly'] }),
 		createVirtualSection({ title: 'Constraints', fields: ['required'] })
 	],
 	fields: {
+		videoManager: {
+			id: 'videoManager',
+			type: 'dropdown',
+			name: 'Data Source',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
 		readonly: {
 			id: 'readonly',
 			type: 'checkbox',

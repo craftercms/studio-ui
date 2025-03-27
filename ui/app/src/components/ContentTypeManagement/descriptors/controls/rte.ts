@@ -22,7 +22,20 @@ export const rteDescriptor = {
 	name: 'Rich Text Editor',
 	description: 'Rich text editing area',
 	sections: [
-		createVirtualSection({ title: 'Options', fields: ['height', 'width', 'readonly', 'tokenize'] }),
+		createVirtualSection({
+			title: 'Options',
+			fields: [
+				'height',
+				'autoGrow',
+				'enableSpellCheck',
+				'supportedChannels',
+				'rteConfiguration',
+				'imageManager',
+				'videoManager',
+				'audioManager',
+				'fileManager'
+			]
+		}),
 		createVirtualSection({ title: 'Constraints', fields: ['required'] })
 	],
 	fields: {
@@ -33,24 +46,60 @@ export const rteDescriptor = {
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
-		width: {
-			id: 'width',
-			type: 'numeric-input',
-			name: 'Width',
+		autoGrow: {
+			id: 'autoGrow',
+			type: 'checkbox',
+			name: 'Auto Grow',
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
-		readonly: {
-			id: 'readonly',
+		enableSpellCheck: {
+			id: 'enableSpellCheck',
 			type: 'checkbox',
-			name: 'Read Only',
+			name: 'Enable Spell Check',
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
-		tokenize: {
-			id: 'tokenize',
-			type: 'checkbox',
-			name: 'Tokenize for Indexing',
+		// TODO: this is a custom type in legacy, need to check
+		supportedChannels: {
+			id: 'supportedChannels',
+			type: 'input',
+			name: 'Supported Channels',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		rteConfiguration: {
+			id: 'rteConfiguration',
+			type: 'input',
+			name: 'RTE Configuration',
+			defaultValue: 'generic',
+			validations: immutableEmptyObject
+		},
+		imageManager: {
+			id: 'imageManager',
+			type: 'dropdown',
+			name: 'Image Manager',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		videoManager: {
+			id: 'videoManager',
+			type: 'dropdown',
+			name: 'Video Manager',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		audioManager: {
+			id: 'audioManager',
+			type: 'dropdown',
+			name: 'Audio Manager',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		fileManager: {
+			id: 'fileManager',
+			type: 'dropdown',
+			name: 'File Manager',
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},

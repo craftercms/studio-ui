@@ -22,22 +22,15 @@ export const awsFileUploadDescriptor: PartialContentType = {
 	name: 'AWS File Upload',
 	description: 'Upload files to AWS S3',
 	sections: [
-		createVirtualSection({ title: 'Options', fields: ['path', 'readonly'] }),
+		createVirtualSection({ title: 'Options', fields: ['profile_id'] }),
 		createVirtualSection({ title: 'Constraints', fields: ['required'] })
 	],
 	fields: {
-		path: {
-			id: 'path',
+		profile_id: {
+			id: 'profile_id',
 			type: 'input',
-			name: 'Path',
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		},
-		readonly: {
-			id: 'readonly',
-			type: 'checkbox',
-			name: 'Read Only',
-			defaultValue: undefined,
+			name: 'Profile ID',
+			defaultValue: 's3-default',
 			validations: immutableEmptyObject
 		},
 		required: {

@@ -6,10 +6,18 @@ export const videoPickerDescriptor: PartialContentType = {
 	name: 'Video Picker',
 	description: 'Video selection control',
 	sections: [
-		createVirtualSection({ title: 'Options', fields: ['readonly'] }),
+		createVirtualSection({ title: 'Options', fields: ['videoManager', 'readonly'] }),
 		createVirtualSection({ title: 'Constraints', fields: ['required'] })
 	],
 	fields: {
+		// TODO: check type
+		videoManager: {
+			id: 'videoManager',
+			type: 'dropdown',
+			name: 'Data Source',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
 		readonly: {
 			id: 'readonly',
 			type: 'checkbox',

@@ -21,12 +21,19 @@ export const labelDescriptor = {
 	id: 'label',
 	name: 'Label',
 	description: 'Static text label',
-	sections: [createVirtualSection({ title: 'Options', fields: ['text'] })],
+	sections: [createVirtualSection({ title: 'Options', fields: ['text', 'renderAsHTML'] })],
 	fields: {
 		text: {
 			id: 'text',
 			type: 'input',
 			name: 'Text',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		renderAsHTML: {
+			id: 'renderAsHTML',
+			type: 'checkbox',
+			name: 'Render as HTML',
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}

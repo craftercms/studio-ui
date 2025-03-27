@@ -22,14 +22,67 @@ export const timeDescriptor = {
 	name: 'Time',
 	description: 'Time picker',
 	sections: [
-		createVirtualSection({ title: 'Options', fields: ['readonly'] }),
+		createVirtualSection({
+			title: 'Options',
+			fields: [
+				'showClear',
+				'showNowLink',
+				'populate',
+				'populateDateExp',
+				'useCustomTimezone',
+				'readonly',
+				'readonlyEdit'
+			]
+		}),
 		createVirtualSection({ title: 'Constraints', fields: ['required'] })
 	],
 	fields: {
+		showClear: {
+			id: 'showClear',
+			type: 'checkbox',
+			name: 'Show Clear',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		showNowLink: {
+			id: 'showNowLink',
+			type: 'checkbox',
+			name: 'Show Now Link',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		populate: {
+			id: 'populate',
+			type: 'checkbox',
+			name: 'Populated',
+			defaultValue: true,
+			validations: immutableEmptyObject
+		},
+		populateDateExp: {
+			id: 'populateDateExp',
+			type: 'input',
+			name: 'Populate Expression',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		useCustomTimezone: {
+			id: 'useCustomTimezone',
+			type: 'checkbox',
+			name: 'Use Custom Timezone',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
 		readonly: {
 			id: 'readonly',
 			type: 'checkbox',
 			name: 'Read Only',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		readonlyEdit: {
+			id: 'readonlyEdit',
+			type: 'checkbox',
+			name: 'Read Only on Edit',
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},

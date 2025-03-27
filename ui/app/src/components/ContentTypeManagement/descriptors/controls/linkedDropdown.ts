@@ -22,10 +22,11 @@ export const linkedDropdownDescriptor: PartialContentType = {
 	name: 'Linked Dropdown',
 	description: 'Linked dropdown selector',
 	sections: [
-		createVirtualSection({ title: 'Options', fields: ['datasource', 'readonly'] }),
+		createVirtualSection({ title: 'Options', fields: ['datasource', 'emptyvalue', 'readonly', 'dependsOn'] }),
 		createVirtualSection({ title: 'Constraints', fields: ['required'] })
 	],
 	fields: {
+		// TODO: check type
 		datasource: {
 			id: 'datasource',
 			type: 'dropdown',
@@ -33,10 +34,24 @@ export const linkedDropdownDescriptor: PartialContentType = {
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
+		emptyvalue: {
+			id: 'emptyvalue',
+			type: 'checkbox',
+			name: 'Allow Empty Value',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
 		readonly: {
 			id: 'readonly',
 			type: 'checkbox',
 			name: 'Read Only',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		dependsOn: {
+			id: 'dependsOn',
+			type: 'input',
+			name: 'Depends On',
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},

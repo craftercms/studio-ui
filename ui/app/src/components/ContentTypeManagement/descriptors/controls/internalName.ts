@@ -24,23 +24,13 @@ export const internalNameDescriptor: PartialContentType = {
 	id: XmlKeys.internalName,
 	name: 'Internal Name',
 	description: 'Internal name displayed for the item throughout the CMS (e.g. sidebar)',
-	sections: [
-		createVirtualSection({ title: 'Options', fields: ['readonly'] }),
-		createVirtualSection({ title: 'Constraints', fields: ['maxLength'] })
-	],
+	sections: [createVirtualSection({ title: 'Options', fields: ['maxlength'] })],
 	fields: {
 		maxLength: {
 			id: 'maxLength',
 			type: 'checkbox',
 			name: 'maxLength',
 			defaultValue: undefined,
-			validations: immutableEmptyObject
-		},
-		required: {
-			id: 'required',
-			type: 'checkbox',
-			name: 'Required',
-			defaultValue: true,
 			validations: immutableEmptyObject
 		}
 	}

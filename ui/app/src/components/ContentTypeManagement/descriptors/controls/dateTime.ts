@@ -24,32 +24,22 @@ export const dateTimeDescriptor: PartialContentType = {
 	sections: [
 		createVirtualSection({
 			title: 'Options',
-			fields: ['readonly', 'showNowLink', 'showClear', 'showDate', 'showTime']
+			fields: [
+				'showDate',
+				'showTime',
+				'showClear',
+				'showNowLink',
+				'populate',
+				'allowPastDate',
+				'populateDateExp',
+				'useCustomTimezone',
+				'readonly',
+				'readonlyEdit'
+			]
 		}),
 		createVirtualSection({ title: 'Constraints', fields: ['required'] })
 	],
 	fields: {
-		readonly: {
-			id: 'readonly',
-			type: 'checkbox',
-			name: 'Read Only',
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		},
-		showNowLink: {
-			id: 'showNowLink',
-			type: 'checkbox',
-			name: 'Show Now Link',
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		},
-		showClear: {
-			id: 'showClear',
-			type: 'checkbox',
-			name: 'Show Clear',
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		},
 		showDate: {
 			id: 'showDate',
 			type: 'checkbox',
@@ -62,6 +52,62 @@ export const dateTimeDescriptor: PartialContentType = {
 			type: 'checkbox',
 			name: 'Show Time',
 			defaultValue: true,
+			validations: immutableEmptyObject
+		},
+		showClear: {
+			id: 'showClear',
+			type: 'checkbox',
+			name: 'Show Clear',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		showNowLink: {
+			id: 'showNowLink',
+			type: 'checkbox',
+			name: 'Show Now Link',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		populate: {
+			id: 'populate',
+			type: 'checkbox',
+			name: 'Populated',
+			defaultValue: true,
+			validations: immutableEmptyObject
+		},
+		allowPastDate: {
+			id: 'allowPastDate',
+			type: 'checkbox',
+			name: 'Allow Past Date',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		populateDateExp: {
+			id: 'populateDateExp',
+			type: 'input',
+			name: 'Populate Expression',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		useCustomTimezone: {
+			id: 'useCustomTimezone',
+			type: 'checkbox',
+			name: 'Use Custom Timezone',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		readonly: {
+			id: 'readonly',
+			type: 'checkbox',
+			name: 'Read Only',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		readonlyEdit: {
+			id: 'readonlyEdit',
+			type: 'checkbox',
+			name: 'Read Only on Edit',
+			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		required: {

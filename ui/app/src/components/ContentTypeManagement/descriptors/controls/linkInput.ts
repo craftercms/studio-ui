@@ -22,14 +22,28 @@ export const linkInputDescriptor: PartialContentType = {
 	name: 'Link Input',
 	description: 'URL/Link input field',
 	sections: [
-		createVirtualSection({ title: 'Options', fields: ['readonly'] }),
-		createVirtualSection({ title: 'Constraints', fields: ['required'] })
+		createVirtualSection({ id: 'properties', title: 'Options', fields: ['maxlength', 'readonly', 'tokenize'] }),
+		createVirtualSection({ id: 'constraints', title: 'Constraints', fields: ['required', 'pattern'] })
 	],
 	fields: {
+		maxlength: {
+			id: 'maxlength',
+			type: 'numeric-input',
+			name: 'maxLength',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
 		readonly: {
 			id: 'readonly',
 			type: 'checkbox',
-			name: 'Read Only',
+			name: 'readonly',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		tokenize: {
+			id: 'tokenize',
+			type: 'checkbox',
+			name: 'Tokenize for Indexing',
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
@@ -37,6 +51,13 @@ export const linkInputDescriptor: PartialContentType = {
 			id: 'required',
 			type: 'checkbox',
 			name: 'Required',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		pattern: {
+			id: 'pattern',
+			type: 'input',
+			name: 'Match Pattern',
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}

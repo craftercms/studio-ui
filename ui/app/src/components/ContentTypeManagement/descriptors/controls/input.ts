@@ -68,7 +68,7 @@ export const inputDescriptor: PartialContentType = {
 		pattern: {
 			id: 'pattern',
 			type: 'input',
-			name: 'pattern',
+			name: 'Match Pattern',
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}

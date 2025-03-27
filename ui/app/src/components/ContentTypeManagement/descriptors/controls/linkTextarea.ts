@@ -22,10 +22,34 @@ export const linkTextareaDescriptor: PartialContentType = {
 	name: 'Link Textarea',
 	description: 'Multiple URL/Link input',
 	sections: [
-		createVirtualSection({ title: 'Options', fields: ['readonly'] }),
+		createVirtualSection({
+			title: 'Options',
+			fields: ['rows', 'maxlength', 'allowResize', 'readonly', 'required']
+		}),
 		createVirtualSection({ title: 'Constraints', fields: ['required'] })
 	],
 	fields: {
+		rows: {
+			id: 'rows',
+			type: 'numeric-input',
+			name: 'Rows',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		maxlength: {
+			id: 'maxlength',
+			type: 'numeric-input',
+			name: 'Maximum Length',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		allowResize: {
+			id: 'allowResize',
+			type: 'checkbox',
+			name: 'Allow Resize',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
 		readonly: {
 			id: 'readonly',
 			type: 'checkbox',

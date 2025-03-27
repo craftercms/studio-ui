@@ -22,17 +22,13 @@ export const nodeSelectorDescriptor: PartialContentType = {
 	name: 'Node Selector',
 	description: 'Content node selection',
 	sections: [
-		createVirtualSection({ title: 'Options', fields: ['readonly', 'minSize', 'maxSize'] }),
-		createVirtualSection({ title: 'Constraints', fields: ['required'] })
+		createVirtualSection({
+			title: 'Options',
+			fields: ['minSize', 'maxSize', 'itemManager', 'readonly', 'disableFlattening', 'useSingleValueFilename', 'useMVS']
+		}),
+		createVirtualSection({ title: 'Constraints', fields: ['allowDuplicates'] })
 	],
 	fields: {
-		readonly: {
-			id: 'readonly',
-			type: 'checkbox',
-			name: 'Read Only',
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		},
 		minSize: {
 			id: 'minSize',
 			type: 'numeric-input',
@@ -47,10 +43,47 @@ export const nodeSelectorDescriptor: PartialContentType = {
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
-		required: {
-			id: 'required',
+		itemManager: {
+			id: 'itemManager',
+			type: 'dropdown',
+			name: 'Item Manager',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		readonly: {
+			id: 'readonly',
 			type: 'checkbox',
-			name: 'Required',
+			name: 'Read Only',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		disableFlattening: {
+			id: 'disableFlattening',
+			type: 'checkbox',
+			name: 'Disable Flattening for Search',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		// TODO: check if we're going to keep this option
+		useSingleValueFilename: {
+			id: 'useSingleValueFilename',
+			type: 'checkbox',
+			name: 'Use single value filename (backward compat)',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		// TODO: check if we're going to keep this option
+		useMVS: {
+			id: 'useMVS',
+			type: 'checkbox',
+			name: 'Use _mvs postfix (backward compat)',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		allowDuplicates: {
+			id: 'allowDuplicates',
+			type: 'checkbox',
+			name: 'Allow Duplicates',
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}

@@ -22,14 +22,21 @@ export const dropdownDescriptor = {
 	name: 'Dropdown',
 	description: 'Dropdown select input',
 	sections: [
-		createVirtualSection({ title: 'Options', fields: ['options', 'readonly', 'allowEmpty'] }),
+		createVirtualSection({ title: 'Options', fields: ['datasource', 'emptyvalue', 'readonly'] }),
 		createVirtualSection({ title: 'Constraints', fields: ['required'] })
 	],
 	fields: {
-		options: {
-			id: 'options',
-			type: 'repeat',
-			name: 'Options',
+		datasource: {
+			id: 'datasource',
+			type: 'dropdown',
+			name: 'Data Source',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		emptyvalue: {
+			id: 'emptyvalue',
+			type: 'checkbox',
+			name: 'Allow Empty Value',
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
@@ -37,13 +44,6 @@ export const dropdownDescriptor = {
 			id: 'readonly',
 			type: 'checkbox',
 			name: 'Read Only',
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		},
-		allowEmpty: {
-			id: 'allowEmpty',
-			type: 'checkbox',
-			name: 'Allow Empty',
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},

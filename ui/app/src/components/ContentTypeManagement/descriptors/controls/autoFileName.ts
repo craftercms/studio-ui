@@ -14,33 +14,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createVirtualSection, PartialContentType } from '../../utils';
-import { immutableEmptyObject } from '../../../../utils/object';
+import { PartialContentType } from '../../utils';
 
 export const autoFileNameDescriptor: PartialContentType = {
 	id: 'auto-filename',
 	name: 'Auto Filename',
 	description: 'Automatically generated filename',
-	sections: [
-		createVirtualSection({ title: 'Options', fields: ['readonly'] }),
-		createVirtualSection({ title: 'Constraints', fields: ['required'] })
-	],
-	fields: {
-		readonly: {
-			id: 'readonly',
-			type: 'checkbox',
-			name: 'Read Only',
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		},
-		required: {
-			id: 'required',
-			type: 'checkbox',
-			name: 'Required',
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		}
-	}
+	sections: [],
+	fields: {}
 };
 
 export default autoFileNameDescriptor;

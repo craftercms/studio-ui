@@ -22,21 +22,17 @@ export const textareaDescriptor = {
 	name: 'Text Area',
 	description: 'Multi-line text input',
 	sections: [
-		createVirtualSection({ title: 'Options', fields: ['height', 'width', 'maxlength', 'readonly', 'tokenize'] }),
+		createVirtualSection({
+			title: 'Options',
+			fields: ['rows', 'maxlength', 'allowResize', 'readonly', 'escapeContent', 'required']
+		}),
 		createVirtualSection({ title: 'Constraints', fields: ['required'] })
 	],
 	fields: {
-		height: {
-			id: 'height',
+		rows: {
+			id: 'rows',
 			type: 'numeric-input',
-			name: 'Height',
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		},
-		width: {
-			id: 'width',
-			type: 'numeric-input',
-			name: 'Width',
+			name: 'Rows',
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
@@ -47,6 +43,13 @@ export const textareaDescriptor = {
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
+		allowResize: {
+			id: 'allowResize',
+			type: 'checkbox',
+			name: 'Allow Resize',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
 		readonly: {
 			id: 'readonly',
 			type: 'checkbox',
@@ -54,10 +57,10 @@ export const textareaDescriptor = {
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
-		tokenize: {
-			id: 'tokenize',
+		escapeContent: {
+			id: 'escapeContent',
 			type: 'checkbox',
-			name: 'Tokenize for Indexing',
+			name: 'Escape Content',
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},

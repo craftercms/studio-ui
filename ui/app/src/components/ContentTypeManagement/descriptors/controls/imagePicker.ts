@@ -24,15 +24,23 @@ export const imagePickerDescriptor: PartialContentType = {
 	sections: [
 		createVirtualSection({
 			title: 'Options',
-			fields: ['readonly', 'thumbnailWidth', 'thumbnailHeight', 'datasource']
+			fields: ['width', 'height', 'thumbnailWidth', 'thumbnailHeight', 'datasource', 'readonly']
 		}),
 		createVirtualSection({ title: 'Constraints', fields: ['required'] })
 	],
 	fields: {
-		readonly: {
-			id: 'readonly',
-			type: 'checkbox',
-			name: 'Read Only',
+		// TODO: on the legacy, width and height are of type 'range', allowing min-max values or a single value
+		width: {
+			id: 'width',
+			type: 'numeric-input',
+			name: 'Width',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		height: {
+			id: 'height',
+			type: 'numeric-input',
+			name: 'Height',
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
@@ -54,6 +62,13 @@ export const imagePickerDescriptor: PartialContentType = {
 			id: 'datasource',
 			type: 'dropdown',
 			name: 'Data Source',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		readonly: {
+			id: 'readonly',
+			type: 'checkbox',
+			name: 'Read Only',
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},

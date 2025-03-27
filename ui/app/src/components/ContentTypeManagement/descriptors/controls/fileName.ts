@@ -22,7 +22,7 @@ export const fileNameDescriptor: PartialContentType = {
 	name: 'File Name',
 	description: 'A slug (url)',
 	sections: [
-		createVirtualSection({ title: 'Options', fields: ['maxlength', 'readonly', 'tokenize'] }),
+		createVirtualSection({ title: 'Options', fields: ['maxlength', 'readonly', 'allowEditWithoutWarning'] }),
 		createVirtualSection({ title: 'Constraints', fields: ['required'] })
 	],
 	fields: {
@@ -36,7 +36,7 @@ export const fileNameDescriptor: PartialContentType = {
 		readonly: {
 			id: 'readonly',
 			type: 'checkbox',
-			name: 'readonly',
+			name: 'Read Only',
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
@@ -53,13 +53,6 @@ export const fileNameDescriptor: PartialContentType = {
 			name: 'Required',
 			defaultValue: true,
 			validations: { required: { id: 'required', value: true, level: 'required' } }
-		},
-		tokenize: {
-			id: 'tokenize',
-			type: 'checkbox',
-			name: 'Tokenize',
-			defaultValue: true,
-			validations: immutableEmptyObject
 		}
 	}
 };

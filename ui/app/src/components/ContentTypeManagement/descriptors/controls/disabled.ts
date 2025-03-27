@@ -14,12 +14,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { createVirtualSection } from '../../utils';
+import { immutableEmptyObject } from '../../../../utils/object';
+
 export const disabledDescriptor = {
 	id: 'disabled',
 	name: 'Disabled',
 	description: 'Disabled field',
-	sections: [],
-	fields: {}
+	sections: [
+		createVirtualSection({
+			id: 'properties',
+			title: 'Options',
+			fields: ['readonly']
+		})
+	],
+	fields: {
+		readonly: {
+			id: 'readonly',
+			type: 'checkbox',
+			name: 'readonly',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		}
+	}
 };
 
 export default disabledDescriptor;
