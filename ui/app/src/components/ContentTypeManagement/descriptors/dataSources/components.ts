@@ -15,63 +15,80 @@
  */
 
 import { immutableEmptyObject } from '../../../../utils/object';
+import { createVirtualSection, PartialContentType } from '../../utils';
 
-export const componentsDataSourceDescriptor = {
-	allowEmbedded: {
-		id: 'allowEmbedded',
-		type: 'checkbox',
-		name: '',
-		defaultValue: undefined,
-		validations: immutableEmptyObject
-	},
-	allowShared: {
-		id: 'allowShared',
-		type: 'checkbox',
-		name: '',
-		defaultValue: undefined,
-		validations: immutableEmptyObject
-	},
-	enableBrowse: {
-		id: 'enableBrowse',
-		type: 'checkbox',
-		name: '',
-		defaultValue: undefined,
-		validations: immutableEmptyObject
-	},
-	enableSearch: {
-		id: 'enableSearch',
-		type: 'checkbox',
-		name: '',
-		defaultValue: undefined,
-		validations: immutableEmptyObject
-	},
-	baseRepoPath: {
-		id: 'baseRepoPath',
-		type: '',
-		name: '',
-		defaultValue: undefined,
-		validations: immutableEmptyObject
-	},
-	baseBrowsePath: {
-		id: 'baseBrowsePath',
-		type: '',
-		name: '',
-		defaultValue: undefined,
-		validations: immutableEmptyObject
-	},
-	contentTypes: {
-		id: 'contentTypes',
-		type: '',
-		name: '',
-		defaultValue: undefined,
-		validations: immutableEmptyObject
-	},
-	tags: {
-		id: 'tags',
-		type: '',
-		name: '',
-		defaultValue: undefined,
-		validations: immutableEmptyObject
+// TODO: consider extending PartialContentType to allow types for datasources
+export const componentsDataSourceDescriptor: PartialContentType = {
+	id: 'components',
+	name: 'Components',
+	description: '',
+	// TODO: extend description
+	// @ts-expect-error type not allowed in PartialContentType yet.
+	type: 'item',
+	sections: [
+		createVirtualSection({
+			title: 'Options',
+			fields: ['allowEmbedded', 'allowShared', 'enableBrowse', 'baseRepoPath', 'baseBrowsePath', 'contentTypes', 'tags']
+		})
+	],
+	fields: {
+		allowEmbedded: {
+			id: 'allowEmbedded',
+			type: 'checkbox',
+			name: 'Allow Embedded',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		allowShared: {
+			id: 'allowShared',
+			type: 'checkbox',
+			name: 'Allow New Shared',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		enableBrowse: {
+			id: 'enableBrowse',
+			type: 'checkbox',
+			name: 'Enable Browsing Shared',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		enableSearch: {
+			id: 'enableSearch',
+			type: 'checkbox',
+			name: '',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		baseRepoPath: {
+			id: 'baseRepoPath',
+			type: 'input',
+			name: 'Path for New Items',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		baseBrowsePath: {
+			id: 'baseBrowsePath',
+			type: 'input',
+			name: 'Base Browse Path',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		// TODO: custom control for 'types'
+		contentTypes: {
+			id: 'contentTypes',
+			type: 'input',
+			name: 'Content Types',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		tags: {
+			id: 'tags',
+			type: 'input',
+			name: 'Tags',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		}
 	}
 };
 

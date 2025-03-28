@@ -60,9 +60,11 @@ export const imagePickerDescriptor: PartialContentType = {
 		},
 		datasource: {
 			id: 'datasource',
+			// TODO: custom control dataSourceSelector
 			type: 'dropdown',
 			name: 'Data Source',
 			defaultValue: undefined,
+			// TODO: dataSourceSelector type
 			validations: immutableEmptyObject
 		},
 		readonly: {

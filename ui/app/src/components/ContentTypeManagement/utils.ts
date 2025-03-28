@@ -39,6 +39,7 @@ import { createParsedValueForField } from '../FormsEngine/lib/valueRetrievers';
 import { toBooleanString, toColor } from '../../utils/string';
 import { getXmlBuilder } from '../FormsEngine/lib/valueSerializers';
 import { nanoid } from 'nanoid';
+import { commonDataSourceDescriptors } from './descriptors/dataSources';
 
 // TODO: assess which of the utils here should go to utils/contentType.ts, or other places (serializers, etc.)
 
@@ -128,7 +129,8 @@ export function populateFieldPropertiesValues(
 			continue;
 		}
 		const propObject = properties[property];
-		values[property] = propObject.value;
+		// TODO: this was done to match dataSource properties, but the dataSource type is not matching so this may be wrong.
+		values[property] = propObject.value ?? propObject;
 	}
 }
 
@@ -146,6 +148,19 @@ export function populateFieldValidationsValues(
 		const validationObject = validations[validationKey as ValidationKeys];
 		values[validationKey] = validationObject.value;
 	}
+}
+
+export function createDataSourceValuesObject(datasource: DataSource): LookupTable<unknown> {
+	const values: LookupTable<unknown> = {};
+	for (const property in datasource) {
+		if (property === 'properties') {
+			populateFieldPropertiesValues(values, datasource.properties);
+		} else {
+			// See notes on `contentTypeFieldToXmlNameMap` declaration.
+			values[contentTypeFieldToXmlNameMap[property] ?? property] = datasource[property];
+		}
+	}
+	return values;
 }
 
 // values is a lookup table of values which needs to be set
@@ -249,26 +264,25 @@ export function createVirtualTypeForSection(descriptor: PartialContentType): Con
 	});
 }
 
-export function createVirtualTypeForDataSource(controlDescriptor: PartialContentType): ContentType {
-	throw new Error('Not implemented');
-	// return createEmptyTypeStructure({
-	// 	...controlDescriptor,
-	// 	fields: {
-	// 		...commonControlFieldsDescriptors,
-	// 		...controlDescriptor.fields
-	// 	},
-	// 	sections: [
-	// 		{
-	// 			id: 'properties',
-	// 			color: null,
-	// 			title: 'Basic Properties',
-	// 			description: '',
-	// 			fields: Object.keys(commonControlFieldsDescriptors),
-	// 			expandByDefault: true
-	// 		},
-	// 		...(controlDescriptor.sections ?? [])
-	// 	]
-	// });
+export function createVirtualTypeForDataSource(dataSourceDescriptor: PartialContentType): ContentType {
+	return createEmptyTypeStructure({
+		...dataSourceDescriptor,
+		fields: {
+			...commonDataSourceDescriptors,
+			...dataSourceDescriptor.fields
+		},
+		sections: [
+			{
+				id: 'properties',
+				color: null,
+				title: 'Basic Properties',
+				description: '',
+				fields: Object.keys(commonDataSourceDescriptors),
+				expandByDefault: true
+			},
+			...(dataSourceDescriptor.sections ?? [])
+		]
+	});
 }
 
 export function createVirtualSection(
