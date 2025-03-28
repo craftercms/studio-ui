@@ -60,11 +60,12 @@ export interface ControlWrapperProps {
 	readonly: boolean;
 	contentType: ContentType;
 	atom: Atom<unknown>;
+	customControlMap?: Record<string, ElementType>;
 }
 
 export const ControlWrapper = memo(function (props: ControlWrapperProps) {
 	const siteId = useActiveSiteId();
-	const { field, autoFocus, readonly, contentType, atom } = props;
+	const { field, autoFocus, readonly, contentType, atom, customControlMap } = props;
 	const [value, setValue] = useAtom(atom);
 	const fieldId = field.id;
 	let Control: ElementType<ControlProps>;
@@ -79,7 +80,7 @@ export const ControlWrapper = memo(function (props: ControlWrapperProps) {
 		if (!lazyControlMap.has(url)) addLazyControl(url);
 		Control = lazyControlMap.get(url);
 	} else {
-		Control = controlMap[field.type] ?? UnknownControl;
+		Control = controlMap[field.type] ?? customControlMap[field.type] ?? UnknownControl;
 	}
 	return (
 		<ErrorBoundary key={fieldId}>
@@ -150,7 +151,8 @@ export function renderFieldControl(
 	atoms: FormsEngineAtoms['valueByFieldId'],
 	autoFocus: boolean,
 	readonly: boolean,
-	contentType: ContentType
+	contentType: ContentType,
+	customControlsMap?: ControlWrapperProps['customControlMap']
 ) {
 	const fieldId = field.id;
 	return (
@@ -161,6 +163,7 @@ export function renderFieldControl(
 			readonly={readonly}
 			autoFocus={autoFocus}
 			contentType={contentType}
+			customControlMap={customControlsMap}
 		/>
 	);
 }

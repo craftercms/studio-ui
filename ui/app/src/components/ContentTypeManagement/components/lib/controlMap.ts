@@ -14,30 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createVirtualSection, PartialContentType } from '../../utils';
+import { ElementType, lazy } from 'react';
 
-export const fileBrowseRepoDataSourceDescriptor: PartialContentType = {
-	id: 'file-browse-repo',
-	name: 'File Browse',
-	description: '',
-	sections: [
-		createVirtualSection({
-			title: 'Options',
-			fields: ['repoPath']
-		})
-	],
-	fields: {
-		repoPath: {
-			id: 'repoPath',
-			type: 'content-path-input',
-			name: 'Repository Path',
-			defaultValue: '/',
-			validations: {
-				// @ts-expect-error 'root' does not exist in type Partial<ContentTypeFieldValidations>
-				root: '/'
-			}
-		}
-	}
+export type ContentTypeControlType = 'content-path-input';
+
+export const controlMap: Record<ContentTypeControlType, ElementType> = {
+	'content-path-input': lazy(() => import('../controls/ContentPathInput'))
 };
-
-export default fileBrowseRepoDataSourceDescriptor;

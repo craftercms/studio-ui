@@ -31,11 +31,13 @@ export const videoBrowseRepoDataSourceDescriptor: PartialContentType = {
 	fields: {
 		repoPath: {
 			id: 'repoPath',
-			// TODO: custom control - content-path-input
-			type: 'input',
+			type: 'content-path-input',
 			name: 'Repository Path',
 			defaultValue: undefined,
-			validations: immutableEmptyObject
+			validations: {
+				// @ts-expect-error 'root' does not exist in type Partial<ContentTypeFieldValidations>
+				root: '/static-assets'
+			}
 		},
 		useSearch: {
 			id: 'useSearch',

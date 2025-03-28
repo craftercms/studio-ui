@@ -51,24 +51,24 @@ export const sharedContentDataSourceDescriptor: PartialContentType = {
 		},
 		repoPath: {
 			id: 'repoPath',
-			// TODO: custom control - content-path-input
-			type: 'input',
+			type: 'content-path-input',
 			name: 'Repository Path',
-			defaultValue: undefined,
+			defaultValue: '/site/',
 			validations: {
 				// @ts-expect-error 'regex' does not exist in type Partial<ContentTypeFieldValidations>
-				regex: /^\/site(\/.*)?$/
+				regex: /^\/site(\/.*)?$/,
+				root: '/site'
 			}
 		},
 		browsePath: {
 			id: 'browsePath',
-			// TODO: custom control - content-path-input
-			type: 'input',
+			type: 'content-path-input',
 			name: 'Browse Path',
-			defaultValue: undefined,
+			defaultValue: '/site',
 			validations: {
 				// @ts-expect-error 'regex' does not exist in type Partial<ContentTypeFieldValidations>
-				regex: /^\/site(\/.*)?$/
+				regex: /^\/site(\/.*)?$/,
+				root: '/site'
 			}
 		},
 		type: {

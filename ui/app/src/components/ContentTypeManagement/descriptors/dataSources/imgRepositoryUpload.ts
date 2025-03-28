@@ -31,13 +31,13 @@ export const imgRepositoryUploadDataSourceDescriptor: PartialContentType = {
 	fields: {
 		repoPath: {
 			id: 'repoPath',
-			// TODO: custom control - content-path-input
-			type: 'input',
+			type: 'content-path-input',
 			name: 'Repository Path',
 			defaultValue: '/',
 			validations: {
 				// @ts-expect-error 'regex' does not exist in type Partial<ContentTypeFieldValidations>
-				regex: /^\/static-assets(\/.*)?$/
+				regex: /^\/static-assets(\/.*)?$/,
+				root: '/static-assets'
 			}
 		},
 		useSearch: {
