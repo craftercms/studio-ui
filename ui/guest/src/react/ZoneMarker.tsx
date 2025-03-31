@@ -125,7 +125,7 @@ export function ZoneMarker(props: ZoneMarkerProps) {
   const isLockedItem = Boolean(lockInfo);
   const [zoneStyle, setZoneStyle] = useState<CSSProperties>();
   const sx = getStyles(props.sx);
-  const elRef = useRef();
+  const elRef = useRef(undefined);
   const theme = useTheme();
   let allowedTypesMeta: LookupTable<Partial<AllowedContentTypesData<boolean>>>;
   let contentTypes: LookupTable<ContentType>;

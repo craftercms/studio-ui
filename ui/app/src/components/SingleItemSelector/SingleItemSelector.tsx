@@ -276,7 +276,7 @@ export function SingleItemSelector(props: SingleItemSelectorProps) {
   } = props;
   // endregion
   const { classes, cx } = useStyles();
-  const buttonElRef = useRef();
+  const buttonElRef = useRef(undefined);
   const [state, _dispatch] = useReducer(reducer, props, init);
   const site = useActiveSiteId();
 

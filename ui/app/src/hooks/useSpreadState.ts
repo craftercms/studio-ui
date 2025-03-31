@@ -18,7 +18,7 @@ import { Dispatch, SetStateAction, useReducer } from 'react';
 
 export function useSpreadState<S>(initialState: S, init?: (args: S) => S): [S, Dispatch<SetStateAction<Partial<S>>>] {
   return useReducer(
-    (state, nextState) => (nextState === '$RESET$' ? { ...initialState } : { ...state, ...nextState }),
+    (state, nextState) => (String(nextState) === '$RESET$' ? { ...initialState } : { ...state, ...nextState }),
     initialState,
     init
   );

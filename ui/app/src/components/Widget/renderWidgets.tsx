@@ -26,7 +26,7 @@ export function renderWidgets(
     userRoles?: string[];
     createMapperFn?(originalMapperFn: MapperFn): MapperFn;
   }
-): JSX.Element[] {
+): ReactJSXElement[] {
   if (!Array.isArray(widgets)) {
     return [];
   }

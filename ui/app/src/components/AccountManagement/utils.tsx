@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 import {
   removeStoredBrowseDialogViewMode,
@@ -39,7 +39,7 @@ import {
 } from '../../utils/state';
 
 export const preferencesGroups: Array<{
-  label: string | JSX.Element;
+  label: string | ReactNode;
   onClear: (props: { siteId: string; siteUuid: string; username: string }) => void;
 }> = [
   {

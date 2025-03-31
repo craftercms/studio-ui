@@ -245,7 +245,7 @@ export function ActivityDashlet(props: ActivityDashletProps) {
     });
   }, [activities, dateFrom, dateTo, limit, setState, site, usernames]);
   // endregion
-  const listRef = useRef();
+  const listRef = useRef(undefined);
   const loadNextPage = () => {
     let newOffset = offset + limit;
     setState({ loadingChunk: true });
@@ -329,8 +329,8 @@ export function ActivityDashlet(props: ActivityDashletProps) {
   // region author filter
   const [authorFilterOpen, setAuthorFilterOpen] = useState(false);
   const [authorFilterValue, setAuthorFilterValue] = useState('');
-  const authorFilterButtonRef = useRef<HTMLButtonElement>();
-  const authorFilterInputRef = useRef<HTMLInputElement>();
+  const authorFilterButtonRef = useRef<HTMLButtonElement>(undefined);
+  const authorFilterInputRef = useRef<HTMLInputElement>(undefined);
 
   const onAuthorFilterChange = (users) => {
     if (users.length === 0 && (usernames === null || usernames.length === 0)) return;

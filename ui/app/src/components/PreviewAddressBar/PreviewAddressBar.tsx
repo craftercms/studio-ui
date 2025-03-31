@@ -159,7 +159,7 @@ export function PreviewAddressBar(props: AddressBarProps) {
   // region XB communication detection
 
   let { xbDetectionTimeoutMs } = usePreviewState();
-  const timeoutRef = useRef<any>();
+  const timeoutRef = useRef<any>(undefined);
   const [alertLevel, setAlertLevel] = useState(0);
   const [popoverAnchorEl, setPopoverAnchorEl] = useState<HTMLElement | null>(null);
   const openPopover = Boolean(popoverAnchorEl);

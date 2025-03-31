@@ -37,7 +37,7 @@ export function PluginConfigDialogContainer(props: PluginConfigDialogContainerPr
   const { pluginId, onSaved, isSubmitting, onClose, onSubmittingAndOrPendingChange } = props;
   const [loading, setLoading] = useState(false);
   const [content, setContent] = useState('');
-  const editorRef = useRef<any>();
+  const editorRef = useRef<any>(undefined);
   const dispatch = useDispatch();
   const [disabledSaveButton, setDisabledSaveButton] = useState(true);
   const { formatMessage } = useIntl();

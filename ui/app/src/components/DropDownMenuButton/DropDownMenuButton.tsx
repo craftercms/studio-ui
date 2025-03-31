@@ -51,7 +51,7 @@ export function DropDownMenu(props: DropDownMenuProps) {
     listItemButtonProps,
     ...buttonProps
   } = props;
-  const buttonRef = useRef<HTMLButtonElement>();
+  const buttonRef = useRef<HTMLButtonElement>(undefined);
   const [open, setOpen] = useState(false);
   const onClose = () => setOpen(false);
   const onMenuItemClick = (e, option) => {

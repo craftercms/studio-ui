@@ -133,7 +133,7 @@ export function PreviewAssetsPanel() {
 
   const { guestBase, xsrfArgument } = useSelector<GlobalState, GlobalState['env']>((state) => state.env);
   const { formatMessage } = useIntl();
-  const elementRef = useRef();
+  const elementRef = useRef(undefined);
 
   const onDragStart = (mediaItem: MediaItem) => {
     if (!editMode) {
