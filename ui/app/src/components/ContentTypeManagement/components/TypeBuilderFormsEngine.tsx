@@ -50,6 +50,7 @@ import ContentType, { ContentTypeField, ContentTypeSection } from '../../../mode
 import { fooStableGlobalContext, PartialContentType } from '../utils';
 import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
 import Alert from '@mui/material/Alert';
+import { controlMap } from './lib/controlMap';
 
 interface TypeModeProps {
 	type: ContentType;
@@ -127,12 +128,12 @@ function FieldFormViewBody(props: FieldFormViewProps) {
 								// TODO: Fix auto focus layout shift. See FE2 solution (render this whole area until panel animation is done).
 								false, // index === 0,
 								false,
-								virtualType
+								virtualType,
+								controlMap
 							);
 						}}
 					/>
 				))}
-
 				<FormBackToTop containerRef={containerRef} />
 			</Container>
 		</Box>

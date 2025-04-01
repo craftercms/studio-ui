@@ -24,10 +24,12 @@ import LookupTable from '../../../models/LookupTable';
 import React, { createElement, forwardRef, useEffect, useMemo, useRef, useState } from 'react';
 import {
 	buildContentTypeXml,
+	createDataSourceValuesObject,
 	createEmptyTypeStructure,
 	createFieldFormContextApi,
 	createTypeFieldValuesObject,
 	createTypeFormValuesObject,
+	createVirtualTypeForDataSource,
 	createVirtualTypeForField,
 	createVirtualTypeFormContext,
 	createVirtualTypeForSection,
@@ -40,6 +42,7 @@ import { extractAtomValues, useShowAlert } from '../../FormsEngine/lib/formUtils
 import TypeBuilderFormsEngine, { FieldFormViewProps } from './TypeBuilderFormsEngine';
 import { FieldChipProps } from './FieldChip';
 import controlDescriptors, { sectionDescriptor, typeBasicDetailsDescriptor } from '../descriptors/controls';
+import dataSourceDescriptors from '../descriptors/dataSources';
 import type { BuiltInControlType } from '../../FormsEngine/lib/controlMap';
 import TypeDetailsView, { TypeDetailsViewProps } from './TypeDetailsView';
 import {
@@ -197,7 +200,7 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 		if (!controlDescriptor)
 			return showAlert(`No control descriptor found for field "${field.name}" of type "${field.type}"`);
 
-		const virtualType = createVirtualTypeForField(controlDescriptor);
+		const virtualType = createVirtualTypeForField({ ...controlDescriptor, dataSources: type.dataSources });
 		handleArtefactSelected(
 			virtualType,
 			createVirtualTypeFormContext(virtualType, createTypeFieldValuesObject(field), contentTypesLookup, {
@@ -205,7 +208,6 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 			}),
 			{ field, fieldIdPath, controlDescriptor }
 		);
-
 		setSelectedFieldIdPath(fieldIdPath);
 		stateRef.current.selectedField = field;
 	};
@@ -222,18 +224,22 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 		stateRef.current.selectedSection = section;
 	};
 	const handleDataSourceSelected: TypeDetailsViewProps['onDataSourceSelected'] = (dataSource) => {
-		return showAlert('Not implemented');
-		// TODO: Similar to fields...
-		// if (!closeAndCleanup()) return;
-		// const virtualType =
-		// stateRef.current.selectedDataSource = dataSource;
-		// handleArtefactSelected(
-		// 	virtualType,
-		// 	createVirtualTypeFormContext(virtualType, createTypeFormValuesObject(type), contentTypesLookup, {
-		// 		fieldUpdates$: stateRef.current.fieldUpdates$
-		// 	}),
-		// 	{ dataSource }
-		// );
+		if (!closeAndCleanup()) return;
+
+		const dataSourceDescriptor = dataSourceDescriptors[dataSource.type];
+		if (!dataSourceDescriptor)
+			return showAlert(`No control descriptor found for field "${dataSource.title}" of type "${dataSource.type}"`);
+
+		const virtualType = createVirtualTypeForDataSource(dataSourceDescriptor);
+		handleArtefactSelected(
+			virtualType,
+			createVirtualTypeFormContext(virtualType, createDataSourceValuesObject(dataSource), contentTypesLookup, {
+				fieldUpdates$: stateRef.current.fieldUpdates$
+			}),
+			{ dataSource }
+		);
+		setSelectedFieldIdPath(dataSource.id);
+		stateRef.current.selectedDataSource = dataSource;
 	};
 	const handleEditTypeProperties = () => {
 		if (!closeAndCleanup()) return;
@@ -481,10 +487,9 @@ function updateTypeFromDataSourceUpdate(
 	selectedDataSource: DataSource,
 	updatedValues: LookupTable<unknown>
 ): ContentType {
-	console.log(selectedDataSource, updatedValues);
 	const updatedType: ContentType = { ...type, dataSources: type.dataSources.concat() };
 	const index = updatedType.dataSources.findIndex((item) => item.id === selectedDataSource.id);
-	updatedType.dataSources[index] = selectedDataSource;
+	updatedType.dataSources[index] = { ...selectedDataSource, properties: updatedValues };
 	return updatedType;
 }
 
