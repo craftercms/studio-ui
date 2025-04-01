@@ -18,42 +18,59 @@ import OutlinedInput, { OutlinedInputProps } from '@mui/material/OutlinedInput';
 import React, { useId } from 'react';
 import { ControlProps } from '../../../FormsEngine/types';
 import FormsEngineField from '../../../FormsEngine/components/FormsEngineField';
-import IconButton from '@mui/material/IconButton';
-import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
-import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import Tooltip from '@mui/material/Tooltip';
 import { FormattedMessage } from 'react-intl';
 import { useDispatch } from 'react-redux';
 import { popDialog, pushDialog } from '../../../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
-import { nou } from '../../../../utils/object';
-import { editTemplate } from '../../../../state/actions/misc';
-import { getFileNameFromPath } from '../../../../utils/path';
+import IconButton from '@mui/material/IconButton';
+import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
+import UploadRoundedIcon from '@mui/icons-material/UploadRounded';
+import useActiveSiteId from '../../../../hooks/useActiveSiteId';
+import { useStableFormContext } from '../../../FormsEngine/lib/formsEngineContext';
 
-export interface TemplateSelectorProps extends ControlProps {
+export interface TypeImageSelectorProps extends ControlProps {
 	value: string;
 }
 
-export function TemplateSelector(props: TemplateSelectorProps) {
+// TODO: in legacy - there are image size restrictions, and the cropper was shown if the image was too large
+/*
+	WIDTHCONSTRAINS = 775;
+	HEIGHTCONSTRAINS = 767;
+*/
+// TODO: This control behavior was a bit different in legacy, since on the image upload success it used to update the xml
+//  		 right away, not waiting for the type save action.
+export function TypeImageSelector(props: TypeImageSelectorProps) {
 	const { field, value, setValue, autoFocus } = props;
-	const basePath = '/templates/web';
 	const htmlId = useId();
+	const siteId = useActiveSiteId();
 	const dispatch = useDispatch();
+	const basePath = '/config/studio/content-types';
+	const stableFormContext = useStableFormContext();
+	const contentTypeId = stableFormContext.originalValues.id;
 
 	const handleChange: OutlinedInputProps['onChange'] = (e) => setValue(e.currentTarget.value);
 
-	const onOpenBrowseTemplate = () => {
+	const onDeleteImage = () => {
+		setValue('');
+	};
+
+	const onEditTemplate = () => {
 		const id = nanoid();
 		dispatch(
 			pushDialog({
 				id,
-				component: 'craftercms.components.BrowseFilesDialog',
+				component: 'craftercms.components.SingleFileUploadDialog',
 				props: {
-					path: basePath,
-					allowUpload: false,
+					site: siteId,
+					path: `${basePath}${contentTypeId}`,
+					fileTypes: ['image/*'],
 					onClose: () => dispatch(popDialog({ id })),
-					onSuccess: (item) => {
-						setValue(item.path);
+					onUploadComplete: (result) => {
+						if (result.successful.length) {
+							const uploaded = result.successful[0];
+							setValue(uploaded.name);
+						}
 						dispatch(popDialog({ id }));
 					}
 				}
@@ -61,40 +78,8 @@ export function TemplateSelector(props: TemplateSelectorProps) {
 		);
 	};
 
-	const onEditTemplate = () => {
-		const id = nanoid();
-		if (nou(value)) {
-			dispatch(
-				pushDialog({
-					id,
-					component: 'craftercms.components.CreateFileDialog',
-					props: {
-						path: basePath,
-						type: 'template',
-						onClose: () => dispatch(popDialog({ id })),
-						onSuccess: (item) => {
-							setValue(item.path);
-							dispatch(popDialog({ id }));
-						}
-					}
-				})
-			);
-		} else {
-			const fileName = getFileNameFromPath(value);
-			const pathNoFileName = value.replace(fileName, '');
-			dispatch(
-				editTemplate({
-					path: pathNoFileName,
-					fileName,
-					mode: 'ftl',
-					openOnSuccess: true
-				})
-			);
-		}
-	};
-
 	return (
-		<FormsEngineField htmlFor={htmlId} field={field}>
+		<FormsEngineField htmlFor={htmlId} field={field} length={value.length}>
 			<OutlinedInput
 				autoFocus={autoFocus}
 				id={htmlId}
@@ -104,14 +89,14 @@ export function TemplateSelector(props: TemplateSelectorProps) {
 				disabled
 				endAdornment={
 					<>
-						<Tooltip title={<FormattedMessage defaultMessage="Select template" />}>
-							<IconButton onClick={() => onOpenBrowseTemplate()}>
-								<SearchRoundedIcon />
+						<Tooltip title={<FormattedMessage defaultMessage="Remove image" />}>
+							<IconButton onClick={() => onDeleteImage()}>
+								<DeleteOutlineRoundedIcon />
 							</IconButton>
 						</Tooltip>
-						<Tooltip title={<FormattedMessage defaultMessage="Edit template" />}>
+						<Tooltip title={<FormattedMessage defaultMessage="Upload Image" />}>
 							<IconButton onClick={() => onEditTemplate()}>
-								<EditRoundedIcon />
+								<UploadRoundedIcon />
 							</IconButton>
 						</Tooltip>
 					</>
@@ -121,4 +106,4 @@ export function TemplateSelector(props: TemplateSelectorProps) {
 	);
 }
 
-export default TemplateSelector;
+export default TypeImageSelector;

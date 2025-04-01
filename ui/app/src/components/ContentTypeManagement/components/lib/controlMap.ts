@@ -22,7 +22,8 @@ export type ContentTypeControlType =
 	| 'dropdown-static-values'
 	| 'template-selector'
 	| 'type-image-selector'
-	| 'datasource-selector';
+	| 'datasource-selector'
+	| 'read-only-value';
 
 export const controlMap: Record<ContentTypeControlType, ElementType> = {
 	'content-path-input': lazy(() => import('../controls/ContentPathInput')),
@@ -30,5 +31,6 @@ export const controlMap: Record<ContentTypeControlType, ElementType> = {
 	'dropdown-static-values': lazy(() => import('../controls/DropdownStaticValues')),
 	'template-selector': lazy(() => import('../controls/TemplateSelector')),
 	'type-image-selector': lazy(() => import('../controls/TypeImageSelector')),
-	'datasource-selector': lazy(() => import('../controls/DataSourceSelector'))
+	'datasource-selector': lazy(() => import('../controls/DataSourceSelector')),
+	'read-only-value': lazy(() => import('../controls/ReadOnlyValue'))
 };
