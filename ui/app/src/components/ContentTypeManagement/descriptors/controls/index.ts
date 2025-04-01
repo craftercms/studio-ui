@@ -21,7 +21,6 @@ import fileNameDescriptor from './fileName';
 import inputDescriptor from './input';
 import autoFileNameDescriptor from './autoFileName';
 import awsFileUploadDescriptor from './awsFileUpload';
-import boxFileUploadDescriptor from './boxFileUpload';
 import checkboxDescriptor from './checkbox';
 import checkboxGroupDescriptor from './checkboxGroup';
 import dateTimeDescriptor from './dateTime';
@@ -148,7 +147,6 @@ export const commonControlFieldsDescriptors: LookupTable<ContentTypeField> = {
 export const controlDescriptors: Record<BuiltInControlType, PartialContentType> = {
 	'auto-filename': autoFileNameDescriptor,
 	'aws-file-upload': awsFileUploadDescriptor,
-	'box-file-upload': boxFileUploadDescriptor,
 	checkbox: checkboxDescriptor,
 	'checkbox-group': checkboxGroupDescriptor,
 	'date-time': dateTimeDescriptor,
@@ -233,7 +231,7 @@ export const typeBasicDetailsDescriptor: PartialContentType = {
 		},
 		type: {
 			id: 'type',
-			type: 'readonlyValue', // TODO: create control
+			type: 'readonlyValue', // TODO: create control readonlyValue
 			name: 'Archetype',
 			description: '',
 			helpText: '',
@@ -260,7 +258,7 @@ export const typeBasicDetailsDescriptor: PartialContentType = {
 		},
 		displayTemplate: {
 			id: 'displayTemplate',
-			type: 'input', // TODO: create control templateSelector
+			type: 'template-selector',
 			name: 'Display Template',
 			description: '',
 			helpText: '',
@@ -287,7 +285,7 @@ export const typeBasicDetailsDescriptor: PartialContentType = {
 		},
 		thumbnailFileName: {
 			id: 'thumbnailFileName',
-			type: 'input', // TODO: create control typeImageSelector
+			type: 'type-image-selector',
 			name: 'Thumbnail Image File Name',
 			description: '',
 			helpText: '',

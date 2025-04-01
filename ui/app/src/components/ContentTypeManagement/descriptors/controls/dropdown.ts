@@ -20,7 +20,7 @@ import { immutableEmptyObject } from '../../../../utils/object';
 export const dropdownDescriptor = {
 	id: 'dropdown',
 	name: 'Dropdown',
-	description: 'Dropdown select input',
+	description: 'DropdownStaticValues select input',
 	sections: [
 		createVirtualSection({ title: 'Options', fields: ['datasource', 'emptyvalue', 'readonly'] }),
 		createVirtualSection({ title: 'Constraints', fields: ['required'] })

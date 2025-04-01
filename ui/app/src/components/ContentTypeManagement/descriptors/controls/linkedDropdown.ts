@@ -26,13 +26,15 @@ export const linkedDropdownDescriptor: PartialContentType = {
 		createVirtualSection({ title: 'Constraints', fields: ['required'] })
 	],
 	fields: {
-		// TODO: check type
 		datasource: {
 			id: 'datasource',
-			type: 'dropdown',
+			type: 'datasource-selector',
 			name: 'Data Source',
 			defaultValue: undefined,
-			validations: immutableEmptyObject
+			validations: {
+				// @ts-expect-error 'type' does not exist in type Partial<ContentTypeFieldValidations>
+				type: 'item'
+			}
 		},
 		emptyvalue: {
 			id: 'emptyvalue',

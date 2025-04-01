@@ -45,10 +45,13 @@ export const nodeSelectorDescriptor: PartialContentType = {
 		},
 		itemManager: {
 			id: 'itemManager',
-			type: 'dropdown',
+			type: 'datasource-selector',
 			name: 'Item Manager',
 			defaultValue: undefined,
-			validations: immutableEmptyObject
+			validations: {
+				// @ts-expect-error 'type' does not exist in type Partial<ContentTypeFieldValidations>
+				type: 'item'
+			}
 		},
 		readonly: {
 			id: 'readonly',

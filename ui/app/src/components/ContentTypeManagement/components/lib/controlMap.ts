@@ -16,8 +16,19 @@
 
 import { ElementType, lazy } from 'react';
 
-export type ContentTypeControlType = 'content-path-input';
+export type ContentTypeControlType =
+	| 'content-path-input'
+	| 'contentTypes'
+	| 'dropdown-static-values'
+	| 'template-selector'
+	| 'type-image-selector'
+	| 'datasource-selector';
 
 export const controlMap: Record<ContentTypeControlType, ElementType> = {
-	'content-path-input': lazy(() => import('../controls/ContentPathInput'))
+	'content-path-input': lazy(() => import('../controls/ContentPathInput')),
+	contentTypes: lazy(() => import('../controls/ContentTypesSelector')),
+	'dropdown-static-values': lazy(() => import('../controls/DropdownStaticValues')),
+	'template-selector': lazy(() => import('../controls/TemplateSelector')),
+	'type-image-selector': lazy(() => import('../controls/TypeImageSelector')),
+	'datasource-selector': lazy(() => import('../controls/DataSourceSelector'))
 };

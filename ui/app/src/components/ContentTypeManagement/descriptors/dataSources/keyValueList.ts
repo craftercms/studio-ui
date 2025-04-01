@@ -31,15 +31,46 @@ export const keyValueListDataSourceDescriptor: PartialContentType = {
 	fields: {
 		dataType: {
 			id: 'dataType',
-			type: 'dropdown',
+			type: 'dropdown-static-values',
 			name: 'Data Type',
-			defaultValue: undefined,
+			defaultValue: [
+				{
+					value: 'value',
+					label: '',
+					selected: true
+				},
+				{
+					value: 'value_s',
+					label: 'String',
+					selected: false
+				},
+				{
+					value: 'value_i',
+					label: 'Integer',
+					selected: false
+				},
+				{
+					value: 'value_f',
+					label: 'Float',
+					selected: false
+				},
+				{
+					value: 'value_dt',
+					label: 'Date',
+					selected: false
+				},
+				{
+					value: 'value_html',
+					label: 'HTML',
+					selected: false
+				}
+			],
 			validations: immutableEmptyObject
 		},
 		options: {
 			id: 'options',
-			// TODO: We probably need a custom control 'options' for this
-			type: 'dropdown',
+			// TODO: We need a custom control 'keyValueMap (?)' for this
+			type: 'input',
 			name: 'Options',
 			defaultValue: undefined,
 			validations: immutableEmptyObject

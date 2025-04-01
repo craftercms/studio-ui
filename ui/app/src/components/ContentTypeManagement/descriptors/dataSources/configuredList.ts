@@ -29,12 +29,42 @@ export const configuredListDataSourceDescriptor: PartialContentType = {
 		createVirtualSection({ id: 'constraints', title: 'Constraints', fields: ['required'] })
 	],
 	fields: {
-		// TODO: how do I populate the dropdown options?
 		dataType: {
 			id: 'dataType',
-			type: 'dropdown',
+			type: 'dropdown-static-values',
 			name: 'Data Type',
-			defaultValue: undefined,
+			defaultValue: [
+				{
+					value: 'value',
+					label: 'No Data Type',
+					selected: true
+				},
+				{
+					value: 'value_s',
+					label: 'String',
+					selected: false
+				},
+				{
+					value: 'value_i',
+					label: 'Integer',
+					selected: false
+				},
+				{
+					value: 'value_f',
+					label: 'Float',
+					selected: false
+				},
+				{
+					value: 'value_dt',
+					label: 'Date',
+					selected: false
+				},
+				{
+					value: 'value_html',
+					label: 'HTML',
+					selected: false
+				}
+			],
 			validations: immutableEmptyObject
 		},
 		listName: {
@@ -44,12 +74,27 @@ export const configuredListDataSourceDescriptor: PartialContentType = {
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
-		// TODO: how do I populate the dropdown options?
 		sort: {
 			id: 'sort',
-			type: 'dropdown',
+			type: 'dropdown-static-values',
 			name: 'Sort',
-			defaultValue: undefined,
+			defaultValue: [
+				{
+					value: 'None',
+					label: 'None',
+					selected: true
+				},
+				{
+					value: 'ascending',
+					label: 'Ascending',
+					selected: false
+				},
+				{
+					value: 'descending',
+					label: 'Descending',
+					selected: false
+				}
+			],
 			validations: immutableEmptyObject
 		},
 		required: {

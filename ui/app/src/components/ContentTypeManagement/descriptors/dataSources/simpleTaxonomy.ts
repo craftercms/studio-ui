@@ -31,23 +31,53 @@ export const simpleTaxonomyDataSourceDescriptor: PartialContentType = {
 	fields: {
 		dataType: {
 			id: 'dataType',
-			// TODO: check how to populate dropdown
-			type: 'dropdown',
-			name: 'required',
-			defaultValue: undefined,
+			type: 'dropdown-static-values',
+			name: 'Data Type',
+			defaultValue: [
+				{
+					value: 'value',
+					label: '',
+					selected: true
+				},
+				{
+					value: 'value_s',
+					label: 'String',
+					selected: false
+				},
+				{
+					value: 'value_i',
+					label: 'Integer',
+					selected: false
+				},
+				{
+					value: 'value_f',
+					label: 'Float',
+					selected: false
+				},
+				{
+					value: 'value_dt',
+					label: 'Date',
+					selected: false
+				},
+				{
+					value: 'value_html',
+					label: 'HTML',
+					selected: false
+				}
+			],
 			validations: immutableEmptyObject
 		},
 		componentPath: {
 			id: 'componentPath',
 			type: 'input',
-			name: 'required',
+			name: 'Component Path',
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		required: {
 			id: 'required',
 			type: 'checkbox',
-			name: 'required',
+			name: 'Required',
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}

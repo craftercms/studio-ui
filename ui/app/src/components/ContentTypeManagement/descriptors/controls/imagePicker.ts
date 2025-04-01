@@ -60,12 +60,13 @@ export const imagePickerDescriptor: PartialContentType = {
 		},
 		datasource: {
 			id: 'datasource',
-			// TODO: custom control dataSourceSelector
-			type: 'dropdown',
+			type: 'datasource-selector',
 			name: 'Data Source',
 			defaultValue: undefined,
-			// TODO: dataSourceSelector type
-			validations: immutableEmptyObject
+			validations: {
+				// @ts-expect-error 'type' does not exist in type Partial<ContentTypeFieldValidations>
+				type: 'image'
+			}
 		},
 		readonly: {
 			id: 'readonly',

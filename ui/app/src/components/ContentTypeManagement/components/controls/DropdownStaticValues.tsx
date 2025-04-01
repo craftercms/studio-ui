@@ -1,0 +1,60 @@
+/*
+ * Copyright (C) 2007-2025 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+import React from 'react';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import { ControlProps } from '../../../FormsEngine/types';
+import FormsEngineField from '../../../FormsEngine/components/FormsEngineField';
+
+export interface DropdownStaticValuesProps extends ControlProps {
+	value: string;
+}
+
+export function DropdownStaticValues(props: DropdownStaticValuesProps) {
+	const { field, value: content, setValue, readonly, autoFocus } = props;
+
+	const defaultValue = field.defaultValue;
+	const options = content ? JSON.parse(content) : (defaultValue ?? []);
+	const selectedOption = options.find((option) => option.selected);
+
+	const handleChange = (event: SelectChangeEvent) => {
+		const newOptions = options.map((option) => {
+			option.selected = option.value === event.target.value;
+			return option;
+		});
+		setValue(JSON.stringify(newOptions));
+	};
+	return (
+		<FormsEngineField field={field}>
+			<Select
+				value={selectedOption?.value ?? ''}
+				label=""
+				onChange={handleChange}
+				disabled={readonly}
+				autoFocus={autoFocus}
+			>
+				{options.map((option) => (
+					<MenuItem key={option.value} value={option.value}>
+						{option.label}
+					</MenuItem>
+				))}
+			</Select>
+		</FormsEngineField>
+	);
+}
+
+export default DropdownStaticValues;

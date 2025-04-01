@@ -14,10 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createVirtualSection } from '../../utils';
+import { createVirtualSection, PartialContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
 
-export const rteDescriptor = {
+export const rteDescriptor: PartialContentType = {
 	id: 'rte',
 	name: 'Rich Text Editor',
 	description: 'Rich text editing area',
@@ -77,31 +77,43 @@ export const rteDescriptor = {
 		},
 		imageManager: {
 			id: 'imageManager',
-			type: 'dropdown',
+			type: 'datasource-selector',
 			name: 'Image Manager',
 			defaultValue: undefined,
-			validations: immutableEmptyObject
+			validations: {
+				// @ts-expect-error 'type' does not exist in type Partial<ContentTypeFieldValidations>
+				type: 'image'
+			}
 		},
 		videoManager: {
 			id: 'videoManager',
-			type: 'dropdown',
+			type: 'datasource-selector',
 			name: 'Video Manager',
 			defaultValue: undefined,
-			validations: immutableEmptyObject
+			validations: {
+				// @ts-expect-error 'type' does not exist in type Partial<ContentTypeFieldValidations>
+				type: 'video'
+			}
 		},
 		audioManager: {
 			id: 'audioManager',
-			type: 'dropdown',
+			type: 'datasource-selector',
 			name: 'Audio Manager',
 			defaultValue: undefined,
-			validations: immutableEmptyObject
+			validations: {
+				// @ts-expect-error 'type' does not exist in type Partial<ContentTypeFieldValidations>
+				type: 'audio'
+			}
 		},
 		fileManager: {
 			id: 'fileManager',
-			type: 'dropdown',
+			type: 'datasource-selector',
 			name: 'File Manager',
 			defaultValue: undefined,
-			validations: immutableEmptyObject
+			validations: {
+				// @ts-expect-error 'type' does not exist in type Partial<ContentTypeFieldValidations>
+				type: 'item'
+			}
 		},
 		required: {
 			id: 'required',

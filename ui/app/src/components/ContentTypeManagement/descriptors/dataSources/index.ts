@@ -70,7 +70,6 @@ export const dataSourceDescriptors = {
 	components: componentsDescriptor,
 	'audio-browse-repo': audioBrowseRepoDescriptor,
 	'audio-desktop-upload': audioDesktopUploadDescriptor,
-	// TODO: need to test
 	'configured-list': configuredListDescriptor,
 	'embedded-content': embeddedContentDescriptor,
 	'file-browse-repo': fileBrowseRepoDescriptor,

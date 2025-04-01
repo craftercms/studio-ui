@@ -22,14 +22,17 @@ export const checkboxGroupDescriptor: PartialContentType = {
 	name: 'Checkbox Group',
 	description: 'Multiple checkbox inputs',
 	sections: [
-		createVirtualSection({ title: 'Options', fields: ['datasource', 'selectAll', 'listDirection', 'readonly'] }),
+		createVirtualSection({
+			title: 'Options',
+			fields: ['datasource', 'selectAll', 'listDirection', 'readonly']
+		}),
 		createVirtualSection({ title: 'Constraints', fields: ['minSize'] })
 	],
 	fields: {
 		// TODO: check this type
 		datasource: {
 			id: 'datasource',
-			type: 'dropdown',
+			type: 'input',
 			name: 'Data Source',
 			defaultValue: undefined,
 			validations: immutableEmptyObject
@@ -41,12 +44,22 @@ export const checkboxGroupDescriptor: PartialContentType = {
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
-		// TODO: check this type
 		listDirection: {
 			id: 'listDirection',
-			type: 'dropdown',
+			type: 'dropdown-static-values',
 			name: 'List Direction',
-			defaultValue: undefined,
+			defaultValue: [
+				{
+					value: 'horizontal',
+					label: 'Horizontal',
+					selected: true
+				},
+				{
+					value: 'vertical',
+					label: 'Vertical',
+					selected: false
+				}
+			],
 			validations: immutableEmptyObject
 		},
 		readonly: {

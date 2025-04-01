@@ -74,10 +74,9 @@ export const componentsDataSourceDescriptor: PartialContentType = {
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
-		// TODO: custom control for 'types'
 		contentTypes: {
 			id: 'contentTypes',
-			type: 'input',
+			type: 'contentTypes',
 			name: 'Content Types',
 			defaultValue: undefined,
 			validations: immutableEmptyObject

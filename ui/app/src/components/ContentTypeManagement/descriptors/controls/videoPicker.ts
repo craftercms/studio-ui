@@ -10,13 +10,15 @@ export const videoPickerDescriptor: PartialContentType = {
 		createVirtualSection({ title: 'Constraints', fields: ['required'] })
 	],
 	fields: {
-		// TODO: check type
 		videoManager: {
 			id: 'videoManager',
-			type: 'dropdown',
+			type: 'datasource-selector',
 			name: 'Data Source',
 			defaultValue: undefined,
-			validations: immutableEmptyObject
+			validations: {
+				// @ts-expect-error 'type' does not exist in type Partial<ContentTypeFieldValidations>
+				type: 'video'
+			}
 		},
 		readonly: {
 			id: 'readonly',
