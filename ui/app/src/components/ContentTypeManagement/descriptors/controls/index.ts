@@ -204,7 +204,7 @@ export const typeBasicDetailsDescriptor: PartialContentType = {
 	fields: {
 		id: {
 			id: 'id',
-			type: 'readonlyValue', // TODO: create control readonlyValue
+			type: 'read-only-value',
 			name: 'ID',
 			description: '',
 			helpText: '',
@@ -231,7 +231,7 @@ export const typeBasicDetailsDescriptor: PartialContentType = {
 		},
 		type: {
 			id: 'type',
-			type: 'readonlyValue', // TODO: create control readonlyValue
+			type: 'read-only-value',
 			name: 'Archetype',
 			description: '',
 			helpText: '',

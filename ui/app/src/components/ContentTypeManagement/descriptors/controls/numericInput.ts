@@ -26,7 +26,6 @@ export const numericInputDescriptor: PartialContentType = {
 		createVirtualSection({ title: 'Constraints', fields: ['required', 'pattern'] })
 	],
 	fields: {
-		// TODO: There should be a correlation between maxValue and MinValue, to avoid max < min and vice versa
 		maxValue: {
 			id: 'maxValue',
 			type: 'numeric-input',

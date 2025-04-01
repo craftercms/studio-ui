@@ -63,7 +63,6 @@ export const commonDataSourceDescriptors: LookupTable<ContentTypeField> = {
 			required: { id: 'required', level: 'required', value: true }
 		}
 	}
-	// TODO: there's a 'type' tag in the xml (also in controls), should it be considered?
 };
 
 export const dataSourceDescriptors = {
