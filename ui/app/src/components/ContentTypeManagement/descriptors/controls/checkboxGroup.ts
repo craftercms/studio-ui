@@ -14,10 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createVirtualSection, PartialContentType } from '../../utils';
+import { createVirtualSection, DescriptorContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
 
-export const checkboxGroupDescriptor: PartialContentType = {
+export const checkboxGroupDescriptor: DescriptorContentType = {
 	id: 'checkbox-group',
 	name: 'Checkbox Group',
 	description: 'Multiple checkbox inputs',
@@ -29,13 +29,14 @@ export const checkboxGroupDescriptor: PartialContentType = {
 		createVirtualSection({ title: 'Constraints', fields: ['minSize'] })
 	],
 	fields: {
-		// TODO: check this type
 		datasource: {
 			id: 'datasource',
-			type: 'input',
+			type: 'datasource-single-selector',
 			name: 'Data Source',
 			defaultValue: undefined,
-			validations: immutableEmptyObject
+			validations: {
+				type: 'item'
+			}
 		},
 		selectAll: {
 			id: 'selectAll',

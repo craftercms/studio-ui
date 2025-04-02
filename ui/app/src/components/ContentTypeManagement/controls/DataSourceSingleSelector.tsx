@@ -14,22 +14,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useId, useMemo, useRef } from 'react';
+import React, { useId, useMemo } from 'react';
 import { ControlProps } from '../../FormsEngine/types';
 import FormsEngineField from '../../FormsEngine/components/FormsEngineField';
-import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox, { CheckboxProps } from '@mui/material/Checkbox';
+import RadioGroup, { RadioGroupProps } from '@mui/material/RadioGroup';
+import Radio from '@mui/material/Radio';
 
-export interface DataSourcesProps extends ControlProps {
+export interface DataSourceSingleSelectorProps extends ControlProps {
 	value: string;
 }
 
-export function DataSourceSelector(props: DataSourcesProps) {
+export function DataSourceSingleSelector(props: DataSourceSingleSelectorProps) {
 	const { field, value, setValue, contentType } = props;
-	const valueRef = useRef<string>(undefined);
-	valueRef.current = value;
-	const selectedDataSources = value?.split(',') ?? [];
 	const htmlId = useId();
 	// @ts-expect-error 'type' does not exist on type Partial<ContentTypeFieldValidations>
 	const type = field.validations.type;
@@ -37,30 +34,16 @@ export function DataSourceSelector(props: DataSourcesProps) {
 		return (contentType.dataSources ?? []).filter((ds) => ds.interface === type);
 	}, [contentType?.dataSources, type]);
 
-	const handleChange: CheckboxProps['onChange'] = (e) => {
-		const newSelected = selectedDataSources;
-
-		if (e.target.checked) {
-			newSelected.push(e.target.name);
-		} else {
-			newSelected.splice(newSelected.indexOf(e.target.name), 1);
-		}
-
-		setValue(newSelected.join(','));
-	};
+	const handleChange: RadioGroupProps['onChange'] = (e) => setValue(e.currentTarget.value);
 	return (
 		<FormsEngineField htmlFor={htmlId} field={field}>
-			<FormControl variant="standard">
+			<RadioGroup value={value ?? ''} onChange={handleChange}>
 				{filteredDataSources.map((ds) => (
-					<FormControlLabel
-						key={ds.id}
-						control={<Checkbox name={ds.id} checked={selectedDataSources.includes(ds.id)} onChange={handleChange} />}
-						label={ds.title}
-					/>
+					<FormControlLabel key={ds.id} value={ds.id} control={<Radio />} label={ds.title} />
 				))}
-			</FormControl>
+			</RadioGroup>
 		</FormsEngineField>
 	);
 }
 
-export default DataSourceSelector;
+export default DataSourceSingleSelector;
