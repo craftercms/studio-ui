@@ -15,9 +15,9 @@
  */
 
 import React, { useId, useState } from 'react';
-import FormsEngineField from '../../../FormsEngine/components/FormsEngineField';
-import { ControlProps } from '../../../FormsEngine/types';
-import useContentTypes from '../../../../hooks/useContentTypes';
+import FormsEngineField from '../../FormsEngine/components/FormsEngineField';
+import { ControlProps } from '../../FormsEngine/types';
+import useContentTypes from '../../../hooks/useContentTypes';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';

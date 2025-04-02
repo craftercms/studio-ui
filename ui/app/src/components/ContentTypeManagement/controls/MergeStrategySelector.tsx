@@ -14,33 +14,47 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import OutlinedInput, { OutlinedInputProps } from '@mui/material/OutlinedInput';
 import React, { useId } from 'react';
-import FormsEngineField from '../../../FormsEngine/components/FormsEngineField';
-import { ControlProps } from '../../../FormsEngine/types';
+import FormsEngineField from '../../FormsEngine/components/FormsEngineField';
+import { ControlProps } from '../../FormsEngine/types';
+import TextField from '@mui/material/TextField';
+import Autocomplete, { AutocompleteProps } from '@mui/material/Autocomplete';
 
-export interface PathWithMacroCreatorProps extends ControlProps {
+export interface MergeStrategySelectorProps extends ControlProps {
 	value: string;
 }
 
-export function PathWithMacroCreator(props: PathWithMacroCreatorProps) {
+const mergeStrategies = ['inherit-levels'];
+
+export function MergeStrategySelector(props: MergeStrategySelectorProps) {
 	const { field, value, setValue, readonly, autoFocus } = props;
 	const htmlId = useId();
 	const maxLength = field.validations.maxLength?.value;
-	const handleChange: OutlinedInputProps['onChange'] = (e) => setValue(e.currentTarget.value);
+	const handleChange: AutocompleteProps<string, false, true, true>['onInputChange'] = (event, value) => setValue(value);
+
 	return (
 		<FormsEngineField htmlFor={htmlId} field={field} max={maxLength} length={value.length}>
-			<OutlinedInput
-				autoFocus={autoFocus}
+			<Autocomplete
+				freeSolo
+				options={mergeStrategies}
 				id={htmlId}
-				fullWidth
-				inputProps={{ maxLength }}
+				onInputChange={handleChange}
 				value={value}
-				onChange={handleChange}
-				disabled={readonly}
+				readOnly={readonly}
+				autoFocus={autoFocus}
+				renderInput={(params) => {
+					return (
+						<TextField
+							{...params}
+							slotProps={{
+								htmlInput: { ...params.inputProps, maxLength }
+							}}
+						/>
+					);
+				}}
 			/>
 		</FormsEngineField>
 	);
 }
 
-export default PathWithMacroCreator;
+export default MergeStrategySelector;

@@ -16,8 +16,8 @@
 
 import OutlinedInput, { OutlinedInputProps } from '@mui/material/OutlinedInput';
 import React, { useId } from 'react';
-import FormsEngineField from '../../../FormsEngine/components/FormsEngineField';
-import { ControlProps } from '../../../FormsEngine/types';
+import FormsEngineField from '../../FormsEngine/components/FormsEngineField';
+import { ControlProps } from '../../FormsEngine/types';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import IconButton from '@mui/material/IconButton';
 import { useDispatch } from 'react-redux';
@@ -25,9 +25,9 @@ import {
 	closePathSelectionDialog,
 	pathSelectionDialogClosed,
 	showPathSelectionDialog
-} from '../../../../state/actions/dialogs';
-import { batchActions, dispatchDOMEvent } from '../../../../state/actions/misc';
-import { createCustomDocumentEventListener } from '../../../../utils/dom';
+} from '../../../state/actions/dialogs';
+import { batchActions, dispatchDOMEvent } from '../../../state/actions/misc';
+import { createCustomDocumentEventListener } from '../../../utils/dom';
 
 export interface ContentPathInputProps extends ControlProps {
 	value: string;

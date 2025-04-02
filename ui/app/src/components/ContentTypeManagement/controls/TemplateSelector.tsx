@@ -16,19 +16,19 @@
 
 import OutlinedInput, { OutlinedInputProps } from '@mui/material/OutlinedInput';
 import React, { useId } from 'react';
-import { ControlProps } from '../../../FormsEngine/types';
-import FormsEngineField from '../../../FormsEngine/components/FormsEngineField';
+import { ControlProps } from '../../FormsEngine/types';
+import FormsEngineField from '../../FormsEngine/components/FormsEngineField';
 import IconButton from '@mui/material/IconButton';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import Tooltip from '@mui/material/Tooltip';
 import { FormattedMessage } from 'react-intl';
 import { useDispatch } from 'react-redux';
-import { popDialog, pushDialog } from '../../../../state/actions/dialogStack';
+import { popDialog, pushDialog } from '../../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
-import { nou } from '../../../../utils/object';
-import { editTemplate } from '../../../../state/actions/misc';
-import { getFileNameFromPath } from '../../../../utils/path';
+import { nou } from '../../../utils/object';
+import { editTemplate } from '../../../state/actions/misc';
+import { getFileNameFromPath } from '../../../utils/path';
 
 export interface TemplateSelectorProps extends ControlProps {
 	value: string;

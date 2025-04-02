@@ -16,8 +16,8 @@
 
 import React, { useId, useState } from 'react';
 import Box from '@mui/material/Box';
-import { ControlProps } from '../../../FormsEngine/types';
-import FormsEngineField from '../../../FormsEngine/components/FormsEngineField';
+import { ControlProps } from '../../FormsEngine/types';
+import FormsEngineField from '../../FormsEngine/components/FormsEngineField';
 import TextField, { TextFieldProps } from '@mui/material/TextField';
 import { FormattedMessage } from 'react-intl';
 import IconButton from '@mui/material/IconButton';

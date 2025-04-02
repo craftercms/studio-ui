@@ -16,18 +16,18 @@
 
 import OutlinedInput, { OutlinedInputProps } from '@mui/material/OutlinedInput';
 import React, { useId } from 'react';
-import { ControlProps } from '../../../FormsEngine/types';
-import FormsEngineField from '../../../FormsEngine/components/FormsEngineField';
+import { ControlProps } from '../../FormsEngine/types';
+import FormsEngineField from '../../FormsEngine/components/FormsEngineField';
 import Tooltip from '@mui/material/Tooltip';
 import { FormattedMessage } from 'react-intl';
 import { useDispatch } from 'react-redux';
-import { popDialog, pushDialog } from '../../../../state/actions/dialogStack';
+import { popDialog, pushDialog } from '../../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
 import IconButton from '@mui/material/IconButton';
 import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
 import UploadRoundedIcon from '@mui/icons-material/UploadRounded';
-import useActiveSiteId from '../../../../hooks/useActiveSiteId';
-import { useStableFormContext } from '../../../FormsEngine/lib/formsEngineContext';
+import useActiveSiteId from '../../../hooks/useActiveSiteId';
+import { useStableFormContext } from '../../FormsEngine/lib/formsEngineContext';
 
 export interface TypeImageSelectorProps extends ControlProps {
 	value: string;

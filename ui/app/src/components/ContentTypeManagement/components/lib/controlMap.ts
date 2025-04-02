@@ -32,17 +32,17 @@ export type ContentTypeControlType =
 	| 'merge-strategy-selector';
 
 export const controlMap: Record<ContentTypeControlType, ElementType> = {
-	'content-path-input': lazy(() => import('../controls/ContentPathInput')),
-	contentTypes: lazy(() => import('../controls/ContentTypesSelector')),
-	'dropdown-static-values': lazy(() => import('../controls/DropdownStaticValues')),
-	'template-selector': lazy(() => import('../controls/TemplateSelector')),
-	'type-image-selector': lazy(() => import('../controls/TypeImageSelector')),
-	'datasource-selector': lazy(() => import('../controls/DataSourceSelector')),
-	'read-only-value': lazy(() => import('../controls/ReadOnlyValue')),
-	range: lazy(() => import('../controls/Range')),
-	'type-js-controller-selector': lazy(() => import('../controls/TypeJsControllerSelector')),
-	'key-value-map': lazy(() => import('../controls/KeyValueMap')),
-	'type-destination-paths-selector': lazy(() => import('../controls/TypeDestinationPathsSelector')),
-	'path-with-macro-creator': lazy(() => import('../controls/PathWithMacroCreator')),
-	'merge-strategy-selector': lazy(() => import('../controls/MergeStrategySelector'))
+	'content-path-input': lazy(() => import('../../controls/ContentPathInput')),
+	contentTypes: lazy(() => import('../../controls/ContentTypesSelector')),
+	'dropdown-static-values': lazy(() => import('../../controls/DropdownStaticValues')),
+	'template-selector': lazy(() => import('../../controls/TemplateSelector')),
+	'type-image-selector': lazy(() => import('../../controls/TypeImageSelector')),
+	'datasource-selector': lazy(() => import('../../controls/DataSourceSelector')),
+	'read-only-value': lazy(() => import('../../controls/ReadOnlyValue')),
+	range: lazy(() => import('../../controls/Range')),
+	'type-js-controller-selector': lazy(() => import('../../controls/TypeJsControllerSelector')),
+	'key-value-map': lazy(() => import('../../controls/KeyValueMap')),
+	'type-destination-paths-selector': lazy(() => import('../../controls/TypeDestinationPathsSelector')),
+	'path-with-macro-creator': lazy(() => import('../../controls/PathWithMacroCreator')),
+	'merge-strategy-selector': lazy(() => import('../../controls/MergeStrategySelector'))
 };

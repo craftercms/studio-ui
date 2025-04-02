@@ -17,8 +17,8 @@
 import React from 'react';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import { ControlProps } from '../../../FormsEngine/types';
-import FormsEngineField from '../../../FormsEngine/components/FormsEngineField';
+import { ControlProps } from '../../FormsEngine/types';
+import FormsEngineField from '../../FormsEngine/components/FormsEngineField';
 
 export interface DropdownStaticValuesProps extends ControlProps {
 	value: string;

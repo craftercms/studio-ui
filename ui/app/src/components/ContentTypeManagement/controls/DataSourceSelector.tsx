@@ -15,8 +15,8 @@
  */
 
 import React, { useId, useMemo, useRef } from 'react';
-import { ControlProps } from '../../../FormsEngine/types';
-import FormsEngineField from '../../../FormsEngine/components/FormsEngineField';
+import { ControlProps } from '../../FormsEngine/types';
+import FormsEngineField from '../../FormsEngine/components/FormsEngineField';
 import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox, { CheckboxProps } from '@mui/material/Checkbox';

@@ -15,8 +15,8 @@
  */
 
 import React, { ChangeEvent, useId } from 'react';
-import FormsEngineField from '../../../FormsEngine/components/FormsEngineField';
-import { ControlProps } from '../../../FormsEngine/types';
+import FormsEngineField from '../../FormsEngine/components/FormsEngineField';
+import { ControlProps } from '../../FormsEngine/types';
 import Box from '@mui/material/Box';
 import { FormattedMessage } from 'react-intl';
 import TextField from '@mui/material/TextField';
