@@ -14,10 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createVirtualSection, PartialContentType } from '../../utils';
+import { createVirtualSection, DescriptorContentType, PartialContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
 
-export const nodeSelectorDescriptor: PartialContentType = {
+export const nodeSelectorDescriptor: DescriptorContentType = {
 	id: 'node-selector',
 	name: 'Node Selector',
 	description: 'Content node selection',
@@ -49,7 +49,6 @@ export const nodeSelectorDescriptor: PartialContentType = {
 			name: 'Item Manager',
 			defaultValue: undefined,
 			validations: {
-				// @ts-expect-error 'type' does not exist in type Partial<ContentTypeFieldValidations>
 				type: 'item'
 			}
 		},

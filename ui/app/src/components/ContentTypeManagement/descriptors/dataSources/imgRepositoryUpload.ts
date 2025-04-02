@@ -14,22 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createVirtualSection, PartialContentType } from '../../utils';
+import { createVirtualSection, DescriptorContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
-import type { ContentTypeField } from '../../../../models';
 
-export type ImageRepositoryUploadRepoContentType = Omit<PartialContentType, 'fields'> & {
-	fields: {
-		[key: string]: ContentTypeField & {
-			validations: ContentTypeField['validations'] & {
-				regex?: RegExp;
-				root?: string;
-			};
-		};
-	};
-};
-
-export const imgRepositoryUploadDataSourceDescriptor: ImageRepositoryUploadRepoContentType = {
+export const imgRepositoryUploadDataSourceDescriptor: DescriptorContentType = {
 	id: 'img-repository-upload',
 	name: 'Image From Repository',
 	description: '',

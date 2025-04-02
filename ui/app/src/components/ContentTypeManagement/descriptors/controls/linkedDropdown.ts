@@ -14,10 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createVirtualSection, PartialContentType } from '../../utils';
+import { createVirtualSection, DescriptorContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
 
-export const linkedDropdownDescriptor: PartialContentType = {
+export const linkedDropdownDescriptor: DescriptorContentType = {
 	id: 'linked-dropdown',
 	name: 'Linked Dropdown',
 	description: 'Linked dropdown selector',
@@ -32,7 +32,6 @@ export const linkedDropdownDescriptor: PartialContentType = {
 			name: 'Data Source',
 			defaultValue: undefined,
 			validations: {
-				// @ts-expect-error 'type' does not exist in type Partial<ContentTypeFieldValidations>
 				type: 'item'
 			}
 		},

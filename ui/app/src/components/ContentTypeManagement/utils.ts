@@ -216,6 +216,18 @@ export type PartialContentType = Pick<ContentType, 'id' | 'name' | 'description'
 	dataSources?: DataSource[];
 };
 
+export type DescriptorContentType = Omit<PartialContentType, 'fields'> & {
+	fields: {
+		[key: string]: ContentTypeField & {
+			validations: ContentTypeField['validations'] & {
+				root?: string;
+				regex?: RegExp;
+				type?: string;
+			};
+		};
+	};
+};
+
 export function createEmptyTypeStructure(mixin?: Partial<ContentType>): ContentType {
 	return {
 		id: null,
@@ -299,8 +311,8 @@ export function createVirtualSection(
 	};
 }
 
-export function createVirtualDataSourceFields(type: ContentType): LookupTable<ContentTypeField> {
-	const dataSourceFields: LookupTable<ContentTypeField> = {};
+export function createVirtualDataSourceFields(type: ContentType): Partial<DescriptorContentType> {
+	const dataSourceFields: Partial<DescriptorContentType> = {};
 	for (const dataSource of type.dataSources ?? []) {
 		dataSourceFields[dataSource.id] = {
 			id: dataSource.id,
@@ -308,7 +320,6 @@ export function createVirtualDataSourceFields(type: ContentType): LookupTable<Co
 			name: dataSource.title,
 			defaultValue: undefined,
 			validations: {
-				// @ts-expect-error 'type' does not exist in type Partial<ContentTypeFieldValidations>
 				type: dataSource.interface
 			}
 		};

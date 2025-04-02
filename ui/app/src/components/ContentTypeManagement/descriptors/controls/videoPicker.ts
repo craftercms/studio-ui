@@ -1,7 +1,7 @@
 import { immutableEmptyObject } from '../../../../utils/object';
-import { createVirtualSection, PartialContentType } from '../../utils';
+import { createVirtualSection, DescriptorContentType } from '../../utils';
 
-export const videoPickerDescriptor: PartialContentType = {
+export const videoPickerDescriptor: DescriptorContentType = {
 	id: 'video-picker',
 	name: 'Video Picker',
 	description: 'Video selection control',
@@ -16,7 +16,6 @@ export const videoPickerDescriptor: PartialContentType = {
 			name: 'Data Source',
 			defaultValue: undefined,
 			validations: {
-				// @ts-expect-error 'type' does not exist in type Partial<ContentTypeFieldValidations>
 				type: 'video'
 			}
 		},

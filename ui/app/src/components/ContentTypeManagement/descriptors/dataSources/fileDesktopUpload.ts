@@ -14,21 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createVirtualSection, PartialContentType } from '../../utils';
-import type { ContentTypeField } from '../../../../models';
+import { createVirtualSection, DescriptorContentType } from '../../utils';
 
-export type FileDesktopUploadRepoContentType = Omit<PartialContentType, 'fields'> & {
-	fields: {
-		[key: string]: ContentTypeField & {
-			validations: ContentTypeField['validations'] & {
-				regex?: RegExp;
-				root?: string;
-			};
-		};
-	};
-};
-
-export const fileDesktopUploadDataSourceDescriptor: FileDesktopUploadRepoContentType = {
+export const fileDesktopUploadDataSourceDescriptor: DescriptorContentType = {
 	id: 'file-desktop-upload',
 	name: 'File Uploaded From Desktop',
 	description: '',

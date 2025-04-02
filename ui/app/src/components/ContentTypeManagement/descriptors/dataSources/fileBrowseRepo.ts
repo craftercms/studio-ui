@@ -14,20 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createVirtualSection, PartialContentType } from '../../utils';
-import type { ContentTypeField } from '../../../../models';
+import { createVirtualSection, DescriptorContentType } from '../../utils';
 
-export type FileBrowseRepoContentType = Omit<PartialContentType, 'fields'> & {
-	fields: {
-		[key: string]: ContentTypeField & {
-			validations: ContentTypeField['validations'] & {
-				root?: string;
-			};
-		};
-	};
-};
-
-export const fileBrowseRepoDataSourceDescriptor: FileBrowseRepoContentType = {
+export const fileBrowseRepoDataSourceDescriptor: DescriptorContentType = {
 	id: 'file-browse-repo',
 	name: 'File Browse',
 	description: '',

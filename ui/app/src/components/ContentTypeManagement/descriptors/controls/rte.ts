@@ -14,10 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createVirtualSection, PartialContentType } from '../../utils';
+import { createVirtualSection, DescriptorContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
 
-export const rteDescriptor: PartialContentType = {
+export const rteDescriptor: DescriptorContentType = {
 	id: 'rte',
 	name: 'Rich Text Editor',
 	description: 'Rich text editing area',
@@ -81,7 +81,6 @@ export const rteDescriptor: PartialContentType = {
 			name: 'Image Manager',
 			defaultValue: undefined,
 			validations: {
-				// @ts-expect-error 'type' does not exist in type Partial<ContentTypeFieldValidations>
 				type: 'image'
 			}
 		},
@@ -91,7 +90,6 @@ export const rteDescriptor: PartialContentType = {
 			name: 'Video Manager',
 			defaultValue: undefined,
 			validations: {
-				// @ts-expect-error 'type' does not exist in type Partial<ContentTypeFieldValidations>
 				type: 'video'
 			}
 		},
@@ -101,7 +99,6 @@ export const rteDescriptor: PartialContentType = {
 			name: 'Audio Manager',
 			defaultValue: undefined,
 			validations: {
-				// @ts-expect-error 'type' does not exist in type Partial<ContentTypeFieldValidations>
 				type: 'audio'
 			}
 		},
@@ -111,7 +108,6 @@ export const rteDescriptor: PartialContentType = {
 			name: 'File Manager',
 			defaultValue: undefined,
 			validations: {
-				// @ts-expect-error 'type' does not exist in type Partial<ContentTypeFieldValidations>
 				type: 'item'
 			}
 		},

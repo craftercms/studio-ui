@@ -15,9 +15,9 @@
  */
 
 import { immutableEmptyObject } from '../../../../utils/object';
-import { createVirtualSection, PartialContentType } from '../../utils';
+import { createVirtualSection, DescriptorContentType } from '../../utils';
 
-export const videoBrowseRepoDataSourceDescriptor: PartialContentType = {
+export const videoBrowseRepoDataSourceDescriptor: DescriptorContentType = {
 	id: 'video-browse-repo',
 	name: 'Video From Repository',
 	description: '',
@@ -35,7 +35,6 @@ export const videoBrowseRepoDataSourceDescriptor: PartialContentType = {
 			name: 'Repository Path',
 			defaultValue: undefined,
 			validations: {
-				// @ts-expect-error 'root' does not exist in type Partial<ContentTypeFieldValidations>
 				root: '/static-assets'
 			}
 		},

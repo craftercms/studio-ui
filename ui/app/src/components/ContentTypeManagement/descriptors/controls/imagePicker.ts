@@ -14,10 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createVirtualSection, PartialContentType } from '../../utils';
+import { createVirtualSection, DescriptorContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
 
-export const imagePickerDescriptor: PartialContentType = {
+export const imagePickerDescriptor: DescriptorContentType = {
 	id: 'image-picker',
 	name: 'Image Picker',
 	description: 'Image selection tool',
@@ -63,7 +63,6 @@ export const imagePickerDescriptor: PartialContentType = {
 			name: 'Data Source',
 			defaultValue: undefined,
 			validations: {
-				// @ts-expect-error 'type' does not exist in type Partial<ContentTypeFieldValidations>
 				type: 'image'
 			}
 		},

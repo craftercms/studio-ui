@@ -15,9 +15,9 @@
  */
 
 import { immutableEmptyObject } from '../../../../utils/object';
-import { createVirtualSection, PartialContentType } from '../../utils';
+import { createVirtualSection, DescriptorContentType } from '../../utils';
 
-export const sharedContentDataSourceDescriptor: PartialContentType = {
+export const sharedContentDataSourceDescriptor: DescriptorContentType = {
 	id: 'shared-content',
 	name: 'Shared Content',
 	description: '',
@@ -55,7 +55,6 @@ export const sharedContentDataSourceDescriptor: PartialContentType = {
 			name: 'Repository Path',
 			defaultValue: '/site/',
 			validations: {
-				// @ts-expect-error 'regex' does not exist in type Partial<ContentTypeFieldValidations>
 				regex: /^\/site(\/.*)?$/,
 				root: '/site'
 			}
@@ -66,7 +65,6 @@ export const sharedContentDataSourceDescriptor: PartialContentType = {
 			name: 'Browse Path',
 			defaultValue: '/site',
 			validations: {
-				// @ts-expect-error 'regex' does not exist in type Partial<ContentTypeFieldValidations>
 				regex: /^\/site(\/.*)?$/,
 				root: '/site'
 			}

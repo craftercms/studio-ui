@@ -15,20 +15,9 @@
  */
 
 import { immutableEmptyObject } from '../../../../utils/object';
-import { createVirtualSection, PartialContentType } from '../../utils';
-import type { ContentTypeField } from '../../../../models';
+import { createVirtualSection, DescriptorContentType } from '../../utils';
 
-export type VideoDesktopUploadContentType = Omit<PartialContentType, 'fields'> & {
-	fields: {
-		[key: string]: ContentTypeField & {
-			validations: ContentTypeField['validations'] & {
-				root?: string;
-			};
-		};
-	};
-};
-
-export const videoDesktopUploadDataSourceDescriptor: VideoDesktopUploadContentType = {
+export const videoDesktopUploadDataSourceDescriptor: DescriptorContentType = {
 	id: 'video-desktop-upload',
 	name: 'Video Uploaded From Desktop',
 	description: '',
