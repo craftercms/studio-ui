@@ -644,6 +644,8 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
               const hasValidations = Boolean(validations.length);
               const hasFailedRequired = validations.some(({ level }) => level === 'required');
               const elementRecord = elementRegistry.get(highlight.id);
+              // If no elementRecord is found, the item was removed while the hover was on top. Skip.
+              if (!elementRecord) return null;
               const elementPath = models[elementRecord.modelId]?.craftercms.path ?? path;
               const { isLocked, isExternallyModified } = checkIfLockedOrModified(state, elementRecord);
               const lockInfo = isLocked ? state.lockedPaths[elementPath]?.user : null;
