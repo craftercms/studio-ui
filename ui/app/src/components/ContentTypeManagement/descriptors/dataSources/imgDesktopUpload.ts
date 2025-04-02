@@ -15,8 +15,20 @@
  */
 
 import { createVirtualSection, PartialContentType } from '../../utils';
+import type { ContentTypeField } from '../../../../models';
 
-export const imgDesktopUploadDataSourceDescriptor: PartialContentType = {
+export type ImageDesktopUploadRepoContentType = Omit<PartialContentType, 'fields'> & {
+	fields: {
+		[key: string]: ContentTypeField & {
+			validations: ContentTypeField['validations'] & {
+				regex?: RegExp;
+				root?: string;
+			};
+		};
+	};
+};
+
+export const imgDesktopUploadDataSourceDescriptor: ImageDesktopUploadRepoContentType = {
 	id: 'img-desktop-upload',
 	name: 'Image Uploaded From Desktop',
 	description: '',
@@ -33,7 +45,6 @@ export const imgDesktopUploadDataSourceDescriptor: PartialContentType = {
 			name: 'Repository Path',
 			defaultValue: '/',
 			validations: {
-				// @ts-expect-error 'regex' does not exist in type Partial<ContentTypeFieldValidations>
 				regex: /^\/static-assets(\/.*)?$/,
 				root: '/static-assets'
 			}

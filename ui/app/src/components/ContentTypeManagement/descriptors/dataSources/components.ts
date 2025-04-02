@@ -56,7 +56,7 @@ export const componentsDataSourceDescriptor: PartialContentType = {
 		enableSearch: {
 			id: 'enableSearch',
 			type: 'checkbox',
-			name: '',
+			name: 'Enable Search',
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},

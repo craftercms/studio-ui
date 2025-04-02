@@ -24,7 +24,7 @@ export const linkTextareaDescriptor: PartialContentType = {
 	sections: [
 		createVirtualSection({
 			title: 'Options',
-			fields: ['rows', 'maxlength', 'allowResize', 'readonly', 'required']
+			fields: ['rows', 'maxlength', 'allowResize', 'readonly']
 		}),
 		createVirtualSection({ title: 'Constraints', fields: ['required'] })
 	],

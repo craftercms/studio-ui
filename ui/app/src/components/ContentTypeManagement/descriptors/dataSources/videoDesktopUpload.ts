@@ -16,8 +16,19 @@
 
 import { immutableEmptyObject } from '../../../../utils/object';
 import { createVirtualSection, PartialContentType } from '../../utils';
+import type { ContentTypeField } from '../../../../models';
 
-export const videoDesktopUploadDataSourceDescriptor: PartialContentType = {
+export type VideoDesktopUploadContentType = Omit<PartialContentType, 'fields'> & {
+	fields: {
+		[key: string]: ContentTypeField & {
+			validations: ContentTypeField['validations'] & {
+				root?: string;
+			};
+		};
+	};
+};
+
+export const videoDesktopUploadDataSourceDescriptor: VideoDesktopUploadContentType = {
 	id: 'video-desktop-upload',
 	name: 'Video Uploaded From Desktop',
 	description: '',
@@ -35,7 +46,6 @@ export const videoDesktopUploadDataSourceDescriptor: PartialContentType = {
 			name: 'Repository Path',
 			defaultValue: undefined,
 			validations: {
-				// @ts-expect-error 'root' does not exist in type Partial<ContentTypeFieldValidations>
 				root: '/static-assets'
 			}
 		},
