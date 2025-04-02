@@ -29,17 +29,16 @@ export const imagePickerDescriptor: PartialContentType = {
 		createVirtualSection({ title: 'Constraints', fields: ['required'] })
 	],
 	fields: {
-		// TODO: on the legacy, width and height are of type 'range', allowing min-max values or a single value
 		width: {
 			id: 'width',
-			type: 'numeric-input',
+			type: 'range',
 			name: 'Width',
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		height: {
 			id: 'height',
-			type: 'numeric-input',
+			type: 'range',
 			name: 'Height',
 			defaultValue: undefined,
 			validations: immutableEmptyObject

@@ -38,8 +38,6 @@ export interface TypeImageSelectorProps extends ControlProps {
 	WIDTHCONSTRAINS = 775;
 	HEIGHTCONSTRAINS = 767;
 */
-// TODO: This control behavior was a bit different in legacy, since on the image upload success it used to update the xml
-//  		 right away, not waiting for the type save action.
 export function TypeImageSelector(props: TypeImageSelectorProps) {
 	const { field, value, setValue, autoFocus } = props;
 	const htmlId = useId();
@@ -47,6 +45,7 @@ export function TypeImageSelector(props: TypeImageSelectorProps) {
 	const dispatch = useDispatch();
 	const basePath = '/config/studio/content-types';
 	const stableFormContext = useStableFormContext();
+	// stableFormContext.originalValues is of type `ContentType`, and `id` is the current contentTypeId.
 	const contentTypeId = stableFormContext.originalValues.id;
 
 	const handleChange: OutlinedInputProps['onChange'] = (e) => setValue(e.currentTarget.value);
@@ -55,7 +54,7 @@ export function TypeImageSelector(props: TypeImageSelectorProps) {
 		setValue('');
 	};
 
-	const onEditTemplate = () => {
+	const onUploadImage = () => {
 		const id = nanoid();
 		dispatch(
 			pushDialog({
@@ -79,7 +78,7 @@ export function TypeImageSelector(props: TypeImageSelectorProps) {
 	};
 
 	return (
-		<FormsEngineField htmlFor={htmlId} field={field} length={value.length}>
+		<FormsEngineField htmlFor={htmlId} field={field}>
 			<OutlinedInput
 				autoFocus={autoFocus}
 				id={htmlId}
@@ -89,13 +88,15 @@ export function TypeImageSelector(props: TypeImageSelectorProps) {
 				disabled
 				endAdornment={
 					<>
-						<Tooltip title={<FormattedMessage defaultMessage="Remove image" />}>
-							<IconButton onClick={() => onDeleteImage()}>
-								<DeleteOutlineRoundedIcon />
-							</IconButton>
-						</Tooltip>
+						{value && (
+							<Tooltip title={<FormattedMessage defaultMessage="Remove image" />}>
+								<IconButton onClick={() => onDeleteImage()}>
+									<DeleteOutlineRoundedIcon />
+								</IconButton>
+							</Tooltip>
+						)}
 						<Tooltip title={<FormattedMessage defaultMessage="Upload Image" />}>
-							<IconButton onClick={() => onEditTemplate()}>
+							<IconButton onClick={() => onUploadImage()}>
 								<UploadRoundedIcon />
 							</IconButton>
 						</Tooltip>

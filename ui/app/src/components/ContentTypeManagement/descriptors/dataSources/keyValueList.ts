@@ -69,8 +69,7 @@ export const keyValueListDataSourceDescriptor: PartialContentType = {
 		},
 		options: {
 			id: 'options',
-			// TODO: We need a custom control 'keyValueMap (?)' for this
-			type: 'input',
+			type: 'key-value-map',
 			name: 'Options',
 			defaultValue: undefined,
 			validations: immutableEmptyObject

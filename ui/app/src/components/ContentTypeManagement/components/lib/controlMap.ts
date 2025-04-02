@@ -23,7 +23,13 @@ export type ContentTypeControlType =
 	| 'template-selector'
 	| 'type-image-selector'
 	| 'datasource-selector'
-	| 'read-only-value';
+	| 'read-only-value'
+	| 'range'
+	| 'type-js-controller-selector'
+	| 'key-value-map'
+	| 'type-destination-paths-selector'
+	| 'path-with-macro-creator'
+	| 'merge-strategy-selector';
 
 export const controlMap: Record<ContentTypeControlType, ElementType> = {
 	'content-path-input': lazy(() => import('../controls/ContentPathInput')),
@@ -32,5 +38,11 @@ export const controlMap: Record<ContentTypeControlType, ElementType> = {
 	'template-selector': lazy(() => import('../controls/TemplateSelector')),
 	'type-image-selector': lazy(() => import('../controls/TypeImageSelector')),
 	'datasource-selector': lazy(() => import('../controls/DataSourceSelector')),
-	'read-only-value': lazy(() => import('../controls/ReadOnlyValue'))
+	'read-only-value': lazy(() => import('../controls/ReadOnlyValue')),
+	range: lazy(() => import('../controls/Range')),
+	'type-js-controller-selector': lazy(() => import('../controls/TypeJsControllerSelector')),
+	'key-value-map': lazy(() => import('../controls/KeyValueMap')),
+	'type-destination-paths-selector': lazy(() => import('../controls/TypeDestinationPathsSelector')),
+	'path-with-macro-creator': lazy(() => import('../controls/PathWithMacroCreator')),
+	'merge-strategy-selector': lazy(() => import('../controls/MergeStrategySelector'))
 };

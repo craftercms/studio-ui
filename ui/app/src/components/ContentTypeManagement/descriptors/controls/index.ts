@@ -193,7 +193,7 @@ export const typeBasicDetailsDescriptor: PartialContentType = {
 		createVirtualSection({
 			id: 'rendering',
 			title: 'Rendering',
-			fields: ['groovyController', 'hasJsController', 'displayTemplate', 'isHeadless']
+			fields: ['hasJsController', 'displayTemplate', 'isHeadless']
 		}),
 		createVirtualSection({
 			id: 'allowedDestinations',
@@ -249,7 +249,7 @@ export const typeBasicDetailsDescriptor: PartialContentType = {
 		},
 		quickCreatePath: {
 			id: 'quickCreatePath',
-			type: 'input', // TODO: create control pathWithMacroCreator
+			type: 'path-with-macro-creator',
 			name: 'Destination Path Pattern',
 			description: '',
 			helpText: '',
@@ -267,7 +267,7 @@ export const typeBasicDetailsDescriptor: PartialContentType = {
 		},
 		mergeStrategy: {
 			id: 'mergeStrategy',
-			type: 'input', // TODO: create control mergeStrategySelector
+			type: 'merge-strategy-selector',
 			name: 'Merge Strategy',
 			description: 'Inheritance description...',
 			helpText: '',
@@ -276,7 +276,7 @@ export const typeBasicDetailsDescriptor: PartialContentType = {
 		},
 		hasJsController: {
 			id: 'hasJsController',
-			type: 'checkbox', // TODO: create control typeJsControllerSelector
+			type: 'type-js-controller-selector',
 			name: 'Client-side Controller',
 			description: '',
 			helpText: '',
@@ -304,7 +304,7 @@ export const typeBasicDetailsDescriptor: PartialContentType = {
 		},
 		paths: {
 			id: 'paths',
-			type: 'typeDestinationPathsSelector', // TODO: create control
+			type: 'type-destination-paths-selector',
 			name: '',
 			description: '',
 			helpText: '',

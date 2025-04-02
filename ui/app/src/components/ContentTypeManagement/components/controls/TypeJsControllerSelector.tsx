@@ -1,0 +1,76 @@
+/*
+ * Copyright (C) 2007-2025 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+import OutlinedInput from '@mui/material/OutlinedInput';
+import React, { useId } from 'react';
+import { ControlProps } from '../../../FormsEngine/types';
+import FormsEngineField from '../../../FormsEngine/components/FormsEngineField';
+import Tooltip from '@mui/material/Tooltip';
+import { FormattedMessage } from 'react-intl';
+import { useDispatch } from 'react-redux';
+import IconButton from '@mui/material/IconButton';
+import EditRoundedIcon from '@mui/icons-material/EditRounded';
+import { useStableFormContext } from '../../../FormsEngine/lib/formsEngineContext';
+import { editController } from '../../../../state/actions/misc';
+
+export interface TypeJsControllerSelectorProps extends ControlProps {
+	value: string;
+}
+
+export function TypeJsControllerSelector(props: TypeJsControllerSelectorProps) {
+	const { field, autoFocus } = props;
+	const htmlId = useId();
+	const dispatch = useDispatch();
+	const basePath = '/config/studio/content-types';
+	const stableFormContext = useStableFormContext();
+	// stableFormContext.originalValues is of type `ContentType`, and `id` is the current contentTypeId.
+	const contentTypeId: string = stableFormContext.originalValues.id as string;
+	const fileName = 'controller.groovy';
+
+	const onEditController = () => {
+		// editController creates the config file if it doesn't exist.
+		dispatch(
+			editController({
+				path: `${basePath}${contentTypeId}/`,
+				fileName,
+				mode: 'groovy',
+				contentType: contentTypeId,
+				openOnSuccess: true
+			})
+		);
+	};
+
+	return (
+		<FormsEngineField htmlFor={htmlId} field={field}>
+			<OutlinedInput
+				autoFocus={autoFocus}
+				id={htmlId}
+				fullWidth
+				value={fileName}
+				disabled
+				endAdornment={
+					<Tooltip title={<FormattedMessage defaultMessage="Edit Controller" />}>
+						<IconButton onClick={() => onEditController()}>
+							<EditRoundedIcon />
+						</IconButton>
+					</Tooltip>
+				}
+			/>
+		</FormsEngineField>
+	);
+}
+
+export default TypeJsControllerSelector;

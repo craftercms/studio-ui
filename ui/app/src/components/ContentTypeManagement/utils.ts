@@ -212,7 +212,9 @@ export function reverseTypeFieldValuesObject(field: ContentTypeField, values: Lo
 	return fieldWithReversedValues;
 }
 
-export type PartialContentType = Pick<ContentType, 'id' | 'name' | 'description' | 'sections' | 'fields'>;
+export type PartialContentType = Pick<ContentType, 'id' | 'name' | 'description' | 'sections' | 'fields'> & {
+	dataSources?: DataSource[];
+};
 
 export function createEmptyTypeStructure(mixin?: Partial<ContentType>): ContentType {
 	return {
@@ -305,7 +307,10 @@ export function createVirtualDataSourceFields(type: ContentType): LookupTable<Co
 			type: dataSource.type,
 			name: dataSource.title,
 			defaultValue: undefined,
-			validations: immutableEmptyObject
+			validations: {
+				// @ts-expect-error 'type' does not exist in type Partial<ContentTypeFieldValidations>
+				type: dataSource.interface
+			}
 		};
 	}
 	return dataSourceFields;

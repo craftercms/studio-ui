@@ -1,0 +1,108 @@
+/*
+ * Copyright (C) 2007-2025 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+import React, { ChangeEvent, useId } from 'react';
+import FormsEngineField from '../../../FormsEngine/components/FormsEngineField';
+import { ControlProps } from '../../../FormsEngine/types';
+import Box from '@mui/material/Box';
+import { FormattedMessage } from 'react-intl';
+import TextField from '@mui/material/TextField';
+import FormLabel from '@mui/material/FormLabel';
+import IconButton from '@mui/material/IconButton';
+import AddCircleOutlineRoundedIcon from '@mui/icons-material/AddCircleOutlineRounded';
+import Tooltip from '@mui/material/Tooltip';
+import RemoveCircleOutlineRoundedIcon from '@mui/icons-material/RemoveCircleOutlineRounded';
+
+export interface TypeDestinationPathsSelectorProps extends ControlProps {
+	value: string;
+}
+
+type Destination = 'includes' | 'excludes';
+interface DestinationPaths {
+	includes: string[];
+	excludes: string[];
+}
+
+export function TypeDestinationPathsSelector(props: TypeDestinationPathsSelectorProps) {
+	const { field, setValue } = props;
+
+	const value: DestinationPaths = props.value ? JSON.parse(props.value) : { includes: [], excludes: [] };
+	const htmlId = useId();
+	const maxLength = field.validations.maxLength?.value;
+	const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, prop: Destination, index: number) => {
+		const newValue = { ...value };
+		newValue[prop][index] = e.currentTarget.value;
+		setValue(JSON.stringify(newValue));
+	};
+
+	const addPath = (prop: Destination) => {
+		const newValue = { ...value };
+		newValue[prop].push('');
+		setValue(JSON.stringify(newValue));
+	};
+
+	const removePath = (prop: Destination, index: number) => {
+		const newValue = { ...value };
+		newValue[prop].splice(index, 1);
+		setValue(JSON.stringify(newValue));
+	};
+
+	return (
+		<FormsEngineField htmlFor={htmlId} field={field} max={maxLength}>
+			{Object.entries(value).map(([key, value]) => (
+				<Box key={key} sx={{ display: 'flex', flexDirection: 'column', rowGap: 2, mt: 2 }}>
+					<FormLabel component="label">
+						{key === 'includes' ? (
+							<FormattedMessage defaultMessage="Includes" />
+						) : (
+							<FormattedMessage defaultMessage="Excludes" />
+						)}
+					</FormLabel>
+					{value.map((path, index) => (
+						<Box key={index} sx={{ display: 'flex', gap: 2 }}>
+							<TextField
+								fullWidth
+								label={<FormattedMessage defaultMessage="Pattern" />}
+								value={path}
+								variant="outlined"
+								slotProps={{
+									htmlInput: { maxLength }
+								}}
+								onChange={(e) => handleChange(e, key as Destination, index)}
+							/>
+							<Box display="flex" alignItems="center">
+								<Tooltip title={<FormattedMessage defaultMessage="Remove Option" />}>
+									<IconButton onClick={() => removePath(key as Destination, index)}>
+										<RemoveCircleOutlineRoundedIcon />
+									</IconButton>
+								</Tooltip>
+							</Box>
+						</Box>
+					))}
+					<Box display="flex" justifyContent="center">
+						<Tooltip title={<FormattedMessage defaultMessage="Add Path" />}>
+							<IconButton onClick={() => addPath(key as Destination)}>
+								<AddCircleOutlineRoundedIcon />
+							</IconButton>
+						</Tooltip>
+					</Box>
+				</Box>
+			))}
+		</FormsEngineField>
+	);
+}
+
+export default TypeDestinationPathsSelector;
