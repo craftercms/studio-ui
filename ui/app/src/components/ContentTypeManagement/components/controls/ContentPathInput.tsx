@@ -84,11 +84,9 @@ export function ContentPathInput(props: ContentPathInputProps) {
 				onChange={handleChange}
 				disabled={readonly}
 				endAdornment={
-					<IconButton
-						aria-label="Maximize"
-						onClick={() => onOpenPathSelectionDialog()}
-						children={<SearchRoundedIcon />}
-					/>
+					<IconButton aria-label="Maximize" onClick={() => onOpenPathSelectionDialog()}>
+						<SearchRoundedIcon />
+					</IconButton>
 				}
 			/>
 		</FormsEngineField>
