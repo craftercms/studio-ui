@@ -24,7 +24,7 @@ export const internalNameDescriptor: PartialContentType = {
 	id: XmlKeys.internalName,
 	name: 'Internal Name',
 	description: 'Internal name displayed for the item throughout the CMS (e.g. sidebar)',
-	sections: [createVirtualSection({ title: 'Options', fields: ['maxlength'] })],
+	sections: [createVirtualSection({ title: 'Options', fields: ['maxLength'] })],
 	fields: {
 		maxLength: {
 			id: 'maxLength',
