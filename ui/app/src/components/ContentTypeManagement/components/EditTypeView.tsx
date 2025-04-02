@@ -200,6 +200,7 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 		if (!controlDescriptor)
 			return showAlert(`No control descriptor found for field "${field.name}" of type "${field.type}"`);
 
+		// Adding data sources to the virtual type to ensure they are available for rendering in the dataSourceSelector.
 		const virtualType = createVirtualTypeForField({ ...controlDescriptor, dataSources: type.dataSources });
 		handleArtefactSelected(
 			virtualType,
