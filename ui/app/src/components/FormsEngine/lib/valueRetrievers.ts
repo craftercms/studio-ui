@@ -39,7 +39,6 @@ export const booleanFieldExtractor: ValueRetriever<boolean> = (value) => (value 
 export const valueRetrieverLookup: Record<BuiltInControlType, ValueRetriever> = {
 	'auto-filename': textFieldExtractor,
 	'aws-file-upload': null,
-	'box-file-upload': null,
 	'checkbox-group': arrayFieldExtractor,
 	checkbox: booleanFieldExtractor,
 	'date-time': null,
