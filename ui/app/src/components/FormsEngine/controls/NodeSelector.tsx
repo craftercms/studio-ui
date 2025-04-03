@@ -59,6 +59,7 @@ import FormLabel from '@mui/material/FormLabel';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Radio from '@mui/material/Radio';
+// TODO: this one was legacy, need to upgrade
 import Grid from '@mui/material/Grid';
 import ContentType from '../../../models/ContentType';
 import { fetchLegacyContentTypes } from '../../../services/contentTypes';
@@ -231,7 +232,7 @@ function CreateDataSourcePicker(props: {
 	}, [refs, value]);
 	return (
 		<Grid container spacing={2} justifyContent="center">
-			<Grid item sx={{ display: 'flex', flexDirection: 'column' }}>
+			<Grid sx={{ display: 'flex', flexDirection: 'column' }}>
 				<FormControl>
 					<FormLabel id="contentTypeLabel" sx={{ minHeight: 28, display: 'flex', alignItems: 'center' }}>
 						<FormattedMessage defaultMessage="Content Type" />
@@ -268,7 +269,7 @@ function CreateDataSourcePicker(props: {
 					</FormControl>
 				)}
 			</Grid>
-			<Grid item>
+			<Grid>
 				<FormControl sx={{ mb: 1, shrink: 0 }}>
 					<Box alignItems="center" display="flex">
 						<FormLabel id="creationStrategyLabel">

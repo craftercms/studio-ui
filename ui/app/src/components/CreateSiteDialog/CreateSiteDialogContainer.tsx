@@ -27,7 +27,7 @@ import { setRequestForgeryToken, setSiteCookie } from '../../utils/auth';
 import { Subscription } from 'rxjs';
 import { create, exists, fetchBlueprints as fetchBuiltInBlueprints } from '../../services/sites';
 import { getSystemLink } from '../../utils/system';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import PluginCard from '../PluginCard';
 import ConfirmDialog from '../ConfirmDialog';
 import LoadingState from '../LoadingState';

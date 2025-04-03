@@ -33,7 +33,7 @@ import useUpdateRefs from '../../hooks/useUpdateRefs';
 import DialogBody from '../DialogBody';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { LoadingState } from '../LoadingState';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import Alert from '@mui/material/Alert';
 import { Fade, Typography } from '@mui/material';
 import { DateTimeTimezonePickerProps } from '../DateTimeTimezonePicker';
