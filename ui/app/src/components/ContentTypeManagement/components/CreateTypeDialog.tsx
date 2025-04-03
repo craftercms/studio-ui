@@ -31,16 +31,18 @@ import { EnhancedDialog, EnhancedDialogProps } from '../../EnhancedDialog';
 import { camelize } from '../../../utils/string';
 import useEnhancedDialogContext from '../../EnhancedDialog/useEnhancedDialogContext';
 import type { ButtonProps } from '@mui/material/Button';
+import { onSubmittingAndOrPendingChangeProps } from '../../../hooks/useEnhancedDialogState';
 
 export interface CreateTypeDialogBaseProps {
 	onAccept(typeData: Pick<ContentType, 'id' | 'name' | 'type'>): void;
+	onSubmittingAndOrPendingChange(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
 export interface CreateTypeDialogProps extends EnhancedDialogProps, CreateTypeDialogBaseProps {}
 
 export function CreateTypeDialog(props: CreateTypeDialogProps) {
 	// Make sure to extract all non-dialog props.
-	const { onAccept, ...dialogProps } = props;
+	const { onAccept, onSubmittingAndOrPendingChange, ...dialogProps } = props;
 	return (
 		<EnhancedDialog
 			maxWidth="xs"
@@ -48,7 +50,7 @@ export function CreateTypeDialog(props: CreateTypeDialogProps) {
 			title={<FormattedMessage defaultMessage="Create Content Type" />}
 			{...dialogProps}
 		>
-			<CreateTypeDialogBody onAccept={onAccept} />
+			<CreateTypeDialogBody onAccept={onAccept} onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange} />
 		</EnhancedDialog>
 	);
 }
@@ -58,7 +60,8 @@ const prefixes = {
 	component: '/component/'
 };
 
-function CreateTypeDialogBody({ onAccept }: CreateTypeDialogBaseProps) {
+function CreateTypeDialogBody(props: CreateTypeDialogBaseProps) {
+	const { onAccept, onSubmittingAndOrPendingChange } = props;
 	const [type, setType] = useState<'page' | 'component'>('page');
 	const [name, setName] = useState<string>('');
 	const [id, setId] = useState<string>('');
@@ -71,11 +74,20 @@ function CreateTypeDialogBody({ onAccept }: CreateTypeDialogBaseProps) {
 	};
 	const handleChange: SelectProps['onChange'] = (e) => {
 		const archetype = e.target.value as keyof typeof prefixes;
+		onSubmittingAndOrPendingChange({ hasPendingChanges: true });
 		setType(archetype);
 		setPrefix(prefixes[archetype] ?? '');
 	};
 	const handleLabelBlur: TextFieldProps['onBlur'] = () => {
 		setId(suggestTypeId(name));
+	};
+	const handleNameChange = (name: string) => {
+		setName(name);
+		onSubmittingAndOrPendingChange({ hasPendingChanges: true });
+	};
+	const handleIdChange = (id: string) => {
+		setId(id);
+		onSubmittingAndOrPendingChange({ hasPendingChanges: true });
 	};
 	const handleAccept: ButtonProps['onClick'] = () => {
 		validateAndSubmit();
@@ -84,7 +96,6 @@ function CreateTypeDialogBody({ onAccept }: CreateTypeDialogBaseProps) {
 		e.preventDefault();
 		validateAndSubmit();
 	};
-	// TODO: Add pending changes close check through
 	return (
 		<form onSubmit={handleFormSubmit}>
 			<DialogBody>
@@ -113,7 +124,7 @@ function CreateTypeDialogBody({ onAccept }: CreateTypeDialogBaseProps) {
 					margin="normal"
 					value={name}
 					label={<FormattedMessage defaultMessage="Label" />}
-					onChange={(e) => setName(e.target.value)}
+					onChange={(e) => handleNameChange(e.target.value)}
 					onBlur={handleLabelBlur}
 				/>
 				<TextField
@@ -121,7 +132,7 @@ function CreateTypeDialogBody({ onAccept }: CreateTypeDialogBaseProps) {
 					value={id}
 					label={<FormattedMessage defaultMessage="Identifier" />}
 					slotProps={{ input: { startAdornment: <InputAdornment position="start">{prefix}</InputAdornment> } }}
-					onChange={(e) => setId(e.target.value)}
+					onChange={(e) => handleIdChange(e.target.value)}
 				/>
 			</DialogBody>
 			<DialogFooter>
