@@ -35,7 +35,8 @@ import {
 	removeStoredPullBranch,
 	removeStoredPullMergeStrategy,
 	removeStoredPushBranch,
-	removeStoredShowToolsPanel
+	removeStoredShowToolsPanel,
+	removeTypeViewCompactMode
 } from '../../utils/state';
 
 export const preferencesGroups: Array<{
@@ -132,6 +133,7 @@ export const preferencesGroups: Array<{
 			removeStoredPreviewBackgroundMode(props.username);
 			removeStoredBrowseDialogViewMode(props.username);
 			removeStoredItems((key) => widgetsAccordionsKeyRegex.test(key));
+			removeTypeViewCompactMode(props.username);
 		}
 	}
 ];

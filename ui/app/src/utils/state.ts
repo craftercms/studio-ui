@@ -460,3 +460,16 @@ export function getFormsEngineCollapseToCKey(username: string): string {
 export function getFormsEngineCloseAfterSave(username: string): string {
 	return `craftercms.${username}.formsEngine.closeAfterSave`;
 }
+
+export function setTypeViewCompactMode(user: string, value: boolean) {
+	window.localStorage.setItem(`craftercms.${user}.typeViewCompactMode`, JSON.stringify(value));
+}
+
+export function getTypeViewCompactMode(user: string): boolean {
+	const value = window.localStorage.getItem(`craftercms.${user}.typeViewCompactMode`);
+	return value ? value === 'true' : null;
+}
+
+export function removeTypeViewCompactMode(user: string) {
+	window.localStorage.removeItem(`craftercms.${user}.typeViewCompactMode`);
+}
