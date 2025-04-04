@@ -59,7 +59,6 @@ import FormLabel from '@mui/material/FormLabel';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Radio from '@mui/material/Radio';
-// TODO: this one was legacy, need to upgrade
 import Grid from '@mui/material/Grid';
 import ContentType from '../../../models/ContentType';
 import { fetchLegacyContentTypes } from '../../../services/contentTypes';
