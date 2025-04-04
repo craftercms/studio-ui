@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useId, useState } from 'react';
+import React, { useId } from 'react';
 import FormsEngineField from '../../FormsEngine/components/FormsEngineField';
 import useContentTypes from '../../../hooks/useContentTypes';
 import List from '@mui/material/List';
@@ -25,6 +25,8 @@ import ListItemButton from '@mui/material/ListItemButton';
 import CheckBoxRoundedIcon from '@mui/icons-material/CheckBoxRounded';
 import CheckBoxOutlineBlankRoundedIcon from '@mui/icons-material/CheckBoxOutlineBlankRounded';
 import { TypeBuilderControl } from '../utils';
+import { createPresenceTable } from '../../../utils/array';
+import useSpreadState from '../../../hooks/useSpreadState';
 
 export interface ContentTypesSelectorProps extends TypeBuilderControl {
 	value: string;
@@ -38,20 +40,19 @@ export function ContentTypesSelector(props: ContentTypesSelectorProps) {
 	const htmlId = useId();
 	const maxLength = field.validations.maxLength?.value;
 	const contentTypes = useContentTypes();
-	const [selected, setSelected] = useState<string[]>(value ? value.split(',') : []);
+	const [selectedLookup, setSelectedLookup] = useSpreadState<Record<string, boolean>>(
+		createPresenceTable(value ? value.split(',') : [])
+	);
 
 	const handleToggle = (value: string) => () => {
-		const currentIndex = selected.indexOf(value);
-		const newSelected = [...selected];
+		const isSelected = selectedLookup[value];
+		const newSelectedLookup = { ...selectedLookup, [value]: !isSelected };
 
-		if (currentIndex === -1) {
-			newSelected.push(value);
-		} else {
-			newSelected.splice(currentIndex, 1);
-		}
-
-		setSelected(newSelected);
-		setValue(newSelected.join(','));
+		setSelectedLookup(newSelectedLookup);
+		const selectedArray = Object.entries(newSelectedLookup)
+			.filter(([, value]) => value)
+			.map(([key]) => key);
+		setValue(selectedArray.join(','));
 	};
 
 	return (
@@ -61,7 +62,7 @@ export function ContentTypesSelector(props: ContentTypesSelectorProps) {
 					<ListItem key={contentType.id} sx={{ bgcolor: 'background.paper', p: 0 }}>
 						<ListItemButton onClick={handleToggle(contentType.id)} dense>
 							<ListItemIcon sx={{ py: 1 }}>
-								{selected.includes(contentType.id) ? (
+								{selectedLookup[contentType.id] ? (
 									<CheckBoxRoundedIcon color="primary" />
 								) : (
 									<CheckBoxOutlineBlankRoundedIcon />
