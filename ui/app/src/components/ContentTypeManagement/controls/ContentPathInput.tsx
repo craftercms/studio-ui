@@ -21,13 +21,8 @@ import { ControlProps } from '../../FormsEngine/types';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import IconButton from '@mui/material/IconButton';
 import { useDispatch } from 'react-redux';
-import {
-	closePathSelectionDialog,
-	pathSelectionDialogClosed,
-	showPathSelectionDialog
-} from '../../../state/actions/dialogs';
-import { batchActions, dispatchDOMEvent } from '../../../state/actions/misc';
-import { createCustomDocumentEventListener } from '../../../utils/dom';
+import { nanoid } from 'nanoid';
+import { popDialog, pushDialog } from '../../../state/actions/dialogStack';
 
 export interface ContentPathInputProps extends ControlProps {
 	value: string;
@@ -43,34 +38,24 @@ export function ContentPathInput(props: ContentPathInputProps) {
 
 	const handleChange: OutlinedInputProps['onChange'] = (e) => setValue(e.currentTarget.value);
 
-	const checkForMacros = (value: string) => {
-		const isMacro = value.indexOf('{');
-		if (isMacro !== -1) {
-			value = value.substring(0, isMacro);
-			value = value.endsWith('/') ? value.substring(0, value.length - 1) : value;
-		}
-		return value;
-	};
-
 	const onOpenPathSelectionDialog = () => {
-		const callbackId = 'pathSelectionDialogCallback';
-		const callbackAccept = 'accept';
+		const id = nanoid();
 		dispatch(
-			showPathSelectionDialog({
-				rootPath,
-				allowSwitchingRootPath: false,
-				initialPath: value ? checkForMacros(value) : rootPath,
-				onClosed: batchActions([dispatchDOMEvent({ id: callbackId, action: 'close' }), pathSelectionDialogClosed()]),
-				onOk: batchActions([dispatchDOMEvent({ id: callbackId, action: callbackAccept }), closePathSelectionDialog()])
+			pushDialog({
+				id,
+				component: 'craftercms.components.PathSelectionDialog',
+				props: {
+					rootPath,
+					allowSwitchingRootPath: false,
+					initialPath: value ? checkForMacros(value) : rootPath,
+					onClose: () => dispatch(popDialog({ id })),
+					onOk: ({ path }) => {
+						setValue(path);
+						dispatch(popDialog({ id }));
+					}
+				}
 			})
 		);
-
-		createCustomDocumentEventListener(callbackId, (detail) => {
-			if (detail.action === callbackAccept) {
-				const path = detail.path;
-				setValue(path);
-			}
-		});
 	};
 
 	return (
@@ -92,5 +77,14 @@ export function ContentPathInput(props: ContentPathInputProps) {
 		</FormsEngineField>
 	);
 }
+
+const checkForMacros = (value: string) => {
+	const isMacro = value.indexOf('{');
+	if (isMacro !== -1) {
+		value = value.substring(0, isMacro);
+		value = value.endsWith('/') ? value.substring(0, value.length - 1) : value;
+	}
+	return value;
+};
 
 export default ContentPathInput;
