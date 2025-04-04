@@ -17,14 +17,14 @@
 import OutlinedInput, { OutlinedInputProps } from '@mui/material/OutlinedInput';
 import React, { useId } from 'react';
 import FormsEngineField from '../../FormsEngine/components/FormsEngineField';
-import { ControlProps } from '../../FormsEngine/types';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import IconButton from '@mui/material/IconButton';
 import { useDispatch } from 'react-redux';
 import { nanoid } from 'nanoid';
 import { popDialog, pushDialog } from '../../../state/actions/dialogStack';
+import { TypeBuilderControl } from '../utils';
 
-export interface ContentPathInputProps extends ControlProps {
+export interface ContentPathInputProps extends TypeBuilderControl {
 	value: string;
 }
 
@@ -36,8 +36,7 @@ export function ContentPathInput(props: ContentPathInputProps) {
 	const dispatch = useDispatch();
 	const htmlId = useId();
 	const maxLength = field.validations.maxLength?.value;
-	// @ts-expect-error 'root' does not exist in type Partial<ContentTypeFieldValidations>
-	const rootPath = field.validations.root;
+	const rootPath = field.validations.root?.value;
 
 	const handleChange: OutlinedInputProps['onChange'] = (e) => setValue(e.currentTarget.value);
 

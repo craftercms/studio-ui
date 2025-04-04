@@ -16,7 +16,6 @@
 
 import OutlinedInput, { OutlinedInputProps } from '@mui/material/OutlinedInput';
 import React, { useId } from 'react';
-import { ControlProps } from '../../FormsEngine/types';
 import FormsEngineField from '../../FormsEngine/components/FormsEngineField';
 import Tooltip from '@mui/material/Tooltip';
 import { FormattedMessage } from 'react-intl';
@@ -28,8 +27,9 @@ import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
 import UploadRoundedIcon from '@mui/icons-material/UploadRounded';
 import useActiveSiteId from '../../../hooks/useActiveSiteId';
 import { useStableFormContext } from '../../FormsEngine/lib/formsEngineContext';
+import { TypeBuilderControl } from '../utils';
 
-export interface TypeImageSelectorProps extends ControlProps {
+export interface TypeImageSelectorProps extends TypeBuilderControl {
 	value: string;
 }
 

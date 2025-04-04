@@ -15,12 +15,13 @@
  */
 
 import { immutableEmptyObject } from '../../../../utils/object';
-import { createVirtualSection, PartialContentType } from '../../utils';
+import { createVirtualSection, TypeBuilderContentType } from '../../utils';
 
-export const audioDesktopUploadDataSourceDescriptor: PartialContentType = {
+export const audioDesktopUploadDataSourceDescriptor: TypeBuilderContentType = {
 	id: 'audio-desktop-upload',
 	name: 'Audio Uploaded from Desktop',
 	description: '',
+	type: 'audio',
 	sections: [
 		createVirtualSection({
 			title: 'Options',

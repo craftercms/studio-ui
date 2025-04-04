@@ -15,15 +15,12 @@
  */
 
 import { immutableEmptyObject } from '../../../../utils/object';
-import { createVirtualSection, PartialContentType } from '../../utils';
+import { createVirtualSection, TypeBuilderContentType } from '../../utils';
 
-// TODO: consider extending PartialContentType to allow types for datasources
-export const componentsDataSourceDescriptor: PartialContentType = {
+export const componentsDataSourceDescriptor: TypeBuilderContentType = {
 	id: 'components',
 	name: 'Components',
 	description: '',
-	// TODO: extend description
-	// @ts-expect-error type not allowed in PartialContentType yet.
 	type: 'item',
 	sections: [
 		createVirtualSection({

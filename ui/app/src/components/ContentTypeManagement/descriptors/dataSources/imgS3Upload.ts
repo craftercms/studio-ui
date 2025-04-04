@@ -15,12 +15,13 @@
  */
 
 import { immutableEmptyObject } from '../../../../utils/object';
-import { createVirtualSection, PartialContentType } from '../../utils';
+import { createVirtualSection, TypeBuilderContentType } from '../../utils';
 
-export const imgS3UploadDataSourceDescriptor: PartialContentType = {
+export const imgS3UploadDataSourceDescriptor: TypeBuilderContentType = {
 	id: 'img-s3-upload',
 	name: 'Image Uploaded to S3 Repository',
 	description: '',
+	type: 'image',
 	sections: [
 		createVirtualSection({
 			title: 'Options',

@@ -15,12 +15,13 @@
  */
 
 import { immutableEmptyObject } from '../../../../utils/object';
-import { createVirtualSection, PartialContentType } from '../../utils';
+import { createVirtualSection, TypeBuilderContentType } from '../../utils';
 
-export const videoWebDavUploadDataSourceDescriptor: PartialContentType = {
+export const videoWebDavUploadDataSourceDescriptor: TypeBuilderContentType = {
 	id: 'video-webdav-upload',
 	name: 'Video Uploaded to WebDav Repository',
 	description: '',
+	type: 'video',
 	sections: [
 		createVirtualSection({
 			title: 'Options',

@@ -15,12 +15,13 @@
  */
 
 import { immutableEmptyObject } from '../../../../utils/object';
-import { createVirtualSection, PartialContentType } from '../../utils';
+import { createVirtualSection, TypeBuilderContentType } from '../../utils';
 
-export const configuredListDataSourceDescriptor: PartialContentType = {
+export const configuredListDataSourceDescriptor: TypeBuilderContentType = {
 	id: 'configured-list',
 	name: 'Configured List',
 	description: '',
+	type: 'item',
 	sections: [
 		createVirtualSection({
 			title: 'Options',

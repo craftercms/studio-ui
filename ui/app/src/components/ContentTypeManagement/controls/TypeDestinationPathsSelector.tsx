@@ -16,7 +16,6 @@
 
 import React, { ChangeEvent, useId } from 'react';
 import FormsEngineField from '../../FormsEngine/components/FormsEngineField';
-import { ControlProps } from '../../FormsEngine/types';
 import Box from '@mui/material/Box';
 import { FormattedMessage } from 'react-intl';
 import TextField from '@mui/material/TextField';
@@ -25,8 +24,9 @@ import IconButton from '@mui/material/IconButton';
 import AddCircleOutlineRoundedIcon from '@mui/icons-material/AddCircleOutlineRounded';
 import Tooltip from '@mui/material/Tooltip';
 import RemoveCircleOutlineRoundedIcon from '@mui/icons-material/RemoveCircleOutlineRounded';
+import { TypeBuilderControl } from '../utils';
 
-export interface TypeDestinationPathsSelectorProps extends ControlProps {
+export interface TypeDestinationPathsSelectorProps extends TypeBuilderControl {
 	value: string;
 }
 

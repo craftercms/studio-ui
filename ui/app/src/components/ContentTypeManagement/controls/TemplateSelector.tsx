@@ -16,7 +16,6 @@
 
 import OutlinedInput, { OutlinedInputProps } from '@mui/material/OutlinedInput';
 import React, { useId } from 'react';
-import { ControlProps } from '../../FormsEngine/types';
 import FormsEngineField from '../../FormsEngine/components/FormsEngineField';
 import IconButton from '@mui/material/IconButton';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
@@ -29,8 +28,9 @@ import { nanoid } from 'nanoid';
 import { nou } from '../../../utils/object';
 import { editTemplate } from '../../../state/actions/misc';
 import { getFileNameFromPath } from '../../../utils/path';
+import { TypeBuilderControl } from '../utils';
 
-export interface TemplateSelectorProps extends ControlProps {
+export interface TemplateSelectorProps extends TypeBuilderControl {
 	value: string;
 }
 

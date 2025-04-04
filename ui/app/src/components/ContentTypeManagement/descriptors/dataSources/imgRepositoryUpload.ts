@@ -14,13 +14,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createVirtualSection, DescriptorContentType } from '../../utils';
+import { createValidation, createVirtualSection, TypeBuilderContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
 
-export const imgRepositoryUploadDataSourceDescriptor: DescriptorContentType = {
+export const imgRepositoryUploadDataSourceDescriptor: TypeBuilderContentType = {
 	id: 'img-repository-upload',
 	name: 'Image From Repository',
 	description: '',
+	type: 'image',
 	sections: [
 		createVirtualSection({
 			title: 'Options',
@@ -35,8 +36,8 @@ export const imgRepositoryUploadDataSourceDescriptor: DescriptorContentType = {
 			name: 'Repository Path',
 			defaultValue: '/',
 			validations: {
-				regex: /^\/static-assets(\/.*)?$/,
-				root: '/static-assets'
+				regex: createValidation('regex', /^\/static-assets(\/.*)?$/),
+				root: createValidation('root', '/static-assets')
 			}
 		},
 		useSearch: {

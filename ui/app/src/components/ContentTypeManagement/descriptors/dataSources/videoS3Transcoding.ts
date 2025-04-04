@@ -15,12 +15,13 @@
  */
 
 import { immutableEmptyObject } from '../../../../utils/object';
-import { createVirtualSection, PartialContentType } from '../../utils';
+import { createVirtualSection, TypeBuilderContentType } from '../../utils';
 
-export const videoS3TranscodingDataSourceDescriptor: PartialContentType = {
+export const videoS3TranscodingDataSourceDescriptor: TypeBuilderContentType = {
 	id: 'video-s3-transcoding',
 	name: 'Video Transcoding From S3 Repository',
 	description: '',
+	type: 'transcoded-video',
 	sections: [
 		createVirtualSection({
 			title: 'Options',

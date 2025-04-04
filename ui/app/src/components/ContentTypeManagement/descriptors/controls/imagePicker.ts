@@ -14,10 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createVirtualSection, DescriptorContentType } from '../../utils';
+import { createValidation, createVirtualSection, TypeBuilderContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
 
-export const imagePickerDescriptor: DescriptorContentType = {
+export const imagePickerDescriptor: TypeBuilderContentType = {
 	id: 'image-picker',
 	name: 'Image Picker',
 	description: 'Image selection tool',
@@ -63,7 +63,7 @@ export const imagePickerDescriptor: DescriptorContentType = {
 			name: 'Data Source',
 			defaultValue: undefined,
 			validations: {
-				type: 'image'
+				type: createValidation('type', 'image')
 			}
 		},
 		readonly: {

@@ -16,15 +16,15 @@
 
 import React, { useId, useState } from 'react';
 import Box from '@mui/material/Box';
-import { ControlProps } from '../../FormsEngine/types';
 import FormsEngineField from '../../FormsEngine/components/FormsEngineField';
 import TextField, { TextFieldProps } from '@mui/material/TextField';
 import { FormattedMessage } from 'react-intl';
 import IconButton from '@mui/material/IconButton';
 import CompareArrowsOutlinedIcon from '@mui/icons-material/CompareArrowsOutlined';
 import Tooltip from '@mui/material/Tooltip';
+import { TypeBuilderControl } from '../utils';
 
-export interface RangeProps extends ControlProps {
+export interface RangeProps extends TypeBuilderControl {
 	value: string;
 }
 
@@ -59,7 +59,7 @@ export function Range(props: RangeProps) {
 		}
 	};
 	return (
-		<FormsEngineField htmlFor={htmlId} field={field} max={maxLength}>
+		<FormsEngineField htmlFor={htmlId} field={field}>
 			<Box sx={{ display: 'flex', mt: 1, gap: 2 }}>
 				<Tooltip title={<FormattedMessage defaultMessage="Switch mode" />}>
 					<IconButton onClick={() => setIsRange(!isRange)}>

@@ -16,7 +16,6 @@
 
 import React, { useId, useState } from 'react';
 import FormsEngineField from '../../FormsEngine/components/FormsEngineField';
-import { ControlProps } from '../../FormsEngine/types';
 import useContentTypes from '../../../hooks/useContentTypes';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -25,8 +24,9 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemButton from '@mui/material/ListItemButton';
 import CheckBoxRoundedIcon from '@mui/icons-material/CheckBoxRounded';
 import CheckBoxOutlineBlankRoundedIcon from '@mui/icons-material/CheckBoxOutlineBlankRounded';
+import { TypeBuilderControl } from '../utils';
 
-export interface ContentTypesSelectorProps extends ControlProps {
+export interface ContentTypesSelectorProps extends TypeBuilderControl {
 	value: string;
 }
 

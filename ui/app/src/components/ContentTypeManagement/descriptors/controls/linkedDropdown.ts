@@ -14,10 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createVirtualSection, DescriptorContentType } from '../../utils';
+import { createValidation, createVirtualSection, TypeBuilderContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
 
-export const linkedDropdownDescriptor: DescriptorContentType = {
+export const linkedDropdownDescriptor: TypeBuilderContentType = {
 	id: 'linked-dropdown',
 	name: 'Linked Dropdown',
 	description: 'Linked dropdown selector',
@@ -32,7 +32,7 @@ export const linkedDropdownDescriptor: DescriptorContentType = {
 			name: 'Data Source',
 			defaultValue: undefined,
 			validations: {
-				type: 'item'
+				type: createValidation('type', 'item')
 			}
 		},
 		emptyvalue: {

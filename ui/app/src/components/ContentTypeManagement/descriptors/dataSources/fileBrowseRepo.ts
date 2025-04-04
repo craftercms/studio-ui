@@ -14,12 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createVirtualSection, DescriptorContentType } from '../../utils';
+import { createValidation, createVirtualSection, TypeBuilderContentType } from '../../utils';
 
-export const fileBrowseRepoDataSourceDescriptor: DescriptorContentType = {
+export const fileBrowseRepoDataSourceDescriptor: TypeBuilderContentType = {
 	id: 'file-browse-repo',
 	name: 'File Browse',
 	description: '',
+	type: 'item',
 	sections: [
 		createVirtualSection({
 			title: 'Options',
@@ -33,7 +34,7 @@ export const fileBrowseRepoDataSourceDescriptor: DescriptorContentType = {
 			name: 'Repository Path',
 			defaultValue: '/',
 			validations: {
-				root: '/'
+				root: createValidation('root', '/')
 			}
 		}
 	}

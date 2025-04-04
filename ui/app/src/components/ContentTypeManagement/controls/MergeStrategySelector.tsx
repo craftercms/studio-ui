@@ -16,11 +16,11 @@
 
 import React, { useId } from 'react';
 import FormsEngineField from '../../FormsEngine/components/FormsEngineField';
-import { ControlProps } from '../../FormsEngine/types';
 import TextField from '@mui/material/TextField';
 import Autocomplete, { AutocompleteProps } from '@mui/material/Autocomplete';
+import { TypeBuilderControl } from '../utils';
 
-export interface MergeStrategySelectorProps extends ControlProps {
+export interface MergeStrategySelectorProps extends TypeBuilderControl {
 	value: string;
 }
 

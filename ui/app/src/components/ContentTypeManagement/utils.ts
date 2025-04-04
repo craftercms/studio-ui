@@ -16,6 +16,7 @@
 
 import {
 	ContentTypeField,
+	ContentTypeFieldValidation,
 	ContentTypeSection,
 	DataSource,
 	LegacyDataSource,
@@ -40,6 +41,7 @@ import { toBooleanString, toColor } from '../../utils/string';
 import { getXmlBuilder } from '../FormsEngine/lib/valueSerializers';
 import { nanoid } from 'nanoid';
 import { commonDataSourceDescriptors } from './descriptors/dataSources';
+import { ControlProps } from '../FormsEngine/types';
 
 // TODO: assess which of the utils here should go to utils/contentType.ts, or other places (serializers, etc.)
 
@@ -216,17 +218,28 @@ export type PartialContentType = Pick<ContentType, 'id' | 'name' | 'description'
 	dataSources?: DataSource[];
 };
 
-export type DescriptorContentType = Omit<PartialContentType, 'fields'> & {
+export type TypeBuilderFieldValidationKeys = ValidationKeys | 'root' | 'regex' | 'type';
+
+export type TypeBuilderContentTypeFieldValidation = Omit<ContentTypeFieldValidation, 'id'> & {
+	id: TypeBuilderFieldValidationKeys;
+};
+
+export type TypeBuilderFieldValidations = Record<TypeBuilderFieldValidationKeys, TypeBuilderContentTypeFieldValidation>;
+
+export type TypeBuilderContentType = Omit<PartialContentType, 'fields'> & {
+	type?: 'image' | 'item' | 'audio' | 'flash' | 'video' | 'transcoded-video';
 	fields: {
 		[key: string]: ContentTypeField & {
-			validations: ContentTypeField['validations'] & {
-				root?: string;
-				regex?: RegExp;
-				type?: string;
-			};
+			validations: Partial<TypeBuilderFieldValidations>;
 		};
 	};
 };
+
+export interface TypeBuilderControl extends Omit<ControlProps, 'field'> {
+	field: ContentTypeField & {
+		validations: Partial<TypeBuilderFieldValidations>;
+	};
+}
 
 export function createEmptyTypeStructure(mixin?: Partial<ContentType>): ContentType {
 	return {
@@ -311,8 +324,8 @@ export function createVirtualSection(
 	};
 }
 
-export function createVirtualDataSourceFields(type: ContentType): Partial<DescriptorContentType> {
-	const dataSourceFields: Partial<DescriptorContentType> = {};
+export function createVirtualDataSourceFields(type: ContentType): Partial<TypeBuilderContentType> {
+	const dataSourceFields: Partial<TypeBuilderContentType> = {};
 	for (const dataSource of type.dataSources ?? []) {
 		dataSourceFields[dataSource.id] = {
 			id: dataSource.id,
@@ -531,5 +544,17 @@ function convertDataSourceStructToXmlStruct(dataSource: DataSource): Required<Le
 				type: typeof value
 			}))
 		}
+	};
+}
+
+export function createValidation(
+	key: TypeBuilderFieldValidationKeys,
+	value,
+	level?: ContentTypeFieldValidation['level']
+): TypeBuilderContentTypeFieldValidation {
+	return {
+		id: key,
+		value,
+		level: level ?? 'suggestion'
 	};
 }

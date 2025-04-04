@@ -28,7 +28,7 @@ export const dropdownDescriptor = {
 	fields: {
 		datasource: {
 			id: 'datasource',
-			type: 'dropdown',
+			type: 'datasource-selector',
 			name: 'Data Source',
 			defaultValue: undefined,
 			validations: immutableEmptyObject

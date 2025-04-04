@@ -14,12 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createVirtualSection, DescriptorContentType } from '../../utils';
+import { createValidation, createVirtualSection, TypeBuilderContentType } from '../../utils';
 
-export const fileDesktopUploadDataSourceDescriptor: DescriptorContentType = {
+export const fileDesktopUploadDataSourceDescriptor: TypeBuilderContentType = {
 	id: 'file-desktop-upload',
 	name: 'File Uploaded From Desktop',
 	description: '',
+	type: 'item',
 	sections: [
 		createVirtualSection({
 			title: 'Options',
@@ -33,8 +34,8 @@ export const fileDesktopUploadDataSourceDescriptor: DescriptorContentType = {
 			name: 'Repository Path',
 			defaultValue: '/',
 			validations: {
-				regex: /^\/static-assets(\/.*)?$/,
-				root: '/static-assets'
+				regex: createValidation('regex', /^\/static-assets(\/.*)?$/),
+				root: createValidation('root', '/static-assets')
 			}
 		}
 	}

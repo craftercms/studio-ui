@@ -15,12 +15,13 @@
  */
 
 import { immutableEmptyObject } from '../../../../utils/object';
-import { createVirtualSection, DescriptorContentType } from '../../utils';
+import { createValidation, createVirtualSection, TypeBuilderContentType } from '../../utils';
 
-export const sharedContentDataSourceDescriptor: DescriptorContentType = {
+export const sharedContentDataSourceDescriptor: TypeBuilderContentType = {
 	id: 'shared-content',
 	name: 'Shared Content',
 	description: '',
+	type: 'item',
 	sections: [
 		createVirtualSection({
 			title: 'Options',
@@ -55,8 +56,8 @@ export const sharedContentDataSourceDescriptor: DescriptorContentType = {
 			name: 'Repository Path',
 			defaultValue: '/site/',
 			validations: {
-				regex: /^\/site(\/.*)?$/,
-				root: '/site'
+				regex: createValidation('regex', /^\/site(\/.*)?$/),
+				root: createValidation('root', '/site')
 			}
 		},
 		browsePath: {
@@ -65,8 +66,8 @@ export const sharedContentDataSourceDescriptor: DescriptorContentType = {
 			name: 'Browse Path',
 			defaultValue: '/site',
 			validations: {
-				regex: /^\/site(\/.*)?$/,
-				root: '/site'
+				regex: createValidation('regex', /^\/site(\/.*)?$/),
+				root: createValidation('root', '/site')
 			}
 		},
 		type: {

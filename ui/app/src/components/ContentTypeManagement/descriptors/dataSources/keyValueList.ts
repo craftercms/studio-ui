@@ -15,12 +15,13 @@
  */
 
 import { immutableEmptyObject } from '../../../../utils/object';
-import { createVirtualSection, PartialContentType } from '../../utils';
+import { createVirtualSection, TypeBuilderContentType } from '../../utils';
 
-export const keyValueListDataSourceDescriptor: PartialContentType = {
+export const keyValueListDataSourceDescriptor: TypeBuilderContentType = {
 	id: 'key-value-list',
 	name: 'Static Key Value Pairs',
 	description: '',
+	type: 'item',
 	sections: [
 		createVirtualSection({
 			title: 'Options',

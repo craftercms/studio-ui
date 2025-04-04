@@ -17,10 +17,10 @@
 import React from 'react';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import { ControlProps } from '../../FormsEngine/types';
 import FormsEngineField from '../../FormsEngine/components/FormsEngineField';
+import { TypeBuilderControl } from '../utils';
 
-export interface DropdownStaticValuesProps extends ControlProps {
+export interface DropdownStaticValuesProps extends TypeBuilderControl {
 	value: string;
 }
 

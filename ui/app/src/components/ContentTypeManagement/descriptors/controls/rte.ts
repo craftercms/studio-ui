@@ -14,10 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createVirtualSection, DescriptorContentType } from '../../utils';
+import { createValidation, createVirtualSection, TypeBuilderContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
 
-export const rteDescriptor: DescriptorContentType = {
+export const rteDescriptor: TypeBuilderContentType = {
 	id: 'rte',
 	name: 'Rich Text Editor',
 	description: 'Rich text editing area',
@@ -81,7 +81,7 @@ export const rteDescriptor: DescriptorContentType = {
 			name: 'Image Manager',
 			defaultValue: undefined,
 			validations: {
-				type: 'image'
+				type: createValidation('type', 'image')
 			}
 		},
 		videoManager: {
@@ -90,7 +90,7 @@ export const rteDescriptor: DescriptorContentType = {
 			name: 'Video Manager',
 			defaultValue: undefined,
 			validations: {
-				type: 'video'
+				type: createValidation('type', 'video')
 			}
 		},
 		audioManager: {
@@ -99,7 +99,7 @@ export const rteDescriptor: DescriptorContentType = {
 			name: 'Audio Manager',
 			defaultValue: undefined,
 			validations: {
-				type: 'audio'
+				type: createValidation('type', 'audio')
 			}
 		},
 		fileManager: {
@@ -108,7 +108,7 @@ export const rteDescriptor: DescriptorContentType = {
 			name: 'File Manager',
 			defaultValue: undefined,
 			validations: {
-				type: 'item'
+				type: createValidation('type', 'item')
 			}
 		},
 		required: {

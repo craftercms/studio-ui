@@ -15,12 +15,13 @@
  */
 
 import { immutableEmptyObject } from '../../../../utils/object';
-import { createVirtualSection, DescriptorContentType } from '../../utils';
+import { createValidation, createVirtualSection, TypeBuilderContentType } from '../../utils';
 
-export const videoDesktopUploadDataSourceDescriptor: DescriptorContentType = {
+export const videoDesktopUploadDataSourceDescriptor: TypeBuilderContentType = {
 	id: 'video-desktop-upload',
 	name: 'Video Uploaded From Desktop',
 	description: '',
+	type: 'video',
 	sections: [
 		createVirtualSection({
 			title: 'Options',
@@ -35,7 +36,7 @@ export const videoDesktopUploadDataSourceDescriptor: DescriptorContentType = {
 			name: 'Repository Path',
 			defaultValue: undefined,
 			validations: {
-				root: '/static-assets'
+				root: createValidation('root', '/static-assets')
 			}
 		},
 		required: {

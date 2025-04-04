@@ -15,12 +15,13 @@
  */
 
 import { immutableEmptyObject } from '../../../../utils/object';
-import { createVirtualSection, PartialContentType } from '../../utils';
+import { createVirtualSection, TypeBuilderContentType } from '../../utils';
 
-export const flashDesktopUploadDataSourceDescriptor: PartialContentType = {
+export const flashDesktopUploadDataSourceDescriptor: TypeBuilderContentType = {
 	id: 'flash-desktop-upload',
 	name: 'Flash Uploaded from Desktop',
 	description: '',
+	type: 'flash',
 	sections: [
 		createVirtualSection({
 			title: 'Options',

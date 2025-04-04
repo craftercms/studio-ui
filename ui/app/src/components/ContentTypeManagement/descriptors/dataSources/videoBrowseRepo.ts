@@ -15,12 +15,13 @@
  */
 
 import { immutableEmptyObject } from '../../../../utils/object';
-import { createVirtualSection, DescriptorContentType } from '../../utils';
+import { createValidation, createVirtualSection, TypeBuilderContentType } from '../../utils';
 
-export const videoBrowseRepoDataSourceDescriptor: DescriptorContentType = {
+export const videoBrowseRepoDataSourceDescriptor: TypeBuilderContentType = {
 	id: 'video-browse-repo',
 	name: 'Video From Repository',
 	description: '',
+	type: 'video',
 	sections: [
 		createVirtualSection({
 			title: 'Options',
@@ -35,7 +36,7 @@ export const videoBrowseRepoDataSourceDescriptor: DescriptorContentType = {
 			name: 'Repository Path',
 			defaultValue: undefined,
 			validations: {
-				root: '/static-assets'
+				root: createValidation('root', '/static-assets')
 			}
 		},
 		useSearch: {

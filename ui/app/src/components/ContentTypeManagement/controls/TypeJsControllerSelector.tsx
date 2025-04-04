@@ -16,7 +16,6 @@
 
 import OutlinedInput from '@mui/material/OutlinedInput';
 import React, { useId } from 'react';
-import { ControlProps } from '../../FormsEngine/types';
 import FormsEngineField from '../../FormsEngine/components/FormsEngineField';
 import Tooltip from '@mui/material/Tooltip';
 import { FormattedMessage } from 'react-intl';
@@ -25,8 +24,9 @@ import IconButton from '@mui/material/IconButton';
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import { useStableFormContext } from '../../FormsEngine/lib/formsEngineContext';
 import { editController } from '../../../state/actions/misc';
+import { TypeBuilderControl } from '../utils';
 
-export interface TypeJsControllerSelectorProps extends ControlProps {
+export interface TypeJsControllerSelectorProps extends TypeBuilderControl {
 	value: string;
 }
 

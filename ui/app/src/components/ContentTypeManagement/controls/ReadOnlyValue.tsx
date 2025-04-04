@@ -17,9 +17,9 @@
 import OutlinedInput from '@mui/material/OutlinedInput';
 import React, { useId } from 'react';
 import FormsEngineField from '../../FormsEngine/components/FormsEngineField';
-import { ControlProps } from '../../FormsEngine/types';
+import { TypeBuilderControl } from '../utils';
 
-export interface ReadOnlyValueProps extends ControlProps {
+export interface ReadOnlyValueProps extends TypeBuilderControl {
 	value: string;
 }
 

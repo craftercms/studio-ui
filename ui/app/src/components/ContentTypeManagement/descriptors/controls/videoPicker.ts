@@ -1,7 +1,7 @@
 import { immutableEmptyObject } from '../../../../utils/object';
-import { createVirtualSection, DescriptorContentType } from '../../utils';
+import { createValidation, createVirtualSection, TypeBuilderContentType } from '../../utils';
 
-export const videoPickerDescriptor: DescriptorContentType = {
+export const videoPickerDescriptor: TypeBuilderContentType = {
 	id: 'video-picker',
 	name: 'Video Picker',
 	description: 'Video selection control',
@@ -16,7 +16,7 @@ export const videoPickerDescriptor: DescriptorContentType = {
 			name: 'Data Source',
 			defaultValue: undefined,
 			validations: {
-				type: 'video'
+				type: createValidation('type', 'video')
 			}
 		},
 		readonly: {

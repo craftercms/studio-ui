@@ -15,12 +15,13 @@
  */
 
 import { immutableEmptyObject } from '../../../../utils/object';
-import { createVirtualSection, PartialContentType } from '../../utils';
+import { createVirtualSection, TypeBuilderContentType } from '../../utils';
 
-export const webDavRepoDataSourceDescriptor: PartialContentType = {
+export const webDavRepoDataSourceDescriptor: TypeBuilderContentType = {
 	id: 'webdav-repo',
 	name: 'File From WebDav Repository',
 	description: '',
+	type: 'item',
 	sections: [
 		createVirtualSection({
 			title: 'Options',

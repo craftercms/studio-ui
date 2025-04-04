@@ -15,13 +15,13 @@
  */
 
 import React, { useId, useMemo } from 'react';
-import { ControlProps } from '../../FormsEngine/types';
 import FormsEngineField from '../../FormsEngine/components/FormsEngineField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import RadioGroup, { RadioGroupProps } from '@mui/material/RadioGroup';
 import Radio from '@mui/material/Radio';
+import { TypeBuilderControl } from '../utils';
 
-export interface DataSourceSingleSelectorProps extends ControlProps {
+export interface DataSourceSingleSelectorProps extends TypeBuilderControl {
 	value: string;
 }
 
@@ -31,8 +31,7 @@ export interface DataSourceSingleSelectorProps extends ControlProps {
 export function DataSourceSingleSelector(props: DataSourceSingleSelectorProps) {
 	const { field, value, setValue, contentType } = props;
 	const htmlId = useId();
-	// @ts-expect-error 'type' does not exist on type Partial<ContentTypeFieldValidations>
-	const type = field.validations.type;
+	const type = field.validations.type?.value;
 	const filteredDataSources = useMemo(() => {
 		return (contentType.dataSources ?? []).filter((ds) => ds.interface === type);
 	}, [contentType?.dataSources, type]);

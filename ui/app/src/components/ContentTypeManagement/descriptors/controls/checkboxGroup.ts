@@ -14,10 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createVirtualSection, DescriptorContentType } from '../../utils';
+import { createValidation, createVirtualSection, TypeBuilderContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
 
-export const checkboxGroupDescriptor: DescriptorContentType = {
+export const checkboxGroupDescriptor: TypeBuilderContentType = {
 	id: 'checkbox-group',
 	name: 'Checkbox Group',
 	description: 'Multiple checkbox inputs',
@@ -35,7 +35,7 @@ export const checkboxGroupDescriptor: DescriptorContentType = {
 			name: 'Data Source',
 			defaultValue: undefined,
 			validations: {
-				type: 'item'
+				type: createValidation('type', 'item')
 			}
 		},
 		selectAll: {

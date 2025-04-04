@@ -15,12 +15,13 @@
  */
 
 import { immutableEmptyObject } from '../../../../utils/object';
-import { createVirtualSection, PartialContentType } from '../../utils';
+import { createVirtualSection, TypeBuilderContentType } from '../../utils';
 
-export const audioBrowseRepoDataSourceDescriptor: PartialContentType = {
+export const audioBrowseRepoDataSourceDescriptor: TypeBuilderContentType = {
 	id: 'audio-browse-repo',
 	name: 'Audio From Repository',
 	description: '',
+	type: 'audio',
 	sections: [
 		createVirtualSection({
 			title: 'Options',

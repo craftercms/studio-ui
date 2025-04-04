@@ -14,10 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createVirtualSection, DescriptorContentType, PartialContentType } from '../../utils';
+import { createValidation, createVirtualSection, TypeBuilderContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
 
-export const nodeSelectorDescriptor: DescriptorContentType = {
+export const nodeSelectorDescriptor: TypeBuilderContentType = {
 	id: 'node-selector',
 	name: 'Node Selector',
 	description: 'Content node selection',
@@ -49,7 +49,7 @@ export const nodeSelectorDescriptor: DescriptorContentType = {
 			name: 'Item Manager',
 			defaultValue: undefined,
 			validations: {
-				type: 'item'
+				type: createValidation('type', 'item')
 			}
 		},
 		readonly: {
