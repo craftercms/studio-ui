@@ -22,8 +22,9 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemIcon from '@mui/material/ListItemIcon';
-import Checkbox from '@mui/material/Checkbox';
 import ListItemButton from '@mui/material/ListItemButton';
+import CheckBoxRoundedIcon from '@mui/icons-material/CheckBoxRounded';
+import CheckBoxOutlineBlankRoundedIcon from '@mui/icons-material/CheckBoxOutlineBlankRounded';
 
 export interface ContentTypesSelectorProps extends ControlProps {
 	value: string;
@@ -56,17 +57,15 @@ export function ContentTypesSelector(props: ContentTypesSelectorProps) {
 	return (
 		<FormsEngineField htmlFor={htmlId} field={field} max={maxLength}>
 			<List>
-				{Object.values(contentTypes).map((contentType, index) => (
+				{Object.values(contentTypes).map((contentType) => (
 					<ListItem key={contentType.id} sx={{ bgcolor: 'background.paper', p: 0 }}>
-						<ListItemButton role={undefined} onClick={handleToggle(contentType.id)} dense>
-							<ListItemIcon>
-								<Checkbox
-									edge="start"
-									checked={selected.includes(contentType.id)}
-									tabIndex={-1}
-									disableRipple
-									autoFocus={index === 0 && autoFocus}
-								/>
+						<ListItemButton onClick={handleToggle(contentType.id)} dense>
+							<ListItemIcon sx={{ py: 1 }}>
+								{selected.includes(contentType.id) ? (
+									<CheckBoxRoundedIcon color="primary" />
+								) : (
+									<CheckBoxOutlineBlankRoundedIcon />
+								)}
 							</ListItemIcon>
 							<ListItemText primary={contentType.name} />
 						</ListItemButton>
