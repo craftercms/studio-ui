@@ -24,11 +24,15 @@ import IconButton from '@mui/material/IconButton';
 import CompareArrowsOutlinedIcon from '@mui/icons-material/CompareArrowsOutlined';
 import Tooltip from '@mui/material/Tooltip';
 
-export interface NumberProps extends ControlProps {
+export interface RangeProps extends ControlProps {
 	value: string;
 }
 
-export function Numeric(props: NumberProps) {
+/**
+ * Enables selection of a range of values through two text fields.
+ * It allows switching between a range and an exact value using a button.
+ */
+export function Range(props: RangeProps) {
 	const { field, setValue } = props;
 	const htmlId = useId();
 	const maxLength = field.validations.maxLength?.value;
@@ -100,4 +104,4 @@ export function Numeric(props: NumberProps) {
 	);
 }
 
-export default Numeric;
+export default Range;

@@ -24,6 +24,9 @@ export interface DropdownStaticValuesProps extends ControlProps {
 	value: string;
 }
 
+/**
+ * Enables the selection of a key/value pair from a predefined list of options.
+ */
 export function DropdownStaticValues(props: DropdownStaticValuesProps) {
 	const { field, value: content, setValue, readonly, autoFocus } = props;
 

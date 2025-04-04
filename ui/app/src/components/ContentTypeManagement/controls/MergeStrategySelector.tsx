@@ -26,6 +26,9 @@ export interface MergeStrategySelectorProps extends ControlProps {
 
 const mergeStrategies = ['inherit-levels'];
 
+/**
+ * Enables selection of merge strategies through an autocomplete input.
+ */
 export function MergeStrategySelector(props: MergeStrategySelectorProps) {
 	const { field, value, setValue, readonly, autoFocus } = props;
 	const htmlId = useId();

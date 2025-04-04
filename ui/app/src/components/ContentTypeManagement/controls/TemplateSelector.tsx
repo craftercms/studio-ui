@@ -34,6 +34,9 @@ export interface TemplateSelectorProps extends ControlProps {
 	value: string;
 }
 
+/**
+ * Enables template selection through the BrowseFilesDialog. It also allows template edition.
+ */
 export function TemplateSelector(props: TemplateSelectorProps) {
 	const { field, value, setValue, autoFocus } = props;
 	const basePath = '/templates/web';

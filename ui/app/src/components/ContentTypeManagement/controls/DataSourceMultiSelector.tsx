@@ -25,6 +25,9 @@ export interface DataSourceMultiSelectorProps extends ControlProps {
 	value: string;
 }
 
+/**
+ * Allows the selection of multiple data sources that are compatible with the field type, using a checkbox group layout.
+ */
 export function DataSourceMultiSelector(props: DataSourceMultiSelectorProps) {
 	const { field, value, setValue, contentType } = props;
 	const selectedDataSources = value?.split(',') ?? [];

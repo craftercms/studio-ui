@@ -30,6 +30,10 @@ export interface TypeJsControllerSelectorProps extends ControlProps {
 	value: string;
 }
 
+/**
+ * Allows the selection and edition of a controller for a content type.
+ * The controller file is created if it doesn't exist.
+ */
 export function TypeJsControllerSelector(props: TypeJsControllerSelectorProps) {
 	const { field, autoFocus } = props;
 	const htmlId = useId();

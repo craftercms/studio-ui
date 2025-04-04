@@ -25,6 +25,9 @@ export interface DataSourceSingleSelectorProps extends ControlProps {
 	value: string;
 }
 
+/**
+ * Allows the selection of a single data source compatible with the field type, using a radio group layout.
+ */
 export function DataSourceSingleSelector(props: DataSourceSingleSelectorProps) {
 	const { field, value, setValue, contentType } = props;
 	const htmlId = useId();

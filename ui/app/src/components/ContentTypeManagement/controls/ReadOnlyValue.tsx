@@ -23,6 +23,9 @@ export interface ReadOnlyValueProps extends ControlProps {
 	value: string;
 }
 
+/**
+ * Displays a read-only value in an input field.
+ */
 export function ReadOnlyValue(props: ReadOnlyValueProps) {
 	const { field, value, autoFocus } = props;
 	const htmlId = useId();

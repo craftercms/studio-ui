@@ -28,7 +28,9 @@ import Tooltip from '@mui/material/Tooltip';
 export interface KeyValueMapProps extends ControlProps {
 	value: string;
 }
-
+/**
+ * Displays a list of key/value pairs, allowing the user to add, remove, and edit them.
+ */
 export function KeyValueMap(props: KeyValueMapProps) {
 	const { field, setValue } = props;
 	const htmlId = useId();

@@ -38,6 +38,10 @@ export interface TypeImageSelectorProps extends ControlProps {
 	WIDTHCONSTRAINS = 775;
 	HEIGHTCONSTRAINS = 767;
 */
+
+/**
+ * Enables image selection through the ImageUploadDialog.
+ */
 export function TypeImageSelector(props: TypeImageSelectorProps) {
 	const { field, value, setValue, autoFocus } = props;
 	const htmlId = useId();

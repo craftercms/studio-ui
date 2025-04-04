@@ -36,6 +36,9 @@ interface DestinationPaths {
 	excludes: string[];
 }
 
+/**
+ * Allows users to specify "includes" and "excludes" destination paths for content types.
+ */
 export function TypeDestinationPathsSelector(props: TypeDestinationPathsSelectorProps) {
 	const { field, setValue } = props;
 

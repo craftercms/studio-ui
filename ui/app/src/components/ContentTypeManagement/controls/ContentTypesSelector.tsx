@@ -29,6 +29,9 @@ export interface ContentTypesSelectorProps extends ControlProps {
 	value: string;
 }
 
+/**
+ * Enables the selection of multiple content types using a checkbox group layout.
+ */
 export function ContentTypesSelector(props: ContentTypesSelectorProps) {
 	const { field, value, setValue, autoFocus } = props;
 	const htmlId = useId();

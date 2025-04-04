@@ -28,6 +28,9 @@ export interface ContentPathInputProps extends ControlProps {
 	value: string;
 }
 
+/**
+ * Enables path selection through the PathSelectionDialog, while also allowing manual input.
+ */
 export function ContentPathInput(props: ContentPathInputProps) {
 	const { field, value, setValue, readonly, autoFocus } = props;
 	const dispatch = useDispatch();
