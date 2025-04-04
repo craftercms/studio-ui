@@ -35,7 +35,8 @@ export function KeyValueMap(props: KeyValueMapProps) {
 	const { field, setValue } = props;
 	const htmlId = useId();
 	const maxLength = field.validations.maxLength?.value;
-	// Value is '' when empty.
+	// When props.value is empty (no key/value pairs), it is stored as an empty string (''). In case `option` is initialized
+	// as an empty array.
 	const options = props.value ? JSON.parse(props.value) : [];
 
 	const handleChange = (
