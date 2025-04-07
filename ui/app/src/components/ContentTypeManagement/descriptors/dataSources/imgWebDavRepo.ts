@@ -15,16 +15,17 @@
  */
 
 import { immutableEmptyObject } from '../../../../utils/object';
-import { createVirtualSection, TypeBuilderContentType } from '../../utils';
+import { createVirtualSection, DescriptorContentType } from '../../utils';
+import { defineMessage } from 'react-intl';
 
-export const imgWebDavRepoDataSourceDescriptor: TypeBuilderContentType = {
+export const imgWebDavRepoDataSourceDescriptor: DescriptorContentType = {
 	id: 'img-webdav-repo',
-	name: 'Image From WebDav Repository',
+	name: defineMessage({ defaultMessage: 'Image From WebDav Repository' }),
 	description: '',
 	type: 'image',
 	sections: [
 		createVirtualSection({
-			title: 'Options',
+			title: defineMessage({ defaultMessage: 'Options' }),
 			fields: ['repoPath', 'profileId']
 		})
 	],
@@ -32,14 +33,14 @@ export const imgWebDavRepoDataSourceDescriptor: TypeBuilderContentType = {
 		repoPath: {
 			id: 'repoPath',
 			type: 'input',
-			name: 'Repository Path',
+			name: defineMessage({ defaultMessage: 'Repository Path' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		profileId: {
 			id: 'profileId',
 			type: 'input',
-			name: 'Profile ID',
+			name: defineMessage({ defaultMessage: 'Profile ID' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}

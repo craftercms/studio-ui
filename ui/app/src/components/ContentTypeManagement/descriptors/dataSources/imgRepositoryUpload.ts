@@ -14,26 +14,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createValidation, createVirtualSection, TypeBuilderContentType } from '../../utils';
+import { createValidation, createVirtualSection, DescriptorContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
+import { defineMessage } from 'react-intl';
 
-export const imgRepositoryUploadDataSourceDescriptor: TypeBuilderContentType = {
+export const imgRepositoryUploadDataSourceDescriptor: DescriptorContentType = {
 	id: 'img-repository-upload',
-	name: 'Image From Repository',
+	name: defineMessage({ defaultMessage: 'Image From Repository' }),
 	description: '',
 	type: 'image',
 	sections: [
 		createVirtualSection({
-			title: 'Options',
+			title: defineMessage({ defaultMessage: 'Options' }),
 			fields: ['repoPath', 'useSearch']
 		}),
-		createVirtualSection({ id: 'constraints', title: 'Constraints', fields: ['required'] })
+		createVirtualSection({
+			id: 'constraints',
+			title: defineMessage({ defaultMessage: 'Constraints' }),
+			fields: ['required']
+		})
 	],
 	fields: {
 		repoPath: {
 			id: 'repoPath',
 			type: 'content-path-input',
-			name: 'Repository Path',
+			name: defineMessage({ defaultMessage: 'Repository Path' }),
 			defaultValue: '/',
 			validations: {
 				regex: createValidation('regex', /^\/static-assets(\/.*)?$/),
@@ -43,14 +48,14 @@ export const imgRepositoryUploadDataSourceDescriptor: TypeBuilderContentType = {
 		useSearch: {
 			id: 'useSearch',
 			type: 'checkbox',
-			name: 'Use Search',
+			name: defineMessage({ defaultMessage: 'Use Search' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		required: {
 			id: 'required',
 			type: 'checkbox',
-			name: 'Required',
+			name: defineMessage({ defaultMessage: 'Required' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}

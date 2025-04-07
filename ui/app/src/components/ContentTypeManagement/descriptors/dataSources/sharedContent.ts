@@ -15,16 +15,17 @@
  */
 
 import { immutableEmptyObject } from '../../../../utils/object';
-import { createValidation, createVirtualSection, TypeBuilderContentType } from '../../utils';
+import { createValidation, createVirtualSection, DescriptorContentType } from '../../utils';
+import { defineMessage } from 'react-intl';
 
-export const sharedContentDataSourceDescriptor: TypeBuilderContentType = {
+export const sharedContentDataSourceDescriptor: DescriptorContentType = {
 	id: 'shared-content',
-	name: 'Shared Content',
+	name: defineMessage({ defaultMessage: 'Shared Content' }),
 	description: '',
 	type: 'item',
 	sections: [
 		createVirtualSection({
-			title: 'Options',
+			title: defineMessage({ defaultMessage: 'Options' }),
 			fields: ['enableCreateNew', 'enableBrowseExisting', 'enableSearchExisting', 'repoPath', 'browsePath', 'type']
 		})
 	],
@@ -32,28 +33,28 @@ export const sharedContentDataSourceDescriptor: TypeBuilderContentType = {
 		enableCreateNew: {
 			id: 'enableCreateNew',
 			type: 'checkbox',
-			name: 'Enable Create New',
+			name: defineMessage({ defaultMessage: 'Enable Create New' }),
 			defaultValue: true,
 			validations: immutableEmptyObject
 		},
 		enableBrowseExisting: {
 			id: 'enableBrowseExisting',
 			type: 'checkbox',
-			name: 'Enable Browse Existing',
+			name: defineMessage({ defaultMessage: 'Enable Browse Existing' }),
 			defaultValue: true,
 			validations: immutableEmptyObject
 		},
 		enableSearchExisting: {
 			id: 'enableSearchExisting',
 			type: 'checkbox',
-			name: 'Enable Search Existing',
+			name: defineMessage({ defaultMessage: 'Enable Search Existing' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		repoPath: {
 			id: 'repoPath',
 			type: 'content-path-input',
-			name: 'Repository Path',
+			name: defineMessage({ defaultMessage: 'Repository Path' }),
 			defaultValue: '/site/',
 			validations: {
 				regex: createValidation('regex', /^\/site(\/.*)?$/),
@@ -63,7 +64,7 @@ export const sharedContentDataSourceDescriptor: TypeBuilderContentType = {
 		browsePath: {
 			id: 'browsePath',
 			type: 'content-path-input',
-			name: 'Browse Path',
+			name: defineMessage({ defaultMessage: 'Browse Path' }),
 			defaultValue: '/site',
 			validations: {
 				regex: createValidation('regex', /^\/site(\/.*)?$/),
@@ -73,7 +74,7 @@ export const sharedContentDataSourceDescriptor: TypeBuilderContentType = {
 		type: {
 			id: 'type',
 			type: 'input',
-			name: 'Default Types',
+			name: defineMessage({ defaultMessage: 'Default Types' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}

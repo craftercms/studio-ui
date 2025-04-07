@@ -14,12 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { PartialContentType } from '../../utils';
+import { DescriptorContentType } from '../../utils';
+import { defineMessage } from 'react-intl';
 
-export const autoFileNameDescriptor: PartialContentType = {
+export const autoFileNameDescriptor: DescriptorContentType = {
 	id: 'auto-filename',
-	name: 'Auto Filename',
-	description: 'Automatically generated filename',
+	name: defineMessage({ defaultMessage: 'Auto Filename' }),
+	description: defineMessage({ defaultMessage: 'Automatically generated filename' }),
 	sections: [],
 	fields: {}
 };

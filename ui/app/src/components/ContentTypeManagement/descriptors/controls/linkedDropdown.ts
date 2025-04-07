@@ -14,22 +14,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createValidation, createVirtualSection, TypeBuilderContentType } from '../../utils';
+import { createValidation, createVirtualSection, DescriptorContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
+import { defineMessage } from 'react-intl';
 
-export const linkedDropdownDescriptor: TypeBuilderContentType = {
+export const linkedDropdownDescriptor: DescriptorContentType = {
 	id: 'linked-dropdown',
-	name: 'Linked Dropdown',
-	description: 'Linked dropdown selector',
+	name: defineMessage({ defaultMessage: 'Linked Dropdown' }),
+	description: defineMessage({ defaultMessage: 'Linked dropdown selector' }),
 	sections: [
-		createVirtualSection({ title: 'Options', fields: ['datasource', 'emptyvalue', 'readonly', 'dependsOn'] }),
-		createVirtualSection({ title: 'Constraints', fields: ['required'] })
+		createVirtualSection({
+			title: defineMessage({ defaultMessage: 'Options' }),
+			fields: ['datasource', 'emptyvalue', 'readonly', 'dependsOn']
+		}),
+		createVirtualSection({ title: defineMessage({ defaultMessage: 'Constraints' }), fields: ['required'] })
 	],
 	fields: {
 		datasource: {
 			id: 'datasource',
 			type: 'datasource-selector',
-			name: 'Data Source',
+			name: defineMessage({ defaultMessage: 'Data Source' }),
 			defaultValue: undefined,
 			validations: {
 				type: createValidation('type', 'item')
@@ -38,28 +42,28 @@ export const linkedDropdownDescriptor: TypeBuilderContentType = {
 		emptyvalue: {
 			id: 'emptyvalue',
 			type: 'checkbox',
-			name: 'Allow Empty Value',
+			name: defineMessage({ defaultMessage: 'Allow Empty Value' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		readonly: {
 			id: 'readonly',
 			type: 'checkbox',
-			name: 'Read Only',
+			name: defineMessage({ defaultMessage: 'Read Only' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		dependsOn: {
 			id: 'dependsOn',
 			type: 'input',
-			name: 'Depends On',
+			name: defineMessage({ defaultMessage: 'Depends On' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		required: {
 			id: 'required',
 			type: 'checkbox',
-			name: 'Required',
+			name: defineMessage({ defaultMessage: 'Required' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}

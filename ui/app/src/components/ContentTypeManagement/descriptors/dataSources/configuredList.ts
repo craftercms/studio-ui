@@ -15,25 +15,30 @@
  */
 
 import { immutableEmptyObject } from '../../../../utils/object';
-import { createVirtualSection, TypeBuilderContentType } from '../../utils';
+import { createVirtualSection, DescriptorContentType } from '../../utils';
+import { defineMessage } from 'react-intl';
 
-export const configuredListDataSourceDescriptor: TypeBuilderContentType = {
+export const configuredListDataSourceDescriptor: DescriptorContentType = {
 	id: 'configured-list',
-	name: 'Configured List',
+	name: defineMessage({ defaultMessage: 'Configured List' }),
 	description: '',
 	type: 'item',
 	sections: [
 		createVirtualSection({
-			title: 'Options',
+			title: defineMessage({ defaultMessage: 'Options' }),
 			fields: ['dataType', 'listName', 'sort']
 		}),
-		createVirtualSection({ id: 'constraints', title: 'Constraints', fields: ['required'] })
+		createVirtualSection({
+			id: 'constraints',
+			title: defineMessage({ defaultMessage: 'Constraints' }),
+			fields: ['required']
+		})
 	],
 	fields: {
 		dataType: {
 			id: 'dataType',
 			type: 'dropdown-static-values',
-			name: 'Data Type',
+			name: defineMessage({ defaultMessage: 'Data Type' }),
 			defaultValue: [
 				{
 					value: 'value',
@@ -71,14 +76,14 @@ export const configuredListDataSourceDescriptor: TypeBuilderContentType = {
 		listName: {
 			id: 'listName',
 			type: 'input',
-			name: 'List Name',
+			name: defineMessage({ defaultMessage: 'List Name' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		sort: {
 			id: 'sort',
 			type: 'dropdown-static-values',
-			name: 'Sort',
+			name: defineMessage({ defaultMessage: 'Sort' }),
 			defaultValue: [
 				{
 					value: 'None',
@@ -101,7 +106,7 @@ export const configuredListDataSourceDescriptor: TypeBuilderContentType = {
 		required: {
 			id: 'required',
 			type: 'checkbox',
-			name: 'required',
+			name: defineMessage({ defaultMessage: 'required' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}

@@ -14,16 +14,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createVirtualSection, PartialContentType } from '../../utils';
+import { createVirtualSection, DescriptorContentType } from '../../utils';
+import { defineMessage } from 'react-intl';
 
-export const colorPickerDescriptor: PartialContentType = {
+export const colorPickerDescriptor: DescriptorContentType = {
 	id: 'colorPicker',
-	name: 'Color Picker',
-	description: 'Pick a web color',
+	name: defineMessage({ defaultMessage: 'Color Picker' }),
+	description: defineMessage({ defaultMessage: 'Pick a web color' }),
 	sections: [
 		createVirtualSection({
 			id: 'properties',
-			title: 'Options',
+			title: defineMessage({ defaultMessage: 'Options' }),
 			fields: []
 		}),
 		createVirtualSection({ id: 'constraints', title: 'Constraints', fields: [] })

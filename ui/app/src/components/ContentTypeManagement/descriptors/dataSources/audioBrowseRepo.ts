@@ -15,39 +15,44 @@
  */
 
 import { immutableEmptyObject } from '../../../../utils/object';
-import { createVirtualSection, TypeBuilderContentType } from '../../utils';
+import { createVirtualSection, DescriptorContentType } from '../../utils';
+import { defineMessage } from 'react-intl';
 
-export const audioBrowseRepoDataSourceDescriptor: TypeBuilderContentType = {
+export const audioBrowseRepoDataSourceDescriptor: DescriptorContentType = {
 	id: 'audio-browse-repo',
-	name: 'Audio From Repository',
+	name: defineMessage({ defaultMessage: 'Audio From Repository' }),
 	description: '',
 	type: 'audio',
 	sections: [
 		createVirtualSection({
-			title: 'Options',
+			title: defineMessage({ defaultMessage: 'Options' }),
 			fields: ['repoPath', 'useSearch']
 		}),
-		createVirtualSection({ id: 'constraints', title: 'Constraints', fields: ['required'] })
+		createVirtualSection({
+			id: 'constraints',
+			title: defineMessage({ defaultMessage: 'Constraints' }),
+			fields: ['required']
+		})
 	],
 	fields: {
 		repoPath: {
 			id: 'repoPath',
 			type: 'input',
-			name: 'Repository Path',
+			name: defineMessage({ defaultMessage: 'Repository Path' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		useSearch: {
 			id: 'useSearch',
 			type: 'checkbox',
-			name: 'Use Search',
+			name: defineMessage({ defaultMessage: 'Use Search' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		required: {
 			id: 'required',
 			type: 'checkbox',
-			name: 'required',
+			name: defineMessage({ defaultMessage: 'required' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}

@@ -14,26 +14,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createVirtualSection } from '../../utils';
+import { createVirtualSection, DescriptorContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
+import { defineMessage } from 'react-intl';
 
-export const labelDescriptor = {
+export const labelDescriptor: DescriptorContentType = {
 	id: 'label',
-	name: 'Label',
-	description: 'Static text label',
+	name: defineMessage({ defaultMessage: 'Label' }),
+	description: defineMessage({ defaultMessage: 'Static text label' }),
 	sections: [createVirtualSection({ title: 'Options', fields: ['text', 'renderAsHTML'] })],
 	fields: {
 		text: {
 			id: 'text',
 			type: 'input',
-			name: 'Text',
+			name: defineMessage({ defaultMessage: 'Text' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		renderAsHTML: {
 			id: 'renderAsHTML',
 			type: 'checkbox',
-			name: 'Render as HTML',
+			name: defineMessage({ defaultMessage: 'Render as HTML' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}

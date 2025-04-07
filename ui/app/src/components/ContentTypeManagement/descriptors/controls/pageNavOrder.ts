@@ -14,29 +14,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createVirtualSection, PartialContentType } from '../../utils';
+import { createVirtualSection, DescriptorContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
+import { defineMessage } from 'react-intl';
 
-export const pageNavOrderDescriptor: PartialContentType = {
+export const pageNavOrderDescriptor: DescriptorContentType = {
 	id: 'page-nav-order',
-	name: 'Page Navigation Order',
-	description: 'Controls page ordering in navigation',
+	name: defineMessage({ defaultMessage: 'Page Navigation Order' }),
+	description: defineMessage({ defaultMessage: 'Controls page ordering in navigation' }),
 	sections: [
-		createVirtualSection({ title: 'Options', fields: ['readonly'] }),
-		createVirtualSection({ title: 'Constraints', fields: ['required'] })
+		createVirtualSection({ title: defineMessage({ defaultMessage: 'Options' }), fields: ['readonly'] }),
+		createVirtualSection({ title: defineMessage({ defaultMessage: 'Constraints' }), fields: ['required'] })
 	],
 	fields: {
 		readonly: {
 			id: 'readonly',
 			type: 'checkbox',
-			name: 'Read Only',
+			name: defineMessage({ defaultMessage: 'Read Only' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		required: {
 			id: 'required',
 			type: 'checkbox',
-			name: 'Required',
+			name: defineMessage({ defaultMessage: 'Required' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}

@@ -14,29 +14,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createVirtualSection, PartialContentType } from '../../utils';
+import { createVirtualSection, DescriptorContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
+import { defineMessage } from 'react-intl';
 
-export const awsFileUploadDescriptor: PartialContentType = {
+export const awsFileUploadDescriptor: DescriptorContentType = {
 	id: 'aws-file-upload',
-	name: 'AWS File Upload',
-	description: 'Upload files to AWS S3',
+	name: defineMessage({ defaultMessage: 'AWS File Upload' }),
+	description: defineMessage({ defaultMessage: 'Upload files to AWS S3' }),
 	sections: [
-		createVirtualSection({ title: 'Options', fields: ['profile_id'] }),
-		createVirtualSection({ title: 'Constraints', fields: ['required'] })
+		createVirtualSection({ title: defineMessage({ defaultMessage: 'Options' }), fields: ['profile_id'] }),
+		createVirtualSection({ title: defineMessage({ defaultMessage: 'Constraints' }), fields: ['required'] })
 	],
 	fields: {
 		profile_id: {
 			id: 'profile_id',
 			type: 'input',
-			name: 'Profile ID',
+			name: defineMessage({ defaultMessage: 'Profile ID' }),
 			defaultValue: 's3-default',
 			validations: immutableEmptyObject
 		},
 		required: {
 			id: 'required',
 			type: 'checkbox',
-			name: 'Required',
+			name: defineMessage({ defaultMessage: 'Required' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}

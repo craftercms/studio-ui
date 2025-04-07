@@ -15,25 +15,30 @@
  */
 
 import { immutableEmptyObject } from '../../../../utils/object';
-import { createValidation, createVirtualSection, TypeBuilderContentType } from '../../utils';
+import { createValidation, createVirtualSection, DescriptorContentType } from '../../utils';
+import { defineMessage } from 'react-intl';
 
-export const videoDesktopUploadDataSourceDescriptor: TypeBuilderContentType = {
+export const videoDesktopUploadDataSourceDescriptor: DescriptorContentType = {
 	id: 'video-desktop-upload',
-	name: 'Video Uploaded From Desktop',
+	name: defineMessage({ defaultMessage: 'Video Uploaded From Desktop' }),
 	description: '',
 	type: 'video',
 	sections: [
 		createVirtualSection({
-			title: 'Options',
+			title: defineMessage({ defaultMessage: 'Options' }),
 			fields: ['repoPath']
 		}),
-		createVirtualSection({ id: 'constraints', title: 'Constraints', fields: ['required'] })
+		createVirtualSection({
+			id: 'constraints',
+			title: defineMessage({ defaultMessage: 'Constraints' }),
+			fields: ['required']
+		})
 	],
 	fields: {
 		repoPath: {
 			id: 'repoPath',
 			type: 'content-path-input',
-			name: 'Repository Path',
+			name: defineMessage({ defaultMessage: 'Repository Path' }),
 			defaultValue: undefined,
 			validations: {
 				root: createValidation('root', '/static-assets')
@@ -42,7 +47,7 @@ export const videoDesktopUploadDataSourceDescriptor: TypeBuilderContentType = {
 		required: {
 			id: 'required',
 			type: 'checkbox',
-			name: 'required',
+			name: defineMessage({ defaultMessage: 'Required' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}

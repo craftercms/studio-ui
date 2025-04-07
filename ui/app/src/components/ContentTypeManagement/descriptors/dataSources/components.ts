@@ -15,16 +15,17 @@
  */
 
 import { immutableEmptyObject } from '../../../../utils/object';
-import { createVirtualSection, TypeBuilderContentType } from '../../utils';
+import { createVirtualSection, DescriptorContentType } from '../../utils';
+import { defineMessage } from 'react-intl';
 
-export const componentsDataSourceDescriptor: TypeBuilderContentType = {
+export const componentsDataSourceDescriptor: DescriptorContentType = {
 	id: 'components',
 	name: 'Components',
 	description: '',
 	type: 'item',
 	sections: [
 		createVirtualSection({
-			title: 'Options',
+			title: defineMessage({ defaultMessage: 'Options' }),
 			fields: ['allowEmbedded', 'allowShared', 'enableBrowse', 'baseRepoPath', 'baseBrowsePath', 'contentTypes', 'tags']
 		})
 	],
@@ -32,56 +33,56 @@ export const componentsDataSourceDescriptor: TypeBuilderContentType = {
 		allowEmbedded: {
 			id: 'allowEmbedded',
 			type: 'checkbox',
-			name: 'Allow Embedded',
+			name: defineMessage({ defaultMessage: 'Allow Embedded' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		allowShared: {
 			id: 'allowShared',
 			type: 'checkbox',
-			name: 'Allow New Shared',
+			name: defineMessage({ defaultMessage: 'Allow New Shared' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		enableBrowse: {
 			id: 'enableBrowse',
 			type: 'checkbox',
-			name: 'Enable Browsing Shared',
+			name: defineMessage({ defaultMessage: 'Enable Browsing Shared' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		enableSearch: {
 			id: 'enableSearch',
 			type: 'checkbox',
-			name: 'Enable Search',
+			name: defineMessage({ defaultMessage: 'Enable Search' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		baseRepoPath: {
 			id: 'baseRepoPath',
 			type: 'input',
-			name: 'Path for New Items',
+			name: defineMessage({ defaultMessage: 'Path for New Items' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		baseBrowsePath: {
 			id: 'baseBrowsePath',
 			type: 'input',
-			name: 'Base Browse Path',
+			name: defineMessage({ defaultMessage: 'Base Browse Path' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		contentTypes: {
 			id: 'contentTypes',
 			type: 'contentTypes',
-			name: 'Content Types',
+			name: defineMessage({ defaultMessage: 'Content Types' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		tags: {
 			id: 'tags',
 			type: 'input',
-			name: 'Tags',
+			name: defineMessage({ defaultMessage: 'Tags' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}

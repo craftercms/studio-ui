@@ -14,19 +14,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createVirtualSection } from '../../utils';
+import { createVirtualSection, DescriptorContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
+import { defineMessage } from 'react-intl';
 
-export const uuidDescriptor = {
+export const uuidDescriptor: DescriptorContentType = {
 	id: 'uuid',
-	name: 'UUID',
-	description: 'Unique identifier',
-	sections: [createVirtualSection({ title: 'Options', fields: ['hidden'] })],
+	name: defineMessage({ defaultMessage: 'UUID' }),
+	description: defineMessage({ defaultMessage: 'Unique identifier' }),
+	sections: [createVirtualSection({ title: defineMessage({ defaultMessage: 'Options' }), fields: ['hidden'] })],
 	fields: {
 		hidden: {
 			id: 'hidden',
 			type: 'checkbox',
-			name: 'Hidden',
+			name: defineMessage({ defaultMessage: 'Hidden' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}

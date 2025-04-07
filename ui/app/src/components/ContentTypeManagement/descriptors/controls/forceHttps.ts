@@ -14,19 +14,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createVirtualSection } from '../../utils';
+import { createVirtualSection, DescriptorContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
+import { defineMessage } from 'react-intl';
 
-export const forceHttpsDescriptor = {
+export const forceHttpsDescriptor: DescriptorContentType = {
 	id: 'forcehttps',
-	name: 'Force HTTPS',
-	description: 'Force HTTPS protocol',
-	sections: [createVirtualSection({ title: 'Options', fields: ['readonly'] })],
+	name: defineMessage({ defaultMessage: 'Force HTTPS' }),
+	description: defineMessage({ defaultMessage: 'Force HTTPS protocol' }),
+	sections: [createVirtualSection({ title: defineMessage({ defaultMessage: 'Options' }), fields: ['readonly'] })],
 	fields: {
 		readonly: {
 			id: 'readonly',
 			type: 'checkbox',
-			name: 'Read Only',
+			name: defineMessage({ defaultMessage: 'Read Only' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}

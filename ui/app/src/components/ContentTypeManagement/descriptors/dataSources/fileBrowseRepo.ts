@@ -14,16 +14,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createValidation, createVirtualSection, TypeBuilderContentType } from '../../utils';
+import { createValidation, createVirtualSection, DescriptorContentType } from '../../utils';
+import { defineMessage } from 'react-intl';
 
-export const fileBrowseRepoDataSourceDescriptor: TypeBuilderContentType = {
+export const fileBrowseRepoDataSourceDescriptor: DescriptorContentType = {
 	id: 'file-browse-repo',
-	name: 'File Browse',
+	name: defineMessage({ defaultMessage: 'File Browse' }),
 	description: '',
 	type: 'item',
 	sections: [
 		createVirtualSection({
-			title: 'Options',
+			title: defineMessage({ defaultMessage: 'Options' }),
 			fields: ['repoPath']
 		})
 	],
@@ -31,7 +32,7 @@ export const fileBrowseRepoDataSourceDescriptor: TypeBuilderContentType = {
 		repoPath: {
 			id: 'repoPath',
 			type: 'content-path-input',
-			name: 'Repository Path',
+			name: defineMessage({ defaultMessage: 'Repository Path' }),
 			defaultValue: '/',
 			validations: {
 				root: createValidation('root', '/')

@@ -14,50 +14,59 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createVirtualSection, PartialContentType } from '../../utils';
+import { createVirtualSection, DescriptorContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
+import { defineMessage } from 'react-intl';
 
-export const linkInputDescriptor: PartialContentType = {
+export const linkInputDescriptor: DescriptorContentType = {
 	id: 'link-input',
-	name: 'Link Input',
-	description: 'URL/Link input field',
+	name: defineMessage({ defaultMessage: 'Link Input' }),
+	description: defineMessage({ defaultMessage: 'URL/Link input field' }),
 	sections: [
-		createVirtualSection({ id: 'properties', title: 'Options', fields: ['maxlength', 'readonly', 'tokenize'] }),
-		createVirtualSection({ id: 'constraints', title: 'Constraints', fields: ['required', 'pattern'] })
+		createVirtualSection({
+			id: 'properties',
+			title: defineMessage({ defaultMessage: 'Options' }),
+			fields: ['maxlength', 'readonly', 'tokenize']
+		}),
+		createVirtualSection({
+			id: 'constraints',
+			title: defineMessage({ defaultMessage: 'Constraints' }),
+			fields: ['required', 'pattern']
+		})
 	],
 	fields: {
 		maxlength: {
 			id: 'maxlength',
 			type: 'numeric-input',
-			name: 'maxLength',
+			name: defineMessage({ defaultMessage: 'maxLength' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		readonly: {
 			id: 'readonly',
 			type: 'checkbox',
-			name: 'readonly',
+			name: defineMessage({ defaultMessage: 'readonly' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		tokenize: {
 			id: 'tokenize',
 			type: 'checkbox',
-			name: 'Tokenize for Indexing',
+			name: defineMessage({ defaultMessage: 'Tokenize for Indexing' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		required: {
 			id: 'required',
 			type: 'checkbox',
-			name: 'Required',
+			name: defineMessage({ defaultMessage: 'Required' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		pattern: {
 			id: 'pattern',
 			type: 'input',
-			name: 'Match Pattern',
+			name: defineMessage({ defaultMessage: 'Match Pattern' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}

@@ -15,25 +15,30 @@
  */
 
 import { immutableEmptyObject } from '../../../../utils/object';
-import { createVirtualSection, TypeBuilderContentType } from '../../utils';
+import { createVirtualSection, DescriptorContentType } from '../../utils';
+import { defineMessage } from 'react-intl';
 
-export const keyValueListDataSourceDescriptor: TypeBuilderContentType = {
+export const keyValueListDataSourceDescriptor: DescriptorContentType = {
 	id: 'key-value-list',
-	name: 'Static Key Value Pairs',
+	name: defineMessage({ defaultMessage: 'Static Key Value Pairs' }),
 	description: '',
 	type: 'item',
 	sections: [
 		createVirtualSection({
-			title: 'Options',
+			title: defineMessage({ defaultMessage: 'Options' }),
 			fields: ['dataType', 'options', 'showkeys']
 		}),
-		createVirtualSection({ id: 'constraints', title: 'Constraints', fields: ['required'] })
+		createVirtualSection({
+			id: 'constraints',
+			title: defineMessage({ defaultMessage: 'Constraints' }),
+			fields: ['required']
+		})
 	],
 	fields: {
 		dataType: {
 			id: 'dataType',
 			type: 'dropdown-static-values',
-			name: 'Data Type',
+			name: defineMessage({ defaultMessage: 'Data Type' }),
 			defaultValue: [
 				{
 					value: 'value',
@@ -71,21 +76,21 @@ export const keyValueListDataSourceDescriptor: TypeBuilderContentType = {
 		options: {
 			id: 'options',
 			type: 'key-value-map',
-			name: 'Options',
+			name: defineMessage({ defaultMessage: 'Options' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		showkeys: {
 			id: 'showkeys',
 			type: 'checkbox',
-			name: 'Show keys',
+			name: defineMessage({ defaultMessage: 'Show keys' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		required: {
 			id: 'required',
 			type: 'checkbox',
-			name: 'required',
+			name: defineMessage({ defaultMessage: 'required' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}

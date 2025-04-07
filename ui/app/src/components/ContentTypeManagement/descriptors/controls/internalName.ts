@@ -14,22 +14,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createVirtualSection, PartialContentType } from '../../utils';
+import { createVirtualSection, DescriptorContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
 import { XmlKeys } from '../../../FormsEngine/lib/formConsts';
+import { defineMessage } from 'react-intl';
 
 // TODO: Why is internal name a control type? Doesn't seem to be in use.
 
-export const internalNameDescriptor: PartialContentType = {
+export const internalNameDescriptor: DescriptorContentType = {
 	id: XmlKeys.internalName,
-	name: 'Internal Name',
-	description: 'Internal name displayed for the item throughout the CMS (e.g. sidebar)',
-	sections: [createVirtualSection({ title: 'Options', fields: ['maxLength'] })],
+	name: defineMessage({ defaultMessage: 'Internal Name' }),
+	description: defineMessage({
+		defaultMessage: 'Internal name displayed for the item throughout the CMS (e.g. sidebar)'
+	}),
+	sections: [createVirtualSection({ title: defineMessage({ defaultMessage: 'Options' }), fields: ['maxLength'] })],
 	fields: {
 		maxLength: {
 			id: 'maxLength',
 			type: 'checkbox',
-			name: 'maxLength',
+			name: defineMessage({ defaultMessage: 'Max Length' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}

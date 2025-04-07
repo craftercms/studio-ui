@@ -14,17 +14,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createVirtualSection } from '../../utils';
+import { createVirtualSection, DescriptorContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
+import { defineMessage } from 'react-intl';
 
-export const disabledDescriptor = {
+export const disabledDescriptor: DescriptorContentType = {
 	id: 'disabled',
-	name: 'Disabled',
-	description: 'Disabled field',
+	name: defineMessage({ defaultMessage: 'Disabled' }),
+	description: defineMessage({ defaultMessage: 'Disabled field' }),
 	sections: [
 		createVirtualSection({
 			id: 'properties',
-			title: 'Options',
+			title: defineMessage({ defaultMessage: 'Options' }),
 			fields: ['readonly']
 		})
 	],
@@ -32,7 +33,7 @@ export const disabledDescriptor = {
 		readonly: {
 			id: 'readonly',
 			type: 'checkbox',
-			name: 'readonly',
+			name: defineMessage({ defaultMessage: 'readonly' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}

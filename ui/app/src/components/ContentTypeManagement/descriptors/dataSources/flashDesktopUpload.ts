@@ -15,32 +15,33 @@
  */
 
 import { immutableEmptyObject } from '../../../../utils/object';
-import { createVirtualSection, TypeBuilderContentType } from '../../utils';
+import { createVirtualSection, DescriptorContentType } from '../../utils';
+import { defineMessage } from 'react-intl';
 
-export const flashDesktopUploadDataSourceDescriptor: TypeBuilderContentType = {
+export const flashDesktopUploadDataSourceDescriptor: DescriptorContentType = {
 	id: 'flash-desktop-upload',
-	name: 'Flash Uploaded from Desktop',
+	name: defineMessage({ defaultMessage: 'Flash Uploaded from Desktop' }),
 	description: '',
 	type: 'flash',
 	sections: [
 		createVirtualSection({
-			title: 'Options',
+			title: defineMessage({ defaultMessage: 'Options' }),
 			fields: ['repoPath']
 		}),
-		createVirtualSection({ title: 'Constraints', fields: ['required'] })
+		createVirtualSection({ title: defineMessage({ defaultMessage: 'Constraints' }), fields: ['required'] })
 	],
 	fields: {
 		repoPath: {
 			id: 'repoPath',
 			type: 'input',
-			name: 'Repository Path',
+			name: defineMessage({ defaultMessage: 'Repository Path' }),
 			defaultValue: '/',
 			validations: immutableEmptyObject
 		},
 		required: {
 			id: 'required',
 			type: 'checkbox',
-			name: 'Required',
+			name: defineMessage({ defaultMessage: 'Required' }),
 			defaultValue: true,
 			validations: { required: { id: 'required', value: true, level: 'required' } }
 		}

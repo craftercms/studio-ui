@@ -15,16 +15,17 @@
  */
 
 import { immutableEmptyObject } from '../../../../utils/object';
-import { createVirtualSection, TypeBuilderContentType } from '../../utils';
+import { createVirtualSection, DescriptorContentType } from '../../utils';
+import { defineMessage } from 'react-intl';
 
-export const videoS3TranscodingDataSourceDescriptor: TypeBuilderContentType = {
+export const videoS3TranscodingDataSourceDescriptor: DescriptorContentType = {
 	id: 'video-s3-transcoding',
-	name: 'Video Transcoding From S3 Repository',
+	name: defineMessage({ defaultMessage: 'Video Transcoding From S3 Repository' }),
 	description: '',
 	type: 'transcoded-video',
 	sections: [
 		createVirtualSection({
-			title: 'Options',
+			title: defineMessage({ defaultMessage: 'Options' }),
 			fields: ['inputProfileId', 'outputProfileId']
 		})
 	],
@@ -32,14 +33,14 @@ export const videoS3TranscodingDataSourceDescriptor: TypeBuilderContentType = {
 		inputProfileId: {
 			id: 'inputProfileId',
 			type: 'input',
-			name: 'Input Profile ID',
+			name: defineMessage({ defaultMessage: 'Input Profile ID' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		outputProfileId: {
 			id: 'outputProfileId',
 			type: 'input',
-			name: 'Output Profile ID',
+			name: defineMessage({ defaultMessage: 'Output Profile ID' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}

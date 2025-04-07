@@ -14,16 +14,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createValidation, createVirtualSection, TypeBuilderContentType } from '../../utils';
+import { createValidation, createVirtualSection, DescriptorContentType } from '../../utils';
+import { defineMessage } from 'react-intl';
 
-export const fileDesktopUploadDataSourceDescriptor: TypeBuilderContentType = {
+export const fileDesktopUploadDataSourceDescriptor: DescriptorContentType = {
 	id: 'file-desktop-upload',
-	name: 'File Uploaded From Desktop',
+	name: defineMessage({ defaultMessage: 'File Uploaded From Desktop' }),
 	description: '',
 	type: 'item',
 	sections: [
 		createVirtualSection({
-			title: 'Options',
+			title: defineMessage({ defaultMessage: 'Options' }),
 			fields: ['repoPath']
 		})
 	],
@@ -31,7 +32,7 @@ export const fileDesktopUploadDataSourceDescriptor: TypeBuilderContentType = {
 		repoPath: {
 			id: 'repoPath',
 			type: 'content-path-input',
-			name: 'Repository Path',
+			name: defineMessage({ defaultMessage: 'Repository Path' }),
 			defaultValue: '/',
 			validations: {
 				regex: createValidation('regex', /^\/static-assets(\/.*)?$/),

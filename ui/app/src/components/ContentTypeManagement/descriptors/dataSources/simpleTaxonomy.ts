@@ -15,25 +15,30 @@
  */
 
 import { immutableEmptyObject } from '../../../../utils/object';
-import { createVirtualSection, TypeBuilderContentType } from '../../utils';
+import { createVirtualSection, DescriptorContentType } from '../../utils';
+import { defineMessage } from 'react-intl';
 
-export const simpleTaxonomyDataSourceDescriptor: TypeBuilderContentType = {
+export const simpleTaxonomyDataSourceDescriptor: DescriptorContentType = {
 	id: 'simpleTaxonomy',
-	name: 'Simple Taxonomy',
+	name: defineMessage({ defaultMessage: 'Simple Taxonomy' }),
 	description: '',
 	type: 'item',
 	sections: [
 		createVirtualSection({
-			title: 'Options',
+			title: defineMessage({ defaultMessage: 'Options' }),
 			fields: ['dataType', 'componentPath']
 		}),
-		createVirtualSection({ id: 'constraints', title: 'Constraints', fields: ['required'] })
+		createVirtualSection({
+			id: 'constraints',
+			title: defineMessage({ defaultMessage: 'Constraints' }),
+			fields: ['required']
+		})
 	],
 	fields: {
 		dataType: {
 			id: 'dataType',
 			type: 'dropdown-static-values',
-			name: 'Data Type',
+			name: defineMessage({ defaultMessage: 'Data Type' }),
 			defaultValue: [
 				{
 					value: 'value',
@@ -71,14 +76,14 @@ export const simpleTaxonomyDataSourceDescriptor: TypeBuilderContentType = {
 		componentPath: {
 			id: 'componentPath',
 			type: 'input',
-			name: 'Component Path',
+			name: defineMessage({ defaultMessage: 'Component Path' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		required: {
 			id: 'required',
 			type: 'checkbox',
-			name: 'Required',
+			name: defineMessage({ defaultMessage: 'Required' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}

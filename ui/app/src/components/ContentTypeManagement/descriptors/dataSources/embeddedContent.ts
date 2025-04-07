@@ -15,16 +15,17 @@
  */
 
 import { immutableEmptyObject } from '../../../../utils/object';
-import { createVirtualSection, TypeBuilderContentType } from '../../utils';
+import { createVirtualSection, DescriptorContentType } from '../../utils';
+import { defineMessage } from 'react-intl';
 
-export const embeddedContentDataSourceDescriptor: TypeBuilderContentType = {
+export const embeddedContentDataSourceDescriptor: DescriptorContentType = {
 	id: 'embedded-content',
-	name: 'Embedded Content',
+	name: defineMessage({ defaultMessage: 'Embedded Content' }),
 	description: '',
 	type: 'item',
 	sections: [
 		createVirtualSection({
-			title: 'Options',
+			title: defineMessage({ defaultMessage: 'Options' }),
 			fields: ['contentType']
 		})
 	],
@@ -32,7 +33,7 @@ export const embeddedContentDataSourceDescriptor: TypeBuilderContentType = {
 		contentType: {
 			id: 'contentType',
 			type: 'input',
-			name: 'Content Type',
+			name: defineMessage({ defaultMessage: 'Content Type' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}

@@ -14,60 +14,61 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createVirtualSection } from '../../utils';
+import { createVirtualSection, DescriptorContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
+import { defineMessage } from 'react-intl';
 
-export const textareaDescriptor = {
+export const textareaDescriptor: DescriptorContentType = {
 	id: 'textarea',
-	name: 'Text Area',
-	description: 'Multi-line text input',
+	name: defineMessage({ defaultMessage: 'Text Area' }),
+	description: defineMessage({ defaultMessage: 'Multi-line text input' }),
 	sections: [
 		createVirtualSection({
-			title: 'Options',
+			title: defineMessage({ defaultMessage: 'Options' }),
 			fields: ['rows', 'maxlength', 'allowResize', 'readonly', 'escapeContent', 'required']
 		}),
-		createVirtualSection({ title: 'Constraints', fields: ['required'] })
+		createVirtualSection({ title: defineMessage({ defaultMessage: 'Constraints' }), fields: ['required'] })
 	],
 	fields: {
 		rows: {
 			id: 'rows',
 			type: 'numeric-input',
-			name: 'Rows',
+			name: defineMessage({ defaultMessage: 'Rows' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		maxlength: {
 			id: 'maxlength',
 			type: 'numeric-input',
-			name: 'Maximum Length',
+			name: defineMessage({ defaultMessage: 'Maximum Length' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		allowResize: {
 			id: 'allowResize',
 			type: 'checkbox',
-			name: 'Allow Resize',
+			name: defineMessage({ defaultMessage: 'Allow Resize' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		readonly: {
 			id: 'readonly',
 			type: 'checkbox',
-			name: 'Read Only',
+			name: defineMessage({ defaultMessage: 'Read Only' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		escapeContent: {
 			id: 'escapeContent',
 			type: 'checkbox',
-			name: 'Escape Content',
+			name: defineMessage({ defaultMessage: 'Escape Content' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		required: {
 			id: 'required',
 			type: 'checkbox',
-			name: 'Required',
+			name: defineMessage({ defaultMessage: 'Required' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}

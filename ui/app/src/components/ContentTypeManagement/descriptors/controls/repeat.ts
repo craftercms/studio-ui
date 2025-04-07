@@ -14,43 +14,47 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createVirtualSection } from '../../utils';
+import { createVirtualSection, DescriptorContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
+import { defineMessage } from 'react-intl';
 
-export const repeatDescriptor = {
+export const repeatDescriptor: DescriptorContentType = {
 	id: 'repeat',
-	name: 'Repeating Group',
-	description: 'Group of fields that can be repeated',
+	name: defineMessage({ defaultMessage: 'Repeating Group' }),
+	description: defineMessage({ defaultMessage: 'Group of fields that can be repeated' }),
 	sections: [
-		createVirtualSection({ title: 'Options', fields: ['minOccurs', 'maxOccurs', 'readonly'] }),
-		createVirtualSection({ title: 'Constraints', fields: ['required'] })
+		createVirtualSection({
+			title: defineMessage({ defaultMessage: 'Options' }),
+			fields: ['minOccurs', 'maxOccurs', 'readonly']
+		}),
+		createVirtualSection({ title: defineMessage({ defaultMessage: 'Constraints' }), fields: ['required'] })
 	],
 	fields: {
 		minOccurs: {
 			id: 'minOccurs',
 			type: 'numeric-input',
-			name: 'Minimum Occurrences',
+			name: defineMessage({ defaultMessage: 'Minimum Occurrences' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		maxOccurs: {
 			id: 'maxOccurs',
 			type: 'numeric-input',
-			name: 'Maximum Occurrences',
+			name: defineMessage({ defaultMessage: 'Maximum Occurrences' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		readonly: {
 			id: 'readonly',
 			type: 'checkbox',
-			name: 'Read Only',
+			name: defineMessage({ defaultMessage: 'Read Only' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		required: {
 			id: 'required',
 			type: 'checkbox',
-			name: 'Required',
+			name: defineMessage({ defaultMessage: 'Required' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}

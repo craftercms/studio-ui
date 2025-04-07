@@ -14,16 +14,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createValidation, createVirtualSection, TypeBuilderContentType } from '../../utils';
+import { createValidation, createVirtualSection, DescriptorContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
+import { defineMessage } from 'react-intl';
 
-export const rteDescriptor: TypeBuilderContentType = {
+export const rteDescriptor: DescriptorContentType = {
 	id: 'rte',
-	name: 'Rich Text Editor',
-	description: 'Rich text editing area',
+	name: defineMessage({ defaultMessage: 'Rich Text Editor' }),
+	description: defineMessage({ defaultMessage: 'Rich text editing area' }),
 	sections: [
 		createVirtualSection({
-			title: 'Options',
+			title: defineMessage({ defaultMessage: 'Options' }),
 			fields: [
 				'height',
 				'autoGrow',
@@ -36,27 +37,27 @@ export const rteDescriptor: TypeBuilderContentType = {
 				'fileManager'
 			]
 		}),
-		createVirtualSection({ title: 'Constraints', fields: ['required'] })
+		createVirtualSection({ title: defineMessage({ defaultMessage: 'Constraints' }), fields: ['required'] })
 	],
 	fields: {
 		height: {
 			id: 'height',
 			type: 'numeric-input',
-			name: 'Height',
+			name: defineMessage({ defaultMessage: 'Height' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		autoGrow: {
 			id: 'autoGrow',
 			type: 'checkbox',
-			name: 'Auto Grow',
+			name: defineMessage({ defaultMessage: 'Auto Grow' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		enableSpellCheck: {
 			id: 'enableSpellCheck',
 			type: 'checkbox',
-			name: 'Enable Spell Check',
+			name: defineMessage({ defaultMessage: 'Enable Spell Check' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
@@ -64,21 +65,21 @@ export const rteDescriptor: TypeBuilderContentType = {
 		supportedChannels: {
 			id: 'supportedChannels',
 			type: 'input',
-			name: 'Supported Channels',
+			name: defineMessage({ defaultMessage: 'Supported Channels' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		rteConfiguration: {
 			id: 'rteConfiguration',
 			type: 'input',
-			name: 'RTE Configuration',
+			name: defineMessage({ defaultMessage: 'RTE Configuration' }),
 			defaultValue: 'generic',
 			validations: immutableEmptyObject
 		},
 		imageManager: {
 			id: 'imageManager',
 			type: 'datasource-selector',
-			name: 'Image Manager',
+			name: defineMessage({ defaultMessage: 'Image Manager' }),
 			defaultValue: undefined,
 			validations: {
 				type: createValidation('type', 'image')
@@ -87,7 +88,7 @@ export const rteDescriptor: TypeBuilderContentType = {
 		videoManager: {
 			id: 'videoManager',
 			type: 'datasource-selector',
-			name: 'Video Manager',
+			name: defineMessage({ defaultMessage: 'Video Manager' }),
 			defaultValue: undefined,
 			validations: {
 				type: createValidation('type', 'video')
@@ -96,7 +97,7 @@ export const rteDescriptor: TypeBuilderContentType = {
 		audioManager: {
 			id: 'audioManager',
 			type: 'datasource-selector',
-			name: 'Audio Manager',
+			name: defineMessage({ defaultMessage: 'Audio Manager' }),
 			defaultValue: undefined,
 			validations: {
 				type: createValidation('type', 'audio')
@@ -105,7 +106,7 @@ export const rteDescriptor: TypeBuilderContentType = {
 		fileManager: {
 			id: 'fileManager',
 			type: 'datasource-selector',
-			name: 'File Manager',
+			name: defineMessage({ defaultMessage: 'File Manager' }),
 			defaultValue: undefined,
 			validations: {
 				type: createValidation('type', 'item')
@@ -114,7 +115,7 @@ export const rteDescriptor: TypeBuilderContentType = {
 		required: {
 			id: 'required',
 			type: 'checkbox',
-			name: 'Required',
+			name: defineMessage({ defaultMessage: 'Required' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}

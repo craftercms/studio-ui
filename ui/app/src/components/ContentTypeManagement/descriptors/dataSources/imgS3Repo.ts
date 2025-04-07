@@ -15,16 +15,17 @@
  */
 
 import { immutableEmptyObject } from '../../../../utils/object';
-import { createVirtualSection, TypeBuilderContentType } from '../../utils';
+import { createVirtualSection, DescriptorContentType } from '../../utils';
+import { defineMessage } from 'react-intl';
 
-export const imgS3RepoDataSourceDescriptor: TypeBuilderContentType = {
+export const imgS3RepoDataSourceDescriptor: DescriptorContentType = {
 	id: 'img-s3-repo',
-	name: 'Image From S3 Repository',
+	name: defineMessage({ defaultMessage: 'Image From S3 Repository' }),
 	description: '',
 	type: 'image',
 	sections: [
 		createVirtualSection({
-			title: 'Options',
+			title: defineMessage({ defaultMessage: 'Options' }),
 			fields: ['path', 'profileId']
 		})
 	],
@@ -32,14 +33,14 @@ export const imgS3RepoDataSourceDescriptor: TypeBuilderContentType = {
 		path: {
 			id: 'path',
 			type: 'input',
-			name: 'Repository Path',
+			name: defineMessage({ defaultMessage: 'Repository Path' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		profileId: {
 			id: 'profileId',
 			type: 'input',
-			name: 'Profile ID',
+			name: defineMessage({ defaultMessage: 'Profile ID' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}

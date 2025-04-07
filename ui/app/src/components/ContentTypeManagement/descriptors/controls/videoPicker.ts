@@ -1,19 +1,20 @@
 import { immutableEmptyObject } from '../../../../utils/object';
-import { createValidation, createVirtualSection, TypeBuilderContentType } from '../../utils';
+import { createValidation, createVirtualSection, DescriptorContentType } from '../../utils';
+import { defineMessage } from 'react-intl';
 
-export const videoPickerDescriptor: TypeBuilderContentType = {
+export const videoPickerDescriptor: DescriptorContentType = {
 	id: 'video-picker',
-	name: 'Video Picker',
-	description: 'Video selection control',
+	name: defineMessage({ defaultMessage: 'Video Picker' }),
+	description: defineMessage({ defaultMessage: 'Video selection control' }),
 	sections: [
-		createVirtualSection({ title: 'Options', fields: ['videoManager', 'readonly'] }),
-		createVirtualSection({ title: 'Constraints', fields: ['required'] })
+		createVirtualSection({ title: defineMessage({ defaultMessage: 'Options' }), fields: ['videoManager', 'readonly'] }),
+		createVirtualSection({ title: defineMessage({ defaultMessage: 'Constraints' }), fields: ['required'] })
 	],
 	fields: {
 		videoManager: {
 			id: 'videoManager',
 			type: 'datasource-selector',
-			name: 'Data Source',
+			name: defineMessage({ defaultMessage: 'Data Source' }),
 			defaultValue: undefined,
 			validations: {
 				type: createValidation('type', 'video')
@@ -22,14 +23,14 @@ export const videoPickerDescriptor: TypeBuilderContentType = {
 		readonly: {
 			id: 'readonly',
 			type: 'checkbox',
-			name: 'Read Only',
+			name: defineMessage({ defaultMessage: 'Read Only' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		required: {
 			id: 'required',
 			type: 'checkbox',
-			name: 'Required',
+			name: defineMessage({ defaultMessage: 'Required' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}

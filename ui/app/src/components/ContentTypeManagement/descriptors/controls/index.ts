@@ -16,7 +16,7 @@
 
 import type { BuiltInControlType } from '../../../FormsEngine/lib/controlMap';
 import { XmlKeys } from '../../../FormsEngine/lib/formConsts';
-import { createVirtualSection, PartialContentType } from '../../utils';
+import { createVirtualSection, DescriptorContentType } from '../../utils';
 import fileNameDescriptor from './fileName';
 import inputDescriptor from './input';
 import autoFileNameDescriptor from './autoFileName';
@@ -48,6 +48,7 @@ import { immutableEmptyObject } from '../../../../utils/object';
 import { ContentTypeField } from '../../../../models/ContentType';
 import LookupTable from '../../../../models/LookupTable';
 import colorPickerDescriptor from './colorPicker';
+import { defineMessage } from 'react-intl';
 
 const dataSourceRootProperties = ['id', 'type', 'title', 'interface'];
 
@@ -144,7 +145,7 @@ export const commonControlFieldsDescriptors: LookupTable<ContentTypeField> = {
 	}
 };
 
-export const controlDescriptors: Record<BuiltInControlType, PartialContentType> = {
+export const controlDescriptors: Record<BuiltInControlType, DescriptorContentType> = {
 	'auto-filename': autoFileNameDescriptor,
 	'aws-file-upload': awsFileUploadDescriptor,
 	checkbox: checkboxDescriptor,
@@ -175,29 +176,29 @@ export const controlDescriptors: Record<BuiltInControlType, PartialContentType> 
 	colorPicker: colorPickerDescriptor
 };
 
-export const typeBasicDetailsDescriptor: PartialContentType = {
+export const typeBasicDetailsDescriptor: DescriptorContentType = {
 	id: 'typeBasicDetailsDescriptor',
-	name: 'Content Type Properties',
+	name: defineMessage({ defaultMessage: 'Content Type Properties' }),
 	description: '',
 	sections: [
 		createVirtualSection({
 			id: 'properties',
-			title: 'Basic Properties',
+			title: defineMessage({ defaultMessage: 'Basic Properties' }),
 			fields: ['id', 'name', 'description', 'type', 'thumbnailFileName', 'mergeStrategy']
 		}),
 		createVirtualSection({
 			id: 'quickCreate',
-			title: 'Quick Create',
+			title: defineMessage({ defaultMessage: 'Quick Create' }),
 			fields: ['quickCreate', 'quickCreatePath']
 		}),
 		createVirtualSection({
 			id: 'rendering',
-			title: 'Rendering',
+			title: defineMessage({ defaultMessage: 'Rendering' }),
 			fields: ['hasJsController', 'displayTemplate', 'isHeadless']
 		}),
 		createVirtualSection({
 			id: 'allowedDestinations',
-			title: 'Allowed Destinations',
+			title: defineMessage({ defaultMessage: 'Allowed Destinations' }),
 			fields: ['paths']
 		})
 	],
@@ -205,7 +206,7 @@ export const typeBasicDetailsDescriptor: PartialContentType = {
 		id: {
 			id: 'id',
 			type: 'read-only-value',
-			name: 'ID',
+			name: defineMessage({ defaultMessage: 'ID' }),
 			description: '',
 			helpText: '',
 			defaultValue: undefined,
@@ -214,7 +215,7 @@ export const typeBasicDetailsDescriptor: PartialContentType = {
 		name: {
 			id: 'name',
 			type: 'input',
-			name: 'Name',
+			name: defineMessage({ defaultMessage: 'Name' }),
 			description: '',
 			helpText: '',
 			defaultValue: undefined,
@@ -223,7 +224,7 @@ export const typeBasicDetailsDescriptor: PartialContentType = {
 		description: {
 			id: 'description',
 			type: 'textarea',
-			name: 'Description',
+			name: defineMessage({ defaultMessage: 'Description' }),
 			description: '',
 			helpText: '',
 			defaultValue: undefined,
@@ -232,7 +233,7 @@ export const typeBasicDetailsDescriptor: PartialContentType = {
 		type: {
 			id: 'type',
 			type: 'read-only-value',
-			name: 'Archetype',
+			name: defineMessage({ defaultMessage: 'Archetype' }),
 			description: '',
 			helpText: '',
 			defaultValue: undefined,
@@ -241,7 +242,7 @@ export const typeBasicDetailsDescriptor: PartialContentType = {
 		quickCreate: {
 			id: 'quickCreate',
 			type: 'checkbox',
-			name: 'Enable Quick Create',
+			name: defineMessage({ defaultMessage: 'Enable Quick Create' }),
 			description: '',
 			helpText: '',
 			defaultValue: undefined,
@@ -250,7 +251,7 @@ export const typeBasicDetailsDescriptor: PartialContentType = {
 		quickCreatePath: {
 			id: 'quickCreatePath',
 			type: 'path-with-macro-creator',
-			name: 'Destination Path Pattern',
+			name: defineMessage({ defaultMessage: 'Destination Path Pattern' }),
 			description: '',
 			helpText: '',
 			defaultValue: undefined,
@@ -259,7 +260,7 @@ export const typeBasicDetailsDescriptor: PartialContentType = {
 		displayTemplate: {
 			id: 'displayTemplate',
 			type: 'template-selector',
-			name: 'Display Template',
+			name: defineMessage({ defaultMessage: 'Display Template' }),
 			description: '',
 			helpText: '',
 			defaultValue: undefined,
@@ -268,7 +269,7 @@ export const typeBasicDetailsDescriptor: PartialContentType = {
 		mergeStrategy: {
 			id: 'mergeStrategy',
 			type: 'merge-strategy-selector',
-			name: 'Merge Strategy',
+			name: defineMessage({ defaultMessage: 'Merge Strategy' }),
 			description: 'Inheritance description...',
 			helpText: '',
 			defaultValue: undefined,
@@ -277,7 +278,7 @@ export const typeBasicDetailsDescriptor: PartialContentType = {
 		hasJsController: {
 			id: 'hasJsController',
 			type: 'type-js-controller-selector',
-			name: 'Client-side Controller',
+			name: defineMessage({ defaultMessage: 'Client-side Controller' }),
 			description: '',
 			helpText: '',
 			defaultValue: undefined,
@@ -286,7 +287,7 @@ export const typeBasicDetailsDescriptor: PartialContentType = {
 		thumbnailFileName: {
 			id: 'thumbnailFileName',
 			type: 'type-image-selector',
-			name: 'Thumbnail Image File Name',
+			name: defineMessage({ defaultMessage: 'Thumbnail Image File Name' }),
 			description: '',
 			helpText: '',
 			defaultValue: undefined,
@@ -295,9 +296,11 @@ export const typeBasicDetailsDescriptor: PartialContentType = {
 		isHeadless: {
 			id: 'isHeadless',
 			type: 'checkbox',
-			name: 'Is Headless Type',
-			description:
-				'Check this to authorize this content type to leave the display template field empty as it is a headless type',
+			name: defineMessage({ defaultMessage: 'Is Headless Type' }),
+			description: defineMessage({
+				defaultMessage:
+					'Check this to authorize this content type to leave the display template field empty as it is a headless type'
+			}),
 			helpText: '',
 			defaultValue: undefined,
 			validations: immutableEmptyObject
@@ -314,14 +317,14 @@ export const typeBasicDetailsDescriptor: PartialContentType = {
 	}
 };
 
-export const sectionDescriptor: PartialContentType = {
+export const sectionDescriptor: DescriptorContentType = {
 	id: 'sectionDescriptor',
-	name: 'Section Properties',
+	name: defineMessage({ defaultMessage: 'Section Properties' }),
 	description: null,
 	sections: [
 		createVirtualSection({
 			id: 'properties',
-			title: 'Basic Properties',
+			title: defineMessage({ defaultMessage: 'Basic Properties' }),
 			fields: ['title', 'color', 'description', 'expandByDefault']
 		})
 		// createVirtualSection({
@@ -334,7 +337,7 @@ export const sectionDescriptor: PartialContentType = {
 		title: {
 			id: 'title',
 			type: 'input',
-			name: 'Title',
+			name: defineMessage({ defaultMessage: 'Title' }),
 			description: '',
 			helpText: '',
 			defaultValue: undefined,
@@ -343,7 +346,7 @@ export const sectionDescriptor: PartialContentType = {
 		description: {
 			id: 'description',
 			type: 'textarea',
-			name: 'Description',
+			name: defineMessage({ defaultMessage: 'Description' }),
 			description: '',
 			helpText: '',
 			defaultValue: undefined,
@@ -352,9 +355,11 @@ export const sectionDescriptor: PartialContentType = {
 		color: {
 			id: 'color',
 			type: 'colorPicker',
-			name: 'Color',
-			description:
-				'Pick the color that this section should feature in the form. A small amount of transparency can help with dark mode.',
+			name: defineMessage({ defaultMessage: 'Color' }),
+			description: defineMessage({
+				defaultMessage:
+					'Pick the color that this section should feature in the form. A small amount of transparency can help with dark mode.'
+			}),
 			helpText: '',
 			defaultValue: undefined,
 			validations: immutableEmptyObject,
@@ -374,8 +379,10 @@ export const sectionDescriptor: PartialContentType = {
 		expandByDefault: {
 			id: 'expandByDefault',
 			type: 'checkbox',
-			name: 'Expand by default',
-			description: 'Check this to show the section expanded when the content type is displayed in the content form',
+			name: defineMessage({ defaultMessage: 'Expand by default' }),
+			description: defineMessage({
+				defaultMessage: 'Check this to show the section expanded when the content type is displayed in the content form'
+			}),
 			helpText: '',
 			defaultValue: undefined,
 			validations: immutableEmptyObject

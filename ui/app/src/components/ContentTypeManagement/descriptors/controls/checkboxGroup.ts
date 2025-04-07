@@ -14,25 +14,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createValidation, createVirtualSection, TypeBuilderContentType } from '../../utils';
+import { createValidation, createVirtualSection, DescriptorContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
+import { defineMessage } from 'react-intl';
 
-export const checkboxGroupDescriptor: TypeBuilderContentType = {
+export const checkboxGroupDescriptor: DescriptorContentType = {
 	id: 'checkbox-group',
-	name: 'Checkbox Group',
-	description: 'Multiple checkbox inputs',
+	name: defineMessage({ defaultMessage: 'Checkbox Group' }),
+	description: defineMessage({ defaultMessage: 'Multiple checkbox inputs' }),
 	sections: [
 		createVirtualSection({
-			title: 'Options',
+			title: defineMessage({ defaultMessage: 'Options' }),
 			fields: ['datasource', 'selectAll', 'listDirection', 'readonly']
 		}),
-		createVirtualSection({ title: 'Constraints', fields: ['minSize'] })
+		createVirtualSection({ title: defineMessage({ defaultMessage: 'Constraints' }), fields: ['minSize'] })
 	],
 	fields: {
 		datasource: {
 			id: 'datasource',
 			type: 'datasource-single-selector',
-			name: 'Data Source',
+			name: defineMessage({ defaultMessage: 'Data Source' }),
 			defaultValue: undefined,
 			validations: {
 				type: createValidation('type', 'item')
@@ -41,14 +42,14 @@ export const checkboxGroupDescriptor: TypeBuilderContentType = {
 		selectAll: {
 			id: 'selectAll',
 			type: 'checkbox',
-			name: 'Show select all',
+			name: defineMessage({ defaultMessage: 'Show select all' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		listDirection: {
 			id: 'listDirection',
 			type: 'dropdown-static-values',
-			name: 'List Direction',
+			name: defineMessage({ defaultMessage: 'List Direction' }),
 			defaultValue: [
 				{
 					value: 'horizontal',
@@ -66,14 +67,14 @@ export const checkboxGroupDescriptor: TypeBuilderContentType = {
 		readonly: {
 			id: 'readonly',
 			type: 'checkbox',
-			name: 'Read Only',
+			name: defineMessage({ defaultMessage: 'Read Only' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		minSize: {
 			id: 'minSize',
 			type: 'numeric-input',
-			name: 'Minimum Selected',
+			name: defineMessage({ defaultMessage: 'Minimum Selected' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}
