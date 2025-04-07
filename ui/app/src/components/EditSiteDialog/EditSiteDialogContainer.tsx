@@ -34,7 +34,7 @@ import useProjectPreviewImage from '../../hooks/useProjectPreviewImage';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
 import { FormattedMessage, useIntl } from 'react-intl';
 import DialogBody from '../DialogBody';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 import Card from '@mui/material/Card';
 import CardMedia from '@mui/material/CardMedia';

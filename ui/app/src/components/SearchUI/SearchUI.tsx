@@ -28,7 +28,7 @@ import Typography from '@mui/material/Typography';
 import { translations } from '../Search/translations';
 import TablePagination, { tablePaginationClasses } from '@mui/material/TablePagination';
 import ApiResponseErrorState from '../ApiResponseErrorState';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import MediaCard from '../MediaCard/MediaCard';
 import EmptyState from '../EmptyState/EmptyState';
 import ItemActionsSnackbar from '../ItemActionsSnackbar';

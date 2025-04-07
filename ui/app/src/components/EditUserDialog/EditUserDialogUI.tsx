@@ -29,7 +29,7 @@ import Switch from '@mui/material/Switch';
 import Chip from '@mui/material/Chip';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import Skeleton from '@mui/material/Skeleton';
 import { rand } from '../PathNavigator/utils';
 import ResetPasswordDialog from '../ResetPasswordDialog';

@@ -25,7 +25,7 @@ import PasswordTextField from '../PasswordTextField/PasswordTextField';
 import DialogFooter from '../DialogFooter/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import UserGroupMembershipEditor from '../UserGroupMembershipEditor';
 import { map, switchMap } from 'rxjs/operators';
 import { forkJoin, of } from 'rxjs';
