@@ -18,7 +18,7 @@ import React, { useState } from 'react';
 import { Box, ListItemIcon, ListItemText } from '@mui/material';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import { EnhancedDialog, EnhancedDialogProps } from '../../EnhancedDialog';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import SecondaryButton from '../../SecondaryButton';
 import PrimaryButton from '../../PrimaryButton';
 import { DialogBody } from '../../DialogBody';
@@ -26,6 +26,7 @@ import { DialogFooter } from '../../DialogFooter';
 import ListItemButton from '@mui/material/ListItemButton';
 import { SearchBar, SearchBarProps } from '../../SearchBar';
 import controlDescriptors from '../descriptors/controls';
+import { applyTranslations } from '../utils';
 
 export interface PickControlDialogProps extends EnhancedDialogProps {}
 
@@ -33,16 +34,19 @@ const fieldTypes = Object.values(controlDescriptors).sort((a, b) => (a?.name > b
 
 function PickControlDialogBody({ onClose }: PickControlDialogProps) {
 	const [searchTerm, setSearchTerm] = useState('');
+	const { formatMessage } = useIntl();
 
 	const handleSearchChange: SearchBarProps['onChange'] = (value) => {
 		setSearchTerm(value);
 	};
 
-	const filteredFields = fieldTypes.filter(
-		(field) =>
-			field.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-			field.description.toLowerCase().includes(searchTerm.toLowerCase())
-	);
+	const filteredFields = fieldTypes
+		.map((type) => applyTranslations(type, formatMessage))
+		.filter(
+			(field) =>
+				field.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+				field.description.toLowerCase().includes(searchTerm.toLowerCase())
+		);
 
 	return (
 		<>

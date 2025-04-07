@@ -23,6 +23,7 @@ import ContentType, {
 import LookupTable from '../../../models/LookupTable';
 import React, { createElement, forwardRef, useEffect, useMemo, useRef, useState } from 'react';
 import {
+	applyTranslations,
 	buildContentTypeXml,
 	createDataSourceValuesObject,
 	createEmptyTypeStructure,
@@ -52,7 +53,7 @@ import {
 } from '../../FormsEngine/lib/formsEngineContext';
 import useContentTypes from '../../../hooks/useContentTypes';
 import { createStore as createJotai, Provider } from 'jotai';
-import { Observable, of, Subject, debounceTime, map } from 'rxjs';
+import { debounceTime, map, Observable, of, Subject } from 'rxjs';
 import EditTypeViewLayout, { EditAppLayoutProps } from './EditTypeViewLayout';
 import useUpdateRefs from '../../../hooks/useUpdateRefs';
 import useActiveSiteId from '../../../hooks/useActiveSiteId';
@@ -201,20 +202,23 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 			return showAlert(`No control descriptor found for field "${field.name}" of type "${field.type}"`);
 
 		// Adding data sources to the virtual type to ensure they are available for rendering in the dataSourceSelector.
-		const virtualType = createVirtualTypeForField({ ...controlDescriptor, dataSources: type.dataSources });
+		const virtualType = createVirtualTypeForField(
+			{ ...controlDescriptor, dataSources: type.dataSources },
+			formatMessage
+		);
 		handleArtefactSelected(
 			virtualType,
 			createVirtualTypeFormContext(virtualType, createTypeFieldValuesObject(field), contentTypesLookup, {
 				fieldUpdates$: stateRef.current.fieldUpdates$
 			}),
-			{ field, fieldIdPath, controlDescriptor }
+			{ field, fieldIdPath, controlDescriptor: applyTranslations(controlDescriptor, formatMessage) }
 		);
 		setSelectedFieldIdPath(fieldIdPath);
 		stateRef.current.selectedField = field;
 	};
 	const handleSectionSelected: TypeDetailsViewProps['onSectionSelected'] = (section) => {
 		if (!closeAndCleanup()) return;
-		const virtualType = createVirtualTypeForSection(sectionDescriptor);
+		const virtualType = createVirtualTypeForSection(sectionDescriptor, formatMessage);
 		handleArtefactSelected(
 			virtualType,
 			createVirtualTypeFormContext(virtualType, section as unknown as LookupTable<unknown>, contentTypesLookup, {
@@ -231,7 +235,7 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 		if (!dataSourceDescriptor)
 			return showAlert(`No control descriptor found for field "${dataSource.title}" of type "${dataSource.type}"`);
 
-		const virtualType = createVirtualTypeForDataSource(dataSourceDescriptor);
+		const virtualType = createVirtualTypeForDataSource(dataSourceDescriptor, formatMessage);
 		handleArtefactSelected(
 			virtualType,
 			createVirtualTypeFormContext(virtualType, createDataSourceValuesObject(dataSource), contentTypesLookup, {
@@ -244,7 +248,7 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 	};
 	const handleEditTypeProperties = () => {
 		if (!closeAndCleanup()) return;
-		const virtualType = createEmptyTypeStructure(typeBasicDetailsDescriptor);
+		const virtualType = createEmptyTypeStructure(applyTranslations(typeBasicDetailsDescriptor, formatMessage));
 		handleArtefactSelected(
 			virtualType,
 			createVirtualTypeFormContext(virtualType, createTypeFormValuesObject(type), contentTypesLookup, {

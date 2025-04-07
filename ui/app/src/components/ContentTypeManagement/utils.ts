@@ -25,7 +25,7 @@ import {
 } from '../../models';
 import LookupTable from '../../models/LookupTable';
 import ContentType, { SerializeToXmlContentTypeStructure } from '../../models/ContentType';
-import { immutableEmptyObject, noOp, pluckProps } from '../../utils/object';
+import { createLookupTable, noOp, pluckProps } from '../../utils/object';
 import { commonControlFieldsDescriptors, defaultDataSourcesSection } from './descriptors/controls';
 import {
 	FormsEngineFormApiContextProps,
@@ -42,6 +42,8 @@ import { getXmlBuilder } from '../FormsEngine/lib/valueSerializers';
 import { nanoid } from 'nanoid';
 import { commonDataSourceDescriptors } from './descriptors/dataSources';
 import { ControlProps } from '../FormsEngine/types';
+import { IntlShape } from 'react-intl';
+import TranslationOrText from '../../models/TranslationOrText';
 
 // TODO: assess which of the utils here should go to utils/contentType.ts, or other places (serializers, etc.)
 
@@ -218,26 +220,39 @@ export type PartialContentType = Pick<ContentType, 'id' | 'name' | 'description'
 	dataSources?: DataSource[];
 };
 
-export type TypeBuilderFieldValidationKeys = ValidationKeys | 'root' | 'regex' | 'type';
-
-export type TypeBuilderContentTypeFieldValidation = Omit<ContentTypeFieldValidation, 'id'> & {
-	id: TypeBuilderFieldValidationKeys;
-};
-
-export type TypeBuilderFieldValidations = Record<TypeBuilderFieldValidationKeys, TypeBuilderContentTypeFieldValidation>;
-
-export type TypeBuilderContentType = Omit<PartialContentType, 'fields'> & {
+export type DescriptorContentType = Pick<ContentType, 'id'> & {
+	dataSources?: DataSource[];
+	name: TranslationOrText;
+	description: TranslationOrText;
+	sections: DescriptorSection[];
+	fields: LookupTable<DescriptorField>;
 	type?: 'image' | 'item' | 'audio' | 'flash' | 'video' | 'transcoded-video';
-	fields: {
-		[key: string]: ContentTypeField & {
-			validations: Partial<TypeBuilderFieldValidations>;
-		};
-	};
 };
+
+export type DescriptorSection = Omit<ContentTypeSection, 'title' | 'description'> & {
+	title: TranslationOrText;
+	description: TranslationOrText;
+};
+
+export type DescriptorField = Omit<ContentTypeField, 'name' | 'description' | 'fields'> & {
+	name: TranslationOrText;
+	description?: TranslationOrText;
+	helpText?: TranslationOrText;
+	fields?: LookupTable<DescriptorField>;
+	validations: Partial<DescriptorFieldValidations>;
+};
+
+export type DescriptorFieldValidationKeys = ValidationKeys | 'root' | 'regex' | 'type';
+
+export type DescriptorContentTypeFieldValidation = Omit<ContentTypeFieldValidation, 'id'> & {
+	id: DescriptorFieldValidationKeys;
+};
+
+export type DescriptorFieldValidations = Record<DescriptorFieldValidationKeys, DescriptorContentTypeFieldValidation>;
 
 export interface TypeBuilderControl extends Omit<ControlProps, 'field'> {
 	field: ContentTypeField & {
-		validations: Partial<TypeBuilderFieldValidations>;
+		validations: Partial<DescriptorFieldValidations>;
 	};
 }
 
@@ -262,70 +277,94 @@ export function createEmptyTypeStructure(mixin?: Partial<ContentType>): ContentT
 	};
 }
 
-export function createVirtualTypeForField(controlDescriptor: PartialContentType): ContentType {
-	return createEmptyTypeStructure({
-		...controlDescriptor,
-		fields: {
-			...commonControlFieldsDescriptors,
-			...controlDescriptor.fields
-		},
-		sections: [
-			{
-				id: 'properties',
-				color: null,
-				title: 'Basic Properties',
-				description: '',
-				fields: Object.keys(commonControlFieldsDescriptors),
-				expandByDefault: true
+export function createVirtualTypeForField(
+	controlDescriptor: DescriptorContentType,
+	formatMessage: IntlShape['formatMessage']
+): ContentType {
+	const translatedControlDescriptor = applyTranslations(
+		{
+			...controlDescriptor,
+			fields: {
+				...commonControlFieldsDescriptors,
+				...controlDescriptor.fields
 			},
-			...(controlDescriptor.sections ?? [])
-		]
-	});
-}
-
-export function createVirtualTypeForSection(descriptor: PartialContentType): ContentType {
-	return createEmptyTypeStructure({
-		...descriptor,
-		fields: descriptor.fields,
-		sections: descriptor.sections
-	});
-}
-
-export function createVirtualTypeForDataSource(dataSourceDescriptor: PartialContentType): ContentType {
-	return createEmptyTypeStructure({
-		...dataSourceDescriptor,
-		fields: {
-			...commonDataSourceDescriptors,
-			...dataSourceDescriptor.fields
+			sections: [
+				{
+					id: 'properties',
+					color: null,
+					title: 'Basic Properties',
+					description: '',
+					fields: Object.keys(commonControlFieldsDescriptors),
+					expandByDefault: true
+				},
+				...(controlDescriptor.sections ?? [])
+			]
 		},
-		sections: [
-			{
-				id: 'properties',
-				color: null,
-				title: 'Basic Properties',
-				description: '',
-				fields: Object.keys(commonDataSourceDescriptors),
-				expandByDefault: true
-			},
-			...(dataSourceDescriptor.sections ?? [])
-		]
-	});
+		formatMessage
+	);
+	return createEmptyTypeStructure(translatedControlDescriptor);
 }
 
-export function createVirtualSection(
-	sectionData: Partial<ContentTypeSection> & Pick<ContentTypeSection, 'title' | 'fields'>
-): ContentTypeSection {
+export function createVirtualTypeForSection(
+	descriptor: DescriptorContentType,
+	formatMessage: IntlShape['formatMessage']
+): ContentType {
+	const translatedDescriptor = applyTranslations(
+		{
+			...descriptor,
+			fields: descriptor.fields,
+			sections: descriptor.sections
+		},
+		formatMessage
+	);
+	return createEmptyTypeStructure(translatedDescriptor);
+}
+
+export function createVirtualTypeForDataSource(
+	dataSourceDescriptor: DescriptorContentType,
+	formatMessage: IntlShape['formatMessage']
+): ContentType {
+	const translatedDataSourceDescriptor = applyTranslations(
+		{
+			...dataSourceDescriptor,
+			fields: {
+				...commonDataSourceDescriptors,
+				...dataSourceDescriptor.fields
+			},
+			sections: [
+				{
+					id: 'properties',
+					color: null,
+					title: 'Basic Properties',
+					description: '',
+					fields: Object.keys(commonDataSourceDescriptors),
+					expandByDefault: true
+				},
+				...(dataSourceDescriptor.sections ?? [])
+			]
+		},
+		formatMessage
+	);
+	return createEmptyTypeStructure(translatedDataSourceDescriptor);
+}
+
+export function createVirtualSection<K extends ContentTypeSection | DescriptorSection>(
+	sectionData: Partial<K> & Pick<K, 'title' | 'fields'>
+): K {
+	const title = JSON.stringify(
+		typeof sectionData.title === 'object' ? sectionData.title.defaultMessage : sectionData.title
+	);
 	return {
 		id: sectionData?.id || nanoid(),
 		description: '',
 		expandByDefault: true,
-		color: sectionData?.color ?? toColor(sectionData.title),
+		color: sectionData?.color ?? toColor(title),
 		...sectionData
-	};
+	} as K;
 }
 
-export function createVirtualDataSourceFields(type: ContentType): Partial<TypeBuilderContentType> {
-	const dataSourceFields: Partial<TypeBuilderContentType> = {};
+export function createVirtualDataSourceFields(type: ContentType): Partial<DescriptorContentType> {
+	const dataSourceFields: Partial<DescriptorContentType> = {};
 	for (const dataSource of type.dataSources ?? []) {
 		dataSourceFields[dataSource.id] = {
 			id: dataSource.id,
@@ -426,7 +465,10 @@ export const createStableFormContextProps = (
 		state: null
 	};
 	if (createRootTypeSections) {
-		Object.assign(context.atoms.expandedStateBySectionId, buildSectionExpandedStateAtoms([defaultDataSourcesSection]));
+		Object.assign(
+			context.atoms.expandedStateBySectionId,
+			buildSectionExpandedStateAtoms([defaultDataSourcesSection as ContentTypeSection])
+		);
 	}
 	return context;
 };
@@ -548,13 +590,64 @@ function convertDataSourceStructToXmlStruct(dataSource: DataSource): Required<Le
 }
 
 export function createValidation(
-	key: TypeBuilderFieldValidationKeys,
+	key: DescriptorFieldValidationKeys,
 	value,
 	level?: ContentTypeFieldValidation['level']
-): TypeBuilderContentTypeFieldValidation {
+): DescriptorContentTypeFieldValidation {
 	return {
 		id: key,
 		value,
 		level: level ?? 'suggestion'
 	};
+}
+
+export function applyTranslations(
+	descriptor: DescriptorContentType,
+	formatMessage: IntlShape['formatMessage']
+): PartialContentType {
+	const translatedSections = descriptor.sections.map((section) => ({
+		...section,
+		title: translateIfMessageDescriptor(formatMessage, section, 'title'),
+		description: translateIfMessageDescriptor(formatMessage, section, 'description')
+	}));
+
+	const translatedFieldsArray = Object.values(descriptor.fields).map((field) => {
+		return {
+			...field,
+			name: translateIfMessageDescriptor(formatMessage, field, 'name'),
+			description: translateIfMessageDescriptor(formatMessage, field, 'description')
+		};
+	});
+	const translatedFieldsLookup = createLookupTable(translatedFieldsArray, 'id');
+
+	return {
+		...descriptor,
+		name: translateIfMessageDescriptor(formatMessage, descriptor, 'name'),
+		description: translateIfMessageDescriptor(formatMessage, descriptor, 'description'),
+		sections: translatedSections,
+		fields: translatedFieldsLookup as unknown as LookupTable<ContentTypeField>
+	};
+}
+
+function translateIfMessageDescriptor(
+	formatMessage: IntlShape['formatMessage'],
+	target: DescriptorContentType,
+	property: 'name' | 'description'
+): string;
+function translateIfMessageDescriptor(
+	formatMessage: IntlShape['formatMessage'],
+	target: DescriptorSection,
+	property: 'title' | 'description'
+): string;
+function translateIfMessageDescriptor(
+	formatMessage: IntlShape['formatMessage'],
+	target: DescriptorField,
+	property: 'name' | 'description' | 'helpText'
+): string;
+function translateIfMessageDescriptor<K>(
+	formatMessage: IntlShape['formatMessage'],
+	target: K,
+	property: keyof K
+): string {
+	return typeof target[property] === 'object' ? formatMessage(target[property]) : ((target[property] as string) ?? '');
 }

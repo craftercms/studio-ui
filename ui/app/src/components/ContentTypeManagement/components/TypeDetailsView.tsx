@@ -172,7 +172,7 @@ export function TypeDetailsView(props: TypeDetailsViewProps) {
 					<SectionAccordion
 						colorize={false}
 						variant="outlined"
-						section={dataSourcesSection}
+						section={dataSourcesSection as ContentTypeSection}
 						slotProps={{
 							accordionDetails: {
 								className: '',
@@ -214,7 +214,7 @@ interface SectionInsertionProps extends EnhancedDialogProps {
 function SectionInsertionDialog({ type, onInsertSection, ...dialogProps }: SectionInsertionProps) {
 	const [position, setPosition] = useState(type.sections.length);
 	const handleAccept = () => {
-		onInsertSection?.(createVirtualSection({ title: 'New Section', fields: [] }), position);
+		onInsertSection?.(createVirtualSection({ title: 'New Section', fields: [] } as ContentTypeSection), position);
 	};
 	return (
 		<EnhancedDialog

@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ContentTypeField, LookupTable } from '../../../../models';
+import { LookupTable } from '../../../../models';
 import componentsDescriptor from './components';
 import audioBrowseRepoDescriptor from './audioBrowseRepo';
 import audioDesktopUploadDescriptor from './audioDesktopUpload';
@@ -43,8 +43,9 @@ import videoWebDavRepoDescriptor from './videoWebDavRepo';
 import videoWebDavUploadDescriptor from './videoWebDavUpload';
 import webDavRepoDescriptor from './webDavRepo';
 import webDavUploadDescriptor from './webDavUpload';
+import { DescriptorContentType, DescriptorField } from '../../utils';
 
-export const commonDataSourceDescriptors: LookupTable<ContentTypeField> = {
+export const commonDataSourceDescriptors: LookupTable<DescriptorField> = {
 	id: {
 		id: 'id',
 		type: 'input',
@@ -65,7 +66,37 @@ export const commonDataSourceDescriptors: LookupTable<ContentTypeField> = {
 	}
 };
 
-export const dataSourceDescriptors = {
+export type BuiltInDataSourceType =
+	| 'components'
+	| 'audio-browse-repo'
+	| 'audio-desktop-upload'
+	| 'configured-list'
+	| 'embedded-content'
+	| 'file-browse-repo'
+	| 'file-desktop-upload'
+	| 'flash-desktop-upload'
+	| 'img-desktop-upload'
+	| 'img-repository-upload'
+	| 'img-S3-repo'
+	| 'img-S3-upload'
+	| 'img-WebDAV-repo'
+	| 'img-WebDAV-upload'
+	| 'key-value-list'
+	| 'S3-repo'
+	| 'S3-upload'
+	| 'shared-content'
+	| 'simpleTaxonomy'
+	| 'video-browse-repo'
+	| 'video-desktop-upload'
+	| 'video-S3-repo'
+	| 'video-S3-transcoding'
+	| 'video-S3-upload'
+	| 'video-WebDAV-repo'
+	| 'video-WebDAV-upload'
+	| 'WebDAV-repo'
+	| 'WebDAV-upload';
+
+export const dataSourceDescriptors: Record<BuiltInDataSourceType, DescriptorContentType> = {
 	components: componentsDescriptor,
 	'audio-browse-repo': audioBrowseRepoDescriptor,
 	'audio-desktop-upload': audioDesktopUploadDescriptor,

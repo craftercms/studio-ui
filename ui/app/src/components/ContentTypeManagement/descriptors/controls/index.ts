@@ -16,7 +16,7 @@
 
 import type { BuiltInControlType } from '../../../FormsEngine/lib/controlMap';
 import { XmlKeys } from '../../../FormsEngine/lib/formConsts';
-import { createVirtualSection, DescriptorContentType } from '../../utils';
+import { createVirtualSection, DescriptorContentType, DescriptorField } from '../../utils';
 import fileNameDescriptor from './fileName';
 import inputDescriptor from './input';
 import autoFileNameDescriptor from './autoFileName';
@@ -101,11 +101,11 @@ export const defaultDataSourcesSection = createVirtualSection({
 	fields: []
 });
 
-export const commonControlFieldsDescriptors: LookupTable<ContentTypeField> = {
+export const commonControlFieldsDescriptors: LookupTable<DescriptorField> = {
 	id: {
 		id: 'id',
 		type: 'input',
-		name: 'Variable Name',
+		name: defineMessage({ defaultMessage: 'Variable Name' }),
 		defaultValue: undefined,
 		validations: {
 			required: { id: 'required', level: 'required', value: true }
@@ -114,7 +114,7 @@ export const commonControlFieldsDescriptors: LookupTable<ContentTypeField> = {
 	title: {
 		id: 'title',
 		type: 'input',
-		name: 'Title',
+		name: defineMessage({ defaultMessage: 'Title' }),
 		defaultValue: undefined,
 		validations: {
 			required: { id: 'required', level: 'required', value: true }
@@ -123,23 +123,23 @@ export const commonControlFieldsDescriptors: LookupTable<ContentTypeField> = {
 	description: {
 		id: 'description',
 		type: 'textarea',
-		name: 'Description',
-		description: 'A description shown to the user on the form',
+		name: defineMessage({ defaultMessage: 'Description' }),
+		description: defineMessage({ defaultMessage: 'A description shown to the user on the form' }),
 		defaultValue: undefined,
 		validations: immutableEmptyObject
 	},
 	help: {
 		id: 'help',
 		type: 'rte',
-		name: 'Help',
-		description: 'An expanded description or help text with rich text capabilities',
+		name: defineMessage({ defaultMessage: 'Help' }),
+		description: defineMessage({ defaultMessage: 'An expanded description or help text with rich text capabilities' }),
 		defaultValue: undefined,
 		validations: immutableEmptyObject
 	},
 	defaultValue: {
 		id: 'defaultValue',
 		type: 'textarea',
-		name: 'Default Value',
+		name: defineMessage({ defaultMessage: 'Default Value' }),
 		defaultValue: undefined,
 		validations: immutableEmptyObject
 	}
