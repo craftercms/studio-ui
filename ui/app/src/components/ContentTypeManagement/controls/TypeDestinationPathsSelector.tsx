@@ -25,6 +25,7 @@ import AddCircleOutlineRoundedIcon from '@mui/icons-material/AddCircleOutlineRou
 import Tooltip from '@mui/material/Tooltip';
 import RemoveCircleOutlineRoundedIcon from '@mui/icons-material/RemoveCircleOutlineRounded';
 import { TypeBuilderControl } from '../utils';
+import Typography from '@mui/material/Typography';
 
 export interface TypeDestinationPathsSelectorProps extends TypeBuilderControl {
 	value: string;
@@ -67,13 +68,13 @@ export function TypeDestinationPathsSelector(props: TypeDestinationPathsSelector
 		<FormsEngineField htmlFor={htmlId} field={field} max={maxLength}>
 			{Object.entries(value).map(([key, value]) => (
 				<Box key={key} sx={{ display: 'flex', flexDirection: 'column', rowGap: 2, mt: 2 }}>
-					<FormLabel component="label">
+					<Typography variant="subtitle2">
 						{key === 'includes' ? (
 							<FormattedMessage defaultMessage="Includes" />
 						) : (
 							<FormattedMessage defaultMessage="Excludes" />
 						)}
-					</FormLabel>
+					</Typography>
 					{value.map((path, index) => (
 						<Box key={index} sx={{ display: 'flex', gap: 2 }}>
 							<TextField

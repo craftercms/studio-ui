@@ -36,8 +36,7 @@ export interface ContentTypesSelectorProps extends TypeBuilderControl {
  * Enables the selection of multiple content types using a checkbox group layout.
  */
 export function ContentTypesSelector(props: ContentTypesSelectorProps) {
-	const { field, value, setValue, autoFocus } = props;
-	const htmlId = useId();
+	const { field, value, setValue } = props;
 	const maxLength = field.validations.maxLength?.value;
 	const contentTypes = useContentTypes();
 	const [selectedLookup, setSelectedLookup] = useSpreadState<Record<string, boolean>>(
@@ -56,7 +55,7 @@ export function ContentTypesSelector(props: ContentTypesSelectorProps) {
 	};
 
 	return (
-		<FormsEngineField htmlFor={htmlId} field={field} max={maxLength}>
+		<FormsEngineField field={field} max={maxLength}>
 			<List>
 				{Object.values(contentTypes).map((contentType) => (
 					<ListItem key={contentType.id} sx={{ bgcolor: 'background.paper', p: 0 }}>

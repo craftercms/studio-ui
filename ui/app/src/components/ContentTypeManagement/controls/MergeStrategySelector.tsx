@@ -40,7 +40,6 @@ export function MergeStrategySelector(props: MergeStrategySelectorProps) {
 			<Autocomplete
 				freeSolo
 				options={mergeStrategies}
-				id={htmlId}
 				onInputChange={handleChange}
 				value={value}
 				readOnly={readonly}
@@ -50,7 +49,7 @@ export function MergeStrategySelector(props: MergeStrategySelectorProps) {
 						<TextField
 							{...params}
 							slotProps={{
-								htmlInput: { ...params.inputProps, maxLength }
+								htmlInput: { ...params.inputProps, maxLength, id: htmlId }
 							}}
 						/>
 					);

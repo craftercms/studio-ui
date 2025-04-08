@@ -37,9 +37,9 @@ export function Range(props: RangeProps) {
 	const htmlId = useId();
 	const maxLength = field.validations.maxLength?.value;
 	const value = props.value ? JSON.parse(props.value) : { exact: '', min: '', max: '' };
-	const minValue = value ? parseInt(value.min) : 0;
-	const maxValue = value ? parseInt(value.max) : 0;
-	const exactValue = value ? parseInt(value.exact) : 0;
+	const minValue = value?.min ? parseInt(value.min) : 0;
+	const maxValue = value?.max ? parseInt(value.max) : 0;
+	const exactValue = value?.exact ? parseInt(value.exact) : 0;
 	// Parsed value is an object like `{ exact: '', min: '50', max: '100' }` or `{ exact: '50', min: '', max: '' }`.
 	// So to determine if it's a range or exact value, we check if any of the values are set.
 	const [isRange, setIsRange] = useState<boolean>(Boolean(minValue));
@@ -70,12 +70,14 @@ export function Range(props: RangeProps) {
 					<>
 						<TextField
 							fullWidth
+							id={htmlId}
 							value={minValue ?? ''}
 							label={<FormattedMessage defaultMessage="Min" />}
 							variant="outlined"
 							name="min"
 							type="number"
 							onChange={handleChange}
+							slotProps={{ htmlInput: { maxLength } }}
 						/>
 						<TextField
 							fullWidth
@@ -85,13 +87,14 @@ export function Range(props: RangeProps) {
 							type="number"
 							name="max"
 							onChange={handleChange}
+							slotProps={{ htmlInput: { maxLength } }}
 						/>
 					</>
 				) : (
 					<TextField
 						fullWidth
+						id={htmlId}
 						value={exactValue ?? ''}
-						id="outlined-basic"
 						label={<FormattedMessage defaultMessage="Exact" />}
 						variant="outlined"
 						name="exact"

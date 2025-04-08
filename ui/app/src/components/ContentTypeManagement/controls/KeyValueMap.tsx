@@ -70,6 +70,7 @@ export function KeyValueMap(props: KeyValueMapProps) {
 						value={option.key}
 						variant="outlined"
 						name="key"
+						id={index === 0 ? htmlId : undefined}
 						slotProps={{
 							htmlInput: { maxLength }
 						}}

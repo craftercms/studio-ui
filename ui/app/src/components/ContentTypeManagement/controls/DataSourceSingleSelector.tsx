@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useId, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import FormsEngineField from '../../FormsEngine/components/FormsEngineField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import RadioGroup, { RadioGroupProps } from '@mui/material/RadioGroup';
@@ -30,7 +30,6 @@ export interface DataSourceSingleSelectorProps extends TypeBuilderControl {
  */
 export function DataSourceSingleSelector(props: DataSourceSingleSelectorProps) {
 	const { field, value, setValue, contentType } = props;
-	const htmlId = useId();
 	const type = field.validations.type?.value;
 	const filteredDataSources = useMemo(() => {
 		return (contentType.dataSources ?? []).filter((ds) => ds.interface === type);
@@ -38,7 +37,7 @@ export function DataSourceSingleSelector(props: DataSourceSingleSelectorProps) {
 
 	const handleChange: RadioGroupProps['onChange'] = (e) => setValue(e.currentTarget.value);
 	return (
-		<FormsEngineField htmlFor={htmlId} field={field}>
+		<FormsEngineField field={field}>
 			<RadioGroup value={value ?? ''} onChange={handleChange}>
 				{filteredDataSources.map((ds) => (
 					<FormControlLabel key={ds.id} value={ds.id} control={<Radio />} label={ds.title} />

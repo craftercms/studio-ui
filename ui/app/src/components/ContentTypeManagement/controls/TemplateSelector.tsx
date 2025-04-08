@@ -40,7 +40,6 @@ export interface TemplateSelectorProps extends TypeBuilderControl {
 export function TemplateSelector(props: TemplateSelectorProps) {
 	const { field, value, setValue, autoFocus } = props;
 	const basePath = '/templates/web';
-	const htmlId = useId();
 	const dispatch = useDispatch();
 
 	const handleChange: OutlinedInputProps['onChange'] = (e) => setValue(e.currentTarget.value);
@@ -97,10 +96,9 @@ export function TemplateSelector(props: TemplateSelectorProps) {
 	};
 
 	return (
-		<FormsEngineField htmlFor={htmlId} field={field}>
+		<FormsEngineField field={field}>
 			<OutlinedInput
 				autoFocus={autoFocus}
-				id={htmlId}
 				fullWidth
 				value={value}
 				onChange={handleChange}

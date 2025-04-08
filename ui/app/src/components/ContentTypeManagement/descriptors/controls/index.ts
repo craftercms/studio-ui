@@ -308,7 +308,7 @@ export const typeBasicDetailsDescriptor: DescriptorContentType = {
 		paths: {
 			id: 'paths',
 			type: 'type-destination-paths-selector',
-			name: '',
+			name: defineMessage({ defaultMessage: 'Paths' }),
 			description: '',
 			helpText: '',
 			defaultValue: undefined,

@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { useId } from 'react';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import FormsEngineField from '../../FormsEngine/components/FormsEngineField';
@@ -29,7 +29,7 @@ export interface DropdownStaticValuesProps extends TypeBuilderControl {
  */
 export function DropdownStaticValues(props: DropdownStaticValuesProps) {
 	const { field, value: content, setValue, readonly, autoFocus } = props;
-
+	const htmlId = useId();
 	const defaultValue = field.defaultValue;
 	const options = content ? JSON.parse(content) : (defaultValue ?? []);
 	const selectedOption = options.find((option) => option.selected);
@@ -42,10 +42,10 @@ export function DropdownStaticValues(props: DropdownStaticValuesProps) {
 		setValue(JSON.stringify(newOptions));
 	};
 	return (
-		<FormsEngineField field={field}>
+		<FormsEngineField field={field} labelId={htmlId}>
 			<Select
 				value={selectedOption?.value ?? ''}
-				label=""
+				labelId={htmlId}
 				onChange={handleChange}
 				disabled={readonly}
 				autoFocus={autoFocus}
