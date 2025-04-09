@@ -25,7 +25,7 @@ import Typography from '@mui/material/Typography';
 import { capitalize } from '../../../utils/string';
 import TypeBuilderAddButton from './TypeBuilderAddButton';
 import { FormattedMessage } from 'react-intl';
-import { ContentTypeField } from '../../../models';
+import { ContentTypeField, NewContentTypeField } from '../../../models';
 import useIsDarkModeTheme from '../../../hooks/useIsDarkModeTheme';
 import LookupTable from '../../../models/LookupTable';
 import Asterisk from '../../../icons/Asterisk';
@@ -44,10 +44,11 @@ export interface FieldChipProps {
 		field: ContentTypeField,
 		event: React.MouseEvent<HTMLButtonElement, MouseEvent>
 	): void;
+	onInsertField?(fieldPath: string): void;
 }
 
 export function FieldChip(props: FieldChipProps) {
-	const { field, fieldPathsWithErrors, fieldPath, selectedFieldIdPath, onFieldSelected } = props;
+	const { field, fieldPathsWithErrors, fieldPath, selectedFieldIdPath, onFieldSelected, onInsertField } = props;
 	const theme = useTheme();
 	const isDark = useIsDarkModeTheme();
 	const isRepeat = field.type === 'repeat';
@@ -120,6 +121,21 @@ export function FieldChip(props: FieldChipProps) {
 						({field.id})
 					</Typography>
 					{error && <Asterisk fontSize="small" sx={{}} />}
+					{field.NEW ? (
+						<Typography component="strong" sx={{ mr: 0.5, fontWeight: 600 }}>
+							<FormattedMessage defaultMessage={`Draft ({type})`} values={{ type: field.type }} />
+						</Typography>
+					) : (
+						<>
+							<Typography component="strong" sx={{ mr: 0.5, fontWeight: 600 }}>
+								{field.name}
+							</Typography>
+							<Typography component="span" variant="body2">
+								({field.id})
+							</Typography>
+						</>
+					)}
+					{error && <Asterisk fontSize="small" />}
 				</Box>
 				{/* TODO: Render the field type label */}
 				<Typography variant="body2">{capitalize(field.type).replaceAll('-', ' ')}</Typography>
@@ -136,11 +152,7 @@ export function FieldChip(props: FieldChipProps) {
 							onFieldSelected={onFieldSelected}
 						/>
 					))}
-					<TypeBuilderAddButton
-						onClick={() => {
-							/* TODO: invoke field addition prop */
-						}}
-					>
+					<TypeBuilderAddButton onClick={() => onInsertField(currentFieldPath)}>
 						<FormattedMessage defaultMessage="Add Field" />
 					</TypeBuilderAddButton>
 				</Box>

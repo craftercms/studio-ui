@@ -27,14 +27,18 @@ import ListItemButton from '@mui/material/ListItemButton';
 import { SearchBar, SearchBarProps } from '../../SearchBar';
 import controlDescriptors from '../descriptors/controls';
 import { applyTranslations } from '../utils';
+import { nou } from '../../../utils/object';
 
-export interface PickControlDialogProps extends EnhancedDialogProps {}
+export interface PickControlDialogProps extends EnhancedDialogProps {
+	onInsertField: (fieldType: string) => void;
+}
 
 const fieldTypes = Object.values(controlDescriptors).sort((a, b) => (a?.name > b?.name ? 1 : -1));
 
-function PickControlDialogBody({ onClose }: PickControlDialogProps) {
+function PickControlDialogBody({ onClose, onInsertField }: PickControlDialogProps) {
 	const [searchTerm, setSearchTerm] = useState('');
 	const { formatMessage } = useIntl();
+	const [selectedControlId, setSelectedControlId] = useState<string>(undefined);
 
 	const handleSearchChange: SearchBarProps['onChange'] = (value) => {
 		setSearchTerm(value);
@@ -54,7 +58,11 @@ function PickControlDialogBody({ onClose }: PickControlDialogProps) {
 				<SearchBar keyword={searchTerm} onChange={handleSearchChange} />
 				<Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr' }}>
 					{filteredFields.map((field, index) => (
-						<ListItemButton key={index}>
+						<ListItemButton
+							key={index}
+							onClick={() => setSelectedControlId(field.id)}
+							selected={selectedControlId === field.id}
+						>
 							<ListItemIcon>
 								<StarBorderIcon />
 							</ListItemIcon>
@@ -67,7 +75,7 @@ function PickControlDialogBody({ onClose }: PickControlDialogProps) {
 				<SecondaryButton onClick={(e) => onClose?.(e, null)}>
 					<FormattedMessage defaultMessage="Cancel" />
 				</SecondaryButton>
-				<PrimaryButton>
+				<PrimaryButton disabled={nou(selectedControlId)} onClick={() => onInsertField(selectedControlId)}>
 					<FormattedMessage defaultMessage="Accept" />
 				</PrimaryButton>
 			</DialogFooter>

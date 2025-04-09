@@ -143,6 +143,10 @@ export interface ContentTypeRepeatField extends ContentTypeField {
 	fields: LookupTable<ContentTypeField>;
 }
 
+export interface NewContentTypeField extends ContentTypeField {
+	NEW?: true;
+}
+
 export interface DataSource {
 	id: string;
 	type: string;

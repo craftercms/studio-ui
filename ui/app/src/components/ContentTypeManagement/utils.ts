@@ -25,7 +25,7 @@ import {
 } from '../../models';
 import LookupTable from '../../models/LookupTable';
 import ContentType, { SerializeToXmlContentTypeStructure } from '../../models/ContentType';
-import { createLookupTable, noOp, pluckProps } from '../../utils/object';
+import { createLookupTable, nnou, noOp, pluckProps } from '../../utils/object';
 import { commonControlFieldsDescriptors, defaultDataSourcesSection } from './descriptors/controls';
 import {
 	FormsEngineFormApiContextProps,
@@ -48,6 +48,8 @@ import TranslationOrText from '../../models/TranslationOrText';
 // TODO: assess which of the utils here should go to utils/contentType.ts, or other places (serializers, etc.)
 
 export const DeserializerNullSymbol = Symbol(null);
+
+export const NEW_FIELD_ID = '{NEW}';
 
 // Some properties in ContentTypeField differ from the name in the XML.
 // Descriptors for controls, sections, data sources, etc., declare their form fields with the XML name,
@@ -649,5 +651,7 @@ function translateIfMessageDescriptor<K>(
 	target: K,
 	property: keyof K
 ): string {
-	return typeof target[property] === 'object' ? formatMessage(target[property]) : ((target[property] as string) ?? '');
+	return nnou(target[property]) && typeof target[property] === 'object'
+		? formatMessage(target[property])
+		: ((target[property] as string) ?? '');
 }

@@ -18,6 +18,7 @@ import ContentType, {
 	ContentTypeField,
 	ContentTypeSection,
 	DataSource,
+	NewContentTypeField,
 	PossibleContentTypeDraft
 } from '../../../models/ContentType';
 import LookupTable from '../../../models/LookupTable';
@@ -34,6 +35,7 @@ import {
 	createVirtualTypeForField,
 	createVirtualTypeFormContext,
 	createVirtualTypeForSection,
+	NEW_FIELD_ID,
 	prepareSerializeToXmlTypeObject,
 	reverseTypeFieldValuesObject,
 	TypePropsToEdit,
@@ -58,7 +60,7 @@ import EditTypeViewLayout, { EditAppLayoutProps } from './EditTypeViewLayout';
 import useUpdateRefs from '../../../hooks/useUpdateRefs';
 import useActiveSiteId from '../../../hooks/useActiveSiteId';
 import { JotaiStore } from '../../FormsEngine/types';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import Dialog from '@mui/material/Dialog';
 import hljs from '../../../env/hljs';
 import Typography from '@mui/material/Typography';
@@ -69,6 +71,9 @@ import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { writeConfiguration } from '../../../services/configuration';
 import { createFormDefinitionPathFromTypeId } from '../../../utils/contentType';
+import { useDispatch } from 'react-redux';
+import { popDialog, pushDialog } from '../../../state/actions/dialogStack';
+import { nanoid } from 'nanoid';
 
 export interface EditTypeAppProps {
 	/**
@@ -118,6 +123,7 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 	const showAlert = useShowAlert();
 	const { formatMessage } = useIntl();
 	const jotai = useMemo(() => createJotai(), []); // TODO: Use stable memo?
+	const dispatch = useDispatch();
 
 	const dialogContext = useEnhancedDialogContext(); // TODO: keep dialog context inform of pending changes/submitting
 	const stateRef = useRef<EditAppContextProps>(null);
@@ -257,12 +263,18 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 		);
 	};
 
+	const onUpdateHasPendingChanges = (hasPendingChanges: boolean) => {
+		setHasPendingChanges(hasPendingChanges);
+		dialogContext?.updateSubmittingOrHasPendingChanges({ hasPendingChanges });
+	};
+
 	const effectRefs = useUpdateRefs({
 		jotai,
 		selectedFieldIdPath,
 		fieldPathsWithErrors,
 		closeAndCleanup,
-		handleEditTypeProperties
+		handleEditTypeProperties,
+		onUpdateHasPendingChanges
 	});
 
 	const handleCloseDrawer: EditAppLayoutProps['onClose'] = () => effectRefs.current.closeAndCleanup();
@@ -298,9 +310,27 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 	const handleToolbarActionClick: EditAppLayoutProps['onActionClick'] = (e, action) => {
 		switch (action) {
 			case 'exit':
-				// TODO: Don't close with pending changes...
 				if (!performCurrentFormErrorCheckAndWarning()) break;
-				onClose?.();
+				if (hasPendingChanges) {
+					const id = nanoid();
+					dispatch(
+						pushDialog({
+							id,
+							component: 'craftercms.components.ConfirmDialog',
+							props: {
+								title: <FormattedMessage defaultMessage="Discard changes?" />,
+								onOk: () => {
+									onClose?.();
+									onUpdateHasPendingChanges(false);
+									dispatch(popDialog({ id }));
+								},
+								onCancel: () => dispatch(popDialog({ id }))
+							}
+						})
+					);
+				} else {
+					onClose?.();
+				}
 				break;
 			case 'save': {
 				if (!performCurrentFormErrorCheckAndWarning()) break;
@@ -323,7 +353,23 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 	};
 	const handleInsertSection: TypeDetailsViewProps['onInsertSection'] = (section, position) => {
 		setType(insertSection(type, section, position));
+		onUpdateHasPendingChanges(true);
 		handleSectionSelected(section);
+	};
+	const handleInsertField: TypeDetailsViewProps['onInsertField'] = (fieldType, sectionId, fieldPath) => {
+		const newField: NewContentTypeField = {
+			NEW: true,
+			id: '',
+			name: '',
+			description: '',
+			type: fieldType,
+			validations: {},
+			defaultValue: ''
+		};
+
+		const newFieldPath = fieldPath ? `${fieldPath}.${NEW_FIELD_ID}` : NEW_FIELD_ID;
+		setType(addField(type, newField, newFieldPath, sectionId));
+		handleFieldSelected(newFieldPath, newField, null);
 	};
 
 	// region const fieldEditorView = ...
@@ -334,11 +380,11 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 	// `fieldUpdates$` subscription
 	useEffect(() => {
 		const sub = stateRef.current.fieldUpdates$.pipe(debounceTime(500)).subscribe(() => {
-			setHasPendingChanges(true);
+			const { jotai, fieldPathsWithErrors, selectedFieldIdPath, onUpdateHasPendingChanges } = effectRefs.current;
+			onUpdateHasPendingChanges(true);
 			stateRef.current.formFieldsChanged = true;
 
 			const { activeFormContext } = stateRef.current;
-			const { jotai, fieldPathsWithErrors, selectedFieldIdPath } = effectRefs.current;
 			const { atoms } = activeFormContext;
 			const nextFieldPathsWithErrors = { ...fieldPathsWithErrors };
 
@@ -377,6 +423,7 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 						<TypeDetailsView
 							type={type}
 							onInsertSection={handleInsertSection}
+							onInsertField={handleInsertField}
 							onEditTypeAction={handleEditTypeAction}
 							onFieldSelected={handleFieldSelected}
 							onDataSourceSelected={handleDataSourceSelected}
@@ -434,10 +481,64 @@ function insertSection(type: ContentType, section: ContentTypeSection, position:
 	return nextType;
 }
 
-function addField(type: ContentType, field: ContentTypeField): ContentType {
-	const nextFields = { ...type.fields, [field.id]: field };
-	const nextSections = type.sections.concat();
-	return { ...type, sections: nextSections, fields: nextFields };
+function addSubField(
+	parentField: ContentTypeField,
+	newField: ContentTypeField,
+	subFieldPath: string
+): ContentTypeField {
+	const isComposedPath = subFieldPath.includes('.');
+	if (isComposedPath) {
+		// If still composed, we need to find the root field and add the new field to it recursively
+		const rootFieldId = subFieldPath.split('.').shift();
+		return {
+			...parentField,
+			fields: {
+				...parentField.fields,
+				[rootFieldId]: addSubField(
+					parentField.fields[rootFieldId],
+					newField,
+					subFieldPath.replace(`${rootFieldId}.`, '')
+				)
+			}
+		};
+	} else {
+		// If not composed, we can add the field directly to the parent fields lookup
+		return {
+			...parentField,
+			fields: {
+				...parentField.fields,
+				[subFieldPath]: newField
+			}
+		};
+	}
+}
+
+function addField(type: ContentType, field: ContentTypeField, fieldPath: string, sectionId: string): ContentType {
+	const isComposedPath = fieldPath.includes('.');
+
+	if (isComposedPath) {
+		// If the fieldPath is composed, we need to find the root field and add the new field to it recursively
+		const rootFieldId = fieldPath.split('.').shift();
+		// When fieldPath is composed (inside a rep-group), sections don't change since the root fields remain the same
+		return {
+			...type,
+			fields: {
+				...type.fields,
+				[rootFieldId]: addSubField(type.fields[rootFieldId], field, fieldPath.replace(`${rootFieldId}.`, ''))
+			}
+		};
+	} else {
+		// If not composed, we can add the field directly to the fields lookup and to the sections list
+		const nextFields = { ...type.fields, [fieldPath]: field };
+		const nextSections = type.sections.concat();
+		const sectionIndex = nextSections.findIndex((section) => section.id === sectionId);
+		const section = nextSections[sectionIndex];
+		nextSections[sectionIndex] = {
+			...section,
+			fields: [...section.fields, fieldPath]
+		};
+		return { ...type, sections: nextSections, fields: nextFields };
+	}
 }
 
 function updateTypeProps(type: ContentType, updatedTypeDetails: TypePropsToEdit): ContentType {

@@ -21,6 +21,7 @@ import type { RepeatItem } from '../controls/Repeat';
 import type { NodeSelectorItem } from '../controls/NodeSelector';
 import { systemFieldsNotInType, XmlKeys } from './formConsts';
 import { deserialize } from '../../../utils/xml';
+import { ContentTypeControlType } from '../../ContentTypeManagement/components/lib/controlMap';
 
 export type ValueRetriever<T = unknown> = (value: unknown, field: ContentTypeField) => T;
 
@@ -36,7 +37,7 @@ export const numberFieldExtractor: ValueRetriever<number> = (value) => (value !=
 
 export const booleanFieldExtractor: ValueRetriever<boolean> = (value) => (value === true || value === 'true') ?? false;
 
-export const valueRetrieverLookup: Record<BuiltInControlType, ValueRetriever> = {
+export const valueRetrieverLookup: Record<BuiltInControlType | ContentTypeControlType, ValueRetriever> = {
 	'auto-filename': textFieldExtractor,
 	'aws-file-upload': null,
 	'checkbox-group': arrayFieldExtractor,
@@ -64,7 +65,21 @@ export const valueRetrieverLookup: Record<BuiltInControlType, ValueRetriever> = 
 	'transcoded-video-picker': textFieldExtractor,
 	uuid: textFieldExtractor,
 	'video-picker': textFieldExtractor,
-	colorPicker: textOrNullExtractor
+	colorPicker: textOrNullExtractor,
+	'content-path-input': textFieldExtractor,
+	contentTypes: textFieldExtractor,
+	'dropdown-static-values': textFieldExtractor,
+	'template-selector': textFieldExtractor,
+	'type-image-selector': textFieldExtractor,
+	'datasource-selector': textFieldExtractor,
+	'read-only-value': textFieldExtractor,
+	range: textFieldExtractor,
+	'type-js-controller-selector': textFieldExtractor,
+	'key-value-map': textFieldExtractor,
+	'type-destination-paths-selector': textFieldExtractor,
+	'path-with-macro-creator': textFieldExtractor,
+	'merge-strategy-selector': textFieldExtractor,
+	'datasource-single-selector': textFieldExtractor
 };
 
 /**
