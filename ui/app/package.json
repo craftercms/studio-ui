@@ -74,7 +74,7 @@
 		"@stomp/stompjs": "^7.0.0",
 		"@tinymce/tinymce-react": "^5.1.1",
 		"@types/ace": "^0.0.52",
-		"@types/react": "^19.0.10",
+		"@types/react": "^19.1.0",
 		"@types/react-dom": "^19.0.4",
 		"@types/react-swipeable-views": "^0.13.6",
 		"@types/video.js": "^7.3.58",
