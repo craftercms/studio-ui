@@ -143,6 +143,7 @@ export function FieldChip(props: FieldChipProps) {
 							selectedFieldIdPath={selectedFieldIdPath}
 							fieldPath={currentFieldPath}
 							onFieldSelected={onFieldSelected}
+							onInsertField={onInsertField}
 						/>
 					))}
 					<TypeBuilderAddButton onClick={() => onInsertField(currentFieldPath)}>

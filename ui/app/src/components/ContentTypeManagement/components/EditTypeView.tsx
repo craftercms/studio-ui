@@ -372,6 +372,9 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 		handleFieldSelected(newFieldPath, newField, null);
 	};
 
+	const handleInsertDataSource: TypeDetailsViewProps['onInsertDataSource'] = (dataSourceType, position) => {
+	};
+
 	// region const fieldEditorView = ...
 	// TODO: Add field, add section also to render on the reactive side panel
 	const fieldEditorView = virtualContentType ? createElement(TypeBuilderFormsEngine, fieldFormViewProps) : null;
@@ -424,6 +427,7 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 							type={type}
 							onInsertSection={handleInsertSection}
 							onInsertField={handleInsertField}
+							onInsertDataSource={handleInsertDataSource}
 							onEditTypeAction={handleEditTypeAction}
 							onFieldSelected={handleFieldSelected}
 							onDataSourceSelected={handleDataSourceSelected}
@@ -664,7 +668,6 @@ function updateTypeFromSectionUpdate(
 	const updatedType: ContentType = { ...type, sections: type.sections.concat() };
 	const index = updatedType.sections.findIndex((item) => item.id === selectedSection.id);
 	updatedType.sections[index] = { ...selectedSection, ...updatedValues };
-	console.log(index, selectedSection, updatedValues, updatedType);
 	return updatedType;
 }
 

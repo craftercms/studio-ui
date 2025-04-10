@@ -38,6 +38,7 @@ import { defaultDataSourcesSection } from '../descriptors/controls';
 import { atom } from 'jotai';
 import PickControlDialog, { PickControlDialogProps } from './PickControlDialog';
 import SectionInsertionDialog, { SectionInsertionProps } from './SectionInsertionDialog';
+import { PickDataSourceDialog, PickDataSourceDialogProps } from './PickDataSourceDialog';
 
 export interface TypeDetailsViewProps {
 	type: PossibleContentTypeDraft;
@@ -49,6 +50,7 @@ export interface TypeDetailsViewProps {
 	onEditTypeAction: TypeDetailsViewHeaderProps['onActionClick'];
 	onInsertSection: SectionInsertionProps['onInsertSection'];
 	onInsertField(fieldType: string, sectionId: string, position: number, fieldPath?: string): void;
+	onInsertDataSource(type: string, position: number): void;
 }
 
 export function TypeDetailsView(props: TypeDetailsViewProps) {
@@ -67,11 +69,12 @@ export function TypeDetailsView(props: TypeDetailsViewProps) {
 	if (stableFormContextRef.current === null)
 		stableFormContextRef.current = createStableFormContextProps({ type }, true);
 
-	const [openSectionInserter, setOpenSectionInserter] = useState(false);
+	const [openSectionInserter, setOpenSectionInserter] = useState<boolean>(false);
 	const [insertFieldData, setInsertFieldData] = useState<{ sectionId: string; fieldPath?: string }>({
 		sectionId: null,
 		fieldPath: null
 	});
+	const [openDataSourceInserter, setOpenDataSourceInserter] = useState<boolean>(false);
 
 	const dataSourcesSection = useMemo(
 		() =>
@@ -107,6 +110,10 @@ export function TypeDetailsView(props: TypeDetailsViewProps) {
 		const { sectionId, fieldPath } = insertFieldData;
 		props.onInsertField?.(fieldType, sectionId, position, fieldPath);
 		setInsertFieldData({ sectionId: null });
+	};
+	const handleInsertDataSource: PickDataSourceDialogProps['onInsert'] = (type, position) => {
+		props.onInsertDataSource?.(type, position);
+		setOpenDataSourceInserter(false);
 	};
 
 	const handleDataSourceSelected = (_, field) => {
@@ -180,7 +187,7 @@ export function TypeDetailsView(props: TypeDetailsViewProps) {
 							accordionDetails: {
 								className: '',
 								children: (
-									<TypeBuilderAddButton>
+									<TypeBuilderAddButton onClick={() => setOpenDataSourceInserter(true)}>
 										<FormattedMessage defaultMessage="Add Data Source" />
 									</TypeBuilderAddButton>
 								)
@@ -210,6 +217,12 @@ export function TypeDetailsView(props: TypeDetailsViewProps) {
 						fieldIdPath={insertFieldData.fieldPath}
 						onClose={() => setInsertFieldData({ sectionId: null })}
 						onInsertField={handleInsertField}
+					/>
+					<PickDataSourceDialog
+						type={type}
+						onInsert={handleInsertDataSource}
+						open={openDataSourceInserter}
+						onClose={() => setOpenDataSourceInserter(false)}
 					/>
 				</StableFormContext.Provider>
 			</Provider>
