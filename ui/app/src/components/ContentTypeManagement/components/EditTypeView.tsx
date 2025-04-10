@@ -145,7 +145,7 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 		let updatedType: ContentType;
 		const values = extractAtomValues(jotai, stateRef.current.activeFormContext.atoms.valueByFieldId);
 		if (stateRef.current.selectedField) {
-			updatedType = updateTypeFromFieldUpdate(type, stateRef.current.selectedField, values);
+			updatedType = updateTypeFromFieldUpdate(type, stateRef.current.selectedField, values, selectedFieldIdPath);
 		} else if (stateRef.current.selectedSection) {
 			updatedType = updateTypeFromSectionUpdate(type, stateRef.current.selectedSection, values);
 		} else if (stateRef.current.selectedDataSource) {
@@ -356,7 +356,6 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 		onUpdateHasPendingChanges(true);
 		handleSectionSelected(section);
 	};
-	const handleInsertField: TypeDetailsViewProps['onInsertField'] = (fieldType, sectionId, fieldPath) => {
 	const handleInsertField: TypeDetailsViewProps['onInsertField'] = (fieldType, sectionId, position, fieldPath) => {
 		const newField: NewContentTypeField = {
 			NEW: true,
@@ -558,37 +557,103 @@ function updateTypeProps(type: ContentType, updatedTypeDetails: TypePropsToEdit)
 	return { ...type, ...pluckProps(updatedTypeDetails, ...typePropsToEdit) };
 }
 
+function updateTypeFromSubFieldUpdate(
+	fields: LookupTable<ContentTypeField>,
+	selectedField: ContentTypeField | NewContentTypeField,
+	updatedValues: LookupTable<unknown>,
+	fieldIdPath: string
+): LookupTable<ContentTypeField> {
+	const isComposedFieldIdPath = fieldIdPath.includes('.');
+
+	if (isComposedFieldIdPath) {
+		const rootFieldId = fieldIdPath.split('.').shift();
+		return {
+			...fields,
+			[rootFieldId]: {
+				...fields[rootFieldId],
+				fields: updateTypeFromSubFieldUpdate(
+					fields[rootFieldId].fields,
+					selectedField,
+					updatedValues,
+					fieldIdPath.replace(`${rootFieldId}.`, '')
+				)
+			}
+		};
+	} else {
+		const updatedField = reverseTypeFieldValuesObject(selectedField, updatedValues);
+		let updatedFields = { ...fields };
+
+		if (updatedField.id !== selectedField.id) {
+			// Since the order of the fields is determined by the lookupTable order, we need to convert it to array, set the
+			// field in the proper position and convert it back to a lookupTable.
+			const updatedFieldsArray = Object.values(updatedFields);
+			const originalFieldIndex = updatedFieldsArray.findIndex((field) => field.id === selectedField.id);
+			updatedFieldsArray.splice(originalFieldIndex, 0, updatedField);
+			updatedFields = createLookupTable(updatedFieldsArray, 'id');
+
+			// Delete the old id
+			delete updatedFields[selectedField.id];
+		} else {
+			updatedFields[updatedField.id] = updatedField;
+		}
+		return updatedFields;
+	}
+}
+
 function updateTypeFromFieldUpdate(
 	type: ContentType,
 	selectedField: ContentTypeField | NewContentTypeField,
-	updatedValues: LookupTable<unknown>
+	updatedValues: LookupTable<unknown>,
+	fieldIdPath: string
 ): ContentType {
 	if (!selectedField) return;
 
 	const isNewField = (selectedField as NewContentTypeField).NEW;
-	const updatedType: ContentType = { ...type, fields: { ...type.fields } };
-	const updatedField = reverseTypeFieldValuesObject(selectedField, updatedValues);
-
-	updatedType.fields[updatedField.id] = updatedField;
-
 	const selectedFieldId = isNewField ? NEW_FIELD_ID : selectedField.id;
-	if (updatedField.id !== selectedFieldId) {
-		// Delete the old id
-		delete updatedType.fields[selectedFieldId];
-		// Find the section in which the field is located
-		const sectionIndex = updatedType.sections.findIndex((section) => section.fields.includes(selectedFieldId));
-		const section: ContentTypeSection = {
-			...updatedType.sections[sectionIndex],
-			fields: updatedType.sections[sectionIndex].fields.concat()
-		};
-		// Replace the field in the section
-		const fieldIndex = section.fields.findIndex((fieldId) => fieldId === selectedFieldId);
-		section.fields[fieldIndex] = updatedField.id;
-		updatedType.sections = updatedType.sections.concat();
-		updatedType.sections[sectionIndex] = section;
-	}
+	const isComposedFieldIdPath = fieldIdPath.includes('.');
 
-	return updatedType;
+	if (isComposedFieldIdPath) {
+		// When the field is not on the root level (composed fieldIdPath), the field is under another field, where each
+		// field contains a lookupTable of fields. In that screnario sections should not be updated.
+		const rootFieldId = fieldIdPath.split('.').shift();
+		return {
+			...type,
+			fields: {
+				...type.fields,
+				[rootFieldId]: {
+					...type.fields[rootFieldId],
+					fields: updateTypeFromSubFieldUpdate(
+						type.fields[rootFieldId].fields,
+						selectedField,
+						updatedValues,
+						fieldIdPath.replace(`${rootFieldId}.`, '')
+					)
+				}
+			}
+		};
+	} else {
+		// If the field is on the root level, the edition is different since the structure of `type` has sections with the
+		// fields (string array) and the lookupTable of the fields. Both properties need to be updated.
+		const updatedType: ContentType = { ...type, fields: { ...type.fields } };
+		const updatedField = reverseTypeFieldValuesObject(selectedField, updatedValues);
+		updatedType.fields[updatedField.id] = updatedField;
+		if (updatedField.id !== selectedFieldId) {
+			// Delete the old id
+			delete updatedType.fields[selectedFieldId];
+			// Find the section in which the field is located
+			const sectionIndex = updatedType.sections.findIndex((section) => section.fields.includes(selectedFieldId));
+			const section: ContentTypeSection = {
+				...updatedType.sections[sectionIndex],
+				fields: updatedType.sections[sectionIndex].fields.concat()
+			};
+			// Replace the field in the section
+			const fieldIndex = section.fields.findIndex((fieldId) => fieldId === selectedFieldId);
+			section.fields[fieldIndex] = updatedField.id;
+			updatedType.sections = updatedType.sections.concat();
+			updatedType.sections[sectionIndex] = section;
+		}
+		return updatedType;
+	}
 }
 
 function updateTypeFromSectionUpdate(
@@ -637,7 +702,7 @@ export default EditTypeView;
 
 // TODO:
 //  - i18n
-//  - Because IDs can be modified, keep a lookup table of `{ [nanoid]: id }`?
+//  - Because IDs can be modified, keep a lookup table of `{ [nanoid]: id }`? - Probably N/A
 //  - Filter based on archetypes on type listing.
 //  - BE tickets for APIs etc
 //  - BE ticket for UM section ids
