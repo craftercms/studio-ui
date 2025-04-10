@@ -1749,7 +1749,7 @@ __metadata:
     highlight.js: "npm:^11.11.1"
     jabber: "npm:^1.5.3"
     jotai: "npm:^2.10.2"
-    jotai-effect: "npm:^1.0.4"
+    jotai-effect: "npm:^2.0.2"
     js-cookie: "npm:^3.0.5"
     marked: "npm:^15.0.7"
     marked-highlight: "npm:^2.2.1"
@@ -9829,12 +9829,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jotai-effect@npm:^1.0.4":
-  version: 1.1.6
-  resolution: "jotai-effect@npm:1.1.6"
+"jotai-effect@npm:^2.0.2":
+  version: 2.0.2
+  resolution: "jotai-effect@npm:2.0.2"
   peerDependencies:
-    jotai: ">=2.5.0"
-  checksum: 10/22317fc5e2d0a6a7d2fc31b74d1c52b062839901a81ef47335da5eb4c321c77ee67d096be783305e939b8bcb662ca9be5b3fd34c15249907cd67fbaf6cc1ce95
+    jotai: ">=2.12.1"
+  checksum: 10/ba358420374491e07869b44efbccd2a901a6879996a797c014c399fbd82b5efb2bf15dbbe26b2ae349d7906c25b163a29488cd1b2f140687cd26ef7ac04e9cef
   languageName: node
   linkType: hard
 
