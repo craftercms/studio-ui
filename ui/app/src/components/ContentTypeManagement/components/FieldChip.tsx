@@ -35,7 +35,7 @@ function composeFieldPath(fieldPath: string, fieldId: string): string {
 }
 
 export interface FieldChipProps {
-	field: ContentTypeField;
+	field: ContentTypeField | NewContentTypeField;
 	fieldPath?: string;
 	fieldPathsWithErrors: LookupTable<boolean>;
 	selectedFieldIdPath?: string;
@@ -114,14 +114,7 @@ export function FieldChip(props: FieldChipProps) {
 				]}
 			>
 				<Box display="flex" alignItems="center">
-					<Typography component="strong" sx={{ mr: 0.5, fontWeight: 600 }}>
-						{field.name}
-					</Typography>
-					<Typography component="span" variant="body2">
-						({field.id})
-					</Typography>
-					{error && <Asterisk fontSize="small" sx={{}} />}
-					{field.NEW ? (
+					{(field as NewContentTypeField).NEW ? (
 						<Typography component="strong" sx={{ mr: 0.5, fontWeight: 600 }}>
 							<FormattedMessage defaultMessage={`Draft ({type})`} values={{ type: field.type }} />
 						</Typography>

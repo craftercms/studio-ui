@@ -64,7 +64,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import Dialog from '@mui/material/Dialog';
 import hljs from '../../../env/hljs';
 import Typography from '@mui/material/Typography';
-import { pluckProps } from '../../../utils/object';
+import { createLookupTable, pluckProps } from '../../../utils/object';
 import Box, { BoxProps } from '@mui/material/Box';
 import useEnhancedDialogContext from '../../EnhancedDialog/useEnhancedDialogContext';
 import Checkbox from '@mui/material/Checkbox';
@@ -357,6 +357,7 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 		handleSectionSelected(section);
 	};
 	const handleInsertField: TypeDetailsViewProps['onInsertField'] = (fieldType, sectionId, fieldPath) => {
+	const handleInsertField: TypeDetailsViewProps['onInsertField'] = (fieldType, sectionId, position, fieldPath) => {
 		const newField: NewContentTypeField = {
 			NEW: true,
 			id: '',
@@ -368,7 +369,7 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 		};
 
 		const newFieldPath = fieldPath ? `${fieldPath}.${NEW_FIELD_ID}` : NEW_FIELD_ID;
-		setType(addField(type, newField, newFieldPath, sectionId));
+		setType(addField(type, newField, newFieldPath, sectionId, position));
 		handleFieldSelected(newFieldPath, newField, null);
 	};
 
@@ -484,7 +485,8 @@ function insertSection(type: ContentType, section: ContentTypeSection, position:
 function addSubField(
 	parentField: ContentTypeField,
 	newField: ContentTypeField,
-	subFieldPath: string
+	subFieldPath: string,
+	position: number
 ): ContentTypeField {
 	const isComposedPath = subFieldPath.includes('.');
 	if (isComposedPath) {
@@ -497,34 +499,43 @@ function addSubField(
 				[rootFieldId]: addSubField(
 					parentField.fields[rootFieldId],
 					newField,
-					subFieldPath.replace(`${rootFieldId}.`, '')
+					subFieldPath.replace(`${rootFieldId}.`, ''),
+					position
 				)
 			}
 		};
 	} else {
-		// If not composed, we can add the field directly to the parent fields lookup
+		// If not composed, we can add the field directly to the parent fields lookup.
+		// Since the fields prop under a parentField is a lookupTable and we need to insert on a specific position, we first
+		// convert it to an array, insert the new field and then convert it back to a lookupTable.
+		const nextFieldsArray = Object.values(parentField.fields);
+		nextFieldsArray.splice(position, 0, newField);
+		const nextFields = createLookupTable(nextFieldsArray, 'id');
 		return {
 			...parentField,
-			fields: {
-				...parentField.fields,
-				[subFieldPath]: newField
-			}
+			fields: nextFields
 		};
 	}
 }
 
-function addField(type: ContentType, field: ContentTypeField, fieldPath: string, sectionId: string): ContentType {
+function addField(
+	type: ContentType,
+	field: ContentTypeField,
+	fieldPath: string,
+	sectionId: string,
+	position: number
+): ContentType {
 	const isComposedPath = fieldPath.includes('.');
 
 	if (isComposedPath) {
-		// If the fieldPath is composed, we need to find the root field and add the new field to it recursively
+		// If the fieldIdPath is composed, we need to find the root field and add the new field to it recursively
 		const rootFieldId = fieldPath.split('.').shift();
-		// When fieldPath is composed (inside a rep-group), sections don't change since the root fields remain the same
+		// When fieldIdPath is composed (inside a rep-group), sections don't change since the root fields remain the same
 		return {
 			...type,
 			fields: {
 				...type.fields,
-				[rootFieldId]: addSubField(type.fields[rootFieldId], field, fieldPath.replace(`${rootFieldId}.`, ''))
+				[rootFieldId]: addSubField(type.fields[rootFieldId], field, fieldPath.replace(`${rootFieldId}.`, ''), position)
 			}
 		};
 	} else {
@@ -533,9 +544,11 @@ function addField(type: ContentType, field: ContentTypeField, fieldPath: string,
 		const nextSections = type.sections.concat();
 		const sectionIndex = nextSections.findIndex((section) => section.id === sectionId);
 		const section = nextSections[sectionIndex];
+		const nextSectionFields = nextSections[sectionIndex].fields.concat();
+		nextSectionFields.splice(position, 0, fieldPath);
 		nextSections[sectionIndex] = {
 			...section,
-			fields: [...section.fields, fieldPath]
+			fields: nextSectionFields
 		};
 		return { ...type, sections: nextSections, fields: nextFields };
 	}
@@ -547,27 +560,29 @@ function updateTypeProps(type: ContentType, updatedTypeDetails: TypePropsToEdit)
 
 function updateTypeFromFieldUpdate(
 	type: ContentType,
-	selectedField: ContentTypeField,
+	selectedField: ContentTypeField | NewContentTypeField,
 	updatedValues: LookupTable<unknown>
 ): ContentType {
 	if (!selectedField) return;
 
+	const isNewField = (selectedField as NewContentTypeField).NEW;
 	const updatedType: ContentType = { ...type, fields: { ...type.fields } };
 	const updatedField = reverseTypeFieldValuesObject(selectedField, updatedValues);
 
 	updatedType.fields[updatedField.id] = updatedField;
 
-	if (updatedField.id !== selectedField.id) {
+	const selectedFieldId = isNewField ? NEW_FIELD_ID : selectedField.id;
+	if (updatedField.id !== selectedFieldId) {
 		// Delete the old id
-		delete updatedType.fields[selectedField.id];
+		delete updatedType.fields[selectedFieldId];
 		// Find the section in which the field is located
-		const sectionIndex = updatedType.sections.findIndex((section) => section.fields.includes(selectedField.id));
+		const sectionIndex = updatedType.sections.findIndex((section) => section.fields.includes(selectedFieldId));
 		const section: ContentTypeSection = {
 			...updatedType.sections[sectionIndex],
 			fields: updatedType.sections[sectionIndex].fields.concat()
 		};
 		// Replace the field in the section
-		const fieldIndex = section.fields.findIndex((fieldId) => fieldId === selectedField.id);
+		const fieldIndex = section.fields.findIndex((fieldId) => fieldId === selectedFieldId);
 		section.fields[fieldIndex] = updatedField.id;
 		updatedType.sections = updatedType.sections.concat();
 		updatedType.sections[sectionIndex] = section;

@@ -48,7 +48,7 @@ export interface TypeDetailsViewProps {
 	onSectionSelected(section: ContentTypeSection): void;
 	onEditTypeAction: TypeDetailsViewHeaderProps['onActionClick'];
 	onInsertSection: SectionInsertionProps['onInsertSection'];
-	onInsertField(fieldType: string, sectionId: string, fieldPath?: string): void;
+	onInsertField(fieldType: string, sectionId: string, position: number, fieldPath?: string): void;
 }
 
 export function TypeDetailsView(props: TypeDetailsViewProps) {
@@ -68,7 +68,6 @@ export function TypeDetailsView(props: TypeDetailsViewProps) {
 		stableFormContextRef.current = createStableFormContextProps({ type }, true);
 
 	const [openSectionInserter, setOpenSectionInserter] = useState(false);
-	// const [insertFieldSection, setInsertFieldSection] = useState<ContentTypeSection>(null);
 	const [insertFieldData, setInsertFieldData] = useState<{ sectionId: string; fieldPath?: string }>({
 		sectionId: null,
 		fieldPath: null
@@ -104,9 +103,9 @@ export function TypeDetailsView(props: TypeDetailsViewProps) {
 		setOpenSectionInserter(false);
 		props.onInsertSection?.(section, position);
 	};
-	const handleInsertField: PickControlDialogProps['onInsertField'] = (fieldType) => {
+	const handleInsertField: PickControlDialogProps['onInsertField'] = (fieldType, position) => {
 		const { sectionId, fieldPath } = insertFieldData;
-		props.onInsertField?.(fieldType, sectionId, fieldPath);
+		props.onInsertField?.(fieldType, sectionId, position, fieldPath);
 		setInsertFieldData({ sectionId: null });
 	};
 
@@ -206,6 +205,9 @@ export function TypeDetailsView(props: TypeDetailsViewProps) {
 					/>
 					<PickControlDialog
 						open={Boolean(insertFieldData.sectionId)}
+						type={type}
+						sectionId={insertFieldData.sectionId}
+						fieldIdPath={insertFieldData.fieldPath}
 						onClose={() => setInsertFieldData({ sectionId: null })}
 						onInsertField={handleInsertField}
 					/>
