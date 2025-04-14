@@ -188,10 +188,23 @@ export function PickFieldDialogBody(props: PickFieldDialogBodyProps) {
 	);
 }
 
-export function PickFieldDialog({ type, title, onInsert, ...dialogProps }: PickFieldDialogProps) {
+export function PickFieldDialog({
+	type,
+	title,
+	onInsert,
+	typesFullList,
+	typesCurrentList,
+	...dialogProps
+}: PickFieldDialogProps) {
 	return (
 		<EnhancedDialog open title={title} maxWidth="sm" {...dialogProps}>
-			<PickFieldDialogBody {...dialogProps} type={type} onInsert={onInsert} />
+			<PickFieldDialogBody
+				{...dialogProps}
+				type={type}
+				onInsert={onInsert}
+				typesFullList={typesFullList}
+				typesCurrentList={typesCurrentList}
+			/>
 		</EnhancedDialog>
 	);
 }

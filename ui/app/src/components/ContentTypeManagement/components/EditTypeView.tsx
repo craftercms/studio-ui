@@ -19,6 +19,7 @@ import ContentType, {
 	ContentTypeSection,
 	DataSource,
 	NewContentTypeField,
+	NewDataSource,
 	PossibleContentTypeDraft
 } from '../../../models/ContentType';
 import LookupTable from '../../../models/LookupTable';
@@ -31,13 +32,19 @@ import {
 	createFieldFormContextApi,
 	createTypeFieldValuesObject,
 	createTypeFormValuesObject,
+	createTypeTemplate,
 	createVirtualTypeForDataSource,
 	createVirtualTypeForField,
 	createVirtualTypeFormContext,
 	createVirtualTypeForSection,
+	editTypeController,
+	editTypeTemplate,
+	NEW_DATASOURCE_ID,
 	NEW_FIELD_ID,
 	prepareSerializeToXmlTypeObject,
 	reverseTypeFieldValuesObject,
+	TYPE_GROOVY_CONTROLLER_BASE_PATH,
+	TYPE_TEMPLATE_BASE_PATH,
 	TypePropsToEdit,
 	typePropsToEdit
 } from '../utils';
@@ -249,7 +256,8 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 			}),
 			{ dataSource }
 		);
-		setSelectedFieldIdPath(dataSource.id);
+		const dataSourceId = dataSource.id ? dataSource.id : NEW_DATASOURCE_ID;
+		setSelectedFieldIdPath(dataSourceId);
 		stateRef.current.selectedDataSource = dataSource;
 	};
 	const handleEditTypeProperties = () => {
@@ -284,9 +292,17 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 				handleEditTypeProperties();
 				break;
 			}
-			case 'template':
-				showAlert(`Not implemented (template)`);
+			case 'template': {
+				const templatePath = type.displayTemplate;
+				if (templatePath) {
+					editTypeTemplate(templatePath, dispatch);
+				} else {
+					createTypeTemplate(TYPE_TEMPLATE_BASE_PATH, dispatch, (item) => {
+						editTypeTemplate(`${item.path}/${item.fileName}`, dispatch);
+					});
+				}
 				break;
+			}
 			case 'jsController':
 				showAlert({
 					message: `Not implemented (jsController)`,
@@ -300,10 +316,16 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 				});
 				break;
 			case 'groovyController':
-				showAlert(`Not implemented (groovyController)`);
+				editTypeController(TYPE_GROOVY_CONTROLLER_BASE_PATH, type.id, dispatch);
 				break;
 			case 'deleted':
-				showAlert(`Not implemented (deleted)`);
+				onClose?.();
+				window.top.postMessage(
+					{
+						type: 'CONTENT_TYPES_ON_DELETED'
+					},
+					'*'
+				);
 				break;
 		}
 	};
@@ -373,6 +395,19 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 	};
 
 	const handleInsertDataSource: TypeDetailsViewProps['onInsertDataSource'] = (dataSourceType, position) => {
+		const newDataSource: NewDataSource = {
+			NEW: true,
+			id: '',
+			title: '',
+			type: dataSourceType,
+			interface: null, // TODO: need to implement interfaces
+			properties: null
+		};
+
+		const nextDataSources = type.dataSources.concat();
+		nextDataSources.splice(position, 0, newDataSource);
+		setType({ ...type, dataSources: nextDataSources });
+		handleDataSourceSelected(newDataSource);
 	};
 
 	// region const fieldEditorView = ...
@@ -677,8 +712,19 @@ function updateTypeFromDataSourceUpdate(
 	updatedValues: LookupTable<unknown>
 ): ContentType {
 	const updatedType: ContentType = { ...type, dataSources: type.dataSources.concat() };
-	const index = updatedType.dataSources.findIndex((item) => item.id === selectedDataSource.id);
-	updatedType.dataSources[index] = { ...selectedDataSource, properties: updatedValues };
+	const index = updatedType.dataSources.findIndex((item) => {
+		if (selectedDataSource.id) {
+			return item.id === selectedDataSource.id;
+		} else {
+			return (item as NewDataSource).NEW;
+		}
+	});
+
+	const nextDataSource = { ...selectedDataSource };
+	// When updating a new data source, we need to exclude NEW prop from the new datasource content
+	delete (nextDataSource as NewDataSource).NEW;
+	const { title, id, ...properties }: Partial<DataSource> = updatedValues;
+	updatedType.dataSources[index] = { ...nextDataSource, id, title, properties };
 	return updatedType;
 }
 
@@ -706,7 +752,6 @@ export default EditTypeView;
 // TODO:
 //  - i18n
 //  - Because IDs can be modified, keep a lookup table of `{ [nanoid]: id }`? - Probably N/A
-//  - Filter based on archetypes on type listing.
 //  - BE tickets for APIs etc
 //  - BE ticket for UM section ids
 //  - BE ticket for UM config.xml transfer props to form-def.xml and remove file.
@@ -716,6 +761,5 @@ export default EditTypeView;
 //    - If not moved, drop `label` & `type`?
 //  - Should we rename the root tag on form-def.xml from `form` to something like `type`, `contentType` or so?
 //  - Can we drop iceId?
-//  - Translation of control descriptors and archetype templates
 // 	- Should we use UM to remove from maxlength property and move into constraints? Also fix spelling to `maxLength`
 // 	- Can we add created, modified, createdBy and modifiedBy to the XML?

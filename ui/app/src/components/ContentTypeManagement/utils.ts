@@ -21,6 +21,7 @@ import {
 	DataSource,
 	LegacyDataSource,
 	LegacyFormDefinitionField,
+	NewDataSource,
 	ValidationKeys
 } from '../../models';
 import LookupTable from '../../models/LookupTable';
@@ -44,12 +45,19 @@ import { commonDataSourceDescriptors } from './descriptors/dataSources';
 import { ControlProps } from '../FormsEngine/types';
 import { IntlShape } from 'react-intl';
 import TranslationOrText from '../../models/TranslationOrText';
+import { getFileNameFromPath } from '../../utils/path';
+import type { Dispatch } from 'redux';
+import { editController, editTemplate } from '../../state/actions/misc';
+import { popDialog, pushDialog } from '../../state/actions/dialogStack';
 
 // TODO: assess which of the utils here should go to utils/contentType.ts, or other places (serializers, etc.)
 
 export const DeserializerNullSymbol = Symbol(null);
 
 export const NEW_FIELD_ID = '{NEW}';
+export const NEW_DATASOURCE_ID = '{NEW}';
+export const TYPE_TEMPLATE_BASE_PATH = '/templates/web';
+export const TYPE_GROOVY_CONTROLLER_BASE_PATH = '/config/studio/content-types';
 
 // Some properties in ContentTypeField differ from the name in the XML.
 // Descriptors for controls, sections, data sources, etc., declare their form fields with the XML name,
@@ -369,6 +377,7 @@ export function createVirtualDataSourceFields(type: ContentType): Partial<Descri
 	const dataSourceFields: Partial<DescriptorContentType> = {};
 	for (const dataSource of type.dataSources ?? []) {
 		dataSourceFields[dataSource.id] = {
+			...((dataSource as NewDataSource).NEW && { NEW: true }),
 			id: dataSource.id,
 			type: dataSource.type,
 			name: dataSource.title,
@@ -654,4 +663,50 @@ function translateIfMessageDescriptor<K>(
 	return nnou(target[property]) && typeof target[property] === 'object'
 		? formatMessage(target[property])
 		: ((target[property] as string) ?? '');
+}
+
+export function editTypeTemplate(path: string, dispatch: Dispatch) {
+	const fileName = getFileNameFromPath(path);
+	const pathNoFileName = path.replace(fileName, '');
+
+	dispatch(
+		editTemplate({
+			path: pathNoFileName,
+			fileName,
+			mode: 'ftl',
+			openOnSuccess: true
+		})
+	);
+}
+
+export function createTypeTemplate(basePath: string, dispatch, onCreated: (item) => void) {
+	const id = nanoid();
+	dispatch(
+		pushDialog({
+			id,
+			component: 'craftercms.components.CreateFileDialog',
+			props: {
+				path: basePath,
+				type: 'template',
+				onClose: () => dispatch(popDialog({ id })),
+				onCreated: (item) => {
+					onCreated(item);
+					dispatch(popDialog({ id }));
+				}
+			}
+		})
+	);
+}
+
+export function editTypeController(basePath: string, contentTypeId: string, dispatch: Dispatch) {
+	// editController creates the config file if it doesn't exist.
+	dispatch(
+		editController({
+			path: `${basePath}${contentTypeId}/`,
+			fileName: 'controller.groovy',
+			mode: 'groovy',
+			contentType: contentTypeId,
+			openOnSuccess: true
+		})
+	);
 }

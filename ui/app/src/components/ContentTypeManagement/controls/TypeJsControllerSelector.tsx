@@ -23,8 +23,7 @@ import { useDispatch } from 'react-redux';
 import IconButton from '@mui/material/IconButton';
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import { useStableFormContext } from '../../FormsEngine/lib/formsEngineContext';
-import { editController } from '../../../state/actions/misc';
-import { TypeBuilderControl } from '../utils';
+import { editTypeController, TypeBuilderControl } from '../utils';
 
 export interface TypeJsControllerSelectorProps extends TypeBuilderControl {
 	value: string;
@@ -45,16 +44,7 @@ export function TypeJsControllerSelector(props: TypeJsControllerSelectorProps) {
 	const fileName = 'controller.groovy';
 
 	const onEditController = () => {
-		// editController creates the config file if it doesn't exist.
-		dispatch(
-			editController({
-				path: `${basePath}${contentTypeId}/`,
-				fileName,
-				mode: 'groovy',
-				contentType: contentTypeId,
-				openOnSuccess: true
-			})
-		);
+		editTypeController(basePath, contentTypeId, dispatch);
 	};
 
 	return (

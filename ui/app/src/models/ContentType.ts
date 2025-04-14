@@ -155,6 +155,10 @@ export interface DataSource {
 	properties: LookupTable;
 }
 
+export interface NewDataSource extends DataSource {
+	NEW?: true;
+}
+
 export type LegacyComponentType = 'component' | 'page' | 'file';
 
 export interface ContentType {

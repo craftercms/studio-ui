@@ -17,7 +17,7 @@
 import { PossibleContentTypeDraft } from '../../../models/ContentType';
 import { useDispatch } from 'react-redux';
 import Button, { ButtonProps } from '@mui/material/Button';
-import { pushDialog } from '../../../state/actions/dialogStack';
+import { popDialog, pushDialog } from '../../../state/actions/dialogStack';
 import { DeleteContentTypeDialogProps } from '../../DeleteContentTypeDialog';
 import Box from '@mui/material/Box';
 import TypeCardMedia from './TypeCardMedia';
@@ -25,6 +25,7 @@ import Typography from '@mui/material/Typography';
 import { ItemTypeIcon } from '../../ItemTypeIcon';
 import { FormattedMessage } from 'react-intl';
 import React from 'react';
+import { nanoid } from 'nanoid';
 
 export type TypeDetailsHeaderActionTarget = 'properties' | 'template' | 'jsController' | 'groovyController' | 'deleted';
 
@@ -36,13 +37,15 @@ export interface TypeDetailsViewHeaderProps {
 export function TypeDetailsViewHeader({ type, onActionClick }: TypeDetailsViewHeaderProps) {
 	const dispatch = useDispatch();
 	const handleDeleteType: ButtonProps['onClick'] = (e) => {
+		const id = nanoid();
 		dispatch(
 			pushDialog({
+				id,
 				component: 'craftercms.components.DeleteContentTypeDialog',
 				props: {
 					contentType: type,
 					onComplete() {
-						console.log('Deleted.');
+						dispatch(popDialog({ id }));
 						onActionClick?.(e, 'deleted');
 					}
 				} as Partial<DeleteContentTypeDialogProps>

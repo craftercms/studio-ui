@@ -15,7 +15,7 @@
  */
 
 import OutlinedInput, { OutlinedInputProps } from '@mui/material/OutlinedInput';
-import React, { useId } from 'react';
+import React from 'react';
 import FormsEngineField from '../../FormsEngine/components/FormsEngineField';
 import IconButton from '@mui/material/IconButton';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
@@ -25,10 +25,7 @@ import { FormattedMessage } from 'react-intl';
 import { useDispatch } from 'react-redux';
 import { popDialog, pushDialog } from '../../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
-import { nou } from '../../../utils/object';
-import { editTemplate } from '../../../state/actions/misc';
-import { getFileNameFromPath } from '../../../utils/path';
-import { TypeBuilderControl } from '../utils';
+import { createTypeTemplate, editTypeTemplate, TypeBuilderControl } from '../utils';
 
 export interface TemplateSelectorProps extends TypeBuilderControl {
 	value: string;
@@ -64,34 +61,14 @@ export function TemplateSelector(props: TemplateSelectorProps) {
 	};
 
 	const onEditTemplate = () => {
-		const id = nanoid();
-		if (nou(value)) {
-			dispatch(
-				pushDialog({
-					id,
-					component: 'craftercms.components.CreateFileDialog',
-					props: {
-						path: basePath,
-						type: 'template',
-						onClose: () => dispatch(popDialog({ id })),
-						onSuccess: (item) => {
-							setValue(item.path);
-							dispatch(popDialog({ id }));
-						}
-					}
-				})
-			);
+		if (value) {
+			editTypeTemplate(value, dispatch);
 		} else {
-			const fileName = getFileNameFromPath(value);
-			const pathNoFileName = value.replace(fileName, '');
-			dispatch(
-				editTemplate({
-					path: pathNoFileName,
-					fileName,
-					mode: 'ftl',
-					openOnSuccess: true
-				})
-			);
+			createTypeTemplate(basePath, dispatch, (item) => {
+				const templatePath = `${item.path}/${item.fileName}`;
+				setValue(templatePath);
+				editTypeTemplate(templatePath, dispatch);
+			});
 		}
 	};
 

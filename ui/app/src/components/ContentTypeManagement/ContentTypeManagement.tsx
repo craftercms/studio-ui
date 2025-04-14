@@ -34,6 +34,7 @@ import Button from '@mui/material/Button';
 import Fade from '@mui/material/Fade';
 import { FeedbackOutlined } from '@mui/icons-material';
 import useContentTypeList from '../../hooks/useContentTypeList';
+import { fetchContentTypes } from '../../state/actions/preview';
 
 export interface ContentTypeManagementProps {
 	embedded?: boolean;
@@ -53,7 +54,7 @@ export interface ContentTypeManagementProps {
 
 export function ContentTypeManagement(props: ContentTypeManagementProps) {
 	const { embedded = false, showAppsButton } = props;
-
+	const dispatch = useDispatch();
 	const [view, setView] = useState<'list' | 'edit' | 'create'>('list');
 	const [selectedType, setSelectedType] = useState<ContentType>(null);
 	const [useLegacy, setUseLegacy] = useState(false);
@@ -77,6 +78,22 @@ export function ContentTypeManagement(props: ContentTypeManagementProps) {
 	// 		setView('edit');
 	// 	}
 	// }, [types]);
+
+	useEffect(() => {
+		const messagesSubscription = fromEvent<MessageEvent>(window, 'message')
+			.pipe(filter((e) => ['CONTENT_TYPES_ON_CREATED', 'CONTENT_TYPES_ON_DELETED'].includes(e.data?.type)))
+			.subscribe((e) => {
+				switch (e.data?.type) {
+					case 'CONTENT_TYPES_ON_DELETED': {
+						dispatch(fetchContentTypes());
+					}
+				}
+			});
+
+		return () => {
+			messagesSubscription.unsubscribe();
+		};
+	}, [dispatch]);
 
 	return (
 		<>
