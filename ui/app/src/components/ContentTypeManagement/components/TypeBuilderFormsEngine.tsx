@@ -46,11 +46,12 @@ import ListItemText from '@mui/material/ListItemText';
 import SectionAccordion from '../../FormsEngine/components/SectionAccordion';
 import { renderFieldControl } from '../../FormsEngine/lib/controlHelpers';
 import FormBackToTop from '../../FormsEngine/components/FormBackToTop';
-import ContentType, { ContentTypeField, ContentTypeSection } from '../../../models/ContentType';
+import ContentType, { ContentTypeField, ContentTypeSection, DataSource } from '../../../models/ContentType';
 import { fooStableGlobalContext, PartialContentType } from '../utils';
 import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
 import Alert from '@mui/material/Alert';
-import { controlMap } from './lib/controlMap';
+import { controlMap } from '../controlMap';
+import { ConfirmDropdown } from '../../ConfirmDropdown';
 
 interface TypeModeProps {
 	type: ContentType;
@@ -59,15 +60,20 @@ interface TypeModeProps {
 interface FieldModeProps {
 	field: ContentTypeField;
 	fieldIdPath: string;
+	sectionId: string;
 	controlDescriptor: PartialContentType;
+	onDeleteField(fieldIdPath: string, sectionId: string): void;
 }
 
 interface SectionModeProps {
 	section: ContentTypeSection;
+	isMainSection: boolean;
+	onDeleteSection(section: ContentTypeSection): void;
 }
 
 interface DataSourceModeProps {
-	dataSource: unknown;
+	dataSource: DataSource;
+	onDeleteDataSource(dataSourceId: string): void;
 }
 
 interface BaseProps extends Partial<FieldModeProps & SectionModeProps & DataSourceModeProps & TypeModeProps> {
@@ -108,7 +114,7 @@ function FieldFormViewBody(props: FieldFormViewProps) {
 			<Container ref={containerRef} maxWidth="md" sx={{ overflow: 'auto', flex: 1 }}>
 				{createElement(FieldSwapper, props)}
 
-				{virtualType.sections.map((section, index) => (
+				{virtualType.sections.map((section) => (
 					<SectionAccordion
 						key={section.title}
 						section={section}
@@ -176,8 +182,8 @@ function FieldBreadcrumbs(props: FieldFormViewProps): JSX.Element {
 }
 
 function FieldActions(props: FieldFormViewProps): JSX.Element {
-	if (!props.field) return;
-	const field = props.field;
+	const { field, fieldIdPath, sectionId, onDeleteField } = props;
+	if (!field) return;
 	return (
 		<>
 			<Tooltip title={<FormattedMessage defaultMessage="Move to another section" />}>
@@ -186,11 +192,19 @@ function FieldActions(props: FieldFormViewProps): JSX.Element {
 				</IconButton>
 			</Tooltip>
 			{field.id !== XmlKeys.internalName && field.id !== XmlKeys.fileName && (
-				<Tooltip title={<FormattedMessage defaultMessage="Delete field" />}>
-					<IconButton>
-						<DeleteRounded />
-					</IconButton>
-				</Tooltip>
+				<ConfirmDropdown
+					icon={DeleteRounded}
+					iconTooltip={<FormattedMessage defaultMessage="Delete field" />}
+					confirmHelperText={
+						<FormattedMessage
+							defaultMessage={'Delete "{fieldName} ({fieldId})"?'}
+							values={{ fieldName: field.name, fieldId: field.id }}
+						/>
+					}
+					cancelText={<FormattedMessage defaultMessage="No" />}
+					confirmText={<FormattedMessage defaultMessage="Yes" />}
+					onConfirm={() => onDeleteField?.(fieldIdPath, sectionId)}
+				/>
 			)}
 		</>
 	);
@@ -224,29 +238,41 @@ function FieldSwapper(props: FieldFormViewProps): JSX.Element {
 }
 
 function SectionActions(props: FieldFormViewProps): JSX.Element {
-	if (!props.section) return;
-	const section = props.section;
+	const { section, isMainSection, onDeleteSection } = props;
+	if (!section) return;
 	return (
 		<>
-			<Tooltip title={<FormattedMessage defaultMessage="Delete Section" />}>
-				<IconButton>
-					<DeleteRounded />
-				</IconButton>
-			</Tooltip>
+			{!isMainSection && (
+				<ConfirmDropdown
+					icon={DeleteRounded}
+					iconTooltip={<FormattedMessage defaultMessage="Delete Section" />}
+					confirmHelperText={
+						<FormattedMessage defaultMessage={'Delete "{title}"?'} values={{ title: section.title }} />
+					}
+					cancelText={<FormattedMessage defaultMessage="No" />}
+					confirmText={<FormattedMessage defaultMessage="Yes" />}
+					onConfirm={() => onDeleteSection?.(section)}
+				/>
+			)}
 		</>
 	);
 }
 
 function DataSourceActions(props: FieldFormViewProps): JSX.Element {
-	if (!props.dataSource) return;
-	const dataSource = props.dataSource;
+	const { dataSource, onDeleteDataSource } = props;
+	if (!dataSource) return;
 	return (
 		<>
-			<Tooltip title={<FormattedMessage defaultMessage="Delete Data Source" />}>
-				<IconButton>
-					<DeleteRounded />
-				</IconButton>
-			</Tooltip>
+			<ConfirmDropdown
+				icon={DeleteRounded}
+				iconTooltip={<FormattedMessage defaultMessage="Delete Data Source" />}
+				confirmHelperText={<FormattedMessage defaultMessage={'Delete "{name}"?'} values={{ name: dataSource.title }} />}
+				cancelText={<FormattedMessage defaultMessage="No" />}
+				confirmText={<FormattedMessage defaultMessage="Yes" />}
+				onConfirm={() => {
+					onDeleteDataSource?.(dataSource.id);
+				}}
+			/>
 		</>
 	);
 }

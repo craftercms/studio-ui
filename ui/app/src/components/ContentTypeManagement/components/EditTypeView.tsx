@@ -50,7 +50,6 @@ import {
 } from '../utils';
 import { extractAtomValues, useShowAlert } from '../../FormsEngine/lib/formUtils';
 import TypeBuilderFormsEngine, { FieldFormViewProps } from './TypeBuilderFormsEngine';
-import { FieldChipProps } from './FieldChip';
 import controlDescriptors, { sectionDescriptor, typeBasicDetailsDescriptor } from '../descriptors/controls';
 import dataSourceDescriptors from '../descriptors/dataSources';
 import type { BuiltInControlType } from '../../FormsEngine/lib/controlMap';
@@ -199,6 +198,9 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 			stableFormContext,
 			formApiContext: stateRef.current.formContextApi,
 			onClose: () => effectRefs.current.closeAndCleanup(),
+			onDeleteField: handleDeleteField,
+			onDeleteSection: handleDeleteSection,
+			onDeleteDataSource: handleDeleteDataSource,
 			...extraFormProps
 		});
 		// Note: things set here should be cleaned up in closeAndCleanup
@@ -207,7 +209,7 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 		setOpen(true);
 	};
 
-	const handleFieldSelected: FieldChipProps['onFieldSelected'] = (fieldIdPath, field) => {
+	const handleFieldSelected: TypeDetailsViewProps['onFieldSelected'] = (fieldIdPath, field, sectionId) => {
 		if (!closeAndCleanup()) return;
 
 		const controlDescriptor = controlDescriptors[field.type as BuiltInControlType];
@@ -224,20 +226,21 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 			createVirtualTypeFormContext(virtualType, createTypeFieldValuesObject(field), contentTypesLookup, {
 				fieldUpdates$: stateRef.current.fieldUpdates$
 			}),
-			{ field, fieldIdPath, controlDescriptor: applyTranslations(controlDescriptor, formatMessage) }
+			{ field, fieldIdPath, controlDescriptor: applyTranslations(controlDescriptor, formatMessage), sectionId }
 		);
 		setSelectedFieldIdPath(fieldIdPath);
 		stateRef.current.selectedField = field;
 	};
 	const handleSectionSelected: TypeDetailsViewProps['onSectionSelected'] = (section) => {
 		if (!closeAndCleanup()) return;
+		const sectionIndex = type.sections.findIndex((s) => s.id === section.id);
 		const virtualType = createVirtualTypeForSection(sectionDescriptor, formatMessage);
 		handleArtefactSelected(
 			virtualType,
 			createVirtualTypeFormContext(virtualType, section as unknown as LookupTable<unknown>, contentTypesLookup, {
 				fieldUpdates$: stateRef.current.fieldUpdates$
 			}),
-			{ section }
+			{ section, isMainSection: sectionIndex === 0 }
 		);
 		stateRef.current.selectedSection = section;
 	};
@@ -373,6 +376,17 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 			}
 		}
 	};
+
+	const resetSelection = () => {
+		setSelectedFieldIdPath(null);
+		stateRef.current.selectedField = null;
+		setVirtualContentType(null);
+		setFieldFormViewProps(null);
+		setHasPendingChanges(false);
+		setOpen(false);
+	};
+
+	// region insert
 	const handleInsertSection: TypeDetailsViewProps['onInsertSection'] = (section, position) => {
 		setType(insertSection(type, section, position));
 		onUpdateHasPendingChanges(true);
@@ -393,7 +407,6 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 		setType(addField(type, newField, newFieldPath, sectionId, position));
 		handleFieldSelected(newFieldPath, newField, null);
 	};
-
 	const handleInsertDataSource: TypeDetailsViewProps['onInsertDataSource'] = (dataSourceType, position) => {
 		const newDataSource: NewDataSource = {
 			NEW: true,
@@ -409,6 +422,26 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 		setType({ ...type, dataSources: nextDataSources });
 		handleDataSourceSelected(newDataSource);
 	};
+	//
+
+	// region delete
+	const handleDeleteSection: FieldFormViewProps['onDeleteSection'] = (section) => {
+		resetSelection();
+		onUpdateHasPendingChanges(true);
+		setType(deleteSection(type, section));
+	};
+	const handleDeleteField: FieldFormViewProps['onDeleteField'] = (fieldIdPath: string, sectionId) => {
+		resetSelection();
+		onUpdateHasPendingChanges(true);
+		setType(deleteField(type, fieldIdPath, sectionId));
+	};
+	const handleDeleteDataSource: FieldFormViewProps['onDeleteDataSource'] = (dataSourceId) => {
+		resetSelection();
+		onUpdateHasPendingChanges(true);
+		const nextDataSources = type.dataSources.filter((dataSource) => dataSource.id !== dataSourceId);
+		setType({ ...type, dataSources: nextDataSources });
+	};
+	// endregion
 
 	// region const fieldEditorView = ...
 	// TODO: Add field, add section also to render on the reactive side panel
@@ -520,6 +553,13 @@ function insertSection(type: ContentType, section: ContentTypeSection, position:
 	return nextType;
 }
 
+function deleteSection(type: ContentType, section: ContentTypeSection): ContentType {
+	const nextType = { ...type, sections: type.sections.concat() };
+	const sectionIndex = nextType.sections.findIndex((s) => s.id === section.id);
+	nextType.sections.splice(sectionIndex, 1);
+	return nextType;
+}
+
 function addSubField(
 	parentField: ContentTypeField,
 	newField: ContentTypeField,
@@ -559,35 +599,91 @@ function addSubField(
 function addField(
 	type: ContentType,
 	field: ContentTypeField,
-	fieldPath: string,
+	fieldIdPath: string,
 	sectionId: string,
 	position: number
 ): ContentType {
-	const isComposedPath = fieldPath.includes('.');
+	const isComposedPath = fieldIdPath.includes('.');
 
 	if (isComposedPath) {
 		// If the fieldIdPath is composed, we need to find the root field and add the new field to it recursively
-		const rootFieldId = fieldPath.split('.').shift();
+		const rootFieldId = fieldIdPath.split('.').shift();
 		// When fieldIdPath is composed (inside a rep-group), sections don't change since the root fields remain the same
 		return {
 			...type,
 			fields: {
 				...type.fields,
-				[rootFieldId]: addSubField(type.fields[rootFieldId], field, fieldPath.replace(`${rootFieldId}.`, ''), position)
+				[rootFieldId]: addSubField(
+					type.fields[rootFieldId],
+					field,
+					fieldIdPath.replace(`${rootFieldId}.`, ''),
+					position
+				)
 			}
 		};
 	} else {
 		// If not composed, we can add the field directly to the fields lookup and to the sections list
-		const nextFields = { ...type.fields, [fieldPath]: field };
+		const nextFields = { ...type.fields, [fieldIdPath]: field };
 		const nextSections = type.sections.concat();
 		const sectionIndex = nextSections.findIndex((section) => section.id === sectionId);
 		const section = nextSections[sectionIndex];
 		const nextSectionFields = nextSections[sectionIndex].fields.concat();
-		nextSectionFields.splice(position, 0, fieldPath);
+		nextSectionFields.splice(position, 0, fieldIdPath);
 		nextSections[sectionIndex] = {
 			...section,
 			fields: nextSectionFields
 		};
+		return { ...type, sections: nextSections, fields: nextFields };
+	}
+}
+
+function deleteSubField(parentField: ContentTypeField, fieldIdPath: string): ContentTypeField {
+	const isComposedPath = fieldIdPath.includes('.');
+	if (isComposedPath) {
+		// If still composed, we need to find the root field and delete the field recursively
+		const rootFieldId = fieldIdPath.split('.').shift();
+		return {
+			...parentField,
+			fields: {
+				...parentField.fields,
+				[rootFieldId]: deleteSubField(parentField.fields[rootFieldId], fieldIdPath.replace(`${rootFieldId}.`, ''))
+			}
+		};
+	} else {
+		const nextFields = { ...parentField.fields };
+		delete nextFields[fieldIdPath];
+		return { ...parentField, fields: nextFields };
+	}
+}
+
+function deleteField(type: ContentType, fieldIdPath: string, sectionId: string): ContentType {
+	const isComposedPath = fieldIdPath.includes('.');
+	if (isComposedPath) {
+		// If the fieldIdPath is composed, we need to find the root field and remove the field recursively
+		const rootFieldId = fieldIdPath.split('.').shift();
+		// When fieldIdPath is composed (inside a rep-group), sections don't change since the root fields remain the same
+		return {
+			...type,
+			fields: {
+				...type.fields,
+				[rootFieldId]: deleteSubField(type.fields[rootFieldId], fieldIdPath.replace(`${rootFieldId}.`, ''))
+			}
+		};
+	} else {
+		const nextFields = { ...type.fields };
+		delete nextFields[fieldIdPath];
+
+		const nextSections = type.sections.concat();
+		const sectionIndex = nextSections.findIndex((section) => section.id === sectionId);
+		const section = nextSections[sectionIndex];
+		const nextSectionFields = nextSections[sectionIndex].fields.concat();
+		const fieldIndex = nextSectionFields.findIndex((fieldId) => fieldId === fieldIdPath);
+		nextSectionFields.splice(fieldIndex, 1);
+		nextSections[sectionIndex] = {
+			...section,
+			fields: nextSectionFields
+		};
+
 		return { ...type, sections: nextSections, fields: nextFields };
 	}
 }

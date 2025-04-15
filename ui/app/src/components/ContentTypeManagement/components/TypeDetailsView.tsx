@@ -14,7 +14,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ContentTypeSection, DataSource, PossibleContentTypeDraft } from '../../../models/ContentType';
+import {
+	ContentTypeField,
+	ContentTypeSection,
+	DataSource,
+	PossibleContentTypeDraft
+} from '../../../models/ContentType';
 import FieldChip, { FieldChipProps } from './FieldChip';
 import React, { useMemo, useRef, useState } from 'react';
 import { createStore, Provider } from 'jotai/index';
@@ -44,7 +49,7 @@ export interface TypeDetailsViewProps {
 	type: PossibleContentTypeDraft;
 	fieldPathsWithErrors: LookupTable<boolean>;
 	selectedFieldIdPath: string;
-	onFieldSelected: FieldChipProps['onFieldSelected'];
+	onFieldSelected(fieldPath: string, field: ContentTypeField, sectionId: string): void;
 	onDataSourceSelected(dataSource: DataSource): void;
 	onSectionSelected(section: ContentTypeSection): void;
 	onEditTypeAction: TypeDetailsViewHeaderProps['onActionClick'];
@@ -165,7 +170,7 @@ export function TypeDetailsView(props: TypeDetailsViewProps) {
 									key={fieldId}
 									field={type.fields[fieldId]}
 									fieldPathsWithErrors={fieldPathsWithErrors}
-									onFieldSelected={onFieldSelected}
+									onFieldSelected={(fieldIdPath, field) => onFieldSelected(fieldIdPath, field, section.id)}
 									selectedFieldIdPath={selectedFieldIdPath}
 									onInsertField={(fieldPath) => setInsertFieldData({ sectionId: section.id, fieldPath })}
 								/>
