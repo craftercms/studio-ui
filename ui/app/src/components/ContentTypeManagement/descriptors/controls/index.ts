@@ -325,7 +325,7 @@ export const sectionDescriptor: DescriptorContentType = {
 		createVirtualSection({
 			id: 'properties',
 			title: defineMessage({ defaultMessage: 'Basic Properties' }),
-			fields: ['title', 'color', 'description', 'expandByDefault']
+			fields: ['title', 'color', 'description', 'expandByDefault', 'fields']
 		})
 		// createVirtualSection({
 		// 	id: 'fields',
@@ -386,17 +386,16 @@ export const sectionDescriptor: DescriptorContentType = {
 			helpText: '',
 			defaultValue: undefined,
 			validations: immutableEmptyObject
+		},
+		fields: {
+			id: 'fields',
+			type: 'fields',
+			name: defineMessage({ defaultMessage: 'Manage fields' }),
+			description: '',
+			helpText: '',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
 		}
-		// TODO: create control for managing fields(?)
-		// fields: {
-		// 	id: 'fields',
-		// 	type: 'sectionFieldManager',
-		// 	name: 'Expand by default',
-		// 	description: 'Check this to show the section expanded when the content type is displayed in the content form',
-		// 	helpText: '',
-		// 	defaultValue: undefined,
-		// 	validations: foo
-		// }
 	}
 };
 

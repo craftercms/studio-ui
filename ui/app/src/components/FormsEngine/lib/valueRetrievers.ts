@@ -21,7 +21,7 @@ import type { RepeatItem } from '../controls/Repeat';
 import type { NodeSelectorItem } from '../controls/NodeSelector';
 import { systemFieldsNotInType, XmlKeys } from './formConsts';
 import { deserialize } from '../../../utils/xml';
-import { ContentTypeControlType } from '../../ContentTypeManagement/components/lib/controlMap';
+import { ContentTypeControlType } from '../../ContentTypeManagement/controlMap';
 
 export type ValueRetriever<T = unknown> = (value: unknown, field: ContentTypeField) => T;
 
@@ -79,7 +79,8 @@ export const valueRetrieverLookup: Record<BuiltInControlType | ContentTypeContro
 	'type-destination-paths-selector': textFieldExtractor,
 	'path-with-macro-creator': textFieldExtractor,
 	'merge-strategy-selector': textFieldExtractor,
-	'datasource-single-selector': textFieldExtractor
+	'datasource-single-selector': textFieldExtractor,
+	fields: arrayFieldExtractor
 };
 
 /**

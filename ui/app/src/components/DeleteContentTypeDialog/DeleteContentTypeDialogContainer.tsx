@@ -76,19 +76,19 @@ export function DeleteContentTypeDialogContainer(props: DeleteContentTypeDialogC
 	}, [site, contentType.id, setState]);
 
 	const onSubmit = () => {
-		functionRefs.current.onSubmittingAndOrPendingChange({
+		functionRefs.current.onSubmittingAndOrPendingChange?.({
 			isSubmitting: true
 		});
 		deleteContentType(site, contentType.id).subscribe({
 			next() {
-				functionRefs.current.onSubmittingAndOrPendingChange({
+				functionRefs.current.onSubmittingAndOrPendingChange?.({
 					isSubmitting: false
 				});
 				dispatch(showSystemNotification({ message: formatMessage(messages.deleteComplete) }));
 				onComplete?.();
 			},
 			error(e) {
-				functionRefs.current.onSubmittingAndOrPendingChange({
+				functionRefs.current.onSubmittingAndOrPendingChange?.({
 					isSubmitting: false
 				});
 				const response = e.response?.response ?? e.response;
