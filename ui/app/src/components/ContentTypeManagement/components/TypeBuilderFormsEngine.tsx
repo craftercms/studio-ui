@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { createElement, useEffect, useRef } from 'react';
+import React, { createElement, useEffect, useRef, useState } from 'react';
 import {
 	FormsEngineFormApiContextProps,
 	FormsEngineFormContextApi,
@@ -52,6 +52,8 @@ import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
 import Alert from '@mui/material/Alert';
 import { controlMap } from '../controlMap';
 import { ConfirmDropdown } from '../../ConfirmDropdown';
+import { LookupTable } from '../../../models';
+import MoveFieldToSectionDialog from './MoveFieldToSectionDialog';
 
 interface TypeModeProps {
 	type: ContentType;
@@ -63,6 +65,7 @@ interface FieldModeProps {
 	sectionId: string;
 	controlDescriptor: PartialContentType;
 	onDeleteField(fieldIdPath: string, sectionId: string): void;
+	onMoveFieldToSection(fieldIdPath: string, originSectionId: string, newSectionId: string, fieldIndex: number): void;
 }
 
 interface SectionModeProps {
@@ -182,15 +185,29 @@ function FieldBreadcrumbs(props: FieldFormViewProps): JSX.Element {
 }
 
 function FieldActions(props: FieldFormViewProps): JSX.Element {
-	const { field, fieldIdPath, sectionId, onDeleteField } = props;
+	const { field, fieldIdPath, sectionId, onDeleteField, onMoveFieldToSection, type } = props;
+	const [openMoveFieldDialog, setOpenMoveFieldDialog] = useState(false);
+
+	const handleMoveFieldToSection: FieldFormViewProps['onMoveFieldToSection'] = (
+		fieldId,
+		originSectionId,
+		newSectionId,
+		fieldIndex
+	) => {
+		setOpenMoveFieldDialog(false);
+		onMoveFieldToSection(fieldIdPath, originSectionId, newSectionId, fieldIndex);
+	};
+
 	if (!field) return;
 	return (
 		<>
-			<Tooltip title={<FormattedMessage defaultMessage="Move to another section" />}>
-				<IconButton>
-					<DriveFileMoveOutlined />
-				</IconButton>
-			</Tooltip>
+			{!fieldIdPath.includes('.') && (
+				<Tooltip title={<FormattedMessage defaultMessage="Move to another section" />}>
+					<IconButton onClick={() => setOpenMoveFieldDialog(true)}>
+						<DriveFileMoveOutlined />
+					</IconButton>
+				</Tooltip>
+			)}
 			{field.id !== XmlKeys.internalName && field.id !== XmlKeys.fileName && (
 				<ConfirmDropdown
 					icon={DeleteRounded}
@@ -206,6 +223,14 @@ function FieldActions(props: FieldFormViewProps): JSX.Element {
 					onConfirm={() => onDeleteField?.(fieldIdPath, sectionId)}
 				/>
 			)}
+			<MoveFieldToSectionDialog
+				field={field}
+				sectionId={sectionId}
+				sections={type.sections}
+				open={openMoveFieldDialog}
+				onClose={() => setOpenMoveFieldDialog(false)}
+				onMoveFieldToSection={handleMoveFieldToSection}
+			/>
 		</>
 	);
 }

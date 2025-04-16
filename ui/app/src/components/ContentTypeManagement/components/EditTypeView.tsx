@@ -136,6 +136,8 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 	if (!stateRef.current) stateRef.current = createContextObject();
 
 	const [type, setType] = useState(() => ({ ...props.type })); // Working copy of the ContentType being edited.
+	const typeRef = useRef<PossibleContentTypeDraft>(undefined);
+	typeRef.current = type;
 	const [open, setOpen] = useState(false);
 	const [openXmlViewer, setOpenXmlViewer] = useState<string>(); // TODO: Temp, for testing, remove.
 	const [selectedFieldIdPath, setSelectedFieldIdPath] = useState<string>(null);
@@ -201,6 +203,7 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 			onDeleteField: handleDeleteField,
 			onDeleteSection: handleDeleteSection,
 			onDeleteDataSource: handleDeleteDataSource,
+			onMoveFieldToSection: handleMoveFieldToSection,
 			...extraFormProps
 		});
 		// Note: things set here should be cleaned up in closeAndCleanup
@@ -209,7 +212,12 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 		setOpen(true);
 	};
 
-	const handleFieldSelected: TypeDetailsViewProps['onFieldSelected'] = (fieldIdPath, field, sectionId) => {
+	const handleFieldSelected = (
+		fieldIdPath: string,
+		field: ContentTypeField,
+		sectionId: string,
+		overrideType?: ContentType
+	) => {
 		if (!closeAndCleanup()) return;
 
 		const controlDescriptor = controlDescriptors[field.type as BuiltInControlType];
@@ -226,7 +234,13 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 			createVirtualTypeFormContext(virtualType, createTypeFieldValuesObject(field), contentTypesLookup, {
 				fieldUpdates$: stateRef.current.fieldUpdates$
 			}),
-			{ field, fieldIdPath, controlDescriptor: applyTranslations(controlDescriptor, formatMessage), sectionId }
+			{
+				field,
+				fieldIdPath,
+				controlDescriptor: applyTranslations(controlDescriptor, formatMessage),
+				sectionId,
+				...(overrideType && { type: overrideType })
+			}
 		);
 		setSelectedFieldIdPath(fieldIdPath);
 		stateRef.current.selectedField = field;
@@ -422,7 +436,7 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 		setType({ ...type, dataSources: nextDataSources });
 		handleDataSourceSelected(newDataSource);
 	};
-	//
+	// endregion
 
 	// region delete
 	const handleDeleteSection: FieldFormViewProps['onDeleteSection'] = (section) => {
@@ -447,6 +461,31 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 	// TODO: Add field, add section also to render on the reactive side panel
 	const fieldEditorView = virtualContentType ? createElement(TypeBuilderFormsEngine, fieldFormViewProps) : null;
 	// endregion
+
+	const handleMoveFieldToSection: FieldFormViewProps['onMoveFieldToSection'] = (
+		fieldId,
+		originSectionId,
+		newSectionId,
+		fieldIndex
+	) => {
+		onUpdateHasPendingChanges(true);
+		const nextType = {
+			...typeRef.current,
+			sections: typeRef.current.sections.map((section) => {
+				if (section.id === originSectionId) {
+					const fields = section.fields.filter((field) => field !== fieldId);
+					return { ...section, fields };
+				} else if (section.id === newSectionId) {
+					const fields = section.fields.concat();
+					fields.splice(fieldIndex, 0, fieldId);
+					return { ...section, fields };
+				}
+				return section;
+			})
+		};
+		setType(nextType);
+		handleFieldSelected(fieldId, type.fields[fieldId], newSectionId, nextType);
+	};
 
 	// `fieldUpdates$` subscription
 	useEffect(() => {
