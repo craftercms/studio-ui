@@ -20,6 +20,9 @@ import { ControlProps } from '../../FormsEngine/types';
 import TouchSortableList from '../../FormsEngine/components/TouchSortableList';
 import SortableList from '../../FormsEngine/components/SortableList';
 import { isTouchDevice } from '../../FormsEngine/lib/sortableListUtil';
+import FieldBox from '../../FormsEngine/components/FieldBox';
+import { FormattedMessage } from 'react-intl';
+import { EmptyState } from '../../EmptyState';
 
 export interface FieldsProps extends ControlProps {
 	value: string[];
@@ -29,18 +32,25 @@ export function Fields(props: FieldsProps) {
 	const { field, value, setValue } = props;
 	const useTouchSorting = useMemo(() => isTouchDevice(), []);
 	const fields = value.map((item) => ({ key: item, value: item }));
+	const hasContent = Boolean(fields?.length);
 
 	const onReorderFields = (newFields) => {
-		setValue(newFields.map((item) => item.key));
+		setValue?.(newFields.map((item) => item.key));
 	};
 
 	return (
 		<FormsEngineField field={field}>
-			{useTouchSorting ? (
-				<TouchSortableList items={fields} onChange={onReorderFields} />
-			) : (
-				<SortableList items={fields} onChange={onReorderFields} />
-			)}
+			<FieldBox sx={{ mt: 1 }} dashed={!hasContent}>
+				{hasContent ? (
+					useTouchSorting ? (
+						<TouchSortableList items={fields} onChange={onReorderFields} />
+					) : (
+						<SortableList items={fields} onChange={onReorderFields} />
+					)
+				) : (
+					<EmptyState key="emptyState" title={<FormattedMessage defaultMessage="No fields set in this section" />} />
+				)}
+			</FieldBox>
 		</FormsEngineField>
 	);
 }
