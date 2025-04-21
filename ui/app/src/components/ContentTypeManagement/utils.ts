@@ -699,13 +699,19 @@ export function createTypeTemplate(basePath: string, dispatch, onCreated: (item)
 	);
 }
 
-export function editTypeController(basePath: string, contentTypeId: string, dispatch: Dispatch) {
+export function editTypeController(
+	basePath: string,
+	contentTypeId: string,
+	dispatch: Dispatch,
+	type: 'groovy' | 'javascript'
+) {
+	const fileName = type === 'groovy' ? 'controller.groovy' : 'form-controller.js';
 	// editController creates the config file if it doesn't exist.
 	dispatch(
 		editController({
 			path: `${basePath}${contentTypeId}/`,
-			fileName: 'controller.groovy',
-			mode: 'groovy',
+			fileName,
+			mode: type,
 			contentType: contentTypeId,
 			openOnSuccess: true
 		})

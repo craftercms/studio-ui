@@ -32,7 +32,6 @@ export interface VariableProps extends ControlProps {
 
 export function Variable(props: VariableProps) {
 	const { field, value, setValue, readonly, autoFocus, contentType } = props;
-	// console.log('props', props);
 	// TODO: if internalName or fileName => disabled, no postfixes
 	const htmlId = useId();
 	const maxLength = field.validations.maxLength?.value;

@@ -319,19 +319,10 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 				break;
 			}
 			case 'jsController':
-				showAlert({
-					message: `Not implemented (jsController)`,
-					children: (
-						<Typography component="ol" variant="body2" marginTop={1} textAlign="left">
-							<li>Open code editor</li>
-							<li>Two</li>
-							<li>Three</li>
-						</Typography>
-					)
-				});
+				editTypeController(TYPE_GROOVY_CONTROLLER_BASE_PATH, type.id, dispatch, 'javascript');
 				break;
 			case 'groovyController':
-				editTypeController(TYPE_GROOVY_CONTROLLER_BASE_PATH, type.id, dispatch);
+				editTypeController(TYPE_GROOVY_CONTROLLER_BASE_PATH, type.id, dispatch, 'groovy');
 				break;
 			case 'deleted':
 				onClose?.();
