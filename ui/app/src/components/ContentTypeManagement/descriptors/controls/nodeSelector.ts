@@ -90,7 +90,8 @@ export const nodeSelectorDescriptor: DescriptorContentType = {
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}
-	}
+	},
+	supportedPostFixes: ['_o']
 };
 
 export default nodeSelectorDescriptor;

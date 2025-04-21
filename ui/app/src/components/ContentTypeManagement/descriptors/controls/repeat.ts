@@ -58,7 +58,8 @@ export const repeatDescriptor: DescriptorContentType = {
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}
-	}
+	},
+	supportedPostFixes: ['_o']
 };
 
 export default repeatDescriptor;

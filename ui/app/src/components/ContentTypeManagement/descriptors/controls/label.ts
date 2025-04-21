@@ -38,7 +38,8 @@ export const labelDescriptor: DescriptorContentType = {
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}
-	}
+	},
+	supportedPostFixes: ['_s']
 };
 
 export default labelDescriptor;

@@ -58,7 +58,8 @@ export const dropdownDescriptor: DescriptorContentType = {
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}
-	}
+	},
+	supportedPostFixes: ['_s', '_i', '_f']
 };
 
 export default dropdownDescriptor;

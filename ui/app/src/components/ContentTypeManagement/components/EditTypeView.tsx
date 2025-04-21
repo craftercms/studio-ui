@@ -136,8 +136,6 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 	if (!stateRef.current) stateRef.current = createContextObject();
 
 	const [type, setType] = useState(() => ({ ...props.type })); // Working copy of the ContentType being edited.
-	const typeRef = useRef<PossibleContentTypeDraft>(undefined);
-	typeRef.current = type;
 	const [open, setOpen] = useState(false);
 	const [openXmlViewer, setOpenXmlViewer] = useState<string>(); // TODO: Temp, for testing, remove.
 	const [selectedFieldIdPath, setSelectedFieldIdPath] = useState<string>(null);
@@ -463,28 +461,30 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 	// endregion
 
 	const handleMoveFieldToSection: FieldFormViewProps['onMoveFieldToSection'] = (
-		fieldId,
+		fieldIdPath,
 		originSectionId,
 		newSectionId,
 		fieldIndex
 	) => {
 		onUpdateHasPendingChanges(true);
-		const nextType = {
-			...typeRef.current,
-			sections: typeRef.current.sections.map((section) => {
-				if (section.id === originSectionId) {
-					const fields = section.fields.filter((field) => field !== fieldId);
-					return { ...section, fields };
-				} else if (section.id === newSectionId) {
-					const fields = section.fields.concat();
-					fields.splice(fieldIndex, 0, fieldId);
-					return { ...section, fields };
-				}
-				return section;
-			})
-		};
-		setType(nextType);
-		handleFieldSelected(fieldId, type.fields[fieldId], newSectionId, nextType);
+		setType((prevType) => {
+			const nextType = {
+				...prevType,
+				sections: prevType.sections.map((section) => {
+					if (section.id === originSectionId) {
+						const fields = section.fields.filter((field) => field !== fieldIdPath);
+						return { ...section, fields };
+					} else if (section.id === newSectionId) {
+						const fields = section.fields.concat();
+						fields.splice(fieldIndex, 0, fieldIdPath);
+						return { ...section, fields };
+					}
+					return section;
+				})
+			};
+			handleFieldSelected(fieldIdPath, type.fields[fieldIdPath], newSectionId, nextType);
+			return nextType;
+		});
 	};
 
 	// `fieldUpdates$` subscription

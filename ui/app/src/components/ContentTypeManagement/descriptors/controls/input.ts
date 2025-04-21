@@ -77,7 +77,8 @@ export const inputDescriptor: DescriptorContentType = {
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}
-	}
+	},
+	supportedPostFixes: ['_s', '_t']
 };
 
 export default inputDescriptor;

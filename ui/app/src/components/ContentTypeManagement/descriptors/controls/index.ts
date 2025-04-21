@@ -102,19 +102,19 @@ export const defaultDataSourcesSection = createVirtualSection({
 });
 
 export const commonControlFieldsDescriptors: LookupTable<DescriptorField> = {
-	id: {
-		id: 'id',
+	title: {
+		id: 'title',
 		type: 'input',
-		name: defineMessage({ defaultMessage: 'Variable Name' }),
+		name: defineMessage({ defaultMessage: 'Title' }),
 		defaultValue: undefined,
 		validations: {
 			required: { id: 'required', level: 'required', value: true }
 		}
 	},
-	title: {
-		id: 'title',
-		type: 'input',
-		name: defineMessage({ defaultMessage: 'Title' }),
+	id: {
+		id: 'id',
+		type: 'variable',
+		name: defineMessage({ defaultMessage: 'Variable Name' }),
 		defaultValue: undefined,
 		validations: {
 			required: { id: 'required', level: 'required', value: true }

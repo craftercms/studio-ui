@@ -187,6 +187,7 @@ function FieldBreadcrumbs(props: FieldFormViewProps): JSX.Element {
 function FieldActions(props: FieldFormViewProps): JSX.Element {
 	const { field, fieldIdPath, sectionId, onDeleteField, onMoveFieldToSection, type } = props;
 	const [openMoveFieldDialog, setOpenMoveFieldDialog] = useState(false);
+	if (!field) return;
 
 	const handleMoveFieldToSection: FieldFormViewProps['onMoveFieldToSection'] = (
 		fieldId,
@@ -195,10 +196,9 @@ function FieldActions(props: FieldFormViewProps): JSX.Element {
 		fieldIndex
 	) => {
 		setOpenMoveFieldDialog(false);
-		onMoveFieldToSection(fieldIdPath, originSectionId, newSectionId, fieldIndex);
+		onMoveFieldToSection?.(fieldIdPath, originSectionId, newSectionId, fieldIndex);
 	};
 
-	if (!field) return;
 	return (
 		<>
 			{!fieldIdPath.includes('.') && (

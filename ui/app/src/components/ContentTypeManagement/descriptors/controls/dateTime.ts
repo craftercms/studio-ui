@@ -118,7 +118,8 @@ export const dateTimeDescriptor: DescriptorContentType = {
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}
-	}
+	},
+	supportedPostFixes: ['_dt']
 };
 
 export default dateTimeDescriptor;

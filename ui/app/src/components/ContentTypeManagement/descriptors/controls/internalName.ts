@@ -20,6 +20,8 @@ import { XmlKeys } from '../../../FormsEngine/lib/formConsts';
 import { defineMessage } from 'react-intl';
 
 // TODO: Why is internal name a control type? Doesn't seem to be in use.
+// We may want to have a separate descriptor without postfixes (since there is no post fixes for internal name), but use
+// the same control (in control map).
 
 export const internalNameDescriptor: DescriptorContentType = {
 	id: XmlKeys.internalName,

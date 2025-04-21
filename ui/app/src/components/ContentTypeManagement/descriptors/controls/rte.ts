@@ -119,7 +119,8 @@ export const rteDescriptor: DescriptorContentType = {
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}
-	}
+	},
+	supportedPostFixes: ['_html']
 };
 
 export default rteDescriptor;

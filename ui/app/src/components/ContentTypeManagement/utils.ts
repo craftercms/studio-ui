@@ -237,6 +237,7 @@ export type DescriptorContentType = Pick<ContentType, 'id'> & {
 	sections: DescriptorSection[];
 	fields: LookupTable<DescriptorField>;
 	type?: 'image' | 'item' | 'audio' | 'flash' | 'video' | 'transcoded-video';
+	supportedPostFixes?: string[];
 };
 
 export type DescriptorSection = Omit<ContentTypeSection, 'title' | 'description'> & {

@@ -78,7 +78,8 @@ export const checkboxGroupDescriptor: DescriptorContentType = {
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}
-	}
+	},
+	supportedPostFixes: ['_o']
 };
 
 export default checkboxGroupDescriptor;

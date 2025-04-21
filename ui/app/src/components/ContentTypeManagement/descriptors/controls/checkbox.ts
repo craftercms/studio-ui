@@ -41,7 +41,8 @@ export const checkboxDescriptor: DescriptorContentType = {
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}
-	}
+	},
+	supportedPostFixes: ['_b']
 };
 
 export default checkboxDescriptor;

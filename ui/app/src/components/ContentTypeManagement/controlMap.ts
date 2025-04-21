@@ -31,7 +31,8 @@ export type ContentTypeControlType =
 	| 'path-with-macro-creator'
 	| 'merge-strategy-selector'
 	| 'datasource-single-selector'
-	| 'fields';
+	| 'fields'
+	| 'variable';
 
 export const controlMap: Record<ContentTypeControlType, ElementType> = {
 	'content-path-input': lazy(() => import('./controls/ContentPathInput')),
@@ -48,5 +49,6 @@ export const controlMap: Record<ContentTypeControlType, ElementType> = {
 	'path-with-macro-creator': lazy(() => import('./controls/PathWithMacroCreator')),
 	'merge-strategy-selector': lazy(() => import('./controls/MergeStrategySelector')),
 	'datasource-single-selector': lazy(() => import('./controls/DataSourceSingleSelector')),
-	fields: lazy(() => import('./controls/Fields'))
+	fields: lazy(() => import('./controls/Fields')),
+	variable: lazy(() => import('./controls/Variable'))
 };

@@ -80,7 +80,8 @@ export const valueRetrieverLookup: Record<BuiltInControlType | ContentTypeContro
 	'path-with-macro-creator': textFieldExtractor,
 	'merge-strategy-selector': textFieldExtractor,
 	'datasource-single-selector': textFieldExtractor,
-	fields: arrayFieldExtractor
+	fields: arrayFieldExtractor,
+	variable: textFieldExtractor
 };
 
 /**
