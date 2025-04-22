@@ -35,6 +35,7 @@ type MenuItemOrButtonEvent = Parameters<MenuItemProps['onClick']>[0] | Parameter
 export interface EditAppLayoutProps extends Omit<LayoutProps, 'toolbarContent'> {
 	onActionClick(e: MenuItemOrButtonEvent, action: EditAppLayoutAction): void;
 	disableSave?: boolean;
+	isNew?: boolean;
 }
 
 const actionsMap: Record<EditAppLayoutAction, EditAppLayoutAction> = {
@@ -72,8 +73,11 @@ export const EditTypeViewLayout = forwardRef<HTMLDivElement, EditAppLayoutProps>
 							</IconButton>
 						</Tooltip>
 						<Typography variant="h5" component="h1" noWrap>
-							{/* TODO: Make title dynamic based on create/edit */}
-							<FormattedMessage defaultMessage="New Content Type" />
+							{props.isNew ? (
+								<FormattedMessage defaultMessage="New Content Type" />
+							) : (
+								<FormattedMessage defaultMessage="Edit Content Type" />
+							)}
 						</Typography>
 					</Box>
 					<Box display="flex" alignItems="center">

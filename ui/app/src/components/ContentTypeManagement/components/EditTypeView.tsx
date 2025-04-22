@@ -543,6 +543,7 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 						</Box>
 					</>
 				}
+				isNew={type.NEW}
 			/>
 			{
 				// region TODO: Temp Dialog to show XML
@@ -889,3 +890,4 @@ export default EditTypeView;
 //  - Can we drop iceId?
 // 	- Should we use UM to remove from maxlength property and move into constraints? Also fix spelling to `maxLength`
 // 	- Can we add created, modified, createdBy and modifiedBy to the XML?
+//  - Assess removal of internalName/disabled controls.

@@ -18,6 +18,7 @@ import { createVirtualSection, DescriptorContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
 import { defineMessage } from 'react-intl';
 
+// TODO: Why is disabled a control type? Doesn't seem to be in use.
 export const disabledDescriptor: DescriptorContentType = {
 	id: 'disabled',
 	name: defineMessage({ defaultMessage: 'Disabled' }),
