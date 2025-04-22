@@ -21,7 +21,7 @@ import type { RepeatItem } from '../controls/Repeat';
 import type { NodeSelectorItem } from '../controls/NodeSelector';
 import { systemFieldsNotInType, XmlKeys } from './formConsts';
 import { deserialize } from '../../../utils/xml';
-import { ContentTypeControlType } from '../../ContentTypeManagement/controlMap';
+import { DescriptorControlType } from '../../ContentTypeManagement/controlMap';
 
 export type ValueRetriever<T = unknown> = (value: unknown, field: ContentTypeField) => T;
 
@@ -37,7 +37,7 @@ export const numberFieldExtractor: ValueRetriever<number> = (value) => (value !=
 
 export const booleanFieldExtractor: ValueRetriever<boolean> = (value) => (value === true || value === 'true') ?? false;
 
-export const valueRetrieverLookup: Record<BuiltInControlType | ContentTypeControlType, ValueRetriever> = {
+export const valueRetrieverLookup: Record<BuiltInControlType | DescriptorControlType, ValueRetriever> = {
 	'auto-filename': textFieldExtractor,
 	'aws-file-upload': null,
 	'checkbox-group': arrayFieldExtractor,

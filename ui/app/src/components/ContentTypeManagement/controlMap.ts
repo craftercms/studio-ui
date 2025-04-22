@@ -14,9 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ElementType, lazy } from 'react';
+import { type ElementType, lazy } from 'react';
 
-export type ContentTypeControlType =
+export type DescriptorControlType =
 	| 'content-path-input'
 	| 'contentTypes'
 	| 'dropdown-static-values'
@@ -34,7 +34,7 @@ export type ContentTypeControlType =
 	| 'fields'
 	| 'variable';
 
-export const controlMap: Record<ContentTypeControlType, ElementType> = {
+export const controlMap: Record<DescriptorControlType, ElementType> = {
 	'content-path-input': lazy(() => import('./controls/ContentPathInput')),
 	contentTypes: lazy(() => import('./controls/ContentTypesSelector')),
 	'dropdown-static-values': lazy(() => import('./controls/DropdownStaticValues')),
