@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import ContentType from '../../../models/ContentType';
-import React, { useState } from 'react';
+import type ContentType from '../../../models/ContentType';
+import React, { useMemo, useRef, useState } from 'react';
 import Select, { SelectProps } from '@mui/material/Select';
 import TextField, { TextFieldProps } from '@mui/material/TextField';
 import { DialogBody } from '../../DialogBody';
@@ -32,6 +32,14 @@ import { camelize } from '../../../utils/string';
 import useEnhancedDialogContext from '../../EnhancedDialog/useEnhancedDialogContext';
 import type { ButtonProps } from '@mui/material/Button';
 import { onSubmittingAndOrPendingChangeProps } from '../../../hooks/useEnhancedDialogState';
+import useContentTypes from '../../../hooks/useContentTypes';
+import type { LookupTable } from '../../../models';
+import { fetchContentTypes } from '../../../services/contentTypes';
+import useActiveSiteId from '../../../hooks/useActiveSiteId';
+import { createLookupTable } from '../../../utils/object';
+import { showErrorDialog } from '../../../state/reducers/dialogs/error';
+import { useDispatch } from 'react-redux';
+import { fetchContentTypesComplete } from '../../../state/actions/preview';
 
 export interface CreateTypeDialogBaseProps {
 	onAccept(typeData: Pick<ContentType, 'id' | 'name' | 'type'>): void;
@@ -62,21 +70,54 @@ const prefixes = {
 
 function CreateTypeDialogBody(props: CreateTypeDialogBaseProps) {
 	const { onAccept, onSubmittingAndOrPendingChange } = props;
+	const siteId = useActiveSiteId();
 	const [type, setType] = useState<'page' | 'component'>('page');
 	const [name, setName] = useState<string>('');
 	const [id, setId] = useState<string>('');
-	const [prefix, setPrefix] = useState<string>('');
+	const prefix = useRef<string>(undefined);
+	prefix.current = prefixes[type];
 	const dialogContext = useEnhancedDialogContext();
+	const contentTypes = useContentTypes();
+	const [nameExists, setNameExists] = useState<boolean>(false);
+	const [idExists, setIdExists] = useState<boolean>(false);
+	const isValid = useMemo(() => {
+		return validate({ id, name, type, contentTypes, setNameExists, setIdExists });
+	}, [id, name, type, contentTypes]);
+	const enableSubmit = Boolean(isValid) && Boolean(name) && Boolean(id) && Boolean(type);
+	const [fetchingContentTypes, setFetchingContentTypes] = useState(false);
+	const dispatch = useDispatch();
+
 	const validateAndSubmit = () => {
-		// TODO: Validate before accepting
-		if (!validate(id, name, type)) return;
-		onAccept?.({ type, name, id: `${prefixes[type] ?? ''}${id}` });
+		setFetchingContentTypes(true);
+		onSubmittingAndOrPendingChange({ isSubmitting: true });
+		fetchContentTypes(siteId).subscribe({
+			next: (typesList) => {
+				setFetchingContentTypes(false);
+				onSubmittingAndOrPendingChange({ isSubmitting: false });
+				// Update content types list
+				dispatch(fetchContentTypesComplete(typesList));
+				const valid = validate({
+					id,
+					name,
+					type,
+					contentTypes: createLookupTable<ContentType>(typesList),
+					setNameExists,
+					setIdExists
+				});
+				if (!valid) return;
+				onAccept?.({ type, name, id: `${prefixes[type] ?? ''}${id}` });
+			},
+			error: ({ response }) => {
+				dispatch(showErrorDialog({ error: response.response }));
+				setFetchingContentTypes(false);
+				onSubmittingAndOrPendingChange({ isSubmitting: false });
+			}
+		});
 	};
 	const handleChange: SelectProps['onChange'] = (e) => {
 		const archetype = e.target.value as keyof typeof prefixes;
 		onSubmittingAndOrPendingChange({ hasPendingChanges: true });
 		setType(archetype);
-		setPrefix(prefixes[archetype] ?? '');
 	};
 	const handleLabelBlur: TextFieldProps['onBlur'] = () => {
 		setId(suggestTypeId(name));
@@ -126,20 +167,32 @@ function CreateTypeDialogBody(props: CreateTypeDialogBaseProps) {
 					label={<FormattedMessage defaultMessage="Label" />}
 					onChange={(e) => handleNameChange(e.target.value)}
 					onBlur={handleLabelBlur}
+					error={nameExists}
+					helperText={nameExists && <FormattedMessage defaultMessage="Label already exists" />}
 				/>
 				<TextField
 					margin="dense"
 					value={id}
 					label={<FormattedMessage defaultMessage="Identifier" />}
-					slotProps={{ input: { startAdornment: <InputAdornment position="start">{prefix}</InputAdornment> } }}
+					slotProps={{
+						input: {
+							startAdornment: (
+								<InputAdornment position="start" sx={{ mr: 0 }}>
+									{prefix.current}
+								</InputAdornment>
+							)
+						}
+					}}
 					onChange={(e) => handleIdChange(e.target.value)}
+					error={idExists}
+					helperText={idExists && <FormattedMessage defaultMessage="Identifier already exists" />}
 				/>
 			</DialogBody>
 			<DialogFooter>
 				<SecondaryButton onClick={(e) => dialogContext?.onClose?.(e, null)}>
 					<FormattedMessage defaultMessage="Cancel" />
 				</SecondaryButton>
-				<PrimaryButton type="submit" onClick={handleAccept}>
+				<PrimaryButton type="submit" onClick={handleAccept} loading={fetchingContentTypes} disabled={!enableSubmit}>
 					<FormattedMessage defaultMessage="Accept" />
 				</PrimaryButton>
 			</DialogFooter>
@@ -147,8 +200,28 @@ function CreateTypeDialogBody(props: CreateTypeDialogBaseProps) {
 	);
 }
 
-function validate(id: string, name: string, type: string): boolean {
-	return true;
+function validate({
+	id,
+	name,
+	type,
+	contentTypes,
+	setNameExists,
+	setIdExists
+}: {
+	id: string;
+	name: string;
+	type: string;
+	contentTypes: LookupTable<ContentType>;
+	setNameExists: (exists: boolean) => void;
+	setIdExists: (exists: boolean) => void;
+}): boolean {
+	if (!id || !name || !type) return false;
+	const idExists = Boolean(contentTypes[`/${type}/${id}`]);
+	const nameExists = Object.values(contentTypes).some((contentType) => contentType.name === name);
+	setIdExists(idExists);
+	setNameExists(nameExists);
+	// Validation will fail if either id or name already exists
+	return !(idExists || nameExists);
 }
 
 function transformId(value: string): string {
