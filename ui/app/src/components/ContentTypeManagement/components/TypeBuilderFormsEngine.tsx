@@ -52,8 +52,9 @@ import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
 import Alert from '@mui/material/Alert';
 import { controlMap } from '../controlMap';
 import { ConfirmDropdown } from '../../ConfirmDropdown';
-import { LookupTable } from '../../../models';
 import MoveFieldToSectionDialog from './MoveFieldToSectionDialog';
+import useEnhancedDialogState from '../../../hooks/useEnhancedDialogState';
+import SwapFieldDialog from './SwapFieldDialog';
 
 interface TypeModeProps {
 	type: ContentType;
@@ -66,6 +67,7 @@ interface FieldModeProps {
 	controlDescriptor: PartialContentType;
 	onDeleteField(fieldIdPath: string, sectionId: string): void;
 	onMoveFieldToSection(fieldIdPath: string, originSectionId: string, newSectionId: string, fieldIndex: number): void;
+	onSwapField(fieldId: string, sectionId: string, newField: PartialContentType): void;
 }
 
 interface SectionModeProps {
@@ -236,29 +238,44 @@ function FieldActions(props: FieldFormViewProps): JSX.Element {
 }
 
 function FieldSwapper(props: FieldFormViewProps): JSX.Element {
+	const { field, sectionId, controlDescriptor, onSwapField } = props;
+	const swapFieldDialogState = useEnhancedDialogState();
 	if (!props.field) return;
-	const { field, controlDescriptor } = props;
+
+	const handleSwapField = (newField: PartialContentType) => {
+		onSwapField?.(field.id, sectionId, newField);
+		swapFieldDialogState.onClose();
+	};
+
 	return (
-		<ListItem
-			component="div"
-			secondaryAction={
-				field.type === 'file-name' && (
-					<Tooltip title={<FormattedMessage defaultMessage="Swap Field" />}>
-						<IconButton>
-							<SwapCallsOutlined />
-						</IconButton>
-					</Tooltip>
-				)
-			}
-		>
-			<ListItemIcon>
-				<ContentTypeFieldIcon />
-			</ListItemIcon>
-			<ListItemText
-				primary={controlDescriptor.name}
-				secondary={controlDescriptor.description || controlDescriptor.id}
+		<>
+			<ListItem
+				component="div"
+				secondaryAction={
+					field.id === 'file-name' && (
+						<Tooltip title={<FormattedMessage defaultMessage="Swap Field" />}>
+							<IconButton onClick={() => swapFieldDialogState.onOpen()}>
+								<SwapCallsOutlined />
+							</IconButton>
+						</Tooltip>
+					)
+				}
+			>
+				<ListItemIcon>
+					<ContentTypeFieldIcon />
+				</ListItemIcon>
+				<ListItemText
+					primary={controlDescriptor.name}
+					secondary={controlDescriptor.description || controlDescriptor.id}
+				/>
+			</ListItem>
+			<SwapFieldDialog
+				currentFieldId={field.type}
+				open={swapFieldDialogState.open}
+				onClose={swapFieldDialogState.onClose}
+				onSwapField={handleSwapField}
 			/>
-		</ListItem>
+		</>
 	);
 }
 

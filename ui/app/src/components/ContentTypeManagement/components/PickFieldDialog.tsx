@@ -51,11 +51,9 @@ export interface PickFieldDialogBodyProps extends Omit<PickFieldDialogProps, 'ti
 
 export function PickFieldDialogBody(props: PickFieldDialogBodyProps) {
 	const { type, typesFullList, typesCurrentList, onInsert, onClose } = props;
-	const [searchTerm, setSearchTerm] = useState('');
 	const [selectedField, setSelectedField] = useState<PartialContentType>(undefined);
 	const [selectedView, setSelectedView] = useState<number>(0);
 	const [position, setPosition] = useState<number>(0);
-	const { formatMessage } = useIntl();
 
 	const onSecondaryAction = (e: React.MouseEvent) => {
 		if (selectedView === 0) {
@@ -73,39 +71,15 @@ export function PickFieldDialogBody(props: PickFieldDialogBodyProps) {
 		}
 	};
 
-	const filteredFields = typesFullList
-		.map((type) => applyTranslations(type, formatMessage))
-		.filter(
-			(type) =>
-				type.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-				type.description.toLowerCase().includes(searchTerm.toLowerCase())
-		);
-
-	const handleSearchChange: SearchBarProps['onChange'] = (value) => {
-		setSearchTerm(value);
-	};
-
 	return (
 		<>
 			<DialogBody sx={{ transition: 'height 0.3s ease-in-out', minHeight: '40vh' }}>
 				{selectedView === 0 ? (
-					<>
-						<SearchBar keyword={searchTerm} onChange={handleSearchChange} />
-						<Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', mt: 2 }}>
-							{filteredFields.map((field, index) => (
-								<ListItemButton
-									key={index}
-									onClick={() => setSelectedField(field)}
-									selected={selectedField?.id === field.id}
-								>
-									<ListItemIcon>
-										<StarBorderIcon />
-									</ListItemIcon>
-									<ListItemText primary={field.name} secondary={field.description} />
-								</ListItemButton>
-							))}
-						</Box>
-					</>
+					<SelectField
+						typesFullList={typesFullList}
+						selectedField={selectedField}
+						setSelectedField={setSelectedField}
+					/>
 				) : (
 					<Box>
 						<Box sx={{ display: 'flex', mb: 1 }}>
@@ -197,7 +171,7 @@ export function PickFieldDialog({
 	...dialogProps
 }: PickFieldDialogProps) {
 	return (
-		<EnhancedDialog open title={title} maxWidth="sm" {...dialogProps}>
+		<EnhancedDialog title={title} maxWidth="sm" {...dialogProps}>
 			<PickFieldDialogBody
 				{...dialogProps}
 				type={type}
@@ -206,6 +180,44 @@ export function PickFieldDialog({
 				typesCurrentList={typesCurrentList}
 			/>
 		</EnhancedDialog>
+	);
+}
+
+export function SelectField(props: {
+	typesFullList: DescriptorContentType[];
+	selectedField: PartialContentType;
+	setSelectedField: (field: PartialContentType) => void;
+}) {
+	const { typesFullList, selectedField, setSelectedField } = props;
+	const [searchTerm, setSearchTerm] = useState('');
+	const { formatMessage } = useIntl();
+
+	const filteredFields = typesFullList
+		.map((type) => applyTranslations(type, formatMessage))
+		.filter(
+			(type) =>
+				type.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+				type.description.toLowerCase().includes(searchTerm.toLowerCase())
+		);
+
+	const handleSearchChange: SearchBarProps['onChange'] = (value) => {
+		setSearchTerm(value);
+	};
+
+	return (
+		<>
+			<SearchBar keyword={searchTerm} onChange={handleSearchChange} />
+			<Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', mt: 2 }}>
+				{filteredFields.map((field, index) => (
+					<ListItemButton key={index} onClick={() => setSelectedField(field)} selected={selectedField?.id === field.id}>
+						<ListItemIcon>
+							<StarBorderIcon />
+						</ListItemIcon>
+						<ListItemText primary={field.name} secondary={field.description} />
+					</ListItemButton>
+				))}
+			</Box>
+		</>
 	);
 }
 

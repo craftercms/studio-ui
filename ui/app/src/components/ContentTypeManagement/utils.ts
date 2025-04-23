@@ -601,15 +601,16 @@ function convertDataSourceStructToXmlStruct(dataSource: DataSource): Required<Le
 	};
 }
 
+// TODO: check default 'required' (check usages)
 export function createValidation(
 	key: DescriptorFieldValidationKeys,
-	value,
+	value, // TODO: type
 	level?: ContentTypeFieldValidation['level']
 ): DescriptorContentTypeFieldValidation {
 	return {
 		id: key,
 		value,
-		level: level ?? 'suggestion'
+		level: level ?? 'required'
 	};
 }
 
@@ -666,6 +667,7 @@ function translateIfMessageDescriptor<K>(
 		: ((target[property] as string) ?? '');
 }
 
+// TODO: check editContentTypeTemplate action
 export function editTypeTemplate(path: string, dispatch: Dispatch) {
 	const fileName = getFileNameFromPath(path);
 	const pathNoFileName = path.replace(fileName, '');

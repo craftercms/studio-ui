@@ -202,6 +202,7 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 			onDeleteSection: handleDeleteSection,
 			onDeleteDataSource: handleDeleteDataSource,
 			onMoveFieldToSection: handleMoveFieldToSection,
+			onSwapField: handleSwapFileNameField,
 			...extraFormProps
 		});
 		// Note: things set here should be cleaned up in closeAndCleanup
@@ -396,6 +397,7 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 		handleSectionSelected(section);
 	};
 	const handleInsertField: TypeDetailsViewProps['onInsertField'] = (fieldType, sectionId, position, fieldPath) => {
+		// TODO: If NEW - allow delete no restrictions - in rubbish bin icon in form
 		const newField: NewContentTypeField = {
 			NEW: true,
 			id: '',
@@ -445,6 +447,24 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 		setType({ ...type, dataSources: nextDataSources });
 	};
 	// endregion
+
+	const handleSwapFileNameField: FieldFormViewProps['onSwapField'] = (fieldId, sectionId, newField) => {
+		onUpdateHasPendingChanges(true);
+		setType((prevType) => {
+			const nextType = {
+				...prevType,
+				fields: {
+					...prevType.fields,
+					[fieldId]: {
+						...prevType.fields[fieldId],
+						type: newField.id
+					}
+				}
+			};
+			handleFieldSelected(fieldId, nextType.fields[fieldId], sectionId, nextType);
+			return nextType;
+		});
+	};
 
 	// region const fieldEditorView = ...
 	// TODO: Add field, add section also to render on the reactive side panel
