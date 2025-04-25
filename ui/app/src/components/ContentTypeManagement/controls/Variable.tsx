@@ -55,7 +55,7 @@ export function Variable(props: VariableProps) {
 	const {
 		atoms: { valueByFieldId }
 	} = useStableFormContext();
-	const title = useAtomValue(valueByFieldId['title']) as string;
+	const title = (useAtomValue(valueByFieldId['title']) as string) || '';
 
 	useEffect(() => {
 		const { setValue, supportedPostFixes, allowAutoValue, disabled } = effectRefs.current;
