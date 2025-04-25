@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useId } from 'react';
+import React from 'react';
 import FormsEngineField from '../../FormsEngine/components/FormsEngineField';
 import useContentTypes from '../../../hooks/useContentTypes';
 import List from '@mui/material/List';
@@ -27,6 +27,8 @@ import CheckBoxOutlineBlankRoundedIcon from '@mui/icons-material/CheckBoxOutline
 import { TypeBuilderControl } from '../utils';
 import { createPresenceTable } from '../../../utils/array';
 import useSpreadState from '../../../hooks/useSpreadState';
+import { EmptyState } from '../../EmptyState';
+import { FormattedMessage } from 'react-intl';
 
 export interface ContentTypesSelectorProps extends TypeBuilderControl {
 	value: string;
@@ -57,20 +59,24 @@ export function ContentTypesSelector(props: ContentTypesSelectorProps) {
 	return (
 		<FormsEngineField field={field} max={maxLength}>
 			<List>
-				{Object.values(contentTypes).map((contentType) => (
-					<ListItem key={contentType.id} sx={{ bgcolor: 'background.paper', p: 0 }}>
-						<ListItemButton onClick={handleToggle(contentType.id)} dense>
-							<ListItemIcon sx={{ py: 1 }}>
-								{selectedLookup[contentType.id] ? (
-									<CheckBoxRoundedIcon color="primary" />
-								) : (
-									<CheckBoxOutlineBlankRoundedIcon />
-								)}
-							</ListItemIcon>
-							<ListItemText primary={contentType.name} />
-						</ListItemButton>
-					</ListItem>
-				))}
+				{Object.values(contentTypes).length === 0 ? (
+					<EmptyState title={<FormattedMessage defaultMessage="No content types available" />} />
+				) : (
+					Object.values(contentTypes).map((contentType) => (
+						<ListItem key={contentType.id} sx={{ bgcolor: 'background.paper', p: 0 }}>
+							<ListItemButton onClick={handleToggle(contentType.id)} dense>
+								<ListItemIcon sx={{ py: 1 }}>
+									{selectedLookup[contentType.id] ? (
+										<CheckBoxRoundedIcon color="primary" />
+									) : (
+										<CheckBoxOutlineBlankRoundedIcon />
+									)}
+								</ListItemIcon>
+								<ListItemText primary={contentType.name} />
+							</ListItemButton>
+						</ListItem>
+					))
+				)}
 			</List>
 		</FormsEngineField>
 	);
