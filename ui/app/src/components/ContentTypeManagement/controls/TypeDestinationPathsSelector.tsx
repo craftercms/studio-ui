@@ -42,8 +42,15 @@ interface DestinationPaths {
  */
 export function TypeDestinationPathsSelector(props: TypeDestinationPathsSelectorProps) {
 	const { field, setValue } = props;
-
-	const value: DestinationPaths = props.value ? JSON.parse(props.value) : { includes: [], excludes: [] };
+	const value: DestinationPaths = React.useMemo(() => {
+		if (!props.value) return { includes: [], excludes: [] };
+		try {
+			return JSON.parse(props.value);
+		} catch (e) {
+			console.error('Invalid JSON value for TypeDestinationPathsSelector', e);
+			return { includes: [], excludes: [] };
+		}
+	}, [props.value]);
 	const htmlId = useId();
 	const maxLength = field.validations.maxLength?.value;
 	const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, prop: Destination, index: number) => {
