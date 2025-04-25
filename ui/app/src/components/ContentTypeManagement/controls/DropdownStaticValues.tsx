@@ -31,7 +31,16 @@ export function DropdownStaticValues(props: DropdownStaticValuesProps) {
 	const { field, value: content, setValue, readonly, autoFocus } = props;
 	const htmlId = useId();
 	const defaultValue = field.defaultValue;
-	const options = content ? JSON.parse(content) : (defaultValue ?? []);
+	const options = content
+		? (() => {
+				try {
+					return JSON.parse(content);
+				} catch (e) {
+					console.error('Invalid JSON in dropdown static values', e);
+					return defaultValue ?? [];
+				}
+			})()
+		: (defaultValue ?? []);
 	const selectedOption = options.find((option) => option.selected);
 
 	const handleChange = (event: SelectChangeEvent) => {
