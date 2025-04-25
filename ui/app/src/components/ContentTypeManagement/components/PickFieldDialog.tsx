@@ -129,7 +129,7 @@ export function PickFieldDialogBody(props: PickFieldDialogBodyProps) {
 									sx={{ marginBottom: '10px' }}
 									slotProps={{ typography: { variant: 'body2' } }}
 									label={
-										index + 1 === type.dataSources.length ? (
+										index + 1 === typesCurrentList.length ? (
 											<FormattedMessage
 												defaultMessage='Insert last (after "{sectionName}")'
 												values={{ sectionName: field.title ?? field.name }}
