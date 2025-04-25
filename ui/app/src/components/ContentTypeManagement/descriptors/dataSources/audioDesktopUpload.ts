@@ -15,7 +15,7 @@
  */
 
 import { immutableEmptyObject } from '../../../../utils/object';
-import { createVirtualSection, DescriptorContentType } from '../../utils';
+import { createValidation, createVirtualSection, DescriptorContentType } from '../../utils';
 import { defineMessage } from 'react-intl';
 
 export const audioDesktopUploadDataSourceDescriptor: DescriptorContentType = {
@@ -37,10 +37,12 @@ export const audioDesktopUploadDataSourceDescriptor: DescriptorContentType = {
 	fields: {
 		repoPath: {
 			id: 'repoPath',
-			type: 'input',
+			type: 'content-path-input',
 			name: defineMessage({ defaultMessage: 'Repository Path' }),
 			defaultValue: undefined,
-			validations: immutableEmptyObject
+			validations: {
+				root: createValidation('root', '/static-assets')
+			}
 		},
 		required: {
 			id: 'required',
