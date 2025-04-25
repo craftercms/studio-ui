@@ -276,7 +276,7 @@ function FieldSwapper(props: FieldFormViewProps): JSX.Element {
 				/>
 			</ListItem>
 			<SwapFieldDialog
-				currentFieldId={field.type}
+				currentFieldType={field.type}
 				open={swapFieldDialogState.open}
 				onClose={swapFieldDialogState.onClose}
 				onSwapField={handleSwapField}

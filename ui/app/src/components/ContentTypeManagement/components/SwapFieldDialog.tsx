@@ -27,7 +27,7 @@ import PrimaryButton from '../../PrimaryButton';
 import { basicFieldsIds } from './PickControlDialog';
 
 export interface SwapFieldDialogProps extends EnhancedDialogProps {
-	currentFieldId: string;
+	currentFieldType: string;
 	onSwapField(newField: PartialContentType): void;
 }
 
@@ -35,20 +35,20 @@ const types = Object.values(controlDescriptors).sort((a, b) => (a?.name > b?.nam
 
 // TODO: Right now we are displaying all the types even when swapping 'file-name' field. This needs to be addressed.
 export function SwapFieldDialogBody(props: SwapFieldDialogProps) {
-	const { currentFieldId, onSwapField, onClose } = props;
+	const { currentFieldType, onSwapField, onClose } = props;
 	const [selectedField, setSelectedField] = useState<PartialContentType>(undefined);
 	const { formatMessage } = useIntl();
-	const disableSubmit = !selectedField || currentFieldId === selectedField?.id;
+	const disableSubmit = !selectedField || currentFieldType === selectedField?.id;
 
 	useEffect(() => {
-		if (currentFieldId) {
+		if (currentFieldType) {
 			const newSelectedField = applyTranslations(
-				types.find((type) => type.id === currentFieldId),
+				types.find((type) => type.id === currentFieldType),
 				formatMessage
 			);
 			setSelectedField(newSelectedField);
 		}
-	}, [currentFieldId, formatMessage]);
+	}, [currentFieldType, formatMessage]);
 
 	return (
 		<>
@@ -73,10 +73,10 @@ export function SwapFieldDialogBody(props: SwapFieldDialogProps) {
 }
 
 export function SwapFieldDialog(props: SwapFieldDialogProps) {
-	const { currentFieldId, onSwapField, ...dialogProps } = props;
+	const { currentFieldType, onSwapField, ...dialogProps } = props;
 	return (
 		<EnhancedDialog title={<FormattedMessage defaultMessage="Swap Field" />} maxWidth="sm" {...dialogProps}>
-			<SwapFieldDialogBody {...dialogProps} currentFieldId={currentFieldId} onSwapField={onSwapField} />
+			<SwapFieldDialogBody {...dialogProps} currentFieldType={currentFieldType} onSwapField={onSwapField} />
 		</EnhancedDialog>
 	);
 }
