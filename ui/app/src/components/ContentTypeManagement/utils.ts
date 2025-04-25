@@ -143,7 +143,6 @@ export function populateFieldPropertiesValues(
 			continue;
 		}
 		const propObject = properties[property];
-		// TODO: this was done to match dataSource properties, but the dataSource type is not matching so this may be wrong.
 		values[property] = propObject.value ?? propObject;
 	}
 }
@@ -170,8 +169,7 @@ export function createDataSourceValuesObject(datasource: DataSource): LookupTabl
 		if (property === 'properties') {
 			populateFieldPropertiesValues(values, datasource.properties);
 		} else {
-			// See notes on `contentTypeFieldToXmlNameMap` declaration.
-			values[contentTypeFieldToXmlNameMap[property] ?? property] = datasource[property];
+			values[property] = datasource[property];
 		}
 	}
 	return values;
