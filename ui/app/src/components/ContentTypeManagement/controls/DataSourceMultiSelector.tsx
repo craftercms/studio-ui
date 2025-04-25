@@ -37,12 +37,15 @@ export function DataSourceMultiSelector(props: DataSourceMultiSelectorProps) {
 	}, [contentType?.dataSources, type]);
 
 	const handleChange: CheckboxProps['onChange'] = (e) => {
-		const newSelected = selectedDataSources;
+		const newSelected = [...selectedDataSources];
 
 		if (e.target.checked) {
 			newSelected.push(e.target.name);
 		} else {
-			newSelected.splice(newSelected.indexOf(e.target.name), 1);
+			const index = newSelected.indexOf(e.target.name);
+			if (index !== -1) {
+				newSelected.splice(index, 1);
+			}
 		}
 
 		setValue(newSelected.join(','));
