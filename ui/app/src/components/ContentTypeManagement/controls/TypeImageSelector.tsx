@@ -73,6 +73,15 @@ export function TypeImageSelector(props: TypeImageSelectorProps) {
 						if (result.successful.length) {
 							const uploaded = result.successful[0];
 							setValue(uploaded.name);
+						} else if (result.failed.length) {
+							// Show error notification or alert
+							dispatch({
+								type: 'SHOW_SYSTEM_NOTIFICATION',
+								payload: {
+									message: `Failed to upload image: ${result.failed[0]?.name}`,
+									options: { variant: 'error' }
+								}
+							});
 						}
 						dispatch(popDialog({ id }));
 					}
