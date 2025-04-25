@@ -55,7 +55,7 @@ export function PickControlDialog(props: PickControlDialogProps) {
 			const fieldPathParts = fieldIdPath.split('.');
 			let subFields = type.fields;
 			fieldPathParts.forEach((fieldPathPart) => {
-				subFields = subFields[fieldPathPart]?.fields;
+				subFields = subFields?.[fieldPathPart]?.fields ?? {};
 			});
 			sectionFields = Object.values(subFields);
 		}
