@@ -81,7 +81,7 @@ export function KeyValueMap(props: KeyValueMapProps) {
 						label={<FormattedMessage defaultMessage="Value" />}
 						value={option.value}
 						variant="outlined"
-						name="key"
+						name="value"
 						slotProps={{
 							htmlInput: { maxLength }
 						}}
