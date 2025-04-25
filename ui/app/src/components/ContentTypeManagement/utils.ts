@@ -599,9 +599,9 @@ function convertDataSourceStructToXmlStruct(dataSource: DataSource): Required<Le
 	};
 }
 
-export function createValidation(
+export function createValidation<T = unknown>(
 	key: DescriptorFieldValidationKeys,
-	value, // TODO: type
+	value: T,
 	level?: ContentTypeFieldValidation['level']
 ): DescriptorContentTypeFieldValidation {
 	return {
@@ -664,10 +664,9 @@ function translateIfMessageDescriptor<K>(
 		: ((target[property] as string) ?? '');
 }
 
-// TODO: check editContentTypeTemplate action
 export function editTypeTemplate(path: string, dispatch: Dispatch) {
 	const fileName = getFileNameFromPath(path);
-	const pathNoFileName = path.replace(fileName, '');
+	const pathNoFileName = path.slice(0, path.lastIndexOf(fileName));
 
 	dispatch(
 		editTemplate({

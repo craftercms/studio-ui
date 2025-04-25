@@ -44,7 +44,7 @@ export function TypeJsControllerSelector(props: TypeJsControllerSelectorProps) {
 	const fileName = 'controller.groovy';
 
 	const onEditController = () => {
-		editTypeController(basePath, contentTypeId, dispatch);
+		editTypeController(basePath, contentTypeId, dispatch, 'groovy');
 	};
 
 	return (
