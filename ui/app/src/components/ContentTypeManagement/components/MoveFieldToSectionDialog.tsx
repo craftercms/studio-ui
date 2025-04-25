@@ -80,7 +80,11 @@ export function MoveFieldToSectionDialogBody(props: MoveFieldToSectionDialogProp
 			const selectedSection = sections.find((section) => section.id === newSectionId);
 			const newFields = selectedSection?.fields.map((field) => ({ key: field, value: field }));
 			fieldIndex = newFields.length;
-			newFields.push({ key: field.id, value: field.id });
+			// Check if the field is already in the section to avoid duplicates (before onSectionChange we're already validating
+			// to avoid duplicates in sections/repeat groups).
+			if (!selectedSection?.fields.includes(field.id)) {
+				newFields.push({ key: field.id, value: field.id });
+			}
 			setFields(newFields);
 		}
 		setSelections({ sectionId: newSectionId, isRepeatGroup, fieldIndex });
@@ -104,7 +108,13 @@ export function MoveFieldToSectionDialogBody(props: MoveFieldToSectionDialogProp
 		if (selectedView === 0) {
 			setSelectedView(1);
 		} else {
-			onMoveFieldToSection(field.id, sectionId, selections.sectionId, selections.fieldIndex, selections.isRepeatGroup);
+			onMoveFieldToSection?.(
+				field.id,
+				sectionId,
+				selections.sectionId,
+				selections.fieldIndex,
+				selections.isRepeatGroup
+			);
 		}
 	};
 
