@@ -27,7 +27,7 @@ export const colorPickerDescriptor: DescriptorContentType = {
 			title: defineMessage({ defaultMessage: 'Options' }),
 			fields: []
 		}),
-		createVirtualSection({ id: 'constraints', title: 'Constraints', fields: [] })
+		createVirtualSection({ id: 'constraints', title: defineMessage({ defaultMessage: 'Constraints' }), fields: [] })
 	],
 	fields: {}
 };
