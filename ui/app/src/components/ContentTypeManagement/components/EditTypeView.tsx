@@ -39,6 +39,7 @@ import {
 	createVirtualTypeForSection,
 	editTypeController,
 	editTypeTemplate,
+	isComposedPath,
 	NEW_DATASOURCE_ID,
 	NEW_FIELD_ID,
 	prepareSerializeToXmlTypeObject,
@@ -475,27 +476,33 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 		fieldIdPath,
 		originSectionId,
 		newSectionId,
-		fieldIndex
+		fieldIndex,
+		isTargetRepeatGroup
 	) => {
 		onUpdateHasPendingChanges(true);
-		setType((prevType) => {
-			const nextType = {
-				...prevType,
-				sections: prevType.sections.map((section) => {
-					if (section.id === originSectionId) {
-						const fields = section.fields.filter((field) => field !== fieldIdPath);
-						return { ...section, fields };
-					} else if (section.id === newSectionId) {
-						const fields = section.fields.concat();
-						fields.splice(fieldIndex, 0, fieldIdPath);
-						return { ...section, fields };
-					}
-					return section;
-				})
-			};
-			handleFieldSelected(fieldIdPath, type.fields[fieldIdPath], newSectionId, nextType);
-			return nextType;
-		});
+		if (isTargetRepeatGroup) {
+			const fieldId = getIdFromIdPath(fieldIdPath);
+			// For repeat groups as targets, newSectionId is the path of the selected repeating group
+			const newFieldIdPath = `${newSectionId}.${fieldId}`;
+			const fieldIdRoot = newFieldIdPath.split('.')[0];
+			// Section where the field will be added (when moving to a repeat group, newSectionId is the path of the selected repeating group)
+			const targetSectionId = type.sections.find((section) => section.fields.includes(fieldIdRoot)).id;
+			setType((prevType) => {
+				const field = getFieldFromType(prevType, fieldIdPath);
+				let nextType = deleteField(prevType, fieldIdPath, originSectionId);
+				nextType = addField(nextType, field, newFieldIdPath, targetSectionId, fieldIndex);
+				handleFieldSelected(newFieldIdPath, field, targetSectionId, nextType);
+				return nextType;
+			});
+		} else {
+			setType((prevType) => {
+				const field = getFieldFromType(prevType, fieldIdPath);
+				let nextType = deleteField(prevType, fieldIdPath, originSectionId);
+				nextType = addField(nextType, field, field.id, newSectionId, fieldIndex);
+				handleFieldSelected(fieldIdPath, field, newSectionId, nextType);
+				return nextType;
+			});
+		}
 	};
 
 	// `fieldUpdates$` subscription
@@ -617,8 +624,7 @@ function addSubField(
 	subFieldPath: string,
 	position: number
 ): ContentTypeField {
-	const isComposedPath = subFieldPath.includes('.');
-	if (isComposedPath) {
+	if (isComposedPath(subFieldPath)) {
 		// If still composed, we need to find the root field and add the new field to it recursively
 		const rootFieldId = subFieldPath.split('.').shift();
 		return {
@@ -654,9 +660,7 @@ function addField(
 	sectionId: string,
 	position: number
 ): ContentType {
-	const isComposedPath = fieldIdPath.includes('.');
-
-	if (isComposedPath) {
+	if (isComposedPath(fieldIdPath)) {
 		// If the fieldIdPath is composed, we need to find the root field and add the new field to it recursively
 		const rootFieldId = fieldIdPath.split('.').shift();
 		// When fieldIdPath is composed (inside a rep-group), sections don't change since the root fields remain the same
@@ -689,8 +693,7 @@ function addField(
 }
 
 function deleteSubField(parentField: ContentTypeField, fieldIdPath: string): ContentTypeField {
-	const isComposedPath = fieldIdPath.includes('.');
-	if (isComposedPath) {
+	if (isComposedPath(fieldIdPath)) {
 		// If still composed, we need to find the root field and delete the field recursively
 		const rootFieldId = fieldIdPath.split('.').shift();
 		return {
@@ -708,8 +711,7 @@ function deleteSubField(parentField: ContentTypeField, fieldIdPath: string): Con
 }
 
 function deleteField(type: ContentType, fieldIdPath: string, sectionId: string): ContentType {
-	const isComposedPath = fieldIdPath.includes('.');
-	if (isComposedPath) {
+	if (isComposedPath(fieldIdPath)) {
 		// If the fieldIdPath is composed, we need to find the root field and remove the field recursively
 		const rootFieldId = fieldIdPath.split('.').shift();
 		// When fieldIdPath is composed (inside a rep-group), sections don't change since the root fields remain the same
@@ -739,6 +741,25 @@ function deleteField(type: ContentType, fieldIdPath: string, sectionId: string):
 	}
 }
 
+function getSubFieldFromType(parentField: ContentTypeField, fieldIdPath: string): ContentTypeField {
+	if (isComposedPath(fieldIdPath)) {
+		// If still composed, we need to find the root field and get the field recursively
+		const rootFieldId = fieldIdPath.split('.').shift();
+		return getSubFieldFromType(parentField.fields[rootFieldId], fieldIdPath.replace(`${rootFieldId}.`, ''));
+	} else {
+		return parentField.fields[fieldIdPath];
+	}
+}
+
+function getFieldFromType(type: ContentType, fieldIdPath: string): ContentTypeField {
+	if (isComposedPath(fieldIdPath)) {
+		const rootFieldId = fieldIdPath.split('.').shift();
+		return getSubFieldFromType(type.fields[rootFieldId], fieldIdPath.replace(`${rootFieldId}.`, ''));
+	} else {
+		return type.fields[fieldIdPath];
+	}
+}
+
 function updateTypeProps(type: ContentType, updatedTypeDetails: TypePropsToEdit): ContentType {
 	return { ...type, ...pluckProps(updatedTypeDetails, ...typePropsToEdit) };
 }
@@ -749,9 +770,7 @@ function updateTypeFromSubFieldUpdate(
 	updatedValues: LookupTable<unknown>,
 	fieldIdPath: string
 ): LookupTable<ContentTypeField> {
-	const isComposedFieldIdPath = fieldIdPath.includes('.');
-
-	if (isComposedFieldIdPath) {
+	if (isComposedPath(fieldIdPath)) {
 		const rootFieldId = fieldIdPath.split('.').shift();
 		return {
 			...fields,
@@ -796,9 +815,8 @@ function updateTypeFromFieldUpdate(
 
 	const isNewField = (selectedField as NewContentTypeField).NEW;
 	const selectedFieldId = isNewField ? NEW_FIELD_ID : selectedField.id;
-	const isComposedFieldIdPath = fieldIdPath.includes('.');
 
-	if (isComposedFieldIdPath) {
+	if (isComposedPath(fieldIdPath)) {
 		// When the field is not on the root level (composed fieldIdPath), the field is under another field, where each
 		// field contains a lookupTable of fields. In that screnario sections should not be updated.
 		const rootFieldId = fieldIdPath.split('.').shift();

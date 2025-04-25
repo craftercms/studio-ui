@@ -719,3 +719,7 @@ export function editTypeController(
 		})
 	);
 }
+
+export const isComposedPath = (path: string): boolean => {
+	return path.includes('.');
+};

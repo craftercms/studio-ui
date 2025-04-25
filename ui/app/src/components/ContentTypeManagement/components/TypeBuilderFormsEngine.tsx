@@ -66,7 +66,13 @@ interface FieldModeProps {
 	sectionId: string;
 	controlDescriptor: PartialContentType;
 	onDeleteField(fieldIdPath: string, sectionId: string): void;
-	onMoveFieldToSection(fieldIdPath: string, originSectionId: string, newSectionId: string, fieldIndex: number): void;
+	onMoveFieldToSection(
+		fieldIdPath: string,
+		originSectionId: string,
+		newSectionId: string,
+		fieldIndex: number,
+		isTargetRepeatGroup: boolean
+	): void;
 	onSwapField(fieldId: string, sectionId: string, newField: PartialContentType): void;
 }
 
@@ -195,21 +201,20 @@ function FieldActions(props: FieldFormViewProps): JSX.Element {
 		fieldId,
 		originSectionId,
 		newSectionId,
-		fieldIndex
+		fieldIndex,
+		isRepeatGroup
 	) => {
 		setOpenMoveFieldDialog(false);
-		onMoveFieldToSection?.(fieldIdPath, originSectionId, newSectionId, fieldIndex);
+		onMoveFieldToSection?.(fieldIdPath, originSectionId, newSectionId, fieldIndex, isRepeatGroup);
 	};
 
 	return (
 		<>
-			{!fieldIdPath.includes('.') && (
-				<Tooltip title={<FormattedMessage defaultMessage="Move to another section" />}>
-					<IconButton onClick={() => setOpenMoveFieldDialog(true)}>
-						<DriveFileMoveOutlined />
-					</IconButton>
-				</Tooltip>
-			)}
+			<Tooltip title={<FormattedMessage defaultMessage="Move to another section" />}>
+				<IconButton onClick={() => setOpenMoveFieldDialog(true)}>
+					<DriveFileMoveOutlined />
+				</IconButton>
+			</Tooltip>
 			{field.id !== XmlKeys.internalName && field.id !== XmlKeys.fileName && (
 				<ConfirmDropdown
 					icon={DeleteRounded}
@@ -226,9 +231,10 @@ function FieldActions(props: FieldFormViewProps): JSX.Element {
 				/>
 			)}
 			<MoveFieldToSectionDialog
+				fieldIdPath={fieldIdPath}
 				field={field}
 				sectionId={sectionId}
-				sections={type.sections}
+				type={type}
 				open={openMoveFieldDialog}
 				onClose={() => setOpenMoveFieldDialog(false)}
 				onMoveFieldToSection={handleMoveFieldToSection}
