@@ -130,9 +130,6 @@ function CreateTypeDialogBody(props: CreateTypeDialogBaseProps) {
 		setId(id);
 		onSubmittingAndOrPendingChange({ hasPendingChanges: true });
 	};
-	const handleAccept: ButtonProps['onClick'] = () => {
-		validateAndSubmit();
-	};
 	const handleFormSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
 		e.preventDefault();
 		validateAndSubmit();
@@ -192,7 +189,7 @@ function CreateTypeDialogBody(props: CreateTypeDialogBaseProps) {
 				<SecondaryButton onClick={(e) => dialogContext?.onClose?.(e, null)}>
 					<FormattedMessage defaultMessage="Cancel" />
 				</SecondaryButton>
-				<PrimaryButton type="submit" onClick={handleAccept} loading={fetchingContentTypes} disabled={!enableSubmit}>
+				<PrimaryButton type="submit" loading={fetchingContentTypes} disabled={!enableSubmit}>
 					<FormattedMessage defaultMessage="Accept" />
 				</PrimaryButton>
 			</DialogFooter>
