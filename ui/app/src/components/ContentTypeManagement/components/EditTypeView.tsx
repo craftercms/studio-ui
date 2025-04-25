@@ -630,7 +630,7 @@ function addSubField(
 		return {
 			...parentField,
 			fields: {
-				...parentField.fields,
+				...(parentField.fields ?? {}),
 				[rootFieldId]: addSubField(
 					parentField.fields[rootFieldId],
 					newField,
@@ -699,7 +699,7 @@ function deleteSubField(parentField: ContentTypeField, fieldIdPath: string): Con
 		return {
 			...parentField,
 			fields: {
-				...parentField.fields,
+				...(parentField.fields ?? {}),
 				[rootFieldId]: deleteSubField(parentField.fields[rootFieldId], fieldIdPath.replace(`${rootFieldId}.`, ''))
 			}
 		};
