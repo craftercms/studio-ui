@@ -44,21 +44,22 @@ import videoWebDavUploadDescriptor from './videoWebDavUpload';
 import webDavRepoDescriptor from './webDavRepo';
 import webDavUploadDescriptor from './webDavUpload';
 import { DescriptorContentType, DescriptorField } from '../../utils';
+import { defineMessage } from 'react-intl';
 
 export const commonDataSourceDescriptors: LookupTable<DescriptorField> = {
-	id: {
-		id: 'id',
+	title: {
+		id: 'title',
 		type: 'input',
-		name: 'Variable Name',
+		name: defineMessage({ defaultMessage: 'Title' }),
 		defaultValue: undefined,
 		validations: {
 			required: { id: 'required', level: 'required', value: true }
 		}
 	},
-	title: {
-		id: 'title',
+	id: {
+		id: 'id',
 		type: 'input',
-		name: 'Title',
+		name: defineMessage({ defaultMessage: 'Variable Name' }),
 		defaultValue: undefined,
 		validations: {
 			required: { id: 'required', level: 'required', value: true }
