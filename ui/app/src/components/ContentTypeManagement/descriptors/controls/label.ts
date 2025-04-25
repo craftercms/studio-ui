@@ -22,7 +22,9 @@ export const labelDescriptor: DescriptorContentType = {
 	id: 'label',
 	name: defineMessage({ defaultMessage: 'Label' }),
 	description: defineMessage({ defaultMessage: 'Static text label' }),
-	sections: [createVirtualSection({ title: 'Options', fields: ['text', 'renderAsHTML'] })],
+	sections: [
+		createVirtualSection({ title: defineMessage({ defaultMessage: 'Options' }), fields: ['text', 'renderAsHTML'] })
+	],
 	fields: {
 		text: {
 			id: 'text',
