@@ -367,8 +367,8 @@ export function createVirtualSection<K extends ContentTypeSection | DescriptorSe
 		id: sectionData?.id || nanoid(),
 		description: '',
 		expandByDefault: true,
-		color: sectionData?.color ?? toColor(title),
-		...sectionData
+		...sectionData,
+		color: sectionData?.color ?? toColor(title)
 	} as K;
 }
 
@@ -382,7 +382,7 @@ export function createVirtualDataSourceFields(type: ContentType): Partial<Descri
 			name: dataSource.title,
 			defaultValue: undefined,
 			validations: {
-				type: dataSource.interface
+				type: createValidation('type', dataSource.interface)
 			}
 		};
 	}
@@ -599,7 +599,6 @@ function convertDataSourceStructToXmlStruct(dataSource: DataSource): Required<Le
 	};
 }
 
-// TODO: check default 'required' (check usages)
 export function createValidation(
 	key: DescriptorFieldValidationKeys,
 	value, // TODO: type
