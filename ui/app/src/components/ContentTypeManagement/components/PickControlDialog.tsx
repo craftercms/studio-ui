@@ -21,6 +21,7 @@ import controlDescriptors from '../descriptors/controls';
 import { nou } from '../../../utils/object';
 import { ContentType, ContentTypeField } from '../../../models';
 import PickFieldDialog from './PickFieldDialog';
+import { BuiltInControlType } from '../../FormsEngine/lib/controlMap';
 
 export interface PickControlDialogProps extends EnhancedDialogProps {
 	sectionId: string;
@@ -30,6 +31,15 @@ export interface PickControlDialogProps extends EnhancedDialogProps {
 }
 
 const types = Object.values(controlDescriptors).sort((a, b) => (a?.name > b?.name ? 1 : -1));
+
+export const basicFieldsIds: BuiltInControlType[] = [
+	'file-name',
+	'auto-filename',
+	'internal-name',
+	'disabled',
+	'page-nav-order',
+	'locale-selector'
+];
 
 export function PickControlDialog(props: PickControlDialogProps) {
 	const { onInsertField, type, sectionId, fieldIdPath, ...dialogProps } = props;
@@ -60,6 +70,7 @@ export function PickControlDialog(props: PickControlDialogProps) {
 			title={<FormattedMessage defaultMessage="Insert Control" />}
 			typesFullList={types}
 			typesCurrentList={sectionFields}
+			basicFieldsIds={basicFieldsIds}
 		/>
 	);
 }

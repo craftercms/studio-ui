@@ -38,6 +38,7 @@ import FormControl from '@mui/material/FormControl';
 import RadioGroup from '@mui/material/RadioGroup';
 import Radio from '@mui/material/Radio';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import Divider from '@mui/material/Divider';
 
 export interface PickFieldDialogProps extends EnhancedDialogProps {
 	type: ContentType;
@@ -45,12 +46,14 @@ export interface PickFieldDialogProps extends EnhancedDialogProps {
 	typesCurrentList: DescriptorField[] | DataSource[];
 	title: ReactNode;
 	onInsert: (fieldType: string, position: number) => void;
+	basicFieldsIds?: string[];
+	basicFieldsTitle?: ReactNode;
 }
 
 export interface PickFieldDialogBodyProps extends Omit<PickFieldDialogProps, 'title'> {}
 
 export function PickFieldDialogBody(props: PickFieldDialogBodyProps) {
-	const { type, typesFullList, typesCurrentList, onInsert, onClose } = props;
+	const { type, typesFullList, typesCurrentList, onInsert, onClose, basicFieldsTitle, basicFieldsIds } = props;
 	const [selectedField, setSelectedField] = useState<PartialContentType>(undefined);
 	const [selectedView, setSelectedView] = useState<number>(0);
 	const [position, setPosition] = useState<number>(0);
@@ -79,6 +82,8 @@ export function PickFieldDialogBody(props: PickFieldDialogBodyProps) {
 						typesFullList={typesFullList}
 						selectedField={selectedField}
 						setSelectedField={setSelectedField}
+						basicFieldsIds={basicFieldsIds}
+						basicFieldsTitle={basicFieldsTitle}
 					/>
 				) : (
 					<Box>
@@ -168,6 +173,8 @@ export function PickFieldDialog({
 	onInsert,
 	typesFullList,
 	typesCurrentList,
+	basicFieldsTitle,
+	basicFieldsIds,
 	...dialogProps
 }: PickFieldDialogProps) {
 	return (
@@ -178,6 +185,8 @@ export function PickFieldDialog({
 				onInsert={onInsert}
 				typesFullList={typesFullList}
 				typesCurrentList={typesCurrentList}
+				basicFieldsTitle={basicFieldsTitle}
+				basicFieldsIds={basicFieldsIds}
 			/>
 		</EnhancedDialog>
 	);
@@ -187,17 +196,34 @@ export function SelectField(props: {
 	typesFullList: DescriptorContentType[];
 	selectedField: PartialContentType;
 	setSelectedField: (field: PartialContentType) => void;
+	basicFieldsIds?: string[];
+	basicFieldsTitle?: ReactNode;
 }) {
-	const { typesFullList, selectedField, setSelectedField } = props;
+	const {
+		typesFullList,
+		selectedField,
+		setSelectedField,
+		basicFieldsIds = [],
+		basicFieldsTitle = <FormattedMessage defaultMessage="Basic Fields" />
+	} = props;
 	const [searchTerm, setSearchTerm] = useState('');
 	const { formatMessage } = useIntl();
 
+	const basicFields = typesFullList
+		.map((type) => applyTranslations(type, formatMessage))
+		.filter(
+			(type) =>
+				(type.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+					type.description.toLowerCase().includes(searchTerm.toLowerCase())) &&
+				basicFieldsIds.includes(type.id)
+		);
 	const filteredFields = typesFullList
 		.map((type) => applyTranslations(type, formatMessage))
 		.filter(
 			(type) =>
-				type.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-				type.description.toLowerCase().includes(searchTerm.toLowerCase())
+				(type.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+					type.description.toLowerCase().includes(searchTerm.toLowerCase())) &&
+				!basicFieldsIds.includes(type.id)
 		);
 
 	const handleSearchChange: SearchBarProps['onChange'] = (value) => {
@@ -207,6 +233,28 @@ export function SelectField(props: {
 	return (
 		<>
 			<SearchBar keyword={searchTerm} onChange={handleSearchChange} />
+			{basicFields.length > 0 && (
+				<>
+					<FormControl sx={{ mt: 2 }}>
+						<FormLabel id="fieldSectionRadioGroupLabel">{basicFieldsTitle}</FormLabel>
+					</FormControl>
+					<Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', mt: 1, mb: 2 }}>
+						{basicFields.map((field, index) => (
+							<ListItemButton
+								key={index}
+								onClick={() => setSelectedField(field)}
+								selected={selectedField?.id === field.id}
+							>
+								<ListItemIcon>
+									<StarBorderIcon />
+								</ListItemIcon>
+								<ListItemText primary={field.name} secondary={field.description} />
+							</ListItemButton>
+						))}
+					</Box>
+					<Divider />
+				</>
+			)}
 			<Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', mt: 2 }}>
 				{filteredFields.map((field, index) => (
 					<ListItemButton key={index} onClick={() => setSelectedField(field)} selected={selectedField?.id === field.id}>

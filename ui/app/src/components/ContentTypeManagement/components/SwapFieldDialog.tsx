@@ -24,6 +24,7 @@ import { SelectField } from './PickFieldDialog';
 import { DialogFooter } from '../../DialogFooter';
 import SecondaryButton from '../../SecondaryButton';
 import PrimaryButton from '../../PrimaryButton';
+import { basicFieldsIds } from './PickControlDialog';
 
 export interface SwapFieldDialogProps extends EnhancedDialogProps {
 	currentFieldId: string;
@@ -51,7 +52,12 @@ export function SwapFieldDialogBody(props: SwapFieldDialogProps) {
 	return (
 		<>
 			<DialogBody sx={{ transition: 'height 0.3s ease-in-out', minHeight: '40vh' }}>
-				<SelectField typesFullList={types} selectedField={selectedField} setSelectedField={setSelectedField} />
+				<SelectField
+					typesFullList={types}
+					selectedField={selectedField}
+					setSelectedField={setSelectedField}
+					basicFieldsIds={basicFieldsIds}
+				/>
 			</DialogBody>
 			<DialogFooter>
 				<SecondaryButton onClick={(e) => onClose?.(e, null)}>
