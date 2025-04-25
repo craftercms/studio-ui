@@ -26,7 +26,16 @@ export const componentsDataSourceDescriptor: DescriptorContentType = {
 	sections: [
 		createVirtualSection({
 			title: defineMessage({ defaultMessage: 'Options' }),
-			fields: ['allowEmbedded', 'allowShared', 'enableBrowse', 'baseRepoPath', 'baseBrowsePath', 'contentTypes', 'tags']
+			fields: [
+				'allowEmbedded',
+				'allowShared',
+				'enableBrowse',
+				'enableSearch',
+				'baseRepoPath',
+				'baseBrowsePath',
+				'contentTypes',
+				'tags'
+			]
 		})
 	],
 	fields: {
