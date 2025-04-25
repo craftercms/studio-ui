@@ -38,6 +38,7 @@ export function SwapFieldDialogBody(props: SwapFieldDialogProps) {
 	const { currentFieldId, onSwapField, onClose } = props;
 	const [selectedField, setSelectedField] = useState<PartialContentType>(undefined);
 	const { formatMessage } = useIntl();
+	const disableSubmit = !selectedField || currentFieldId === selectedField?.id;
 
 	useEffect(() => {
 		if (currentFieldId) {
@@ -63,7 +64,7 @@ export function SwapFieldDialogBody(props: SwapFieldDialogProps) {
 				<SecondaryButton onClick={(e) => onClose?.(e, null)}>
 					<FormattedMessage defaultMessage="Cancel" />
 				</SecondaryButton>
-				<PrimaryButton onClick={() => onSwapField?.(selectedField)}>
+				<PrimaryButton disabled={disableSubmit} onClick={() => onSwapField?.(selectedField)}>
 					<FormattedMessage defaultMessage="Select" />
 				</PrimaryButton>
 			</DialogFooter>
