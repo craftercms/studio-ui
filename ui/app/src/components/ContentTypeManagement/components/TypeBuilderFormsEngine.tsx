@@ -47,7 +47,7 @@ import SectionAccordion from '../../FormsEngine/components/SectionAccordion';
 import { renderFieldControl } from '../../FormsEngine/lib/controlHelpers';
 import FormBackToTop from '../../FormsEngine/components/FormBackToTop';
 import ContentType, { ContentTypeField, ContentTypeSection, DataSource } from '../../../models/ContentType';
-import { fooStableGlobalContext, PartialContentType } from '../utils';
+import { fooStableGlobalContext, getFieldFromType, PartialContentType } from '../utils';
 import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
 import Alert from '@mui/material/Alert';
 import { controlMap } from '../controlMap';
@@ -183,10 +183,12 @@ function FieldBreadcrumbs(props: FieldFormViewProps): JSX.Element {
 	return (
 		fieldPathIds.length > 1 && (
 			<Breadcrumbs separator={<NavigateNextIcon fontSize="small" />}>
-				{fieldPathIds.map((id) => (
-					// TODO: Render field names instead of ids
-					<Typography variant="body2" key={id} children={id} />
-				))}
+				{fieldPathIds.map((id) => {
+					// Retrieve the fieldPathId by removing everything after `id` in fieldPathIds
+					const currentFieldPathId = fieldPathIds.slice(0, fieldPathIds.indexOf(id) + 1).join('.');
+					const currentField = getFieldFromType(props.type, currentFieldPathId);
+					return <Typography variant="body2" key={id} children={currentField.name} />;
+				})}
 			</Breadcrumbs>
 		)
 	);

@@ -398,7 +398,6 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 		handleSectionSelected(section);
 	};
 	const handleInsertField: TypeDetailsViewProps['onInsertField'] = (fieldType, sectionId, position, fieldPath) => {
-		// TODO: If NEW - allow delete no restrictions - in rubbish bin icon in form
 		const newField: NewContentTypeField = {
 			NEW: true,
 			id: '',
