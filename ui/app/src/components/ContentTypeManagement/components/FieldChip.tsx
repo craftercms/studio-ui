@@ -24,11 +24,14 @@ import { alpha } from '@mui/system/colorManipulator';
 import Typography from '@mui/material/Typography';
 import { capitalize } from '../../../utils/string';
 import TypeBuilderAddButton from './TypeBuilderAddButton';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { ContentTypeField, NewContentTypeField } from '../../../models';
 import useIsDarkModeTheme from '../../../hooks/useIsDarkModeTheme';
 import LookupTable from '../../../models/LookupTable';
 import Asterisk from '../../../icons/Asterisk';
+import controlDescriptors from '../descriptors/controls';
+import dataSourceDescriptors from '../descriptors/dataSources';
+import { applyTranslations } from '../utils';
 
 function composeFieldPath(fieldPath: string, fieldId: string): string {
 	return fieldPath ? `${fieldPath}.${fieldId}` : fieldId;
@@ -46,6 +49,8 @@ export interface FieldChipProps {
 	): void;
 	onInsertField?(fieldPath: string): void;
 }
+
+const descriptors = { ...controlDescriptors, ...dataSourceDescriptors };
 
 export function FieldChip(props: FieldChipProps) {
 	const { field, fieldPathsWithErrors, fieldPath, selectedFieldIdPath, onFieldSelected, onInsertField } = props;
@@ -71,6 +76,7 @@ export function FieldChip(props: FieldChipProps) {
 		bgcolor: 'action.selected',
 		'&:hover': { bgcolor: 'action.selected' }
 	};
+	const { formatMessage } = useIntl();
 	return (
 		<Root
 			disabled={isSelected}
@@ -130,8 +136,11 @@ export function FieldChip(props: FieldChipProps) {
 					)}
 					{error && <Asterisk fontSize="small" />}
 				</Box>
-				{/* TODO: Render the field type label */}
-				<Typography variant="body2">{capitalize(field.type).replaceAll('-', ' ')}</Typography>
+				<Typography variant="body2">
+					{descriptors[field.type]
+						? applyTranslations(descriptors[field.type], formatMessage).name
+						: capitalize(field.type).replaceAll('-', ' ')}
+				</Typography>
 			</Box>
 			{isRepeat && (
 				<Box p={1} pt={0}>
