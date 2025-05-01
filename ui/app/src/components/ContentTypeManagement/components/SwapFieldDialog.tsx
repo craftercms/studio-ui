@@ -24,7 +24,7 @@ import { SelectField } from './PickFieldDialog';
 import { DialogFooter } from '../../DialogFooter';
 import SecondaryButton from '../../SecondaryButton';
 import PrimaryButton from '../../PrimaryButton';
-import { basicFieldsIds } from './PickControlDialog';
+import { systemFieldsIds } from './PickControlDialog';
 
 export interface SwapFieldDialogProps extends EnhancedDialogProps {
 	currentFieldType: string;
@@ -57,7 +57,7 @@ export function SwapFieldDialogBody(props: SwapFieldDialogProps) {
 					typesFullList={types}
 					selectedField={selectedField}
 					setSelectedField={setSelectedField}
-					basicFieldsIds={basicFieldsIds}
+					systemFieldsIds={systemFieldsIds}
 				/>
 			</DialogBody>
 			<DialogFooter>

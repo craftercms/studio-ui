@@ -46,14 +46,14 @@ export interface PickFieldDialogProps extends EnhancedDialogProps {
 	typesCurrentList: DescriptorField[] | DataSource[];
 	title: ReactNode;
 	onInsert: (fieldType: string, position: number) => void;
-	basicFieldsIds?: string[];
-	basicFieldsTitle?: ReactNode;
+	systemFieldsIds?: string[];
+	systemFieldsTitle?: ReactNode;
 }
 
 export interface PickFieldDialogBodyProps extends Omit<PickFieldDialogProps, 'title'> {}
 
 export function PickFieldDialogBody(props: PickFieldDialogBodyProps) {
-	const { type, typesFullList, typesCurrentList, onInsert, onClose, basicFieldsTitle, basicFieldsIds } = props;
+	const { type, typesFullList, typesCurrentList, onInsert, onClose, systemFieldsTitle, systemFieldsIds } = props;
 	const [selectedField, setSelectedField] = useState<PartialContentType>(undefined);
 	const [selectedView, setSelectedView] = useState<number>(0);
 	const [position, setPosition] = useState<number>(0);
@@ -82,8 +82,8 @@ export function PickFieldDialogBody(props: PickFieldDialogBodyProps) {
 						typesFullList={typesFullList}
 						selectedField={selectedField}
 						setSelectedField={setSelectedField}
-						basicFieldsIds={basicFieldsIds}
-						basicFieldsTitle={basicFieldsTitle}
+						systemFieldsIds={systemFieldsIds}
+						systemFieldsTitle={systemFieldsTitle}
 					/>
 				) : (
 					<Box>
@@ -173,8 +173,8 @@ export function PickFieldDialog({
 	onInsert,
 	typesFullList,
 	typesCurrentList,
-	basicFieldsTitle,
-	basicFieldsIds,
+	systemFieldsTitle,
+	systemFieldsIds,
 	...dialogProps
 }: PickFieldDialogProps) {
 	return (
@@ -185,8 +185,8 @@ export function PickFieldDialog({
 				onInsert={onInsert}
 				typesFullList={typesFullList}
 				typesCurrentList={typesCurrentList}
-				basicFieldsTitle={basicFieldsTitle}
-				basicFieldsIds={basicFieldsIds}
+				systemFieldsTitle={systemFieldsTitle}
+				systemFieldsIds={systemFieldsIds}
 			/>
 		</EnhancedDialog>
 	);
@@ -196,15 +196,15 @@ export function SelectField(props: {
 	typesFullList: DescriptorContentType[];
 	selectedField: PartialContentType;
 	setSelectedField: (field: PartialContentType) => void;
-	basicFieldsIds?: string[];
-	basicFieldsTitle?: ReactNode;
+	systemFieldsIds?: PickFieldDialogProps['systemFieldsIds'];
+	systemFieldsTitle?: PickFieldDialogProps['systemFieldsTitle'];
 }) {
 	const {
 		typesFullList,
 		selectedField,
 		setSelectedField,
-		basicFieldsIds = [],
-		basicFieldsTitle = <FormattedMessage defaultMessage="Basic Fields" />
+		systemFieldsIds = [],
+		systemFieldsTitle = <FormattedMessage defaultMessage="System Fields" />
 	} = props;
 	const [searchTerm, setSearchTerm] = useState('');
 	const { formatMessage } = useIntl();
@@ -215,7 +215,7 @@ export function SelectField(props: {
 			(type) =>
 				(type.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
 					type.description.toLowerCase().includes(searchTerm.toLowerCase())) &&
-				basicFieldsIds.includes(type.id)
+				systemFieldsIds.includes(type.id)
 		);
 	const filteredFields = typesFullList
 		.map((type) => applyTranslations(type, formatMessage))
@@ -223,7 +223,7 @@ export function SelectField(props: {
 			(type) =>
 				(type.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
 					type.description.toLowerCase().includes(searchTerm.toLowerCase())) &&
-				!basicFieldsIds.includes(type.id)
+				!systemFieldsIds.includes(type.id)
 		);
 
 	const handleSearchChange: SearchBarProps['onChange'] = (value) => {
@@ -236,7 +236,7 @@ export function SelectField(props: {
 			{basicFields.length > 0 && (
 				<>
 					<FormControl sx={{ mt: 2 }}>
-						<FormLabel id="fieldSectionRadioGroupLabel">{basicFieldsTitle}</FormLabel>
+						<FormLabel id="fieldSectionRadioGroupLabel">{systemFieldsTitle}</FormLabel>
 					</FormControl>
 					<Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', mt: 1, mb: 2 }}>
 						{basicFields.map((field, index) => (
