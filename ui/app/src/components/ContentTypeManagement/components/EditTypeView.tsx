@@ -556,15 +556,18 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 	useEffect(() => {
 		fetchSiteUiConfig(site, activeEnvironment).subscribe((config) => {
 			const configDOM = fromString(config);
-			const contentTypesConfig = deserialize(
-				configDOM.querySelector('widget[id="craftercms.components.ContentTypeManagement"] > configuration')
-			).configuration;
-			setConfig({
-				controls: parseConfigPlugins(contentTypesConfig.controls),
-				controlExclusions: asArray(contentTypesConfig.controlExclusions),
-				dataSources: parseConfigPlugins(contentTypesConfig.dataSources),
-				dataSourceExclusions: asArray(contentTypesConfig.dataSourceExclusions)
-			});
+			const contentTypesConfigDOM = configDOM.querySelector(
+				'widget[id="craftercms.components.ContentTypeManagement"] > configuration'
+			);
+			const contentTypesConfig = contentTypesConfigDOM ? deserialize(contentTypesConfigDOM).configuration : null;
+			if (contentTypesConfig) {
+				setConfig({
+					controls: parseConfigPlugins(contentTypesConfig.controls),
+					controlExclusions: asArray(contentTypesConfig.controlExclusions),
+					dataSources: parseConfigPlugins(contentTypesConfig.dataSources),
+					dataSourceExclusions: asArray(contentTypesConfig.dataSourceExclusions)
+				});
+			}
 		});
 	}, [site, activeEnvironment, setConfig]);
 
