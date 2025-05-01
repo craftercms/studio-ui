@@ -20,20 +20,34 @@ import { FormattedMessage } from 'react-intl';
 import React from 'react';
 import dataSourceDescriptors from '../descriptors/dataSources';
 import PickFieldDialog, { PickFieldDialogProps } from './PickFieldDialog';
+import { DescriptorContentType } from '../utils';
+import { ContentTypeManagementConfig } from './EditTypeView';
 
 export interface PickDataSourceDialogProps extends EnhancedDialogProps {
 	type: ContentType;
 	onInsert: PickFieldDialogProps['onInsert'];
+	configDescriptors?: DescriptorContentType[];
+	dataSourceExclusions: ContentTypeManagementConfig['controlExclusions'];
 }
 
 const types = Object.values(dataSourceDescriptors).sort((a, b) => (a?.name > b?.name ? 1 : -1));
 
 export function PickDataSourceDialog(props: PickDataSourceDialogProps) {
+	const { configDescriptors, dataSourceExclusions, ...rest } = props;
+
+	// Before rendering the PickFieldDialog we need to do two things:
+	// 1. Filter out the dataSources that are in the dataSourceExclusions list.
+	// 2. Add the configDescriptors (plugins) to the list of datasources.
+	const typesFullList = [
+		...types.filter((type) => !(dataSourceExclusions ?? []).includes(type.id)),
+		...configDescriptors
+	];
+
 	return (
 		<PickFieldDialog
-			{...props}
+			{...rest}
 			title={<FormattedMessage defaultMessage="Insert Data Source" />}
-			typesFullList={types}
+			typesFullList={typesFullList}
 			typesCurrentList={props.type.dataSources}
 		/>
 	);

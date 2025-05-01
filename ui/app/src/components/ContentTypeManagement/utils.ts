@@ -138,8 +138,7 @@ export function populateFieldPropertiesValues(
 ): void {
 	for (const property in properties ?? {}) {
 		if (property === 'plugin') {
-			// TODO: Not handled...
-			console.error('Plugin case not handled.');
+			values[property] = properties[property];
 			continue;
 		}
 		const propObject = properties[property];
@@ -182,23 +181,24 @@ export function reverseTypeFieldValuesObject(field: ContentTypeField, values: Lo
 	for (property in field) {
 		if (ignoredContentTypeFieldProps.includes(property)) continue;
 		if (property === 'fields') {
-			for (const fieldId in field.fields) {
-				fieldWithReversedValues.fields[fieldId] = reverseTypeFieldValuesObject(
-					field.fields[fieldId],
-					values.fields[fieldId]
-				);
+			if (values.fields) {
+				for (const fieldId in field.fields) {
+					fieldWithReversedValues.fields[fieldId] = reverseTypeFieldValuesObject(
+						field.fields[fieldId],
+						values.fields[fieldId]
+					);
+				}
 			}
 		} else if (property === 'properties') {
 			fieldWithReversedValues.properties = {};
 			const properties = fieldWithReversedValues.properties;
 			for (const property in field.properties ?? {}) {
 				// A stored property that's no longer in the descriptor would get cleaned/dropped up by this check.
-				if (!(property in values)) {
+				if (property !== 'plugin' && !(property in values)) {
 					continue;
 				}
 				if (property === 'plugin') {
-					// TODO: Not handled...
-					console.error('Plugin case not handled.');
+					properties[property] = field.properties[property];
 					continue;
 				}
 				properties[property] = { ...field.properties[property] };
@@ -549,8 +549,23 @@ export function buildContentTypeXml(serializeTypeStructureObject: SerializeToXml
 
 function convertFieldStructToXmlStruct(field: ContentTypeField): Required<LegacyFormDefinitionField> {
 	// TODO: sections other than properties & constraints?
-	// field.properties
 	// field.constraints
+	const minOccurs = field.properties?.minOccurs?.value as string;
+	const maxOccurs = field.properties?.maxOccurs?.value as string;
+
+	// 'plugin' comes in 'field.properties'. (see ContentTypeField['properties'], but it's a separate object in the XML.
+	let plugin: LegacyFormDefinitionField['plugin'];
+	const properties: LegacyFormDefinitionField['properties'] = field.properties
+		? ({
+				property: Object.entries(field.properties)
+					.filter(([key, value]) => {
+						if (key === 'plugin') plugin = value as LegacyFormDefinitionField['plugin'];
+						return key !== 'plugin';
+					})
+					.map(([, value]) => value)
+			} as LegacyFormDefinitionField['properties'])
+		: undefined;
+
 	// Note: `undefined` suppresses nodes in the XML, empty strings doesn't.
 	return {
 		id: field.id,
@@ -560,14 +575,17 @@ function convertFieldStructToXmlStruct(field: ContentTypeField): Required<Legacy
 		type: field.type,
 		help: field.helpText,
 		iceId: undefined, // TODO: drop?
-		// region TODO: ∨∨∨ Repeat Groups ∨∨∨
-		maxOccurs: undefined,
-		minOccurs: undefined,
-		fields: undefined, // { field: undefined },
-		// endregion TODO: ^^^ Repeat Groups ^^^
-		// TODO: Populate `plugin` property
-		plugin: undefined, // { filename: '', name: '', pluginId: '', type: '' },
-		properties: undefined, // { property: undefined },
+		// region Repeat Groups
+		maxOccurs,
+		minOccurs,
+		fields: field.fields
+			? {
+					field: Object.values(field.fields).map((value) => convertFieldStructToXmlStruct(value))
+				}
+			: undefined, // { field: undefined } ,
+		// endregion
+		plugin,
+		properties,
 		constraints: undefined // { constraint: undefined }
 	};
 }
@@ -719,3 +737,22 @@ export function editTypeController(
 export const isComposedPath = (path: string): boolean => {
 	return path.includes('.');
 };
+
+function getSubFieldFromType(parentField: ContentTypeField, fieldIdPath: string): ContentTypeField {
+	if (isComposedPath(fieldIdPath)) {
+		// If still composed, we need to find the root field and get the field recursively
+		const rootFieldId = fieldIdPath.split('.').shift();
+		return getSubFieldFromType(parentField.fields[rootFieldId], fieldIdPath.replace(`${rootFieldId}.`, ''));
+	} else {
+		return parentField.fields[fieldIdPath];
+	}
+}
+
+export function getFieldFromType(type: ContentType, fieldIdPath: string): ContentTypeField {
+	if (isComposedPath(fieldIdPath)) {
+		const rootFieldId = fieldIdPath.split('.').shift();
+		return getSubFieldFromType(type.fields[rootFieldId], fieldIdPath.replace(`${rootFieldId}.`, ''));
+	} else {
+		return type.fields[fieldIdPath];
+	}
+}

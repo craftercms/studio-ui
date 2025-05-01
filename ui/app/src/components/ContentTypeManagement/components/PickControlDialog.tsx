@@ -22,17 +22,22 @@ import { nou } from '../../../utils/object';
 import { ContentType, ContentTypeField } from '../../../models';
 import PickFieldDialog from './PickFieldDialog';
 import { BuiltInControlType } from '../../FormsEngine/lib/controlMap';
+import { DescriptorContentType } from '../utils';
+import { ContentTypeManagementConfig } from './EditTypeView';
 
 export interface PickControlDialogProps extends EnhancedDialogProps {
 	sectionId: string;
 	type: ContentType;
 	fieldIdPath?: string;
 	onInsertField: (fieldType: string, position: number) => void;
+	configDescriptors?: DescriptorContentType[];
+	controlExclusions: ContentTypeManagementConfig['controlExclusions'];
 }
 
 const types = Object.values(controlDescriptors).sort((a, b) => (a?.name > b?.name ? 1 : -1));
 
-export const basicFieldsIds: BuiltInControlType[] = [
+// TODO: finalize handling of systemFields
+export const systemFieldsIds: BuiltInControlType[] = [
 	'file-name',
 	'auto-filename',
 	'internal-name',
@@ -42,7 +47,7 @@ export const basicFieldsIds: BuiltInControlType[] = [
 ];
 
 export function PickControlDialog(props: PickControlDialogProps) {
-	const { onInsertField, type, sectionId, fieldIdPath, ...dialogProps } = props;
+	const { onInsertField, type, sectionId, fieldIdPath, configDescriptors, controlExclusions, ...dialogProps } = props;
 	const { sectionFields } = useMemo(() => {
 		let sectionFields: ContentTypeField[];
 		if (nou(fieldIdPath)) {
@@ -62,15 +67,20 @@ export function PickControlDialog(props: PickControlDialogProps) {
 		return { sectionFields };
 	}, [fieldIdPath, sectionId, type]);
 
+	// Before rendering the PickFieldDialog we need to do two things:
+	// 1. Filter out the controls that are in the controlExclusions list.
+	// 2. Add the configDescriptors (plugins) to the list of controls.
+	const typesFullList = [...types.filter((type) => !(controlExclusions ?? []).includes(type.id)), ...configDescriptors];
+
 	return (
 		<PickFieldDialog
 			{...dialogProps}
 			onInsert={onInsertField}
 			type={type}
 			title={<FormattedMessage defaultMessage="Insert Control" />}
-			typesFullList={types}
+			typesFullList={typesFullList}
 			typesCurrentList={sectionFields}
-			basicFieldsIds={basicFieldsIds}
+			systemFieldsIds={systemFieldsIds}
 		/>
 	);
 }

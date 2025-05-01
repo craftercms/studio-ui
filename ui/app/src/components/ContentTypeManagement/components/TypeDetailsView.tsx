@@ -44,11 +44,14 @@ import { atom } from 'jotai';
 import PickControlDialog, { PickControlDialogProps } from './PickControlDialog';
 import SectionInsertionDialog, { SectionInsertionProps } from './SectionInsertionDialog';
 import { PickDataSourceDialog, PickDataSourceDialogProps } from './PickDataSourceDialog';
+import { ContentTypeManagementConfig } from './EditTypeView';
+import { nnou } from '../../../utils/object';
 
 export interface TypeDetailsViewProps {
 	type: PossibleContentTypeDraft;
 	fieldPathsWithErrors: LookupTable<boolean>;
 	selectedFieldIdPath: string;
+	config: ContentTypeManagementConfig;
 	onFieldSelected(fieldPath: string, field: ContentTypeField, sectionId: string): void;
 	onDataSourceSelected(dataSource: DataSource): void;
 	onSectionSelected(section: ContentTypeSection): void;
@@ -66,7 +69,8 @@ export function TypeDetailsView(props: TypeDetailsViewProps) {
 		fieldPathsWithErrors,
 		onSectionSelected,
 		onDataSourceSelected,
-		onEditTypeAction
+		onEditTypeAction,
+		config
 	} = props;
 
 	const store = useMemo(() => createStore(), []); // TODO: Use stable memo?
@@ -91,6 +95,21 @@ export function TypeDetailsView(props: TypeDetailsViewProps) {
 	);
 
 	const dataSourceFields = useMemo(() => createVirtualDataSourceFields(type), [type]);
+
+	const { configControlDescriptors, configDataSourceDescriptors } = useMemo(() => {
+		return {
+			configControlDescriptors: config?.controls
+				? Object.values(config?.controls)
+						.map(({ descriptor }) => descriptor)
+						.filter((descriptor) => nnou(descriptor))
+				: [],
+			configDataSourceDescriptors: config?.dataSources
+				? Object.values(config?.dataSources)
+						.map(({ descriptor }) => descriptor)
+						.filter((descriptor) => nnou(descriptor))
+				: []
+		};
+	}, [config]);
 
 	const setSectionsExpandedState = (expanded: boolean) => {
 		Object.values(stableFormContextRef.current.atoms.expandedStateBySectionId).forEach((atom) => {
@@ -222,12 +241,16 @@ export function TypeDetailsView(props: TypeDetailsViewProps) {
 						fieldIdPath={insertFieldData.fieldPath}
 						onClose={() => setInsertFieldData({ sectionId: null })}
 						onInsertField={handleInsertField}
+						configDescriptors={configControlDescriptors}
+						controlExclusions={config.controlExclusions}
 					/>
 					<PickDataSourceDialog
 						type={type}
 						onInsert={handleInsertDataSource}
 						open={openDataSourceInserter}
 						onClose={() => setOpenDataSourceInserter(false)}
+						configDescriptors={configDataSourceDescriptors}
+						dataSourceExclusions={config.dataSourceExclusions}
 					/>
 				</StableFormContext.Provider>
 			</Provider>

@@ -37,6 +37,7 @@ import {
 	createVirtualTypeForField,
 	createVirtualTypeFormContext,
 	createVirtualTypeForSection,
+	DescriptorContentType,
 	editTypeController,
 	editTypeTemplate,
 	isComposedPath,
@@ -76,11 +77,15 @@ import Box, { BoxProps } from '@mui/material/Box';
 import useEnhancedDialogContext from '../../EnhancedDialog/useEnhancedDialogContext';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import { writeConfiguration } from '../../../services/configuration';
+import { fetchSiteUiConfig, writeConfiguration } from '../../../services/configuration';
 import { createFormDefinitionPathFromTypeId } from '../../../utils/contentType';
 import { useDispatch } from 'react-redux';
 import { popDialog, pushDialog } from '../../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
+import useEnv from '../../../hooks/useEnv';
+import { deserialize, fromString } from '../../../utils/xml';
+import useSpreadState from '../../../hooks/useSpreadState';
+import { asArray } from '../../../utils/array';
 
 export interface EditTypeAppProps {
 	/**
@@ -122,6 +127,13 @@ interface EditAppContextProps {
 	formFieldsChanged: boolean;
 }
 
+export interface ContentTypeManagementConfig {
+	controls: LookupTable<{ descriptor: DescriptorContentType; icon: { id: string }; id: string }>;
+	controlExclusions: string[];
+	dataSources: LookupTable<{ descriptor: DescriptorContentType; icon: { id: string }; id: string }>;
+	dataSourceExclusions: string[];
+}
+
 export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props, ref) => {
 	const { onClose } = props;
 
@@ -131,6 +143,7 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 	const { formatMessage } = useIntl();
 	const jotai = useMemo(() => createJotai(), []); // TODO: Use stable memo?
 	const dispatch = useDispatch();
+	const { activeEnvironment } = useEnv();
 
 	const dialogContext = useEnhancedDialogContext(); // TODO: keep dialog context inform of pending changes/submitting
 	const stateRef = useRef<EditAppContextProps>(null);
@@ -144,6 +157,12 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 	const [virtualContentType, setVirtualContentType] = useState<ContentType>(null);
 	const [fieldFormViewProps, setFieldFormViewProps] = useState<FieldFormViewProps>(null);
 	const [fieldPathsWithErrors, setFieldPathsWithErrors] = useState<LookupTable<boolean>>({});
+	const [config, setConfig] = useSpreadState<ContentTypeManagementConfig>({
+		controls: null,
+		controlExclusions: null,
+		dataSources: null,
+		dataSourceExclusions: null
+	});
 
 	/** Saves and commits the state changes. Returns undefined if no changes occurred. */
 	const commitOpenFormChanges = () => {
@@ -220,7 +239,8 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 	) => {
 		if (!closeAndCleanup()) return;
 
-		const controlDescriptor = controlDescriptors[field.type as BuiltInControlType];
+		const controlDescriptor =
+			controlDescriptors[field.type as BuiltInControlType] ?? config.controls?.[field.type].descriptor;
 		if (!controlDescriptor)
 			return showAlert(`No control descriptor found for field "${field.name}" of type "${field.type}"`);
 
@@ -261,7 +281,8 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 	const handleDataSourceSelected: TypeDetailsViewProps['onDataSourceSelected'] = (dataSource) => {
 		if (!closeAndCleanup()) return;
 
-		const dataSourceDescriptor = dataSourceDescriptors[dataSource.type];
+		const dataSourceDescriptor =
+			dataSourceDescriptors[dataSource.type] ?? config.dataSources?.[dataSource.type].descriptor;
 		if (!dataSourceDescriptor)
 			return showAlert(`No control descriptor found for field "${dataSource.title}" of type "${dataSource.type}"`);
 
@@ -532,8 +553,22 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 		}
 	}, [type.NEW, effectRefs]);
 
+	useEffect(() => {
+		fetchSiteUiConfig(site, activeEnvironment).subscribe((config) => {
+			const configDOM = fromString(config);
+			const contentTypesConfig = deserialize(
+				configDOM.querySelector('widget[id="craftercms.components.ContentTypeManagement"] > configuration')
+			).configuration;
+			setConfig({
+				controls: parseConfigPlugins(contentTypesConfig.controls),
+				controlExclusions: asArray(contentTypesConfig.controlExclusions),
+				dataSources: parseConfigPlugins(contentTypesConfig.dataSources),
+				dataSourceExclusions: asArray(contentTypesConfig.dataSourceExclusions)
+			});
+		});
+	}, [site, activeEnvironment, setConfig]);
+
 	const disableSave = !hasPendingChanges || Object.keys(fieldPathsWithErrors).length !== 0;
-	// value={} onChange={}
 	return (
 		<Provider store={jotai}>
 			<EditTypeViewLayout
@@ -558,6 +593,7 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 							onSectionSelected={handleSectionSelected}
 							fieldPathsWithErrors={fieldPathsWithErrors}
 							selectedFieldIdPath={selectedFieldIdPath}
+							config={config}
 						/>
 						<Box>
 							{/* TODO: Remove this whole box and the fragment container. */}
@@ -909,6 +945,29 @@ function save(siteId: string, type: ContentType, tempSaveSaveToServerArgumentToB
 function validityAtomsHaveErrors(jotai: JotaiStore, atoms: FormsEngineAtoms['validationByFieldId']) {
 	// Check validations atoms of the form to see if there are any unfulfilled validations.
 	return Object.values(atoms).some((atom) => !jotai.get(atom).isValid);
+}
+
+function parseConfigPlugins(
+	plugins: { descriptor: DescriptorContentType; icon: { id: string }; id: string }[]
+): ContentTypeManagementConfig['controls'] {
+	if (!plugins) return;
+	const parsedControls = asArray(plugins).map((plugin) => {
+		const fields = Object.values(plugin.descriptor.fields)?.map((field) => {
+			return {
+				...field,
+				validations: field.validations ?? {}
+			};
+		});
+		return {
+			...plugin,
+			descriptor: {
+				...plugin.descriptor,
+				fields: createLookupTable(fields),
+				sections: asArray(plugin.descriptor?.sections) ?? []
+			}
+		};
+	});
+	return createLookupTable(parsedControls);
 }
 
 export default EditTypeView;
