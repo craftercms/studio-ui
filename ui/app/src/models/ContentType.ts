@@ -221,7 +221,7 @@ export interface LegacyFormDefinitionProperty {
 	label?: string; // => display name
 	name: string; // => id
 	type: string;
-	value: string | boolean | number;
+	value: string;
 }
 
 export interface LegacyFormDefinitionField {
