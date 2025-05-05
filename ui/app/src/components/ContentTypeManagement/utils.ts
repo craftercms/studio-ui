@@ -548,8 +548,6 @@ export function buildContentTypeXml(serializeTypeStructureObject: SerializeToXml
 }
 
 function convertFieldStructToXmlStruct(field: ContentTypeField): Required<LegacyFormDefinitionField> {
-	// TODO: sections other than properties & constraints?
-	// field.constraints
 	const minOccurs = field.properties?.minOccurs?.value as string;
 	const maxOccurs = field.properties?.maxOccurs?.value as string;
 
@@ -557,7 +555,7 @@ function convertFieldStructToXmlStruct(field: ContentTypeField): Required<Legacy
 	let plugin: LegacyFormDefinitionField['plugin'];
 	const properties: LegacyFormDefinitionField['properties'] = field.properties
 		? ({
-				property: Object.entries(field.properties)
+				property: Object.entries(field.properties ?? {})
 					.filter(([key, value]) => {
 						if (key === 'plugin') plugin = value as LegacyFormDefinitionField['plugin'];
 						return key !== 'plugin';
@@ -565,6 +563,17 @@ function convertFieldStructToXmlStruct(field: ContentTypeField): Required<Legacy
 					.map(([, value]) => value)
 			} as LegacyFormDefinitionField['properties'])
 		: undefined;
+
+	const constraints =
+		field.validations && Object.keys(field.validations).length > 0
+			? {
+					constraint: Object.values(field.validations).map((validation) => ({
+						name: validation.id,
+						value: validation.value,
+						type: typeof validation.value
+					}))
+				}
+			: undefined;
 
 	// Note: `undefined` suppresses nodes in the XML, empty strings doesn't.
 	return {
@@ -582,11 +591,11 @@ function convertFieldStructToXmlStruct(field: ContentTypeField): Required<Legacy
 			? {
 					field: Object.values(field.fields).map((value) => convertFieldStructToXmlStruct(value))
 				}
-			: undefined, // { field: undefined } ,
+			: undefined,
 		// endregion
 		plugin,
 		properties,
-		constraints: undefined // { constraint: undefined }
+		constraints
 	};
 }
 
