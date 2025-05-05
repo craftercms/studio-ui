@@ -441,7 +441,7 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 
 		const newFieldPath = fieldPath ? `${fieldPath}.${NEW_FIELD_ID}` : NEW_FIELD_ID;
 		setType(addField(type, newField, newFieldPath, sectionId, position));
-		handleFieldSelected(newFieldPath, newField, null);
+		handleFieldSelected(newFieldPath, newField, sectionId);
 	};
 	const handleInsertDataSource: TypeDetailsViewProps['onInsertDataSource'] = (dataSourceType, position) => {
 		const newDataSource: NewDataSource = {

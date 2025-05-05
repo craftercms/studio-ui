@@ -60,7 +60,7 @@ export function Variable(props: VariableProps) {
 	useEffect(() => {
 		const { setValue, supportedPostFixes, allowAutoValue, disabled } = effectRefs.current;
 		// If allowAutoValue is true and the field is not disabled, set the value from the title.
-		if (allowAutoValue && !disabled) {
+		if (allowAutoValue && !disabled && title) {
 			setValue(getValueFromTitle(title, supportedPostFixes));
 		}
 	}, [title, effectRefs]);
@@ -77,7 +77,7 @@ export function Variable(props: VariableProps) {
 	};
 
 	return (
-		<FormsEngineField htmlFor={htmlId} field={field} max={maxLength} length={value.length}>
+		<FormsEngineField htmlFor={htmlId} field={field} max={maxLength} length={value?.length}>
 			<OutlinedInput
 				autoFocus={autoFocus}
 				id={htmlId}
@@ -134,7 +134,7 @@ const getValueFromTitle = (title: string, supportedPostFixes: PostFixesType[]): 
 	// Lowercase the first letter
 	newValue = newValue.charAt(0).toLowerCase() + newValue.slice(1);
 	// If there are supported post fixes and the value is not in the disablePostFixes list, add the first one.
-	if (supportedPostFixes.length && !disablePostFixes.includes(newValue)) {
+	if (supportedPostFixes?.length && !disablePostFixes.includes(newValue)) {
 		newValue = getValueWithPostFix(newValue, supportedPostFixes[0], supportedPostFixes);
 	}
 	return newValue;

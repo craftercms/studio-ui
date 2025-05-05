@@ -46,8 +46,13 @@ import ListItemText from '@mui/material/ListItemText';
 import SectionAccordion from '../../FormsEngine/components/SectionAccordion';
 import { renderFieldControl } from '../../FormsEngine/lib/controlHelpers';
 import FormBackToTop from '../../FormsEngine/components/FormBackToTop';
-import ContentType, { ContentTypeField, ContentTypeSection, DataSource } from '../../../models/ContentType';
-import { fooStableGlobalContext, getFieldFromType, PartialContentType } from '../utils';
+import ContentType, {
+	ContentTypeField,
+	ContentTypeSection,
+	DataSource,
+	NewContentTypeField
+} from '../../../models/ContentType';
+import { fooStableGlobalContext, getFieldFromType, NEW_FIELD_ID, PartialContentType } from '../utils';
 import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
 import Alert from '@mui/material/Alert';
 import { controlMap } from '../controlMap';
@@ -222,14 +227,21 @@ function FieldActions(props: FieldFormViewProps): JSX.Element {
 					icon={DeleteRounded}
 					iconTooltip={<FormattedMessage defaultMessage="Delete field" />}
 					confirmHelperText={
-						<FormattedMessage
-							defaultMessage={'Delete "{fieldName} ({fieldId})"?'}
-							values={{ fieldName: field.name, fieldId: field.id }}
-						/>
+						!(field as NewContentTypeField).NEW ? (
+							<FormattedMessage
+								defaultMessage={'Delete "{fieldName} ({fieldId})"?'}
+								values={{
+									fieldName: field.name,
+									fieldId: field.id
+								}}
+							/>
+						) : (
+							<FormattedMessage defaultMessage="Delete new field?" />
+						)
 					}
 					cancelText={<FormattedMessage defaultMessage="No" />}
 					confirmText={<FormattedMessage defaultMessage="Yes" />}
-					onConfirm={() => onDeleteField?.(fieldIdPath, sectionId)}
+					onConfirm={() => onDeleteField?.((field as NewContentTypeField).NEW ? NEW_FIELD_ID : fieldIdPath, sectionId)}
 				/>
 			)}
 			<MoveFieldToSectionDialog
