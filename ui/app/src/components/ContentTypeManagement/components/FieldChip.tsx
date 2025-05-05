@@ -23,7 +23,6 @@ import { Theme } from '@mui/material';
 import { alpha } from '@mui/system/colorManipulator';
 import Typography from '@mui/material/Typography';
 import { capitalize } from '../../../utils/string';
-import TypeBuilderAddButton from './TypeBuilderAddButton';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { ContentTypeField, NewContentTypeField } from '../../../models';
 import useIsDarkModeTheme from '../../../hooks/useIsDarkModeTheme';
@@ -32,6 +31,7 @@ import Asterisk from '../../../icons/Asterisk';
 import controlDescriptors from '../descriptors/controls';
 import dataSourceDescriptors from '../descriptors/dataSources';
 import { applyTranslations } from '../utils';
+import Button from '@mui/material/Button';
 
 function composeFieldPath(fieldPath: string, fieldId: string): string {
 	return fieldPath ? `${fieldPath}.${fieldId}` : fieldId;
@@ -155,9 +155,9 @@ export function FieldChip(props: FieldChipProps) {
 							onInsertField={onInsertField}
 						/>
 					))}
-					<TypeBuilderAddButton onClick={() => onInsertField(currentFieldPath)}>
+					<Button onClick={() => onInsertField(currentFieldPath)}>
 						<FormattedMessage defaultMessage="Add Field" />
-					</TypeBuilderAddButton>
+					</Button>
 				</Box>
 			)}
 		</Root>

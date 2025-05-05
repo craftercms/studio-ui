@@ -20,14 +20,13 @@ import {
 	DataSource,
 	PossibleContentTypeDraft
 } from '../../../models/ContentType';
-import FieldChip, { FieldChipProps } from './FieldChip';
+import FieldChip from './FieldChip';
 import React, { useMemo, useRef, useState } from 'react';
 import { createStore, Provider } from 'jotai/index';
 import { StableFormContext, StableFormContextProps } from '../../FormsEngine/lib/formsEngineContext';
 import { createStableFormContextProps, createVirtualDataSourceFields, createVirtualSection } from '../utils';
 import ErrorBoundary from '../../ErrorBoundary';
 import Box from '@mui/material/Box';
-import TypeBuilderAddButton from './TypeBuilderAddButton';
 import { FormattedMessage } from 'react-intl';
 import Divider from '@mui/material/Divider';
 import Tooltip from '@mui/material/Tooltip';
@@ -151,9 +150,9 @@ export function TypeDetailsView(props: TypeDetailsViewProps) {
 					<TypeDetailsViewHeader type={type} onActionClick={onEditTypeAction} />
 
 					<Box display="flex" justifyContent="space-between" mt={(theme) => `${theme.spacing(1)} !important`}>
-						<TypeBuilderAddButton onClick={() => setOpenSectionInserter(true)}>
+						<Button onClick={() => setOpenSectionInserter(true)}>
 							<FormattedMessage defaultMessage="Add Section" />
-						</TypeBuilderAddButton>
+						</Button>
 						<div>
 							<Divider orientation="vertical" flexItem />
 							<Tooltip title={<FormattedMessage defaultMessage="Expand All" />}>
@@ -178,9 +177,9 @@ export function TypeDetailsView(props: TypeDetailsViewProps) {
 								accordionDetails: {
 									className: '',
 									children: (
-										<TypeBuilderAddButton onClick={() => setInsertFieldData({ sectionId: section.id })}>
+										<Button onClick={() => setInsertFieldData({ sectionId: section.id })}>
 											<FormattedMessage defaultMessage="Add Field" />
-										</TypeBuilderAddButton>
+										</Button>
 									)
 								}
 							}}
@@ -211,9 +210,9 @@ export function TypeDetailsView(props: TypeDetailsViewProps) {
 							accordionDetails: {
 								className: '',
 								children: (
-									<TypeBuilderAddButton onClick={() => setOpenDataSourceInserter(true)}>
+									<Button onClick={() => setOpenDataSourceInserter(true)}>
 										<FormattedMessage defaultMessage="Add Data Source" />
-									</TypeBuilderAddButton>
+									</Button>
 								)
 							}
 						}}
