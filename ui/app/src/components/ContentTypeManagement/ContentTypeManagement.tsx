@@ -70,22 +70,35 @@ export function ContentTypeManagement(props: ContentTypeManagementProps) {
 	// const handleCreateNewType:
 
 	// TODO: Temp. For development purposes. Remove.
-	// const types = useContentTypeList();
-	// useEffect(() => {
-	// 	const type = types?.find((type) => type.id === '/page/article');
-	// 	if (type) {
-	// 		setSelectedType(type);
-	// 		setView('edit');
-	// 	}
-	// }, [types]);
+	const types = useContentTypeList();
+	useEffect(() => {
+		// const type = types?.find((type) => type.id === '/page/article');
+		const type = types?.find((type) => type.id === '/page/test');
+		// const type = types?.find((type) => type.id === '/page/small');
+		if (type) {
+			setSelectedType(type);
+			setView('edit');
+		}
+	}, [types]);
 
 	useEffect(() => {
 		const messagesSubscription = fromEvent<MessageEvent>(window, 'message')
-			.pipe(filter((e) => ['CONTENT_TYPES_ON_CREATED', 'CONTENT_TYPES_ON_DELETED'].includes(e.data?.type)))
+			.pipe(
+				filter((e) =>
+					['CONTENT_TYPES_ON_SAVED', 'CONTENT_TYPES_ON_CREATED', 'CONTENT_TYPES_ON_DELETED'].includes(e.data?.type)
+				)
+			)
 			.subscribe((e) => {
+				// TODO: handle other events
 				switch (e.data?.type) {
+					case 'CONTENT_TYPES_ON_SAVED': {
+						console.log('saved!');
+						break;
+					}
+					case 'CONTENT_TYPES_CREATED':
 					case 'CONTENT_TYPES_ON_DELETED': {
 						dispatch(fetchContentTypes());
+						break;
 					}
 				}
 			});

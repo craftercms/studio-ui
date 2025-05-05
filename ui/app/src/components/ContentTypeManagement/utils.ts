@@ -41,7 +41,7 @@ import { createParsedValueForField } from '../FormsEngine/lib/valueRetrievers';
 import { toBooleanString, toColor } from '../../utils/string';
 import { getXmlBuilder } from '../FormsEngine/lib/valueSerializers';
 import { nanoid } from 'nanoid';
-import { commonDataSourceDescriptors } from './descriptors/dataSources';
+import { commonDataSourceDescriptors, dataSourceDescriptors } from './descriptors/dataSources';
 import { ControlProps } from '../FormsEngine/types';
 import { IntlShape } from 'react-intl';
 import TranslationOrText from '../../models/TranslationOrText';
@@ -491,7 +491,13 @@ export function makeIntoTypeFieldStructPath(fieldPath: string): string {
 		.replace(/.fields$/, '');
 }
 
-export function prepareSerializeToXmlTypeObject(type: ContentType): SerializeToXmlContentTypeStructure {
+export function prepareSerializeToXmlTypeObject(
+	type: ContentType,
+	configDescriptors?: {
+		controlDescriptors: LookupTable<DescriptorContentType>;
+		dataSourceDescriptors: LookupTable<DescriptorContentType>;
+	}
+): SerializeToXmlContentTypeStructure {
 	return {
 		'content-type': type.id,
 		title: type.name,
@@ -537,7 +543,11 @@ export function prepareSerializeToXmlTypeObject(type: ContentType): SerializeToX
 		},
 		datasources:
 			type.dataSources?.length > 0
-				? { datasource: type.dataSources?.map((ds) => convertDataSourceStructToXmlStruct(ds)) }
+				? {
+						datasource: type.dataSources?.map((ds) =>
+							convertDataSourceStructToXmlStruct(ds, configDescriptors?.dataSourceDescriptors)
+						)
+					}
 				: null
 	};
 }
@@ -599,13 +609,16 @@ function convertFieldStructToXmlStruct(field: ContentTypeField): Required<Legacy
 	};
 }
 
-function convertDataSourceStructToXmlStruct(dataSource: DataSource): Required<LegacyDataSource> {
+function convertDataSourceStructToXmlStruct(
+	dataSource: DataSource,
+	configDataSourceDescriptors?: LookupTable<DescriptorContentType>
+): Required<LegacyDataSource> {
+	const descriptor = configDataSourceDescriptors?.[dataSource.type] ?? dataSourceDescriptors[dataSource.type];
 	return {
 		id: dataSource.id,
 		interface: dataSource.interface,
 		title: dataSource.title,
 		type: dataSource.type,
-		// TODO: Double check the dataSource.properties struct matches the XML struct
 		properties: {
 			// TODO: Ideally, suppress these objects into simple key-value pairs.
 			//   <properties>
@@ -620,7 +633,7 @@ function convertDataSourceStructToXmlStruct(dataSource: DataSource): Required<Le
 			property: Object.entries(dataSource.properties).map(([name, value]) => ({
 				name,
 				value,
-				type: typeof value
+				type: descriptor?.fields[name] ? descriptor?.fields[name].type : typeof value
 			}))
 		}
 	};

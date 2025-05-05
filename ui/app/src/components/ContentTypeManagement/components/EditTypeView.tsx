@@ -164,6 +164,16 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 		dataSourceExclusions: null
 	});
 
+	const configDescriptors = useMemo(() => {
+		const controlDescriptors = Object.values(config?.controls ?? {}).map(({ descriptor }) => descriptor);
+		const dataSourceDescriptors = Object.values(config?.dataSources ?? {}).map(({ descriptor }) => descriptor);
+
+		return {
+			controlDescriptors: controlDescriptors.length ? createLookupTable(controlDescriptors) : null,
+			dataSourceDescriptors: dataSourceDescriptors.length ? createLookupTable(dataSourceDescriptors) : null
+		};
+	}, [config?.controls, config?.dataSources]);
+
 	/** Saves and commits the state changes. Returns undefined if no changes occurred. */
 	const commitOpenFormChanges = () => {
 		// No form open, nothing to commit. Or, a form was opened but no changes were made.
@@ -388,7 +398,7 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 				const latestUpdate = commitOpenFormChanges();
 				const tempActuallySaveToServer =
 					(document.getElementById('tempSaveToServerCheckbox') as HTMLInputElement)?.checked ?? false;
-				save(site, latestUpdate ?? type, tempActuallySaveToServer).subscribe({
+				save(site, latestUpdate ?? type, tempActuallySaveToServer, configDescriptors).subscribe({
 					next(xml) {
 						const highlighted = hljs.highlight(xml, { language: 'xml' }).value;
 						setOpenXmlViewer(highlighted);
@@ -439,7 +449,7 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 			id: '',
 			title: '',
 			type: dataSourceType,
-			interface: null, // TODO: need to implement interfaces
+			interface: null,
 			properties: null
 		};
 
@@ -488,7 +498,6 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 	};
 
 	// region const fieldEditorView = ...
-	// TODO: Add field, add section also to render on the reactive side panel
 	const fieldEditorView = virtualContentType ? createElement(TypeBuilderFormsEngine, fieldFormViewProps) : null;
 	// endregion
 
@@ -933,8 +942,16 @@ function updateTypeFromDataSourceUpdate(
 
 // merge the basic details, the non-edited field values, the manipulated field atoms into a single object
 // that gets serialized to XML and stored
-function save(siteId: string, type: ContentType, tempSaveSaveToServerArgumentToBeRemoved: boolean): Observable<string> {
-	const typeStructure = prepareSerializeToXmlTypeObject(type);
+function save(
+	siteId: string,
+	type: ContentType,
+	tempSaveSaveToServerArgumentToBeRemoved: boolean,
+	configDescriptors?: {
+		controlDescriptors: LookupTable<DescriptorContentType>;
+		dataSourceDescriptors: LookupTable<DescriptorContentType>;
+	}
+): Observable<string> {
+	const typeStructure = prepareSerializeToXmlTypeObject(type, configDescriptors);
 	// console.log(typeStructure);
 	const xml = buildContentTypeXml(typeStructure);
 	// TODO: Validation? This get pre-validated?
