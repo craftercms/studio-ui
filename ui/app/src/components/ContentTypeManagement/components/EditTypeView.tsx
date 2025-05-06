@@ -402,6 +402,8 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 					next(xml) {
 						const highlighted = hljs.highlight(xml, { language: 'xml' }).value;
 						setOpenXmlViewer(highlighted);
+						dialogContext?.updateSubmittingOrHasPendingChanges({ hasPendingChanges: false });
+						setHasPendingChanges(false);
 						if (tempActuallySaveToServer) showAlert(`Save successful.`);
 					},
 					error() {
