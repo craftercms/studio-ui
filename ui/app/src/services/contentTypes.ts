@@ -306,10 +306,18 @@ function parseLegacyFormDefinitionFields(
 					value = legacyProp.value === 'true';
 					break;
 				case 'int':
-					value = parseInt(legacyProp.value);
+					value = legacyProp.value ? parseInt(legacyProp.value) : null;
 					break;
 				default:
-					value = legacyProp.value;
+					if (
+						legacyField.type === 'repeat' &&
+						(legacyProp.name === 'minOccurs' || legacyProp.name === 'maxOccurs') &&
+						legacyProp.value === '*'
+					) {
+						value = null;
+					} else {
+						value = legacyProp.value;
+					}
 			}
 			field.properties[legacyProp.name] = {
 				...legacyProp,
@@ -318,7 +326,7 @@ function parseLegacyFormDefinitionFields(
 		});
 
 		asArray<LegacyFormDefinitionProperty>(legacyField.constraints?.constraint).forEach((legacyProp) => {
-			const value = legacyProp.value.trim();
+			const value = legacyProp.value?.trim();
 			switch (legacyProp.name) {
 				case 'required':
 					if (value === 'true') {
@@ -330,8 +338,20 @@ function parseLegacyFormDefinitionFields(
 					}
 					break;
 				case 'allowDuplicates':
+					if (value === 'true') {
+						field.validations.allowDuplicates = {
+							id: 'required',
+							value: value === 'true',
+							level: 'required'
+						};
+					}
 					break;
 				case 'pattern':
+					field.validations.pattern = {
+						id: 'pattern',
+						value,
+						level: 'required'
+					};
 					break;
 				case 'minSize':
 					break;
@@ -344,8 +364,8 @@ function parseLegacyFormDefinitionFields(
 		switch (legacyField.type) {
 			case 'repeat': {
 				field.fields = {};
-				let min = parseInt(legacyField?.minOccurs);
-				const max = parseInt(legacyField?.maxOccurs);
+				let min = legacyField?.minOccurs !== '*' ? parseInt(legacyField?.minOccurs) : null;
+				const max = legacyField?.maxOccurs !== '*' ? parseInt(legacyField?.maxOccurs) : null;
 				isNaN(min) && (min = 0);
 				field.validations.required = {
 					id: 'required',

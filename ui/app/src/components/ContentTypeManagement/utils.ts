@@ -142,7 +142,7 @@ export function populateFieldPropertiesValues(
 			continue;
 		}
 		const propObject = properties[property];
-		values[property] = propObject.value ?? propObject;
+		values[property] = propObject.value;
 	}
 }
 
@@ -162,11 +162,24 @@ export function populateFieldValidationsValues(
 	}
 }
 
+export function populateDataSourcePropertiesValues(
+	values: LookupTable<unknown>,
+	properties: ContentTypeField['properties']
+): void {
+	for (const property in properties ?? {}) {
+		if (property === 'plugin') {
+			values[property] = properties[property];
+			continue;
+		}
+		values[property] = properties[property];
+	}
+}
+
 export function createDataSourceValuesObject(datasource: DataSource): LookupTable<unknown> {
 	const values: LookupTable<unknown> = {};
 	for (const property in datasource) {
 		if (property === 'properties') {
-			populateFieldPropertiesValues(values, datasource.properties);
+			populateDataSourcePropertiesValues(values, datasource.properties);
 		} else {
 			values[property] = datasource[property];
 		}

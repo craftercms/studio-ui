@@ -33,7 +33,7 @@ export const textFieldExtractor: ValueRetriever<string> = (value) => (value && S
 
 export const textOrNullExtractor: ValueRetriever<string> = (value) => (value && String(value)) || null;
 
-export const numberFieldExtractor: ValueRetriever<number> = (value) => (value != null && Number(value)) ?? null;
+export const numberFieldExtractor: ValueRetriever<number> = (value) => (value !== null ? Number(value) : null);
 
 export const booleanFieldExtractor: ValueRetriever<boolean> = (value) => (value === true || value === 'true') ?? false;
 

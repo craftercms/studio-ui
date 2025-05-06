@@ -49,7 +49,9 @@ export type ValidationKeys =
 	| 'allowVideosFromRepo'
 	| 'allowVideoUpload'
 	| 'allowAudioUpload'
-	| 'allowAudioFromRepo';
+	| 'allowAudioFromRepo'
+	| 'pattern'
+	| 'allowDuplicates';
 
 export type ContentTypeFieldValidations = Record<ValidationKeys, ContentTypeFieldValidation>;
 
