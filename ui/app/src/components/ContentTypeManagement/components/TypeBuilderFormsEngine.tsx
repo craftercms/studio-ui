@@ -192,7 +192,11 @@ function FieldBreadcrumbs(props: FieldFormViewProps): JSX.Element {
 					// Retrieve the fieldPathId by removing everything after `id` in fieldPathIds
 					const currentFieldPathId = fieldPathIds.slice(0, fieldPathIds.indexOf(id) + 1).join('.');
 					const currentField = getFieldFromType(props.type, currentFieldPathId);
-					return <Typography variant="body2" key={id} children={currentField.name} />;
+					return (
+						<Typography variant="body2" key={id}>
+							{currentField?.name ?? id}
+						</Typography>
+					);
 				})}
 			</Breadcrumbs>
 		)
