@@ -40,6 +40,7 @@ import {
 	DescriptorContentType,
 	editTypeController,
 	editTypeTemplate,
+	getFieldFromType,
 	isComposedPath,
 	NEW_DATASOURCE_ID,
 	NEW_FIELD_ID,
@@ -790,25 +791,6 @@ function deleteField(type: ContentType, fieldIdPath: string, sectionId: string):
 	}
 }
 
-function getSubFieldFromType(parentField: ContentTypeField, fieldIdPath: string): ContentTypeField {
-	if (isComposedPath(fieldIdPath)) {
-		// If still composed, we need to find the root field and get the field recursively
-		const rootFieldId = fieldIdPath.split('.').shift();
-		return getSubFieldFromType(parentField.fields[rootFieldId], fieldIdPath.replace(`${rootFieldId}.`, ''));
-	} else {
-		return parentField.fields[fieldIdPath];
-	}
-}
-
-function getFieldFromType(type: ContentType, fieldIdPath: string): ContentTypeField {
-	if (isComposedPath(fieldIdPath)) {
-		const rootFieldId = fieldIdPath.split('.').shift();
-		return getSubFieldFromType(type.fields[rootFieldId], fieldIdPath.replace(`${rootFieldId}.`, ''));
-	} else {
-		return type.fields[fieldIdPath];
-	}
-}
-
 function updateTypeProps(type: ContentType, updatedTypeDetails: TypePropsToEdit): ContentType {
 	return { ...type, ...pluckProps(updatedTypeDetails, ...typePropsToEdit) };
 }
@@ -995,7 +977,6 @@ function parseConfigPlugins(
 export default EditTypeView;
 
 // TODO:
-//  - i18n
 //  - Because IDs can be modified, keep a lookup table of `{ [nanoid]: id }`? - Probably N/A
 //  - BE tickets for APIs etc
 //  - BE ticket for UM section ids
