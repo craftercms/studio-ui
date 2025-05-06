@@ -87,6 +87,7 @@ import useEnv from '../../../hooks/useEnv';
 import { deserialize, fromString } from '../../../utils/xml';
 import useSpreadState from '../../../hooks/useSpreadState';
 import { asArray } from '../../../utils/array';
+import { showErrorDialog } from '../../../state/reducers/dialogs/error';
 
 export interface EditTypeAppProps {
 	/**
@@ -146,7 +147,7 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 	const dispatch = useDispatch();
 	const { activeEnvironment } = useEnv();
 
-	const dialogContext = useEnhancedDialogContext(); // TODO: keep dialog context inform of pending changes/submitting
+	const dialogContext = useEnhancedDialogContext();
 	const stateRef = useRef<EditAppContextProps>(null);
 	if (!stateRef.current) stateRef.current = createContextObject();
 
@@ -566,22 +567,27 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 	}, [type.NEW, effectRefs]);
 
 	useEffect(() => {
-		fetchSiteUiConfig(site, activeEnvironment).subscribe((config) => {
-			const configDOM = fromString(config);
-			const contentTypesConfigDOM = configDOM.querySelector(
-				'widget[id="craftercms.components.ContentTypeManagement"] > configuration'
-			);
-			const contentTypesConfig = contentTypesConfigDOM ? deserialize(contentTypesConfigDOM).configuration : null;
-			if (contentTypesConfig) {
-				setConfig({
-					controls: parseConfigPlugins(contentTypesConfig.controls),
-					controlExclusions: asArray(contentTypesConfig.controlExclusions),
-					dataSources: parseConfigPlugins(contentTypesConfig.dataSources),
-					dataSourceExclusions: asArray(contentTypesConfig.dataSourceExclusions)
-				});
+		fetchSiteUiConfig(site, activeEnvironment).subscribe({
+			next: (config) => {
+				const configDOM = fromString(config);
+				const contentTypesConfigDOM = configDOM.querySelector(
+					'widget[id="craftercms.components.ContentTypeManagement"] > configuration'
+				);
+				const contentTypesConfig = contentTypesConfigDOM ? deserialize(contentTypesConfigDOM).configuration : null;
+				if (contentTypesConfig) {
+					setConfig({
+						controls: parseConfigPlugins(contentTypesConfig.controls),
+						controlExclusions: asArray(contentTypesConfig.controlExclusions),
+						dataSources: parseConfigPlugins(contentTypesConfig.dataSources),
+						dataSourceExclusions: asArray(contentTypesConfig.dataSourceExclusions)
+					});
+				}
+			},
+			error: ({ response }) => {
+				dispatch(showErrorDialog({ error: response.response }));
 			}
 		});
-	}, [site, activeEnvironment, setConfig]);
+	}, [site, activeEnvironment, setConfig, dispatch]);
 
 	const disableSave = !hasPendingChanges || Object.keys(fieldPathsWithErrors).length !== 0;
 	return (
