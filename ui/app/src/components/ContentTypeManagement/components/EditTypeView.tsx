@@ -754,7 +754,7 @@ function deleteSubField(parentField: ContentTypeField, fieldIdPath: string): Con
 			}
 		};
 	} else {
-		const nextFields = { ...parentField.fields };
+		const nextFields = { ...(parentField.fields ?? {}) };
 		delete nextFields[fieldIdPath];
 		return { ...parentField, fields: nextFields };
 	}
