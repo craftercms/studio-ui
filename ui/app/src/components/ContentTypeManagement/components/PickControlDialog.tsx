@@ -70,7 +70,10 @@ export function PickControlDialog(props: PickControlDialogProps) {
 	// Before rendering the PickFieldDialog we need to do two things:
 	// 1. Filter out the controls that are in the controlExclusions list.
 	// 2. Add the configDescriptors (plugins) to the list of controls.
-	const typesFullList = [...types.filter((type) => !(controlExclusions ?? []).includes(type.id)), ...configDescriptors];
+	const typesFullList = [
+		...types.filter((type) => !(controlExclusions ?? []).includes(type.id)),
+		...(configDescriptors ?? [])
+	];
 
 	return (
 		<PickFieldDialog
