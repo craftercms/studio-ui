@@ -440,7 +440,9 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 			description: '',
 			type: fieldType,
 			validations: {},
-			defaultValue: ''
+			defaultValue: '',
+			fields: {},
+			properties: {}
 		};
 
 		const newFieldPath = fieldPath ? `${fieldPath}.${NEW_FIELD_ID}` : NEW_FIELD_ID;
@@ -453,8 +455,8 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 			id: '',
 			title: '',
 			type: dataSourceType,
-			interface: null,
-			properties: null
+			interface: '',
+			properties: {}
 		};
 
 		const nextDataSources = type.dataSources.concat();
@@ -699,7 +701,7 @@ function addSubField(
 		// If not composed, we can add the field directly to the parent fields lookup.
 		// Since the fields prop under a parentField is a lookupTable and we need to insert on a specific position, we first
 		// convert it to an array, insert the new field and then convert it back to a lookupTable.
-		const nextFieldsArray = Object.values(parentField.fields);
+		const nextFieldsArray = Object.values(parentField.fields ?? {});
 		nextFieldsArray.splice(position, 0, newField);
 		const nextFields = createLookupTable(nextFieldsArray, 'id');
 		return {
