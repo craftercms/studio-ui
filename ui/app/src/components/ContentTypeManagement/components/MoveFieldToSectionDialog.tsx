@@ -144,7 +144,7 @@ export function MoveFieldToSectionDialogBody(props: MoveFieldToSectionDialogProp
 									<Box key={section.id} sx={{ display: 'flex', flexDirection: 'column' }}>
 										{/* Do not display section if:
 										 1- Same section where the field comes from. There's an exception: if the field belongs to a repeat
-										    group of the section, not on the root of it.
+										    group of the section, not to the root of it.
 										 2- The type has a field with the same id as the field being moved.
 										 3- If the target is a section (not a repeat group), never allow to move the field if any of the
 										 		sections have a field with the same id on their root (sameFieldInType).
@@ -171,6 +171,7 @@ export function MoveFieldToSectionDialogBody(props: MoveFieldToSectionDialogProp
 											// being moved.
 											const isSameOrChildRepeatGroup = repeatGroupFieldIdPath.includes(fieldIdPath);
 											const sameFieldInRepGroup = typeRepeatGroups[repeatGroupFieldIdPath].fields[field.id];
+											const label = getLabelFromRepeatGroupIdPath(repeatGroupFieldIdPath, typeRepeatGroups);
 
 											return (
 												// Do not display repeating group if:
@@ -189,7 +190,7 @@ export function MoveFieldToSectionDialogBody(props: MoveFieldToSectionDialogProp
 														label={
 															<FormattedMessage
 																defaultMessage='Move to "{sectionTitle}"'
-																values={{ sectionTitle: repeatGroupFieldIdPath.replaceAll('.', ' | ') }}
+																values={{ sectionTitle: label }}
 															/>
 														}
 													/>
@@ -281,6 +282,26 @@ const getRepeatGroupsIdsForSection = (
 		const rootId = key.split('.')[0];
 		return section.fields.includes(rootId);
 	});
+};
+
+// Given an ID path for a repeat group, retrieves a label composed by the parent's labels and the repeat group label
+// e.g: 'repGroup_o.subRepGroup_o' => 'Repeat Group | Sub Repeat Group'
+const getLabelFromRepeatGroupIdPath = (
+	repeatGroupIdPath: string,
+	typeRepeatGroups: LookupTable<ContentTypeField>
+): string => {
+	const paths = repeatGroupIdPath.split('.');
+	let composedPath: string;
+	const labels = [];
+	paths.forEach((path) => {
+		if (composedPath) {
+			composedPath = `${composedPath}.${path}`;
+		} else {
+			composedPath = path;
+		}
+		labels.push(typeRepeatGroups[composedPath].name);
+	});
+	return labels.join(' | ');
 };
 
 export default MoveFieldToSectionDialog;
