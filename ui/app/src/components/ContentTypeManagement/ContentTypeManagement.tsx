@@ -70,16 +70,14 @@ export function ContentTypeManagement(props: ContentTypeManagementProps) {
 	// const handleCreateNewType:
 
 	// TODO: Temp. For development purposes. Remove.
-	const types = useContentTypeList();
-	useEffect(() => {
-		// const type = types?.find((type) => type.id === '/page/article');
-		const type = types?.find((type) => type.id === '/page/test');
-		// const type = types?.find((type) => type.id === '/page/small');
-		if (type) {
-			setSelectedType(type);
-			setView('edit');
-		}
-	}, [types]);
+	// const types = useContentTypeList();
+	// useEffect(() => {
+	// 	const type = types?.find((type) => type.id === '/page/article');
+	// 	if (type) {
+	// 		setSelectedType(type);
+	// 		setView('edit');
+	// 	}
+	// }, [types]);
 
 	useEffect(() => {
 		const messagesSubscription = fromEvent<MessageEvent>(window, 'message')
