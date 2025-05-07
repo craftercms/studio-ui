@@ -37,7 +37,7 @@ const disablePostFixes = ['internal-name', 'file-name', 'disabled'];
 
 export function Variable(props: VariableProps) {
 	const { field, value, setValue, readonly, autoFocus, contentType } = props;
-	const [allowAutoValue, setAllowAutoValue] = useState<boolean>(value === '');
+	const [allowAutoValue, setAllowAutoValue] = useState<boolean>(!value);
 	const htmlId = useId();
 	const maxLength = field.validations.maxLength?.value;
 	const controlDescriptor = contentType?.id && controlDescriptors[contentType?.id];
