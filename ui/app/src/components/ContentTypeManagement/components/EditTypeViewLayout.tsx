@@ -57,8 +57,6 @@ export const EditTypeViewLayout = forwardRef<HTMLDivElement, EditAppLayoutProps>
 		setOpen(false);
 		const action = e.currentTarget.getAttribute('data-action-id') as EditAppLayoutAction;
 		props.onActionClick?.(e, action);
-		// TODO: Remove...
-		if (!['exit', 'save'].includes(action)) showAlert('Implement: View XML, diff, history & rollback');
 	};
 	return (
 		<Layout

@@ -57,6 +57,7 @@ export const DeserializerNullSymbol = Symbol(null);
 export const NEW_FIELD_ID = '{NEW}';
 export const NEW_DATASOURCE_ID = '{NEW}';
 export const TYPE_TEMPLATE_BASE_PATH = '/templates/web';
+export const CONTENT_TYPES_BASE_PATH = '/config/studio/content-types';
 export const TYPE_GROOVY_CONTROLLER_BASE_PATH = '/config/studio/content-types';
 
 // Some properties in ContentTypeField differ from the name in the XML.

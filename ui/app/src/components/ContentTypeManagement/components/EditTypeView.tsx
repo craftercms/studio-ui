@@ -27,6 +27,7 @@ import React, { createElement, forwardRef, useEffect, useMemo, useRef, useState 
 import {
 	applyTranslations,
 	buildContentTypeXml,
+	CONTENT_TYPES_BASE_PATH,
 	createDataSourceValuesObject,
 	createEmptyTypeStructure,
 	createFieldFormContextApi,
@@ -70,8 +71,6 @@ import useUpdateRefs from '../../../hooks/useUpdateRefs';
 import useActiveSiteId from '../../../hooks/useActiveSiteId';
 import { JotaiStore } from '../../FormsEngine/types';
 import { FormattedMessage, useIntl } from 'react-intl';
-import Dialog from '@mui/material/Dialog';
-import hljs from '../../../env/hljs';
 import Typography from '@mui/material/Typography';
 import { createLookupTable, pluckProps } from '../../../utils/object';
 import Box, { BoxProps } from '@mui/material/Box';
@@ -88,6 +87,14 @@ import { deserialize, fromString } from '../../../utils/xml';
 import useSpreadState from '../../../hooks/useSpreadState';
 import { asArray } from '../../../utils/array';
 import { showErrorDialog } from '../../../state/reducers/dialogs/error';
+import { fetchContentItem } from '../../../services/content';
+import { batchActions } from '../../../state/actions/misc';
+import { fetchItemVersions } from '../../../state/actions/versions';
+import { getRootPath } from '../../../utils/path';
+import { showHistoryDialog } from '../../../state/actions/dialogs';
+import { XmlViewerDialog } from './XmlViewerDialog';
+import useEnhancedDialogState from '../../../hooks/useEnhancedDialogState';
+import { XmlDiffDialog } from './XmlDiffDialog';
 
 export interface EditTypeAppProps {
 	/**
@@ -153,7 +160,10 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 
 	const [type, setType] = useState(() => ({ ...props.type })); // Working copy of the ContentType being edited.
 	const [open, setOpen] = useState(false);
-	const [openXmlViewer, setOpenXmlViewer] = useState<string>(); // TODO: Temp, for testing, remove.
+	const xmlViewerDialogState = useEnhancedDialogState();
+	const [xmlViewerContent, setXmlViewerContent] = useState<string>(undefined);
+	const xmlDiffDialogState = useEnhancedDialogState();
+	const [xmlDiffContent, setXmlDiffContent] = useState<{ initialContent: string; currentContent }>(undefined);
 	const [selectedFieldIdPath, setSelectedFieldIdPath] = useState<string>(null);
 	const [hasPendingChanges, setHasPendingChanges] = useState(false);
 	const [virtualContentType, setVirtualContentType] = useState<ContentType>(null);
@@ -400,18 +410,68 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 				const latestUpdate = commitOpenFormChanges();
 				const tempActuallySaveToServer =
 					(document.getElementById('tempSaveToServerCheckbox') as HTMLInputElement)?.checked ?? false;
+				dialogContext?.updateSubmittingOrHasPendingChanges({ isSubmitting: true });
 				save(site, latestUpdate ?? type, tempActuallySaveToServer, configDescriptors).subscribe({
 					next(xml) {
 						const highlighted = hljs.highlight(xml, { language: 'xml' }).value;
 						setOpenXmlViewer(highlighted);
 						dialogContext?.updateSubmittingOrHasPendingChanges({ hasPendingChanges: false });
 						setHasPendingChanges(false);
+						const initialXml = buildXmlFromType(props.type, configDescriptors);
+						openDiffXml(initialXml, xml);
+						onUpdateHasPendingChanges(false);
+						dialogContext?.updateSubmittingOrHasPendingChanges({ isSubmitting: false });
 						if (tempActuallySaveToServer) showAlert(`Save successful.`);
 					},
 					error() {
+						dialogContext?.updateSubmittingOrHasPendingChanges({ isSubmitting: false });
 						showAlert(formatMessage({ defaultMessage: `Error saving content type` }));
 					}
 				});
+				break;
+			}
+			case 'viewXml': {
+				const xml = buildXmlFromType(type, configDescriptors);
+				openViewXml(xml);
+				break;
+			}
+			case 'diff': {
+				const initialXml = buildXmlFromType(props.type, configDescriptors);
+				const currentXml = buildXmlFromType(type, configDescriptors);
+				openDiffXml(initialXml, currentXml);
+				break;
+			}
+			case 'history': {
+				fetchContentItem(site, `${CONTENT_TYPES_BASE_PATH}${type.id}/form-definition.xml`).subscribe((item) => {
+					dispatch(
+						batchActions([
+							fetchItemVersions({
+								item,
+								rootPath: getRootPath(item.path)
+							}),
+							showHistoryDialog({})
+						])
+					);
+				});
+				break;
+			}
+			case 'rollback': {
+				const id = nanoid();
+				dispatch(
+					pushDialog({
+						id,
+						component: 'craftercms.components.ConfirmDialog',
+						props: {
+							body: <FormattedMessage defaultMessage="Confirm reverting current changes?" />,
+							onOk: () => {
+								resetSelection();
+								setType(props.type);
+								dispatch(popDialog({ id }));
+							},
+							onCancel: () => dispatch(popDialog({ id }))
+						}
+					})
+				);
 				break;
 			}
 		}
@@ -540,6 +600,26 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 		}
 	};
 
+	// region view/diff xml
+	const openViewXml = (xml: string) => {
+		setXmlViewerContent(xml);
+		xmlViewerDialogState.onOpen();
+	};
+	const closeViewXml = () => {
+		setXmlViewerContent(null);
+		xmlViewerDialogState.onClose();
+	};
+
+	const openDiffXml = (initialContent: string, currentContent: string) => {
+		setXmlDiffContent({ initialContent, currentContent });
+		xmlDiffDialogState.onOpen();
+	};
+	const closeDiffXml = () => {
+		setXmlDiffContent(null);
+		xmlDiffDialogState.onClose();
+	};
+	// endregion
+
 	// `fieldUpdates$` subscription
 	useEffect(() => {
 		const sub = stateRef.current.fieldUpdates$.pipe(debounceTime(500)).subscribe(() => {
@@ -630,18 +710,13 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 				}
 				isNew={type.NEW}
 			/>
-			{
-				// region TODO: Temp Dialog to show XML
-				<Dialog open={Boolean(openXmlViewer)} onClose={() => setOpenXmlViewer(null)} maxWidth="lg" fullWidth>
-					<Typography
-						variant="body2"
-						component="pre"
-						dangerouslySetInnerHTML={{ __html: openXmlViewer }}
-						sx={{ py: 1, px: 2, fontFamily: 'monospace' }}
-					/>
-				</Dialog>
-				// endregion
-			}
+			<XmlViewerDialog xml={xmlViewerContent} open={xmlViewerDialogState.open} onClose={closeViewXml} />
+			<XmlDiffDialog
+				initialXml={xmlDiffContent?.initialContent}
+				currentXml={xmlDiffContent?.currentContent}
+				open={xmlDiffDialogState.open}
+				onClose={closeDiffXml}
+			/>
 		</Provider>
 	);
 });
@@ -932,6 +1007,17 @@ function updateTypeFromDataSourceUpdate(
 	return updatedType;
 }
 
+function buildXmlFromType(
+	type: ContentType,
+	configDescriptors?: {
+		controlDescriptors: LookupTable<DescriptorContentType>;
+		dataSourceDescriptors: LookupTable<DescriptorContentType>;
+	}
+): string {
+	const typeStructure = prepareSerializeToXmlTypeObject(type, configDescriptors);
+	return buildContentTypeXml(typeStructure);
+}
+
 // merge the basic details, the non-edited field values, the manipulated field atoms into a single object
 // that gets serialized to XML and stored
 function save(
@@ -943,9 +1029,7 @@ function save(
 		dataSourceDescriptors: LookupTable<DescriptorContentType>;
 	}
 ): Observable<string> {
-	const typeStructure = prepareSerializeToXmlTypeObject(type, configDescriptors);
-	// console.log(typeStructure);
-	const xml = buildContentTypeXml(typeStructure);
+	const xml = buildXmlFromType(type, configDescriptors);
 	// TODO: Validation? This get pre-validated?
 	if (tempSaveSaveToServerArgumentToBeRemoved) {
 		return writeConfiguration(siteId, createFormDefinitionPathFromTypeId(type.id), 'studio', xml).pipe(map(() => xml));
