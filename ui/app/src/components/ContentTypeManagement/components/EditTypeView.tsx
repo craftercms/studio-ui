@@ -34,11 +34,13 @@ import {
 	createTypeFieldValuesObject,
 	createTypeFormValuesObject,
 	createTypeTemplate,
+	createValidation,
 	createVirtualTypeForDataSource,
 	createVirtualTypeForField,
 	createVirtualTypeFormContext,
 	createVirtualTypeForSection,
 	DescriptorContentType,
+	DescriptorFieldValidationKeys,
 	editTypeController,
 	editTypeTemplate,
 	getFieldFromType,
@@ -505,6 +507,8 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 			properties: {}
 		};
 
+		const descriptor = controlDescriptors[fieldType] ?? config.controls?.[fieldType].descriptor;
+		const newField = getNewFieldFromDescriptor(fieldType, descriptor);
 		const newFieldPath = fieldPath ? `${fieldPath}.${NEW_FIELD_ID}` : NEW_FIELD_ID;
 		setType(addField(type, newField, newFieldPath, sectionId, position));
 		handleFieldSelected(newFieldPath, newField, sectionId);
@@ -1064,6 +1068,44 @@ function parseConfigPlugins(
 		};
 	});
 	return createLookupTable(parsedControls);
+}
+
+function getNewFieldFromDescriptor(fieldType: string, descriptor: DescriptorContentType): NewContentTypeField {
+	const newField: NewContentTypeField = {
+		NEW: true,
+		id: '',
+		name: '',
+		description: '',
+		type: fieldType,
+		validations: {},
+		defaultValue: '',
+		fields: {},
+		properties: {}
+	};
+	if (!descriptor) return newField;
+
+	const sections = createLookupTable(descriptor.sections);
+
+	const propertiesFieldIds = sections.properties?.fields ?? [];
+	const properties = {};
+	propertiesFieldIds.forEach(
+		(field) =>
+			(properties[field] = {
+				name: field,
+				value: descriptor.fields[field]?.defaultValue,
+				type: descriptor.fields[field]?.type
+			})
+	);
+	newField.properties = properties;
+
+	const constraintsFieldIds = (sections.constraints?.fields as DescriptorFieldValidationKeys[]) ?? [];
+	const validations = {};
+	constraintsFieldIds.forEach(
+		(field) => (validations[field] = createValidation(field, descriptor.fields[field]?.defaultValue))
+	);
+	newField.validations = validations;
+
+	return newField;
 }
 
 export default EditTypeView;
