@@ -26,7 +26,7 @@ export const imagePickerDescriptor: DescriptorContentType = {
 		createVirtualSection({
 			id: 'properties',
 			title: defineMessage({ defaultMessage: 'Options' }),
-			fields: ['width', 'height', 'thumbnailWidth', 'thumbnailHeight', 'datasource', 'readonly']
+			fields: ['width', 'height', 'thumbnailWidth', 'thumbnailHeight', 'imageManager', 'readonly']
 		}),
 		createVirtualSection({
 			id: 'constraints',
@@ -63,8 +63,8 @@ export const imagePickerDescriptor: DescriptorContentType = {
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
-		datasource: {
-			id: 'datasource',
+		imageManager: {
+			id: 'imageManager',
 			type: 'datasource-selector',
 			name: defineMessage({ defaultMessage: 'Data Source' }),
 			defaultValue: undefined,
