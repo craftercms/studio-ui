@@ -24,6 +24,7 @@ export const imgDesktopUploadDataSourceDescriptor: DescriptorContentType = {
 	type: 'image',
 	sections: [
 		createVirtualSection({
+			id: 'properties',
 			title: defineMessage({ defaultMessage: 'Options' }),
 			fields: ['repoPath']
 		})

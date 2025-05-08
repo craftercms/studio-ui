@@ -7,8 +7,16 @@ export const videoPickerDescriptor: DescriptorContentType = {
 	name: defineMessage({ defaultMessage: 'Video Picker' }),
 	description: defineMessage({ defaultMessage: 'Video selection control' }),
 	sections: [
-		createVirtualSection({ title: defineMessage({ defaultMessage: 'Options' }), fields: ['videoManager', 'readonly'] }),
-		createVirtualSection({ title: defineMessage({ defaultMessage: 'Constraints' }), fields: ['required'] })
+		createVirtualSection({
+			id: 'properties',
+			title: defineMessage({ defaultMessage: 'Options' }),
+			fields: ['videoManager', 'readonly']
+		}),
+		createVirtualSection({
+			id: 'constraints',
+			title: defineMessage({ defaultMessage: 'Constraints' }),
+			fields: ['required']
+		})
 	],
 	fields: {
 		videoManager: {

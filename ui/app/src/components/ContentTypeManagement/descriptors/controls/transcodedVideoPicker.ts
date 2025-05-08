@@ -23,8 +23,16 @@ export const transcodedVideoPickerDescriptor: DescriptorContentType = {
 	name: defineMessage({ defaultMessage: 'Transcoded Video Picker' }),
 	description: defineMessage({ defaultMessage: 'Select transcoded video' }),
 	sections: [
-		createVirtualSection({ title: defineMessage({ defaultMessage: 'Options' }), fields: ['videoManager', 'readonly'] }),
-		createVirtualSection({ title: defineMessage({ defaultMessage: 'Constraints' }), fields: ['required'] })
+		createVirtualSection({
+			id: 'properties',
+			title: defineMessage({ defaultMessage: 'Options' }),
+			fields: ['videoManager', 'readonly']
+		}),
+		createVirtualSection({
+			id: 'constraints',
+			title: defineMessage({ defaultMessage: 'Constraints' }),
+			fields: ['required']
+		})
 	],
 	fields: {
 		videoManager: {

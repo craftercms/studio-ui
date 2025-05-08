@@ -24,10 +24,15 @@ export const dropdownDescriptor: DescriptorContentType = {
 	description: defineMessage({ defaultMessage: 'DropdownStaticValues select input' }),
 	sections: [
 		createVirtualSection({
+			id: 'properties',
 			title: defineMessage({ defaultMessage: 'Options' }),
 			fields: ['datasource', 'emptyvalue', 'readonly']
 		}),
-		createVirtualSection({ title: defineMessage({ defaultMessage: 'Constraints' }), fields: ['required'] })
+		createVirtualSection({
+			id: 'constraints',
+			title: defineMessage({ defaultMessage: 'Constraints' }),
+			fields: ['required']
+		})
 	],
 	fields: {
 		datasource: {

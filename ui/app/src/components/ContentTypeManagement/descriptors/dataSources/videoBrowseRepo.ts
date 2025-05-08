@@ -25,6 +25,7 @@ export const videoBrowseRepoDataSourceDescriptor: DescriptorContentType = {
 	type: 'video',
 	sections: [
 		createVirtualSection({
+			id: 'properties',
 			title: defineMessage({ defaultMessage: 'Options' }),
 			fields: ['repoPath', 'useSearch']
 		}),

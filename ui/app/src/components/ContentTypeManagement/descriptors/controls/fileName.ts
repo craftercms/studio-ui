@@ -24,10 +24,15 @@ export const fileNameDescriptor: DescriptorContentType = {
 	description: defineMessage({ defaultMessage: 'A slug (url)' }),
 	sections: [
 		createVirtualSection({
+			id: 'properties',
 			title: defineMessage({ defaultMessage: 'Options' }),
 			fields: ['maxlength', 'readonly', 'allowEditWithoutWarning']
 		}),
-		createVirtualSection({ title: defineMessage({ defaultMessage: 'Constraints' }), fields: ['required'] })
+		createVirtualSection({
+			id: 'constraints',
+			title: defineMessage({ defaultMessage: 'Constraints' }),
+			fields: ['required']
+		})
 	],
 	fields: {
 		maxlength: {

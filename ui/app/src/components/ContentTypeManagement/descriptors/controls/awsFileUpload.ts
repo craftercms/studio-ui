@@ -23,8 +23,16 @@ export const awsFileUploadDescriptor: DescriptorContentType = {
 	name: defineMessage({ defaultMessage: 'AWS File Upload' }),
 	description: defineMessage({ defaultMessage: 'Upload files to AWS S3' }),
 	sections: [
-		createVirtualSection({ title: defineMessage({ defaultMessage: 'Options' }), fields: ['profile_id'] }),
-		createVirtualSection({ title: defineMessage({ defaultMessage: 'Constraints' }), fields: ['required'] })
+		createVirtualSection({
+			id: 'properties',
+			title: defineMessage({ defaultMessage: 'Options' }),
+			fields: ['profile_id']
+		}),
+		createVirtualSection({
+			id: 'constraints',
+			title: defineMessage({ defaultMessage: 'Constraints' }),
+			fields: ['required']
+		})
 	],
 	fields: {
 		profile_id: {

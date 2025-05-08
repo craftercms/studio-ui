@@ -25,6 +25,7 @@ export const videoS3TranscodingDataSourceDescriptor: DescriptorContentType = {
 	type: 'transcoded-video',
 	sections: [
 		createVirtualSection({
+			id: 'properties',
 			title: defineMessage({ defaultMessage: 'Options' }),
 			fields: ['inputProfileId', 'outputProfileId']
 		})

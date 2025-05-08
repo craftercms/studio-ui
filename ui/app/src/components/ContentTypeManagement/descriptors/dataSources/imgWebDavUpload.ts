@@ -25,6 +25,7 @@ export const imgWebDavUploadDataSourceDescriptor: DescriptorContentType = {
 	type: 'image',
 	sections: [
 		createVirtualSection({
+			id: 'properties',
 			title: defineMessage({ defaultMessage: 'Options' }),
 			fields: ['repoPath', 'profileId']
 		})

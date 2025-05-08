@@ -22,7 +22,9 @@ export const uuidDescriptor: DescriptorContentType = {
 	id: 'uuid',
 	name: defineMessage({ defaultMessage: 'UUID' }),
 	description: defineMessage({ defaultMessage: 'Unique identifier' }),
-	sections: [createVirtualSection({ title: defineMessage({ defaultMessage: 'Options' }), fields: ['hidden'] })],
+	sections: [
+		createVirtualSection({ id: 'properties', title: defineMessage({ defaultMessage: 'Options' }), fields: ['hidden'] })
+	],
 	fields: {
 		hidden: {
 			id: 'hidden',

@@ -25,6 +25,7 @@ export const componentsDataSourceDescriptor: DescriptorContentType = {
 	type: 'item',
 	sections: [
 		createVirtualSection({
+			id: 'properties',
 			title: defineMessage({ defaultMessage: 'Options' }),
 			fields: [
 				'allowEmbedded',

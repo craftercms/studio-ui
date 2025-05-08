@@ -23,8 +23,16 @@ export const pageNavOrderDescriptor: DescriptorContentType = {
 	name: defineMessage({ defaultMessage: 'Page Navigation Order' }),
 	description: defineMessage({ defaultMessage: 'Controls page ordering in navigation' }),
 	sections: [
-		createVirtualSection({ title: defineMessage({ defaultMessage: 'Options' }), fields: ['readonly'] }),
-		createVirtualSection({ title: defineMessage({ defaultMessage: 'Constraints' }), fields: ['required'] })
+		createVirtualSection({
+			id: 'properties',
+			title: defineMessage({ defaultMessage: 'Options' }),
+			fields: ['readonly']
+		}),
+		createVirtualSection({
+			id: 'constraints',
+			title: defineMessage({ defaultMessage: 'Constraints' }),
+			fields: ['required']
+		})
 	],
 	fields: {
 		readonly: {

@@ -24,10 +24,15 @@ export const imagePickerDescriptor: DescriptorContentType = {
 	description: defineMessage({ defaultMessage: 'Image selection tool' }),
 	sections: [
 		createVirtualSection({
+			id: 'properties',
 			title: defineMessage({ defaultMessage: 'Options' }),
 			fields: ['width', 'height', 'thumbnailWidth', 'thumbnailHeight', 'datasource', 'readonly']
 		}),
-		createVirtualSection({ title: defineMessage({ defaultMessage: 'Constraints' }), fields: ['required'] })
+		createVirtualSection({
+			id: 'constraints',
+			title: defineMessage({ defaultMessage: 'Constraints' }),
+			fields: ['required']
+		})
 	],
 	fields: {
 		width: {

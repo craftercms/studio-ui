@@ -29,7 +29,13 @@ export const internalNameDescriptor: DescriptorContentType = {
 	description: defineMessage({
 		defaultMessage: 'Internal name displayed for the item throughout the CMS (e.g. sidebar)'
 	}),
-	sections: [createVirtualSection({ title: defineMessage({ defaultMessage: 'Options' }), fields: ['maxLength'] })],
+	sections: [
+		createVirtualSection({
+			id: 'properties',
+			title: defineMessage({ defaultMessage: 'Options' }),
+			fields: ['maxLength']
+		})
+	],
 	fields: {
 		maxLength: {
 			id: 'maxLength',

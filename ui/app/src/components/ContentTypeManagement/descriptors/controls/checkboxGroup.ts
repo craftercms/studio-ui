@@ -24,10 +24,15 @@ export const checkboxGroupDescriptor: DescriptorContentType = {
 	description: defineMessage({ defaultMessage: 'Multiple checkbox inputs' }),
 	sections: [
 		createVirtualSection({
+			id: 'properties',
 			title: defineMessage({ defaultMessage: 'Options' }),
 			fields: ['datasource', 'selectAll', 'listDirection', 'readonly']
 		}),
-		createVirtualSection({ title: defineMessage({ defaultMessage: 'Constraints' }), fields: ['minSize'] })
+		createVirtualSection({
+			id: 'constraints',
+			title: defineMessage({ defaultMessage: 'Constraints' }),
+			fields: ['minSize']
+		})
 	],
 	fields: {
 		datasource: {

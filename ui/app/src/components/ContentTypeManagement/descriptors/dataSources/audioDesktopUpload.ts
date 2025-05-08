@@ -25,6 +25,7 @@ export const audioDesktopUploadDataSourceDescriptor: DescriptorContentType = {
 	type: 'audio',
 	sections: [
 		createVirtualSection({
+			id: 'properties',
 			title: defineMessage({ defaultMessage: 'Options' }),
 			fields: ['repoPath']
 		}),

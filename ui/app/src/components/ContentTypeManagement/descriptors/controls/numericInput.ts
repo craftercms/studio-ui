@@ -24,10 +24,15 @@ export const numericInputDescriptor: DescriptorContentType = {
 	description: defineMessage({ defaultMessage: 'Input field that accepts numbers' }),
 	sections: [
 		createVirtualSection({
+			id: 'properties',
 			title: defineMessage({ defaultMessage: 'Options' }),
 			fields: ['maxValue', 'minValue', 'readonly', 'tokenize']
 		}),
-		createVirtualSection({ title: defineMessage({ defaultMessage: 'Constraints' }), fields: ['required', 'pattern'] })
+		createVirtualSection({
+			id: 'constraints',
+			title: defineMessage({ defaultMessage: 'Constraints' }),
+			fields: ['required', 'pattern']
+		})
 	],
 	fields: {
 		maxValue: {

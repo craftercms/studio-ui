@@ -24,6 +24,7 @@ export const fileBrowseRepoDataSourceDescriptor: DescriptorContentType = {
 	type: 'item',
 	sections: [
 		createVirtualSection({
+			id: 'properties',
 			title: defineMessage({ defaultMessage: 'Options' }),
 			fields: ['repoPath']
 		})

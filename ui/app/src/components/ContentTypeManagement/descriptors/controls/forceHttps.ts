@@ -22,7 +22,13 @@ export const forceHttpsDescriptor: DescriptorContentType = {
 	id: 'forcehttps',
 	name: defineMessage({ defaultMessage: 'Force HTTPS' }),
 	description: defineMessage({ defaultMessage: 'Force HTTPS protocol' }),
-	sections: [createVirtualSection({ title: defineMessage({ defaultMessage: 'Options' }), fields: ['readonly'] })],
+	sections: [
+		createVirtualSection({
+			id: 'properties',
+			title: defineMessage({ defaultMessage: 'Options' }),
+			fields: ['readonly']
+		})
+	],
 	fields: {
 		readonly: {
 			id: 'readonly',

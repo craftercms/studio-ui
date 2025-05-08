@@ -24,6 +24,7 @@ export const timeDescriptor: DescriptorContentType = {
 	description: defineMessage({ defaultMessage: 'Time picker' }),
 	sections: [
 		createVirtualSection({
+			id: 'properties',
 			title: defineMessage({ defaultMessage: 'Options' }),
 			fields: [
 				'showClear',
@@ -35,7 +36,11 @@ export const timeDescriptor: DescriptorContentType = {
 				'readonlyEdit'
 			]
 		}),
-		createVirtualSection({ title: defineMessage({ defaultMessage: 'Constraints' }), fields: ['required'] })
+		createVirtualSection({
+			id: 'constraints',
+			title: defineMessage({ defaultMessage: 'Constraints' }),
+			fields: ['required']
+		})
 	],
 	fields: {
 		showClear: {

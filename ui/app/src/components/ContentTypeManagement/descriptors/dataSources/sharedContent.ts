@@ -25,6 +25,7 @@ export const sharedContentDataSourceDescriptor: DescriptorContentType = {
 	type: 'item',
 	sections: [
 		createVirtualSection({
+			id: 'properties',
 			title: defineMessage({ defaultMessage: 'Options' }),
 			fields: ['enableCreateNew', 'enableBrowseExisting', 'enableSearchExisting', 'repoPath', 'browsePath', 'type']
 		})

@@ -25,6 +25,7 @@ export const configuredListDataSourceDescriptor: DescriptorContentType = {
 	type: 'item',
 	sections: [
 		createVirtualSection({
+			id: 'properties',
 			title: defineMessage({ defaultMessage: 'Options' }),
 			fields: ['dataType', 'listName', 'sort']
 		}),

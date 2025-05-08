@@ -24,6 +24,7 @@ export const dateTimeDescriptor: DescriptorContentType = {
 	description: defineMessage({ defaultMessage: 'Date and time picker' }),
 	sections: [
 		createVirtualSection({
+			id: 'properties',
 			title: defineMessage({ defaultMessage: 'Options' }),
 			fields: [
 				'showDate',
@@ -38,7 +39,11 @@ export const dateTimeDescriptor: DescriptorContentType = {
 				'readonlyEdit'
 			]
 		}),
-		createVirtualSection({ title: defineMessage({ defaultMessage: 'Constraints' }), fields: ['required'] })
+		createVirtualSection({
+			id: 'constraints',
+			title: defineMessage({ defaultMessage: 'Constraints' }),
+			fields: ['required']
+		})
 	],
 	fields: {
 		showDate: {

@@ -24,10 +24,15 @@ export const nodeSelectorDescriptor: DescriptorContentType = {
 	description: defineMessage({ defaultMessage: 'Content node selection' }),
 	sections: [
 		createVirtualSection({
+			id: 'properties',
 			title: defineMessage({ defaultMessage: 'Options' }),
 			fields: ['minSize', 'maxSize', 'itemManager', 'readonly', 'disableFlattening', 'useSingleValueFilename', 'useMVS']
 		}),
-		createVirtualSection({ title: defineMessage({ defaultMessage: 'Constraints' }), fields: ['allowDuplicates'] })
+		createVirtualSection({
+			id: 'constraints',
+			title: defineMessage({ defaultMessage: 'Constraints' }),
+			fields: ['allowDuplicates']
+		})
 	],
 	fields: {
 		minSize: {

@@ -25,6 +25,7 @@ export const s3RepoDataSourceDescriptor: DescriptorContentType = {
 	type: 'item',
 	sections: [
 		createVirtualSection({
+			id: 'properties',
 			title: defineMessage({ defaultMessage: 'Options' }),
 			fields: ['path', 'profileId']
 		})

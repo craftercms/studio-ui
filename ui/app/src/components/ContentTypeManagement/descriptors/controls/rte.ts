@@ -24,6 +24,7 @@ export const rteDescriptor: DescriptorContentType = {
 	description: defineMessage({ defaultMessage: 'Rich text editing area' }),
 	sections: [
 		createVirtualSection({
+			id: 'properties',
 			title: defineMessage({ defaultMessage: 'Options' }),
 			fields: [
 				'height',
@@ -37,7 +38,11 @@ export const rteDescriptor: DescriptorContentType = {
 				'fileManager'
 			]
 		}),
-		createVirtualSection({ title: defineMessage({ defaultMessage: 'Constraints' }), fields: ['required'] })
+		createVirtualSection({
+			id: 'constraints',
+			title: defineMessage({ defaultMessage: 'Constraints' }),
+			fields: ['required']
+		})
 	],
 	fields: {
 		height: {

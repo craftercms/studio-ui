@@ -24,10 +24,15 @@ export const textareaDescriptor: DescriptorContentType = {
 	description: defineMessage({ defaultMessage: 'Multi-line text input' }),
 	sections: [
 		createVirtualSection({
+			id: 'properties',
 			title: defineMessage({ defaultMessage: 'Options' }),
 			fields: ['rows', 'maxlength', 'allowResize', 'readonly', 'escapeContent', 'required']
 		}),
-		createVirtualSection({ title: defineMessage({ defaultMessage: 'Constraints' }), fields: ['required'] })
+		createVirtualSection({
+			id: 'constraints',
+			title: defineMessage({ defaultMessage: 'Constraints' }),
+			fields: ['required']
+		})
 	],
 	fields: {
 		rows: {

@@ -25,6 +25,7 @@ export const imgS3RepoDataSourceDescriptor: DescriptorContentType = {
 	type: 'image',
 	sections: [
 		createVirtualSection({
+			id: 'properties',
 			title: defineMessage({ defaultMessage: 'Options' }),
 			fields: ['path', 'profileId']
 		})

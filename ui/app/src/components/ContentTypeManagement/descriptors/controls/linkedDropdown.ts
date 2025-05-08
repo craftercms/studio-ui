@@ -24,10 +24,15 @@ export const linkedDropdownDescriptor: DescriptorContentType = {
 	description: defineMessage({ defaultMessage: 'Linked dropdown selector' }),
 	sections: [
 		createVirtualSection({
+			id: 'properties',
 			title: defineMessage({ defaultMessage: 'Options' }),
 			fields: ['datasource', 'emptyvalue', 'readonly', 'dependsOn']
 		}),
-		createVirtualSection({ title: defineMessage({ defaultMessage: 'Constraints' }), fields: ['required'] })
+		createVirtualSection({
+			id: 'constraints',
+			title: defineMessage({ defaultMessage: 'Constraints' }),
+			fields: ['required']
+		})
 	],
 	fields: {
 		datasource: {

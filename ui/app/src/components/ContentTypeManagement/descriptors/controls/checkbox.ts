@@ -23,8 +23,16 @@ export const checkboxDescriptor: DescriptorContentType = {
 	name: defineMessage({ defaultMessage: 'Checkbox' }),
 	description: defineMessage({ defaultMessage: 'Single checkbox input' }),
 	sections: [
-		createVirtualSection({ title: defineMessage({ defaultMessage: 'Options' }), fields: ['readonly'] }),
-		createVirtualSection({ title: defineMessage({ defaultMessage: 'Constraints' }), fields: ['required'] })
+		createVirtualSection({
+			id: 'properties',
+			title: defineMessage({ defaultMessage: 'Options' }),
+			fields: ['readonly']
+		}),
+		createVirtualSection({
+			id: 'constraints',
+			title: defineMessage({ defaultMessage: 'Constraints' }),
+			fields: ['required']
+		})
 	],
 	fields: {
 		readonly: {

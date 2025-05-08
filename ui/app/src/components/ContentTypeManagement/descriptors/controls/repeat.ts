@@ -24,10 +24,15 @@ export const repeatDescriptor: DescriptorContentType = {
 	description: defineMessage({ defaultMessage: 'Group of fields that can be repeated' }),
 	sections: [
 		createVirtualSection({
+			id: 'properties',
 			title: defineMessage({ defaultMessage: 'Options' }),
 			fields: ['minOccurs', 'maxOccurs', 'readonly']
 		}),
-		createVirtualSection({ title: defineMessage({ defaultMessage: 'Constraints' }), fields: ['required'] })
+		createVirtualSection({
+			id: 'constraints',
+			title: defineMessage({ defaultMessage: 'Constraints' }),
+			fields: ['required']
+		})
 	],
 	fields: {
 		minOccurs: {
