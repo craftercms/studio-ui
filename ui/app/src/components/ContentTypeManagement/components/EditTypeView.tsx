@@ -23,7 +23,7 @@ import ContentType, {
 	PossibleContentTypeDraft
 } from '../../../models/ContentType';
 import LookupTable from '../../../models/LookupTable';
-import React, { createElement, forwardRef, useEffect, useMemo, useRef, useState } from 'react';
+import React, { forwardRef, useEffect, useMemo, useRef, useState } from 'react';
 import {
 	applyTranslations,
 	buildContentTypeXml,
@@ -177,6 +177,7 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 		dataSources: null,
 		dataSourceExclusions: null
 	});
+	const [drawerOpenTransitionEnded, setDrawerOpenTransitionEnded] = useState(false);
 
 	const configDescriptors = useMemo(() => {
 		const controlDescriptors = Object.values(config?.controls ?? {}).map(({ descriptor }) => descriptor);
@@ -495,18 +496,6 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 		handleSectionSelected(section);
 	};
 	const handleInsertField: TypeDetailsViewProps['onInsertField'] = (fieldType, sectionId, position, fieldPath) => {
-		const newField: NewContentTypeField = {
-			NEW: true,
-			id: '',
-			name: '',
-			description: '',
-			type: fieldType,
-			validations: {},
-			defaultValue: '',
-			fields: {},
-			properties: {}
-		};
-
 		const descriptor = controlDescriptors[fieldType] ?? config.controls?.[fieldType].descriptor;
 		const newField = getNewFieldFromDescriptor(fieldType, descriptor);
 		const newFieldPath = fieldPath ? `${fieldPath}.${NEW_FIELD_ID}` : NEW_FIELD_ID;
@@ -514,14 +503,8 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 		handleFieldSelected(newFieldPath, newField, sectionId);
 	};
 	const handleInsertDataSource: TypeDetailsViewProps['onInsertDataSource'] = (dataSourceType, position) => {
-		const newDataSource: NewDataSource = {
-			NEW: true,
-			id: '',
-			title: '',
-			type: dataSourceType,
-			interface: '',
-			properties: {}
-		};
+		const descriptor = dataSourceDescriptors[dataSourceType] ?? config.dataSources?.[dataSourceType].descriptor;
+		const newDataSource = getNewDataSourceFromDescriptor(dataSourceType, descriptor);
 
 		const nextDataSources = type.dataSources.concat();
 		nextDataSources.splice(position, 0, newDataSource);
@@ -1106,6 +1089,27 @@ function getNewFieldFromDescriptor(fieldType: string, descriptor: DescriptorCont
 	newField.validations = validations;
 
 	return newField;
+}
+
+function getNewDataSourceFromDescriptor(dataSourceType: string, descriptor: DescriptorContentType): NewDataSource {
+	const newDataSource: NewDataSource = {
+		NEW: true,
+		id: '',
+		title: '',
+		type: dataSourceType,
+		interface: '',
+		properties: {}
+	};
+	if (!descriptor) return newDataSource;
+
+	const sections = createLookupTable(descriptor.sections);
+
+	const propertiesFieldIds = sections.properties?.fields ?? [];
+	const properties = {};
+	propertiesFieldIds.forEach((field) => (properties[field] = descriptor.fields[field]?.defaultValue));
+	newDataSource.properties = properties;
+
+	return newDataSource;
 }
 
 export default EditTypeView;
