@@ -522,7 +522,7 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 	const handleDeleteField: FieldFormViewProps['onDeleteField'] = (fieldIdPath: string, sectionId) => {
 		resetSelection();
 		onUpdateHasPendingChanges(true);
-		setType(deleteField(type, fieldIdPath, sectionId));
+		setType((currentType) => deleteField(currentType, fieldIdPath, sectionId));
 	};
 	const handleDeleteDataSource: FieldFormViewProps['onDeleteDataSource'] = (dataSourceId) => {
 		resetSelection();
