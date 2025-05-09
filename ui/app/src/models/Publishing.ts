@@ -110,11 +110,14 @@ export interface PublishingStats {
 	numberOfEditedAndPublishedItems: number;
 }
 
-export interface PublishingPackageApproveParams {
+export interface PublishingPackagesApproveParams {
 	comment: string;
 	schedule: string;
 	updateSchedule: boolean;
+	packageIds: number[];
 }
+
+export interface PublishingPackageApproveParams extends Omit<PublishingPackagesApproveParams, 'packageIds'> {}
 
 export type PackageActions = 'review' | 'cancel' | 'resubmit' | 'promote';
 
