@@ -22,7 +22,7 @@ import { FormattedMessage } from 'react-intl';
 import Box, { BoxProps } from '@mui/material/Box';
 import GlobalAppToolbar from '../../GlobalAppToolbar';
 import SelectTypeView from './SelectTypeView';
-import React, { forwardRef, useState } from 'react';
+import React, { forwardRef } from 'react';
 import CreateTypeDialog, { CreateTypeDialogProps } from './CreateTypeDialog';
 import { PossibleContentTypeDraft } from '../../../models';
 import { initializeTypeForCreate } from '../descriptors/archetypes';

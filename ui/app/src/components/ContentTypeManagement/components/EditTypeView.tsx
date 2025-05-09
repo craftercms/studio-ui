@@ -23,7 +23,7 @@ import ContentType, {
 	PossibleContentTypeDraft
 } from '../../../models/ContentType';
 import LookupTable from '../../../models/LookupTable';
-import React, { forwardRef, useEffect, useMemo, useRef, useState } from 'react';
+import React, { createElement, forwardRef, useEffect, useMemo, useRef, useState } from 'react';
 import {
 	applyTranslations,
 	buildContentTypeXml,
@@ -242,7 +242,10 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 			virtualType,
 			stableFormContext,
 			formApiContext: stateRef.current.formContextApi,
-			onClose: () => effectRefs.current.closeAndCleanup(),
+			onClose: () => {
+				setDrawerOpenTransitionEnded(false);
+				effectRefs.current.closeAndCleanup();
+			},
 			onDeleteField: handleDeleteField,
 			onDeleteSection: handleDeleteSection,
 			onDeleteDataSource: handleDeleteDataSource,
@@ -486,6 +489,7 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 		setVirtualContentType(null);
 		setFieldFormViewProps(null);
 		setHasPendingChanges(false);
+		setDrawerOpenTransitionEnded(false);
 		setOpen(false);
 	};
 
@@ -551,7 +555,9 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 	};
 
 	// region const fieldEditorView = ...
-	const fieldEditorView = virtualContentType ? createElement(TypeBuilderFormsEngine, fieldFormViewProps) : null;
+	const fieldEditorView = virtualContentType
+		? createElement(TypeBuilderFormsEngine, { ...fieldFormViewProps, isPanelReady: drawerOpenTransitionEnded })
+		: null;
 	// endregion
 
 	const handleMoveFieldToSection: FieldFormViewProps['onMoveFieldToSection'] = (
@@ -670,6 +676,22 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 				disableSave={disableSave}
 				onActionClick={handleToolbarActionClick}
 				drawerContent={fieldEditorView}
+				drawerProps={{
+					// onTransitionEnd keeps triggering after the Drawer transition has finished on certain interactions (e.g. when hovering buttons)
+					onTransitionEnd: (e) => {
+						// Make sure it is the drawer paper that finished transitioning before considering the transition complete.
+						// If 'EditTypeViewDrawer' transition ended, and 'open' is true, then the opening transition is complete.
+						if ((e.target as HTMLElement).getAttribute('data-area-id') === 'EditTypeViewDrawer') {
+							setDrawerOpenTransitionEnded(open);
+						}
+					},
+					slotProps: {
+						paper: {
+							// @ts-expect-error Setting a html prop
+							['data-area-id']: 'EditTypeViewDrawer'
+						}
+					}
+				}}
 				mainContent={
 					<>
 						<TypeDetailsView

@@ -22,7 +22,7 @@ import Container, { ContainerProps } from '@mui/material/Container';
 import type { ToolbarProps } from '@mui/material/Toolbar';
 import { getMarginSxProps } from '../../../utils/ui';
 import Main from './MainSection';
-import Drawer from '@mui/material/Drawer';
+import Drawer, { DrawerProps } from '@mui/material/Drawer';
 import { paperClasses } from '@mui/material/Paper';
 import Dialog, { DialogProps } from '@mui/material/Dialog';
 import { useTheme } from '@mui/material/styles';
@@ -35,10 +35,11 @@ export interface LayoutProps {
 	drawerContent: ReactNode;
 	toolbarContent: ReactNode;
 	onClose: DialogProps['onClose'];
+	drawerProps?: DrawerProps;
 }
 
 export const Layout = forwardRef<HTMLDivElement, LayoutProps>((props, ref) => {
-	const { open, mainContent, drawerContent, toolbarContent, sx, style } = props;
+	const { open, mainContent, drawerContent, toolbarContent, sx, style, drawerProps } = props;
 
 	const theme = useTheme();
 	const [useDrawer, setUseDrawer] = useState(true);
@@ -112,6 +113,7 @@ export const Layout = forwardRef<HTMLDivElement, LayoutProps>((props, ref) => {
 								bgcolor: 'background.default'
 							}
 						}}
+						{...drawerProps}
 					>
 						{drawerContent}
 					</Drawer>

@@ -60,6 +60,7 @@ import { ConfirmDropdown } from '../../ConfirmDropdown';
 import MoveFieldToSectionDialog from './MoveFieldToSectionDialog';
 import useEnhancedDialogState from '../../../hooks/useEnhancedDialogState';
 import SwapFieldDialog from './SwapFieldDialog';
+import { nanoid } from 'nanoid';
 
 interface TypeModeProps {
 	type: ContentType;
@@ -70,6 +71,7 @@ interface FieldModeProps {
 	fieldIdPath: string;
 	sectionId: string;
 	controlDescriptor: PartialContentType;
+	isPanelReady?: boolean;
 	onDeleteField(fieldIdPath: string, sectionId: string): void;
 	onMoveFieldToSection(
 		fieldIdPath: string,
@@ -102,12 +104,16 @@ interface BaseProps extends Partial<FieldModeProps & SectionModeProps & DataSour
 export type FieldFormViewProps = BaseProps & (TypeModeProps | FieldModeProps | SectionModeProps | DataSourceModeProps);
 
 function FieldFormViewBody(props: FieldFormViewProps) {
-	const { virtualType, onClose } = props;
+	const { virtualType, isPanelReady = true, onClose } = props;
 	const containerRef = useRef<HTMLDivElement>(undefined);
 	const stableFormContext = useStableFormContext();
+	// We're using nanoid to generate a unique ID for the typeId. This is to ensure that the component re-renders
+	// when the virtualType changes, so the autoFocus is set properly when the new set of fields render.
+	const [typeId, setTypeId] = useState<string>(undefined);
 
 	useEffect(() => {
 		containerRef.current.scroll({ top: 0, behavior: 'smooth' });
+		setTypeId(nanoid());
 	}, [virtualType]);
 
 	return (
@@ -129,33 +135,31 @@ function FieldFormViewBody(props: FieldFormViewProps) {
 			</Box>
 			<Container ref={containerRef} maxWidth="md" sx={{ overflow: 'auto', flex: 1 }}>
 				{createElement(FieldSwapper, props)}
-
-				{virtualType.sections.map((section) => (
-					<SectionAccordion
-						key={section.title}
-						section={section}
-						colorize={false}
-						renderControl={(fieldId) => {
-							const field = virtualType.fields[fieldId];
-							// TODO: tokenize not found on file-name
-							if (!field)
-								return (
-									<Alert key={fieldId} severity="error">
-										Field {fieldId} not found
-									</Alert>
+				{isPanelReady &&
+					virtualType.sections.map((section, sectionIndex) => (
+						<SectionAccordion
+							key={`${typeId}-${section.title}`}
+							section={section}
+							colorize={false}
+							renderControl={(fieldId, fieldIndex) => {
+								const field = virtualType.fields[fieldId];
+								if (!field)
+									return (
+										<Alert key={fieldId} severity="error">
+											Field {fieldId} not found
+										</Alert>
+									);
+								return renderFieldControl(
+									field,
+									stableFormContext.atoms.valueByFieldId,
+									sectionIndex === 0 && fieldIndex === 0,
+									false,
+									virtualType,
+									controlMap
 								);
-							return renderFieldControl(
-								field,
-								stableFormContext.atoms.valueByFieldId,
-								// TODO: Fix auto focus layout shift. See FE2 solution (render this whole area until panel animation is done).
-								false, // index === 0,
-								false,
-								virtualType,
-								controlMap
-							);
-						}}
-					/>
-				))}
+							}}
+						/>
+					))}
 				<FormBackToTop containerRef={containerRef} />
 			</Container>
 		</Box>
