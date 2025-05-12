@@ -16,7 +16,7 @@
 
 import Typography from '@mui/material/Typography';
 import React, { useCallback, useEffect, useState } from 'react';
-import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
+import { defineMessage, defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import AddIcon from '@mui/icons-material/Add';
 import { PluginRecord } from '../../models/Plugin';
 import { ConditionalLoadingState } from '../LoadingState/LoadingState';
@@ -293,7 +293,11 @@ export const PluginManagement = (props: PluginManagementProps) => {
 										</StyledTableCell>
 										<StyledTableCell align="left">
 											{plugin.files.length}
-											<IconButton onClick={(e) => showPluginFiles(e, plugin)} size="small">
+											<IconButton
+												onClick={(e) => showPluginFiles(e, plugin)}
+												size="small"
+												aria-label={formatMessage(defineMessage({ defaultMessage: 'View files' }))}
+											>
 												<Tooltip title={<FormattedMessage defaultMessage="View files" />}>
 													<ExpandMoreRoundedIcon />
 												</Tooltip>
@@ -309,6 +313,7 @@ export const PluginManagement = (props: PluginManagementProps) => {
 														onEditPluginConfig(plugin);
 													}}
 													color="primary"
+													aria-label={formatMessage(defineMessage({ defaultMessage: 'Edit configuration' }))}
 												>
 													<PencilIcon />
 												</IconButton>
@@ -320,6 +325,7 @@ export const PluginManagement = (props: PluginManagementProps) => {
 														deletePluginDialogState.onOpen();
 													}}
 													color="primary"
+													aria-label={formatMessage(defineMessage({ defaultMessage: 'Uninstall plugin' }))}
 												>
 													<DeleteIcon />
 												</IconButton>

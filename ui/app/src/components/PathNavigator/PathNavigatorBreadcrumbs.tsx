@@ -24,7 +24,7 @@ import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import CloseIconRounded from '@mui/icons-material/CloseRounded';
-import { defineMessages, useIntl } from 'react-intl';
+import { defineMessage, defineMessages, useIntl } from 'react-intl';
 import Box from '@mui/material/Box';
 import { PartialSxRecord } from '../../models';
 
@@ -176,6 +176,7 @@ function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
 							}}
 							className={props.classes?.searchCloseButton}
 							sx={{ marginTop: '5px', marginBottom: '5px', marginRight: '10px', ...sxs?.searchCloseButton }}
+							aria-label={formatMessage(defineMessage({ defaultMessage: 'Close' }))}
 						>
 							<CloseIconRounded />
 						</IconButton>

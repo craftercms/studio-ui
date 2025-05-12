@@ -18,7 +18,7 @@ import React from 'react';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import DialogBody from '../DialogBody/DialogBody';
 import Typography from '@mui/material/Typography';
-import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
+import { defineMessage, defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import Divider from '@mui/material/Divider';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
@@ -129,7 +129,12 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
 						/>
 					)}
 					<Tooltip title={<FormattedMessage id="editGroupDialog.close" defaultMessage="Close" />}>
-						<IconButton edge="end" onClick={onCloseButtonClick} size="large">
+						<IconButton
+							edge="end"
+							onClick={onCloseButtonClick}
+							size="large"
+							aria-label={formatMessage(defineMessage({ defaultMessage: 'Close' }))}
+						>
 							<CloseRoundedIcon />
 						</IconButton>
 					</Tooltip>

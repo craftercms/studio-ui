@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
+import { defineMessage, defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
 import Tooltip from '@mui/material/Tooltip';
@@ -122,7 +122,11 @@ export function EditUserDialogUI(props: EditUserDialogUIProps) {
 					{managedInStudio ? (
 						<>
 							<Tooltip title={<FormattedMessage id="userInfoDialog.resetPassword" defaultMessage="Reset password" />}>
-								<IconButton onClick={() => onResetPassword(true)} size="large">
+								<IconButton
+									onClick={() => onResetPassword(true)}
+									size="large"
+									aria-label={formatMessage(defineMessage({ defaultMessage: 'Reset password' }))}
+								>
 									<PasswordRoundedIcon />
 								</IconButton>
 							</Tooltip>
@@ -151,7 +155,12 @@ export function EditUserDialogUI(props: EditUserDialogUIProps) {
 						/>
 					)}
 					<Tooltip title={<FormattedMessage id="userInfoDialog.close" defaultMessage="Close" />}>
-						<IconButton edge="end" onClick={onCloseButtonClick} size="large">
+						<IconButton
+							edge="end"
+							onClick={onCloseButtonClick}
+							size="large"
+							aria-label={formatMessage(defineMessage({ defaultMessage: 'Close' }))}
+						>
 							<CloseRoundedIcon />
 						</IconButton>
 					</Tooltip>

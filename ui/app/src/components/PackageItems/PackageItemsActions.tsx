@@ -17,7 +17,7 @@
 import React from 'react';
 import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
-import { FormattedMessage } from 'react-intl';
+import { defineMessage, FormattedMessage, useIntl } from 'react-intl';
 import Button from '@mui/material/Button';
 import ListRoundedIcon from '@mui/icons-material/ListRounded';
 import TreeOutlined from '../../icons/TreeOutlined';
@@ -37,6 +37,7 @@ export interface PackageItemsActionsProps {
 
 export function PackageItemsActions(props: PackageItemsActionsProps) {
 	const { isTreeView, onSetIsTreeView, disableTreeView, maxTreeItems, setExpandedPaths } = props;
+	const { formatMessage } = useIntl();
 	return (
 		<Box display="flex" justifyContent="space-between" alignItems="center" mr={1} ml={1}>
 			<Box display="flex" py={0.5}>
@@ -73,10 +74,20 @@ export function PackageItemsActions(props: PackageItemsActionsProps) {
 				{!disableTreeView && isTreeView && (
 					<>
 						<Divider flexItem orientation="vertical" sx={{ mx: 0.5 }} />
-						<IconButton size="small" color="primary" onClick={() => setExpandedPaths(undefined)}>
+						<IconButton
+							size="small"
+							color="primary"
+							onClick={() => setExpandedPaths(undefined)}
+							aria-label={formatMessage(defineMessage({ defaultMessage: 'Collapse All' }))}
+						>
 							<UnfoldMoreRoundedIcon fontSize="small" />
 						</IconButton>
-						<IconButton size="small" color="primary" onClick={() => setExpandedPaths([])}>
+						<IconButton
+							size="small"
+							color="primary"
+							onClick={() => setExpandedPaths([])}
+							aria-label={formatMessage(defineMessage({ defaultMessage: 'Expand All' }))}
+						>
 							<UnfoldLessRoundedIcon fontSize="small" />
 						</IconButton>
 					</>

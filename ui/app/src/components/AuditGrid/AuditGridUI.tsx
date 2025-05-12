@@ -19,7 +19,7 @@ import { PagedArray } from '../../models/PagedArray';
 import Box from '@mui/material/Box';
 import React, { useCallback, useMemo, useState } from 'react';
 import { DataGrid, GridCellParams, gridClasses, GridColDef, GridSortModel } from '@mui/x-data-grid';
-import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
+import { defineMessage, defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { AuditOptions } from '../../services/audit';
 import { Site } from '../../models/Site';
 import User from '../../models/User';
@@ -307,7 +307,11 @@ export function AuditGridUI(props: AuditGridUIProps) {
 				renderCell: (params: GridCellParams) => {
 					return parametersLookup[params.id] === undefined || parametersLookup[params.id]?.length ? (
 						<Tooltip title={<FormattedMessage id="auditGrid.showParameters" defaultMessage="Show parameters" />}>
-							<IconButton onClick={() => onGetParameters(params)} size="large">
+							<IconButton
+								onClick={() => onGetParameters(params)}
+								size="large"
+								aria-label={formatMessage(defineMessage({ defaultMessage: 'Show parameters' }))}
+							>
 								<VisibilityRoundedIcon />
 							</IconButton>
 						</Tooltip>

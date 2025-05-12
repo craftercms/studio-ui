@@ -184,7 +184,11 @@ export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
 			borderLeftColor={borderLeftColor}
 			title={<FormattedMessage id="recentlyPublishedDashlet.widgetTitle" defaultMessage="Recently Published" />}
 			headerAction={
-				<LoadingIconButton onClick={onRefresh} loading={loading}>
+				<LoadingIconButton
+					onClick={onRefresh}
+					loading={loading}
+					aria-label={formatMessage({ defaultMessage: 'Refresh' })}
+				>
 					<RefreshRounded />
 				</LoadingIconButton>
 			}

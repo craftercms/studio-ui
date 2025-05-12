@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { FormattedMessage } from 'react-intl';
+import { defineMessage, FormattedMessage, useIntl } from 'react-intl';
 import { isBlank } from '../../utils/string';
 import React, { MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -71,6 +71,7 @@ export function PreviewAddressBar(props: AddressBarProps) {
 		}
 	}, [item]);
 	const disableItemMenuButton = !item || Boolean(error);
+	const { formatMessage } = useIntl();
 
 	const onOptions = (e) => {
 		const anchorRect = e.currentTarget.getBoundingClientRect();
@@ -162,7 +163,12 @@ export function PreviewAddressBar(props: AddressBarProps) {
 			<PreviewBackButton />
 			<PreviewForwardButton />
 			<Tooltip title={noSiteSet ? '' : <FormattedMessage defaultMessage="Reload this page (r)" />}>
-				<IconButton onClick={noSiteSet ? undefined : onRefresh} size="large" disabled={noSiteSet}>
+				<IconButton
+					onClick={noSiteSet ? undefined : onRefresh}
+					size="large"
+					disabled={noSiteSet}
+					aria-label={formatMessage(defineMessage({ defaultMessage: 'Reload this page' }))}
+				>
 					<RefreshRounded />
 				</IconButton>
 			</Tooltip>
@@ -217,6 +223,7 @@ export function PreviewAddressBar(props: AddressBarProps) {
 						sx={error ? { visibility: 'hidden' } : undefined}
 						size="medium"
 						id="previewAddressBarActionsMenuButton"
+						aria-label="Options"
 					>
 						<MoreRounded sx={alertLevel === 2 ? { visibility: 'hidden' } : undefined} />
 						{!item && !error && (

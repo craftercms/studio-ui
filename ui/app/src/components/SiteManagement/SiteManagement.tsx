@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
+import { defineMessage, defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import AddIcon from '@mui/icons-material/Add';
 import SkeletonSitesGrid from '../SitesGrid/SitesGridSkeleton';
 import CreateSiteDialog from '../CreateSiteDialog/CreateSiteDialog';
@@ -206,7 +206,11 @@ export function SiteManagement() {
 				}
 				rightContent={
 					<Tooltip title={<FormattedMessage id="sites.ChangeView" defaultMessage="Change view" />}>
-						<IconButton onClick={handleChangeView} size="large">
+						<IconButton
+							onClick={handleChangeView}
+							size="large"
+							aria-label={formatMessage(defineMessage({ defaultMessage: 'Change view' }))}
+						>
 							{currentView === 'grid' ? <ListViewIcon /> : <GridViewIcon />}
 						</IconButton>
 					</Tooltip>

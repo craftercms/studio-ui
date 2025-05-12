@@ -19,7 +19,7 @@ import Core from '@uppy/core';
 import XHRUpload from '@uppy/xhr-upload';
 import ProgressBar from '@uppy/progress-bar';
 import Form from '@uppy/form';
-import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
+import { defineMessage, defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import '@uppy/core/src/style.scss';
 import '@uppy/progress-bar/src/style.scss';
 import '@uppy/file-input/src/style.scss';
@@ -346,7 +346,11 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 						severity="error"
 						action={
 							<Tooltip title={<FormattedMessage defaultMessage="Retry" />}>
-								<IconButton onClick={() => retryUpload()} size="small">
+								<IconButton
+									onClick={() => retryUpload()}
+									size="small"
+									aria-label={formatMessage(defineMessage({ defaultMessage: 'Retry' }))}
+								>
 									<ReplayRoundedIcon />
 								</IconButton>
 							</Tooltip>

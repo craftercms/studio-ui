@@ -20,7 +20,7 @@ import { ContentItem } from '../../models/Item';
 import LookupTable from '../../models/LookupTable';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Typography } from '@mui/material';
-import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
+import { defineMessage, defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import ItemDisplay from '../ItemDisplay';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
@@ -319,6 +319,7 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
 										e.stopPropagation();
 										onOpenItemMenu(e.currentTarget, path);
 									}}
+									aria-label={formatMessage(defineMessage({ defaultMessage: 'Options' }))}
 								>
 									<MoreVertRoundedIcon />
 								</IconButton>
@@ -336,6 +337,7 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
 										onClearKeywords();
 										onFilterButtonClick();
 									}}
+									aria-label={formatMessage(defineMessage({ defaultMessage: 'Filter' }))}
 								>
 									<SearchRoundedIcon color={showFilter ? 'primary' : 'action'} />
 								</IconButton>
@@ -395,6 +397,7 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
 									marginRight: '10px',
 									...sxs?.searchCloseButton
 								}}
+								aria-label={formatMessage(defineMessage({ defaultMessage: 'Close' }))}
 							>
 								<CloseIconRounded />
 							</IconButton>

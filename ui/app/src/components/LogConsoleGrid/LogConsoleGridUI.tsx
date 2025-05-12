@@ -22,7 +22,7 @@ import TableHead from '@mui/material/TableHead';
 import GlobalAppGridRow from '../GlobalAppGridRow';
 import GlobalAppGridCell from '../GlobalAppGridCell';
 import Typography from '@mui/material/Typography';
-import { FormattedMessage } from 'react-intl';
+import { defineMessage, FormattedMessage, useIntl } from 'react-intl';
 import TableBody from '@mui/material/TableBody';
 import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
 import { IconButton } from '@mui/material';
@@ -37,6 +37,7 @@ interface LogConsoleGridUIProps {
 export function LogConsoleGridUI(props: LogConsoleGridUIProps) {
 	const { logEvents, onLogEventDetails, showSiteColumn } = props;
 	const localeBranch = useSelection((state) => state.uiConfig.locale);
+	const { formatMessage } = useIntl();
 	return (
 		<TableContainer>
 			<Table>
@@ -97,7 +98,11 @@ export function LogConsoleGridUI(props: LogConsoleGridUIProps) {
 								{logEvent.message}
 							</GlobalAppGridCell>
 							<GlobalAppGridCell align="left" className="action">
-								<IconButton onClick={() => onLogEventDetails(logEvent)} size="large">
+								<IconButton
+									onClick={() => onLogEventDetails(logEvent)}
+									size="large"
+									aria-label={formatMessage(defineMessage({ defaultMessage: 'Event details' }))}
+								>
 									<VisibilityRoundedIcon />
 								</IconButton>
 							</GlobalAppGridCell>

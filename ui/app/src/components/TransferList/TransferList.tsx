@@ -20,7 +20,7 @@ import IconButton from '@mui/material/IconButton';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import TransferListColumn, { TransferListColumnProps, TransferListItem } from '../TransferListColumn';
-import { FormattedMessage } from 'react-intl';
+import { defineMessage, FormattedMessage, useIntl } from 'react-intl';
 import Tooltip from '@mui/material/Tooltip';
 
 export interface TransferListProps {
@@ -51,6 +51,7 @@ export function TransferList(props: TransferListProps) {
 		removeFromTarget,
 		disabled = false
 	} = props;
+	const { formatMessage } = useIntl();
 
 	return (
 		<Box display="flex">
@@ -99,7 +100,12 @@ export function TransferList(props: TransferListProps) {
 							}
 						>
 							<span>
-								<IconButton onClick={addToTarget} disabled={disableAdd} size="large">
+								<IconButton
+									onClick={addToTarget}
+									disabled={disableAdd}
+									size="large"
+									aria-label={formatMessage(defineMessage({ defaultMessage: 'Add to target' }))}
+								>
 									<NavigateNextIcon />
 								</IconButton>
 							</span>
@@ -117,7 +123,12 @@ export function TransferList(props: TransferListProps) {
 							}
 						>
 							<span>
-								<IconButton onClick={removeFromTarget} disabled={disableRemove} size="large">
+								<IconButton
+									onClick={removeFromTarget}
+									disabled={disableRemove}
+									size="large"
+									aria-label={formatMessage(defineMessage({ defaultMessage: 'Remove from target' }))}
+								>
 									<NavigateBeforeIcon />
 								</IconButton>
 							</span>

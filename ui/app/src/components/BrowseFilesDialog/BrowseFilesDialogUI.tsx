@@ -19,7 +19,7 @@ import DialogBody from '../DialogBody/DialogBody';
 import DialogFooter from '../DialogFooter/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { defineMessage, FormattedMessage, useIntl } from 'react-intl';
 import { SearchItem } from '../../models';
 import MediaCard from '../MediaCard/MediaCard';
 import SearchBar from '../SearchBar/SearchBar';
@@ -133,13 +133,20 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
 										</>
 									)}
 									<Tooltip title={<FormattedMessage id="word.refresh" defaultMessage="Refresh" />}>
-										<IconButton onClick={onRefresh}>
+										<IconButton
+											onClick={onRefresh}
+											aria-label={formatMessage(defineMessage({ defaultMessage: 'Refresh' }))}
+										>
 											<RefreshIcon />
 										</IconButton>
 									</Tooltip>
 									{allowUpload && (
 										<Tooltip title={<FormattedMessage id="word.upload" defaultMessage="Upload" />}>
-											<IconButton onClick={onUpload} sx={{ mr: 1 }}>
+											<IconButton
+												onClick={onUpload}
+												sx={{ mr: 1 }}
+												aria-label={formatMessage(defineMessage({ defaultMessage: 'Upload' }))}
+											>
 												<UploadFileIcon />
 											</IconButton>
 										</Tooltip>
@@ -269,7 +276,11 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
 								</Box>
 								<Box sx={{ display: 'flex', flexGrow: 0 }}>
 									<Tooltip title={<FormattedMessage defaultMessage="Switch view mode" />}>
-										<IconButton onClick={onToggleViewMode} sx={{ mr: 1 }}>
+										<IconButton
+											onClick={onToggleViewMode}
+											sx={{ mr: 1 }}
+											aria-label={formatMessage(defineMessage({ defaultMessage: 'Switch view mode' }))}
+										>
 											{viewMode === 'card' ? (
 												<ListViewIcon />
 											) : viewMode === 'compact' ? (

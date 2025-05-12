@@ -15,7 +15,7 @@
  */
 
 import React, { ChangeEvent, MouseEvent, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { defineMessage, FormattedMessage, useIntl } from 'react-intl';
 import useSpreadState from '../../hooks/useSpreadState';
 import useEnv from '../../hooks/useEnv';
 import { CreateSiteMeta, LookupTable, MarketplacePlugin, MarketplaceSite, SiteState, Views } from '../../models';
@@ -667,7 +667,11 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
 													<Typography color="text.secondary" variant="overline" sx={{ mr: 2 }}>
 														{formatMessage(messages.publicMarketplaceBlueprints)}
 													</Typography>
-													<IconButton size="small" onClick={handleSearchClick}>
+													<IconButton
+														size="small"
+														onClick={handleSearchClick}
+														aria-label={formatMessage(defineMessage({ defaultMessage: 'Search' }))}
+													>
 														<SearchIcon />
 													</IconButton>
 													<FormControlLabel

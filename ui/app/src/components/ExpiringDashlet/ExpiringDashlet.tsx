@@ -26,7 +26,7 @@ import {
 	ListSubheader
 } from '../DashletCard/dashletCommons';
 import palette from '../../styles/palette';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { defineMessage, FormattedMessage, useIntl } from 'react-intl';
 import Typography from '@mui/material/Typography';
 import ListItemText from '@mui/material/ListItemText';
 import { ExpiredItem, fetchExpired, fetchExpiring } from '../../services/dashboard';
@@ -147,7 +147,11 @@ export function ExpiringDashlet(props: ExpiringDashletProps) {
 			borderLeftColor={borderLeftColor}
 			title={<FormattedMessage id="words.expiring" defaultMessage="Expiring" />}
 			headerAction={
-				<LoadingIconButton onClick={onRefresh} loading={state.loading}>
+				<LoadingIconButton
+					onClick={onRefresh}
+					loading={state.loading}
+					aria-label={formatMessage(defineMessage({ defaultMessage: 'Refresh' }))}
+				>
 					<RefreshRounded />
 				</LoadingIconButton>
 			}

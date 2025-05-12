@@ -28,6 +28,7 @@ export interface DialogHeaderActionProps extends ButtonProps {
 
 export function DialogHeaderAction(props: DialogHeaderActionProps) {
 	const { icon, text, tooltip, disabled = false, ...rest } = props;
+
 	const button = text ? (
 		<Button
 			size="large"

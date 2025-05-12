@@ -34,7 +34,7 @@ import EmptyState from '../EmptyState/EmptyState';
 import ItemActionsSnackbar from '../ItemActionsSnackbar';
 import Button from '@mui/material/Button';
 import ListItemText from '@mui/material/ListItemText';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { defineMessage, FormattedMessage, useIntl } from 'react-intl';
 import ApiResponse from '../../models/ApiResponse';
 import IconButton from '@mui/material/IconButton';
 import MoreVertRounded from '@mui/icons-material/MoreVertRounded';
@@ -380,7 +380,11 @@ export function SearchUI(props: SearchUIProps) {
 													previewAppBaseUri={guestBase}
 													action={
 														mode === 'default' ? (
-															<IconButton onClick={(e) => onHeaderButtonClick(e, item)} size="small">
+															<IconButton
+																onClick={(e) => onHeaderButtonClick(e, item)}
+																size="small"
+																aria-label={formatMessage(defineMessage({ defaultMessage: 'Options' }))}
+															>
 																<MoreVertRounded />
 															</IconButton>
 														) : null

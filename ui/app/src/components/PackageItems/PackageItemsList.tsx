@@ -20,7 +20,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import ItemDisplay from '../ItemDisplay';
 import Tooltip from '@mui/material/Tooltip';
-import { FormattedMessage } from 'react-intl';
+import { defineMessage, FormattedMessage, useIntl } from 'react-intl';
 import IconButton from '@mui/material/IconButton';
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
 import InfiniteLoader from 'react-window-infinite-loader';
@@ -42,6 +42,7 @@ export function PackageItemsList(props: PackageItemsListProps) {
 	const [over, setOver] = useState(null);
 	// If there are more items to be loaded then add an extra row to hold a loading indicator.
 	const currentItemsCount = hasNextPage ? items.length + 1 : items.length;
+	const { formatMessage } = useIntl();
 
 	// Only load 1 page of items at a time.
 	// Pass an empty callback to InfiniteLoader in case it asks us to load more than once.
@@ -103,6 +104,7 @@ export function PackageItemsList(props: PackageItemsListProps) {
 																onOpenMenu(e, item);
 															}}
 															sx={{ padding: 0 }}
+															aria-label={formatMessage(defineMessage({ defaultMessage: 'Options' }))}
 														>
 															<MoreVertRoundedIcon />
 														</IconButton>

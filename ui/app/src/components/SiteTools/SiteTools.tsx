@@ -20,7 +20,7 @@ import MenuList from '@mui/material/MenuList';
 import MenuItem from '@mui/material/MenuItem';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { defineMessage, FormattedMessage, useIntl } from 'react-intl';
 import SystemIcon, { SystemIconDescriptor } from '../SystemIcon';
 import EmptyState from '../EmptyState/EmptyState';
 import CrafterCMSLogo from '../../icons/CrafterCMSLogo';
@@ -124,7 +124,11 @@ export function SiteTools(props: SiteToolsProps) {
 					<Box display="flex" justifyContent="space-between" marginBottom="10px">
 						{onBackClick && (
 							<Tooltip title={<FormattedMessage id="words.preview" defaultMessage="Preview" />}>
-								<IconButton onClick={onBackClick} size="large">
+								<IconButton
+									onClick={onBackClick}
+									size="large"
+									aria-label={formatMessage(defineMessage({ defaultMessage: 'Preview' }))}
+								>
 									<KeyboardArrowLeftRoundedIcon />
 								</IconButton>
 							</Tooltip>

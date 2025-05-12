@@ -280,7 +280,11 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
 				/>
 			}
 			headerAction={
-				<LoadingIconButton onClick={onRefresh} loading={loading}>
+				<LoadingIconButton
+					onClick={onRefresh}
+					loading={loading}
+					aria-label={formatMessage({ defaultMessage: 'Refresh' })}
+				>
 					<RefreshRounded />
 				</LoadingIconButton>
 			}

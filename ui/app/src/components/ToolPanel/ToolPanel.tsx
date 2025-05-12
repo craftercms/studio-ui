@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useIntl } from 'react-intl';
+import { defineMessage, useIntl } from 'react-intl';
 import React, { ElementType, FunctionComponent, PropsWithChildren, ReactElement, Suspense } from 'react';
 import Typography from '@mui/material/Typography';
 import ChevronLeftRounded from '@mui/icons-material/ChevronLeftRounded';
@@ -45,6 +45,7 @@ interface PanelHeaderProps {
 
 export const PanelHeader: FunctionComponent<PanelHeaderProps> = (props) => {
 	const { title, BackIcon = ChevronLeftRounded, onBack } = props;
+	const { formatMessage } = useIntl();
 	return (
 		<>
 			<Box
@@ -57,7 +58,7 @@ export const PanelHeader: FunctionComponent<PanelHeaderProps> = (props) => {
 					justifyContent: 'flex-start'
 				})}
 			>
-				<IconButton onClick={onBack} size="large">
+				<IconButton onClick={onBack} size="large" aria-label={formatMessage(defineMessage({ defaultMessage: 'Back' }))}>
 					<BackIcon />
 				</IconButton>
 				<Typography component="h2" noWrap title={title}>

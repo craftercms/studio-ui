@@ -16,7 +16,7 @@
 
 import React from 'react';
 import IconButton from '@mui/material/IconButton';
-import { defineMessages, useIntl } from 'react-intl';
+import { defineMessage, defineMessages, useIntl } from 'react-intl';
 import Typography from '@mui/material/Typography';
 import LauncherOpenerButton from '../LauncherOpenerButton/LauncherOpenerButton';
 import SearchBar from '../SearchBar/SearchBar';
@@ -97,7 +97,11 @@ export function SiteSearchToolBar(props: SiteSearchToolBarProps) {
 			</Box>
 			<section>
 				<Tooltip title={formatMessage(translations.changeViewButtonTip)}>
-					<IconButton onClick={handleChangeView} size="large">
+					<IconButton
+						onClick={handleChangeView}
+						size="large"
+						aria-label={formatMessage(translations.changeViewButtonTip)}
+					>
 						{currentView === 'grid' ? <ListViewIcon /> : <GridViewIcon />}
 					</IconButton>
 				</Tooltip>

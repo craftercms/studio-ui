@@ -25,7 +25,7 @@ import { Site } from '../../models/Site';
 import CardMedia from '@mui/material/CardMedia';
 import CardActions from '@mui/material/CardActions';
 import Tooltip from '@mui/material/Tooltip';
-import { FormattedMessage } from 'react-intl';
+import { defineMessage, FormattedMessage, useIntl } from 'react-intl';
 import CardActionArea from '@mui/material/CardActionArea';
 import { alpha, Typography } from '@mui/material';
 import { PublishingStatus } from '../../models/Publishing';
@@ -72,6 +72,7 @@ export function SiteCard(props: SiteCardProps) {
 	const isSiteReady = site.state === 'READY';
 	const [dataUrl, fetch] = useProjectPreviewImage(site.id, fallbackImageSrc);
 	const color = useMemo(() => toColor(site.name), [site.name]);
+	const { formatMessage } = useIntl();
 
 	useEffect(() => {
 		if (isSiteReady) {
@@ -198,7 +199,12 @@ export function SiteCard(props: SiteCardProps) {
 				)}
 				{isSiteReady && onEditSiteClick && (
 					<Tooltip title={<FormattedMessage id="words.edit" defaultMessage="Edit" />}>
-						<IconButton onClick={() => onEditSiteClick(site)} size={compact ? 'small' : 'medium'} disabled={disabled}>
+						<IconButton
+							onClick={() => onEditSiteClick(site)}
+							size={compact ? 'small' : 'medium'}
+							disabled={disabled}
+							aria-label={formatMessage(defineMessage({ defaultMessage: 'Edit' }))}
+						>
 							<EditRoundedIcon />
 						</IconButton>
 					</Tooltip>
@@ -209,6 +215,7 @@ export function SiteCard(props: SiteCardProps) {
 							onClick={() => onDuplicateSiteClick(site.id)}
 							size={compact ? 'small' : 'medium'}
 							disabled={disabled}
+							aria-label={formatMessage(defineMessage({ defaultMessage: 'Duplicate' }))}
 						>
 							<ContentCopyIcon />
 						</IconButton>
@@ -216,7 +223,12 @@ export function SiteCard(props: SiteCardProps) {
 				)}
 				{isSiteReady && onDeleteSiteClick && (
 					<Tooltip title={<FormattedMessage defaultMessage="Delete" />}>
-						<IconButton onClick={() => onDeleteSiteClick(site)} size={compact ? 'small' : 'medium'} disabled={disabled}>
+						<IconButton
+							onClick={() => onDeleteSiteClick(site)}
+							size={compact ? 'small' : 'medium'}
+							disabled={disabled}
+							aria-label={formatMessage(defineMessage({ defaultMessage: 'Delete' }))}
+						>
 							<DeleteRoundedIcon />
 						</IconButton>
 					</Tooltip>

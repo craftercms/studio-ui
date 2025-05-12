@@ -15,7 +15,7 @@
  */
 
 import { getResponseError as getResponseErrorUtil, UploadDialogContainerProps } from './util';
-import { useIntl } from 'react-intl';
+import { defineMessage, useIntl } from 'react-intl';
 import { useSelection } from '../../hooks/useSelection';
 import React, { useEffect } from 'react';
 import { Uppy } from '@uppy/core';
@@ -176,7 +176,11 @@ export function UploadDialogContainer(props: UploadDialogContainerProps) {
 	return (
 		<>
 			<Button style={{ display: 'none' }}>test</Button>
-			<IconButton style={{ display: 'none' }} size="large">
+			<IconButton
+				style={{ display: 'none' }}
+				size="large"
+				aria-label={formatMessage(defineMessage({ defaultMessage: 'Close' }))}
+			>
 				<CloseIconRounded />
 			</IconButton>
 			<DialogBody sx={{ minHeight: '60vh', padding: 0 }}>
