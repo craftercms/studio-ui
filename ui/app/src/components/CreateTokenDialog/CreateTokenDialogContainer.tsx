@@ -82,11 +82,11 @@ export function CreateTokenDialogContainer(props: CreateTokenContainerProps) {
 				});
 				onCreated?.(token);
 			},
-			(response) => {
+			({ response }) => {
 				functionRefs.current.onSubmittingAndOrPendingChange({
 					isSubmitting: false
 				});
-				dispatch(showErrorDialog({ error: response }));
+				dispatch(showErrorDialog({ error: response.response }));
 			}
 		);
 	};
