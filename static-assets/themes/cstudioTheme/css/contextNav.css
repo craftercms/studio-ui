@@ -1067,6 +1067,7 @@ body.yui-skin-cstudioTheme .mask {
   width: 30%;
   float: left;
   overflow-y: auto;
+  max-height: 80vh;
 }
 
 #crop-popup-inner .rightControls .img-preview > img {
