@@ -1080,8 +1080,8 @@ body.yui-skin-cstudioTheme .mask {
 
 #crop-popup-inner .rightControls {
 	width: 30%;
-	height: 268px;
 	float: left;
+	overflow-y: auto;
 }
 
 #crop-popup-inner .rightControls .img-preview > img {
