@@ -1533,6 +1533,7 @@ const initializeCStudioForms = () => {
                       var getContentItemCb = {
                         success: function (contentTO) {
                           var previewUrl = CStudioAuthoringContext.previewAppBaseUri + contentTO.item.browserUri;
+                          const initialPath = path;
                           path = entityId;
                           var formId = CStudioAuthoring.Utils.getQueryVariable(location.search.substring(1), 'wid');
                           var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
@@ -1553,6 +1554,8 @@ const initializeCStudioForms = () => {
 
                             contentTO.initialModel = CStudioForms.initialModel;
                             contentTO.updatedModel = CStudioForms.updatedModel;
+                            contentTO.initialModelPath = initialPath;
+                            contentTO.updatedModelPath = entityId;
 
                             iceWindowCallback.success(contentTO, editorId, name, value, draft, action);
 
