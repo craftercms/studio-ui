@@ -5006,11 +5006,11 @@ __metadata:
   linkType: hard
 
 "@types/react-dom@npm:^19.0.4":
-  version: 19.0.4
-  resolution: "@types/react-dom@npm:19.0.4"
+  version: 19.1.4
+  resolution: "@types/react-dom@npm:19.1.4"
   peerDependencies:
     "@types/react": ^19.0.0
-  checksum: 10/f15d470242f0b7cca57dd7e991a2852525ac93b2cb92f7e6c104d7bd6a978c3b1d0ba9b8698f23bc19c16b5cd98a6d160007be52c61196952f57cf019f204254
+  checksum: 10/bf25b3911152b7b5be0f65313532e1cefb33c5d836c49e6bafa55e55f61b04dfad065108b6145f294e22bb280002f9f75538c9b5353df25e83083435e1c00f05
   languageName: node
   linkType: hard
 
