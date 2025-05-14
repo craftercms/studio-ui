@@ -22,7 +22,9 @@ import Freemarker from '../../icons/Freemarker';
 import Html from '../../icons/Html';
 import Css from '../../icons/Css';
 import ComponentIcon from '../../icons/Component';
+import ComponentIconSolid from '@mui/icons-material/Extension';
 import PageIcon from '../../icons/Page';
+import PageIconSolid from '@mui/icons-material/InsertDriveFile';
 import LevelDescriptorIcon from '../../icons/LevelDescriptor';
 import Tooltip, { TooltipProps } from '@mui/material/Tooltip';
 import * as React from 'react';
@@ -35,9 +37,10 @@ import FontIcon from '@mui/icons-material/FontDownloadOutlined';
 import TextIcon from '@mui/icons-material/SubjectRounded';
 import FolderIcon from '@mui/icons-material/FolderOpenRounded';
 import TaxonomyIcon from '@mui/icons-material/LocalOfferOutlined';
+import TaxonomyIconSolid from '@mui/icons-material/LocalOffer';
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import { ContentItem } from '../../models/Item';
-import { IntlFormatters, useIntl } from 'react-intl';
+import { defineMessage, IntlFormatters, useIntl } from 'react-intl';
 import { messages } from './translations';
 import { SvgIconProps } from '@mui/material/SvgIcon';
 import { BoxProps } from '@mui/material/Box';
@@ -45,6 +48,7 @@ import { BoxProps } from '@mui/material/Box';
 export interface ItemTypeIconProps extends SvgIconProps {
 	item: Pick<ContentItem, 'systemType' | 'mimeType'>;
 	tooltipProps?: Partial<TooltipProps>;
+	disabled?: boolean;
 	sxs?: Partial<{
 		icon: BoxProps['sx'];
 	}>;
@@ -52,17 +56,22 @@ export interface ItemTypeIconProps extends SvgIconProps {
 
 export function getItemTypeText(
 	item: Pick<ContentItem, 'systemType' | 'mimeType'>,
-	formatMessage: IntlFormatters['formatMessage']
+	formatMessage: IntlFormatters['formatMessage'],
+	disabled: boolean = false
 ) {
-	return messages[item.systemType]
+	let itemTypeText = messages[item.systemType]
 		? formatMessage(messages[item.systemType])
 		: item.mimeType
 			? item.mimeType
 			: formatMessage(messages.unknown);
+	itemTypeText = disabled
+		? `${formatMessage(defineMessage({ defaultMessage: 'Disabled' }))} ${itemTypeText}`
+		: itemTypeText;
+	return itemTypeText;
 }
 
 export function ItemTypeIcon(props: ItemTypeIconProps) {
-	const { item, tooltipProps, sxs, ...rest } = props;
+	const { item, tooltipProps, disabled = false, sxs, ...rest } = props;
 	const { formatMessage } = useIntl();
 	let TheIcon = UnknownStateIcon;
 	switch (item.systemType) {
@@ -124,10 +133,10 @@ export function ItemTypeIcon(props: ItemTypeIconProps) {
 			}
 			break;
 		case 'component':
-			TheIcon = ComponentIcon;
+			TheIcon = disabled ? ComponentIconSolid : ComponentIcon;
 			break;
 		case 'page':
-			TheIcon = PageIcon;
+			TheIcon = disabled ? PageIconSolid : PageIcon;
 			break;
 		case 'folder':
 			TheIcon = FolderIcon;
@@ -142,14 +151,14 @@ export function ItemTypeIcon(props: ItemTypeIconProps) {
 			TheIcon = Groovy;
 			break;
 		case 'taxonomy':
-			TheIcon = TaxonomyIcon;
+			TheIcon = disabled ? TaxonomyIconSolid : TaxonomyIcon;
 			break;
 		case 'configuration':
 			TheIcon = SettingsOutlinedIcon;
 			break;
 	}
 	return (
-		<Tooltip {...tooltipProps} title={getItemTypeText(item, formatMessage)}>
+		<Tooltip {...tooltipProps} title={getItemTypeText(item, formatMessage, disabled)}>
 			<TheIcon sx={sxs?.icon} {...rest} />
 		</Tooltip>
 	);
