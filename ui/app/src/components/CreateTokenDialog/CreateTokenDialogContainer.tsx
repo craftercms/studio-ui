@@ -86,7 +86,12 @@ export function CreateTokenDialogContainer(props: CreateTokenContainerProps) {
 				functionRefs.current.onSubmittingAndOrPendingChange({
 					isSubmitting: false
 				});
-				dispatch(showErrorDialog({ error: response.response }));
+				dispatch(
+					showErrorDialog({
+						error: response.response,
+						validationErrors: response.validationErrors
+					})
+				);
 			}
 		);
 	};
