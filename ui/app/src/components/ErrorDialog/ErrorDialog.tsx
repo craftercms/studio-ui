@@ -20,7 +20,7 @@ import CloseIcon from '@mui/icons-material/CloseRounded';
 import Dialog from '@mui/material/Dialog';
 import StandardAction from '../../models/StandardAction';
 import { ApiResponse } from '../../models/ApiResponse';
-import ApiResponseErrorState, { ApiResponseErrorStateProps } from '../ApiResponseErrorState';
+import ApiResponseErrorState, { type ApiResponseErrorStateProps } from '../ApiResponseErrorState';
 import { useUnmount } from '../../hooks/useUnmount';
 import Box from '@mui/material/Box';
 
