@@ -272,9 +272,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 						setConfirm({ body: message });
 						setSuggestedName(modifiedName);
 					} else {
-						// When uploading large files to aws/s3, something causes requests to fail and get retried n times before finally stating it failed; despite the file seemingly actually getting uploaded.
-						// This setTimeout avoids that issue. The mechanism of failure or why this avoids it is unknown.
-						setTimeout(() => uppy.upload(), 50);
+						uppy.upload();
 						setDescription(`${formatMessage(messages.uploadingFile)}:`);
 						onUploadStart?.();
 					}
@@ -295,7 +293,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 	}, [onUploadStart, formatMessage, path, site, uppy]);
 
 	const onConfirm = () => {
-		uppy.upload();
+		uppy.upload().then(() => {});
 		setSuggestedName(null);
 		setDescription(`${formatMessage(messages.uploadingFile)}:`);
 		onUploadStart?.();
