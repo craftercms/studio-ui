@@ -93,14 +93,6 @@ export function DisabledItemIcon(props: DisabledItemIconProps) {
 			className={[classes?.icon, itemTypeIconProps?.className].filter(Boolean).join(' ')}
 			sx={{
 				fontSize: '1.1rem',
-				...(item.stateMap.disabled
-					? {
-							position: 'absolute',
-							top: '-5px',
-							left: '-3px',
-							padding: '3px'
-						}
-					: {}),
 				...sxs?.icon
 			}}
 		/>
