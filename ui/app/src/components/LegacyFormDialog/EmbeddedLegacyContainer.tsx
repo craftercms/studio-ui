@@ -168,7 +168,7 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
               authoringBase
             });
           } else {
-            getHostToGuestBus().next({ type: reloadRequest.type });
+            getHostToGuestBus().next(reloadRequest());
           }
           dispatch(updateEditDialogConfig({ pendingChanges: false }));
           switch (e.data.action) {
