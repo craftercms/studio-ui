@@ -386,7 +386,7 @@ export function initTinyMCE(
 					// Hypothesis is the focusout destroys the editor before some internal tiny thing runs.
 					// @ts-ignore - Add "forced" property to be able to recognise this manually-triggered focusout on our handler.
 					setTimeout(() => editor.fire('focusout', { forced: true }));
-				} else if (e.key === 'Enter' && type !== 'html' && type !== 'textarea') {
+				} else if (e.key === 'Enter' && !isRTE && type !== 'textarea') {
 					// Avoid new line in plain text fields
 					e.preventDefault();
 				} else if (
