@@ -47,6 +47,7 @@ export function initTinyMCE(
 	const originalRawContent = originalElement.innerHTML;
 	let rteEl = originalElement;
 	const isRecordElInline = record.element.tagName.match(inlineElsRegex);
+	const isRTE = type === 'rte';
 
 	// If record element is of type inline (doesn't matter the display prop), replace it with a block element (div).
 	// This is because of an issue happening with inline elements (for example a span tag even with 'display: block' style
@@ -124,8 +125,8 @@ export function initTinyMCE(
 		// For some reason this is not working.
 		// body_class: 'craftercms-rich-text-editor',
 		plugins: ['craftercms_paste editform', rteSetup?.tinymceOptions?.plugins].filter(Boolean).join(' '), // 'editform' plugin will always be loaded
-		paste_as_text: type !== 'html',
-		paste_data_images: type === 'html',
+		paste_as_text: !isRTE,
+		paste_data_images: isRTE,
 		paste_preprocess(editor, args) {
 			const currentContent = editor.getContent({ format: 'text' });
 			const fullContent = currentContent + args.content;
@@ -148,7 +149,7 @@ export function initTinyMCE(
 		paste_postprocess(plugin, args) {
 			window.tinymce.activeEditor.plugins.craftercms_paste_extension?.paste_postprocess(plugin, args);
 		},
-		toolbar: type === 'html',
+		toolbar: isRTE,
 		menubar: false,
 		inline: true,
 		base_url: '/studio/static-assets/libs/tinymce',
@@ -236,11 +237,11 @@ export function initTinyMCE(
 			}
 
 			function getContent() {
-				return editor.getContent({ format: type === 'html' ? 'html' : 'text' });
+				return editor.getContent({ format: isRTE ? 'html' : 'text' });
 			}
 
 			function getSelectionContent() {
-				return editor.selection.getContent({ format: type === 'html' ? 'html' : 'text' });
+				return editor.selection.getContent({ format: isRTE ? 'html' : 'text' });
 			}
 
 			function destroyEditor() {
@@ -280,7 +281,7 @@ export function initTinyMCE(
 					// Replace line breaks with <br> for textarea fields
 					// Address line breaks in textarea fields: https://github.com/craftercms/craftercms/issues/6432
 					editor.setContent(content.replaceAll('\n', '<br>'), { format: 'html' });
-				} else if (type === 'html') {
+				} else if (isRTE) {
 					// Set content in 'html' format for the editor to exec its internal cleanup mechanisms
 					// For example, removal of potentially problematic line breaks which we're seeing cause the list plugin to crash (https://github.com/craftercms/craftercms/issues/6514)
 					editor.setContent(content, { format: 'html' });
