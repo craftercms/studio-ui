@@ -30,6 +30,7 @@ import { editComponentInline, exitComponentInlineEdit } from '../store/actions';
 import { emptyFieldClass } from '../constants';
 import { rtePickerActionResult, showRtePickerActions } from '@craftercms/studio-ui/state/actions/dialogs';
 import { unlockItem } from '@craftercms/studio-ui/state/actions/content';
+import { getPreviewURLFromPath } from '@craftercms/studio-ui/utils/path';
 
 export function initTinyMCE(
   path: string,
@@ -153,7 +154,8 @@ export function initTinyMCE(
             'allowVideoUpload',
             'allowVideosFromRepo',
             'allowAudioUpload',
-            'allowAudioFromRepo'
+            'allowAudioFromRepo',
+            'allowFilesFromRepo'
           ].includes(validation.id)
         ) {
           datasources[validation.id] = validation;
@@ -177,7 +179,8 @@ export function initTinyMCE(
         )
         .subscribe(({ payload }) => {
           if (payload) {
-            cb(payload.path, { alt: payload.name });
+            const path = meta.filetype === 'file' ? getPreviewURLFromPath(payload.path) : payload.path;
+            cb(path, { alt: payload.name });
           }
         });
     },
