@@ -98,7 +98,7 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
       '<div class="contentTypePopupInner crop-image-dialog" id="crop-popup-inner">' +
       '<div class="contentTypePopupContent" id="contentTypePopupContent"> ' +
       '<div class="contentTypePopupHeader">Crop Image</div> ' +
-      '<div>' +
+      '<div class="contentTypeContentWrapper">' +
       '<div class="contentTypeOuter clearfix">' +
       '<div class="formDesc">' +
       Message +
@@ -179,6 +179,8 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
       constraintoviewport: true,
       underlay: 'none'
     });
+    crop_dialog.element.classList.add('crop-image-dialog-panel-container');
+    crop_dialog.innerElement.classList.add('crop-image-dialog-panel-content');
 
     // Render the Dialog
     crop_dialog.render();
