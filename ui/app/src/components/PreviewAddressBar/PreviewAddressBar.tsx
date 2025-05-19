@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { defineMessage, FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { isBlank } from '../../utils/string';
 import React, { MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -167,7 +167,7 @@ export function PreviewAddressBar(props: AddressBarProps) {
 					onClick={noSiteSet ? undefined : onRefresh}
 					size="large"
 					disabled={noSiteSet}
-					aria-label={formatMessage(defineMessage({ defaultMessage: 'Reload this page' }))}
+					aria-label={formatMessage({ defaultMessage: 'Reload this page' })}
 				>
 					<RefreshRounded />
 				</IconButton>
@@ -223,7 +223,7 @@ export function PreviewAddressBar(props: AddressBarProps) {
 						sx={error ? { visibility: 'hidden' } : undefined}
 						size="medium"
 						id="previewAddressBarActionsMenuButton"
-						aria-label="Options"
+						aria-label={formatMessage({ defaultMessage: 'Options' })}
 					>
 						<MoreRounded sx={alertLevel === 2 ? { visibility: 'hidden' } : undefined} />
 						{!item && !error && (

@@ -19,7 +19,7 @@ import IconButton from '@mui/material/IconButton';
 import InputBase, { inputBaseClasses, InputBaseProps } from '@mui/material/InputBase';
 import SearchIcon from '@mui/icons-material/SearchRounded';
 import CloseIcon from '@mui/icons-material/Close';
-import { defineMessage, defineMessages, useIntl } from 'react-intl';
+import { defineMessages, useIntl } from 'react-intl';
 import Paper, { PaperProps } from '@mui/material/Paper';
 import { PartialSxRecord } from '../../models';
 import { consolidateSx } from '../../utils/system';
@@ -113,7 +113,7 @@ export function SearchBar(props: SearchBarProps) {
 				<IconButton
 					onClick={onDecoratorButtonClick}
 					size="large"
-					aria-label={formatMessage(defineMessage({ defaultMessage: 'decorator' }))}
+					aria-label={formatMessage({ defaultMessage: 'decorator' })}
 				>
 					<DecoratorIcon sx={{ color: (theme) => theme.palette.text.secondary }} />
 				</IconButton>
@@ -188,7 +188,7 @@ export function SearchBar(props: SearchBarProps) {
 					}}
 					sx={{ padding: '6px' }}
 					size="small"
-					aria-label={formatMessage(defineMessage({ defaultMessage: 'Clear' }))}
+					aria-label={formatMessage({ defaultMessage: 'Clear' })}
 				>
 					<ActionButtonIcon
 						fontSize="small"

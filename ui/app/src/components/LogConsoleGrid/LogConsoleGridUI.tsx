@@ -22,7 +22,7 @@ import TableHead from '@mui/material/TableHead';
 import GlobalAppGridRow from '../GlobalAppGridRow';
 import GlobalAppGridCell from '../GlobalAppGridCell';
 import Typography from '@mui/material/Typography';
-import { defineMessage, FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import TableBody from '@mui/material/TableBody';
 import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
 import { IconButton } from '@mui/material';
@@ -101,7 +101,7 @@ export function LogConsoleGridUI(props: LogConsoleGridUIProps) {
 								<IconButton
 									onClick={() => onLogEventDetails(logEvent)}
 									size="large"
-									aria-label={formatMessage(defineMessage({ defaultMessage: 'Event details' }))}
+									aria-label={formatMessage({ defaultMessage: 'Event details' })}
 								>
 									<VisibilityRoundedIcon />
 								</IconButton>

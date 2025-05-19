@@ -203,7 +203,7 @@ export function SiteCard(props: SiteCardProps) {
 							onClick={() => onEditSiteClick(site)}
 							size={compact ? 'small' : 'medium'}
 							disabled={disabled}
-							aria-label={formatMessage(defineMessage({ defaultMessage: 'Edit' }))}
+							aria-label={formatMessage({ defaultMessage: 'Edit' })}
 						>
 							<EditRoundedIcon />
 						</IconButton>
@@ -215,7 +215,7 @@ export function SiteCard(props: SiteCardProps) {
 							onClick={() => onDuplicateSiteClick(site.id)}
 							size={compact ? 'small' : 'medium'}
 							disabled={disabled}
-							aria-label={formatMessage(defineMessage({ defaultMessage: 'Duplicate' }))}
+							aria-label={formatMessage({ defaultMessage: 'Duplicate' })}
 						>
 							<ContentCopyIcon />
 						</IconButton>
@@ -227,7 +227,7 @@ export function SiteCard(props: SiteCardProps) {
 							onClick={() => onDeleteSiteClick(site)}
 							size={compact ? 'small' : 'medium'}
 							disabled={disabled}
-							aria-label={formatMessage(defineMessage({ defaultMessage: 'Delete' }))}
+							aria-label={formatMessage({ defaultMessage: 'Delete' })}
 						>
 							<DeleteRoundedIcon />
 						</IconButton>

@@ -20,7 +20,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import ItemDisplay from '../ItemDisplay';
 import Tooltip from '@mui/material/Tooltip';
-import { defineMessage, FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import IconButton from '@mui/material/IconButton';
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
 import InfiniteLoader from 'react-window-infinite-loader';
@@ -104,7 +104,7 @@ export function PackageItemsList(props: PackageItemsListProps) {
 																onOpenMenu(e, item);
 															}}
 															sx={{ padding: 0 }}
-															aria-label={formatMessage(defineMessage({ defaultMessage: 'Options' }))}
+															aria-label={formatMessage({ defaultMessage: 'Options' })}
 														>
 															<MoreVertRoundedIcon />
 														</IconButton>

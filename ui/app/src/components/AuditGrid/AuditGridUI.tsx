@@ -19,7 +19,7 @@ import { PagedArray } from '../../models/PagedArray';
 import Box from '@mui/material/Box';
 import React, { useCallback, useMemo, useState } from 'react';
 import { DataGrid, GridCellParams, gridClasses, GridColDef, GridSortModel } from '@mui/x-data-grid';
-import { defineMessage, defineMessages, FormattedMessage, useIntl } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { AuditOptions } from '../../services/audit';
 import { Site } from '../../models/Site';
 import User from '../../models/User';
@@ -310,7 +310,7 @@ export function AuditGridUI(props: AuditGridUIProps) {
 							<IconButton
 								onClick={() => onGetParameters(params)}
 								size="large"
-								aria-label={formatMessage(defineMessage({ defaultMessage: 'Show parameters' }))}
+								aria-label={formatMessage({ defaultMessage: 'Show parameters' })}
 							>
 								<VisibilityRoundedIcon />
 							</IconButton>

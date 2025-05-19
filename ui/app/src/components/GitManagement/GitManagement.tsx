@@ -16,7 +16,7 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import GlobalAppToolbar from '../GlobalAppToolbar';
-import { defineMessage, FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import AddIcon from '@mui/icons-material/Add';
@@ -226,7 +226,7 @@ export function GitManagement(props: GitManagementProps) {
 								fetchRepositories();
 								fetchRepoStatus();
 							}}
-							aria-label={formatMessage(defineMessage({ defaultMessage: 'Refresh' }))}
+							aria-label={formatMessage({ defaultMessage: 'Refresh' })}
 						>
 							<RefreshRounded />
 						</IconButton>

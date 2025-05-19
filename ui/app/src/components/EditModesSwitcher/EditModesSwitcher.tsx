@@ -21,7 +21,7 @@ import { ContentItem } from '../../models/Item';
 import { usePreviewState } from '../../hooks/usePreviewState';
 import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
-import { defineMessage, FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import IconButton from '@mui/material/IconButton';
 import { UNDEFINED } from '../../utils/constants';
 import PowerSettingsNewRoundedIcon from '@mui/icons-material/PowerSettingsNewRounded';
@@ -79,7 +79,7 @@ export function EditModesSwitcher(props: EditModesSwitcherProps) {
 						borderBottomRightRadius: 0,
 						...(!editMode && { cursor: 'default' })
 					}}
-					aria-label={formatMessage(defineMessage({ defaultMessage: 'Switch off editing' }))}
+					aria-label={formatMessage({ defaultMessage: 'Switch off editing' })}
 				>
 					<PowerSettingsNewRoundedIcon />
 				</IconButton>
@@ -98,7 +98,7 @@ export function EditModesSwitcher(props: EditModesSwitcherProps) {
 						borderRadius: 0,
 						...(isAllHighlightMode && commonModeButtonStyle)
 					}}
-					aria-label={formatMessage(defineMessage({ defaultMessage: 'Edit mode' }))}
+					aria-label={formatMessage({ defaultMessage: 'Edit mode' })}
 				>
 					<EditRoundedIcon />
 				</IconButton>
@@ -118,7 +118,7 @@ export function EditModesSwitcher(props: EditModesSwitcherProps) {
 						borderBottomLeftRadius: 0,
 						...(isMoveHighlightMode && commonModeButtonStyle)
 					}}
-					aria-label={formatMessage(defineMessage({ defaultMessage: 'Move mode' }))}
+					aria-label={formatMessage({ defaultMessage: 'Move mode' })}
 				>
 					<DragIndicatorRoundedIcon />
 				</IconButton>

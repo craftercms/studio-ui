@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { defineMessage, defineMessages, FormattedMessage, useIntl } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
 import Tooltip from '@mui/material/Tooltip';
@@ -125,7 +125,7 @@ export function EditUserDialogUI(props: EditUserDialogUIProps) {
 								<IconButton
 									onClick={() => onResetPassword(true)}
 									size="large"
-									aria-label={formatMessage(defineMessage({ defaultMessage: 'Reset password' }))}
+									aria-label={formatMessage({ defaultMessage: 'Reset password' })}
 								>
 									<PasswordRoundedIcon />
 								</IconButton>
@@ -159,7 +159,7 @@ export function EditUserDialogUI(props: EditUserDialogUIProps) {
 							edge="end"
 							onClick={onCloseButtonClick}
 							size="large"
-							aria-label={formatMessage(defineMessage({ defaultMessage: 'Close' }))}
+							aria-label={formatMessage({ defaultMessage: 'Close' })}
 						>
 							<CloseRoundedIcon />
 						</IconButton>

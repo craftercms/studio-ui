@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { defineMessage, defineMessages, FormattedMessage, useIntl } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import AddIcon from '@mui/icons-material/Add';
 import SkeletonSitesGrid from '../SitesGrid/SitesGridSkeleton';
 import CreateSiteDialog from '../CreateSiteDialog/CreateSiteDialog';
@@ -209,7 +209,7 @@ export function SiteManagement() {
 						<IconButton
 							onClick={handleChangeView}
 							size="large"
-							aria-label={formatMessage(defineMessage({ defaultMessage: 'Change view' }))}
+							aria-label={formatMessage({ defaultMessage: 'Change view' })}
 						>
 							{currentView === 'grid' ? <ListViewIcon /> : <GridViewIcon />}
 						</IconButton>

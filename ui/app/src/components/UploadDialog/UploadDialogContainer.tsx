@@ -15,7 +15,7 @@
  */
 
 import { getResponseError as getResponseErrorUtil, UploadDialogContainerProps } from './util';
-import { defineMessage, useIntl } from 'react-intl';
+import { useIntl } from 'react-intl';
 import { useSelection } from '../../hooks/useSelection';
 import React, { useEffect } from 'react';
 import { Uppy } from '@uppy/core';
@@ -30,7 +30,7 @@ import DialogBody from '../DialogBody/DialogBody';
 import UppyDashboard from '../UppyDashboard';
 import useSiteUIConfig from '../../hooks/useSiteUIConfig';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
-import type { Meta, Body } from '@uppy/utils/lib/UppyFile';
+import type { Body, Meta } from '@uppy/utils/lib/UppyFile';
 import type { XHRUploadOptions as UppyXHRUploadOptions } from '@uppy/xhr-upload';
 import { nnou } from '../../utils/object';
 
@@ -176,11 +176,7 @@ export function UploadDialogContainer(props: UploadDialogContainerProps) {
 	return (
 		<>
 			<Button style={{ display: 'none' }}>test</Button>
-			<IconButton
-				style={{ display: 'none' }}
-				size="large"
-				aria-label={formatMessage(defineMessage({ defaultMessage: 'Close' }))}
-			>
+			<IconButton style={{ display: 'none' }} size="large" aria-label={formatMessage({ defaultMessage: 'Close' })}>
 				<CloseIconRounded />
 			</IconButton>
 			<DialogBody sx={{ minHeight: '60vh', padding: 0 }}>

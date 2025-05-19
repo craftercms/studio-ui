@@ -16,7 +16,7 @@
 
 import React from 'react';
 import IconButton from '@mui/material/IconButton';
-import { defineMessage, defineMessages, useIntl } from 'react-intl';
+import { defineMessages, useIntl } from 'react-intl';
 import Typography from '@mui/material/Typography';
 import LauncherOpenerButton from '../LauncherOpenerButton/LauncherOpenerButton';
 import SearchBar from '../SearchBar/SearchBar';

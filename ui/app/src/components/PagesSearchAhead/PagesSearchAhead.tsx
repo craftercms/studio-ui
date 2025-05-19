@@ -26,7 +26,7 @@ import EmptyState from '../EmptyState/EmptyState';
 import Page from '../../icons/Page';
 import CloseIcon from '@mui/icons-material/Close';
 import { getPreviewURLFromPath } from '../../utils/path';
-import { defineMessage, FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import parse from 'autosuggest-highlight/parse';
 import match from 'autosuggest-highlight/match';
 import palette from '../../styles/palette';
@@ -189,7 +189,7 @@ export function PagesSearchAhead(props: PagesSearchAheadProps) {
 								sx={{ padding: '3px', ...sxs?.closeIcon }}
 								onClick={onClean}
 								size="large"
-								aria-label={formatMessage(defineMessage({ defaultMessage: 'Clean' }))}
+								aria-label={formatMessage({ defaultMessage: 'Clean' })}
 							>
 								<CloseIcon fontSize="small" />
 							</IconButton>

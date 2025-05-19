@@ -20,7 +20,7 @@ import TableHead from '@mui/material/TableHead';
 import GlobalAppGridRow from '../../GlobalAppGridRow';
 import GlobalAppGridCell from '../../GlobalAppGridCell';
 import Typography from '@mui/material/Typography';
-import { defineMessage, FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import TableBody from '@mui/material/TableBody';
 import TableContainer from '@mui/material/TableContainer';
 import React from 'react';
@@ -60,7 +60,7 @@ export function RepoGridUI(props: RepoGridUIProps) {
 											onClick={() => onPullClick(repository.name, repository.branches)}
 											disabled={disableActions}
 											size="large"
-											aria-label={formatMessage(defineMessage({ defaultMessage: 'Pull' }))}
+											aria-label={formatMessage({ defaultMessage: 'Pull' })}
 										>
 											<ArrowDownwardRoundedIcon />
 										</IconButton>
@@ -72,7 +72,7 @@ export function RepoGridUI(props: RepoGridUIProps) {
 											onClick={() => onPushClick(repository.name, repository.branches)}
 											disabled={disableActions}
 											size="large"
-											aria-label={formatMessage(defineMessage({ defaultMessage: 'Push' }))}
+											aria-label={formatMessage({ defaultMessage: 'Push' })}
 										>
 											<ArrowUpwardRoundedIcon />
 										</IconButton>

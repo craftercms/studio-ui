@@ -28,7 +28,8 @@ import CloseFullscreenOutlinedIcon from '@mui/icons-material/CloseFullscreenOutl
 import IconButton from '@mui/material/IconButton';
 import useSiteDashboardContext from '../SiteDashboard/useSiteDashboardContext';
 import CardActionArea from '@mui/material/CardActionArea';
-import { defineMessage, useIntl } from 'react-intl';
+import { useIntl } from 'react-intl';
+
 export type DashletCardProps = PropsWithChildren<
 	CommonDashletProps & {
 		title?: React.ReactNode;
@@ -137,8 +138,8 @@ export function DashletCard(props: DashletCardProps) {
 										onClick={updateMaximized}
 										aria-label={
 											isMaximized
-												? formatMessage(defineMessage({ defaultMessage: 'Minimize' }))
-												: formatMessage(defineMessage({ defaultMessage: 'Maximize' }))
+												? formatMessage({ defaultMessage: 'Minimize' })
+												: formatMessage({ defaultMessage: 'Maximize' })
 										}
 									>
 										{isMaximized ? <CloseFullscreenOutlinedIcon /> : <OpenInFullOutlinedIcon />}

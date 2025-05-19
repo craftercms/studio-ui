@@ -16,7 +16,7 @@
 
 import * as React from 'react';
 import MenuItem from '@mui/material/MenuItem';
-import { defineMessage, FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import Select, { selectClasses } from '@mui/material/Select';
 import { isBlank } from '../../utils/string';
 import { changeSite } from '../../state/actions/sites';
@@ -93,7 +93,7 @@ function SiteSwitcherSelect(props: SiteSwitcherSelectProps) {
 			onChange={onSiteChange}
 			slotProps={{
 				input: {
-					'aria-label': formatMessage(defineMessage({ defaultMessage: 'Select site' }))
+					'aria-label': formatMessage({ defaultMessage: 'Select site' })
 				}
 			}}
 		>

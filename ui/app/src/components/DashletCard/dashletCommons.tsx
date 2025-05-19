@@ -34,7 +34,7 @@ import Person from '../../models/Person';
 import Avatar from '@mui/material/Avatar';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import { defineMessage, FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { Pagination } from '../Pagination';
 import { AllItemActions } from '../../models';
 import { SxProps } from '@mui/system';
@@ -205,7 +205,7 @@ export function DashletItemOptions(props: { path: string; iconButtonProps?: Icon
 					e.stopPropagation();
 					onOpenItemMegaMenu(e.currentTarget);
 				}}
-				aria-label={formatMessage(defineMessage({ defaultMessage: 'Options' }))}
+				aria-label={formatMessage({ defaultMessage: 'Options' })}
 				{...iconButtonProps}
 			>
 				<MoreVertRoundedIcon />

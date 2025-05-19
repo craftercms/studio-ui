@@ -16,7 +16,7 @@
 
 import Box from '@mui/material/Box';
 import { listItemSecondaryActionClasses } from '@mui/material';
-import { defineMessage, useIntl } from 'react-intl';
+import { useIntl } from 'react-intl';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
@@ -201,7 +201,7 @@ export function PublishPackageItemsView(props: PublishItemsProps) {
 																e.stopPropagation();
 																onContextMenuOpen?.(e, path);
 															}}
-															aria-label={formatMessage(defineMessage({ defaultMessage: 'Options' }))}
+															aria-label={formatMessage({ defaultMessage: 'Options' })}
 														>
 															<MoreVertRounded />
 														</IconButton>

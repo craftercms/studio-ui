@@ -20,7 +20,7 @@ import IconButton from '@mui/material/IconButton';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import TransferListColumn, { TransferListColumnProps, TransferListItem } from '../TransferListColumn';
-import { defineMessage, FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import Tooltip from '@mui/material/Tooltip';
 
 export interface TransferListProps {
@@ -104,7 +104,7 @@ export function TransferList(props: TransferListProps) {
 									onClick={addToTarget}
 									disabled={disableAdd}
 									size="large"
-									aria-label={formatMessage(defineMessage({ defaultMessage: 'Add to target' }))}
+									aria-label={formatMessage({ defaultMessage: 'Add to target' })}
 								>
 									<NavigateNextIcon />
 								</IconButton>
@@ -127,7 +127,7 @@ export function TransferList(props: TransferListProps) {
 									onClick={removeFromTarget}
 									disabled={disableRemove}
 									size="large"
-									aria-label={formatMessage(defineMessage({ defaultMessage: 'Remove from target' }))}
+									aria-label={formatMessage({ defaultMessage: 'Remove from target' })}
 								>
 									<NavigateBeforeIcon />
 								</IconButton>

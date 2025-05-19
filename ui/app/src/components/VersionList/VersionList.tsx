@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { defineMessage, FormattedDateParts, FormattedMessage, FormattedTime, useIntl } from 'react-intl';
+import { FormattedDateParts, FormattedMessage, FormattedTime, useIntl } from 'react-intl';
 import React from 'react';
 import List from '@mui/material/List';
 import ListItemText from '@mui/material/ListItemText';
@@ -107,7 +107,7 @@ export function VersionList(props: VersionListProps) {
 													versions.length === i + 1
 												);
 											}}
-											aria-label={formatMessage(defineMessage({ defaultMessage: 'Options' }))}
+											aria-label={formatMessage({ defaultMessage: 'Options' })}
 										>
 											<MoreVertIcon />
 										</IconButton>

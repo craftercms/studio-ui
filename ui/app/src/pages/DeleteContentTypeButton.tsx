@@ -20,7 +20,7 @@ import DeleteRounded from '@mui/icons-material/DeleteRounded';
 import DeleteContentTypeDialog from '../components/DeleteContentTypeDialog';
 import ContentType from '../models/ContentType';
 import { useEnhancedDialogState } from '../hooks/useEnhancedDialogState';
-import { defineMessage, useIntl } from 'react-intl';
+import { useIntl } from 'react-intl';
 
 export interface DeleteContentTypeButtonProps {
 	contentType: ContentType;
@@ -35,7 +35,7 @@ function DeleteContentTypeButton({ contentType, onComplete }: DeleteContentTypeB
 			<IconButton
 				onClick={() => deleteContentTypeDialogState.onOpen()}
 				size="large"
-				aria-label={formatMessage(defineMessage({ defaultMessage: 'Delete' }))}
+				aria-label={formatMessage({ defaultMessage: 'Delete' })}
 			>
 				<DeleteRounded />
 			</IconButton>

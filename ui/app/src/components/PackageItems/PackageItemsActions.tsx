@@ -17,7 +17,7 @@
 import React from 'react';
 import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
-import { defineMessage, FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import Button from '@mui/material/Button';
 import ListRoundedIcon from '@mui/icons-material/ListRounded';
 import TreeOutlined from '../../icons/TreeOutlined';
@@ -78,7 +78,7 @@ export function PackageItemsActions(props: PackageItemsActionsProps) {
 							size="small"
 							color="primary"
 							onClick={() => setExpandedPaths(undefined)}
-							aria-label={formatMessage(defineMessage({ defaultMessage: 'Collapse All' }))}
+							aria-label={formatMessage({ defaultMessage: 'Collapse All' })}
 						>
 							<UnfoldMoreRoundedIcon fontSize="small" />
 						</IconButton>
@@ -86,7 +86,7 @@ export function PackageItemsActions(props: PackageItemsActionsProps) {
 							size="small"
 							color="primary"
 							onClick={() => setExpandedPaths([])}
-							aria-label={formatMessage(defineMessage({ defaultMessage: 'Expand All' }))}
+							aria-label={formatMessage({ defaultMessage: 'Expand All' })}
 						>
 							<UnfoldLessRoundedIcon fontSize="small" />
 						</IconButton>

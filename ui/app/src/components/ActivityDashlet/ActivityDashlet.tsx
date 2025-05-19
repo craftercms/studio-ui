@@ -25,7 +25,7 @@ import useLocale from '../../hooks/useLocale';
 import useSpreadState from '../../hooks/useSpreadState';
 import { fetchActivity } from '../../services/dashboard';
 import IconButton from '@mui/material/IconButton';
-import { defineMessage, FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import MuiTimeline from '@mui/lab/Timeline';
 import TimelineItem from '@mui/lab/TimelineItem';
 import TimelineSeparator from '@mui/lab/TimelineSeparator';
@@ -559,9 +559,7 @@ export function ActivityDashlet(props: ActivityDashletProps) {
 											color="primary"
 											size="small"
 											onClick={loadNextPage}
-											aria-label={formatMessage(
-												defineMessage({ defaultMessage: 'Load {limit} more', values: { limit } })
-											)}
+											aria-label={formatMessage({ defaultMessage: 'Load {limit} more' }, { limit })}
 										>
 											<MoreVertRounded />
 										</IconButton>

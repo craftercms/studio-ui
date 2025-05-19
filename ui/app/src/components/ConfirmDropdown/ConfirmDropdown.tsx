@@ -27,7 +27,7 @@ import Tooltip from '@mui/material/Tooltip';
 import { FullSxRecord, PartialSxRecord } from '../../models/CustomRecord';
 import { SxProps } from '@mui/system';
 import { Theme } from '@mui/material';
-import { defineMessage, useIntl } from 'react-intl';
+import { useIntl } from 'react-intl';
 
 export type ConfirmDropdownClassKey = 'button' | 'menuPaper' | 'helperText';
 
@@ -49,7 +49,9 @@ interface ConfirmDropdownProps {
 	iconColor?: IconButtonProps['color'];
 	iconTooltip?: React.ReactNode;
 	buttonProps?: ButtonProps;
+
 	onConfirm(): any;
+
 	onCancel?(): any;
 }
 
@@ -113,7 +115,7 @@ export function ConfirmDropdown(props: ConfirmDropdownProps) {
 					onClick={(e) => setAnchorEl(e.currentTarget)}
 					size={size}
 					disabled={disabled}
-					aria-label={formatMessage(defineMessage({ defaultMessage: 'Confirm' }))}
+					aria-label={formatMessage({ defaultMessage: 'Confirm' })}
 				>
 					<Icon />
 				</IconButton>

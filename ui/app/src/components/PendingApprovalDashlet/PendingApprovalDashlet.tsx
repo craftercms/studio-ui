@@ -30,7 +30,7 @@ import {
 	Pager,
 	PersonAvatar
 } from '../DashletCard/dashletCommons';
-import { defineMessage, defineMessages, FormattedMessage, useIntl } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import palette from '../../styles/palette';
 import ListItemText from '@mui/material/ListItemText';
 import Checkbox from '@mui/material/Checkbox';
@@ -366,7 +366,7 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
 									e.stopPropagation();
 									onPackageDetailsClick(pkg.id);
 								}}
-								aria-label={formatMessage(defineMessage({ defaultMessage: 'Package details' }))}
+								aria-label={formatMessage({ defaultMessage: 'Package details' })}
 							>
 								<ChevronRightRoundedIcon />
 							</IconButton>
