@@ -20,6 +20,7 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import React from 'react';
 import { useIntl } from 'react-intl';
 import ErrorState, { ErrorStateProps } from '../ErrorState/ErrorState';
+import { capitalize } from '../../utils/string';
 
 export type ApiResponseErrorStateProps = Omit<ErrorStateProps, 'title' | 'message'> & {
 	error: ApiResponse;
@@ -59,7 +60,9 @@ export function createErrorStatePropsFromApiResponse(
 			(remedialAction && message ? (remedialAction.endsWith('.') ? '' : '.') : ''),
 		children: (
 			<>
-				{validationErrors?.map(({ field, message }, index) => <div key={`${field}_${index}`}>{message}</div>)}
+				{validationErrors?.map(({ field, message }, index) => (
+					<div key={`${field}_${index}`}>{capitalize(message)}</div>
+				))}
 				{documentationUrl && (
 					<Button href={documentationUrl} target="_blank" rel="noreferrer" variant="text">
 						{formatMessage({

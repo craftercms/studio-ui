@@ -20,13 +20,14 @@ import CloseIcon from '@mui/icons-material/CloseRounded';
 import Dialog from '@mui/material/Dialog';
 import StandardAction from '../../models/StandardAction';
 import { ApiResponse } from '../../models/ApiResponse';
-import ApiResponseErrorState from '../ApiResponseErrorState';
+import ApiResponseErrorState, { type ApiResponseErrorStateProps } from '../ApiResponseErrorState';
 import { useUnmount } from '../../hooks/useUnmount';
 import Box from '@mui/material/Box';
 
 interface ErrorDialogBaseProps {
 	open: boolean;
 	error: ApiResponse;
+	validationErrors?: ApiResponseErrorStateProps['validationErrors'];
 }
 
 export type ErrorDialogProps = PropsWithChildren<
@@ -44,7 +45,7 @@ export interface ErrorDialogStateProps extends ErrorDialogBaseProps {
 }
 
 function ErrorDialogBody(props: ErrorDialogProps) {
-	const { onDismiss, error } = props;
+	const { onDismiss, error, validationErrors } = props;
 	useUnmount(props.onClosed);
 	return (
 		<Box sx={{ padding: (theme) => theme.spacing(2) }}>
@@ -60,7 +61,7 @@ function ErrorDialogBody(props: ErrorDialogProps) {
 			>
 				<CloseIcon />
 			</IconButton>
-			{error && <ApiResponseErrorState error={error} />}
+			{error && <ApiResponseErrorState error={error} validationErrors={validationErrors} />}
 		</Box>
 	);
 }
