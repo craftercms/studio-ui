@@ -108,13 +108,13 @@ __metadata:
   linkType: hard
 
 "@atlaskit/pragmatic-drag-and-drop@npm:^1.1.0, @atlaskit/pragmatic-drag-and-drop@npm:^1.4.0":
-  version: 1.5.0
-  resolution: "@atlaskit/pragmatic-drag-and-drop@npm:1.5.0"
+  version: 1.6.1
+  resolution: "@atlaskit/pragmatic-drag-and-drop@npm:1.6.1"
   dependencies:
     "@babel/runtime": "npm:^7.0.0"
     bind-event-listener: "npm:^3.0.0"
     raf-schd: "npm:^4.0.3"
-  checksum: 10/c85fdd6d923b1d338fa424303dd39d85aa0bde9e780ba8d18ed2e5be697b5f62cbbaaca8cb8135d849c6a77a28b65ec0283a9023f5c58d314317782f452f9ed8
+  checksum: 10/d1a1113a8d1dfbffbfd6d42f24269273a08f41c623082b8f3f33931faffb339be1fc364b2deb431757713bcdb0525e34f29a22d6a23491c365cbaa0f00dafa30
   languageName: node
   linkType: hard
 
