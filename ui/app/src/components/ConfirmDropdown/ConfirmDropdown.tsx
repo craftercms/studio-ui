@@ -49,9 +49,7 @@ interface ConfirmDropdownProps {
 	iconColor?: IconButtonProps['color'];
 	iconTooltip?: React.ReactNode;
 	buttonProps?: ButtonProps;
-
 	onConfirm(): any;
-
 	onCancel?(): any;
 }
 
