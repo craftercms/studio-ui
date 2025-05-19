@@ -431,6 +431,8 @@ function parseLegacyFormDefinition(definition: LegacyFormDefinition): ContentTyp
 				//   break;
 			}
 			dataSources[datasource.id].properties[property.name] = value;
+			// datasource also needs to be directly edited since it's set to dropTargetsLookup when datasource type is 'components'
+			datasource.properties[property.name] = value;
 		});
 		if (datasource.type === 'components') {
 			dropTargetsLookup[datasource.id] = datasource;
