@@ -363,6 +363,7 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
 					.filter(Boolean)
 					.join(' ')
 			}}
+			// @ts-expect-error - sx property removed from types, though styles still apply. Ticket here https://github.com/mui/mui-x/issues/17923
 			sx={{
 				[`& .${treeItemClasses.content}`]: {
 					pt: 0,

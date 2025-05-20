@@ -58,6 +58,7 @@ export function ItemSelectorTree(props: ItemSelectorTreeProps) {
 					label={nodes.internalName || nodes.uri}
 				/>
 			}
+			// @ts-expect-error - sx property removed from types, though styles still apply. Ticket here https://github.com/mui/mui-x/issues/17923
 			sx={{
 				[`& .${treeItemClasses.iconContainer}`]: {
 					display: 'none'

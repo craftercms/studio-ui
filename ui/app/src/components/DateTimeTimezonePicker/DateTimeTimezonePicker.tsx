@@ -25,9 +25,7 @@ import TextField from '@mui/material/TextField';
 import Autocomplete, { AutocompleteProps } from '@mui/material/Autocomplete';
 import FormControl from '@mui/material/FormControl';
 import useLocale from '../../hooks/useLocale';
-import { UsePickerValueBaseProps } from '@mui/x-date-pickers/internals/hooks/usePicker/usePickerValue.types';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
-import { DateTimeValidationError } from '@mui/x-date-pickers';
 import {
 	createAtLeastHalfHourInFutureDate,
 	createTransposedToTimezoneDate,
@@ -41,7 +39,7 @@ export interface DateTimeTimezonePickerProps {
 	disablePast?: boolean;
 	localeCode?: string;
 	dateTimeFormatOptions?: Intl.DateTimeFormatOptions;
-	onError?: DateTimePickerProps<Moment, true>['onError'];
+	onError?: DateTimePickerProps['onError'];
 	onChange?(date: Date): void;
 }
 
@@ -74,12 +72,12 @@ export function DateTimeTimezonePicker(props: DateTimeTimezonePickerProps) {
 		disablePast,
 		onChange
 	});
-	const handleChange = ((newValue) => {
+	const handleChange = (newValue: Moment) => {
 		setSelectedDate(newValue);
 		if (newValue.toISOString() !== moment(effectRefs.current.dateProp).toISOString()) {
 			effectRefs.current.onChange?.(createTransposedToTimezoneDate(newValue, selectedTimezone));
 		}
-	}) as UsePickerValueBaseProps<Moment, DateTimeValidationError>['onChange'];
+	};
 	const handleTimezoneChange = ((event, value) => {
 		event.preventDefault();
 		event.stopPropagation();
@@ -139,7 +137,12 @@ export function DateTimeTimezonePicker(props: DateTimeTimezonePickerProps) {
 					disablePast={disablePast}
 					disabled={disabled}
 					onError={onError}
-					slotProps={{ textField: { size: 'small' } }}
+					slotProps={{
+						textField: { size: 'small' },
+						actionBar: {
+							actions: ['accept']
+						}
+					}}
 					// Not using the timezone prop since it would cause the date to get adjusted to that timezone.
 					// The idea of this control is to keep the date/time value stable as you pick timezones and only
 					// reflect the actual value change externally; but for the user, the date doesn't move around if
