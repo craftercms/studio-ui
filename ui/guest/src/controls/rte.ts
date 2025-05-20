@@ -179,6 +179,8 @@ export function initTinyMCE(
         )
         .subscribe(({ payload }) => {
           if (payload) {
+            // For selections of pages or components from the 'Insert link' dialog, use the preview URL (the actual page or component link)
+            // instead of the repoURL returned by the browse dialog.
             const path = meta.filetype === 'file' ? getPreviewURLFromPath(payload.path) : payload.path;
             cb(path, { alt: payload.name });
           }
