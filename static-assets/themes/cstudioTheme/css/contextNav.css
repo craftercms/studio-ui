@@ -215,6 +215,36 @@ div[id*='expandComponentError'].yui-dialog {
   width: auto;
 }
 
+.crop-image-dialog-panel-container {
+  display: flex;
+  height: calc(100% - 115px);
+  max-height: 615px;
+}
+
+.crop-image-dialog-panel-content {
+  align-self: center;
+  height: 100%;
+}
+
+.yui-dialog .yui-panel .contentTypePopupInner.crop-image-dialog {
+  max-height: 100%;
+  overflow: auto;
+}
+
+.yui-dialog .yui-panel .contentTypePopupInner.crop-image-dialog .contentTypePopupContent {
+  height: 100%;
+  margin: 0;
+}
+
+.yui-dialog .yui-panel .contentTypePopupInner.crop-image-dialog .contentTypeContentWrapper {
+  height: calc(100% - 63px); /* 63px = header */
+  overflow-y: auto;
+}
+
+.yui-dialog .yui-panel .contentTypePopupInner.crop-image-dialog .contentTypePopupBtn {
+  padding-bottom: 10px !important;
+}
+
 .contentTypePopupInner input[type='text'],
 .contentTypePopupInner input[type='password'],
 .yui-overlay.yui-panel .bd > div select,
@@ -1066,8 +1096,6 @@ body.yui-skin-cstudioTheme .mask {
 #crop-popup-inner .rightControls {
   width: 30%;
   float: left;
-  overflow-y: auto;
-  max-height: 80vh;
 }
 
 #crop-popup-inner .rightControls .img-preview > img {
