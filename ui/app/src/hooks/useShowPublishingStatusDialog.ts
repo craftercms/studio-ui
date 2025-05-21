@@ -33,7 +33,7 @@ export function useShowPublishingStatusDialog() {
       // If user has either of these permissions or roles, then he'll see more than one widget, and it's worth showing the
       // Publishing Dashboard. Otherwise, just show the simple status dialog.
       userPermissions.some((permission) => permission === 'get_publishing_queue' || permission === 'publish') ||
-        userRoles.some((role) => role === 'developer' || role === 'admin')
+        userRoles.some((role) => role.toLowerCase() === 'developer' || role.toLowerCase() === 'admin')
         ? showWidgetDialog({
             title: formatMessage({ defaultMessage: 'Publishing' }),
             widget: {
