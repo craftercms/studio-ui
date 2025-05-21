@@ -347,21 +347,6 @@ function DataSourceActions(props: FieldFormViewProps): JSX.Element {
 	);
 }
 
-type Mode = 'field' | 'section' | 'dataSource' | 'type';
-
-// TODO: Remove if unnecessary
-function identifyMode(props: FieldFormViewProps): Mode {
-	if (props.type) {
-		return 'type';
-	} else if (props.field) {
-		return 'field';
-	} else if (props.section) {
-		return 'section';
-	} else if (props.dataSource) {
-		return 'dataSource';
-	}
-}
-
 function pickPanelTitleByMode(props: FieldFormViewProps): JSX.Element {
 	if (props.type) {
 		return <FormattedMessage defaultMessage="Edit Type" />;
