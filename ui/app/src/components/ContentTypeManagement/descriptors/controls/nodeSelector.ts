@@ -72,7 +72,6 @@ export const nodeSelectorDescriptor: DescriptorContentType = {
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
-		// TODO: check if we're going to keep this option
 		useSingleValueFilename: {
 			id: 'useSingleValueFilename',
 			type: 'checkbox',
@@ -80,7 +79,6 @@ export const nodeSelectorDescriptor: DescriptorContentType = {
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
-		// TODO: check if we're going to keep this option
 		useMVS: {
 			id: 'useMVS',
 			type: 'checkbox',

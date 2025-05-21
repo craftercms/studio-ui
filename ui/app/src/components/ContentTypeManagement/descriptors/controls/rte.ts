@@ -66,14 +66,6 @@ export const rteDescriptor: DescriptorContentType = {
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
-		// TODO: this is a custom type in legacy, need to check
-		supportedChannels: {
-			id: 'supportedChannels',
-			type: 'input',
-			name: defineMessage({ defaultMessage: 'Supported Channels' }),
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		},
 		rteConfiguration: {
 			id: 'rteConfiguration',
 			type: 'input',
