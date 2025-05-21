@@ -252,7 +252,7 @@ export function SelectField(props: {
 							</ListItemButton>
 						))}
 					</Box>
-					<Divider />
+					{filteredFields.length > 0 && <Divider />}
 				</>
 			)}
 			<Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', mt: 2 }}>

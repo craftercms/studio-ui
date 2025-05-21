@@ -265,6 +265,8 @@ function FieldActions(props: FieldFormViewProps): JSX.Element {
 	);
 }
 
+const fileNameTypeIds = ['file-name', 'auto-filename'];
+
 function FieldSwapper(props: FieldFormViewProps): JSX.Element {
 	const { field, sectionId, controlDescriptor, onSwapField } = props;
 	const swapFieldDialogState = useEnhancedDialogState();
@@ -302,6 +304,7 @@ function FieldSwapper(props: FieldFormViewProps): JSX.Element {
 				open={swapFieldDialogState.open}
 				onClose={swapFieldDialogState.onClose}
 				onSwapField={handleSwapField}
+				allowedTypeIds={fileNameTypeIds}
 			/>
 		</>
 	);

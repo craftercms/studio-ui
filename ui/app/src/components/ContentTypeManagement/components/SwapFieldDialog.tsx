@@ -18,7 +18,7 @@ import { EnhancedDialog, EnhancedDialogProps } from '../../EnhancedDialog';
 import { applyTranslations, PartialContentType } from '../utils';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { DialogBody } from '../../DialogBody';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import controlDescriptors from '../descriptors/controls';
 import { SelectField } from './PickFieldDialog';
 import { DialogFooter } from '../../DialogFooter';
@@ -28,33 +28,42 @@ import { systemFieldsIds } from './PickControlDialog';
 
 export interface SwapFieldDialogProps extends EnhancedDialogProps {
 	currentFieldType: string;
+	allowedTypeIds?: string[];
 	onSwapField(newField: PartialContentType): void;
 }
 
 const types = Object.values(controlDescriptors).sort((a, b) => (a?.name > b?.name ? 1 : -1));
 
-// TODO: Right now we are displaying all the types even when swapping 'file-name' field. This needs to be addressed.
 export function SwapFieldDialogBody(props: SwapFieldDialogProps) {
-	const { currentFieldType, onSwapField, onClose } = props;
+	const { currentFieldType, allowedTypeIds, onSwapField, onClose } = props;
 	const [selectedField, setSelectedField] = useState<PartialContentType>(undefined);
 	const { formatMessage } = useIntl();
 	const disableSubmit = !selectedField || currentFieldType === selectedField?.id;
+	const allowedTypes = useMemo(() => {
+		return types.filter((type) => {
+			if (!allowedTypeIds) {
+				return true;
+			} else {
+				return allowedTypeIds.includes(type.id);
+			}
+		});
+	}, [allowedTypeIds]);
 
 	useEffect(() => {
 		if (currentFieldType) {
 			const newSelectedField = applyTranslations(
-				types.find((type) => type.id === currentFieldType),
+				allowedTypes.find((type) => type.id === currentFieldType),
 				formatMessage
 			);
 			setSelectedField(newSelectedField);
 		}
-	}, [currentFieldType, formatMessage]);
+	}, [currentFieldType, formatMessage, allowedTypes]);
 
 	return (
 		<>
 			<DialogBody sx={{ transition: 'height 0.3s ease-in-out', minHeight: '40vh' }}>
 				<SelectField
-					typesFullList={types}
+					typesFullList={allowedTypes}
 					selectedField={selectedField}
 					setSelectedField={setSelectedField}
 					systemFieldsIds={systemFieldsIds}
