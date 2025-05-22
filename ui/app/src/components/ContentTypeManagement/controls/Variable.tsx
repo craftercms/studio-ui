@@ -101,9 +101,11 @@ export function Variable(props: VariableProps) {
 								})}
 								endIcon={null}
 								sx={{
-									color: (theme) => theme.palette.text.primary,
+									color: (theme) =>
+										theme.palette.mode === 'dark' ? theme.palette.text.primary : theme.palette.text.secondary,
 									minWidth: 'unset',
 									borderRadius: '50%',
+									p: 1,
 									'&:hover': {
 										backgroundColor: (theme) => theme.palette.action.hover
 									}
