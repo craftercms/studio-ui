@@ -474,7 +474,9 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 						id,
 						component: 'craftercms.components.ConfirmDialog',
 						props: {
-							body: <FormattedMessage defaultMessage="Confirm reverting current changes?" />,
+							body: (
+								<FormattedMessage defaultMessage="Are you sure you want to revert all changes made during this session?" />
+							),
 							onOk: () => {
 								resetSelection();
 								setType(props.type);
