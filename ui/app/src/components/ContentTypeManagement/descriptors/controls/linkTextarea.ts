@@ -20,7 +20,7 @@ import { defineMessage } from 'react-intl';
 
 export const linkTextareaDescriptor: DescriptorContentType = {
 	id: 'link-textarea',
-	name: defineMessage({ defaultMessage: 'Link Textarea' }),
+	name: defineMessage({ defaultMessage: 'Link Text Area' }),
 	description: defineMessage({ defaultMessage: 'Multiple URL/Link input' }),
 	sections: [
 		createVirtualSection({

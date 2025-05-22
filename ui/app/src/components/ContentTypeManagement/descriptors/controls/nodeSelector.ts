@@ -20,8 +20,8 @@ import { defineMessage } from 'react-intl';
 
 export const nodeSelectorDescriptor: DescriptorContentType = {
 	id: 'node-selector',
-	name: defineMessage({ defaultMessage: 'Node Selector' }),
-	description: defineMessage({ defaultMessage: 'Content node selection' }),
+	name: defineMessage({ defaultMessage: 'Item Selector' }),
+	description: defineMessage({ defaultMessage: 'Content item selection' }),
 	sections: [
 		createVirtualSection({
 			id: 'properties',

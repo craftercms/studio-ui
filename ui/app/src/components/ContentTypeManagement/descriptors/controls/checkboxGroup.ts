@@ -20,7 +20,7 @@ import { defineMessage } from 'react-intl';
 
 export const checkboxGroupDescriptor: DescriptorContentType = {
 	id: 'checkbox-group',
-	name: defineMessage({ defaultMessage: 'Checkbox Group' }),
+	name: defineMessage({ defaultMessage: 'Grouped Checkboxes' }),
 	description: defineMessage({ defaultMessage: 'Multiple checkbox inputs' }),
 	sections: [
 		createVirtualSection({

@@ -20,7 +20,7 @@ import { defineMessage } from 'react-intl';
 
 export const configuredListDataSourceDescriptor: DescriptorContentType = {
 	id: 'configured-list',
-	name: defineMessage({ defaultMessage: 'Configured List' }),
+	name: defineMessage({ defaultMessage: 'Configured List of Pairs' }),
 	description: '',
 	type: 'item',
 	sections: [

@@ -417,17 +417,23 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 				const tempActuallySaveToServer =
 					(document.getElementById('tempSaveToServerCheckbox') as HTMLInputElement)?.checked ?? false;
 				dialogContext?.updateSubmittingOrHasPendingChanges({ isSubmitting: true });
+				// console.log('latestUpdate', latestUpdate);
+				// console.log('type', type);
+				const typeToSave = latestUpdate ?? type;
 				save(site, latestUpdate ?? type, tempActuallySaveToServer, configDescriptors).subscribe({
 					next(xml) {
-						const highlighted = hljs.highlight(xml, { language: 'xml' }).value;
-						setOpenXmlViewer(highlighted);
-						dialogContext?.updateSubmittingOrHasPendingChanges({ hasPendingChanges: false });
-						setHasPendingChanges(false);
+						// TODO: REMOVE
 						const initialXml = buildXmlFromType(props.type, configDescriptors);
 						openDiffXml(initialXml, xml);
 						onUpdateHasPendingChanges(false);
 						dialogContext?.updateSubmittingOrHasPendingChanges({ isSubmitting: false });
-						if (tempActuallySaveToServer) showAlert(`Save successful.`);
+						// TODO: REMOVE
+						if (tempActuallySaveToServer) {
+							// if (typeToSave.NEW) {
+							// 	dispatch(emitSystemEvent(contentTypeCreated()));
+							// }
+							showAlert(`Save successful.`);
+						}
 					},
 					error() {
 						dialogContext?.updateSubmittingOrHasPendingChanges({ isSubmitting: false });
@@ -599,7 +605,6 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 		xmlViewerDialogState.onOpen();
 	};
 	const closeViewXml = () => {
-		setXmlViewerContent(null);
 		xmlViewerDialogState.onClose();
 	};
 
@@ -608,7 +613,6 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 		xmlDiffDialogState.onOpen();
 	};
 	const closeDiffXml = () => {
-		setXmlDiffContent(null);
 		xmlDiffDialogState.onClose();
 	};
 	// endregion

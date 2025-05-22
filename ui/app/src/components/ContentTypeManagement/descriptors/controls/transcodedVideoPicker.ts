@@ -20,7 +20,7 @@ import { defineMessage } from 'react-intl';
 
 export const transcodedVideoPickerDescriptor: DescriptorContentType = {
 	id: 'transcoded-video-picker',
-	name: defineMessage({ defaultMessage: 'Transcoded Video Picker' }),
+	name: defineMessage({ defaultMessage: 'Transcoded Video' }),
 	description: defineMessage({ defaultMessage: 'Select transcoded video' }),
 	sections: [
 		createVirtualSection({

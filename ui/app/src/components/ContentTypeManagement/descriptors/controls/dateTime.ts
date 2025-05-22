@@ -20,7 +20,7 @@ import { defineMessage } from 'react-intl';
 
 export const dateTimeDescriptor: DescriptorContentType = {
 	id: 'date-time',
-	name: defineMessage({ defaultMessage: 'Date Time' }),
+	name: defineMessage({ defaultMessage: 'Date / Time' }),
 	description: defineMessage({ defaultMessage: 'Date and time picker' }),
 	sections: [
 		createVirtualSection({

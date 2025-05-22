@@ -4,7 +4,7 @@ import { defineMessage } from 'react-intl';
 
 export const videoPickerDescriptor: DescriptorContentType = {
 	id: 'video-picker',
-	name: defineMessage({ defaultMessage: 'Video Picker' }),
+	name: defineMessage({ defaultMessage: 'Video' }),
 	description: defineMessage({ defaultMessage: 'Video selection control' }),
 	sections: [
 		createVirtualSection({

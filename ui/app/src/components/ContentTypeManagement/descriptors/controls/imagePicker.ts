@@ -20,7 +20,7 @@ import { defineMessage } from 'react-intl';
 
 export const imagePickerDescriptor: DescriptorContentType = {
 	id: 'image-picker',
-	name: defineMessage({ defaultMessage: 'Image Picker' }),
+	name: defineMessage({ defaultMessage: 'Image' }),
 	description: defineMessage({ defaultMessage: 'Image selection tool' }),
 	sections: [
 		createVirtualSection({

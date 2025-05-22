@@ -20,7 +20,7 @@ import { defineMessage } from 'react-intl';
 
 export const pageNavOrderDescriptor: DescriptorContentType = {
 	id: 'page-nav-order',
-	name: defineMessage({ defaultMessage: 'Page Navigation Order' }),
+	name: defineMessage({ defaultMessage: 'Page Order' }),
 	description: defineMessage({ defaultMessage: 'Controls page ordering in navigation' }),
 	sections: [
 		createVirtualSection({

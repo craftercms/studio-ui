@@ -5,4 +5,9 @@
       <module name="studio-ui" target="11" />
     </bytecodeTargetLevel>
   </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="crafter-studio-ui" options="-parameters" />
+    </option>
+  </component>
 </project>
