@@ -122,7 +122,7 @@ export function Variable(props: VariableProps) {
 }
 
 const cleanVariable = (value) => {
-	return value.replace(/[-\s]/g, '_').replace(/[^A-Za-z0-9-_]/g, '');
+	return value.replace(/-/g, '_').replace(/[^A-Za-z0-9-_]/g, '');
 };
 
 const getValueWithPostFix = (value: string, postFix: string, supportedPostFixes: PostFixesType[]): string => {
