@@ -74,6 +74,16 @@ export function PickFieldDialogBody(props: PickFieldDialogBodyProps) {
 		}
 	};
 
+	const onSelectField = (field: PartialContentType) => {
+		setSelectedField(field);
+		// If there are items in the current section, move to next view (select position). Otherwise, insert at first position.
+		if (typesCurrentList?.length > 0) {
+			setSelectedView(1);
+		} else {
+			onInsert(field.id, 0);
+		}
+	};
+
 	return (
 		<>
 			<DialogBody sx={{ transition: 'height 0.3s ease-in-out', minHeight: '40vh' }}>
@@ -81,7 +91,7 @@ export function PickFieldDialogBody(props: PickFieldDialogBodyProps) {
 					<SelectField
 						typesFullList={typesFullList}
 						selectedField={selectedField}
-						setSelectedField={setSelectedField}
+						setSelectedField={onSelectField}
 						systemFieldsIds={systemFieldsIds}
 						systemFieldsTitle={systemFieldsTitle}
 					/>
