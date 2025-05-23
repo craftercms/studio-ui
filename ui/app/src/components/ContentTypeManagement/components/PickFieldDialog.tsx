@@ -242,7 +242,7 @@ export function SelectField(props: {
 
 	return (
 		<>
-			<SearchBar keyword={searchTerm} onChange={handleSearchChange} />
+			<SearchBar keyword={searchTerm} onChange={handleSearchChange} autoFocus={true} />
 			{basicFields.length > 0 && (
 				<>
 					<FormControl sx={{ mt: 2 }}>
