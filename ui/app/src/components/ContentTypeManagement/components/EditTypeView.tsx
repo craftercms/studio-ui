@@ -703,6 +703,7 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 							onSectionSelected={handleSectionSelected}
 							fieldPathsWithErrors={fieldPathsWithErrors}
 							selectedFieldIdPath={selectedFieldIdPath}
+							performCurrentFormErrorCheckAndWarning={performCurrentFormErrorCheckAndWarning}
 							config={config}
 						/>
 						<Box>

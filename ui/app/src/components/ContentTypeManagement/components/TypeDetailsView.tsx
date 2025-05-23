@@ -58,6 +58,7 @@ export interface TypeDetailsViewProps {
 	onInsertSection: SectionInsertionProps['onInsertSection'];
 	onInsertField(fieldType: string, sectionId: string, position: number, fieldPath?: string): void;
 	onInsertDataSource(type: string, position: number): void;
+	performCurrentFormErrorCheckAndWarning?(): boolean;
 }
 
 export function TypeDetailsView(props: TypeDetailsViewProps) {
@@ -69,7 +70,8 @@ export function TypeDetailsView(props: TypeDetailsViewProps) {
 		onSectionSelected,
 		onDataSourceSelected,
 		onEditTypeAction,
-		config
+		config,
+		performCurrentFormErrorCheckAndWarning
 	} = props;
 
 	const store = useMemo(() => createStore(), []); // TODO: Use stable memo?
@@ -83,6 +85,19 @@ export function TypeDetailsView(props: TypeDetailsViewProps) {
 		fieldPath: null
 	});
 	const [openDataSourceInserter, setOpenDataSourceInserter] = useState<boolean>(false);
+
+	const onAddSection = () => {
+		if (!performCurrentFormErrorCheckAndWarning()) return false;
+		setOpenSectionInserter(true);
+	};
+	const onAddField = (sectionId: string) => {
+		if (!performCurrentFormErrorCheckAndWarning()) return false;
+		setInsertFieldData({ sectionId });
+	};
+	const onAddDataSource = () => {
+		if (!performCurrentFormErrorCheckAndWarning()) return false;
+		setOpenDataSourceInserter(true);
+	};
 
 	const dataSourcesSection = useMemo(
 		() =>
@@ -150,7 +165,7 @@ export function TypeDetailsView(props: TypeDetailsViewProps) {
 					<TypeDetailsViewHeader type={type} onActionClick={onEditTypeAction} />
 
 					<Box display="flex" justifyContent="space-between" mt={(theme) => `${theme.spacing(1)} !important`}>
-						<Button onClick={() => setOpenSectionInserter(true)}>
+						<Button onClick={() => onAddSection()}>
 							<FormattedMessage defaultMessage="Add Section" />
 						</Button>
 						<div>
@@ -177,7 +192,7 @@ export function TypeDetailsView(props: TypeDetailsViewProps) {
 								accordionDetails: {
 									className: '',
 									children: (
-										<Button onClick={() => setInsertFieldData({ sectionId: section.id })}>
+										<Button onClick={() => onAddField(section.id)}>
 											<FormattedMessage defaultMessage="Add Field" />
 										</Button>
 									)
@@ -210,7 +225,7 @@ export function TypeDetailsView(props: TypeDetailsViewProps) {
 							accordionDetails: {
 								className: '',
 								children: (
-									<Button onClick={() => setOpenDataSourceInserter(true)}>
+									<Button onClick={() => onAddDataSource()}>
 										<FormattedMessage defaultMessage="Add Data Source" />
 									</Button>
 								)
