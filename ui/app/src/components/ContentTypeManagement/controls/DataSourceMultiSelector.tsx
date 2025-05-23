@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useId, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import FormsEngineField from '../../FormsEngine/components/FormsEngineField';
 import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -31,7 +31,7 @@ export interface DataSourceMultiSelectorProps extends TypeBuilderControl {
 export function DataSourceMultiSelector(props: DataSourceMultiSelectorProps) {
 	const { field, value, setValue, contentType } = props;
 	const selectedDataSources = value?.split(',') ?? [];
-	const type = field.validations.type?.value;
+	const type = field.validations?.type?.value ?? '';
 	const filteredDataSources = useMemo(() => {
 		return (contentType.dataSources ?? []).filter((ds) => ds.interface === type);
 	}, [contentType?.dataSources, type]);

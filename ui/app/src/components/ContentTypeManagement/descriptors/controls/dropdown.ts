@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createVirtualSection, DescriptorContentType } from '../../utils';
+import { createValidation, createVirtualSection, DescriptorContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
 import { defineMessage } from 'react-intl';
 
@@ -40,7 +40,9 @@ export const dropdownDescriptor: DescriptorContentType = {
 			type: 'datasource-selector',
 			name: defineMessage({ defaultMessage: 'Data Source' }),
 			defaultValue: undefined,
-			validations: immutableEmptyObject
+			validations: {
+				type: createValidation('type', 'item')
+			}
 		},
 		emptyvalue: {
 			id: 'emptyvalue',
