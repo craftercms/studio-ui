@@ -503,16 +503,16 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 		const descriptor = controlDescriptors[fieldType] ?? config.controls?.[fieldType].descriptor;
 		const newField = getNewFieldFromDescriptor(fieldType, descriptor);
 		const newFieldPath = fieldPath ? `${fieldPath}.${NEW_FIELD_ID}` : NEW_FIELD_ID;
-		setType(addField(type, newField, newFieldPath, sectionId, position));
+		setType((currentType) => addField(currentType, newField, newFieldPath, sectionId, position));
 		handleFieldSelected(newFieldPath, newField, sectionId);
 	};
 	const handleInsertDataSource: TypeDetailsViewProps['onInsertDataSource'] = (dataSourceType, position) => {
 		const descriptor = dataSourceDescriptors[dataSourceType] ?? config.dataSources?.[dataSourceType].descriptor;
 		const newDataSource = getNewDataSourceFromDescriptor(dataSourceType, descriptor);
 
-		const nextDataSources = type.dataSources.concat();
+		const nextDataSources = type.dataSources?.concat() ?? [];
 		nextDataSources.splice(position, 0, newDataSource);
-		setType({ ...type, dataSources: nextDataSources });
+		setType((currentType) => ({ ...currentType, dataSources: nextDataSources }));
 		handleDataSourceSelected(newDataSource);
 	};
 	// endregion
@@ -521,7 +521,7 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 	const handleDeleteSection: FieldFormViewProps['onDeleteSection'] = (section) => {
 		resetSelection();
 		onUpdateHasPendingChanges(true);
-		setType(deleteSection(type, section));
+		setType((currentType) => deleteSection(currentType, section));
 	};
 	const handleDeleteField: FieldFormViewProps['onDeleteField'] = (fieldIdPath: string, sectionId) => {
 		resetSelection();
@@ -532,7 +532,7 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 		resetSelection();
 		onUpdateHasPendingChanges(true);
 		const nextDataSources = type.dataSources.filter((dataSource) => dataSource.id !== dataSourceId);
-		setType({ ...type, dataSources: nextDataSources });
+		setType((currentType) => ({ ...currentType, dataSources: nextDataSources }));
 	};
 	// endregion
 

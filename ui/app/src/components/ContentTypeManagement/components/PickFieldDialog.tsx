@@ -56,7 +56,7 @@ export function PickFieldDialogBody(props: PickFieldDialogBodyProps) {
 	const { type, typesFullList, typesCurrentList, onInsert, onClose, systemFieldsTitle, systemFieldsIds } = props;
 	const [selectedField, setSelectedField] = useState<PartialContentType>(undefined);
 	const [selectedView, setSelectedView] = useState<number>(0);
-	const [position, setPosition] = useState<number>(typesCurrentList.length);
+	const [position, setPosition] = useState<number>(typesCurrentList?.length ?? 0);
 
 	const onSecondaryAction = (e: React.MouseEvent) => {
 		if (selectedView === 0) {
