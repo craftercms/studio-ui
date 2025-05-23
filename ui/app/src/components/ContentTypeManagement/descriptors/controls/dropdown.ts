@@ -21,7 +21,7 @@ import { defineMessage } from 'react-intl';
 export const dropdownDescriptor: DescriptorContentType = {
 	id: 'dropdown',
 	name: defineMessage({ defaultMessage: 'Dropdown' }),
-	description: defineMessage({ defaultMessage: 'DropdownStaticValues select input' }),
+	description: defineMessage({ defaultMessage: 'Dropdown select input' }),
 	sections: [
 		createVirtualSection({
 			id: 'properties',
