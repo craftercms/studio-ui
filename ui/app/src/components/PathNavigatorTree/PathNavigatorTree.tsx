@@ -214,7 +214,8 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
 		};
 	}, [dispatch, id, onSearch$, rootPath]);
 
-	if (!rootItem || !state) {
+	// If there is no state yet, or if the root item is nullish and the rootPath is not missing, show loading skeleton.
+	if (!state || (!rootItem && !state.isRootPathMissing)) {
 		const storedState = getStoredPathNavigatorTree(uuid, user.username, id);
 		return <PathNavigatorSkeleton renderBody={storedState ? !storedState.collapsed : !initialCollapsed} />;
 	}
