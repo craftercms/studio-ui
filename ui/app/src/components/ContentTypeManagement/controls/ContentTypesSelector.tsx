@@ -44,6 +44,7 @@ export function ContentTypesSelector(props: ContentTypesSelectorProps) {
 	const [selectedLookup, setSelectedLookup] = useSpreadState<Record<string, boolean>>(
 		createPresenceTable(value ? value.split(',') : [])
 	);
+	const components = Object.values(contentTypes).filter((contentType) => contentType.type === 'component');
 
 	const handleToggle = (value: string) => () => {
 		const isSelected = selectedLookup[value];
@@ -62,7 +63,7 @@ export function ContentTypesSelector(props: ContentTypesSelectorProps) {
 				{Object.values(contentTypes).length === 0 ? (
 					<EmptyState title={<FormattedMessage defaultMessage="No content types available" />} />
 				) : (
-					Object.values(contentTypes).map((contentType) => (
+					components.map((contentType) => (
 						<ListItem key={contentType.id} sx={{ bgcolor: 'background.paper', p: 0 }}>
 							<ListItemButton onClick={handleToggle(contentType.id)} dense>
 								<ListItemIcon sx={{ py: 1 }}>
