@@ -417,21 +417,13 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 				const tempActuallySaveToServer =
 					(document.getElementById('tempSaveToServerCheckbox') as HTMLInputElement)?.checked ?? false;
 				dialogContext?.updateSubmittingOrHasPendingChanges({ isSubmitting: true });
-				// console.log('latestUpdate', latestUpdate);
-				// console.log('type', type);
-				const typeToSave = latestUpdate ?? type;
 				save(site, latestUpdate ?? type, tempActuallySaveToServer, configDescriptors).subscribe({
 					next(xml) {
-						// TODO: REMOVE
 						const initialXml = buildXmlFromType(props.type, configDescriptors);
 						openDiffXml(initialXml, xml);
 						onUpdateHasPendingChanges(false);
 						dialogContext?.updateSubmittingOrHasPendingChanges({ isSubmitting: false });
-						// TODO: REMOVE
 						if (tempActuallySaveToServer) {
-							// if (typeToSave.NEW) {
-							// 	dispatch(emitSystemEvent(contentTypeCreated()));
-							// }
 							showAlert(`Save successful.`);
 						}
 					},
