@@ -792,3 +792,32 @@ export function getFieldFromType(type: ContentType, fieldIdPath: string): Conten
 		return type.fields[fieldIdPath];
 	}
 }
+
+export function getPropertiesAndValidationsFromDescriptor(descriptor: DescriptorContentType): {
+	properties: ContentTypeField['properties'];
+	validations: ContentTypeField['validations'];
+} {
+	const properties = {};
+	const validations = {};
+	if (!descriptor) return { properties, validations };
+
+	const sections = createLookupTable(descriptor.sections);
+	const propertiesFieldIds = sections.properties?.fields ?? [];
+	propertiesFieldIds.forEach(
+		(field) =>
+			(properties[field] = {
+				name: field,
+				value: descriptor.fields[field]?.defaultValue,
+				type: descriptor.fields[field]?.type
+			})
+	);
+
+	const constraintsFieldIds = (sections.constraints?.fields as DescriptorFieldValidationKeys[]) ?? [];
+	constraintsFieldIds.forEach((field) => {
+		validations[field] = {
+			...createValidation(field, descriptor.fields[field]?.defaultValue)
+		};
+	});
+
+	return { properties, validations };
+}
