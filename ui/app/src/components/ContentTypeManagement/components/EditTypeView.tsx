@@ -196,7 +196,7 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 		let updatedType: ContentType;
 		const values = extractAtomValues(jotai, stateRef.current.activeFormContext.atoms.valueByFieldId);
 		if (stateRef.current.selectedField) {
-			updatedType = updateTypeFromFieldUpdate(type, stateRef.current.selectedField, values, selectedFieldIdPath);
+			updatedType = updateTypeFromFieldUpdate(type, stateRef.current, values, selectedFieldIdPath);
 		} else if (stateRef.current.selectedSection) {
 			updatedType = updateTypeFromSectionUpdate(type, stateRef.current.selectedSection, values);
 		} else if (stateRef.current.selectedDataSource) {
@@ -888,7 +888,7 @@ function updateTypeProps(type: ContentType, updatedTypeDetails: TypePropsToEdit)
 
 function updateTypeFromSubFieldUpdate(
 	fields: LookupTable<ContentTypeField>,
-	selectedField: ContentTypeField | NewContentTypeField,
+	state: EditAppContextProps,
 	updatedValues: LookupTable<unknown>,
 	fieldIdPath: string
 ): LookupTable<ContentTypeField> {
@@ -900,43 +900,41 @@ function updateTypeFromSubFieldUpdate(
 				...fields[rootFieldId],
 				fields: updateTypeFromSubFieldUpdate(
 					fields[rootFieldId].fields,
-					selectedField,
+					state,
 					updatedValues,
 					fieldIdPath.replace(`${rootFieldId}.`, '')
 				)
 			}
 		};
 	} else {
-		const updatedField = reverseTypeFieldValuesObject(selectedField, updatedValues);
+		const updatedField = reverseTypeFieldValuesObject(state.selectedField, updatedValues);
 		let updatedFields = { ...fields };
 
-		if (updatedField.id !== selectedField.id) {
+		if (updatedField.id !== state.selectedField.id) {
 			// Since the order of the fields is determined by the lookupTable order, we need to convert it to array, set the
 			// field in the proper position and convert it back to a lookupTable.
 			const updatedFieldsArray = Object.values(updatedFields);
-			const originalFieldIndex = updatedFieldsArray.findIndex((field) => field.id === selectedField.id);
+			const originalFieldIndex = updatedFieldsArray.findIndex((field) => field.id === state.selectedField.id);
 			updatedFieldsArray.splice(originalFieldIndex, 0, updatedField);
 			updatedFields = createLookupTable(updatedFieldsArray, 'id');
 
 			// Delete the old id
-			delete updatedFields[selectedField.id];
+			delete updatedFields[state.selectedField.id];
 		} else {
 			updatedFields[updatedField.id] = updatedField;
 		}
+		state.selectedField = updatedField;
 		return updatedFields;
 	}
 }
 
 function updateTypeFromFieldUpdate(
 	type: ContentType,
-	selectedField: ContentTypeField | NewContentTypeField,
+	state: EditAppContextProps,
 	updatedValues: LookupTable<unknown>,
 	fieldIdPath: string
 ): ContentType {
-	if (!selectedField) return;
-
-	const isNewField = (selectedField as NewContentTypeField).NEW;
-	const selectedFieldId = isNewField ? NEW_FIELD_ID : selectedField.id;
+	if (!state.selectedField) return;
 
 	if (isComposedPath(fieldIdPath)) {
 		// When the field is not on the root level (composed fieldIdPath), the field is under another field, where each
@@ -950,7 +948,7 @@ function updateTypeFromFieldUpdate(
 					...type.fields[rootFieldId],
 					fields: updateTypeFromSubFieldUpdate(
 						type.fields[rootFieldId].fields,
-						selectedField,
+						state,
 						updatedValues,
 						fieldIdPath.replace(`${rootFieldId}.`, '')
 					)
@@ -958,10 +956,13 @@ function updateTypeFromFieldUpdate(
 			}
 		};
 	} else {
+		const isNewField = (state.selectedField as NewContentTypeField).NEW;
+		const selectedFieldId = isNewField ? NEW_FIELD_ID : state.selectedField.id;
+
 		// If the field is on the root level, the edition is different since the structure of `type` has sections with the
 		// fields (string array) and the lookupTable of the fields. Both properties need to be updated.
 		const updatedType: ContentType = { ...type, fields: { ...type.fields } };
-		const updatedField = reverseTypeFieldValuesObject(selectedField, updatedValues);
+		const updatedField = reverseTypeFieldValuesObject(state.selectedField, updatedValues);
 		updatedType.fields[updatedField.id] = updatedField;
 		if (updatedField.id !== selectedFieldId) {
 			// Delete the old id
@@ -978,6 +979,7 @@ function updateTypeFromFieldUpdate(
 			updatedType.sections = updatedType.sections.concat();
 			updatedType.sections[sectionIndex] = section;
 		}
+		state.selectedField = updatedField;
 		return updatedType;
 	}
 }
