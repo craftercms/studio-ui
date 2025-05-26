@@ -27,11 +27,6 @@ export const fileNameDescriptor: DescriptorContentType = {
 			id: 'properties',
 			title: defineMessage({ defaultMessage: 'Options' }),
 			fields: ['maxlength', 'readonly', 'allowEditWithoutWarning']
-		}),
-		createVirtualSection({
-			id: 'constraints',
-			title: defineMessage({ defaultMessage: 'Constraints' }),
-			fields: ['required']
 		})
 	],
 	fields: {
@@ -55,13 +50,6 @@ export const fileNameDescriptor: DescriptorContentType = {
 			name: defineMessage({ defaultMessage: 'Allow Edit Without Warning' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
-		},
-		required: {
-			id: 'required',
-			type: 'checkbox',
-			name: defineMessage({ defaultMessage: 'Required' }),
-			defaultValue: true,
-			validations: { required: { id: 'required', value: true, level: 'required' } }
 		}
 	}
 };
