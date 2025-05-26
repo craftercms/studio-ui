@@ -47,7 +47,7 @@ export function URLDrivenSearch(props: URLDrivenSearchProps) {
 	const desktopScreen = useMediaQuery(theme.breakpoints.up('md'));
 	// endregion
 
-	const preselectedPaths = JSON.parse(queryParams.preselectedPaths as string);
+	const preselectedPaths = queryParams.preselectedPaths ? JSON.parse(queryParams.preselectedPaths as string) : [];
 	const preselectedLookup = createPresenceTable(preselectedPaths);
 	const disableChangePreselected = queryParams.disableChangePreselected
 		? queryParams.disableChangePreselected === 'true'
