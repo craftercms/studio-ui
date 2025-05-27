@@ -189,41 +189,53 @@ export function createDataSourceValuesObject(datasource: DataSource): LookupTabl
 }
 
 // values is a lookup table of values which needs to be set
-export function reverseTypeFieldValuesObject(field: ContentTypeField, values: LookupTable<unknown>): ContentTypeField {
+export function reverseTypeFieldValuesObject(
+	field: ContentTypeField,
+	values: LookupTable<unknown>,
+	descriptor: DescriptorContentType
+): ContentTypeField {
 	const fieldWithReversedValues: ContentTypeField = { ...field };
 	let property: ContentTypeFieldProperties;
 	for (property in field) {
 		if (ignoredContentTypeFieldProps.includes(property)) continue;
+
+		// It may happen that the original XML doesn't have some properties/validations that the field has (in the descriptor).
+		// So we need to ge the defaults from the descriptor to ensure we don't drop them when retrieving the values.
+		const defaults = getPropertiesAndValidationsFromDescriptor(descriptor);
 		if (property === 'fields') {
 			if (values.fields) {
 				for (const fieldId in field.fields) {
 					fieldWithReversedValues.fields[fieldId] = reverseTypeFieldValuesObject(
 						field.fields[fieldId],
-						values.fields[fieldId]
+						values.fields[fieldId],
+						descriptor
 					);
 				}
 			}
 		} else if (property === 'properties') {
 			fieldWithReversedValues.properties = {};
 			const properties = fieldWithReversedValues.properties;
-			for (const property in field.properties ?? {}) {
+			const mergedProperties = { ...defaults.properties, ...(field.properties ?? {}) };
+
+			for (const property in mergedProperties) {
 				// A stored property that's no longer in the descriptor would get cleaned/dropped up by this check.
 				if (property !== 'plugin' && !(property in values)) {
 					continue;
 				}
 				if (property === 'plugin') {
-					properties[property] = field.properties[property];
+					properties[property] = mergedProperties[property];
 					continue;
 				}
-				properties[property] = { ...field.properties[property] };
+				properties[property] = { ...mergedProperties[property] };
 				properties[property].value = values[property] as never;
 			}
 		} else if (property === 'validations') {
 			fieldWithReversedValues.validations = { ...field.validations };
 			const validations = fieldWithReversedValues.validations;
+			const mergedValidations = { ...defaults.validations, ...(field.validations ?? {}) };
 			let validationKey: ValidationKeys;
-			for (validationKey in validations ?? {}) {
-				validations[validationKey as ValidationKeys] = { ...validations[validationKey as ValidationKeys] };
+			for (validationKey in mergedValidations) {
+				validations[validationKey as ValidationKeys] = { ...mergedValidations[validationKey as ValidationKeys] };
 				validations[validationKey as ValidationKeys].value =
 					// TODO: Should we use upgrade manager to remove from properties and into constraints?
 					// The maxlength property is mapped from properties to `field.validations` as `maxLength`.

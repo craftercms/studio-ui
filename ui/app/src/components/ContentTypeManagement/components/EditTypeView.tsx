@@ -195,7 +195,13 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 		let updatedType: ContentType;
 		const values = extractAtomValues(jotai, stateRef.current.activeFormContext.atoms.valueByFieldId);
 		if (stateRef.current.selectedField) {
-			updatedType = updateTypeFromFieldUpdate(type, stateRef.current, values, selectedFieldIdPath);
+			updatedType = updateTypeFromFieldUpdate(
+				type,
+				stateRef.current,
+				values,
+				selectedFieldIdPath,
+				configDescriptors.controlDescriptors
+			);
 		} else if (stateRef.current.selectedSection) {
 			updatedType = updateTypeFromSectionUpdate(type, stateRef.current.selectedSection, values);
 		} else if (stateRef.current.selectedDataSource) {
@@ -889,7 +895,8 @@ function updateTypeFromSubFieldUpdate(
 	fields: LookupTable<ContentTypeField>,
 	state: EditAppContextProps,
 	updatedValues: LookupTable<unknown>,
-	fieldIdPath: string
+	fieldIdPath: string,
+	descriptor: DescriptorContentType
 ): LookupTable<ContentTypeField> {
 	if (isComposedPath(fieldIdPath)) {
 		const rootFieldId = fieldIdPath.split('.').shift();
@@ -901,12 +908,13 @@ function updateTypeFromSubFieldUpdate(
 					fields[rootFieldId].fields,
 					state,
 					updatedValues,
-					fieldIdPath.replace(`${rootFieldId}.`, '')
+					fieldIdPath.replace(`${rootFieldId}.`, ''),
+					descriptor
 				)
 			}
 		};
 	} else {
-		const updatedField = reverseTypeFieldValuesObject(state.selectedField, updatedValues);
+		const updatedField = reverseTypeFieldValuesObject(state.selectedField, updatedValues, descriptor);
 		let updatedFields = { ...fields };
 
 		if (updatedField.id !== state.selectedField.id) {
@@ -931,10 +939,13 @@ function updateTypeFromFieldUpdate(
 	type: ContentType,
 	state: EditAppContextProps,
 	updatedValues: LookupTable<unknown>,
-	fieldIdPath: string
+	fieldIdPath: string,
+	configDescriptors?: LookupTable<DescriptorContentType>
 ): ContentType {
 	if (!state.selectedField) return;
 
+	const fieldType = state.selectedField.type;
+	const descriptor = configDescriptors?.[fieldType] ?? controlDescriptors[fieldType];
 	if (isComposedPath(fieldIdPath)) {
 		// When the field is not on the root level (composed fieldIdPath), the field is under another field, where each
 		// field contains a lookupTable of fields. In that screnario sections should not be updated.
@@ -949,7 +960,8 @@ function updateTypeFromFieldUpdate(
 						type.fields[rootFieldId].fields,
 						state,
 						updatedValues,
-						fieldIdPath.replace(`${rootFieldId}.`, '')
+						fieldIdPath.replace(`${rootFieldId}.`, ''),
+						descriptor
 					)
 				}
 			}
@@ -961,7 +973,7 @@ function updateTypeFromFieldUpdate(
 		// If the field is on the root level, the edition is different since the structure of `type` has sections with the
 		// fields (string array) and the lookupTable of the fields. Both properties need to be updated.
 		const updatedType: ContentType = { ...type, fields: { ...type.fields } };
-		const updatedField = reverseTypeFieldValuesObject(state.selectedField, updatedValues);
+		const updatedField = reverseTypeFieldValuesObject(state.selectedField, updatedValues, descriptor);
 		updatedType.fields[updatedField.id] = updatedField;
 		if (updatedField.id !== selectedFieldId) {
 			// Delete the old id
