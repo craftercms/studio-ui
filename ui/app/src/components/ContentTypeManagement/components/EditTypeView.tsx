@@ -1092,15 +1092,16 @@ function getNewFieldFromDescriptor(fieldType: string, descriptor: DescriptorCont
 		NEW: true,
 		id: '',
 		name: '',
+		helpText: '',
 		description: '',
 		type: fieldType,
 		validations: {},
 		defaultValue: '',
-		fields: {},
 		properties: {}
 	};
 	if (!descriptor) return newField;
 
+	if (descriptor.id === 'repeat') newField.fields = {};
 	const { properties, validations } = getPropertiesAndValidationsFromDescriptor(descriptor);
 
 	newField.properties = properties;
