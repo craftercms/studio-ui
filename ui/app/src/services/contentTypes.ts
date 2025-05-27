@@ -329,7 +329,6 @@ function parseLegacyFormDefinitionFields(
 			const value = legacyProp.value?.trim();
 			switch (legacyProp.name) {
 				case 'required':
-					if (value === 'true') {
 					if (value) {
 						field.validations.required = {
 							id: 'required',
