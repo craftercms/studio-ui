@@ -200,6 +200,11 @@ export const typeBasicDetailsDescriptor: DescriptorContentType = {
 			id: 'allowedDestinations',
 			title: defineMessage({ defaultMessage: 'Allowed Destinations' }),
 			fields: ['paths']
+		}),
+		createVirtualSection({
+			id: 'sections',
+			title: defineMessage({ defaultMessage: 'Sections' }),
+			fields: ['sections']
 		})
 	],
 	fields: {
@@ -313,6 +318,15 @@ export const typeBasicDetailsDescriptor: DescriptorContentType = {
 			helpText: '',
 			defaultValue: undefined,
 			validations: immutableEmptyObject
+		},
+		sections: {
+			id: 'sections',
+			type: 'sections',
+			name: defineMessage({ defaultMessage: 'Sections' }),
+			description: '',
+			helpText: '',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
 		}
 	}
 };
@@ -327,11 +341,6 @@ export const sectionDescriptor: DescriptorContentType = {
 			title: defineMessage({ defaultMessage: 'Basic Properties' }),
 			fields: ['title', 'color', 'description', 'expandByDefault', 'fields']
 		})
-		// createVirtualSection({
-		// 	id: 'fields',
-		// 	title: 'Fields',
-		// 	fields: ['fields']
-		// })
 	],
 	fields: {
 		title: {

@@ -82,6 +82,7 @@ export type TypePropsToEdit = Pick<
 	| 'displayTemplate'
 	| 'isHeadless'
 	| 'paths'
+	| 'sections'
 >;
 
 type ContentTypeValuesObject = TypePropsToEdit & { groovyController: string };
@@ -98,7 +99,8 @@ export const typePropsToEdit: Array<keyof TypePropsToEdit> = [
 	'hasJsController',
 	'displayTemplate',
 	'isHeadless',
-	'paths'
+	'paths',
+	'sections'
 ];
 
 export function createTypeFormValuesObject(type: ContentType): ContentTypeValuesObject {

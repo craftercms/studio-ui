@@ -32,7 +32,8 @@ export type DescriptorControlType =
 	| 'merge-strategy-selector'
 	| 'datasource-single-selector'
 	| 'fields'
-	| 'variable';
+	| 'variable'
+	| 'sections';
 
 export const controlMap: Record<DescriptorControlType, ElementType> = {
 	'content-path-input': lazy(() => import('./controls/ContentPathInput')),
@@ -50,5 +51,6 @@ export const controlMap: Record<DescriptorControlType, ElementType> = {
 	'merge-strategy-selector': lazy(() => import('./controls/MergeStrategySelector')),
 	'datasource-single-selector': lazy(() => import('./controls/DataSourceSingleSelector')),
 	fields: lazy(() => import('./controls/Fields')),
-	variable: lazy(() => import('./controls/Variable'))
+	variable: lazy(() => import('./controls/Variable')),
+	sections: lazy(() => import('./controls/Sections'))
 };
