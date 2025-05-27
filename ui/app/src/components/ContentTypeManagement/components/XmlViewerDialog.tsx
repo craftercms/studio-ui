@@ -45,7 +45,7 @@ export function XmlViewerDialogBody(props: XmlViewerDialogProps) {
 export function XmlViewerDialog(props: XmlViewerDialogProps) {
 	const { xml, ...dialogProps } = props;
 	return (
-		<EnhancedDialog title="View XML" {...dialogProps}>
+		<EnhancedDialog title="View XML" {...dialogProps} maxWidth="xl">
 			<XmlViewerDialogBody xml={xml} {...dialogProps} />
 		</EnhancedDialog>
 	);

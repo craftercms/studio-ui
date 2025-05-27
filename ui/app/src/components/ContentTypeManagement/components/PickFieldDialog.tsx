@@ -188,7 +188,7 @@ export function PickFieldDialog({
 	...dialogProps
 }: PickFieldDialogProps) {
 	return (
-		<EnhancedDialog title={title} maxWidth="sm" {...dialogProps}>
+		<EnhancedDialog title={title} maxWidth="lg" {...dialogProps}>
 			<PickFieldDialogBody
 				{...dialogProps}
 				type={type}
@@ -248,7 +248,7 @@ export function SelectField(props: {
 					<FormControl sx={{ mt: 2 }}>
 						<FormLabel id="fieldSectionRadioGroupLabel">{systemFieldsTitle}</FormLabel>
 					</FormControl>
-					<Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', mt: 1, mb: 2 }}>
+					<Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', mt: 1, mb: 2 }}>
 						{basicFields.map((field, index) => (
 							<ListItemButton
 								key={index}
@@ -265,7 +265,7 @@ export function SelectField(props: {
 					{filteredFields.length > 0 && <Divider />}
 				</>
 			)}
-			<Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', mt: 2 }}>
+			<Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', mt: 2 }}>
 				{filteredFields.map((field, index) => (
 					<ListItemButton key={index} onClick={() => setSelectedField(field)} selected={selectedField?.id === field.id}>
 						<ListItemIcon>
