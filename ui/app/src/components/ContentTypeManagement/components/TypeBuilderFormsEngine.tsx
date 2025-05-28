@@ -61,6 +61,8 @@ import MoveFieldToSectionDialog from './MoveFieldToSectionDialog';
 import useEnhancedDialogState from '../../../hooks/useEnhancedDialogState';
 import SwapFieldDialog from './SwapFieldDialog';
 import { nanoid } from 'nanoid';
+import MoveDownIcon from '@mui/icons-material/MoveDown';
+import { ReorderFieldsDialog, type ReorderFieldsDialogProps } from './ReorderFieldsDialog';
 
 interface TypeModeProps {
 	type: ContentType;
@@ -81,12 +83,14 @@ interface FieldModeProps {
 		isTargetRepeatGroup: boolean
 	): void;
 	onSwapField(fieldId: string, sectionId: string, newField: PartialContentType): void;
+	onReorderRepGroupFields?(fields: ReorderFieldsDialogProps['fields'], fieldIdPath: string): void;
 }
 
 interface SectionModeProps {
 	section: ContentTypeSection;
 	isMainSection: boolean;
 	onDeleteSection(section: ContentTypeSection): void;
+	onReorderSectionFields?(fields: ReorderFieldsDialogProps['fields'], sectionId: string): void;
 }
 
 interface DataSourceModeProps {
@@ -98,6 +102,7 @@ interface BaseProps extends Partial<FieldModeProps & SectionModeProps & DataSour
 	virtualType: ContentType;
 	formApiContext: FormsEngineFormApiContextProps;
 	stableFormContext: StableFormContextProps;
+	onReorderTypeSections?(fields: ReorderFieldsDialogProps['fields']): void;
 	onClose(): void;
 }
 
@@ -127,6 +132,7 @@ function FieldFormViewBody(props: FieldFormViewProps) {
 					{createElement(FieldActions, props)}
 					{createElement(SectionActions, props)}
 					{createElement(DataSourceActions, props)}
+					{createElement(ContentTypeActions, props)}
 					<Divider sx={{ ml: 1, mr: 2 }} orientation="vertical" flexItem />
 					<Button variant="outlined" onClick={onClose}>
 						<FormattedMessage defaultMessage="Done" />
@@ -208,9 +214,11 @@ function FieldBreadcrumbs(props: FieldFormViewProps): JSX.Element {
 }
 
 function FieldActions(props: FieldFormViewProps): JSX.Element {
-	const { field, fieldIdPath, sectionId, onDeleteField, onMoveFieldToSection, type } = props;
+	const { field, fieldIdPath, sectionId, onDeleteField, onMoveFieldToSection, type, onReorderRepGroupFields } = props;
 	const [openMoveFieldDialog, setOpenMoveFieldDialog] = useState(false);
+	const [openReorderFieldsDialog, setOpenReorderFieldsDialog] = useState(false);
 	if (!field) return;
+	const fields = Object.values(field.fields ?? {}).map((f) => ({ key: f.id, value: f.name })) || [];
 
 	const handleMoveFieldToSection: FieldFormViewProps['onMoveFieldToSection'] = (
 		fieldId,
@@ -223,8 +231,20 @@ function FieldActions(props: FieldFormViewProps): JSX.Element {
 		onMoveFieldToSection?.(fieldIdPath, originSectionId, newSectionId, fieldIndex, isRepeatGroup);
 	};
 
+	const onReorderFields = (newFields: ReorderFieldsDialogProps['fields']) => {
+		setOpenReorderFieldsDialog(false);
+		onReorderRepGroupFields?.(newFields, fieldIdPath);
+	};
+
 	return (
 		<>
+			{field.type === 'repeat' && Object.keys(field.fields ?? []).length > 0 && (
+				<Tooltip title={<FormattedMessage defaultMessage="Reorder fields" />}>
+					<IconButton onClick={() => setOpenReorderFieldsDialog(true)}>
+						<MoveDownIcon />
+					</IconButton>
+				</Tooltip>
+			)}
 			<Tooltip title={<FormattedMessage defaultMessage="Move to another section" />}>
 				<IconButton onClick={() => setOpenMoveFieldDialog(true)}>
 					<DriveFileMoveOutlined />
@@ -260,6 +280,12 @@ function FieldActions(props: FieldFormViewProps): JSX.Element {
 				open={openMoveFieldDialog}
 				onClose={() => setOpenMoveFieldDialog(false)}
 				onMoveFieldToSection={handleMoveFieldToSection}
+			/>
+			<ReorderFieldsDialog
+				fields={fields}
+				open={openReorderFieldsDialog}
+				onClose={() => setOpenReorderFieldsDialog(false)}
+				onReorderFields={onReorderFields}
 			/>
 		</>
 	);
@@ -311,10 +337,25 @@ function FieldSwapper(props: FieldFormViewProps): JSX.Element {
 }
 
 function SectionActions(props: FieldFormViewProps): JSX.Element {
-	const { section, isMainSection, onDeleteSection } = props;
+	const { section, isMainSection, onDeleteSection, onReorderSectionFields } = props;
+	const [openReorderFieldsDialog, setOpenReorderFieldsDialog] = useState(false);
 	if (!section) return;
+	const fields = section.fields.map((field) => ({ key: field, value: field })) || [];
+
+	const onReorderFields = (newFields: ReorderFieldsDialogProps['fields']) => {
+		setOpenReorderFieldsDialog(false);
+		onReorderSectionFields?.(newFields, section.id);
+	};
+
 	return (
 		<>
+			{section.fields?.length > 0 && (
+				<Tooltip title={<FormattedMessage defaultMessage="Reorder fields" />}>
+					<IconButton onClick={() => setOpenReorderFieldsDialog(true)}>
+						<MoveDownIcon />
+					</IconButton>
+				</Tooltip>
+			)}
 			{!isMainSection && (
 				<ConfirmDropdown
 					icon={DeleteRounded}
@@ -327,6 +368,12 @@ function SectionActions(props: FieldFormViewProps): JSX.Element {
 					onConfirm={() => onDeleteSection?.(section)}
 				/>
 			)}
+			<ReorderFieldsDialog
+				fields={fields}
+				open={openReorderFieldsDialog}
+				onClose={() => setOpenReorderFieldsDialog(false)}
+				onReorderFields={onReorderFields}
+			/>
 		</>
 	);
 }
@@ -345,6 +392,35 @@ function DataSourceActions(props: FieldFormViewProps): JSX.Element {
 				onConfirm={() => {
 					onDeleteDataSource?.(dataSource.id);
 				}}
+			/>
+		</>
+	);
+}
+
+function ContentTypeActions(props: FieldFormViewProps): JSX.Element {
+	const { section, field, dataSource, type, onReorderTypeSections } = props;
+	const [openReorderFieldsDialog, setOpenReorderFieldsDialog] = useState(false);
+	if (section || field || dataSource) return;
+
+	const sections = type.sections.map((section) => ({ key: section.id, value: section.title, content: section })) || [];
+
+	const onReorderSections = (newSections: ReorderFieldsDialogProps['fields']) => {
+		setOpenReorderFieldsDialog(false);
+		onReorderTypeSections?.(newSections);
+	};
+
+	return (
+		<>
+			<Tooltip title={<FormattedMessage defaultMessage="Reorder sections" />}>
+				<IconButton onClick={() => setOpenReorderFieldsDialog(true)}>
+					<MoveDownIcon />
+				</IconButton>
+			</Tooltip>
+			<ReorderFieldsDialog
+				fields={sections}
+				open={openReorderFieldsDialog}
+				onClose={() => setOpenReorderFieldsDialog(false)}
+				onReorderFields={onReorderSections}
 			/>
 		</>
 	);

@@ -200,11 +200,6 @@ export const typeBasicDetailsDescriptor: DescriptorContentType = {
 			id: 'allowedDestinations',
 			title: defineMessage({ defaultMessage: 'Allowed Destinations' }),
 			fields: ['paths']
-		}),
-		createVirtualSection({
-			id: 'sections',
-			title: defineMessage({ defaultMessage: 'Sections' }),
-			fields: ['sections']
 		})
 	],
 	fields: {
@@ -318,15 +313,6 @@ export const typeBasicDetailsDescriptor: DescriptorContentType = {
 			helpText: '',
 			defaultValue: undefined,
 			validations: immutableEmptyObject
-		},
-		sections: {
-			id: 'sections',
-			type: 'sections',
-			name: defineMessage({ defaultMessage: 'Sections' }),
-			description: '',
-			helpText: '',
-			defaultValue: undefined,
-			validations: immutableEmptyObject
 		}
 	}
 };
@@ -339,7 +325,7 @@ export const sectionDescriptor: DescriptorContentType = {
 		createVirtualSection({
 			id: 'properties',
 			title: defineMessage({ defaultMessage: 'Basic Properties' }),
-			fields: ['title', 'color', 'description', 'expandByDefault', 'fields']
+			fields: ['title', 'color', 'description', 'expandByDefault']
 		})
 	],
 	fields: {
@@ -392,15 +378,6 @@ export const sectionDescriptor: DescriptorContentType = {
 			description: defineMessage({
 				defaultMessage: 'Check this to show the section expanded when the content type is displayed in the content form'
 			}),
-			helpText: '',
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		},
-		fields: {
-			id: 'fields',
-			type: 'fields',
-			name: defineMessage({ defaultMessage: 'Manage fields' }),
-			description: '',
 			helpText: '',
 			defaultValue: undefined,
 			validations: immutableEmptyObject

@@ -96,6 +96,7 @@ import { showHistoryDialog } from '../../../state/actions/dialogs';
 import { XmlViewerDialog } from './XmlViewerDialog';
 import useEnhancedDialogState from '../../../hooks/useEnhancedDialogState';
 import { XmlDiffDialog } from './XmlDiffDialog';
+import type { ReorderFieldsDialogProps } from './ReorderFieldsDialog';
 
 export interface EditTypeAppProps {
 	/**
@@ -255,6 +256,9 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 			onDeleteSection: handleDeleteSection,
 			onDeleteDataSource: handleDeleteDataSource,
 			onMoveFieldToSection: handleMoveFieldToSection,
+			onReorderSectionFields: handleReorderSectionFields,
+			onReorderTypeSections: handleReorderTypeSections,
+			onReorderRepGroupFields: handleReorderRepGroupFields,
 			onSwapField: handleSwapFileNameField,
 			...extraFormProps
 		});
@@ -613,6 +617,30 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 	};
 	const closeDiffXml = () => {
 		xmlDiffDialogState.onClose();
+	};
+	// endregion
+
+	// region reorder
+	const handleReorderRepGroupFields = (fields: ReorderFieldsDialogProps['fields'], fieldIdPath: string) => {
+		setType((currentType) => {
+			return reorderRepGroupFields(currentType, fields, fieldIdPath);
+		});
+	};
+
+	const handleReorderSectionFields = (fields: ReorderFieldsDialogProps['fields'], sectionId: string) => {
+		setType((currentType) => {
+			const { updatedSection, updatedType } = reorderSectionFields(currentType, fields, sectionId);
+			return updatedType;
+		});
+	};
+
+	const handleReorderTypeSections = (sections: ReorderFieldsDialogProps['fields']) => {
+		setType((currentType) => {
+			const newSections = sections.map((section) => {
+				return type.sections.find((s) => s.id === section.key);
+			});
+			return { ...currentType, sections: newSections };
+		});
 	};
 	// endregion
 
@@ -1129,6 +1157,98 @@ function getNewDataSourceFromDescriptor(dataSourceType: string, descriptor: Desc
 	newDataSource.properties = properties;
 
 	return newDataSource;
+}
+
+function reorderSectionFields(
+	type: ContentType,
+	fields: ReorderFieldsDialogProps['fields'],
+	sectionId: string
+): { updatedSection: ContentTypeSection; updatedType: ContentType } {
+	const newFields = fields.map((field) => field.key);
+	let updatedSection: ContentTypeSection;
+	const nextSections = type.sections.map((section) => {
+		if (section.id !== sectionId) return section;
+		updatedSection = section;
+		return {
+			...section,
+			fields: newFields
+		};
+	});
+
+	return {
+		updatedSection,
+		updatedType: { ...type, sections: nextSections }
+	};
+}
+
+function reorderRepGroupSubFields(
+	field: ContentTypeField,
+	fields: ReorderFieldsDialogProps['fields'],
+	subFieldPath: string
+): ContentTypeField {
+	if (isComposedPath(subFieldPath)) {
+		const rootFieldId = subFieldPath.split('.').shift();
+
+		return {
+			...field,
+			fields: {
+				...field.fields,
+				[rootFieldId]: reorderRepGroupSubFields(
+					field.fields[rootFieldId],
+					fields,
+					subFieldPath.replace(`${rootFieldId}.`, '')
+				)
+			}
+		};
+	} else {
+		const fieldsContainer = field.fields[subFieldPath];
+		const newFields = fields.map(({ key }) => fieldsContainer.fields[key]);
+		return {
+			...field,
+			fields: {
+				...field.fields,
+				[subFieldPath]: {
+					...field.fields[subFieldPath],
+					fields: createLookupTable(newFields)
+				}
+			}
+		};
+	}
+}
+
+function reorderRepGroupFields(
+	type: ContentType,
+	fields: ReorderFieldsDialogProps['fields'],
+	fieldIdPath: string
+): ContentType {
+	if (isComposedPath(fieldIdPath)) {
+		const rootFieldId = fieldIdPath.split('.').shift();
+
+		return {
+			...type,
+			fields: {
+				...type.fields,
+				[rootFieldId]: reorderRepGroupSubFields(
+					type.fields[rootFieldId],
+					fields,
+					fieldIdPath.replace(`${rootFieldId}.`, '')
+				)
+			}
+		};
+	} else {
+		const fieldsContainer = type.fields[fieldIdPath];
+		const newFields = fields.map(({ key }) => fieldsContainer.fields[key]);
+		return {
+			...type,
+			fields: {
+				...type.fields,
+				[fieldIdPath]: {
+					...type.fields[fieldIdPath],
+					fields: createLookupTable(newFields)
+				}
+			}
+		};
+	}
 }
 
 export default EditTypeView;
