@@ -83,7 +83,7 @@ interface FieldModeProps {
 		isTargetRepeatGroup: boolean
 	): void;
 	onSwapField(fieldId: string, sectionId: string, newField: PartialContentType): void;
-	onReorderRepGroupFields?(fields: ReorderFieldsDialogProps['fields'], fieldIdPath: string): void;
+	onReorderRepGroupFields?(fields: ReorderFieldsDialogProps['fields'], fieldIdPath: string, sectionId: string): void;
 }
 
 interface SectionModeProps {
@@ -233,7 +233,7 @@ function FieldActions(props: FieldFormViewProps): JSX.Element {
 
 	const onReorderFields = (newFields: ReorderFieldsDialogProps['fields']) => {
 		setOpenReorderFieldsDialog(false);
-		onReorderRepGroupFields?.(newFields, fieldIdPath);
+		onReorderRepGroupFields?.(newFields, fieldIdPath, sectionId);
 	};
 
 	return (

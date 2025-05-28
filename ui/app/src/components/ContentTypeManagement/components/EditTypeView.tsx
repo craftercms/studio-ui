@@ -43,6 +43,7 @@ import {
 	editTypeTemplate,
 	getFieldFromType,
 	getPropertiesAndValidationsFromDescriptor,
+	getSectionFromType,
 	isComposedPath,
 	NEW_DATASOURCE_ID,
 	NEW_FIELD_ID,
@@ -302,7 +303,7 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 		setSelectedFieldIdPath(fieldIdPath);
 		stateRef.current.selectedField = field;
 	};
-	const handleSectionSelected: TypeDetailsViewProps['onSectionSelected'] = (section) => {
+	const handleSectionSelected = (section: ContentTypeSection, overrideType?: ContentType) => {
 		if (!closeAndCleanup()) return;
 		const sectionIndex = type.sections.findIndex((s) => s.id === section.id);
 		const virtualType = createVirtualTypeForSection(sectionDescriptor, formatMessage);
@@ -311,7 +312,7 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 			createVirtualTypeFormContext(virtualType, section as unknown as LookupTable<unknown>, contentTypesLookup, {
 				fieldUpdates$: stateRef.current.fieldUpdates$
 			}),
-			{ section, isMainSection: sectionIndex === 0 }
+			{ section, isMainSection: sectionIndex === 0, ...(overrideType && { type: overrideType }) }
 		);
 		stateRef.current.selectedSection = section;
 	};
@@ -335,14 +336,15 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 		setSelectedFieldIdPath(dataSourceId);
 		stateRef.current.selectedDataSource = dataSource;
 	};
-	const handleEditTypeProperties = () => {
+	const handleEditTypeProperties = (overrideType?: ContentType) => {
 		if (!closeAndCleanup()) return;
 		const virtualType = createEmptyTypeStructure(applyTranslations(typeBasicDetailsDescriptor, formatMessage));
 		handleArtefactSelected(
 			virtualType,
 			createVirtualTypeFormContext(virtualType, createTypeFormValuesObject(type), contentTypesLookup, {
 				fieldUpdates$: stateRef.current.fieldUpdates$
-			})
+			}),
+			{ ...(overrideType && { type: overrideType }) }
 		);
 	};
 
@@ -621,16 +623,25 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 	// endregion
 
 	// region reorder
-	const handleReorderRepGroupFields = (fields: ReorderFieldsDialogProps['fields'], fieldIdPath: string) => {
+	const handleReorderRepGroupFields: FieldFormViewProps['onReorderRepGroupFields'] = (
+		fields,
+		fieldIdPath,
+		sectionId
+	) => {
 		setType((currentType) => {
-			return reorderRepGroupFields(currentType, fields, fieldIdPath);
+			const nextType = reorderRepGroupFields(currentType, fields, fieldIdPath);
+			const field = getFieldFromType(nextType, fieldIdPath);
+			handleFieldSelected(fieldIdPath, field, sectionId, nextType);
+			return nextType;
 		});
 	};
 
 	const handleReorderSectionFields = (fields: ReorderFieldsDialogProps['fields'], sectionId: string) => {
 		setType((currentType) => {
-			const { updatedSection, updatedType } = reorderSectionFields(currentType, fields, sectionId);
-			return updatedType;
+			const nextType = reorderSectionFields(currentType, fields, sectionId);
+			const nextSection = getSectionFromType(nextType, sectionId);
+			handleSectionSelected(nextSection, nextType);
+			return nextType;
 		});
 	};
 
@@ -639,7 +650,9 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 			const newSections = sections.map((section) => {
 				return type.sections.find((s) => s.id === section.key);
 			});
-			return { ...currentType, sections: newSections };
+			const nextType = { ...currentType, sections: newSections };
+			handleEditTypeProperties(nextType);
+			return nextType;
 		});
 	};
 	// endregion
@@ -1163,22 +1176,17 @@ function reorderSectionFields(
 	type: ContentType,
 	fields: ReorderFieldsDialogProps['fields'],
 	sectionId: string
-): { updatedSection: ContentTypeSection; updatedType: ContentType } {
+): ContentType {
 	const newFields = fields.map((field) => field.key);
-	let updatedSection: ContentTypeSection;
 	const nextSections = type.sections.map((section) => {
 		if (section.id !== sectionId) return section;
-		updatedSection = section;
 		return {
 			...section,
 			fields: newFields
 		};
 	});
 
-	return {
-		updatedSection,
-		updatedType: { ...type, sections: nextSections }
-	};
+	return { ...type, sections: nextSections };
 }
 
 function reorderRepGroupSubFields(

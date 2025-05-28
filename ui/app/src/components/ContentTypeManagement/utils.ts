@@ -807,6 +807,10 @@ export function getFieldFromType(type: ContentType, fieldIdPath: string): Conten
 	}
 }
 
+export function getSectionFromType(type: ContentType, sectionId: string): ContentTypeSection | undefined {
+	return type.sections.find((section) => section.id === sectionId);
+}
+
 export function getPropertiesAndValidationsFromDescriptor(descriptor: DescriptorContentType): {
 	properties: ContentTypeField['properties'];
 	validations: ContentTypeField['validations'];
