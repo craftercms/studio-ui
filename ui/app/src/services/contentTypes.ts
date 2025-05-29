@@ -416,6 +416,7 @@ function parseLegacyFormDefinition(definition: LegacyFormDefinition): ContentTyp
 	legacyDataSourceArray.forEach((datasource: LegacyDataSource) => {
 		// TODO: Delete datasource.properties after props have been added to the root object? Must update code usages of datasource.properties.
 		dataSources[datasource.id] = { ...datasource, properties: {} };
+		const legacyDatasource = { ...datasource };
 		asArray(datasource.properties?.property).forEach((property) => {
 			let value: unknown = property.value;
 			switch (property.type) {
@@ -431,11 +432,11 @@ function parseLegacyFormDefinition(definition: LegacyFormDefinition): ContentTyp
 				//   break;
 			}
 			dataSources[datasource.id].properties[property.name] = value;
-			// datasource also needs to be directly edited since it's set to dropTargetsLookup when datasource type is 'components'
-			datasource.properties[property.name] = value;
+			// Also update legacyDatasource, since dropTargetsLookup references it for 'components' type datasources.
+			legacyDatasource.properties[property.name] = value;
 		});
-		if (datasource.type === 'components') {
-			dropTargetsLookup[datasource.id] = datasource;
+		if (legacyDatasource.type === 'components') {
+			dropTargetsLookup[datasource.id] = legacyDatasource;
 		}
 	});
 
