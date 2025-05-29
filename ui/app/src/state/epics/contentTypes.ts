@@ -65,9 +65,15 @@ export default [
       ofType(fetchComponentsByContentType.type, setContentTypeFilter.type),
       withLatestFrom(state$),
       switchMap(([, state]) => {
-        const allowedContentTypes = Object.entries(state.preview.guest?.allowedContentTypes ?? {}).flatMap(
+        let allowedContentTypes = Object.entries(state.preview.guest?.allowedContentTypes ?? {}).flatMap(
           ([key, type]) => (type.shared ? [key] : [])
         );
+        // If '*' is included in allowedContentTypes, it means that all content types are allowed.
+        if (allowedContentTypes.includes('*')) {
+          allowedContentTypes = Object.values(state.contentTypes.byId)
+            .filter((contentType) => contentType.type === 'component' && !contentType.id.includes('/level-descriptor'))
+            .map((contentType) => contentType.id);
+        }
         return fetchItemsByContentType(
           state.sites.active,
           state.preview.components.contentTypeFilter === 'compatible'
