@@ -49,6 +49,8 @@ import {
 	NEW_FIELD_ID,
 	prepareSerializeToXmlTypeObject,
 	reverseTypeFieldValuesObject,
+	systemFieldsIdsMap,
+	systemFieldsTypesMap,
 	TYPE_GROOVY_CONTROLLER_BASE_PATH,
 	TYPE_TEMPLATE_BASE_PATH,
 	TypePropsToEdit,
@@ -1131,11 +1133,11 @@ function parseConfigPlugins(
 function getNewFieldFromDescriptor(fieldType: string, descriptor: DescriptorContentType): NewContentTypeField {
 	const newField: NewContentTypeField = {
 		NEW: true,
-		id: '',
+		id: systemFieldsIdsMap[fieldType] ?? '',
 		name: '',
 		helpText: '',
 		description: '',
-		type: fieldType,
+		type: systemFieldsTypesMap[fieldType] ?? fieldType,
 		validations: {},
 		defaultValue: '',
 		properties: {}

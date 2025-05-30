@@ -49,6 +49,7 @@ import { getFileNameFromPath } from '../../utils/path';
 import type { Dispatch } from 'redux';
 import { editController, editTemplate } from '../../state/actions/misc';
 import { popDialog, pushDialog } from '../../state/actions/dialogStack';
+import type { BuiltInControlType } from '../FormsEngine/lib/controlMap';
 
 // TODO: assess which of the utils here should go to utils/contentType.ts, or other places (serializers, etc.)
 
@@ -102,6 +103,25 @@ export const typePropsToEdit: Array<keyof TypePropsToEdit> = [
 	'paths',
 	'sections'
 ];
+
+// Some system fields resolve to other built-in controls, so we need to map them to the correct type
+export const systemFieldsTypesMap: Partial<Record<BuiltInControlType, string>> = {
+	disabled: 'checkbox',
+	'internal-name': 'input'
+};
+
+// Some system fields have a pre-set id which is not editable.
+export type readOnlyFieldIds = 'disabled' | 'file-name' | 'internal-name' | 'pageInNav';
+
+// Some system fields have a pre-set id. This map is to map the built-in control type to the id.
+export const systemFieldsIdsMap: Partial<Record<BuiltInControlType, readOnlyFieldIds>> = {
+	disabled: 'disabled',
+	'file-name': 'file-name',
+	'auto-filename': 'file-name',
+	'internal-name': 'internal-name',
+	'page-nav-order': 'pageInNav'
+	// 'locale-selector: 'locale-selector' // This one doesn't have a pre-set id
+};
 
 export function createTypeFormValuesObject(type: ContentType): ContentTypeValuesObject {
 	const values: Partial<ContentTypeValuesObject> = pluckProps(type, false, ...typePropsToEdit);
