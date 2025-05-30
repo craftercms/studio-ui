@@ -1164,6 +1164,7 @@ function getNewDataSourceFromDescriptor(dataSourceType: string, descriptor: Desc
 
 	const sections = createLookupTable(descriptor.sections);
 
+	newDataSource.interface = descriptor.type;
 	const propertiesFieldIds = sections.properties?.fields ?? [];
 	const properties = {};
 	propertiesFieldIds.forEach((field) => (properties[field] = descriptor.fields[field]?.defaultValue));
