@@ -52,7 +52,14 @@ import ContentType, {
 	DataSource,
 	NewContentTypeField
 } from '../../../models/ContentType';
-import { fooStableGlobalContext, getFieldFromType, NEW_FIELD_ID, PartialContentType } from '../utils';
+import {
+	fooStableGlobalContext,
+	getFieldFromType,
+	NEW_FIELD_ID,
+	PartialContentType,
+	type readOnlyFieldIdsType,
+	readOnlyFieldsIds
+} from '../utils';
 import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
 import Alert from '@mui/material/Alert';
 import { controlMap } from '../controlMap';
@@ -115,6 +122,7 @@ function FieldFormViewBody(props: FieldFormViewProps) {
 	// We're using nanoid to generate a unique ID for the typeId. This is to ensure that the component re-renders
 	// when the virtualType changes, so the autoFocus is set properly when the new set of fields render.
 	const [typeId, setTypeId] = useState<string>(undefined);
+	const isReadOnlyFieldId = readOnlyFieldsIds.includes(props.field.id as readOnlyFieldIdsType);
 
 	useEffect(() => {
 		containerRef.current.scroll({ top: 0, behavior: 'smooth' });
@@ -159,7 +167,7 @@ function FieldFormViewBody(props: FieldFormViewProps) {
 									field,
 									stableFormContext.atoms.valueByFieldId,
 									sectionIndex === 0 && fieldIndex === 0,
-									false,
+									field.id === 'id' && isReadOnlyFieldId,
 									virtualType,
 									controlMap
 								);

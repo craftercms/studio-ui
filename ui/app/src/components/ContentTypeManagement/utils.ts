@@ -111,10 +111,17 @@ export const systemFieldsTypesMap: Partial<Record<BuiltInControlType, string>> =
 };
 
 // Some system fields have a pre-set id which is not editable.
-export type readOnlyFieldIds = 'disabled' | 'file-name' | 'internal-name' | 'pageInNav';
+export type readOnlyFieldIdsType = 'disabled' | 'file-name' | 'internal-name' | 'pageInNav' | 'navLabel';
+export const readOnlyFieldsIds: readOnlyFieldIdsType[] = [
+	'disabled',
+	'file-name',
+	'internal-name',
+	'pageInNav',
+	'navLabel'
+];
 
 // Some system fields have a pre-set id. This map is to map the built-in control type to the id.
-export const systemFieldsIdsMap: Partial<Record<BuiltInControlType, readOnlyFieldIds>> = {
+export const systemFieldsIdsMap: Partial<Record<BuiltInControlType, readOnlyFieldIdsType>> = {
 	disabled: 'disabled',
 	'file-name': 'file-name',
 	'auto-filename': 'file-name',
