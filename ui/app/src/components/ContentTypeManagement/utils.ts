@@ -848,14 +848,31 @@ export function getPropertiesAndValidationsFromDescriptor(descriptor: Descriptor
 
 	const sections = createLookupTable(descriptor.sections);
 	const propertiesFieldIds = sections.properties?.fields ?? [];
-	propertiesFieldIds.forEach(
-		(field) =>
-			(properties[field] = {
-				name: field,
-				value: descriptor.fields[field]?.defaultValue,
-				type: descriptor.fields[field]?.type
-			})
-	);
+	propertiesFieldIds.forEach((field) => {
+		let type = descriptor.fields[field]?.type;
+		switch (type) {
+			case 'datasource-selector':
+			case 'datasource-single-selector': {
+				type = `datasource:${descriptor.fields[field]?.validations?.type?.value ?? 'item'}`;
+				break;
+			}
+			case 'checkbox':
+				type = 'boolean';
+				break;
+			case 'numeric-input':
+				type = 'int';
+				break;
+			case 'input':
+				type = 'string';
+				break;
+		}
+
+		properties[field] = {
+			name: field,
+			value: descriptor.fields[field]?.defaultValue,
+			type
+		};
+	});
 
 	const constraintsFieldIds = (sections.constraints?.fields as DescriptorFieldValidationKeys[]) ?? [];
 	constraintsFieldIds.forEach((field) => {
