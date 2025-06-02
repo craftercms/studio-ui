@@ -30,7 +30,7 @@ export interface DataSourceMultiSelectorProps extends TypeBuilderControl {
  */
 export function DataSourceMultiSelector(props: DataSourceMultiSelectorProps) {
 	const { field, value, setValue, contentType } = props;
-	const selectedDataSources = value?.split(',') ?? [];
+	const selectedDataSources = value ? value?.split(',') : [];
 	const type = field.validations?.type?.value ?? '';
 	const filteredDataSources = useMemo(() => {
 		return (contentType.dataSources ?? []).filter((ds) => ds.interface === type);
