@@ -270,7 +270,7 @@ export const typeBasicDetailsDescriptor: DescriptorContentType = {
 			id: 'mergeStrategy',
 			type: 'merge-strategy-selector',
 			name: defineMessage({ defaultMessage: 'Merge Strategy' }),
-			description: 'Inheritance description...',
+			description: defineMessage({ defaultMessage: 'The inheritance pattern to use with content of this type' }),
 			helpText: '',
 			defaultValue: undefined,
 			validations: immutableEmptyObject
