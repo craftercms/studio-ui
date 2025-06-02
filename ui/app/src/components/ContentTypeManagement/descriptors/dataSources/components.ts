@@ -44,42 +44,42 @@ export const componentsDataSourceDescriptor: DescriptorContentType = {
 			id: 'allowEmbedded',
 			type: 'checkbox',
 			name: defineMessage({ defaultMessage: 'Allow Embedded' }),
-			defaultValue: undefined,
+			defaultValue: true,
 			validations: immutableEmptyObject
 		},
 		allowShared: {
 			id: 'allowShared',
 			type: 'checkbox',
 			name: defineMessage({ defaultMessage: 'Allow New Shared' }),
-			defaultValue: undefined,
+			defaultValue: true,
 			validations: immutableEmptyObject
 		},
 		enableBrowse: {
 			id: 'enableBrowse',
 			type: 'checkbox',
 			name: defineMessage({ defaultMessage: 'Enable Browsing Shared' }),
-			defaultValue: undefined,
+			defaultValue: true,
 			validations: immutableEmptyObject
 		},
 		enableSearch: {
 			id: 'enableSearch',
 			type: 'checkbox',
 			name: defineMessage({ defaultMessage: 'Enable Search' }),
-			defaultValue: undefined,
+			defaultValue: false,
 			validations: immutableEmptyObject
 		},
 		baseRepoPath: {
 			id: 'baseRepoPath',
 			type: 'input',
 			name: defineMessage({ defaultMessage: 'Path for New Items' }),
-			defaultValue: undefined,
+			defaultValue: '/site/components',
 			validations: immutableEmptyObject
 		},
 		baseBrowsePath: {
 			id: 'baseBrowsePath',
 			type: 'input',
 			name: defineMessage({ defaultMessage: 'Base Browse Path' }),
-			defaultValue: undefined,
+			defaultValue: '/site/components',
 			validations: immutableEmptyObject
 		},
 		contentTypes: {

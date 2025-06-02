@@ -50,6 +50,7 @@ import type { Dispatch } from 'redux';
 import { editController, editTemplate } from '../../state/actions/misc';
 import { popDialog, pushDialog } from '../../state/actions/dialogStack';
 import type { BuiltInControlType } from '../FormsEngine/lib/controlMap';
+import { asArray } from '../../utils/array';
 
 // TODO: assess which of the utils here should go to utils/contentType.ts, or other places (serializers, etc.)
 
@@ -664,6 +665,7 @@ function convertFieldStructToXmlStruct(field: ContentTypeField): Required<Legacy
 	};
 }
 
+const propertiesSimpleTypes = ['checkbox', 'input', 'numeric-input'];
 function convertDataSourceStructToXmlStruct(
 	dataSource: DataSource,
 	configDataSourceDescriptors?: LookupTable<DescriptorContentType>
@@ -685,11 +687,20 @@ function convertDataSourceStructToXmlStruct(
 			//  ===>
 			//    <properties>
 			//      <enableSearchExisting>true</enableSearchExisting>
-			property: Object.entries(dataSource.properties).map(([name, value]) => ({
-				name,
-				value,
-				type: descriptor?.fields[name] ? descriptor?.fields[name].type : typeof value
-			}))
+			// TODO: note type usage in `services/contentTypes.ts, parseLegacyFormDefinition when parsing the data sources`
+			property: Object.entries(dataSource.properties).map(([name, value]) => {
+				let type = descriptor?.fields[name] ? descriptor?.fields[name].type : typeof value;
+				// some properties are simple types, so we need to get the proper type.
+				if (propertiesSimpleTypes.includes(type)) {
+					type = typeof value;
+				}
+
+				return {
+					name,
+					value,
+					type
+				};
+			})
 		}
 	};
 }
@@ -874,7 +885,7 @@ export function getPropertiesAndValidationsFromDescriptor(descriptor: Descriptor
 		};
 	});
 
-	const constraintsFieldIds = (sections.constraints?.fields as DescriptorFieldValidationKeys[]) ?? [];
+	const constraintsFieldIds = (asArray(sections.constraints?.fields) as DescriptorFieldValidationKeys[]) ?? [];
 	constraintsFieldIds.forEach((field) => {
 		validations[field] = {
 			...createValidation(field, descriptor.fields[field]?.defaultValue)
