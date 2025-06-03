@@ -122,7 +122,7 @@ function FieldFormViewBody(props: FieldFormViewProps) {
 	// We're using nanoid to generate a unique ID for the typeId. This is to ensure that the component re-renders
 	// when the virtualType changes, so the autoFocus is set properly when the new set of fields render.
 	const [typeId, setTypeId] = useState<string>(undefined);
-	const isReadOnlyFieldId = readOnlyFieldsIds.includes(props.field.id as readOnlyFieldIdsType);
+	const isReadOnlyField = props.field && readOnlyFieldsIds.includes(props.field.id as readOnlyFieldIdsType);
 
 	useEffect(() => {
 		containerRef.current.scroll({ top: 0, behavior: 'smooth' });
@@ -167,7 +167,7 @@ function FieldFormViewBody(props: FieldFormViewProps) {
 									field,
 									stableFormContext.atoms.valueByFieldId,
 									sectionIndex === 0 && fieldIndex === 0,
-									field.id === 'id' && isReadOnlyFieldId,
+									field.id === 'id' && isReadOnlyField,
 									virtualType,
 									controlMap
 								);
