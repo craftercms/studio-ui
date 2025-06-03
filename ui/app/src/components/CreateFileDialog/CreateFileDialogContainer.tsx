@@ -172,7 +172,7 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
 						fullWidth
 						autoFocus
 						required
-						error={(!name && isSubmitting !== null) || fileExists}
+						error={(!name && Boolean(isSubmitting)) || fileExists}
 						placeholder={formatMessage(translations.placeholder)}
 						helperText={
 							fileExists ? (

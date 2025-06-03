@@ -70,14 +70,14 @@ export const componentsDataSourceDescriptor: DescriptorContentType = {
 		},
 		baseRepoPath: {
 			id: 'baseRepoPath',
-			type: 'input',
+			type: 'content-path-input',
 			name: defineMessage({ defaultMessage: 'Path for New Items' }),
 			defaultValue: '/site/components',
 			validations: immutableEmptyObject
 		},
 		baseBrowsePath: {
 			id: 'baseBrowsePath',
-			type: 'input',
+			type: 'content-path-input',
 			name: defineMessage({ defaultMessage: 'Base Browse Path' }),
 			defaultValue: '/site/components',
 			validations: immutableEmptyObject
