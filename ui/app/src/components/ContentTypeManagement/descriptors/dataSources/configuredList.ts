@@ -40,38 +40,38 @@ export const configuredListDataSourceDescriptor: DescriptorContentType = {
 			id: 'dataType',
 			type: 'dropdown-static-values',
 			name: defineMessage({ defaultMessage: 'Data Type' }),
-			defaultValue: [
+			defaultValue: `[
 				{
-					value: 'value',
-					label: 'No Data Type',
-					selected: true
+					"value": "value",
+					"label": "No Data Type",
+					"selected": true
 				},
 				{
-					value: 'value_s',
-					label: 'String',
-					selected: false
+					"value": "value_s",
+					"label": "String",
+					"selected": false
 				},
 				{
-					value: 'value_i',
-					label: 'Integer',
-					selected: false
+					"value": "value_i",
+					"label": "Integer",
+					"selected": false
 				},
 				{
-					value: 'value_f',
-					label: 'Float',
-					selected: false
+					"value": "value_f",
+					"label": "Float",
+					"selected": false
 				},
 				{
-					value: 'value_dt',
-					label: 'Date',
-					selected: false
+					"value": "value_dt",
+					"label": "Date",
+					"selected": false
 				},
 				{
-					value: 'value_html',
-					label: 'HTML',
-					selected: false
+					"value": "value_html",
+					"label": "HTML",
+					"selected": false
 				}
-			],
+			]`,
 			validations: immutableEmptyObject
 		},
 		listName: {
@@ -85,23 +85,23 @@ export const configuredListDataSourceDescriptor: DescriptorContentType = {
 			id: 'sort',
 			type: 'dropdown-static-values',
 			name: defineMessage({ defaultMessage: 'Sort' }),
-			defaultValue: [
+			defaultValue: `[
 				{
-					value: 'None',
-					label: 'None',
-					selected: true
+					"value": "None",
+					"label": "None",
+					"selected": true
 				},
 				{
-					value: 'ascending',
-					label: 'Ascending',
-					selected: false
+					"value": "ascending",
+					"label": "Ascending",
+					"selected": false
 				},
 				{
-					value: 'descending',
-					label: 'Descending',
-					selected: false
+					"value": "descending",
+					"label": "Descending",
+					"selected": false
 				}
-			],
+			]`,
 			validations: immutableEmptyObject
 		},
 		required: {

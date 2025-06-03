@@ -40,38 +40,33 @@ export const keyValueListDataSourceDescriptor: DescriptorContentType = {
 			id: 'dataType',
 			type: 'dropdown-static-values',
 			name: defineMessage({ defaultMessage: 'Data Type' }),
-			defaultValue: [
+			defaultValue: `[
 				{
-					value: 'value',
-					label: '',
-					selected: true
+					"value": "value_s",
+					"label": "String",
+					"selected": true
 				},
 				{
-					value: 'value_s',
-					label: 'String',
-					selected: false
+					"value": "value_i",
+					"label": "Integer",
+					"selected": false
 				},
 				{
-					value: 'value_i',
-					label: 'Integer',
-					selected: false
+					"value": "value_f",
+					"label": "Float",
+					"selected": false
 				},
 				{
-					value: 'value_f',
-					label: 'Float',
-					selected: false
+					"value": "value_dt",
+					"label": "Date",
+					"selected": false
 				},
 				{
-					value: 'value_dt',
-					label: 'Date',
-					selected: false
-				},
-				{
-					value: 'value_html',
-					label: 'HTML',
-					selected: false
+					"value": "value_html",
+					"label": "HTML",
+					"selected": false
 				}
-			],
+			]`,
 			validations: immutableEmptyObject
 		},
 		options: {

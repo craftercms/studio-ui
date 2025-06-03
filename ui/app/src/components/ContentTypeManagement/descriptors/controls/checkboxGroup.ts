@@ -55,18 +55,18 @@ export const checkboxGroupDescriptor: DescriptorContentType = {
 			id: 'listDirection',
 			type: 'dropdown-static-values',
 			name: defineMessage({ defaultMessage: 'List Direction' }),
-			defaultValue: [
+			defaultValue: `[
 				{
-					value: 'horizontal',
-					label: 'Horizontal',
-					selected: true
+					"value": "horizontal",
+					"label": "Horizontal",
+					"selected": true
 				},
 				{
-					value: 'vertical',
-					label: 'Vertical',
-					selected: false
+					"value": "vertical",
+					"label": "Vertical",
+					"selected": false
 				}
-			],
+			]`,
 			validations: immutableEmptyObject
 		},
 		readonly: {
