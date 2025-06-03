@@ -40,24 +40,19 @@ import TypeDetailsViewHeader, { TypeDetailsViewHeaderProps } from './TypeDetails
 import LookupTable from '../../../models/LookupTable';
 import { defaultDataSourcesSection } from '../descriptors/controls';
 import { atom } from 'jotai';
-import PickControlDialog, { PickControlDialogProps } from './PickControlDialog';
 import SectionInsertionDialog, { SectionInsertionProps } from './SectionInsertionDialog';
-import { PickDataSourceDialog, PickDataSourceDialogProps } from './PickDataSourceDialog';
-import { ContentTypeManagementConfig } from './EditTypeView';
-import { nnou } from '../../../utils/object';
 
 export interface TypeDetailsViewProps {
 	type: PossibleContentTypeDraft;
 	fieldPathsWithErrors: LookupTable<boolean>;
 	selectedFieldIdPath: string;
-	config: ContentTypeManagementConfig;
 	onFieldSelected(fieldPath: string, field: ContentTypeField, sectionId: string): void;
 	onDataSourceSelected(dataSource: DataSource): void;
 	onSectionSelected(section: ContentTypeSection): void;
 	onEditTypeAction: TypeDetailsViewHeaderProps['onActionClick'];
 	onInsertSection: SectionInsertionProps['onInsertSection'];
-	onInsertField(fieldType: string, sectionId: string, position: number, fieldPath?: string): void;
-	onInsertDataSource(type: string, position: number): void;
+	onOpenInsertFieldDialog(sectionId: string, fieldPath?: string): void;
+	onOpenInsertDataSourceDialog(): void;
 	performCurrentFormErrorCheckAndWarning?(): boolean;
 }
 
@@ -70,7 +65,8 @@ export function TypeDetailsView(props: TypeDetailsViewProps) {
 		onSectionSelected,
 		onDataSourceSelected,
 		onEditTypeAction,
-		config,
+		onOpenInsertFieldDialog,
+		onOpenInsertDataSourceDialog,
 		performCurrentFormErrorCheckAndWarning
 	} = props;
 
@@ -80,23 +76,10 @@ export function TypeDetailsView(props: TypeDetailsViewProps) {
 		stableFormContextRef.current = createStableFormContextProps({ type }, true);
 
 	const [openSectionInserter, setOpenSectionInserter] = useState<boolean>(false);
-	const [insertFieldData, setInsertFieldData] = useState<{ sectionId: string; fieldPath?: string }>({
-		sectionId: null,
-		fieldPath: null
-	});
-	const [openDataSourceInserter, setOpenDataSourceInserter] = useState<boolean>(false);
 
 	const onAddSection = () => {
 		if (!performCurrentFormErrorCheckAndWarning()) return false;
 		setOpenSectionInserter(true);
-	};
-	const onAddField = (sectionId: string) => {
-		if (!performCurrentFormErrorCheckAndWarning()) return false;
-		setInsertFieldData({ sectionId });
-	};
-	const onAddDataSource = () => {
-		if (!performCurrentFormErrorCheckAndWarning()) return false;
-		setOpenDataSourceInserter(true);
 	};
 
 	const dataSourcesSection = useMemo(
@@ -109,21 +92,6 @@ export function TypeDetailsView(props: TypeDetailsViewProps) {
 	);
 
 	const dataSourceFields = useMemo(() => createVirtualDataSourceFields(type), [type]);
-
-	const { configControlDescriptors, configDataSourceDescriptors } = useMemo(() => {
-		return {
-			configControlDescriptors: config?.controls
-				? Object.values(config?.controls)
-						.map(({ descriptor }) => descriptor)
-						.filter((descriptor) => nnou(descriptor))
-				: [],
-			configDataSourceDescriptors: config?.dataSources
-				? Object.values(config?.dataSources)
-						.map(({ descriptor }) => descriptor)
-						.filter((descriptor) => nnou(descriptor))
-				: []
-		};
-	}, [config]);
 
 	const setSectionsExpandedState = (expanded: boolean) => {
 		Object.values(stableFormContextRef.current.atoms.expandedStateBySectionId).forEach((atom) => {
@@ -143,15 +111,6 @@ export function TypeDetailsView(props: TypeDetailsViewProps) {
 		stableFormContextRef.current.atoms.expandedStateBySectionId[section.id] = atom(true);
 		setOpenSectionInserter(false);
 		props.onInsertSection?.(section, position);
-	};
-	const handleInsertField: PickControlDialogProps['onInsertField'] = (fieldType, position) => {
-		const { sectionId, fieldPath } = insertFieldData;
-		props.onInsertField?.(fieldType, sectionId, position, fieldPath);
-		setInsertFieldData({ sectionId: null });
-	};
-	const handleInsertDataSource: PickDataSourceDialogProps['onInsert'] = (type, position) => {
-		props.onInsertDataSource?.(type, position);
-		setOpenDataSourceInserter(false);
 	};
 
 	const handleDataSourceSelected = (_, field) => {
@@ -192,7 +151,7 @@ export function TypeDetailsView(props: TypeDetailsViewProps) {
 								accordionDetails: {
 									className: '',
 									children: (
-										<Button onClick={() => onAddField(section.id)}>
+										<Button onClick={() => onOpenInsertFieldDialog(section.id)}>
 											<FormattedMessage defaultMessage="Add Field" />
 										</Button>
 									)
@@ -205,7 +164,7 @@ export function TypeDetailsView(props: TypeDetailsViewProps) {
 									fieldPathsWithErrors={fieldPathsWithErrors}
 									onFieldSelected={(fieldIdPath, field) => onFieldSelected(fieldIdPath, field, section.id)}
 									selectedFieldIdPath={selectedFieldIdPath}
-									onInsertField={(fieldPath) => setInsertFieldData({ sectionId: section.id, fieldPath })}
+									onInsertField={(fieldPath) => onOpenInsertFieldDialog(section.id, fieldPath)}
 								/>
 							)}
 						>
@@ -225,7 +184,7 @@ export function TypeDetailsView(props: TypeDetailsViewProps) {
 							accordionDetails: {
 								className: '',
 								children: (
-									<Button onClick={() => onAddDataSource()}>
+									<Button onClick={() => onOpenInsertDataSourceDialog()}>
 										<FormattedMessage defaultMessage="Add Data Source" />
 									</Button>
 								)
@@ -241,30 +200,11 @@ export function TypeDetailsView(props: TypeDetailsViewProps) {
 							/>
 						)}
 					/>
-
 					<SectionInsertionDialog
 						type={type}
 						open={openSectionInserter}
 						onClose={() => setOpenSectionInserter(false)}
 						onInsertSection={handleInsertSection}
-					/>
-					<PickControlDialog
-						open={Boolean(insertFieldData.sectionId)}
-						type={type}
-						sectionId={insertFieldData.sectionId}
-						fieldIdPath={insertFieldData.fieldPath}
-						onClose={() => setInsertFieldData({ sectionId: null })}
-						onInsertField={handleInsertField}
-						configDescriptors={configControlDescriptors}
-						controlExclusions={config.controlExclusions}
-					/>
-					<PickDataSourceDialog
-						type={type}
-						onInsert={handleInsertDataSource}
-						open={openDataSourceInserter}
-						onClose={() => setOpenDataSourceInserter(false)}
-						configDescriptors={configDataSourceDescriptors}
-						dataSourceExclusions={config.dataSourceExclusions}
 					/>
 				</StableFormContext.Provider>
 			</Provider>

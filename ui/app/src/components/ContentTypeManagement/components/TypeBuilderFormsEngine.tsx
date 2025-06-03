@@ -70,6 +70,7 @@ import SwapFieldDialog from './SwapFieldDialog';
 import { nanoid } from 'nanoid';
 import MoveDownIcon from '@mui/icons-material/MoveDown';
 import { ReorderFieldsDialog, type ReorderFieldsDialogProps } from './ReorderFieldsDialog';
+import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
 
 interface TypeModeProps {
 	type: ContentType;
@@ -98,6 +99,7 @@ interface SectionModeProps {
 	isMainSection: boolean;
 	onDeleteSection(section: ContentTypeSection): void;
 	onReorderSectionFields?(fields: ReorderFieldsDialogProps['fields'], sectionId: string): void;
+	onOpenInsertFieldDialog?(sectionId: string, fieldPath?: string): void;
 }
 
 interface DataSourceModeProps {
@@ -345,7 +347,7 @@ function FieldSwapper(props: FieldFormViewProps): JSX.Element {
 }
 
 function SectionActions(props: FieldFormViewProps): JSX.Element {
-	const { section, isMainSection, onDeleteSection, onReorderSectionFields } = props;
+	const { section, isMainSection, onDeleteSection, onReorderSectionFields, onOpenInsertFieldDialog } = props;
 	const [openReorderFieldsDialog, setOpenReorderFieldsDialog] = useState(false);
 	if (!section) return;
 	const fields = section.fields.map((field) => ({ key: field, value: field })) || [];
@@ -357,10 +359,16 @@ function SectionActions(props: FieldFormViewProps): JSX.Element {
 
 	return (
 		<>
-			{section.fields?.length > 0 && (
+			{section.fields?.length > 0 ? (
 				<Tooltip title={<FormattedMessage defaultMessage="Reorder fields" />}>
 					<IconButton onClick={() => setOpenReorderFieldsDialog(true)}>
 						<MoveDownIcon />
+					</IconButton>
+				</Tooltip>
+			) : (
+				<Tooltip title={<FormattedMessage defaultMessage="Add field" />}>
+					<IconButton onClick={() => onOpenInsertFieldDialog?.(section.id)}>
+						<AddCircleOutlineOutlinedIcon />
 					</IconButton>
 				</Tooltip>
 			)}

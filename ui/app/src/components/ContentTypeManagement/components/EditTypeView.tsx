@@ -76,7 +76,7 @@ import useActiveSiteId from '../../../hooks/useActiveSiteId';
 import { JotaiStore } from '../../FormsEngine/types';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Typography from '@mui/material/Typography';
-import { createLookupTable, pluckProps } from '../../../utils/object';
+import { createLookupTable, nnou, pluckProps } from '../../../utils/object';
 import Box, { BoxProps } from '@mui/material/Box';
 import useEnhancedDialogContext from '../../EnhancedDialog/useEnhancedDialogContext';
 import Checkbox from '@mui/material/Checkbox';
@@ -100,6 +100,8 @@ import { XmlViewerDialog } from './XmlViewerDialog';
 import useEnhancedDialogState from '../../../hooks/useEnhancedDialogState';
 import { XmlDiffDialog } from './XmlDiffDialog';
 import type { ReorderFieldsDialogProps } from './ReorderFieldsDialog';
+import PickControlDialog from './PickControlDialog';
+import PickDataSourceDialog from './PickDataSourceDialog';
 
 export interface EditTypeAppProps {
 	/**
@@ -181,6 +183,11 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 		dataSourceExclusions: null
 	});
 	const [drawerOpenTransitionEnded, setDrawerOpenTransitionEnded] = useState(false);
+	const [insertFieldData, setInsertFieldData] = useState<{ sectionId: string; fieldPath?: string }>({
+		sectionId: null,
+		fieldPath: null
+	});
+	const [openDataSourceInserter, setOpenDataSourceInserter] = useState<boolean>(false);
 
 	const configDescriptors = useMemo(() => {
 		const controlDescriptors = Object.values(config?.controls ?? {}).map(({ descriptor }) => descriptor);
@@ -191,6 +198,20 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 			dataSourceDescriptors: dataSourceDescriptors.length ? createLookupTable(dataSourceDescriptors) : null
 		};
 	}, [config?.controls, config?.dataSources]);
+	const { configControlDescriptors, configDataSourceDescriptors } = useMemo(() => {
+		return {
+			configControlDescriptors: config?.controls
+				? Object.values(config?.controls)
+						.map(({ descriptor }) => descriptor)
+						.filter((descriptor) => nnou(descriptor))
+				: [],
+			configDataSourceDescriptors: config?.dataSources
+				? Object.values(config?.dataSources)
+						.map(({ descriptor }) => descriptor)
+						.filter((descriptor) => nnou(descriptor))
+				: []
+		};
+	}, [config]);
 
 	/** Saves and commits the state changes. Returns undefined if no changes occurred. */
 	const commitOpenFormChanges = () => {
@@ -507,25 +528,38 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 	};
 
 	// region insert
+	const onOpenInsertFieldDialog = (sectionId: string, fieldPath?: string) => {
+		if (!performCurrentFormErrorCheckAndWarning()) return false;
+		setInsertFieldData({ sectionId, fieldPath });
+	};
+
+	const onOpenInsertDataSourceDialog = () => {
+		if (!performCurrentFormErrorCheckAndWarning()) return false;
+		setOpenDataSourceInserter(true);
+	};
+
 	const handleInsertSection: TypeDetailsViewProps['onInsertSection'] = (section, position) => {
 		setType(insertSection(type, section, position));
 		onUpdateHasPendingChanges(true);
 		handleSectionSelected(section);
 	};
-	const handleInsertField: TypeDetailsViewProps['onInsertField'] = (fieldType, sectionId, position, fieldPath) => {
+	const handleInsertField = (fieldType: string, position: number): void => {
+		const { sectionId, fieldPath } = insertFieldData;
+		setInsertFieldData({ sectionId: null });
 		const descriptor = controlDescriptors[fieldType] ?? config.controls?.[fieldType].descriptor;
 		const newField = getNewFieldFromDescriptor(fieldType, descriptor);
 		const newFieldPath = fieldPath ? `${fieldPath}.${NEW_FIELD_ID}` : NEW_FIELD_ID;
-		setType((currentType) => addField(currentType, newField, newFieldPath, sectionId, position));
+		setType(addField(type, newField, newFieldPath, sectionId, position));
 		handleFieldSelected(newFieldPath, newField, sectionId);
 	};
-	const handleInsertDataSource: TypeDetailsViewProps['onInsertDataSource'] = (dataSourceType, position) => {
+	const handleInsertDataSource = (dataSourceType: string, position: number) => {
 		const descriptor = dataSourceDescriptors[dataSourceType] ?? config.dataSources?.[dataSourceType].descriptor;
 		const newDataSource = getNewDataSourceFromDescriptor(dataSourceType, descriptor);
 
+		setOpenDataSourceInserter(false);
 		const nextDataSources = type.dataSources?.concat() ?? [];
 		nextDataSources.splice(position, 0, newDataSource);
-		setType((currentType) => ({ ...currentType, dataSources: nextDataSources }));
+		setType({ ...type, dataSources: nextDataSources });
 		handleDataSourceSelected(newDataSource);
 	};
 	// endregion
@@ -569,7 +603,11 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 
 	// region const fieldEditorView = ...
 	const fieldEditorView = virtualContentType
-		? createElement(TypeBuilderFormsEngine, { ...fieldFormViewProps, isPanelReady: drawerOpenTransitionEnded })
+		? createElement(TypeBuilderFormsEngine, {
+				...fieldFormViewProps,
+				isPanelReady: drawerOpenTransitionEnded,
+				onOpenInsertFieldDialog
+			})
 		: null;
 	// endregion
 
@@ -743,8 +781,8 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 						<TypeDetailsView
 							type={type}
 							onInsertSection={handleInsertSection}
-							onInsertField={handleInsertField}
-							onInsertDataSource={handleInsertDataSource}
+							onOpenInsertFieldDialog={onOpenInsertFieldDialog}
+							onOpenInsertDataSourceDialog={onOpenInsertDataSourceDialog}
 							onEditTypeAction={handleEditTypeAction}
 							onFieldSelected={handleFieldSelected}
 							onDataSourceSelected={handleDataSourceSelected}
@@ -752,7 +790,6 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 							fieldPathsWithErrors={fieldPathsWithErrors}
 							selectedFieldIdPath={selectedFieldIdPath}
 							performCurrentFormErrorCheckAndWarning={performCurrentFormErrorCheckAndWarning}
-							config={config}
 						/>
 						<Box>
 							{/* TODO: Remove this whole box and the fragment container. */}
@@ -772,6 +809,24 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 				currentXml={xmlDiffContent?.currentContent}
 				open={xmlDiffDialogState.open}
 				onClose={closeDiffXml}
+			/>
+			<PickControlDialog
+				open={Boolean(insertFieldData.sectionId)}
+				type={type}
+				sectionId={insertFieldData.sectionId}
+				fieldIdPath={insertFieldData.fieldPath}
+				onClose={() => setInsertFieldData({ sectionId: null })}
+				onInsertField={handleInsertField}
+				configDescriptors={configControlDescriptors}
+				controlExclusions={config.controlExclusions}
+			/>
+			<PickDataSourceDialog
+				type={type}
+				onInsert={handleInsertDataSource}
+				open={openDataSourceInserter}
+				onClose={() => setOpenDataSourceInserter(false)}
+				configDescriptors={configDataSourceDescriptors}
+				dataSourceExclusions={config.dataSourceExclusions}
 			/>
 		</Provider>
 	);
