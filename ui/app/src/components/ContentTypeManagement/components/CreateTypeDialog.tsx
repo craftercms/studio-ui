@@ -17,7 +17,7 @@
 import type ContentType from '../../../models/ContentType';
 import React, { useMemo, useRef, useState } from 'react';
 import Select, { SelectProps } from '@mui/material/Select';
-import TextField, { TextFieldProps } from '@mui/material/TextField';
+import TextField from '@mui/material/TextField';
 import { DialogBody } from '../../DialogBody';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
@@ -30,7 +30,6 @@ import PrimaryButton from '../../PrimaryButton';
 import { EnhancedDialog, EnhancedDialogProps } from '../../EnhancedDialog';
 import { camelize } from '../../../utils/string';
 import useEnhancedDialogContext from '../../EnhancedDialog/useEnhancedDialogContext';
-import type { ButtonProps } from '@mui/material/Button';
 import { onSubmittingAndOrPendingChangeProps } from '../../../hooks/useEnhancedDialogState';
 import useContentTypes from '../../../hooks/useContentTypes';
 import type { LookupTable } from '../../../models';
@@ -86,6 +85,7 @@ function CreateTypeDialogBody(props: CreateTypeDialogBaseProps) {
 	const enableSubmit = Boolean(isValid) && Boolean(name) && Boolean(id) && Boolean(type);
 	const [fetchingContentTypes, setFetchingContentTypes] = useState(false);
 	const dispatch = useDispatch();
+	const [idManuallyChanged, setIdManuallyChanged] = useState(false);
 
 	const validateAndSubmit = () => {
 		setFetchingContentTypes(true);
@@ -119,15 +119,16 @@ function CreateTypeDialogBody(props: CreateTypeDialogBaseProps) {
 		onSubmittingAndOrPendingChange({ hasPendingChanges: true });
 		setType(archetype);
 	};
-	const handleLabelBlur: TextFieldProps['onBlur'] = () => {
-		setId(suggestTypeId(name));
-	};
 	const handleNameChange = (name: string) => {
 		setName(name);
+		if (!idManuallyChanged) {
+			setId(suggestTypeId(name));
+		}
 		onSubmittingAndOrPendingChange({ hasPendingChanges: true });
 	};
 	const handleIdChange = (id: string) => {
 		setId(id);
+		setIdManuallyChanged(id !== '');
 		onSubmittingAndOrPendingChange({ hasPendingChanges: true });
 	};
 	const handleFormSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
@@ -163,7 +164,6 @@ function CreateTypeDialogBody(props: CreateTypeDialogBaseProps) {
 					value={name}
 					label={<FormattedMessage defaultMessage="Label" />}
 					onChange={(e) => handleNameChange(e.target.value)}
-					onBlur={handleLabelBlur}
 					error={nameExists}
 					helperText={nameExists && <FormattedMessage defaultMessage="Label already exists" />}
 				/>
