@@ -931,7 +931,13 @@ function deleteField(type: ContentType, fieldIdPath: string, sectionId: string):
 }
 
 function updateTypeProps(type: ContentType, updatedTypeDetails: TypePropsToEdit): ContentType {
-	return { ...type, ...pluckProps(updatedTypeDetails, ...typePropsToEdit) };
+	const newProps = pluckProps(updatedTypeDetails, ...typePropsToEdit);
+	// If the sections property have not changed, retain the current type's sections to prevent unintentional
+	// data loss (e.g., sections being set to 'undefined').
+	if (!newProps.sections) {
+		newProps.sections = type.sections;
+	}
+	return { ...type, ...newProps };
 }
 
 function updateTypeFromSubFieldUpdate(
