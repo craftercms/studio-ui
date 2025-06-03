@@ -37,10 +37,10 @@ export function DropdownStaticValues(props: DropdownStaticValuesProps) {
 					return JSON.parse(content);
 				} catch (e) {
 					console.error('Invalid JSON in dropdown static values', e);
-					return defaultValue ?? [];
+					return JSON.parse(defaultValue) ?? [];
 				}
 			})()
-		: (defaultValue ?? []);
+		: (JSON.parse(defaultValue) ?? []);
 	const selectedOption = options.find((option) => option.selected);
 
 	const handleChange = (event: SelectChangeEvent) => {
