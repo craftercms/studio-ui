@@ -26,7 +26,7 @@ export const textareaDescriptor: DescriptorContentType = {
 		createVirtualSection({
 			id: 'properties',
 			title: defineMessage({ defaultMessage: 'Options' }),
-			fields: ['rows', 'maxlength', 'allowResize', 'readonly', 'escapeContent', 'required']
+			fields: ['rows', 'maxlength', 'allowResize', 'readonly', 'escapeContent']
 		}),
 		createVirtualSection({
 			id: 'constraints',
@@ -39,21 +39,21 @@ export const textareaDescriptor: DescriptorContentType = {
 			id: 'rows',
 			type: 'numeric-input',
 			name: defineMessage({ defaultMessage: 'Rows' }),
-			defaultValue: undefined,
+			defaultValue: 5,
 			validations: immutableEmptyObject
 		},
 		maxlength: {
 			id: 'maxlength',
 			type: 'numeric-input',
 			name: defineMessage({ defaultMessage: 'Maximum Length' }),
-			defaultValue: undefined,
+			defaultValue: 100000,
 			validations: immutableEmptyObject
 		},
 		allowResize: {
 			id: 'allowResize',
 			type: 'checkbox',
 			name: defineMessage({ defaultMessage: 'Allow Resize' }),
-			defaultValue: undefined,
+			defaultValue: true,
 			validations: immutableEmptyObject
 		},
 		readonly: {
@@ -78,7 +78,7 @@ export const textareaDescriptor: DescriptorContentType = {
 			validations: immutableEmptyObject
 		}
 	},
-	supportedPostFixes: ['_s', '_t']
+	supportedPostFixes: ['_t', '_s']
 };
 
 export default textareaDescriptor;

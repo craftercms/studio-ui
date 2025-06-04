@@ -112,12 +112,12 @@ export const systemFieldsTypesMap: Partial<Record<BuiltInControlType, string>> =
 };
 
 // Some system fields have a pre-set id which is not editable.
-export type readOnlyFieldIdsType = 'disabled' | 'file-name' | 'internal-name' | 'pageInNav' | 'navLabel';
+export type readOnlyFieldIdsType = 'disabled' | 'file-name' | 'internal-name' | 'placeInNav' | 'navLabel';
 export const readOnlyFieldsIds: readOnlyFieldIdsType[] = [
 	'disabled',
 	'file-name',
 	'internal-name',
-	'pageInNav',
+	'placeInNav',
 	'navLabel'
 ];
 
@@ -127,7 +127,7 @@ export const systemFieldsIdsMap: Partial<Record<BuiltInControlType, readOnlyFiel
 	'file-name': 'file-name',
 	'auto-filename': 'file-name',
 	'internal-name': 'internal-name',
-	'page-nav-order': 'pageInNav'
+	'page-nav-order': 'placeInNav'
 	// 'locale-selector: 'locale-selector' // This one doesn't have a pre-set id
 };
 
@@ -862,9 +862,12 @@ export function getPropertiesAndValidationsFromDescriptor(descriptor: Descriptor
 	propertiesFieldIds.forEach((field) => {
 		let type = descriptor.fields[field]?.type;
 		switch (type) {
-			case 'datasource-selector':
-			case 'datasource-single-selector': {
+			case 'datasource-selector': {
 				type = `datasource:${descriptor.fields[field]?.validations?.type?.value ?? 'item'}`;
+				break;
+			}
+			case 'datasource-single-selector': {
+				type = `datasource:${descriptor.fields[field]?.validations?.type?.value ?? 'item'}:singleSelection`;
 				break;
 			}
 			case 'checkbox':

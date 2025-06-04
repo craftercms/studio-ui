@@ -39,7 +39,7 @@ export const inputDescriptor: DescriptorContentType = {
 			id: 'maxlength',
 			type: 'numeric-input',
 			name: defineMessage({ defaultMessage: 'Max Length' }),
-			defaultValue: undefined,
+			defaultValue: 50,
 			validations: immutableEmptyObject
 		},
 		readonly: {

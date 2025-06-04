@@ -57,7 +57,7 @@ export const dateTimeDescriptor: DescriptorContentType = {
 			id: 'showTime',
 			type: 'checkbox',
 			name: defineMessage({ defaultMessage: 'Show Time' }),
-			defaultValue: true,
+			defaultValue: false,
 			validations: immutableEmptyObject
 		},
 		showClear: {
@@ -92,7 +92,7 @@ export const dateTimeDescriptor: DescriptorContentType = {
 			id: 'populateDateExp',
 			type: 'input',
 			name: defineMessage({ defaultMessage: 'Populate Expression' }),
-			defaultValue: undefined,
+			defaultValue: 'now',
 			validations: immutableEmptyObject
 		},
 		useCustomTimezone: {

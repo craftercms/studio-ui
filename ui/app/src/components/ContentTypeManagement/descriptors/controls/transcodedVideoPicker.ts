@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createVirtualSection, DescriptorContentType } from '../../utils';
+import { createValidation, createVirtualSection, DescriptorContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
 import { defineMessage } from 'react-intl';
 
@@ -37,10 +37,12 @@ export const transcodedVideoPickerDescriptor: DescriptorContentType = {
 	fields: {
 		videoManager: {
 			id: 'videoManager',
-			type: 'dropdown',
+			type: 'datasource-selector',
 			name: defineMessage({ defaultMessage: 'Data Source' }),
 			defaultValue: undefined,
-			validations: immutableEmptyObject
+			validations: {
+				type: createValidation('type', 'transcoded-video')
+			}
 		},
 		readonly: {
 			id: 'readonly',
@@ -56,7 +58,8 @@ export const transcodedVideoPickerDescriptor: DescriptorContentType = {
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}
-	}
+	},
+	supportedPostFixes: ['_o']
 };
 
 export default transcodedVideoPickerDescriptor;

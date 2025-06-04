@@ -33,14 +33,54 @@ export const internalNameDescriptor: DescriptorContentType = {
 		createVirtualSection({
 			id: 'properties',
 			title: defineMessage({ defaultMessage: 'Options' }),
-			fields: ['maxLength']
+			fields: ['maxlength', 'readonly', 'tokenize', 'escapeContent']
+		}),
+		createVirtualSection({
+			id: 'constraints',
+			title: defineMessage({ defaultMessage: 'Constraints' }),
+			fields: ['required', 'pattern']
 		})
 	],
 	fields: {
-		maxLength: {
-			id: 'maxLength',
-			type: 'checkbox',
+		maxlength: {
+			id: 'maxlength',
+			type: 'numeric-input',
 			name: defineMessage({ defaultMessage: 'Max Length' }),
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		readonly: {
+			id: 'readonly',
+			type: 'checkbox',
+			name: defineMessage({ defaultMessage: 'Read Only' }),
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		tokenize: {
+			id: 'tokenize',
+			type: 'checkbox',
+			name: defineMessage({ defaultMessage: 'Tokenize for Indexing' }),
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		escapeContent: {
+			id: 'escapeContent',
+			type: 'checkbox',
+			name: 'escapeContent',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		required: {
+			id: 'required',
+			type: 'checkbox',
+			name: defineMessage({ defaultMessage: 'Required' }),
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		pattern: {
+			id: 'pattern',
+			type: 'input',
+			name: defineMessage({ defaultMessage: 'Match Pattern' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}

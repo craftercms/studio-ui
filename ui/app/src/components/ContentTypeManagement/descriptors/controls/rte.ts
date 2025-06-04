@@ -30,7 +30,6 @@ export const rteDescriptor: DescriptorContentType = {
 				'height',
 				'autoGrow',
 				'enableSpellCheck',
-				'supportedChannels',
 				'rteConfiguration',
 				'imageManager',
 				'videoManager',
@@ -63,7 +62,7 @@ export const rteDescriptor: DescriptorContentType = {
 			id: 'enableSpellCheck',
 			type: 'checkbox',
 			name: defineMessage({ defaultMessage: 'Enable Spell Check' }),
-			defaultValue: undefined,
+			defaultValue: true,
 			validations: immutableEmptyObject
 		},
 		rteConfiguration: {
