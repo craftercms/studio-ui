@@ -15,7 +15,7 @@
  */
 
 import OutlinedInput, { OutlinedInputProps } from '@mui/material/OutlinedInput';
-import React, { useEffect, useId, useState } from 'react';
+import React, { useEffect, useId, useRef, useState } from 'react';
 import FormsEngineField from '../../FormsEngine/components/FormsEngineField';
 import { ControlProps } from '../../FormsEngine/types';
 import controlDescriptors from '../descriptors/controls';
@@ -56,6 +56,7 @@ export function Variable(props: VariableProps) {
 		atoms: { valueByFieldId }
 	} = useStableFormContext();
 	const title = (useAtomValue(valueByFieldId['title']) as string) || '';
+	const inputRef = useRef<HTMLInputElement>(null); // ref for the input
 
 	useEffect(() => {
 		const { setValue, supportedPostFixes, allowAutoValue, disabled } = effectRefs.current;
@@ -74,6 +75,11 @@ export function Variable(props: VariableProps) {
 
 	const onAddPostFix = (postFix: string) => {
 		setValue(getValueWithPostFix(value, postFix, supportedPostFixes));
+		setTimeout(() => {
+			inputRef.current?.focus(); // Focus the input after updating the value
+			const length = inputRef.current.value.length; // Get the length of the input value
+			inputRef.current.setSelectionRange(length, length); // Set the cursor at the end
+		});
 	};
 
 	return (
@@ -86,6 +92,7 @@ export function Variable(props: VariableProps) {
 				value={value}
 				onChange={handleChange}
 				disabled={disabled}
+				inputRef={inputRef}
 				endAdornment={
 					showPostFixes && (
 						<Tooltip title={<FormattedMessage defaultMessage="Add/update postfix" />}>
@@ -108,6 +115,16 @@ export function Variable(props: VariableProps) {
 									p: 1,
 									'&:hover': {
 										backgroundColor: (theme) => theme.palette.action.hover
+									}
+								}}
+								menuProps={{
+									anchorOrigin: {
+										vertical: 'bottom',
+										horizontal: 'right'
+									},
+									transformOrigin: {
+										vertical: 'top',
+										horizontal: 'right'
 									}
 								}}
 							>
