@@ -92,6 +92,7 @@ interface FieldModeProps {
 	): void;
 	onSwapField(fieldId: string, sectionId: string, newField: PartialContentType): void;
 	onReorderRepGroupFields?(fields: ReorderFieldsDialogProps['fields'], fieldIdPath: string, sectionId: string): void;
+	performCurrentFormErrorCheckAndWarning(): boolean;
 }
 
 interface SectionModeProps {
@@ -224,11 +225,25 @@ function FieldBreadcrumbs(props: FieldFormViewProps): JSX.Element {
 }
 
 function FieldActions(props: FieldFormViewProps): JSX.Element {
-	const { field, fieldIdPath, sectionId, onDeleteField, onMoveFieldToSection, type, onReorderRepGroupFields } = props;
+	const {
+		field,
+		fieldIdPath,
+		sectionId,
+		onDeleteField,
+		onMoveFieldToSection,
+		type,
+		onReorderRepGroupFields,
+		performCurrentFormErrorCheckAndWarning
+	} = props;
 	const [openMoveFieldDialog, setOpenMoveFieldDialog] = useState(false);
 	const [openReorderFieldsDialog, setOpenReorderFieldsDialog] = useState(false);
 	if (!field) return;
 	const fields = Object.values(field.fields ?? {}).map((f) => ({ key: f.id, value: f.name })) || [];
+
+	const onOpenMoveFieldDialog = () => {
+		if (!performCurrentFormErrorCheckAndWarning()) return;
+		setOpenMoveFieldDialog(true);
+	};
 
 	const handleMoveFieldToSection: FieldFormViewProps['onMoveFieldToSection'] = (
 		fieldId,
@@ -256,7 +271,7 @@ function FieldActions(props: FieldFormViewProps): JSX.Element {
 				</Tooltip>
 			)}
 			<Tooltip title={<FormattedMessage defaultMessage="Move to another section" />}>
-				<IconButton onClick={() => setOpenMoveFieldDialog(true)}>
+				<IconButton onClick={() => onOpenMoveFieldDialog()}>
 					<DriveFileMoveOutlined />
 				</IconButton>
 			</Tooltip>
