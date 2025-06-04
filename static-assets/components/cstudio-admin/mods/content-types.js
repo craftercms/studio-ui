@@ -2578,7 +2578,7 @@
 				this.createRowFn(
 					CMgs.format(langBundle, 'iceGroup'),
 					'iceGroup',
-					item.iceId,
+					item.iceId ?? '',
 					'',
 					'string',
 					sheetEl,
@@ -2674,7 +2674,7 @@
 				this.createRowFn(
 					CMgs.format(langBundle, 'iceGroup'),
 					'iceGroup',
-					item.iceId,
+					item.iceId ?? '',
 					'',
 					'string',
 					sheetEl,
@@ -3697,6 +3697,7 @@
 				const additionalFields = control.getAdditionalFields?.() ?? [];
 
 				var xml = '';
+				const iceId = field.iceId ?? '';
 
 				if (field) {
 					xml +=
@@ -3708,7 +3709,7 @@
 						field.id +
 						'</id>\r\n' +
 						'\t\t\t\t\t<iceId>' +
-						field.iceId +
+						iceId +
 						'</iceId>\r\n' +
 						'\t\t\t\t\t<title>' +
 						CStudioForms.Util.escapeXml(field.title) +
