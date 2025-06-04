@@ -294,7 +294,7 @@ function FieldActions(props: FieldFormViewProps): JSX.Element {
 					}
 					cancelText={<FormattedMessage defaultMessage="No" />}
 					confirmText={<FormattedMessage defaultMessage="Yes" />}
-					onConfirm={() => onDeleteField?.((field as NewContentTypeField).NEW ? NEW_FIELD_ID : fieldIdPath, sectionId)}
+					onConfirm={() => onDeleteField?.(fieldIdPath, sectionId)}
 				/>
 			)}
 			<MoveFieldToSectionDialog

@@ -457,14 +457,13 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 				save(site, latestUpdate ?? type, tempActuallySaveToServer, configDescriptors).subscribe({
 					next(xml) {
 						const initialXml = buildXmlFromType(props.type, configDescriptors);
-						openDiffXml(initialXml, xml);
 						onUpdateHasPendingChanges(false);
 						dialogContext?.updateSubmittingOrHasPendingChanges({ isSubmitting: false });
 						if (tempActuallySaveToServer) {
-							if ((typeToSave as PossibleContentTypeDraft).NEW) {
-								dispatch(fetchContentTypes());
-							}
+							dispatch(fetchContentTypes());
 							showAlert(`Save successful.`);
+						} else {
+							openDiffXml(initialXml, xml);
 						}
 					},
 					error() {
@@ -612,7 +611,8 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 		? createElement(TypeBuilderFormsEngine, {
 				...fieldFormViewProps,
 				isPanelReady: drawerOpenTransitionEnded,
-				onOpenInsertFieldDialog
+				onOpenInsertFieldDialog,
+				performCurrentFormErrorCheckAndWarning
 			})
 		: null;
 	// endregion
@@ -895,7 +895,11 @@ function addSubField(
 		// convert it to an array, insert the new field and then convert it back to a lookupTable.
 		const nextFieldsArray = Object.values(parentField.fields ?? {});
 		nextFieldsArray.splice(position, 0, newField);
-		const nextFields = createLookupTable(nextFieldsArray, 'id');
+		const nextFields = {};
+		nextFieldsArray.forEach((field) => {
+			const fieldId = field.id ? field.id : NEW_FIELD_ID;
+			nextFields[fieldId] = field;
+		});
 		return {
 			...parentField,
 			fields: nextFields
