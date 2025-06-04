@@ -102,6 +102,7 @@ import { XmlDiffDialog } from './XmlDiffDialog';
 import type { ReorderFieldsDialogProps } from './ReorderFieldsDialog';
 import PickControlDialog from './PickControlDialog';
 import PickDataSourceDialog from './PickDataSourceDialog';
+import { fetchContentTypes } from '../../../state/actions/preview';
 
 export interface EditTypeAppProps {
 	/**
@@ -273,8 +274,9 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 			stableFormContext,
 			formApiContext: stateRef.current.formContextApi,
 			onClose: () => {
+				const formValid = effectRefs.current.closeAndCleanup();
+				if (!formValid) return;
 				setDrawerOpenTransitionEnded(false);
-				effectRefs.current.closeAndCleanup();
 			},
 			onDeleteField: handleDeleteField,
 			onDeleteSection: handleDeleteSection,
@@ -451,6 +453,7 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 				const tempActuallySaveToServer =
 					(document.getElementById('tempSaveToServerCheckbox') as HTMLInputElement)?.checked ?? false;
 				dialogContext?.updateSubmittingOrHasPendingChanges({ isSubmitting: true });
+				const typeToSave = latestUpdate ?? type;
 				save(site, latestUpdate ?? type, tempActuallySaveToServer, configDescriptors).subscribe({
 					next(xml) {
 						const initialXml = buildXmlFromType(props.type, configDescriptors);
@@ -458,6 +461,9 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 						onUpdateHasPendingChanges(false);
 						dialogContext?.updateSubmittingOrHasPendingChanges({ isSubmitting: false });
 						if (tempActuallySaveToServer) {
+							if ((typeToSave as PossibleContentTypeDraft).NEW) {
+								dispatch(fetchContentTypes());
+							}
 							showAlert(`Save successful.`);
 						}
 					},
@@ -1339,3 +1345,4 @@ export default EditTypeView;
 // 	- Should we use UM to remove from maxlength property and move into constraints? Also fix spelling to `maxLength`
 // 	- Can we add created, modified, createdBy and modifiedBy to the XML?
 //  - Assess removal of internalName/disabled controls.
+//  - Dynamic default values (eg. can't have a text field for the node selector). An idea is to have a custom control that renders depending on the type.
