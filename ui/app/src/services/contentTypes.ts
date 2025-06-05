@@ -356,7 +356,6 @@ function parseLegacyFormDefinitionFields(
 				case 'minSize':
 					break;
 				default:
-					// TODO: check 'unhandled constraint "maxLength" and other possible constraints
 					console.log(`[parseLegacyFormDef] Unhandled constraint "${legacyProp.name}"`, legacyProp);
 			}
 		});
