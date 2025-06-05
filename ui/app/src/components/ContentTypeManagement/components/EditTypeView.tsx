@@ -76,7 +76,7 @@ import useActiveSiteId from '../../../hooks/useActiveSiteId';
 import { JotaiStore } from '../../FormsEngine/types';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Typography from '@mui/material/Typography';
-import { createLookupTable, nnou, pluckProps } from '../../../utils/object';
+import { createLookupTable, nnou, pluckProps, reversePluckProps } from '../../../utils/object';
 import Box, { BoxProps } from '@mui/material/Box';
 import useEnhancedDialogContext from '../../EnhancedDialog/useEnhancedDialogContext';
 import Checkbox from '@mui/material/Checkbox';
@@ -454,12 +454,16 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 					(document.getElementById('tempSaveToServerCheckbox') as HTMLInputElement)?.checked ?? false;
 				dialogContext?.updateSubmittingOrHasPendingChanges({ isSubmitting: true });
 				const typeToSave = latestUpdate ?? type;
-				save(site, latestUpdate ?? type, tempActuallySaveToServer, configDescriptors).subscribe({
+				save(site, typeToSave, tempActuallySaveToServer, configDescriptors).subscribe({
 					next(xml) {
 						const initialXml = buildXmlFromType(props.type, configDescriptors);
 						onUpdateHasPendingChanges(false);
 						dialogContext?.updateSubmittingOrHasPendingChanges({ isSubmitting: false });
 						if (tempActuallySaveToServer) {
+							// If the type being save is new, update the type state to remove the NEW property.
+							if ((typeToSave as PossibleContentTypeDraft).NEW) {
+								setType(reversePluckProps(typeToSave as PossibleContentTypeDraft, 'NEW'));
+							}
 							dispatch(fetchContentTypes());
 							showAlert(`Save successful.`);
 						} else {

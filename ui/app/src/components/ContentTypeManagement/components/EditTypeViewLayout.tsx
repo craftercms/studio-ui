@@ -101,9 +101,11 @@ export const EditTypeViewLayout = forwardRef<HTMLDivElement, EditAppLayoutProps>
 							<MenuItem onClick={handleMenuItemClick} data-action-id={actionsMap.diff}>
 								<FormattedMessage defaultMessage="Diff" />
 							</MenuItem>
-							<MenuItem onClick={handleMenuItemClick} data-action-id={actionsMap.history}>
-								<FormattedMessage defaultMessage="History" />
-							</MenuItem>
+							{!props.isNew && (
+								<MenuItem onClick={handleMenuItemClick} data-action-id={actionsMap.history}>
+									<FormattedMessage defaultMessage="History" />
+								</MenuItem>
+							)}
 							<MenuItem onClick={handleMenuItemClick} data-action-id={actionsMap.rollback}>
 								<FormattedMessage defaultMessage="Rollback" />
 							</MenuItem>
