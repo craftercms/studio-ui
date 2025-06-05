@@ -46,7 +46,7 @@ export const pageNavOrderDescriptor: DescriptorContentType = {
 			id: 'required',
 			type: 'checkbox',
 			name: defineMessage({ defaultMessage: 'Required' }),
-			defaultValue: undefined,
+			defaultValue: false,
 			validations: immutableEmptyObject
 		}
 	}

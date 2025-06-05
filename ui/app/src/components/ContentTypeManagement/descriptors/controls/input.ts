@@ -67,14 +67,14 @@ export const inputDescriptor: DescriptorContentType = {
 			id: 'required',
 			type: 'checkbox',
 			name: defineMessage({ defaultMessage: 'Required' }),
-			defaultValue: undefined,
+			defaultValue: false,
 			validations: immutableEmptyObject
 		},
 		pattern: {
 			id: 'pattern',
 			type: 'input',
 			name: defineMessage({ defaultMessage: 'Match Pattern' }),
-			defaultValue: undefined,
+			defaultValue: '',
 			validations: immutableEmptyObject
 		}
 	},
