@@ -754,7 +754,7 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 		});
 	}, [site, activeEnvironment, setConfig, dispatch]);
 
-	const disableSave = !hasPendingChanges || Object.keys(fieldPathsWithErrors).length !== 0;
+	const disableSave = (!type.NEW && !hasPendingChanges) || Object.keys(fieldPathsWithErrors).length !== 0;
 	return (
 		<Provider store={jotai}>
 			<EditTypeViewLayout
