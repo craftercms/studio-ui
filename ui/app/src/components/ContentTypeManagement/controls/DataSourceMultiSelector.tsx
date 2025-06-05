@@ -20,6 +20,7 @@ import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox, { CheckboxProps } from '@mui/material/Checkbox';
 import { TypeBuilderControl } from '../utils';
+import { EmptyState } from '../../EmptyState';
 
 export interface DataSourceMultiSelectorProps extends TypeBuilderControl {
 	value: string;
@@ -53,13 +54,17 @@ export function DataSourceMultiSelector(props: DataSourceMultiSelectorProps) {
 	return (
 		<FormsEngineField field={field}>
 			<FormControl variant="standard">
-				{filteredDataSources.map((ds) => (
-					<FormControlLabel
-						key={ds.id}
-						control={<Checkbox name={ds.id} checked={selectedDataSources.includes(ds.id)} onChange={handleChange} />}
-						label={ds.title}
-					/>
-				))}
+				{filteredDataSources.length ? (
+					filteredDataSources.map((ds) => (
+						<FormControlLabel
+							key={ds.id}
+							control={<Checkbox name={ds.id} checked={selectedDataSources.includes(ds.id)} onChange={handleChange} />}
+							label={ds.title}
+						/>
+					))
+				) : (
+					<EmptyState title="No Data Sources available" sxs={{ image: { display: 'none' } }} />
+				)}
 			</FormControl>
 		</FormsEngineField>
 	);

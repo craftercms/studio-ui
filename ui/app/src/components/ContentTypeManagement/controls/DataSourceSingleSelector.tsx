@@ -20,6 +20,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import RadioGroup, { RadioGroupProps } from '@mui/material/RadioGroup';
 import Radio from '@mui/material/Radio';
 import { TypeBuilderControl } from '../utils';
+import { EmptyState } from '../../EmptyState';
 
 export interface DataSourceSingleSelectorProps extends TypeBuilderControl {
 	value: string;
@@ -39,9 +40,13 @@ export function DataSourceSingleSelector(props: DataSourceSingleSelectorProps) {
 	return (
 		<FormsEngineField field={field}>
 			<RadioGroup value={value ?? ''} onChange={handleChange}>
-				{filteredDataSources.map((ds) => (
-					<FormControlLabel key={ds.id} value={ds.id} control={<Radio />} label={ds.title} />
-				))}
+				{filteredDataSources.length ? (
+					filteredDataSources.map((ds) => (
+						<FormControlLabel key={ds.id} value={ds.id} control={<Radio />} label={ds.title} />
+					))
+				) : (
+					<EmptyState title="No Data Sources available" sxs={{ image: { display: 'none' } }} />
+				)}
 			</RadioGroup>
 		</FormsEngineField>
 	);
