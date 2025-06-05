@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import FormsEngineField from '../../FormsEngine/components/FormsEngineField';
 import useContentTypes from '../../../hooks/useContentTypes';
 import List from '@mui/material/List';
@@ -26,9 +26,9 @@ import CheckBoxRoundedIcon from '@mui/icons-material/CheckBoxRounded';
 import CheckBoxOutlineBlankRoundedIcon from '@mui/icons-material/CheckBoxOutlineBlankRounded';
 import { TypeBuilderControl } from '../utils';
 import { createPresenceTable } from '../../../utils/array';
-import useSpreadState from '../../../hooks/useSpreadState';
 import { EmptyState } from '../../EmptyState';
 import { FormattedMessage } from 'react-intl';
+import { reversePluckProps } from '../../../utils/object';
 
 export interface ContentTypesSelectorProps extends TypeBuilderControl {
 	value: string;
@@ -41,15 +41,24 @@ export function ContentTypesSelector(props: ContentTypesSelectorProps) {
 	const { field, value, setValue } = props;
 	const maxLength = field.validations.maxLength?.value;
 	const contentTypes = useContentTypes();
-	const [selectedLookup, setSelectedLookup] = useSpreadState<Record<string, boolean>>(
+	const [selectedLookup, setSelectedLookup] = useState<Record<string, boolean>>(
 		createPresenceTable(value ? value.split(',') : [])
 	);
 	const components = Object.values(contentTypes).filter((contentType) => contentType.type === 'component');
 
-	const handleToggle = (value: string) => () => {
-		const isSelected = selectedLookup[value];
-		const newSelectedLookup = { ...selectedLookup, [value]: !isSelected };
-
+	const handleToggle = (selectionValue: string) => () => {
+		let newSelectedLookup = {};
+		// We use '*' meaning that all components are selected
+		if (selectionValue === '*') {
+			const isSelected = value === '*';
+			if (!isSelected) {
+				newSelectedLookup[selectionValue] = true;
+			}
+		} else {
+			const isSelected = selectedLookup[selectionValue];
+			// ensure that when selecting individual content types, '*' won't be in the selectedLookup
+			newSelectedLookup = { ...reversePluckProps(selectedLookup, '*'), [selectionValue]: !isSelected };
+		}
 		setSelectedLookup(newSelectedLookup);
 		const selectedArray = Object.entries(newSelectedLookup)
 			.filter(([, value]) => value)
@@ -63,20 +72,30 @@ export function ContentTypesSelector(props: ContentTypesSelectorProps) {
 				{Object.values(contentTypes).length === 0 ? (
 					<EmptyState title={<FormattedMessage defaultMessage="No content types available" />} />
 				) : (
-					components.map((contentType) => (
-						<ListItem key={contentType.id} sx={{ bgcolor: 'background.paper', p: 0 }}>
-							<ListItemButton onClick={handleToggle(contentType.id)} dense>
+					<>
+						<ListItem sx={{ bgcolor: 'background.paper', p: 0 }}>
+							<ListItemButton onClick={handleToggle('*')} dense>
 								<ListItemIcon sx={{ py: 1 }}>
-									{selectedLookup[contentType.id] ? (
-										<CheckBoxRoundedIcon color="primary" />
-									) : (
-										<CheckBoxOutlineBlankRoundedIcon />
-									)}
+									{selectedLookup['*'] ? <CheckBoxRoundedIcon color="primary" /> : <CheckBoxOutlineBlankRoundedIcon />}
 								</ListItemIcon>
-								<ListItemText primary={contentType.name} />
+								<ListItemText primary={<FormattedMessage defaultMessage="Allow any component" />} />
 							</ListItemButton>
 						</ListItem>
-					))
+						{components.map((contentType) => (
+							<ListItem key={contentType.id} sx={{ bgcolor: 'background.paper', p: 0 }}>
+								<ListItemButton onClick={handleToggle(contentType.id)} dense disabled={value === '*'}>
+									<ListItemIcon sx={{ py: 1 }}>
+										{selectedLookup[contentType.id] ? (
+											<CheckBoxRoundedIcon color="primary" />
+										) : (
+											<CheckBoxOutlineBlankRoundedIcon />
+										)}
+									</ListItemIcon>
+									<ListItemText primary={contentType.name} />
+								</ListItemButton>
+							</ListItem>
+						))}
+					</>
 				)}
 			</List>
 		</FormsEngineField>
