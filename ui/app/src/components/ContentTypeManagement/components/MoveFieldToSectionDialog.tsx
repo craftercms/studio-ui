@@ -35,6 +35,7 @@ import ContentType, { ContentTypeField, ContentTypeSection } from '../../../mode
 import { LookupTable } from '../../../models';
 import Box from '@mui/material/Box';
 import { isComposedPath } from '../utils';
+import { EmptyState } from '../../EmptyState';
 
 export interface MoveFieldToSectionDialogProps extends EnhancedDialogProps {
 	fieldIdPath: FieldFormViewProps['fieldIdPath'];
@@ -105,7 +106,8 @@ export function MoveFieldToSectionDialogBody(props: MoveFieldToSectionDialogProp
 	};
 
 	const onPrimaryAction = () => {
-		if (selectedView === 0) {
+		// If when selecting the new target, there is only one field (the field being moved), skip the select position view.
+		if (selectedView === 0 && fields.length > 1) {
 			setSelectedView(1);
 		} else {
 			onMoveFieldToSection?.(
@@ -118,104 +120,98 @@ export function MoveFieldToSectionDialogBody(props: MoveFieldToSectionDialogProp
 		}
 	};
 
+	// Array of sections and repeat groups that the field can be moved to.
+	const filteredTargets = useMemo(() => {
+		const targets = [];
+		sections.forEach((section) => {
+			const repeatGroupsIdsForSection = getRepeatGroupsIdsForSection(section, typeRepeatGroups);
+			const sameFieldInType = Boolean(type.fields[field.id]);
+			const sameSection = section.id === sectionId;
+			/* Include section if:
+				1- If fieldPath is composed: It can be moved to any section as long as there are no fields with the same id in the type.
+				2- If fieldPath is not composed: It can be moved to any section that is not the same as the current section.
+			*/
+			if ((isComposedPath(fieldIdPath) && !sameFieldInType) || (!isComposedPath(fieldIdPath) && !sameSection)) {
+				targets.push({
+					id: section.id,
+					title: section.title
+				});
+			}
+
+			repeatGroupsIdsForSection.forEach((repeatGroupFieldIdPath) => {
+				// The pathId of the repeating group of the field being moved
+				const currentRepeatGroupIdPath = fieldIdPath.split('.').slice(0, -1).join('.');
+				// Validates if the current field is a child of the repeat group or if is the same repeat group
+				// being moved.
+				const isSameOrChildRepeatGroup = repeatGroupFieldIdPath.includes(fieldIdPath);
+				const sameFieldInRepGroup = typeRepeatGroups[repeatGroupFieldIdPath].fields[field.id];
+				const label = getLabelFromRepeatGroupIdPath(repeatGroupFieldIdPath, typeRepeatGroups);
+
+				if (currentRepeatGroupIdPath !== repeatGroupFieldIdPath && !isSameOrChildRepeatGroup && !sameFieldInRepGroup) {
+					targets.push({
+						id: repeatGroupFieldIdPath,
+						title: label
+					});
+				}
+			});
+		});
+		return targets;
+	}, [sections, field?.id, sectionId, type?.fields, typeRepeatGroups, fieldIdPath]);
+
 	return (
 		<>
 			<DialogBody sx={{ transition: 'height 0.3s ease-in-out' }}>
 				{selectedView === 0 ? (
 					<>
-						<FormControl>
-							<FormLabel id="fieldSectionRadioGroupLabel">
-								<FormattedMessage defaultMessage="Pick the new section for the field" />
-							</FormLabel>
-						</FormControl>
-						<RadioGroup
-							aria-labelledby="fieldSectionRadioGroupLabel"
-							name="fieldSectionRadioGroupLabel"
-							sx={{ padding: '10px' }}
-							value={selections.sectionId}
-							onChange={onSectionChange}
-						>
-							{sections.map((section) => {
-								const repeatGroupsIdsForSection = getRepeatGroupsIdsForSection(section, typeRepeatGroups);
-								const sameFieldInType = Boolean(type.fields[field.id]);
-								const sameSection = section.id === sectionId;
-
-								return (
-									<Box key={section.id} sx={{ display: 'flex', flexDirection: 'column' }}>
-										{/* Do not display section if:
-										 1- Same section where the field comes from. There's an exception: if the field belongs to a repeat
-										    group of the section, not to the root of it.
-										 2- The type has a field with the same id as the field being moved.
-										 3- If the target is a section (not a repeat group), never allow to move the field if any of the
-										 		sections have a field with the same id on their root (sameFieldInType).
-										 */}
-										{(section.id === sectionId && isComposedPath(fieldIdPath) && !sameFieldInType) ||
-										(!sameSection && !sameFieldInType) ? (
+						{filteredTargets.length > 0 ? (
+							<>
+								<FormControl>
+									<FormLabel id="fieldSectionRadioGroupLabel">
+										<FormattedMessage defaultMessage="Pick the new section for the field" />
+									</FormLabel>
+								</FormControl>
+								<RadioGroup
+									aria-labelledby="fieldSectionRadioGroupLabel"
+									name="fieldSectionRadioGroupLabel"
+									sx={{ padding: '10px' }}
+									value={selections.sectionId}
+									onChange={onSectionChange}
+								>
+									<Box sx={{ display: 'flex', flexDirection: 'column' }}>
+										{filteredTargets.map(({ id, title }) => (
 											<FormControlLabel
+												key={id}
 												control={<Radio />}
-												value={section.id}
+												value={id}
 												sx={{ marginBottom: '10px' }}
 												slotProps={{ typography: { variant: 'body2' } }}
 												label={
 													<FormattedMessage
 														defaultMessage='Move to "{sectionTitle}"'
-														values={{ sectionTitle: section.title }}
+														values={{ sectionTitle: title }}
 													/>
 												}
 											/>
-										) : null}
-										{repeatGroupsIdsForSection.map((repeatGroupFieldIdPath) => {
-											// The pathId opf the repeating group of the field being moved
-											const currentRepeatGroupIdPath = fieldIdPath.split('.').slice(0, -1).join('.');
-											// Validates if the current field is a child of the repeat group or if is the same repeat group
-											// being moved.
-											const isSameOrChildRepeatGroup = repeatGroupFieldIdPath.includes(fieldIdPath);
-											const sameFieldInRepGroup = typeRepeatGroups[repeatGroupFieldIdPath].fields[field.id];
-											const label = getLabelFromRepeatGroupIdPath(repeatGroupFieldIdPath, typeRepeatGroups);
-
-											return (
-												// Do not display repeating group if:
-												// 1- Current field is a child of the repeat group 'repeatGroupFieldIdPath'.
-												// 2- Current field is the same repeat group being moved, or a child of it.
-												// 3- Rep Group has a field with the same id as the field being moved.
-												currentRepeatGroupIdPath !== repeatGroupFieldIdPath &&
-												!isSameOrChildRepeatGroup &&
-												!sameFieldInRepGroup && (
-													<FormControlLabel
-														key={repeatGroupFieldIdPath}
-														control={<Radio />}
-														value={repeatGroupFieldIdPath}
-														sx={{ marginBottom: '10px' }}
-														slotProps={{ typography: { variant: 'body2' } }}
-														label={
-															<FormattedMessage
-																defaultMessage='Move to "{sectionTitle}"'
-																values={{ sectionTitle: label }}
-															/>
-														}
-													/>
-												)
-											);
-										})}
+										))}
 									</Box>
-								);
-							})}
-						</RadioGroup>
+								</RadioGroup>
+							</>
+						) : (
+							<EmptyState title={<FormattedMessage defaultMessage="No sections available to move this field." />} />
+						)}
 					</>
 				) : (
-					<>
-						<FormControl>
-							<FormLabel id="moveFieldRadioGroupLabel">
-								<FormattedMessage defaultMessage="Manage field position" />
-							</FormLabel>
-							{fields &&
-								(useTouchSorting ? (
-									<TouchSortableList items={fields} onChange={onReorderField} selectedItemId={field.id} />
-								) : (
-									<SortableList items={fields} onChange={onReorderField} selectedItemId={field.id} />
-								))}
-						</FormControl>
-					</>
+					<FormControl>
+						<FormLabel id="moveFieldRadioGroupLabel">
+							<FormattedMessage defaultMessage="Manage field position" />
+						</FormLabel>
+						{fields &&
+							(useTouchSorting ? (
+								<TouchSortableList items={fields} onChange={onReorderField} selectedItemId={field.id} />
+							) : (
+								<SortableList items={fields} onChange={onReorderField} selectedItemId={field.id} />
+							))}
+					</FormControl>
 				)}
 			</DialogBody>
 			<DialogFooter>
