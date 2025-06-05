@@ -28,11 +28,6 @@ export const keyValueListDataSourceDescriptor: DescriptorContentType = {
 			id: 'properties',
 			title: defineMessage({ defaultMessage: 'Options' }),
 			fields: ['dataType', 'options', 'showkeys']
-		}),
-		createVirtualSection({
-			id: 'constraints',
-			title: defineMessage({ defaultMessage: 'Constraints' }),
-			fields: ['required']
 		})
 	],
 	fields: {
@@ -80,13 +75,6 @@ export const keyValueListDataSourceDescriptor: DescriptorContentType = {
 			id: 'showkeys',
 			type: 'checkbox',
 			name: defineMessage({ defaultMessage: 'Show keys' }),
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		},
-		required: {
-			id: 'required',
-			type: 'checkbox',
-			name: defineMessage({ defaultMessage: 'required' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}

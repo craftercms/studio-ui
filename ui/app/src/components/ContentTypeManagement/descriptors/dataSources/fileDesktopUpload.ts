@@ -34,7 +34,7 @@ export const fileDesktopUploadDataSourceDescriptor: DescriptorContentType = {
 			id: 'repoPath',
 			type: 'content-path-input',
 			name: defineMessage({ defaultMessage: 'Repository Path' }),
-			defaultValue: '/',
+			defaultValue: '/static-assets/',
 			validations: {
 				regex: createValidation('regex', /^\/static-assets(\/.*)?$/),
 				root: createValidation('root', '/static-assets')

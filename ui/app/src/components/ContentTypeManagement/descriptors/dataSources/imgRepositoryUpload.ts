@@ -28,11 +28,6 @@ export const imgRepositoryUploadDataSourceDescriptor: DescriptorContentType = {
 			id: 'properties',
 			title: defineMessage({ defaultMessage: 'Options' }),
 			fields: ['repoPath', 'useSearch']
-		}),
-		createVirtualSection({
-			id: 'constraints',
-			title: defineMessage({ defaultMessage: 'Constraints' }),
-			fields: ['required']
 		})
 	],
 	fields: {
@@ -40,7 +35,7 @@ export const imgRepositoryUploadDataSourceDescriptor: DescriptorContentType = {
 			id: 'repoPath',
 			type: 'content-path-input',
 			name: defineMessage({ defaultMessage: 'Repository Path' }),
-			defaultValue: '/',
+			defaultValue: '/static-assets/',
 			validations: {
 				regex: createValidation('regex', /^\/static-assets(\/.*)?$/),
 				root: createValidation('root', '/static-assets')
@@ -50,13 +45,6 @@ export const imgRepositoryUploadDataSourceDescriptor: DescriptorContentType = {
 			id: 'useSearch',
 			type: 'checkbox',
 			name: defineMessage({ defaultMessage: 'Use Search' }),
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		},
-		required: {
-			id: 'required',
-			type: 'checkbox',
-			name: defineMessage({ defaultMessage: 'Required' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}

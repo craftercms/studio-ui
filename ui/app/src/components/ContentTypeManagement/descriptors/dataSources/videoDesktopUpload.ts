@@ -28,11 +28,6 @@ export const videoDesktopUploadDataSourceDescriptor: DescriptorContentType = {
 			id: 'properties',
 			title: defineMessage({ defaultMessage: 'Options' }),
 			fields: ['repoPath']
-		}),
-		createVirtualSection({
-			id: 'constraints',
-			title: defineMessage({ defaultMessage: 'Constraints' }),
-			fields: ['required']
 		})
 	],
 	fields: {
@@ -44,13 +39,6 @@ export const videoDesktopUploadDataSourceDescriptor: DescriptorContentType = {
 			validations: {
 				root: createValidation('root', '/static-assets')
 			}
-		},
-		required: {
-			id: 'required',
-			type: 'checkbox',
-			name: defineMessage({ defaultMessage: 'Required' }),
-			defaultValue: undefined,
-			validations: immutableEmptyObject
 		}
 	}
 };

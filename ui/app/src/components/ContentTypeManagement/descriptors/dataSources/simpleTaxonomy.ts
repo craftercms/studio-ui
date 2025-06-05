@@ -28,11 +28,6 @@ export const simpleTaxonomyDataSourceDescriptor: DescriptorContentType = {
 			id: 'properties',
 			title: defineMessage({ defaultMessage: 'Options' }),
 			fields: ['dataType', 'componentPath']
-		}),
-		createVirtualSection({
-			id: 'constraints',
-			title: defineMessage({ defaultMessage: 'Constraints' }),
-			fields: ['required']
 		})
 	],
 	fields: {
@@ -73,13 +68,6 @@ export const simpleTaxonomyDataSourceDescriptor: DescriptorContentType = {
 			id: 'componentPath',
 			type: 'content-path-input',
 			name: defineMessage({ defaultMessage: 'Component Path' }),
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		},
-		required: {
-			id: 'required',
-			type: 'checkbox',
-			name: defineMessage({ defaultMessage: 'Required' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}

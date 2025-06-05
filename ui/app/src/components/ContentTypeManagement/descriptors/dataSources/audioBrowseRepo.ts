@@ -28,11 +28,6 @@ export const audioBrowseRepoDataSourceDescriptor: DescriptorContentType = {
 			id: 'properties',
 			title: defineMessage({ defaultMessage: 'Options' }),
 			fields: ['repoPath', 'useSearch']
-		}),
-		createVirtualSection({
-			id: 'constraints',
-			title: defineMessage({ defaultMessage: 'Constraints' }),
-			fields: ['required']
 		})
 	],
 	fields: {
@@ -49,13 +44,6 @@ export const audioBrowseRepoDataSourceDescriptor: DescriptorContentType = {
 			id: 'useSearch',
 			type: 'checkbox',
 			name: defineMessage({ defaultMessage: 'Use Search' }),
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		},
-		required: {
-			id: 'required',
-			type: 'checkbox',
-			name: defineMessage({ defaultMessage: 'required' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}
