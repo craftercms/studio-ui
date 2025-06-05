@@ -93,7 +93,7 @@ export function MoveFieldToSectionDialogBody(props: MoveFieldToSectionDialogProp
 
 	const onReorderField = (newFields: TouchSortableListProps['items']) => {
 		const fieldIndex = newFields.findIndex(({ key }) => key === field.id);
-		setSelections({ fieldIndex: fieldIndex });
+		setSelections({ fieldIndex });
 		setFields(newFields);
 	};
 
@@ -295,7 +295,12 @@ const getLabelFromRepeatGroupIdPath = (
 		} else {
 			composedPath = path;
 		}
-		labels.push(typeRepeatGroups[composedPath].name);
+		const repeatGroup = typeRepeatGroups[composedPath];
+		if (!repeatGroup) {
+			console.warn(`Repeat group not found for path: ${composedPath}`);
+			return;
+		}
+		labels.push(repeatGroup.name);
 	});
 	return labels.join(' | ');
 };

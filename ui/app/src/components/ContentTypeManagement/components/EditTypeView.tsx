@@ -556,6 +556,10 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 		const { sectionId, fieldPath } = insertFieldData;
 		setInsertFieldData({ sectionId: null });
 		const descriptor = controlDescriptors[fieldType] ?? config.controls?.[fieldType].descriptor;
+		if (!descriptor) {
+			showAlert(`No control descriptor found for field type "${fieldType}"`);
+			return;
+		}
 		const newField = getNewFieldFromDescriptor(fieldType, descriptor);
 		const newFieldPath = fieldPath ? `${fieldPath}.${NEW_FIELD_ID}` : NEW_FIELD_ID;
 		setType(addField(type, newField, newFieldPath, sectionId, position));
@@ -563,6 +567,11 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 	};
 	const handleInsertDataSource = (dataSourceType: string, position: number) => {
 		const descriptor = dataSourceDescriptors[dataSourceType] ?? config.dataSources?.[dataSourceType].descriptor;
+		if (!descriptor) {
+			showAlert(`No data source descriptor found for type "${dataSourceType}"`);
+			return;
+		}
+
 		const newDataSource = getNewDataSourceFromDescriptor(dataSourceType, descriptor);
 
 		setOpenDataSourceInserter(false);
