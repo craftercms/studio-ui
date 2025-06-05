@@ -69,11 +69,9 @@ export function ContentTypeManagement(props: ContentTypeManagementProps) {
 	};
 
 	// TODO: Temp. For development purposes. Remove.
-	const types = useContentTypeList();
+	// const types = useContentTypeList();
 	// useEffect(() => {
 	// 	const type = types?.find((type) => type.id === '/page/article');
-	// 	// const type = types?.find((type) => type.id === '/page/test');
-	// 	// const type = types?.find((type) => type.id === '/page/small');
 	// 	if (type) {
 	// 		setSelectedType(type);
 	// 		setView('edit');
