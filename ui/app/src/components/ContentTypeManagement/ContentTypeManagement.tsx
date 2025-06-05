@@ -67,12 +67,13 @@ export function ContentTypeManagement(props: ContentTypeManagementProps) {
 		setSelectedType(null);
 		setView('list');
 	};
-	// const handleCreateNewType:
 
 	// TODO: Temp. For development purposes. Remove.
-	// const types = useContentTypeList();
+	const types = useContentTypeList();
 	// useEffect(() => {
 	// 	const type = types?.find((type) => type.id === '/page/article');
+	// 	// const type = types?.find((type) => type.id === '/page/test');
+	// 	// const type = types?.find((type) => type.id === '/page/small');
 	// 	if (type) {
 	// 		setSelectedType(type);
 	// 		setView('edit');
@@ -87,13 +88,7 @@ export function ContentTypeManagement(props: ContentTypeManagementProps) {
 				)
 			)
 			.subscribe((e) => {
-				// TODO: handle other events
 				switch (e.data?.type) {
-					case 'CONTENT_TYPES_ON_SAVED': {
-						console.log('saved!');
-						break;
-					}
-					case 'CONTENT_TYPES_CREATED':
 					case 'CONTENT_TYPES_ON_DELETED': {
 						dispatch(fetchContentTypes());
 						break;
@@ -119,6 +114,7 @@ export function ContentTypeManagement(props: ContentTypeManagementProps) {
 										color="error"
 										component="a"
 										startIcon={<FeedbackOutlined />}
+										// TODO: what about this?
 										href={`mailto:roy.art@craftercms.com?subject=${encodeURIComponent('New Content Type Tool Feedback')}&body=${encodeURIComponent('My Feedback: (this could go to studio@craftercms.com)')}`}
 									>
 										Why did you switch?

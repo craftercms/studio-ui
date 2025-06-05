@@ -77,7 +77,7 @@ const systemValidationsNames = [
 	'audioBrowseRepo'
 ];
 
-const systemValidationsKeysMap = {
+export const systemValidationsKeysMap = {
 	minSize: 'minCount',
 	maxSize: 'maxCount',
 	maxlength: 'maxLength',
@@ -113,6 +113,13 @@ function bestGuessParse(value: unknown): unknown {
 		return value;
 	}
 }
+
+export const componentsDataSourceContentTypesPropertyNames = [
+	'allowedContentTypes',
+	'allowedEmbeddedContentTypes',
+	'allowedSharedContentTypes',
+	'allowedSharedExistingContentTypes'
+];
 
 interface ParseComponentsDataSourceContentTypesPropertyOutput {
 	allowedContentTypes: ContentTypeFieldValidation<LookupTable<AllowedContentTypesData>>;
@@ -150,15 +157,16 @@ export function parseComponentsDataSourceContentTypesProperty(
 	const allowedContentTypesMeta: LookupTable<AllowedContentTypesData> = validations.allowedContentTypes.value;
 	value.forEach((typeId) => {
 		allowedContentTypesMeta[typeId] = allowedContentTypesMeta[typeId] ?? {};
-		if (dataSource.properties.allowEmbedded) {
+		const propsLookup = createLookupTable(asArray(dataSource.properties.property), 'name');
+		if (propsLookup.allowEmbedded) {
 			allowedContentTypesMeta[typeId].embedded = true;
 			validations.allowedEmbeddedContentTypes.value.push(typeId);
 		}
-		if (dataSource.properties.allowShared) {
+		if (propsLookup.allowShared) {
 			allowedContentTypesMeta[typeId].shared = true;
 			validations.allowedSharedContentTypes.value.push(typeId);
 		}
-		if (dataSource.properties.enableBrowse || dataSource.properties.enableSearch) {
+		if (propsLookup.enableBrowse || propsLookup.enableSearch) {
 			allowedContentTypesMeta[typeId].sharedExisting = true;
 			validations.allowedSharedExistingContentTypes.value.push(typeId);
 		}

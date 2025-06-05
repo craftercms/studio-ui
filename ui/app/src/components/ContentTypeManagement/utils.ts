@@ -51,6 +51,7 @@ import { editController, editTemplate } from '../../state/actions/misc';
 import { popDialog, pushDialog } from '../../state/actions/dialogStack';
 import type { BuiltInControlType } from '../FormsEngine/lib/controlMap';
 import { asArray } from '../../utils/array';
+import { componentsDataSourceContentTypesPropertyNames, systemValidationsKeysMap } from '../../services/contentTypes';
 
 // TODO: assess which of the utils here should go to utils/contentType.ts, or other places (serializers, etc.)
 
@@ -630,14 +631,21 @@ function convertFieldStructToXmlStruct(field: ContentTypeField): Required<Legacy
 			} as LegacyFormDefinitionField['properties'])
 		: undefined;
 
+	const invertedSystemValidationsNames = [
+		...Object.values(systemValidationsKeysMap),
+		...componentsDataSourceContentTypesPropertyNames
+	];
+
 	const constraints =
 		field.validations && Object.keys(field.validations).length > 0
 			? {
-					constraint: Object.values(field.validations).map((validation) => ({
-						name: validation.id,
-						value: validation.value,
-						type: typeof validation.value
-					}))
+					constraint: Object.values(field.validations)
+						.map((validation) => ({
+							name: validation.id,
+							value: validation.value,
+							type: typeof validation.value
+						}))
+						.filter((validation) => !invertedSystemValidationsNames.includes(validation.name))
 				}
 			: undefined;
 
