@@ -125,7 +125,11 @@ export function ContentTypeManagement(props: ContentTypeManagementProps) {
 									</Button>
 								)}
 								<Button onClick={() => setUseLegacy(!useLegacy)}>
-									{useLegacy ? 'Use New Tool' : 'Use Legacy Tool'}
+									{useLegacy ? (
+										<FormattedMessage defaultMessage="Use New Tool" />
+									) : (
+										<FormattedMessage defaultMessage="Use Legacy Tool" />
+									)}
 								</Button>
 							</>
 						}
@@ -136,7 +140,11 @@ export function ContentTypeManagement(props: ContentTypeManagementProps) {
 							icon: { sx: { display: 'flex', alignItems: 'center' } }
 						}}
 					>
-						{useLegacy ? "You're using the legacy Content Type UX" : "You're viewing the new Content Type UX"}
+						{useLegacy ? (
+							<FormattedMessage defaultMessage="You're using the legacy Content Type UX" />
+						) : (
+							<FormattedMessage defaultMessage="You're viewing the new Content Type UX" />
+						)}
 					</Alert>
 					{useLegacy ? (
 						createElement(LegacyTypeManagement, props)
