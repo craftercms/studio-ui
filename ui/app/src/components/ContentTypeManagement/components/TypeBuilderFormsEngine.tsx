@@ -55,7 +55,6 @@ import ContentType, {
 import {
 	fooStableGlobalContext,
 	getFieldFromType,
-	NEW_FIELD_ID,
 	PartialContentType,
 	type readOnlyFieldIdsType,
 	readOnlyFieldsIds
@@ -263,7 +262,7 @@ function FieldActions(props: FieldFormViewProps): JSX.Element {
 
 	return (
 		<>
-			{field.type === 'repeat' && Object.keys(field.fields ?? []).length > 0 && (
+			{field.type === 'repeat' && Object.keys(field.fields ?? {}).length > 0 && (
 				<Tooltip title={<FormattedMessage defaultMessage="Reorder fields" />}>
 					<IconButton onClick={() => setOpenReorderFieldsDialog(true)}>
 						<MoveDownIcon />
