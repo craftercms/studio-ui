@@ -65,11 +65,14 @@ export default [
       ofType(fetchComponentsByContentType.type, setContentTypeFilter.type),
       withLatestFrom(state$),
       switchMap(([, state]) => {
+        // allowedContentTypes is an array of content type IDs that are 'compatible' with preview.
+        // For a content type to be compatible, the type should have the 'shareExisting' property set to true.
+        // *Note that this is different from the 'shared' property, which means that new content of the type can be created.
         let allowedContentTypes = Object.entries(state.preview.guest?.allowedContentTypes ?? {}).flatMap(
-          ([key, type]) => (type.shared ? [key] : [])
+          ([key, type]) => (type.sharedExisting ? [key] : [])
         );
         // If '*' is included in allowedContentTypes, it means that all content types are allowed.
-        if (allowedContentTypes.includes('*')) {
+        if (allowedContentTypes.includes('*') && state.preview.guest.allowedContentTypes['*'].sharedExisting) {
           allowedContentTypes = Object.values(state.contentTypes.byId)
             .filter((contentType) => contentType.type === 'component' && !contentType.id.includes('/level-descriptor'))
             .map((contentType) => contentType.id);
