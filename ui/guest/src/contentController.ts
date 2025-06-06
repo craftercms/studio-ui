@@ -787,7 +787,7 @@ fromTopic(fetchGuestModelComplete.type).subscribe((action: StandardAction<FetchG
       mhm[id].parentContainerFieldPath = mhm[id].parentContainerFieldPath ?? hierarchyMap[id].parentContainerFieldPath;
       mhm[id].parentContainerFieldIndex =
         mhm[id].parentContainerFieldIndex ?? hierarchyMap[id].parentContainerFieldIndex;
-      // Flipping around from the fix on ticket #6433 for ticket #8154. The children coming from Host must be the latest.Add commentMore actions
+      // Flipping around from the fix on ticket #6433 for ticket #8154. The children coming from Host must be the latest.
       // TODO: Observed the local hierarchyMap[id].children containing duplicates. Where is that coming from? Are children computed locally?
       mhm[id].children = hierarchyMap[id].children ?? mhm[id].children;
     } else {
