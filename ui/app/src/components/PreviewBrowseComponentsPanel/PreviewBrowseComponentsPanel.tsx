@@ -74,7 +74,8 @@ export function PreviewBrowseComponentsPanel() {
     const result = { allowedTypes, otherTypes };
     if (!contentTypes || !allowedTypesData) return result;
     contentTypes.forEach((contentType) => {
-      if (allowedTypesData[contentType.id]?.shared) {
+      // When selecting 'Allow any component' in the content type editor, there will be a key '*' in the allowedTypesData
+      if (allowedTypesData[contentType.id]?.sharedExisting || allowedTypesData['*']?.sharedExisting) {
         allowedTypes.push(contentType);
       } else {
         otherTypes.push(contentType);

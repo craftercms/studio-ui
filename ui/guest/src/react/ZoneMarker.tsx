@@ -179,7 +179,9 @@ export function ZoneMarker(props: ZoneMarkerProps) {
                   onClick={(e) => e.stopPropagation()}
                 >
                   {Object.entries(allowedTypesMeta).map(([id, modes]) => {
-                    const type = contentTypes[id];
+                    // 'id' can be '*' (meaning all content types), so we need to handle that scenario
+                    // TODO: i18n
+                    const type = id === '*' ? { id: 'all', name: 'All types' } : contentTypes[id];
                     const { backgroundColor, textColor } = getAvatarWithIconColors(
                       type?.id ?? type?.name,
                       theme,
