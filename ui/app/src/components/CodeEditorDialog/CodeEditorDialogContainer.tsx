@@ -17,7 +17,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import DialogHeader from '../DialogHeader/DialogHeader';
 import DialogBody from '../DialogBody/DialogBody';
-import { fetchContentXML, lock, writeContent } from '../../services/content';
+import { fetchContentItem, fetchContentXML, lock, writeContent } from '../../services/content';
 import { ConditionalLoadingState } from '../LoadingState/LoadingState';
 import AceEditor from '../AceEditor/AceEditor';
 import { useDispatch } from 'react-redux';
@@ -39,7 +39,6 @@ import { isItemLockedForMe, isLockedState } from '../../utils/content';
 import { useContentTypes } from '../../hooks/useContentTypes';
 import { useActiveUser } from '../../hooks/useActiveUser';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
-import { useContentItem } from '../../hooks/useContentItem';
 import { useReferences } from '../../hooks/useReferences';
 import { getHostToGuestBus } from '../../utils/subjects';
 import { reloadRequest } from '../../state/actions/preview';
@@ -58,7 +57,7 @@ import { createCustomDocumentEventListener } from '../../utils/dom';
 export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps) {
 	const { path, onMinimize, onClose, mode, readonly, contentType, onFullScreen, onSuccess } = props;
 	const { open, isSubmitting } = useEnhancedDialogContext();
-	const item = useContentItem(path);
+	const [item, setItem] = useState(null);
 	const site = useActiveSiteId();
 	const user = useActiveUser();
 	const [loading, setLoading] = useState(false);
@@ -203,6 +202,18 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 	};
 
 	const fnRefs = useUpToDateRefs({ onSaveButtonClick, onClose });
+
+	useEffect(() => {
+		fetchContentItem(site, path).subscribe({
+			next: (item) => {
+				setItem(item);
+			},
+			error: ({ response }) => {
+				dispatch(showErrorDialog({ error: response.response }));
+				onClose?.(null, null);
+			}
+		});
+	}, [site, path, dispatch, onClose]);
 
 	// add content model variables
 	useEffect(() => {
