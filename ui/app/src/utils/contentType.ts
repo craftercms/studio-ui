@@ -207,3 +207,55 @@ export function getNormalizedFolderPathForApi1GetTypes(item: ContentItem): strin
 export function createFormDefinitionPathFromTypeId(contentTypeId: string): string {
 	return ensureSingleSlash(`/content-types/${contentTypeId}/form-definition.xml`);
 }
+
+export const systemValidationsNames = [
+	'itemManager',
+	'minSize',
+	'maxSize',
+	'maxlength',
+	'readonly',
+	'width',
+	'height',
+	'minWidth',
+	'minHeight',
+	'maxWidth',
+	'maxHeight',
+	'minValue',
+	'maxValue',
+	'imgRepositoryUpload',
+	'imgDesktopUpload',
+	'videoDesktopUpload',
+	'videoBrowseRepo',
+	'audioDesktopUpload',
+	'audioBrowseRepo'
+];
+
+export const systemValidationsKeysMap = {
+	minSize: 'minCount',
+	maxSize: 'maxCount',
+	maxlength: 'maxLength',
+	contentTypes: 'allowedContentTypes',
+	tags: 'allowedContentTypeTags',
+	readonly: 'readOnly',
+	width: 'width',
+	height: 'height',
+	minWidth: 'minWidth',
+	minHeight: 'minHeight',
+	maxWidth: 'maxWidth',
+	maxHeight: 'maxHeight',
+	minValue: 'minValue',
+	maxValue: 'maxValue',
+	imgRepositoryUpload: 'allowImagesFromRepo',
+	imgDesktopUpload: 'allowImageUpload',
+	videoDesktopUpload: 'allowVideoUpload',
+	videoBrowseRepo: 'allowVideosFromRepo',
+	audioDesktopUpload: 'allowAudioUpload',
+	audioBrowseRepo: 'allowAudioFromRepo'
+};
+
+export const componentsDataSourceContentTypesPropertyNames = [
+	'allowedContentTypes',
+	'allowedEmbeddedContentTypes',
+	'allowedSharedContentTypes',
+	'allowedSharedExistingContentTypes'
+];

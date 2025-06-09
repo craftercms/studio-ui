@@ -26,7 +26,7 @@ export const repeatDescriptor: DescriptorContentType = {
 		createVirtualSection({
 			id: 'properties',
 			title: defineMessage({ defaultMessage: 'Options' }),
-			fields: ['minOccurs', 'maxOccurs', 'readonly']
+			fields: ['minOccurs', 'maxOccurs']
 		})
 	],
 	fields: {
@@ -41,13 +41,6 @@ export const repeatDescriptor: DescriptorContentType = {
 			id: 'maxOccurs',
 			type: 'numeric-input',
 			name: defineMessage({ defaultMessage: 'Maximum Occurrences' }),
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		},
-		readonly: {
-			id: 'readonly',
-			type: 'checkbox',
-			name: defineMessage({ defaultMessage: 'Read Only' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}

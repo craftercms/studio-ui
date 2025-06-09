@@ -43,7 +43,11 @@ import { Api2ResponseFormat } from '../models/ApiResponse';
 import { asArray, immutableEmptyArray } from '../utils/array';
 import { fromPromise } from 'rxjs/internal/observable/innerFrom';
 import AllowedContentTypesData from '../models/AllowedContentTypesData';
-import { createFormDefinitionPathFromTypeId } from '../utils/contentType';
+import {
+	createFormDefinitionPathFromTypeId,
+	systemValidationsKeysMap,
+	systemValidationsNames
+} from '../utils/contentType';
 import { XmlKeys } from '../components/FormsEngine/lib/formConsts';
 import { AjaxResponse } from 'rxjs/ajax';
 
@@ -54,51 +58,6 @@ import { AjaxResponse } from 'rxjs/ajax';
 //   checkbox: 'boolean',
 //   'image-picker': 'image'
 // };
-
-const systemValidationsNames = [
-	'itemManager',
-	'minSize',
-	'maxSize',
-	'maxlength',
-	'readonly',
-	'width',
-	'height',
-	'minWidth',
-	'minHeight',
-	'maxWidth',
-	'maxHeight',
-	'minValue',
-	'maxValue',
-	'imgRepositoryUpload',
-	'imgDesktopUpload',
-	'videoDesktopUpload',
-	'videoBrowseRepo',
-	'audioDesktopUpload',
-	'audioBrowseRepo'
-];
-
-export const systemValidationsKeysMap = {
-	minSize: 'minCount',
-	maxSize: 'maxCount',
-	maxlength: 'maxLength',
-	contentTypes: 'allowedContentTypes',
-	tags: 'allowedContentTypeTags',
-	readonly: 'readOnly',
-	width: 'width',
-	height: 'height',
-	minWidth: 'minWidth',
-	minHeight: 'minHeight',
-	maxWidth: 'maxWidth',
-	maxHeight: 'maxHeight',
-	minValue: 'minValue',
-	maxValue: 'maxValue',
-	imgRepositoryUpload: 'allowImagesFromRepo',
-	imgDesktopUpload: 'allowImageUpload',
-	videoDesktopUpload: 'allowVideoUpload',
-	videoBrowseRepo: 'allowVideosFromRepo',
-	audioDesktopUpload: 'allowAudioUpload',
-	audioBrowseRepo: 'allowAudioFromRepo'
-};
 
 function bestGuessParse(value: unknown): unknown {
 	if (nou(value)) {
@@ -113,13 +72,6 @@ function bestGuessParse(value: unknown): unknown {
 		return value;
 	}
 }
-
-export const componentsDataSourceContentTypesPropertyNames = [
-	'allowedContentTypes',
-	'allowedEmbeddedContentTypes',
-	'allowedSharedContentTypes',
-	'allowedSharedExistingContentTypes'
-];
 
 interface ParseComponentsDataSourceContentTypesPropertyOutput {
 	allowedContentTypes: ContentTypeFieldValidation<LookupTable<AllowedContentTypesData>>;
@@ -180,7 +132,7 @@ function getFieldValidations(
 ): Partial<ContentTypeFieldValidations> {
 	const map = asArray<LegacyFormDefinitionProperty>(fieldProperty).reduce<LookupTable<LegacyFormDefinitionProperty>>(
 		(table, prop) => {
-			if (prop.name === 'width' || prop.name === 'height') {
+			if ((prop.name === 'width' || prop.name === 'height') && Boolean(prop.value)) {
 				const parsedValidation = JSON.parse(prop.value);
 				if (parsedValidation.exact) {
 					table[prop.name] = {
