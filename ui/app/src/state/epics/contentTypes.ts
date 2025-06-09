@@ -66,7 +66,7 @@ export default [
       withLatestFrom(state$),
       switchMap(([, state]) => {
         // allowedContentTypes is an array of content type IDs that are 'compatible' with preview.
-        // For a content type to be compatible, the type should have the 'shareExisting' property set to true.
+        // For a content type to be compatible (in the context of the browse components panel), the type should have the 'shareExisting' property set to true.
         // *Note that this is different from the 'shared' property, which means that new content of the type can be created.
         let allowedContentTypes = Object.entries(state.preview.guest?.allowedContentTypes ?? {}).flatMap(
           ([key, type]) => (type.sharedExisting ? [key] : [])
