@@ -38,7 +38,10 @@ export function DataSourceMultiSelector(props: DataSourceMultiSelectorProps) {
 	}, [contentType?.dataSources, type]);
 
 	const handleChange: CheckboxProps['onChange'] = (e) => {
-		const newSelected = [...selectedDataSources];
+		// There may be outdated data sources in the current set value, so we filter to only include those that are still valid
+		const newSelected = [
+			...(selectedDataSources.filter((dataSourceId) => filteredDataSources.some((ds) => ds.id === dataSourceId)) || [])
+		];
 
 		if (e.target.checked) {
 			newSelected.push(e.target.name);
