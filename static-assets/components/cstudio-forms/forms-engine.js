@@ -2787,6 +2787,7 @@ const initializeCStudioForms = () => {
                 }
               });
           });
+          form.sections.push(formSection);
         },
 
         /**
