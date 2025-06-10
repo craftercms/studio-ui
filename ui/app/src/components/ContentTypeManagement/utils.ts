@@ -918,8 +918,8 @@ export function initializeConfigFromType(type: ContentType) {
 			previewable: type.type === 'page',
 			quickCreate: Boolean(type.quickCreate),
 			quickCreatePath: type.quickCreatePath ?? '',
-			controller: 'false', // TODO ?
-			noThumbnail: 'false', // TODO ?
+			controller: Boolean(type.hasJsController),
+			noThumbnail: !type.thumbnailFileName,
 			'image-thumbnail': type.thumbnailFileName ?? '',
 			paths: {
 				includes: {},
