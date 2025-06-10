@@ -81,7 +81,8 @@ export const valueRetrieverLookup: Record<BuiltInControlType | DescriptorControl
 	'path-with-macro-creator': textFieldExtractor,
 	'merge-strategy-selector': textFieldExtractor,
 	'datasource-single-selector': textFieldExtractor,
-	variable: textFieldExtractor
+	variable: textFieldExtractor,
+	'type-configuration': textFieldExtractor
 };
 
 /**
