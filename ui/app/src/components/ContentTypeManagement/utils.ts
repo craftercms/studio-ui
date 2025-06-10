@@ -905,3 +905,26 @@ export function getPropertiesAndValidationsFromDescriptor(descriptor: Descriptor
 
 	return { properties, validations };
 }
+
+export function initializeConfigFromType(type: ContentType) {
+	return {
+		'content-type': {
+			label: type.name,
+			form: type.id,
+			'form-path': 'simple',
+			'model-instance-path': 'NOT-USED-BY-SIMPLE-FORM-ENGINE',
+			'file-extension': 'xml',
+			'content-as-folder': type.type === 'page',
+			previewable: type.type === 'page',
+			quickCreate: Boolean(type.quickCreate),
+			quickCreatePath: type.quickCreatePath ?? '',
+			controller: 'false', // TODO ?
+			noThumbnail: 'false', // TODO ?
+			'image-thumbnail': type.thumbnailFileName ?? '',
+			paths: {
+				includes: {},
+				excludes: {}
+			}
+		}
+	};
+}

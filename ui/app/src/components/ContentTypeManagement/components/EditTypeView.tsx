@@ -44,6 +44,7 @@ import {
 	getFieldFromType,
 	getPropertiesAndValidationsFromDescriptor,
 	getSectionFromType,
+	initializeConfigFromType,
 	isComposedPath,
 	NEW_DATASOURCE_ID,
 	NEW_FIELD_ID,
@@ -69,7 +70,7 @@ import {
 } from '../../FormsEngine/lib/formsEngineContext';
 import useContentTypes from '../../../hooks/useContentTypes';
 import { createStore as createJotai, Provider } from 'jotai';
-import { debounceTime, map, Observable, of, Subject } from 'rxjs';
+import { debounceTime, forkJoin, map, Observable, of, Subject } from 'rxjs';
 import EditTypeViewLayout, { EditAppLayoutProps } from './EditTypeViewLayout';
 import useUpdateRefs from '../../../hooks/useUpdateRefs';
 import useActiveSiteId from '../../../hooks/useActiveSiteId';
@@ -82,7 +83,7 @@ import useEnhancedDialogContext from '../../EnhancedDialog/useEnhancedDialogCont
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { fetchSiteUiConfig, writeConfiguration } from '../../../services/configuration';
-import { createFormDefinitionPathFromTypeId } from '../../../utils/contentType';
+import { createConfigPathFromTypeId, createFormDefinitionPathFromTypeId } from '../../../utils/contentType';
 import { useDispatch } from 'react-redux';
 import { popDialog, pushDialog } from '../../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
@@ -103,6 +104,7 @@ import type { ReorderFieldsDialogProps } from './ReorderFieldsDialog';
 import PickControlDialog from './PickControlDialog';
 import PickDataSourceDialog from './PickDataSourceDialog';
 import { fetchContentTypes } from '../../../state/actions/preview';
+import { getXmlBuilder } from '../../FormsEngine/lib/valueSerializers';
 
 export interface EditTypeAppProps {
 	/**
@@ -1178,9 +1180,18 @@ function save(
 	}
 ): Observable<string> {
 	const xml = buildXmlFromType(type, configDescriptors);
-	// TODO: Validation? This get pre-validated?
+
 	if (tempSaveSaveToServerArgumentToBeRemoved) {
-		return writeConfiguration(siteId, createFormDefinitionPathFromTypeId(type.id), 'studio', xml).pipe(map(() => xml));
+		const requests = [writeConfiguration(siteId, createFormDefinitionPathFromTypeId(type.id), 'studio', xml)];
+
+		if ((type as PossibleContentTypeDraft).NEW) {
+			const config = initializeConfigFromType(type);
+			const builder = getXmlBuilder();
+			const configXml = builder.build(config);
+			requests.push(writeConfiguration(siteId, createConfigPathFromTypeId(type.id), 'studio', configXml));
+		}
+
+		return forkJoin(requests).pipe(map(() => xml));
 	} else {
 		return of(xml);
 	}

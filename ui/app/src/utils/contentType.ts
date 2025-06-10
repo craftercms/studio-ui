@@ -208,6 +208,10 @@ export function createFormDefinitionPathFromTypeId(contentTypeId: string): strin
 	return ensureSingleSlash(`/content-types/${contentTypeId}/form-definition.xml`);
 }
 
+export function createConfigPathFromTypeId(contentTypeId: string): string {
+	return ensureSingleSlash(`/content-types/${contentTypeId}/config.xml`);
+}
+
 export const systemValidationsNames = [
 	'itemManager',
 	'minSize',
