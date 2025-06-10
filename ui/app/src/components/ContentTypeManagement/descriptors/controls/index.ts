@@ -194,13 +194,14 @@ export const typeBasicDetailsDescriptor: DescriptorContentType = {
 		createVirtualSection({
 			id: 'rendering',
 			title: defineMessage({ defaultMessage: 'Rendering' }),
-			fields: ['hasJsController', 'displayTemplate', 'isHeadless']
-		}),
-		createVirtualSection({
+			fields: ['configuration', 'hasJsController', 'displayTemplate', 'isHeadless']
+		})
+		// This section and paths field won't be available until 'config.xml' is removed from the content type.
+		/* createVirtualSection({
 			id: 'allowedDestinations',
 			title: defineMessage({ defaultMessage: 'Allowed Destinations' }),
 			fields: ['paths']
-		})
+		})*/
 	],
 	fields: {
 		id: {
@@ -305,7 +306,16 @@ export const typeBasicDetailsDescriptor: DescriptorContentType = {
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
-		paths: {
+		configuration: {
+			id: 'configuration',
+			type: 'type-configuration',
+			name: defineMessage({ defaultMessage: 'Configuration' }),
+			description: '',
+			helpText: '',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		}
+		/* paths: {
 			id: 'paths',
 			type: 'type-destination-paths-selector',
 			name: defineMessage({ defaultMessage: 'Paths' }),
@@ -313,7 +323,7 @@ export const typeBasicDetailsDescriptor: DescriptorContentType = {
 			helpText: '',
 			defaultValue: undefined,
 			validations: immutableEmptyObject
-		}
+		}*/
 	}
 };
 
