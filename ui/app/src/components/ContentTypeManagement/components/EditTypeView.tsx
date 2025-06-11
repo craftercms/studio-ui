@@ -747,7 +747,7 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 	}, [type.NEW, effectRefs]);
 
 	useEffect(() => {
-		fetchSiteUiConfig(site, activeEnvironment).subscribe({
+		const sub = fetchSiteUiConfig(site, activeEnvironment).subscribe({
 			next: (config) => {
 				const configDOM = fromString(config);
 				const contentTypesConfigDOM = configDOM.querySelector(
@@ -767,6 +767,8 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 				dispatch(showErrorDialog({ error: response.response }));
 			}
 		});
+
+		return () => sub.unsubscribe();
 	}, [site, activeEnvironment, setConfig, dispatch]);
 
 	const disableSave = (!type.NEW && !hasPendingChanges) || Object.keys(fieldPathsWithErrors).length !== 0;
