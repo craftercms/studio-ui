@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import FormsEngineField from '../../FormsEngine/components/FormsEngineField';
 import useContentTypes from '../../../hooks/useContentTypes';
 import List from '@mui/material/List';
@@ -29,6 +29,7 @@ import { createPresenceTable } from '../../../utils/array';
 import { EmptyState } from '../../EmptyState';
 import { FormattedMessage } from 'react-intl';
 import { reversePluckProps } from '../../../utils/object';
+import { SearchBar, type SearchBarProps } from '../../SearchBar';
 
 export interface ContentTypesSelectorProps extends TypeBuilderControl {
 	value: string;
@@ -44,7 +45,18 @@ export function ContentTypesSelector(props: ContentTypesSelectorProps) {
 	const [selectedLookup, setSelectedLookup] = useState<Record<string, boolean>>(
 		createPresenceTable(value ? value.split(',') : [])
 	);
-	const components = Object.values(contentTypes).filter((contentType) => contentType.type === 'component');
+	const [searchTerm, setSearchTerm] = useState('');
+	const components = useMemo(
+		() =>
+			Object.values(contentTypes).filter((contentType) => {
+				return (
+					contentType.type === 'component' &&
+					(contentType.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+						contentType.name.toLowerCase().includes(searchTerm.toLowerCase()))
+				);
+			}),
+		[contentTypes, searchTerm]
+	);
 
 	const handleToggle = (selectionValue: string) => () => {
 		let newSelectedLookup = {};
@@ -66,10 +78,15 @@ export function ContentTypesSelector(props: ContentTypesSelectorProps) {
 		setValue(selectedArray.join(','));
 	};
 
+	const handleSearchChange: SearchBarProps['onChange'] = (value) => {
+		setSearchTerm(value);
+	};
+
 	return (
 		<FormsEngineField field={field} max={maxLength}>
+			<SearchBar keyword={searchTerm} onChange={handleSearchChange} autoFocus={true} />
 			<List>
-				{Object.values(contentTypes).length === 0 ? (
+				{components.length === 0 ? (
 					<EmptyState title={<FormattedMessage defaultMessage="No content types available" />} />
 				) : (
 					<>
