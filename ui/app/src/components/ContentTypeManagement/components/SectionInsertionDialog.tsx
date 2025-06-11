@@ -34,18 +34,14 @@ export interface SectionInsertionProps extends EnhancedDialogProps {
 	onInsertSection: (section: ContentTypeSection, position: number) => void;
 }
 
-export function SectionInsertionDialog({ type, onInsertSection, ...dialogProps }: SectionInsertionProps) {
+export function SectionInsertionDialogBody({ type, onInsertSection, ...dialogProps }: SectionInsertionProps) {
 	const [position, setPosition] = useState(type.sections.length);
 	const handleAccept = () => {
 		onInsertSection?.(createVirtualSection({ title: 'New Section', fields: [] } as ContentTypeSection), position);
 	};
+
 	return (
-		<EnhancedDialog
-			{...dialogProps}
-			maxWidth="xs"
-			fullWidth
-			title={<FormattedMessage defaultMessage="Insert New Section" />}
-		>
+		<>
 			<DialogBody>
 				<FormControl>
 					<FormLabel id="sectionInsertionRadioGroupLabel">
@@ -91,6 +87,19 @@ export function SectionInsertionDialog({ type, onInsertSection, ...dialogProps }
 					<FormattedMessage defaultMessage="Accept" />
 				</PrimaryButton>
 			</DialogFooter>
+		</>
+	);
+}
+
+export function SectionInsertionDialog({ type, onInsertSection, ...dialogProps }: SectionInsertionProps) {
+	return (
+		<EnhancedDialog
+			{...dialogProps}
+			maxWidth="xs"
+			fullWidth
+			title={<FormattedMessage defaultMessage="Insert New Section" />}
+		>
+			<SectionInsertionDialogBody type={type} onInsertSection={onInsertSection} {...dialogProps} />
 		</EnhancedDialog>
 	);
 }
