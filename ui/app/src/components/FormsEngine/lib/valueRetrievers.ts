@@ -59,7 +59,7 @@ export const valueRetrieverLookup: Record<BuiltInControlType | DescriptorControl
 	repeat: arrayFieldExtractor,
 	'node-selector': arrayFieldExtractor,
 	'numeric-input': numberFieldExtractor,
-	'page-nav-order': null,
+	'page-nav-order': booleanFieldExtractor,
 	rte: textFieldExtractor,
 	textarea: textFieldExtractor,
 	time: null,
