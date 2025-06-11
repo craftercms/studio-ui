@@ -51,7 +51,7 @@ export function initializeTypeForCreate(
 						name: 'Component ID',
 						description: '',
 						helpText: '',
-						defaultValue: undefined,
+						defaultValue: '',
 						...fileNameProps
 					},
 					[XmlKeys.internalName]: {
@@ -60,7 +60,7 @@ export function initializeTypeForCreate(
 						name: 'Internal Name',
 						description: '',
 						helpText: '',
-						defaultValue: undefined,
+						defaultValue: '',
 						...inputProps
 					},
 					...mixin?.fields
@@ -91,7 +91,7 @@ export function initializeTypeForCreate(
 						name: 'Component ID',
 						description: '',
 						helpText: '',
-						defaultValue: undefined,
+						defaultValue: '',
 						...fileNameProps
 					},
 					[XmlKeys.internalName]: {
@@ -100,7 +100,7 @@ export function initializeTypeForCreate(
 						name: 'Internal Name',
 						description: '',
 						helpText: '',
-						defaultValue: undefined,
+						defaultValue: '',
 						...inputProps
 					},
 					[XmlKeys.placeInNav]: {
@@ -109,7 +109,7 @@ export function initializeTypeForCreate(
 						name: 'Place in Nav',
 						description: '',
 						helpText: '',
-						defaultValue: undefined,
+						defaultValue: '',
 						validations: immutableEmptyObject,
 						...pageNavOrderProps
 					},
@@ -119,7 +119,7 @@ export function initializeTypeForCreate(
 						name: 'Nav Label',
 						description: '',
 						helpText: '',
-						defaultValue: undefined,
+						defaultValue: '',
 						validations: immutableEmptyObject,
 						...inputProps
 					},
