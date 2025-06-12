@@ -70,18 +70,15 @@ import {
 } from '../../FormsEngine/lib/formsEngineContext';
 import useContentTypes from '../../../hooks/useContentTypes';
 import { createStore as createJotai, Provider } from 'jotai';
-import { debounceTime, forkJoin, map, Observable, of, Subject } from 'rxjs';
+import { debounceTime, forkJoin, map, Observable, Subject } from 'rxjs';
 import EditTypeViewLayout, { EditAppLayoutProps } from './EditTypeViewLayout';
 import useUpdateRefs from '../../../hooks/useUpdateRefs';
 import useActiveSiteId from '../../../hooks/useActiveSiteId';
 import { JotaiStore } from '../../FormsEngine/types';
 import { FormattedMessage, useIntl } from 'react-intl';
-import Typography from '@mui/material/Typography';
 import { createLookupTable, nnou, pluckProps, reversePluckProps } from '../../../utils/object';
-import Box, { BoxProps } from '@mui/material/Box';
+import { BoxProps } from '@mui/material/Box';
 import useEnhancedDialogContext from '../../EnhancedDialog/useEnhancedDialogContext';
-import Checkbox from '@mui/material/Checkbox';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import { fetchSiteUiConfig, writeConfiguration } from '../../../services/configuration';
 import { createConfigPathFromTypeId, createFormDefinitionPathFromTypeId } from '../../../utils/contentType';
 import { useDispatch } from 'react-redux';
@@ -452,25 +449,18 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 			case 'save': {
 				if (!performCurrentFormErrorCheckAndWarning()) break;
 				const latestUpdate = commitOpenFormChanges();
-				const tempActuallySaveToServer =
-					(document.getElementById('tempSaveToServerCheckbox') as HTMLInputElement)?.checked ?? false;
 				dialogContext?.updateSubmittingOrHasPendingChanges({ isSubmitting: true });
 				const typeToSave = latestUpdate ?? type;
-				save(site, typeToSave, tempActuallySaveToServer, configDescriptors).subscribe({
-					next(xml) {
-						const initialXml = buildXmlFromType(props.type, configDescriptors);
+				save(site, typeToSave, configDescriptors).subscribe({
+					next() {
 						onUpdateHasPendingChanges(false);
 						dialogContext?.updateSubmittingOrHasPendingChanges({ isSubmitting: false });
-						if (tempActuallySaveToServer) {
-							// If the type being save is new, update the type state to remove the NEW property.
-							if ((typeToSave as PossibleContentTypeDraft).NEW) {
-								setType(reversePluckProps(typeToSave as PossibleContentTypeDraft, 'NEW'));
-							}
-							dispatch(fetchContentTypes());
-							showAlert(`Save successful.`);
-						} else {
-							openDiffXml(initialXml, xml);
+						// If the type being saved is new, update the type state to remove the NEW property.
+						if ((typeToSave as PossibleContentTypeDraft).NEW) {
+							setType(reversePluckProps(typeToSave as PossibleContentTypeDraft, 'NEW'));
 						}
+						dispatch(fetchContentTypes());
+						showAlert(`Save successful.`);
 					},
 					error() {
 						dialogContext?.updateSubmittingOrHasPendingChanges({ isSubmitting: false });
@@ -800,29 +790,19 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 					}
 				}}
 				mainContent={
-					<>
-						<TypeDetailsView
-							type={type}
-							onInsertSection={handleInsertSection}
-							onOpenInsertFieldDialog={onOpenInsertFieldDialog}
-							onOpenInsertDataSourceDialog={onOpenInsertDataSourceDialog}
-							onEditTypeAction={handleEditTypeAction}
-							onFieldSelected={handleFieldSelected}
-							onDataSourceSelected={handleDataSourceSelected}
-							onSectionSelected={handleSectionSelected}
-							fieldPathsWithErrors={fieldPathsWithErrors}
-							selectedFieldIdPath={selectedFieldIdPath}
-							performCurrentFormErrorCheckAndWarning={performCurrentFormErrorCheckAndWarning}
-						/>
-						<Box>
-							{/* TODO: Remove this whole box and the fragment container. */}
-							<FormControlLabel control={<Checkbox id="tempSaveToServerCheckbox" />} label="Actually save to server?" />
-							<Typography variant="body2">
-								While we have this module in "beta", when you press save, you'll be shown the XML that would be saved to
-								the server. If you want to actually save, mark this checkbox.
-							</Typography>
-						</Box>
-					</>
+					<TypeDetailsView
+						type={type}
+						onInsertSection={handleInsertSection}
+						onOpenInsertFieldDialog={onOpenInsertFieldDialog}
+						onOpenInsertDataSourceDialog={onOpenInsertDataSourceDialog}
+						onEditTypeAction={handleEditTypeAction}
+						onFieldSelected={handleFieldSelected}
+						onDataSourceSelected={handleDataSourceSelected}
+						onSectionSelected={handleSectionSelected}
+						fieldPathsWithErrors={fieldPathsWithErrors}
+						selectedFieldIdPath={selectedFieldIdPath}
+						performCurrentFormErrorCheckAndWarning={performCurrentFormErrorCheckAndWarning}
+					/>
 				}
 				isNew={type.NEW}
 			/>
@@ -1175,28 +1155,22 @@ function buildXmlFromType(
 function save(
 	siteId: string,
 	type: ContentType,
-	tempSaveSaveToServerArgumentToBeRemoved: boolean,
 	configDescriptors?: {
 		controlDescriptors: LookupTable<DescriptorContentType>;
 		dataSourceDescriptors: LookupTable<DescriptorContentType>;
 	}
 ): Observable<string> {
 	const xml = buildXmlFromType(type, configDescriptors);
+	const requests = [writeConfiguration(siteId, createFormDefinitionPathFromTypeId(type.id), 'studio', xml)];
 
-	if (tempSaveSaveToServerArgumentToBeRemoved) {
-		const requests = [writeConfiguration(siteId, createFormDefinitionPathFromTypeId(type.id), 'studio', xml)];
-
-		if ((type as PossibleContentTypeDraft).NEW) {
-			const config = initializeConfigFromType(type);
-			const builder = getXmlBuilder();
-			const configXml = builder.build(config);
-			requests.push(writeConfiguration(siteId, createConfigPathFromTypeId(type.id), 'studio', configXml));
-		}
-
-		return forkJoin(requests).pipe(map(() => xml));
-	} else {
-		return of(xml);
+	if ((type as PossibleContentTypeDraft).NEW) {
+		const config = initializeConfigFromType(type);
+		const builder = getXmlBuilder();
+		const configXml = builder.build(config);
+		requests.push(writeConfiguration(siteId, createConfigPathFromTypeId(type.id), 'studio', configXml));
 	}
+
+	return forkJoin(requests).pipe(map(() => xml));
 }
 
 function validityAtomsHaveErrors(jotai: JotaiStore, atoms: FormsEngineAtoms['validationByFieldId']) {

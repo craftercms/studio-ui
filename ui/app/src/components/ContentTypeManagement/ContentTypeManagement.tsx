@@ -33,7 +33,6 @@ import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import Fade from '@mui/material/Fade';
 import { FeedbackOutlined } from '@mui/icons-material';
-import useContentTypeList from '../../hooks/useContentTypeList';
 import { fetchContentTypes } from '../../state/actions/preview';
 
 export interface ContentTypeManagementProps {
@@ -67,16 +66,6 @@ export function ContentTypeManagement(props: ContentTypeManagementProps) {
 		setSelectedType(null);
 		setView('list');
 	};
-
-	// TODO: Temp. For development purposes. Remove.
-	// const types = useContentTypeList();
-	// useEffect(() => {
-	// 	const type = types?.find((type) => type.id === '/page/article');
-	// 	if (type) {
-	// 		setSelectedType(type);
-	// 		setView('edit');
-	// 	}
-	// }, [types]);
 
 	useEffect(() => {
 		const messagesSubscription = fromEvent<MessageEvent>(window, 'message')
