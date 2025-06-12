@@ -171,6 +171,7 @@
 		},
 
 		_openBrowse: function (contentType, control) {
+			const _self = this;
 			const path = this._processPathsForMacros(this.baseBrowsePath);
 			const multiSelect = this.selectItemsCount === -1 || this.selectItemsCount > 1;
 			// Paths already in the control, by sending them to the Browse Dialog, it'll mark them as selected, and disable
@@ -188,7 +189,7 @@
 				onSuccess: (result) => {
 					(Array.isArray(result) ? result : [result]).forEach(({ name, path }) => {
 						const value = name && name !== '' ? name : path;
-						control.newInsertItem(path, value, 'shared');
+						control.newInsertItem(path, value, 'shared', _self.id);
 						control._renderItems();
 					});
 				}
@@ -196,6 +197,7 @@
 		},
 
 		_openSearch: function (control) {
+			const _self = this;
 			let searchPath = this._processPathsForMacros(this.baseBrowsePath);
 			searchPath = craftercms.utils.string.ensureSingleSlash(`${searchPath}/.+`);
 			const searchContext = {
@@ -236,7 +238,7 @@
 					success(searchId, selectedTOs) {
 						selectedTOs.forEach(function (item) {
 							const value = item.label && item.label !== '' ? item.label : item.path;
-							control.newInsertItem(item.path, value, 'shared');
+							control.newInsertItem(item.path, value, 'shared', _self.id);
 							control._renderItems();
 						});
 					},
@@ -247,13 +249,14 @@
 		},
 
 		_openCreateAny: function (control, type) {
+			const _self = this;
 			CStudioAuthoring.Operations.createNewContent(
 				CStudioAuthoringContext.site,
 				'getAllContentType',
 				false,
 				{
 					success: function (contentTO, editorId, name, value) {
-						control.newInsertItem(name, value, type);
+						control.newInsertItem(name, value, type, _self.id);
 						control._renderItems();
 					},
 					failure: function () {}
@@ -400,7 +403,7 @@
 				false,
 				{
 					success: function (contentTO, editorId, name, value, draft, action) {
-						control.newInsertItem(name, value, type);
+						control.newInsertItem(name, value, type, self.id);
 						control._renderItems();
 					},
 					failure: function () {}
