@@ -124,7 +124,11 @@ export function SiteTools(props: SiteToolsProps) {
 					<Box display="flex" justifyContent="space-between" marginBottom="10px">
 						{onBackClick && (
 							<Tooltip title={<FormattedMessage id="words.preview" defaultMessage="Preview" />}>
-								<IconButton onClick={onBackClick} size="large">
+								<IconButton
+									onClick={onBackClick}
+									size="large"
+									aria-label={formatMessage({ defaultMessage: 'Preview' })}
+								>
 									<KeyboardArrowLeftRoundedIcon />
 								</IconButton>
 							</Tooltip>

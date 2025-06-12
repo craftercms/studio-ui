@@ -667,7 +667,11 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
 													<Typography color="text.secondary" variant="overline" sx={{ mr: 2 }}>
 														{formatMessage(messages.publicMarketplaceBlueprints)}
 													</Typography>
-													<IconButton size="small" onClick={handleSearchClick}>
+													<IconButton
+														size="small"
+														onClick={handleSearchClick}
+														aria-label={formatMessage({ defaultMessage: 'Search' })}
+													>
 														<SearchIcon />
 													</IconButton>
 													<FormControlLabel

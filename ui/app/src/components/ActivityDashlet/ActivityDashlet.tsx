@@ -407,7 +407,11 @@ export function ActivityDashlet(props: ActivityDashletProps) {
 			borderLeftColor={borderLeftColor}
 			title={<FormattedMessage id="words.activity" defaultMessage="Activity" />}
 			headerAction={
-				<LoadingIconButton onClick={() => onRefresh()} loading={isFetching}>
+				<LoadingIconButton
+					onClick={() => onRefresh()}
+					loading={isFetching}
+					aria-label={formatMessage({ defaultMessage: 'Refresh' })}
+				>
 					<RefreshRounded />
 				</LoadingIconButton>
 			}
@@ -468,6 +472,7 @@ export function ActivityDashlet(props: ActivityDashletProps) {
 												edge="end"
 												onClick={submitAuthorFilterChanges}
 												size="small"
+												aria-label={formatMessage({ defaultMessage: 'Submit' })}
 											>
 												<ReplyRounded sx={{ transform: 'scaleX(-1)' }} />
 											</IconButton>
@@ -477,6 +482,7 @@ export function ActivityDashlet(props: ActivityDashletProps) {
 												edge="end"
 												onClick={clearAuthorFilterValue}
 												size="small"
+												aria-label={formatMessage({ defaultMessage: 'Clear & close' })}
 											>
 												<ClearRounded />
 											</IconButton>
@@ -549,7 +555,12 @@ export function ActivityDashlet(props: ActivityDashletProps) {
 											/>
 										}
 									>
-										<IconButton color="primary" size="small" onClick={loadNextPage}>
+										<IconButton
+											color="primary"
+											size="small"
+											onClick={loadNextPage}
+											aria-label={formatMessage({ defaultMessage: 'Load {limit} more' }, { limit })}
+										>
 											<MoreVertRounded />
 										</IconButton>
 									</Tooltip>

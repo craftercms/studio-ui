@@ -201,6 +201,7 @@ export function PublishPackageItemsView(props: PublishItemsProps) {
 																e.stopPropagation();
 																onContextMenuOpen?.(e, path);
 															}}
+															aria-label={formatMessage({ defaultMessage: 'Options' })}
 														>
 															<MoreVertRounded />
 														</IconButton>

@@ -133,13 +133,17 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
 										</>
 									)}
 									<Tooltip title={<FormattedMessage id="word.refresh" defaultMessage="Refresh" />}>
-										<IconButton onClick={onRefresh}>
+										<IconButton onClick={onRefresh} aria-label={formatMessage({ defaultMessage: 'Refresh' })}>
 											<RefreshIcon />
 										</IconButton>
 									</Tooltip>
 									{allowUpload && (
 										<Tooltip title={<FormattedMessage id="word.upload" defaultMessage="Upload" />}>
-											<IconButton onClick={onUpload} sx={{ mr: 1 }}>
+											<IconButton
+												onClick={onUpload}
+												sx={{ mr: 1 }}
+												aria-label={formatMessage({ defaultMessage: 'Upload' })}
+											>
 												<UploadFileIcon />
 											</IconButton>
 										</Tooltip>
@@ -269,7 +273,11 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
 								</Box>
 								<Box sx={{ display: 'flex', flexGrow: 0 }}>
 									<Tooltip title={<FormattedMessage defaultMessage="Switch view mode" />}>
-										<IconButton onClick={onToggleViewMode} sx={{ mr: 1 }}>
+										<IconButton
+											onClick={onToggleViewMode}
+											sx={{ mr: 1 }}
+											aria-label={formatMessage({ defaultMessage: 'Switch view mode' })}
+										>
 											{viewMode === 'card' ? (
 												<ListViewIcon />
 											) : viewMode === 'compact' ? (

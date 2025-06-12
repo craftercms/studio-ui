@@ -122,7 +122,11 @@ export function EditUserDialogUI(props: EditUserDialogUIProps) {
 					{managedInStudio ? (
 						<>
 							<Tooltip title={<FormattedMessage id="userInfoDialog.resetPassword" defaultMessage="Reset password" />}>
-								<IconButton onClick={() => onResetPassword(true)} size="large">
+								<IconButton
+									onClick={() => onResetPassword(true)}
+									size="large"
+									aria-label={formatMessage({ defaultMessage: 'Reset password' })}
+								>
 									<PasswordRoundedIcon />
 								</IconButton>
 							</Tooltip>
@@ -151,7 +155,12 @@ export function EditUserDialogUI(props: EditUserDialogUIProps) {
 						/>
 					)}
 					<Tooltip title={<FormattedMessage id="userInfoDialog.close" defaultMessage="Close" />}>
-						<IconButton edge="end" onClick={onCloseButtonClick} size="large">
+						<IconButton
+							edge="end"
+							onClick={onCloseButtonClick}
+							size="large"
+							aria-label={formatMessage({ defaultMessage: 'Close' })}
+						>
 							<CloseRoundedIcon />
 						</IconButton>
 					</Tooltip>

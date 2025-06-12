@@ -380,7 +380,11 @@ export function SearchUI(props: SearchUIProps) {
 													previewAppBaseUri={guestBase}
 													action={
 														mode === 'default' ? (
-															<IconButton onClick={(e) => onHeaderButtonClick(e, item)} size="small">
+															<IconButton
+																onClick={(e) => onHeaderButtonClick(e, item)}
+																size="small"
+																aria-label={formatMessage({ defaultMessage: 'Options' })}
+															>
 																<MoreVertRounded />
 															</IconButton>
 														) : null

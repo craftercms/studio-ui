@@ -45,6 +45,7 @@ interface PanelHeaderProps {
 
 export const PanelHeader: FunctionComponent<PanelHeaderProps> = (props) => {
 	const { title, BackIcon = ChevronLeftRounded, onBack } = props;
+	const { formatMessage } = useIntl();
 	return (
 		<>
 			<Box
@@ -57,7 +58,7 @@ export const PanelHeader: FunctionComponent<PanelHeaderProps> = (props) => {
 					justifyContent: 'flex-start'
 				})}
 			>
-				<IconButton onClick={onBack} size="large">
+				<IconButton onClick={onBack} size="large" aria-label={formatMessage({ defaultMessage: 'Back' })}>
 					<BackIcon />
 				</IconButton>
 				<Typography component="h2" noWrap title={title}>

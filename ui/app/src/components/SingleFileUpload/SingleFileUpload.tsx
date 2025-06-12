@@ -348,7 +348,11 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 						severity="error"
 						action={
 							<Tooltip title={<FormattedMessage defaultMessage="Retry" />}>
-								<IconButton onClick={() => retryUpload()} size="small">
+								<IconButton
+									onClick={() => retryUpload()}
+									size="small"
+									aria-label={formatMessage({ defaultMessage: 'Retry' })}
+								>
 									<ReplayRoundedIcon />
 								</IconButton>
 							</Tooltip>

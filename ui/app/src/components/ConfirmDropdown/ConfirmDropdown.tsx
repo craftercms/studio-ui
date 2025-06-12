@@ -27,6 +27,7 @@ import Tooltip from '@mui/material/Tooltip';
 import { FullSxRecord, PartialSxRecord } from '../../models/CustomRecord';
 import { SxProps } from '@mui/system';
 import { Theme } from '@mui/material';
+import { useIntl } from 'react-intl';
 
 export type ConfirmDropdownClassKey = 'button' | 'menuPaper' | 'helperText';
 
@@ -87,6 +88,7 @@ export function ConfirmDropdown(props: ConfirmDropdownProps) {
 		size = 'medium',
 		buttonProps = {}
 	} = props;
+	const { formatMessage } = useIntl();
 
 	const handleClose = () => {
 		setAnchorEl(null);
@@ -106,7 +108,13 @@ export function ConfirmDropdown(props: ConfirmDropdownProps) {
 	const iconButton = useMemo(
 		() =>
 			Icon ? (
-				<IconButton color={iconColor} onClick={(e) => setAnchorEl(e.currentTarget)} size={size} disabled={disabled}>
+				<IconButton
+					color={iconColor}
+					onClick={(e) => setAnchorEl(e.currentTarget)}
+					size={size}
+					disabled={disabled}
+					aria-label={formatMessage({ defaultMessage: 'Confirm' })}
+				>
 					<Icon />
 				</IconButton>
 			) : null,
