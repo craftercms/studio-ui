@@ -2436,8 +2436,12 @@ const initializeCStudioForms = () => {
 				 */
 				_renderRepeatBody: function (repeatContainerEl) {
 					// If value for min/max is not set, use default values (0 for min and '*' for max)
-					var maxOccurs = Boolean(repeatContainerEl.maxOccurs) ? repeatContainerEl.maxOccurs : '*';
-					var minOccurs = Boolean(repeatContainerEl.minOccurs) ? repeatContainerEl.minOccurs : 0;
+					// craftercms.utils.object.nou(value)
+					const nou = craftercms.utils.object.nou;
+					const maxOccurs =
+						nou(repeatContainerEl.maxOccurs) || repeatContainerEl.maxOccurs === '' ? '*' : repeatContainerEl.maxOccurs;
+					const minOccurs =
+						nou(repeatContainerEl.minOccurs) || repeatContainerEl.minOccurs === '' ? 0 : repeatContainerEl.minOccurs;
 					var formDef = repeatContainerEl.formDef;
 					var repeat = repeatContainerEl.repeat;
 					var form = repeatContainerEl.form;
