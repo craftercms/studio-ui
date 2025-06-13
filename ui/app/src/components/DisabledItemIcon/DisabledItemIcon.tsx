@@ -15,7 +15,7 @@
  */
 
 import { ItemDisplayProps } from '../ItemDisplay';
-import ItemTypeIcon, { getItemTypeText } from '../ItemTypeIcon';
+import { getItemTypeText } from '../ItemTypeIcon';
 import Tooltip from '@mui/material/Tooltip';
 import BlockRoundedIcon from '@mui/icons-material/BlockRounded';
 import * as React from 'react';
