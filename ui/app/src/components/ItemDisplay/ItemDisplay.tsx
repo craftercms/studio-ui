@@ -21,7 +21,7 @@ import palette from '../../styles/palette';
 import Typography, { TypographyProps } from '@mui/material/Typography';
 import { isPreviewable } from '../PathNavigator/utils';
 import ItemStateIcon, { ItemStateIconProps } from '../ItemStateIcon';
-import { ItemTypeIcon, ItemTypeIconProps } from '../ItemTypeIcon';
+import ItemTypeIcon, { ItemTypeIconProps } from '../ItemTypeIcon';
 import ItemPublishingTargetIcon, { ItemPublishingTargetIconProps } from '../ItemPublishingTargetIcon';
 import { isInWorkflow } from './utils';
 import Box from '@mui/material/Box';
