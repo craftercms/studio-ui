@@ -190,8 +190,8 @@
 					(Array.isArray(result) ? result : [result]).forEach(({ name, path }) => {
 						const value = name && name !== '' ? name : path;
 						control.newInsertItem(path, value, 'shared', _self.id);
-						control._renderItems();
 					});
+					control._renderItems();
 				}
 			});
 		},
@@ -239,8 +239,8 @@
 						selectedTOs.forEach(function (item) {
 							const value = item.label && item.label !== '' ? item.label : item.path;
 							control.newInsertItem(item.path, value, 'shared', _self.id);
-							control._renderItems();
 						});
+						control._renderItems();
 					},
 					failure: function () {}
 				},

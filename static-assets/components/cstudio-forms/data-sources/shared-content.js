@@ -135,8 +135,8 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
 				items.forEach(({ name, path }) => {
 					const value = name && name !== '' ? name : path;
 					control.newInsertItem(path, value, 'shared', _self.id);
-					control._renderItems();
 				});
+				control._renderItems();
 			}
 		});
 	},
