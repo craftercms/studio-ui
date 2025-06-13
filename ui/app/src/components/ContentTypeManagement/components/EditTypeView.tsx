@@ -699,7 +699,7 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 	const handleReorderTypeSections = (sections: ReorderFieldsDialogProps['fields']) => {
 		setType((currentType) => {
 			const newSections = sections.map((section) => {
-				return type.sections.find((s) => s.id === section.key);
+				return currentType.sections.find((s) => s.id === section.key);
 			});
 			const nextType = { ...currentType, sections: newSections };
 			handleEditTypeProperties(nextType);
@@ -1183,7 +1183,7 @@ function parseConfigPlugins(
 ): ContentTypeManagementConfig['controls'] {
 	if (!plugins) return;
 	const parsedControls = asArray(plugins).map((plugin) => {
-		const fields = Object.values(plugin.descriptor.fields)?.map((field) => {
+		const fields = Object.values(plugin.descriptor.fields ?? {})?.map((field) => {
 			return {
 				...field,
 				validations: field.validations ?? {}
