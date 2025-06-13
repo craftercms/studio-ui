@@ -26,8 +26,8 @@ import {
 	editController,
 	editTemplate
 } from '../actions/misc';
-import { changeContentType, createFile, fetchContentItem } from '../../services/content';
-import { showCodeEditorDialog, showEditDialog, showViewPackagesDialog } from '../actions/dialogs';
+import { createFile, fetchContentItem } from '../../services/content';
+import { showCodeEditorDialog, showEditDialog } from '../actions/dialogs';
 import { reloadContentItem } from '../actions/content';
 import { blockUI, showEditItemSuccessNotification, unblockUI } from '../actions/system';
 import { CrafterCMSEpic } from '../store';
@@ -43,19 +43,17 @@ const epics = [
 			ofType(changeContentTypeAction.type),
 			withLatestFrom(state$),
 			switchMap(([{ payload }, state]) => {
-				const newContentTypeId = payload.newContentTypeId;
+				const newContentTypeId = payload.contentType.id;
 				const path = payload.path;
 				if (payload.originalContentTypeId !== newContentTypeId) {
-					return changeContentType(state.sites.active, path, newContentTypeId).pipe(
-						map(() =>
-							showEditDialog({
-								site: state.sites.active,
-								path,
-								authoringBase: state.env.authoringBase,
-								changeTemplate: newContentTypeId,
-								onSaveSuccess: batchActions([showEditItemSuccessNotification(), reloadContentItem({ path })])
-							})
-						)
+					return of(
+						showEditDialog({
+							site: state.sites.active,
+							path,
+							authoringBase: state.env.authoringBase,
+							changeTemplate: newContentTypeId,
+							onSaveSuccess: batchActions([showEditItemSuccessNotification(), reloadContentItem({ path })])
+						})
 					);
 				}
 				return NEVER;
