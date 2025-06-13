@@ -37,7 +37,6 @@ export interface DisabledItemIconProps {
 export function DisabledItemIcon(props: DisabledItemIconProps) {
 	const { item, itemTypeIconProps, sxs, classes } = props;
 	const { formatMessage } = useIntl();
-	const isDisabledItem = item.stateMap.disabled;
 
 	let DisabledTypeIcon = UnknownStateIcon;
 	switch (item.systemType) {
@@ -55,7 +54,7 @@ export function DisabledItemIcon(props: DisabledItemIconProps) {
 			break;
 	}
 
-	return isDisabledItem ? (
+	return (
 		<Tooltip
 			title={
 				<>
@@ -86,16 +85,6 @@ export function DisabledItemIcon(props: DisabledItemIconProps) {
 				/>
 			</Box>
 		</Tooltip>
-	) : (
-		<ItemTypeIcon
-			{...itemTypeIconProps}
-			item={item}
-			className={[classes?.icon, itemTypeIconProps?.className].filter(Boolean).join(' ')}
-			sx={{
-				fontSize: '1.1rem',
-				...sxs?.icon
-			}}
-		/>
 	);
 }
 

@@ -21,7 +21,7 @@ import palette from '../../styles/palette';
 import Typography, { TypographyProps } from '@mui/material/Typography';
 import { isPreviewable } from '../PathNavigator/utils';
 import ItemStateIcon, { ItemStateIconProps } from '../ItemStateIcon';
-import { ItemTypeIconProps } from '../ItemTypeIcon';
+import { ItemTypeIcon, ItemTypeIconProps } from '../ItemTypeIcon';
 import ItemPublishingTargetIcon, { ItemPublishingTargetIconProps } from '../ItemPublishingTargetIcon';
 import { isInWorkflow } from './utils';
 import Box from '@mui/material/Box';
@@ -81,6 +81,7 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
 		// Prevents crashing if the item is nullish
 		return null;
 	}
+	const isDisabledItem = item.stateMap.disabled;
 	const inWorkflow = isInWorkflow(item.stateMap) || item.systemType === 'folder';
 	return (
 		<Box
@@ -124,9 +125,20 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
 							}}
 						/>
 					)}
-			{showItemType && (
-				<DisabledItemIcon item={item} itemTypeIconProps={itemTypeIconProps} sxs={sxs} classes={classes} />
-			)}
+			{showItemType &&
+				(isDisabledItem ? (
+					<DisabledItemIcon item={item} itemTypeIconProps={itemTypeIconProps} sxs={sxs} classes={classes} />
+				) : (
+					<ItemTypeIcon
+						{...itemTypeIconProps}
+						item={item}
+						className={[classes?.icon, itemTypeIconProps?.className].filter(Boolean).join(' ')}
+						sx={{
+							fontSize: '1.1rem',
+							...sxs?.icon
+						}}
+					/>
+				))}
 			<Typography
 				noWrap
 				component={labelComponent}
