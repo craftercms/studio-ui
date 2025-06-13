@@ -74,6 +74,7 @@
   * Renamed `content/fetchItemsByPath` to `fetchContentItems`.
   * Removed `content/fetchSandboxItem`. Replaced by `fetchContentItem`.
   * Removed `content/fetchDetailedItems`. Replaced by `fetchContentItems`.
+  * Removed `content/changeContentType`.
 * `PublishingItem` interface changes:
   * `approver` is now `reviewer`, of type Person.
   * `comment` is removed, and now there's `reviewerComment` and `submitterComment`.
