@@ -40,7 +40,7 @@ export interface ContentTypesSelectorProps extends TypeBuilderControl {
  */
 export function ContentTypesSelector(props: ContentTypesSelectorProps) {
 	const { field, value, setValue } = props;
-	const maxLength = field.validations.maxLength?.value;
+	const maxLength = field.validations?.maxLength?.value;
 	const contentTypes = useContentTypes();
 	const [selectedLookup, setSelectedLookup] = useState<Record<string, boolean>>(
 		createPresenceTable(value ? value.split(',') : [])
@@ -91,7 +91,12 @@ export function ContentTypesSelector(props: ContentTypesSelectorProps) {
 				) : (
 					<>
 						<ListItem sx={{ bgcolor: 'background.paper', p: 0 }}>
-							<ListItemButton onClick={handleToggle('*')} dense>
+							<ListItemButton
+								role="checkbox"
+								aria-checked={Boolean(selectedLookup['*'])}
+								onClick={handleToggle('*')}
+								dense
+							>
 								<ListItemIcon sx={{ py: 1 }}>
 									{selectedLookup['*'] ? <CheckBoxRoundedIcon color="primary" /> : <CheckBoxOutlineBlankRoundedIcon />}
 								</ListItemIcon>
