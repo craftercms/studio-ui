@@ -19,7 +19,7 @@ import { IconButton, IconButtonProps } from '@mui/material';
 import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
 import { useDispatch } from 'react-redux';
 import { useHistoryBackStack } from '../../hooks/useHistoryBackStack';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import Tooltip from '@mui/material/Tooltip';
 import { goToLastPage } from '../../state/actions/preview';
 import { useSelection } from '../../hooks/useSelection';
@@ -30,6 +30,7 @@ export function PreviewBackButton(props: PreviewBackButtonProps) {
 	const currentUrlPath = useSelection((state) => state.previewNavigation.currentUrlPath);
 	const stack = useHistoryBackStack();
 	const dispatch = useDispatch();
+	const { formatMessage } = useIntl();
 	const onClick = () => {
 		dispatch(goToLastPage());
 	};
@@ -41,6 +42,7 @@ export function PreviewBackButton(props: PreviewBackButtonProps) {
 					disabled={stack.length === 0 || (stack.length === 1 && currentUrlPath === stack[0])}
 					onClick={onClick}
 					size="large"
+					aria-label={formatMessage({ defaultMessage: 'Back' })}
 					{...props}
 				>
 					<ArrowBackRoundedIcon />

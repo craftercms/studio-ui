@@ -16,7 +16,7 @@
 
 import React, { PropsWithChildren } from 'react';
 import { ContentTypeField } from '../../models/ContentType';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import FormHelperText from '@mui/material/FormHelperText';
 import Divider from '@mui/material/Divider';
 

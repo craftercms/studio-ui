@@ -172,6 +172,7 @@ function LegacyTypeManagement(props: ContentTypeManagementProps) {
 			.subscribe((e) => {
 				switch (e.data.type) {
 					case 'CONTENT_TYPES_ON_SAVED': {
+						dispatch(fetchContentTypes());
 						switch (e.data.saveType) {
 							case 'saveAndClose':
 								onClose?.();

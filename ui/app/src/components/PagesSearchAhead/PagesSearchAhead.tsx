@@ -26,7 +26,7 @@ import EmptyState from '../EmptyState/EmptyState';
 import Page from '../../icons/Page';
 import CloseIcon from '@mui/icons-material/Close';
 import { getPreviewURLFromPath } from '../../utils/path';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import parse from 'autosuggest-highlight/parse';
 import match from 'autosuggest-highlight/match';
 import palette from '../../styles/palette';
@@ -63,6 +63,7 @@ export function PagesSearchAhead(props: PagesSearchAheadProps) {
 	const [items, setItems] = useState(null);
 	const [dirty, setDirty] = useState(false);
 	const [error, setError] = useState(null);
+	const { formatMessage } = useIntl();
 
 	const { getRootProps, getInputProps, getListboxProps, getOptionProps, groupedOptions, popupOpen } = useAutocomplete({
 		freeSolo: true,
@@ -184,7 +185,12 @@ export function PagesSearchAhead(props: PagesSearchAheadProps) {
 								size={15}
 							/>
 						) : keyword && keyword !== value ? (
-							<IconButton sx={{ padding: '3px', ...sxs?.closeIcon }} onClick={onClean} size="large">
+							<IconButton
+								sx={{ padding: '3px', ...sxs?.closeIcon }}
+								onClick={onClean}
+								size="large"
+								aria-label={formatMessage({ defaultMessage: 'Clean' })}
+							>
 								<CloseIcon fontSize="small" />
 							</IconButton>
 						) : null

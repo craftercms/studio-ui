@@ -49,7 +49,7 @@ import MinimizeIconRounded from '@mui/icons-material/RemoveRounded';
 import MaximiseIcon from '@mui/icons-material/OpenInFullRounded';
 import CloseFullscreenOutlined from '@mui/icons-material/CloseFullscreenOutlined';
 import Close from '@mui/icons-material/Close';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import Alert from '@mui/material/Alert';
 import { createErrorStatePropsFromApiResponse } from '../ApiResponseErrorState';
 import Button, { ButtonProps } from '@mui/material/Button';

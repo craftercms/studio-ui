@@ -171,7 +171,6 @@ CStudioAuthoring.Dialogs.UploadS3Dialog = CStudioAuthoring.Dialogs.UploadS3Dialo
 		});
 
 		var url = CStudioAuthoring.Service.createServiceUri(serviceUri);
-		url += '&' + CStudioAuthoringContext.xsrfParameterName + '=' + CrafterCMSNext.util.auth.getRequestForgeryToken();
 
 		CrafterCMSNext.render(document.getElementById('uploadContainer'), 'SingleFileUpload', {
 			formTarget: '#asset_upload_form',

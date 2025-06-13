@@ -19,7 +19,7 @@ import React from 'react';
 
 import AceEditor from '../AceEditor/AceEditor';
 import ConflictedPathDiffDialogSplitView from './ConflictedPathDiffDialogSplitView';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 import Box from '@mui/material/Box';

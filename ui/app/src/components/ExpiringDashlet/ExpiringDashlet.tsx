@@ -147,7 +147,11 @@ export function ExpiringDashlet(props: ExpiringDashletProps) {
 			borderLeftColor={borderLeftColor}
 			title={<FormattedMessage id="words.expiring" defaultMessage="Expiring" />}
 			headerAction={
-				<LoadingIconButton onClick={onRefresh} loading={state.loading}>
+				<LoadingIconButton
+					onClick={onRefresh}
+					loading={state.loading}
+					aria-label={formatMessage({ defaultMessage: 'Refresh' })}
+				>
 					<RefreshRounded />
 				</LoadingIconButton>
 			}

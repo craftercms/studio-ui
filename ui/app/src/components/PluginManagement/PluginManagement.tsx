@@ -293,7 +293,11 @@ export const PluginManagement = (props: PluginManagementProps) => {
 										</StyledTableCell>
 										<StyledTableCell align="left">
 											{plugin.files.length}
-											<IconButton onClick={(e) => showPluginFiles(e, plugin)} size="small">
+											<IconButton
+												onClick={(e) => showPluginFiles(e, plugin)}
+												size="small"
+												aria-label={formatMessage({ defaultMessage: 'View files' })}
+											>
 												<Tooltip title={<FormattedMessage defaultMessage="View files" />}>
 													<ExpandMoreRoundedIcon />
 												</Tooltip>
@@ -309,6 +313,7 @@ export const PluginManagement = (props: PluginManagementProps) => {
 														onEditPluginConfig(plugin);
 													}}
 													color="primary"
+													aria-label={formatMessage({ defaultMessage: 'Edit configuration' })}
 												>
 													<PencilIcon />
 												</IconButton>
@@ -320,6 +325,7 @@ export const PluginManagement = (props: PluginManagementProps) => {
 														deletePluginDialogState.onOpen();
 													}}
 													color="primary"
+													aria-label={formatMessage({ defaultMessage: 'Uninstall plugin' })}
 												>
 													<DeleteIcon />
 												</IconButton>

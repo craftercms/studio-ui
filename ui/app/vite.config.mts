@@ -41,7 +41,7 @@ export default defineConfig(({ mode }) => ({
     }
   },
   optimizeDeps: {
-    include: ['@mui/material/*']
+		include: ['@mui/material']
   },
   build: {
     minify: false,

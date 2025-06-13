@@ -176,6 +176,7 @@ function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
 							}}
 							className={props.classes?.searchCloseButton}
 							sx={{ marginTop: '5px', marginBottom: '5px', marginRight: '10px', ...sxs?.searchCloseButton }}
+							aria-label={formatMessage({ defaultMessage: 'Close' })}
 						>
 							<CloseIconRounded />
 						</IconButton>

@@ -307,7 +307,11 @@ export function AuditGridUI(props: AuditGridUIProps) {
 				renderCell: (params: GridCellParams) => {
 					return parametersLookup[params.id] === undefined || parametersLookup[params.id]?.length ? (
 						<Tooltip title={<FormattedMessage id="auditGrid.showParameters" defaultMessage="Show parameters" />}>
-							<IconButton onClick={() => onGetParameters(params)} size="large">
+							<IconButton
+								onClick={() => onGetParameters(params)}
+								size="large"
+								aria-label={formatMessage({ defaultMessage: 'Show parameters' })}
+							>
 								<VisibilityRoundedIcon />
 							</IconButton>
 						</Tooltip>

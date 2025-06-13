@@ -34,7 +34,7 @@ import useProjectPreviewImage from '../../hooks/useProjectPreviewImage';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
 import { FormattedMessage, useIntl } from 'react-intl';
 import DialogBody from '../DialogBody';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 import Card from '@mui/material/Card';
 import CardMedia from '@mui/material/CardMedia';
@@ -170,7 +170,7 @@ export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
 								<CardMedia component="img" image={imageUrl} title={name} sx={{ height: '234px' }} />
 								<CardActions sx={{ placeContent: 'center' }} disableSpacing>
 									<Tooltip title={<FormattedMessage id="words.edit" defaultMessage="Edit" />}>
-										<IconButton onClick={onEditSiteImage}>
+										<IconButton onClick={onEditSiteImage} aria-label={formatMessage({ defaultMessage: 'Edit' })}>
 											<EditRoundedIcon />
 										</IconButton>
 									</Tooltip>

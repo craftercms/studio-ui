@@ -34,7 +34,7 @@ import Person from '../../models/Person';
 import Avatar from '@mui/material/Avatar';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { Pagination } from '../Pagination';
 import { AllItemActions } from '../../models';
 import { SxProps } from '@mui/system';
@@ -182,6 +182,7 @@ export function Pager(props: {
 export function DashletItemOptions(props: { path: string; iconButtonProps?: IconButtonProps }) {
 	const { path, iconButtonProps } = props;
 	const dispatch = useDispatch();
+	const { formatMessage } = useIntl();
 
 	const onOpenItemMegaMenu = (element: Element) => {
 		const anchorRect = element.getBoundingClientRect();
@@ -204,6 +205,7 @@ export function DashletItemOptions(props: { path: string; iconButtonProps?: Icon
 					e.stopPropagation();
 					onOpenItemMegaMenu(e.currentTarget);
 				}}
+				aria-label={formatMessage({ defaultMessage: 'Options' })}
 				{...iconButtonProps}
 			>
 				<MoreVertRoundedIcon />

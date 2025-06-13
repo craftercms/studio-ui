@@ -97,7 +97,11 @@ export function SiteSearchToolBar(props: SiteSearchToolBarProps) {
 			</Box>
 			<section>
 				<Tooltip title={formatMessage(translations.changeViewButtonTip)}>
-					<IconButton onClick={handleChangeView} size="large">
+					<IconButton
+						onClick={handleChangeView}
+						size="large"
+						aria-label={formatMessage(translations.changeViewButtonTip)}
+					>
 						{currentView === 'grid' ? <ListViewIcon /> : <GridViewIcon />}
 					</IconButton>
 				</Tooltip>

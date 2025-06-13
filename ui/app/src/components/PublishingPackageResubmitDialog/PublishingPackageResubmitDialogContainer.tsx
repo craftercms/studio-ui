@@ -23,7 +23,7 @@ import { DependencyMap, InternalDialogState, usePublishState } from '../PublishD
 import { createAtLeastHalfHourInFutureDate } from '../../utils/datetime';
 import { DialogBody } from '../DialogBody';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import { FormattedMessage } from 'react-intl';
 import { DateTimeTimezonePickerProps } from '../DateTimeTimezonePicker';
 import Divider from '@mui/material/Divider';
