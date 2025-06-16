@@ -31,6 +31,7 @@ import {
   emitSystemEvent
 } from '../../state/actions/system';
 import { ProjectToolsRoutes } from '../../env/routes';
+import { fetchContentTypes } from '../../state/actions/preview';
 
 export interface ContentTypeManagementProps {
   embedded?: boolean;
@@ -61,6 +62,7 @@ export function ContentTypeManagement(props: ContentTypeManagementProps) {
       .subscribe((e: any) => {
         switch (e.data.type) {
           case 'CONTENT_TYPES_ON_SAVED': {
+            dispatch(fetchContentTypes());
             switch (e.data.saveType) {
               case 'saveAndClose':
                 onClose?.();
