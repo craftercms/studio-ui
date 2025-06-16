@@ -344,7 +344,7 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 		if (!closeAndCleanup()) return;
 
 		const dataSourceDescriptor =
-			dataSourceDescriptors[dataSource.type] ?? config.dataSources?.[dataSource.type].descriptor;
+			dataSourceDescriptors[dataSource.type] ?? config.dataSources?.[dataSource.type]?.descriptor;
 		if (!dataSourceDescriptor)
 			return showAlert(`No control descriptor found for field "${dataSource.title}" of type "${dataSource.type}"`);
 

@@ -33,7 +33,7 @@ export function XmlViewerDialogBody(props: XmlViewerDialogProps) {
 				<Editor
 					height="90vh"
 					defaultLanguage="xml"
-					defaultValue={xml}
+					value={xml}
 					theme={isDark ? 'vs-dark' : 'light'}
 					options={{ readOnly: true, scrollBeyondLastLine: false }}
 				/>

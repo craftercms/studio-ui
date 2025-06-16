@@ -2439,7 +2439,6 @@ const initializeCStudioForms = () => {
 				 */
 				_renderRepeatBody: function (repeatContainerEl) {
 					// If value for min/max is not set, use default values (0 for min and '*' for max)
-					// craftercms.utils.object.nou(value)
 					const nou = craftercms.utils.object.nou;
 					const maxOccurs =
 						nou(repeatContainerEl.maxOccurs) || repeatContainerEl.maxOccurs === '' ? '*' : repeatContainerEl.maxOccurs;

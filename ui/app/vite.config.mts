@@ -47,7 +47,7 @@ export default defineConfig(({ mode }) => ({
     minify: false,
     outDir: '../../static-assets/app',
     emptyOutDir: true,
-    sourcemap: true,
+    sourceMap: true,
     rollupOptions: {
       input: {
         main: 'index.html',

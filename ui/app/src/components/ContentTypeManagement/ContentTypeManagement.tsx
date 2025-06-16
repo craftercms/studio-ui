@@ -69,11 +69,7 @@ export function ContentTypeManagement(props: ContentTypeManagementProps) {
 
 	useEffect(() => {
 		const messagesSubscription = fromEvent<MessageEvent>(window, 'message')
-			.pipe(
-				filter((e) =>
-					['CONTENT_TYPES_ON_SAVED', 'CONTENT_TYPES_ON_CREATED', 'CONTENT_TYPES_ON_DELETED'].includes(e.data?.type)
-				)
-			)
+			.pipe(filter((e) => ['CONTENT_TYPES_ON_DELETED'].includes(e.data?.type)))
 			.subscribe((e) => {
 				switch (e.data?.type) {
 					case 'CONTENT_TYPES_ON_DELETED': {
