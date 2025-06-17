@@ -14,15 +14,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react';
+import React, { JSX, PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react';
 import { fromEvent, interval, merge } from 'rxjs';
 import { filter, map, take, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 import * as iceRegistry from '../iceRegistry';
+import { getById, getReferentialEntries, subscribeToAllowedContentTypes } from '../iceRegistry';
 import {
 	contentTypes$,
 	flushRequestedPaths,
-	getCachedModels,
 	getCachedContentItems,
+	getCachedModels,
 	modelHierarchyMap,
 	operations$
 } from '../contentController';
@@ -117,8 +118,6 @@ import { SHARED_WORKER_NAME } from '@craftercms/studio-ui/utils/constants';
 import useUnmount from '@craftercms/studio-ui/hooks/useUnmount';
 import { DeepPartial } from '@craftercms/studio-ui/models/DeepPartial';
 import { emitSystemEvent, emitSystemEvents } from '@craftercms/studio-ui/state/actions/system';
-import StandardAction from '@craftercms/studio-ui/models/StandardAction';
-import { getById, getReferentialEntries, subscribeToAllowedContentTypes } from '../iceRegistry';
 import { getParentModelId } from '../utils/ice';
 import { SxProps } from '@mui/system';
 
@@ -435,17 +434,17 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
 		if (!hasHost) {
 			// prettier-ignore
 			interval(1000).pipe(
-        takeUntil(
-          merge(fromTopic(hostCheckIn.type), fromTopic('LEGACY_CHECK_IN')).pipe(
-            tap(dispatch),
-            take(1)
-          )
-        ),
-        take(1)
-      ).subscribe(() => setSnack({
-        autoHideDuration: 8000,
-        message: 'In-context editing is disabled: page running out of CrafterCMS frame.'
-      }));
+				takeUntil(
+					merge(fromTopic(hostCheckIn.type), fromTopic('LEGACY_CHECK_IN')).pipe(
+						tap(dispatch),
+						take(1)
+					)
+				),
+				take(1)
+			).subscribe(() => setSnack({
+				autoHideDuration: 8000,
+				message: 'In-context editing is disabled: page running out of CrafterCMS frame.'
+			}));
 		}
 	}, [dispatch, hasHost]);
 

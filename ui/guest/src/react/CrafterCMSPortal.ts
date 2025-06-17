@@ -15,7 +15,7 @@
  */
 
 import { createPortal } from 'react-dom';
-import { PropsWithChildren, useLayoutEffect, useRef } from 'react';
+import { PropsWithChildren, useLayoutEffect, useRef, JSX } from 'react';
 
 export type CrafterCMSPortalProps = PropsWithChildren<{}>;
 
