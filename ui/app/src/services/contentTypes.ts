@@ -417,6 +417,7 @@ function parseLegacyFormDefinition(definition: LegacyFormDefinition): ContentTyp
 	const fields: LookupTable<ContentTypeField> = {};
 	const sections: Array<ContentTypeSection> = [];
 	const dataSources: LookupTable<DataSource> = {};
+	// TODO: update type to be LookupTable<DataSource>. https://github.com/craftercms/craftercms/issues/8216
 	const dropTargetsLookup: LookupTable<LegacyDataSource> = {};
 
 	const legacyDataSourceArray = asArray(definition.datasources?.datasource);
@@ -425,6 +426,7 @@ function parseLegacyFormDefinition(definition: LegacyFormDefinition): ContentTyp
 	legacyDataSourceArray.forEach((datasource: LegacyDataSource) => {
 		// TODO: Delete datasource.properties after props have been added to the root object? Must update code usages of datasource.properties.
 		dataSources[datasource.id] = { ...datasource, properties: {} };
+		const legacyDatasource = { ...datasource };
 		asArray(datasource.properties?.property).forEach((property) => {
 			let value: unknown = property.value;
 			switch (property.type) {
@@ -440,9 +442,11 @@ function parseLegacyFormDefinition(definition: LegacyFormDefinition): ContentTyp
 				//   break;
 			}
 			dataSources[datasource.id].properties[property.name] = value;
+			// Also update legacyDatasource, since dropTargetsLookup references it for 'components' type datasources.
+			legacyDatasource.properties[property.name] = value;
 		});
-		if (datasource.type === 'components') {
-			dropTargetsLookup[datasource.id] = datasource;
+		if (legacyDatasource.type === 'components') {
+			dropTargetsLookup[datasource.id] = legacyDatasource;
 		}
 	});
 
