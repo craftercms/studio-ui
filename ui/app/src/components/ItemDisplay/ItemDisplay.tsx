@@ -133,10 +133,7 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
 						{...itemTypeIconProps}
 						item={item}
 						className={[classes?.icon, itemTypeIconProps?.className].filter(Boolean).join(' ')}
-						sx={{
-							fontSize: '1.1rem',
-							...sxs?.icon
-						}}
+						sx={{ fontSize: '1.1rem', ...sxs?.icon }}
 					/>
 				))}
 			<Typography
