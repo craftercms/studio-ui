@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from 'react';
+import React, { JSX, useState } from 'react';
 import Typography from '@mui/material/Typography';
 import SwipeableViews from 'react-swipeable-views';
 // @ts-ignore

@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren } from 'react';
+import React, { JSX, PropsWithChildren } from 'react';
 import { CrafterCMSStore } from '../../state/store';
 import { Provider } from 'react-redux';
 
