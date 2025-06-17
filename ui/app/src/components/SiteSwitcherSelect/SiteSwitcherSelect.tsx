@@ -65,12 +65,13 @@ function SiteSwitcherSelect(props: SiteSwitcherSelectProps) {
 	return (
 		<Select
 			displayEmpty
-			variant="standard"
+			variant="outlined"
 			{...rest}
 			className={props.className}
 			sx={{
 				maxWidth: 150,
 				background: 'transparent',
+				'.MuiOutlinedInput-notchedOutline': { border: 0 },
 				'&.MuiInput-underline::before': {
 					display: 'none'
 				},
