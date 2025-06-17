@@ -27,7 +27,7 @@ import {
 	editTemplate
 } from '../actions/misc';
 import { createFile, fetchContentItem } from '../../services/content';
-import { showCodeEditorDialog, showEditDialog } from '../actions/dialogs';
+import { showCodeEditorDialog } from '../actions/dialogs';
 import { reloadContentItem } from '../actions/content';
 import { blockUI, showEditItemSuccessNotification, unblockUI } from '../actions/system';
 import { CrafterCMSEpic } from '../store';
@@ -36,6 +36,7 @@ import { showErrorDialog } from '../reducers/dialogs/error';
 import { getFileNameFromPath, getParentPath } from '../../utils/path';
 import { popPiece } from '../../utils/string';
 import { associateTemplate } from '../actions/preview';
+import { pickShowContentFormAction } from '../../utils/system';
 
 const epics = [
 	(action$, state$: Observable<GlobalState>) =>
@@ -47,7 +48,7 @@ const epics = [
 				const path = payload.path;
 				if (payload.originalContentTypeId !== newContentTypeId) {
 					return of(
-						showEditDialog({
+						pickShowContentFormAction({
 							site: state.sites.active,
 							path,
 							authoringBase: state.env.authoringBase,
