@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { createElement, JSX, useEffect, useRef } from 'react';
+import React, { createElement, type JSX, useEffect, useRef } from 'react';
 import {
 	FormsEngineFormApiContextProps,
 	FormsEngineFormContextApi,

@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { JSX, PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react';
+import React, { type JSX, type PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react';
 import { fromEvent, interval, merge } from 'rxjs';
 import { filter, map, take, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 import * as iceRegistry from '../iceRegistry';

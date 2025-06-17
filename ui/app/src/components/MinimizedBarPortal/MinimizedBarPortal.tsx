@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { JSX, PropsWithChildren, useEffect } from 'react';
+import { type JSX, type PropsWithChildren, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { decrementMinimizedBarCount, incrementMinimizedBarCount } from './minimizedBarCounter';
 

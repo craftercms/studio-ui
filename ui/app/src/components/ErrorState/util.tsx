@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { JSX } from 'react';
+import React, { type JSX } from 'react';
 import { ErrorState, ErrorStateProps } from './ErrorState';
 import { isAjaxError, isApiResponse } from '../../utils/object';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';

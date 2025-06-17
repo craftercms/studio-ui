@@ -15,7 +15,7 @@
  */
 
 import WidgetDescriptor from '../../models/WidgetDescriptor';
-import React, { JSX, ReactElement } from 'react';
+import React, { type JSX, type ReactElement } from 'react';
 import Widget, { WidgetProps } from './Widget';
 
 type MapperFn = (widget: WidgetDescriptor, index: number) => ReactElement;

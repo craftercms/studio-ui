@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { JSX, useContext, useMemo } from 'react';
+import React, { type JSX, useContext, useMemo } from 'react';
 import { GuestState } from '../store/models/GuestStore';
 import {
 	createDispatchHook,
