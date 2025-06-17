@@ -31,6 +31,7 @@ import useMinimizedDialogWarning from '../../hooks/useMinimizedDialogWarning';
 import SiteStatusIndicator from '../SiteStatusIndicator/SiteStatusIndicator';
 import { previewSwitch } from '../../services/security';
 import { BaseSelectProps } from '@mui/material/Select/Select';
+import { outlinedInputClasses } from '@mui/material';
 
 export interface SiteSwitcherSelectProps extends BaseSelectProps {
   site: string;
@@ -64,12 +65,15 @@ function SiteSwitcherSelect(props: SiteSwitcherSelectProps) {
   return (
     <Select
       displayEmpty
-      variant="standard"
+      variant="outlined"
       {...rest}
       className={clsx(classes.menuRoot, props.className)}
       classes={{
         ...props.classes,
         select: clsx(classes.input, props.classes?.select, classes.menu)
+      }}
+      sx={{
+        [`.${outlinedInputClasses.notchedOutline}`]: { border: 0 }
       }}
       value={site}
       onChange={onSiteChange}
