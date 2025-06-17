@@ -408,7 +408,9 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
           // isEditable: studio-ui has mechanisms to edit the item (e.g. a component or a text file)
           // allowEdit: the datasource has edit capabilities (datasource.edit exists).
           const isEditable = this.allowEdit && (isComponent || craftercms.utils.content.isEditableAsset(item.key));
-          if (isEditable && hasEditAction) {
+          // At this point, we only need to check if the item is editable (see definition above). If the user doesn't
+          // have write permission, the datasource.edit method will open the item in view mode.
+          if (isEditable) {
             $actionsContainer.append(editBtn);
             editBtn.on('click', function () {
               const elIndex = $(this).data('index');
