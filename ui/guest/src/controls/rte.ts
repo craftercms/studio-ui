@@ -30,6 +30,7 @@ import { editComponentInline, exitComponentInlineEdit } from '../store/actions';
 import { emptyFieldClass } from '../constants';
 import { rtePickerActionResult, showRtePickerActions } from '@craftercms/studio-ui/state/actions/dialogs';
 import { unlockItem } from '@craftercms/studio-ui/state/actions/content';
+import { getPreviewURLFromPath } from '@craftercms/studio-ui/utils/path';
 
 export function initTinyMCE(
 	path: string,
@@ -46,6 +47,7 @@ export function initTinyMCE(
 	const originalRawContent = originalElement.innerHTML;
 	let rteEl = originalElement;
 	const isRecordElInline = record.element.tagName.match(inlineElsRegex);
+	const isRTE = type === 'rte';
 
 	// If record element is of type inline (doesn't matter the display prop), replace it with a block element (div).
 	// This is because of an issue happening with inline elements (for example a span tag even with 'display: block' style
@@ -123,8 +125,8 @@ export function initTinyMCE(
 		// For some reason this is not working.
 		// body_class: 'craftercms-rich-text-editor',
 		plugins: ['craftercms_paste editform', rteSetup?.tinymceOptions?.plugins].filter(Boolean).join(' '), // 'editform' plugin will always be loaded
-		paste_as_text: type !== 'html',
-		paste_data_images: type === 'html',
+		paste_as_text: !isRTE,
+		paste_data_images: isRTE,
 		paste_preprocess(editor, args) {
 			const currentContent = editor.getContent({ format: 'text' });
 			const fullContent = currentContent + args.content;
@@ -147,7 +149,7 @@ export function initTinyMCE(
 		paste_postprocess(plugin, args) {
 			window.tinymce.activeEditor.plugins.craftercms_paste_extension?.paste_postprocess(plugin, args);
 		},
-		toolbar: type === 'html',
+		toolbar: isRTE,
 		menubar: false,
 		inline: true,
 		base_url: '/studio/static-assets/libs/tinymce',
@@ -170,7 +172,8 @@ export function initTinyMCE(
 						'allowVideoUpload',
 						'allowVideosFromRepo',
 						'allowAudioUpload',
-						'allowAudioFromRepo'
+						'allowAudioFromRepo',
+						'allowFilesFromRepo'
 					].includes(validation.id)
 				) {
 					datasources[validation.id] = validation;
@@ -194,7 +197,10 @@ export function initTinyMCE(
 				)
 				.subscribe(({ payload }) => {
 					if (payload) {
-						cb(payload.path, { alt: payload.name });
+						// For selections of pages or components from the 'Insert link' dialog, use the preview URL (the actual page or component link)
+						// instead of the repoURL returned by the browse dialog.
+						const path = meta.filetype === 'file' ? getPreviewURLFromPath(payload.path) : payload.path;
+						cb(path, { alt: payload.name });
 					}
 				});
 		},
@@ -233,11 +239,11 @@ export function initTinyMCE(
 			}
 
 			function getContent() {
-				return editor.getContent({ format: type === 'html' ? 'html' : 'text' });
+				return editor.getContent({ format: isRTE ? 'html' : 'text' });
 			}
 
 			function getSelectionContent() {
-				return editor.selection.getContent({ format: type === 'html' ? 'html' : 'text' });
+				return editor.selection.getContent({ format: isRTE ? 'html' : 'text' });
 			}
 
 			function destroyEditor() {
@@ -277,7 +283,7 @@ export function initTinyMCE(
 					// Replace line breaks with <br> for textarea fields
 					// Address line breaks in textarea fields: https://github.com/craftercms/craftercms/issues/6432
 					editor.setContent(content.replaceAll('\n', '<br>'), { format: 'html' });
-				} else if (type === 'html') {
+				} else if (isRTE) {
 					// Set content in 'html' format for the editor to exec its internal cleanup mechanisms
 					// For example, removal of potentially problematic line breaks which we're seeing cause the list plugin to crash (https://github.com/craftercms/craftercms/issues/6514)
 					editor.setContent(content, { format: 'html' });
@@ -382,7 +388,7 @@ export function initTinyMCE(
 					// Hypothesis is the focusout destroys the editor before some internal tiny thing runs.
 					// @ts-ignore - Add "forced" property to be able to recognise this manually-triggered focusout on our handler.
 					setTimeout(() => editor.fire('focusout', { forced: true }));
-				} else if (e.key === 'Enter' && type !== 'html' && type !== 'textarea') {
+				} else if (e.key === 'Enter' && !isRTE && type !== 'textarea') {
 					// Avoid new line in plain text fields
 					e.preventDefault();
 				} else if (
