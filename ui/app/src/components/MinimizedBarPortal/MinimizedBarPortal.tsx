@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type JSX, type PropsWithChildren, useEffect } from 'react';
+import React, { type PropsWithChildren, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { decrementMinimizedBarCount, incrementMinimizedBarCount } from './minimizedBarCounter';
 
@@ -35,7 +35,7 @@ export function MinimizedBarPortal(props: PropsWithChildren<{}>) {
 		incrementMinimizedBarCount();
 		return () => decrementMinimizedBarCount();
 	}, []);
-	return createPortal(props.children, el) as JSX.Element;
+	return createPortal(props.children, el) as React.JSX.Element;
 }
 
 export default MinimizedBarPortal;

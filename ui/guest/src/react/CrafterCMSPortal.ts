@@ -15,7 +15,7 @@
  */
 
 import { createPortal } from 'react-dom';
-import { PropsWithChildren, useLayoutEffect, useRef, type JSX } from 'react';
+import React, { PropsWithChildren, useLayoutEffect, useRef } from 'react';
 
 export type CrafterCMSPortalProps = PropsWithChildren<{}>;
 
@@ -34,7 +34,7 @@ export function CrafterCMSPortal(props: CrafterCMSPortalProps) {
 		};
 	}, []);
 
-	return createPortal(props.children, portalRef.current) as JSX.Element;
+	return createPortal(props.children, portalRef.current) as React.JSX.Element;
 }
 
 export default CrafterCMSPortal;

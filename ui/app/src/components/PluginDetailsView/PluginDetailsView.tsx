@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { type JSX, useState } from 'react';
+import React, { useState } from 'react';
 import Typography from '@mui/material/Typography';
 import SwipeableViews from 'react-swipeable-views';
 // @ts-ignore
@@ -66,7 +66,7 @@ interface PluginDetailsViewProps {
 	selectedImageSlideIndex?: number;
 	changeImageSlideInterval?: number;
 	isMarketplacePlugin?: boolean;
-	useLabel?: string | JSX.Element;
+	useLabel?: string | React.JSX.Element;
 	usePermission?: boolean;
 	inUse?: boolean;
 	beingInstalled?: boolean;

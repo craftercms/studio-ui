@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { createElement, type JSX, useEffect, useRef } from 'react';
+import React, { createElement, useEffect, useRef } from 'react';
 import {
 	FormsEngineFormApiContextProps,
 	FormsEngineFormContextApi,
@@ -159,7 +159,7 @@ export function TypeBuilderFormsEngine(props: FieldFormViewProps) {
 	);
 }
 
-function FieldBreadcrumbs(props: FieldFormViewProps): JSX.Element {
+function FieldBreadcrumbs(props: FieldFormViewProps): React.JSX.Element {
 	if (!props.field) return;
 	const fieldPathIds = props.fieldIdPath?.split('.') ?? [];
 	return (
@@ -174,7 +174,7 @@ function FieldBreadcrumbs(props: FieldFormViewProps): JSX.Element {
 	);
 }
 
-function FieldActions(props: FieldFormViewProps): JSX.Element {
+function FieldActions(props: FieldFormViewProps): React.JSX.Element {
 	if (!props.field) return;
 	const field = props.field;
 	return (
@@ -195,7 +195,7 @@ function FieldActions(props: FieldFormViewProps): JSX.Element {
 	);
 }
 
-function FieldSwapper(props: FieldFormViewProps): JSX.Element {
+function FieldSwapper(props: FieldFormViewProps): React.JSX.Element {
 	if (!props.field) return;
 	const { field, controlDescriptor } = props;
 	return (
@@ -222,7 +222,7 @@ function FieldSwapper(props: FieldFormViewProps): JSX.Element {
 	);
 }
 
-function SectionActions(props: FieldFormViewProps): JSX.Element {
+function SectionActions(props: FieldFormViewProps): React.JSX.Element {
 	if (!props.section) return;
 	const section = props.section;
 	return (
@@ -236,7 +236,7 @@ function SectionActions(props: FieldFormViewProps): JSX.Element {
 	);
 }
 
-function DataSourceActions(props: FieldFormViewProps): JSX.Element {
+function DataSourceActions(props: FieldFormViewProps): React.JSX.Element {
 	if (!props.dataSource) return;
 	const dataSource = props.dataSource;
 	return (
@@ -265,7 +265,7 @@ function identifyMode(props: FieldFormViewProps): Mode {
 	}
 }
 
-function pickPanelTitleByMode(props: FieldFormViewProps): JSX.Element {
+function pickPanelTitleByMode(props: FieldFormViewProps): React.JSX.Element {
 	if (props.type) {
 		return <FormattedMessage defaultMessage="Edit Type" />;
 	} else if (props.field) {

@@ -14,13 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { type JSX, PropsWithChildren } from 'react';
+import React, { PropsWithChildren } from 'react';
 import { CrafterCMSStore } from '../../state/store';
 import { Provider } from 'react-redux';
 
 export type StoreProviderProps = PropsWithChildren<{ store: CrafterCMSStore }>;
 
-export function StoreProvider(props: StoreProviderProps): JSX.Element {
+export function StoreProvider(props: StoreProviderProps): React.JSX.Element {
 	const { store } = props;
 	return <Provider children={props.children} store={store} />;
 }

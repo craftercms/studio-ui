@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { type JSX, useState } from 'react';
+import React, { useState } from 'react';
 import Card from '@mui/material/Card';
 import CardActionArea from '@mui/material/CardActionArea';
 import CardContent from '@mui/material/CardContent';
@@ -41,7 +41,7 @@ interface PluginCardProps {
 	inUse?: boolean;
 	usePermission?: boolean;
 	beingInstalled?: boolean;
-	useLabel?: string | JSX.Element;
+	useLabel?: string | React.JSX.Element;
 	disableCardActionClick?: boolean;
 	onPluginSelected(plugin: MarketplacePlugin, view: number): any;
 	onDetails(plugin: MarketplacePlugin, index?: number): any;

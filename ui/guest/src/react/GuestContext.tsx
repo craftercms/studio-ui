@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { type JSX, useContext, useMemo } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { GuestState } from '../store/models/GuestStore';
 import {
 	createDispatchHook,
@@ -65,7 +65,7 @@ export function useIsAuthoring(): boolean {
 	return Boolean(context?.editMode && context.hasHost);
 }
 
-export function GuestContextProvider(props): JSX.Element {
+export function GuestContextProvider(props): React.JSX.Element {
 	const value = useMemo(() => props.value, [props.value]);
 	return <GuestContext.Provider {...props} value={value} />;
 }

@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { type JSX, type PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react';
+import React, { type PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react';
 import { fromEvent, interval, merge } from 'rxjs';
 import { filter, map, take, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 import * as iceRegistry from '../iceRegistry';
@@ -730,9 +730,9 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
 	);
 }
 
-export function ExperienceBuilder(props: GenericXBProps<{ model: ContentInstance }>): JSX.Element;
-export function ExperienceBuilder(props: GenericXBProps<{ path: string }>): JSX.Element;
-export function ExperienceBuilder(props: ExperienceBuilderProps): JSX.Element {
+export function ExperienceBuilder(props: GenericXBProps<{ model: ContentInstance }>): React.JSX.Element;
+export function ExperienceBuilder(props: GenericXBProps<{ path: string }>): React.JSX.Element;
+export function ExperienceBuilder(props: ExperienceBuilderProps): React.JSX.Element {
 	let { children, isAuthoring = false, path, model } = props as CompleteGuestProps;
 	let store = useMemo(() => isAuthoring && createGuestStore(), [isAuthoring]);
 	path = path || prop(model, 'path');
@@ -741,7 +741,7 @@ export function ExperienceBuilder(props: ExperienceBuilderProps): JSX.Element {
 			<ExperienceBuilderInternal {...props} path={path} />
 		</Provider>
 	) : (
-		(children as JSX.Element)
+		(children as React.JSX.Element)
 	);
 }
 
