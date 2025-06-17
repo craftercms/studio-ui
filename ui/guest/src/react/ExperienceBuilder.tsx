@@ -192,7 +192,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
 					const { type } = event;
 					const record = elementRegistry.get(dispatcherElementRecordId);
 					if (nullOrUndefined(record)) {
-						console.error('[Guest] No record found for dispatcher element');
+						console.warn('[Guest] No record found for dispatcher element');
 					} else {
 						if (refs.current.keysPressed.z && type === 'click') {
 							return false;
