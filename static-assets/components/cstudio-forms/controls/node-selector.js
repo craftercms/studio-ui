@@ -534,12 +534,12 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
 		return validation;
 	},
 
-	newInsertItem: function (key, value, type) {
+	newInsertItem: function (key, value, type, datasource) {
 		const validation = this.checkValidations(key, value);
 
 		if (validation.successful) {
 			let item = {};
-			item = { key: key, value: value };
+			item = { key: key, value: value, datasource };
 
 			if (type === 'embedded') {
 				item.key = key;
