@@ -408,6 +408,7 @@ function parseLegacyFormDefinition(definition: LegacyFormDefinition): ContentTyp
 	const fields: LookupTable<ContentTypeField> = {};
 	const sections: Array<ContentTypeSection> = [];
 	const dataSources: LookupTable<DataSource> = {};
+	// TODO: update type to be LookupTable<DataSource>. https://github.com/craftercms/craftercms/issues/8216
 	const dropTargetsLookup: LookupTable<LegacyDataSource> = {};
 
 	const legacyDataSourceArray = asArray(definition.datasources?.datasource);
