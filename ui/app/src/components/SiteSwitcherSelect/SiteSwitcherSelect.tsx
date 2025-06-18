@@ -31,7 +31,7 @@ import useMinimizedDialogWarning from '../../hooks/useMinimizedDialogWarning';
 import SiteStatusIndicator from '../SiteStatusIndicator/SiteStatusIndicator';
 import { previewSwitch } from '../../services/security';
 import { BaseSelectProps } from '@mui/material/Select/Select';
-import { outlinedInputClasses } from '@mui/material';
+import { outlinedInputClasses } from '@mui/material/OutlinedInput';
 
 export interface SiteSwitcherSelectProps extends BaseSelectProps {
   site: string;
