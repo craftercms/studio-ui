@@ -150,7 +150,7 @@ export function isImage(path: string): boolean {
 
 // TODO: check why is LegacyItem accepted.
 export function isItemLockedForMe(item: ContentItem | LegacyItem, username: string): boolean {
-	return item ? isLockedState(item.state) && item.lockOwner.username !== username : true;
+	return item ? isLockedState(item.state) && item.lockOwner?.username !== username : true;
 }
 
 export function isBlobUrl(url: string): boolean {
