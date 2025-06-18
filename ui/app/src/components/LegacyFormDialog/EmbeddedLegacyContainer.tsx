@@ -158,9 +158,8 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
 					const updatedModelPath = e.data.updatedModelPath;
 
 					onSave(e.data);
-					// If 'currentUrlPath' is the same as the initial path of the page being edited, and there has been an url update,
-					// preview the new one. Otherwise, reload the current previewed page.
-					if (currentUrlPath === getPreviewURLFromPath(initialModelPath)) {
+					// If the page being previewed was the one updated and its original path was edited, redirect to the new path.
+					if (currentUrlPath === getPreviewURLFromPath(initialModelPath) && initialModelPath !== updatedModelPath) {
 						window.location.href = getSystemLink({
 							page: getPreviewURLFromPath(updatedModelPath),
 							systemLinkId: 'preview',
