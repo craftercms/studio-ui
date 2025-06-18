@@ -20,7 +20,7 @@ import { Provider } from 'react-redux';
 
 export type StoreProviderProps = PropsWithChildren<{ store: CrafterCMSStore }>;
 
-export function StoreProvider(props: StoreProviderProps): JSX.Element {
+export function StoreProvider(props: StoreProviderProps): React.JSX.Element {
 	const { store } = props;
 	return <Provider children={props.children} store={store} />;
 }
