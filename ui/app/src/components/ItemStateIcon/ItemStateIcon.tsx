@@ -155,6 +155,7 @@ export function ItemStateIcon(props: ItemStateIconProps) {
 				...stateSpecificSx
 			}}
 			aria-label={getItemStateString(item.stateMap, formatMessage, { user: item.lockOwner?.username })}
+			aria-hidden={false}
 			className={[className, stateSpecificClass].filter(Boolean).join(' ')}
 			fontSize={fontSize}
 		/>
@@ -169,6 +170,7 @@ export function ItemStateIcon(props: ItemStateIconProps) {
 					...stateSpecificSx
 				}}
 				aria-label={getItemStateString(item.stateMap, formatMessage, { user: item.lockOwner?.username })}
+				aria-hidden={false}
 				className={[className, stateSpecificClass].filter(Boolean).join(' ')}
 				fontSize={fontSize}
 			/>

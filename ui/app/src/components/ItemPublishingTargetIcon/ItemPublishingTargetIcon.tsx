@@ -51,6 +51,7 @@ export function ItemPublishingTargetIcon(props: ItemPublishingTargetIconProps) {
 				fontSize={fontSize}
 				className={[className, classes?.root].join(' ')}
 				aria-label={getItemPublishingTargetString(item.stateMap, formatMessage)}
+				aria-hidden={false}
 				sx={{
 					color: item.stateMap.live ? LIVE_COLOUR : item.stateMap.staged ? STAGING_COLOUR : palette.gray.medium2,
 					...sxs?.root
