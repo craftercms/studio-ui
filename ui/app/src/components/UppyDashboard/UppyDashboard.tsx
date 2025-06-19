@@ -30,6 +30,7 @@ import { ensureSingleSlash } from '../../utils/string';
 import { UppyDashboardProps } from './UppyDashboardProps';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Box from '@mui/material/Box';
+import type { DashboardOptions } from '@uppy/dashboard';
 
 const translations = defineMessages({
 	cancelPending: {
@@ -151,6 +152,7 @@ export function UppyDashboard(props: UppyDashboardProps) {
 			inline: true,
 			target: ref.current,
 			// TODO: Check our Dashboard component typings
+			// @ts-expect-error validateActionPolicy is a prop of @craftercms/uppy/plugins/Dashboard, and not in the type definition of uppy's dashboard.
 			validateActionPolicy,
 			onPendingChanges: function () {
 				functionsRef.current.onPendingChanges.apply(null, arguments);
@@ -202,7 +204,7 @@ export function UppyDashboard(props: UppyDashboardProps) {
 					})
 				);
 			}
-		});
+		} as DashboardOptions<Meta, Body>);
 
 		const onUploadSuccess = (file: UppyFile<Meta, Body>) => {
 			onItemsUploaded$.next(file.id);
