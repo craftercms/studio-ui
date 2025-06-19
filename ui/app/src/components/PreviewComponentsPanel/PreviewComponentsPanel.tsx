@@ -249,7 +249,12 @@ export function PreviewComponentsPanel() {
 										arrow
 										title={<FormattedMessage defaultMessage="Compatible types are configured in the content model." />}
 									>
-										<IconButton size="small">
+										<IconButton
+											size="small"
+											aria-label={formatMessage({
+												defaultMessage: 'Compatible types are configured in the content model.'
+											})}
+										>
 											<InfoRounded fontSize="small" />
 										</IconButton>
 									</Tooltip>
