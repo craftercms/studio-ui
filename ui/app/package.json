@@ -62,7 +62,7 @@
 		"@emotion/css": "^11.13.5",
 		"@emotion/react": "^11.14.0",
 		"@emotion/styled": "^11.14.0",
-		"@graphiql/plugin-explorer": "^3.2.5",
+		"@graphiql/plugin-explorer": "^4.0.6",
 		"@mui/icons-material": "^7.0.1",
 		"@mui/lab": "7.0.0-beta.10",
 		"@mui/material": "^7.0.1",
