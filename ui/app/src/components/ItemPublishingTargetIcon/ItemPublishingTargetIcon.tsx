@@ -17,12 +17,13 @@
 import Tooltip from '@mui/material/Tooltip';
 import PublishingTargetIcon from '@mui/icons-material/FiberManualRecordRounded';
 import * as React from 'react';
-import { getItemPublishingTargetText } from '../ItemDisplay/utils';
+import { getItemPublishingTargetString, getItemPublishingTargetText } from '../ItemDisplay/utils';
 import { ContentItem } from '../../models/Item';
 import { SvgIconProps } from '@mui/material/SvgIcon';
 import { PartialSxRecord } from '../../models';
 import palette from '../../styles/palette';
 import { LIVE_COLOUR, STAGING_COLOUR } from './styles';
+import { useIntl } from 'react-intl';
 
 export type ItemPublishingTargetIconClassKey =
 	| 'root'
@@ -40,6 +41,7 @@ export interface ItemPublishingTargetIconProps {
 
 export function ItemPublishingTargetIcon(props: ItemPublishingTargetIconProps) {
 	const { item, classes, sxs, className, displayTooltip = true, fontSize } = props;
+	const { formatMessage } = useIntl();
 	return (
 		<Tooltip
 			title={displayTooltip ? getItemPublishingTargetText(item.stateMap) : ''}
@@ -48,6 +50,7 @@ export function ItemPublishingTargetIcon(props: ItemPublishingTargetIconProps) {
 			<PublishingTargetIcon
 				fontSize={fontSize}
 				className={[className, classes?.root].join(' ')}
+				aria-label={getItemPublishingTargetString(item.stateMap, formatMessage)}
 				sx={{
 					color: item.stateMap.live ? LIVE_COLOUR : item.stateMap.staged ? STAGING_COLOUR : palette.gray.medium2,
 					...sxs?.root

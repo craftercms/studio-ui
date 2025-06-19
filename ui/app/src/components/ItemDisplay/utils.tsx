@@ -15,10 +15,11 @@
  */
 
 import { ItemStateMap, ItemStates } from '../../models/Item';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, IntlFormatters } from 'react-intl';
 import * as React from 'react';
+import type { ReactNode } from 'react';
 
-export function getItemPublishingTargetText(stateMap: ItemStateMap) {
+export function getItemPublishingTargetText(stateMap: ItemStateMap): ReactNode {
 	return stateMap.live ? (
 		<FormattedMessage id="words.live" defaultMessage="Live" />
 	) : stateMap.staged ? (
@@ -28,7 +29,18 @@ export function getItemPublishingTargetText(stateMap: ItemStateMap) {
 	);
 }
 
-export function getItemStateText(stateMap: ItemStateMap, values?: Record<string, any>) {
+export function getItemPublishingTargetString(
+	stateMap: ItemStateMap,
+	formatMessage: IntlFormatters['formatMessage']
+): string {
+	return stateMap.live
+		? formatMessage({ defaultMessage: 'Live' })
+		: stateMap.staged
+			? formatMessage({ defaultMessage: 'Staged' })
+			: formatMessage({ defaultMessage: 'Unpublished' });
+}
+
+export function getItemStateText(stateMap: ItemStateMap, values?: Record<string, any>): ReactNode {
 	let map: { [key in ItemStates]: any };
 	map = {
 		new: () => <FormattedMessage id="itemState.new" defaultMessage="New" />,
@@ -68,6 +80,39 @@ export function getItemStateText(stateMap: ItemStateMap, values?: Record<string,
 			<FormattedMessage id="itemState.notInWorkflow" defaultMessage="Not in workflow" />
 		)
 	);
+}
+
+export function getItemStateString(
+	stateMap: ItemStateMap,
+	formatMessage: IntlFormatters['formatMessage'],
+	values?: { user: string }
+): string {
+	const map: { [key in ItemStates]: string } = {
+		new: formatMessage({ defaultMessage: 'New' }),
+		modified: formatMessage({ defaultMessage: 'Modified' }),
+		deleted: formatMessage({ defaultMessage: 'Deleted' }),
+		locked: values?.user
+			? (formatMessage({ defaultMessage: 'Locked by {user}' }, { user: values.user }) as string)
+			: formatMessage({ defaultMessage: 'Locked' }),
+		systemProcessing: formatMessage({ defaultMessage: 'System Processing' }),
+		submitted: formatMessage({ defaultMessage: 'Submitted' }),
+		scheduled: formatMessage({ defaultMessage: 'Scheduled' }),
+		publishing: formatMessage({ defaultMessage: 'Publishing' }),
+		submittedToStaging: stateMap.submitted
+			? formatMessage({ defaultMessage: 'Submitted to staging' })
+			: formatMessage({ defaultMessage: 'Scheduled to staging' }),
+		submittedToLive: stateMap.submitted
+			? formatMessage({ defaultMessage: 'Submitted to live' })
+			: formatMessage({ defaultMessage: 'Scheduled to live' }),
+		staged: null,
+		live: null,
+		disabled: formatMessage({ defaultMessage: 'Disabled' }),
+		translationUpToDate: null,
+		translationPending: null,
+		translationInProgress: null
+	};
+
+	return map[getItemStateId(stateMap)] ?? formatMessage({ defaultMessage: 'Not in workflow' });
 }
 
 // Disable case was removed from the switch statement to allow for rendering both workflow state and disabled status.

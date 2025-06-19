@@ -150,7 +150,7 @@ export function ItemTypeIcon(props: ItemTypeIconProps) {
 	}
 	return (
 		<Tooltip {...tooltipProps} title={getItemTypeText(item, formatMessage)}>
-			<TheIcon sx={sxs?.icon} {...rest} />
+			<TheIcon sx={sxs?.icon} aria-label={getItemTypeText(item, formatMessage)} {...rest} />
 		</Tooltip>
 	);
 }
