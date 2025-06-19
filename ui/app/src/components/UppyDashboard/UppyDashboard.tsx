@@ -151,7 +151,6 @@ export function UppyDashboard(props: UppyDashboardProps) {
 			inline: true,
 			target: ref.current,
 			// TODO: Check our Dashboard component typings
-			// @ts-expect-error validateActionPolicy is a prop of @craftercms/uppy/plugins/Dashboard, and not in the type definition of uppy's dashboard.
 			validateActionPolicy,
 			onPendingChanges: function () {
 				functionsRef.current.onPendingChanges.apply(null, arguments);
