@@ -2399,7 +2399,7 @@ const initializeCStudioForms = () => {
 						// to avoid having multiple callbacks for the same RTE field (since callbacks are going to be added on each
 						// RTE rendering)
 						controlEl.form.beforeSaveCallbacks = controlEl.form.beforeSaveCallbacks.filter(
-							(callback) => !callback.rteCallback
+							(callback) => !(callback.repeatGroupId === repeat.id)
 						);
 						controlEl.formEngine._cleanUpRepeatBodyFields(controlEl, this.repeat.id);
 						controlEl.innerHTML = '';
@@ -2693,7 +2693,11 @@ const initializeCStudioForms = () => {
 									pencilMode
 								);
 
-								formField.initialize(moduleConfig.config.field, this.containerEl, lastTwo);
+								formField.initialize(
+									{ ...moduleConfig.config.field, repeatContainer: moduleConfig.config.repeatField },
+									this.containerEl,
+									lastTwo
+								);
 
 								var value = '';
 								if (repeatField) {

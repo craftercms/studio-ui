@@ -510,12 +510,13 @@ CStudioAuthoring.Module.requireModule(
 						})
 					});
 
+					const isInRepeatGroup = Boolean(config.repeatContainer);
 					// Update all content before saving the form (all content is automatically updated on focusOut)
 					callback = {
 						beforeSave: function () {
 							_thisControl.save();
 						},
-						rteCallback: true
+						...(isInRepeatGroup ? { repeatGroupId: config.repeatContainer.id } : {})
 					};
 					_thisControl.form.registerBeforeSaveCallback(callback);
 
