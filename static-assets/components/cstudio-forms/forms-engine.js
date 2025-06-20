@@ -1468,7 +1468,10 @@ const initializeCStudioForms = () => {
 								form.onBeforeSave({ preview: preview });
 							} catch (e) {
 								CStudioAuthoring.Utils.showConfirmDialog({
-									body: formatMessage(formEngineMessages.formNotReadyForSaving)
+									body: formatMessage(formEngineMessages.formNotReadyForSaving),
+									onOk: () => {
+										setButtonsEnabled(true);
+									}
 								});
 								return;
 							}
