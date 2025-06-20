@@ -6102,13 +6102,9 @@ var nodeOpen = false,
 									}
 								]
 							},
-							...(onCancel
-								? {
-										onCancel: {
-											type: 'CONFIRM_DIALOG_CLOSED'
-										}
-									}
-								: {}),
+							onCancel: {
+								type: 'CONFIRM_DIALOG_CLOSED'
+							},
 							onClosed: {
 								type: 'BATCH_ACTIONS',
 								payload: [

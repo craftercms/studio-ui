@@ -511,9 +511,11 @@ CStudioAuthoring.Module.requireModule(
 					});
 
 					// Update all content before saving the form (all content is automatically updated on focusOut)
-					callback = {};
-					callback.beforeSave = function () {
-						_thisControl.save();
+					callback = {
+						beforeSave: function () {
+							_thisControl.save();
+						},
+						rteCallback: true
 					};
 					_thisControl.form.registerBeforeSaveCallback(callback);
 

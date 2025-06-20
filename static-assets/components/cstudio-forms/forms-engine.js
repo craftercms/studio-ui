@@ -1468,11 +1468,9 @@ const initializeCStudioForms = () => {
 								form.onBeforeSave({ preview: preview });
 							} catch (e) {
 								CStudioAuthoring.Utils.showConfirmDialog({
-									body: formatMessage(formEngineMessages.formNotReadyForSaving),
-									onOk: () => {
-										setButtonsEnabled(true);
-									}
+									body: formatMessage(formEngineMessages.formNotReadyForSaving)
 								});
+								setButtonsEnabled(true);
 								return;
 							}
 
@@ -2397,6 +2395,12 @@ const initializeCStudioForms = () => {
 								tinymce.get(rteId).remove();
 							});
 						}
+						// When rendering the items of a repeat group, if there are RTE fields we need to clear beforeSaveCallbacks
+						// to avoid having multiple callbacks for the same RTE field (since callbacks are going to be added on each
+						// RTE rendering)
+						controlEl.form.beforeSaveCallbacks = controlEl.form.beforeSaveCallbacks.filter(
+							(callback) => !callback.rteCallback
+						);
 						controlEl.formEngine._cleanUpRepeatBodyFields(controlEl, this.repeat.id);
 						controlEl.innerHTML = '';
 						controlEl.formEngine._renderRepeatBody(controlEl);
