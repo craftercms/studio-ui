@@ -30,6 +30,7 @@ import { ensureSingleSlash } from '../../utils/string';
 import { UppyDashboardProps } from './UppyDashboardProps';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Box from '@mui/material/Box';
+import type { DashboardOptions } from '@uppy/dashboard';
 
 const translations = defineMessages({
 	cancelPending: {
@@ -203,7 +204,7 @@ export function UppyDashboard(props: UppyDashboardProps) {
 					})
 				);
 			}
-		});
+		} as DashboardOptions<Meta, Body>);
 
 		const onUploadSuccess = (file: UppyFile<Meta, Body>) => {
 			onItemsUploaded$.next(file.id);
