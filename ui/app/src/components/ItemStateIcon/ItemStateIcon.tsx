@@ -27,7 +27,7 @@ import NotInWorkflowIcon from '@mui/icons-material/PanoramaFishEyeRounded';
 import Tooltip from '@mui/material/Tooltip';
 import * as React from 'react';
 import { useMemo } from 'react';
-import { getItemStateId, getItemStateString, getItemStateText } from '../ItemDisplay/utils';
+import { getItemStateId, getItemStateText } from '../ItemDisplay/utils';
 import palette from '../../styles/palette';
 import { ContentItem, ItemStates } from '../../models/Item';
 import { SvgIconProps } from '@mui/material/SvgIcon';
@@ -154,14 +154,14 @@ export function ItemStateIcon(props: ItemStateIconProps) {
 				...sxs?.root,
 				...stateSpecificSx
 			}}
-			aria-label={getItemStateString(item.stateMap, formatMessage, { user: item.lockOwner?.username })}
+			aria-label={getItemStateText(item.stateMap, formatMessage, { user: item.lockOwner?.username })}
 			aria-hidden={false}
 			className={[className, stateSpecificClass].filter(Boolean).join(' ')}
 			fontSize={fontSize}
 		/>
 	) : (
 		<Tooltip
-			title={displayTooltip ? getItemStateText(item.stateMap, { user: item.lockOwner?.username }) : ''}
+			title={displayTooltip ? getItemStateText(item.stateMap, formatMessage, { user: item.lockOwner?.username }) : ''}
 			open={displayTooltip ? void 0 : false}
 		>
 			<Icon
@@ -169,7 +169,7 @@ export function ItemStateIcon(props: ItemStateIconProps) {
 					...sxs?.root,
 					...stateSpecificSx
 				}}
-				aria-label={getItemStateString(item.stateMap, formatMessage, { user: item.lockOwner?.username })}
+				aria-label={getItemStateText(item.stateMap, formatMessage, { user: item.lockOwner?.username })}
 				aria-hidden={false}
 				className={[className, stateSpecificClass].filter(Boolean).join(' ')}
 				fontSize={fontSize}

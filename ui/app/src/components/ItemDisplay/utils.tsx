@@ -15,21 +15,10 @@
  */
 
 import { ItemStateMap, ItemStates } from '../../models/Item';
-import { FormattedMessage, IntlFormatters } from 'react-intl';
+import { IntlFormatters } from 'react-intl';
 import * as React from 'react';
-import type { ReactNode } from 'react';
 
-export function getItemPublishingTargetText(stateMap: ItemStateMap): ReactNode {
-	return stateMap.live ? (
-		<FormattedMessage id="words.live" defaultMessage="Live" />
-	) : stateMap.staged ? (
-		<FormattedMessage id="words.staged" defaultMessage="Staged" />
-	) : (
-		<FormattedMessage id="words.unpublished" defaultMessage="Unpublished" />
-	);
-}
-
-export function getItemPublishingTargetString(
+export function getItemPublishingTargetText(
 	stateMap: ItemStateMap,
 	formatMessage: IntlFormatters['formatMessage']
 ): string {
@@ -40,49 +29,7 @@ export function getItemPublishingTargetString(
 			: formatMessage({ defaultMessage: 'Unpublished' });
 }
 
-export function getItemStateText(stateMap: ItemStateMap, values?: Record<string, any>): ReactNode {
-	let map: { [key in ItemStates]: any };
-	map = {
-		new: () => <FormattedMessage id="itemState.new" defaultMessage="New" />,
-		modified: () => <FormattedMessage id="itemState.modified" defaultMessage="Modified" />,
-		deleted: () => <FormattedMessage id="itemState.deleted" defaultMessage="Deleted" />,
-		locked: () =>
-			values?.user ? (
-				<FormattedMessage id="itemState.lockedBy" defaultMessage="Locked by {user}" values={values} />
-			) : (
-				<FormattedMessage id="itemState.locked" defaultMessage="Locked" />
-			),
-		systemProcessing: () => <FormattedMessage id="itemState.systemProcessing" defaultMessage="System Processing" />,
-		submitted: () => <FormattedMessage id="itemState.submitted" defaultMessage="Submitted" />,
-		scheduled: () => <FormattedMessage id="itemState.scheduled" defaultMessage="Scheduled" />,
-		publishing: () => <FormattedMessage id="itemState.publishing" defaultMessage="Publishing" />,
-		submittedToStaging: () =>
-			stateMap.submitted ? (
-				<FormattedMessage id="itemState.submittedToStaging" defaultMessage="Submitted to staging" />
-			) : (
-				<FormattedMessage id="itemState.scheduledToStaging" defaultMessage="Scheduled to staging" />
-			),
-		submittedToLive: () =>
-			stateMap.submitted ? (
-				<FormattedMessage id="itemState.submittedToLive" defaultMessage="Submitted to live" />
-			) : (
-				<FormattedMessage id="itemState.scheduledToGoLive" defaultMessage="Scheduled to live" />
-			),
-		staged: () => void 0,
-		live: () => void 0,
-		disabled: () => <FormattedMessage id="itemState.disabled" defaultMessage="Disabled" />,
-		translationUpToDate: null,
-		translationPending: null,
-		translationInProgress: null
-	};
-	return (
-		map[getItemStateId(stateMap)]?.() ?? (
-			<FormattedMessage id="itemState.notInWorkflow" defaultMessage="Not in workflow" />
-		)
-	);
-}
-
-export function getItemStateString(
+export function getItemStateText(
 	stateMap: ItemStateMap,
 	formatMessage: IntlFormatters['formatMessage'],
 	values?: { user: string }

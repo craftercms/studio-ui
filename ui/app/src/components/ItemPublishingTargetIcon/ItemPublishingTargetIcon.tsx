@@ -17,7 +17,7 @@
 import Tooltip from '@mui/material/Tooltip';
 import PublishingTargetIcon from '@mui/icons-material/FiberManualRecordRounded';
 import * as React from 'react';
-import { getItemPublishingTargetString, getItemPublishingTargetText } from '../ItemDisplay/utils';
+import { getItemPublishingTargetText } from '../ItemDisplay/utils';
 import { ContentItem } from '../../models/Item';
 import { SvgIconProps } from '@mui/material/SvgIcon';
 import { PartialSxRecord } from '../../models';
@@ -44,13 +44,13 @@ export function ItemPublishingTargetIcon(props: ItemPublishingTargetIconProps) {
 	const { formatMessage } = useIntl();
 	return (
 		<Tooltip
-			title={displayTooltip ? getItemPublishingTargetText(item.stateMap) : ''}
+			title={displayTooltip ? getItemPublishingTargetText(item.stateMap, formatMessage) : ''}
 			open={displayTooltip ? void 0 : false}
 		>
 			<PublishingTargetIcon
 				fontSize={fontSize}
 				className={[className, classes?.root].join(' ')}
-				aria-label={getItemPublishingTargetString(item.stateMap, formatMessage)}
+				aria-label={getItemPublishingTargetText(item.stateMap, formatMessage)}
 				aria-hidden={false}
 				sx={{
 					color: item.stateMap.live ? LIVE_COLOUR : item.stateMap.staged ? STAGING_COLOUR : palette.gray.medium2,
