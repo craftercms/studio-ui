@@ -115,7 +115,7 @@ export function LogLevelManagement() {
 					<Tooltip title={<FormattedMessage id="word.refresh" defaultMessage="Refresh" />}>
 						<IconButton
 							onClick={() => fnRefs.current.fetchLoggers()}
-							aria-label={formatMessage({ defaultMessage: 'Refresh' })}
+							aria-label={formatMessage({ id: 'word.refresh', defaultMessage: 'Refresh' })}
 						>
 							<RefreshRounded />
 						</IconButton>

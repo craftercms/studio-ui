@@ -167,7 +167,7 @@ export function PreviewAddressBar(props: AddressBarProps) {
 					onClick={noSiteSet ? undefined : onRefresh}
 					size="large"
 					disabled={noSiteSet}
-					aria-label={formatMessage({ defaultMessage: 'Reload this page' })}
+					aria-label={formatMessage({ defaultMessage: 'Reload this page (r)' })}
 				>
 					<RefreshRounded />
 				</IconButton>
@@ -223,7 +223,7 @@ export function PreviewAddressBar(props: AddressBarProps) {
 						sx={error ? { visibility: 'hidden' } : undefined}
 						size="medium"
 						id="previewAddressBarActionsMenuButton"
-						aria-label={formatMessage({ defaultMessage: 'Options' })}
+						aria-label={formatMessage({ defaultMessage: 'Options (a)' })}
 					>
 						<MoreRounded sx={alertLevel === 2 ? { visibility: 'hidden' } : undefined} />
 						{!item && !error && (

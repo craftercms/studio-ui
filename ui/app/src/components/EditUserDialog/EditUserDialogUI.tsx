@@ -125,7 +125,7 @@ export function EditUserDialogUI(props: EditUserDialogUIProps) {
 								<IconButton
 									onClick={() => onResetPassword(true)}
 									size="large"
-									aria-label={formatMessage({ defaultMessage: 'Reset password' })}
+									aria-label={formatMessage({ id: 'userInfoDialog.resetPassword', defaultMessage: 'Reset password' })}
 								>
 									<PasswordRoundedIcon />
 								</IconButton>
@@ -159,7 +159,7 @@ export function EditUserDialogUI(props: EditUserDialogUIProps) {
 							edge="end"
 							onClick={onCloseButtonClick}
 							size="large"
-							aria-label={formatMessage({ defaultMessage: 'Close' })}
+							aria-label={formatMessage({ id: 'userInfoDialog.close', defaultMessage: 'Close' })}
 						>
 							<CloseRoundedIcon />
 						</IconButton>

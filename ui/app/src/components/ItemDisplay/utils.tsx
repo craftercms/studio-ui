@@ -23,10 +23,10 @@ export function getItemPublishingTargetText(
 	formatMessage: IntlFormatters['formatMessage']
 ): string {
 	return stateMap.live
-		? formatMessage({ defaultMessage: 'Live' })
+		? formatMessage({ id: 'words.live', defaultMessage: 'Live' })
 		: stateMap.staged
-			? formatMessage({ defaultMessage: 'Staged' })
-			: formatMessage({ defaultMessage: 'Unpublished' });
+			? formatMessage({ id: 'words.staged', defaultMessage: 'Staged' })
+			: formatMessage({ id: 'words.unpublished', defaultMessage: 'Unpublished' });
 }
 
 export function getItemStateText(
@@ -35,31 +35,36 @@ export function getItemStateText(
 	values?: { user: string }
 ): string {
 	const map: { [key in ItemStates]: string } = {
-		new: formatMessage({ defaultMessage: 'New' }),
-		modified: formatMessage({ defaultMessage: 'Modified' }),
-		deleted: formatMessage({ defaultMessage: 'Deleted' }),
+		new: formatMessage({ id: 'itemState.new', defaultMessage: 'New' }),
+		modified: formatMessage({ id: 'itemState.modified', defaultMessage: 'Modified' }),
+		deleted: formatMessage({ id: 'itemState.deleted', defaultMessage: 'Deleted' }),
 		locked: values?.user
-			? (formatMessage({ defaultMessage: 'Locked by {user}' }, { user: values.user }) as string)
-			: formatMessage({ defaultMessage: 'Locked' }),
-		systemProcessing: formatMessage({ defaultMessage: 'System Processing' }),
-		submitted: formatMessage({ defaultMessage: 'Submitted' }),
-		scheduled: formatMessage({ defaultMessage: 'Scheduled' }),
-		publishing: formatMessage({ defaultMessage: 'Publishing' }),
+			? (formatMessage(
+					{ id: 'itemState.lockedBy', defaultMessage: 'Locked by {user}' },
+					{ user: values.user }
+				) as string)
+			: formatMessage({ id: 'itemState.locked', defaultMessage: 'Locked' }),
+		systemProcessing: formatMessage({ id: 'itemState.systemProcessing', defaultMessage: 'System Processing' }),
+		submitted: formatMessage({ id: 'itemState.submitted', defaultMessage: 'Submitted' }),
+		scheduled: formatMessage({ id: 'itemState.scheduled', defaultMessage: 'Scheduled' }),
+		publishing: formatMessage({ id: 'itemState.publishing', defaultMessage: 'Publishing' }),
 		submittedToStaging: stateMap.submitted
-			? formatMessage({ defaultMessage: 'Submitted to staging' })
-			: formatMessage({ defaultMessage: 'Scheduled to staging' }),
+			? formatMessage({ id: 'itemState.submittedToStaging', defaultMessage: 'Submitted to staging' })
+			: formatMessage({ id: 'itemState.scheduledToStaging', defaultMessage: 'Scheduled to staging' }),
 		submittedToLive: stateMap.submitted
-			? formatMessage({ defaultMessage: 'Submitted to live' })
-			: formatMessage({ defaultMessage: 'Scheduled to live' }),
+			? formatMessage({ id: 'itemState.submittedToLive', defaultMessage: 'Submitted to live' })
+			: formatMessage({ id: 'itemState.scheduledToGoLive', defaultMessage: 'Scheduled to live' }),
 		staged: null,
 		live: null,
-		disabled: formatMessage({ defaultMessage: 'Disabled' }),
+		disabled: formatMessage({ id: 'itemState.disabled', defaultMessage: 'Disabled' }),
 		translationUpToDate: null,
 		translationPending: null,
 		translationInProgress: null
 	};
 
-	return map[getItemStateId(stateMap)] ?? formatMessage({ defaultMessage: 'Not in workflow' });
+	return (
+		map[getItemStateId(stateMap)] ?? formatMessage({ id: 'itemState.notInWorkflow', defaultMessage: 'Not in workflow' })
+	);
 }
 
 // Disable case was removed from the switch statement to allow for rendering both workflow state and disabled status.
