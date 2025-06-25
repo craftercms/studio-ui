@@ -180,8 +180,8 @@ CStudioAuthoring.Module.requireModule(
 					} catch (err) {}
 
 					// If lazy-load is enabled, update the value in the lazy-load element
-					if (this.onDemandEditorInitialization) {
-						this.onDemandEditorInitialization.innerHTML = value;
+					if (this.onDemandEditorInitializationEl) {
+						this.onDemandEditorInitializationEl.innerHTML = value;
 					}
 
 					this.updateModel(value);
