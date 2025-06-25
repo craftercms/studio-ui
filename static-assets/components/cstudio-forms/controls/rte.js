@@ -283,7 +283,7 @@ CStudioAuthoring.Module.requireModule(
 					this.rteId = rteId;
 					this.rteWidth = '100%';
 
-					const { inputEl, onDemandEditorInitialization } = this._renderInputMarkup(config, rteId);
+					const { inputEl, onDemandEditorInitializationEl } = this._renderInputMarkup(config, rteId);
 
 					const initTiny = () => {
 						// Getting properties from content-type
@@ -528,9 +528,9 @@ CStudioAuthoring.Module.requireModule(
 					};
 
 					if (config.onDemandEditorInitialization) {
-						onDemandEditorInitialization.addEventListener('click', () => {
+						onDemandEditorInitializationEl.addEventListener('click', () => {
 							initTiny();
-							onDemandEditorInitialization.style.display = 'none';
+							onDemandEditorInitializationEl.style.display = 'none';
 						});
 					} else {
 						initTiny();
@@ -863,15 +863,15 @@ CStudioAuthoring.Module.requireModule(
 					inputEl.id = rteId;
 					YDom.addClass(inputEl, 'cstudio-form-control-input hidden');
 
-					let onDemandEditorInitialization;
+					let onDemandEditorInitializationEl;
 					if (config.onDemandEditorInitialization) {
-						onDemandEditorInitialization = document.createElement('div');
-						onDemandEditorInitialization.innerHTML = inputEl.value;
-						controlWidgetContainerEl.appendChild(onDemandEditorInitialization);
+						onDemandEditorInitializationEl = document.createElement('div');
+						onDemandEditorInitializationEl.innerHTML = inputEl.value;
+						controlWidgetContainerEl.appendChild(onDemandEditorInitializationEl);
 						const customHeight = config.properties.find((prop) => prop.name === 'height');
-						onDemandEditorInitialization.style.height = `${(customHeight?.value ? parseInt(customHeight.value) : this.rteHeight) + 78}px`;
-						onDemandEditorInitialization.classList.add('cstudio-form-control-lazy-rte');
-						this.onDemandEditorInitializationEl = onDemandEditorInitialization;
+						onDemandEditorInitializationEl.style.height = `${(customHeight?.value ? parseInt(customHeight.value) : this.rteHeight) + 78}px`;
+						onDemandEditorInitializationEl.classList.add('cstudio-form-control-lazy-rte');
+						this.onDemandEditorInitializationEl = onDemandEditorInitializationEl;
 					}
 
 					// Control description that will be shown on the form
@@ -885,7 +885,7 @@ CStudioAuthoring.Module.requireModule(
 					this.containerEl.appendChild(controlWidgetContainerEl);
 					controlWidgetContainerEl.appendChild(descriptionEl);
 
-					return { inputEl, onDemandEditorInitialization };
+					return { inputEl, onDemandEditorInitializationEl };
 				},
 
 				/**
