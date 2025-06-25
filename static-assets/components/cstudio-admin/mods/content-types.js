@@ -2289,6 +2289,19 @@
 					);
 				}
 
+				this.createRowFn(
+					formatMessage(contentTypesMessages.onDemandEditorInitialization),
+					'on-demand-editor-initialization',
+					item.onDemandEditorInitialization,
+					'',
+					'boolean',
+					sheetEl,
+					function (e, el) {
+						onSetDirty(true);
+						item.onDemandEditorInitialization = el.value;
+					}
+				);
+
 				this.createRowHeading(CMgs.format(langBundle, 'quickCreate'), sheetEl);
 
 				this.createRowFn(
@@ -3412,6 +3425,7 @@
 			serializeDefinitionToXml: function (definition) {
 				var quickCreate = definition.quickCreate ? definition.quickCreate : 'false';
 				var quickCreatePath = definition.quickCreatePath ? definition.quickCreatePath : '';
+				const onDemandEditorInitialization = definition.onDemandEditorInitialization ?? 'false';
 				var xml = '<form>\r\n';
 				xml +=
 					'\t<title>' +
@@ -3435,6 +3449,9 @@
 					'\t<quickCreatePath>' +
 					quickCreatePath +
 					'</quickCreatePath>\r\n' +
+					'\t<onDemandEditorInitialization>' +
+					onDemandEditorInitialization +
+					'</onDemandEditorInitialization>\r\n' +
 					'\t<properties>';
 				for (var i = 0; i < definition.properties.length; i++) {
 					var property = definition.properties[i];

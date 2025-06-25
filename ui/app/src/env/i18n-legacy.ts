@@ -313,6 +313,9 @@ export const contentTypesMessages = defineMessages({
 	},
 	invalidMacros: {
 		defaultMessage: 'The following invalid macros were removed: {macros}'
+	},
+	onDemandEditorInitialization: {
+		defaultMessage: 'Initialize RTEs on Click'
 	}
 });
 

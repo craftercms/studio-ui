@@ -159,8 +159,8 @@ button.node-selector-item-icon {
 	box-shadow: none;
 	color: #222f3e;
 	padding: 10px 5px;
-	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue',
-		sans-serif;
+	font-family:
+		-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
 	font-size: 16px;
 }
 
@@ -1866,4 +1866,138 @@ input[type='file']::file-selector-button {
 
 .aws-file-upload-url-el:not(:empty) {
 	padding: 10px;
+}
+
+/* lazy-load RTE element styles */
+.cstudio-form-control-lazy-rte {
+	width: 100%;
+	font-family:
+		-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue',
+		sans-serif;
+	line-height: 1.4;
+	font-size: 16px;
+	overflow-y: auto;
+	border: 1px solid #ced4da;
+	border-radius: 3px;
+	padding-left: 15px;
+	padding-right: 15px;
+	cursor: pointer;
+	background-color: #fff;
+	margin-block-start: 1em;
+	margin-block-end: 1em;
+}
+
+.cstudio-form-control-lazy-rte > * {
+	margin-block-start: 1em;
+	margin-block-end: 1em;
+}
+
+.cstudio-form-control-lazy-rte h1,
+.cstudio-form-control-lazy-rte h2,
+.cstudio-form-control-lazy-rte h3,
+.cstudio-form-control-lazy-rte h4,
+.cstudio-form-control-lazy-rte h5,
+.cstudio-form-control-lazy-rte h6 {
+	font-family:
+		-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue',
+		sans-serif;
+}
+
+.cstudio-form-control-lazy-rte table {
+	border-collapse: collapse;
+}
+
+.cstudio-form-control-lazy-rte table:not([cellpadding]) td,
+.cstudio-form-control-lazy-rte table:not([cellpadding]) th {
+	padding: 0.4rem;
+}
+
+.cstudio-form-control-lazy-rte table[border]:not([border='0']):not([style*='border-width']) td,
+.cstudio-form-control-lazy-rte table[border]:not([border='0']):not([style*='border-width']) th {
+	border-width: 1px;
+}
+
+.cstudio-form-control-lazy-rte table[border]:not([border='0']):not([style*='border-style']) td,
+.cstudio-form-control-lazy-rte table[border]:not([border='0']):not([style*='border-style']) th {
+	border-style: solid;
+}
+
+.cstudio-form-control-lazy-rte table[border]:not([border='0']):not([style*='border-color']) td,
+.cstudio-form-control-lazy-rte table[border]:not([border='0']):not([style*='border-color']) th {
+	border-color: #ccc;
+}
+
+.cstudio-form-control-lazy-rte figure {
+	display: table;
+	margin: 1rem auto;
+}
+
+.cstudio-form-control-lazy-rte figure figcaption {
+	color: #999;
+	display: block;
+	margin-top: 0.25rem;
+	text-align: center;
+}
+
+.cstudio-form-control-lazy-rte hr {
+	border-color: #ccc;
+	border-style: solid;
+	border-width: 1px 0 0 0;
+}
+
+.cstudio-form-control-lazy-rte code {
+	font-family: monospace;
+	font-size: 0.8em;
+	background-color: #e8e8e8;
+	border-radius: 3px;
+	padding: 0.1rem 0.2rem;
+}
+
+.cstudio-form-control-lazy-rte .mce-content-body:not([dir='rtl']) blockquote {
+	border-left: 2px solid #ccc;
+	margin-left: 1.5rem;
+	padding-left: 1rem;
+}
+
+.cstudio-form-control-lazy-rte .mce-content-body[dir='rtl'] blockquote {
+	border-right: 2px solid #ccc;
+	margin-right: 1.5rem;
+	padding-right: 1rem;
+}
+
+@media (prefers-color-scheme: dark) {
+	.cstudio-form-control-lazy-rte {
+		background-color: #222f3e;
+		color: #fff;
+		border-color: #fff;
+	}
+
+	.cstudio-form-control-lazy-rte a {
+		color: #4099ff;
+	}
+
+	.cstudio-form-control-lazy-rte table[border]:not([border='0']):not([style*='border-color']) td,
+	.cstudio-form-control-lazy-rte table[border]:not([border='0']):not([style*='border-color']) th {
+		border-color: #6d737b;
+	}
+
+	.cstudio-form-control-lazy-rte figure figcaption {
+		color: #8a8f97;
+	}
+
+	.cstudio-form-control-lazy-rte hr {
+		border-color: #6d737b;
+	}
+
+	.cstudio-form-control-lazy-rte code {
+		background-color: #6d737b;
+	}
+
+	.cstudio-form-control-lazy-rte .mce-content-body:not([dir='rtl']) blockquote {
+		border-left: 2px solid #6d737b;
+	}
+
+	.cstudio-form-control-lazy-rte .mce-content-body[dir='rtl'] blockquote {
+		border-right: 2px solid #6d737b;
+	}
 }
