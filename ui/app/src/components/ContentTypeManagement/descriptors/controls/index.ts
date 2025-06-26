@@ -194,7 +194,7 @@ export const typeBasicDetailsDescriptor: DescriptorContentType = {
 		createVirtualSection({
 			id: 'rendering',
 			title: defineMessage({ defaultMessage: 'Rendering' }),
-			fields: ['configuration', 'hasJsController', 'displayTemplate', 'isHeadless']
+			fields: ['configuration', 'hasJsController', 'displayTemplate', 'isHeadless', 'onDemandEditorInitialization']
 		})
 		// This section and paths field won't be available until 'config.xml' is removed from the content type.
 		/* createVirtualSection({
@@ -310,6 +310,15 @@ export const typeBasicDetailsDescriptor: DescriptorContentType = {
 			id: 'configuration',
 			type: 'type-configuration',
 			name: defineMessage({ defaultMessage: 'Configuration' }),
+			description: '',
+			helpText: '',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		onDemandEditorInitialization: {
+			id: 'onDemandEditorInitialization',
+			type: 'checkbox',
+			name: defineMessage({ defaultMessage: 'Initialize RTEs on Click' }),
 			description: '',
 			helpText: '',
 			defaultValue: undefined,

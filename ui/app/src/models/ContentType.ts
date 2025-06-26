@@ -188,6 +188,7 @@ export interface ContentType {
 	sections: ContentTypeSection[];
 	fields: LookupTable<ContentTypeField>;
 	dataSources: DataSource[];
+	onDemandEditorInitialization: boolean;
 }
 
 /**
@@ -284,6 +285,7 @@ export interface SerializeToXmlContentTypeStructure {
 	controller: 'true' | 'false';
 	quickCreate: 'true' | 'false';
 	quickCreatePath: string;
+	onDemandEditorInitialization: boolean;
 	paths: {
 		excludes?: Array<{ pattern: string }>;
 		includes?: Array<{ pattern: string }>;
@@ -328,6 +330,7 @@ export interface LegacyFormDefinition {
 	imageThumbnail: string; // e.g. page-home.png
 	quickCreate: 'true' | 'false';
 	quickCreatePath: string; // e.g. /site/pages
+	onDemandEditorInitialization: 'true' | 'false';
 	// ∨∨∨ config.xml ∨∨∨
 	controller: 'true' | 'false';
 	paths: {
@@ -362,6 +365,7 @@ export interface LegacyContentType {
 	quickCreatePath: string;
 	type: LegacyComponentType;
 	useRoundedFolder: string;
+	onDemandEditorInitialization: boolean;
 }
 
 export interface ComponentsDatasource extends LegacyDataSource {
