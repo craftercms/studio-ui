@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useItemContext, useItemMetaContext, useStableGlobalApiContext } from '../formsEngineContext';
+import { useItemContext, useItemMetaContext, useStableGlobalApiContext } from '../lib/formsEngineContext';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import AddRounded from '@mui/icons-material/AddRounded';
@@ -22,7 +22,7 @@ import DeleteOutlined from '@mui/icons-material/DeleteOutlined';
 import EditOutlined from '@mui/icons-material/EditOutlined';
 import HelpOutline from '@mui/icons-material/HelpOutline';
 import SearchRounded from '@mui/icons-material/SearchRounded';
-import { FormsEngineField } from '../common/FormsEngineField';
+import { FormsEngineField } from '../components/FormsEngineField';
 import { ControlProps } from '../types';
 import { MediaItem, Primitive } from '../../../models';
 import List from '@mui/material/List';
@@ -75,26 +75,26 @@ import { useDispatch } from 'react-redux';
 import { nanoid } from 'nanoid';
 import useUpdateRefs from '../../../hooks/useUpdateRefs';
 import { SearchProps } from '../../Search';
-import useFetchSandboxItems from '../../../hooks/useFetchSandboxItems';
+import useFetchContentItems from '../../../hooks/useFetchContentItems';
 import useItemsByPath from '../../../hooks/useItemsByPath';
 import ItemDisplay from '../../ItemDisplay';
 import useActiveUser from '../../../hooks/useActiveUser';
 import { processPathMacros } from '../../../utils/path';
 import { ensureSingleSlash } from '../../../utils/string';
 import { popDialog, pushDialog, pushNonDialog } from '../../../state/actions/dialogStack';
-import FieldBox from '../common/FieldBox';
-import { isTouchDevice, KeyDownEvent, sortableListKeyDownHandler } from '../common/sortableListUtil';
-import SortableListSkeleton from '../common/SortableListSkeleton';
+import FieldBox from '../components/FieldBox';
+import { isTouchDevice, KeyDownEvent, sortableListKeyDownHandler } from '../lib/sortableListUtil';
+import SortableListSkeleton from '../components/SortableListSkeleton';
 import { EmptyState } from '../../EmptyState';
-import { XmlKeys } from '../common/formConsts';
+import { XmlKeys } from '../lib/formConsts';
 import useConsolidatedItemPickerData, {
 	ConsolidatedItemPickerData
-} from '../data-sources/useConsolidatedItemPickerData';
-import { useExtractItemPickerDataSources } from '../data-sources/useExtractItemPickerDataSources';
+} from '../dataSourceHooks/useConsolidatedItemPickerData';
+import { useExtractItemPickerDataSources } from '../dataSourceHooks/useExtractItemPickerDataSources';
 import { Dispatch as ReduxDispatch } from 'redux';
 
-const SortableList = lazy(() => import('../common/SortableList'));
-const TouchSortableList = lazy(() => import('../common/TouchSortableList'));
+const SortableList = lazy(() => import('../components/SortableList'));
+const TouchSortableList = lazy(() => import('../components/TouchSortableList'));
 
 // TODO: process path macros
 
@@ -231,7 +231,7 @@ function CreateDataSourcePicker(props: {
 	}, [refs, value]);
 	return (
 		<Grid container spacing={2} justifyContent="center">
-			<Grid item sx={{ display: 'flex', flexDirection: 'column' }}>
+			<Grid sx={{ display: 'flex', flexDirection: 'column' }}>
 				<FormControl>
 					<FormLabel id="contentTypeLabel" sx={{ minHeight: 28, display: 'flex', alignItems: 'center' }}>
 						<FormattedMessage defaultMessage="Content Type" />
@@ -268,7 +268,7 @@ function CreateDataSourcePicker(props: {
 					</FormControl>
 				)}
 			</Grid>
-			<Grid item>
+			<Grid>
 				<FormControl sx={{ mb: 1, shrink: 0 }}>
 					<Box alignItems="center" display="flex">
 						<FormLabel id="creationStrategyLabel">
@@ -457,7 +457,7 @@ const showSearchDialog = ({
 
 function NodeSelector(props: NodeSelectorProps) {
 	const { field, contentType, value, setValue, readonly, autoFocus } = props;
-	useFetchSandboxItems(value.flatMap((item) => item.include ?? []));
+	useFetchContentItems(value.flatMap((item) => item.include ?? []));
 	const [sortMode, setSortMode] = useState(false);
 	const useTouchSorting = useMemo(() => isTouchDevice(), []);
 	const handleCancelReorder = () => setSortMode(false);
@@ -499,7 +499,7 @@ function NodeSelector(props: NodeSelectorProps) {
 				},
 				onSave({ values }) {
 					const key = isEmbedded
-						? ((values[XmlKeys.fileName] || values.objectId) as string)
+						? ((values[XmlKeys.fileName] || values.objectId) as string).replace(/\.xml$/, '')
 						: // TODO: What if it was moved? i.e. changed its file-name/folder-name
 							item.include;
 					const newItem: NodeSelectorItem = {

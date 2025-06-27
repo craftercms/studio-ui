@@ -16,7 +16,7 @@
 
 import * as React from 'react';
 import MenuItem from '@mui/material/MenuItem';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import Select, { selectClasses } from '@mui/material/Select';
 import { isBlank } from '../../utils/string';
 import { changeSite } from '../../state/actions/sites';
@@ -43,6 +43,7 @@ function SiteSwitcherSelect(props: SiteSwitcherSelectProps) {
 	const { authoringBase, useBaseDomain } = useEnv();
 	const dispatch = useDispatch();
 	const checkMinimized = useMinimizedDialogWarning();
+	const { formatMessage } = useIntl();
 
 	const onSiteChange = ({ target: { value } }) => {
 		if (!isBlank(value) && site !== value && !checkMinimized()) {
@@ -90,6 +91,11 @@ function SiteSwitcherSelect(props: SiteSwitcherSelectProps) {
 			}}
 			value={site}
 			onChange={onSiteChange}
+			slotProps={{
+				input: {
+					'aria-label': formatMessage({ defaultMessage: 'Select site' })
+				}
+			}}
 		>
 			{sites.length === 0 && (
 				<MenuItem value="">

@@ -17,10 +17,10 @@
 import OutlinedInput, { OutlinedInputProps } from '@mui/material/OutlinedInput';
 import React, { useId } from 'react';
 import { applyContentNameRules } from '../../../utils/content';
-import { FormsEngineField } from '../common/FormsEngineField';
+import { FormsEngineField } from '../components/FormsEngineField';
 import InputAdornment from '@mui/material/InputAdornment';
 import { ControlProps } from '../types';
-import { useItemMetaContext, useStableFormContext } from '../formsEngineContext';
+import { useItemMetaContext, useStableFormContext } from '../lib/formsEngineContext';
 import { useAtom, useAtomValue } from 'jotai';
 import { PrimitiveAtom } from 'jotai/index';
 
@@ -43,6 +43,7 @@ export function Slug(props: SlugProps) {
 	const [value, setValue] = useAtom(atoms.valueByFieldId[fieldId] as PrimitiveAtom<string>);
 	const validityState = useAtomValue(atoms.validationByFieldId[fieldId]);
 	const handleChange: OutlinedInputProps['onChange'] = (e) => setValue(applyContentNameRules(e.currentTarget.value));
+	const webUrlRoot = pathInSite.replace('/site/website', '/');
 	return (
 		<FormsEngineField
 			isValid={validityState.isValid}
@@ -60,8 +61,8 @@ export function Slug(props: SlugProps) {
 				onChange={handleChange}
 				disabled={readonly}
 				startAdornment={
-					<InputAdornment position="start" title={pathInSite} sx={{ mr: 0 }}>
-						{pathInSite}
+					<InputAdornment position="start" title={webUrlRoot} sx={{ mr: 0 }}>
+						{webUrlRoot}
 					</InputAdornment>
 				}
 			/>

@@ -70,6 +70,8 @@ export function getItemStateText(stateMap: ItemStateMap, values?: Record<string,
 	);
 }
 
+// Disable case was removed from the switch statement to allow for rendering both workflow state and disabled status.
+// (by using DisabledItemIcon)
 export function getItemStateId(stateMap: ItemStateMap): ItemStates {
 	switch (true) {
 		case stateMap.deleted:
@@ -78,8 +80,6 @@ export function getItemStateId(stateMap: ItemStateMap): ItemStates {
 			return 'systemProcessing';
 		case stateMap.locked:
 			return 'locked';
-		case stateMap.disabled:
-			return 'disabled';
 		case stateMap.submittedToLive:
 			return 'submittedToLive';
 		case stateMap.submittedToStaging:

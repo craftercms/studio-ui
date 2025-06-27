@@ -37,6 +37,7 @@ import bulkCancelPackage from './bulkCancelPackage';
 import publishingPackageResubmit from './publishingPackageResubmit';
 import packageDetails from './packageDetails';
 import viewPackages from './viewPackages';
+import folderMoveAlert from './folderMoveAlertDialog';
 
 export default combineReducers({
 	error,
@@ -60,5 +61,6 @@ export default combineReducers({
 	cancelPackage,
 	bulkCancelPackage,
 	packageDetails,
-	viewPackages
+	viewPackages,
+	folderMoveAlert
 });

@@ -29,6 +29,7 @@ import Box from '@mui/material/Box';
 import { PartialSxRecord } from '../../models/CustomRecord';
 import { CSSSelectorObjectOrCssVariables } from '@mui/system/styleFunctionSx/styleFunctionSx';
 import { consolidateSx } from '../../utils/system';
+import { useIntl } from 'react-intl';
 
 export type MediaCardViewModes = 'card' | 'compact' | 'row';
 
@@ -99,9 +100,11 @@ function MediaCard(props: MediaCardProps) {
 					e.preventDefault();
 					e.stopPropagation();
 					onPreview(e);
-				}
+				},
+				'aria-label': name
 			}
 		: {};
+	const { formatMessage } = useIntl();
 
 	return (
 		<Card
@@ -133,6 +136,7 @@ function MediaCard(props: MediaCardProps) {
 								onClick={(e: any) => !disableSelection && onSelect(path, e.target.checked)}
 								color="primary"
 								size="small"
+								aria-label={formatMessage({ defaultMessage: 'Select {name}' }, { name })}
 							/>
 						</FormGroup>
 					) : (

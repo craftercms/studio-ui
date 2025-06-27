@@ -356,7 +356,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
 		// Retrieve all SandboxItems to determine if the user has the edit permissions.
 		this._renderItemsSubscription?.unsubscribe();
 		this._renderItemsSubscription = craftercms.services.content
-			.fetchItemsByPath(CStudioAuthoringContext.site, sharedItems)
+			.fetchContentItems(CStudioAuthoringContext.site, sharedItems)
 			.subscribe((sandboxItems) => {
 				itemsContainerEl.innerHTML = '';
 				var tar = new YAHOO.util.DDTarget(itemsContainerEl);
@@ -534,12 +534,12 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
 		return validation;
 	},
 
-	newInsertItem: function (key, value, type) {
+	newInsertItem: function (key, value, type, datasource) {
 		const validation = this.checkValidations(key, value);
 
 		if (validation.successful) {
 			let item = {};
-			item = { key: key, value: value };
+			item = { key: key, value: value, datasource };
 
 			if (type === 'embedded') {
 				item.key = key;

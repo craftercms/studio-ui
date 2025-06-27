@@ -280,7 +280,11 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
 				/>
 			}
 			headerAction={
-				<LoadingIconButton onClick={onRefresh} loading={loading}>
+				<LoadingIconButton
+					onClick={onRefresh}
+					loading={loading}
+					aria-label={formatMessage({ defaultMessage: 'Refresh' })}
+				>
 					<RefreshRounded />
 				</LoadingIconButton>
 			}
@@ -362,6 +366,7 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
 									e.stopPropagation();
 									onPackageDetailsClick(pkg.id);
 								}}
+								aria-label={formatMessage({ defaultMessage: 'Package details' })}
 							>
 								<ChevronRightRoundedIcon />
 							</IconButton>

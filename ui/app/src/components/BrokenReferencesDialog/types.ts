@@ -18,11 +18,11 @@ import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import StandardAction from '../../models/StandardAction';
 import React from 'react';
-import { ApiResponse, SandboxItem } from '../../models';
+import { ApiResponse, ContentItem } from '../../models';
 
 export interface BrokenReferencesDialogBaseProps {
 	path?: string;
-	references?: SandboxItem[];
+	references?: ContentItem[];
 	error?: ApiResponse;
 }
 

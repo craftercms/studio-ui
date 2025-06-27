@@ -17,18 +17,22 @@
 import React, { useEffect, useState } from 'react';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useDispatch } from 'react-redux';
-import { fetchDeleteDependencies, showEditDialog, updateDeleteDialog } from '../../state/actions/dialogs';
+import {
+	fetchDeleteDependencies,
+	fetchDeleteDependenciesComplete,
+	showEditDialog,
+	updateDeleteDialog
+} from '../../state/actions/dialogs';
 import { deleteItems } from '../../services/content';
 import { DeleteDialogUI } from './DeleteDialogUI';
-import { DeleteDialogContainerProps } from './utils';
+import { DeleteDialogContainerProps, DeleteDialogContentUIProps } from './utils';
 import { useSelection } from '../../hooks/useSelection';
 import LookupTable from '../../models/LookupTable';
 import { createPresenceTable } from '../../utils/array';
-import { DetailedItem } from '../../models/Item';
+import { ContentItem } from '../../models/Item';
 import { isBlank } from '../../utils/string';
 import { ApiResponse } from '../../models';
-import useFetchSandboxItems from '../../hooks/useFetchSandboxItems';
-import { batchActions } from '../../state/actions/misc';
+import useFetchContentItems from '../../hooks/useFetchContentItems';
 
 function createCheckedList(selectedItems: LookupTable<boolean>, excludedPaths?: string[]) {
 	return Object.entries(selectedItems)
@@ -36,7 +40,7 @@ function createCheckedList(selectedItems: LookupTable<boolean>, excludedPaths?: 
 		.map(([path]) => path);
 }
 
-function createCheckedLookup(items: Array<DetailedItem | string>, setChecked = true) {
+function createCheckedLookup(items: Array<ContentItem | string>, setChecked = true) {
 	const isString = typeof items[0] === 'string';
 	return items.reduce((checked, item) => {
 		// @ts-ignore - `isString` above pre-checks the type, typescript doesn't realise this is safe by this point.
@@ -47,21 +51,27 @@ function createCheckedLookup(items: Array<DetailedItem | string>, setChecked = t
 
 export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
 	const { items, onClose, isSubmitting, onSuccess, isFetching, childItems, dependentItems, error } = props;
+	const [title, setTitle] = useState('');
 	const [comment, setComment] = useState('');
 	const [submitError, setSubmitError] = useState<ApiResponse>(null);
 	const site = useActiveSiteId();
 	const isCommentRequired = useSelection((state) => state.uiConfig.publishing.deleteCommentRequired);
 	const [selectedItems, setSelectedItems] = useState<LookupTable<boolean>>({});
 	const dispatch = useDispatch();
-	const [submitDisabled, setSubmitDisabled] = useState(true);
 	const [confirmChecked, setConfirmChecked] = useState(false);
+	const submitDisabled =
+		isSubmitting ||
+		Object.values(selectedItems).length === 0 ||
+		(isCommentRequired && isBlank(comment)) ||
+		isBlank(title) ||
+		!confirmChecked;
 	const authoringBase = useSelection((state) => state.env.authoringBase);
-	useFetchSandboxItems(dependentItems ?? []);
+	const dependentItemsPaths = dependentItems?.map((item) => item.path) ?? [];
 
 	const onSubmit = () => {
 		const paths = createCheckedList(selectedItems);
 		dispatch(updateDeleteDialog({ isSubmitting: true }));
-		deleteItems(site, paths, comment).subscribe({
+		deleteItems(site, paths, title, comment).subscribe({
 			next() {
 				dispatch(updateDeleteDialog({ isSubmitting: false, hasPendingChanges: false }));
 				onSuccess?.({
@@ -77,17 +87,26 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
 
 	const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
 
-	const onCommentChange = (e) => {
+	const onInputChange: DeleteDialogContentUIProps['onInputChange'] = (e, fieldId) => {
 		dispatch(updateDeleteDialog({ hasPendingChanges: true }));
-		setComment(e.target.value);
+		switch (fieldId) {
+			case 'title':
+				setTitle(e.target.value);
+				break;
+			case 'comment':
+				setComment(e.target.value);
+				break;
+			default:
+				break;
+		}
 	};
 
 	const fetchOrCleanDependencies = (nextChecked) => {
 		let paths = createCheckedList(nextChecked);
 		if (paths.length) {
-			dispatch(batchActions([updateDeleteDialog({ isSubmitting: true }), fetchDeleteDependencies({ paths })]));
+			dispatch(fetchDeleteDependencies({ paths }));
 		} else {
-			dispatch(updateDeleteDialog({ dependentItems: [], childItems: [] }));
+			dispatch(fetchDeleteDependenciesComplete({ dependentItems: [], childItems: [] }));
 		}
 	};
 
@@ -96,7 +115,7 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
 		// Clean the state, only keep checked items
 		!nextChecked[path] && delete nextChecked[path];
 		// If there aren't any checked main items, uncheck everything.
-		const checkedMainItems = createCheckedList(nextChecked, dependentItems);
+		const checkedMainItems = createCheckedList(nextChecked, dependentItemsPaths);
 		checkedMainItems.length === 0 && (nextChecked = {});
 		fetchOrCleanDependencies(nextChecked);
 		setSelectedItems(nextChecked);
@@ -127,7 +146,7 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
 	};
 
 	const onEditDependantClick = (e, path) => {
-		let paths = createCheckedList(selectedItems, dependentItems);
+		let paths = createCheckedList(selectedItems, dependentItemsPaths);
 		// We don't have a good way of knowing if the dependant item cleared it's dependency and if it's checked, it
 		// needs to get removed from selectedItems after the edit is complete and the item is not even listed as a dependency.
 		// Until we find a better way around that, will uncheck when the edit button is pressed.
@@ -143,15 +162,6 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
 		}
 	}, [dispatch, items]);
 
-	useEffect(() => {
-		setSubmitDisabled(
-			isSubmitting ||
-				Object.values(selectedItems).length === 0 ||
-				(isCommentRequired && isBlank(comment)) ||
-				!confirmChecked
-		);
-	}, [isSubmitting, comment, isCommentRequired, selectedItems, confirmChecked]);
-
 	return (
 		<DeleteDialogUI
 			items={items}
@@ -162,8 +172,9 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
 			submitError={submitError}
 			setSubmitError={setSubmitError}
 			isFetching={isFetching}
+			title={title}
 			comment={comment}
-			onCommentChange={onCommentChange}
+			onInputChange={onInputChange}
 			isDisabled={isSubmitting}
 			isSubmitting={isSubmitting}
 			onSubmit={onSubmit}

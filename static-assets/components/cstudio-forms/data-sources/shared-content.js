@@ -134,9 +134,9 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
 				const items = Array.isArray(result) ? result : [result];
 				items.forEach(({ name, path }) => {
 					const value = name && name !== '' ? name : path;
-					control.newInsertItem(path, value, 'shared');
-					control._renderItems();
+					control.newInsertItem(path, value, 'shared', _self.id);
 				});
+				control._renderItems();
 			}
 		});
 	},
@@ -279,18 +279,14 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
 	edit: function (key, control, index, callback) {
 		var _self = this;
 		craftercms.getStore().dispatch({ type: 'BLOCK_UI' });
-		craftercms.services.content.fetchSandboxItem(CStudioAuthoringContext.site, key).subscribe({
+		craftercms.services.content.fetchContentItem(CStudioAuthoringContext.site, key).subscribe({
 			next(sandboxItem) {
 				const readonly = !sandboxItem.availableActionsMap.edit;
 				const action =
 					readonly || !sandboxItem.availableActionsMap.edit
 						? CStudioAuthoring.Operations.viewContent
 						: CStudioAuthoring.Operations.editContent;
-				// CStudioAuthoring.Operations.editContent shows the UI blocker too, so no point
-				// hiding it yet in the case of an edit.
-				if (action === CStudioAuthoring.Operations.viewContent) {
-					craftercms.getStore().dispatch({ type: 'UNBLOCK_UI' });
-				}
+				craftercms.getStore().dispatch({ type: 'UNBLOCK_UI' });
 				action(
 					sandboxItem.contentTypeId,
 					CStudioAuthoringContext.siteId,

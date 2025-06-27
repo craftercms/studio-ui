@@ -30,7 +30,7 @@ import { ApiResponse } from './ApiResponse';
 import { VersionsStateProps } from './Version';
 import QuickCreateItem from './content/QuickCreateItem';
 import { PathNavigatorStateProps } from '../components/PathNavigator';
-import { DetailedItem } from './Item';
+import { ContentItem } from './Item';
 import { CopyDialogStateProps } from '../components/CopyDialog/utils';
 import { PathSelectionDialogStateProps } from '../components/PathSelectionDialog/PathSelectionDialog';
 import { WidgetDescriptor } from './WidgetDescriptor';
@@ -72,6 +72,7 @@ import { BulkCancelPackageDialogStateProps } from '../components/BulkCancelPacka
 import { PublishingPackageResubmitDialogStateProps } from '../components/PublishingPackageResubmitDialog/types';
 import { PackageDetailsDialogStateProps } from '../components';
 import { ViewPackagesDialogStateProps } from '../components/ViewPackagesDialog';
+import type { FolderMoveAlertDialogStateProps } from '../components/FolderMoveAlert/FolderMoveAlertDialog';
 
 export type HighlightMode = 'all' | 'move';
 
@@ -150,7 +151,7 @@ export interface GlobalState {
 			isFetching: boolean;
 			items: QuickCreateItem[];
 		};
-		itemsByPath: LookupTable<DetailedItem>;
+		itemsByPath: LookupTable<ContentItem>;
 		clipboard: Clipboard;
 		itemsBeingFetchedByPath: LookupTable<boolean>;
 	};
@@ -268,6 +269,7 @@ export interface GlobalState {
 		publishingPackageResubmit: PublishingPackageResubmitDialogStateProps;
 		packageDetails: PackageDetailsDialogStateProps;
 		viewPackages: ViewPackagesDialogStateProps;
+		folderMoveAlert: FolderMoveAlertDialogStateProps;
 	};
 	uiConfig: {
 		error: ApiResponse;

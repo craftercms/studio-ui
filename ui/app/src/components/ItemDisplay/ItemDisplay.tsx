@@ -16,7 +16,7 @@
 
 import * as React from 'react';
 import { ElementType, forwardRef } from 'react';
-import { DetailedItem, SandboxItem } from '../../models/Item';
+import { ContentItem } from '../../models/Item';
 import palette from '../../styles/palette';
 import Typography, { TypographyProps } from '@mui/material/Typography';
 import { isPreviewable } from '../PathNavigator/utils';
@@ -28,6 +28,7 @@ import Box from '@mui/material/Box';
 import { PartialSxRecord } from '../../models';
 import { SxProps } from '@mui/system';
 import { Theme } from '@mui/material/styles';
+import { DisabledItemIcon } from '../DisabledItemIcon';
 
 export type ItemDisplayClassKey = 'root' | 'label' | 'labelPreviewable' | 'icon' | 'typeIcon';
 
@@ -39,9 +40,9 @@ export interface ItemDisplayProps<LabelTypographyComponent extends React.Element
 	showNavigableAsLinks?: boolean;
 	classes?: Partial<Record<ItemDisplayClassKey, string>>;
 	sxs?: PartialSxRecord<ItemDisplayClassKey>;
-	item: DetailedItem | SandboxItem;
+	item: ContentItem;
 	labelTypographyProps?: TypographyProps<LabelTypographyComponent, { component?: LabelTypographyComponent }>;
-	isNavigableFn?: (item: DetailedItem | SandboxItem) => boolean;
+	isNavigableFn?: (item: ContentItem) => boolean;
 	labelComponent?: ElementType;
 	labelDisplayProp?: 'label' | 'path' | 'previewUrl';
 	titleDisplayProp?: 'label' | 'path' | 'previewUrl';
@@ -80,10 +81,11 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
 		// Prevents crashing if the item is nullish
 		return null;
 	}
+	const isDisabledItem = item.stateMap.disabled;
 	const inWorkflow = isInWorkflow(item.stateMap) || item.systemType === 'folder';
 	return (
 		<Box
-			component="span"
+			component={component}
 			ref={ref}
 			{...rest}
 			className={[classes?.root, rest?.className].filter(Boolean).join(' ')}
@@ -123,14 +125,17 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
 							}}
 						/>
 					)}
-			{showItemType && (
-				<ItemTypeIcon
-					{...itemTypeIconProps}
-					item={item}
-					className={[classes?.icon, itemTypeIconProps?.className].filter(Boolean).join(' ')}
-					sx={{ fontSize: '1.1rem', ...sxs?.icon }}
-				/>
-			)}
+			{showItemType &&
+				(isDisabledItem ? (
+					<DisabledItemIcon item={item} itemTypeIconProps={itemTypeIconProps} sxs={sxs} classes={classes} />
+				) : (
+					<ItemTypeIcon
+						{...itemTypeIconProps}
+						item={item}
+						className={[classes?.icon, itemTypeIconProps?.className].filter(Boolean).join(' ')}
+						sx={{ fontSize: '1.1rem', ...sxs?.icon }}
+					/>
+				))}
 			<Typography
 				noWrap
 				component={labelComponent}

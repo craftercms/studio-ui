@@ -18,19 +18,14 @@ import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../models/GlobalState';
 import {
 	clearClipboard,
-	completeDetailedItem,
-	fetchDetailedItem,
-	fetchDetailedItemComplete,
-	fetchDetailedItems,
-	fetchDetailedItemsComplete,
+	fetchContentItem,
+	fetchContentItemComplete,
 	fetchQuickCreateList,
 	fetchQuickCreateListComplete,
 	fetchQuickCreateListFailed,
-	fetchSandboxItem,
-	fetchSandboxItemComplete,
-	fetchSandboxItems,
-	fetchSandboxItemsComplete,
-	reloadDetailedItem,
+	fetchContentItems,
+	fetchContentItemsComplete,
+	reloadContentItem,
 	restoreClipboard,
 	setClipboard,
 	updateItemsByPath
@@ -44,9 +39,7 @@ import {
 	pathNavigatorFetchParentItemsComplete,
 	pathNavigatorFetchPathComplete
 } from '../actions/pathNavigator';
-import { parseSandBoxItemToDetailedItem } from '../../utils/content';
 import { createLookupTable, reversePluckProps } from '../../utils/object';
-import { SandboxItem } from '../../models/Item';
 import { changeSiteComplete } from '../actions/sites';
 import {
 	pathNavigatorTreeBulkFetchPathChildrenComplete,
@@ -58,6 +51,7 @@ import {
 } from '../actions/pathNavigatorTree';
 import { STATE_LOCKED_MASK } from '../../utils/constants';
 import { deleteContentEvent, deleteContentEvents, lockContentEvent, moveContentEvent } from '../actions/system';
+import { ContentItem, LookupTable } from '../../models';
 
 type ContentState = GlobalState['content'];
 
@@ -74,15 +68,12 @@ const initialState: ContentState = {
 
 const updateItemByPath = (state: ContentState, { payload }) => {
 	const { parent, children } = payload;
-	const nextByPath = {
+	const nextByPath: LookupTable<ContentItem> = {
 		...state.itemsByPath,
-		...createLookupTable(parseSandBoxItemToDetailedItem(children as SandboxItem[], state.itemsByPath), 'path')
+		...createLookupTable(children, 'path')
 	};
 	if (children.levelDescriptor) {
-		nextByPath[children.levelDescriptor.path] = parseSandBoxItemToDetailedItem(
-			children.levelDescriptor,
-			state.itemsByPath[children.levelDescriptor.path]
-		);
+		nextByPath[children.levelDescriptor.path] = children.levelDescriptor;
 	}
 	if (parent) {
 		nextByPath[parent.path] = parent;
@@ -119,17 +110,11 @@ const updateItemsBeingFetchedByPaths = (state, { payload: { paths } }) => {
 
 const updateItemsFromRestoredTree = (state, payload: PathNavigatorTreeRestoreCompletePayload) => {
 	const { children, items } = payload;
-	let nextByPath = {};
+	const nextByPath: LookupTable<ContentItem> = {};
 	Object.values(children).forEach((children) => {
-		Object.assign(
-			nextByPath,
-			createLookupTable(parseSandBoxItemToDetailedItem(children as SandboxItem[], state.itemsByPath), 'path')
-		);
+		Object.assign(nextByPath, createLookupTable(children, 'path'));
 		if (children.levelDescriptor) {
-			nextByPath[children.levelDescriptor.path] = parseSandBoxItemToDetailedItem(
-				children.levelDescriptor,
-				state.itemsByPath[children.levelDescriptor.path]
-			);
+			nextByPath[children.levelDescriptor.path] = children.levelDescriptor;
 		}
 	});
 	items.forEach((item) => {
@@ -163,39 +148,19 @@ const reducer = createReducer<ContentState>(initialState, (builder) => {
 				error: error.payload.response
 			}
 		}))
-		.addCase(fetchDetailedItem, updateItemsBeingFetchedByPath)
-		.addCase(reloadDetailedItem, updateItemsBeingFetchedByPath)
-		.addCase(completeDetailedItem, updateItemsBeingFetchedByPath)
-		.addCase(fetchSandboxItem, updateItemsBeingFetchedByPath)
-		.addCase(fetchSandboxItems, updateItemsBeingFetchedByPaths)
-		.addCase(fetchSandboxItemsComplete, (state, { payload: { items } }) => {
-			items.forEach((item) => {
-				const path = item.path;
-				state.itemsByPath[path] = parseSandBoxItemToDetailedItem(item, state.itemsByPath[item.path]);
-				delete state.itemsBeingFetchedByPath[path];
-			});
-		})
-		.addCase(fetchDetailedItemComplete, (state, { payload }) => ({
-			...state,
-			itemsByPath: {
-				...state.itemsByPath,
-				[payload.path]: payload
-			},
-			itemsBeingFetchedByPath: {
-				...reversePluckProps(state.itemsBeingFetchedByPath, payload.path)
-			}
-		}))
-		.addCase(fetchDetailedItems, updateItemsBeingFetchedByPaths)
-		.addCase(fetchDetailedItemsComplete, (state, { payload: { items } }) => {
+		.addCase(fetchContentItem, updateItemsBeingFetchedByPath)
+		.addCase(reloadContentItem, updateItemsBeingFetchedByPath)
+		.addCase(fetchContentItems, updateItemsBeingFetchedByPaths)
+		.addCase(fetchContentItemsComplete, (state, { payload: { items } }) => {
 			items.forEach((item) => {
 				const path = item.path;
 				state.itemsByPath[path] = item;
 				delete state.itemsBeingFetchedByPath[path];
 			});
 		})
-		.addCase(fetchSandboxItemComplete, (state, { payload: { item } }) => {
+		.addCase(fetchContentItemComplete, (state, { payload: { item } }) => {
 			const path = item.path;
-			state.itemsByPath[path] = parseSandBoxItemToDetailedItem(item, state.itemsByPath[item.path]);
+			state.itemsByPath[path] = item;
 			state.itemsBeingFetchedByPath[path] = false;
 		})
 		.addCase(restoreClipboard, (state, { payload }) => ({
@@ -218,12 +183,9 @@ const reducer = createReducer<ContentState>(initialState, (builder) => {
 				...state,
 				itemsByPath: {
 					...state.itemsByPath,
-					...createLookupTable(parseSandBoxItemToDetailedItem(children, state.itemsByPath), 'path'),
+					...createLookupTable(children, 'path'),
 					...(children.levelDescriptor && {
-						[children.levelDescriptor.path]: parseSandBoxItemToDetailedItem(
-							children.levelDescriptor,
-							state.itemsByPath[children.levelDescriptor.path]
-						)
+						[children.levelDescriptor.path]: state.itemsByPath[children.levelDescriptor.path]
 					}),
 					...createLookupTable(
 						items.reduce((items, item) => {

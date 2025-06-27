@@ -23,12 +23,12 @@ import Typography from '@mui/material/Typography';
 import CardMedia from '@mui/material/CardMedia';
 import IconButton from '@mui/material/IconButton';
 import { DeleteOutlined, DownloadOutlined, EditOutlined } from '@mui/icons-material';
-import { FormsEngineField } from '../common/FormsEngineField';
+import { FormsEngineField } from '../components/FormsEngineField';
 import useEnv from '../../../hooks/useEnv';
 import { ControlProps } from '../types';
-import { StackedButton } from '../common/StackedButton';
+import { StackedButton } from '../components/StackedButton';
 import { FormattedMessage } from 'react-intl';
-import FieldBox from '../common/FieldBox';
+import FieldBox from '../components/FieldBox';
 
 export interface ImagePickerProps extends ControlProps {
 	value: string;

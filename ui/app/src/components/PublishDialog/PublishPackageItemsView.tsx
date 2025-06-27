@@ -28,7 +28,7 @@ import ListItemText from '@mui/material/ListItemText';
 import ItemDisplay from '../ItemDisplay';
 import React, { useCallback, useState } from 'react';
 import { DependencyChip, DependencyDataState } from './PublishDialogContainer';
-import { AllItemActions, DetailedItem } from '../../models';
+import { AllItemActions, ContentItem, LightItem } from '../../models';
 import { PathTreeNode } from './buildPathTrees';
 import { getPublishingPackagePreferredView, setPublishingPackagePreferredView } from '../../utils/state';
 import { nnou } from '../../utils/object';
@@ -43,9 +43,11 @@ import { FixedSizeList as List } from 'react-window';
 import Popover, { getOffsetLeft, getOffsetTop } from '@mui/material/Popover';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import PackageItemsActions from '../PackageItems/PackageItemsActions';
+import useItemsByPath from '../../hooks/useItemsByPath';
+import { fetchContentItem } from '../../services/content';
 
 export interface PublishItemsProps {
-	itemMap: Record<string, DetailedItem>;
+	itemMap: Record<string, LightItem>;
 	defaultExpandedPaths?: string[];
 	itemsAndDependenciesPaths: string[];
 	dependencyTypeMap?: DependencyDataState['typeByPath'];
@@ -83,6 +85,7 @@ export function PublishPackageItemsView(props: PublishItemsProps) {
 	});
 	const totalItems = itemsAndDependenciesPaths.length;
 	const disableTreeView = totalItems > maxTreeItems;
+	const itemsByPath = useItemsByPath();
 
 	const onContextMenuClose = () => {
 		setContextMenu({
@@ -116,12 +119,21 @@ export function PublishPackageItemsView(props: PublishItemsProps) {
 			const anchorRect = element.getBoundingClientRect();
 			const top = anchorRect.top + getOffsetTop(anchorRect, 'top');
 			const left = anchorRect.left + getOffsetLeft(anchorRect, 'left');
-			const itemMenuOptions = generateSingleItemOptions(item, formatMessage, {
-				includeOnly: ['view', 'dependencies', 'history']
-			});
-			setContextMenu({ anchorPosition: { top, left }, options: itemMenuOptions.flat(), item });
+
+			const menuOptionsCb = (contentItem: ContentItem) => {
+				const itemMenuOptions = generateSingleItemOptions(contentItem, formatMessage, {
+					includeOnly: ['view', 'dependencies', 'history']
+				});
+				setContextMenu({ anchorPosition: { top, left }, options: itemMenuOptions.flat(), item: contentItem });
+			};
+
+			if (itemsByPath?.[item.path]) {
+				menuOptionsCb(itemsByPath[item.path]);
+			} else {
+				fetchContentItem(siteId, item.path).subscribe(menuOptionsCb);
+			}
 		},
-		[formatMessage, itemMap]
+		[formatMessage, itemMap, itemsByPath, siteId]
 	);
 
 	return (
@@ -157,7 +169,8 @@ export function PublishPackageItemsView(props: PublishItemsProps) {
 								dependencyTypeMap,
 								onMenuClick: onContextMenuOpen,
 								onCheckboxChange,
-								selectedDependencies: selectedDependenciesPaths
+								selectedDependencies: selectedDependenciesPaths,
+								showItemTarget: false
 							})
 						)}
 					</SimpleTreeView>
@@ -188,6 +201,7 @@ export function PublishPackageItemsView(props: PublishItemsProps) {
 																e.stopPropagation();
 																onContextMenuOpen?.(e, path);
 															}}
+															aria-label={formatMessage({ defaultMessage: 'Options' })}
 														>
 															<MoreVertRounded />
 														</IconButton>
@@ -205,10 +219,15 @@ export function PublishPackageItemsView(props: PublishItemsProps) {
 													primary={
 														<Box display="flex">
 															<ItemDisplay
+																// TODO: Review casting requirement of ItemDisplay when using LightItem
+																// @ts-expect-error items from itemMap (LightItems) do not contain lockOwner and stateMap
+																// props, but with showWorkflowState and showPublishingTarget set to false, a LightItem
+																// is sufficient.
 																item={itemMap[path]}
 																showNavigableAsLinks={false}
 																showWorkflowState={false}
 																sx={{ mr: 1 }}
+																showPublishingTarget={false}
 															/>
 															<DependencyChip type={dependencyTypeMap?.[path]} />
 														</Box>

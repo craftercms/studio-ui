@@ -80,8 +80,8 @@ import {
 	duplicateItem,
 	fetchContentInstance,
 	fetchContentInstanceDescriptor,
-	fetchItemsByPath,
-	fetchSandboxItem as fetchSandboxItemService,
+	fetchContentItems,
+	fetchContentItem as fetchContentItemService,
 	insertComponent,
 	insertInstance,
 	insertItem,
@@ -109,8 +109,8 @@ import {
 	setStoredOutdatedXBValidationDate
 } from '../../utils/state';
 import {
-	fetchSandboxItem,
-	reloadDetailedItem,
+	fetchContentItem,
+	reloadContentItem,
 	restoreClipboard,
 	unlockItem,
 	updateItemsByPath
@@ -176,7 +176,7 @@ import RefreshRounded from '@mui/icons-material/RefreshRounded';
 import { useTheme } from '@mui/material/styles';
 import { createCustomDocumentEventListener } from '../../utils/dom';
 import BrowseFilesDialog from '../BrowseFilesDialog';
-import { DetailedItem, MediaItem } from '../../models';
+import { ContentItem, MediaItem } from '../../models';
 import DataSourcesActionsList, { DataSourcesActionsListProps } from '../DataSourcesActionsList/DataSourcesActionsList';
 import { editControllerActionCreator, itemActionDispatcher } from '../../utils/itemActions';
 import useEnv from '../../hooks/useEnv';
@@ -220,16 +220,16 @@ const issueDescriptorRequest = (props: {
 			takeUntil(guestToHost$.pipe(filter(({ type }) => [guestCheckIn.type, guestCheckOut.type].includes(type)))),
 			switchMap((modelResponse) => {
 				let requests: Array<Observable<ContentInstance>> = [];
-				let sandboxItemPaths = []; // Used to collect the paths to fetch the sandbox items corresponding to the Content Instances.
-				let sandboxItemPathLookup = {};
+				const contentItemPaths = []; // Used to collect the paths to fetch the sandbox items corresponding to the Content Instances.
+				const contentItemPathLookup = {};
 				Object.values(modelResponse.modelLookup).forEach((model) => {
 					if (model.craftercms.path) {
-						sandboxItemPaths.push(model.craftercms.path);
-						sandboxItemPathLookup[model.craftercms.path] = true;
+						contentItemPaths.push(model.craftercms.path);
+						contentItemPathLookup[model.craftercms.path] = true;
 						Object.values(model.craftercms.sourceMap).forEach((path) => {
-							if (!sandboxItemPathLookup[path]) {
-								sandboxItemPathLookup[path] = true;
-								sandboxItemPaths.push(path);
+							if (!contentItemPathLookup[path]) {
+								contentItemPathLookup[path] = true;
+								contentItemPaths.push(path);
 							}
 							if (!requestedSourceMapPaths.current[path]) {
 								requestedSourceMapPaths.current[path] = true;
@@ -239,11 +239,11 @@ const issueDescriptorRequest = (props: {
 					}
 				});
 				Object.keys(modelResponse.unflattenedPaths).forEach((path) => {
-					sandboxItemPaths.push(path);
+					contentItemPaths.push(path);
 					requests.push(fetchContentInstance(site, path, contentTypes));
 				});
 				return forkJoin({
-					sandboxItems: fetchItemsByPath(site, sandboxItemPaths),
+					contentItems: fetchContentItems(site, contentItemPaths),
 					modelResponse: requests.length
 						? forkJoin(requests).pipe(
 								map((response) => {
@@ -267,7 +267,7 @@ const issueDescriptorRequest = (props: {
 				});
 			})
 		)
-		.subscribe(({ sandboxItems, modelResponse }) => {
+		.subscribe(({ contentItems, modelResponse }) => {
 			const { model, modelLookup } = modelResponse;
 			const normalizedModels = normalizeModelsLookup(modelLookup);
 			const hierarchyMap = createModelHierarchyDescriptorMap(normalizedModels, contentTypes);
@@ -295,7 +295,7 @@ const issueDescriptorRequest = (props: {
 						modelIdByPath: modelIdByPath,
 						hierarchyMap
 					}),
-					updateItemsByPath({ items: sandboxItems })
+					updateItemsByPath({ items: contentItems })
 				])
 			);
 			hostToGuest$.next(
@@ -305,7 +305,7 @@ const issueDescriptorRequest = (props: {
 					modelLookup: normalizedModels,
 					hierarchyMap,
 					modelIdByPath: modelIdByPath,
-					sandboxItems,
+					contentItems,
 					permissions
 				})
 			);
@@ -495,7 +495,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 	// Fetch active item
 	useEffect(() => {
 		if (currentItemPath && siteId) {
-			dispatch(fetchSandboxItem({ path: currentItemPath }));
+			dispatch(fetchContentItem({ path: currentItemPath }));
 		}
 	}, [dispatch, currentItemPath, siteId]);
 
@@ -540,7 +540,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 		const hostToHost$ = getHostToHostBus();
 		const updatedModifiedItem = (path: string) => {
 			upToDateRefs.current.dispatch(
-				reloadDetailedItem({
+				reloadContentItem({
 					path
 				})
 			);
@@ -919,10 +919,10 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 							hostToGuest$.next(moveItemOperationComplete());
 							dispatch(
 								batchActions([
-									reloadDetailedItem({
+									reloadContentItem({
 										path: originPath
 									}),
-									reloadDetailedItem({
+									reloadContentItem({
 										path: targetPath
 									})
 								])
@@ -1004,7 +1004,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 						value,
 						upToDateRefs.current.cdataEscapedFieldPatterns.some((pattern) => Boolean(fieldId.match(pattern)))
 					)
-						.pipe(switchMap(() => fetchSandboxItemService(siteId, path)))
+						.pipe(switchMap(() => fetchContentItemService(siteId, path)))
 						.subscribe({
 							next(item) {
 								hostToGuest$.next(updateFieldValueOperationComplete({ item }));
@@ -1081,10 +1081,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 					const contentType = contentTypes[model.craftercms.contentTypeId];
 					if (type === 'content') {
 						// Not quite sure if it ever happens that the item isn't already loaded.
-						(item
-							? (of(item) as Observable<DetailedItem>)
-							: fetchSandboxItemService(siteId, path, { castAsDetailedItem: true })
-						).subscribe((item) => {
+						(item ? (of(item) as Observable<ContentItem>) : fetchContentItemService(siteId, path)).subscribe((item) => {
 							itemActionDispatcher({
 								item,
 								site: siteId,
@@ -1183,13 +1180,15 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 						}
 					};
 
-					const onShowBrowseFilesDialog = (path: string, type: 'image' | 'audio' | 'video') => {
+					const onShowBrowseFilesDialog = (path: string, type: 'image' | 'audio' | 'video' | 'file') => {
 						const mimeTypes =
 							type === 'image'
 								? ['image/png', 'image/jpeg', 'image/gif', 'image/jpg']
 								: type === 'video'
 									? ['video/mp4']
-									: ['audio/mpeg', 'audio/mp3', 'audio/ogg', 'audio/wav'];
+									: type === 'audio'
+										? ['audio/mpeg', 'audio/mp3', 'audio/ogg', 'audio/wav']
+										: null;
 						setDataSourceActionsListState(dataSourceActionsListInitialState);
 
 						if (path) {
@@ -1207,7 +1206,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 
 					const dataSourcesByType = {
 						image: ['allowImageUpload', 'allowImagesFromRepo'],
-						media: ['allowVideoUpload', 'allowVideosFromRepo', 'allowAudioUpload', 'allowAudioFromRepo']
+						media: ['allowVideoUpload', 'allowVideosFromRepo', 'allowAudioUpload', 'allowAudioFromRepo'],
+						file: ['allowFilesFromRepo']
 					};
 
 					// Tinymce handles both audio and video as 'media' types. This lookup is used to determine which type of media to handle.
@@ -1215,7 +1215,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 						allowAudioUpload: 'audio',
 						allowAudioFromRepo: 'audio',
 						allowVideoUpload: 'video',
-						allowVideosFromRepo: 'video'
+						allowVideosFromRepo: 'video',
+						allowFilesFromRepo: 'file'
 					};
 
 					// filter data sources to only the ones that match the type
@@ -1232,7 +1233,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 							objectId: typedPayload.model.craftercms.id,
 							objectGroupId: typedPayload.model.objectGroupId
 						});
-						if (key === 'allowImageUpload' || key === 'allowVideoUpload' || 'allowAudioUpload') {
+						if (key === 'allowImageUpload' || key === 'allowVideoUpload' || key === 'allowAudioUpload') {
 							onShowSingleFileUploadDialog(processedPath, mediaTypes[key] ?? typedPayload.type);
 						} else {
 							onShowBrowseFilesDialog(processedPath, mediaTypes[key] ?? typedPayload.type);

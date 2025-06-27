@@ -21,13 +21,13 @@ import { ApiResponse } from '../../models/ApiResponse';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useSelection } from '../../hooks/useSelection';
 import { useDispatch } from 'react-redux';
-import { DetailedItem } from '../../models/Item';
+import { ContentItem } from '../../models/Item';
 import { showHistoryDialog } from '../../state/actions/dialogs';
 import { batchActions } from '../../state/actions/misc';
 import { fetchItemVersions } from '../../state/actions/versions';
 import { getRootPath } from '../../utils/path';
 import { fetchDependant, fetchSimpleDependencies } from '../../services/dependencies';
-import { openItemEditor, isEditableAsset, parseLegacyItemToSandBoxItem } from '../../utils/content';
+import { isEditableAsset, openItemEditor, parseLegacyItemToContentItem } from '../../utils/content';
 import DependenciesDialogUI from './DependenciesDialogUI';
 import useMount from '../../hooks/useMount';
 
@@ -48,11 +48,11 @@ export function DependenciesDialogContainer(props: DependenciesDialogContainerPr
 	});
 	const dispatch = useDispatch();
 
-	const handleEditorDisplay = (item: DetailedItem) => {
+	const handleEditorDisplay = (item: ContentItem) => {
 		openItemEditor(item, authoringBase, siteId, dispatch);
 	};
 
-	const handleHistoryDisplay = (item: DetailedItem) => {
+	const handleHistoryDisplay = (item: ContentItem) => {
 		dispatch(
 			batchActions([
 				fetchItemVersions({
@@ -70,7 +70,7 @@ export function DependenciesDialogContainer(props: DependenciesDialogContainerPr
 				if (dialog.dependantItems === null || newItem) {
 					fetchDependant(siteId, path).subscribe({
 						next: (response) => {
-							const dependantItems = parseLegacyItemToSandBoxItem(response);
+							const dependantItems = parseLegacyItemToContentItem(response);
 							setDialog({
 								dependantItems,
 								...(newItem ? { dependencies: null } : {})
@@ -88,7 +88,7 @@ export function DependenciesDialogContainer(props: DependenciesDialogContainerPr
 				if (dialog.dependencies === null || newItem) {
 					fetchSimpleDependencies(siteId, path).subscribe(
 						(response) => {
-							const dependencies = parseLegacyItemToSandBoxItem(response);
+							const dependencies = parseLegacyItemToContentItem(response);
 							setDialog({
 								dependencies,
 								...(newItem ? { dependantItems: null } : {})
@@ -125,7 +125,7 @@ export function DependenciesDialogContainer(props: DependenciesDialogContainerPr
 		setDialog({ showTypes });
 	};
 
-	const setItem = (item: DetailedItem) => {
+	const setItem = (item: ContentItem) => {
 		setDialog({ item });
 		getDepsItems(siteId, item.path, dialog.dependenciesShown, true);
 	};
@@ -136,7 +136,7 @@ export function DependenciesDialogContainer(props: DependenciesDialogContainerPr
 		getDepsItems(siteId, dialog.item.path, dependenciesShown);
 	};
 
-	const handleContextMenuClick = (event: React.MouseEvent<HTMLButtonElement>, dependency: DetailedItem) => {
+	const handleContextMenuClick = (event: React.MouseEvent<HTMLButtonElement>, dependency: ContentItem) => {
 		setContextMenu({
 			el: event.currentTarget,
 			dependency

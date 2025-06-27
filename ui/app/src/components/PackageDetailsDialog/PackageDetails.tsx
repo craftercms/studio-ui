@@ -22,7 +22,7 @@ import { fetchPackage } from '../../services/publishing';
 import { LoadingState } from '../LoadingState';
 import ApiResponseErrorState from '../ApiResponseErrorState';
 import Typography from '@mui/material/Typography';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import { PublishPackageReview } from './PublishPackageReview';
 import PackageItems from '../PackageItems/PackageItems';
 

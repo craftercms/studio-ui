@@ -14,9 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { DetailedItem, SandboxItem } from './Item';
+import { ContentItem } from './Item';
 
-export interface FetchItemsByPathArray<T = SandboxItem | DetailedItem> extends Array<T> {
+export interface FetchItemsByPathArray<T = ContentItem> extends Array<T> {
 	missingItems: string[];
 }
 

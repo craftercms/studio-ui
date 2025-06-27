@@ -74,6 +74,7 @@
             <small class="location"></small>
           </div>
         </h1>
+				<div class="in-workflow-warning"></div>
         <p class="page-description"></p>
       </div>
     </div>

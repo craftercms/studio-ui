@@ -28,6 +28,8 @@ import CloseFullscreenOutlinedIcon from '@mui/icons-material/CloseFullscreenOutl
 import IconButton from '@mui/material/IconButton';
 import useSiteDashboardContext from '../SiteDashboard/useSiteDashboardContext';
 import CardActionArea from '@mui/material/CardActionArea';
+import { useIntl } from 'react-intl';
+
 export type DashletCardProps = PropsWithChildren<
 	CommonDashletProps & {
 		title?: React.ReactNode;
@@ -72,6 +74,7 @@ export function DashletCard(props: DashletCardProps) {
 	const [isMaximized, setIsMaximized] = useState(false);
 	const dashboardState = useSiteDashboardContext();
 	const [isExpanded, setIsExpanded] = useState(true);
+	const { formatMessage } = useIntl();
 	const showCardBody = isExpanded || isMaximized;
 	const HeaderActionArea = isMaximized || !collapsible ? 'div' : CardActionArea;
 	const [disableHeaderActionAreaRipple, setDisableHeaderActionAreaRipple] = useState(false);
@@ -131,7 +134,14 @@ export function DashletCard(props: DashletCardProps) {
 								onMouseOut={() => setDisableHeaderActionAreaRipple(false)}
 							>
 								{maximizable && (
-									<IconButton onClick={updateMaximized}>
+									<IconButton
+										onClick={updateMaximized}
+										aria-label={
+											isMaximized
+												? formatMessage({ defaultMessage: 'Minimize' })
+												: formatMessage({ defaultMessage: 'Maximize' })
+										}
+									>
 										{isMaximized ? <CloseFullscreenOutlinedIcon /> : <OpenInFullOutlinedIcon />}
 									</IconButton>
 								)}

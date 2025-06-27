@@ -16,7 +16,7 @@
 
 import React, { ChangeEvent } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { DetailedItem } from '../../models/Item';
+import { ContentItem } from '../../models/Item';
 import PathNavigatorHeader from './PathNavigatorHeader';
 import Breadcrumbs from './PathNavigatorBreadcrumbs';
 import PathNavigatorItem from './PathNavigatorItem';
@@ -52,7 +52,7 @@ export interface PathNavigatorUIProps {
 	/**
 	 * Item lookup table (indexed by path)
 	 **/
-	itemsByPath: LookupTable<DetailedItem>;
+	itemsByPath: LookupTable<ContentItem>;
 	/**
 	 * Styling props (classes and/or styles) applied to the widget's header icon element
 	 **/
@@ -84,7 +84,7 @@ export interface PathNavigatorUIProps {
 	/**
 	 * Prop called to determine which items are highlighted as active/selected
 	 **/
-	computeActiveItems?: (items: DetailedItem[]) => string[];
+	computeActiveItems?: (items: ContentItem[]) => string[];
 	/**
 	 * Prop fired when the widget's accordion header is clicked
 	 **/
@@ -104,29 +104,29 @@ export interface PathNavigatorUIProps {
 	/**
 	 * Prop fired when a breadcrumb item is clicked
 	 **/
-	onBreadcrumbSelected: (item: DetailedItem, event: React.SyntheticEvent) => void;
+	onBreadcrumbSelected: (item: ContentItem, event: React.SyntheticEvent) => void;
 	/**
 	 * Prop fired when an item is checked in when the widget is in "selection" mode
 	 **/
-	onSelectItem?: (item: DetailedItem, checked: boolean) => void;
+	onSelectItem?: (item: ContentItem, checked: boolean) => void;
 	/**
 	 *
 	 **/
-	onPathSelected: (item: DetailedItem) => void;
+	onPathSelected: (item: ContentItem) => void;
 	/**
 	 * Prop fired when the widget determines the clicked item is "previewable".
 	 * It may be fired by the widget's default onItemClicked handler or via the "view"
 	 * button of each item when the clicked item is not a folder
 	 **/
-	onPreview?: (item: DetailedItem) => void;
+	onPreview?: (item: ContentItem) => void;
 	/**
 	 * Prop fired when a list item options button is clicked
 	 **/
-	onOpenItemMenu?: (element: Element, item: DetailedItem) => void;
+	onOpenItemMenu?: (element: Element, item: ContentItem) => void;
 	/**
 	 * Prop fired when a list item itself is clicked (anywhere but it's buttons)
 	 **/
-	onItemClicked?(item: DetailedItem, event?: React.MouseEvent): void;
+	onItemClicked?(item: ContentItem, event?: React.MouseEvent): void;
 	/**
 	 *
 	 **/

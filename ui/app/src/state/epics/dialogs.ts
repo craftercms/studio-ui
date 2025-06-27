@@ -63,7 +63,7 @@ import infoGraphic from '../../assets/information.svg';
 import { nnou, nou } from '../../utils/object';
 import { getHostToGuestBus } from '../../utils/subjects';
 import { unlockItem } from '../actions/content';
-import { parseLegacyItemToDetailedItem, parseLegacyItemToSandBoxItem } from '../../utils/content';
+import { parseLegacyItemToContentItem } from '../../utils/content';
 import { LegacyItem } from '../../models';
 
 function getDialogNameFromType(type: string): string {
@@ -259,8 +259,8 @@ const dialogEpics: CrafterCMSEpic[] = [
 				fetchDependant(state.sites.active, state.dialogs.renameAsset.path).pipe(
 					takeUntil(action$.pipe(ofType(closeRenameAssetDialog.type))),
 					map((response: LegacyItem[]) => {
-						const dependantItems = parseLegacyItemToDetailedItem(response);
-						return updateRenameAssetDialog({ dependantItems, fetchingDependantItems: false });
+						const dependants = parseLegacyItemToContentItem(response);
+						return fetchRenameAssetDependantsComplete({ dependants });
 					}),
 					catchAjaxError((error) => updateRenameAssetDialog({ error, fetchingDependantItems: false }))
 				)
@@ -275,7 +275,7 @@ const dialogEpics: CrafterCMSEpic[] = [
 			switchMap(([, state]) =>
 				fetchDependant(state.sites.active, state.dialogs.brokenReferences.path).pipe(
 					map((response: LegacyItem[]) => {
-						const references = parseLegacyItemToSandBoxItem(response);
+						const references = parseLegacyItemToContentItem(response);
 						return updateBrokenReferencesDialog({ references });
 					}),
 					catchAjaxError(fetchBrokenReferencesFailed)

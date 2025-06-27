@@ -17,7 +17,7 @@
 import { createAction } from '@reduxjs/toolkit';
 import { ElementRecord } from '../../models/InContextEditing';
 import { EditingStatus } from '../../constants';
-import { SandboxItem } from '@craftercms/studio-ui/models';
+import { ContentItem } from '@craftercms/studio-ui/models';
 
 export const contentReady = /*#__PURE__*/ createAction('content_ready');
 export const setDropPosition = /*#__PURE__*/ createAction<{ targetIndex: number }>('set_drop_position');
@@ -60,4 +60,4 @@ export const desktopAssetUploadFailed = /*#__PURE__*/ createAction<{ record: Ele
 	'DESKTOP_ASSET_UPLOAD_FAILED'
 );
 
-export const setLockedItems = /*#__PURE__*/ createAction<SandboxItem[]>('set_locked_items');
+export const setLockedItems = /*#__PURE__*/ createAction<ContentItem[]>('set_locked_items');

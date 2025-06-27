@@ -277,7 +277,7 @@ crafterDefine(
 					valid = false;
 					publish.call(me, Topics.START_DIALOG, {
 						messageKey: 'contentTypeNotFound',
-						link: 'https://docs.craftercms.org/en/3.1/developers/in-context-editing.html',
+						link: 'https://craftercms.com/docs/current/by-role/developer/common/experience-builder.html',
 						height: 'auto'
 					});
 				}
@@ -745,7 +745,7 @@ crafterDefine(
 				} else {
 					publish.call(me, Topics.START_DIALOG, {
 						messageKey: 'pathNotFound',
-						link: 'https://docs.craftercms.org/en/3.1/developers/in-context-editing.html',
+						link: 'https://craftercms.com/docs/current/by-role/developer/common/experience-builder.html',
 						height: 'auto'
 					});
 				}
@@ -753,7 +753,7 @@ crafterDefine(
 			if (noObjectid > 0) {
 				publish.call(me, Topics.START_DIALOG, {
 					messageKey: 'objectIdNotFound',
-					link: 'https://docs.craftercms.org/en/3.1/developers/in-context-editing.html',
+					link: 'https://craftercms.com/docs/current/by-role/developer/common/experience-builder.html',
 					height: 'auto'
 				});
 			}
@@ -762,7 +762,7 @@ crafterDefine(
 				if (contentTypeValidationInProgress == null) {
 					publish.call(me, Topics.START_DIALOG, {
 						messageKey: 'contentTypeNotFound',
-						link: 'https://docs.craftercms.org/en/3.1/developers/in-context-editing.html',
+						link: 'https://craftercms.com/docs/current/by-role/developer/common/experience-builder.html',
 						height: 'auto'
 					});
 					contentTypeValidationInProgress = true;

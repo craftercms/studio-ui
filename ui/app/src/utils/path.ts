@@ -15,7 +15,7 @@
  */
 
 import queryString, { ParsedQuery } from 'query-string';
-import { DetailedItem, PasteItem } from '../models/Item';
+import { ContentItem, PasteItem } from '../models/Item';
 import { toQueryString } from './object';
 import LookupTable from '../models/LookupTable';
 import ContentType from '../models/ContentType';
@@ -280,16 +280,17 @@ export function getCodeEditorSrc({
 	return `${authoringBase}/legacy/form${qs}`;
 }
 
+// TODO: Dupe of ensureSingleSlash
 export function stripDuplicateSlashes(str: string): string {
 	return str.replace(/\/+/g, '/');
 }
 
-export function getItemGroovyPath(item: DetailedItem): string {
+export function getItemGroovyPath(item: ContentItem): string {
 	const contentTypeName = /[^/]*$/.exec(item.contentTypeId)[0];
 	return `${getControllerPath(item.systemType)}/${contentTypeName}.groovy`;
 }
 
-export function getItemTemplatePath(item: DetailedItem, contentTypes: LookupTable<ContentType>): string {
+export function getItemTemplatePath(item: ContentItem, contentTypes: LookupTable<ContentType>): string {
 	return contentTypes[item.contentTypeId].displayTemplate;
 }
 

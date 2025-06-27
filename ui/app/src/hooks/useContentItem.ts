@@ -1,0 +1,38 @@
+/*
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { useSelection } from './useSelection';
+import { ContentItem } from '../models/Item';
+import { nou } from '../utils/object';
+import { fetchContentItem } from '../state/actions/content';
+import { lookupItemByPath } from '../utils/content';
+
+export function useContentItem(path: string): ContentItem {
+	const dispatch = useDispatch();
+	const itemsByPath = useSelection((state) => state.content.itemsByPath);
+	const item = path ? lookupItemByPath(path, itemsByPath) : null;
+	const beingFetching = useSelection((state) => state.content.itemsBeingFetchedByPath[path]);
+	useEffect(() => {
+		if (nou(item) && path && beingFetching === undefined) {
+			dispatch(fetchContentItem({ path }));
+		}
+	}, [beingFetching, dispatch, item, path]);
+	return item;
+}
+
+export default useContentItem;

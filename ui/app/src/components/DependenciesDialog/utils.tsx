@@ -15,7 +15,7 @@
  */
 
 import { FormattedMessage } from 'react-intl';
-import { DetailedItem, SandboxItem } from '../../models/Item';
+import { ContentItem } from '../../models/Item';
 import { isAsset, isCode } from '../../utils/content';
 import React, { ReactNode } from 'react';
 import StandardAction from '../../models/StandardAction';
@@ -25,7 +25,7 @@ import ApiResponse from '../../models/ApiResponse';
 
 export interface DependenciesDialogBaseProps {
 	// TODO: This should be a mandatory prop. Dialog crashes without it.
-	item?: DetailedItem;
+	item?: ContentItem;
 	rootPath: string;
 	// TODO: Revisit/improve these keys. Seem not to be in use outside the
 	//  Dialog, but don't want to change at this stage (release is close).
@@ -42,15 +42,15 @@ export interface DependenciesDialogStateProps extends DependenciesDialogBaseProp
 export interface DependenciesDialogContainerProps extends DependenciesDialogBaseProps {}
 
 export interface DependenciesListProps {
-	dependencies: DetailedItem[];
+	dependencies: ContentItem[];
 	compactView: boolean;
 	showTypes: string;
-	renderAction?(dependency: DetailedItem): ReactNode;
+	renderAction?(dependency: ContentItem): ReactNode;
 }
 
 export interface DependenciesDialogUIProps {
-	dependencies: DetailedItem[];
-	item: DetailedItem;
+	dependencies: ContentItem[];
+	item: ContentItem;
 	rootPath: string;
 	setItem: Function;
 	compactView: boolean;
@@ -60,12 +60,12 @@ export interface DependenciesDialogUIProps {
 	dependenciesShown: string;
 	setDependenciesShown: Function;
 	isEditableItem: Function;
-	handleEditorDisplay(item: DetailedItem): void;
-	handleHistoryDisplay(item: DetailedItem): void;
+	handleEditorDisplay(item: ContentItem): void;
+	handleHistoryDisplay(item: ContentItem): void;
 	contextMenu: any;
 	error: ApiResponse;
 
-	handleContextMenuClick(event: React.MouseEvent<HTMLButtonElement>, dependency: DetailedItem): void;
+	handleContextMenuClick(event: React.MouseEvent<HTMLButtonElement>, dependency: ContentItem): void;
 
 	handleContextMenuClose(): void;
 }
@@ -84,14 +84,14 @@ export const assetsTypes = {
 	},
 	'content-items': {
 		label: <FormattedMessage id="dependenciesDialog.contentItems" defaultMessage="Content items only" />,
-		filter: (dependency: SandboxItem) => dependency.systemType === 'component' || dependency.systemType === 'page'
+		filter: (dependency: ContentItem) => dependency.systemType === 'component' || dependency.systemType === 'page'
 	},
 	assets: {
 		label: <FormattedMessage id="dependenciesDialog.assets" defaultMessage="Assets only" />,
-		filter: (dependency: SandboxItem) => isAsset(dependency.path)
+		filter: (dependency: ContentItem) => isAsset(dependency.path)
 	},
 	code: {
 		label: <FormattedMessage id="dependenciesDialog.code" defaultMessage="Code only" />,
-		filter: (dependency: SandboxItem) => isCode(dependency.path)
+		filter: (dependency: ContentItem) => isCode(dependency.path)
 	}
 };

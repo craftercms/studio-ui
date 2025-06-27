@@ -16,6 +16,8 @@
 
 import LookupTable from './LookupTable';
 import { PackageApprovalState } from '../services/publishing';
+import Person from './Person';
+import { LightItem } from './Item';
 
 export type PublishingTargets = 'live' | 'staging';
 
@@ -108,11 +110,14 @@ export interface PublishingStats {
 	numberOfEditedAndPublishedItems: number;
 }
 
-export interface PublishingPackageApproveParams {
+export interface PublishingPackagesApproveParams {
 	comment: string;
 	schedule: string;
 	updateSchedule: boolean;
+	packageIds: number[];
 }
+
+export interface PublishingPackageApproveParams extends Omit<PublishingPackagesApproveParams, 'packageIds'> {}
 
 export type PackageActions = 'review' | 'cancel' | 'resubmit' | 'promote';
 
@@ -127,9 +132,9 @@ export interface PublishingItem {
 	stagingPreviousPath: string;
 	userRequested: boolean;
 	itemMetadata: {
-		label: string;
-		systemType: string;
-		mimeType: string;
+		label: LightItem['label'];
+		systemType: LightItem['systemType'];
+		mimeType: LightItem['mimeType'];
 	};
 }
 
@@ -170,4 +175,10 @@ export interface PublishPackage {
 	publishedLiveCommitId: string;
 	itemCount: number;
 	availableActions: number;
+}
+
+export interface PublishTargetStatus {
+	dateLastPublished: string;
+	dateScheduled: string;
+	publisher: Person;
 }

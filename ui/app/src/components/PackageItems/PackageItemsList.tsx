@@ -15,27 +15,26 @@
  */
 
 import React, { useState } from 'react';
-import { SandboxItem } from '../../models';
+import { ContentItem, LightItem } from '../../models';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import ItemDisplay from '../ItemDisplay';
 import Tooltip from '@mui/material/Tooltip';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import IconButton from '@mui/material/IconButton';
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
 import InfiniteLoader from 'react-window-infinite-loader';
 import { FixedSizeList as List } from 'react-window';
-import { PackageItem } from './PackageItems';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import Box from '@mui/material/Box';
 
 export interface PackageItemsListProps {
-	items: PackageItem[];
+	items: LightItem[];
 	totalItems: number;
 	hasNextPage: boolean;
 	isNextPageLoading: boolean;
 	loadNextPage(): void;
-	onOpenMenu(e: React.MouseEvent<HTMLButtonElement>, item: PackageItem): void;
+	onOpenMenu(e: React.MouseEvent<HTMLButtonElement>, item: LightItem): void;
 }
 
 export function PackageItemsList(props: PackageItemsListProps) {
@@ -43,6 +42,7 @@ export function PackageItemsList(props: PackageItemsListProps) {
 	const [over, setOver] = useState(null);
 	// If there are more items to be loaded then add an extra row to hold a loading indicator.
 	const currentItemsCount = hasNextPage ? items.length + 1 : items.length;
+	const { formatMessage } = useIntl();
 
 	// Only load 1 page of items at a time.
 	// Pass an empty callback to InfiniteLoader in case it asks us to load more than once.
@@ -85,7 +85,8 @@ export function PackageItemsList(props: PackageItemsListProps) {
 												<ListItemText
 													primary={
 														<ItemDisplay
-															item={item as unknown as SandboxItem}
+															// TODO: Review casting requirement of ItemDisplay when using LightItem
+															item={item as unknown as ContentItem}
 															titleDisplayProp="path"
 															showWorkflowState={false}
 															showPublishingTarget={false}
@@ -103,6 +104,7 @@ export function PackageItemsList(props: PackageItemsListProps) {
 																onOpenMenu(e, item);
 															}}
 															sx={{ padding: 0 }}
+															aria-label={formatMessage({ defaultMessage: 'Options' })}
 														>
 															<MoreVertRoundedIcon />
 														</IconButton>

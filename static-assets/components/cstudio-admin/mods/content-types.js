@@ -3501,6 +3501,9 @@
 					CStudioForms.Util.escapeXml(formDef.quickCreatePath) +
 					'</quickCreatePath>\r\n';
 
+				xml += `\t<!-- Specifies whether a form-controller.js is present in the type definition and should be loaded by the Forms Engine -->\n`;
+				xml += `\t<controller>${config.controller === 'true'}</controller>\n`;
+
 				if (formDef.imageThumbnail && formDef.imageThumbnail != '' && formDef.imageThumbnail != 'undefined') {
 					xml +=
 						'\t<noThumbnail>' +

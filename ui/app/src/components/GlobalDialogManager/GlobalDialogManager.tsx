@@ -14,9 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ElementType, lazy, Suspense, useEffect, useMemo } from 'react';
+import React, { lazy, Suspense, useEffect } from 'react';
 import StandardAction from '../../models/StandardAction';
-import { Dispatch, Dispatch as ReduxDispatch } from 'redux';
+import { Dispatch } from 'redux';
 import { useDispatch } from 'react-redux';
 import { isPlainObject } from '../../utils/object';
 import { SnackbarKey, useSnackbar } from 'notistack';
@@ -35,15 +35,9 @@ import IconButton from '@mui/material/IconButton';
 import CloseRounded from '@mui/icons-material/CloseRounded';
 import useAuth from '../../hooks/useAuth';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
-import { components } from '../../utils/constants';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 import { DialogStackItem } from '../../models/GlobalState';
-import { nanoid } from 'nanoid';
-import { ConfirmDialogProps } from '../ConfirmDialog';
-import { popDialog, pushDialog, updateDialogState } from '../../state/actions/dialogStack';
-import AlertDialog from '../AlertDialog/AlertDialog';
-import PrimaryButton from '../PrimaryButton';
-import infoImgUrl from '../../assets/information.svg';
+import DialogStackItemContainer from './DialogStackItemContainer';
 
 // region const ... = lazy(() => import('...'));
 const ViewVersionDialog = lazy(() => import('../ViewVersionDialog'));
@@ -51,6 +45,17 @@ const CompareVersionsDialog = lazy(() => import('../CompareVersionsDialog'));
 const HistoryDialog = lazy(() => import('../HistoryDialog'));
 const AuthMonitor = lazy(() => import('../AuthMonitor'));
 const UIBlocker = lazy(() => import('../UIBlocker'));
+const PathSelectionDialog = lazy(() => import('../PathSelectionDialog'));
+const WidgetDialog = lazy(() => import('../WidgetDialog'));
+const CodeEditorDialog = lazy(() => import('../CodeEditorDialog'));
+const BrokenReferencesDialog = lazy(() => import('../BrokenReferencesDialog'));
+const PublishingPackageReviewDialog = lazy(() => import('../PublishPackageReviewDialog/PublishingPackageReviewDialog'));
+const PublishingPackageResubmitDialog = lazy(() => import('../PublishingPackageResubmitDialog'));
+const CancelPackageDialog = lazy(() => import('../CancelPackageDialog'));
+const BulkCancelPackageDialog = lazy(() => import('../BulkCancelPackageDialog'));
+const PackageDetailsDialog = lazy(() => import('../PackageDetailsDialog'));
+const ViewPackagesDialog = lazy(() => import('../ViewPackagesDialog'));
+const FolderMoveAlertDialog = lazy(() => import('../FolderMoveAlert/FolderMoveAlertDialog'));
 // endregion
 
 // @formatter:off
@@ -89,116 +94,6 @@ export function createCallback(action: StandardAction, dispatch: Dispatch): (out
   } : null;
 }
 // @formatter:on
-
-// FE2 TODO: Find a better place for this
-export const displayWithPendingChangesConfirm = (
-	dispatch: ReduxDispatch,
-	onClose: () => void,
-	message = <FormattedMessage defaultMessage="Close without saving changes?" />
-) => {
-	const id = nanoid();
-	dispatch(
-		pushDialog({
-			id,
-			component: 'craftercms.components.ConfirmDialog',
-			props: {
-				title: message,
-				onOk() {
-					dispatch(popDialog({ id }));
-					onClose();
-				},
-				onCancel() {
-					dispatch(popDialog({ id }));
-				}
-			} as ConfirmDialogProps
-		})
-	);
-};
-
-function DialogStackItemContainer(props: DialogStackItem<EnhancedDialogProps>) {
-	const { id, component, allowMinimize = false, allowFullScreen = false } = props;
-	const dispatch = useDispatch();
-	const Dialog = useMemo(() => {
-		if (typeof component === 'string') {
-			if (components.has(component)) {
-				return components.get(component) as ElementType<EnhancedDialogProps>;
-			} else {
-				return (props: EnhancedDialogProps) => (
-					<AlertDialog
-						open={props.open}
-						body={`Unknown component id "${component}". The component is not registered or the id is incorrect.`}
-						imageUrl={infoImgUrl}
-						buttons={
-							<PrimaryButton fullWidth onClick={(e) => props.onClose(e, undefined)}>
-								<FormattedMessage defaultMessage="Accept" />
-							</PrimaryButton>
-						}
-					/>
-				);
-			}
-		} else {
-			return component as ElementType<EnhancedDialogProps>;
-		}
-	}, [component]);
-	const onClose: EnhancedDialogProps['onClose'] = () => {
-		dispatch(updateDialogState({ id, props: { open: false } }));
-	};
-	const onMaximize: EnhancedDialogProps['onMaximize'] = allowMinimize
-		? () => {
-				dispatch(updateDialogState({ id, props: { isMinimized: false } }));
-			}
-		: undefined;
-	const onMinimize: EnhancedDialogProps['onMinimize'] = allowMinimize
-		? () => {
-				dispatch(updateDialogState({ id, props: { isMinimized: true } }));
-			}
-		: undefined;
-	const onFullScreen: EnhancedDialogProps['onFullScreen'] = allowFullScreen
-		? () => {
-				dispatch(updateDialogState({ id, props: { isFullScreen: true } }));
-			}
-		: undefined;
-	const onCancelFullScreen: EnhancedDialogProps['onCancelFullScreen'] = allowFullScreen
-		? () => {
-				dispatch(updateDialogState({ id, props: { isFullScreen: false } }));
-			}
-		: undefined;
-	// TODO: Review type discrepancy
-	// @ts-expect-error: Discrepancy in types (EnhancedDialogProps['onTransitionExited'] !== props.props.onTransitionEnd).
-	const onTransitionExited: EnhancedDialogProps['onTransitionExited'] = (e) => {
-		props.props.onTransitionEnd?.(e);
-		if (!props.props.open && !props.props.keepMounted) {
-			dispatch(popDialog({ id }));
-		}
-	};
-	const onWithPendingChangesCloseRequest: EnhancedDialogProps['onWithPendingChangesCloseRequest'] = (e, reason) => {
-		displayWithPendingChangesConfirm(dispatch, () => onClose(e, reason));
-	};
-	const updateSubmittingOrHasPendingChanges = (changes: { isSubmitting?: boolean; hasPendingChanges?: boolean }) => {
-		dispatch(
-			updateDialogState({
-				id,
-				props: {
-					isSubmitting: changes.isSubmitting ?? props.props.isSubmitting,
-					hasPendingChanges: changes.hasPendingChanges ?? props.props.hasPendingChanges
-				} as Partial<EnhancedDialogProps>
-			})
-		);
-	};
-	return (
-		<Dialog
-			{...props.props}
-			onClose={onClose}
-			onMaximize={onMaximize}
-			onMinimize={onMinimize}
-			onFullScreen={onFullScreen}
-			onCancelFullScreen={onCancelFullScreen}
-			onTransitionExited={onTransitionExited}
-			updateSubmittingOrHasPendingChanges={updateSubmittingOrHasPendingChanges}
-			onWithPendingChangesCloseRequest={onWithPendingChangesCloseRequest}
-		/>
-	);
-}
 
 function GlobalDialogManager() {
 	const state = useSelection((state) => state.dialogs);
@@ -409,6 +304,14 @@ function GlobalDialogManager() {
 
 				{/* region UIBlocker */}
 				<UIBlocker {...state.uiBlocker} />
+				{/* endregion */}
+
+				{/* region FolderMoveAlertDialog */}
+				<FolderMoveAlertDialog
+					{...state.folderMoveAlert}
+					onClose={createCallback(state.folderMoveAlert.onClose, dispatch)}
+					onClosed={createCallback(state.folderMoveAlert.onClosed, dispatch)}
+				/>
 				{/* endregion */}
 			</Suspense>
 		</>

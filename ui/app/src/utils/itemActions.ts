@@ -15,7 +15,7 @@
  */
 
 import { translations } from '../components/ItemActionsMenu/translations';
-import { AllItemActions, DetailedItem, LegacyItem } from '../models/Item';
+import { AllItemActions, ContentItem, LegacyItem } from '../models/Item';
 import { ContextMenuOption } from '../components/ContextMenu';
 import { getControllerPath, getRootPath, withoutIndex } from './path';
 import {
@@ -35,6 +35,7 @@ import {
 	showCreateFolderDialog,
 	showDeleteDialog,
 	showDependenciesDialog,
+	showFolderMoveAlertDialog,
 	showHistoryDialog,
 	showPreviewDialog,
 	showPublishDialog,
@@ -42,7 +43,7 @@ import {
 	showUploadDialog,
 	showViewPackagesDialog
 } from '../state/actions/dialogs';
-import { fetchItemsByPath, fetchLegacyItemsTree, fetchSandboxItem } from '../services/content';
+import { checkPathExistence, fetchContentItem, fetchContentItems, fetchLegacyItemsTree } from '../services/content';
 import {
 	batchActions,
 	changeContentType,
@@ -70,7 +71,7 @@ import {
 	duplicateWithPolicyValidation,
 	pasteItem,
 	pasteItemWithPolicyValidation,
-	reloadDetailedItem,
+	reloadContentItem,
 	setClipboard,
 	unlockItem
 } from '../state/actions/content';
@@ -278,7 +279,7 @@ export function toContextMenuOptionsLookup<Keys extends string = AllItemActions>
 	formatMessage: IntlFormatters['formatMessage']
 ): Record<Keys, ContextMenuOption> {
 	const menuOptions: any = {};
-	// @ts-ignore - not sure why the type system is not picking up that the "values" are ContextMenuOptionDescriptor
+	// @ts-expect-error - not sure why the type system is not picking up that the "values" are ContextMenuOptionDescriptor
 	Object.entries(menuOptionDescriptors).forEach(([key, { id, label }]) => {
 		menuOptions[key] = { id, label: formatMessage(label) };
 	});
@@ -286,7 +287,7 @@ export function toContextMenuOptionsLookup<Keys extends string = AllItemActions>
 }
 
 export function generateSingleItemOptions(
-	item: DetailedItem,
+	item: ContentItem,
 	formatMessage: IntlFormatters['formatMessage'],
 	options?: Partial<{
 		hasClipboard: boolean;
@@ -448,7 +449,7 @@ export function generateSingleItemOptions(
 }
 
 export function generateMultipleItemOptions(
-	items: DetailedItem[],
+	items: ContentItem[],
 	formatMessage: IntlFormatters['formatMessage'],
 	options?: {
 		includeOnly: AllItemActions[];
@@ -498,7 +499,7 @@ export const itemActionDispatcher = ({
 	extraPayload
 }: {
 	site: string;
-	item: DetailedItem | DetailedItem[];
+	item: ContentItem | ContentItem[];
 	option: AllItemActions;
 	authoringBase: string;
 	dispatch: Dispatch;
@@ -508,8 +509,8 @@ export const itemActionDispatcher = ({
 	event?: React.MouseEvent<Element, MouseEvent>;
 	extraPayload?: any;
 }) => {
-	let item: DetailedItem;
-	let items: DetailedItem[];
+	let item: ContentItem;
+	let items: ContentItem[];
 	if (Array.isArray(itemOrItems)) {
 		items = itemOrItems;
 	} else {
@@ -529,21 +530,18 @@ export const itemActionDispatcher = ({
 				//  we need the modelId that's not supplied to this function.
 				// const src = `${defaultSrc}site=${site}&path=${embeddedParentPath}&isHidden=true&modelId=${modelId}&type=form`
 				const path = item.path;
-				const actionToDispatch = pickShowContentFormAction({
-					site,
-					path,
-					authoringBase,
-					onSaveSuccess: batchActions([
-						showEditItemSuccessNotification(),
-						...(onActionSuccess ? [onActionSuccess] : [])
-					]),
-					...extraPayload
-				});
-				if (isInActiveWorkflow(item)) {
-					dispatch(showViewPackagesDialog({ item, onContinue: actionToDispatch }));
-				} else {
-					dispatch(actionToDispatch);
-				}
+				dispatch(
+					pickShowContentFormAction({
+						site,
+						path,
+						authoringBase,
+						onSaveSuccess: batchActions([
+							showEditItemSuccessNotification(),
+							...(onActionSuccess ? [onActionSuccess] : [])
+						]),
+						...extraPayload
+					})
+				);
 				break;
 			}
 			case 'createFolder': {
@@ -594,12 +592,19 @@ export const itemActionDispatcher = ({
 						component: 'craftercms.components.NewContentDialog',
 						props: {
 							item,
-							rootPath: getRootPath(item.path),
 							onContentTypeSelected(response) {
 								dispatch(updateDialogState({ id, props: { open: false } }));
-								dispatch(pickShowContentFormAction(response));
+								dispatch(
+									pickShowContentFormAction({
+										authoringBase,
+										site,
+										path: response.path,
+										contentTypeId: response.contentType.id,
+										isNewContent: true
+									})
+								);
 							}
-						} as NewContentDialogProps
+						} as Partial<NewContentDialogProps>
 					})
 				);
 				break;
@@ -628,33 +633,39 @@ export const itemActionDispatcher = ({
 			}
 			case 'cut': {
 				const path = item.path;
-				fetchDependant(site, path).subscribe({
-					next(dependantItems) {
-						const actionToDispatch = batchActions([
-							setClipboard({
-								type: 'CUT',
-								paths: [item.path],
-								sourcePath: item.path
-							}),
-							emitSystemEvent(itemCut({ target: item.path })),
-							showCutItemSuccessNotification()
-						]);
+				if (item.systemType === 'folder') {
+					dispatch(showFolderMoveAlertDialog({ item }));
+				} else {
+					fetchDependant(site, path).subscribe({
+						next(dependantItems) {
+							const actionToDispatch = batchActions([
+								setClipboard({
+									type: 'CUT',
+									paths: [item.path],
+									sourcePath: item.path
+								}),
+								emitSystemEvent(itemCut({ target: item.path })),
+								showCutItemSuccessNotification()
+							]);
 
-						if (dependantItems?.length) {
-							fetchItemsByPath(
-								site,
-								dependantItems.map((item) => item.uri ?? item.path)
-							).subscribe((sandboxItems) => {
-								dispatch(showBrokenReferencesDialog({ path, references: sandboxItems, onContinue: actionToDispatch }));
-							});
-						} else {
-							dispatch(actionToDispatch);
+							if (dependantItems?.length) {
+								fetchContentItems(
+									site,
+									dependantItems.map((item) => item.uri ?? item.path)
+								).subscribe((contentItems) => {
+									dispatch(
+										showBrokenReferencesDialog({ path, references: contentItems, onContinue: actionToDispatch })
+									);
+								});
+							} else {
+								dispatch(actionToDispatch);
+							}
+						},
+						error({ response }) {
+							dispatch(showErrorDialog({ error: response }));
 						}
-					},
-					error({ response }) {
-						dispatch(showErrorDialog({ error: response }));
-					}
-				});
+					});
+				}
 				break;
 			}
 			case 'copy': {
@@ -664,9 +675,9 @@ export const itemActionDispatcher = ({
 						message: `${formatMessage(translations.processing)}...`
 					})
 				);
-				fetchSandboxItem(site, item.path).subscribe({
-					next(item) {
-						if (item) {
+				checkPathExistence(site, item.path).subscribe({
+					next(exists) {
+						if (exists) {
 							dispatch(
 								batchActions([
 									unblockUI(),
@@ -738,7 +749,7 @@ export const itemActionDispatcher = ({
 			}
 			case 'paste': {
 				if (clipboard.type === 'CUT') {
-					fetchSandboxItem(site, clipboard.sourcePath).subscribe((clipboardItem) => {
+					fetchContentItem(site, clipboard.sourcePath).subscribe((clipboardItem) => {
 						if (isInActiveWorkflow(clipboardItem)) {
 							dispatch(
 								showViewPackagesDialog({
@@ -830,20 +841,12 @@ export const itemActionDispatcher = ({
 				break;
 			}
 			case 'editCode': {
-				const editorShowAction = showCodeEditorDialog({
-					path: item.path,
-					mode: getEditorMode(item)
-				});
-				if (isInActiveWorkflow(item)) {
-					dispatch(
-						showViewPackagesDialog({
-							item,
-							onContinue: editorShowAction
-						})
-					);
-				} else {
-					dispatch(editorShowAction);
-				}
+				dispatch(
+					showCodeEditorDialog({
+						path: item.path,
+						mode: getEditorMode(item)
+					})
+				);
 				break;
 			}
 			case 'viewCode': {
@@ -934,7 +937,7 @@ export const itemActionDispatcher = ({
 					scheduling: schedulingMap[option],
 					onSuccess: batchActions([
 						showPublishItemSuccessNotification(),
-						...items.map((item) => reloadDetailedItem({ path: item.path })),
+						...items.map((item) => reloadContentItem({ path: item.path })),
 						closePublishDialog(),
 						fetchPublishingStatus(),
 						...(onActionSuccess ? [onActionSuccess] : [])

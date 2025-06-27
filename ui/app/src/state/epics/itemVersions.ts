@@ -37,7 +37,7 @@ import {
 import { NEVER, of } from 'rxjs';
 import { historyDialogClosed } from '../actions/dialogs';
 import { fetchHistory as getConfigurationHistory } from '../../services/configuration';
-import { reloadDetailedItem } from '../actions/content';
+import { reloadContentItem } from '../actions/content';
 import { emitSystemEvent, itemReverted, showRevertItemSuccessNotification } from '../actions/system';
 import { batchActions } from '../actions/misc';
 import { getHostToGuestBus } from '../../utils/subjects';
@@ -100,7 +100,7 @@ export default [
 						emitSystemEvent(itemReverted({ target: payload.path })),
 						fetchItemVersions(),
 						showRevertItemSuccessNotification(),
-						reloadDetailedItem({ path: payload.path })
+						reloadContentItem({ path: payload.path })
 					])
 				);
 			})

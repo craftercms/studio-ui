@@ -17,7 +17,7 @@
 import { errorSelectorApi1, post, postJSON } from '../utils/ajax';
 import { catchError, map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-import { LegacyItem } from '../models/Item';
+import { LegacyItem, LightItem } from '../models/Item';
 import { toQueryString } from '../utils/object';
 
 export interface FetchDependenciesResponse {
@@ -49,8 +49,8 @@ export function fetchDependant(site: string, path: string): Observable<LegacyIte
 }
 
 export interface FetchDeleteDependenciesResponse {
-	childItems: string[];
-	dependentItems: string[];
+	childItems: LightItem[];
+	dependentItems: LightItem[];
 }
 
 export function fetchDeleteDependencies(siteId: string, paths: string[]): Observable<FetchDeleteDependenciesResponse> {

@@ -15,146 +15,60 @@
  */
 
 import { ChangeContentTypeDialogContainerProps } from './utils';
-import { useActiveSiteId } from '../../hooks/useActiveSiteId';
-import { useDispatch } from 'react-redux';
-import React, { useEffect, useMemo, useState } from 'react';
-import { LegacyContentType } from '../../models/ContentType';
-import { fetchLegacyContentTypes } from '../../services/contentTypes';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
-import { useSubject } from '../../hooks/useSubject';
-import { debounceTime } from 'rxjs/operators';
+import React from 'react';
 import DialogBody from '../DialogBody/DialogBody';
-import { Box, Checkbox, FormControlLabel } from '@mui/material';
-import SingleItemSelector from '../SingleItemSelector';
 import { FormattedMessage } from 'react-intl';
-import SearchBar from '../SearchBar/SearchBar';
-import { ContentTypesGrid, ContentTypesLoader } from '../NewContentDialog';
-import DialogFooter from '../DialogFooter/DialogFooter';
-import EmptyState from '../EmptyState';
+import SelectTypeView from '../ContentTypeManagement/components/SelectTypeView';
+import { getNormalizedFolderPathForApi1GetTypes } from '../../utils/contentType';
+import { TypeListProps } from '../ContentTypeManagement/components/TypeList';
+import ItemDisplay from '../ItemDisplay';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import { withoutIndex } from '../../utils/path';
+import useFetchAllowedTypesForPath from '../../hooks/useFetchAllowedTypesForPath';
+import { ObjectTypeOption } from '../ContentTypeFilter';
 
 export function ChangeContentTypeDialogContainer(props: ChangeContentTypeDialogContainerProps) {
-	const { item, onContentTypeSelected, compact = false, rootPath, selectedContentType } = props;
-	const site = useActiveSiteId();
-	const dispatch = useDispatch();
+	const { item, onContentTypeSelected, initialCompact = false } = props;
 
-	const [isCompact, setIsCompact] = useState(compact);
-	const [openSelector, setOpenSelector] = useState(false);
-	const [selectedItem, setSelectedItem] = useState(item);
-	const [contentTypes, setContentTypes] = useState<LegacyContentType[]>();
-	const [isFetching, setIsFetching] = useState(false);
-	const [keyword, setKeyword] = useState('');
-	const [debounceKeyword, setDebounceKeyword] = useState('');
-	const filteredContentTypes = useMemo(() => {
-		const lowercaseKeyword = debounceKeyword.toLowerCase();
-		return contentTypes?.filter((contentType) => contentType.label.toLowerCase().includes(lowercaseKeyword));
-	}, [contentTypes, debounceKeyword]);
-
-	const onSelectedContentType = (contentType: LegacyContentType) => {
-		onContentTypeSelected?.({
-			newContentTypeId: contentType.form
-		});
+	const handleContentTypeSelected: TypeListProps['onCardClick'] = (_, contentType) => {
+		onContentTypeSelected?.({ path: withoutIndex(item.path), contentType: contentType });
 	};
 
-	useEffect(() => {
-		if (selectedItem.path) {
-			setIsFetching(true);
-			const sub = fetchLegacyContentTypes(site, selectedItem.path).subscribe({
-				next: (response) => {
-					setIsFetching(false);
-					setContentTypes(
-						response.filter(
-							(contentType) =>
-								contentType.type === selectedItem.systemType && contentType.name !== selectedItem.contentTypeId
-						)
-					);
-				},
-				error: (response) => {
-					setIsFetching(false);
-					dispatch(showErrorDialog({ error: response }));
-				}
-			});
-			return () => {
-				sub.unsubscribe();
-			};
-		}
-	}, [dispatch, selectedItem, site]);
-
-	const onSearch$ = useSubject<string>();
-
-	useEffect(() => {
-		onSearch$.pipe(debounceTime(400)).subscribe((keywords) => {
-			setDebounceKeyword(keywords);
-		});
-	});
-
-	const onSearch = (keyword: string) => {
-		onSearch$.next(keyword);
-		setKeyword(keyword);
-	};
+	const { contentTypes, isFetching } = useFetchAllowedTypesForPath(
+		getNormalizedFolderPathForApi1GetTypes(item),
+		(types) => types.filter((type) => type.type === item.systemType)
+	);
 
 	return (
-		<>
-			<DialogBody sx={{ minHeight: '455px' }}>
-				<Box display="flex" justifyContent="space-between" alignItems="center">
-					<Box>
-						<SingleItemSelector
-							label={<FormattedMessage id="words.item" defaultMessage="Item" />}
-							open={openSelector}
-							onClose={() => setOpenSelector(false)}
-							onDropdownClick={() => setOpenSelector(!openSelector)}
-							rootPath={rootPath}
-							selectedItem={selectedItem}
-							onItemClicked={(item) => {
-								setOpenSelector(false);
-								setSelectedItem(item);
-							}}
-						/>
-					</Box>
-					<Box sx={{ minWidth: '33%' }}>
-						<SearchBar onChange={onSearch} keyword={keyword} autoFocus showActionButton={Boolean(keyword)} />
-					</Box>
-				</Box>
-				{isFetching ? (
-					<ContentTypesLoader numOfItems={6} isCompact={isCompact} />
-				) : filteredContentTypes ? (
-					filteredContentTypes.length > 0 ? (
-						<ContentTypesGrid
-							contentTypes={filteredContentTypes}
-							isCompact={isCompact}
-							onTypeOpen={onSelectedContentType}
-							selectedContentType={selectedContentType}
-						/>
-					) : (
-						<EmptyState
-							title={
-								<FormattedMessage
-									id="changeContentTypeDialog.emptyStateMessage"
-									defaultMessage="No Content Types Found"
-								/>
-							}
-							sxs={{
-								image: {
-									width: '250px',
-									marginBottom: '17px'
-								}
-							}}
-						/>
-					)
-				) : (
-					<></>
-				)}
-			</DialogBody>
-			<DialogFooter>
-				<FormControlLabel
-					sx={{
-						marginRight: 'auto',
-						paddingLeft: '20px'
-					}}
-					control={<Checkbox checked={isCompact} onChange={() => setIsCompact(!isCompact)} color="primary" />}
-					label={<FormattedMessage id="words.compact" defaultMessage="Compact" />}
-				/>
-			</DialogFooter>
-		</>
+		<DialogBody sx={{ minHeight: 670 }}>
+			<SelectTypeView
+				initialCompact={initialCompact}
+				initialObjectTypeFilter={item.systemType as ObjectTypeOption}
+				contentTypesList={contentTypes}
+				slotProps={{
+					listing: {
+						skeleton: isFetching,
+						skeletonItemCount: 4,
+						onCardClick: handleContentTypeSelected,
+						selectedTypeId: item.contentTypeId
+					},
+					bar: {
+						slotProps: {
+							contentTypesFilter: { disabled: true }
+						},
+						leftChildren: (
+							<Box sx={{ pl: 2, mr: 2, maxWidth: 300 }}>
+								<Typography variant="body2" color="textSecondary">
+									<FormattedMessage defaultMessage="Target Item" />
+								</Typography>
+								<ItemDisplay item={item} showNavigableAsLinks={false} />
+							</Box>
+						)
+					}
+				}}
+			/>
+		</DialogBody>
 	);
 }
 

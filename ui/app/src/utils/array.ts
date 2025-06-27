@@ -17,7 +17,7 @@
 import LookupTable from '../models/LookupTable';
 import { PagedArray } from '../models';
 
-export const fooArray = [];
+export const immutableEmptyArray = [];
 
 export function forEach<T = any, R = undefined>(
 	array: T[],

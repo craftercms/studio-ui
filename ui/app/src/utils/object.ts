@@ -77,6 +77,19 @@ export function createLookupTable<T>(list: T[], idProp: string = 'id'): LookupTa
 	return table;
 }
 
+/**
+ * { K: V } => { V: K }
+ **/
+export function reverseLookupTable<K extends string | number | symbol, V extends string | number | symbol>(
+	original: Record<K, V>
+): Record<V, K> {
+	const reversed = {} as Record<V, K>;
+	Object.entries(original ?? {}).forEach(([key, value]) => {
+		reversed[value as V] = key as K;
+	});
+	return reversed;
+}
+
 export function flattenHierarchical<T>(root: T | T[], childrenProp = 'children'): T[] {
 	return (Array.isArray(root) ? root : [root]).flatMap((node) =>
 		Boolean(node) ? [node, ...flattenHierarchical(node[childrenProp] ?? [], childrenProp)] : null
@@ -266,9 +279,9 @@ export function deepCopy<T extends object = any>(target: T): T {
 	return JSON.parse(JSON.stringify(target));
 }
 
-export const foo = {};
+export const immutableEmptyObject = Object.freeze({});
 
-export const fooFn = () => undefined;
+export const noOp = Object.freeze(() => undefined);
 
 export function isApiResponse(source: object): boolean {
 	source = source ?? {};

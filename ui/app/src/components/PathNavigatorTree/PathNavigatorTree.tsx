@@ -48,7 +48,7 @@ import { showItemMegaMenu, showPreviewDialog } from '../../state/actions/dialogs
 import { getStoredPathNavigatorTree } from '../../utils/state';
 import GlobalState from '../../models/GlobalState';
 import PathNavigatorSkeleton from '../PathNavigator/PathNavigatorSkeleton';
-import { DetailedItem } from '../../models/Item';
+import { ContentItem } from '../../models/Item';
 import { SystemIconDescriptor } from '../SystemIcon';
 import { useSelection } from '../../hooks/useSelection';
 import { useEnv } from '../../hooks/useEnv';
@@ -214,7 +214,8 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
 		};
 	}, [dispatch, id, onSearch$, rootPath]);
 
-	if (!rootItem || !state) {
+	// If there is no state yet, or if the root item is nullish and the rootPath is not missing, show loading skeleton.
+	if (!state || (!rootItem && !state.isRootPathMissing)) {
 		const storedState = getStoredPathNavigatorTree(uuid, user.username, id);
 		return <PathNavigatorSkeleton renderBody={storedState ? !storedState.collapsed : !initialCollapsed} />;
 	}
@@ -308,7 +309,7 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
 		dispatch(pathNavigatorTreeFetchPathPage({ id, path }));
 	};
 
-	const onPreview = (item: DetailedItem) => {
+	const onPreview = (item: ContentItem) => {
 		if (isEditableViaFormEditor(item)) {
 			dispatch(pickShowContentFormAction({ path: item.path, authoringBase, site: siteId, readonly: true }));
 		} else if (isMediaContent(item.mimeType) || isPdfDocument(item.mimeType)) {

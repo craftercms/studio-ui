@@ -38,8 +38,8 @@ import {
 	getCachedModel,
 	getCachedModels,
 	getCachedModelsByPath,
-	getCachedSandboxItem,
-	getCachedSandboxItems,
+	getCachedContentItem,
+	getCachedContentItems,
 	getModelIdFromInheritedField,
 	isInheritedField,
 	modelHierarchyMap
@@ -233,7 +233,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 					const parentModelId = getParentModelId(modelId, models, modelHierarchyMap);
 					// if path of current model doesn't exist (current component is embedded), then use the parent model id (shared)
 					const path = models[modelId].craftercms.path ?? models[parentModelId].craftercms.path;
-					const cachedSandboxItem = getCachedSandboxItem(path);
+					const cachedContentItem = getCachedContentItem(path);
 
 					const pathToLock = record.inherited
 						? models[getModelIdFromInheritedField(modelId, record.fieldId)].craftercms.path
@@ -250,7 +250,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 							path: pathToLock,
 							site: state.activeSite,
 							username: state.username,
-							localItem: cachedSandboxItem
+							localItem: cachedContentItem
 						}).pipe(
 							switchMap(() => {
 								switch (status) {
@@ -290,6 +290,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 													entries.contentType.dataSources?.find(
 														(ds) =>
 															ds.type === 'components' && ds.properties.contentTypes.split(',').includes(contentType.id)
+														// FE2 TODO: check type
 													)?.baseRepoPath ?? null;
 												newComponentPath = newComponentPath
 													? processPathMacros({
@@ -531,7 +532,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 					const isEditable = isEditActionAvailable({
 						record,
 						models: getCachedModels(),
-						sandboxItemsByPath: getCachedSandboxItems(),
+						contentItemsByPath: getCachedContentItems(),
 						parentModelId: getParentModelId(record.modelId, getCachedModels(), modelHierarchyMap)
 					});
 					if (
@@ -569,8 +570,9 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 						if (
 							// If it is locked, want the flow to go through the `else` statement even for these types of field — so people can unlock if they are the owner.
 							!isLocked &&
-							// FE2 TODO: types changed to be what they are on xml
-							['html', 'text', 'textarea'].includes(type)
+							// FE2 TODO: types changed to be what they are on xml. Test/review thoroughly.
+							// ['html', 'text', 'textarea'].includes(type)
+							['rte', 'input', 'textarea'].includes(type)
 						) {
 							if (!window.tinymce) {
 								alert(
@@ -586,7 +588,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 								const modelId = action.payload.record.modelId;
 								const parentModelId = getParentModelId(modelId, models, modelHierarchyMap);
 								const path = models[parentModelId ?? modelId].craftercms.path;
-								const cachedSandboxItem = getCachedSandboxItem(path);
+								const cachedContentItem = getCachedContentItem(path);
 
 								const pathToLock = isInheritedField(modelId, field.id)
 									? models[getModelIdFromInheritedField(modelId, field.id)].craftercms.path
@@ -597,21 +599,22 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 								//   path: pathToLock,
 								//   site: state.activeSite,
 								//   username: state.username,
-								//   localItem: cachedSandboxItem
+								//   localItem: cachedContentItem
 								// }).pipe(switchMap(() => initTinyMCE(pathToLock, record, validations, type === 'html' ? setup : {})));
 								return beforeWrite$({
 									path: pathToLock,
 									site: state.activeSite,
 									username: state.username,
-									localItem: cachedSandboxItem
+									localItem: cachedContentItem
 								}).pipe(
 									switchMap(() =>
 										initTinyMCE(
 											pathToLock,
 											record,
 											validations,
-											// FE2 TODO: Changed the mapping of rte to html, this probably breaks now
-											type === 'html' ? setup : {}
+											// FE2 TODO: Changed the mapping of rte to html, this probably breaks now. Test/review thoroughly.
+											// type === 'html' ? setup : {}
+											type === 'rte' ? setup : {}
 										)
 									)
 								);
@@ -749,7 +752,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 					path: pathToLock,
 					site: activeSite,
 					username,
-					localItem: getCachedSandboxItem(pathToLock)
+					localItem: getCachedContentItem(pathToLock)
 				}).pipe(
 					switchMap(() => {
 						contentController.deleteItem(modelId, fieldId, index);
@@ -875,10 +878,9 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 			switchMap(([, state]) => {
 				if (nullOrUndefined((state.dragContext.dragged as SearchItem).path)) {
 					console.error('No path found for this drag asset.');
-				} else {
-					return initializeDragSubjects(state$);
+					return NEVER;
 				}
-				return NEVER;
+				return initializeDragSubjects(state$);
 			})
 		);
 	},
