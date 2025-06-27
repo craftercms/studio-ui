@@ -143,9 +143,6 @@ export const components = {
 	GitAuthForm: lazy(() => import('../components/GitAuthForm')),
 	GitManagement: lazy(() => import('../components/GitManagement')),
 	PublishCommitDialog: lazy(() => import('../components/GitManagement/PublishCommitDialog')),
-	PublishingPackageReviewDialog: lazy(
-		() => import('../components/PublishPackageReviewDialog/PublishingPackageReviewDialog')
-	),
 	PullDialog: lazy(() => import('../components/GitManagement/PullDialog')),
 	PushDialog: lazy(() => import('../components/GitManagement/PushDialog')),
 	RepoGrid: lazy(() => import('../components/GitManagement/RepoGrid')),
@@ -336,7 +333,6 @@ export const components = {
 	UserManagement: lazy(() => import('../components/UserManagement')),
 	UsersGrid: lazy(() => import('../components/UsersGrid')),
 	VersionList: lazy(() => import('../components/VersionList')),
-	ViewPackagesDialog: lazy(() => import('../components/ViewPackagesDialog')),
 	VideoPlayer: lazy(() => import('../components/VideoPlayer')),
 	ViewPackagesDialog: lazy(() => import('../components/ViewPackagesDialog')),
 	ViewToolbar: lazy(() => import('../components/ViewToolbar')),
@@ -346,10 +342,7 @@ export const components = {
 	WidgetDialogIconButton: lazy(() => import('../components/WidgetDialogIconButton')),
 	WidgetsAccordion: lazy(() => import('../components/WidgetsAccordion')),
 	WidgetsGrid: lazy(() => import('../components/WidgetsGrid')),
-	WorkflowStateManagement: lazy(() => import('../components/WorkflowStateManagement')),
-	FormsEngine: lazy(() => import('../components/FormsEngine/FormsEngine')),
-	FormsEngineDialog: lazy(() => import('../components/FormsEngine/FormsEngineDialog')),
-	FormsEngineField: lazy(() => import('../components/FormsEngine/common/FormsEngineField'))
+	WorkflowStateManagement: lazy(() => import('../components/WorkflowStateManagement'))
 };
 export const icons = {
 	About: lazy(() => import('../icons/About')),

@@ -259,8 +259,8 @@ const dialogEpics: CrafterCMSEpic[] = [
 				fetchDependant(state.sites.active, state.dialogs.renameAsset.path).pipe(
 					takeUntil(action$.pipe(ofType(closeRenameAssetDialog.type))),
 					map((response: LegacyItem[]) => {
-						const dependants = parseLegacyItemToContentItem(response);
-						return fetchRenameAssetDependantsComplete({ dependants });
+						const dependantItems = parseLegacyItemToContentItem(response);
+						return updateRenameAssetDialog({ dependantItems, fetchingDependantItems: false });
 					}),
 					catchAjaxError((error) => updateRenameAssetDialog({ error, fetchingDependantItems: false }))
 				)
