@@ -67,7 +67,7 @@
 		"prop-types": "^15.8.1",
 		"react": "19.1.0",
 		"react-dom": "19.1.0",
-		"react-hotkeys-hook": "^4.6.1",
+		"react-hotkeys-hook": "^5.1.0",
 		"react-is": "^19.1.0",
 		"react-redux": "^9.2.0",
 		"redux": "^5.0.1",
@@ -88,6 +88,6 @@
 		"replace-in-file": "^8.3.0",
 		"rollup": "^4.34.8",
 		"rollup-plugin-swc3": "^0.12.1",
-		"yargs": "^17.7.2"
+		"yargs": "^18.0.0"
 	}
 }
