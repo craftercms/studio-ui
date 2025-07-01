@@ -385,6 +385,7 @@ CStudioAuthoring.Module.requireModule(
 									? 'dark'
 									: 'default',
 							external_plugins: external,
+							auto_focus: config.onDemandEditorInitialization,
 
 							file_picker_callback: function (cb, value, meta) {
 								// meta contains info about type (image, media, etc). Used to properly add DS to dialogs.
