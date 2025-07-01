@@ -283,7 +283,8 @@ CStudioAuthoring.Module.requireModule(
 					this.rteId = rteId;
 					this.rteWidth = '100%';
 
-					const { inputEl, onDemandEditorInitializationEl } = this._renderInputMarkup(config, rteId);
+					const inputEl = this._renderInputMarkup(config, rteId);
+					const onDemandEditorInitializationEl = this.onDemandEditorInitializationEl;
 
 					const initTiny = () => {
 						// Getting properties from content-type
@@ -530,7 +531,7 @@ CStudioAuthoring.Module.requireModule(
 					if (config.onDemandEditorInitialization) {
 						onDemandEditorInitializationEl.addEventListener('click', () => {
 							initTiny();
-							onDemandEditorInitializationEl.style.display = 'none';
+							onDemandEditorInitializationEl.remove();
 						});
 					} else {
 						initTiny();
@@ -885,7 +886,7 @@ CStudioAuthoring.Module.requireModule(
 					this.containerEl.appendChild(controlWidgetContainerEl);
 					controlWidgetContainerEl.appendChild(descriptionEl);
 
-					return { inputEl, onDemandEditorInitializationEl };
+					return inputEl;
 				},
 
 				/**
