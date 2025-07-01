@@ -22,13 +22,7 @@ const useStyles = makeStyles()(() => ({
   },
   menuRoot: {
     maxWidth: 150,
-    background: 'transparent',
-    '&.MuiInput-underline::before': {
-      display: 'none'
-    },
-    '&.MuiInput-underline::after': {
-      display: 'none'
-    }
+    background: 'transparent'
   },
   menuItem: {
     maxWidth: 390,
