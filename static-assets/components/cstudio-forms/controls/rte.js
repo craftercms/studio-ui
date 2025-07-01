@@ -308,7 +308,7 @@ CStudioAuthoring.Module.requireModule(
 									this.rteHeight = prop.value === undefined || prop.value === '' ? 300 : parseInt(prop.value, 10);
 									break;
 								case 'autoGrow':
-									this.autoGrow = prop.value == 'false' ? false : true;
+									this.autoGrow = prop.value !== 'false';
 									break;
 								case 'maxlength':
 									inputEl.maxlength = prop.value;
@@ -379,7 +379,7 @@ CStudioAuthoring.Module.requireModule(
 							file_picker_types: 'image media file',
 							skin: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'oxide-dark' : 'oxide',
 							code_editor_inline: true,
-							content_css: Boolean(rteConfig.tinymceOptions?.content_css?.length)
+							content_css: rteConfig.tinymceOptions?.content_css?.length
 								? rteConfig.tinymceOptions.content_css
 								: window.matchMedia('(prefers-color-scheme: dark)').matches
 									? 'dark'
