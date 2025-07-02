@@ -291,6 +291,8 @@ export function getControllerPath(type: SystemType): string {
   return `/scripts/${type === 'page' ? 'pages' : 'components'}`;
 }
 
+// For nested embedded components, parentPath will be the last non-embedded (shared) path, meaning that the parent
+// path will always be a 'physical' path.
 const availableMacrosRegex = /{(objectId|objectGroupId|objectGroupId2|year|month|yyyy|mm|dd|parentPath(\[[0-9]+])?)}/;
 export function processPathMacros(dependencies: {
   path: string;
