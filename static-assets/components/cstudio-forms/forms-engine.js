@@ -2300,6 +2300,17 @@ const initializeCStudioForms = () => {
           }
         },
 
+        _clearRteEditorInstances: function (containerEl) {
+          const $rteControls = $(containerEl).find('.rte-control');
+          if ($rteControls.length) {
+            const $rteInputs = $rteControls.find('.cstudio-form-control-input');
+            $rteInputs.each((index, element) => {
+              const rteId = element.getAttribute('id');
+              tinymce.get(rteId).remove();
+            });
+          }
+        },
+
         /**
          * render a repeat
          */
@@ -2325,23 +2336,66 @@ const initializeCStudioForms = () => {
                 return el[attFilter];
               });
             };
-
-            // If the repeating group that it's being re-rendered has RTE5 controls, remove all of them before cleanup up
-            // markup (so it'll remove all things related to those RTEs)
-            const $rteControls = $(controlEl).find('.rte-control');
-            if ($rteControls.length) {
-              const $rteInputs = $rteControls.find('.cstudio-form-control-input');
-              $rteInputs.each((index, element) => {
-                const rteId = element.getAttribute('id');
-                tinymce.get(rteId).remove();
-              });
-            }
+            controlEl.formEngine._clearRteEditorInstances(controlEl);
             controlEl.formEngine._cleanUpRepeatBodyFields(controlEl, this.repeat.id);
             controlEl.innerHTML = '';
             controlEl.formEngine._renderRepeatBody(controlEl);
           };
 
           this._renderRepeatBody(repeatContainerEl);
+        },
+
+        // Updates indexes of repeat group items and field containers ids
+        _recalculateRepeatItemsIndexes: function (repeatContainerEl) {
+          const containers = repeatContainerEl.querySelectorAll('.cstudio-form-repeat-container');
+          for (let i = 0; i < containers.length; i++) {
+            containers[i]._repeatIndex = i;
+
+            const fieldContainers = containers[i].querySelectorAll('.cstudio-form-field-container');
+            for (let j = 0; j < fieldContainers.length; j++) {
+              const currentId = fieldContainers[j].id;
+              const idParts = currentId.split('|');
+              // In this Forms Engine, there are no nested repeat groups, so the index part of the id is always the one in
+              // the second position of the idParts array
+              idParts[1] = i;
+              fieldContainers[j].id = idParts.join('|');
+            }
+          }
+        },
+
+        _addRepeatItem: function (repeatContainerEl, index) {
+          this._renderRepeatItem(repeatContainerEl, index);
+          this._recalculateRepeatItemsIndexes(repeatContainerEl);
+          this._reRenderItemsActions(repeatContainerEl);
+        },
+
+        _deleteRepeatItem: function (repeatContainerEl, index) {
+          const containers = repeatContainerEl.querySelectorAll('.cstudio-form-repeat-container');
+          const numOfItems = containers.length;
+          if (containers[index]) {
+            this._clearRteEditorInstances(containers[index]);
+            containers[index].parentNode.removeChild(containers[index]);
+            this._recalculateRepeatItemsIndexes(repeatContainerEl);
+            this._reRenderItemsActions(repeatContainerEl);
+
+            if (numOfItems === 1) {
+              // If this was the last item, we need to render the empty repeat markup
+              this._renderRepeatBody(repeatContainerEl);
+            }
+          }
+        },
+
+        _moveRepeatItem: function (repeatContainerEl, originalIndex, newIndex) {
+          const containers = repeatContainerEl.querySelectorAll('.cstudio-form-repeat-container');
+          if (containers[originalIndex] && containers[newIndex]) {
+            const itemToMove = containers[originalIndex];
+            this._clearRteEditorInstances(containers[originalIndex]);
+            const parent = itemToMove.parentNode;
+            parent.removeChild(itemToMove);
+            this._renderRepeatItem(repeatContainerEl, newIndex);
+            this._recalculateRepeatItemsIndexes(repeatContainerEl);
+            this._reRenderItemsActions(repeatContainerEl);
+          }
         },
 
         /**
@@ -2371,6 +2425,177 @@ const initializeCStudioForms = () => {
             YAHOO.util.Dom.addClass(descriptionEl, 'cstudio-form-field-description repeating-group-description');
             descriptionEl.textContent = description;
             repeatContainerEl.appendChild(descriptionEl);
+          }
+        },
+
+        _renderRepeatItem: function (repeatContainerEl, i) {
+          const formDef = repeatContainerEl.formDef;
+          const repeat = repeatContainerEl.repeat;
+          const form = repeatContainerEl.form;
+          const formSection = repeatContainerEl.formSection;
+
+          const repeatInstanceContainerEl = document.createElement('div');
+          YAHOO.util.Dom.addClass(repeatInstanceContainerEl, 'cstudio-form-repeat-container');
+          repeatInstanceContainerEl._repeatIndex = i;
+
+          this._renderItemActions(repeatContainerEl, repeatInstanceContainerEl);
+
+          // Insert the repeat group instance to the DOM as late in the process as possible
+          // repeatContainerEl.appendChild(repeatInstanceContainerEl);
+          repeatContainerEl.insertBefore(repeatInstanceContainerEl, repeatContainerEl.children[i] || null);
+
+          for (let j = 0; j < repeat.fields.length; j++) {
+            const field = repeat.fields[j];
+            this._renderField(formDef, field, form, formSection, repeatInstanceContainerEl, repeat, i);
+          }
+        },
+
+        // Renders the set of actions for a repeat group item, considering min/max and position of the item.
+        _renderItemActions: function (repeatContainerEl, repeatInstanceContainerEl) {
+          const maxOccurs = repeatContainerEl.maxOccurs;
+          const minOccurs = repeatContainerEl.minOccurs;
+          const repeat = repeatContainerEl.repeat;
+          const form = repeatContainerEl.form;
+          const containerEl = repeatContainerEl;
+          const i = repeatInstanceContainerEl._repeatIndex;
+          const self = this;
+
+          const currentCount = form.model[repeat.id] ? form.model[repeat.id].length : 0;
+          const repeatCount = currentCount > minOccurs ? currentCount : minOccurs;
+
+          const repeatIndex = repeatContainerEl.index;
+          const repeatIndexNOU = repeatIndex === null || repeatIndex === undefined;
+
+          // const actionsContainerEl = repeatInstanceContainerEl;
+          const actionsContainerEl = document.createElement('div');
+          YAHOO.util.Dom.addClass(actionsContainerEl, 'cstudio-form-repeat-actions');
+          // repeatInstanceContainerEl.appendChild(actionsContainerEl);
+          repeatInstanceContainerEl.insertBefore(actionsContainerEl, repeatInstanceContainerEl.firstChild);
+
+          const titleEl = document.createElement('span');
+          actionsContainerEl.appendChild(titleEl);
+          YAHOO.util.Dom.addClass(titleEl, 'cstudio-form-repeat-title');
+          titleEl.textContent = repeat.title;
+
+          if (repeatIndexNOU) {
+            const addEl = document.createElement('a');
+            actionsContainerEl.appendChild(addEl);
+            YAHOO.util.Dom.addClass(addEl, 'cstudio-form-repeat-control btn btn-default btn-sm');
+            addEl.innerHTML = CMgs.format(formsLangBundle, 'repeatAddAnother');
+            if (form.readOnly || (maxOccurs != '*' && currentCount >= maxOccurs)) {
+              YAHOO.util.Dom.addClass(addEl, 'cstudio-form-repeat-control-disabled');
+            } else {
+              addEl.onclick = function () {
+                form.onBeforeUiRefresh();
+                repeatContainerEl.form.setFocusedField(repeatContainerEl);
+                const itemArray = form.model[repeat.id];
+                const repeatArrayIndex = this.closest('.cstudio-form-repeat-container')._repeatIndex;
+                itemArray.splice(repeatArrayIndex + 1, 0, []);
+                self._addRepeatItem(repeatContainerEl, repeatArrayIndex + 1);
+
+                const containerElNodes = $(containerEl.childNodes);
+                containerElLastChildTop = $(containerElNodes.get(repeatArrayIndex + 1)).offset().top;
+                $('html').scrollTop(containerElLastChildTop);
+
+                repeatEdited = true;
+              };
+            }
+
+            const upEl = document.createElement('a');
+            actionsContainerEl.appendChild(upEl);
+            YAHOO.util.Dom.addClass(upEl, 'cstudio-form-repeat-control btn btn-default btn-sm');
+            upEl.innerHTML = CMgs.format(formsLangBundle, 'repeatMoveUp');
+            if (form.readOnly || i == 0) {
+              YAHOO.util.Dom.addClass(upEl, 'cstudio-form-repeat-control-disabled');
+            } else {
+              upEl.onclick = function () {
+                //form.setFocusedField(null);
+                repeatContainerEl.form.setFocusedField(repeatContainerEl);
+                form.onBeforeUiRefresh();
+                const itemArray = form.model[repeat.id];
+                const repeatArrayIndex = this.closest('.cstudio-form-repeat-container')._repeatIndex;
+                const itemToMove = itemArray[repeatArrayIndex];
+                itemArray.splice(repeatArrayIndex, 1);
+                itemArray.splice(repeatArrayIndex - 1, 0, itemToMove);
+                self._moveRepeatItem(containerEl, repeatArrayIndex, repeatArrayIndex - 1);
+
+                const containerElNodes = $(containerEl.childNodes);
+                containerElLastChildTop = $(containerElNodes.get(repeatArrayIndex - 1)).offset().top;
+                $('html').scrollTop(containerElLastChildTop);
+
+                repeatEdited = true;
+              };
+            }
+
+            const downEl = document.createElement('a');
+            actionsContainerEl.appendChild(downEl);
+            YAHOO.util.Dom.addClass(downEl, 'cstudio-form-repeat-control btn btn-default btn-sm');
+            downEl.innerHTML = CMgs.format(formsLangBundle, 'repeatMoveDown');
+            if (form.readOnly || i == repeatCount - 1) {
+              YAHOO.util.Dom.addClass(downEl, 'cstudio-form-repeat-control-disabled');
+            } else {
+              downEl.onclick = function () {
+                //form.setFocusedField(null);
+                repeatContainerEl.form.setFocusedField(repeatContainerEl);
+                form.onBeforeUiRefresh();
+                const itemArray = form.model[repeat.id];
+                const repeatArrayIndex = this.closest('.cstudio-form-repeat-container')._repeatIndex;
+                const itemToMove = itemArray[repeatArrayIndex];
+                itemArray.splice(repeatArrayIndex, 1);
+                itemArray.splice(repeatArrayIndex + 1, 0, itemToMove);
+                self._moveRepeatItem(containerEl, repeatArrayIndex, repeatArrayIndex + 1);
+
+                const containerElNodes = $(containerEl.childNodes);
+                containerElLastChildTop = $(containerElNodes.get(repeatArrayIndex + 1)).offset().top;
+                $('html').scrollTop(containerElLastChildTop);
+
+                repeatEdited = true;
+              };
+            }
+
+            const deleteEl = document.createElement('a');
+            actionsContainerEl.appendChild(deleteEl);
+            YAHOO.util.Dom.addClass(deleteEl, 'cstudio-form-repeat-control btn btn-default btn-sm');
+            deleteEl.innerHTML = CMgs.format(formsLangBundle, 'repeatDelete');
+            if (form.readOnly || currentCount <= minOccurs) {
+              YAHOO.util.Dom.addClass(deleteEl, 'cstudio-form-repeat-control-disabled');
+            } else {
+              deleteEl.onclick = function () {
+                repeatContainerEl.form.setFocusedField(repeatContainerEl);
+                form.onBeforeUiRefresh();
+                const itemArray = form.model[repeat.id];
+                const repeatArrayIndex = this.closest('.cstudio-form-repeat-container')._repeatIndex;
+                itemArray.splice(repeatArrayIndex, 1);
+                // Remove noDefaultLookup entry
+                const itemBaseId = repeat.id + '|' + repeatArrayIndex;
+                noDefaultLookup = Object.fromEntries(
+                  Object.entries(noDefaultLookup).filter(([key]) => !key.startsWith(itemBaseId))
+                );
+                self._deleteRepeatItem(containerEl, repeatArrayIndex);
+
+                if (repeatArrayIndex) {
+                  const containerElNodes = $(containerEl.childNodes);
+                  containerElLastChildTop = $(containerElNodes.get(repeatArrayIndex - 1)).offset().top;
+                  $('html').scrollTop(containerElLastChildTop);
+                }
+
+                repeatEdited = true;
+              };
+            }
+          }
+
+          return actionsContainerEl;
+        },
+
+        // Re-calculates actions for each of the items of a repeat group
+        _reRenderItemsActions: function (repeatContainerEl) {
+          const containers = repeatContainerEl.querySelectorAll('.cstudio-form-repeat-container');
+          for (let i = 0; i < containers.length; i++) {
+            const actionsContainerEl = containers[i].querySelector('.cstudio-form-repeat-actions');
+            if (actionsContainerEl) {
+              actionsContainerEl.remove();
+            }
+            this._renderItemActions(repeatContainerEl, containers[i]);
           }
         },
 
@@ -2440,130 +2665,7 @@ const initializeCStudioForms = () => {
           const repeatIndexNOU = repeatIndex === null || repeatIndex === undefined;
           for (var i = 0; i < repeatCount; i++) {
             if (repeatIndexNOU || repeatIndex === i) {
-              var repeatInstanceContainerEl = document.createElement('div');
-              YAHOO.util.Dom.addClass(repeatInstanceContainerEl, 'cstudio-form-repeat-container');
-              repeatInstanceContainerEl._repeatIndex = i;
-
-              var titleEl = document.createElement('span');
-              repeatInstanceContainerEl.appendChild(titleEl);
-              YAHOO.util.Dom.addClass(titleEl, 'cstudio-form-repeat-title');
-              titleEl.textContent = repeat.title;
-
-              if (repeatIndexNOU) {
-                var addEl = document.createElement('a');
-                repeatInstanceContainerEl.appendChild(addEl);
-                YAHOO.util.Dom.addClass(addEl, 'cstudio-form-repeat-control btn btn-default btn-sm');
-                addEl.innerHTML = CMgs.format(formsLangBundle, 'repeatAddAnother');
-                if (form.readOnly || (maxOccurs != '*' && currentCount >= maxOccurs)) {
-                  YAHOO.util.Dom.addClass(addEl, 'cstudio-form-repeat-control-disabled');
-                } else {
-                  addEl.onclick = function () {
-                    form.onBeforeUiRefresh();
-                    repeatContainerEl.form.setFocusedField(repeatContainerEl);
-                    var itemArray = form.model[repeat.id];
-                    var repeatArrayIndex = this.parentNode._repeatIndex;
-                    itemArray.splice(repeatArrayIndex + 1, 0, []);
-                    containerEl.reRender(containerEl);
-
-                    var containerElNodes = $(containerEl.childNodes);
-                    containerElLastChildTop = $(containerElNodes.get(repeatArrayIndex + 1)).offset().top;
-                    $('html').scrollTop(containerElLastChildTop);
-
-                    repeatEdited = true;
-                  };
-                }
-
-                var upEl = document.createElement('a');
-                repeatInstanceContainerEl.appendChild(upEl);
-                YAHOO.util.Dom.addClass(upEl, 'cstudio-form-repeat-control btn btn-default btn-sm');
-                upEl.innerHTML = CMgs.format(formsLangBundle, 'repeatMoveUp');
-                if (form.readOnly || i == 0) {
-                  YAHOO.util.Dom.addClass(upEl, 'cstudio-form-repeat-control-disabled');
-                } else {
-                  upEl.onclick = function () {
-                    //form.setFocusedField(null);
-                    repeatContainerEl.form.setFocusedField(repeatContainerEl);
-                    form.onBeforeUiRefresh();
-                    var itemArray = form.model[repeat.id];
-                    var repeatArrayIndex = this.parentNode._repeatIndex;
-                    var itemToMove = itemArray[repeatArrayIndex];
-                    itemArray.splice(repeatArrayIndex, 1);
-                    itemArray.splice(repeatArrayIndex - 1, 0, itemToMove);
-                    containerEl.reRender(containerEl);
-
-                    var containerElNodes = $(containerEl.childNodes);
-                    containerElLastChildTop = $(containerElNodes.get(repeatArrayIndex - 1)).offset().top;
-                    $('html').scrollTop(containerElLastChildTop);
-
-                    repeatEdited = true;
-                  };
-                }
-
-                var downEl = document.createElement('a');
-                repeatInstanceContainerEl.appendChild(downEl);
-                YAHOO.util.Dom.addClass(downEl, 'cstudio-form-repeat-control btn btn-default btn-sm');
-                downEl.innerHTML = CMgs.format(formsLangBundle, 'repeatMoveDown');
-                if (form.readOnly || i == repeatCount - 1) {
-                  YAHOO.util.Dom.addClass(downEl, 'cstudio-form-repeat-control-disabled');
-                } else {
-                  downEl.onclick = function () {
-                    //form.setFocusedField(null);
-                    repeatContainerEl.form.setFocusedField(repeatContainerEl);
-                    form.onBeforeUiRefresh();
-                    var itemArray = form.model[repeat.id];
-                    var repeatArrayIndex = this.parentNode._repeatIndex;
-                    var itemToMove = itemArray[repeatArrayIndex];
-                    itemArray.splice(repeatArrayIndex, 1);
-                    itemArray.splice(repeatArrayIndex + 1, 0, itemToMove);
-                    containerEl.reRender(containerEl);
-
-                    var containerElNodes = $(containerEl.childNodes);
-                    containerElLastChildTop = $(containerElNodes.get(repeatArrayIndex + 1)).offset().top;
-                    $('html').scrollTop(containerElLastChildTop);
-
-                    repeatEdited = true;
-                  };
-                }
-
-                var deleteEl = document.createElement('a');
-                repeatInstanceContainerEl.appendChild(deleteEl);
-                YAHOO.util.Dom.addClass(deleteEl, 'cstudio-form-repeat-control btn btn-default btn-sm');
-                deleteEl.innerHTML = CMgs.format(formsLangBundle, 'repeatDelete');
-                if (form.readOnly || currentCount <= minOccurs) {
-                  YAHOO.util.Dom.addClass(deleteEl, 'cstudio-form-repeat-control-disabled');
-                } else {
-                  deleteEl.onclick = function () {
-                    repeatContainerEl.form.setFocusedField(repeatContainerEl);
-                    form.onBeforeUiRefresh();
-                    var itemArray = form.model[repeat.id];
-                    var repeatArrayIndex = this.parentNode._repeatIndex;
-                    itemArray.splice(repeatArrayIndex, 1);
-                    // Remove noDefaultLookup entry
-                    const itemBaseId = repeat.id + '|' + repeatArrayIndex;
-                    noDefaultLookup = Object.fromEntries(
-                      Object.entries(noDefaultLookup).filter(([key]) => !key.startsWith(itemBaseId))
-                    );
-                    containerEl.reRender(containerEl);
-
-                    if (repeatArrayIndex) {
-                      var containerElNodes = $(containerEl.childNodes);
-                      containerElLastChildTop = $(containerElNodes.get(repeatArrayIndex - 1)).offset().top;
-                      $('html').scrollTop(containerElLastChildTop);
-                    }
-
-                    repeatEdited = true;
-                  };
-                }
-              }
-
-              // Insert the repeat group instance to the DOM as late in the process as possible
-              repeatContainerEl.appendChild(repeatInstanceContainerEl);
-
-              for (var j = 0; j < repeat.fields.length; j++) {
-                var field = repeat.fields[j];
-
-                this._renderField(formDef, field, form, formSection, repeatInstanceContainerEl, repeat, i);
-              }
+              this._renderRepeatItem(repeatContainerEl, i);
             }
           }
 
