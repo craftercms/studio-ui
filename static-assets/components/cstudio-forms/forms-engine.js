@@ -1465,6 +1465,7 @@ const initializeCStudioForms = () => {
                 CStudioAuthoring.Utils.showConfirmDialog({
                   body: formatMessage(formEngineMessages.formNotReadyForSaving)
                 });
+                setButtonsEnabled(true);
                 return;
               }
 
@@ -2300,12 +2301,15 @@ const initializeCStudioForms = () => {
           }
         },
 
-        _clearRteEditorInstances: function (containerEl) {
+        _clearRteEditorInstances: function (containerEl, form) {
           const $rteControls = $(containerEl).find('.rte-control');
           if ($rteControls.length) {
             const $rteInputs = $rteControls.find('.cstudio-form-control-input');
             $rteInputs.each((index, element) => {
               const rteId = element.getAttribute('id');
+              // Clear rte callbacks using rteId
+              form.beforeSaveCallbacks = form.beforeSaveCallbacks.filter((callback) => !(callback.rteId === rteId));
+
               tinymce.get(rteId).remove();
             });
           }
@@ -2336,7 +2340,13 @@ const initializeCStudioForms = () => {
                 return el[attFilter];
               });
             };
-            controlEl.formEngine._clearRteEditorInstances(controlEl);
+            controlEl.formEngine._clearRteEditorInstances(controlEl, form);
+            // When rendering the items of a repeat group, if there are RTE fields we need to clear beforeSaveCallbacks
+            // to avoid having multiple callbacks for the same RTE field (since callbacks are going to be added on each
+            // RTE rendering)
+            controlEl.form.beforeSaveCallbacks = controlEl.form.beforeSaveCallbacks.filter(
+              (callback) => !(callback.repeatGroupId === repeat.id)
+            );
             controlEl.formEngine._cleanUpRepeatBodyFields(controlEl, this.repeat.id);
             controlEl.innerHTML = '';
             controlEl.formEngine._renderRepeatBody(controlEl);
@@ -2345,12 +2355,14 @@ const initializeCStudioForms = () => {
           this._renderRepeatBody(repeatContainerEl);
         },
 
-        // Updates indexes of repeat group items and field containers ids
+        // Updates indexes of repeat group items, field containers ids, and controls ids.
         _recalculateRepeatItemsIndexes: function (repeatContainerEl) {
           const containers = repeatContainerEl.querySelectorAll('.cstudio-form-repeat-container');
           for (let i = 0; i < containers.length; i++) {
+            // Update _repeatIndex property of the repeat item container
             containers[i]._repeatIndex = i;
 
+            // Update element (DOM) ids of the fields inside the repeat item.
             const fieldContainers = containers[i].querySelectorAll('.cstudio-form-field-container');
             for (let j = 0; j < fieldContainers.length; j++) {
               const currentId = fieldContainers[j].id;
@@ -2361,6 +2373,12 @@ const initializeCStudioForms = () => {
               fieldContainers[j].id = idParts.join('|');
             }
           }
+
+          // Sync controls ids with ids of recently updated DOM elements
+          const controls = repeatContainerEl.formSection?.fields ?? [];
+          controls.forEach((control) => {
+            control.id = control.containerEl.id;
+          });
         },
 
         _addRepeatItem: function (repeatContainerEl, index) {
@@ -2373,7 +2391,7 @@ const initializeCStudioForms = () => {
           const containers = repeatContainerEl.querySelectorAll('.cstudio-form-repeat-container');
           const numOfItems = containers.length;
           if (containers[index]) {
-            this._clearRteEditorInstances(containers[index]);
+            this._clearRteEditorInstances(containers[index], repeatContainerEl.form);
             containers[index].parentNode.removeChild(containers[index]);
             this._recalculateRepeatItemsIndexes(repeatContainerEl);
             this._reRenderItemsActions(repeatContainerEl);
@@ -2389,7 +2407,7 @@ const initializeCStudioForms = () => {
           const containers = repeatContainerEl.querySelectorAll('.cstudio-form-repeat-container');
           if (containers[originalIndex] && containers[newIndex]) {
             const itemToMove = containers[originalIndex];
-            this._clearRteEditorInstances(containers[originalIndex]);
+            this._clearRteEditorInstances(containers[originalIndex], repeatContainerEl.form);
             const parent = itemToMove.parentNode;
             parent.removeChild(itemToMove);
             this._renderRepeatItem(repeatContainerEl, newIndex);
@@ -2478,6 +2496,7 @@ const initializeCStudioForms = () => {
           titleEl.textContent = repeat.title;
 
           if (repeatIndexNOU) {
+            // region Add item
             const addEl = document.createElement('a');
             actionsContainerEl.appendChild(addEl);
             YAHOO.util.Dom.addClass(addEl, 'cstudio-form-repeat-control btn btn-default btn-sm');
@@ -2490,7 +2509,7 @@ const initializeCStudioForms = () => {
                 repeatContainerEl.form.setFocusedField(repeatContainerEl);
                 const itemArray = form.model[repeat.id];
                 const repeatArrayIndex = this.closest('.cstudio-form-repeat-container')._repeatIndex;
-                itemArray.splice(repeatArrayIndex + 1, 0, []);
+                itemArray.splice(repeatArrayIndex + 1, 0, {});
                 self._addRepeatItem(repeatContainerEl, repeatArrayIndex + 1);
 
                 const containerElNodes = $(containerEl.childNodes);
@@ -2500,7 +2519,9 @@ const initializeCStudioForms = () => {
                 repeatEdited = true;
               };
             }
+            // endregion
 
+            // region Move item up
             const upEl = document.createElement('a');
             actionsContainerEl.appendChild(upEl);
             YAHOO.util.Dom.addClass(upEl, 'cstudio-form-repeat-control btn btn-default btn-sm');
@@ -2526,7 +2547,9 @@ const initializeCStudioForms = () => {
                 repeatEdited = true;
               };
             }
+            // endregion
 
+            // region Move item down
             const downEl = document.createElement('a');
             actionsContainerEl.appendChild(downEl);
             YAHOO.util.Dom.addClass(downEl, 'cstudio-form-repeat-control btn btn-default btn-sm');
@@ -2552,7 +2575,9 @@ const initializeCStudioForms = () => {
                 repeatEdited = true;
               };
             }
+            // endregion region
 
+            // region Delete item
             const deleteEl = document.createElement('a');
             actionsContainerEl.appendChild(deleteEl);
             YAHOO.util.Dom.addClass(deleteEl, 'cstudio-form-repeat-control btn btn-default btn-sm');
@@ -2582,6 +2607,7 @@ const initializeCStudioForms = () => {
                 repeatEdited = true;
               };
             }
+            // endregion
           }
 
           return actionsContainerEl;
@@ -2731,7 +2757,11 @@ const initializeCStudioForms = () => {
                   pencilMode
                 );
 
-                formField.initialize(moduleConfig.config.field, this.containerEl, lastTwo);
+                formField.initialize(
+                  { ...moduleConfig.config.field, repeatContainer: moduleConfig.config.repeatField },
+                  this.containerEl,
+                  lastTwo
+                );
 
                 var value = '';
                 if (repeatField) {
