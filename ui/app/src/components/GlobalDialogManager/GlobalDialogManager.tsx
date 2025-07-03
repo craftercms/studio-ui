@@ -45,16 +45,7 @@ const CompareVersionsDialog = lazy(() => import('../CompareVersionsDialog'));
 const HistoryDialog = lazy(() => import('../HistoryDialog'));
 const AuthMonitor = lazy(() => import('../AuthMonitor'));
 const UIBlocker = lazy(() => import('../UIBlocker'));
-const PathSelectionDialog = lazy(() => import('../PathSelectionDialog'));
-const WidgetDialog = lazy(() => import('../WidgetDialog'));
-const CodeEditorDialog = lazy(() => import('../CodeEditorDialog'));
 const BrokenReferencesDialog = lazy(() => import('../BrokenReferencesDialog'));
-const PublishingPackageReviewDialog = lazy(() => import('../PublishPackageReviewDialog/PublishingPackageReviewDialog'));
-const PublishingPackageResubmitDialog = lazy(() => import('../PublishingPackageResubmitDialog'));
-const CancelPackageDialog = lazy(() => import('../CancelPackageDialog'));
-const BulkCancelPackageDialog = lazy(() => import('../BulkCancelPackageDialog'));
-const PackageDetailsDialog = lazy(() => import('../PackageDetailsDialog'));
-const ViewPackagesDialog = lazy(() => import('../ViewPackagesDialog'));
 const FolderMoveAlertDialog = lazy(() => import('../FolderMoveAlert/FolderMoveAlertDialog'));
 // endregion
 
