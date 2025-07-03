@@ -2368,7 +2368,8 @@ const initializeCStudioForms = () => {
 							// Clear rte callbacks using rteId
 							form.beforeSaveCallbacks = form.beforeSaveCallbacks.filter((callback) => !(callback.rteId === rteId));
 
-							tinymce.get(rteId).remove();
+							const editor = tinymce.get(rteId);
+							if (editor) editor.remove();
 						});
 					}
 				},
@@ -2428,8 +2429,10 @@ const initializeCStudioForms = () => {
 							const idParts = currentId.split('|');
 							// In this Forms Engine, there are no nested repeat groups, so the index part of the id is always the one in
 							// the second position of the idParts array
-							idParts[1] = i;
-							fieldContainers[j].id = idParts.join('|');
+							if (idParts.length >= 3) {
+								idParts[1] = i;
+								fieldContainers[j].id = idParts.join('|');
+							}
 						}
 					}
 
