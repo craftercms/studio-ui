@@ -2358,13 +2358,13 @@ const initializeCStudioForms = () => {
 
         // Updates indexes of repeat group items, field containers ids, and controls ids.
         _recalculateRepeatItemsIndexes: function (repeatContainerEl) {
-          const containers = repeatContainerEl.querySelectorAll('.cstudio-form-repeat-container');
+          const containers = repeatContainerEl.querySelectorAll(':scope > .cstudio-form-repeat-container');
           for (let i = 0; i < containers.length; i++) {
             // Update _repeatIndex property of the repeat item container
             containers[i]._repeatIndex = i;
 
             // Update element (DOM) ids of the fields inside the repeat item.
-            const fieldContainers = containers[i].querySelectorAll('.cstudio-form-field-container');
+            const fieldContainers = containers[i].querySelectorAll(':scope > .cstudio-form-field-container');
             for (let j = 0; j < fieldContainers.length; j++) {
               const currentId = fieldContainers[j].id;
               const idParts = currentId.split('|');
