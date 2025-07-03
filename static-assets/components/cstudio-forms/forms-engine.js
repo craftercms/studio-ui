@@ -2388,7 +2388,7 @@ const initializeCStudioForms = () => {
         _addRepeatItem: function (repeatContainerEl, index) {
           this._renderRepeatItem(repeatContainerEl, index);
           this._recalculateRepeatItemsIndexes(repeatContainerEl);
-          this._reRenderItemsActions(repeatContainerEl);
+          this._reRenderAllRepeatItemsActions(repeatContainerEl);
         },
 
         _deleteRepeatItem: function (repeatContainerEl, index) {
@@ -2398,7 +2398,7 @@ const initializeCStudioForms = () => {
             this._clearRteEditorInstances(containers[index], repeatContainerEl.form);
             containers[index].parentNode.removeChild(containers[index]);
             this._recalculateRepeatItemsIndexes(repeatContainerEl);
-            this._reRenderItemsActions(repeatContainerEl);
+            this._reRenderAllRepeatItemsActions(repeatContainerEl);
 
             if (numOfItems === 1) {
               // If this was the last item, we need to render the empty repeat markup
@@ -2416,7 +2416,7 @@ const initializeCStudioForms = () => {
             parent.removeChild(itemToMove);
             this._renderRepeatItem(repeatContainerEl, newIndex);
             this._recalculateRepeatItemsIndexes(repeatContainerEl);
-            this._reRenderItemsActions(repeatContainerEl);
+            this._reRenderAllRepeatItemsActions(repeatContainerEl);
           }
         },
 
@@ -2460,10 +2460,9 @@ const initializeCStudioForms = () => {
           YAHOO.util.Dom.addClass(repeatInstanceContainerEl, 'cstudio-form-repeat-container');
           repeatInstanceContainerEl._repeatIndex = i;
 
-          this._renderItemActions(repeatContainerEl, repeatInstanceContainerEl);
+          this._renderRepeatItemActions(repeatContainerEl, repeatInstanceContainerEl);
 
           // Insert the repeat group instance to the DOM as late in the process as possible
-          // repeatContainerEl.appendChild(repeatInstanceContainerEl);
           repeatContainerEl.insertBefore(repeatInstanceContainerEl, repeatContainerEl.children[i] || null);
 
           for (let j = 0; j < repeat.fields.length; j++) {
@@ -2473,7 +2472,7 @@ const initializeCStudioForms = () => {
         },
 
         // Renders the set of actions for a repeat group item, considering min/max and position of the item.
-        _renderItemActions: function (repeatContainerEl, repeatInstanceContainerEl) {
+        _renderRepeatItemActions: function (repeatContainerEl, repeatInstanceContainerEl) {
           const maxOccurs = repeatContainerEl.maxOccurs;
           const minOccurs = repeatContainerEl.minOccurs;
           const repeat = repeatContainerEl.repeat;
@@ -2618,14 +2617,14 @@ const initializeCStudioForms = () => {
         },
 
         // Re-calculates actions for each of the items of a repeat group
-        _reRenderItemsActions: function (repeatContainerEl) {
+        _reRenderAllRepeatItemsActions: function (repeatContainerEl) {
           const containers = repeatContainerEl.querySelectorAll('.cstudio-form-repeat-container');
           for (let i = 0; i < containers.length; i++) {
             const actionsContainerEl = containers[i].querySelector('.cstudio-form-repeat-actions');
             if (actionsContainerEl) {
               actionsContainerEl.remove();
             }
-            this._renderItemActions(repeatContainerEl, containers[i]);
+            this._renderRepeatItemActions(repeatContainerEl, containers[i]);
           }
         },
 
