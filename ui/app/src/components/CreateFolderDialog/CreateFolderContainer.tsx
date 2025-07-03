@@ -130,8 +130,8 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
 	const onCreateFolder = (site: string, path: string, name: string) => {
 		createFolder(site, path, name).subscribe({
 			next() {
-				dispatch(updateCreateFolderDialog({ isSubmitting: false, hasPendingChanges: false }));
 				onCreated?.({ path, name, rename });
+				dispatch(updateCreateFolderDialog({ isSubmitting: false, hasPendingChanges: false }));
 			},
 			error: onError
 		});
