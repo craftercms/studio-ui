@@ -73,6 +73,7 @@ import { PublishingPackageResubmitDialogStateProps } from '../components/Publish
 import { PackageDetailsDialogStateProps } from '../components';
 import { ViewPackagesDialogStateProps } from '../components/ViewPackagesDialog';
 import type { FolderMoveAlertDialogStateProps } from '../components/FolderMoveAlert/FolderMoveAlertDialog';
+import type { PublishingStatus } from './Publishing';
 
 export type HighlightMode = 'all' | 'move';
 
@@ -315,6 +316,12 @@ export interface GlobalState {
 		error: AjaxError;
 		items: Array<{ icon: SystemIconDescriptor; id: string; label: string }>;
 		isFetching: boolean;
+	};
+	publishing: {
+		isFetching: boolean;
+		enabled: PublishingStatus['enabled'];
+		published: PublishingStatus['published'];
+		currentTask: PublishingStatus['currentTask'];
 	};
 }
 
