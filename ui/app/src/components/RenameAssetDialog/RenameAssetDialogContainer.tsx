@@ -65,8 +65,8 @@ export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
 		isSubmitting || !isValid || fetchingDependantItems || (dependantItems?.length > 0 && !confirmBrokenReferences);
 
 	useEffect(() => {
-		dispatch(fetchRenameAssetDependants());
-	}, [dispatch]);
+		dispatch(fetchRenameAssetDependants({ path }));
+	}, [dispatch, path]);
 
 	const onInputChanges = (newValue: string) => {
 		setName(newValue);

@@ -255,8 +255,8 @@ const dialogEpics: CrafterCMSEpic[] = [
 		action$.pipe(
 			ofType(fetchRenameAssetDependants.type),
 			withLatestFrom(state$),
-			switchMap(([, state]) =>
-				fetchDependant(state.sites.active, state.dialogs.renameAsset.path).pipe(
+			switchMap(([{ payload }, state]) =>
+				fetchDependant(state.sites.active, payload.path).pipe(
 					takeUntil(action$.pipe(ofType(closeRenameAssetDialog.type))),
 					map((response: LegacyItem[]) => {
 						const dependantItems = parseLegacyItemToContentItem(response);
