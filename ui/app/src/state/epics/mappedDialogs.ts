@@ -127,7 +127,7 @@ const dialogsMap = {
 	[showCompareVersionsDialog.type]: 'craftercms.components.CompareVersionsDialog',
 	[showPathSelectionDialog.type]: 'craftercms.components.PathSelectionDialog',
 	[showCodeEditorDialog.type]: 'craftercms.components.CodeEditorDialog',
-	[showPublishingPackageReviewDialog.type]: 'craftercms.components.PublishingPackageReviewDialog',
+	[showPublishingPackageReviewDialog.type]: 'craftercms.components.PublishPackageReviewDialog',
 	[showPublishingPackageResubmitDialog.type]: 'craftercms.components.PublishingPackageResubmitDialog',
 	[showEditSiteDialog.type]: 'craftercms.components.EditSiteDialog',
 	[showCancelPackageDialog.type]: 'craftercms.components.CancelPackageDialog',
@@ -139,7 +139,7 @@ const dialogsMap = {
 	[showRenameAssetDialog.type]: 'craftercms.components.RenameAssetDialog',
 	[showDeleteDialog.type]: 'craftercms.components.DeleteDialog',
 	[showEditDialog.type]: 'craftercms.components.LegacyFormDialog',
-	[showItemMenu.type]: 'craftercms.components.ItemMenu',
+	[showItemMenu.type]: 'craftercms.components.ItemActionsMenu',
 	[showItemMegaMenu.type]: 'craftercms.components.ItemMegaMenu',
 	[showLauncher.type]: 'craftercms.components.Launcher',
 	[blockUI.type]: 'craftercms.components.UIBlocker'
@@ -160,14 +160,14 @@ const showDialogsEpics: CrafterCMSEpic[] = [
 				showDependenciesDialog.type,
 				showCreateFolderDialog.type,
 				showCreateFileDialog.type,
-				showCopyDialog.type,
+				showCopyDialog.type, // TODO: test
 				showUploadDialog.type,
 				showSingleFileUploadDialog.type,
 				showPreviewDialog.type,
 				showWidgetDialog.type,
 				showPublishingStatusDialog.type,
 				showPathSelectionDialog.type,
-				showCodeEditorDialog.type,
+				showCodeEditorDialog.type, // TODO: issue!
 				showPublishingPackageReviewDialog.type,
 				showPublishingPackageResubmitDialog.type,
 				showEditSiteDialog.type,
@@ -176,30 +176,34 @@ const showDialogsEpics: CrafterCMSEpic[] = [
 				showPackageDetailsDialog.type,
 				showViewPackagesDialog.type,
 				showErrorDialog.type,
-				showBrokenReferencesDialog.type,
+				showBrokenReferencesDialog.type, // TODO: check formatjs/intl `id` error
 				showRenameAssetDialog.type,
 				showDeleteDialog.type,
-				showEditDialog.type,
+				showEditDialog.type, // TODO: issue!
 				showItemMenu.type,
 				showItemMegaMenu.type,
 				showLauncher.type
 			),
 			withLatestFrom(state$),
 			map(([{ payload, type }]) => {
+				const dialogId = generateDialogId(type);
 				const dialogProps: DialogStackItem<EnhancedDialogProps>['props'] = { ...payload };
 				Object.entries((payload as EnhancedDialogProps) ?? {}).forEach(([key, value]) => {
 					// TODO: By just having a type, can I say it is an action?
-					if (value.type) {
+					if (value?.type) {
 						dialogProps[key] = createCallback(value as StandardAction, store.dispatch);
 					}
 				});
-
 				return pushDialog({
-					id: generateDialogId(type),
+					id: dialogId,
 					component: dialogsMap[type],
 					allowMinimize: allowMinimizeDialogs.includes(type),
 					allowFullScreen: allowFullScreenDialogs.includes(type),
-					props: dialogProps
+					props: {
+						// TODO: is this still needed?
+						onClose: () => store.dispatch(popDialog({ id: dialogId })),
+						...dialogProps
+					}
 				});
 			})
 		),

@@ -15,33 +15,24 @@
  */
 
 import { combineReducers } from 'redux';
-import error from './error';
 import minimizedTabs from './minimizedTabs';
 import history from './history';
 import viewVersion from './viewVersion';
 import compareVersions from './compareVersions';
 import edit from './edit';
 import codeEditor from './codeEditor';
-import editSite from './editSite';
-import itemMenu from './itemMenu';
-import itemMegaMenu from './itemMegaMenu';
 import publishingStatus from './publishingStatus';
 import uiBlocker from './uiBlocker';
 import brokenReferences from './brokenReferences';
 import folderMoveAlert from './folderMoveAlertDialog';
 
 export default combineReducers({
-	error,
 	minimizedTabs,
 	history,
 	viewVersion,
 	compareVersions,
 	edit,
 	codeEditor,
-	editSite,
-	itemMenu,
-	itemMegaMenu,
-	// launcher,
 	publishingStatus,
 	uiBlocker,
 	brokenReferences,
