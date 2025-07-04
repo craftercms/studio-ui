@@ -438,9 +438,7 @@ const systemEpics: CrafterCMSEpic[] = [
 		action$.pipe(
 			ofType(fetchPublishingStatusComplete.type),
 			withLatestFrom(state$),
-			filter(([, state]) =>
-				['processing', 'publishing'].includes(getPublishingStatusState(state.dialogs.publishingStatus))
-			),
+			filter(([, state]) => ['processing', 'publishing'].includes(getPublishingStatusState(state.publishing))),
 			switchMap(() =>
 				interval(1000).pipe(
 					startWith(0), // To fetch status immediately
