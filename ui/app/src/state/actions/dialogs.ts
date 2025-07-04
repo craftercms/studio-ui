@@ -51,7 +51,7 @@ import { CancelPackageDialogProps } from '../../components/CancelPackageDialog';
 import { PublishingPackageResubmitDialogStateProps } from '../../components/PublishingPackageResubmitDialog/types';
 import { ErrorDialogStateProps, PackageDetailsDialogProps } from '../../components';
 import { ViewPackagesDialogProps } from '../../components/ViewPackagesDialog';
-import { FolderMoveAlertDialogStateProps } from '../../components/FolderMoveAlert/FolderMoveAlertDialog';
+import { FolderMoveAlertDialogStateProps } from '../../components/FolderMoveAlertDialog/FolderMoveAlertDialog';
 
 // region History
 export const showHistoryDialog = /*#__PURE__*/ createAction<Partial<HistoryDialogStateProps>>('SHOW_HISTORY_DIALOG');

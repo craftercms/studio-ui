@@ -16,7 +16,7 @@
 
 import React, { createElement, useState } from 'react';
 import EnhancedDialog, { EnhancedDialogProps } from '../EnhancedDialog/EnhancedDialog';
-import FolderMoveAlert from './FolderMoveAlert';
+import FolderMoveAlert from '../FolderMoveAlert/FolderMoveAlert';
 import { batchActions } from '../../state/actions/misc';
 import { setClipboard } from '../../state/actions/content';
 import { emitSystemEvent, itemCut, showCutItemSuccessNotification } from '../../state/actions/system';

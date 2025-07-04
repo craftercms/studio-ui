@@ -32,6 +32,7 @@ import {
 	closeEditDialog,
 	closeEditSiteDialog,
 	closeErrorDialog,
+	closeFolderMoveAlertDialog,
 	closeHistoryDialog,
 	closeItemMegaMenu,
 	closeItemMenu,
@@ -65,6 +66,7 @@ import {
 	showEditDialog,
 	showEditSiteDialog,
 	showErrorDialog,
+	showFolderMoveAlertDialog,
 	showHistoryDialog,
 	showItemMegaMenu,
 	showItemMenu,
@@ -142,7 +144,8 @@ const dialogsMap = {
 	[showItemMenu.type]: 'craftercms.components.ItemActionsMenu',
 	[showItemMegaMenu.type]: 'craftercms.components.ItemMegaMenu',
 	[showLauncher.type]: 'craftercms.components.Launcher',
-	[blockUI.type]: 'craftercms.components.UIBlocker'
+	[blockUI.type]: 'craftercms.components.UIBlocker',
+	[showFolderMoveAlertDialog.type]: 'craftercms.components.FolderMoveAlertDialog'
 };
 
 const allowMinimizeDialogs = [showPreviewDialog.type, showCodeEditorDialog.type, showEditDialog.type];
@@ -182,7 +185,8 @@ const showDialogsEpics: CrafterCMSEpic[] = [
 				showEditDialog.type, // TODO: issue!
 				showItemMenu.type,
 				showItemMegaMenu.type,
-				showLauncher.type
+				showLauncher.type,
+				showFolderMoveAlertDialog.type
 			),
 			withLatestFrom(state$),
 			map(([{ payload, type }]) => {
@@ -282,7 +286,8 @@ const showDialogsEpics: CrafterCMSEpic[] = [
 				closeEditDialog.type,
 				closeItemMenu.type,
 				closeItemMegaMenu.type,
-				closeLauncher.type
+				closeLauncher.type,
+				closeFolderMoveAlertDialog.type
 			),
 			withLatestFrom(state$),
 			map(([{ type }]) => {

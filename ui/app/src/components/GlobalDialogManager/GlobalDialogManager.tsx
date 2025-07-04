@@ -45,8 +45,6 @@ const CompareVersionsDialog = lazy(() => import('../CompareVersionsDialog'));
 const HistoryDialog = lazy(() => import('../HistoryDialog'));
 const AuthMonitor = lazy(() => import('../AuthMonitor'));
 const UIBlocker = lazy(() => import('../UIBlocker'));
-const BrokenReferencesDialog = lazy(() => import('../BrokenReferencesDialog'));
-const FolderMoveAlertDialog = lazy(() => import('../FolderMoveAlert/FolderMoveAlertDialog'));
 // endregion
 
 // @formatter:off
@@ -295,14 +293,6 @@ function GlobalDialogManager() {
 
 				{/* region UIBlocker */}
 				<UIBlocker {...state.uiBlocker} />
-				{/* endregion */}
-
-				{/* region FolderMoveAlertDialog */}
-				<FolderMoveAlertDialog
-					{...state.folderMoveAlert}
-					onClose={createCallback(state.folderMoveAlert.onClose, dispatch)}
-					onClosed={createCallback(state.folderMoveAlert.onClosed, dispatch)}
-				/>
 				{/* endregion */}
 			</Suspense>
 		</>

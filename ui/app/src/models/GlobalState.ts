@@ -72,7 +72,7 @@ import { BulkCancelPackageDialogStateProps } from '../components/BulkCancelPacka
 import { PublishingPackageResubmitDialogStateProps } from '../components/PublishingPackageResubmitDialog/types';
 import { PackageDetailsDialogStateProps } from '../components';
 import { ViewPackagesDialogStateProps } from '../components/ViewPackagesDialog';
-import type { FolderMoveAlertDialogStateProps } from '../components/FolderMoveAlert/FolderMoveAlertDialog';
+import type { FolderMoveAlertDialogStateProps } from '../components/FolderMoveAlertDialog/FolderMoveAlertDialog';
 import type { PublishingStatus } from './Publishing';
 
 export type HighlightMode = 'all' | 'move';
