@@ -21,13 +21,17 @@ import { fetchContentXML, lock, writeContent } from '../../services/content';
 import { ConditionalLoadingState } from '../LoadingState/LoadingState';
 import AceEditor from '../AceEditor/AceEditor';
 import { useDispatch } from 'react-redux';
-import { closeViewPackagesDialog, showViewPackagesDialog, updateCodeEditorDialog } from '../../state/actions/dialogs';
+import {
+	closeViewPackagesDialog,
+	showErrorDialog,
+	showViewPackagesDialog,
+	updateCodeEditorDialog
+} from '../../state/actions/dialogs';
 import Skeleton from '@mui/material/Skeleton';
 import ListSubheader from '@mui/material/ListSubheader';
 import DialogFooter from '../DialogFooter/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { showSystemNotification } from '../../state/actions/system';
 import translations from './translations';
 import MenuItem from '@mui/material/MenuItem';

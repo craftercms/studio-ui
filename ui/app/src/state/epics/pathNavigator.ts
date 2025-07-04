@@ -51,7 +51,6 @@ import {
 } from '../actions/pathNavigator';
 import { setStoredPathNavigator } from '../../utils/state';
 import { CrafterCMSEpic } from '../store';
-import { showErrorDialog } from '../reducers/dialogs/error';
 import { AjaxError } from 'rxjs/ajax';
 import StandardAction from '../../models/StandardAction';
 import {
@@ -72,6 +71,7 @@ import {
 	workflowEventReject,
 	workflowEventSubmit
 } from '../actions/system';
+import { showErrorDialog } from '../actions/dialogs';
 
 export default [
 	// region pathNavigatorInit

@@ -36,6 +36,7 @@ import {
 	closeConfirmDialog,
 	closePublishDialog,
 	showConfirmDialog,
+	showErrorDialog,
 	showPublishDialog
 } from '../../state/actions/dialogs';
 import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
@@ -52,7 +53,6 @@ import { hasInitialPublish as hasInitialPublishService } from '../../services/si
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import Box from '@mui/material/Box';
 import useContentItem from '../../hooks/useContentItem';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import usePermissionsBySite from '../../hooks/usePermissionsBySite';
 import { StandardAction } from '../../models';
 import Checkbox from '@mui/material/Checkbox';

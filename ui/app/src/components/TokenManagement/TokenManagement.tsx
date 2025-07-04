@@ -42,7 +42,6 @@ import TableHead from '@mui/material/TableHead';
 import TableBody from '@mui/material/TableBody';
 import Chip from '@mui/material/Chip';
 import Switch from '@mui/material/Switch';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
@@ -50,6 +49,7 @@ import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { useWithPendingChangesCloseRequest } from '../../hooks/useWithPendingChangesCloseRequest';
 import Tooltip from '@mui/material/Tooltip';
 import { CreatePreviewTokenDialog } from '../CreatePreviewTokenDialog';
+import { showErrorDialog } from '../../state/actions/dialogs';
 
 const StyledTableCell = styled(TableCell)(() => ({
 	padding: '5px'

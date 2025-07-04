@@ -28,7 +28,6 @@ import {
 	update
 } from '../../services/groups';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../state/actions/system';
 import Typography from '@mui/material/Typography';
@@ -41,6 +40,7 @@ import useMount from '../../hooks/useMount';
 import { createPresenceTable } from '../../utils/array';
 import { pluckProps, reversePluckProps } from '../../utils/object';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
+import { showErrorDialog } from '../../state/actions/dialogs';
 
 const translations = defineMessages({
 	groupCreated: {

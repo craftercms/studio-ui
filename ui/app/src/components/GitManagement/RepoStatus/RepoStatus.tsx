@@ -22,12 +22,12 @@ import CommitResolutionDialog from '../../CommitResolutionDialog/CommitResolutio
 import { bulkResolveConflict, cancelFailedPull, resolveConflict } from '../../../services/repositories';
 import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../../state/actions/system';
-import { showErrorDialog } from '../../../state/reducers/dialogs/error';
 import { FormattedMessage, useIntl } from 'react-intl';
 import ConflictedPathDiffDialog from '../../ConflictedPathDiffDialog';
 import { useActiveSiteId } from '../../../hooks/useActiveSiteId';
 import { messages } from './translations';
 import { ConfirmDialog } from '../../ConfirmDialog';
+import { showErrorDialog } from '../../../state/actions/dialogs';
 
 export interface RepoStatusProps {
 	status: RepositoryStatus;

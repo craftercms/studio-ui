@@ -28,11 +28,11 @@ import LogConsoleGridUI from '../LogConsoleGrid';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import { ConditionalLoadingState } from '../LoadingState/LoadingState';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import LogConsoleDetailsDialog from '../LogConsoleDetailsDialog';
 import EmptyState from '../EmptyState/EmptyState';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useMount } from '../../hooks/useMount';
+import { showErrorDialog } from '../../state/actions/dialogs';
 
 interface LogConsoleManagementProps {
 	logType?: 'studio' | 'preview';

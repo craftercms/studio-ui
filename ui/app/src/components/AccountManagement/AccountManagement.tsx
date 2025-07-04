@@ -33,7 +33,6 @@ import PasswordTextField from '../PasswordTextField/PasswordTextField';
 import PrimaryButton from '../PrimaryButton';
 import { setMyPassword } from '../../services/users';
 import { useDispatch } from 'react-redux';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { showSystemNotification } from '../../state/actions/system';
 import { useActiveUser } from '../../hooks/useActiveUser';
 import { PasswordStrengthDisplayPopper } from '../PasswordStrengthDisplayPopper';
@@ -48,6 +47,7 @@ import TableBody from '@mui/material/TableBody';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import { preferencesGroups } from './utils';
+import { showErrorDialog } from '../../state/actions/dialogs';
 
 interface AccountManagementProps {
 	passwordRequirementsMinComplexity?: number;

@@ -31,6 +31,7 @@ import {
 	closeDependenciesDialog,
 	closeEditDialog,
 	closeEditSiteDialog,
+	closeErrorDialog,
 	closeHistoryDialog,
 	closeItemMegaMenu,
 	closeItemMenu,
@@ -63,6 +64,7 @@ import {
 	showDependenciesDialog,
 	showEditDialog,
 	showEditSiteDialog,
+	showErrorDialog,
 	showHistoryDialog,
 	showItemMegaMenu,
 	showItemMenu,
@@ -105,7 +107,6 @@ import { generateDialogId } from '../../utils/dialogs';
 import { updatePublishingStatus } from '../actions/publishingStatus';
 import { DialogStackItem, StandardAction } from '../../models';
 import { createCallback, EnhancedDialogProps } from '../../components';
-import { closeErrorDialog, showErrorDialog } from '../reducers/dialogs/error';
 import { blockUI, unblockUI } from '../actions/system';
 
 const dialogsMap = {

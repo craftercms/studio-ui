@@ -22,7 +22,6 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import PushDialog from '../PushDialog';
 import { deleteRemote as deleteRemoteService, PullResponse } from '../../../services/repositories';
 import { showSystemNotification } from '../../../state/actions/system';
-import { showErrorDialog } from '../../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';
 import { useActiveSiteId } from '../../../hooks/useActiveSiteId';
 import { useEnhancedDialogState } from '../../../hooks/useEnhancedDialogState';
@@ -36,6 +35,7 @@ import PublishCommitDialog from '../PublishCommitDialog/PublishCommitDialog';
 import useSpreadState from '../../../hooks/useSpreadState';
 import RepoGridSkeleton from './RepoGridSkeleton';
 import { ApiResponse } from '../../../models';
+import { showErrorDialog } from '../../../state/actions/dialogs';
 
 export interface RepoGridProps {
 	repositories: Array<Repository>;

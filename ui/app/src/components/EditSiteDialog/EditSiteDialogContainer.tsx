@@ -24,11 +24,11 @@ import { fetchSites } from '../../state/actions/sites';
 import { EditSiteDialogContainerProps } from './utils';
 import {
 	closeSingleFileUploadDialog,
+	showErrorDialog,
 	showSingleFileUploadDialog,
 	updateEditSiteDialog
 } from '../../state/actions/dialogs';
 import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { ConditionalLoadingState } from '../LoadingState/LoadingState';
 import useProjectPreviewImage from '../../hooks/useProjectPreviewImage';
 import useUpdateRefs from '../../hooks/useUpdateRefs';

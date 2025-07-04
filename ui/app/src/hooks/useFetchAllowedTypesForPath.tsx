@@ -20,8 +20,8 @@ import { useEffect, useState } from 'react';
 import useUpdateRefs from './useUpdateRefs';
 import { fetchLegacyContentTypes, parseLegacyContentType } from '../services/contentTypes';
 import { map } from 'rxjs/operators';
-import { showErrorDialog } from '../state/reducers/dialogs/error';
 import useActiveSiteId from './useActiveSiteId';
+import { showErrorDialog } from '../state/actions/dialogs';
 
 export function useFetchAllowedTypesForPath(path: string, responseFilterFn?: (types: ContentType[]) => ContentType[]) {
 	const site = useActiveSiteId();

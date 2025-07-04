@@ -31,9 +31,8 @@ import { isBlank } from '../../utils/string';
 import { useDispatch } from 'react-redux';
 import { cancelPackages } from '../../services/workflow';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { batchActions } from '../../state/actions/misc';
-import { updateBulkCancelPackageDialog } from '../../state/actions/dialogs';
+import { showErrorDialog, updateBulkCancelPackageDialog } from '../../state/actions/dialogs';
 import { showSystemNotification } from '../../state/actions/system';
 
 export interface BulkCancelPackageDialogContainerProps

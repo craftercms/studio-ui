@@ -36,7 +36,7 @@ import { Observable } from 'rxjs';
 import GlobalState from '../../models/GlobalState';
 import { getHostToGuestBus } from '../../utils/subjects';
 import { CrafterCMSEpic } from '../store';
-import { showErrorDialog } from '../reducers/dialogs/error';
+import { showErrorDialog } from '../actions/dialogs';
 
 export default [
 	(action$, state$: Observable<GlobalState>) =>

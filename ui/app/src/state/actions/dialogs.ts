@@ -28,7 +28,6 @@ import { WidgetDialogStateProps } from '../../components/WidgetDialog/utils';
 import { CodeEditorDialogStateProps } from '../../components/CodeEditorDialog';
 import { PublishDialogStateProps } from '../../components/PublishDialog/utils';
 import { DeleteDialogStateProps } from '../../components/DeleteDialog/utils';
-import { FetchDeleteDependenciesResponse } from '../../services/dependencies';
 import { CreateFolderStateProps } from '../../components/CreateFolderDialog';
 import { DependenciesDialogStateProps } from '../../components/DependenciesDialog';
 import { HistoryDialogStateProps } from '../../components/HistoryDialog/utils';
@@ -43,14 +42,14 @@ import { EditSiteDialogStateProps } from '../../components/EditSiteDialog/utils'
 import { LegacyFormDialogStateProps } from '../../components/LegacyFormDialog/utils';
 import { SingleFileUploadDialogStateProps } from '../../components/SingleFileUploadDialog';
 import ContentInstance from '../../models/ContentInstance';
-import { ContentTypeFieldValidation, ContentItem } from '../../models';
+import { ContentItem, ContentTypeFieldValidation } from '../../models';
 import { RenameAssetStateProps } from '../../components/RenameAssetDialog';
 import { AjaxError } from 'rxjs/ajax';
 import { BrokenReferencesDialogStateProps } from '../../components/BrokenReferencesDialog/types';
 import { PublishingPackageReviewDialogStateProps } from '../../components/PublishPackageReviewDialog/types';
 import { CancelPackageDialogProps } from '../../components/CancelPackageDialog';
 import { PublishingPackageResubmitDialogStateProps } from '../../components/PublishingPackageResubmitDialog/types';
-import { PackageDetailsDialogProps } from '../../components';
+import { ErrorDialogStateProps, PackageDetailsDialogProps } from '../../components';
 import { ViewPackagesDialogProps } from '../../components/ViewPackagesDialog';
 import { FolderMoveAlertDialogStateProps } from '../../components/FolderMoveAlert/FolderMoveAlertDialog';
 
@@ -378,4 +377,10 @@ export const showFolderMoveAlertDialog = /*#__PURE__*/ createAction<Partial<Fold
 );
 export const closeFolderMoveAlertDialog = /*#__PURE__*/ createAction('CLOSE_FOLDER_MOVE_ALERT_DIALOG');
 export const folderMoveAlertDialogClosed = /*#__PURE__*/ createAction('FOLDER_MOVE_ALERT_DIALOG_CLOSED');
+// endregion
+
+// region Error Dialog
+export const showErrorDialog = /*#__PURE__*/ createAction<Partial<ErrorDialogStateProps>>('SHOW_ERROR_DIALOG');
+export const closeErrorDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_ERROR_DIALOG');
+export const errorDialogClosed = /*#__PURE__*/ createAction<StandardAction>('ERROR_DIALOG_CLOSED');
 // endregion

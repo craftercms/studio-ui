@@ -25,11 +25,11 @@ import DialogFooter from '../DialogFooter/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import { setPassword } from '../../services/users';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../state/actions/system';
 import PasswordTextField from '../PasswordTextField/PasswordTextField';
 import { PasswordStrengthDisplayPopper } from '../PasswordStrengthDisplayPopper';
+import { showErrorDialog } from '../../state/actions/dialogs';
 
 interface ResetPasswordDialogProps {
 	open: boolean;

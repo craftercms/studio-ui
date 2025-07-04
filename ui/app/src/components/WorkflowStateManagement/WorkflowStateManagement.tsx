@@ -55,7 +55,7 @@ import useMount from '../../hooks/useMount';
 import { fetchPublishingTargets } from '../../services/publishing';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { EmptyState } from '../EmptyState';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
+import { showErrorDialog } from '../../state/actions/dialogs';
 
 const workflowStateManagementMessages = defineMessages({
 	statesUpdatedMessage: {

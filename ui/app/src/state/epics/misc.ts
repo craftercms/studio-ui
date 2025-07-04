@@ -27,12 +27,11 @@ import {
 	editTemplate
 } from '../actions/misc';
 import { changeContentType, createFile, fetchContentItem } from '../../services/content';
-import { showCodeEditorDialog, showEditDialog, showViewPackagesDialog } from '../actions/dialogs';
+import { showCodeEditorDialog, showEditDialog, showErrorDialog, showViewPackagesDialog } from '../actions/dialogs';
 import { reloadContentItem } from '../actions/content';
 import { blockUI, showEditItemSuccessNotification, unblockUI } from '../actions/system';
 import { CrafterCMSEpic } from '../store';
 import { translations } from '../../components/ItemActionsMenu/translations';
-import { showErrorDialog } from '../reducers/dialogs/error';
 import { getFileNameFromPath, getParentPath } from '../../utils/path';
 import { popPiece } from '../../utils/string';
 import { associateTemplate } from '../actions/preview';

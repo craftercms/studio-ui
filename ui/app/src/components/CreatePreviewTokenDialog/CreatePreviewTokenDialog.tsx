@@ -42,7 +42,6 @@ import FormLabel from '@mui/material/FormLabel';
 import Alert from '@mui/material/Alert';
 import Divider from '@mui/material/Divider';
 import { encrypt } from '../../services/security';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { copyToClipboard } from '../../utils/system';
 import { showSystemNotification } from '../../state/actions/system';
 import useSitesBranch from '../../hooks/useSitesBranch';
@@ -52,6 +51,7 @@ import Typography from '@mui/material/Typography';
 import hljs from '../../env/hljs';
 import useEnv from '../../hooks/useEnv';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
+import { showErrorDialog } from '../../state/actions/dialogs';
 
 interface BodyProps extends Pick<EnhancedDialogProps, 'isSubmitting' | 'onClose'> {
 	onTokenGenerated?(token: string): void;

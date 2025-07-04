@@ -18,7 +18,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
 import { create } from '../../services/users';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import DialogBody from '../DialogBody/DialogBody';
 import TextField from '@mui/material/TextField';
 import PasswordTextField from '../PasswordTextField/PasswordTextField';
@@ -49,6 +48,7 @@ import useUpdateRefs from '../../hooks/useUpdateRefs';
 import { showSystemNotification } from '../../state/actions/system';
 import { PasswordStrengthDisplayPopper } from '../PasswordStrengthDisplayPopper';
 import Box from '@mui/material/Box';
+import { showErrorDialog } from '../../state/actions/dialogs';
 
 const translations = defineMessages({
 	invalidMinLength: {

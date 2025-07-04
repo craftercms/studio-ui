@@ -61,6 +61,7 @@ import {
 	showConfirmDialog,
 	showDeleteDialog,
 	showEditDialog,
+	showErrorDialog,
 	showItemMegaMenu
 } from '../actions/dialogs';
 import { getEditorMode, isEditableAsset } from '../../utils/content';
@@ -92,7 +93,6 @@ import { CrafterCMSEpic } from '../store';
 import StandardAction from '../../models/StandardAction';
 import { asArray } from '../../utils/array';
 import { AjaxError } from 'rxjs/ajax';
-import { showErrorDialog } from '../reducers/dialogs/error';
 import { dissociateTemplate } from '../actions/preview';
 import { isBlank } from '../../utils/string';
 import SocketEvent, { MoveContentEventPayload } from '../../models/SocketEvent';

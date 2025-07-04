@@ -28,7 +28,6 @@ import { debounceTime } from 'rxjs/operators';
 import { blockUI, unblockUI } from '../../state/actions/system';
 import { translations } from './translations';
 import { batchActions } from '../../state/actions/misc';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import DialogHeader from '../DialogHeader';
 import DialogBody from '../DialogBody/DialogBody';
 import PluginDetailsView from '../PluginDetailsView';
@@ -44,6 +43,7 @@ import LoadingState from '../LoadingState/LoadingState';
 import { AjaxError } from 'rxjs/ajax';
 import ApiResponseErrorState from '../ApiResponseErrorState/ApiResponseErrorState';
 import ApiResponse from '../../models/ApiResponse';
+import { showErrorDialog } from '../../state/actions/dialogs';
 
 export function InstallPluginDialogContainer(props: InstallPluginDialogProps) {
 	const siteId = useActiveSiteId();

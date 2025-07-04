@@ -35,6 +35,7 @@ import {
 	showCreateFolderDialog,
 	showDeleteDialog,
 	showDependenciesDialog,
+	showErrorDialog,
 	showFolderMoveAlertDialog,
 	showHistoryDialog,
 	showPreviewDialog,
@@ -75,7 +76,6 @@ import {
 	setClipboard,
 	unlockItem
 } from '../state/actions/content';
-import { showErrorDialog } from '../state/reducers/dialogs/error';
 import { popPiece } from './string';
 import { IntlFormatters, MessageDescriptor } from 'react-intl';
 import {

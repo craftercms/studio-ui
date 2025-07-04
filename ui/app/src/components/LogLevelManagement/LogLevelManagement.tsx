@@ -22,13 +22,13 @@ import GlobalAppToolbar from '../GlobalAppToolbar';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import LogLevelGrid, { LogLevelGridSkeleton } from './LogLevelGrid';
 import { useDispatch } from 'react-redux';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { showSystemNotification } from '../../state/actions/system';
 import Paper from '@mui/material/Paper';
 import useDebouncedInput from '../../hooks/useDebouncedInput';
 import IconButton from '@mui/material/IconButton';
 import RefreshRounded from '@mui/icons-material/RefreshRounded';
 import Tooltip from '@mui/material/Tooltip';
+import { showErrorDialog } from '../../state/actions/dialogs';
 
 const messages = defineMessages({
 	levelChangedSuccess: {

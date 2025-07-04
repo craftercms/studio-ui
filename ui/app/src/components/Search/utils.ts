@@ -24,11 +24,16 @@ import { useSelection } from '../../hooks/useSelection';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useEnv } from '../../hooks/useEnv';
 import { ContextMenuOption } from '../ContextMenu';
-import { showEditDialog, showItemMegaMenu, showPreviewDialog, updatePreviewDialog } from '../../state/actions/dialogs';
+import {
+	showEditDialog,
+	showErrorDialog,
+	showItemMegaMenu,
+	showPreviewDialog,
+	updatePreviewDialog
+} from '../../state/actions/dialogs';
 import { getNumOfMenuOptionsForItem, getSystemTypeFromPath } from '../../utils/content';
 import LookupTable from '../../models/LookupTable';
 import { search } from '../../services/search';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { translations } from './translations';
 import { ApiResponse } from '../../models/ApiResponse';
 import { contentEvent, deleteContentEvent, deleteContentEvents, moveContentEvent } from '../../state/actions/system';

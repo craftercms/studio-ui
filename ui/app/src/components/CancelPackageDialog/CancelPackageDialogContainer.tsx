@@ -28,9 +28,8 @@ import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { isBlank } from '../../utils/string';
 import useSpreadState from '../../hooks/useSpreadState';
 import { useDispatch } from 'react-redux';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { Divider } from '@mui/material';
-import { updateCancelPackageDialog } from '../../state/actions/dialogs';
+import { showErrorDialog, updateCancelPackageDialog } from '../../state/actions/dialogs';
 import { batchActions } from '../../state/actions/misc';
 import { showSystemNotification } from '../../state/actions/system';
 

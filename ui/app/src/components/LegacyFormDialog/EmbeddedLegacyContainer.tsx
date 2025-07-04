@@ -41,8 +41,7 @@ import {
 	reloadRequest
 } from '../../state/actions/preview';
 import { getHostToGuestBus } from '../../utils/subjects';
-import { updateEditDialogConfig } from '../../state/actions/dialogs';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
+import { showErrorDialog, updateEditDialogConfig } from '../../state/actions/dialogs';
 import { useUnmount } from '../../hooks/useUnmount';
 import LoadingState from '../LoadingState/LoadingState';
 import ErrorDialog from '../ErrorDialog/ErrorDialog';

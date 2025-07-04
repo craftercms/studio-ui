@@ -31,11 +31,11 @@ import PrimaryButton from '../PrimaryButton';
 import { useSelection } from '../../hooks/useSelection';
 import { CreateTokenContainerProps } from './utils';
 import { createToken } from '../../services/tokens';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
 import { createAtLeastHalfHourInFutureDate } from '../../utils/datetime';
 import Box from '@mui/material/Box';
+import { showErrorDialog } from '../../state/actions/dialogs';
 
 const translations = defineMessages({
 	placeholder: {
