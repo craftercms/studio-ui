@@ -68,13 +68,13 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
 	const onCreateFile = (site: string, path: string, fileName: string) => {
 		createFile(site, path, fileName).subscribe({
 			next() {
-				onCreated?.({ path, fileName, mode: pickExtensionForItemType(type), openOnSuccess: true });
 				dispatch(
 					updateCreateFileDialog({
 						hasPendingChanges: false,
 						isSubmitting: false
 					})
 				);
+				onCreated?.({ path, fileName, mode: pickExtensionForItemType(type), openOnSuccess: true });
 			},
 			error: onError
 		});
