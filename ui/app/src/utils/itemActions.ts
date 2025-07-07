@@ -619,8 +619,6 @@ export const itemActionDispatcher = ({
 							closeConfirmDialog(),
 							showChangeContentTypeDialog({
 								item,
-								rootPath: getRootPath(item.path),
-								selectedContentType: item.contentTypeId,
 								onContentTypeSelected: batchActions([
 									closeChangeContentTypeDialog(),
 									changeContentType({ originalContentTypeId: item.contentTypeId, path: item.path })
