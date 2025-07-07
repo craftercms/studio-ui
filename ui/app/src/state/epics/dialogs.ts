@@ -31,8 +31,6 @@ import {
 	closeRenameAssetDialog,
 	closeSingleFileUploadDialog,
 	closeViewVersionDialog,
-	fetchBrokenReferences,
-	fetchBrokenReferencesFailed,
 	fetchContentVersion,
 	fetchContentVersionComplete,
 	fetchContentVersionFailed,
@@ -43,7 +41,6 @@ import {
 	showConfirmDialog,
 	showEditDialog,
 	showPreviewDialog,
-	updateBrokenReferencesDialog,
 	updateCodeEditorDialog,
 	updateDeleteDialog,
 	updateEditDialogConfig,
@@ -263,22 +260,6 @@ const dialogEpics: CrafterCMSEpic[] = [
 						return updateRenameAssetDialog({ dependantItems, fetchingDependantItems: false });
 					}),
 					catchAjaxError((error) => updateRenameAssetDialog({ error, fetchingDependantItems: false }))
-				)
-			)
-		),
-	// endregion
-	// region fetchBrokenReferences
-	(action$, state$) =>
-		action$.pipe(
-			ofType(fetchBrokenReferences.type),
-			withLatestFrom(state$),
-			switchMap(([, state]) =>
-				fetchDependant(state.sites.active, state.dialogs.brokenReferences.path).pipe(
-					map((response: LegacyItem[]) => {
-						const references = parseLegacyItemToContentItem(response);
-						return updateBrokenReferencesDialog({ references });
-					}),
-					catchAjaxError(fetchBrokenReferencesFailed)
 				)
 			)
 		)

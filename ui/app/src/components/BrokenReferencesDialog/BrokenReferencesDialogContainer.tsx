@@ -14,12 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { BrokenReferencesDialogContainerProps } from './types';
 import { FormattedMessage } from 'react-intl';
 import { EmptyState } from '../EmptyState';
 import { useDispatch } from 'react-redux';
-import { fetchBrokenReferences, showEditDialog } from '../../state/actions/dialogs';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import useEnv from '../../hooks/useEnv';
 import { DialogBody } from '../DialogBody';
@@ -32,20 +31,42 @@ import DialogFooter from '../DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import ApiResponseErrorState from '../ApiResponseErrorState';
+import { fetchDependant } from '../../services/dependencies';
+import type { LegacyItem } from '../../models';
+import { parseLegacyItemToContentItem } from '../../utils/content';
+import { pushDialog } from '../../state/actions/dialogStack';
 
 export function BrokenReferencesDialogContainer(props: BrokenReferencesDialogContainerProps) {
-	const { references, error, onClose, onContinue } = props;
+	const { path, references: initialReferences, error, onClose, onContinue } = props;
 	const dispatch = useDispatch();
 	const site = useActiveSiteId();
 	const { authoringBase } = useEnv();
+	const [references, setReferences] = useState(initialReferences || []);
 
 	const onContinueClick = (e) => {
 		onClose(e, null);
 		onContinue();
 	};
 
-	const onEditReferenceClick = (path: string) => {
-		dispatch(showEditDialog({ path, authoringBase, site, onSaveSuccess: fetchBrokenReferences() }));
+	const onEditReferenceClick = (referencePath: string) => {
+		dispatch(
+			pushDialog({
+				component: 'craftercms.components.LegacyFormDialog',
+
+				props: {
+					path: referencePath,
+					authoringBase,
+					site,
+					onSaveSuccess: () => {
+						// Fetch broken references again after editing
+						fetchDependant(site, path).subscribe((response: LegacyItem[]) => {
+							const refs = parseLegacyItemToContentItem(response);
+							setReferences(refs);
+						});
+					}
+				}
+			})
+		);
 	};
 
 	return error ? (

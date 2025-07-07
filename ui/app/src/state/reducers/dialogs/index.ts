@@ -22,7 +22,6 @@ import compareVersions from './compareVersions';
 import edit from './edit';
 import codeEditor from './codeEditor';
 import uiBlocker from './uiBlocker';
-import brokenReferences from './brokenReferences';
 
 export default combineReducers({
 	minimizedTabs,
@@ -31,6 +30,5 @@ export default combineReducers({
 	compareVersions,
 	edit,
 	codeEditor,
-	uiBlocker,
-	brokenReferences
+	uiBlocker
 });
