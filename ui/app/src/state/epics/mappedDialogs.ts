@@ -110,6 +110,7 @@ import { updatePublishingStatus } from '../actions/publishingStatus';
 import { DialogStackItem, StandardAction } from '../../models';
 import { createCallback, EnhancedDialogProps } from '../../components';
 import { blockUI, unblockUI } from '../actions/system';
+import { NEVER } from 'rxjs';
 
 const dialogsMap = {
 	[showConfirmDialog.type]: 'craftercms.components.ConfirmDialog',
@@ -189,7 +190,7 @@ const showDialogsEpics: CrafterCMSEpic[] = [
 				showFolderMoveAlertDialog.type
 			),
 			withLatestFrom(state$),
-			map(([{ payload, type }]) => {
+			map(([{ payload, type }, state]) => {
 				const dialogId = generateDialogId(type);
 				const dialogProps: DialogStackItem<EnhancedDialogProps>['props'] = { ...payload };
 				Object.entries((payload as EnhancedDialogProps) ?? {}).forEach(([key, value]) => {
@@ -198,6 +199,12 @@ const showDialogsEpics: CrafterCMSEpic[] = [
 						dialogProps[key] = createCallback(value as StandardAction, store.dispatch);
 					}
 				});
+
+				const isDialogOpen = Boolean(state.dialogStack.byId[dialogId]);
+
+				// If showEditDialog or showCodeEditorDialog is already open, do not open another one
+				if ((type === showEditDialog.type || type === showCodeEditorDialog.type) && isDialogOpen) return NEVER;
+
 				return pushDialog({
 					id: dialogId,
 					component: dialogsMap[type],

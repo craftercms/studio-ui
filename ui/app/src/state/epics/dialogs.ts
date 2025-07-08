@@ -62,6 +62,9 @@ import { getHostToGuestBus } from '../../utils/subjects';
 import { unlockItem } from '../actions/content';
 import { parseLegacyItemToContentItem } from '../../utils/content';
 import { LegacyItem } from '../../models';
+import { generateDialogId } from '../../utils/dialogs';
+import { LegacyFormDialogStateProps } from '../../components/LegacyFormDialog/utils';
+import { CodeEditorDialogStateProps } from '../../components';
 
 function getDialogNameFromType(type: string): string {
 	let name = getDialogActionNameFromType(type);
@@ -174,25 +177,39 @@ const dialogEpics: CrafterCMSEpic[] = [
 				// form before opening another.
 				let showValidation = false;
 
-				if (type === showEditDialog.type) {
-					showValidation =
-						payload.path !== state.dialogs.edit.path ||
-						payload.iceGroupId !== state.dialogs.edit.iceGroupId ||
-						payload.modelId !== state.dialogs.edit.modelId;
-				} else {
-					showValidation = payload.path !== state.dialogs.codeEditor.path;
+				const dialogId = generateDialogId(type);
+				const dialogState = state.dialogStack.byId[dialogId];
+
+				if (dialogState) {
+					if (type === showEditDialog.type) {
+						showValidation =
+							payload.path !== (dialogState.props as LegacyFormDialogStateProps).path ||
+							payload.iceGroupId !== (dialogState.props as LegacyFormDialogStateProps).iceGroupId ||
+							payload.modelId !== (dialogState.props as LegacyFormDialogStateProps).modelId;
+					} else {
+						showValidation = payload.path !== (dialogState.props as CodeEditorDialogStateProps).path;
+					}
 				}
 
 				if (nou(payload.path) || !showValidation) {
 					// If showEditDialog action is called while the dialog is already open & minimized, we maximize it.
 					// Differences in the showEditDialog payload — to what's on the state — are ignored, except for the path,
 					// which is used to check if it's the same form that's getting opened.
-					const { isMinimized, updateDialogAction } =
-						type === showEditDialog.type
-							? { isMinimized: state.dialogs.edit.isMinimized, updateDialogAction: updateEditDialogConfig }
-							: { isMinimized: state.dialogs.codeEditor.isMinimized, updateDialogAction: updateCodeEditorDialog };
-					if (isMinimized === true) {
-						return of(updateDialogAction({ isMinimized: false }));
+
+					if (dialogState) {
+						const { isMinimized, updateDialogAction } =
+							type === showEditDialog.type
+								? {
+										isMinimized: (dialogState.props as LegacyFormDialogStateProps).isMinimized,
+										updateDialogAction: updateEditDialogConfig
+									}
+								: {
+										isMinimized: (dialogState.props as CodeEditorDialogStateProps).isMinimized,
+										updateDialogAction: updateCodeEditorDialog
+									};
+						if (isMinimized === true) {
+							return of(updateDialogAction({ isMinimized: false }));
+						}
 					} else {
 						return NEVER;
 					}
