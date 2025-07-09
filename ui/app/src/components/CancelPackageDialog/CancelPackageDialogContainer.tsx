@@ -29,9 +29,10 @@ import { isBlank } from '../../utils/string';
 import useSpreadState from '../../hooks/useSpreadState';
 import { useDispatch } from 'react-redux';
 import { Divider } from '@mui/material';
-import { showErrorDialog, updateCancelPackageDialog } from '../../state/actions/dialogs';
+import { updateCancelPackageDialog } from '../../state/actions/dialogs';
 import { batchActions } from '../../state/actions/misc';
 import { showSystemNotification } from '../../state/actions/system';
+import { pushDialog } from '../../state/actions/dialogStack';
 
 export interface CancelPackageDialogContainerProps
 	extends CancelPackageDialogBaseProps,
@@ -67,7 +68,7 @@ export function CancelPackageDialogContainer(props: CancelPackageDialogContainer
 				dispatch(
 					batchActions([
 						updateCancelPackageDialog({ isSubmitting: false }),
-						showErrorDialog({ error: response.response })
+						pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response.response } })
 					])
 				);
 			}

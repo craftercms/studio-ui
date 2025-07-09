@@ -32,7 +32,6 @@ import { trash } from '../../services/sites';
 import { batchActions } from '../../state/actions/misc';
 import { showSystemNotification } from '../../state/actions/system';
 import { fetchSites, popSite } from '../../state/actions/sites';
-import { showErrorDialog } from '../../state/actions/dialogs';
 import { ErrorBoundary } from '../ErrorBoundary/ErrorBoundary';
 import SitesGrid from '../SitesGrid/SitesGrid';
 import PublishingStatusDialog from '../PublishingStatusDialog';
@@ -133,7 +132,7 @@ export function SiteManagement() {
 			},
 			error({ response: { response } }) {
 				setDisabledSitesLookup({ [site.id]: false });
-				dispatch(showErrorDialog({ error: response }));
+				dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } }));
 			}
 		});
 	};

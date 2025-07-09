@@ -24,13 +24,7 @@ import { useSelection } from '../../hooks/useSelection';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useEnv } from '../../hooks/useEnv';
 import { ContextMenuOption } from '../ContextMenu';
-import {
-	showEditDialog,
-	showErrorDialog,
-	showItemMegaMenu,
-	showPreviewDialog,
-	updatePreviewDialog
-} from '../../state/actions/dialogs';
+import { showEditDialog, showItemMegaMenu, showPreviewDialog, updatePreviewDialog } from '../../state/actions/dialogs';
 import { getNumOfMenuOptionsForItem, getSystemTypeFromPath } from '../../utils/content';
 import LookupTable from '../../models/LookupTable';
 import { search } from '../../services/search';
@@ -43,6 +37,7 @@ import { fetchContentXML } from '../../services/content';
 import { getPreviewURLFromPath } from '../../utils/path';
 import { IconButtonProps } from '@mui/material/IconButton';
 import useFetchContentItems from '../../hooks/useFetchContentItems';
+import { pushDialog } from '../../state/actions/dialogStack';
 
 export const drawerWidth = 300;
 
@@ -327,9 +322,12 @@ export const useSearchState = ({
 				} else {
 					console.error(error);
 					dispatch(
-						showErrorDialog({
-							error: {
-								message: formatMessage(translations.unknownError)
+						pushDialog({
+							component: 'craftercms.components.ErrorDialog',
+							props: {
+								error: {
+									message: formatMessage(translations.unknownError)
+								}
 							}
 						})
 					);

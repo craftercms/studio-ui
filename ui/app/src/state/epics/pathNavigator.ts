@@ -71,7 +71,7 @@ import {
 	workflowEventReject,
 	workflowEventSubmit
 } from '../actions/system';
-import { showErrorDialog } from '../actions/dialogs';
+import { pushDialog } from '../actions/dialogStack';
 
 export default [
 	// region pathNavigatorInit
@@ -207,7 +207,11 @@ export default [
 						map(({ item, children }) => pathNavigatorFetchPathComplete({ id, parent: item, children })),
 						catchAjaxError(
 							(error) => pathNavigatorFetchPathFailed({ id, error }),
-							(error) => showErrorDialog({ error: error.response ?? error })
+							(error) =>
+								pushDialog({
+									component: 'craftercms.components.ErrorDialog',
+									props: { error: error.response ?? error }
+								})
 						)
 					)
 			)
@@ -237,7 +241,11 @@ export default [
 						),
 						catchAjaxError(
 							(error) => pathNavigatorConditionallySetPathFailed({ id, error }),
-							(error) => showErrorDialog({ error: error.response ?? error })
+							(error) =>
+								pushDialog({
+									component: 'craftercms.components.ErrorDialog',
+									props: { error: error.response ?? error }
+								})
 						)
 					)
 			)

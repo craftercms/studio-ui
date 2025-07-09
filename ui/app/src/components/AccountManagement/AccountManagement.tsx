@@ -47,7 +47,7 @@ import TableBody from '@mui/material/TableBody';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import { preferencesGroups } from './utils';
-import { showErrorDialog } from '../../state/actions/dialogs';
+import { pushDialog } from '../../state/actions/dialogStack';
 
 interface AccountManagementProps {
 	passwordRequirementsMinComplexity?: number;
@@ -109,7 +109,7 @@ export function AccountManagement(props: AccountManagementProps) {
 				setNewPassword('');
 			},
 			error({ response: { response } }) {
-				dispatch(showErrorDialog({ error: response }));
+				dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } }));
 			}
 		});
 	};

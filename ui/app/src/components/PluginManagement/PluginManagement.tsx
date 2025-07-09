@@ -65,7 +65,7 @@ import { fetchMyPermissions } from '../../services/users';
 import Tooltip from '@mui/material/Tooltip';
 import PencilIcon from '@mui/icons-material/EditOutlined';
 import { styled } from '@mui/material/styles';
-import { showErrorDialog } from '../../state/actions/dialogs';
+import { pushDialog } from '../../state/actions/dialogStack';
 
 const messages = defineMessages({
 	pluginInstalled: {
@@ -130,11 +130,7 @@ export const PluginManagement = (props: PluginManagementProps) => {
 					);
 				},
 				(error) => {
-					dispatch(
-						showErrorDialog({
-							error
-						})
-					);
+					dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error } }));
 				}
 			),
 		[dispatch, siteId]

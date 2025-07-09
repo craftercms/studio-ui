@@ -22,7 +22,7 @@ import { ContentItem } from '../../models/Item';
 import { getParentPath, getRootPath, withoutIndex } from '../../utils/path';
 import { checkPathExistence, createFolder, renameFolder } from '../../services/content';
 import { batchActions } from '../../state/actions/misc';
-import { showErrorDialog, updateCreateFolderDialog } from '../../state/actions/dialogs';
+import { updateCreateFolderDialog } from '../../state/actions/dialogs';
 import { validateActionPolicy } from '../../services/sites';
 import { translations } from './translations';
 import DialogBody from '../DialogBody/DialogBody';
@@ -45,7 +45,8 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import Typography from '@mui/material/Typography';
 import { cancelPackages, fetchAffectedPackages } from '../../services/workflow';
-import { switchMap, map } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
+import { pushDialog } from '../../state/actions/dialogStack';
 
 export function CreateFolderContainer(props: CreateFolderContainerProps) {
 	const { onClose, onCreated, onRenamed, rename = false, value = '', allowBraces = false } = props;
@@ -113,7 +114,12 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
 	const onCancelPackagesAckChange = (e: React.ChangeEvent<HTMLInputElement>) => setCancelPackagesAck(e.target.checked);
 
 	const onError = (error: ApiResponse) => {
-		dispatch(batchActions([showErrorDialog({ error }), updateCreateFolderDialog({ isSubmitting: false })]));
+		dispatch(
+			batchActions([
+				pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: error } }),
+				updateCreateFolderDialog({ isSubmitting: false })
+			])
+		);
 	};
 
 	const onRenameFolder = (site: string, path: string, name: string) => {

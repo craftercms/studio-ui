@@ -25,7 +25,6 @@ import {
 	showCreateFolderDialog,
 	showDeleteDialog,
 	showDependenciesDialog,
-	showErrorDialog,
 	showHistoryDialog,
 	showPreviewDialog,
 	showRenameAssetDialog
@@ -671,7 +670,7 @@ export const itemActionDispatcher = ({
 							}
 						},
 						error({ response }) {
-							dispatch(showErrorDialog({ error: response }));
+							dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } }));
 						}
 					});
 				}
@@ -702,11 +701,14 @@ export const itemActionDispatcher = ({
 							dispatch(
 								batchActions([
 									unblockUI(),
-									showErrorDialog({
-										error: {
-											code: '7000',
-											message: `Content not found`,
-											remedialAction: `Check if the item was deleted from the system or blob store`
+									pushDialog({
+										component: 'craftercms.components.ErrorDialog',
+										props: {
+											error: {
+												code: '7000',
+												message: `Content not found`,
+												remedialAction: `Check if the item was deleted from the system or blob store`
+											}
 										}
 									})
 								])
@@ -714,7 +716,12 @@ export const itemActionDispatcher = ({
 						}
 					},
 					error(response) {
-						dispatch(batchActions([unblockUI(), showErrorDialog({ error: response })]));
+						dispatch(
+							batchActions([
+								unblockUI(),
+								pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } })
+							])
+						);
 					}
 				});
 				break;

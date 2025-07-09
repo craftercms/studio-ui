@@ -32,7 +32,6 @@ import Typography from '@mui/material/Typography';
 import { fetchPublishingTargets, publish } from '../../services/publishing';
 import { showSystemNotification } from '../../state/actions/system';
 import { useDispatch } from 'react-redux';
-import { showErrorDialog } from '../../state/actions/dialogs';
 import Link from '@mui/material/Link';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import { isBlank } from '../../utils/string';
@@ -235,7 +234,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 				setHasInitialPublish(response);
 			},
 			error(error) {
-				dispatch(showErrorDialog(error));
+				dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error } }));
 			}
 		});
 		fetchPublishingTargets(siteId).subscribe({

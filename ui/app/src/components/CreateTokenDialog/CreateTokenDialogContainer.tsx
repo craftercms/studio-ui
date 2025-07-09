@@ -35,7 +35,7 @@ import { useDispatch } from 'react-redux';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
 import { createAtLeastHalfHourInFutureDate } from '../../utils/datetime';
 import Box from '@mui/material/Box';
-import { showErrorDialog } from '../../state/actions/dialogs';
+import { pushDialog } from '../../state/actions/dialogStack';
 
 const translations = defineMessages({
 	placeholder: {
@@ -87,9 +87,12 @@ export function CreateTokenDialogContainer(props: CreateTokenContainerProps) {
 					isSubmitting: false
 				});
 				dispatch(
-					showErrorDialog({
-						error: response.response,
-						validationErrors: response.validationErrors
+					pushDialog({
+						component: 'craftercms.components.ErrorDialog',
+						props: {
+							error: response.response,
+							validationErrors: response.validationErrors
+						}
 					})
 				);
 			}

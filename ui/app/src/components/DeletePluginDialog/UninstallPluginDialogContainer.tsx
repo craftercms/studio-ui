@@ -25,7 +25,7 @@ import useUpdateRefs from '../../hooks/useUpdateRefs';
 import useSpreadState from '../../hooks/useSpreadState';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { LoadingState } from '../LoadingState';
-import { showErrorDialog } from '../../state/actions/dialogs';
+import { pushDialog } from '../../state/actions/dialogStack';
 
 export function UninstallPluginDialogContainer(props: UninstallPluginDialogContainerProps) {
 	const { onClose, pluginId, onComplete, isSubmitting, onSubmittingAndOrPendingChange } = props;
@@ -75,7 +75,7 @@ export function UninstallPluginDialogContainer(props: UninstallPluginDialogConta
 				callbacksRef.current.onSubmittingAndOrPendingChange({
 					isSubmitting: false
 				});
-				dispatch(showErrorDialog({ error: response }));
+				dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } }));
 			}
 		});
 	};

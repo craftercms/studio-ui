@@ -21,7 +21,7 @@ import { fetchContentXML, lock, writeContent } from '../../services/content';
 import { ConditionalLoadingState } from '../LoadingState/LoadingState';
 import AceEditor from '../AceEditor/AceEditor';
 import { useDispatch } from 'react-redux';
-import { showErrorDialog, updateCodeEditorDialog } from '../../state/actions/dialogs';
+import { updateCodeEditorDialog } from '../../state/actions/dialogs';
 import Skeleton from '@mui/material/Skeleton';
 import ListSubheader from '@mui/material/ListSubheader';
 import DialogFooter from '../DialogFooter/DialogFooter';
@@ -125,7 +125,10 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 				},
 				error({ response }) {
 					dispatch(
-						batchActions([updateCodeEditorDialog({ isSubmitting: false }), showErrorDialog({ error: response })])
+						batchActions([
+							updateCodeEditorDialog({ isSubmitting: false }),
+							pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } })
+						])
 					);
 				}
 			});

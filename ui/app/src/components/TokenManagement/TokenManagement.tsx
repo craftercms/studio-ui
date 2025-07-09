@@ -49,7 +49,7 @@ import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { useWithPendingChangesCloseRequest } from '../../hooks/useWithPendingChangesCloseRequest';
 import Tooltip from '@mui/material/Tooltip';
 import { CreatePreviewTokenDialog } from '../CreatePreviewTokenDialog';
-import { showErrorDialog } from '../../state/actions/dialogs';
+import { pushDialog } from '../../state/actions/dialogStack';
 
 const StyledTableCell = styled(TableCell)(() => ({
 	padding: '5px'
@@ -197,7 +197,12 @@ export function TokenManagement() {
 			},
 			(response) => {
 				setTokens(_tokens);
-				dispatch(showErrorDialog({ error: response }));
+				dispatch(
+					pushDialog({
+						component: 'craftercms.components.ErrorDialog',
+						props: { error: response }
+					})
+				);
 			}
 		);
 	};
@@ -224,7 +229,7 @@ export function TokenManagement() {
 					...checkedLookup,
 					[id]: false
 				});
-				dispatch(showErrorDialog({ error: response }));
+				dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } }));
 			}
 		);
 	};
@@ -257,7 +262,7 @@ export function TokenManagement() {
 					},
 					(response) => {
 						fetchTokens();
-						dispatch(showErrorDialog({ error: response }));
+						dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } }));
 					}
 				);
 				break;

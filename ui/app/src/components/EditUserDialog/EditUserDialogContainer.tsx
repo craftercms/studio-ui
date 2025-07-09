@@ -28,7 +28,7 @@ import { EditUserDialogContainerProps } from './utils';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
 import { isInvalidEmail, validateFieldMinLength } from '../UserManagement/utils';
 import { pluckProps } from '../../utils/object';
-import { showErrorDialog } from '../../state/actions/dialogs';
+import { pushDialog } from '../../state/actions/dialogStack';
 
 const translations = defineMessages({
 	userDeleted: {
@@ -107,7 +107,7 @@ export function EditUserDialogContainer(props: EditUserDialogContainerProps) {
 					);
 				},
 				error({ response: { response } }) {
-					dispatch(showErrorDialog({ error: response }));
+					dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } }));
 				}
 			});
 		} else {
@@ -120,7 +120,7 @@ export function EditUserDialogContainer(props: EditUserDialogContainerProps) {
 					);
 				},
 				error({ response: { response } }) {
-					dispatch(showErrorDialog({ error: response }));
+					dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } }));
 				}
 			});
 		}
@@ -148,7 +148,7 @@ export function EditUserDialogContainer(props: EditUserDialogContainerProps) {
 				});
 			},
 			error({ response: { response } }) {
-				dispatch(showErrorDialog({ error: response }));
+				dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } }));
 				fnRefs.current.onSubmittingAndOrPendingChange({
 					isSubmitting: false
 				});
@@ -168,7 +168,7 @@ export function EditUserDialogContainer(props: EditUserDialogContainerProps) {
 				fnRefs.current.onUserEdited();
 			},
 			error({ response: { response } }) {
-				dispatch(showErrorDialog({ error: response }));
+				dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } }));
 			}
 		});
 	};

@@ -22,12 +22,7 @@ import { isBlank } from '../../utils/string';
 import { update } from '../../services/sites';
 import { fetchSites } from '../../state/actions/sites';
 import { EditSiteDialogContainerProps } from './utils';
-import {
-	closeSingleFileUploadDialog,
-	showErrorDialog,
-	showSingleFileUploadDialog,
-	updateEditSiteDialog
-} from '../../state/actions/dialogs';
+import { updateEditSiteDialog } from '../../state/actions/dialogs';
 import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
 import { ConditionalLoadingState } from '../LoadingState/LoadingState';
 import useProjectPreviewImage from '../../hooks/useProjectPreviewImage';
@@ -47,6 +42,8 @@ import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import { PROJECT_PREVIEW_IMAGE_UPDATED } from '../../utils/constants';
 import { showSystemNotification } from '../../state/actions/system';
+import { popDialog, pushDialog } from '../../state/actions/dialogStack';
+import { nanoid } from 'nanoid';
 
 export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
 	const { site, onClose, onSaveSuccess, onSiteImageChange, isSubmitting } = props;
@@ -93,7 +90,12 @@ export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
 					onSaveSuccess?.(response);
 				},
 				error({ response: { response } }) {
-					dispatch(batchActions([updateEditSiteDialog({ isSubmitting: false }), showErrorDialog({ error: response })]));
+					dispatch(
+						batchActions([
+							updateEditSiteDialog({ isSubmitting: false }),
+							pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } })
+						])
+					);
 				}
 			});
 		}
@@ -125,17 +127,22 @@ export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
 	};
 
 	const onEditSiteImage = () => {
+		const dialogId = nanoid();
 		dispatch(
-			showSingleFileUploadDialog({
-				path: '/.crafter/screenshots',
-				site: site.id,
-				customFileName: 'default.png',
-				fileTypes: ['image/png'],
-				onClose: closeSingleFileUploadDialog(),
-				onUploadComplete: batchActions([
-					closeSingleFileUploadDialog(),
-					dispatchDOMEvent({ id: PROJECT_PREVIEW_IMAGE_UPDATED })
-				])
+			pushDialog({
+				id: dialogId,
+				component: 'craftercms.components.SingleFileUploadDialog',
+				props: {
+					path: '/.crafter/screenshots',
+					site: site.id,
+					customFileName: 'default.png',
+					fileTypes: ['image/png'],
+					onClose: () => dispatch(popDialog({ id: dialogId })),
+					onUploadComplete: () =>
+						dispatch(
+							batchActions([popDialog({ id: dialogId }), dispatchDOMEvent({ id: PROJECT_PREVIEW_IMAGE_UPDATED })])
+						)
+				}
 			})
 		);
 	};

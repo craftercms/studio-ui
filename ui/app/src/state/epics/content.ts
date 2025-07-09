@@ -54,13 +54,7 @@ import {
 	unlock
 } from '../../services/content';
 import { merge, Observable, of } from 'rxjs';
-import {
-	closeDeleteDialog,
-	showDeleteDialog,
-	showEditDialog,
-	showErrorDialog,
-	showItemMegaMenu
-} from '../actions/dialogs';
+import { closeDeleteDialog, showDeleteDialog, showEditDialog, showItemMegaMenu } from '../actions/dialogs';
 import { getEditorMode, isEditableAsset } from '../../utils/content';
 import {
 	blockUI,
@@ -246,7 +240,7 @@ const content: CrafterCMSEpic[] = [
 			),
 			catchAjaxError(
 				() => unblockUI(),
-				(error) => showErrorDialog({ error: error.response })
+				(error) => pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: error.response } })
 			)
 		),
 	// endregion
@@ -329,7 +323,8 @@ const content: CrafterCMSEpic[] = [
 						}),
 						catchAjaxError(
 							() => unblockUI(),
-							(error) => showErrorDialog({ error: error.response })
+							(error) =>
+								pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: error.response } })
 						)
 					)
 				)
@@ -442,7 +437,8 @@ const content: CrafterCMSEpic[] = [
 						map(() => batchActions([unblockUI(), clearClipboard(), showPasteItemSuccessNotification()])),
 						catchAjaxError(
 							() => unblockUI(),
-							(error) => showErrorDialog({ error: error.response })
+							(error) =>
+								pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: error.response } })
 						)
 					)
 				)
@@ -585,7 +581,10 @@ const content: CrafterCMSEpic[] = [
 													onOk: () => store.dispatch(popDialog({ id: dialogId }))
 												}
 											})
-										: showErrorDialog({ error: error.response ?? error })
+										: pushDialog({
+												component: 'craftercms.components.ErrorDialog',
+												props: { error: error.response ?? error }
+											})
 								]);
 							})
 						)

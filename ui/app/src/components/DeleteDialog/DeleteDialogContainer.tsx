@@ -62,7 +62,6 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
 		!confirmChecked;
 	const authoringBase = useSelection((state) => state.env.authoringBase);
 	const dependentItemsPaths = dependentItems?.map((item) => item.path) ?? [];
-
 	const onSubmit = () => {
 		const paths = createCheckedList(selectedItems);
 		dispatch(updateDeleteDialog({ isSubmitting: true }));

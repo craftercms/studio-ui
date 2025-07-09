@@ -28,7 +28,7 @@ import PrimaryButton from '../PrimaryButton';
 import ConfirmDialog from '../ConfirmDialog';
 import { CreateFileContainerProps } from './utils';
 import { translations } from './translations';
-import { showErrorDialog, updateCreateFileDialog, updateCreateFolderDialog } from '../../state/actions/dialogs';
+import { updateCreateFileDialog, updateCreateFolderDialog } from '../../state/actions/dialogs';
 import { batchActions } from '../../state/actions/misc';
 import useEnhancedDialogContext from '../EnhancedDialog/useEnhancedDialogContext';
 import useItemsByPath from '../../hooks/useItemsByPath';
@@ -37,6 +37,7 @@ import { isBlank } from '../../utils/string';
 import { applyAssetNameRules } from '../../utils/content';
 import { getFileNameWithExtensionForItemType, pickExtensionForItemType } from '../../utils/path';
 import ApiResponse from '../../models/ApiResponse';
+import { pushDialog } from '../../state/actions/dialogStack';
 
 export function CreateFileDialogContainer(props: CreateFileContainerProps) {
 	const { onClose, onCreated, type, path, allowBraces } = props;
@@ -57,7 +58,7 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
 	const onError = (error: ApiResponse) => {
 		dispatch(
 			batchActions([
-				showErrorDialog({ error }),
+				pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error } }),
 				updateCreateFileDialog({
 					isSubmitting: false
 				})

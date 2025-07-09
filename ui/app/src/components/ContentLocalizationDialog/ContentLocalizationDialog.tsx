@@ -33,7 +33,7 @@ import ActionsBar from '../ActionsBar';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useUnmount } from '../../hooks/useUnmount';
 import Box from '@mui/material/Box';
-import { showErrorDialog } from '../../state/actions/dialogs';
+import { pushDialog } from '../../state/actions/dialogStack';
 
 const translations: { [id: string]: any } = defineMessages({
 	mark: {
@@ -184,11 +184,7 @@ function ContentLocalizationDialogUI(props: ContentLocalizationDialogProps) {
 						});
 					},
 					({ response }) => {
-						dispatch(
-							showErrorDialog({
-								error: response
-							})
-						);
+						dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } }));
 					}
 				);
 				break;

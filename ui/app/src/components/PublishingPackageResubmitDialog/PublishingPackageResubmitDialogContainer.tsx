@@ -41,11 +41,12 @@ import { createLookupTable } from '../../utils/object';
 import { Fade } from '@mui/material';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
-import { showErrorDialog, updatePublishingPackageResubmitDialog } from '../../state/actions/dialogs';
+import { updatePublishingPackageResubmitDialog } from '../../state/actions/dialogs';
 import { batchActions } from '../../state/actions/misc';
 import { isBlank } from '../../utils/string';
 import { LoadingState } from '../LoadingState';
 import useActiveUser from '../../hooks/useActiveUser';
+import { pushDialog } from '../../state/actions/dialogStack';
 
 export function PublishingPackageResubmitDialogContainer(props: PublishingPackageResubmitDialogContainerProps) {
 	const { pkg, type, isSubmitting, onSuccess, onClose } = props;
@@ -182,7 +183,7 @@ export function PublishingPackageResubmitDialogContainer(props: PublishingPackag
 				dispatch(
 					batchActions([
 						updatePublishingPackageResubmitDialog({ isSubmitting: false }),
-						showErrorDialog({ error: response.response })
+						pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response.response } })
 					])
 				);
 			}

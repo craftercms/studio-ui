@@ -35,7 +35,7 @@ import PublishCommitDialog from '../PublishCommitDialog/PublishCommitDialog';
 import useSpreadState from '../../../hooks/useSpreadState';
 import RepoGridSkeleton from './RepoGridSkeleton';
 import { ApiResponse } from '../../../models';
-import { showErrorDialog } from '../../../state/actions/dialogs';
+import { pushDialog } from '../../../state/actions/dialogStack';
 
 export interface RepoGridProps {
 	repositories: Array<Repository>;
@@ -144,7 +144,12 @@ export function RepoGrid(props: RepoGridProps) {
 
 	const onPushError = (response) => {
 		pushToRemoteDialogState.onClose();
-		dispatch(showErrorDialog({ error: response }));
+		dispatch(
+			pushDialog({
+				component: 'craftercms.components.ErrorDialog',
+				props: { error: response }
+			})
+		);
 	};
 
 	const deleteRemote = (remoteName: string) => {
@@ -158,7 +163,12 @@ export function RepoGrid(props: RepoGridProps) {
 				);
 			},
 			({ response }) => {
-				dispatch(showErrorDialog({ error: response }));
+				dispatch(
+					pushDialog({
+						component: 'craftercms.components.ErrorDialog',
+						props: { error: response }
+					})
+				);
 			}
 		);
 	};

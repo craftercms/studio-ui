@@ -49,7 +49,7 @@ import { fetchItemVersions } from '../../state/actions/versions';
 import { fetchItemByPath } from '../../services/content';
 import SearchBar from '../SearchBar/SearchBar';
 import Alert, { alertClasses } from '@mui/material/Alert';
-import { showErrorDialog, showHistoryDialog } from '../../state/actions/dialogs';
+import { showHistoryDialog } from '../../state/actions/dialogs';
 import { batchActions } from '../../state/actions/misc';
 import { capitalize, stripCData } from '../../utils/string';
 import { itemReverted, showSystemNotification } from '../../state/actions/system';
@@ -142,7 +142,7 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
 				setEnvironment(env);
 			},
 			error({ response }) {
-				dispatch(showErrorDialog({ error: response }));
+				dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } }));
 			}
 		});
 	});
@@ -208,7 +208,7 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
 					setFiles(files.map((file) => ({ ...file, id: `${file.module}/${file.path}` })));
 				},
 				error({ response }) {
-					dispatch(showErrorDialog({ error: response.response }));
+					dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response.response } }));
 				}
 			});
 		}
@@ -304,7 +304,7 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
 					setEncrypting(false);
 				},
 				error({ response: { response } }) {
-					dispatch(showErrorDialog({ error: response }));
+					dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } }));
 				}
 			});
 		} else {
@@ -535,7 +535,7 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
 					},
 					error: ({ response: { response } }) => {
 						functionRefs.current.onSubmittingAndOrPendingChange?.({ isSubmitting: false });
-						dispatch(showErrorDialog({ error: response }));
+						dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } }));
 					}
 				});
 			} else {

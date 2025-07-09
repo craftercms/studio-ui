@@ -41,7 +41,7 @@ import {
 	reloadRequest
 } from '../../state/actions/preview';
 import { getHostToGuestBus } from '../../utils/subjects';
-import { showErrorDialog, updateEditDialogConfig } from '../../state/actions/dialogs';
+import { updateEditDialogConfig } from '../../state/actions/dialogs';
 import { useUnmount } from '../../hooks/useUnmount';
 import LoadingState from '../LoadingState/LoadingState';
 import ErrorDialog from '../ErrorDialog/ErrorDialog';
@@ -52,6 +52,7 @@ import { useFetchItem } from '../../hooks/useFetchItem';
 import Box from '@mui/material/Box';
 import usePreviewNavigation from '../../hooks/usePreviewNavigation';
 import { getSystemLink } from '../../utils/system';
+import { pushDialog } from '../../state/actions/dialogStack';
 
 // FE2 TODO: for removal after FE1 removal
 export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyEditor(
@@ -220,7 +221,12 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
 				}
 				case EMBEDDED_LEGACY_FORM_RENDER_FAILED: {
 					onClose();
-					dispatch(showErrorDialog({ error: { message: formatMessage(translations.error) } }));
+					dispatch(
+						pushDialog({
+							component: 'craftercms.components.ErrorDialog',
+							props: { error: { message: formatMessage(translations.error) } }
+						})
+					);
 					break;
 				}
 				case EMBEDDED_LEGACY_FORM_SAVE: {

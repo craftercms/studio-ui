@@ -51,7 +51,7 @@ import Typography from '@mui/material/Typography';
 import hljs from '../../env/hljs';
 import useEnv from '../../hooks/useEnv';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
-import { showErrorDialog } from '../../state/actions/dialogs';
+import { pushDialog } from '../../state/actions/dialogStack';
 
 interface BodyProps extends Pick<EnhancedDialogProps, 'isSubmitting' | 'onClose'> {
 	onTokenGenerated?(token: string): void;
@@ -193,7 +193,7 @@ function Body(props: BodyProps) {
 			},
 			error(response) {
 				functionRefs.current.onSubmittingAndOrPendingChange({ isSubmitting: false });
-				dispatch(showErrorDialog({ error: response }));
+				dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } }));
 			}
 		});
 	};

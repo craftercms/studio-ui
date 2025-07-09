@@ -32,7 +32,7 @@ import LogConsoleDetailsDialog from '../LogConsoleDetailsDialog';
 import EmptyState from '../EmptyState/EmptyState';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useMount } from '../../hooks/useMount';
-import { showErrorDialog } from '../../state/actions/dialogs';
+import { pushDialog } from '../../state/actions/dialogStack';
 
 interface LogConsoleManagementProps {
 	logType?: 'studio' | 'preview';
@@ -64,7 +64,7 @@ export function LogConsole(props: LogConsoleManagementProps) {
 				error(response) {
 					response = response.response ? response.response.response : response;
 					setError(response);
-					dispatch(showErrorDialog({ error: response }));
+					dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } }));
 				}
 			});
 		},

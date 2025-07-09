@@ -43,7 +43,7 @@ import LoadingState from '../LoadingState/LoadingState';
 import { AjaxError } from 'rxjs/ajax';
 import ApiResponseErrorState from '../ApiResponseErrorState/ApiResponseErrorState';
 import ApiResponse from '../../models/ApiResponse';
-import { showErrorDialog } from '../../state/actions/dialogs';
+import { pushDialog } from '../../state/actions/dialogStack';
 
 export function InstallPluginDialogContainer(props: InstallPluginDialogProps) {
 	const siteId = useActiveSiteId();
@@ -132,7 +132,12 @@ export function InstallPluginDialogContainer(props: InstallPluginDialogProps) {
 			},
 			error({ response }) {
 				setInstallingLookup({ [plugin.id]: false });
-				dispatch(batchActions([showErrorDialog({ error: response.response }), unblockUI()]));
+				dispatch(
+					batchActions([
+						pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response.response } }),
+						unblockUI()
+					])
+				);
 			}
 		});
 	};

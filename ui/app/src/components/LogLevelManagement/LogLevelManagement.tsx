@@ -28,7 +28,7 @@ import useDebouncedInput from '../../hooks/useDebouncedInput';
 import IconButton from '@mui/material/IconButton';
 import RefreshRounded from '@mui/icons-material/RefreshRounded';
 import Tooltip from '@mui/material/Tooltip';
-import { showErrorDialog } from '../../state/actions/dialogs';
+import { pushDialog } from '../../state/actions/dialogStack';
 
 const messages = defineMessages({
 	levelChangedSuccess: {
@@ -80,7 +80,7 @@ export function LogLevelManagement() {
 				setFetching(false);
 			},
 			error({ response }) {
-				dispatch(showErrorDialog({ error: response }));
+				dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } }));
 				setFetching(false);
 			}
 		});
@@ -102,7 +102,7 @@ export function LogLevelManagement() {
 				);
 			},
 			error(response) {
-				dispatch(showErrorDialog({ error: response }));
+				dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } }));
 			}
 		});
 	};

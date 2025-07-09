@@ -47,11 +47,12 @@ import { createAtLeastHalfHourInFutureDate } from '../../utils/datetime';
 import { approvePackage, rejectPackage } from '../../services/workflow';
 import { batchActions } from '../../state/actions/misc';
 import { useDispatch } from 'react-redux';
-import { showErrorDialog, updatePublishingPackageReviewDialog } from '../../state/actions/dialogs';
+import { updatePublishingPackageReviewDialog } from '../../state/actions/dialogs';
 import { AsDayMonthDateTime } from '../VersionList';
 import PackageDetails from '../PackageDetailsDialog/PackageDetails';
 import { showSystemNotification } from '../../state/actions/system';
 import { hasApproveAction, hasRejectAction } from '../../utils/content';
+import { pushDialog } from '../../state/actions/dialogStack';
 
 export type PackageReviewAction = 'approve' | 'reject';
 interface InternalDialogState {
@@ -210,7 +211,7 @@ export function PublishingPackageReviewDialogContainer(props: PublishingPackageR
 					dispatch(
 						batchActions([
 							updatePublishingPackageReviewDialog({ isSubmitting: false }),
-							showErrorDialog({ error: response.response })
+							pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response.response } })
 						])
 					);
 				}
@@ -230,7 +231,7 @@ export function PublishingPackageReviewDialogContainer(props: PublishingPackageR
 					dispatch(
 						batchActions([
 							updatePublishingPackageReviewDialog({ isSubmitting: false }),
-							showErrorDialog({ error: response.response })
+							pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response.response } })
 						])
 					);
 				}

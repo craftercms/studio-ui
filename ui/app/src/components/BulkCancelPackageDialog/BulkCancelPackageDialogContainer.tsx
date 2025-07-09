@@ -32,8 +32,9 @@ import { useDispatch } from 'react-redux';
 import { cancelPackages } from '../../services/workflow';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { batchActions } from '../../state/actions/misc';
-import { showErrorDialog, updateBulkCancelPackageDialog } from '../../state/actions/dialogs';
+import { updateBulkCancelPackageDialog } from '../../state/actions/dialogs';
 import { showSystemNotification } from '../../state/actions/system';
+import { pushDialog } from '../../state/actions/dialogStack';
 
 export interface BulkCancelPackageDialogContainerProps
 	extends BulkCancelPackageDialogBaseProps,
@@ -67,7 +68,7 @@ export function BulkCancelPackageDialogContainer(props: BulkCancelPackageDialogC
 				dispatch(
 					batchActions([
 						updateBulkCancelPackageDialog({ isSubmitting: false }),
-						showErrorDialog({ error: response.response })
+						pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response.response } })
 					])
 				);
 			}

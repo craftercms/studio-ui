@@ -137,14 +137,12 @@ import { useActiveSite } from '../../hooks/useActiveSite';
 import { getPathFromPreviewURL, processPathMacros, withIndex } from '../../utils/path';
 import {
 	closeItemMegaMenu,
-	closeSingleFileUploadDialog,
 	itemMegaMenuClosed,
 	rtePickerActionResult,
 	showEditDialog,
 	showItemMegaMenu,
 	showRtePickerActions,
-	ShowRtePickerActionsPayload,
-	showSingleFileUploadDialog
+	ShowRtePickerActionsPayload
 } from '../../state/actions/dialogs';
 import { UNDEFINED } from '../../utils/constants';
 import { useCurrentPreviewItem } from '../../hooks/useCurrentPreviewItem';
@@ -187,7 +185,7 @@ import { ActionCreatorWithOptionalPayload } from '@reduxjs/toolkit';
 import { ItemMegaMenuStateProps } from '../ItemMegaMenu';
 import StandardAction from '../../models/StandardAction';
 import { pickShowContentFormAction } from '../../utils/system';
-import { pushDialog } from '../../state/actions/dialogStack';
+import { popDialog, pushDialog } from '../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
 
 const issueDescriptorRequest = (props: {
@@ -1146,33 +1144,28 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 						setDataSourceActionsListState(dataSourceActionsListInitialState);
 
 						if (path) {
+							const dialogId = nanoid();
 							dispatch(
-								showSingleFileUploadDialog({
-									site: siteId,
-									path,
-									fileTypes: type === 'image' ? ['image/*'] : type === 'video' ? ['video/*'] : ['audio/*'],
-									onClose: batchActions([
-										closeSingleFileUploadDialog(),
-										dispatchDOMEvent({ id: 'fileUploadCanceled' })
-									]),
-									onUploadComplete: batchActions([
-										closeSingleFileUploadDialog(),
-										dispatchDOMEvent({ id: 'fileUploaded' })
-									])
+								pushDialog({
+									id: dialogId,
+									component: 'craftercms.components.SingleFileUploadDialog',
+									props: {
+										site: siteId,
+										path,
+										fileTypes: type === 'image' ? ['image/*'] : type === 'video' ? ['video/*'] : ['audio/*'],
+										onClose: () => {
+											onRtePickerResult();
+											dispatch(popDialog({ id: dialogId }));
+										},
+										onUploadComplete: ({ successful: response }) => {
+											const file = response[0];
+											const filePath = `${file.meta.path}${file.meta.path.endsWith('/') ? '' : '/'}${file.meta.name}`;
+											onRtePickerResult({ path: filePath, name: file.meta.name });
+											dispatch(popDialog({ id: dialogId }));
+										}
+									}
 								})
 							);
-							let unsubscribe, cancelUnsubscribe;
-							unsubscribe = createCustomDocumentEventListener('fileUploaded', ({ successful: response }) => {
-								const file = response[0];
-								const filePath = `${file.meta.path}${file.meta.path.endsWith('/') ? '' : '/'}${file.meta.name}`;
-								onRtePickerResult({ path: filePath, name: file.meta.name });
-								cancelUnsubscribe();
-							});
-
-							cancelUnsubscribe = createCustomDocumentEventListener('fileUploadCanceled', () => {
-								onRtePickerResult();
-								unsubscribe();
-							});
 						} else {
 							dispatch(
 								showSystemNotification({

@@ -30,7 +30,7 @@ import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../state/actions/system';
 import { translations } from '../SiteConfigurationManagement/translations';
 import { parseValidateDocument } from '../../utils/xml';
-import { showErrorDialog } from '../../state/actions/dialogs';
+import { pushDialog } from '../../state/actions/dialogStack';
 
 export function PluginConfigDialogContainer(props: PluginConfigDialogContainerProps) {
 	const siteId = useActiveSiteId();
@@ -53,11 +53,7 @@ export function PluginConfigDialogContainer(props: PluginConfigDialogContainerPr
 				setLoading(false);
 			},
 			error: ({ response }) => {
-				dispatch(
-					showErrorDialog({
-						error: response
-					})
-				);
+				dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } }));
 			}
 		});
 	}, [dispatch, pluginId, siteId]);
@@ -113,11 +109,7 @@ export function PluginConfigDialogContainer(props: PluginConfigDialogContainerPr
 				},
 				error: ({ response }) => {
 					functionRefs.current.onSubmittingAndOrPendingChange({ isSubmitting: false });
-					dispatch(
-						showErrorDialog({
-							error: response.response
-						})
-					);
+					dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response.response } }));
 				}
 			});
 		}

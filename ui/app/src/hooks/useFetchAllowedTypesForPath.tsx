@@ -21,7 +21,7 @@ import useUpdateRefs from './useUpdateRefs';
 import { fetchLegacyContentTypes, parseLegacyContentType } from '../services/contentTypes';
 import { map } from 'rxjs/operators';
 import useActiveSiteId from './useActiveSiteId';
-import { showErrorDialog } from '../state/actions/dialogs';
+import { pushDialog } from '../state/actions/dialogStack';
 
 export function useFetchAllowedTypesForPath(path: string, responseFilterFn?: (types: ContentType[]) => ContentType[]) {
 	const site = useActiveSiteId();
@@ -42,7 +42,7 @@ export function useFetchAllowedTypesForPath(path: string, responseFilterFn?: (ty
 					},
 					error(response) {
 						setIsFetching(false);
-						dispatch(showErrorDialog({ error: response }));
+						dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } }));
 					}
 				});
 			return () => {

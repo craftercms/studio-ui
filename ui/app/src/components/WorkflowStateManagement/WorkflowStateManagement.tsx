@@ -55,7 +55,7 @@ import useMount from '../../hooks/useMount';
 import { fetchPublishingTargets } from '../../services/publishing';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { EmptyState } from '../EmptyState';
-import { showErrorDialog } from '../../state/actions/dialogs';
+import { pushDialog } from '../../state/actions/dialogStack';
 
 const workflowStateManagementMessages = defineMessages({
 	statesUpdatedMessage: {
@@ -273,11 +273,7 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
 	};
 
 	const onError = (error: ApiResponse) => {
-		dispatch(
-			showErrorDialog({
-				error
-			})
-		);
+		dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error } }));
 	};
 
 	const onSetItemStateDialogConfirm = (update: StatesToUpdate) => {

@@ -24,7 +24,7 @@ import { useDispatch } from 'react-redux';
 import { calculatePackage, publish } from '../../services/publishing';
 import { FormattedMessage } from 'react-intl';
 import { isBlank } from '../../utils/string';
-import { showErrorDialog, updatePublishDialog } from '../../state/actions/dialogs';
+import { updatePublishDialog } from '../../state/actions/dialogs';
 import { ContentItem, LightItem } from '../../models';
 import { createAtLeastHalfHourInFutureDate } from '../../utils/datetime';
 import { batchActions } from '../../state/actions/misc';
@@ -49,6 +49,7 @@ import PublishPackageItemsView from './PublishPackageItemsView';
 import PublishReferencesLegend from './PublishReferencesLegend';
 import { PublishDialogForm } from './PublishDialogForm';
 import useActiveUser from '../../hooks/useActiveUser';
+import { pushDialog } from '../../state/actions/dialogStack';
 
 export type DependencyType = 'soft' | 'hard';
 export type DependencyMap = Record<string, DependencyType>;
@@ -248,7 +249,10 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 			},
 			error({ response }) {
 				dispatch(
-					batchActions([updatePublishDialog({ isSubmitting: false }), showErrorDialog({ error: response.response })])
+					batchActions([
+						updatePublishDialog({ isSubmitting: false }),
+						pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response.response } })
+					])
 				);
 			}
 		});

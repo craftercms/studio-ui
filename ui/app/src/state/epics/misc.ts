@@ -27,7 +27,7 @@ import {
 	editTemplate
 } from '../actions/misc';
 import { changeContentType, createFile, fetchContentItem } from '../../services/content';
-import { showEditDialog, showErrorDialog } from '../actions/dialogs';
+import { showEditDialog } from '../actions/dialogs';
 import { reloadContentItem } from '../actions/content';
 import { blockUI, showEditItemSuccessNotification, unblockUI } from '../actions/system';
 import { CrafterCMSEpic } from '../store';
@@ -133,9 +133,7 @@ const epics = [
 							} else {
 								return of(
 									batchActions([
-										showErrorDialog({
-											error: response.response
-										}),
+										pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response.response } }),
 										unblockUI()
 									])
 								);

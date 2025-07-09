@@ -48,7 +48,7 @@ import useUpdateRefs from '../../hooks/useUpdateRefs';
 import { showSystemNotification } from '../../state/actions/system';
 import { PasswordStrengthDisplayPopper } from '../PasswordStrengthDisplayPopper';
 import Box from '@mui/material/Box';
-import { showErrorDialog } from '../../state/actions/dialogs';
+import { pushDialog } from '../../state/actions/dialogStack';
 
 const translations = defineMessages({
 	invalidMinLength: {
@@ -123,7 +123,7 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
 							functionRefs.current.onSubmittingAndOrPendingChange({
 								isSubmitting: false
 							});
-							dispatch(showErrorDialog({ error: response }));
+							dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } }));
 						}
 					});
 			} else {

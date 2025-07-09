@@ -29,7 +29,7 @@ import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../state/actions/system';
 import PasswordTextField from '../PasswordTextField/PasswordTextField';
 import { PasswordStrengthDisplayPopper } from '../PasswordStrengthDisplayPopper';
-import { showErrorDialog } from '../../state/actions/dialogs';
+import { pushDialog } from '../../state/actions/dialogStack';
 
 interface ResetPasswordDialogProps {
 	open: boolean;
@@ -78,7 +78,7 @@ function ResetPasswordDialogUI(props: ResetPasswordDialogProps) {
 			},
 			error({ response: { response } }) {
 				setUpdating(false);
-				dispatch(showErrorDialog({ error: response }));
+				dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } }));
 			}
 		});
 	};
