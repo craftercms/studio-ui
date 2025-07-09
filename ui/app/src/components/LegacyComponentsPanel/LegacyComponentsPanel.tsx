@@ -34,7 +34,7 @@ import BrowseFilesDialog from '../BrowseFilesDialog';
 import { MediaItem } from '../../models/Search';
 import { deleteItem, fetchContentDOM, fetchLegacyItem, sortItem } from '../../services/content';
 import { useDispatch } from 'react-redux';
-import { showConfirmDialog, showEditDialog } from '../../state/actions/dialogs';
+import { showEditDialog } from '../../state/actions/dialogs';
 import { dragAndDropMessages } from '../../env/i18n-legacy';
 import { fetchAndInsertContentInstance, legacyLoadFormDefinition, legacyXmlModelToMap } from './utils';
 import LookupTable from '../../models/LookupTable';
@@ -48,6 +48,8 @@ import { useEnv } from '../../hooks/useEnv';
 import { createCustomDocumentEventListener } from '../../utils/dom';
 import { guestMessages } from '../../assets/guestMessages';
 import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
+import { popDialog, pushDialog } from '../../state/actions/dialogStack';
+import { nanoid } from 'nanoid';
 
 export interface LegacyComponentsPanelProps {
 	title: string;
@@ -525,9 +527,15 @@ export function LegacyComponentsPanel(props: LegacyComponentsPanelProps) {
 				}
 				case 'START_DIALOG': {
 					const { messageKey, message } = payload;
+					const dialogId = nanoid();
 					dispatch(
-						showConfirmDialog({
-							body: messageKey ? formatMessage(dragAndDropMessages[messageKey]) : message
+						pushDialog({
+							id: dialogId,
+							component: 'craftercms.components.ConfirmDialog',
+							props: {
+								body: messageKey ? formatMessage(dragAndDropMessages[messageKey]) : message,
+								onOk: () => dispatch(popDialog({ id: dialogId }))
+							}
 						})
 					);
 					break;

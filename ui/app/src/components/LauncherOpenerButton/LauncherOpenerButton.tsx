@@ -20,9 +20,9 @@ import CrafterCMSIcon from '../../icons/CrafterCMSIcon';
 import { defineMessages, useIntl } from 'react-intl';
 import Tooltip from '@mui/material/Tooltip';
 import { useDispatch } from 'react-redux';
-import { showLauncher } from '../../state/actions/dialogs';
 import { LauncherStateProps } from '../Launcher/Launcher';
 import AppsRounded from '@mui/icons-material/AppsRounded';
+import { pushDialog } from '../../state/actions/dialogStack';
 
 const messages = defineMessages({
 	menu: {
@@ -48,7 +48,14 @@ export function LauncherOpenerButton(props: LauncherOpenerButtonProps) {
 	const { formatMessage } = useIntl();
 	const id = useMemo(() => `toolbarLauncherButton${instanceCount++}`, []);
 	const dispatch = useDispatch();
-	const onMenuClick = () => dispatch(showLauncher({ anchor: `#${id}`, ...launcherProps }));
+	const onMenuClick = () =>
+		dispatch(
+			pushDialog({
+				id: 'LAUNCHER',
+				component: 'craftercms.components.Launcher',
+				props: { anchor: `#${id}`, ...launcherProps }
+			})
+		);
 	return (
 		<Tooltip title={formatMessage(messages.menu)}>
 			<IconButton

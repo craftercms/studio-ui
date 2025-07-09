@@ -21,13 +21,13 @@ import { useDispatch } from 'react-redux';
 
 import '@uppy/core/dist/style.css';
 import '@uppy/dashboard/dist/style.css';
-import { closeConfirmDialog, closeUploadDialog, showConfirmDialog } from '../../state/actions/dialogs';
-import { batchActions } from '../../state/actions/misc';
 import { UploadDialogProps } from './util';
 import { translations } from './translations';
 import { UploadDialogContainer } from './UploadDialogContainer';
 import MinimizedBar from '../MinimizedBar';
 import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
+import { popDialog, pushDialog } from '../../state/actions/dialogStack';
+import { nanoid } from 'nanoid';
 
 export function UploadDialog(props: UploadDialogProps) {
 	const { formatMessage } = useIntl();
@@ -49,11 +49,19 @@ export function UploadDialog(props: UploadDialogProps) {
 
 	const onClose = () => {
 		if (hasPendingChanges) {
+			const dialogId = nanoid();
 			dispatch(
-				showConfirmDialog({
-					body: formatMessage(translations.uploadInProgressConfirmation),
-					onOk: batchActions([closeConfirmDialog(), closeUploadDialog()]),
-					onCancel: closeConfirmDialog()
+				pushDialog({
+					id: dialogId,
+					component: 'craftercms.components.ConfirmDialog',
+					props: {
+						body: formatMessage(translations.uploadInProgressConfirmation),
+						onOk: () => {
+							dispatch(popDialog({ id: dialogId }));
+							props.onClose();
+						},
+						onCancel: () => dispatch(popDialog({ id: dialogId }))
+					}
 				})
 			);
 		} else {

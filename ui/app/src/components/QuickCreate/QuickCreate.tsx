@@ -22,7 +22,7 @@ import Menu, { menuClasses } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import { useDispatch } from 'react-redux';
-import { newContentCreationComplete, showEditDialog, showNewContentDialog } from '../../state/actions/dialogs';
+import { newContentCreationComplete, showEditDialog } from '../../state/actions/dialogs';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
@@ -43,6 +43,8 @@ import useActiveSiteId from '../../hooks/useActiveSiteId';
 import useSystemVersion from '../../hooks/useSystemVersion';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { LoadingState } from '../LoadingState';
+import { nanoid } from 'nanoid';
+import { pushDialog } from '../../state/actions/dialogStack';
 
 const translations = defineMessages({
 	quickCreateBtnLabel: {
@@ -274,11 +276,16 @@ const QuickCreate = forwardRef<HTMLButtonElement, { item?: ContentItem }>((props
 
 	const onNewContentSelected = () => {
 		onMenuClose();
+		const dialogId = nanoid();
 		dispatch(
-			showNewContentDialog({
-				item: lookupItemByPath(currentPreviewItemPath, items),
-				// @ts-ignore - required attributes of `showEditDialog` are submitted by new content dialog `onContentTypeSelected` callback and injected into the showEditDialog action by the GlobalDialogManger
-				onContentTypeSelected: showEditDialog({})
+			pushDialog({
+				id: dialogId,
+				component: 'craftercms.components.NewContentDialog',
+				props: {
+					item: lookupItemByPath(currentPreviewItemPath, items),
+					// @ts-ignore - required attributes of `showEditDialog` are submitted by new content dialog `onContentTypeSelected` callback and injected into the showEditDialog action by the GlobalDialogManger
+					onContentTypeSelected: () => dispatch(showEditDialog({}))
+				}
 			})
 		);
 	};

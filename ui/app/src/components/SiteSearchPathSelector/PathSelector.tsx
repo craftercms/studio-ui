@@ -17,18 +17,13 @@
 import { defineMessages, useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
 import React, { useEffect, useState } from 'react';
-import {
-	closePathSelectionDialog,
-	pathSelectionDialogClosed,
-	showPathSelectionDialog
-} from '../../state/actions/dialogs';
-import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
 import InputBase from '@mui/material/InputBase';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import Paper from '@mui/material/Paper';
 import SiteExplorer from '../../icons/SiteExplorer';
-import { createCustomDocumentEventListener } from '../../utils/dom';
+import { popDialog, pushDialog } from '../../state/actions/dialogStack';
+import { nanoid } from 'nanoid';
 
 const messages = defineMessages({
 	searchIn: {
@@ -65,26 +60,26 @@ export function PathSelector(props: PathSelectorProps) {
 	};
 
 	const onOpenPathSelectionDialog = () => {
-		const callbackId = 'pathSelectionDialogCallback';
-		const callbackAccept = 'accept';
+		const dialogId = nanoid();
 		dispatch(
-			showPathSelectionDialog({
-				rootPath: rootPath ?? `/${path.split('/')[1] ?? ''}`,
-				initialPath: path,
-				showCreateFolderOption: false,
-				allowSwitchingRootPath: !Boolean(rootPath),
-				stripXmlIndex,
-				onClosed: batchActions([dispatchDOMEvent({ id: callbackId, action: 'close' }), pathSelectionDialogClosed()]),
-				onOk: batchActions([dispatchDOMEvent({ id: callbackId, action: callbackAccept }), closePathSelectionDialog()])
+			pushDialog({
+				id: dialogId,
+				component: 'craftercms.components.PathSelectionDialog',
+				props: {
+					rootPath: rootPath ?? `/${path.split('/')[1] ?? ''}`,
+					initialPath: path,
+					showCreateFolderOption: false,
+					allowSwitchingRootPath: !Boolean(rootPath),
+					stripXmlIndex,
+					onClosed: () => dispatch(popDialog({ id: dialogId })),
+					onOk: ({ path }) => {
+						setPath(path);
+						onPathSelected(path);
+						dispatch(popDialog({ id: dialogId }));
+					}
+				}
 			})
 		);
-		createCustomDocumentEventListener(callbackId, (detail) => {
-			if (detail.action === callbackAccept) {
-				const path = detail.path;
-				setPath(path);
-				onPathSelected(path);
-			}
-		});
 	};
 
 	return (

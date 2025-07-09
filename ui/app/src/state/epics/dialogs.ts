@@ -38,7 +38,6 @@ import {
 	fetchRenameAssetDependants,
 	newContentCreationComplete,
 	showCodeEditorDialog,
-	showConfirmDialog,
 	showEditDialog,
 	showPreviewDialog,
 	updateCodeEditorDialog,
@@ -65,6 +64,8 @@ import { LegacyItem } from '../../models';
 import { generateDialogId } from '../../utils/dialogs';
 import { LegacyFormDialogStateProps } from '../../components/LegacyFormDialog/utils';
 import { CodeEditorDialogStateProps } from '../../components';
+import { popDialog, pushDialog } from '../actions/dialogStack';
+import { nanoid } from 'nanoid';
 
 function getDialogNameFromType(type: string): string {
 	let name = getDialogActionNameFromType(type);
@@ -167,7 +168,7 @@ const dialogEpics: CrafterCMSEpic[] = [
 		),
 	// endregion
 	// region showEditDialog, showCodeEditorDialog
-	(action$, state$, { getIntl }) =>
+	(action$, state$, { getIntl, store }) =>
 		action$.pipe(
 			ofType(showEditDialog.type, showCodeEditorDialog.type),
 			withLatestFrom(state$),
@@ -214,10 +215,16 @@ const dialogEpics: CrafterCMSEpic[] = [
 						return NEVER;
 					}
 				} else {
+					const dialogId = nanoid();
 					return of(
-						showConfirmDialog({
-							body: getIntl().formatMessage(formEngineMessages.inProgressConfirmation),
-							imageUrl: infoGraphic
+						pushDialog({
+							id: dialogId,
+							component: 'craftercms.components.ConfirmDialog',
+							props: {
+								body: getIntl().formatMessage(formEngineMessages.inProgressConfirmation),
+								imageUrl: infoGraphic,
+								onOk: () => store.dispatch(popDialog({ id: dialogId }))
+							}
 						})
 					);
 				}

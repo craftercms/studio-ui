@@ -32,7 +32,7 @@ import { trash } from '../../services/sites';
 import { batchActions } from '../../state/actions/misc';
 import { showSystemNotification } from '../../state/actions/system';
 import { fetchSites, popSite } from '../../state/actions/sites';
-import { closeEditSiteDialog, showEditSiteDialog, showErrorDialog } from '../../state/actions/dialogs';
+import { showErrorDialog } from '../../state/actions/dialogs';
 import { ErrorBoundary } from '../ErrorBoundary/ErrorBoundary';
 import SitesGrid from '../SitesGrid/SitesGrid';
 import PublishingStatusDialog from '../PublishingStatusDialog';
@@ -59,6 +59,8 @@ import Checkbox from '@mui/material/Checkbox';
 import { ConfirmDialog } from '../ConfirmDialog';
 import { previewSwitch } from '../../services/security';
 import { EmptyState } from '../EmptyState';
+import { popDialog, pushDialog } from '../../state/actions/dialogStack';
+import { nanoid } from 'nanoid';
 
 const translations = defineMessages({
 	siteDeleted: {
@@ -137,7 +139,17 @@ export function SiteManagement() {
 	};
 
 	const onEditSiteClick = (site: Site) => {
-		dispatch(showEditSiteDialog({ site, onSaveSuccess: closeEditSiteDialog() }));
+		const dialogId = nanoid();
+		dispatch(
+			pushDialog({
+				id: dialogId,
+				component: 'craftercms.components.EditSiteDialog',
+				props: {
+					site,
+					onSaveSuccess: () => dispatch(popDialog({ id: dialogId }))
+				}
+			})
+		);
 	};
 
 	const onPublishButtonClick = (

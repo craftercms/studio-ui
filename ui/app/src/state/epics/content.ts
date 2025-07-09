@@ -19,6 +19,7 @@ import { filter, map, mergeMap, switchMap, tap, withLatestFrom } from 'rxjs/oper
 import {
 	clearClipboard,
 	conditionallyUnlockItem,
+	contentItemsMissing,
 	deleteController,
 	deleteTemplate,
 	duplicateAsset,
@@ -27,27 +28,26 @@ import {
 	fetchContentItem,
 	fetchContentItemComplete,
 	fetchContentItemFailed,
-	fetchQuickCreateList as fetchQuickCreateListAction,
-	fetchQuickCreateListComplete,
-	fetchQuickCreateListFailed,
 	fetchContentItems,
 	fetchContentItemsComplete,
 	fetchContentItemsFailed,
+	fetchQuickCreateList as fetchQuickCreateListAction,
+	fetchQuickCreateListComplete,
+	fetchQuickCreateListFailed,
 	lockItem,
 	lockItemCompleted,
 	lockItemFailed,
 	pasteItem,
 	pasteItemWithPolicyValidation,
 	reloadContentItem,
-	contentItemsMissing,
 	unlockItem
 } from '../actions/content';
 import { catchAjaxError } from '../../utils/ajax';
 import {
 	duplicate,
 	fetchContentItem as fetchContentItemService,
-	fetchItemByPath,
 	fetchContentItems as fetchContentItemsService,
+	fetchItemByPath,
 	fetchQuickCreateList,
 	lock,
 	paste,
@@ -55,10 +55,7 @@ import {
 } from '../../services/content';
 import { merge, Observable, of } from 'rxjs';
 import {
-	closeConfirmDialog,
 	closeDeleteDialog,
-	showCodeEditorDialog,
-	showConfirmDialog,
 	showDeleteDialog,
 	showEditDialog,
 	showErrorDialog,
@@ -96,6 +93,8 @@ import { AjaxError } from 'rxjs/ajax';
 import { dissociateTemplate } from '../actions/preview';
 import { isBlank } from '../../utils/string';
 import SocketEvent, { MoveContentEventPayload } from '../../models/SocketEvent';
+import { popDialog, pushDialog } from '../actions/dialogStack';
+import { nanoid } from 'nanoid';
 
 export const sitePolicyMessages = defineMessages({
 	itemPastePolicyConfirm: {
@@ -294,7 +293,7 @@ const content: CrafterCMSEpic[] = [
 		),
 	// endregion
 	// region duplicateAsset
-	(action$, state$, { getIntl }) =>
+	(action$, state$, { getIntl, store }) =>
 		action$.pipe(
 			ofType(duplicateAsset.type),
 			withLatestFrom(state$),
@@ -314,12 +313,15 @@ const content: CrafterCMSEpic[] = [
 								unblockUI(),
 								...(editableAsset
 									? [
-											showCodeEditorDialog({
-												authoringBase: state.env.authoringBase,
-												site: state.sites.active,
-												path,
-												mode,
-												onSuccess: payload.onSuccess
+											pushDialog({
+												component: 'craftercms.components.CodeEditorDialog',
+												props: {
+													authoringBase: state.env.authoringBase,
+													site: state.sites.active,
+													path,
+													mode,
+													onSuccess: () => store.dispatch(payload.onSuccess)
+												}
 											})
 										]
 									: [])
@@ -335,7 +337,7 @@ const content: CrafterCMSEpic[] = [
 		),
 	// endregion
 	// region duplicateWithPolicyValidation
-	(action$, state$, { getIntl }) =>
+	(action$, state$, { getIntl, store }) =>
 		action$.pipe(
 			ofType(duplicateWithPolicyValidation.type),
 			withLatestFrom(state$),
@@ -347,30 +349,39 @@ const content: CrafterCMSEpic[] = [
 				}).pipe(
 					map(({ allowed, modifiedValue, target, message }) => {
 						if (allowed && modifiedValue) {
-							return showConfirmDialog({
-								body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyConfirm, {
-									action: getIntl().formatMessage(sitePolicyMessages.duplicate),
-									path: target,
-									modifiedPath: modifiedValue,
-									detail: message
-								}),
-								onCancel: closeConfirmDialog(),
-								onOk: batchActions([
-									...(payload.type === 'item'
-										? [
-												duplicateItem({
-													path: payload.path,
-													onSuccess: showDuplicatedItemSuccessNotification()
-												})
-											]
-										: [
-												duplicateAsset({
-													path: payload.path,
-													onSuccess: showDuplicatedItemSuccessNotification()
-												})
-											]),
-									closeConfirmDialog()
-								])
+							const dialogId = nanoid();
+							return pushDialog({
+								id: dialogId,
+								component: 'craftercms.components.ConfirmDialog',
+								props: {
+									body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyConfirm, {
+										action: getIntl().formatMessage(sitePolicyMessages.duplicate),
+										path: target,
+										modifiedPath: modifiedValue,
+										detail: message
+									}),
+									onCancel: () => store.dispatch(popDialog({ id: dialogId })),
+									onOk: () => {
+										store.dispatch(
+											batchActions([
+												...(payload.type === 'item'
+													? [
+															duplicateItem({
+																path: payload.path,
+																onSuccess: showDuplicatedItemSuccessNotification()
+															})
+														]
+													: [
+															duplicateAsset({
+																path: payload.path,
+																onSuccess: showDuplicatedItemSuccessNotification()
+															})
+														]),
+												popDialog({ id: dialogId })
+											])
+										);
+									}
+								}
 							});
 						} else if (allowed) {
 							return payload.type === 'item'
@@ -383,11 +394,17 @@ const content: CrafterCMSEpic[] = [
 										onSuccess: showDuplicatedItemSuccessNotification()
 									});
 						} else {
-							return showConfirmDialog({
-								body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyError, {
-									action: getIntl().formatMessage(sitePolicyMessages.duplicate),
-									detail: message
-								})
+							const dialogId = nanoid();
+							return pushDialog({
+								id: dialogId,
+								component: 'craftercms.components.ConfirmDialog',
+								props: {
+									body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyError, {
+										action: getIntl().formatMessage(sitePolicyMessages.duplicate),
+										detail: message
+									}),
+									onOk: () => store.dispatch(popDialog({ id: dialogId }))
+								}
 							});
 						}
 					})
@@ -433,7 +450,7 @@ const content: CrafterCMSEpic[] = [
 		),
 	// endregion
 	// region pasteItemWithPolicyValidation
-	(action$, state$, { getIntl }) =>
+	(action$, state$, { getIntl, store }) =>
 		action$.pipe(
 			ofType(pasteItemWithPolicyValidation.type),
 			withLatestFrom(state$),
@@ -459,17 +476,24 @@ const content: CrafterCMSEpic[] = [
 					}).pipe(
 						switchMap(({ allowed, modifiedValue, target, message }) => {
 							if (allowed && modifiedValue) {
+								const dialogId = nanoid();
 								return [
 									unblockUI(),
-									showConfirmDialog({
-										body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyConfirm, {
-											action: state.content.clipboard.type === 'CUT' ? 'cut' : 'copy',
-											path: target,
-											modifiedPath: modifiedValue,
-											detail: message
-										}),
-										onCancel: closeConfirmDialog(),
-										onOk: batchActions([pasteItem({ path: payload.path }), closeConfirmDialog()])
+									pushDialog({
+										id: dialogId,
+										component: 'craftercms.components.ConfirmDialog',
+										props: {
+											body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyConfirm, {
+												action: state.content.clipboard.type === 'CUT' ? 'cut' : 'copy',
+												path: target,
+												modifiedPath: modifiedValue,
+												detail: message
+											}),
+											onCancel: () => store.dispatch(popDialog({ id: dialogId })),
+											onOk: () => {
+												store.dispatch(batchActions([pasteItem({ path: payload.path }), popDialog({ id: dialogId })]));
+											}
+										}
 									})
 								];
 							} else if (allowed) {
@@ -479,13 +503,19 @@ const content: CrafterCMSEpic[] = [
 									})
 								];
 							} else {
+								const dialogId = nanoid();
 								return [
 									unblockUI(),
-									showConfirmDialog({
-										body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyError, {
-											action: state.content.clipboard.type === 'CUT' ? 'cut' : 'copy',
-											detail: message
-										})
+									pushDialog({
+										id: dialogId,
+										component: 'craftercms.components.ConfirmDialog',
+										props: {
+											body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyError, {
+												action: state.content.clipboard.type === 'CUT' ? 'cut' : 'copy',
+												detail: message
+											}),
+											onOk: () => store.dispatch(popDialog({ id: dialogId }))
+										}
 									})
 								];
 							}
@@ -496,7 +526,7 @@ const content: CrafterCMSEpic[] = [
 		),
 	// endregion
 	// region deleteController, deleteTemplate
-	(action$, state$, { getIntl }) =>
+	(action$, state$, { getIntl, store }) =>
 		action$.pipe(
 			ofType(deleteController.type, deleteTemplate.type),
 			withLatestFrom(state$),
@@ -507,11 +537,17 @@ const content: CrafterCMSEpic[] = [
 
 				// path may be empty string if the displayTemplate has not been set for a content type.
 				if (isBlank(path)) {
+					const dialogId = nanoid();
 					return of(
-						showConfirmDialog({
-							body: getIntl().formatMessage(
-								itemFailureMessages[type === 'DELETE_CONTROLLER' ? 'controllerNotFound' : 'templateNotFound']
-							)
+						pushDialog({
+							id: dialogId,
+							component: 'craftercms.components.ConfirmDialog',
+							props: {
+								body: getIntl().formatMessage(
+									itemFailureMessages[type === 'DELETE_CONTROLLER' ? 'controllerNotFound' : 'templateNotFound']
+								),
+								onOk: () => store.dispatch(popDialog({ id: dialogId }))
+							}
 						})
 					);
 				} else {
@@ -532,18 +568,26 @@ const content: CrafterCMSEpic[] = [
 								}),
 								unblockUI()
 							]),
-							catchAjaxError((error: AjaxError) =>
-								batchActions([
+							catchAjaxError((error: AjaxError) => {
+								const dialogId = nanoid();
+								return batchActions([
 									unblockUI(),
 									error.status === 404
-										? showConfirmDialog({
-												body: getIntl().formatMessage(
-													itemFailureMessages[type === 'DELETE_CONTROLLER' ? 'controllerNotFound' : 'templateNotFound']
-												)
+										? pushDialog({
+												id: dialogId,
+												component: 'craftercms.components.ConfirmDialog',
+												props: {
+													body: getIntl().formatMessage(
+														itemFailureMessages[
+															type === 'DELETE_CONTROLLER' ? 'controllerNotFound' : 'templateNotFound'
+														]
+													),
+													onOk: () => store.dispatch(popDialog({ id: dialogId }))
+												}
 											})
 										: showErrorDialog({ error: error.response ?? error })
-								])
-							)
+								]);
+							})
 						)
 					);
 				}

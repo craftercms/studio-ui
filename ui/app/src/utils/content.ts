@@ -77,10 +77,11 @@ import { getStateBitmap } from '../components/WorkflowStateManagement/utils';
 import { forEach } from './array';
 import { PublishingTargets } from '../models';
 import slugify from 'slugify';
-import { showCodeEditorDialog, showEditDialog } from '../state/actions/dialogs';
+import { showEditDialog } from '../state/actions/dialogs';
 import { Dispatch } from 'react';
 import { AnyAction } from 'redux';
 import { findParentModelId, getModelIdFromInheritedField, isInheritedField } from './model';
+import { pushDialog } from '../state/actions/dialogStack';
 
 export function isEditableAsset(path: string) {
 	return (
@@ -1059,13 +1060,16 @@ export const openItemEditor = (
 		dispatch(showEditDialog({ path: item.path, authoringBase, site: siteId, onSaveSuccess }));
 	} else {
 		dispatch(
-			showCodeEditorDialog({
-				site: siteId,
-				authoringBase,
-				path: item.path,
-				type,
-				mode: getEditorMode(item.mimeType),
-				onSuccess: onSaveSuccess
+			pushDialog({
+				component: 'craftercms.components.CodeEditorDialog',
+				props: {
+					site: siteId,
+					authoringBase,
+					path: item.path,
+					type,
+					mode: getEditorMode(item.mimeType),
+					onSuccess: onSaveSuccess
+				}
 			})
 		);
 	}

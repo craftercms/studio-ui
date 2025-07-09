@@ -49,8 +49,8 @@ import { fetchItemVersions } from '../../state/actions/versions';
 import { fetchItemByPath } from '../../services/content';
 import SearchBar from '../SearchBar/SearchBar';
 import Alert, { alertClasses } from '@mui/material/Alert';
-import { closeConfirmDialog, showConfirmDialog, showErrorDialog, showHistoryDialog } from '../../state/actions/dialogs';
-import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
+import { showErrorDialog, showHistoryDialog } from '../../state/actions/dialogs';
+import { batchActions } from '../../state/actions/misc';
 import { capitalize, stripCData } from '../../utils/string';
 import { itemReverted, showSystemNotification } from '../../state/actions/system';
 import { getHostToHostBus } from '../../utils/subjects';
@@ -72,10 +72,11 @@ import { nnou } from '../../utils/object';
 import { MaxLengthCircularProgress } from '../MaxLengthCircularProgress';
 import useUnmount from '../../hooks/useUnmount';
 import useActiveUser from '../../hooks/useActiveUser';
-import { createCustomDocumentEventListener } from '../../utils/dom';
 import { ProjectToolsRoutes } from '../../env/routes';
 import ListItemButton from '@mui/material/ListItemButton';
 import { SiteToolsContext } from '../SiteTools/siteToolsContext';
+import { nanoid } from 'nanoid';
+import { popDialog, pushDialog } from '../../state/actions/dialogStack';
 
 interface SiteConfigurationManagementProps {
 	embedded?: boolean;
@@ -155,35 +156,45 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
 					selectedConfigFile: refs.current.selectedConfigFile
 				})
 			);
-			const eventId = 'unsavedConfigurationChangesConfirmation';
 			const title = getTranslation(refs.current.selectedConfigFile.title, translations, formatMessage);
+			const dialogId = nanoid();
 			if (refs.current.setTool) {
 				dispatch(
-					showConfirmDialog({
-						body: formatMessage({ defaultMessage: 'You left unsaved changes on "{title}"' }, { title }),
-						onCancel: batchActions([closeConfirmDialog(), dispatchDOMEvent({ id: eventId, button: 'cancel' })]),
-						onOk: batchActions([closeConfirmDialog(), dispatchDOMEvent({ id: eventId, button: 'ok' })]),
-						okButtonText: <FormattedMessage defaultMessage="Go back and recover changes" />,
-						cancelButtonText: <FormattedMessage defaultMessage="Discard changes" />
+					pushDialog({
+						id: dialogId,
+						component: 'craftercms.components.ConfirmDialog',
+						props: {
+							body: formatMessage({ defaultMessage: 'You left unsaved changes on "{title}"' }, { title }),
+							onCancel: () => {
+								dispatch(popDialog({ id: dialogId }));
+								sessionStorage.removeItem(sessionStorageKey);
+							},
+							onOk: () => {
+								dispatch(popDialog({ id: dialogId }));
+								refs.current.setTool(ProjectToolsRoutes.Configuration);
+							},
+							okButtonText: <FormattedMessage defaultMessage="Go back and recover changes" />,
+							cancelButtonText: <FormattedMessage defaultMessage="Discard changes" />
+						}
 					})
 				);
-				createCustomDocumentEventListener<{ button: 'ok' | 'cancel' }>(eventId, ({ button }) => {
-					if (button === 'ok') {
-						refs.current.setTool(ProjectToolsRoutes.Configuration);
-					} else {
-						sessionStorage.removeItem(sessionStorageKey);
-					}
-				});
 			} else {
 				dispatch(
-					showConfirmDialog({
-						body: formatMessage(
-							{
-								defaultMessage:
-									'You left unsaved changes on "{title}". You may go back to configuration now if you wish to recover or ignore to discard changes.'
-							},
-							{ title }
-						)
+					pushDialog({
+						id: dialogId,
+						component: 'craftercms.components.ConfirmDialog',
+						props: {
+							body: formatMessage(
+								{
+									defaultMessage:
+										'You left unsaved changes on "{title}". You may go back to configuration now if you wish to recover or ignore to discard changes.'
+								},
+								{ title }
+							),
+							onOk: () => {
+								dispatch(popDialog({ id: dialogId }));
+							}
+						}
 					})
 				);
 			}

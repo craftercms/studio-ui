@@ -32,21 +32,12 @@ import Typography from '@mui/material/Typography';
 import { fetchPublishingTargets, publish } from '../../services/publishing';
 import { showSystemNotification } from '../../state/actions/system';
 import { useDispatch } from 'react-redux';
-import {
-	closeConfirmDialog,
-	closePublishDialog,
-	showConfirmDialog,
-	showErrorDialog,
-	showPublishDialog
-} from '../../state/actions/dialogs';
-import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
+import { showErrorDialog } from '../../state/actions/dialogs';
 import Link from '@mui/material/Link';
 import { useSpreadState } from '../../hooks/useSpreadState';
-import { useSelection } from '../../hooks/useSelection';
 import { isBlank } from '../../utils/string';
 import PrimaryButton from '../PrimaryButton';
 import SecondaryButton from '../SecondaryButton';
-import { createCustomDocumentEventListener } from '../../utils/dom';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
 import { hasInitialPublish as hasInitialPublishService } from '../../services/sites';
@@ -57,6 +48,8 @@ import usePermissionsBySite from '../../hooks/usePermissionsBySite';
 import { StandardAction } from '../../models';
 import Checkbox from '@mui/material/Checkbox';
 import Alert, { alertClasses } from '@mui/material/Alert';
+import { popDialog, pushDialog } from '../../state/actions/dialogStack';
+import { nanoid } from 'nanoid';
 
 const messages = defineMessages({
 	publishStudioWarning: {
@@ -298,49 +291,53 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 	};
 
 	const onSubmitBulkPublish = () => {
-		const eventId = 'bulkPublishWidgetSubmit';
 		const studioNote = formatMessage(messages.publishStudioNote, { a: (msg) => msg[0] });
+		const dialogId = nanoid();
 		dispatch(
-			showConfirmDialog({
-				body: `${formatMessage(messages.publishStudioWarning)} ${studioNote}`,
-				onCancel: batchActions([closeConfirmDialog(), dispatchDOMEvent({ id: eventId, button: 'cancel' })]),
-				onOk: batchActions([closeConfirmDialog(), dispatchDOMEvent({ id: eventId, button: 'ok' })])
-			})
-		);
-		createCustomDocumentEventListener<{ button: 'ok' | 'cancel' }>(eventId, ({ button }) => {
-			if (button === 'ok') {
-				setIsSubmitting(true);
-				const { path, publishingTarget, title, comment } = publishStudioFormData;
-
-				publish(siteId, {
-					publishingTarget,
-					paths: [{ path, includeChildren: true, includeSoftDeps: false }],
-					title,
-					comment
-				}).subscribe({
-					next() {
-						setIsSubmitting(false);
-						setPublishStudioFormData({ ...initialPublishStudioFormData, publishingTarget });
-						setSelectedMode(pickMode(mode));
-						dispatch(
-							showSystemNotification({
-								message: formatMessage(messages.bulkPublishStarted)
-							})
-						);
-						if (onSuccessProp) {
-							dispatch(onSuccessProp);
-						}
+			pushDialog({
+				id: dialogId,
+				component: 'craftercms.components.ConfirmDialog',
+				props: {
+					body: `${formatMessage(messages.publishStudioWarning)} ${studioNote}`,
+					onCancel: () => {
+						dispatch(popDialog({ id: dialogId }));
 					},
-					error({ response }) {
-						setIsSubmitting(false);
-						showSystemNotification({
-							message: response.message,
-							options: { variant: 'error' }
+					onOk: () => {
+						dispatch(popDialog({ id: dialogId }));
+						setIsSubmitting(true);
+						const { path, publishingTarget, title, comment } = publishStudioFormData;
+
+						publish(siteId, {
+							publishingTarget,
+							paths: [{ path, includeChildren: true, includeSoftDeps: false }],
+							title,
+							comment
+						}).subscribe({
+							next() {
+								setIsSubmitting(false);
+								setPublishStudioFormData({ ...initialPublishStudioFormData, publishingTarget });
+								setSelectedMode(pickMode(mode));
+								dispatch(
+									showSystemNotification({
+										message: formatMessage(messages.bulkPublishStarted)
+									})
+								);
+								if (onSuccessProp) {
+									dispatch(onSuccessProp);
+								}
+							},
+							error({ response }) {
+								setIsSubmitting(false);
+								showSystemNotification({
+									message: response.message,
+									options: { variant: 'error' }
+								});
+							}
 						});
 					}
-				});
-			}
-		});
+				}
+			})
+		);
 	};
 
 	const onSubmitPublishEverything = () => {
@@ -422,19 +419,21 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 		}
 	};
 
-	const customEventId = 'dialogDismissConfirm';
 	const onInitialPublish = () => {
+		const dialogId = nanoid();
 		dispatch(
-			showPublishDialog({
-				items: [initialPublishItem],
-				onSuccess: batchActions([closePublishDialog(), dispatchDOMEvent({ id: customEventId, type: 'publish' })]),
-				onClosed: dispatchDOMEvent({ id: customEventId, type: 'cancel' })
+			pushDialog({
+				id: dialogId,
+				component: 'craftercms.components.PublishDialog',
+				props: {
+					items: [initialPublishItem],
+					onSuccess: () => {
+						setHasInitialPublish(true);
+						dispatch(popDialog({ id: dialogId }));
+					}
+				}
 			})
 		);
-
-		createCustomDocumentEventListener(customEventId, ({ type }) => {
-			type === 'publish' && setHasInitialPublish(true);
-		});
 	};
 
 	return (

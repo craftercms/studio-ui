@@ -24,7 +24,7 @@ import { nnou } from '../../utils/object';
 import * as ModelHelper from '../../utils/model';
 import { findParentModelId } from '../../utils/model';
 import { popPiece } from '../../utils/string';
-import { showCodeEditorDialog, showEditDialog } from '../../state/actions/dialogs';
+import { showEditDialog } from '../../state/actions/dialogs';
 import { getField } from '../../utils/contentType';
 import { Menu, MenuItem } from '@mui/material';
 import { GuestData } from '../../models/GlobalState';
@@ -32,6 +32,7 @@ import { useSelection } from '../../hooks/useSelection';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { usePreviewState } from '../../hooks/usePreviewState';
 import ContentInstance from '../../models/ContentInstance';
+import { pushDialog } from '../../state/actions/dialogStack';
 
 interface EditFormPanelProps {
 	open: boolean;
@@ -199,13 +200,16 @@ function EditFormPanelBody(props: EditFormPanelBodyProps) {
 			);
 		} else {
 			dispatch(
-				showCodeEditorDialog({
-					path:
-						type === 'template'
-							? contentType.displayTemplate
-							: `/scripts/pages/${popPiece(selectedContentTypeId, '/')}.groovy`,
-					contentType: selectedContentTypeId,
-					mode: type === 'template' ? 'ftl' : 'groovy'
+				pushDialog({
+					component: 'craftercms.components.CodeEditorDialog',
+					props: {
+						path:
+							type === 'template'
+								? contentType.displayTemplate
+								: `/scripts/pages/${popPiece(selectedContentTypeId, '/')}.groovy`,
+						contentType: selectedContentTypeId,
+						mode: type === 'template' ? 'ftl' : 'groovy'
+					}
 				})
 			);
 		}

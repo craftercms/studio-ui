@@ -21,12 +21,7 @@ import { fetchContentXML, lock, writeContent } from '../../services/content';
 import { ConditionalLoadingState } from '../LoadingState/LoadingState';
 import AceEditor from '../AceEditor/AceEditor';
 import { useDispatch } from 'react-redux';
-import {
-	closeViewPackagesDialog,
-	showErrorDialog,
-	showViewPackagesDialog,
-	updateCodeEditorDialog
-} from '../../state/actions/dialogs';
+import { showErrorDialog, updateCodeEditorDialog } from '../../state/actions/dialogs';
 import Skeleton from '@mui/material/Skeleton';
 import ListSubheader from '@mui/material/ListSubheader';
 import DialogFooter from '../DialogFooter/DialogFooter';
@@ -48,7 +43,7 @@ import { useReferences } from '../../hooks/useReferences';
 import { getHostToGuestBus } from '../../utils/subjects';
 import { reloadRequest } from '../../state/actions/preview';
 import { CodeEditorDialogContainerProps, getContentModelSnippets } from './utils';
-import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
+import { batchActions } from '../../state/actions/misc';
 import { MultiChoiceSaveButton } from '../MultiChoiceSaveButton';
 import useUpToDateRefs from '../../hooks/useUpdateRefs';
 import { useEnhancedDialogContext } from '../EnhancedDialog';
@@ -57,7 +52,8 @@ import { forkJoin, switchMap } from 'rxjs';
 import { cancelPackages, fetchAffectedPackages } from '../../services/workflow';
 import { PublishPackage } from '../../models';
 import Alert, { alertClasses } from '@mui/material/Alert';
-import { createCustomDocumentEventListener } from '../../utils/dom';
+import { popDialog, pushDialog } from '../../state/actions/dialogStack';
+import { nanoid } from 'nanoid';
 
 export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps) {
 	const { path, onMinimize, onClose, mode, readonly, contentType, onFullScreen, onSuccess } = props;
@@ -140,18 +136,20 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 		// Before saving, check if the item is part of a package in active workflow. If so, show a dialog to review the
 		// packages before continuing with the cancellation of the packages and saving the item.
 		if (affectedPackages?.length) {
-			const callbackId = 'viewPackagesDialogCallback';
+			const dialogId = nanoid();
 			dispatch(
-				showViewPackagesDialog({
-					item,
-					onContinue: dispatchDOMEvent({ id: callbackId, type: 'continue' }),
-					onClose: batchActions([dispatchDOMEvent({ id: callbackId, type: 'close' }), closeViewPackagesDialog()])
+				pushDialog({
+					id: dialogId,
+					component: 'craftercms.components.ViewPackagesDialog',
+					props: {
+						item,
+						onContinue: () => {
+							save(callback);
+						},
+						onClose: () => dispatch(popDialog({ id: dialogId }))
+					}
 				})
 			);
-			createCustomDocumentEventListener(callbackId, ({ type }) => {
-				if (type === 'close') return;
-				save(callback);
-			});
 		} else {
 			save(callback);
 		}
@@ -279,7 +277,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 									size="small"
 									sx={{ p: 0 }}
 									onClick={() => {
-										dispatch(showViewPackagesDialog({ item }));
+										dispatch(pushDialog({ component: 'craftercms.components.ViewPackagesDialog', props: { item } }));
 									}}
 								>
 									<FormattedMessage defaultMessage="Review" />

@@ -27,7 +27,7 @@ import { FormattedMessage } from 'react-intl';
 import PrimaryButton from '../PrimaryButton';
 import { DialogBody } from '../DialogBody';
 import { useDispatch } from 'react-redux';
-import { closePreviewDialog, showCodeEditorDialog } from '../../state/actions/dialogs';
+import { closePreviewDialog } from '../../state/actions/dialogs';
 import { batchActions } from '../../state/actions/misc';
 import { hasEditAction, isBlobUrl } from '../../utils/content';
 import { useSelection } from '../../hooks/useSelection';
@@ -36,6 +36,7 @@ import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { fetchContentItem } from '../../state/actions/content';
 import useItemsBeingFetchedByPath from '../../hooks/useItemsBeingFetchedByPath';
 import palette from '../../styles/palette';
+import { pushDialog } from '../../state/actions/dialogStack';
 
 export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
 	const { title, content, mode, url, path, onClose, type, mimeType, backgroundModeIndex, showEdit = true } = props;
@@ -117,9 +118,12 @@ export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
 		dispatch(
 			batchActions([
 				closePreviewDialog(),
-				showCodeEditorDialog({
-					path: url,
-					mode
+				pushDialog({
+					component: 'craftercms.components.CodeEditorDialog',
+					props: {
+						path: url,
+						mode
+					}
 				})
 			])
 		);

@@ -19,30 +19,16 @@ import { AllItemActions, ContentItem, LegacyItem } from '../models/Item';
 import { ContextMenuOption } from '../components/ContextMenu';
 import { getControllerPath, getRootPath, withoutIndex } from './path';
 import {
-	closeChangeContentTypeDialog,
-	closeConfirmDialog,
-	closeCreateFileDialog,
 	closeCreateFolderDialog,
 	closeDeleteDialog,
-	closePublishDialog,
 	closeRenameAssetDialog,
-	closeUploadDialog,
-	showBrokenReferencesDialog,
-	showChangeContentTypeDialog,
-	showCodeEditorDialog,
-	showConfirmDialog,
-	showCreateFileDialog,
 	showCreateFolderDialog,
 	showDeleteDialog,
 	showDependenciesDialog,
 	showErrorDialog,
-	showFolderMoveAlertDialog,
 	showHistoryDialog,
 	showPreviewDialog,
-	showPublishDialog,
-	showRenameAssetDialog,
-	showUploadDialog,
-	showViewPackagesDialog
+	showRenameAssetDialog
 } from '../state/actions/dialogs';
 import { checkPathExistence, fetchContentItem, fetchContentItems, fetchLegacyItemsTree } from '../services/content';
 import {
@@ -124,7 +110,7 @@ import StandardAction from '../models/StandardAction';
 import { fetchDependant } from '../services/dependencies';
 import { NewContentDialogProps } from '../components/NewContentDialog/utils';
 import { nanoid } from 'nanoid';
-import { pushDialog, updateDialogState } from '../state/actions/dialogStack';
+import { popDialog, pushDialog, updateDialogState } from '../state/actions/dialogStack';
 import { pickShowContentFormAction } from './system';
 
 export type ContextMenuOptionDescriptor<ID extends string = string> = {
@@ -610,21 +596,39 @@ export const itemActionDispatcher = ({
 				break;
 			}
 			case 'changeContentType': {
+				const dialogId = nanoid();
 				dispatch(
-					showConfirmDialog({
-						title: formatMessage(translations.changeContentType),
-						body: formatMessage(translations.changeContentTypeBody),
-						onCancel: closeConfirmDialog(),
-						onOk: batchActions([
-							closeConfirmDialog(),
-							showChangeContentTypeDialog({
-								item,
-								onContentTypeSelected: batchActions([
-									closeChangeContentTypeDialog(),
-									changeContentType({ originalContentTypeId: item.contentTypeId, path: item.path })
-								])
-							})
-						])
+					pushDialog({
+						id: dialogId,
+						component: 'craftercms.components.ConfirmDialog',
+						props: {
+							title: formatMessage(translations.changeContentType),
+							body: formatMessage(translations.changeContentTypeBody),
+							onCancel: () => dispatch(popDialog({ id: dialogId })),
+							onOk: () => {
+								const changeContentTypeDialogId = nanoid();
+								dispatch(
+									batchActions([
+										popDialog({ id: dialogId }),
+										pushDialog({
+											id: changeContentTypeDialogId,
+											component: 'craftercms.components.ChangeContentTypeDialog',
+											props: {
+												item,
+												onContentTypeSelected: () => {
+													dispatch(
+														batchActions([
+															popDialog({ id: changeContentTypeDialogId }),
+															changeContentType({ originalContentTypeId: item.contentTypeId, path: item.path })
+														])
+													);
+												}
+											}
+										})
+									])
+								);
+							}
+						}
 					})
 				);
 				break;
@@ -632,7 +636,7 @@ export const itemActionDispatcher = ({
 			case 'cut': {
 				const path = item.path;
 				if (item.systemType === 'folder') {
-					dispatch(showFolderMoveAlertDialog({ item }));
+					dispatch(pushDialog({ component: 'craftercms.components.FolderMoveAlertDialog', props: { item } }));
 				} else {
 					fetchDependant(site, path).subscribe({
 						next(dependantItems) {
@@ -652,7 +656,14 @@ export const itemActionDispatcher = ({
 									dependantItems.map((item) => item.uri ?? item.path)
 								).subscribe((contentItems) => {
 									dispatch(
-										showBrokenReferencesDialog({ path, references: contentItems, onContinue: actionToDispatch })
+										pushDialog({
+											component: 'craftercms.components.BrokenReferencesDialog',
+											props: {
+												path,
+												references: contentItems,
+												onContinue: () => dispatch(actionToDispatch)
+											}
+										})
 									);
 								});
 							} else {
@@ -750,9 +761,12 @@ export const itemActionDispatcher = ({
 					fetchContentItem(site, clipboard.sourcePath).subscribe((clipboardItem) => {
 						if (isInActiveWorkflow(clipboardItem)) {
 							dispatch(
-								showViewPackagesDialog({
-									item: clipboardItem,
-									onContinue: pasteItem({ path: item.path })
+								pushDialog({
+									component: 'craftercms.components.ViewPackagesDialog',
+									props: {
+										item: clipboardItem,
+										onContinue: () => dispatch(pasteItem({ path: item.path }))
+									}
 								})
 							);
 						} else {
@@ -765,35 +779,51 @@ export const itemActionDispatcher = ({
 				break;
 			}
 			case 'duplicateAsset': {
+				const dialogId = nanoid();
 				dispatch(
-					showConfirmDialog({
-						title: formatMessage(translations.duplicate),
-						body: formatMessage(translations.duplicateDialogBody),
-						onCancel: closeConfirmDialog(),
-						onOk: batchActions([
-							closeConfirmDialog(),
-							duplicateWithPolicyValidation({
-								path: item.path,
-								type: 'asset'
-							})
-						])
+					pushDialog({
+						id: dialogId,
+						component: 'craftercms.components.ConfirmDialog',
+						props: {
+							title: formatMessage(translations.duplicate),
+							body: formatMessage(translations.duplicateDialogBody),
+							onCancel: () => dispatch(popDialog({ id: dialogId })),
+							onOk: () =>
+								dispatch(
+									batchActions([
+										popDialog({ id: dialogId }),
+										duplicateWithPolicyValidation({
+											path: item.path,
+											type: 'asset'
+										})
+									])
+								)
+						}
 					})
 				);
 				break;
 			}
 			case 'duplicate': {
+				const dialogId = nanoid();
 				dispatch(
-					showConfirmDialog({
-						title: formatMessage(translations.duplicate),
-						body: formatMessage(translations.duplicateDialogBody),
-						onCancel: closeConfirmDialog(),
-						onOk: batchActions([
-							closeConfirmDialog(),
-							duplicateWithPolicyValidation({
-								path: item.path,
-								type: 'item'
-							})
-						])
+					pushDialog({
+						id: dialogId,
+						component: 'craftercms.components.ConfirmDialog',
+						props: {
+							title: formatMessage(translations.duplicate),
+							body: formatMessage(translations.duplicateDialogBody),
+							onCancel: () => dispatch(popDialog({ id: dialogId })),
+							onOk: () =>
+								dispatch(
+									batchActions([
+										popDialog({ id: dialogId }),
+										duplicateWithPolicyValidation({
+											path: item.path,
+											type: 'item'
+										})
+									])
+								)
+						}
 					})
 				);
 				break;
@@ -812,6 +842,14 @@ export const itemActionDispatcher = ({
 			}
 			case 'dependencies': {
 				dispatch(showDependenciesDialog({ item, rootPath: getRootPath(item.path) }));
+				const dialogId = nanoid();
+				dispatch(
+					pushDialog({
+						id: dialogId,
+						component: 'craftercms.components.DependenciesDialog',
+						props: { item, rootPath: getRootPath(item.path) }
+					})
+				);
 				break;
 			}
 			case 'editTemplate': {
@@ -824,25 +862,36 @@ export const itemActionDispatcher = ({
 			}
 			case 'createTemplate':
 			case 'createController': {
+				const dialogId = nanoid();
 				dispatch(
-					showCreateFileDialog({
-						path: withoutIndex(item.path),
-						type: option === 'createController' ? 'controller' : 'template',
-						allowBraces: option === 'createController' ? item.path.startsWith('/scripts/rest') : false,
-						onCreated: batchActions([
-							closeCreateFileDialog(),
-							showCreateItemSuccessNotification(),
-							option === 'createController' ? editController() : editTemplate()
-						])
+					pushDialog({
+						id: dialogId,
+						component: 'craftercms.components.CreateFileDialog',
+						props: {
+							path: withoutIndex(item.path),
+							type: option === 'createController' ? 'controller' : 'template',
+							allowBraces: option === 'createController' ? item.path.startsWith('/scripts/rest') : false,
+							onCreated: () =>
+								dispatch(
+									batchActions([
+										popDialog({ id: dialogId }),
+										showCreateItemSuccessNotification(),
+										option === 'createController' ? editController() : editTemplate()
+									])
+								)
+						}
 					})
 				);
 				break;
 			}
 			case 'editCode': {
 				dispatch(
-					showCodeEditorDialog({
-						path: item.path,
-						mode: getEditorMode(item)
+					pushDialog({
+						component: 'craftercms.components.CodeEditorDialog',
+						props: {
+							path: item.path,
+							mode: getEditorMode(item)
+						}
 					})
 				);
 				break;
@@ -871,11 +920,16 @@ export const itemActionDispatcher = ({
 				break;
 			}
 			case 'upload': {
+				const dialogId = nanoid();
 				dispatch(
-					showUploadDialog({
-						path: item.path,
-						site,
-						onClose: closeUploadDialog()
+					pushDialog({
+						id: dialogId,
+						component: 'craftercms.components.UploadDialog',
+						props: {
+							path: item.path,
+							site,
+							onClose: () => dispatch(popDialog({ id: dialogId }))
+						}
 					})
 				);
 				break;
@@ -889,7 +943,7 @@ export const itemActionDispatcher = ({
 				break;
 			}
 			case 'viewPackages': {
-				dispatch(showViewPackagesDialog({ item }));
+				dispatch(pushDialog({ component: 'craftercms.components.ViewPackagesDialog', props: { item } }));
 				break;
 			}
 			default:
@@ -929,17 +983,26 @@ export const itemActionDispatcher = ({
 				requestPublish: 'now',
 				publish: 'now'
 			};
+			const dialogId = nanoid();
 			dispatch(
-				showPublishDialog({
-					items,
-					scheduling: schedulingMap[option],
-					onSuccess: batchActions([
-						showPublishItemSuccessNotification(),
-						...items.map((item) => reloadContentItem({ path: item.path })),
-						closePublishDialog(),
-						fetchPublishingStatus(),
-						...(onActionSuccess ? [onActionSuccess] : [])
-					])
+				pushDialog({
+					id: dialogId,
+					component: 'craftercms.components.PublishDialog',
+					props: {
+						items,
+						scheduling: schedulingMap[option],
+						onSuccess: () => {
+							dispatch(
+								batchActions([
+									showPublishItemSuccessNotification(),
+									...items.map((item) => reloadContentItem({ path: item.path })),
+									popDialog({ id: dialogId }),
+									fetchPublishingStatus(),
+									...(onActionSuccess ? [onActionSuccess] : [])
+								])
+							);
+						}
+					}
 				})
 			);
 			break;

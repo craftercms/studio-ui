@@ -30,7 +30,9 @@ import {
 import { getHostToHostBus } from '../../utils/subjects';
 import { itemSuccessMessages } from '../../env/i18n-legacy';
 import {
+	closeSiteSocket,
 	emitSystemEvent,
+	emitSystemEvents,
 	fetchGlobalMenu,
 	fetchGlobalMenuComplete,
 	fetchGlobalMenuFailed,
@@ -38,7 +40,6 @@ import {
 	newProjectReady,
 	openSiteSocket,
 	projectDeleted,
-	siteSocketStatus,
 	showCopyItemSuccessNotification,
 	showCreateFolderSuccessNotification,
 	showCreateItemSuccessNotification,
@@ -52,9 +53,8 @@ import {
 	showRevertItemSuccessNotification,
 	showSystemNotification,
 	showUnlockItemSuccessNotification,
-	storeInitialized,
-	closeSiteSocket,
-	emitSystemEvents
+	siteSocketStatus,
+	storeInitialized
 } from '../actions/system';
 import { CrafterCMSEpic } from '../store';
 import {
@@ -76,16 +76,17 @@ import { getStoredShowToolsPanel } from '../../utils/state';
 import { closeToolsPanel, openToolsPanel } from '../actions/preview';
 import { getXSRFToken, removeSiteCookie, setSiteCookie } from '../../utils/auth';
 import { changeSiteComplete, fetchSites, popSite } from '../actions/sites';
-import { closeConfirmDialog, showConfirmDialog } from '../actions/dialogs';
 import { defineMessages } from 'react-intl';
 import { createCustomDocumentEventListener } from '../../utils/dom';
-import { batchActions, dispatchDOMEvent } from '../actions/misc';
+import { batchActions } from '../actions/misc';
 import StandardAction from '../../models/StandardAction';
 import { ProjectLifecycleEvent } from '../../models/ProjectLifecycleEvent';
 import { isDashboardAppUrl, isPreviewAppUrl, isProjectToolsAppUrl } from '../../utils/system';
 import { GlobalRoutes } from '../../env/routes';
 import { previewSwitch } from '../../services/security';
 import { getPublishingStatusState } from '../../components';
+import { nanoid } from 'nanoid';
+import { popDialog, pushDialog } from '../actions/dialogStack';
 
 const msgs = defineMessages({
 	siteSwitchedOnAnotherTab: {
@@ -501,7 +502,7 @@ const systemEpics: CrafterCMSEpic[] = [
 		),
 	// endregion
 	// region siteSocketStatus
-	(action$, state$, { getIntl }) =>
+	(action$, state$, { getIntl, store }) =>
 		action$.pipe(
 			ofType(siteSocketStatus.type),
 			withLatestFrom(state$),
@@ -515,41 +516,51 @@ const systemEpics: CrafterCMSEpic[] = [
 				const newProject = sites[newProjectId].name;
 				createCustomDocumentEventListener(customEventId, ({ choice }) => {
 					if (choice === 'ok') {
-						// Continue on current site (since it was changed on another tab we need to call previewSwitch, to re-set the
-						// current site)
-						setSiteCookie(currentProjectId);
-						previewSwitch().subscribe();
 					} else {
-						setSiteCookie(newProjectId);
-						setTimeout(() => {
-							const href = window.location.href;
-							if (href.includes(`site=`)) {
-								window.location.href = href.replace(`site=${currentProjectId}`, `site=${newProjectId}`);
-							} else {
-								window.location.reload();
-							}
-						});
 					}
 				});
-				return showConfirmDialog({
-					body: getIntl().formatMessage(msgs.siteSwitchedOnAnotherTab, {
-						newProject,
-						currentProject
-					}),
-					okButtonText: getIntl().formatMessage(msgs.siteSwitchedOnAnotherTabPrimaryAction, {
-						newProject,
-						currentProject
-					}),
-					cancelButtonText: getIntl().formatMessage(msgs.siteSwitchedOnAnotherTabSecondaryAction, {
-						newProject,
-						currentProject
-					}),
-					onOk: batchActions([
-						dispatchDOMEvent({ id: customEventId, choice: 'ok' }),
-						messageSharedWorker(openSiteSocket({ site: currentProjectId, xsrfToken: getXSRFToken() })),
-						closeConfirmDialog()
-					]),
-					onCancel: batchActions([dispatchDOMEvent({ id: customEventId, choice: 'cancel' }), closeConfirmDialog()])
+				const dialogId = nanoid();
+				return pushDialog({
+					id: dialogId,
+					component: 'craftercms.components.ConfirmDialog',
+					props: {
+						body: getIntl().formatMessage(msgs.siteSwitchedOnAnotherTab, {
+							newProject,
+							currentProject
+						}),
+						okButtonText: getIntl().formatMessage(msgs.siteSwitchedOnAnotherTabPrimaryAction, {
+							newProject,
+							currentProject
+						}),
+						cancelButtonText: getIntl().formatMessage(msgs.siteSwitchedOnAnotherTabSecondaryAction, {
+							newProject,
+							currentProject
+						}),
+						onOk: () => {
+							// Continue on current site (since it was changed on another tab we need to call previewSwitch, to re-set the
+							// current site)
+							setSiteCookie(currentProjectId);
+							previewSwitch().subscribe();
+							store.dispatch(
+								batchActions([
+									popDialog({ id: dialogId }),
+									messageSharedWorker(openSiteSocket({ site: currentProjectId, xsrfToken: getXSRFToken() }))
+								])
+							);
+						},
+						onCancel: () => {
+							setSiteCookie(newProjectId);
+							setTimeout(() => {
+								const href = window.location.href;
+								if (href.includes(`site=`)) {
+									window.location.href = href.replace(`site=${currentProjectId}`, `site=${newProjectId}`);
+								} else {
+									window.location.reload();
+								}
+							});
+							store.dispatch(popDialog({ id: dialogId }));
+						}
+					}
 				});
 			})
 		)

@@ -18,7 +18,8 @@ import { useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
 import useActiveUser from './useActiveUser';
 import useActiveSiteId from './useActiveSiteId';
-import { showPublishingStatusDialog, showWidgetDialog } from '../state/actions/dialogs';
+import { pushDialog } from '../state/actions/dialogStack';
+import { nanoid } from 'nanoid';
 
 export function useShowPublishingStatusDialog() {
 	const { formatMessage } = useIntl();
@@ -29,21 +30,28 @@ export function useShowPublishingStatusDialog() {
 	const userPermissions = user?.permissionsBySite[site] ?? [];
 
 	return () => {
+		const dialogId = nanoid();
 		dispatch(
 			// If user has either of these permissions or roles, then he'll see more than one widget, and it's worth showing the
 			// Publishing Dashboard. Otherwise, just show the simple status dialog.
 			userPermissions.some((permission) => permission === 'get_publishing_queue' || permission === 'publish') ||
 				userRoles.some((role) => role.toLowerCase() === 'developer' || role.toLowerCase() === 'admin')
-				? showWidgetDialog({
-						title: formatMessage({ defaultMessage: 'Publishing' }),
-						widget: {
-							id: 'craftercms.components.PublishingDashboard',
-							configuration: {
-								embedded: true
+				? pushDialog({
+						id: dialogId,
+						component: 'craftercms.components.WidgetDialog',
+						props: {
+							title: formatMessage({ defaultMessage: 'Publishing' }),
+							widget: {
+								id: 'craftercms.components.PublishingDashboard',
+								configuration: {
+									embedded: true
+								}
 							}
 						}
 					})
-				: showPublishingStatusDialog({})
+				: pushDialog({
+						component: 'craftercms.components.PublishingStatusDialog'
+					})
 		);
 	};
 }

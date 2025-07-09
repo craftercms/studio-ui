@@ -27,7 +27,7 @@ import {
 	editTemplate
 } from '../actions/misc';
 import { changeContentType, createFile, fetchContentItem } from '../../services/content';
-import { showCodeEditorDialog, showEditDialog, showErrorDialog, showViewPackagesDialog } from '../actions/dialogs';
+import { showEditDialog, showErrorDialog } from '../actions/dialogs';
 import { reloadContentItem } from '../actions/content';
 import { blockUI, showEditItemSuccessNotification, unblockUI } from '../actions/system';
 import { CrafterCMSEpic } from '../store';
@@ -35,6 +35,7 @@ import { translations } from '../../components/ItemActionsMenu/translations';
 import { getFileNameFromPath, getParentPath } from '../../utils/path';
 import { popPiece } from '../../utils/string';
 import { associateTemplate } from '../actions/preview';
+import { pushDialog } from '../actions/dialogStack';
 
 const epics = [
 	(action$, state$: Observable<GlobalState>) =>
@@ -92,11 +93,14 @@ const epics = [
 					fetchContentItem(state.sites.active, path).pipe(
 						map((item) =>
 							batchActions([
-								showCodeEditorDialog({
-									site: state.sites.active,
-									path,
-									mode,
-									contentType
+								pushDialog({
+									component: 'craftercms.components.CodeEditorDialog',
+									props: {
+										site: state.sites.active,
+										path,
+										mode,
+										contentType
+									}
 								}),
 								unblockUI()
 							])
@@ -112,11 +116,14 @@ const epics = [
 												// Only editing templates should associate. Groovy controllers are not on the content type definition.
 												type !== editController.type &&
 													associateTemplate({ contentTypeId: contentType, displayTemplate: path }),
-												showCodeEditorDialog({
-													site: state.sites.active,
-													path,
-													mode,
-													contentType
+												pushDialog({
+													component: 'craftercms.components.CodeEditorDialog',
+													props: {
+														site: state.sites.active,
+														path,
+														mode,
+														contentType
+													}
 												}),
 												unblockUI()
 											].filter(Boolean)

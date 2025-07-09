@@ -16,9 +16,10 @@
 
 import { useStore } from 'react-redux';
 import { hasMinimizedBar } from '../components/MinimizedBarPortal/minimizedBarCounter';
-import { showConfirmDialog } from '../state/actions/dialogs';
 import infoGraphic from '../assets/information.svg';
 import { defineMessages, useIntl } from 'react-intl';
+import { popDialog, pushDialog } from '../state/actions/dialogStack';
+import { nanoid } from 'nanoid';
 
 const messages = defineMessages({
 	main: {
@@ -32,10 +33,16 @@ export function useMinimizedDialogWarning() {
 	const { formatMessage } = useIntl();
 	return () => {
 		if (hasMinimizedBar()) {
+			const dialogId = nanoid();
 			store.dispatch(
-				showConfirmDialog({
-					body: formatMessage(messages.main),
-					imageUrl: infoGraphic
+				pushDialog({
+					id: dialogId,
+					component: 'craftercms.components.ConfirmDialog',
+					props: {
+						body: formatMessage(messages.main),
+						imageUrl: infoGraphic,
+						onOk: () => store.dispatch(popDialog({ id: dialogId }))
+					}
 				})
 			);
 			return true;

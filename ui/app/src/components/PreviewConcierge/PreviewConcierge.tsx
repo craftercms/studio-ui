@@ -80,8 +80,8 @@ import {
 	duplicateItem,
 	fetchContentInstance,
 	fetchContentInstanceDescriptor,
-	fetchContentItems,
 	fetchContentItem as fetchContentItemService,
+	fetchContentItems,
 	insertComponent,
 	insertInstance,
 	insertItem,
@@ -144,9 +144,7 @@ import {
 	showItemMegaMenu,
 	showRtePickerActions,
 	ShowRtePickerActionsPayload,
-	showSingleFileUploadDialog,
-	showViewPackagesDialog,
-	viewPackagesDialogClosed
+	showSingleFileUploadDialog
 } from '../../state/actions/dialogs';
 import { UNDEFINED } from '../../utils/constants';
 import { useCurrentPreviewItem } from '../../hooks/useCurrentPreviewItem';
@@ -189,6 +187,8 @@ import { ActionCreatorWithOptionalPayload } from '@reduxjs/toolkit';
 import { ItemMegaMenuStateProps } from '../ItemMegaMenu';
 import StandardAction from '../../models/StandardAction';
 import { pickShowContentFormAction } from '../../utils/system';
+import { pushDialog } from '../../state/actions/dialogStack';
+import { nanoid } from 'nanoid';
 
 const issueDescriptorRequest = (props: {
 	site: string;
@@ -1104,14 +1104,16 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 					break;
 				}
 				case requestWorkflowCancellationDialog.type: {
+					const dialogId = nanoid();
 					dispatch(
-						showViewPackagesDialog({
-							item: payload.item,
-							onClosed: batchActions([
-								viewPackagesDialogClosed(),
-								requestWorkflowCancellationDialogOnResult({ type: 'close' })
-							]),
-							onContinue: requestWorkflowCancellationDialogOnResult({ type: 'continue' })
+						pushDialog({
+							id: dialogId,
+							component: 'craftercms.components.ViewPackagesDialog',
+							props: {
+								item: payload.item,
+								onClosed: () => dispatch(requestWorkflowCancellationDialogOnResult({ type: 'close' })),
+								onContinue: () => dispatch(requestWorkflowCancellationDialogOnResult({ type: 'continue' }))
+							}
 						})
 					);
 					break;
