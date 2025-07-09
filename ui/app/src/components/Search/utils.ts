@@ -24,7 +24,7 @@ import { useSelection } from '../../hooks/useSelection';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useEnv } from '../../hooks/useEnv';
 import { ContextMenuOption } from '../ContextMenu';
-import { showEditDialog, showItemMegaMenu, showPreviewDialog, updatePreviewDialog } from '../../state/actions/dialogs';
+import { showEditDialog, showPreviewDialog, updatePreviewDialog } from '../../state/actions/dialogs';
 import { getNumOfMenuOptionsForItem, getSystemTypeFromPath } from '../../utils/content';
 import LookupTable from '../../models/LookupTable';
 import { search } from '../../services/search';
@@ -293,14 +293,17 @@ export const useSearchState = ({
 	const onHeaderButtonClick = (event: any, item: MediaItem) => {
 		const path = item.path;
 		dispatch(
-			showItemMegaMenu({
-				path,
-				anchorReference: 'anchorPosition',
-				anchorPosition: { top: event.clientY, left: event.clientX },
-				numOfLoaderItems: getNumOfMenuOptionsForItem({
-					path: item.path,
-					systemType: getSystemTypeFromPath(item.path)
-				} as ContentItem)
+			pushDialog({
+				component: 'craftercms.components.ItemMegaMenu',
+				props: {
+					path,
+					anchorReference: 'anchorPosition',
+					anchorPosition: { top: event.clientY, left: event.clientX },
+					numOfLoaderItems: getNumOfMenuOptionsForItem({
+						path: item.path,
+						systemType: getSystemTypeFromPath(item.path)
+					} as ContentItem)
+				}
 			})
 		);
 	};

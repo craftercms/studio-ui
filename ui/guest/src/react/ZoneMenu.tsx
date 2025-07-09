@@ -32,10 +32,10 @@ import ContentCopyRoundedIcon from '@mui/icons-material/ContentCopyRounded';
 import {
 	deleteItem,
 	duplicateItem,
+	getCachedContentItem,
 	getCachedModel,
 	getCachedModels,
 	getCachedPermissions,
-	getCachedContentItem,
 	getModelIdFromInheritedField,
 	insertItem,
 	isInheritedField,
@@ -63,8 +63,8 @@ import UltraStyledTypography from './UltraStyledTypography';
 import UltraStyledTooltip from './UltraStyledTooltip';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
-import { showItemMegaMenu } from '@craftercms/studio-ui/state/actions/dialogs';
 import { unlockItem } from '@craftercms/studio-ui/state/actions/content';
+import { pushDialog } from '@craftercms/studio-ui/state/actions/dialogStack';
 
 export interface ZoneMenuProps {
 	record: ElementRecord;
@@ -384,10 +384,13 @@ export function ZoneMenu(props: ZoneMenuProps) {
 		const top = e.clientY;
 		const left = e.clientX;
 		post(
-			showItemMegaMenu({
-				path,
-				anchorReference: 'anchorPosition',
-				anchorPosition: { top, left }
+			pushDialog({
+				component: 'craftercms.components.ItemMegaMenu',
+				props: {
+					path,
+					anchorReference: 'anchorPosition',
+					anchorPosition: { top, left }
+				}
 			})
 		);
 	};

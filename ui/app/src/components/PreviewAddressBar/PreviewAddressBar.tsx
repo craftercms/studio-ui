@@ -28,7 +28,6 @@ import { ContentItem } from '../../models/Item';
 import MoreRounded from '@mui/icons-material/MoreVertRounded';
 import Popover, { getOffsetLeft, getOffsetTop } from '@mui/material/Popover';
 import { withIndex, withoutIndex } from '../../utils/path';
-import { showItemMegaMenu } from '../../state/actions/dialogs';
 import { getNumOfMenuOptionsForItem } from '../../utils/content';
 import Tooltip from '@mui/material/Tooltip';
 import { changeCurrentUrl, reloadRequest } from '../../state/actions/preview';
@@ -44,6 +43,7 @@ import Button from '@mui/material/Button';
 import ErrorOutlineOutlined from '@mui/icons-material/ErrorOutlineOutlined';
 import useEnv from '../../hooks/useEnv';
 import { Subscription } from 'rxjs';
+import { pushDialog } from '../../state/actions/dialogStack';
 
 export interface AddressBarProps {
 	site: string;
@@ -82,11 +82,14 @@ export function PreviewAddressBar(props: AddressBarProps) {
 			path = withIndex(item.path);
 		}
 		dispatch(
-			showItemMegaMenu({
-				path: path,
-				anchorReference: 'anchorPosition',
-				anchorPosition: { top, left },
-				loaderItems: getNumOfMenuOptionsForItem(item)
+			pushDialog({
+				component: 'craftercms.components.ItemMegaMenu',
+				props: {
+					path: path,
+					anchorReference: 'anchorPosition',
+					anchorPosition: { top, left },
+					loaderItems: getNumOfMenuOptionsForItem(item)
+				}
 			})
 		);
 	};

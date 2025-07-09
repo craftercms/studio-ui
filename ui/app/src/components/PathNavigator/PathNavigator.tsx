@@ -33,16 +33,16 @@ import {
 	pathNavigatorSetKeyword,
 	pathNavigatorSetLocaleCode
 } from '../../state/actions/pathNavigator';
-import { showEditDialog, showItemMegaMenu, showPreviewDialog } from '../../state/actions/dialogs';
+import { showEditDialog, showPreviewDialog } from '../../state/actions/dialogs';
 import {
 	getEditorMode,
 	isEditableViaFormEditor,
 	isFolder,
 	isImage,
 	isNavigable,
+	isPdfDocument,
 	isPreviewable,
-	isVideo,
-	isPdfDocument
+	isVideo
 } from './utils';
 import { StateStylingProps } from '../../models/UiConfig';
 import { debounceTime } from 'rxjs/operators';
@@ -63,6 +63,7 @@ import { getStoredPathNavigator } from '../../utils/state';
 import { useActiveSite } from '../../hooks/useActiveSite';
 import { useActiveUser } from '../../hooks/useActiveUser';
 import { GetChildrenOptions, PartialSxRecord } from '../../models';
+import { pushDialog } from '../../state/actions/dialogStack';
 
 interface Menu {
 	path?: string;
@@ -316,11 +317,14 @@ export function PathNavigator(props: PathNavigatorProps) {
 			path = withIndex(state.currentPath);
 		}
 		dispatch(
-			showItemMegaMenu({
-				path: path,
-				anchorReference: 'anchorPosition',
-				anchorPosition: { top, left },
-				loaderItems: getNumOfMenuOptionsForItem(lookupItemByPath(path, itemsByPath))
+			pushDialog({
+				component: 'craftercms.components.ItemMegaMenu',
+				props: {
+					path,
+					anchorReference: 'anchorPosition',
+					anchorPosition: { top, left },
+					loaderItems: getNumOfMenuOptionsForItem(lookupItemByPath(path, itemsByPath))
+				}
 			})
 		);
 	};
@@ -331,11 +335,14 @@ export function PathNavigator(props: PathNavigatorProps) {
 		const left = anchorRect.left + getOffsetLeft(anchorRect, 'left');
 
 		dispatch(
-			showItemMegaMenu({
-				path: item.path,
-				anchorReference: 'anchorPosition',
-				anchorPosition: { top, left },
-				loaderItems: getNumOfMenuOptionsForItem(item)
+			pushDialog({
+				component: 'craftercms.components.ItemMegaMenu',
+				props: {
+					path: item.path,
+					anchorReference: 'anchorPosition',
+					anchorPosition: { top, left },
+					loaderItems: getNumOfMenuOptionsForItem(item)
+				}
 			})
 		);
 	};

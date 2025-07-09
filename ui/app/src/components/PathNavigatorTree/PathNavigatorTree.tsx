@@ -44,7 +44,7 @@ import ContextMenu, { ContextMenuOption } from '../ContextMenu/ContextMenu';
 import { getNumOfMenuOptionsForItem, lookupItemByPath } from '../../utils/content';
 import { previewItem } from '../../state/actions/preview';
 import { getOffsetLeft, getOffsetTop } from '@mui/material/Popover';
-import { showItemMegaMenu, showPreviewDialog } from '../../state/actions/dialogs';
+import { showPreviewDialog } from '../../state/actions/dialogs';
 import { getStoredPathNavigatorTree } from '../../utils/state';
 import GlobalState from '../../models/GlobalState';
 import PathNavigatorSkeleton from '../PathNavigator/PathNavigatorSkeleton';
@@ -63,6 +63,7 @@ import { PathNavigatorTreeItemProps } from './PathNavigatorTreeItem';
 import { UNDEFINED } from '../../utils/constants';
 import SimpleAjaxError from '../../models/SimpleAjaxError';
 import { pickShowContentFormAction } from '../../utils/system';
+import { pushDialog } from '../../state/actions/dialogStack';
 
 export interface PathNavigatorTreeProps
 	extends Pick<
@@ -270,11 +271,14 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
 		const top = anchorRect.top + getOffsetTop(anchorRect, 'top');
 		const left = anchorRect.left + getOffsetLeft(anchorRect, 'left');
 		dispatch(
-			showItemMegaMenu({
-				path,
-				anchorReference: 'anchorPosition',
-				anchorPosition: { top, left },
-				loaderItems: getNumOfMenuOptionsForItem(getItemByPath(path))
+			pushDialog({
+				component: 'craftercms.components.ItemMegaMenu',
+				props: {
+					path,
+					anchorReference: 'anchorPosition',
+					anchorPosition: { top, left },
+					loaderItems: getNumOfMenuOptionsForItem(getItemByPath(path))
+				}
 			})
 		);
 	};

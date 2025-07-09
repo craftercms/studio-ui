@@ -54,7 +54,7 @@ import {
 	unlock
 } from '../../services/content';
 import { merge, Observable, of } from 'rxjs';
-import { closeDeleteDialog, showDeleteDialog, showEditDialog, showItemMegaMenu } from '../actions/dialogs';
+import { closeDeleteDialog, showDeleteDialog, showEditDialog } from '../actions/dialogs';
 import { getEditorMode, isEditableAsset } from '../../utils/content';
 import {
 	blockUI,
@@ -161,10 +161,12 @@ const content: CrafterCMSEpic[] = [
 		),
 	// endregion
 	// region showItemMegaMenu
-	(action$) =>
+	(action$, state$) =>
 		action$.pipe(
-			ofType(showItemMegaMenu.type),
-			map(({ payload }) => fetchContentItem({ path: payload.path }))
+			ofType(pushDialog.type),
+			withLatestFrom(state$),
+			filter(([{ payload }]) => payload.component === 'craftercms.components.ItemMegaMenu'),
+			map(([{ payload }]) => fetchContentItem({ path: payload.props.path }))
 		),
 	// endregion
 	// region fetchContentItem, reloadContentItem
