@@ -26,7 +26,6 @@ import {
 	showDeleteDialog,
 	showDependenciesDialog,
 	showHistoryDialog,
-	showPreviewDialog,
 	showRenameAssetDialog
 } from '../state/actions/dialogs';
 import { checkPathExistence, fetchContentItem, fetchContentItems, fetchLegacyItemsTree } from '../services/content';
@@ -906,22 +905,34 @@ export const itemActionDispatcher = ({
 			case 'viewCode': {
 				const mode = getEditorMode(item);
 				dispatch(
-					showPreviewDialog({
-						type: 'editor',
-						title: item.label,
-						url: item.path,
-						path: item.path,
-						mode
+					pushDialog({
+						id: nanoid(),
+						component: 'craftercms.components.PreviewDialog',
+						allowMinimize: true,
+						allowFullScreen: true,
+						props: {
+							type: 'editor',
+							title: item.label,
+							url: item.path,
+							path: item.path,
+							mode
+						}
 					})
 				);
 				break;
 			}
 			case 'viewMedia': {
 				dispatch(
-					showPreviewDialog({
-						type: isImage(item) ? 'image' : isVideo(item) ? 'video' : 'pdf',
-						title: item.label,
-						url: item.path
+					pushDialog({
+						id: nanoid(),
+						component: 'craftercms.components.PreviewDialog',
+						allowMinimize: true,
+						allowFullScreen: true,
+						props: {
+							type: isImage(item) ? 'image' : isVideo(item) ? 'video' : 'pdf',
+							title: item.label,
+							url: item.path
+						}
 					})
 				);
 				break;

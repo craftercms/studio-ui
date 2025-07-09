@@ -17,7 +17,6 @@
 import { ofType } from 'redux-observable';
 import { filter, ignoreElements, map, switchMap, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 import { NEVER, of } from 'rxjs';
-import GlobalState from '../../models/GlobalState';
 import { camelize, dasherize } from '../../utils/string';
 import {
 	closeCodeEditorDialog,
@@ -39,18 +38,15 @@ import {
 	newContentCreationComplete,
 	showCodeEditorDialog,
 	showEditDialog,
-	showPreviewDialog,
 	updateCodeEditorDialog,
 	updateDeleteDialog,
 	updateEditDialogConfig,
-	updatePreviewDialog,
 	updateRenameAssetDialog
 } from '../actions/dialogs';
 import { fetchDeleteDependencies as fetchDeleteDependenciesService, fetchDependant } from '../../services/dependencies';
 import { fetchContentXML, fetchItemVersion } from '../../services/content';
 import { catchAjaxError } from '../../utils/ajax';
 import { batchActions } from '../actions/misc';
-import StandardAction from '../../models/StandardAction';
 import { asArray } from '../../utils/array';
 import { changeCurrentUrl, requestWorkflowCancellationDialogOnResult } from '../actions/preview';
 import { CrafterCMSEpic } from '../store';
@@ -63,8 +59,8 @@ import { parseLegacyItemToContentItem } from '../../utils/content';
 import { LegacyItem } from '../../models';
 import { generateDialogId } from '../../utils/dialogs';
 import { LegacyFormDialogStateProps } from '../../components/LegacyFormDialog/utils';
-import { CodeEditorDialogStateProps } from '../../components';
-import { popDialog, pushDialog } from '../actions/dialogStack';
+import { CodeEditorDialogStateProps, type PreviewDialogStateProps } from '../../components';
+import { popDialog, pushDialog, updateDialogState } from '../actions/dialogStack';
 import { nanoid } from 'nanoid';
 
 function getDialogNameFromType(type: string): string {
@@ -234,13 +230,20 @@ const dialogEpics: CrafterCMSEpic[] = [
 	// region showPreviewDialog
 	(action$, state$) =>
 		action$.pipe(
-			ofType(showPreviewDialog.type),
+			ofType(pushDialog.type),
 			withLatestFrom(state$),
-			filter(
-				([{ payload }, state]) => payload.type === 'editor' && nnou(payload.url) && nou(state.dialogs.preview.content)
-			),
+			filter(([{ payload }, state]) => {
+				return (
+					payload.component === 'craftercms.components.PreviewDialog' &&
+					payload.props.type === 'editor' &&
+					nnou(payload.props.url) &&
+					nou((state.dialogStack.byId[payload.id]?.props as PreviewDialogStateProps)?.content)
+				);
+			}),
 			switchMap(([{ payload }, state]) =>
-				fetchContentXML(state.sites.active, payload.url).pipe(map((content) => updatePreviewDialog({ content })))
+				fetchContentXML(state.sites.active, payload.props.url).pipe(
+					map((content) => updateDialogState({ id: payload.id, props: { content } }))
+				)
 			)
 		),
 	// endregion

@@ -46,6 +46,8 @@ import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { showPreviewDialog } from '../../state/actions/dialogs';
 import { ErrorBoundary } from '../ErrorBoundary';
 import Box from '@mui/material/Box';
+import { pushDialog } from '../../state/actions/dialogStack';
+import { nanoid } from 'nanoid';
 
 const translations = defineMessages({
 	previewAssetsPanelTitle: {
@@ -251,11 +253,17 @@ export function PreviewAssetsPanel() {
 											onDragEnd={() => onDragEnd()}
 											onPreview={() =>
 												dispatch(
-													showPreviewDialog({
-														// TODO: check if it's image or video
-														type: 'image',
-														title: item.name,
-														url: item.path
+													pushDialog({
+														id: nanoid(),
+														component: 'craftercms.components.PreviewDialog',
+														allowMinimize: true,
+														allowFullScreen: true,
+														props: {
+															// TODO: check if it's image or video
+															type: 'image',
+															title: item.name,
+															url: item.path
+														}
 													})
 												)
 											}

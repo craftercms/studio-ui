@@ -33,7 +33,7 @@ import {
 	pathNavigatorSetKeyword,
 	pathNavigatorSetLocaleCode
 } from '../../state/actions/pathNavigator';
-import { showEditDialog, showPreviewDialog } from '../../state/actions/dialogs';
+import { showEditDialog } from '../../state/actions/dialogs';
 import {
 	getEditorMode,
 	isEditableViaFormEditor,
@@ -64,6 +64,7 @@ import { useActiveSite } from '../../hooks/useActiveSite';
 import { useActiveUser } from '../../hooks/useActiveUser';
 import { GetChildrenOptions, PartialSxRecord } from '../../models';
 import { pushDialog } from '../../state/actions/dialogStack';
+import { nanoid } from 'nanoid';
 
 interface Menu {
 	path?: string;
@@ -256,21 +257,33 @@ export function PathNavigator(props: PathNavigatorProps) {
 			dispatch(showEditDialog({ path: item.path, authoringBase, site: siteId, readonly: true }));
 		} else if (isImage(item) || isVideo(item) || isPdfDocument(item.mimeType)) {
 			dispatch(
-				showPreviewDialog({
-					type: isImage(item) ? 'image' : isVideo(item) ? 'video' : 'pdf',
-					title: item.label,
-					url: item.path
+				pushDialog({
+					id: nanoid(),
+					component: 'craftercms.components.PreviewDialog',
+					allowMinimize: true,
+					allowFullScreen: true,
+					props: {
+						type: isImage(item) ? 'image' : isVideo(item) ? 'video' : 'pdf',
+						title: item.label,
+						url: item.path
+					}
 				})
 			);
 		} else {
 			const mode = getEditorMode(item);
 			dispatch(
-				showPreviewDialog({
-					type: 'editor',
-					title: item.label,
-					url: item.path,
-					path: item.path,
-					mode
+				pushDialog({
+					id: nanoid(),
+					component: 'craftercms.components.PreviewDialog',
+					allowMinimize: true,
+					allowFullScreen: true,
+					props: {
+						type: 'editor',
+						title: item.label,
+						url: item.path,
+						path: item.path,
+						mode
+					}
 				})
 			);
 		}
