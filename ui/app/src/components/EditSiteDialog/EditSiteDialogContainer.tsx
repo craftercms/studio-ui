@@ -22,7 +22,6 @@ import { isBlank } from '../../utils/string';
 import { update } from '../../services/sites';
 import { fetchSites } from '../../state/actions/sites';
 import { EditSiteDialogContainerProps } from './utils';
-import { updateEditSiteDialog } from '../../state/actions/dialogs';
 import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
 import { ConditionalLoadingState } from '../LoadingState/LoadingState';
 import useProjectPreviewImage from '../../hooks/useProjectPreviewImage';
@@ -42,11 +41,11 @@ import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import { PROJECT_PREVIEW_IMAGE_UPDATED } from '../../utils/constants';
 import { showSystemNotification } from '../../state/actions/system';
-import { popDialog, pushDialog } from '../../state/actions/dialogStack';
+import { popDialog, pushDialog, updateDialogState } from '../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
 
 export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
-	const { site, onClose, onSaveSuccess, onSiteImageChange, isSubmitting } = props;
+	const { site, onClose, onSaveSuccess, onSiteImageChange, isSubmitting, dialogId } = props;
 	const [hasNameConflict, setHasNameConflict] = useState(false);
 	const sites = useSelector<GlobalState, LookupTable>((state) => state.sites.byId);
 	const dispatch = useDispatch();
@@ -75,15 +74,12 @@ export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
 
 	const handleSubmit = (id: string, name: string, description: string) => {
 		if (!disableSubmit) {
-			dispatch(updateEditSiteDialog({ isSubmitting: true }));
+			dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: true } }));
 			update({ id, name: name.trim(), description: description.trim() }).subscribe({
 				next(response) {
 					dispatch(
 						batchActions([
-							updateEditSiteDialog({
-								hasPendingChanges: false,
-								isSubmitting: false
-							}),
+							updateDialogState({ id: dialogId, props: { hasPendingChanges: false, isSubmitting: false } }),
 							fetchSites()
 						])
 					);
@@ -92,7 +88,7 @@ export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
 				error({ response: { response } }) {
 					dispatch(
 						batchActions([
-							updateEditSiteDialog({ isSubmitting: false }),
+							updateDialogState({ id: dialogId, props: { isSubmitting: false } }),
 							pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } })
 						])
 					);
@@ -107,8 +103,11 @@ export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
 		checkSiteName(value);
 		setName(value);
 		dispatch(
-			updateEditSiteDialog({
-				hasPendingChanges: originalDescription !== description.trim() || originalName !== value.trim()
+			updateDialogState({
+				id: dialogId,
+				props: {
+					hasPendingChanges: originalDescription !== description.trim() || originalName !== value.trim()
+				}
 			})
 		);
 	};
@@ -122,7 +121,10 @@ export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
 	const onSiteDescriptionChange = (value: string) => {
 		setDescription(value);
 		dispatch(
-			updateEditSiteDialog({ hasPendingChanges: originalName !== name.trim() || originalDescription !== value.trim() })
+			updateDialogState({
+				id: dialogId,
+				props: { hasPendingChanges: originalName !== name.trim() || originalDescription !== value.trim() }
+			})
 		);
 	};
 

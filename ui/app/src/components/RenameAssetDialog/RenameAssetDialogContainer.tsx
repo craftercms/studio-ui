@@ -19,7 +19,7 @@ import { useEnhancedDialogContext } from '../EnhancedDialog';
 import React, { useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
-import { fetchRenameAssetDependants, showErrorDialog, updateRenameAssetDialog } from '../../state/actions/dialogs';
+import { fetchRenameAssetDependants } from '../../state/actions/dialogs';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import useItemsByPath from '../../hooks/useItemsByPath';
 import { getFileNameWithExtensionForItemType, getParentPath } from '../../utils/path';
@@ -35,7 +35,7 @@ import { translations } from '../CreateFileDialog/translations';
 import { RenameItemView } from '../RenameDialogBody';
 import { applyAssetNameRules } from '../../utils/content';
 import { DialogBody } from '../DialogBody';
-import { pushDialog } from '../../state/actions/dialogStack';
+import { pushDialog, updateDialogState } from '../../state/actions/dialogStack';
 
 export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
 	const {
@@ -47,7 +47,8 @@ export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
 		type,
 		dependantItems,
 		fetchingDependantItems,
-		error
+		error,
+		dialogId
 	} = props;
 	const { isSubmitting, hasPendingChanges } = useEnhancedDialogContext();
 	const [name, setName] = useState(value);
@@ -65,37 +66,37 @@ export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
 		isSubmitting || !isValid || fetchingDependantItems || (dependantItems?.length > 0 && !confirmBrokenReferences);
 
 	useEffect(() => {
-		dispatch(fetchRenameAssetDependants({ path }));
-	}, [dispatch, path]);
+		dispatch(fetchRenameAssetDependants({ path, dialogId }));
+	}, [dispatch, path, dialogId]);
 
 	const onInputChanges = (newValue: string) => {
 		setName(newValue);
 		const newHasPendingChanges = newValue !== value;
 		hasPendingChanges !== newHasPendingChanges &&
-			dispatch(updateRenameAssetDialog({ hasPendingChanges: newHasPendingChanges }));
+			dispatch(updateDialogState({ id: dialogId, props: { hasPendingChanges: newHasPendingChanges } }));
 	};
 
 	const onRenameAsset = (siteId: string, path: string, name: string) => {
 		const fileName = type !== 'asset' ? getFileNameWithExtensionForItemType(type, name) : name;
 		renameContent(siteId, path, fileName).subscribe({
 			next() {
-				dispatch(updateRenameAssetDialog({ isSubmitting: false, hasPendingChanges: false }));
+				dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: false, hasPendingChanges: false } }));
 				onRenamed?.({ path, name });
 			},
 			error({ response }) {
 				dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response.response } }));
-				dispatch(updateRenameAssetDialog({ isSubmitting: false }));
+				dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: false } }));
 			}
 		});
 	};
 
 	const onConfirmCancel = () => {
 		setConfirm(null);
-		dispatch(updateRenameAssetDialog({ isSubmitting: false }));
+		dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: false } }));
 	};
 
 	const onRename = () => {
-		dispatch(updateRenameAssetDialog({ isSubmitting: true }));
+		dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: true } }));
 		if (name) {
 			validateActionPolicy(siteId, {
 				type: 'RENAME',

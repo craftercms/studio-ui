@@ -41,15 +41,14 @@ import { createLookupTable } from '../../utils/object';
 import { Fade } from '@mui/material';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
-import { updatePublishingPackageResubmitDialog } from '../../state/actions/dialogs';
 import { batchActions } from '../../state/actions/misc';
 import { isBlank } from '../../utils/string';
 import { LoadingState } from '../LoadingState';
 import useActiveUser from '../../hooks/useActiveUser';
-import { pushDialog } from '../../state/actions/dialogStack';
+import { pushDialog, updateDialogState } from '../../state/actions/dialogStack';
 
 export function PublishingPackageResubmitDialogContainer(props: PublishingPackageResubmitDialogContainerProps) {
-	const { pkg, type, isSubmitting, onSuccess, onClose } = props;
+	const { pkg, type, isSubmitting, onSuccess, onClose, dialogId } = props;
 	const siteId = useActiveSiteId();
 	const { permissionsBySite } = useActiveUser();
 	const dispatch = useDispatch();
@@ -113,7 +112,7 @@ export function PublishingPackageResubmitDialogContainer(props: PublishingPackag
 
 	const onPublishingArgumentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		let value: unknown;
-		dispatch(updatePublishingPackageResubmitDialog({ hasPendingChanges: true }));
+		dispatch(updateDialogState({ id: dialogId, props: { hasPendingChanges: true } }));
 		switch (e.target.type) {
 			case 'checkbox':
 				value = e.target.checked;
@@ -172,17 +171,17 @@ export function PublishingPackageResubmitDialogContainer(props: PublishingPackag
 			comment: submissionComment
 		};
 
-		dispatch(updatePublishingPackageResubmitDialog({ isSubmitting: true }));
+		dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: true } }));
 
 		publish(siteId, data).subscribe({
 			next() {
-				dispatch(updatePublishingPackageResubmitDialog({ isSubmitting: false, hasPendingChanges: false }));
+				dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: false, hasPendingChanges: false } }));
 				onSuccess?.();
 			},
 			error({ response }) {
 				dispatch(
 					batchActions([
-						updatePublishingPackageResubmitDialog({ isSubmitting: false }),
+						updateDialogState({ id: dialogId, props: { isSubmitting: false } }),
 						pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response.response } })
 					])
 				);

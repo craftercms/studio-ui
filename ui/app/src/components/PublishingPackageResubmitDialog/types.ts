@@ -26,6 +26,7 @@ export interface PublishingPackageResubmitDialogBaseProps {
 export interface PublishingPackageResubmitDialogProps
 	extends PublishingPackageResubmitDialogBaseProps,
 		EnhancedDialogProps {
+	dialogId: string;
 	onSuccess?(): void;
 }
 
@@ -39,4 +40,4 @@ export interface PublishingPackageResubmitDialogStateProps
 
 export interface PublishingPackageResubmitDialogContainerProps
 	extends PublishingPackageResubmitDialogBaseProps,
-		Pick<PublishingPackageResubmitDialogProps, 'isSubmitting' | 'onSuccess' | 'onClose'> {}
+		Pick<PublishingPackageResubmitDialogProps, 'isSubmitting' | 'onSuccess' | 'onClose' | 'dialogId'> {}

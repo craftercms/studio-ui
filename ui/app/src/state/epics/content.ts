@@ -90,6 +90,7 @@ import SocketEvent, { MoveContentEventPayload } from '../../models/SocketEvent';
 import { popDialog, pushDialog } from '../actions/dialogStack';
 import { nanoid } from 'nanoid';
 import { pickShowContentFormAction } from '../../utils/system';
+import { ContentItem } from '../../models';
 
 export const sitePolicyMessages = defineMessages({
 	itemPastePolicyConfirm: {
@@ -554,20 +555,30 @@ const content: CrafterCMSEpic[] = [
 					return merge(
 						of(blockUI({ message: `${getIntl().formatMessage(inProgressMessages.processing)}...` })),
 						fetchItemByPath(state.sites.active, path).pipe(
-							switchMap((itemToDelete) => [
-								showDeleteDialog({
-									items: asArray(itemToDelete),
-									onSuccess: batchActions(
-										[
-											showDeleteItemSuccessNotification(),
-											type === 'DELETE_TEMPLATE' && dissociateTemplate({ contentTypeId: item.contentTypeId }),
-											closeDeleteDialog(),
-											onSuccess
-										].filter(Boolean)
-									)
-								}),
-								unblockUI()
-							]),
+							switchMap((itemToDelete) => {
+								const dialogId = nanoid();
+								return [
+									pushDialog({
+										id: dialogId,
+										component: 'craftercms.components.DeleteDialog',
+										props: {
+											items: asArray(itemToDelete),
+											onSuccess: ({ items }: { items: ContentItem[] }) =>
+												store.dispatch(
+													batchActions(
+														[
+															showDeleteItemSuccessNotification({ items }),
+															type === 'DELETE_TEMPLATE' && dissociateTemplate({ contentTypeId: item.contentTypeId }),
+															popDialog({ id: dialogId }),
+															onSuccess
+														].filter(Boolean)
+													)
+												)
+										}
+									}),
+									unblockUI()
+								];
+							}),
 							catchAjaxError((error: AjaxError) => {
 								const dialogId = nanoid();
 								return batchActions([

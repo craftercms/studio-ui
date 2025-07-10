@@ -26,6 +26,7 @@ export interface CreateFolderBaseProps {
 }
 
 export interface CreateFolderProps extends CreateFolderBaseProps, EnhancedDialogProps {
+	dialogId: string;
 	onCreated?(response: { path: string; name: string; rename: boolean }): void;
 	onRenamed?(response: { path: string; name: string; rename: boolean }): void;
 }
@@ -40,5 +41,5 @@ export interface CreateFolderStateProps extends CreateFolderBaseProps, EnhancedD
 export interface CreateFolderContainerProps
 	extends Pick<
 		CreateFolderProps,
-		'path' | 'allowBraces' | 'value' | 'rename' | 'onRenamed' | 'onCreated' | 'onClose'
+		'path' | 'allowBraces' | 'value' | 'rename' | 'onRenamed' | 'onCreated' | 'onClose' | 'dialogId'
 	> {}

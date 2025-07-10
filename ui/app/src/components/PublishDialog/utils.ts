@@ -40,6 +40,7 @@ export interface PublishDialogBaseProps {
 }
 
 export interface PublishDialogProps extends PublishDialogBaseProps, EnhancedDialogProps {
+	dialogId: string;
 	onSuccess?(response?: ExtendedGoLiveResponse): void;
 }
 
@@ -51,7 +52,7 @@ export interface PublishDialogStateProps extends PublishDialogBaseProps, Enhance
 
 export interface PublishDialogContainerProps
 	extends PublishDialogBaseProps,
-		Pick<PublishDialogProps, 'isSubmitting' | 'onSuccess' | 'onClose'> {}
+		Pick<PublishDialogProps, 'isSubmitting' | 'onSuccess' | 'onClose' | 'dialogId'> {}
 
 export interface InternalDialogState {
 	packageTitle: string;

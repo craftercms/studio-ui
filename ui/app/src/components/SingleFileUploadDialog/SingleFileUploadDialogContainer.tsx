@@ -20,29 +20,22 @@ import { useDispatch } from 'react-redux';
 import DialogBody from '../DialogBody/DialogBody';
 import SingleFileUploadDialogUI from './SingleFileUploadDialogUI';
 import { updateSingleFileUploadDialog } from '../../state/actions/dialogs';
+import { updateDialogState } from '../../state/actions/dialogStack';
 
 export function SingleFileUploadDialogContainer(props: SingleFileUploadDialogContainerProps) {
-	const { onUploadComplete, onUploadStart, onUploadError, ...rest } = props;
+	const { onUploadComplete, onUploadStart, onUploadError, dialogId, ...rest } = props;
 	const dispatch = useDispatch();
 	const onStart = useCallback(() => {
 		onUploadStart?.();
-		dispatch(
-			updateSingleFileUploadDialog({
-				isSubmitting: true
-			})
-		);
-	}, [dispatch, onUploadStart]);
+		dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: true } }));
+	}, [dispatch, onUploadStart, dialogId]);
 
 	const onComplete = useCallback(
 		(result) => {
-			dispatch(
-				updateSingleFileUploadDialog({
-					isSubmitting: false
-				})
-			);
+			dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: false } }));
 			onUploadComplete?.(result);
 		},
-		[dispatch, onUploadComplete]
+		[dispatch, onUploadComplete, dialogId]
 	);
 
 	const onError = useCallback(

@@ -17,7 +17,7 @@
 import React, { useEffect, useState } from 'react';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useDispatch } from 'react-redux';
-import { fetchDeleteDependencies, updateDeleteDialog } from '../../state/actions/dialogs';
+import { fetchDeleteDependencies } from '../../state/actions/dialogs';
 import { deleteItems } from '../../services/content';
 import { DeleteDialogUI } from './DeleteDialogUI';
 import { DeleteDialogContainerProps, DeleteDialogContentUIProps } from './utils';
@@ -29,6 +29,7 @@ import { isBlank } from '../../utils/string';
 import { ApiResponse } from '../../models';
 import { batchActions } from '../../state/actions/misc';
 import { pickShowContentFormAction } from '../../utils/system';
+import { updateDialogState } from '../../state/actions/dialogStack';
 
 function createCheckedList(selectedItems: LookupTable<boolean>, excludedPaths?: string[]) {
 	return Object.entries(selectedItems)
@@ -46,7 +47,7 @@ function createCheckedLookup(items: Array<ContentItem | string>, setChecked = tr
 }
 
 export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
-	const { items, onClose, isSubmitting, onSuccess, isFetching, childItems, dependentItems, error } = props;
+	const { items, onClose, isSubmitting, onSuccess, isFetching, childItems, dependentItems, error, dialogId } = props;
 	const [title, setTitle] = useState('');
 	const [comment, setComment] = useState('');
 	const [submitError, setSubmitError] = useState<ApiResponse>(null);
@@ -65,16 +66,16 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
 	const dependentItemsPaths = dependentItems?.map((item) => item.path) ?? [];
 	const onSubmit = () => {
 		const paths = createCheckedList(selectedItems);
-		dispatch(updateDeleteDialog({ isSubmitting: true }));
+		dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: true } }));
 		deleteItems(site, paths, title, comment).subscribe({
 			next() {
-				dispatch(updateDeleteDialog({ isSubmitting: false, hasPendingChanges: false }));
+				dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: false, hasPendingChanges: false } }));
 				onSuccess?.({
 					items: paths.map((path) => items.find((item) => item.path === path))
 				});
 			},
 			error({ response }) {
-				dispatch(updateDeleteDialog({ isSubmitting: false }));
+				dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: false } }));
 				setSubmitError(response.response);
 			}
 		});
@@ -83,7 +84,7 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
 	const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
 
 	const onInputChange: DeleteDialogContentUIProps['onInputChange'] = (e, fieldId) => {
-		dispatch(updateDeleteDialog({ hasPendingChanges: true }));
+		dispatch(updateDialogState({ id: dialogId, props: { hasPendingChanges: true } }));
 		switch (fieldId) {
 			case 'title':
 				setTitle(e.target.value);
@@ -97,11 +98,16 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
 	};
 
 	const fetchOrCleanDependencies = (nextChecked) => {
-		let paths = createCheckedList(nextChecked);
+		const paths = createCheckedList(nextChecked);
 		if (paths.length) {
-			dispatch(batchActions([updateDeleteDialog({ isSubmitting: true }), fetchDeleteDependencies({ paths })]));
+			dispatch(
+				batchActions([
+					updateDialogState({ id: dialogId, props: { isSubmitting: true } }),
+					fetchDeleteDependencies({ paths, dialogId })
+				])
+			);
 		} else {
-			dispatch(updateDeleteDialog({ dependentItems: [], childItems: [] }));
+			dispatch(updateDialogState({ id: dialogId, props: { dependentItems: [], childItems: [] } }));
 		}
 	};
 
@@ -151,7 +157,7 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
 				path,
 				authoringBase,
 				site,
-				onSaveSuccess: () => dispatch(fetchDeleteDependencies({ paths }))
+				onSaveSuccess: () => dispatch(fetchDeleteDependencies({ paths, dialogId }))
 			})
 		);
 	};
@@ -160,9 +166,9 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
 		if (items.length) {
 			const nextChecked = createPresenceTable(items, true, (item) => item.path);
 			setSelectedItems(nextChecked);
-			dispatch(fetchDeleteDependencies({ paths: items.map((i) => i.path) }));
+			dispatch(fetchDeleteDependencies({ paths: items.map((i) => i.path), dialogId }));
 		}
-	}, [dispatch, items]);
+	}, [dispatch, items, dialogId]);
 
 	return (
 		<DeleteDialogUI

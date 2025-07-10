@@ -21,7 +21,18 @@ import { RenameAssetDialogProps } from './utils';
 import { RenameAssetDialogContainer } from './RenameAssetDialogContainer';
 
 export function RenameAssetDialog(props: RenameAssetDialogProps) {
-	const { path, allowBraces, value, onRenamed, type, dependantItems, fetchingDependantItems, error, ...rest } = props;
+	const {
+		path,
+		allowBraces,
+		value,
+		onRenamed,
+		type,
+		dependantItems,
+		fetchingDependantItems,
+		error,
+		dialogId,
+		...rest
+	} = props;
 	return (
 		<EnhancedDialog
 			title={<FormattedMessage defaultMessage="Rename Asset" />}
@@ -29,6 +40,7 @@ export function RenameAssetDialog(props: RenameAssetDialogProps) {
 			{...rest}
 		>
 			<RenameAssetDialogContainer
+				dialogId={dialogId}
 				path={path}
 				allowBraces={allowBraces}
 				value={value}

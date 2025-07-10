@@ -28,6 +28,7 @@ export interface CodeEditorDialogBaseProps {
 }
 
 export interface CodeEditorDialogProps extends CodeEditorDialogBaseProps, EnhancedDialogProps {
+	dialogId: string;
 	onSuccess?(response?: any): void;
 }
 
@@ -43,7 +44,7 @@ export interface CodeEditorDialogStateProps extends CodeEditorDialogBaseProps, E
 
 export interface CodeEditorDialogContainerProps
 	extends CodeEditorDialogBaseProps,
-		Pick<CodeEditorDialogProps, 'onMinimize' | 'onSuccess' | 'onClose'> {
+		Pick<CodeEditorDialogProps, 'onMinimize' | 'onSuccess' | 'onClose' | 'dialogId'> {
 	title: string;
 	onFullScreen(): void;
 }

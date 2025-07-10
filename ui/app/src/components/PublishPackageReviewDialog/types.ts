@@ -25,6 +25,7 @@ export interface PublishingPackageReviewDialogBaseProps {
 export interface PublishingPackageReviewDialogProps
 	extends PublishingPackageReviewDialogBaseProps,
 		EnhancedDialogProps {
+	dialogId: string;
 	onSuccess?(): void;
 }
 
@@ -38,4 +39,4 @@ export interface PublishingPackageReviewDialogStateProps
 
 export interface PublishingPackageReviewDialogContainerProps
 	extends PublishingPackageReviewDialogBaseProps,
-		Pick<PublishingPackageReviewDialogProps, 'isSubmitting' | 'onSuccess' | 'onClose'> {}
+		Pick<PublishingPackageReviewDialogProps, 'isSubmitting' | 'onSuccess' | 'onClose' | 'dialogId'> {}

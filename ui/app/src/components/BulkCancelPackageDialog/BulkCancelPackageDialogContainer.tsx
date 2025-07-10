@@ -32,16 +32,15 @@ import { useDispatch } from 'react-redux';
 import { cancelPackages } from '../../services/workflow';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { batchActions } from '../../state/actions/misc';
-import { updateBulkCancelPackageDialog } from '../../state/actions/dialogs';
 import { showSystemNotification } from '../../state/actions/system';
-import { pushDialog } from '../../state/actions/dialogStack';
+import { pushDialog, updateDialogState } from '../../state/actions/dialogStack';
 
 export interface BulkCancelPackageDialogContainerProps
 	extends BulkCancelPackageDialogBaseProps,
-		Pick<BulkCancelPackageDialogProps, 'onSuccess' | 'onClose' | 'isSubmitting'> {}
+		Pick<BulkCancelPackageDialogProps, 'onSuccess' | 'onClose' | 'isSubmitting' | 'dialogId'> {}
 
 export function BulkCancelPackageDialogContainer(props: BulkCancelPackageDialogContainerProps) {
-	const { packages, onSuccess, onClose, isSubmitting } = props;
+	const { packages, onSuccess, onClose, isSubmitting, dialogId } = props;
 	const [comment, setComment] = useState<string>();
 	const siteId = useActiveSiteId();
 	const submitDisabled = isBlank(comment);
@@ -50,7 +49,7 @@ export function BulkCancelPackageDialogContainer(props: BulkCancelPackageDialogC
 	const { formatMessage } = useIntl();
 
 	const handleSubmit = () => {
-		dispatch(updateBulkCancelPackageDialog({ isSubmitting: true }));
+		dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: true } }));
 		cancelPackages(siteId, {
 			packageIds,
 			comment
@@ -58,7 +57,7 @@ export function BulkCancelPackageDialogContainer(props: BulkCancelPackageDialogC
 			next() {
 				dispatch(
 					batchActions([
-						updateBulkCancelPackageDialog({ isSubmitting: false }),
+						updateDialogState({ id: dialogId, props: { isSubmitting: false } }),
 						showSystemNotification({ message: formatMessage({ defaultMessage: 'Packages cancelled successfully.' }) })
 					])
 				);
@@ -67,7 +66,7 @@ export function BulkCancelPackageDialogContainer(props: BulkCancelPackageDialogC
 			error({ response }) {
 				dispatch(
 					batchActions([
-						updateBulkCancelPackageDialog({ isSubmitting: false }),
+						updateDialogState({ id: dialogId, props: { isSubmitting: false } }),
 						pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response.response } })
 					])
 				);

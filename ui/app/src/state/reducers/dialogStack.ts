@@ -72,6 +72,7 @@ const reducer = createReducer<GlobalState['dialogStack']>(
 					isFullScreen: false,
 					hasPendingChanges: false,
 					isSubmitting: false,
+					dialogId: id,
 					...(payload.props as object)
 				}
 			};

@@ -72,7 +72,7 @@ export const moveContentEvent = /*#__PURE__*/ createAction<MoveContentEventPaylo
 
 // region Notifications
 
-export const showDeleteItemSuccessNotification = /*#__PURE__*/ createAction<StandardAction<{ items: ContentItem[] }>>(
+export const showDeleteItemSuccessNotification = /*#__PURE__*/ createAction<{ items: ContentItem[] }>(
 	'SHOW_DELETE_ITEM_SUCCESS_NOTIFICATION'
 );
 

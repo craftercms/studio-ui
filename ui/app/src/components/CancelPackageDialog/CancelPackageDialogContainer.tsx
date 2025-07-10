@@ -29,17 +29,16 @@ import { isBlank } from '../../utils/string';
 import useSpreadState from '../../hooks/useSpreadState';
 import { useDispatch } from 'react-redux';
 import { Divider } from '@mui/material';
-import { updateCancelPackageDialog } from '../../state/actions/dialogs';
 import { batchActions } from '../../state/actions/misc';
 import { showSystemNotification } from '../../state/actions/system';
-import { pushDialog } from '../../state/actions/dialogStack';
+import { pushDialog, updateDialogState } from '../../state/actions/dialogStack';
 
 export interface CancelPackageDialogContainerProps
 	extends CancelPackageDialogBaseProps,
-		Pick<CancelPackageDialogProps, 'onSuccess' | 'onClose' | 'isSubmitting'> {}
+		Pick<CancelPackageDialogProps, 'onSuccess' | 'onClose' | 'isSubmitting' | 'dialogId'> {}
 
 export function CancelPackageDialogContainer(props: CancelPackageDialogContainerProps) {
-	const { packageId, onSuccess, onClose, isSubmitting } = props;
+	const { packageId, onSuccess, onClose, isSubmitting, dialogId } = props;
 	const [state, setState] = useSpreadState({
 		comment: '',
 		error: null
@@ -50,7 +49,7 @@ export function CancelPackageDialogContainer(props: CancelPackageDialogContainer
 	const { formatMessage } = useIntl();
 
 	const handleSubmit = () => {
-		dispatch(updateCancelPackageDialog({ isSubmitting: true }));
+		dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: true } }));
 		cancelPackages(siteId, {
 			packageIds: [packageId],
 			comment: state.comment
@@ -58,7 +57,7 @@ export function CancelPackageDialogContainer(props: CancelPackageDialogContainer
 			next() {
 				dispatch(
 					batchActions([
-						updateCancelPackageDialog({ isSubmitting: false }),
+						updateDialogState({ id: dialogId, props: { isSubmitting: false } }),
 						showSystemNotification({ message: formatMessage({ defaultMessage: 'Package cancelled successfully.' }) })
 					])
 				);
@@ -67,7 +66,7 @@ export function CancelPackageDialogContainer(props: CancelPackageDialogContainer
 			error({ response }) {
 				dispatch(
 					batchActions([
-						updateCancelPackageDialog({ isSubmitting: false }),
+						updateDialogState({ id: dialogId, props: { isSubmitting: false } }),
 						pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response.response } })
 					])
 				);

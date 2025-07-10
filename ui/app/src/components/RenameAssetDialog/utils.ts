@@ -31,6 +31,7 @@ export interface RenameAssetBaseProps {
 }
 
 export interface RenameAssetDialogProps extends RenameAssetBaseProps, EnhancedDialogProps {
+	dialogId: string;
 	onRenamed?(response: { path: string; name: string }): void;
 }
 
@@ -43,7 +44,15 @@ export interface RenameAssetStateProps extends RenameAssetBaseProps, EnhancedDia
 export interface RenameAssetContainerProps
 	extends Pick<
 		RenameAssetDialogProps,
-		'path' | 'value' | 'allowBraces' | 'onRenamed' | 'onClose' | 'type' | 'fetchingDependantItems' | 'error'
+		| 'path'
+		| 'value'
+		| 'allowBraces'
+		| 'onRenamed'
+		| 'onClose'
+		| 'type'
+		| 'fetchingDependantItems'
+		| 'error'
+		| 'dialogId'
 	> {
 	dependantItems: ContentItem[];
 }

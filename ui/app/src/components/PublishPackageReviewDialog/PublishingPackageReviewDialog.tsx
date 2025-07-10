@@ -21,7 +21,7 @@ import { FormattedMessage } from 'react-intl';
 import PublishingPackageReviewDialogContainer from './PublishingPackageReviewDialogContainer';
 
 export function PublishingPackageReviewDialog(props: PublishingPackageReviewDialogProps) {
-	const { packageId, isSubmitting, onSuccess, ...rest } = props;
+	const { packageId, isSubmitting, onSuccess, dialogId, ...rest } = props;
 	return (
 		<EnhancedDialog
 			title={<FormattedMessage defaultMessage="Review Publishing Package" />}
@@ -29,7 +29,12 @@ export function PublishingPackageReviewDialog(props: PublishingPackageReviewDial
 			{...rest}
 			isSubmitting={isSubmitting}
 		>
-			<PublishingPackageReviewDialogContainer packageId={packageId} onSuccess={onSuccess} isSubmitting={isSubmitting} />
+			<PublishingPackageReviewDialogContainer
+				dialogId={dialogId}
+				packageId={packageId}
+				onSuccess={onSuccess}
+				isSubmitting={isSubmitting}
+			/>
 		</EnhancedDialog>
 	);
 }

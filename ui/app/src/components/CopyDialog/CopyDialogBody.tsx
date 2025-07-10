@@ -28,17 +28,17 @@ import { fetchLegacyItemsTree } from '../../services/content';
 import Typography from '@mui/material/Typography';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 import { useDispatch } from 'react-redux';
-import { updateCopyDialog } from '../../state/actions/dialogs';
+import { updateDialogState } from '../../state/actions/dialogStack';
 
 export interface CopyDialogBodyProps
 	extends CopyDialogCallbacks,
-		Pick<CopyDialogBaseProps, 'site' | 'item'>,
+		Pick<CopyDialogBaseProps, 'site' | 'item' | 'dialogId'>,
 		Pick<EnhancedDialogProps, 'onClose'> {
 	disabled: boolean;
 }
 
 export function CopyDialogBody(props: CopyDialogBodyProps) {
-	const { onOk, item, site, onClose, disabled } = props;
+	const { onOk, item, site, onClose, disabled, dialogId } = props;
 	const { formatMessage } = useIntl();
 	const dispatch = useDispatch();
 	const [data, setData] = useState<{
@@ -77,7 +77,7 @@ export function CopyDialogBody(props: CopyDialogBodyProps) {
 	useEffect(() => {
 		// Disable dismissing the dialog until the data has finished fetching. The call is expensive; don't want people
 		// dismissing by mistake.
-		dispatch(updateCopyDialog({ isSubmitting: true }));
+		dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: true } }));
 		fetchLegacyItemsTree(site, item.path, { depth: 1000, order: 'default' }).subscribe({
 			next(item: LegacyItem) {
 				let paths = [];
@@ -99,10 +99,10 @@ export function CopyDialogBody(props: CopyDialogBodyProps) {
 				process(item);
 				setSelected(paths);
 				setData({ item, parents, children, paths });
-				dispatch(updateCopyDialog({ isSubmitting: false }));
+				dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: false } }));
 			}
 		});
-	}, [dispatch, item.path, site]);
+	}, [dispatch, item.path, site, dialogId]);
 
 	return (
 		<>

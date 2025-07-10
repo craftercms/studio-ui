@@ -18,7 +18,7 @@ import { translations } from '../components/ItemActionsMenu/translations';
 import { AllItemActions, ContentItem, LegacyItem } from '../models/Item';
 import { ContextMenuOption } from '../components/ContextMenu';
 import { getControllerPath, getRootPath, withoutIndex } from './path';
-import { closeDeleteDialog, showDeleteDialog, showHistoryDialog } from '../state/actions/dialogs';
+import { showHistoryDialog } from '../state/actions/dialogs';
 import { checkPathExistence, fetchContentItem, fetchContentItems, fetchLegacyItemsTree } from '../services/content';
 import {
 	batchActions,
@@ -895,7 +895,8 @@ export const itemActionDispatcher = ({
 										showCreateItemSuccessNotification(),
 										option === 'createController' ? editController() : editTemplate()
 									])
-								)
+								),
+							isSubmitting: null
 						}
 					})
 				);
@@ -986,14 +987,22 @@ export const itemActionDispatcher = ({
 	// TODO: some actions below aren't really well covered for multiple actions (e.g. deleting controller or template)
 	switch (option) {
 		case 'delete': {
+			const dialogId = nanoid();
 			dispatch(
-				showDeleteDialog({
-					items,
-					onSuccess: batchActions([
-						showDeleteItemSuccessNotification(),
-						closeDeleteDialog(),
-						...(onActionSuccess ? [onActionSuccess] : [])
-					])
+				pushDialog({
+					id: dialogId,
+					component: 'craftercms.components.DeleteDialog',
+					props: {
+						items,
+						onSuccess: ({ items }: { items: ContentItem[] }) =>
+							dispatch(
+								batchActions([
+									showDeleteItemSuccessNotification({ items }),
+									popDialog({ id: dialogId }),
+									...(onActionSuccess ? [onActionSuccess] : [])
+								])
+							)
+					}
 				})
 			);
 			break;
@@ -1023,10 +1032,10 @@ export const itemActionDispatcher = ({
 					props: {
 						items,
 						scheduling: schedulingMap[option],
-						onSuccess: () => {
+						onSuccess: (payload) => {
 							dispatch(
 								batchActions([
-									showPublishItemSuccessNotification(),
+									showPublishItemSuccessNotification(payload),
 									...items.map((item) => reloadContentItem({ path: item.path })),
 									popDialog({ id: dialogId }),
 									fetchPublishingStatus(),

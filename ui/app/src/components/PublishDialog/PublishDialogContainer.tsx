@@ -49,7 +49,7 @@ import PublishPackageItemsView from './PublishPackageItemsView';
 import PublishReferencesLegend from './PublishReferencesLegend';
 import { PublishDialogForm } from './PublishDialogForm';
 import useActiveUser from '../../hooks/useActiveUser';
-import { pushDialog } from '../../state/actions/dialogStack';
+import { pushDialog, updateDialogState } from '../../state/actions/dialogStack';
 
 export type DependencyType = 'soft' | 'hard';
 export type DependencyMap = Record<string, DependencyType>;
@@ -74,7 +74,7 @@ export function DependencyChip({ type }: { type: DependencyType }) {
 }
 
 export function PublishDialogContainer(props: PublishDialogContainerProps) {
-	const { items: initialItems, scheduling = 'now', onSuccess, onClose, isSubmitting } = props;
+	const { items: initialItems, scheduling = 'now', onSuccess, onClose, isSubmitting, dialogId } = props;
 	const siteId = useActiveSiteId();
 	const { permissionsBySite } = useActiveUser();
 	const dispatch = useDispatch();
@@ -233,11 +233,11 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 			comment: submissionComment
 		};
 
-		dispatch(updatePublishDialog({ isSubmitting: true }));
+		dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: true } }));
 
 		publish(siteId, data).subscribe({
 			next() {
-				dispatch(updatePublishDialog({ isSubmitting: false, hasPendingChanges: false }));
+				dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: false, hasPendingChanges: false } }));
 				onSuccess?.({
 					schedule: schedule,
 					publishingTarget,
@@ -250,7 +250,7 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 			error({ response }) {
 				dispatch(
 					batchActions([
-						updatePublishDialog({ isSubmitting: false }),
+						updateDialogState({ id: dialogId, props: { isSubmitting: false } }),
 						pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response.response } })
 					])
 				);
@@ -260,7 +260,7 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 
 	const onPublishingArgumentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		let value: unknown;
-		dispatch(updatePublishDialog({ hasPendingChanges: true }));
+		dispatch(updateDialogState({ id: dialogId, props: { hasPendingChanges: true } }));
 		switch (e.target.type) {
 			case 'checkbox':
 				value = e.target.checked;

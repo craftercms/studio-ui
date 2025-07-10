@@ -39,9 +39,7 @@ import {
 	showCodeEditorDialog,
 	showEditDialog,
 	updateCodeEditorDialog,
-	updateDeleteDialog,
-	updateEditDialogConfig,
-	updateRenameAssetDialog
+	updateEditDialogConfig
 } from '../actions/dialogs';
 import { fetchDeleteDependencies as fetchDeleteDependenciesService, fetchDependant } from '../../services/dependencies';
 import { fetchContentXML, fetchItemVersion } from '../../services/content';
@@ -146,19 +144,22 @@ const dialogEpics: CrafterCMSEpic[] = [
 			switchMap(
 				([
 					{
-						payload: { paths }
+						payload: { paths, dialogId }
 					},
 					state
 				]) =>
 					fetchDeleteDependenciesService(state.sites.active, paths).pipe(
 						map((response) => {
-							return updateDeleteDialog({
-								isFetching: false,
-								dependentItems: response.dependentItems,
-								childItems: response.childItems
+							return updateDialogState({
+								id: dialogId,
+								props: {
+									isFetching: false,
+									dependentItems: response.dependentItems,
+									childItems: response.childItems
+								}
 							});
 						}),
-						catchAjaxError((error) => updateDeleteDialog({ error, isFetching: false }))
+						catchAjaxError((error) => updateDialogState({ id: dialogId, props: { error, isFetching: false } }))
 					)
 			)
 		),
@@ -284,9 +285,17 @@ const dialogEpics: CrafterCMSEpic[] = [
 					takeUntil(action$.pipe(ofType(closeRenameAssetDialog.type))),
 					map((response: LegacyItem[]) => {
 						const dependantItems = parseLegacyItemToContentItem(response);
-						return updateRenameAssetDialog({ dependantItems, fetchingDependantItems: false });
+						return updateDialogState({
+							id: payload.dialogId,
+							props: { dependantItems, fetchingDependantItems: false }
+						});
 					}),
-					catchAjaxError((error) => updateRenameAssetDialog({ error, fetchingDependantItems: false }))
+					catchAjaxError((error) =>
+						updateDialogState({
+							id: payload.dialogId,
+							props: { error, fetchingDependantItems: false }
+						})
+					)
 				)
 			)
 		)

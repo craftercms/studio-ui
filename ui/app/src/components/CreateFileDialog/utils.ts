@@ -25,6 +25,7 @@ export interface CreateFileBaseProps {
 }
 
 export interface CreateFileProps extends CreateFileBaseProps, EnhancedDialogProps {
+	dialogId: string;
 	onCreated?(response: { path: string; fileName: string; mode: string; openOnSuccess: boolean }): void;
 }
 
@@ -34,4 +35,6 @@ export interface CreateFileStateProps extends CreateFileBaseProps, EnhancedDialo
 	onCreated?: StandardAction;
 }
 
-export interface CreateFileContainerProps extends CreateFileBaseProps, Pick<CreateFileProps, 'onCreated' | 'onClose'> {}
+export interface CreateFileContainerProps
+	extends CreateFileBaseProps,
+		Pick<CreateFileProps, 'onCreated' | 'onClose' | 'dialogId'> {}

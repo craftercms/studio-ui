@@ -28,6 +28,7 @@ export interface EditSiteDialogBaseProps {
 }
 
 export interface EditSiteDialogProps extends EditSiteDialogBaseProps, EnhancedDialogProps {
+	dialogId: string;
 	onSaveSuccess?(response?: any): any;
 	onSiteImageChange?(): void;
 }
@@ -41,4 +42,4 @@ export interface EditSiteDialogStateProps extends EditSiteDialogBaseProps, Enhan
 
 export interface EditSiteDialogContainerProps
 	extends EditSiteDialogBaseProps,
-		Pick<EditSiteDialogProps, 'isSubmitting' | 'onSaveSuccess' | 'onSiteImageChange' | 'onClose'> {}
+		Pick<EditSiteDialogProps, 'isSubmitting' | 'onSaveSuccess' | 'onSiteImageChange' | 'onClose' | 'dialogId'> {}

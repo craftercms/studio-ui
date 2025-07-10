@@ -21,7 +21,6 @@ import { fetchContentXML, lock, writeContent } from '../../services/content';
 import { ConditionalLoadingState } from '../LoadingState/LoadingState';
 import AceEditor from '../AceEditor/AceEditor';
 import { useDispatch } from 'react-redux';
-import { updateCodeEditorDialog } from '../../state/actions/dialogs';
 import Skeleton from '@mui/material/Skeleton';
 import ListSubheader from '@mui/material/ListSubheader';
 import DialogFooter from '../DialogFooter/DialogFooter';
@@ -52,11 +51,11 @@ import { forkJoin, switchMap } from 'rxjs';
 import { cancelPackages, fetchAffectedPackages } from '../../services/workflow';
 import { PublishPackage } from '../../models';
 import Alert, { alertClasses } from '@mui/material/Alert';
-import { popDialog, pushDialog } from '../../state/actions/dialogStack';
+import { popDialog, pushDialog, updateDialogState } from '../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
 
 export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps) {
-	const { path, onMinimize, onClose, mode, readonly, contentType, onFullScreen, onSuccess } = props;
+	const { path, onMinimize, onClose, mode, readonly, contentType, onFullScreen, onSuccess, dialogId } = props;
 	const { open, isSubmitting } = useEnhancedDialogContext();
 	const item = useContentItem(path);
 	const site = useActiveSiteId();
@@ -86,8 +85,11 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 		clearTimeout(onChangeTimeoutRef.current);
 		onChangeTimeoutRef.current = setTimeout(() => {
 			dispatch(
-				updateCodeEditorDialog({
-					hasPendingChanges: content !== editorRef.current.getValue()
+				updateDialogState({
+					id: dialogId,
+					props: {
+						hasPendingChanges: content !== editorRef.current.getValue()
+					}
 				})
 			);
 		}, 150);
@@ -95,7 +97,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 
 	const save = (callback?: () => void) => {
 		if (!isLockedForMe && !readonly) {
-			dispatch(updateCodeEditorDialog({ isSubmitting: true }));
+			dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: true } }));
 			const value = editorRef.current.getValue();
 			const isConfig = path.startsWith('/config');
 			const module = isConfig ? (path.split('/')[2] as 'studio') : null;
@@ -116,7 +118,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 					dispatch(
 						batchActions([
 							showSystemNotification({ message: formatMessage(translations.saved) }),
-							updateCodeEditorDialog({ isSubmitting: false, hasPendingChanges: false })
+							updateDialogState({ id: dialogId, props: { isSubmitting: false, hasPendingChanges: false } })
 						])
 					);
 					setTimeout(callback);
@@ -126,7 +128,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 				error({ response }) {
 					dispatch(
 						batchActions([
-							updateCodeEditorDialog({ isSubmitting: false }),
+							updateDialogState({ id: dialogId, props: { isSubmitting: false } }),
 							pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } })
 						])
 					);
@@ -234,20 +236,20 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 	useEffect(() => {
 		if (content === null) {
 			setLoading(true);
-			dispatch(updateCodeEditorDialog({ isSubmitting: true }));
+			dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: true } }));
 			const subscription = forkJoin([fetchContentXML(site, path), fetchAffectedPackages(site, path)]).subscribe(
 				([xml, affectedPackages]) => {
 					setContent(xml);
 					setAffectedPackages(affectedPackages);
 					setLoading(false);
-					dispatch(updateCodeEditorDialog({ isSubmitting: false }));
+					dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: false } }));
 				}
 			);
 			return () => {
 				subscription.unsubscribe();
 			};
 		}
-	}, [content, dispatch, path, site]);
+	}, [content, dispatch, path, site, dialogId]);
 
 	useEffect(() => {
 		if (shouldPerformLock) {

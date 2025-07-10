@@ -52,7 +52,7 @@ import { AsDayMonthDateTime } from '../VersionList';
 import PackageDetails from '../PackageDetailsDialog/PackageDetails';
 import { showSystemNotification } from '../../state/actions/system';
 import { hasApproveAction, hasRejectAction } from '../../utils/content';
-import { pushDialog } from '../../state/actions/dialogStack';
+import { pushDialog, updateDialogState } from '../../state/actions/dialogStack';
 
 export type PackageReviewAction = 'approve' | 'reject';
 interface InternalDialogState {
@@ -65,7 +65,7 @@ interface InternalDialogState {
 }
 
 export function PublishingPackageReviewDialogContainer(props: PublishingPackageReviewDialogContainerProps) {
-	const { packageId, isSubmitting, onSuccess, onClose } = props;
+	const { packageId, isSubmitting, onSuccess, onClose, dialogId } = props;
 	const { activeEnvironment } = useEnv();
 	const [publishingPackage, setPublishingPackage] = useState<PublishPackage>();
 	const [cannedMessages, setCannedMessages] = useState<CannedMessage[]>([]);
@@ -156,7 +156,7 @@ export function PublishingPackageReviewDialogContainer(props: PublishingPackageR
 
 	const onArgumentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		let value: unknown;
-		dispatch(updatePublishingPackageReviewDialog({ hasPendingChanges: true }));
+		dispatch(updateDialogState({ id: dialogId, props: { hasPendingChanges: true } }));
 		switch (e.target.type) {
 			case 'textarea':
 			case 'radio':
@@ -189,7 +189,7 @@ export function PublishingPackageReviewDialogContainer(props: PublishingPackageR
 	};
 
 	const handleSubmit = () => {
-		dispatch(updatePublishingPackageReviewDialog({ isSubmitting: true }));
+		dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: true } }));
 		if (state.action === 'approve') {
 			const data: PublishingPackageApproveParams = {
 				comment: state.approverComment,
@@ -201,7 +201,7 @@ export function PublishingPackageReviewDialogContainer(props: PublishingPackageR
 				next() {
 					dispatch(
 						batchActions([
-							updatePublishingPackageReviewDialog({ isSubmitting: false, hasPendingChanges: false }),
+							updateDialogState({ id: dialogId, props: { isSubmitting: false, hasPendingChanges: false } }),
 							showSystemNotification({ message: formatMessage({ defaultMessage: 'Package approved successfully.' }) })
 						])
 					);
@@ -210,7 +210,7 @@ export function PublishingPackageReviewDialogContainer(props: PublishingPackageR
 				error({ response }) {
 					dispatch(
 						batchActions([
-							updatePublishingPackageReviewDialog({ isSubmitting: false }),
+							updateDialogState({ id: dialogId, props: { isSubmitting: false } }),
 							pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response.response } })
 						])
 					);
@@ -221,7 +221,7 @@ export function PublishingPackageReviewDialogContainer(props: PublishingPackageR
 				next() {
 					dispatch(
 						batchActions([
-							updatePublishingPackageReviewDialog({ isSubmitting: false, hasPendingChanges: false }),
+							updateDialogState({ id: dialogId, props: { isSubmitting: false, hasPendingChanges: false } }),
 							showSystemNotification({ message: formatMessage({ defaultMessage: 'Package rejected successfully.' }) })
 						])
 					);
@@ -230,7 +230,7 @@ export function PublishingPackageReviewDialogContainer(props: PublishingPackageR
 				error({ response }) {
 					dispatch(
 						batchActions([
-							updatePublishingPackageReviewDialog({ isSubmitting: false }),
+							updateDialogState({ id: dialogId, props: { isSubmitting: false } }),
 							pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response.response } })
 						])
 					);
