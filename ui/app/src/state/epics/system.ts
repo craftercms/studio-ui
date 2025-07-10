@@ -255,7 +255,7 @@ const systemEpics: CrafterCMSEpic[] = [
 	(action$, state$, { getIntl }) =>
 		action$.pipe(
 			ofType(showCreateFolderSuccessNotification.type),
-			tap(({ payload: { action } }) => {
+			tap(() => {
 				const hostToHost$ = getHostToHostBus();
 				hostToHost$.next(
 					showSystemNotification({

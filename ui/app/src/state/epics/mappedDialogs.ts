@@ -171,7 +171,7 @@ const showDialogsEpics: CrafterCMSEpic[] = [
 				showWidgetDialog.type,
 				showPublishingStatusDialog.type,
 				showPathSelectionDialog.type,
-				showCodeEditorDialog.type, // TODO: issue!
+				showCodeEditorDialog.type,
 				showPublishingPackageReviewDialog.type,
 				showPublishingPackageResubmitDialog.type,
 				showEditSiteDialog.type,
@@ -201,7 +201,6 @@ const showDialogsEpics: CrafterCMSEpic[] = [
 				});
 
 				const isDialogOpen = Boolean(state.dialogStack.byId[dialogId]);
-
 				// If showEditDialog or showCodeEditorDialog is already open, do not open another one
 				if ((type === showEditDialog.type || type === showCodeEditorDialog.type) && isDialogOpen) return NEVER;
 

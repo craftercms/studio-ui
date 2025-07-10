@@ -18,16 +18,7 @@ import { translations } from '../components/ItemActionsMenu/translations';
 import { AllItemActions, ContentItem, LegacyItem } from '../models/Item';
 import { ContextMenuOption } from '../components/ContextMenu';
 import { getControllerPath, getRootPath, withoutIndex } from './path';
-import {
-	closeCreateFolderDialog,
-	closeDeleteDialog,
-	closeRenameAssetDialog,
-	showCreateFolderDialog,
-	showDeleteDialog,
-	showDependenciesDialog,
-	showHistoryDialog,
-	showRenameAssetDialog
-} from '../state/actions/dialogs';
+import { closeDeleteDialog, showDeleteDialog, showHistoryDialog } from '../state/actions/dialogs';
 import { checkPathExistence, fetchContentItem, fetchContentItems, fetchLegacyItemsTree } from '../services/content';
 import {
 	batchActions,
@@ -532,23 +523,36 @@ export const itemActionDispatcher = ({
 				break;
 			}
 			case 'createFolder': {
+				const dialogId = nanoid();
 				dispatch(
-					showCreateFolderDialog({
-						path: item.path,
-						allowBraces: item.path.startsWith('/scripts/rest'),
-						onCreated: batchActions([closeCreateFolderDialog(), showCreateFolderSuccessNotification()])
+					pushDialog({
+						id: dialogId,
+						component: 'craftercms.components.CreateFolderDialog',
+						props: {
+							path: item.path,
+							allowBraces: item.path.startsWith('/scripts/rest'),
+							onCreated: () =>
+								dispatch(batchActions([popDialog({ id: dialogId }), showCreateFolderSuccessNotification()])),
+							isSubmitting: null
+						}
 					})
 				);
 				break;
 			}
 			case 'rename': {
 				if (item.systemType === 'folder') {
+					const dialogId = nanoid();
 					dispatch(
-						showCreateFolderDialog({
-							path: item.path,
-							allowBraces: item.path.startsWith('/scripts/rest'),
-							rename: true,
-							value: item.label
+						pushDialog({
+							id: dialogId,
+							component: 'craftercms.components.CreateFolderDialog',
+							props: {
+								path: item.path,
+								allowBraces: item.path.startsWith('/scripts/rest'),
+								rename: true,
+								value: item.label,
+								onRenamed: () => dispatch(popDialog({ id: dialogId }))
+							}
 						})
 					);
 				} else {
@@ -559,13 +563,18 @@ export const itemActionDispatcher = ({
 								? 'controller'
 								: 'asset';
 
+					const dialogId = nanoid();
 					dispatch(
-						showRenameAssetDialog({
-							path: item.path,
-							allowBraces: item.path.startsWith('/scripts/rest'),
-							type,
-							value: item.label,
-							onRenamed: closeRenameAssetDialog()
+						pushDialog({
+							id: dialogId,
+							component: 'craftercms.components.RenameAssetDialog',
+							props: {
+								path: item.path,
+								allowBraces: item.path.startsWith('/scripts/rest'),
+								type,
+								value: item.label,
+								onRenamed: () => dispatch(popDialog({ id: dialogId }))
+							}
 						})
 					);
 				}
@@ -850,7 +859,6 @@ export const itemActionDispatcher = ({
 				break;
 			}
 			case 'dependencies': {
-				dispatch(showDependenciesDialog({ item, rootPath: getRootPath(item.path) }));
 				const dialogId = nanoid();
 				dispatch(
 					pushDialog({
