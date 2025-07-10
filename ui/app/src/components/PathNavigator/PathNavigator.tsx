@@ -33,7 +33,6 @@ import {
 	pathNavigatorSetKeyword,
 	pathNavigatorSetLocaleCode
 } from '../../state/actions/pathNavigator';
-import { showEditDialog } from '../../state/actions/dialogs';
 import {
 	getEditorMode,
 	isEditableViaFormEditor,
@@ -58,7 +57,7 @@ import { useItemsByPath } from '../../hooks/useItemsByPath';
 import { useSubject } from '../../hooks/useSubject';
 import { useSiteLocales } from '../../hooks/useSiteLocales';
 import { useMount } from '../../hooks/useMount';
-import { getSystemLink } from '../../utils/system';
+import { getSystemLink, pickShowContentFormAction } from '../../utils/system';
 import { getStoredPathNavigator } from '../../utils/state';
 import { useActiveSite } from '../../hooks/useActiveSite';
 import { useActiveUser } from '../../hooks/useActiveUser';
@@ -254,7 +253,7 @@ export function PathNavigator(props: PathNavigatorProps) {
 
 	const onPreview = (item: ContentItem) => {
 		if (isEditableViaFormEditor(item)) {
-			dispatch(showEditDialog({ path: item.path, authoringBase, site: siteId, readonly: true }));
+			dispatch(pickShowContentFormAction({ path: item.path, authoringBase, site: siteId, readonly: true }));
 		} else if (isImage(item) || isVideo(item) || isPdfDocument(item.mimeType)) {
 			dispatch(
 				pushDialog({

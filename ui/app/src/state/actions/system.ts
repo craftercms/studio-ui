@@ -91,7 +91,9 @@ export const showCreateFolderSuccessNotification = /*#__PURE__*/ createAction(
 	'SHOW_CREATE_FOLDER_SUCCESS_NOTIFICATION'
 );
 
-export const showEditItemSuccessNotification = /*#__PURE__*/ createAction('SHOW_EDIT_ITEM_SUCCESS_NOTIFICATION');
+export const showEditItemSuccessNotification = /*#__PURE__*/ createAction<{ action: string }>(
+	'SHOW_EDIT_ITEM_SUCCESS_NOTIFICATION'
+);
 
 export const showCopyItemSuccessNotification = /*#__PURE__*/ createAction<
 	StandardAction<{

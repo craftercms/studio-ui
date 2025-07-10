@@ -24,7 +24,6 @@ import { nnou } from '../../utils/object';
 import * as ModelHelper from '../../utils/model';
 import { findParentModelId } from '../../utils/model';
 import { popPiece } from '../../utils/string';
-import { showEditDialog } from '../../state/actions/dialogs';
 import { getField } from '../../utils/contentType';
 import { Menu, MenuItem } from '@mui/material';
 import { GuestData } from '../../models/GlobalState';
@@ -33,6 +32,8 @@ import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { usePreviewState } from '../../hooks/usePreviewState';
 import ContentInstance from '../../models/ContentInstance';
 import { pushDialog } from '../../state/actions/dialogStack';
+import { nanoid } from 'nanoid';
+import { pickShowContentFormAction } from '../../utils/system';
 
 interface EditFormPanelProps {
 	open: boolean;
@@ -194,13 +195,14 @@ function EditFormPanelBody(props: EditFormPanelBodyProps) {
 		if (type === 'form') {
 			const selectedFields = selected[0]?.fieldId.length ? selected[0].fieldId : null;
 			dispatch(
-				showEditDialog(
+				pickShowContentFormAction(
 					getEditDialogProps({ authoringBase, hierarchyMap, model, models, path, selectedFields, selectedId, site })
 				)
 			);
 		} else {
 			dispatch(
 				pushDialog({
+					id: nanoid(),
 					component: 'craftercms.components.CodeEditorDialog',
 					props: {
 						path:

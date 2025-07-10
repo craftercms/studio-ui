@@ -19,6 +19,7 @@ import { createReducer } from '@reduxjs/toolkit';
 import { nanoid } from 'nanoid';
 import { WidgetDialogProps } from '../../components/WidgetDialog/utils';
 import { popDialog, pushDialog, pushNonDialog, updateDialogState, updateNonDialogState } from '../actions/dialogStack';
+import type { FormsEngineDialogProps } from '../../components';
 
 const reducer = createReducer<GlobalState['dialogStack']>(
 	{
@@ -27,6 +28,39 @@ const reducer = createReducer<GlobalState['dialogStack']>(
 	},
 	(builder) => {
 		builder.addCase(pushDialog, (state, { payload }) => {
+			const component = payload.component;
+			// If the dialog is a CodeEditorDialog, FormsEngineDialog or LegacyFormDialog, we run extra verification.
+			// If the same type of dialog is already open for the same path, we update its props instead of creating a new
+			// dialog, and reset the isMinimized state.
+			if (
+				component === 'craftercms.components.CodeEditorDialog' ||
+				component === 'craftercms.components.LegacyFormDialog' ||
+				component === 'craftercms.components.FormsEngineDialog'
+			) {
+				const dialogState = Object.values(state.byId).find((dialog) => {
+					if (dialog.component === 'craftercms.components.FormsEngineDialog') {
+						return (
+							dialog.component === component &&
+							(dialog.props as FormsEngineDialogProps).formProps.update?.path ===
+								(payload.props as FormsEngineDialogProps).formProps.update?.path
+						);
+					} else {
+						// @ts-expect-error TS2339: Props may be type CodeEditorDialogProps or LegacyFormDialogProps.
+						return dialog.component === component && dialog.props.path === payload.props.path;
+					}
+				});
+				if (dialogState) {
+					state.byId[dialogState.id].props = {
+						// @ts-expect-error TS2698: TypeScript doesn't think the WritableDraft can be spread.
+						...state.byId[dialogState.id].props,
+						// @ts-expect-error TS2698: Props may be type CodeEditorDialogProps or LegacyFormDialogProps or FormsEngineDialogProps.
+						...payload.props,
+						isMinimized: false
+					};
+					return state;
+				}
+			}
+
 			const id = payload.id ?? nanoid();
 			state.ids.push(id);
 			state.byId[id] = {

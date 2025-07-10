@@ -135,12 +135,7 @@ import { useActiveUser } from '../../hooks/useActiveUser';
 import { usePreviewNavigation } from '../../hooks/usePreviewNavigation';
 import { useActiveSite } from '../../hooks/useActiveSite';
 import { getPathFromPreviewURL, processPathMacros, withIndex } from '../../utils/path';
-import {
-	rtePickerActionResult,
-	showEditDialog,
-	showRtePickerActions,
-	ShowRtePickerActionsPayload
-} from '../../state/actions/dialogs';
+import { rtePickerActionResult, showRtePickerActions, ShowRtePickerActionsPayload } from '../../state/actions/dialogs';
 import { UNDEFINED } from '../../utils/constants';
 import { useCurrentPreviewItem } from '../../hooks/useCurrentPreviewItem';
 import { useSiteUIConfig } from '../../hooks/useSiteUIConfig';
@@ -623,7 +618,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 				}
 				case 'ICE_ZONE_ON': {
 					dispatch(
-						showEditDialog({
+						pickShowContentFormAction({
 							path: payload.itemId,
 							authoringBase,
 							site: siteId,
@@ -1060,7 +1055,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 				}
 				case showEditDialogAction.type: {
 					dispatch(
-						showEditDialog({
+						pickShowContentFormAction({
 							authoringBase,
 							path: upToDateRefs.current.guest.path,
 							selectedFields: payload.selectedFields,

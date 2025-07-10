@@ -24,7 +24,7 @@ import { useSelection } from '../../hooks/useSelection';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useEnv } from '../../hooks/useEnv';
 import { ContextMenuOption } from '../ContextMenu';
-import { showEditDialog, updatePreviewDialog } from '../../state/actions/dialogs';
+import { updatePreviewDialog } from '../../state/actions/dialogs';
 import { getNumOfMenuOptionsForItem, getSystemTypeFromPath } from '../../utils/content';
 import LookupTable from '../../models/LookupTable';
 import { search } from '../../services/search';
@@ -39,6 +39,7 @@ import { IconButtonProps } from '@mui/material/IconButton';
 import useFetchContentItems from '../../hooks/useFetchContentItems';
 import { pushDialog } from '../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
+import { pickShowContentFormAction } from '../../utils/system';
 
 export const drawerWidth = 300;
 
@@ -424,7 +425,7 @@ export const useSearchState = ({
 			}
 			case 'Component':
 			case 'Taxonomy': {
-				dispatch(showEditDialog({ site, path: item.path, authoringBase, readonly: true }));
+				dispatch(pickShowContentFormAction({ site, path: item.path, authoringBase, readonly: true }));
 				break;
 			}
 			case 'Video':

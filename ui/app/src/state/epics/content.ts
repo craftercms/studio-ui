@@ -54,7 +54,7 @@ import {
 	unlock
 } from '../../services/content';
 import { merge, Observable, of } from 'rxjs';
-import { closeDeleteDialog, showDeleteDialog, showEditDialog } from '../actions/dialogs';
+import { closeDeleteDialog, showDeleteDialog } from '../actions/dialogs';
 import { getEditorMode, isEditableAsset } from '../../utils/content';
 import {
 	blockUI,
@@ -89,6 +89,7 @@ import { isBlank } from '../../utils/string';
 import SocketEvent, { MoveContentEventPayload } from '../../models/SocketEvent';
 import { popDialog, pushDialog } from '../actions/dialogStack';
 import { nanoid } from 'nanoid';
+import { pickShowContentFormAction } from '../../utils/system';
 
 export const sitePolicyMessages = defineMessages({
 	itemPastePolicyConfirm: {
@@ -215,7 +216,7 @@ const content: CrafterCMSEpic[] = [
 		),
 	// endregion
 	// region duplicateItem
-	(action$, state$, { getIntl }) =>
+	(action$, state$, { getIntl, store }) =>
 		action$.pipe(
 			ofType(duplicateItem.type),
 			withLatestFrom(state$),
@@ -230,11 +231,11 @@ const content: CrafterCMSEpic[] = [
 					duplicate(state.sites.active, payload.path).pipe(
 						switchMap(({ item: path }) => [
 							unblockUI(),
-							showEditDialog({
+							pickShowContentFormAction({
 								site: state.sites.active,
 								path,
 								authoringBase: state.env.authoringBase,
-								onSaveSuccess: payload.onSuccess
+								onSaveSuccess: () => store.dispatch(payload.onSuccess)
 							})
 						])
 					)
@@ -310,6 +311,7 @@ const content: CrafterCMSEpic[] = [
 								...(editableAsset
 									? [
 											pushDialog({
+												id: nanoid(),
 												component: 'craftercms.components.CodeEditorDialog',
 												props: {
 													authoringBase: state.env.authoringBase,

@@ -17,7 +17,7 @@
 import React, { useEffect, useState } from 'react';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useDispatch } from 'react-redux';
-import { fetchDeleteDependencies, showEditDialog, updateDeleteDialog } from '../../state/actions/dialogs';
+import { fetchDeleteDependencies, updateDeleteDialog } from '../../state/actions/dialogs';
 import { deleteItems } from '../../services/content';
 import { DeleteDialogUI } from './DeleteDialogUI';
 import { DeleteDialogContainerProps, DeleteDialogContentUIProps } from './utils';
@@ -28,6 +28,7 @@ import { ContentItem } from '../../models/Item';
 import { isBlank } from '../../utils/string';
 import { ApiResponse } from '../../models';
 import { batchActions } from '../../state/actions/misc';
+import { pickShowContentFormAction } from '../../utils/system';
 
 function createCheckedList(selectedItems: LookupTable<boolean>, excludedPaths?: string[]) {
 	return Object.entries(selectedItems)
@@ -145,7 +146,14 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
 		// needs to get removed from selectedItems after the edit is complete and the item is not even listed as a dependency.
 		// Until we find a better way around that, will uncheck when the edit button is pressed.
 		selectedItems[path] && onItemClicked(null, path);
-		dispatch(showEditDialog({ path, authoringBase, site, onSaveSuccess: fetchDeleteDependencies({ paths }) }));
+		dispatch(
+			pickShowContentFormAction({
+				path,
+				authoringBase,
+				site,
+				onSaveSuccess: () => dispatch(fetchDeleteDependencies({ paths }))
+			})
+		);
 	};
 
 	useEffect(() => {

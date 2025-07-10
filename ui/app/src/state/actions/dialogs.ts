@@ -42,7 +42,7 @@ import { EditSiteDialogStateProps } from '../../components/EditSiteDialog/utils'
 import { LegacyFormDialogStateProps } from '../../components/LegacyFormDialog/utils';
 import { SingleFileUploadDialogStateProps } from '../../components/SingleFileUploadDialog';
 import ContentInstance from '../../models/ContentInstance';
-import { ContentItem, ContentTypeFieldValidation } from '../../models';
+import { ContentItem, ContentTypeFieldValidation, type LegacyItem } from '../../models';
 import { RenameAssetStateProps } from '../../components/RenameAssetDialog';
 import { AjaxError } from 'rxjs/ajax';
 import { BrokenReferencesDialogStateProps } from '../../components/BrokenReferencesDialog/types';
@@ -159,7 +159,9 @@ export const dependenciesDialogClosed = /*#__PURE__*/ createAction('DEPENDENCIES
 export const showEditDialog = /*#__PURE__*/ createAction<LegacyFormDialogStateProps>('SHOW_EDIT_DIALOG');
 export const closeEditDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_EDIT_DIALOG');
 export const editDialogClosed = /*#__PURE__*/ createAction<StandardAction>('EDIT_DIALOG_CLOSED');
-export const newContentCreationComplete = /*#__PURE__*/ createAction<StandardAction>('NEW_CONTENT_CREATION_COMPLETE');
+export const newContentCreationComplete = /*#__PURE__*/ createAction<{ item: LegacyItem; redirectUrl: string }>(
+	'NEW_CONTENT_CREATION_COMPLETE'
+);
 export const updateEditDialogConfig =
 	/*#__PURE__*/ createAction<Partial<LegacyFormDialogStateProps>>('UPDATE_EDIT_DIALOG');
 // endregion

@@ -45,6 +45,7 @@ import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { LoadingState } from '../LoadingState';
 import { nanoid } from 'nanoid';
 import { pushDialog } from '../../state/actions/dialogStack';
+import { pickShowContentFormAction } from '../../utils/system';
 
 const translations = defineMessages({
 	quickCreateBtnLabel: {
@@ -293,10 +294,10 @@ const QuickCreate = forwardRef<HTMLButtonElement, { item?: ContentItem }>((props
 	const onQuickCreateItemSelected = (props) => {
 		onMenuClose();
 		dispatch(
-			showEditDialog({
+			pickShowContentFormAction({
 				...props,
 				inProgress: false,
-				onSaveSuccess: newContentCreationComplete()
+				onSaveSuccess: ({ item, redirectUrl }) => dispatch(newContentCreationComplete({ item, redirectUrl }))
 			})
 		);
 	};

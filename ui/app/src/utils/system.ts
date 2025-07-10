@@ -27,6 +27,7 @@ import type { FormsEngineProps } from '../components/FormsEngine/FormsEngine';
 import { getHostToGuestBus } from './subjects';
 import { reloadRequest } from '../state/actions/preview';
 import { Context, useContext } from 'react';
+import type { LegacyFormDialogProps } from '../components/LegacyFormDialog/utils';
 
 export type SystemLinkId =
 	| 'preview'
@@ -100,10 +101,15 @@ export function consolidateSx(...sxs: SxProps<Theme>[]): SxProps<Theme> {
 	return sxs.flatMap((item) => item ?? []);
 }
 
-export function pickShowContentFormAction(oldProps: ReturnType<typeof showEditDialog>['payload']) {
+export function pickShowContentFormAction(oldProps: LegacyFormDialogProps) {
 	const useLegacy = window.localStorage.getItem('useLegacyFormEngine') === 'true';
 	return useLegacy
-		? showEditDialog(oldProps)
+		? pushDialog({
+				component: 'craftercms.components.LegacyFormDialog',
+				allowFullScreen: true,
+				allowMinimize: true,
+				props: oldProps
+			})
 		: pushDialog({
 				component: 'craftercms.components.FormsEngineDialog',
 				allowFullScreen: true,

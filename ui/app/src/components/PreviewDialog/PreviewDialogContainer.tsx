@@ -37,6 +37,7 @@ import { fetchContentItem } from '../../state/actions/content';
 import useItemsBeingFetchedByPath from '../../hooks/useItemsBeingFetchedByPath';
 import palette from '../../styles/palette';
 import { pushDialog } from '../../state/actions/dialogStack';
+import { nanoid } from 'nanoid';
 
 export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
 	const { title, content, mode, url, path, onClose, type, mimeType, backgroundModeIndex, showEdit = true } = props;
@@ -119,6 +120,7 @@ export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
 			batchActions([
 				closePreviewDialog(),
 				pushDialog({
+					id: nanoid(),
 					component: 'craftercms.components.CodeEditorDialog',
 					props: {
 						path: url,

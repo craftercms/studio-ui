@@ -519,10 +519,13 @@ export const itemActionDispatcher = ({
 						site,
 						path,
 						authoringBase,
-						onSaveSuccess: batchActions([
-							showEditItemSuccessNotification(),
-							...(onActionSuccess ? [onActionSuccess] : [])
-						]),
+						onSaveSuccess: ({ action }) =>
+							dispatch(
+								batchActions([
+									showEditItemSuccessNotification({ action }),
+									...(onActionSuccess ? [onActionSuccess] : [])
+								])
+							),
 						...extraPayload
 					})
 				);
@@ -893,7 +896,10 @@ export const itemActionDispatcher = ({
 			case 'editCode': {
 				dispatch(
 					pushDialog({
+						id: nanoid(),
 						component: 'craftercms.components.CodeEditorDialog',
+						allowMinimize: true,
+						allowFullScreen: true,
 						props: {
 							path: item.path,
 							mode: getEditorMode(item)

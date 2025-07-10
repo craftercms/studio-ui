@@ -77,11 +77,12 @@ import { getStateBitmap } from '../components/WorkflowStateManagement/utils';
 import { forEach } from './array';
 import { PublishingTargets } from '../models';
 import slugify from 'slugify';
-import { showEditDialog } from '../state/actions/dialogs';
 import { Dispatch } from 'react';
 import { AnyAction } from 'redux';
 import { findParentModelId, getModelIdFromInheritedField, isInheritedField } from './model';
 import { pushDialog } from '../state/actions/dialogStack';
+import { nanoid } from 'nanoid';
+import { pickShowContentFormAction } from './system';
 
 export function isEditableAsset(path: string) {
 	return (
@@ -1057,10 +1058,18 @@ export const openItemEditor = (
 	}
 
 	if (type === 'form') {
-		dispatch(showEditDialog({ path: item.path, authoringBase, site: siteId, onSaveSuccess }));
+		dispatch(
+			pickShowContentFormAction({
+				path: item.path,
+				authoringBase,
+				site: siteId,
+				onSaveSuccess: () => dispatch(onSaveSuccess)
+			})
+		);
 	} else {
 		dispatch(
 			pushDialog({
+				id: nanoid(),
 				component: 'craftercms.components.CodeEditorDialog',
 				props: {
 					site: siteId,
