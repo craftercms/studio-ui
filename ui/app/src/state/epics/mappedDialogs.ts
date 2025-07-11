@@ -322,21 +322,6 @@ const showDialogsEpics: CrafterCMSEpic[] = [
 			})
 		)
 	// end region
-
-	// region showNonDialogs
-	// (action$, state$) =>
-	// 	action$.pipe(
-	// 		ofType(showLauncher.type),
-	// 		withLatestFrom(state$),
-	// 		map(([{ payload, type }]) => {
-	// 			return pushNonDialog({
-	// 				id: generateDialogId(type),
-	// 				component: dialogsMap[type],
-	// 				props: payload
-	// 			});
-	// 		})
-	// 	)
-	// endregion
 ] as CrafterCMSEpic[];
 
 export default showDialogsEpics;

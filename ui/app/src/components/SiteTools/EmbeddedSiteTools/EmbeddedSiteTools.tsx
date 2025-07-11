@@ -20,9 +20,11 @@ import useReference from '../../../hooks/useReference';
 import { useActiveSiteId } from '../../../hooks/useActiveSiteId';
 import SiteTools, { Tool } from '../SiteTools';
 import { onSubmittingAndOrPendingChangeProps } from '../../../hooks/useEnhancedDialogState';
-import { useDispatch } from 'react-redux';
-import { updateWidgetDialog } from '../../../state/actions/dialogs';
+import { useDispatch, useSelector } from 'react-redux';
 import { SiteToolsContext, SiteToolsContextProps } from '../siteToolsContext';
+import GlobalState from '../../../models/GlobalState';
+import type { WidgetDialogStateProps } from '../../WidgetDialog/utils';
+import { updateDialogState } from '../../../state/actions/dialogStack';
 
 interface EmbeddedSiteToolsProps {
 	onMinimize?: () => void;
@@ -41,6 +43,13 @@ export const EmbeddedSiteToolsContainer = (props: EmbeddedSiteToolsProps) => {
 		() => ({ setTool: (id) => setActiveToolId(id.replace(/^\//, '')), activeToolId }),
 		[activeToolId]
 	);
+	// Embedded Site Tools may not be rendered in a dialog, if so, we need to get it for the updates to the dialog state.
+	const dialogStackState = useSelector<GlobalState, GlobalState['dialogStack']>((state) => state.dialogStack);
+	const dialogId = useMemo(() => {
+		return Object.values(dialogStackState?.byId).find(
+			(dialog) => (dialog.props as WidgetDialogStateProps).widget?.id === 'craftercms.components.EmbeddedSiteTools'
+		)?.id;
+	}, [dialogStackState]);
 
 	const onNavItemClick = (id: string) => {
 		setActiveToolId(id);
@@ -49,7 +58,7 @@ export const EmbeddedSiteToolsContainer = (props: EmbeddedSiteToolsProps) => {
 	const onSubmittingAndOrPendingChange =
 		props.onSubmittingAndOrPendingChange ??
 		((value: onSubmittingAndOrPendingChangeProps) => {
-			dispatch(updateWidgetDialog(value));
+			dialogId && dispatch(updateDialogState({ id: dialogId, props: value }));
 		});
 
 	return (
@@ -72,7 +81,7 @@ export const EmbeddedSiteToolsContainer = (props: EmbeddedSiteToolsProps) => {
 					if (props.onMinimize) {
 						props.onMinimize();
 					} else {
-						dispatch(updateWidgetDialog({ isMinimized: true }));
+						dialogId && dispatch(updateDialogState({ id: dialogId, props: { isMinimized: true } }));
 					}
 				}}
 				mountMode="dialog"
