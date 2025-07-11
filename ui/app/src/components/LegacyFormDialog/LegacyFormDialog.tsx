@@ -44,6 +44,7 @@ export function LegacyFormDialog(props: LegacyFormDialogProps) {
 		onMaximize,
 		onMinimize,
 		onTransitionExited,
+		dialogId,
 		...rest
 	} = props;
 	const renameContentDialogState = useEnhancedDialogState();
@@ -130,6 +131,7 @@ export function LegacyFormDialog(props: LegacyFormDialogProps) {
 					inProgress={inProgress}
 					onMinimize={onMinimize}
 					setIframeLoaded={setIframeLoaded}
+					dialogId={dialogId}
 					{...rest}
 				/>
 			</Dialog>

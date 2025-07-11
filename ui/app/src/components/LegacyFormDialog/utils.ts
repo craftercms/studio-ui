@@ -42,6 +42,7 @@ export interface LegacyFormDialogBaseProps {
 		fieldId: string;
 	};
 	index?: string | number;
+	dialogId?: string;
 }
 
 export type LegacyFormDialogProps = PropsWithChildren<

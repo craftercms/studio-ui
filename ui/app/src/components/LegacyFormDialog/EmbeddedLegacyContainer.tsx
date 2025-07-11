@@ -41,7 +41,6 @@ import {
 	reloadRequest
 } from '../../state/actions/preview';
 import { getHostToGuestBus } from '../../utils/subjects';
-import { updateEditDialogConfig } from '../../state/actions/dialogs';
 import { useUnmount } from '../../hooks/useUnmount';
 import LoadingState from '../LoadingState/LoadingState';
 import ErrorDialog from '../ErrorDialog/ErrorDialog';
@@ -52,7 +51,7 @@ import { useFetchItem } from '../../hooks/useFetchItem';
 import Box from '@mui/material/Box';
 import usePreviewNavigation from '../../hooks/usePreviewNavigation';
 import { getSystemLink } from '../../utils/system';
-import { pushDialog } from '../../state/actions/dialogStack';
+import { pushDialog, updateDialogState } from '../../state/actions/dialogStack';
 
 // FE2 TODO: for removal after FE1 removal
 export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyEditor(
@@ -78,7 +77,8 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
 		iceGroupId,
 		newEmbedded,
 		index,
-		setIframeLoaded
+		setIframeLoaded,
+		dialogId
 	} = props;
 
 	const { formatMessage } = useIntl();
@@ -170,7 +170,7 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
 						getHostToGuestBus().next(reloadRequest());
 					}
 
-					dispatch(updateEditDialogConfig({ pendingChanges: false }));
+					dispatch(updateDialogState({ id: dialogId, props: { pendingChanges: false } }));
 					switch (e.data.action) {
 						case 'save': {
 							break;
@@ -199,24 +199,24 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
 				case EMBEDDED_LEGACY_FORM_RENDERED: {
 					setIframeLoaded(true);
 					if (inProgress) {
-						dispatch(updateEditDialogConfig({ inProgress: false }));
+						dispatch(updateDialogState({ id: dialogId, props: { inProgress: false } }));
 					}
 					break;
 				}
 				case EMBEDDED_LEGACY_FORM_ENABLE_ON_CLOSE: {
-					dispatch(updateEditDialogConfig({ isSubmitting: false }));
+					dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: false } }));
 					break;
 				}
 				case EMBEDDED_LEGACY_FORM_DISABLE_ON_CLOSE: {
-					dispatch(updateEditDialogConfig({ isSubmitting: true }));
+					dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: true } }));
 					break;
 				}
 				case EMBEDDED_LEGACY_FORM_ENABLE_HEADER: {
-					dispatch(updateEditDialogConfig({ disableHeader: false }));
+					dispatch(updateDialogState({ id: dialogId, props: { disableHeader: false } }));
 					break;
 				}
 				case EMBEDDED_LEGACY_FORM_DISABLE_HEADER: {
-					dispatch(updateEditDialogConfig({ disableHeader: true }));
+					dispatch(updateDialogState({ id: dialogId, props: { disableHeader: true } }));
 					break;
 				}
 				case EMBEDDED_LEGACY_FORM_RENDER_FAILED: {
@@ -231,7 +231,7 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
 				}
 				case EMBEDDED_LEGACY_FORM_SAVE: {
 					onSave(e.data);
-					dispatch(updateEditDialogConfig({ pendingChanges: false }));
+					dispatch(updateDialogState({ id: dialogId, props: { pendingChanges: false } }));
 					if (e.data.refresh) {
 						getHostToGuestBus().next({ type: reloadRequest.type });
 					}
@@ -258,7 +258,7 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
 					break;
 				}
 				case EMBEDDED_LEGACY_FORM_PENDING_CHANGES: {
-					dispatch(updateEditDialogConfig({ pendingChanges: true }));
+					dispatch(updateDialogState({ id: dialogId, props: { pendingChanges: true } }));
 					break;
 				}
 				case EMBEDDED_LEGACY_MINIMIZE_REQUEST: {
@@ -266,15 +266,15 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
 					break;
 				}
 				case EMBEDDED_LEGACY_CHANGE_TO_EDIT_MODE: {
-					dispatch(updateEditDialogConfig({ readonly: false }));
+					dispatch(updateDialogState({ id: dialogId, props: { readonly: false } }));
 					break;
 				}
 				case EMBEDDED_LEGACY_FORM_SAVE_START: {
-					dispatch(updateEditDialogConfig({ isSubmitting: true }));
+					dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: true } }));
 					break;
 				}
 				case EMBEDDED_LEGACY_FORM_SAVE_END: {
-					dispatch(updateEditDialogConfig({ isSubmitting: false }));
+					dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: false } }));
 					break;
 				}
 			}
@@ -282,7 +282,7 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
 		return () => {
 			messagesSubscription.unsubscribe();
 		};
-	}, [inProgress, onSave, messages, dispatch, onClose, formatMessage, onMinimize, setIframeLoaded]);
+	}, [inProgress, onSave, messages, dispatch, onClose, formatMessage, onMinimize, setIframeLoaded, dialogId]);
 
 	useUnmount(onClosed);
 
