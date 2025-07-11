@@ -114,7 +114,7 @@ export function ViewPackagesDialogContainer(props: ViewPackagesDialogContainerPr
 										secondaryTypographyProps={{ noWrap: true, title: pkg.title }}
 									/>
 									<Tooltip title={<FormattedMessage defaultMessage="View package details" />}>
-										<IconButton onClick={() => onShowPackageDetails?.(pkg.id)}>
+										<IconButton>
 											<ChevronRightRoundedIcon />
 										</IconButton>
 									</Tooltip>
