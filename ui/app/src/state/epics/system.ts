@@ -511,14 +511,8 @@ const systemEpics: CrafterCMSEpic[] = [
 				const sites = state.sites.byId;
 				const currentProjectId = state.sites.active;
 				const newProjectId = action.payload.siteId;
-				const customEventId = 'site-switched-confirm-dialog';
 				const currentProject = sites[currentProjectId].name;
 				const newProject = sites[newProjectId].name;
-				createCustomDocumentEventListener(customEventId, ({ choice }) => {
-					if (choice === 'ok') {
-					} else {
-					}
-				});
 				const dialogId = nanoid();
 				return pushDialog({
 					id: dialogId,
