@@ -20,12 +20,12 @@ import { StandardAction } from '../../models';
 
 export interface PublishingPackageReviewDialogBaseProps {
 	packageId: number;
+	dialogId?: string;
 }
 
 export interface PublishingPackageReviewDialogProps
 	extends PublishingPackageReviewDialogBaseProps,
 		EnhancedDialogProps {
-	dialogId: string;
 	onSuccess?(): void;
 }
 

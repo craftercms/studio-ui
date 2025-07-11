@@ -74,23 +74,28 @@ export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
 
 	const handleSubmit = (id: string, name: string, description: string) => {
 		if (!disableSubmit) {
-			dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: true } }));
+			dialogId && dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: true } }));
 			update({ id, name: name.trim(), description: description.trim() }).subscribe({
 				next(response) {
 					dispatch(
-						batchActions([
-							updateDialogState({ id: dialogId, props: { hasPendingChanges: false, isSubmitting: false } }),
-							fetchSites()
-						])
+						batchActions(
+							[
+								dialogId &&
+									updateDialogState({ id: dialogId, props: { hasPendingChanges: false, isSubmitting: false } }),
+								fetchSites()
+							].filter(Boolean)
+						)
 					);
 					onSaveSuccess?.(response);
 				},
 				error({ response: { response } }) {
 					dispatch(
-						batchActions([
-							updateDialogState({ id: dialogId, props: { isSubmitting: false } }),
-							pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } })
-						])
+						batchActions(
+							[
+								dialogId && updateDialogState({ id: dialogId, props: { isSubmitting: false } }),
+								pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } })
+							].filter(Boolean)
+						)
 					);
 				}
 			});
@@ -102,14 +107,15 @@ export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
 	const onSiteNameChange = (value: string) => {
 		checkSiteName(value);
 		setName(value);
-		dispatch(
-			updateDialogState({
-				id: dialogId,
-				props: {
-					hasPendingChanges: originalDescription !== description.trim() || originalName !== value.trim()
-				}
-			})
-		);
+		dialogId &&
+			dispatch(
+				updateDialogState({
+					id: dialogId,
+					props: {
+						hasPendingChanges: originalDescription !== description.trim() || originalName !== value.trim()
+					}
+				})
+			);
 	};
 
 	const onKeyPress = (event: React.KeyboardEvent) => {
@@ -120,29 +126,33 @@ export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
 
 	const onSiteDescriptionChange = (value: string) => {
 		setDescription(value);
-		dispatch(
-			updateDialogState({
-				id: dialogId,
-				props: { hasPendingChanges: originalName !== name.trim() || originalDescription !== value.trim() }
-			})
-		);
+		dialogId &&
+			dispatch(
+				updateDialogState({
+					id: dialogId,
+					props: { hasPendingChanges: originalName !== name.trim() || originalDescription !== value.trim() }
+				})
+			);
 	};
 
 	const onEditSiteImage = () => {
-		const dialogId = nanoid();
+		const singleFileUploadDialogDialogId = nanoid();
 		dispatch(
 			pushDialog({
-				id: dialogId,
+				id: singleFileUploadDialogDialogId,
 				component: 'craftercms.components.SingleFileUploadDialog',
 				props: {
 					path: '/.crafter/screenshots',
 					site: site.id,
 					customFileName: 'default.png',
 					fileTypes: ['image/png'],
-					onClose: () => dispatch(popDialog({ id: dialogId })),
+					onClose: () => dispatch(popDialog({ id: singleFileUploadDialogDialogId })),
 					onUploadComplete: () =>
 						dispatch(
-							batchActions([popDialog({ id: dialogId }), dispatchDOMEvent({ id: PROJECT_PREVIEW_IMAGE_UPDATED })])
+							batchActions([
+								popDialog({ id: singleFileUploadDialogDialogId }),
+								dispatchDOMEvent({ id: PROJECT_PREVIEW_IMAGE_UPDATED })
+							])
 						)
 				}
 			})

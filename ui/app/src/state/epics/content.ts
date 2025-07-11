@@ -54,7 +54,6 @@ import {
 	unlock
 } from '../../services/content';
 import { merge, Observable, of } from 'rxjs';
-import { closeDeleteDialog, showDeleteDialog } from '../actions/dialogs';
 import { getEditorMode, isEditableAsset } from '../../utils/content';
 import {
 	blockUI,

@@ -66,7 +66,8 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
 	const onCreateFile = (site: string, path: string, fileName: string) => {
 		createFile(site, path, fileName).subscribe({
 			next() {
-				dispatch(updateDialogState({ id: dialogId, props: { hasPendingChanges: false, isSubmitting: false } }));
+				dialogId &&
+					dispatch(updateDialogState({ id: dialogId, props: { hasPendingChanges: false, isSubmitting: false } }));
 				onCreated?.({ path, fileName, mode: pickExtensionForItemType(type), openOnSuccess: true });
 			},
 			error: onError
@@ -74,7 +75,7 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
 	};
 
 	const onSubmit = () => {
-		dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: true } }));
+		dialogId && dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: true } }));
 		if (name) {
 			validateActionPolicy(site, {
 				type: 'CREATE',
@@ -89,7 +90,7 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
 							next: (exists) => {
 								if (exists) {
 									setItemExists(true);
-									dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: false } }));
+									dialogId && dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: false } }));
 								} else {
 									if (modifiedValue) {
 										setConfirm({ body: message });
@@ -105,7 +106,7 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
 							error: true,
 							body: formatMessage(translations.policyError, { fileName: name, detail: message })
 						});
-						dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: false } }));
+						dialogId && dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: false } }));
 					}
 				},
 				error: onError
@@ -120,7 +121,7 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
 
 	const onConfirmCancel = () => {
 		setConfirm(null);
-		dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: false } }));
+		dialogId && dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: false } }));
 	};
 
 	const onInputChanges = (value: string) => {
@@ -128,6 +129,7 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
 		setItemExists(false);
 		const newHasPending = !isBlank(value);
 		hasPendingChanges !== newHasPending &&
+			dialogId &&
 			dispatch(updateDialogState({ id: dialogId, props: { hasPendingChanges: newHasPending } }));
 	};
 

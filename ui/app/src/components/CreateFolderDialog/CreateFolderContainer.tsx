@@ -116,7 +116,7 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
 		dispatch(
 			batchActions([
 				pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: error } }),
-				updateDialogState({ id: dialogId, props: { isSubmitting: false } })
+				dialogId && updateDialogState({ id: dialogId, props: { isSubmitting: false } })
 			])
 		);
 	};
@@ -124,7 +124,8 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
 	const onRenameFolder = (site: string, path: string, name: string) => {
 		renameFolder(site, path, name).subscribe({
 			next() {
-				dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: false, hasPendingChanges: false } }));
+				dialogId &&
+					dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: false, hasPendingChanges: false } }));
 				onRenamed?.({ path, name, rename });
 			},
 			error: onError
@@ -143,7 +144,7 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
 
 	const onSubmit = () => {
 		if (!name) return;
-		dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: true } }));
+		dialogId && dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: true } }));
 		const parentPath = rename ? getParentPath(path) : path;
 		validateActionPolicy(site, { type: rename ? 'RENAME' : 'CREATE', target: `${parentPath}/${name}` })
 			.pipe(
@@ -154,7 +155,7 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
 							error: true,
 							body: formatMessage(translations.policyError, { fileName: name, detail: message })
 						});
-						dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: false } }));
+						dialogId && dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: false } }));
 						return [];
 					}
 					const pathToCheckExists = modifiedValue ?? `${parentPath}/${name}`;
@@ -167,7 +168,7 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
 					// Note: Block of guard statements (each if ends function)
 					if (exists) {
 						setItemExists(true);
-						dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: false } }));
+						dialogId && dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: false } }));
 						return;
 					} else if (modifiedValue) {
 						setConfirm({ body: message });
@@ -201,7 +202,7 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
 
 	const onConfirmCancel = () => {
 		setConfirm(null);
-		dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: false } }));
+		dialogId && dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: false } }));
 	};
 
 	const onInputChanges = (newValue: string) => {
@@ -209,6 +210,7 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
 		setItemExists(false);
 		const newHasPendingChanges = rename ? newValue !== value : !isBlank(newValue);
 		hasPendingChanges !== newHasPendingChanges &&
+			dialogId &&
 			dispatch(updateDialogState({ id: dialogId, props: { hasPendingChanges: newHasPendingChanges } }));
 	};
 

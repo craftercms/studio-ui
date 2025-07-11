@@ -21,12 +21,12 @@ import { PublishPackage, StandardAction } from '../../models';
 export interface PublishingPackageResubmitDialogBaseProps {
 	type: 'resubmit' | 'promote';
 	pkg: PublishPackage;
+	dialogId?: string;
 }
 
 export interface PublishingPackageResubmitDialogProps
 	extends PublishingPackageResubmitDialogBaseProps,
 		EnhancedDialogProps {
-	dialogId: string;
 	onSuccess?(): void;
 }
 

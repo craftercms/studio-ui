@@ -20,9 +20,9 @@ import { ContentItem } from '../../models';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 
 export interface CopyDialogBaseProps {
-	dialogId: string;
 	site: string;
 	item: ContentItem;
+	dialogId?: string;
 }
 
 export interface CopyDialogCallbacks {

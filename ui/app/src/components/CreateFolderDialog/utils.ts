@@ -19,6 +19,7 @@ import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 
 export interface CreateFolderBaseProps {
+	dialogId?: string;
 	path?: string;
 	rename?: boolean;
 	value?: string;
@@ -26,7 +27,6 @@ export interface CreateFolderBaseProps {
 }
 
 export interface CreateFolderProps extends CreateFolderBaseProps, EnhancedDialogProps {
-	dialogId: string;
 	onCreated?(response: { path: string; name: string; rename: boolean }): void;
 	onRenamed?(response: { path: string; name: string; rename: boolean }): void;
 }

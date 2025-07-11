@@ -22,11 +22,11 @@ import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import StandardAction from '../../models/StandardAction';
 
 export interface CancelPackageDialogBaseProps {
+	dialogId?: string;
 	packageId?: number;
 }
 
 export interface CancelPackageDialogProps extends EnhancedDialogProps, CancelPackageDialogBaseProps {
-	dialogId: string;
 	onSuccess?(): void;
 }
 

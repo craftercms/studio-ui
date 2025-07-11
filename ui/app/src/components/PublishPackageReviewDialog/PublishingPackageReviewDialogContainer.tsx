@@ -47,7 +47,6 @@ import { createAtLeastHalfHourInFutureDate } from '../../utils/datetime';
 import { approvePackage, rejectPackage } from '../../services/workflow';
 import { batchActions } from '../../state/actions/misc';
 import { useDispatch } from 'react-redux';
-import { updatePublishingPackageReviewDialog } from '../../state/actions/dialogs';
 import { AsDayMonthDateTime } from '../VersionList';
 import PackageDetails from '../PackageDetailsDialog/PackageDetails';
 import { showSystemNotification } from '../../state/actions/system';
@@ -156,7 +155,7 @@ export function PublishingPackageReviewDialogContainer(props: PublishingPackageR
 
 	const onArgumentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		let value: unknown;
-		dispatch(updateDialogState({ id: dialogId, props: { hasPendingChanges: true } }));
+		dialogId && dispatch(updateDialogState({ id: dialogId, props: { hasPendingChanges: true } }));
 		switch (e.target.type) {
 			case 'textarea':
 			case 'radio':
@@ -189,7 +188,7 @@ export function PublishingPackageReviewDialogContainer(props: PublishingPackageR
 	};
 
 	const handleSubmit = () => {
-		dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: true } }));
+		dialogId && dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: true } }));
 		if (state.action === 'approve') {
 			const data: PublishingPackageApproveParams = {
 				comment: state.approverComment,
@@ -200,19 +199,24 @@ export function PublishingPackageReviewDialogContainer(props: PublishingPackageR
 			approvePackage(siteId, packageId, data).subscribe({
 				next() {
 					dispatch(
-						batchActions([
-							updateDialogState({ id: dialogId, props: { isSubmitting: false, hasPendingChanges: false } }),
-							showSystemNotification({ message: formatMessage({ defaultMessage: 'Package approved successfully.' }) })
-						])
+						batchActions(
+							[
+								dialogId &&
+									updateDialogState({ id: dialogId, props: { isSubmitting: false, hasPendingChanges: false } }),
+								showSystemNotification({ message: formatMessage({ defaultMessage: 'Package approved successfully.' }) })
+							].filter(Boolean)
+						)
 					);
 					onSuccess?.();
 				},
 				error({ response }) {
 					dispatch(
-						batchActions([
-							updateDialogState({ id: dialogId, props: { isSubmitting: false } }),
-							pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response.response } })
-						])
+						batchActions(
+							[
+								dialogId && updateDialogState({ id: dialogId, props: { isSubmitting: false } }),
+								pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response.response } })
+							].filter(Boolean)
+						)
 					);
 				}
 			});
@@ -220,19 +224,24 @@ export function PublishingPackageReviewDialogContainer(props: PublishingPackageR
 			rejectPackage(siteId, packageId, state.rejectComment).subscribe({
 				next() {
 					dispatch(
-						batchActions([
-							updateDialogState({ id: dialogId, props: { isSubmitting: false, hasPendingChanges: false } }),
-							showSystemNotification({ message: formatMessage({ defaultMessage: 'Package rejected successfully.' }) })
-						])
+						batchActions(
+							[
+								dialogId &&
+									updateDialogState({ id: dialogId, props: { isSubmitting: false, hasPendingChanges: false } }),
+								showSystemNotification({ message: formatMessage({ defaultMessage: 'Package rejected successfully.' }) })
+							].filter(Boolean)
+						)
 					);
 					onSuccess?.();
 				},
 				error({ response }) {
 					dispatch(
-						batchActions([
-							updateDialogState({ id: dialogId, props: { isSubmitting: false } }),
-							pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response.response } })
-						])
+						batchActions(
+							[
+								dialogId && updateDialogState({ id: dialogId, props: { isSubmitting: false } }),
+								pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response.response } })
+							].filter(Boolean)
+						)
 					);
 				}
 			});

@@ -23,11 +23,11 @@ import BulkCancelPackageDialogContainer from './BulkCancelPackageDialogContainer
 import StandardAction from '../../models/StandardAction';
 
 export interface BulkCancelPackageDialogBaseProps {
+	dialogId?: string;
 	packages?: PublishPackage[];
 }
 
 export interface BulkCancelPackageDialogProps extends EnhancedDialogProps, BulkCancelPackageDialogBaseProps {
-	dialogId: string;
 	onSuccess?(): void;
 }
 

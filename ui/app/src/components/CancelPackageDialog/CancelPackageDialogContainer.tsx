@@ -49,26 +49,30 @@ export function CancelPackageDialogContainer(props: CancelPackageDialogContainer
 	const { formatMessage } = useIntl();
 
 	const handleSubmit = () => {
-		dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: true } }));
+		dialogId && dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: true } }));
 		cancelPackages(siteId, {
 			packageIds: [packageId],
 			comment: state.comment
 		}).subscribe({
 			next() {
 				dispatch(
-					batchActions([
-						updateDialogState({ id: dialogId, props: { isSubmitting: false } }),
-						showSystemNotification({ message: formatMessage({ defaultMessage: 'Package cancelled successfully.' }) })
-					])
+					batchActions(
+						[
+							dialogId && updateDialogState({ id: dialogId, props: { isSubmitting: false } }),
+							showSystemNotification({ message: formatMessage({ defaultMessage: 'Package cancelled successfully.' }) })
+						].filter(Boolean)
+					)
 				);
 				onSuccess?.();
 			},
 			error({ response }) {
 				dispatch(
-					batchActions([
-						updateDialogState({ id: dialogId, props: { isSubmitting: false } }),
-						pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response.response } })
-					])
+					batchActions(
+						[
+							dialogId && updateDialogState({ id: dialogId, props: { isSubmitting: false } }),
+							pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response.response } })
+						].filter(Boolean)
+					)
 				);
 			}
 		});

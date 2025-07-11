@@ -22,10 +22,10 @@ export interface CreateFileBaseProps {
 	type: 'controller' | 'template';
 	path: string;
 	allowBraces?: boolean;
+	dialogId?: string;
 }
 
 export interface CreateFileProps extends CreateFileBaseProps, EnhancedDialogProps {
-	dialogId: string;
 	onCreated?(response: { path: string; fileName: string; mode: string; openOnSuccess: boolean }): void;
 }
 

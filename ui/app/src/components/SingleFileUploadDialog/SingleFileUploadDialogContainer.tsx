@@ -19,7 +19,6 @@ import { SingleFileUploadDialogContainerProps } from './utils';
 import { useDispatch } from 'react-redux';
 import DialogBody from '../DialogBody/DialogBody';
 import SingleFileUploadDialogUI from './SingleFileUploadDialogUI';
-import { updateSingleFileUploadDialog } from '../../state/actions/dialogs';
 import { updateDialogState } from '../../state/actions/dialogStack';
 
 export function SingleFileUploadDialogContainer(props: SingleFileUploadDialogContainerProps) {
@@ -27,12 +26,12 @@ export function SingleFileUploadDialogContainer(props: SingleFileUploadDialogCon
 	const dispatch = useDispatch();
 	const onStart = useCallback(() => {
 		onUploadStart?.();
-		dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: true } }));
+		dialogId && dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: true } }));
 	}, [dispatch, onUploadStart, dialogId]);
 
 	const onComplete = useCallback(
 		(result) => {
-			dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: false } }));
+			dialogId && dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: false } }));
 			onUploadComplete?.(result);
 		},
 		[dispatch, onUploadComplete, dialogId]
@@ -40,15 +39,11 @@ export function SingleFileUploadDialogContainer(props: SingleFileUploadDialogCon
 
 	const onError = useCallback(
 		({ file, error, response }) => {
-			dispatch(
-				updateSingleFileUploadDialog({
-					isSubmitting: false
-				})
-			);
+			dialogId && dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: false } }));
 
 			onUploadError?.({ file, error, response });
 		},
-		[dispatch, onUploadError]
+		[dispatch, onUploadError, dialogId]
 	);
 
 	return (

@@ -25,10 +25,10 @@ export interface CodeEditorDialogBaseProps {
 	mode?: string;
 	contentType?: string;
 	readonly?: boolean;
+	dialogId?: string;
 }
 
 export interface CodeEditorDialogProps extends CodeEditorDialogBaseProps, EnhancedDialogProps {
-	dialogId: string;
 	onSuccess?(response?: any): void;
 }
 

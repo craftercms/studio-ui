@@ -237,7 +237,8 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 
 		publish(siteId, data).subscribe({
 			next() {
-				dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: false, hasPendingChanges: false } }));
+				dialogId &&
+					dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: false, hasPendingChanges: false } }));
 				onSuccess?.({
 					schedule: schedule,
 					publishingTarget,
@@ -249,10 +250,12 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 			},
 			error({ response }) {
 				dispatch(
-					batchActions([
-						updateDialogState({ id: dialogId, props: { isSubmitting: false } }),
-						pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response.response } })
-					])
+					batchActions(
+						[
+							dialogId && updateDialogState({ id: dialogId, props: { isSubmitting: false } }),
+							pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response.response } })
+						].filter(Boolean)
+					)
 				);
 			}
 		});
@@ -260,7 +263,7 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 
 	const onPublishingArgumentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		let value: unknown;
-		dispatch(updateDialogState({ id: dialogId, props: { hasPendingChanges: true } }));
+		dialogId && dispatch(updateDialogState({ id: dialogId, props: { hasPendingChanges: true } }));
 		switch (e.target.type) {
 			case 'checkbox':
 				value = e.target.checked;

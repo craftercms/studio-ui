@@ -15,7 +15,6 @@
  */
 
 import { Site } from '../../models/Site';
-import React from 'react';
 import StandardAction from '../../models/StandardAction';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
@@ -25,10 +24,10 @@ export type Return = Omit<Source, 'error'>;
 
 export interface EditSiteDialogBaseProps {
 	site: Site;
+	dialogId?: string;
 }
 
 export interface EditSiteDialogProps extends EditSiteDialogBaseProps, EnhancedDialogProps {
-	dialogId: string;
 	onSaveSuccess?(response?: any): any;
 	onSiteImageChange?(): void;
 }

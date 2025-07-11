@@ -23,10 +23,10 @@ export interface SingleFileUploadDialogBaseProps {
 	path: string;
 	customFileName?: string;
 	fileTypes?: [string];
+	dialogId?: string;
 }
 
 export interface SingleFileUploadDialogProps extends SingleFileUploadDialogBaseProps, EnhancedDialogProps {
-	dialogId: string;
 	onClose(): void;
 	onClosed?(): void;
 	onUploadStart?(): void;

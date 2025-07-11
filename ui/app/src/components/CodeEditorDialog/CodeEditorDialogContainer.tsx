@@ -97,7 +97,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 
 	const save = (callback?: () => void) => {
 		if (!isLockedForMe && !readonly) {
-			dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: true } }));
+			dialogId && dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: true } }));
 			const value = editorRef.current.getValue();
 			const isConfig = path.startsWith('/config');
 			const module = isConfig ? (path.split('/')[2] as 'studio') : null;
@@ -116,10 +116,13 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 			preWriteAction$.subscribe({
 				next() {
 					dispatch(
-						batchActions([
-							showSystemNotification({ message: formatMessage(translations.saved) }),
-							updateDialogState({ id: dialogId, props: { isSubmitting: false, hasPendingChanges: false } })
-						])
+						batchActions(
+							[
+								showSystemNotification({ message: formatMessage(translations.saved) }),
+								dialogId &&
+									updateDialogState({ id: dialogId, props: { isSubmitting: false, hasPendingChanges: false } })
+							].filter(Boolean)
+						)
 					);
 					setTimeout(callback);
 					getHostToGuestBus().next(reloadRequest());
@@ -127,10 +130,12 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 				},
 				error({ response }) {
 					dispatch(
-						batchActions([
-							updateDialogState({ id: dialogId, props: { isSubmitting: false } }),
-							pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } })
-						])
+						batchActions(
+							[
+								dialogId && updateDialogState({ id: dialogId, props: { isSubmitting: false } }),
+								pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } })
+							].filter(Boolean)
+						)
 					);
 				}
 			});
@@ -141,17 +146,17 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 		// Before saving, check if the item is part of a package in active workflow. If so, show a dialog to review the
 		// packages before continuing with the cancellation of the packages and saving the item.
 		if (affectedPackages?.length) {
-			const dialogId = nanoid();
+			const viewPackagesDialogId = nanoid();
 			dispatch(
 				pushDialog({
-					id: dialogId,
+					id: viewPackagesDialogId,
 					component: 'craftercms.components.ViewPackagesDialog',
 					props: {
 						item,
 						onContinue: () => {
 							save(callback);
 						},
-						onClose: () => dispatch(popDialog({ id: dialogId }))
+						onClose: () => dispatch(popDialog({ id: viewPackagesDialogId }))
 					}
 				})
 			);
@@ -236,13 +241,13 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 	useEffect(() => {
 		if (content === null) {
 			setLoading(true);
-			dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: true } }));
+			dialogId && dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: true } }));
 			const subscription = forkJoin([fetchContentXML(site, path), fetchAffectedPackages(site, path)]).subscribe(
 				([xml, affectedPackages]) => {
 					setContent(xml);
 					setAffectedPackages(affectedPackages);
 					setLoading(false);
-					dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: false } }));
+					dialogId && dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: false } }));
 				}
 			);
 			return () => {
