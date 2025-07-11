@@ -390,3 +390,5 @@ export const showErrorDialog = /*#__PURE__*/ createAction<Partial<ErrorDialogSta
 export const closeErrorDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_ERROR_DIALOG');
 export const errorDialogClosed = /*#__PURE__*/ createAction<StandardAction>('ERROR_DIALOG_CLOSED');
 // endregion
+
+export const popCodeEditorDialog = /*#__PURE__*/ createAction<{ id: string }>('POP_CODE_EDITOR_DIALOG');

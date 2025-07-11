@@ -90,7 +90,7 @@ import { popDialog, pushDialog } from '../actions/dialogStack';
 import { nanoid } from 'nanoid';
 import { pickShowContentFormAction } from '../../utils/system';
 import { ContentItem } from '../../models';
-import { showItemMegaMenu } from '../actions/dialogs';
+import { popCodeEditorDialog, showItemMegaMenu } from '../actions/dialogs';
 
 export const sitePolicyMessages = defineMessages({
 	itemPastePolicyConfirm: {
@@ -312,19 +312,21 @@ const content: CrafterCMSEpic[] = [
 						switchMap(({ item: path }) => {
 							const mode = getEditorMode(state.content.itemsByPath[payload.path].mimeType);
 							const editableAsset = isEditableAsset(payload.path);
+							const dialogId = nanoid();
 							return [
 								unblockUI(),
 								...(editableAsset
 									? [
 											pushDialog({
-												id: nanoid(),
+												id: dialogId,
 												component: 'craftercms.components.CodeEditorDialog',
 												props: {
 													authoringBase: state.env.authoringBase,
 													site: state.sites.active,
 													path,
 													mode,
-													onSuccess: () => store.dispatch(payload.onSuccess)
+													onSuccess: () => store.dispatch(payload.onSuccess),
+													onClose: () => store.dispatch(popCodeEditorDialog({ id: dialogId }))
 												}
 											})
 										]

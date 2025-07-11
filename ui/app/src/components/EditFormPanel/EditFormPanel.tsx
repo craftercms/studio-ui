@@ -34,6 +34,7 @@ import ContentInstance from '../../models/ContentInstance';
 import { pushDialog } from '../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
 import { pickShowContentFormAction } from '../../utils/system';
+import { popCodeEditorDialog } from '../../state/actions/dialogs';
 
 interface EditFormPanelProps {
 	open: boolean;
@@ -200,9 +201,10 @@ function EditFormPanelBody(props: EditFormPanelBodyProps) {
 				)
 			);
 		} else {
+			const dialogId = nanoid();
 			dispatch(
 				pushDialog({
-					id: nanoid(),
+					id: dialogId,
 					component: 'craftercms.components.CodeEditorDialog',
 					props: {
 						path:
@@ -210,7 +212,8 @@ function EditFormPanelBody(props: EditFormPanelBodyProps) {
 								? contentType.displayTemplate
 								: `/scripts/pages/${popPiece(selectedContentTypeId, '/')}.groovy`,
 						contentType: selectedContentTypeId,
-						mode: type === 'template' ? 'ftl' : 'groovy'
+						mode: type === 'template' ? 'ftl' : 'groovy',
+						onClose: () => dispatch(popCodeEditorDialog({ id: dialogId }))
 					}
 				})
 			);

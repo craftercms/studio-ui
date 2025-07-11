@@ -36,6 +36,7 @@ import {
 	fetchDeleteDependencies,
 	fetchRenameAssetDependants,
 	newContentCreationComplete,
+	popCodeEditorDialog,
 	showCodeEditorDialog,
 	showEditDialog,
 	showPreviewDialog,
@@ -104,8 +105,7 @@ const dialogEpics: CrafterCMSEpic[] = [
 				// the MUI dialog would later also call the onClose action and this causes a infinite
 				// "loop" of "CLOSE_*_DIALOG" actions. The filter insures the actions to be called
 				// don't include the "CLOSE_*_DIALOG" action to avoid said loop.
-				const onClose = getDialogState(type, state)?.onClose;
-
+				// const onClose = getDialogState(type, state)?.onClose;
 				return [
 					// In the case of batch actions, save the additional BATCH_ACTIONS action itself
 					// and jump straight to the actions to dispatch.
@@ -272,7 +272,6 @@ const dialogEpics: CrafterCMSEpic[] = [
 			ignoreElements()
 		),
 	// endregion
-	// TODO: how to handle this in the new dialogs system?
 	// region closeCodeEditorDialog
 	// Moved unlock from dialog to epics since the container has no visibility of the backdrop click close and
 	// was hence unable to unlock the item in all cases.
@@ -286,6 +285,27 @@ const dialogEpics: CrafterCMSEpic[] = [
 				return item.stateMap.locked && item.lockOwner.username === username;
 			}),
 			map(([, state]) => unlockItem({ path: state.dialogs.codeEditor.path }))
+		),
+	(action$, state$) =>
+		action$.pipe(
+			ofType(popCodeEditorDialog.type),
+			withLatestFrom(state$),
+			filter(([{ payload }, state]) => {
+				const dialogId = payload.id;
+				// Check if the dialog has a path set in its state.
+				if (!(state.dialogStack.byId[dialogId]?.props as CodeEditorDialogStateProps)?.path) return false;
+
+				const username = state.user.username;
+				const item =
+					state.content.itemsByPath[(state.dialogStack.byId[dialogId]?.props as CodeEditorDialogStateProps)?.path];
+				return item.stateMap.locked && item.lockOwner.username === username;
+			}),
+			map(([{ payload }, state]) =>
+				batchActions([
+					unlockItem({ path: (state.dialogStack.byId[payload.id].props as CodeEditorDialogStateProps).path }),
+					popDialog({ id: payload.id })
+				])
+			)
 		),
 	// endregion
 	// region renameAssetDialog

@@ -83,6 +83,7 @@ import { findParentModelId, getModelIdFromInheritedField, isInheritedField } fro
 import { pushDialog } from '../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
 import { pickShowContentFormAction } from './system';
+import { popCodeEditorDialog } from '../state/actions/dialogs';
 
 export function isEditableAsset(path: string) {
 	return (
@@ -1067,9 +1068,10 @@ export const openItemEditor = (
 			})
 		);
 	} else {
+		const dialogId = nanoid();
 		dispatch(
 			pushDialog({
-				id: nanoid(),
+				id: dialogId,
 				component: 'craftercms.components.CodeEditorDialog',
 				props: {
 					site: siteId,
@@ -1077,7 +1079,8 @@ export const openItemEditor = (
 					path: item.path,
 					type,
 					mode: getEditorMode(item.mimeType),
-					onSuccess: onSaveSuccess
+					onSuccess: onSaveSuccess,
+					onClose: () => dispatch(popCodeEditorDialog({ id: dialogId }))
 				}
 			})
 		);

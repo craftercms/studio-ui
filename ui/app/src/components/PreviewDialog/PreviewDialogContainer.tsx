@@ -27,7 +27,7 @@ import { FormattedMessage } from 'react-intl';
 import PrimaryButton from '../PrimaryButton';
 import { DialogBody } from '../DialogBody';
 import { useDispatch } from 'react-redux';
-import { closePreviewDialog } from '../../state/actions/dialogs';
+import { closePreviewDialog, popCodeEditorDialog } from '../../state/actions/dialogs';
 import { batchActions } from '../../state/actions/misc';
 import { hasEditAction, isBlobUrl } from '../../utils/content';
 import { useSelection } from '../../hooks/useSelection';
@@ -116,15 +116,17 @@ export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
 	};
 
 	const onEdit = () => {
+		const dialogId = nanoid();
 		dispatch(
 			batchActions([
 				closePreviewDialog(),
 				pushDialog({
-					id: nanoid(),
+					id: dialogId,
 					component: 'craftercms.components.CodeEditorDialog',
 					props: {
 						path: url,
-						mode
+						mode,
+						onClose: () => dispatch(popCodeEditorDialog({ id: dialogId }))
 					}
 				})
 			])

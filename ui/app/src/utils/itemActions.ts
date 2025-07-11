@@ -18,7 +18,7 @@ import { translations } from '../components/ItemActionsMenu/translations';
 import { AllItemActions, ContentItem, LegacyItem } from '../models/Item';
 import { ContextMenuOption } from '../components/ContextMenu';
 import { getControllerPath, getRootPath, withoutIndex } from './path';
-import { showHistoryDialog } from '../state/actions/dialogs';
+import { popCodeEditorDialog, showHistoryDialog } from '../state/actions/dialogs';
 import { checkPathExistence, fetchContentItem, fetchContentItems, fetchLegacyItemsTree } from '../services/content';
 import {
 	batchActions,
@@ -903,15 +903,17 @@ export const itemActionDispatcher = ({
 				break;
 			}
 			case 'editCode': {
+				const dialogId = nanoid();
 				dispatch(
 					pushDialog({
-						id: nanoid(),
+						id: dialogId,
 						component: 'craftercms.components.CodeEditorDialog',
 						allowMinimize: true,
 						allowFullScreen: true,
 						props: {
 							path: item.path,
-							mode: getEditorMode(item)
+							mode: getEditorMode(item),
+							onClose: () => dispatch(popCodeEditorDialog({ id: dialogId }))
 						}
 					})
 				);

@@ -37,6 +37,7 @@ import { associateTemplate } from '../actions/preview';
 import { pushDialog } from '../actions/dialogStack';
 import { pickShowContentFormAction } from '../../utils/system';
 import { nanoid } from 'nanoid';
+import { popCodeEditorDialog } from '../actions/dialogs';
 
 const epics = [
 	(action$, state$: Observable<GlobalState>, { store }) =>
@@ -61,7 +62,7 @@ const epics = [
 				return NEVER;
 			})
 		),
-	(action$, state$, { getIntl }) =>
+	(action$, state$, { getIntl, store }) =>
 		action$.pipe(
 			ofType(editTemplate.type, editController.type, editContentTypeTemplate.type),
 			filter(({ payload }) => payload.openOnSuccess || payload.openOnSuccess === void 0),
@@ -91,23 +92,28 @@ const epics = [
 				return merge(
 					of(blockUI({ message: getIntl().formatMessage(translations.verifyingAffectedWorkflows) })),
 					fetchContentItem(state.sites.active, path).pipe(
-						map((item) =>
-							batchActions([
+						map((item) => {
+							const dialogId = nanoid();
+							return batchActions([
 								pushDialog({
-									id: nanoid(),
+									id: dialogId,
 									component: 'craftercms.components.CodeEditorDialog',
+									allowFullScreen: true,
+									allowMinimize: true,
 									props: {
 										site: state.sites.active,
 										path,
 										mode,
-										contentType
+										contentType,
+										onClose: () => store.dispatch(popCodeEditorDialog({ id: dialogId }))
 									}
 								}),
 								unblockUI()
-							])
-						),
+							]);
+						}),
 						catchError(({ response }) => {
 							if (response.response.code === 7000) {
+								const dialogId = nanoid();
 								return of(
 									createFileAction({
 										path: destinationPath,
@@ -118,13 +124,14 @@ const epics = [
 												type !== editController.type &&
 													associateTemplate({ contentTypeId: contentType, displayTemplate: path }),
 												pushDialog({
-													id: nanoid(),
+													id: dialogId,
 													component: 'craftercms.components.CodeEditorDialog',
 													props: {
 														site: state.sites.active,
 														path,
 														mode,
-														contentType
+														contentType,
+														onClose: () => store.dispatch(popCodeEditorDialog({ id: dialogId }))
 													}
 												}),
 												unblockUI()
