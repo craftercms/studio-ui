@@ -158,11 +158,12 @@ CStudioAuthoring.Module.requireModule(
 									});
 
 								// If ui config XML not loaded yet, dispatch action to load it
-								if (!store.getState()?.uiConfig.xml) {
+								const state = store.getState();
+								if (state && !state.uiConfig.xml) {
 									store.dispatch({
 										type: 'FETCH_SITE_UI_CONFIG',
 										payload: {
-											site: store.getState().sites.active
+											site: state.sites.active
 										}
 									});
 								}
