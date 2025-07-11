@@ -73,50 +73,7 @@ function getDialogActionNameFromType(type: string): string {
 	return type.replace(/(CLOSE_)|(_DIALOG)/g, '');
 }
 
-function getDialogState(type: string, state: GlobalState): { onClose: StandardAction } {
-	const stateName = getDialogNameFromType(type);
-	const dialog = state.dialogs[stateName];
-	if (!dialog) {
-		console.error(`[epics/dialogs] Unable to retrieve dialog state from "${stateName}" action`);
-	}
-	return dialog;
-}
-
 const dialogEpics: CrafterCMSEpic[] = [
-	// region onClose Actions
-	(action$, state$) =>
-		action$.pipe(
-			ofType(
-				closeConfirmDialog.type,
-				closePublishDialog.type,
-				closeDeleteDialog.type,
-				closeNewContentDialog.type,
-				closeHistoryDialog.type,
-				closeViewVersionDialog.type,
-				closeCompareVersionsDialog.type,
-				closeDependenciesDialog.type,
-				closeSingleFileUploadDialog.type
-			),
-			withLatestFrom(state$),
-			map(([{ type, payload }, state]) => {
-				// Setting both onDismiss & onClose to the "CLOSE_*_DIALOG" action, allows escape
-				// and backdrop click to work. MUI dialogs will call onClose either when escape is
-				// pressed or the backdrop is clicked which is fine. When onDismiss is called, however
-				// the MUI dialog would later also call the onClose action and this causes a infinite
-				// "loop" of "CLOSE_*_DIALOG" actions. The filter insures the actions to be called
-				// don't include the "CLOSE_*_DIALOG" action to avoid said loop.
-				// const onClose = getDialogState(type, state)?.onClose;
-				return [
-					// In the case of batch actions, save the additional BATCH_ACTIONS action itself
-					// and jump straight to the actions to dispatch.
-					...asArray(payload?.type === batchActions.type ? payload.payload : payload),
-					...asArray(onClose?.type === batchActions.type ? onClose.payload : onClose)
-				].filter((action) => Boolean(action) && action.type && action.type !== type);
-			}),
-			filter((actions) => actions.length > 0),
-			switchMap((actions) => actions)
-		),
-	// endregion
 	// region fetchContentVersion
 	(action$, state$) =>
 		action$.pipe(
@@ -315,6 +272,7 @@ const dialogEpics: CrafterCMSEpic[] = [
 			withLatestFrom(state$),
 			switchMap(([{ payload }, state]) =>
 				fetchDependant(state.sites.active, payload.path).pipe(
+					// TODO: check this
 					takeUntil(action$.pipe(ofType(closeRenameAssetDialog.type))),
 					map((response: LegacyItem[]) => {
 						const dependantItems = parseLegacyItemToContentItem(response);
