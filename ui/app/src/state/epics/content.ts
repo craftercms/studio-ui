@@ -90,6 +90,7 @@ import { popDialog, pushDialog } from '../actions/dialogStack';
 import { nanoid } from 'nanoid';
 import { pickShowContentFormAction } from '../../utils/system';
 import { ContentItem } from '../../models';
+import { showItemMegaMenu } from '../actions/dialogs';
 
 export const sitePolicyMessages = defineMessages({
 	itemPastePolicyConfirm: {
@@ -162,6 +163,11 @@ const content: CrafterCMSEpic[] = [
 		),
 	// endregion
 	// region showItemMegaMenu
+	(action$) =>
+		action$.pipe(
+			ofType(showItemMegaMenu.type),
+			map(({ payload }) => fetchContentItem({ path: payload.path }))
+		),
 	(action$, state$) =>
 		action$.pipe(
 			ofType(pushDialog.type),

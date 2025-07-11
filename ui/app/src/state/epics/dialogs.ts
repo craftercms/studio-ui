@@ -38,8 +38,10 @@ import {
 	newContentCreationComplete,
 	showCodeEditorDialog,
 	showEditDialog,
+	showPreviewDialog,
 	updateCodeEditorDialog,
-	updateEditDialogConfig
+	updateEditDialogConfig,
+	updatePreviewDialog
 } from '../actions/dialogs';
 import { fetchDeleteDependencies as fetchDeleteDependenciesService, fetchDependant } from '../../services/dependencies';
 import { fetchContentXML, fetchItemVersion } from '../../services/content';
@@ -229,6 +231,17 @@ const dialogEpics: CrafterCMSEpic[] = [
 		),
 	// endregion
 	// region showPreviewDialog
+	(action$, state$) =>
+		action$.pipe(
+			ofType(showPreviewDialog.type),
+			withLatestFrom(state$),
+			filter(
+				([{ payload }, state]) => payload.type === 'editor' && nnou(payload.url) && nou(state.dialogs.preview.content)
+			),
+			switchMap(([{ payload }, state]) =>
+				fetchContentXML(state.sites.active, payload.url).pipe(map((content) => updatePreviewDialog({ content })))
+			)
+		),
 	(action$, state$) =>
 		action$.pipe(
 			ofType(pushDialog.type),
