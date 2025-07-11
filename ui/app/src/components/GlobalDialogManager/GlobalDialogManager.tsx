@@ -236,7 +236,6 @@ function GlobalDialogManager() {
 				/>
 				{/* endregion */}
 
-				{/* TODO: not used anymore (?) */}
 				{/* region View Versions */}
 				<ViewVersionDialog
 					{...state.viewVersion}

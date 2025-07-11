@@ -59,9 +59,19 @@ export function BrokenReferencesDialogContainer(props: BrokenReferencesDialogCon
 					site,
 					onSaveSuccess: () => {
 						// Fetch broken references again after editing
-						fetchDependant(site, path).subscribe((response: LegacyItem[]) => {
-							const refs = parseLegacyItemToContentItem(response);
-							setReferences(refs);
+						fetchDependant(site, path).subscribe({
+							next: (response: LegacyItem[]) => {
+								const refs = parseLegacyItemToContentItem(response);
+								setReferences(refs);
+							},
+							error: ({ response }) => {
+								dispatch(
+									pushDialog({
+										component: 'craftercms.components.ErrorDialog',
+										props: { error: response.response }
+									})
+								);
+							}
 						});
 					}
 				}
