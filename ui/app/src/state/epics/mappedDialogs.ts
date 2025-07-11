@@ -183,7 +183,7 @@ const showDialogsEpics: CrafterCMSEpic[] = [
 				showBrokenReferencesDialog.type,
 				showRenameAssetDialog.type,
 				showDeleteDialog.type,
-				showEditDialog.type, // TODO: issue!
+				showEditDialog.type,
 				showItemMenu.type,
 				showItemMegaMenu.type,
 				showLauncher.type,
@@ -194,7 +194,6 @@ const showDialogsEpics: CrafterCMSEpic[] = [
 				const dialogId = generateDialogId(type);
 				const dialogProps: DialogStackItem<EnhancedDialogProps>['props'] = { ...payload };
 				Object.entries((payload as EnhancedDialogProps) ?? {}).forEach(([key, value]) => {
-					// TODO: By just having a type, can I say it is an action?
 					if (value?.type) {
 						dialogProps[key] = createCallback(value as StandardAction, store.dispatch);
 					}
@@ -210,7 +209,6 @@ const showDialogsEpics: CrafterCMSEpic[] = [
 					allowMinimize: allowMinimizeDialogs.includes(type),
 					allowFullScreen: allowFullScreenDialogs.includes(type),
 					props: {
-						// TODO: is this still needed?
 						onClose: () => store.dispatch(popDialog({ id: dialogId })),
 						...dialogProps
 					}

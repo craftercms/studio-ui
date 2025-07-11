@@ -46,6 +46,7 @@ import { LoadingState } from '../LoadingState';
 import { nanoid } from 'nanoid';
 import { pushDialog } from '../../state/actions/dialogStack';
 import { pickShowContentFormAction } from '../../utils/system';
+import useEnv from '../../hooks/useEnv';
 
 const translations = defineMessages({
 	quickCreateBtnLabel: {
@@ -257,6 +258,7 @@ const QuickCreate = forwardRef<HTMLButtonElement, { item?: ContentItem }>((props
 	const dispatch = useDispatch();
 	const items = useItemsByPath();
 	const site = useActiveSiteId();
+	const { authoringBase } = useEnv();
 
 	useEffect(() => {
 		site && dispatch(fetchQuickCreateList());
@@ -284,8 +286,16 @@ const QuickCreate = forwardRef<HTMLButtonElement, { item?: ContentItem }>((props
 				component: 'craftercms.components.NewContentDialog',
 				props: {
 					item: lookupItemByPath(currentPreviewItemPath, items),
-					// @ts-ignore - required attributes of `showEditDialog` are submitted by new content dialog `onContentTypeSelected` callback and injected into the showEditDialog action by the GlobalDialogManger
-					onContentTypeSelected: () => dispatch(showEditDialog({}))
+					onContentTypeSelected: ({ path, contentType }) => {
+						dispatch(
+							showEditDialog({
+								authoringBase,
+								path,
+								contentTypeId: contentType.id,
+								isNewContent: true
+							})
+						);
+					}
 				}
 			})
 		);

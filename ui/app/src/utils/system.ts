@@ -21,7 +21,6 @@ import Monaco from '../models/Monaco';
 import { ProjectToolsRoutes } from '../env/routes';
 import type { SxProps } from '@mui/system';
 import type { Theme } from '@mui/material/styles';
-import { showEditDialog } from '../state/actions/dialogs';
 import { pushDialog } from '../state/actions/dialogStack';
 import type { FormsEngineProps } from '../components/FormsEngine/FormsEngine';
 import { getHostToGuestBus } from './subjects';
