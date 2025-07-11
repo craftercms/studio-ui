@@ -27,7 +27,7 @@ import { FormattedMessage } from 'react-intl';
 import PrimaryButton from '../PrimaryButton';
 import { DialogBody } from '../DialogBody';
 import { useDispatch } from 'react-redux';
-import { closePreviewDialog, popCodeEditorDialog } from '../../state/actions/dialogs';
+import { popCodeEditorDialog } from '../../state/actions/dialogs';
 import { batchActions } from '../../state/actions/misc';
 import { hasEditAction, isBlobUrl } from '../../utils/content';
 import { useSelection } from '../../hooks/useSelection';
@@ -36,11 +36,23 @@ import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { fetchContentItem } from '../../state/actions/content';
 import useItemsBeingFetchedByPath from '../../hooks/useItemsBeingFetchedByPath';
 import palette from '../../styles/palette';
-import { pushDialog } from '../../state/actions/dialogStack';
+import { popDialog, pushDialog } from '../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
 
 export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
-	const { title, content, mode, url, path, onClose, type, mimeType, backgroundModeIndex, showEdit = true } = props;
+	const {
+		title,
+		content,
+		mode,
+		url,
+		path,
+		onClose,
+		type,
+		mimeType,
+		backgroundModeIndex,
+		showEdit = true,
+		dialogId
+	} = props;
 	const siteId = useActiveSiteId();
 	const items = useItemsByPath();
 	const itemsBeingFetchedByPath = useItemsBeingFetchedByPath();
@@ -116,17 +128,19 @@ export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
 	};
 
 	const onEdit = () => {
-		const dialogId = nanoid();
+		const codeEditorDialogId = nanoid();
 		dispatch(
 			batchActions([
-				closePreviewDialog(),
+				popDialog({ id: dialogId }),
 				pushDialog({
-					id: dialogId,
+					id: codeEditorDialogId,
 					component: 'craftercms.components.CodeEditorDialog',
+					allowMinimize: true,
+					allowFullScreen: true,
 					props: {
 						path: url,
 						mode,
-						onClose: () => dispatch(popCodeEditorDialog({ id: dialogId }))
+						onClose: () => dispatch(popCodeEditorDialog({ id: codeEditorDialogId }))
 					}
 				})
 			])

@@ -164,7 +164,7 @@ const showDialogsEpics: CrafterCMSEpic[] = [
 				showDependenciesDialog.type,
 				showCreateFolderDialog.type,
 				showCreateFileDialog.type,
-				showCopyDialog.type, // TODO: test
+				showCopyDialog.type,
 				showUploadDialog.type,
 				showSingleFileUploadDialog.type,
 				showPreviewDialog.type,
@@ -180,7 +180,7 @@ const showDialogsEpics: CrafterCMSEpic[] = [
 				showPackageDetailsDialog.type,
 				showViewPackagesDialog.type,
 				showErrorDialog.type,
-				showBrokenReferencesDialog.type, // TODO: check formatjs/intl `id` error
+				showBrokenReferencesDialog.type,
 				showRenameAssetDialog.type,
 				showDeleteDialog.type,
 				showEditDialog.type, // TODO: issue!

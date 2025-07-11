@@ -500,14 +500,6 @@ export const useSearchState = ({
 						}
 					})
 				);
-
-				fetchContentXML(site, path).subscribe((content) => {
-					dispatch(
-						updatePreviewDialog({
-							content
-						})
-					);
-				});
 				break;
 			}
 		}
