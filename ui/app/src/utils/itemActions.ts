@@ -888,12 +888,12 @@ export const itemActionDispatcher = ({
 							path: withoutIndex(item.path),
 							type: option === 'createController' ? 'controller' : 'template',
 							allowBraces: option === 'createController' ? item.path.startsWith('/scripts/rest') : false,
-							onCreated: () =>
+							onCreated: (payload) =>
 								dispatch(
 									batchActions([
 										popDialog({ id: dialogId }),
 										showCreateItemSuccessNotification(),
-										option === 'createController' ? editController() : editTemplate()
+										option === 'createController' ? editController(payload) : editTemplate(payload)
 									])
 								),
 							isSubmitting: null
