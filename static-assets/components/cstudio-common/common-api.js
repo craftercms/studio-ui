@@ -6103,7 +6103,7 @@ var nodeOpen = false,
                 ]
               },
               onCancel: {
-                type: 'CONFIRM_DIALOG_CLOSED'
+                type: 'CLOSE_CONFIRM_DIALOG'
               },
               onClosed: {
                 type: 'BATCH_ACTIONS',
@@ -6131,7 +6131,10 @@ var nodeOpen = false,
             payload: {
               open: true,
               title,
-              body
+              body,
+              onOk: {
+                type: 'CLOSE_CONFIRM_DIALOG'
+              },
             }
           });
         }
