@@ -240,7 +240,7 @@ const systemEpics: CrafterCMSEpic[] = [
 	(action$, state$, { getIntl }) =>
 		action$.pipe(
 			ofType(showCreateItemSuccessNotification.type),
-			tap(({ payload: { action } }) => {
+			tap(() => {
 				const hostToHost$ = getHostToHostBus();
 				hostToHost$.next(
 					showSystemNotification({
