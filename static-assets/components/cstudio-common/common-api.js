@@ -2268,7 +2268,8 @@ var nodeOpen = false,
               type: 'BATCH_ACTIONS',
               payload: [
                 {
-                  type: 'CLOSE_CODE_EDITOR_DIALOG'
+                  type: 'POP_CODE_EDITOR_DIALOG',
+                  payload: { id: 'CODE_EDITOR_DIALOG' }
                 },
                 {
                   type: 'DISPATCH_DOM_EVENT',

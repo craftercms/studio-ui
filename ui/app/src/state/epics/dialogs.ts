@@ -20,16 +20,7 @@ import { NEVER, of } from 'rxjs';
 import { camelize, dasherize } from '../../utils/string';
 import {
 	closeCodeEditorDialog,
-	closeCompareVersionsDialog,
-	closeConfirmDialog,
-	closeDeleteDialog,
-	closeDependenciesDialog,
-	closeHistoryDialog,
-	closeNewContentDialog,
-	closePublishDialog,
 	closeRenameAssetDialog,
-	closeSingleFileUploadDialog,
-	closeViewVersionDialog,
 	fetchContentVersion,
 	fetchContentVersionComplete,
 	fetchContentVersionFailed,
@@ -48,7 +39,6 @@ import { fetchDeleteDependencies as fetchDeleteDependenciesService, fetchDependa
 import { fetchContentXML, fetchItemVersion } from '../../services/content';
 import { catchAjaxError } from '../../utils/ajax';
 import { batchActions } from '../actions/misc';
-import { asArray } from '../../utils/array';
 import { changeCurrentUrl, requestWorkflowCancellationDialogOnResult } from '../actions/preview';
 import { CrafterCMSEpic } from '../store';
 import { formEngineMessages } from '../../env/i18n-legacy';
