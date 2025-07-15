@@ -71,7 +71,7 @@ YAHOO.extend(
 				.pipe(take(1))
 				.subscribe((store) => {
 					const state = store.getState();
-					if (state && !state.uiConfig.xml) {
+					if (state?.uiConfig && !state.uiConfig.xml) {
 						store.dispatch({
 							type: 'FETCH_SITE_UI_CONFIG',
 							payload: {

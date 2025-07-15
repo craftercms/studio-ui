@@ -78,7 +78,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 	const {
 		'craftercms.freemarkerCodeSnippets': freemarkerCodeSnippets,
 		'craftercms.groovyCodeSnippets': groovyCodeSnippets
-	} = useReferences();
+	} = useReferences() ?? {};
 	const onChangeTimeoutRef = useRef<any>(null);
 
 	const onEditorChanges = () => {
