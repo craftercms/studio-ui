@@ -249,12 +249,12 @@ export class Dashboard extends UppyDashboard {
 		}
 	};
 
-  checkInProgressFiles = () => {
-    const { inProgressFiles } = this.uppy.getObjectOfFilesPerState();
-    if (!inProgressFiles?.length) {
-      this.opts.onPendingChanges(false);
-    }
-  };
+	checkInProgressFiles = () => {
+		const { inProgressFiles } = this.uppy.getObjectOfFilesPerState();
+		if (!inProgressFiles?.length) {
+			this.opts.onPendingChanges(false);
+		}
+	};
 
 	initEvents = () => {
 		// Modal open button
@@ -278,8 +278,8 @@ export class Dashboard extends UppyDashboard {
 		this.uppy.on('dashboard:modal-closed', this.hideAllPanels);
 		this.uppy.on('file-editor:complete', this.hideAllPanels);
 		this.uppy.on('complete', this.handleComplete);
-    this.uppy.on('upload-success', this.checkInProgressFiles);
-    this.uppy.on('upload-error', this.checkInProgressFiles);
+		this.uppy.on('upload-success', this.checkInProgressFiles);
+		this.uppy.on('upload-error', this.checkInProgressFiles);
 
 		// ___Why fire on capture?
 		//    Because this.ifFocusedOnUppyRecently needs to change before onUpdate() fires.
@@ -313,8 +313,8 @@ export class Dashboard extends UppyDashboard {
 		this.uppy.off('file-added', this.hideAllPanels);
 		this.uppy.off('dashboard:modal-closed', this.hideAllPanels);
 		this.uppy.off('complete', this.handleComplete);
-    this.uppy.off('upload-success', this.checkInProgressFiles);
-    this.uppy.off('upload-error', this.checkInProgressFiles);
+		this.uppy.off('upload-success', this.checkInProgressFiles);
+		this.uppy.off('upload-error', this.checkInProgressFiles);
 
 		document.removeEventListener('focus', this.recordIfFocusedOnUppyRecently);
 		document.removeEventListener('click', this.recordIfFocusedOnUppyRecently);
