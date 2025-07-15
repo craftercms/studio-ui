@@ -20,7 +20,6 @@ import { DialogBody } from '../DialogBody';
 import { DialogFooter } from '../DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
-import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import List from '@mui/material/List';
 import Paper from '@mui/material/Paper';
@@ -35,6 +34,11 @@ import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { batchActions } from '../../state/actions/misc';
 import { updateBulkCancelPackageDialog } from '../../state/actions/dialogs';
 import { showSystemNotification } from '../../state/actions/system';
+import ListItemButton from '@mui/material/ListItemButton';
+import IconButton from '@mui/material/IconButton';
+import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
+import Tooltip from '@mui/material/Tooltip';
+import { pushDialog } from '../../state/actions/dialogStack';
 
 export interface BulkCancelPackageDialogContainerProps
 	extends BulkCancelPackageDialogBaseProps,
@@ -75,19 +79,33 @@ export function BulkCancelPackageDialogContainer(props: BulkCancelPackageDialogC
 		});
 	};
 
+	const showPackageDetails = (packageId: number) => {
+		dispatch(
+			pushDialog({
+				component: 'craftercms.components.PackageDetailsDialog',
+				props: { packageId }
+			})
+		);
+	};
+
 	return (
 		<>
 			<DialogBody>
 				<Paper sx={{ background: (theme) => theme.palette.background.paper }}>
-					<List>
+					<List sx={{ p: 0 }}>
 						{packages?.map((pkg) => (
-							<ListItem key={pkg.id}>
+							<ListItemButton key={pkg.id} onClick={() => showPackageDetails(pkg.id)}>
 								<ListItemText
 									primary={`${pkg.id} - ${pkg.title}`}
 									secondary={pkg.submitterComment}
 									secondaryTypographyProps={{ noWrap: true, title: pkg.title }}
 								/>
-							</ListItem>
+								<Tooltip title={<FormattedMessage defaultMessage="View package details" />}>
+									<IconButton>
+										<ChevronRightRoundedIcon />
+									</IconButton>
+								</Tooltip>
+							</ListItemButton>
 						))}
 					</List>
 				</Paper>
