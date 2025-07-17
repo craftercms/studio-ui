@@ -573,10 +573,9 @@ export const itemActionDispatcher = ({
 
 					dispatch(
 						showRenameAssetDialog({
-							path: item.path,
+							item,
 							allowBraces: item.path.startsWith('/scripts/rest'),
-							type,
-							value: item.label
+							type
 						})
 					);
 				}
