@@ -36,10 +36,7 @@ import { translations } from '../CreateFileDialog/translations';
 import { RenameItemView } from '../RenameDialogBody';
 import { applyAssetNameRules } from '../../utils/content';
 import { DialogBody } from '../DialogBody';
-import { cancelPackages, fetchAffectedPackages } from '../../services/workflow';
-import { nanoid } from 'nanoid';
-import { popDialog, pushDialog } from '../../state/actions/dialogStack';
-import { batchActions } from '../../state/actions/misc';
+import { checkAndCancelAffectedPackages } from '../ViewPackagesDialog/utils';
 
 export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
 	const { onClose, onRenamed, item, allowBraces = false, type, dependantItems, fetchingDependantItems, error } = props;
@@ -111,42 +108,15 @@ export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
 	const onRenameSubmit = () => {
 		dispatch(updateRenameAssetDialog({ isSubmitting: true }));
 		if (name) {
-			fetchAffectedPackages(siteId, path).subscribe({
-				next: (affectedPackages) => {
-					if (affectedPackages?.length) {
-						const dialogId = nanoid();
-						dispatch(
-							pushDialog({
-								id: dialogId,
-								component: 'craftercms.components.ViewPackagesDialog',
-								props: {
-									item,
-									onContinue: () => {
-										cancelPackages(siteId, {
-											packageIds: affectedPackages.map((p) => p.id),
-											// TODO: Correct comment generation
-											comment: `Cancel packages to rename "${path}"`
-										}).subscribe(() => renameAsset());
-									},
-									onClose: () =>
-										dispatch(
-											batchActions([updateRenameAssetDialog({ isSubmitting: false }), popDialog({ id: dialogId })])
-										)
-								}
-							})
-						);
-					} else {
-						renameAsset();
-					}
+			checkAndCancelAffectedPackages({
+				siteId,
+				item,
+				dispatch,
+				onContinue: () => renameAsset(),
+				onClose: () => {
+					dispatch(updateRenameAssetDialog({ isSubmitting: false }));
 				},
-				error: ({ response }) => {
-					dispatch(
-						pushDialog({
-							component: 'craftercms.components.ErrorDialog',
-							props: { error: response.response }
-						})
-					);
-				}
+				cancelPackagesMessage: `Cancel packages to rename "${item.path}"`
 			});
 		}
 	};

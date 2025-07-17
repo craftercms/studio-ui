@@ -125,6 +125,7 @@ import { NewContentDialogProps } from '../components/NewContentDialog/utils';
 import { nanoid } from 'nanoid';
 import { pushDialog, updateDialogState } from '../state/actions/dialogStack';
 import { pickShowContentFormAction } from './system';
+import { checkAndCancelAffectedPackages } from '../components/ViewPackagesDialog/utils';
 
 export type ContextMenuOptionDescriptor<ID extends string = string> = {
 	id: ID;
@@ -633,33 +634,40 @@ export const itemActionDispatcher = ({
 				if (item.systemType === 'folder') {
 					dispatch(showFolderMoveAlertDialog({ item }));
 				} else {
-					fetchDependant(site, path).subscribe({
-						next(dependantItems) {
-							const actionToDispatch = batchActions([
-								setClipboard({
-									type: 'CUT',
-									paths: [item.path],
-									sourcePath: item.path
-								}),
-								emitSystemEvent(itemCut({ target: item.path })),
-								showCutItemSuccessNotification()
-							]);
+					checkAndCancelAffectedPackages({
+						siteId: site,
+						item,
+						dispatch,
+						onContinue: () => {
+							fetchDependant(site, path).subscribe({
+								next(dependantItems) {
+									const actionToDispatch = batchActions([
+										setClipboard({
+											type: 'CUT',
+											paths: [item.path],
+											sourcePath: item.path
+										}),
+										emitSystemEvent(itemCut({ target: item.path })),
+										showCutItemSuccessNotification()
+									]);
 
-							if (dependantItems?.length) {
-								fetchContentItems(
-									site,
-									dependantItems.map((item) => item.uri ?? item.path)
-								).subscribe((contentItems) => {
-									dispatch(
-										showBrokenReferencesDialog({ path, references: contentItems, onContinue: actionToDispatch })
-									);
-								});
-							} else {
-								dispatch(actionToDispatch);
-							}
-						},
-						error({ response }) {
-							dispatch(showErrorDialog({ error: response }));
+									if (dependantItems?.length) {
+										fetchContentItems(
+											site,
+											dependantItems.map((item) => item.uri ?? item.path)
+										).subscribe((contentItems) => {
+											dispatch(
+												showBrokenReferencesDialog({ path, references: contentItems, onContinue: actionToDispatch })
+											);
+										});
+									} else {
+										dispatch(actionToDispatch);
+									}
+								},
+								error({ response }) {
+									dispatch(showErrorDialog({ error: response }));
+								}
+							});
 						}
 					});
 				}
