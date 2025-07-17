@@ -24,7 +24,8 @@
   * Removed `PublishDialog/styles.ts` file.
   * `PackageDetailsDialog`: Updated `packageId` prop to be of type `number`.
   * `PublishOnDemandForm`: Removed `bulkPublishCommentRequired` and `publishByCommitCommentRequired` props.
-  * `PublishingQueue/FilterDropdown`: Removed `filterStates` prop.
+  * `PublishingQueue/FilterDropdown`: Removed `filterStates` and `handleEnterKey` prop.
+  * `PublishingQueue/PublishingPackage`: Removed `id`, `schedule`, `approver`, `state`, `environment`, `comment`, `filesPerPackage` and `setFilesPerPackage` properties. Added `pkg` property of type `PublishPackage`.
   * `PackageDetailsDialog`: Update packageId prop to be of type number.
   * Removed `WorkflowCancellationDialog`. Replaced by `ViewPackagesDialog`.
   * Removed `UnlockPublisherDialog` component.
@@ -36,6 +37,11 @@
   * [ContentTypesLoader] Removed
   * [NewContentDialog] Props `rootPath`, `copact` removed. Prop `initialCompact` added.
     * Prop `onContentTypeSelected` changed its signature from sending an object with `authoringBase`, `path`, `isNewContent`, `contentTypeId`, `onSaveSuccess` to `{ path: string; contentType: ContentType }`
+  * [PublishingStatusTile] Removed `enabled` and `status` properties. Replaced by `publishingStatus` property of type `PublishingStatus`.
+  * [PublishDialogForm]
+    * Removed `state`, `published`, `publishingTargetsStatus`, `onPublishingChannelsFailRetry`, `submissionCommentRequired`, `publishingChannels` and `onChange` props. Added `onSubmit`, `formState`, `onInputChange`, `onDateTimePickerChange`, `showRequestApproval`, `isPromote`, and `onFetchedPublishedTargets` props.
+    * Updated `PublishFormProps` type to `PublishDialogFormProps` interface.
+  * [PublishingStatusButtonUI] Removed `numberOfItems`, `totalItems` and `status` properties. Added `published` and `currentTask` properties.
 * [hooks]
   * Removed `useLogicResource` hook.
   * Removed `useSelectorResource` hook.
@@ -74,6 +80,9 @@
   * Renamed `content/fetchItemsByPath` to `fetchContentItems`.
   * Removed `content/fetchSandboxItem`. Replaced by `fetchContentItem`.
   * Removed `content/fetchDetailedItems`. Replaced by `fetchContentItems`.
+  * Updated `dashboard/fetchPublishingHistoryPackageItems` `packageId` parameter to be of type `number`.
+  * Updated `dependencies/fetchDependencies` `items` parameter to be of type `string[]`, renamed variable to `paths`
+  * Updated `publishing/fetchPackage` `packageId` parameter to be of type `number`.
 * `PublishingItem` interface changes:
   * `approver` is now `reviewer`, of type Person.
   * `comment` is removed, and now there's `reviewerComment` and `submitterComment`.
@@ -100,6 +109,18 @@
     * Removed `fetchDetailedItems` action. Replaced by `fetchContentItems`.
     * Removed `fetchDetailedItemsComplete` action. Replaced by `fetchContentItemsComplete`.
     * Removed `completeDetailedItem` action.
+  * `actions/preview`:
+    * `requestWorkflowCancellationDialog`: Removed `path`, replaced by `item`.
+  * `actions/system`:
+    * Removed `workflowEvent`. Replaced by `workflowEventSubmit`, `workflowEventDirectPublish`, `workflowEventApprove`, `workflowEventReject` and `workflowEventCancel`.
+* [models/Publishing]
+  * `Package`: Updated id to be of type `number`.
+  * `CurrentFilters`: Removed `environment` and `path`, `state` and `page` properties. Added `target`, `states`, `approvalStates`, `submitter`, `reviewer`, `isScheduled`, `sort` and `offset` properties.
+  * `PublishingStatusCodes`: Removed `processing`, `queued`, `error` and `readyWithErrors`.
+  * `PublishingStatus`: Removed `status`, `lockOwner`, `lockTTL`, `publishingTarget`, `submissionId`, `numberOfItems`, and `totalItems`. Added `currentTask` property.
+  * `PublishFormData`: Added `title` property.
+  * `PublishingTarget`: updated `name` property to be of type `'live' | 'staging'`.
+  * `PublishingParams`: Removed `optionalDependencies` and `sendEmailNotifications` properties. Added `paths`, `commitIds`, `requestApproval`, `publishAll` and `title` properties.
 * [common-api.js]
   * Removed `CStudioAuthoring.Operations.uploadCMISAsset` and `CStudioAuthoring.Operations.openCMISUploadDialog`.
 
