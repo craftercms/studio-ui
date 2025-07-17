@@ -33,7 +33,7 @@ const initialState: RenameAssetStateProps = {
 	isSubmitting: null,
 	isMinimized: null,
 	hasPendingChanges: null,
-	path: null,
+	item: null,
 	type: null,
 	dependantItems: null,
 	fetchingDependantItems: false
