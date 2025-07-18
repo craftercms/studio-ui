@@ -25,7 +25,6 @@ import TextField from '@mui/material/TextField';
 import Autocomplete, { AutocompleteProps } from '@mui/material/Autocomplete';
 import FormControl from '@mui/material/FormControl';
 import useLocale from '../../hooks/useLocale';
-import { UsePickerValueBaseProps } from '@mui/x-date-pickers/internals/hooks/usePicker/usePickerValue.types';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
 import { DateTimeValidationError } from '@mui/x-date-pickers';
 import {
@@ -33,6 +32,8 @@ import {
   createTransposedToTimezoneDate,
   getZDateOffset
 } from '../../utils/datetime';
+import { UsePickerBaseProps, UsePickerProps } from '@mui/x-date-pickers/internals/hooks/usePicker/usePicker.types';
+import { DateOrTimeViewWithMeridiem } from '@mui/x-date-pickers/internals/models';
 
 export interface DateTimeTimezonePickerProps {
   id?: string;
@@ -41,7 +42,7 @@ export interface DateTimeTimezonePickerProps {
   disablePast?: boolean;
   localeCode?: string;
   dateTimeFormatOptions?: Intl.DateTimeFormatOptions;
-  onError?: DateTimePickerProps<Moment, true>['onError'];
+  onError?: DateTimePickerProps['onError'];
   onChange?(date: Date): void;
 }
 
@@ -79,7 +80,12 @@ export function DateTimeTimezonePicker(props: DateTimeTimezonePickerProps) {
     if (newValue.toISOString() !== moment(effectRefs.current.dateProp).toISOString()) {
       effectRefs.current.onChange?.(createTransposedToTimezoneDate(newValue, selectedTimezone));
     }
-  }) as UsePickerValueBaseProps<Moment, DateTimeValidationError>['onChange'];
+  }) as UsePickerBaseProps<
+    Moment,
+    DateOrTimeViewWithMeridiem,
+    DateTimeValidationError,
+    UsePickerProps<Moment, DateOrTimeViewWithMeridiem, DateTimeValidationError, any>
+  >['onChange'];
   const handleTimezoneChange = ((event, value) => {
     event.preventDefault();
     event.stopPropagation();
