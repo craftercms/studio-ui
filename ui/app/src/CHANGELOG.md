@@ -38,10 +38,17 @@
   * [NewContentDialog] Props `rootPath`, `copact` removed. Prop `initialCompact` added.
     * Prop `onContentTypeSelected` changed its signature from sending an object with `authoringBase`, `path`, `isNewContent`, `contentTypeId`, `onSaveSuccess` to `{ path: string; contentType: ContentType }`
   * [PublishingStatusTile] Removed `enabled` and `status` properties. Replaced by `publishingStatus` property of type `PublishingStatus`.
+  * [PublishDialog]
+    * Added `buildPathTrees` util that builds a tree structure from a list of paths, grouping them by root directories.
   * [PublishDialogForm]
     * Removed `state`, `published`, `publishingTargetsStatus`, `onPublishingChannelsFailRetry`, `submissionCommentRequired`, `publishingChannels` and `onChange` props. Added `onSubmit`, `formState`, `onInputChange`, `onDateTimePickerChange`, `showRequestApproval`, `isPromote`, and `onFetchedPublishedTargets` props.
     * Updated `PublishFormProps` type to `PublishDialogFormProps` interface.
   * [PublishingStatusButtonUI] Removed `numberOfItems`, `totalItems` and `status` properties. Added `published` and `currentTask` properties.
+  * Added `CancelPackageDialog` component.
+  * Added `BulkCancelPackageDialog` component.
+  * Added `PublishPackageReviewDialog` component.
+  * Added `PublishingPackageResubmitDialog` component.
+  * Added `ViewPackagesDialog` component.
 * [hooks]
   * Removed `useLogicResource` hook.
   * Removed `useSelectorResource` hook.
@@ -82,7 +89,8 @@
   * Removed `content/fetchDetailedItems`. Replaced by `fetchContentItems`.
   * Updated `dashboard/fetchPublishingHistoryPackageItems` `packageId` parameter to be of type `number`.
   * Updated `dependencies/fetchDependencies` `items` parameter to be of type `string[]`, renamed variable to `paths`
-  * Updated `publishing/fetchPackage` `packageId` parameter to be of type `number`.
+  * Updated `publishing/fetchPackage` `packageId` parameter to be of type `number`, and added the parameter `data`.
+  * Updated `publishing/fetchPackages` `filters` parameter to be required, and removed the filters object props `environment` and `path`. Added filters object props `target`, `approvalStates`, `submitter`, `reviewer`, `isScheduled` and `sort`.
 * `PublishingItem` interface changes:
   * `approver` is now `reviewer`, of type Person.
   * `comment` is removed, and now there's `reviewerComment` and `submitterComment`.
