@@ -28,7 +28,7 @@ import EmptyState from '../EmptyState';
 import { FormattedMessage } from 'react-intl';
 import Skeleton from '@mui/material/Skeleton';
 import { useTheme } from '@mui/material/styles';
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Grid2';
 import ActivityDashlet from '../ActivityDashlet/ActivityDashlet';
 import DevContentOpsDashlet from '../DevContentOpsDashlet/DevContentOpsDashlet';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -80,7 +80,6 @@ export function Dashboard(props: DashboardProps) {
       <Box
         sx={{
           position: 'relative',
-          p: 2,
           bgcolor: 'background.default',
           ...(desktopScreen
             ? {
@@ -99,6 +98,7 @@ export function Dashboard(props: DashboardProps) {
           sx={{
             alignItems: 'baseline',
             alignContent: 'baseline',
+            p: 2,
             ...(desktopScreen
               ? {
                   width: showActivityFeed ? '70%' : '100%',
@@ -112,9 +112,7 @@ export function Dashboard(props: DashboardProps) {
           }}
         >
           <Grid
-            item
-            xs={12}
-            md={12}
+            size={12}
             sx={{
               display: 'flex',
               flexWrap: 'wrap'
@@ -136,13 +134,13 @@ export function Dashboard(props: DashboardProps) {
                   userRoles,
                   defaultProps: { contentHeight: height, onMinimize, maximizable: true },
                   createMapperFn: (mapper) => (widget, index) => (
-                    <Grid item xs={12} md={6} key={index}>
+                    <Grid size={{ xs: 12, md: 6 }} key={index}>
                       {mapper(widget, index)}
                     </Grid>
                   )
                 })
               ) : (
-                <Grid item xs={12}>
+                <Grid size={12}>
                   <EmptyState
                     title={
                       <FormattedMessage
@@ -165,7 +163,7 @@ export function Dashboard(props: DashboardProps) {
           </Suspense>
           {/* Displays on desktop - inside grid, below the last rendered dashlet */}
           {desktopScreen && (
-            <Grid item md={12} sx={{ flexWrap: 'wrap' }}>
+            <Grid size={12} sx={{ flexWrap: 'wrap' }}>
               <IconGuideDashlet />
             </Grid>
           )}
@@ -211,7 +209,7 @@ function DashboardSkeleton() {
   return (
     <>
       {new Array(3).fill(null).map((nothing, index) => (
-        <Grid item xs={12} md={6} key={index}>
+        <Grid size={{ xs: 12, md: 6 }} key={index}>
           <Skeleton variant="rectangular" sx={{ height: 350 }} />
         </Grid>
       ))}

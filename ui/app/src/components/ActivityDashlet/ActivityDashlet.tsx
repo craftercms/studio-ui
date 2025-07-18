@@ -425,30 +425,32 @@ export function ActivityDashlet(props: ActivityDashletProps) {
               onChange={handleAuthorFilterInputChange}
               placeholder='e.g. "jon.doe, jdoe, jane@example.com"'
               onKeyUp={handleAuthorFilterKeyUp}
-              InputProps={{
-                inputRef: authorFilterInputRef,
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      disabled={isFetching}
-                      title={formatMessage({ defaultMessage: 'Submit' })}
-                      edge="end"
-                      onClick={submitAuthorFilterChanges}
-                      size="small"
-                    >
-                      <ReplyRounded sx={{ transform: 'scaleX(-1)' }} />
-                    </IconButton>
-                    <IconButton
-                      disabled={isFetching}
-                      title={formatMessage({ defaultMessage: 'Clear & close' })}
-                      edge="end"
-                      onClick={clearAuthorFilterValue}
-                      size="small"
-                    >
-                      <ClearRounded />
-                    </IconButton>
-                  </InputAdornment>
-                )
+              slotProps={{
+                input: {
+                  inputRef: authorFilterInputRef,
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        disabled={isFetching}
+                        title={formatMessage({ defaultMessage: 'Submit' })}
+                        edge="end"
+                        onClick={submitAuthorFilterChanges}
+                        size="small"
+                      >
+                        <ReplyRounded sx={{ transform: 'scaleX(-1)' }} />
+                      </IconButton>
+                      <IconButton
+                        disabled={isFetching}
+                        title={formatMessage({ defaultMessage: 'Clear & close' })}
+                        edge="end"
+                        onClick={clearAuthorFilterValue}
+                        size="small"
+                      >
+                        <ClearRounded />
+                      </IconButton>
+                    </InputAdornment>
+                  )
+                }
               }}
             />
           </Popover>
