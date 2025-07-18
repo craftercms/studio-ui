@@ -22,7 +22,8 @@ export const UltraStyledTooltip = (props: TooltipProps) => {
       {...props}
       slotProps={{
         ...props?.slotProps,
-        tooltip: { ...props.slotProps?.tooltip, sx: { fontSize: 12 } }
+        // @ts-expect-error [TS2339]: Property 'sx' does not exist on type TooltipProps['slotProps]['tooltip'].
+        tooltip: { ...props.slotProps?.tooltip, sx: { fontSize: 12, ...props.slotProps?.tooltip?.sx } }
       }}
     />
   );
