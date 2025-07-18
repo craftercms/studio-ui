@@ -15,7 +15,7 @@
  */
 
 import { useSitesGridStyles } from '../styles';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import { SiteCardSkeleton } from '../../SiteCard/SiteCardSkeleton/SiteCardSkeleton';
 import React from 'react';
 

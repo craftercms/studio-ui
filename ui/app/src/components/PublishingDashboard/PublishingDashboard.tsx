@@ -16,7 +16,7 @@
 
 import * as React from 'react';
 import PublishingStatusWidget from '../PublishingStatusWidget';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import { PublishingQueueWidget } from '../PublishingQueue';
 import PublishOnDemandWidget from '../PublishOnDemandWidget';
 import GlobalAppToolbar from '../GlobalAppToolbar';

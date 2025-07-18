@@ -25,7 +25,7 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { MarketplacePlugin } from '../../models/MarketplacePlugin';
 import Fab from '@mui/material/Fab';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import Alert from '@mui/material/Alert';
 import { backgroundColor } from '../../styles/theme';

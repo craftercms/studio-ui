@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { useDeleteDialogUIStyles } from './styles';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import TextFieldWithMax from '../TextFieldWithMax/TextFieldWithMax';
 import { FormattedMessage } from 'react-intl';
 import { SelectionList } from '../DependencySelection/SelectionList';

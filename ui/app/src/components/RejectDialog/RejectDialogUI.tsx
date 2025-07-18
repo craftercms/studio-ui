@@ -17,7 +17,7 @@
 import { RejectDialogUIProps } from './utils';
 import { FormattedMessage } from 'react-intl';
 import DialogBody from '../DialogBody/DialogBody';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';

@@ -38,6 +38,9 @@ export default defineConfig(({ mode }) => ({
       '/studio/1/plugin/file': proxyConfig
     }
   },
+  optimizeDeps: {
+    include: ['@mui/material']
+  },
   build: {
     minify: false,
     outDir: '../../static-assets/app',

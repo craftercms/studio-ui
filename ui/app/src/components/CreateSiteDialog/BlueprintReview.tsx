@@ -16,7 +16,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { makeStyles } from 'tss-react/mui';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
