@@ -68,8 +68,7 @@ export function PackageItemsTree(props: PackageItemsTreeProps) {
 		>
 			{trees.map((node) =>
 				renderTreeNode({
-					// TODO: Review casting requirement of ItemDisplay when using LightItem
-					itemMap: itemMap as unknown as LookupTable<ContentItem>,
+					itemMap: itemMap,
 					node,
 					dependencyTypeMap: {},
 					onMenuClick: (e, path) => onOpenMenu(e, itemMap[path]),

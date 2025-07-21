@@ -16,7 +16,7 @@
 
 import * as React from 'react';
 import { ElementType, forwardRef } from 'react';
-import { ContentItem } from '../../models/Item';
+import { ContentItem, type LightItem } from '../../models/Item';
 import palette from '../../styles/palette';
 import Typography, { TypographyProps } from '@mui/material/Typography';
 import { isPreviewable } from '../PathNavigator/utils';
@@ -40,7 +40,7 @@ export interface ItemDisplayProps<LabelTypographyComponent extends React.Element
 	showNavigableAsLinks?: boolean;
 	classes?: Partial<Record<ItemDisplayClassKey, string>>;
 	sxs?: PartialSxRecord<ItemDisplayClassKey>;
-	item: ContentItem;
+	item: LightItem & Partial<ContentItem>;
 	labelTypographyProps?: TypographyProps<LabelTypographyComponent, { component?: LabelTypographyComponent }>;
 	isNavigableFn?: (item: ContentItem) => boolean;
 	labelComponent?: ElementType;
@@ -82,6 +82,8 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
 		return null;
 	}
 	const isDisabledItem = item.stateMap.disabled;
+	// inWorkflow will only be true for type ContentItem (if they met the workflow criteria). Casting to ContentItem
+	// is only done on scenarios where `isWorkflow` is true.
 	const inWorkflow = isInWorkflow(item.stateMap) || item.systemType === 'folder';
 	return (
 		<Box
@@ -102,7 +104,7 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
 				? showWorkflowState && (
 						<ItemStateIcon
 							{...stateIconProps}
-							item={item}
+							item={item as ContentItem}
 							className={[classes?.icon, stateIconProps?.className].filter(Boolean).join(' ')}
 							sxs={{
 								root: {
@@ -115,7 +117,7 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
 				: showPublishingTarget && (
 						<ItemPublishingTargetIcon
 							{...publishingTargetIconProps}
-							item={item}
+							item={item as ContentItem}
 							className={[classes?.icon, publishingTargetIconProps?.className].filter(Boolean).join(' ')}
 							sxs={{
 								root: {
@@ -145,7 +147,7 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
 					marginLeft: '2px',
 					display: 'inline-block',
 					color:
-						showNavigableAsLinks && isNavigableFn(item)
+						showNavigableAsLinks && isNavigableFn(item as ContentItem)
 							? (theme) => (theme.palette.mode === 'dark' ? palette.teal.tint : palette.teal.shade)
 							: null,
 					...sxs?.label
