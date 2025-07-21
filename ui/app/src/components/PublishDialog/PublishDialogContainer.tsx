@@ -162,8 +162,7 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 		if (state.publishingTarget) {
 			calculatePackage(siteId, {
 				publishingTarget: state.publishingTarget,
-				paths: itemsDataSummary.itemPaths.map((path) => ({ path, includeChildren: false, includeSoftDeps: false })),
-				commitIds: [] // TODO: there's a bug where the API fails if commitsIds is not provided. Needs to be fixed.
+				paths: itemsDataSummary.itemPaths.map((path) => ({ path, includeChildren: false, includeSoftDeps: false }))
 			}).subscribe({
 				next(dependenciesByType) {
 					const itemsList = [...dependenciesByType.hardDependencies, ...dependenciesByType.softDependencies];
