@@ -207,13 +207,13 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
 
 	const onSelectFieldFromContent = (field: ContentTypeField) => {
 		setSelectedField(field);
-		sidebarRefs.current[field.id].current?.scrollIntoView({ behavior: 'smooth' });
+		sidebarRefs.current[field.id]?.current?.scrollIntoView({ behavior: 'smooth' });
 	};
 
 	const onSelectFieldFromList = (field: ContentTypeField) => {
 		setSelectedField(field);
 		if (accordionView) {
-			fieldsRefs.current[field.id].current?.scrollIntoView({ behavior: 'smooth' });
+			fieldsRefs.current[field.id]?.current?.scrollIntoView({ behavior: 'smooth' });
 		}
 	};
 
