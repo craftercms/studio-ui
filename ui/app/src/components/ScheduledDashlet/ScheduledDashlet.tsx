@@ -239,7 +239,11 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
 			borderLeftColor={borderLeftColor}
 			title={<FormattedMessage id="scheduledDashlet.widgetTitle" defaultMessage="Scheduled for Publish" />}
 			headerAction={
-				<LoadingIconButton onClick={onRefresh} loading={loading}>
+				<LoadingIconButton
+					onClick={onRefresh}
+					loading={loading}
+					aria-label={formatMessage({ defaultMessage: 'Refresh' })}
+				>
 					<RefreshRounded />
 				</LoadingIconButton>
 			}

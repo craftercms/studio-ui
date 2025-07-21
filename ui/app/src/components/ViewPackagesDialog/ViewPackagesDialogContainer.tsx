@@ -56,9 +56,9 @@ export function ViewPackagesDialogContainer(props: ViewPackagesDialogContainerPr
 		dispatch(showPackageDetailsDialog({ packageId }));
 	};
 
-	const onContinueClick = (e) => {
-		onClose(e, null);
+	const onContinueClick = (e: React.MouseEvent) => {
 		onContinue();
+		onClose(e, null);
 	};
 
 	useEffect(() => {

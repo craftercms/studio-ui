@@ -29,10 +29,16 @@ import CloseIconRounded from '@mui/icons-material/CloseRounded';
 import DialogBody from '../DialogBody/DialogBody';
 import UppyDashboard from '../UppyDashboard';
 import useSiteUIConfig from '../../hooks/useSiteUIConfig';
-import { XHRUploadOptions } from '@uppy/xhr-upload';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
+import type { Body, Meta } from '@uppy/utils/lib/UppyFile';
+import type { XHRUploadOptions as UppyXHRUploadOptions } from '@uppy/xhr-upload';
+import { nnou } from '../../utils/object';
 
 const mixHeaders = (headers: Record<string, any>) => Object.assign({}, getGlobalHeaders(), headers);
+
+interface XHRUploadOptions extends UppyXHRUploadOptions<Meta, Body> {
+	validateStatus?(statusCode: number, responseText: string, response: unknown): boolean;
+}
 
 export function UploadDialogContainer(props: UploadDialogContainerProps) {
 	const { formatMessage } = useIntl();
@@ -97,16 +103,26 @@ export function UploadDialogContainer(props: UploadDialogContainerProps) {
 			timeout: upload.timeout,
 			headers: mixHeaders(headers),
 			method,
-			getResponseError: (responseText) => getResponseErrorUtil(responseText, formatMessage)
+			onAfterResponse: (response) => {
+				if (response.status !== 200) {
+					if (nnou(getResponseError)) {
+						getResponseError(response);
+					} else {
+						throw getResponseErrorUtil(response.responseText, formatMessage);
+					}
+				}
+				getResponseData && getResponseData(response);
+			}
 		};
 		allowedMetaFields && (xhrOptions.allowedMetaFields = allowedMetaFields);
 		// These (validateStatus, getResponseData, getResponseError) are unlikely to have closures inside them that would go stale.
 		validateStatus && (xhrOptions.validateStatus = validateStatus);
-		getResponseData && (xhrOptions.getResponseData = getResponseData);
-		getResponseError && (xhrOptions.getResponseError = getResponseError);
 		const instance = new Uppy({
 			meta: Object.assign({ site }, meta),
-			locale: { strings: { noDuplicates: formatMessage(translations.noDuplicates) } }
+			locale: {
+				strings: { noDuplicates: formatMessage(translations.noDuplicates) },
+				pluralize: (n: number) => (n === 1 ? 0 : 1)
+			}
 		}).use(XHRUpload, xhrOptions);
 		onFileAdded &&
 			instance.on('file-added', (file) => {
@@ -132,7 +148,7 @@ export function UploadDialogContainer(props: UploadDialogContainerProps) {
 	]);
 
 	useUnmount(() => {
-		uppy.close();
+		uppy.destroy();
 		onClosed?.();
 	});
 
@@ -160,7 +176,7 @@ export function UploadDialogContainer(props: UploadDialogContainerProps) {
 	return (
 		<>
 			<Button style={{ display: 'none' }}>test</Button>
-			<IconButton style={{ display: 'none' }} size="large">
+			<IconButton style={{ display: 'none' }} size="large" aria-label={formatMessage({ defaultMessage: 'Close' })}>
 				<CloseIconRounded />
 			</IconButton>
 			<DialogBody sx={{ minHeight: '60vh', padding: 0 }}>

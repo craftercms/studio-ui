@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { FormattedDateParts, FormattedMessage, FormattedTime } from 'react-intl';
+import { FormattedDateParts, FormattedMessage, FormattedTime, useIntl } from 'react-intl';
 import React from 'react';
 import List from '@mui/material/List';
 import ListItemText from '@mui/material/ListItemText';
@@ -69,6 +69,7 @@ export function VersionList(props: VersionListProps) {
 	const { versions, onOpenMenu, onItemClick, current, selected, isSelectMode = false } = props;
 	const locale = useSelection<GlobalState['uiConfig']['locale']>((state) => state.uiConfig.locale);
 	const selectedLookup = createPresenceTable(selected);
+	const { formatMessage } = useIntl();
 	return (
 		<List
 			component="div"
@@ -106,6 +107,7 @@ export function VersionList(props: VersionListProps) {
 													versions.length === i + 1
 												);
 											}}
+											aria-label={formatMessage({ defaultMessage: 'Options' })}
 										>
 											<MoreVertIcon />
 										</IconButton>

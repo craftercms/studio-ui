@@ -22,7 +22,7 @@ import { ContentItem } from '../models/Item';
 import { PagedArray } from '../models/PagedArray';
 import { createItemActionMap, createItemStateMap } from '../utils/content';
 import PaginationOptions from '../models/PaginationOptions';
-import { PublishingPackageApproveParams, PublishPackage } from '../models/Publishing';
+import { PublishingPackageApproveParams, PublishingPackagesApproveParams, PublishPackage } from '../models/Publishing';
 import { ApiResponse } from '../models';
 
 export function fetchItemStates(
@@ -82,20 +82,30 @@ export function setItemStatesByQuery(
 	}).pipe(map(({ response }) => response));
 }
 
-export function approve(
+export function approvePackages(siteId: string, data: PublishingPackagesApproveParams): Observable<ApiResponse> {
+	return postJSON(`/studio/api/2/workflow/${siteId}/approve`, data).pipe(map(({ response }) => response));
+}
+
+export function approvePackage(
 	siteId: string,
 	packageId: number,
 	data: PublishingPackageApproveParams
 ): Observable<ApiResponse> {
-	return postJSON(`/studio/api/2/workflow/${siteId}/package/${packageId}/approve`, data).pipe(
-		map(({ response }) => response)
-	);
+	return approvePackages(siteId, { ...data, packageIds: [packageId] });
 }
 
-export function reject(siteId: string, packageId: number, comment: string): Observable<ApiResponse> {
-	return postJSON(`/studio/api/2/workflow/${siteId}/package/${packageId}/reject`, {
+export function rejectPackages(
+	siteId: string,
+	data: { packageIds: number[]; comment: string }
+): Observable<ApiResponse> {
+	return postJSON(`/studio/api/2/workflow/${siteId}/reject`, data).pipe(map(({ response }) => response));
+}
+
+export function rejectPackage(siteId: string, packageId: number, comment: string): Observable<ApiResponse> {
+	return rejectPackages(siteId, {
+		packageIds: [packageId],
 		comment
-	}).pipe(map(({ response }) => response));
+	});
 }
 
 export function cancelPackages(

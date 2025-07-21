@@ -44,7 +44,7 @@ import InputLabel from '@mui/material/InputLabel';
 import Collapse from '@mui/material/Collapse';
 import DateTimeTimezonePicker, { DateTimeTimezonePickerProps } from '../DateTimeTimezonePicker';
 import { createAtLeastHalfHourInFutureDate } from '../../utils/datetime';
-import { approve, reject } from '../../services/workflow';
+import { approvePackage, rejectPackage } from '../../services/workflow';
 import { batchActions } from '../../state/actions/misc';
 import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
@@ -197,7 +197,7 @@ export function PublishingPackageReviewDialogContainer(props: PublishingPackageR
 				updateSchedule: true
 			};
 
-			approve(siteId, packageId, data).subscribe({
+			approvePackage(siteId, packageId, data).subscribe({
 				next() {
 					dispatch(
 						batchActions([
@@ -217,7 +217,7 @@ export function PublishingPackageReviewDialogContainer(props: PublishingPackageR
 				}
 			});
 		} else {
-			reject(siteId, packageId, state.rejectComment).subscribe({
+			rejectPackage(siteId, packageId, state.rejectComment).subscribe({
 				next() {
 					dispatch(
 						batchActions([

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2025 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -14,13 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as React from 'react';
-import Button, { ButtonProps } from '@mui/material/Button';
+export { default } from './DisabledItemIcon';
 
-export interface SecondaryButtonProps extends ButtonProps {}
-
-const SecondaryButton = React.forwardRef<HTMLButtonElement, SecondaryButtonProps>((props, ref) => {
-	return <Button ref={ref} {...props} variant="outlined" />;
-});
-
-export default SecondaryButton;
+export * from './DisabledItemIcon';

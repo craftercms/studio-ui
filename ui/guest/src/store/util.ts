@@ -25,7 +25,7 @@ import {
 	snackGuestMessage
 } from '@craftercms/studio-ui/state/actions/preview';
 import { unlockItem } from '@craftercms/studio-ui/state/actions/content';
-import { NEVER, Observable, of } from 'rxjs';
+import { forkJoin, NEVER, Observable, of } from 'rxjs';
 import { ContentItem } from '@craftercms/studio-ui/models';
 import { GuestState } from './models/GuestStore';
 import { ElementRecord, ICERecord } from '../models/InContextEditing';
@@ -33,6 +33,7 @@ import { getCachedModel, getCachedModels, modelHierarchyMap } from '../contentCo
 import { getParentModelId } from '../utils/ice';
 import { getReferentialEntries } from '../iceRegistry';
 import { extractCollectionItem } from '@craftercms/studio-ui/utils/model';
+import { cancelPackages, fetchAffectedPackages } from '@craftercms/studio-ui/services/workflow';
 
 export function dragOk(status): boolean {
 	return [
@@ -68,15 +69,23 @@ export function beforeWrite$<T extends any = 'continue', S extends any = never>(
 ): Observable<T | S> {
 	const { site, username, path, continue$ = of('continue') as Observable<T>, stop$ = NEVER, localItem } = props;
 	return lock(site, path).pipe(
-		switchMap(() => fetchContentItem(site, path)),
-		switchMap((item) => {
+		switchMap(() => forkJoin([fetchContentItem(site, path), fetchAffectedPackages(site, path)])),
+		switchMap(([item, affectedPackages]) => {
 			if (item.stateMap.submitted || item.stateMap.scheduled) {
 				post(requestWorkflowCancellationDialog({ item, siteId: site }));
 				return message$.pipe(
 					filter((e) => e.type === requestWorkflowCancellationDialogOnResult.type),
 					take(1),
 					tap(({ payload }) => payload.type !== 'continue' && post(unlockItem({ path }))),
-					switchMap(({ payload }) => (payload.type === 'continue' ? continue$ : stop$))
+					switchMap(({ payload }) =>
+						payload.type === 'continue'
+							? cancelPackages(site, {
+									packageIds: affectedPackages.map((p) => p.id),
+									// TODO: Correct comment generation
+									comment: `Cancel packages to write on "${path}"`
+								}).pipe(switchMap(() => continue$))
+							: stop$
+					)
 				);
 			} else if (item.dateModified !== localItem.dateModified && item.lockOwner?.username !== username) {
 				post(snackGuestMessage({ id: 'outOfSyncContent', level: 'suggestion' }));
@@ -114,9 +123,9 @@ export const checkIfLockedOrModified = (state: GuestState, record: ElementRecord
 			modelId = model.craftercms.id;
 		}
 	}
-	const parentModelId = model.craftercms.path ? null : getParentModelId(modelId, getCachedModels(), modelHierarchyMap);
+	const parentModelId = model?.craftercms.path ? null : getParentModelId(modelId, getCachedModels(), modelHierarchyMap);
 	const parentModel = parentModelId ? getCachedModel(parentModelId) : null;
-	const path = model.craftercms.path ?? parentModel.craftercms.path;
+	const path = model?.craftercms.path ?? parentModel?.craftercms.path;
 	const isLocked = Boolean(state.lockedPaths[path]);
 	const isLockedByCurrentUser = isLocked && state.lockedPaths[path].user.username === state.username;
 	const isExternallyModified = Boolean(state.externallyModifiedPaths[path]);

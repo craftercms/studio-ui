@@ -15,13 +15,13 @@
  */
 
 import React from 'react';
-import LoadingButton, { LoadingButtonProps } from '@mui/lab/LoadingButton';
+import Button, { ButtonProps } from '@mui/material/Button';
 
-export function LoadingIconButton(props: LoadingButtonProps) {
+export function LoadingIconButton(props: ButtonProps) {
 	const { sx, ...rest } = props;
 
 	return (
-		<LoadingButton
+		<Button
 			{...rest}
 			sx={{
 				borderRadius: '50%',
@@ -36,7 +36,7 @@ export function LoadingIconButton(props: LoadingButtonProps) {
 			}}
 		>
 			{props.children}
-		</LoadingButton>
+		</Button>
 	);
 }
 

@@ -110,7 +110,11 @@ export function SearchBar(props: SearchBarProps) {
 			)}
 		>
 			{showDecoratorIcon && onDecoratorButtonClick ? (
-				<IconButton onClick={onDecoratorButtonClick} size="large">
+				<IconButton
+					onClick={onDecoratorButtonClick}
+					size="large"
+					aria-label={formatMessage({ defaultMessage: 'decorator' })}
+				>
 					<DecoratorIcon sx={{ color: (theme) => theme.palette.text.secondary }} />
 				</IconButton>
 			) : (
@@ -184,6 +188,7 @@ export function SearchBar(props: SearchBarProps) {
 					}}
 					sx={{ padding: '6px' }}
 					size="small"
+					aria-label={formatMessage({ defaultMessage: 'Clear' })}
 				>
 					<ActionButtonIcon
 						fontSize="small"

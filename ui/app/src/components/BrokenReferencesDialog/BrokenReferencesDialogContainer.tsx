@@ -23,7 +23,7 @@ import { fetchBrokenReferences, showEditDialog } from '../../state/actions/dialo
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import useEnv from '../../hooks/useEnv';
 import { DialogBody } from '../DialogBody';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';

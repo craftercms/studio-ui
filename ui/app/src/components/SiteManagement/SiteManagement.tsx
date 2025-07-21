@@ -206,7 +206,11 @@ export function SiteManagement() {
 				}
 				rightContent={
 					<Tooltip title={<FormattedMessage id="sites.ChangeView" defaultMessage="Change view" />}>
-						<IconButton onClick={handleChangeView} size="large">
+						<IconButton
+							onClick={handleChangeView}
+							size="large"
+							aria-label={formatMessage({ defaultMessage: 'Change view' })}
+						>
 							{currentView === 'grid' ? <ListViewIcon /> : <GridViewIcon />}
 						</IconButton>
 					</Tooltip>

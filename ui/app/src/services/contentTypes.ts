@@ -74,7 +74,8 @@ const systemValidationsNames = [
 	'videoDesktopUpload',
 	'videoBrowseRepo',
 	'audioDesktopUpload',
-	'audioBrowseRepo'
+	'audioBrowseRepo',
+	'fileBrowseRepo'
 ];
 
 const systemValidationsKeysMap = {
@@ -97,7 +98,8 @@ const systemValidationsKeysMap = {
 	videoDesktopUpload: 'allowVideoUpload',
 	videoBrowseRepo: 'allowVideosFromRepo',
 	audioDesktopUpload: 'allowAudioUpload',
-	audioBrowseRepo: 'allowAudioFromRepo'
+	audioBrowseRepo: 'allowAudioFromRepo',
+	fileBrowseRepo: 'allowFilesFromRepo'
 };
 
 function bestGuessParse(value: unknown): unknown {
@@ -244,11 +246,18 @@ function getFieldDataSourceValidations(
 	if (
 		dataSources &&
 		dataSources.length > 0 &&
-		asArray(fieldProperty).find((prop) => ['imageManager', 'videoManager', 'audioManager'].includes(prop.name))
+		asArray(fieldProperty).find((prop) =>
+			['imageManager', 'videoManager', 'audioManager', 'fileManager'].includes(prop.name)
+		)
 	) {
 		validations = asArray<LegacyFormDefinitionProperty>(fieldProperty).reduce<LookupTable<ContentTypeFieldValidation>>(
 			(table, prop) => {
-				if (prop.name === 'imageManager' || prop.name === 'videoManager' || prop.name === 'audioManager') {
+				if (
+					prop.name === 'imageManager' ||
+					prop.name === 'videoManager' ||
+					prop.name === 'audioManager' ||
+					prop.name === 'fileManager'
+				) {
 					const dataSourcesIds = prop.value.trim() !== '' ? prop.value.split(',') : null;
 					dataSourcesIds?.forEach((id) => {
 						const dataSource = dataSources.find((datasource) => datasource.id === id);
@@ -408,6 +417,7 @@ function parseLegacyFormDefinition(definition: LegacyFormDefinition): ContentTyp
 	const fields: LookupTable<ContentTypeField> = {};
 	const sections: Array<ContentTypeSection> = [];
 	const dataSources: LookupTable<DataSource> = {};
+	// TODO: update type to be LookupTable<DataSource>. https://github.com/craftercms/craftercms/issues/8216
 	const dropTargetsLookup: LookupTable<LegacyDataSource> = {};
 
 	const legacyDataSourceArray = asArray(definition.datasources?.datasource);
@@ -416,6 +426,7 @@ function parseLegacyFormDefinition(definition: LegacyFormDefinition): ContentTyp
 	legacyDataSourceArray.forEach((datasource: LegacyDataSource) => {
 		// TODO: Delete datasource.properties after props have been added to the root object? Must update code usages of datasource.properties.
 		dataSources[datasource.id] = { ...datasource, properties: {} };
+		const legacyDatasource = { ...datasource };
 		asArray(datasource.properties?.property).forEach((property) => {
 			let value: unknown = property.value;
 			switch (property.type) {
@@ -431,9 +442,11 @@ function parseLegacyFormDefinition(definition: LegacyFormDefinition): ContentTyp
 				//   break;
 			}
 			dataSources[datasource.id].properties[property.name] = value;
+			// Also update legacyDatasource, since dropTargetsLookup references it for 'components' type datasources.
+			legacyDatasource.properties[property.name] = value;
 		});
-		if (datasource.type === 'components') {
-			dropTargetsLookup[datasource.id] = datasource;
+		if (legacyDatasource.type === 'components') {
+			dropTargetsLookup[datasource.id] = legacyDatasource;
 		}
 	});
 

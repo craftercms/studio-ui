@@ -16,7 +16,7 @@
 
 import Checkbox, { CheckboxProps } from '@mui/material/Checkbox';
 import React, { useState } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import Alert, { alertClasses, AlertProps } from '@mui/material/Alert';
 import IconButton from '@mui/material/IconButton';
 import ExpandMoreRounded from '@mui/icons-material/ExpandMoreRounded';
@@ -52,6 +52,7 @@ export function FolderMoveAlert({
 			action === 'move' ? <FormattedMessage defaultMessage="moved" /> : <FormattedMessage defaultMessage="renamed" />,
 		b: (msg) => <strong>{msg}</strong>
 	};
+	const { formatMessage } = useIntl();
 	return (
 		<Alert
 			variant={variant}
@@ -64,6 +65,7 @@ export function FolderMoveAlert({
 					<IconButton
 						color="primary"
 						size="small"
+						aria-label={formatMessage(open ? { defaultMessage: 'Collapse' } : { defaultMessage: 'Expand' })}
 						onClick={() => {
 							!checked && setOpen(!open);
 						}}

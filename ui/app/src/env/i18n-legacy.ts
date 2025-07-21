@@ -503,6 +503,9 @@ export const formEngineMessages = defineMessages({
 	maxItemsReached: {
 		defaultMessage:
 			'A max of {maxSize} {maxSize, plural, one {item is} other {items are}} allowed. Please remove items to fit the limit before trying to add more.'
+	},
+	inWorkflowWarning: {
+		defaultMessage: 'The item is part of one or more publishing packages. Editing it will cancel the packages.'
 	}
 });
 

@@ -529,21 +529,18 @@ export const itemActionDispatcher = ({
 				//  we need the modelId that's not supplied to this function.
 				// const src = `${defaultSrc}site=${site}&path=${embeddedParentPath}&isHidden=true&modelId=${modelId}&type=form`
 				const path = item.path;
-				const actionToDispatch = pickShowContentFormAction({
-					site,
-					path,
-					authoringBase,
-					onSaveSuccess: batchActions([
-						showEditItemSuccessNotification(),
-						...(onActionSuccess ? [onActionSuccess] : [])
-					]),
-					...extraPayload
-				});
-				if (isInActiveWorkflow(item)) {
-					dispatch(showViewPackagesDialog({ item, onContinue: actionToDispatch }));
-				} else {
-					dispatch(actionToDispatch);
-				}
+				dispatch(
+					pickShowContentFormAction({
+						site,
+						path,
+						authoringBase,
+						onSaveSuccess: batchActions([
+							showEditItemSuccessNotification(),
+							...(onActionSuccess ? [onActionSuccess] : [])
+						]),
+						...extraPayload
+					})
+				);
 				break;
 			}
 			case 'createFolder': {
@@ -842,20 +839,12 @@ export const itemActionDispatcher = ({
 				break;
 			}
 			case 'editCode': {
-				const editorShowAction = showCodeEditorDialog({
-					path: item.path,
-					mode: getEditorMode(item)
-				});
-				if (isInActiveWorkflow(item)) {
-					dispatch(
-						showViewPackagesDialog({
-							item,
-							onContinue: editorShowAction
-						})
-					);
-				} else {
-					dispatch(editorShowAction);
-				}
+				dispatch(
+					showCodeEditorDialog({
+						path: item.path,
+						mode: getEditorMode(item)
+					})
+				);
 				break;
 			}
 			case 'viewCode': {

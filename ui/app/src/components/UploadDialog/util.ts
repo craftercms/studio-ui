@@ -17,8 +17,8 @@
 import StandardAction from '../../models/StandardAction';
 import { PropsWithChildren } from 'react';
 import { XHRUploadOptions } from '@uppy/xhr-upload';
-import { SuccessResponse, Uppy } from '@uppy/core';
-import { UppyFile } from '@uppy/utils';
+import { Uppy } from '@uppy/core';
+import { UppyFile, Meta, Body } from '@uppy/utils/lib/UppyFile';
 import UppyDashboardProps from '../UppyDashboard/UppyDashboardProps';
 import ApiResponse from '../../models/ApiResponse';
 import { IntlShape } from 'react-intl';
@@ -29,10 +29,10 @@ export interface UploadDialogBaseProps {
 	site: string;
 	maxSimultaneousUploads?: number;
 	endpoint?: string;
-	method?: XHRUploadOptions['method'];
-	headers?: XHRUploadOptions['headers'];
+	method?: XHRUploadOptions<Meta, Body>['method'];
+	headers?: XHRUploadOptions<Meta, Body>['headers'];
 	meta?: Record<string, unknown>;
-	allowedMetaFields?: XHRUploadOptions['allowedMetaFields'];
+	allowedMetaFields?: XHRUploadOptions<Meta, Body>['allowedMetaFields'];
 	useFormData?: boolean;
 	fieldName?: string;
 	showRemoveButtonAfterComplete?: boolean;
@@ -44,19 +44,26 @@ export type UploadDialogProps = PropsWithChildren<
 	UploadDialogBaseProps & {
 		onClose(): void;
 		onClosed?(): void;
-		onFileAdded?(data: { file: UppyFile; uppy: Uppy }): void;
-		onUploadSuccess?(data: { file: UppyFile | undefined; response: SuccessResponse }): void;
+		onFileAdded?(data: {
+			file: UppyFile<Meta, Record<string, never>>;
+			uppy: Uppy<{ site: string } & Record<string, unknown>, Record<string, never>>;
+		}): void;
+		onUploadSuccess?(data: { file: UppyFile<Meta, Body> | undefined; response }): void;
 		validateStatus?(statusCode: number, responseText: string, response: unknown): boolean;
-		getResponseData?(responseText: string, response: unknown): any;
-		getResponseError?(responseText: string, xhr: unknown): Error;
+		getResponseData?(response: XMLHttpRequest): void;
+		getResponseError?(response: XMLHttpRequest): Error;
 	}
 >;
 
 export interface UploadDialogStateProps extends UploadDialogBaseProps {
 	onClose?: StandardAction;
 	onClosed?: StandardAction;
-	onFileAdded?: StandardAction<{ file: UppyFile; uppy: Uppy; [key: string]: unknown }>;
-	onUploadSuccess?: StandardAction<{ file: UppyFile; response: SuccessResponse; [key: string]: unknown }>;
+	onFileAdded?: StandardAction<{
+		file: UppyFile<Meta, Body>;
+		uppy: Uppy<{ site: string } & Record<string, unknown>, Record<string, never>>;
+		[key: string]: unknown;
+	}>;
+	onUploadSuccess?: StandardAction<{ file: UppyFile<Meta, Body>; response; [key: string]: unknown }>;
 }
 
 export interface UploadDialogContainerProps extends UploadDialogProps {

@@ -33,7 +33,7 @@ import useUpdateRefs from '../../hooks/useUpdateRefs';
 import DialogBody from '../DialogBody';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { LoadingState } from '../LoadingState';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import Alert from '@mui/material/Alert';
 import { Fade, Typography } from '@mui/material';
 import { DateTimeTimezonePickerProps } from '../DateTimeTimezonePicker';
@@ -219,7 +219,7 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 
 		const { publishingTarget, scheduling: schedule } = state;
 		const { itemPaths, itemMap } = itemsDataSummary;
-		const { requestApproval, packageTitle, submissionComment, scheduling, scheduledDateTime } = state;
+		const { packageTitle, submissionComment, scheduling, scheduledDateTime } = state;
 		const data: PublishParams = {
 			publishingTarget: state.publishingTarget,
 			paths: itemPaths.map((path: string) => ({
@@ -228,7 +228,7 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 				includeSoftDeps: false
 			})),
 			schedule: scheduling === 'custom' ? scheduledDateTime.toISOString() : null,
-			requestApproval,
+			requestApproval: isRequestPublish,
 			title: packageTitle,
 			comment: submissionComment
 		};

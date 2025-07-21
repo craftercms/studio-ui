@@ -16,7 +16,7 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { LegacyFormDialogContainerProps } from './utils';
-import { getEditFormSrc } from '../../utils/path';
+import { getEditFormSrc, getPreviewURLFromPath } from '../../utils/path';
 import { useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
 import { ApiResponse } from '../../models/ApiResponse';
@@ -51,6 +51,8 @@ import { hasEditAction } from '../../utils/content';
 import { nnou } from '../../utils/object';
 import { useFetchItem } from '../../hooks/useFetchItem';
 import Box from '@mui/material/Box';
+import usePreviewNavigation from '../../hooks/usePreviewNavigation';
+import { getSystemLink } from '../../utils/system';
 
 // FE2 TODO: for removal after FE1 removal
 export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyEditor(
@@ -87,6 +89,7 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
 	// non-existing item (old filename path), so we will only re-fetch when the actual path prop of the component
 	// changes.
 	const item = useFetchItem(path);
+	const { currentUrlPath } = usePreviewNavigation();
 	const availableActions = item?.availableActions;
 	let fieldsIndexes;
 	if (selectedFields && index) {
@@ -150,8 +153,23 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
 		const messagesSubscription = messages.subscribe((e: any) => {
 			switch (e.data.type) {
 				case EMBEDDED_LEGACY_FORM_SUCCESS: {
+					// Determine if current previewed page is the same as the one that was saved (before possible url update)
+					const initialModelPath = e.data.initialModelPath;
+					const updatedModelPath = e.data.updatedModelPath;
+
 					onSave(e.data);
-					getHostToGuestBus().next({ type: reloadRequest.type });
+					// If the page being previewed was the one updated and its original path was edited, redirect to the new path.
+					if (currentUrlPath === getPreviewURLFromPath(initialModelPath) && initialModelPath !== updatedModelPath) {
+						window.location.href = getSystemLink({
+							page: getPreviewURLFromPath(updatedModelPath),
+							systemLinkId: 'preview',
+							site,
+							authoringBase
+						});
+					} else {
+						getHostToGuestBus().next(reloadRequest());
+					}
+
 					dispatch(updateEditDialogConfig({ pendingChanges: false }));
 					switch (e.data.action) {
 						case 'save': {

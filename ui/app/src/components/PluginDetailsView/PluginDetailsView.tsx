@@ -24,7 +24,7 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { MarketplacePlugin } from '../../models/MarketplacePlugin';
 import Fab from '@mui/material/Fab';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import Alert, { alertClasses } from '@mui/material/Alert';
 import { backgroundColor } from '../../styles/theme';
@@ -66,7 +66,7 @@ interface PluginDetailsViewProps {
 	selectedImageSlideIndex?: number;
 	changeImageSlideInterval?: number;
 	isMarketplacePlugin?: boolean;
-	useLabel?: string | JSX.Element;
+	useLabel?: string | React.JSX.Element;
 	usePermission?: boolean;
 	inUse?: boolean;
 	beingInstalled?: boolean;

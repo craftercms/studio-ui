@@ -34,6 +34,7 @@ import Button from '@mui/material/Button';
 import Fade from '@mui/material/Fade';
 import { FeedbackOutlined } from '@mui/icons-material';
 import useContentTypeList from '../../hooks/useContentTypeList';
+import { fetchContentTypes } from '../../state/actions/preview';
 
 export interface ContentTypeManagementProps {
 	embedded?: boolean;
@@ -153,6 +154,7 @@ function LegacyTypeManagement(props: ContentTypeManagementProps) {
 			.subscribe((e) => {
 				switch (e.data.type) {
 					case 'CONTENT_TYPES_ON_SAVED': {
+						dispatch(fetchContentTypes());
 						switch (e.data.saveType) {
 							case 'saveAndClose':
 								onClose?.();

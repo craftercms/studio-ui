@@ -254,7 +254,11 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
 				footer: { justifyContent: 'space-between' }
 			}}
 			headerAction={
-				<LoadingIconButton onClick={onRefresh} loading={loading}>
+				<LoadingIconButton
+					onClick={onRefresh}
+					loading={loading}
+					aria-label={formatMessage({ defaultMessage: 'Refresh' })}
+				>
 					<RefreshRounded />
 				</LoadingIconButton>
 			}

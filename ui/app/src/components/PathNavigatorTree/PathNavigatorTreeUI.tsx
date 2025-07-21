@@ -130,7 +130,7 @@ export function PathNavigatorTreeUI(props: PathNavigatorTreeUIProps) {
 			/>
 			{isRootPathMissing ? (
 				<ErrorState
-					sxs={{ image: { display: 'none' } }}
+					sxs={{ root: { textAlign: 'center' }, image: { display: 'none' } }}
 					title={
 						<FormattedMessage
 							id="pathNavigatorTree.missingRootPath"
