@@ -30,7 +30,7 @@ export function VideoView(props: VideoViewProps) {
 	const contentTypes = useContentTypes();
 	const content =
 		contentProp ??
-		(xml ? parseElementByContentType(fromString(xml).querySelector(field.id), field, contentTypes, {}) : '');
+		(xml ? parseElementByContentType(fromString(xml).querySelector(field.id) || null, field, contentTypes, {}) : '');
 	return (
 		<Box sx={{ textAlign: 'center' }}>
 			<AsyncVideoPlayer playerOptions={{ src: content, controls: true, width: 400 }} />

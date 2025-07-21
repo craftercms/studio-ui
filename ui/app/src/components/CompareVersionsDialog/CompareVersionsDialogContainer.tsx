@@ -163,7 +163,7 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
 		// - selected versions of the history of an item, so we need to fetch the content we're going to diff
 		// - pre-fetched content (and the fields of the content) so we don't need to fetch anything.
 		if (!preFetchedContent && selectedA && selectedB) {
-			forkJoin([
+			const subscription = forkJoin([
 				fetchContentByCommitId(siteId, selectedA.path, selectedA.versionNumber),
 				fetchContentByCommitId(siteId, selectedB.path, selectedB.versionNumber)
 			]).subscribe(([contentA, contentB]) => {
@@ -185,6 +185,7 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
 					});
 				}
 			});
+			return () => subscription.unsubscribe();
 		}
 	}, [preFetchedContent, selectedA, selectedB, siteId, setSelectionContent, contentTypesBranch, isAsset]);
 

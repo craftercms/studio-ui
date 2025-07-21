@@ -28,7 +28,7 @@ export function CheckboxGroupView(props: CheckboxGroupViewProps) {
 	const { xml, field } = props;
 	const contentTypes = useContentTypes();
 	const content = xml
-		? parseElementByContentType(fromString(xml).querySelector(field.id), field, contentTypes, {})
+		? parseElementByContentType(fromString(xml).querySelector(field.id) || null, field, contentTypes, {})
 		: [];
 
 	return (

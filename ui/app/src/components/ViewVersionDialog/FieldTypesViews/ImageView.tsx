@@ -32,7 +32,16 @@ export function ImageView(props: ImageViewProps) {
 	const contentTypes = useContentTypes();
 	const content =
 		contentProp ??
-		(xml ? parseElementByContentType(fromString(xml).querySelector(field.id), field, contentTypes, {}) : '');
+		(xml
+			? (() => {
+					try {
+						return parseElementByContentType(fromString(xml).querySelector(field.id), field, contentTypes, {});
+					} catch (error) {
+						console.error(`Error parsing XML for field ${field.id}:`, error);
+						return '';
+					}
+				})()
+			: '');
 
 	return (
 		<>

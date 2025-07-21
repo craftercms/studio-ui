@@ -28,7 +28,13 @@ export interface FileNameViewProps extends Pick<ViewComponentBaseProps, 'xml'> {
 
 export function FileNameView(props: FileNameViewProps) {
 	const { xml, editorProps } = props;
-	const path = fromString(xml).querySelector(`${XmlKeys.fileName}`).textContent;
+	if (!xml) {
+		return <TextView xml="" editorProps={editorProps} />;
+	}
+
+	const xmlDoc = fromString(xml);
+	const pathElement = xmlDoc?.querySelector(`${XmlKeys.fileName}`);
+	const path = pathElement?.textContent || '';
 	const fileName = getContentFileNameFromPath(path);
 
 	return <TextView xml={fileName} editorProps={editorProps} />;
