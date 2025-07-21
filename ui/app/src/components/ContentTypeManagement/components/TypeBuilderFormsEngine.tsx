@@ -360,7 +360,7 @@ function FieldSwapper(props: FieldFormViewProps): React.JSX.Element {
 	);
 }
 
-function SectionActions(props: FieldFormViewProps): JSX.Element {
+function SectionActions(props: FieldFormViewProps): React.JSX.Element {
 	const { section, isMainSection, onDeleteSection, onReorderSectionFields, onOpenInsertFieldDialog } = props;
 	const [openReorderFieldsDialog, setOpenReorderFieldsDialog] = useState(false);
 	if (!section) return;
@@ -408,7 +408,7 @@ function SectionActions(props: FieldFormViewProps): JSX.Element {
 	);
 }
 
-function DataSourceActions(props: FieldFormViewProps): JSX.Element {
+function DataSourceActions(props: FieldFormViewProps): React.JSX.Element {
 	const { dataSource, onDeleteDataSource } = props;
 	if (!dataSource) return;
 	return (
@@ -427,7 +427,7 @@ function DataSourceActions(props: FieldFormViewProps): JSX.Element {
 	);
 }
 
-function ContentTypeActions(props: FieldFormViewProps): JSX.Element {
+function ContentTypeActions(props: FieldFormViewProps): React.JSX.Element {
 	const { section, field, dataSource, type, onReorderTypeSections } = props;
 	const [openReorderFieldsDialog, setOpenReorderFieldsDialog] = useState(false);
 	if (section || field || dataSource) return;
