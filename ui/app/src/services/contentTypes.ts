@@ -307,7 +307,7 @@ function parseLegacyFormDefinitionFields(
 				case 'allowDuplicates':
 					if (value === 'true') {
 						field.validations.allowDuplicates = {
-							id: 'required',
+							id: 'allowDuplicates',
 							value: value === 'true',
 							level: 'required'
 						};
