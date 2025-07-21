@@ -50,7 +50,7 @@ YAHOO.extend(CStudioForms.Datasources.FileBrowseRepo, CStudioForms.CStudioFormDa
 			// Paths already in the control, by sending them to the Browse Dialog, it'll mark them as selected, and disable
 			// the actions for those paths.
 			const preselectedPaths = craftercms.utils.array
-				.asArray(control?.form.model[control.fieldDef.id])
+				.asArray(control?.form?.model[control.fieldDef.id])
 				.flatMap((item) => item.key || []);
 
 			CStudioAuthoring.Operations.openBrowseFilesDialog({

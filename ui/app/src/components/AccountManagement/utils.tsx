@@ -40,7 +40,7 @@ import {
 } from '../../utils/state';
 
 export const preferencesGroups: Array<{
-	label: string | JSX.Element;
+	label: string | React.JSX.Element;
 	onClear: (props: { siteId: string; siteUuid: string; username: string }) => void;
 }> = [
 	{

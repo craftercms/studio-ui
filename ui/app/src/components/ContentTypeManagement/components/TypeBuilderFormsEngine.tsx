@@ -202,7 +202,7 @@ export function TypeBuilderFormsEngine(props: FieldFormViewProps) {
 	);
 }
 
-function FieldBreadcrumbs(props: FieldFormViewProps): JSX.Element {
+function FieldBreadcrumbs(props: FieldFormViewProps): React.JSX.Element {
 	if (!props.field) return;
 	const fieldPathIds = props.fieldIdPath?.split('.') ?? [];
 	return (
@@ -223,7 +223,7 @@ function FieldBreadcrumbs(props: FieldFormViewProps): JSX.Element {
 	);
 }
 
-function FieldActions(props: FieldFormViewProps): JSX.Element {
+function FieldActions(props: FieldFormViewProps): React.JSX.Element {
 	const {
 		field,
 		fieldIdPath,
@@ -317,7 +317,7 @@ function FieldActions(props: FieldFormViewProps): JSX.Element {
 
 const fileNameTypeIds = ['file-name', 'auto-filename'];
 
-function FieldSwapper(props: FieldFormViewProps): JSX.Element {
+function FieldSwapper(props: FieldFormViewProps): React.JSX.Element {
 	const { field, sectionId, controlDescriptor, onSwapField } = props;
 	const swapFieldDialogState = useEnhancedDialogState();
 	if (!props.field) return;
@@ -456,7 +456,7 @@ function ContentTypeActions(props: FieldFormViewProps): JSX.Element {
 	);
 }
 
-function pickPanelTitleByMode(props: FieldFormViewProps): JSX.Element {
+function pickPanelTitleByMode(props: FieldFormViewProps): React.JSX.Element {
 	if (props.type) {
 		return <FormattedMessage defaultMessage="Edit Type" />;
 	} else if (props.field) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2025 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -14,15 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren } from 'react';
-import { CrafterCMSStore } from '../../state/store';
-import { Provider } from 'react-redux';
+export { default } from './DisabledItemIcon';
 
-export type StoreProviderProps = PropsWithChildren<{ store: CrafterCMSStore }>;
-
-export function StoreProvider(props: StoreProviderProps): React.JSX.Element {
-	const { store } = props;
-	return <Provider children={props.children} store={store} />;
-}
-
-export default StoreProvider;
+export * from './DisabledItemIcon';
