@@ -231,7 +231,8 @@ export const systemValidationsNames = [
 	'videoDesktopUpload',
 	'videoBrowseRepo',
 	'audioDesktopUpload',
-	'audioBrowseRepo'
+	'audioBrowseRepo',
+	'fileBrowseRepo'
 ];
 
 export const systemValidationsKeysMap = {
@@ -254,7 +255,8 @@ export const systemValidationsKeysMap = {
 	videoDesktopUpload: 'allowVideoUpload',
 	videoBrowseRepo: 'allowVideosFromRepo',
 	audioDesktopUpload: 'allowAudioUpload',
-	audioBrowseRepo: 'allowAudioFromRepo'
+	audioBrowseRepo: 'allowAudioFromRepo',
+	fileBrowseRepo: 'allowFilesFromRepo'
 };
 
 export const componentsDataSourceContentTypesPropertyNames = [

@@ -43,7 +43,7 @@ import { getXmlBuilder } from '../FormsEngine/lib/valueSerializers';
 import { nanoid } from 'nanoid';
 import { commonDataSourceDescriptors, dataSourceDescriptors } from './descriptors/dataSources';
 import { ControlProps } from '../FormsEngine/types';
-import { IntlShape } from 'react-intl';
+import { IntlShape, type MessageDescriptor } from 'react-intl';
 import TranslationOrText from '../../models/TranslationOrText';
 import { getFileNameFromPath } from '../../utils/path';
 import type { Dispatch } from 'redux';
@@ -777,9 +777,11 @@ function translateIfMessageDescriptor<K>(
 	target: K,
 	property: keyof K
 ): string {
-	return nnou(target[property]) && typeof target[property] === 'object'
-		? formatMessage(target[property])
-		: ((target[property] as string) ?? '');
+	const value = target[property];
+	if (nnou(value) && typeof value === 'object') {
+		return formatMessage(value as MessageDescriptor);
+	}
+	return typeof value === 'string' ? value : '';
 }
 
 export function editTypeTemplate(path: string, dispatch: Dispatch) {
@@ -867,12 +869,16 @@ export function getPropertiesAndValidationsFromDescriptor(descriptor: Descriptor
 } {
 	const properties = {};
 	const validations = {};
-	if (!descriptor) return { properties, validations };
+	if (!descriptor || !descriptor.sections || !descriptor.fields) {
+		return { properties, validations };
+	}
 
 	const sections = createLookupTable(descriptor.sections);
 	const propertiesFieldIds = sections.properties?.fields ?? [];
 	propertiesFieldIds.forEach((field) => {
-		let type = descriptor.fields[field]?.type;
+		const fieldDescriptor = descriptor.fields?.[field];
+		if (!fieldDescriptor) return;
+		let type = fieldDescriptor.type;
 		switch (type) {
 			case 'datasource-selector': {
 				type = `datasource:${descriptor.fields[field]?.validations?.type?.value ?? 'item'}`;
