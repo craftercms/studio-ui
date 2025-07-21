@@ -19,9 +19,16 @@ import useSelection from '../../../hooks/useSelection';
 import { isBlobUrl } from '../../../utils/content';
 import { IFrame } from '../../IFrame';
 
-export function PDFView(props) {
+export interface PDFViewProps {
+	content: string;
+}
+export function PDFView(props: PDFViewProps) {
 	const { content } = props;
 	const guestBase = useSelection<string>((state) => state.env.guestBase);
+
+	if (!content) {
+		return <div>No content available</div>;
+	}
 
 	return <IFrame url={isBlobUrl(content) ? content : `${guestBase}${content}`} title="" width="100%" height="100%" />;
 }
