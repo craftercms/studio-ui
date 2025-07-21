@@ -52,7 +52,17 @@ export function checkAndCancelAffectedPackages({
 									packageIds: affectedPackages.map((p) => p.id),
 									// TODO: Correct comment generation
 									comment: cancelPackagesMessage ?? `Cancel affected packages of "${item.path}"`
-								}).subscribe(() => onContinue());
+								}).subscribe({
+									next: () => onContinue(),
+									error: ({ response }) => {
+										dispatch(
+											pushDialog({
+												component: 'craftercms.components.ErrorDialog',
+												props: { error: response?.response }
+											})
+										);
+									}
+								});
 							},
 							onClose: () => {
 								dispatch(popDialog({ id: dialogId }));
