@@ -25,7 +25,7 @@ export const UltraStyledTooltip = (props: TooltipProps) => {
         tooltip: {
           ...props.slotProps?.tooltip,
           // TODO: handle slotProps of type `function` case.
-          sx: { ...(props.slotProps.tooltip as TooltipProps)?.sx, fontSize: 12 }
+          sx: { ...(props.slotProps?.tooltip as TooltipProps)?.sx, fontSize: 12 }
         }
       }}
     />
