@@ -22,9 +22,11 @@ export const UltraStyledTooltip = (props: TooltipProps) => {
       {...props}
       slotProps={{
         ...props?.slotProps,
-        // TODO: Ticket reported here: https://github.com/mui/material-ui/issues/46582. Need to fix this when MUI fixes the issue.
-        // @ts-expect-error [TS2339]: Property 'sx' does not exist on type TooltipProps['slotProps]['tooltip'].
-        tooltip: { ...props.slotProps?.tooltip, sx: { fontSize: 12, ...props.slotProps?.tooltip?.sx } }
+        tooltip: {
+          ...props.slotProps?.tooltip,
+          // TODO: handle slotProps of type `function` case.
+          sx: { ...(props.slotProps.tooltip as TooltipProps)?.sx, fontSize: 12 }
+        }
       }}
     />
   );
