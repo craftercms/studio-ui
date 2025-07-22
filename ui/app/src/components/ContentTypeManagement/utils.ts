@@ -599,7 +599,8 @@ export function prepareSerializeToXmlTypeObject(
 				defaultOpen: toBooleanString(section.expandByDefault),
 				fields: {
 					field: section.fields.map((fieldId) => convertFieldStructToXmlStruct(type.fields[fieldId]))
-				}
+				},
+				color: section.color
 			}))
 		},
 		datasources:
