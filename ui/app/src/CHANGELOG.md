@@ -49,6 +49,8 @@
   * Added `PublishPackageReviewDialog` component.
   * Added `PublishingPackageResubmitDialog` component.
   * Added `ViewPackagesDialog` component.
+  * [RenameAssetDialog] Removed `path` and `value` properties. Replaced with `item` property.
+  * [ItemDisplay] Updated item prop to be of type `LightItem | ContentItem`.
 * [hooks]
   * Removed `useLogicResource` hook.
   * Removed `useSelectorResource` hook.
