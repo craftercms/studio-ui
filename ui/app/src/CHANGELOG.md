@@ -37,6 +37,11 @@
   * [ContentTypesLoader] Removed
   * [NewContentDialog] Props `rootPath`, `copact` removed. Prop `initialCompact` added.
     * Prop `onContentTypeSelected` changed its signature from sending an object with `authoringBase`, `path`, `isNewContent`, `contentTypeId`, `onSaveSuccess` to `{ path: string; contentType: ContentType }`
+  * [CompareVersions] Removed.
+  * [EnhancedDialog] Removed unused `id` prop.
+  * [CompareVersionsDialog] Added `subtitle`, `selectionContent`, and `fields` properties.
+  * [ViewVersionDialog] Added `onClose` property.
+  * [ViewVersionDialogContainer] Added `contentTypesBranch`, `showXml` and `data` properties.
   * [PublishingStatusTile] Removed `enabled` and `status` properties. Replaced by `publishingStatus` property of type `PublishingStatus`.
   * [PublishDialog]
     * Added `buildPathTrees` util that builds a tree structure from a list of paths, grouping them by root directories.
@@ -135,6 +140,7 @@
   * `PublishingParams`: Removed `optionalDependencies` and `sendEmailNotifications` properties. Added `paths`, `commitIds`, `requestApproval`, `publishAll` and `title` properties.
 * [common-api.js]
   * Removed `CStudioAuthoring.Operations.uploadCMISAsset` and `CStudioAuthoring.Operations.openCMISUploadDialog`.
+* Removed LegacyVersionDialog and the entire associated `/studio/diff` route
 
 ## 4.2.0
 
