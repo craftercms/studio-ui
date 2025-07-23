@@ -65,7 +65,9 @@ export function FolderMoveAlert({
 					<IconButton
 						color="primary"
 						size="small"
-						aria-label={formatMessage(open ? { defaultMessage: 'Collapse' } : { defaultMessage: 'Expand' })}
+						aria-label={
+							open ? formatMessage({ defaultMessage: 'Collapse' }) : formatMessage({ defaultMessage: 'Expand' })
+						}
 						onClick={() => {
 							!checked && setOpen(!open);
 						}}
