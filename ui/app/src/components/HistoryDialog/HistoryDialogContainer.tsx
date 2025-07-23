@@ -65,6 +65,7 @@ import { contentEvent } from '../../state/actions/system';
 import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
 import { getRootPath } from '../../utils/path';
+import { isComparableAsset } from '../../utils/content';
 
 export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
 	const { versionsBranch, error } = props;
@@ -80,15 +81,14 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
 	const timeoutRef = useRef(null);
 	const isItemPreviewable = isPreviewable(item);
 	// Item may be null for config items in config management.
-	const isDiffSupported = ['page', 'component', 'taxonomy'].includes(item?.systemType);
-	const [compareMode, setCompareMode] = useState(false);
-	const [selectedCompareVersions, setSelectedCompareVersions] = useState([]);
-
+	const isDiffSupported = ['page', 'component', 'taxonomy'].includes(item?.systemType) || isComparableAsset(item);
+	const [compareMode, setCompareMode] = useState<boolean>(false);
+	const [selectedCompareVersions, setSelectedCompareVersions] = useState<string[]>([]);
 	const [menu, setMenu] = useSpreadState<Menu>(menuInitialState);
 
 	const handleOpenMenu = useCallback(
 		(anchorEl, version, isCurrent = false, initialCommit) => {
-			const hasOptions = ['page', 'component', 'taxonomy'].includes(item.systemType);
+			const hasOptions = ['page', 'component', 'taxonomy', 'asset'].includes(item.systemType);
 			const contextMenuOptions: { [prop in keyof typeof menuOptions]: ContextMenuOption } = {};
 			Object.entries(menuOptions).forEach(([key, value]) => {
 				contextMenuOptions[key] = {
@@ -154,7 +154,8 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
 	const handleViewItem = (version: ItemHistoryEntry) => {
 		const versionPath = Boolean(version.path) && path !== version.path ? version.path : path;
 
-		if (isDiffSupported) {
+		// If diff is supported, but the item is an asset, we don't show the ViewVersionDialog, instead we show the Preview dialog.
+		if (isDiffSupported && item?.systemType !== 'asset') {
 			dispatch(
 				batchActions([
 					fetchContentTypes(),
@@ -363,6 +364,7 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
 							control={<Switch color="primary" checked={compareMode} />}
 							label={<FormattedMessage defaultMessage="Compare" />}
 							labelPlacement="start"
+							disabled={versionsBranch.versions?.length <= 1}
 							onChange={(e) => {
 								setCompareMode((e.currentTarget as HTMLInputElement).checked);
 							}}
