@@ -81,7 +81,7 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
 		// Prevents crashing if the item is nullish
 		return null;
 	}
-	const isDisabledItem = item.stateMap.disabled;
+	const isDisabledItem = item.stateMap?.disabled;
 	// inWorkflow will only be true for type ContentItem (if they met the workflow criteria). Casting to ContentItem
 	// is only done on scenarios where `isWorkflow` is true.
 	const inWorkflow = isInWorkflow(item.stateMap) || item.systemType === 'folder';
