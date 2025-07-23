@@ -127,7 +127,9 @@
   * `Package`: Updated id to be of type `number`.
   * `CurrentFilters`: Removed `environment` and `path`, `state` and `page` properties. Added `target`, `states`, `approvalStates`, `submitter`, `reviewer`, `isScheduled`, `sort` and `offset` properties.
   * `PublishingStatusCodes`: Removed `processing`, `queued`, `error` and `readyWithErrors`.
-  * `PublishingStatus`: Removed `status`, `lockOwner`, `lockTTL`, `publishingTarget`, `submissionId`, `numberOfItems`, and `totalItems`. Added `currentTask` property.
+  * `PublishingStatus`: 
+    * Removed `status`, `lockOwner`, `lockTTL`, `publishingTarget`, `submissionId`, `numberOfItems`, and `totalItems`. Added `currentTask` property.
+    * Updated `state` property to be of type `'READY' | 'IN_PROGRESS' | 'COMPLETED'`
   * `PublishFormData`: Added `title` property.
   * `PublishingTarget`: updated `name` property to be of type `'live' | 'staging'`.
   * `PublishingParams`: Removed `optionalDependencies` and `sendEmailNotifications` properties. Added `paths`, `commitIds`, `requestApproval`, `publishAll` and `title` properties.
