@@ -53,11 +53,11 @@ const PasswordTextField = React.forwardRef<HTMLDivElement, PasswordTextFieldProp
       {...props}
       ref={ref}
       type={showPassword ? 'text' : 'password'}
-      inputProps={{
-        ref: inputRef
-      }}
-      InputProps={
-        visibilitySwitch
+      slotProps={{
+        htmlInput: {
+          ref: inputRef
+        },
+        input: visibilitySwitch
           ? {
               ...props.InputProps,
               endAdornment: (
@@ -74,7 +74,7 @@ const PasswordTextField = React.forwardRef<HTMLDivElement, PasswordTextFieldProp
               )
             }
           : props.InputProps
-      }
+      }}
     />
   );
 });

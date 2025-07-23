@@ -22,7 +22,11 @@ export const UltraStyledTooltip = (props: TooltipProps) => {
       {...props}
       slotProps={{
         ...props?.slotProps,
-        tooltip: { ...props.slotProps?.tooltip, sx: { ...props.slotProps?.tooltip?.sx, fontSize: 12 } }
+        tooltip: {
+          ...props.slotProps?.tooltip,
+          // TODO: handle slotProps of type `function` case.
+          sx: { ...(props.slotProps?.tooltip as TooltipProps)?.sx, fontSize: 12 }
+        }
       }}
     />
   );

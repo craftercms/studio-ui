@@ -141,19 +141,21 @@ function AuthFields(props: AuthFieldsProps) {
             true,
             inputs.submitted
           )}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton
-                  edge="end"
-                  aria-label="toggle password visibility"
-                  onClick={handleClickShowPassword}
-                  size="large"
-                >
-                  {showPassword ? <VisibilityOff /> : <Visibility />}
-                </IconButton>
-              </InputAdornment>
-            )
+          slotProps={{
+            input: {
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    edge="end"
+                    aria-label="toggle password visibility"
+                    onClick={handleClickShowPassword}
+                    size="large"
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              )
+            }
           }}
         />
       )}
@@ -171,19 +173,21 @@ function AuthFields(props: AuthFieldsProps) {
           helperText={renderHelperText(formatMessage(messages.token), inputs.repoToken, '', true, inputs.submitted)}
           onKeyPress={onKeyPress}
           onChange={handleInputChange}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton
-                  edge="end"
-                  aria-label="toggle password visibility"
-                  onClick={handleClickShowPassword}
-                  size="large"
-                >
-                  {showPassword ? <VisibilityOff /> : <Visibility />}
-                </IconButton>
-              </InputAdornment>
-            )
+          slotProps={{
+            input: {
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    edge="end"
+                    aria-label="toggle password visibility"
+                    onClick={handleClickShowPassword}
+                    size="large"
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              )
+            }
           }}
         />
       )}

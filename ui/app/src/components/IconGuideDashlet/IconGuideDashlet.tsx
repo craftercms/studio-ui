@@ -142,7 +142,7 @@ export function IconGuideDashlet(props: IconGuideDashletProps) {
             </Typography>
             <Grid container spacing={2}>
               {Object.keys(status).map((key) => (
-                <Grid key={key} item xs={6} sm={4} md={3} lg={2} className={classes.stateContainer}>
+                <Grid key={key} size={{ xs: 6, sm: 4, md: 3, lg: 2 }} className={classes.stateContainer}>
                   <ItemPublishingTargetIcon item={status[key]} className={classes.icon} />
                   <Typography variant="body2" component="span">
                     {getItemPublishingTargetText(status[key].stateMap)}
@@ -156,7 +156,7 @@ export function IconGuideDashlet(props: IconGuideDashletProps) {
             </Typography>
             <Grid container spacing={2}>
               {Object.keys(states).map((key) => (
-                <Grid key={key} item xs={6} sm={4} md={3} lg={2} className={classes.stateContainer}>
+                <Grid key={key} size={{ xs: 6, sm: 4, md: 3, lg: 2 }} className={classes.stateContainer}>
                   <ItemStateIcon item={states[key]} className={classes.icon} />
                   <Typography variant="body2" component="span">
                     {getItemStateText(states[key].stateMap)}
@@ -170,7 +170,7 @@ export function IconGuideDashlet(props: IconGuideDashletProps) {
             </Typography>
             <Grid container spacing={2}>
               {Object.keys(types).map((key) => (
-                <Grid key={key} item xs={6} sm={4} md={3} lg={2} className={classes.stateContainer}>
+                <Grid key={key} size={{ xs: 6, sm: 4, md: 3, lg: 2 }} className={classes.stateContainer}>
                   <ItemTypeIcon item={types[key]} className={classes.icon} />
                   <Typography variant="body2" component="span">
                     {formatMessage(messages[key])}

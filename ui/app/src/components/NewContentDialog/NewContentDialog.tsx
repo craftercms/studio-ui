@@ -16,7 +16,7 @@
 
 import React from 'react';
 import NewContentCard, { ContentSkeletonCard } from './NewContentCard';
-import { Grid } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import useStyles from './styles';
 import { ContentTypesGridProps, NewContentDialogProps } from './utils';
 import { NewContentDialogContainer } from './NewContentDialogContainer';
@@ -54,7 +54,7 @@ export function ContentTypesLoader(props: { numOfItems?: number; isCompact: bool
   return (
     <Grid container spacing={3} style={{ marginTop: '14px' }}>
       {items.map((value, i) => (
-        <Grid item key={i} xs={12} sm={!isCompact ? 4 : 6}>
+        <Grid key={i} size={{ xs: 12, sm: !isCompact ? 4 : 6 }}>
           <ContentSkeletonCard isCompact={isCompact} />
         </Grid>
       ))}
@@ -69,7 +69,7 @@ export function ContentTypesGrid(props: ContentTypesGridProps) {
   return (
     <Grid container spacing={3} className={classes.cardsContainer}>
       {filterContentTypes.map((content) => (
-        <Grid item key={content.label} xs={12} sm={!isCompact ? 4 : 6}>
+        <Grid key={content.label} size={{ xs: 12, sm: !isCompact ? 4 : 6 }}>
           <NewContentCard
             isCompact={isCompact}
             headerTitle={content.label}
