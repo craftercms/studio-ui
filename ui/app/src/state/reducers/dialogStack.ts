@@ -19,7 +19,8 @@ import { createReducer } from '@reduxjs/toolkit';
 import { nanoid } from 'nanoid';
 import { WidgetDialogProps } from '../../components/WidgetDialog/utils';
 import { popDialog, pushDialog, pushNonDialog, updateDialogState, updateNonDialogState } from '../actions/dialogStack';
-import type { FormsEngineDialogProps } from '../../components';
+import type { CodeEditorDialogProps, FormsEngineDialogProps } from '../../components';
+import type { LegacyFormDialogProps } from '../../components/LegacyFormDialog/utils';
 
 const reducer = createReducer<GlobalState['dialogStack']>(
 	{
@@ -45,8 +46,9 @@ const reducer = createReducer<GlobalState['dialogStack']>(
 								(payload.props as FormsEngineDialogProps).formProps.update?.path
 						);
 					} else {
-						// @ts-expect-error TS2339: Props may be type CodeEditorDialogProps or LegacyFormDialogProps.
-						return dialog.component === component && dialog.props.path === payload.props.path;
+						const payloadProps = payload.props as CodeEditorDialogProps | LegacyFormDialogProps;
+						const dialogProps = dialog.props as CodeEditorDialogProps | LegacyFormDialogProps;
+						return dialog.component === component && dialogProps.path === payloadProps.path;
 					}
 				});
 				if (dialogState) {
