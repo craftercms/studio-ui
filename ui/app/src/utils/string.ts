@@ -288,3 +288,16 @@ export function isEmpty(str: string): boolean {
 export function toBooleanString(bool: boolean): 'true' | 'false' {
 	return bool ? 'true' : 'false';
 }
+
+/**
+ * Counts the number of lines in a given text based on the break lines it has.
+ *
+ * @param text - The text to count lines in.
+ * @returns The number of lines in the text. Returns 0 if the text is empty or undefined.
+ */
+export function countLines(text: string): number {
+	if (!text) {
+		return 0;
+	}
+	return text.split('\n').length;
+}
