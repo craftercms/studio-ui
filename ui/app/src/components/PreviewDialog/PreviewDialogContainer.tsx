@@ -39,6 +39,8 @@ import palette from '../../styles/palette';
 import { popDialog, pushDialog } from '../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
 
+import { createComponentId } from '../../utils/system';
+
 export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
 	const {
 		title,
@@ -134,7 +136,7 @@ export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
 				popDialog({ id: dialogId }),
 				pushDialog({
 					id: codeEditorDialogId,
-					component: 'craftercms.components.CodeEditorDialog',
+					component: createComponentId('CodeEditorDialog'),
 					allowMinimize: true,
 					allowFullScreen: true,
 					props: {

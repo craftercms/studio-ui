@@ -45,6 +45,8 @@ import ApiResponseErrorState from '../ApiResponseErrorState/ApiResponseErrorStat
 import ApiResponse from '../../models/ApiResponse';
 import { pushDialog } from '../../state/actions/dialogStack';
 
+import { createComponentId } from '../../utils/system';
+
 export function InstallPluginDialogContainer(props: InstallPluginDialogProps) {
 	const siteId = useActiveSiteId();
 	const { installPermission = false, onInstall, installedPlugins = {} } = props;
@@ -134,7 +136,7 @@ export function InstallPluginDialogContainer(props: InstallPluginDialogProps) {
 				setInstallingLookup({ [plugin.id]: false });
 				dispatch(
 					batchActions([
-						pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response.response } }),
+						pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response.response } }),
 						unblockUI()
 					])
 				);

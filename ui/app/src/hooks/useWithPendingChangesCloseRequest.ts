@@ -21,6 +21,8 @@ import { EnhancedDialogProps as DialogProps } from '../components/EnhancedDialog
 import { popDialog, pushDialog } from '../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
 
+import { createComponentId } from '../utils/system';
+
 export function useWithPendingChangesCloseRequest(onClose: DialogProps['onClose']): DialogProps['onClose'] {
 	const dispatch = useDispatch();
 	const { formatMessage } = useIntl();
@@ -29,7 +31,7 @@ export function useWithPendingChangesCloseRequest(onClose: DialogProps['onClose'
 		dispatch(
 			pushDialog({
 				id: dialogId,
-				component: 'craftercms.components.ConfirmDialog',
+				component: createComponentId('ConfirmDialog'),
 				props: {
 					title: formatMessage(translations.pendingChanges),
 					onOk: () => {

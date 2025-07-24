@@ -81,7 +81,7 @@ import { createCustomDocumentEventListener } from '../../utils/dom';
 import { batchActions } from '../actions/misc';
 import StandardAction from '../../models/StandardAction';
 import { ProjectLifecycleEvent } from '../../models/ProjectLifecycleEvent';
-import { isDashboardAppUrl, isPreviewAppUrl, isProjectToolsAppUrl } from '../../utils/system';
+import { createComponentId, isDashboardAppUrl, isPreviewAppUrl, isProjectToolsAppUrl } from '../../utils/system';
 import { GlobalRoutes } from '../../env/routes';
 import { previewSwitch } from '../../services/security';
 import { getPublishingStatusState } from '../../components';
@@ -516,7 +516,7 @@ const systemEpics: CrafterCMSEpic[] = [
 				const dialogId = nanoid();
 				return pushDialog({
 					id: dialogId,
-					component: 'craftercms.components.ConfirmDialog',
+					component: createComponentId('ConfirmDialog'),
 					props: {
 						body: getIntl().formatMessage(msgs.siteSwitchedOnAnotherTab, {
 							newProject,

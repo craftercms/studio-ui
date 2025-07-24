@@ -104,13 +104,13 @@ export function pickShowContentFormAction(oldProps: LegacyFormDialogProps) {
 	const useLegacy = window.localStorage.getItem('useLegacyFormEngine') === 'true';
 	return useLegacy
 		? pushDialog({
-				component: 'craftercms.components.LegacyFormDialog',
+				component: createComponentId('LegacyFormDialog'),
 				allowFullScreen: true,
 				allowMinimize: true,
 				props: oldProps
 			})
 		: pushDialog({
-				component: 'craftercms.components.FormsEngineDialog',
+				component: createComponentId('FormsEngineDialog'),
 				allowFullScreen: true,
 				allowMinimize: true,
 				props: {
@@ -147,4 +147,8 @@ export function createUseContextHook<T, K extends keyof T>(
 		}
 		return selector?.(instance) ?? instance;
 	};
+}
+
+export function createComponentId(componentName: string) {
+	return `craftercms.components.${componentName}`;
 }

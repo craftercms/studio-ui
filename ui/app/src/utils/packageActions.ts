@@ -25,6 +25,8 @@ import { hasApproveAction, hasCancelAction, hasRejectAction, hasResubmitAction }
 import { popDialog, pushDialog } from '../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
 
+import { createComponentId } from './system';
+
 const translations = defineMessages({
 	review: {
 		defaultMessage: 'Review'
@@ -116,7 +118,7 @@ export const packageActionDispatcher = ({
 			dispatch(
 				pushDialog({
 					id: dialogId,
-					component: 'craftercms.components.PublishPackageReviewDialog',
+					component: createComponentId('PublishPackageReviewDialog'),
 					props: {
 						packageId: (pkg as PublishPackage).id,
 						onSuccess: () => {
@@ -133,7 +135,7 @@ export const packageActionDispatcher = ({
 			dispatch(
 				pushDialog({
 					id: dialogId,
-					component: 'craftercms.components.PublishingPackageResubmitDialog',
+					component: createComponentId('PublishingPackageResubmitDialog'),
 					props: {
 						pkg,
 						type: option,
@@ -151,7 +153,7 @@ export const packageActionDispatcher = ({
 				dispatch(
 					pushDialog({
 						id: dialogId,
-						component: 'craftercms.components.BulkCancelPackageDialog',
+						component: createComponentId('BulkCancelPackageDialog'),
 						props: {
 							packages: pkg,
 							onSuccess: () => dispatch(batchActions([popDialog({ id: dialogId }), onActionSuccess].filter(Boolean)))
@@ -163,7 +165,7 @@ export const packageActionDispatcher = ({
 				dispatch(
 					pushDialog({
 						id: dialogId,
-						component: 'craftercms.components.CancelPackageDialog',
+						component: createComponentId('CancelPackageDialog'),
 						props: {
 							packageId: pkg.id,
 							onSuccess: () => dispatch(batchActions([popDialog({ id: dialogId }), onActionSuccess].filter(Boolean)))

@@ -60,6 +60,8 @@ import { svgIconClasses, typographyClasses } from '@mui/material';
 import Box from '@mui/material/Box';
 import { pushDialog } from '../../state/actions/dialogStack';
 
+import { createComponentId } from '../../utils/system';
+
 const rootPrefix = '{root}_';
 
 const translations = defineMessages({
@@ -623,7 +625,7 @@ export function PreviewPageExplorerPanel() {
 		if (path) {
 			dispatch(
 				pushDialog({
-					component: 'craftercms.components.ItemMegaMenu',
+					component: createComponentId('ItemMegaMenu'),
 					props: {
 						path: path,
 						anchorReference: 'anchorPosition',

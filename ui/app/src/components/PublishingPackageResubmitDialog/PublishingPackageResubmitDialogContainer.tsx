@@ -47,6 +47,8 @@ import { LoadingState } from '../LoadingState';
 import useActiveUser from '../../hooks/useActiveUser';
 import { pushDialog, updateDialogState } from '../../state/actions/dialogStack';
 
+import { createComponentId } from '../../utils/system';
+
 export function PublishingPackageResubmitDialogContainer(props: PublishingPackageResubmitDialogContainerProps) {
 	const { pkg, type, isSubmitting, onSuccess, onClose, dialogId } = props;
 	const siteId = useActiveSiteId();
@@ -184,7 +186,7 @@ export function PublishingPackageResubmitDialogContainer(props: PublishingPackag
 					batchActions(
 						[
 							dialogId && updateDialogState({ id: dialogId, props: { isSubmitting: false } }),
-							pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response.response } })
+							pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response.response } })
 						].filter(Boolean)
 					)
 				);

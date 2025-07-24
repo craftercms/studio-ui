@@ -45,7 +45,7 @@ import { useActiveUser } from '../../hooks/useActiveUser';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import { useSitesBranch } from '../../hooks/useSitesBranch';
 import Paper from '@mui/material/Paper';
-import { getSystemLink } from '../../utils/system';
+import { createComponentId, getSystemLink } from '../../utils/system';
 import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { DuplicateSiteDialog } from '../DuplicateSiteDialog';
 import Card from '@mui/material/Card';
@@ -132,7 +132,7 @@ export function SiteManagement() {
 			},
 			error({ response: { response } }) {
 				setDisabledSitesLookup({ [site.id]: false });
-				dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } }));
+				dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response } }));
 			}
 		});
 	};
@@ -142,7 +142,7 @@ export function SiteManagement() {
 		dispatch(
 			pushDialog({
 				id: dialogId,
-				component: 'craftercms.components.EditSiteDialog',
+				component: createComponentId('EditSiteDialog'),
 				props: {
 					site,
 					onSaveSuccess: () => dispatch(popDialog({ id: dialogId }))

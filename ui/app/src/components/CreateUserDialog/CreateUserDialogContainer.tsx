@@ -50,6 +50,8 @@ import { PasswordStrengthDisplayPopper } from '../PasswordStrengthDisplayPopper'
 import Box from '@mui/material/Box';
 import { pushDialog } from '../../state/actions/dialogStack';
 
+import { createComponentId } from '../../utils/system';
+
 const translations = defineMessages({
 	invalidMinLength: {
 		id: 'createUserDialog.invalidMinLength',
@@ -123,7 +125,7 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
 							functionRefs.current.onSubmittingAndOrPendingChange({
 								isSubmitting: false
 							});
-							dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } }));
+							dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response } }));
 						}
 					});
 			} else {

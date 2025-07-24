@@ -24,6 +24,8 @@ import { LauncherStateProps } from '../Launcher/Launcher';
 import AppsRounded from '@mui/icons-material/AppsRounded';
 import { pushDialog } from '../../state/actions/dialogStack';
 
+import { createComponentId } from '../../utils/system';
+
 const messages = defineMessages({
 	menu: {
 		id: 'launcherOpenerButton.menuTooltip',
@@ -52,7 +54,7 @@ export function LauncherOpenerButton(props: LauncherOpenerButtonProps) {
 		dispatch(
 			pushDialog({
 				id: 'LAUNCHER',
-				component: 'craftercms.components.Launcher',
+				component: createComponentId('Launcher'),
 				props: { anchor: `#${id}`, ...launcherProps }
 			})
 		);

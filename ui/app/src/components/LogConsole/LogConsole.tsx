@@ -34,6 +34,8 @@ import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useMount } from '../../hooks/useMount';
 import { pushDialog } from '../../state/actions/dialogStack';
 
+import { createComponentId } from '../../utils/system';
+
 interface LogConsoleManagementProps {
 	logType?: 'studio' | 'preview';
 	embedded?: boolean;
@@ -64,7 +66,7 @@ export function LogConsole(props: LogConsoleManagementProps) {
 				error(response) {
 					response = response.response ? response.response.response : response;
 					setError(response);
-					dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } }));
+					dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response } }));
 				}
 			});
 		},

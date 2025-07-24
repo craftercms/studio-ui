@@ -53,6 +53,7 @@ import { LegacyFormDialogStateProps } from '../../components/LegacyFormDialog/ut
 import { CodeEditorDialogStateProps, type PreviewDialogStateProps } from '../../components';
 import { popDialog, pushDialog, updateDialogState } from '../actions/dialogStack';
 import { nanoid } from 'nanoid';
+import { createComponentId } from '../../utils/system';
 
 function getDialogNameFromType(type: string): string {
 	let name = getDialogActionNameFromType(type);
@@ -165,7 +166,7 @@ const dialogEpics: CrafterCMSEpic[] = [
 					return of(
 						pushDialog({
 							id: dialogId,
-							component: 'craftercms.components.ConfirmDialog',
+							component: createComponentId('ConfirmDialog'),
 							props: {
 								body: getIntl().formatMessage(formEngineMessages.inProgressConfirmation),
 								imageUrl: infoGraphic,

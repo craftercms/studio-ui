@@ -61,7 +61,7 @@ import SystemType from '../../models/SystemType';
 import { PathNavigatorTreeItemProps } from './PathNavigatorTreeItem';
 import { UNDEFINED } from '../../utils/constants';
 import SimpleAjaxError from '../../models/SimpleAjaxError';
-import { pickShowContentFormAction } from '../../utils/system';
+import { createComponentId, pickShowContentFormAction } from '../../utils/system';
 import { pushDialog } from '../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
 
@@ -272,7 +272,7 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
 		const left = anchorRect.left + getOffsetLeft(anchorRect, 'left');
 		dispatch(
 			pushDialog({
-				component: 'craftercms.components.ItemMegaMenu',
+				component: createComponentId('ItemMegaMenu'),
 				props: {
 					path,
 					anchorReference: 'anchorPosition',
@@ -320,7 +320,7 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
 			dispatch(
 				pushDialog({
 					id: nanoid(),
-					component: 'craftercms.components.PreviewDialog',
+					component: createComponentId('PreviewDialog'),
 					allowMinimize: true,
 					allowFullScreen: true,
 					props: {
@@ -335,7 +335,7 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
 			dispatch(
 				pushDialog({
 					id: nanoid(),
-					component: 'craftercms.components.PreviewDialog',
+					component: createComponentId('PreviewDialog'),
 					allowMinimize: true,
 					allowFullScreen: true,
 					props: {

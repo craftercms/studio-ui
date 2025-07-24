@@ -30,6 +30,8 @@ import { isInvalidEmail, validateFieldMinLength } from '../UserManagement/utils'
 import { pluckProps } from '../../utils/object';
 import { pushDialog } from '../../state/actions/dialogStack';
 
+import { createComponentId } from '../../utils/system';
+
 const translations = defineMessages({
 	userDeleted: {
 		id: 'userInfoDialog.userDeleted',
@@ -107,7 +109,7 @@ export function EditUserDialogContainer(props: EditUserDialogContainerProps) {
 					);
 				},
 				error({ response: { response } }) {
-					dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } }));
+					dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response } }));
 				}
 			});
 		} else {
@@ -120,7 +122,7 @@ export function EditUserDialogContainer(props: EditUserDialogContainerProps) {
 					);
 				},
 				error({ response: { response } }) {
-					dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } }));
+					dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response } }));
 				}
 			});
 		}
@@ -148,7 +150,7 @@ export function EditUserDialogContainer(props: EditUserDialogContainerProps) {
 				});
 			},
 			error({ response: { response } }) {
-				dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } }));
+				dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response } }));
 				fnRefs.current.onSubmittingAndOrPendingChange({
 					isSubmitting: false
 				});
@@ -168,7 +170,7 @@ export function EditUserDialogContainer(props: EditUserDialogContainerProps) {
 				fnRefs.current.onUserEdited();
 			},
 			error({ response: { response } }) {
-				dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } }));
+				dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response } }));
 			}
 		});
 	};

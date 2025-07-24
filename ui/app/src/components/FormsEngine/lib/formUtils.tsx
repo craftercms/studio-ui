@@ -71,6 +71,8 @@ import { unlockItem } from '../../../state/actions/content';
 import ApiResponse from '../../../models/ApiResponse';
 import { getFormsEngineCloseAfterSave, getFormsEngineCollapseToCKey } from '../../../utils/state';
 
+import { createComponentId } from '../../../utils/system';
+
 /**
  * Returns the scroll container for the form's container.
  * TODO: After much tweaking and testing, managed to get the form container box itself to be the scrolling element. Asses removal.
@@ -230,7 +232,7 @@ export function showAlert({
 	dispatch(
 		pushDialog({
 			id,
-			component: 'craftercms.components.AlertDialog',
+			component: createComponentId('AlertDialog'),
 			allowFullScreen: false,
 			allowMinimize: false,
 			props: {

@@ -25,6 +25,8 @@ import SiteExplorer from '../../icons/SiteExplorer';
 import { popDialog, pushDialog } from '../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
 
+import { createComponentId } from '../../utils/system';
+
 const messages = defineMessages({
 	searchIn: {
 		id: 'pathSelector.inputPlaceholderText',
@@ -64,7 +66,7 @@ export function PathSelector(props: PathSelectorProps) {
 		dispatch(
 			pushDialog({
 				id: dialogId,
-				component: 'craftercms.components.PathSelectionDialog',
+				component: createComponentId('PathSelectionDialog'),
 				props: {
 					rootPath: rootPath ?? `/${path.split('/')[1] ?? ''}`,
 					initialPath: path,

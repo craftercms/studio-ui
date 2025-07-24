@@ -35,6 +35,8 @@ import { useUnmount } from '../../hooks/useUnmount';
 import Box from '@mui/material/Box';
 import { pushDialog } from '../../state/actions/dialogStack';
 
+import { createComponentId } from '../../utils/system';
+
 const translations: { [id: string]: any } = defineMessages({
 	mark: {
 		id: 'contentLocalization.mark',
@@ -184,7 +186,7 @@ function ContentLocalizationDialogUI(props: ContentLocalizationDialogProps) {
 						});
 					},
 					({ response }) => {
-						dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } }));
+						dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response } }));
 					}
 				);
 				break;

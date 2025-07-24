@@ -51,6 +51,8 @@ import Tooltip from '@mui/material/Tooltip';
 import { CreatePreviewTokenDialog } from '../CreatePreviewTokenDialog';
 import { pushDialog } from '../../state/actions/dialogStack';
 
+import { createComponentId } from '../../utils/system';
+
 const StyledTableCell = styled(TableCell)(() => ({
 	padding: '5px'
 }));
@@ -199,7 +201,7 @@ export function TokenManagement() {
 				setTokens(_tokens);
 				dispatch(
 					pushDialog({
-						component: 'craftercms.components.ErrorDialog',
+						component: createComponentId('ErrorDialog'),
 						props: { error: response }
 					})
 				);
@@ -229,7 +231,7 @@ export function TokenManagement() {
 					...checkedLookup,
 					[id]: false
 				});
-				dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } }));
+				dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response } }));
 			}
 		);
 	};
@@ -262,7 +264,7 @@ export function TokenManagement() {
 					},
 					(response) => {
 						fetchTokens();
-						dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } }));
+						dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response } }));
 					}
 				);
 				break;

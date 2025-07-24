@@ -33,7 +33,7 @@ import { usePreviewState } from '../../hooks/usePreviewState';
 import ContentInstance from '../../models/ContentInstance';
 import { pushDialog } from '../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
-import { pickShowContentFormAction } from '../../utils/system';
+import { createComponentId, pickShowContentFormAction } from '../../utils/system';
 import { popCodeEditorDialog } from '../../state/actions/dialogs';
 
 interface EditFormPanelProps {
@@ -205,7 +205,7 @@ function EditFormPanelBody(props: EditFormPanelBodyProps) {
 			dispatch(
 				pushDialog({
 					id: dialogId,
-					component: 'craftercms.components.CodeEditorDialog',
+					component: createComponentId('CodeEditorDialog'),
 					props: {
 						path:
 							type === 'template'

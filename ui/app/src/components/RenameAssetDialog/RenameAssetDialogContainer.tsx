@@ -37,6 +37,8 @@ import { applyAssetNameRules } from '../../utils/content';
 import { DialogBody } from '../DialogBody';
 import { pushDialog, updateDialogState } from '../../state/actions/dialogStack';
 
+import { createComponentId } from '../../utils/system';
+
 export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
 	const {
 		onClose,
@@ -84,7 +86,7 @@ export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
 				onRenamed?.({ path, name });
 			},
 			error({ response }) {
-				dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response.response } }));
+				dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response.response } }));
 				dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: false } }));
 			}
 		});

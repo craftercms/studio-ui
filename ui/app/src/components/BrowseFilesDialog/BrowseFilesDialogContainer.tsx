@@ -39,6 +39,8 @@ import { prepareSearchParams } from '../Search/utils';
 import { popDialog, pushDialog } from '../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
 
+import { createComponentId } from '../../utils/system';
+
 const viewModes: MediaCardViewModes[] = ['card', 'compact', 'row'];
 const defaultPreselectedPaths = [];
 
@@ -204,7 +206,7 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
 		dispatch(
 			pushDialog({
 				id: dialogId,
-				component: 'craftercms.components.SingleFileUploadDialog',
+				component: createComponentId('SingleFileUploadDialog'),
 				props: {
 					site,
 					path: currentPath,

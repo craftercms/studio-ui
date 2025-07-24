@@ -51,6 +51,8 @@ import { PublishDialogForm } from './PublishDialogForm';
 import useActiveUser from '../../hooks/useActiveUser';
 import { pushDialog, updateDialogState } from '../../state/actions/dialogStack';
 
+import { createComponentId } from '../../utils/system';
+
 export type DependencyType = 'soft' | 'hard';
 export type DependencyMap = Record<string, DependencyType>;
 export type DependencyDataState = {
@@ -253,7 +255,7 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 					batchActions(
 						[
 							dialogId && updateDialogState({ id: dialogId, props: { isSubmitting: false } }),
-							pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response.response } })
+							pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response.response } })
 						].filter(Boolean)
 					)
 				);

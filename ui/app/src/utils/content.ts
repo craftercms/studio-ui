@@ -82,7 +82,7 @@ import { AnyAction } from 'redux';
 import { findParentModelId, getModelIdFromInheritedField, isInheritedField } from './model';
 import { pushDialog } from '../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
-import { pickShowContentFormAction } from './system';
+import { createComponentId, pickShowContentFormAction } from './system';
 import { popCodeEditorDialog } from '../state/actions/dialogs';
 
 export function isEditableAsset(path: string) {
@@ -1072,7 +1072,7 @@ export const openItemEditor = (
 		dispatch(
 			pushDialog({
 				id: dialogId,
-				component: 'craftercms.components.CodeEditorDialog',
+				component: createComponentId('CodeEditorDialog'),
 				props: {
 					site: siteId,
 					authoringBase,

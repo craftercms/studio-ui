@@ -21,6 +21,8 @@ import { defineMessages, useIntl } from 'react-intl';
 import { popDialog, pushDialog } from '../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
 
+import { createComponentId } from '../utils/system';
+
 const messages = defineMessages({
 	main: {
 		id: 'common.minimizedDialogSiteSwitchCheck',
@@ -37,7 +39,7 @@ export function useMinimizedDialogWarning() {
 			store.dispatch(
 				pushDialog({
 					id: dialogId,
-					component: 'craftercms.components.ConfirmDialog',
+					component: createComponentId('ConfirmDialog'),
 					props: {
 						body: formatMessage(messages.main),
 						imageUrl: infoGraphic,

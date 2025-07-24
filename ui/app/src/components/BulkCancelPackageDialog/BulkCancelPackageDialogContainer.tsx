@@ -35,6 +35,8 @@ import { batchActions } from '../../state/actions/misc';
 import { showSystemNotification } from '../../state/actions/system';
 import { pushDialog, updateDialogState } from '../../state/actions/dialogStack';
 
+import { createComponentId } from '../../utils/system';
+
 export interface BulkCancelPackageDialogContainerProps
 	extends BulkCancelPackageDialogBaseProps,
 		Pick<BulkCancelPackageDialogProps, 'onSuccess' | 'onClose' | 'isSubmitting' | 'dialogId'> {}
@@ -70,7 +72,7 @@ export function BulkCancelPackageDialogContainer(props: BulkCancelPackageDialogC
 					batchActions(
 						[
 							dialogId && updateDialogState({ id: dialogId, props: { isSubmitting: false } }),
-							pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response.response } })
+							pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response.response } })
 						].filter(Boolean)
 					)
 				);

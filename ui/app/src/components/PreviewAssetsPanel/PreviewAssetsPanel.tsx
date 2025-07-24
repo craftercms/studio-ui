@@ -49,6 +49,8 @@ import Box from '@mui/material/Box';
 import { pushDialog } from '../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
 
+import { createComponentId } from '../../utils/system';
+
 const translations = defineMessages({
 	previewAssetsPanelTitle: {
 		id: 'previewAssetsPanel.title',
@@ -255,7 +257,7 @@ export function PreviewAssetsPanel() {
 												dispatch(
 													pushDialog({
 														id: nanoid(),
-														component: 'craftercms.components.PreviewDialog',
+														component: createComponentId('PreviewDialog'),
 														allowMinimize: true,
 														allowFullScreen: true,
 														props: {

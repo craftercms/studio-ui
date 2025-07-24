@@ -39,7 +39,7 @@ import { IconButtonProps } from '@mui/material/IconButton';
 import useFetchContentItems from '../../hooks/useFetchContentItems';
 import { pushDialog } from '../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
-import { pickShowContentFormAction } from '../../utils/system';
+import { createComponentId, pickShowContentFormAction } from '../../utils/system';
 
 export const drawerWidth = 300;
 
@@ -296,7 +296,7 @@ export const useSearchState = ({
 		const path = item.path;
 		dispatch(
 			pushDialog({
-				component: 'craftercms.components.ItemMegaMenu',
+				component: createComponentId('ItemMegaMenu'),
 				props: {
 					path,
 					anchorReference: 'anchorPosition',
@@ -328,7 +328,7 @@ export const useSearchState = ({
 					console.error(error);
 					dispatch(
 						pushDialog({
-							component: 'craftercms.components.ErrorDialog',
+							component: createComponentId('ErrorDialog'),
 							props: {
 								error: {
 									message: formatMessage(translations.unknownError)
@@ -395,7 +395,7 @@ export const useSearchState = ({
 				dispatch(
 					pushDialog({
 						id: nanoid(),
-						component: 'craftercms.components.PreviewDialog',
+						component: createComponentId('PreviewDialog'),
 						allowMinimize: true,
 						allowFullScreen: true,
 						props: {
@@ -411,7 +411,7 @@ export const useSearchState = ({
 				dispatch(
 					pushDialog({
 						id: nanoid(),
-						component: 'craftercms.components.PreviewDialog',
+						component: createComponentId('PreviewDialog'),
 						allowMinimize: true,
 						allowFullScreen: true,
 						props: {
@@ -432,7 +432,7 @@ export const useSearchState = ({
 				dispatch(
 					pushDialog({
 						id: nanoid(),
-						component: 'craftercms.components.PreviewDialog',
+						component: createComponentId('PreviewDialog'),
 						allowMinimize: true,
 						allowFullScreen: true,
 						props: {
@@ -447,7 +447,7 @@ export const useSearchState = ({
 				dispatch(
 					pushDialog({
 						id: nanoid(),
-						component: 'craftercms.components.PreviewDialog',
+						component: createComponentId('PreviewDialog'),
 						allowMinimize: true,
 						allowFullScreen: true,
 						props: {
@@ -463,7 +463,7 @@ export const useSearchState = ({
 				dispatch(
 					pushDialog({
 						id: nanoid(),
-						component: 'craftercms.components.PreviewDialog',
+						component: createComponentId('PreviewDialog'),
 						allowMinimize: true,
 						allowFullScreen: true,
 						props: {
@@ -488,7 +488,7 @@ export const useSearchState = ({
 				dispatch(
 					pushDialog({
 						id: nanoid(),
-						component: 'craftercms.components.PreviewDialog',
+						component: createComponentId('PreviewDialog'),
 						allowMinimize: true,
 						allowFullScreen: true,
 						props: {

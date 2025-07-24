@@ -30,7 +30,7 @@ import InputBase from '@mui/material/InputBase';
 import Button from '@mui/material/Button';
 import Snackbar from '@mui/material/Snackbar';
 import { useSnackbar } from 'notistack';
-import { copyToClipboard } from '../../../utils/system';
+import { copyToClipboard, createComponentId } from '../../../utils/system';
 import PublishCommitDialog from '../PublishCommitDialog/PublishCommitDialog';
 import useSpreadState from '../../../hooks/useSpreadState';
 import RepoGridSkeleton from './RepoGridSkeleton';
@@ -146,7 +146,7 @@ export function RepoGrid(props: RepoGridProps) {
 		pushToRemoteDialogState.onClose();
 		dispatch(
 			pushDialog({
-				component: 'craftercms.components.ErrorDialog',
+				component: createComponentId('ErrorDialog'),
 				props: { error: response }
 			})
 		);
@@ -165,7 +165,7 @@ export function RepoGrid(props: RepoGridProps) {
 			({ response }) => {
 				dispatch(
 					pushDialog({
-						component: 'craftercms.components.ErrorDialog',
+						component: createComponentId('ErrorDialog'),
 						props: { error: response }
 					})
 				);

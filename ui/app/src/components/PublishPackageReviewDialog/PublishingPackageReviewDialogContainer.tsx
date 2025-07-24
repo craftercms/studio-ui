@@ -53,6 +53,8 @@ import { showSystemNotification } from '../../state/actions/system';
 import { hasApproveAction, hasRejectAction } from '../../utils/content';
 import { pushDialog, updateDialogState } from '../../state/actions/dialogStack';
 
+import { createComponentId } from '../../utils/system';
+
 export type PackageReviewAction = 'approve' | 'reject';
 interface InternalDialogState {
 	action: PackageReviewAction;
@@ -214,7 +216,7 @@ export function PublishingPackageReviewDialogContainer(props: PublishingPackageR
 						batchActions(
 							[
 								dialogId && updateDialogState({ id: dialogId, props: { isSubmitting: false } }),
-								pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response.response } })
+								pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response.response } })
 							].filter(Boolean)
 						)
 					);
@@ -239,7 +241,7 @@ export function PublishingPackageReviewDialogContainer(props: PublishingPackageR
 						batchActions(
 							[
 								dialogId && updateDialogState({ id: dialogId, props: { isSubmitting: false } }),
-								pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response.response } })
+								pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response.response } })
 							].filter(Boolean)
 						)
 					);

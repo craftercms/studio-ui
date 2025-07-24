@@ -45,7 +45,7 @@ import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { LoadingState } from '../LoadingState';
 import { nanoid } from 'nanoid';
 import { pushDialog } from '../../state/actions/dialogStack';
-import { pickShowContentFormAction } from '../../utils/system';
+import { createComponentId, pickShowContentFormAction } from '../../utils/system';
 import useEnv from '../../hooks/useEnv';
 
 const translations = defineMessages({
@@ -283,7 +283,7 @@ const QuickCreate = forwardRef<HTMLButtonElement, { item?: ContentItem }>((props
 		dispatch(
 			pushDialog({
 				id: dialogId,
-				component: 'craftercms.components.NewContentDialog',
+				component: createComponentId('NewContentDialog'),
 				props: {
 					item: lookupItemByPath(currentPreviewItemPath, items),
 					onContentTypeSelected: ({ path, contentType }) => {

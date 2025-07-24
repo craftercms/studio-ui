@@ -93,6 +93,8 @@ import useConsolidatedItemPickerData, {
 import { useExtractItemPickerDataSources } from '../dataSourceHooks/useExtractItemPickerDataSources';
 import { Dispatch as ReduxDispatch } from 'redux';
 
+import { createComponentId } from '../../../utils/system';
+
 const SortableList = lazy(() => import('../components/SortableList'));
 const TouchSortableList = lazy(() => import('../components/TouchSortableList'));
 
@@ -405,7 +407,7 @@ const showBrowseFilesDialog = ({
 	dispatch(
 		pushDialog({
 			id,
-			component: 'craftercms.components.BrowseFilesDialog',
+			component: createComponentId('BrowseFilesDialog'),
 			props: {
 				path,
 				multiSelect: true,
@@ -436,7 +438,7 @@ const showSearchDialog = ({
 	dispatch(
 		pushNonDialog({
 			id,
-			component: 'craftercms.components.Search',
+			component: createComponentId('Search'),
 			props: {
 				mode: 'select',
 				embedded: true,

@@ -21,6 +21,8 @@ import useActiveSiteId from './useActiveSiteId';
 import { pushDialog } from '../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
 
+import { createComponentId } from '../utils/system';
+
 export function useShowPublishingStatusDialog() {
 	const { formatMessage } = useIntl();
 	const dispatch = useDispatch();
@@ -38,11 +40,11 @@ export function useShowPublishingStatusDialog() {
 				userRoles.some((role) => role.toLowerCase() === 'developer' || role.toLowerCase() === 'admin')
 				? pushDialog({
 						id: dialogId,
-						component: 'craftercms.components.WidgetDialog',
+						component: createComponentId('WidgetDialog'),
 						props: {
 							title: formatMessage({ defaultMessage: 'Publishing' }),
 							widget: {
-								id: 'craftercms.components.PublishingDashboard',
+								id: createComponentId('PublishingDashboard'),
 								configuration: {
 									embedded: true
 								}
@@ -50,7 +52,7 @@ export function useShowPublishingStatusDialog() {
 						}
 					})
 				: pushDialog({
-						component: 'craftercms.components.PublishingStatusDialog'
+						component: createComponentId('PublishingStatusDialog')
 					})
 		);
 	};

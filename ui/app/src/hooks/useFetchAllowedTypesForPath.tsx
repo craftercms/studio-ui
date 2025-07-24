@@ -23,6 +23,8 @@ import { map } from 'rxjs/operators';
 import useActiveSiteId from './useActiveSiteId';
 import { pushDialog } from '../state/actions/dialogStack';
 
+import { createComponentId } from '../utils/system';
+
 export function useFetchAllowedTypesForPath(path: string, responseFilterFn?: (types: ContentType[]) => ContentType[]) {
 	const site = useActiveSiteId();
 	const dispatch = useDispatch();
@@ -42,7 +44,7 @@ export function useFetchAllowedTypesForPath(path: string, responseFilterFn?: (ty
 					},
 					error(response) {
 						setIsFetching(false);
-						dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } }));
+						dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response } }));
 					}
 				});
 			return () => {

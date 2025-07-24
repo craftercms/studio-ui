@@ -30,6 +30,8 @@ import RefreshRounded from '@mui/icons-material/RefreshRounded';
 import Tooltip from '@mui/material/Tooltip';
 import { pushDialog } from '../../state/actions/dialogStack';
 
+import { createComponentId } from '../../utils/system';
+
 const messages = defineMessages({
 	levelChangedSuccess: {
 		id: 'loggingLevelsManagement.levelChangedSuccessMessage',
@@ -80,7 +82,7 @@ export function LogLevelManagement() {
 				setFetching(false);
 			},
 			error({ response }) {
-				dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } }));
+				dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response } }));
 				setFetching(false);
 			}
 		});
@@ -102,7 +104,7 @@ export function LogLevelManagement() {
 				);
 			},
 			error(response) {
-				dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } }));
+				dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response } }));
 			}
 		});
 	};

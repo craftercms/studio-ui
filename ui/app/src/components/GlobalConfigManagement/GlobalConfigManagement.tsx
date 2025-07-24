@@ -39,6 +39,8 @@ import { GlobalRoutes } from '../../env/routes';
 import { popDialog, pushDialog } from '../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
 
+import { createComponentId } from '../../utils/system';
+
 const translations = defineMessages({
 	configSaved: {
 		id: 'globalConfig.configSaved',
@@ -98,7 +100,7 @@ export function GlobalConfigManagement() {
 			dispatch(
 				pushDialog({
 					id: dialogId,
-					component: 'craftercms.components.ConfirmDialog',
+					component: createComponentId('ConfirmDialog'),
 					props: {
 						body: <FormattedMessage defaultMessage="You left unsaved changes. Go back and continue editing?" />,
 						onCancel: () => {

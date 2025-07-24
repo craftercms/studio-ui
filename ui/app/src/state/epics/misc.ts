@@ -35,7 +35,7 @@ import { getFileNameFromPath, getParentPath } from '../../utils/path';
 import { popPiece } from '../../utils/string';
 import { associateTemplate } from '../actions/preview';
 import { pushDialog } from '../actions/dialogStack';
-import { pickShowContentFormAction } from '../../utils/system';
+import { createComponentId, pickShowContentFormAction } from '../../utils/system';
 import { nanoid } from 'nanoid';
 import { popCodeEditorDialog } from '../actions/dialogs';
 
@@ -97,7 +97,7 @@ const epics = [
 							return batchActions([
 								pushDialog({
 									id: dialogId,
-									component: 'craftercms.components.CodeEditorDialog',
+									component: createComponentId('CodeEditorDialog'),
 									allowFullScreen: true,
 									allowMinimize: true,
 									props: {
@@ -125,7 +125,7 @@ const epics = [
 													associateTemplate({ contentTypeId: contentType, displayTemplate: path }),
 												pushDialog({
 													id: dialogId,
-													component: 'craftercms.components.CodeEditorDialog',
+													component: createComponentId('CodeEditorDialog'),
 													props: {
 														site: state.sites.active,
 														path,
@@ -142,7 +142,7 @@ const epics = [
 							} else {
 								return of(
 									batchActions([
-										pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response.response } }),
+										pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response.response } }),
 										unblockUI()
 									])
 								);

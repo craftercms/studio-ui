@@ -22,6 +22,8 @@ import type { ConfirmDialogProps } from '../components';
 import type { Theme } from '@mui/material';
 import type { SxProps } from '@mui/system';
 
+import { createComponentId } from './system';
+
 export const displayWithPendingChangesConfirm = (
 	dispatch: ReduxDispatch,
 	onClose: () => void,
@@ -31,7 +33,7 @@ export const displayWithPendingChangesConfirm = (
 	dispatch(
 		pushDialog({
 			id,
-			component: 'craftercms.components.ConfirmDialog',
+			component: createComponentId('ConfirmDialog'),
 			props: {
 				title: message,
 				onOk() {

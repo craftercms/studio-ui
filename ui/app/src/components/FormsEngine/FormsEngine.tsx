@@ -118,6 +118,8 @@ import { displayWithPendingChangesConfirm } from '../../utils/ui';
 import useActiveUser from '../../hooks/useActiveUser';
 import FormBackToTop from './components/FormBackToTop';
 
+import { createComponentId } from '../../utils/system';
+
 export interface FormSavePromiseResult {
 	close: boolean;
 }
@@ -783,7 +785,7 @@ function FormOrchestrator(props: FormsEngineProps) {
 										onClick={() => {
 											dispatch(
 												pushDialog({
-													component: 'craftercms.components.ViewPackagesDialog',
+													component: createComponentId('ViewPackagesDialog'),
 													props: { item } as ViewPackagesDialogProps
 												})
 											);

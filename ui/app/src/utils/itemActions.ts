@@ -100,7 +100,7 @@ import { fetchDependant } from '../services/dependencies';
 import { NewContentDialogProps } from '../components/NewContentDialog/utils';
 import { nanoid } from 'nanoid';
 import { popDialog, pushDialog, updateDialogState } from '../state/actions/dialogStack';
-import { pickShowContentFormAction } from './system';
+import { createComponentId, pickShowContentFormAction } from './system';
 
 export type ContextMenuOptionDescriptor<ID extends string = string> = {
 	id: ID;
@@ -527,7 +527,7 @@ export const itemActionDispatcher = ({
 				dispatch(
 					pushDialog({
 						id: dialogId,
-						component: 'craftercms.components.CreateFolderDialog',
+						component: createComponentId('CreateFolderDialog'),
 						props: {
 							path: item.path,
 							allowBraces: item.path.startsWith('/scripts/rest'),
@@ -545,7 +545,7 @@ export const itemActionDispatcher = ({
 					dispatch(
 						pushDialog({
 							id: dialogId,
-							component: 'craftercms.components.CreateFolderDialog',
+							component: createComponentId('CreateFolderDialog'),
 							props: {
 								path: item.path,
 								allowBraces: item.path.startsWith('/scripts/rest'),
@@ -567,7 +567,7 @@ export const itemActionDispatcher = ({
 					dispatch(
 						pushDialog({
 							id: dialogId,
-							component: 'craftercms.components.RenameAssetDialog',
+							component: createComponentId('RenameAssetDialog'),
 							props: {
 								path: item.path,
 								allowBraces: item.path.startsWith('/scripts/rest'),
@@ -585,7 +585,7 @@ export const itemActionDispatcher = ({
 				dispatch(
 					pushDialog({
 						id,
-						component: 'craftercms.components.NewContentDialog',
+						component: createComponentId('NewContentDialog'),
 						props: {
 							item,
 							onContentTypeSelected(response) {
@@ -610,7 +610,7 @@ export const itemActionDispatcher = ({
 				dispatch(
 					pushDialog({
 						id: dialogId,
-						component: 'craftercms.components.ConfirmDialog',
+						component: createComponentId('ConfirmDialog'),
 						props: {
 							title: formatMessage(translations.changeContentType),
 							body: formatMessage(translations.changeContentTypeBody),
@@ -622,7 +622,7 @@ export const itemActionDispatcher = ({
 										popDialog({ id: dialogId }),
 										pushDialog({
 											id: changeContentTypeDialogId,
-											component: 'craftercms.components.ChangeContentTypeDialog',
+											component: createComponentId('ChangeContentTypeDialog'),
 											props: {
 												item,
 												onContentTypeSelected: () => {
@@ -646,7 +646,7 @@ export const itemActionDispatcher = ({
 			case 'cut': {
 				const path = item.path;
 				if (item.systemType === 'folder') {
-					dispatch(pushDialog({ component: 'craftercms.components.FolderMoveAlertDialog', props: { item } }));
+					dispatch(pushDialog({ component: createComponentId('FolderMoveAlertDialog'), props: { item } }));
 				} else {
 					fetchDependant(site, path).subscribe({
 						next(dependantItems) {
@@ -667,7 +667,7 @@ export const itemActionDispatcher = ({
 								).subscribe((contentItems) => {
 									dispatch(
 										pushDialog({
-											component: 'craftercms.components.BrokenReferencesDialog',
+											component: createComponentId('BrokenReferencesDialog'),
 											props: {
 												path,
 												references: contentItems,
@@ -681,7 +681,7 @@ export const itemActionDispatcher = ({
 							}
 						},
 						error({ response }) {
-							dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } }));
+							dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response } }));
 						}
 					});
 				}
@@ -713,7 +713,7 @@ export const itemActionDispatcher = ({
 								batchActions([
 									unblockUI(),
 									pushDialog({
-										component: 'craftercms.components.ErrorDialog',
+										component: createComponentId('ErrorDialog'),
 										props: {
 											error: {
 												code: '7000',
@@ -730,7 +730,7 @@ export const itemActionDispatcher = ({
 						dispatch(
 							batchActions([
 								unblockUI(),
-								pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } })
+								pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response } })
 							])
 						);
 					}
@@ -780,7 +780,7 @@ export const itemActionDispatcher = ({
 						if (isInActiveWorkflow(clipboardItem)) {
 							dispatch(
 								pushDialog({
-									component: 'craftercms.components.ViewPackagesDialog',
+									component: createComponentId('ViewPackagesDialog'),
 									props: {
 										item: clipboardItem,
 										onContinue: () => dispatch(pasteItem({ path: item.path }))
@@ -801,7 +801,7 @@ export const itemActionDispatcher = ({
 				dispatch(
 					pushDialog({
 						id: dialogId,
-						component: 'craftercms.components.ConfirmDialog',
+						component: createComponentId('ConfirmDialog'),
 						props: {
 							title: formatMessage(translations.duplicate),
 							body: formatMessage(translations.duplicateDialogBody),
@@ -826,7 +826,7 @@ export const itemActionDispatcher = ({
 				dispatch(
 					pushDialog({
 						id: dialogId,
-						component: 'craftercms.components.ConfirmDialog',
+						component: createComponentId('ConfirmDialog'),
 						props: {
 							title: formatMessage(translations.duplicate),
 							body: formatMessage(translations.duplicateDialogBody),
@@ -863,7 +863,7 @@ export const itemActionDispatcher = ({
 				dispatch(
 					pushDialog({
 						id: dialogId,
-						component: 'craftercms.components.DependenciesDialog',
+						component: createComponentId('DependenciesDialog'),
 						props: { item, rootPath: getRootPath(item.path) }
 					})
 				);
@@ -883,7 +883,7 @@ export const itemActionDispatcher = ({
 				dispatch(
 					pushDialog({
 						id: dialogId,
-						component: 'craftercms.components.CreateFileDialog',
+						component: createComponentId('CreateFileDialog'),
 						props: {
 							path: withoutIndex(item.path),
 							type: option === 'createController' ? 'controller' : 'template',
@@ -907,7 +907,7 @@ export const itemActionDispatcher = ({
 				dispatch(
 					pushDialog({
 						id: dialogId,
-						component: 'craftercms.components.CodeEditorDialog',
+						component: createComponentId('CodeEditorDialog'),
 						allowMinimize: true,
 						allowFullScreen: true,
 						props: {
@@ -924,7 +924,7 @@ export const itemActionDispatcher = ({
 				dispatch(
 					pushDialog({
 						id: nanoid(),
-						component: 'craftercms.components.PreviewDialog',
+						component: createComponentId('PreviewDialog'),
 						allowMinimize: true,
 						allowFullScreen: true,
 						props: {
@@ -942,7 +942,7 @@ export const itemActionDispatcher = ({
 				dispatch(
 					pushDialog({
 						id: nanoid(),
-						component: 'craftercms.components.PreviewDialog',
+						component: createComponentId('PreviewDialog'),
 						allowMinimize: true,
 						allowFullScreen: true,
 						props: {
@@ -959,7 +959,7 @@ export const itemActionDispatcher = ({
 				dispatch(
 					pushDialog({
 						id: dialogId,
-						component: 'craftercms.components.UploadDialog',
+						component: createComponentId('UploadDialog'),
 						props: {
 							path: item.path,
 							site,
@@ -978,7 +978,7 @@ export const itemActionDispatcher = ({
 				break;
 			}
 			case 'viewPackages': {
-				dispatch(pushDialog({ component: 'craftercms.components.ViewPackagesDialog', props: { item } }));
+				dispatch(pushDialog({ component: createComponentId('ViewPackagesDialog'), props: { item } }));
 				break;
 			}
 			default:
@@ -993,7 +993,7 @@ export const itemActionDispatcher = ({
 			dispatch(
 				pushDialog({
 					id: dialogId,
-					component: 'craftercms.components.DeleteDialog',
+					component: createComponentId('DeleteDialog'),
 					props: {
 						items,
 						onSuccess: ({ items }: { items: ContentItem[] }) =>
@@ -1030,7 +1030,7 @@ export const itemActionDispatcher = ({
 			dispatch(
 				pushDialog({
 					id: dialogId,
-					component: 'craftercms.components.PublishDialog',
+					component: createComponentId('PublishDialog'),
 					props: {
 						items,
 						scheduling: schedulingMap[option],

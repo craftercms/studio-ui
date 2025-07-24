@@ -57,6 +57,8 @@ import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { EmptyState } from '../EmptyState';
 import { pushDialog } from '../../state/actions/dialogStack';
 
+import { createComponentId } from '../../utils/system';
+
 const workflowStateManagementMessages = defineMessages({
 	statesUpdatedMessage: {
 		id: 'workflowStateManagementMessages.statesUpdatedMessage',
@@ -273,7 +275,7 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
 	};
 
 	const onError = (error: ApiResponse) => {
-		dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error } }));
+		dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error } }));
 	};
 
 	const onSetItemStateDialogConfirm = (update: StatesToUpdate) => {

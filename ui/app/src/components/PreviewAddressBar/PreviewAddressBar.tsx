@@ -45,6 +45,8 @@ import useEnv from '../../hooks/useEnv';
 import { Subscription } from 'rxjs';
 import { pushDialog } from '../../state/actions/dialogStack';
 
+import { createComponentId } from '../../utils/system';
+
 export interface AddressBarProps {
 	site: string;
 	url: string;
@@ -83,7 +85,7 @@ export function PreviewAddressBar(props: AddressBarProps) {
 		}
 		dispatch(
 			pushDialog({
-				component: 'craftercms.components.ItemMegaMenu',
+				component: createComponentId('ItemMegaMenu'),
 				props: {
 					path: path,
 					anchorReference: 'anchorPosition',

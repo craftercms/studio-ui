@@ -38,6 +38,8 @@ import { getHostToGuestBus } from '../../utils/subjects';
 import { CrafterCMSEpic } from '../store';
 import { pushDialog } from '../actions/dialogStack';
 
+import { createComponentId } from '../../utils/system';
+
 export default [
 	(action$, state$: Observable<GlobalState>) =>
 		action$.pipe(
@@ -65,7 +67,7 @@ export default [
 		action$.pipe(
 			ofType(setActiveTargetingModelFailed.type),
 			map(({ payload }) =>
-				pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: payload.response } })
+				pushDialog({ component: createComponentId('ErrorDialog'), props: { error: payload.response } })
 			)
 		),
 	(action$) =>

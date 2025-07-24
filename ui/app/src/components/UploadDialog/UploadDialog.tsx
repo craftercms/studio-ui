@@ -29,6 +29,8 @@ import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { popDialog, pushDialog } from '../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
 
+import { createComponentId } from '../../utils/system';
+
 export function UploadDialog(props: UploadDialogProps) {
 	const { formatMessage } = useIntl();
 	const dispatch = useDispatch();
@@ -53,7 +55,7 @@ export function UploadDialog(props: UploadDialogProps) {
 			dispatch(
 				pushDialog({
 					id: dialogId,
-					component: 'craftercms.components.ConfirmDialog',
+					component: createComponentId('ConfirmDialog'),
 					props: {
 						body: formatMessage(translations.uploadInProgressConfirmation),
 						onOk: () => {

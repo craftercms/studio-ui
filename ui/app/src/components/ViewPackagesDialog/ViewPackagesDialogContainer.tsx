@@ -39,6 +39,8 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ItemDisplay from '../ItemDisplay';
 import { pushDialog } from '../../state/actions/dialogStack';
 
+import { createComponentId } from '../../utils/system';
+
 export interface ViewPackagesDialogContainerProps
 	extends Pick<ViewPackagesDialogProps, 'item' | 'onContinue' | 'onClose'> {}
 
@@ -55,7 +57,7 @@ export function ViewPackagesDialogContainer(props: ViewPackagesDialogContainerPr
 	const onShowPackageDetails = (packageId: number) => {
 		dispatch(
 			pushDialog({
-				component: 'craftercms.components.PackageDetailsDialog',
+				component: createComponentId('PackageDetailsDialog'),
 				props: { packageId }
 			})
 		);

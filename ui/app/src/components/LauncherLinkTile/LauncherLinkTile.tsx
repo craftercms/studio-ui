@@ -24,7 +24,7 @@ import { batchActions } from '../../state/actions/misc';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useEnv } from '../../hooks/useEnv';
 import { usePossibleTranslation } from '../../hooks/usePossibleTranslation';
-import { getSystemLink, SystemLinkId } from '../../utils/system';
+import { createComponentId, getSystemLink, SystemLinkId } from '../../utils/system';
 import { pushDialog } from '../../state/actions/dialogStack';
 
 export interface LauncherLinkTileProps {
@@ -56,7 +56,7 @@ const LauncherLinkTile = (props: LauncherLinkTileProps) => {
 						batchActions([
 							closeLauncher(),
 							pushDialog({
-								component: 'craftercms.components.WidgetDialog',
+								component: createComponentId('WidgetDialog'),
 								props: {
 									id: systemLinkId,
 									title,

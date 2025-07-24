@@ -48,7 +48,7 @@ import { guestMessages } from '../../assets/guestMessages';
 import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { popDialog, pushDialog } from '../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
-import { pickShowContentFormAction } from '../../utils/system';
+import { createComponentId, pickShowContentFormAction } from '../../utils/system';
 
 export interface LegacyComponentsPanelProps {
 	title: string;
@@ -484,7 +484,7 @@ export function LegacyComponentsPanel(props: LegacyComponentsPanelProps) {
 					dispatch(
 						pushDialog({
 							id: dialogId,
-							component: 'craftercms.components.ConfirmDialog',
+							component: createComponentId('ConfirmDialog'),
 							props: {
 								body: messageKey ? formatMessage(dragAndDropMessages[messageKey]) : message,
 								onOk: () => dispatch(popDialog({ id: dialogId }))

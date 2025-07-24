@@ -36,6 +36,8 @@ import type { LegacyItem } from '../../models';
 import { parseLegacyItemToContentItem } from '../../utils/content';
 import { pushDialog } from '../../state/actions/dialogStack';
 
+import { createComponentId } from '../../utils/system';
+
 export function BrokenReferencesDialogContainer(props: BrokenReferencesDialogContainerProps) {
 	const { path, references: initialReferences, error, onClose, onContinue } = props;
 	const dispatch = useDispatch();
@@ -51,7 +53,7 @@ export function BrokenReferencesDialogContainer(props: BrokenReferencesDialogCon
 	const onEditReferenceClick = (referencePath: string) => {
 		dispatch(
 			pushDialog({
-				component: 'craftercms.components.LegacyFormDialog',
+				component: createComponentId('LegacyFormDialog'),
 
 				props: {
 					path: referencePath,
@@ -67,7 +69,7 @@ export function BrokenReferencesDialogContainer(props: BrokenReferencesDialogCon
 							error: ({ response }) => {
 								dispatch(
 									pushDialog({
-										component: 'craftercms.components.ErrorDialog',
+										component: createComponentId('ErrorDialog'),
 										props: { error: response.response }
 									})
 								);

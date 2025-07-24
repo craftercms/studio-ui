@@ -88,7 +88,7 @@ import { isBlank } from '../../utils/string';
 import SocketEvent, { MoveContentEventPayload } from '../../models/SocketEvent';
 import { popDialog, pushDialog } from '../actions/dialogStack';
 import { nanoid } from 'nanoid';
-import { pickShowContentFormAction } from '../../utils/system';
+import { createComponentId, pickShowContentFormAction } from '../../utils/system';
 import { ContentItem } from '../../models';
 import { popCodeEditorDialog, showItemMegaMenu } from '../actions/dialogs';
 
@@ -249,7 +249,7 @@ const content: CrafterCMSEpic[] = [
 			),
 			catchAjaxError(
 				() => unblockUI(),
-				(error) => pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: error.response } })
+				(error) => pushDialog({ component: createComponentId('ErrorDialog'), props: { error: error.response } })
 			)
 		),
 	// endregion
@@ -319,7 +319,7 @@ const content: CrafterCMSEpic[] = [
 									? [
 											pushDialog({
 												id: dialogId,
-												component: 'craftercms.components.CodeEditorDialog',
+												component: createComponentId('CodeEditorDialog'),
 												props: {
 													authoringBase: state.env.authoringBase,
 													site: state.sites.active,
@@ -335,8 +335,7 @@ const content: CrafterCMSEpic[] = [
 						}),
 						catchAjaxError(
 							() => unblockUI(),
-							(error) =>
-								pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: error.response } })
+							(error) => pushDialog({ component: createComponentId('ErrorDialog'), props: { error: error.response } })
 						)
 					)
 				)
@@ -359,7 +358,7 @@ const content: CrafterCMSEpic[] = [
 							const dialogId = nanoid();
 							return pushDialog({
 								id: dialogId,
-								component: 'craftercms.components.ConfirmDialog',
+								component: createComponentId('ConfirmDialog'),
 								props: {
 									body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyConfirm, {
 										action: getIntl().formatMessage(sitePolicyMessages.duplicate),
@@ -404,7 +403,7 @@ const content: CrafterCMSEpic[] = [
 							const dialogId = nanoid();
 							return pushDialog({
 								id: dialogId,
-								component: 'craftercms.components.ConfirmDialog',
+								component: createComponentId('ConfirmDialog'),
 								props: {
 									body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyError, {
 										action: getIntl().formatMessage(sitePolicyMessages.duplicate),
@@ -449,8 +448,7 @@ const content: CrafterCMSEpic[] = [
 						map(() => batchActions([unblockUI(), clearClipboard(), showPasteItemSuccessNotification()])),
 						catchAjaxError(
 							() => unblockUI(),
-							(error) =>
-								pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: error.response } })
+							(error) => pushDialog({ component: createComponentId('ErrorDialog'), props: { error: error.response } })
 						)
 					)
 				)
@@ -489,7 +487,7 @@ const content: CrafterCMSEpic[] = [
 									unblockUI(),
 									pushDialog({
 										id: dialogId,
-										component: 'craftercms.components.ConfirmDialog',
+										component: createComponentId('ConfirmDialog'),
 										props: {
 											body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyConfirm, {
 												action: state.content.clipboard.type === 'CUT' ? 'cut' : 'copy',
@@ -516,7 +514,7 @@ const content: CrafterCMSEpic[] = [
 									unblockUI(),
 									pushDialog({
 										id: dialogId,
-										component: 'craftercms.components.ConfirmDialog',
+										component: createComponentId('ConfirmDialog'),
 										props: {
 											body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyError, {
 												action: state.content.clipboard.type === 'CUT' ? 'cut' : 'copy',
@@ -549,7 +547,7 @@ const content: CrafterCMSEpic[] = [
 					return of(
 						pushDialog({
 							id: dialogId,
-							component: 'craftercms.components.ConfirmDialog',
+							component: createComponentId('ConfirmDialog'),
 							props: {
 								body: getIntl().formatMessage(
 									itemFailureMessages[type === 'DELETE_CONTROLLER' ? 'controllerNotFound' : 'templateNotFound']
@@ -567,7 +565,7 @@ const content: CrafterCMSEpic[] = [
 								return [
 									pushDialog({
 										id: dialogId,
-										component: 'craftercms.components.DeleteDialog',
+										component: createComponentId('DeleteDialog'),
 										props: {
 											items: asArray(itemToDelete),
 											onSuccess: ({ items }: { items: ContentItem[] }) =>
@@ -593,7 +591,7 @@ const content: CrafterCMSEpic[] = [
 									error.status === 404
 										? pushDialog({
 												id: dialogId,
-												component: 'craftercms.components.ConfirmDialog',
+												component: createComponentId('ConfirmDialog'),
 												props: {
 													body: getIntl().formatMessage(
 														itemFailureMessages[
@@ -604,7 +602,7 @@ const content: CrafterCMSEpic[] = [
 												}
 											})
 										: pushDialog({
-												component: 'craftercms.components.ErrorDialog',
+												component: createComponentId('ErrorDialog'),
 												props: { error: error.response ?? error }
 											})
 								]);

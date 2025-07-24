@@ -32,6 +32,8 @@ import { translations } from '../SiteConfigurationManagement/translations';
 import { parseValidateDocument } from '../../utils/xml';
 import { pushDialog } from '../../state/actions/dialogStack';
 
+import { createComponentId } from '../../utils/system';
+
 export function PluginConfigDialogContainer(props: PluginConfigDialogContainerProps) {
 	const siteId = useActiveSiteId();
 	const { pluginId, onSaved, isSubmitting, onClose, onSubmittingAndOrPendingChange } = props;
@@ -53,7 +55,7 @@ export function PluginConfigDialogContainer(props: PluginConfigDialogContainerPr
 				setLoading(false);
 			},
 			error: ({ response }) => {
-				dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } }));
+				dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response } }));
 			}
 		});
 	}, [dispatch, pluginId, siteId]);
@@ -109,7 +111,7 @@ export function PluginConfigDialogContainer(props: PluginConfigDialogContainerPr
 				},
 				error: ({ response }) => {
 					functionRefs.current.onSubmittingAndOrPendingChange({ isSubmitting: false });
-					dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response.response } }));
+					dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response.response } }));
 				}
 			});
 		}

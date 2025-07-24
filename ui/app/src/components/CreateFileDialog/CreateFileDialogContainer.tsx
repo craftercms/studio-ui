@@ -38,6 +38,8 @@ import { getFileNameWithExtensionForItemType, pickExtensionForItemType } from '.
 import ApiResponse from '../../models/ApiResponse';
 import { pushDialog, updateDialogState } from '../../state/actions/dialogStack';
 
+import { createComponentId } from '../../utils/system';
+
 export function CreateFileDialogContainer(props: CreateFileContainerProps) {
 	const { onClose, onCreated, type, path, allowBraces, dialogId } = props;
 	const { isSubmitting, hasPendingChanges } = useEnhancedDialogContext();
@@ -57,7 +59,7 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
 	const onError = (error: ApiResponse) => {
 		dispatch(
 			batchActions([
-				pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error } }),
+				pushDialog({ component: createComponentId('ErrorDialog'), props: { error } }),
 				updateDialogState({ id: dialogId, props: { isSubmitting: false } })
 			])
 		);

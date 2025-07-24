@@ -31,6 +31,8 @@ import PasswordTextField from '../PasswordTextField/PasswordTextField';
 import { PasswordStrengthDisplayPopper } from '../PasswordStrengthDisplayPopper';
 import { pushDialog } from '../../state/actions/dialogStack';
 
+import { createComponentId } from '../../utils/system';
+
 interface ResetPasswordDialogProps {
 	open: boolean;
 	onClose(): void;
@@ -78,7 +80,7 @@ function ResetPasswordDialogUI(props: ResetPasswordDialogProps) {
 			},
 			error({ response: { response } }) {
 				setUpdating(false);
-				dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } }));
+				dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response } }));
 			}
 		});
 	};

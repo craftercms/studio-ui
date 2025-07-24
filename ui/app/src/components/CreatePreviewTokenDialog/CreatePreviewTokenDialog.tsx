@@ -42,7 +42,7 @@ import FormLabel from '@mui/material/FormLabel';
 import Alert from '@mui/material/Alert';
 import Divider from '@mui/material/Divider';
 import { encrypt } from '../../services/security';
-import { copyToClipboard } from '../../utils/system';
+import { copyToClipboard, createComponentId } from '../../utils/system';
 import { showSystemNotification } from '../../state/actions/system';
 import useSitesBranch from '../../hooks/useSitesBranch';
 import Tabs from '@mui/material/Tabs';
@@ -193,7 +193,7 @@ function Body(props: BodyProps) {
 			},
 			error(response) {
 				functionRefs.current.onSubmittingAndOrPendingChange({ isSubmitting: false });
-				dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } }));
+				dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response } }));
 			}
 		});
 	};

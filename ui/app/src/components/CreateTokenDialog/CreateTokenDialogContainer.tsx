@@ -37,6 +37,8 @@ import { createAtLeastHalfHourInFutureDate } from '../../utils/datetime';
 import Box from '@mui/material/Box';
 import { pushDialog } from '../../state/actions/dialogStack';
 
+import { createComponentId } from '../../utils/system';
+
 const translations = defineMessages({
 	placeholder: {
 		id: 'words.label',
@@ -88,7 +90,7 @@ export function CreateTokenDialogContainer(props: CreateTokenContainerProps) {
 				});
 				dispatch(
 					pushDialog({
-						component: 'craftercms.components.ErrorDialog',
+						component: createComponentId('ErrorDialog'),
 						props: {
 							error: response.response,
 							validationErrors: response.validationErrors

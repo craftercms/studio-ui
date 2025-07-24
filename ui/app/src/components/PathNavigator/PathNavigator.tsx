@@ -57,7 +57,7 @@ import { useItemsByPath } from '../../hooks/useItemsByPath';
 import { useSubject } from '../../hooks/useSubject';
 import { useSiteLocales } from '../../hooks/useSiteLocales';
 import { useMount } from '../../hooks/useMount';
-import { getSystemLink, pickShowContentFormAction } from '../../utils/system';
+import { createComponentId, getSystemLink, pickShowContentFormAction } from '../../utils/system';
 import { getStoredPathNavigator } from '../../utils/state';
 import { useActiveSite } from '../../hooks/useActiveSite';
 import { useActiveUser } from '../../hooks/useActiveUser';
@@ -258,7 +258,7 @@ export function PathNavigator(props: PathNavigatorProps) {
 			dispatch(
 				pushDialog({
 					id: nanoid(),
-					component: 'craftercms.components.PreviewDialog',
+					component: createComponentId('PreviewDialog'),
 					allowMinimize: true,
 					allowFullScreen: true,
 					props: {
@@ -273,7 +273,7 @@ export function PathNavigator(props: PathNavigatorProps) {
 			dispatch(
 				pushDialog({
 					id: nanoid(),
-					component: 'craftercms.components.PreviewDialog',
+					component: createComponentId('PreviewDialog'),
 					allowMinimize: true,
 					allowFullScreen: true,
 					props: {
@@ -330,7 +330,7 @@ export function PathNavigator(props: PathNavigatorProps) {
 		}
 		dispatch(
 			pushDialog({
-				component: 'craftercms.components.ItemMegaMenu',
+				component: createComponentId('ItemMegaMenu'),
 				props: {
 					path,
 					anchorReference: 'anchorPosition',
@@ -348,7 +348,7 @@ export function PathNavigator(props: PathNavigatorProps) {
 
 		dispatch(
 			pushDialog({
-				component: 'craftercms.components.ItemMegaMenu',
+				component: createComponentId('ItemMegaMenu'),
 				props: {
 					path: item.path,
 					anchorReference: 'anchorPosition',

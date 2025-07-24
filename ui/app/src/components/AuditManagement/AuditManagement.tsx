@@ -40,6 +40,8 @@ import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { useDispatch } from 'react-redux';
 import { pushDialog } from '../../state/actions/dialogStack';
 
+import { createComponentId } from '../../utils/system';
+
 interface AuditManagementProps {
 	site?: string;
 	embedded?: boolean;
@@ -142,7 +144,7 @@ export function AuditManagement(props: AuditManagementProps) {
 					}
 				},
 				error({ response }) {
-					dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response.response } }));
+					dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response.response } }));
 				}
 			});
 		}

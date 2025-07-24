@@ -50,6 +50,8 @@ import Alert, { alertClasses } from '@mui/material/Alert';
 import { popDialog, pushDialog } from '../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
 
+import { createComponentId } from '../../utils/system';
+
 const messages = defineMessages({
 	publishStudioWarning: {
 		id: 'publishingDashboard.warning',
@@ -234,7 +236,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 				setHasInitialPublish(response);
 			},
 			error(error) {
-				dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error } }));
+				dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error } }));
 			}
 		});
 		fetchPublishingTargets(siteId).subscribe({
@@ -295,7 +297,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 		dispatch(
 			pushDialog({
 				id: dialogId,
-				component: 'craftercms.components.ConfirmDialog',
+				component: createComponentId('ConfirmDialog'),
 				props: {
 					body: `${formatMessage(messages.publishStudioWarning)} ${studioNote}`,
 					onCancel: () => {
@@ -423,7 +425,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 		dispatch(
 			pushDialog({
 				id: dialogId,
-				component: 'craftercms.components.PublishDialog',
+				component: createComponentId('PublishDialog'),
 				props: {
 					items: [initialPublishItem],
 					onSuccess: () => {

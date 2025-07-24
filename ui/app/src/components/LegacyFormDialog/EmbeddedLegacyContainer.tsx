@@ -50,7 +50,7 @@ import { nnou } from '../../utils/object';
 import { useFetchItem } from '../../hooks/useFetchItem';
 import Box from '@mui/material/Box';
 import usePreviewNavigation from '../../hooks/usePreviewNavigation';
-import { getSystemLink } from '../../utils/system';
+import { createComponentId, getSystemLink } from '../../utils/system';
 import { pushDialog, updateDialogState } from '../../state/actions/dialogStack';
 
 // FE2 TODO: for removal after FE1 removal
@@ -223,7 +223,7 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
 					onClose();
 					dispatch(
 						pushDialog({
-							component: 'craftercms.components.ErrorDialog',
+							component: createComponentId('ErrorDialog'),
 							props: { error: { message: formatMessage(translations.error) } }
 						})
 					);

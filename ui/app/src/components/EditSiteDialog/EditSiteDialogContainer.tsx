@@ -44,6 +44,8 @@ import { showSystemNotification } from '../../state/actions/system';
 import { popDialog, pushDialog, updateDialogState } from '../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
 
+import { createComponentId } from '../../utils/system';
+
 export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
 	const { site, onClose, onSaveSuccess, onSiteImageChange, isSubmitting, dialogId } = props;
 	const [hasNameConflict, setHasNameConflict] = useState(false);
@@ -93,7 +95,7 @@ export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
 						batchActions(
 							[
 								dialogId && updateDialogState({ id: dialogId, props: { isSubmitting: false } }),
-								pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } })
+								pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response } })
 							].filter(Boolean)
 						)
 					);
@@ -140,7 +142,7 @@ export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
 		dispatch(
 			pushDialog({
 				id: singleFileUploadDialogDialogId,
-				component: 'craftercms.components.SingleFileUploadDialog',
+				component: createComponentId('SingleFileUploadDialog'),
 				props: {
 					path: '/.crafter/screenshots',
 					site: site.id,

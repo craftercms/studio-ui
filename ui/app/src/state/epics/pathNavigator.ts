@@ -73,6 +73,8 @@ import {
 } from '../actions/system';
 import { pushDialog } from '../actions/dialogStack';
 
+import { createComponentId } from '../../utils/system';
+
 export default [
 	// region pathNavigatorInit
 	(action$: Observable<StandardAction<PathNavInitPayload>>, state$) =>
@@ -209,7 +211,7 @@ export default [
 							(error) => pathNavigatorFetchPathFailed({ id, error }),
 							(error) =>
 								pushDialog({
-									component: 'craftercms.components.ErrorDialog',
+									component: createComponentId('ErrorDialog'),
 									props: { error: error.response ?? error }
 								})
 						)
@@ -243,7 +245,7 @@ export default [
 							(error) => pathNavigatorConditionallySetPathFailed({ id, error }),
 							(error) =>
 								pushDialog({
-									component: 'craftercms.components.ErrorDialog',
+									component: createComponentId('ErrorDialog'),
 									props: { error: error.response ?? error }
 								})
 						)

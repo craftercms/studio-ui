@@ -67,6 +67,8 @@ import PencilIcon from '@mui/icons-material/EditOutlined';
 import { styled } from '@mui/material/styles';
 import { pushDialog } from '../../state/actions/dialogStack';
 
+import { createComponentId } from '../../utils/system';
+
 const messages = defineMessages({
 	pluginInstalled: {
 		id: 'pluginManagement.pluginInstalled',
@@ -130,7 +132,7 @@ export const PluginManagement = (props: PluginManagementProps) => {
 					);
 				},
 				(error) => {
-					dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error } }));
+					dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error } }));
 				}
 			),
 		[dispatch, siteId]

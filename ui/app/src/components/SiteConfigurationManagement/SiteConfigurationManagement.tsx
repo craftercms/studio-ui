@@ -78,6 +78,8 @@ import { SiteToolsContext } from '../SiteTools/siteToolsContext';
 import { nanoid } from 'nanoid';
 import { popDialog, pushDialog } from '../../state/actions/dialogStack';
 
+import { createComponentId } from '../../utils/system';
+
 interface SiteConfigurationManagementProps {
 	embedded?: boolean;
 	showAppsButton?: boolean;
@@ -142,7 +144,7 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
 				setEnvironment(env);
 			},
 			error({ response }) {
-				dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } }));
+				dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response } }));
 			}
 		});
 	});
@@ -162,7 +164,7 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
 				dispatch(
 					pushDialog({
 						id: dialogId,
-						component: 'craftercms.components.ConfirmDialog',
+						component: createComponentId('ConfirmDialog'),
 						props: {
 							body: formatMessage({ defaultMessage: 'You left unsaved changes on "{title}"' }, { title }),
 							onCancel: () => {
@@ -182,7 +184,7 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
 				dispatch(
 					pushDialog({
 						id: dialogId,
-						component: 'craftercms.components.ConfirmDialog',
+						component: createComponentId('ConfirmDialog'),
 						props: {
 							body: formatMessage(
 								{
@@ -208,7 +210,7 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
 					setFiles(files.map((file) => ({ ...file, id: `${file.module}/${file.path}` })));
 				},
 				error({ response }) {
-					dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response.response } }));
+					dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response.response } }));
 				}
 			});
 		}
@@ -304,7 +306,7 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
 					setEncrypting(false);
 				},
 				error({ response: { response } }) {
-					dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } }));
+					dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response } }));
 				}
 			});
 		} else {
@@ -535,7 +537,7 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
 					},
 					error: ({ response: { response } }) => {
 						functionRefs.current.onSubmittingAndOrPendingChange?.({ isSubmitting: false });
-						dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } }));
+						dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response } }));
 					}
 				});
 			} else {

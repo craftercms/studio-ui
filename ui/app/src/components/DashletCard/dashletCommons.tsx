@@ -46,6 +46,8 @@ import Tooltip from '@mui/material/Tooltip';
 import { getPersonFullName } from '../../utils/object';
 import { pushDialog } from '../../state/actions/dialogStack';
 
+import { createComponentId } from '../../utils/system';
+
 export const actionsToBeShown: AllItemActions[] = [
 	'edit',
 	'delete',
@@ -190,7 +192,7 @@ export function DashletItemOptions(props: { path: string; iconButtonProps?: Icon
 		const left = anchorRect.left + getOffsetLeft(anchorRect, 'left');
 		dispatch(
 			pushDialog({
-				component: 'craftercms.components.ItemMegaMenu',
+				component: createComponentId('ItemMegaMenu'),
 				props: {
 					path,
 					anchorReference: 'anchorPosition',

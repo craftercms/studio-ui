@@ -175,7 +175,7 @@ import ContentType from '../../models/ContentType';
 import { Dispatch } from 'redux';
 import { ActionCreatorWithOptionalPayload } from '@reduxjs/toolkit';
 import { ItemMegaMenuStateProps } from '../ItemMegaMenu';
-import { pickShowContentFormAction } from '../../utils/system';
+import { createComponentId, pickShowContentFormAction } from '../../utils/system';
 import { popDialog, pushDialog } from '../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
 
@@ -433,7 +433,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 							}
 							dispatch(
 								pushDialog({
-									component: 'craftercms.components.ItemMegaMenu',
+									component: createComponentId('ItemMegaMenu'),
 									props: {
 										path: path,
 										anchorReference: 'anchorPosition',
@@ -1105,7 +1105,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 					dispatch(
 						pushDialog({
 							id: dialogId,
-							component: 'craftercms.components.ViewPackagesDialog',
+							component: createComponentId('ViewPackagesDialog'),
 							props: {
 								item: payload.item,
 								onClosed: () => dispatch(requestWorkflowCancellationDialogOnResult({ type: 'close' })),
@@ -1152,7 +1152,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 							dispatch(
 								pushDialog({
 									id: dialogId,
-									component: 'craftercms.components.SingleFileUploadDialog',
+									component: createComponentId('SingleFileUploadDialog'),
 									props: {
 										site: siteId,
 										path,

@@ -47,6 +47,8 @@ import { cancelPackages, fetchAffectedPackages } from '../../services/workflow';
 import { map, switchMap } from 'rxjs/operators';
 import { pushDialog, updateDialogState } from '../../state/actions/dialogStack';
 
+import { createComponentId } from '../../utils/system';
+
 export function CreateFolderContainer(props: CreateFolderContainerProps) {
 	const { onClose, onCreated, onRenamed, rename = false, value = '', allowBraces = false, dialogId } = props;
 	const { isSubmitting, hasPendingChanges } = useEnhancedDialogContext();
@@ -115,7 +117,7 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
 	const onError = (error: ApiResponse) => {
 		dispatch(
 			batchActions([
-				pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: error } }),
+				pushDialog({ component: createComponentId('ErrorDialog'), props: { error: error } }),
 				dialogId && updateDialogState({ id: dialogId, props: { isSubmitting: false } })
 			])
 		);

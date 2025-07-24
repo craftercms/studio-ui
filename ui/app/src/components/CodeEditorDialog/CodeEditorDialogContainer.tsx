@@ -54,6 +54,8 @@ import Alert, { alertClasses } from '@mui/material/Alert';
 import { popDialog, pushDialog, updateDialogState } from '../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
 
+import { createComponentId } from '../../utils/system';
+
 export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps) {
 	const { path, onMinimize, onClose, mode, readonly, contentType, onFullScreen, onSuccess, dialogId } = props;
 	const { open, isSubmitting } = useEnhancedDialogContext();
@@ -133,7 +135,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 						batchActions(
 							[
 								dialogId && updateDialogState({ id: dialogId, props: { isSubmitting: false } }),
-								pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } })
+								pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response } })
 							].filter(Boolean)
 						)
 					);
@@ -150,7 +152,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 			dispatch(
 				pushDialog({
 					id: viewPackagesDialogId,
-					component: 'craftercms.components.ViewPackagesDialog',
+					component: createComponentId('ViewPackagesDialog'),
 					props: {
 						item,
 						onContinue: () => {
@@ -287,7 +289,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 									size="small"
 									sx={{ p: 0 }}
 									onClick={() => {
-										dispatch(pushDialog({ component: 'craftercms.components.ViewPackagesDialog', props: { item } }));
+										dispatch(pushDialog({ component: createComponentId('ViewPackagesDialog'), props: { item } }));
 									}}
 								>
 									<FormattedMessage defaultMessage="Review" />

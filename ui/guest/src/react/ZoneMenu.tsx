@@ -66,6 +66,8 @@ import Divider from '@mui/material/Divider';
 import { unlockItem } from '@craftercms/studio-ui/state/actions/content';
 import { pushDialog } from '@craftercms/studio-ui/state/actions/dialogStack';
 
+import { createComponentId } from '@craftercms/studio-ui/utils/system';
+
 export interface ZoneMenuProps {
 	record: ElementRecord;
 	dispatch: Dispatch<AnyAction>;
@@ -385,7 +387,7 @@ export function ZoneMenu(props: ZoneMenuProps) {
 		const left = e.clientX;
 		post(
 			pushDialog({
-				component: 'craftercms.components.ItemMegaMenu',
+				component: createComponentId('ItemMegaMenu'),
 				props: {
 					path,
 					anchorReference: 'anchorPosition',

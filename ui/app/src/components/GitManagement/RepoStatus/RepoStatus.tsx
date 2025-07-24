@@ -29,6 +29,8 @@ import { messages } from './translations';
 import { ConfirmDialog } from '../../ConfirmDialog';
 import { pushDialog } from '../../../state/actions/dialogStack';
 
+import { createComponentId } from '../../../utils/system';
+
 export interface RepoStatusProps {
 	status: RepositoryStatus;
 	openConfirmDialog?: boolean;
@@ -76,7 +78,7 @@ export function RepoStatus(props: RepoStatusProps) {
 				);
 			},
 			error({ response }) {
-				dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } }));
+				dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response } }));
 			}
 		});
 	};
@@ -99,7 +101,7 @@ export function RepoStatus(props: RepoStatusProps) {
 	};
 
 	const onResolveConflictsError = (response) => {
-		dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } }));
+		dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response } }));
 		setFetching(false);
 	};
 
@@ -128,7 +130,7 @@ export function RepoStatus(props: RepoStatusProps) {
 	};
 
 	const onCommitError = (response) => {
-		dispatch(pushDialog({ component: 'craftercms.components.ErrorDialog', props: { error: response } }));
+		dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response } }));
 	};
 
 	const openDiffDialog = (path) => {
