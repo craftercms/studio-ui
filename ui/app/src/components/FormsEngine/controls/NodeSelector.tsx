@@ -92,7 +92,6 @@ import useConsolidatedItemPickerData, {
 } from '../dataSourceHooks/useConsolidatedItemPickerData';
 import { useExtractItemPickerDataSources } from '../dataSourceHooks/useExtractItemPickerDataSources';
 import { Dispatch as ReduxDispatch } from 'redux';
-
 import { createComponentId } from '../../../utils/system';
 
 const SortableList = lazy(() => import('../components/SortableList'));

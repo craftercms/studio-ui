@@ -44,7 +44,6 @@ import { AjaxError } from 'rxjs/ajax';
 import ApiResponseErrorState from '../ApiResponseErrorState/ApiResponseErrorState';
 import ApiResponse from '../../models/ApiResponse';
 import { pushDialog } from '../../state/actions/dialogStack';
-
 import { createComponentId } from '../../utils/system';
 
 export function InstallPluginDialogContainer(props: InstallPluginDialogProps) {

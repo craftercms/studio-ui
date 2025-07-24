@@ -50,7 +50,6 @@ import { useWithPendingChangesCloseRequest } from '../../hooks/useWithPendingCha
 import Tooltip from '@mui/material/Tooltip';
 import { CreatePreviewTokenDialog } from '../CreatePreviewTokenDialog';
 import { pushDialog } from '../../state/actions/dialogStack';
-
 import { createComponentId } from '../../utils/system';
 
 const StyledTableCell = styled(TableCell)(() => ({

@@ -65,7 +65,6 @@ import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import { unlockItem } from '@craftercms/studio-ui/state/actions/content';
 import { pushDialog } from '@craftercms/studio-ui/state/actions/dialogStack';
-
 import { createComponentId } from '@craftercms/studio-ui/utils/system';
 
 export interface ZoneMenuProps {

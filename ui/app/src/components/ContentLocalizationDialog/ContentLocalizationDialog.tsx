@@ -34,7 +34,6 @@ import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useUnmount } from '../../hooks/useUnmount';
 import Box from '@mui/material/Box';
 import { pushDialog } from '../../state/actions/dialogStack';
-
 import { createComponentId } from '../../utils/system';
 
 const translations: { [id: string]: any } = defineMessages({

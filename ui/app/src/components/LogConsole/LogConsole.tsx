@@ -33,7 +33,6 @@ import EmptyState from '../EmptyState/EmptyState';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useMount } from '../../hooks/useMount';
 import { pushDialog } from '../../state/actions/dialogStack';
-
 import { createComponentId } from '../../utils/system';
 
 interface LogConsoleManagementProps {

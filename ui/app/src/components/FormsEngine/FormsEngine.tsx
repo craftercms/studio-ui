@@ -117,7 +117,6 @@ import { fromString } from '../../utils/xml';
 import { displayWithPendingChangesConfirm } from '../../utils/ui';
 import useActiveUser from '../../hooks/useActiveUser';
 import FormBackToTop from './components/FormBackToTop';
-
 import { createComponentId } from '../../utils/system';
 
 export interface FormSavePromiseResult {

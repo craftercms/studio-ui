@@ -24,7 +24,6 @@ import { batchActions } from '../state/actions/misc';
 import { hasApproveAction, hasCancelAction, hasRejectAction, hasResubmitAction } from './content';
 import { popDialog, pushDialog } from '../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
-
 import { createComponentId } from './system';
 
 const translations = defineMessages({

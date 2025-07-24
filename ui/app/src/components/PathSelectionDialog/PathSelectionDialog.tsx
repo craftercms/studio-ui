@@ -15,7 +15,7 @@
  */
 
 import React, { useState } from 'react';
-import Dialog, { DialogProps } from '@mui/material/Dialog';
+import Dialog, { type DialogProps } from '@mui/material/Dialog';
 import { withoutIndex } from '../../utils/path';
 import StandardAction from '../../models/StandardAction';
 import TranslationOrText from '../../models/TranslationOrText';

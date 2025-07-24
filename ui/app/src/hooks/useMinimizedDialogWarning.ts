@@ -20,7 +20,6 @@ import infoGraphic from '../assets/information.svg';
 import { defineMessages, useIntl } from 'react-intl';
 import { popDialog, pushDialog } from '../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
-
 import { createComponentId } from '../utils/system';
 
 const messages = defineMessages({

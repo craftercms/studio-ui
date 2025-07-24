@@ -28,7 +28,6 @@ import MinimizedBar from '../MinimizedBar';
 import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { popDialog, pushDialog } from '../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
-
 import { createComponentId } from '../../utils/system';
 
 export function UploadDialog(props: UploadDialogProps) {

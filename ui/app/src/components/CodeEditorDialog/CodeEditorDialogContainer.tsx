@@ -52,7 +52,6 @@ import { PublishPackage } from '../../models';
 import Alert, { alertClasses } from '@mui/material/Alert';
 import { popDialog, pushDialog } from '../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
-
 import { createComponentId } from '../../utils/system';
 
 export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps) {

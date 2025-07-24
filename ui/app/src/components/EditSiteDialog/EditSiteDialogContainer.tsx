@@ -43,7 +43,6 @@ import { PROJECT_PREVIEW_IMAGE_UPDATED } from '../../utils/constants';
 import { showSystemNotification } from '../../state/actions/system';
 import { popDialog, pushDialog } from '../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
-
 import { createComponentId } from '../../utils/system';
 import { useEnhancedDialogContext } from '../EnhancedDialog';
 

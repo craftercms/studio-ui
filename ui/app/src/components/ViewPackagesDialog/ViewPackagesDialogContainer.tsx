@@ -38,7 +38,6 @@ import PrimaryButton from '../PrimaryButton';
 import ListItemButton from '@mui/material/ListItemButton';
 import ItemDisplay from '../ItemDisplay';
 import { pushDialog } from '../../state/actions/dialogStack';
-
 import { createComponentId } from '../../utils/system';
 
 export interface ViewPackagesDialogContainerProps

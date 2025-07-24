@@ -30,7 +30,6 @@ import { showSystemNotification } from '../../state/actions/system';
 import PasswordTextField from '../PasswordTextField/PasswordTextField';
 import { PasswordStrengthDisplayPopper } from '../PasswordStrengthDisplayPopper';
 import { pushDialog } from '../../state/actions/dialogStack';
-
 import { createComponentId } from '../../utils/system';
 
 interface ResetPasswordDialogProps {

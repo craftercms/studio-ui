@@ -49,7 +49,6 @@ import Checkbox from '@mui/material/Checkbox';
 import Alert, { alertClasses } from '@mui/material/Alert';
 import { popDialog, pushDialog } from '../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
-
 import { createComponentId } from '../../utils/system';
 
 const messages = defineMessages({

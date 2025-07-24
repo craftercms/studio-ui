@@ -16,7 +16,7 @@
 
 import { PropsWithChildren } from 'react';
 import StandardAction from '../../models/StandardAction';
-import { DialogProps } from '@mui/material/Dialog';
+import { type DialogProps } from '@mui/material/Dialog';
 
 export interface LegacyFormDialogBaseProps {
 	open?: boolean;

@@ -45,7 +45,6 @@ import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
 import Tooltip from '@mui/material/Tooltip';
 import { getPersonFullName } from '../../utils/object';
 import { pushDialog } from '../../state/actions/dialogStack';
-
 import { createComponentId } from '../../utils/system';
 
 export const actionsToBeShown: AllItemActions[] = [

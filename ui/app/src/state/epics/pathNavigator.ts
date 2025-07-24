@@ -72,7 +72,6 @@ import {
 	workflowEventSubmit
 } from '../actions/system';
 import { pushDialog } from '../actions/dialogStack';
-
 import { createComponentId } from '../../utils/system';
 
 export default [

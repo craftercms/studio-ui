@@ -20,7 +20,6 @@ import useActiveUser from './useActiveUser';
 import useActiveSiteId from './useActiveSiteId';
 import { pushDialog } from '../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
-
 import { createComponentId } from '../utils/system';
 
 export function useShowPublishingStatusDialog() {

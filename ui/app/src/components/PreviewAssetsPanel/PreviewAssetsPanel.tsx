@@ -43,12 +43,10 @@ import { useDebouncedInput } from '../../hooks/useDebouncedInput';
 import Pagination from '../Pagination';
 import { LoadingState } from '../LoadingState';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
-import { showPreviewDialog } from '../../state/actions/dialogs';
 import { ErrorBoundary } from '../ErrorBoundary';
 import Box from '@mui/material/Box';
 import { pushDialog } from '../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
-
 import { createComponentId } from '../../utils/system';
 
 const translations = defineMessages({

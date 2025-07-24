@@ -66,7 +66,6 @@ import Tooltip from '@mui/material/Tooltip';
 import PencilIcon from '@mui/icons-material/EditOutlined';
 import { styled } from '@mui/material/styles';
 import { pushDialog } from '../../state/actions/dialogStack';
-
 import { createComponentId } from '../../utils/system';
 
 const messages = defineMessages({

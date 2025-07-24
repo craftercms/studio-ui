@@ -38,7 +38,6 @@ import { useBeforeUnload, useNavigate } from 'react-router';
 import { GlobalRoutes } from '../../env/routes';
 import { popDialog, pushDialog } from '../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
-
 import { createComponentId } from '../../utils/system';
 
 const translations = defineMessages({

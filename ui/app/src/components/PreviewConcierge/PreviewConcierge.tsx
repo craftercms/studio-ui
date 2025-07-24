@@ -135,7 +135,11 @@ import { useActiveUser } from '../../hooks/useActiveUser';
 import { usePreviewNavigation } from '../../hooks/usePreviewNavigation';
 import { useActiveSite } from '../../hooks/useActiveSite';
 import { getPathFromPreviewURL, processPathMacros, withIndex } from '../../utils/path';
-import { rtePickerActionResult, showRtePickerActions, ShowRtePickerActionsPayload } from '../../state/actions/dialogs';
+import {
+	rtePickerActionResult,
+	showRtePickerActions,
+	type ShowRtePickerActionsPayload
+} from '../../state/actions/dialogs';
 import { UNDEFINED } from '../../utils/constants';
 import { useCurrentPreviewItem } from '../../hooks/useCurrentPreviewItem';
 import { useSiteUIConfig } from '../../hooks/useSiteUIConfig';

@@ -45,7 +45,6 @@ import Typography from '@mui/material/Typography';
 import { cancelPackages, fetchAffectedPackages } from '../../services/workflow';
 import { map, switchMap } from 'rxjs/operators';
 import { pushDialog } from '../../state/actions/dialogStack';
-
 import { createComponentId } from '../../utils/system';
 
 export function CreateFolderContainer(props: CreateFolderContainerProps) {

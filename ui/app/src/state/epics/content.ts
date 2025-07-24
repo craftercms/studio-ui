@@ -89,7 +89,7 @@ import SocketEvent, { MoveContentEventPayload } from '../../models/SocketEvent';
 import { popDialog, pushDialog } from '../actions/dialogStack';
 import { nanoid } from 'nanoid';
 import { createComponentId, pickShowContentFormAction } from '../../utils/system';
-import { ContentItem } from '../../models';
+import type { ContentItem } from '../../models';
 import { popCodeEditorDialog, showItemMegaMenu } from '../actions/dialogs';
 
 export const sitePolicyMessages = defineMessages({

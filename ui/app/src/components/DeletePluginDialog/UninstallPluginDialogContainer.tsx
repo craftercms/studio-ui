@@ -26,7 +26,6 @@ import useSpreadState from '../../hooks/useSpreadState';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { LoadingState } from '../LoadingState';
 import { pushDialog } from '../../state/actions/dialogStack';
-
 import { createComponentId } from '../../utils/system';
 
 export function UninstallPluginDialogContainer(props: UninstallPluginDialogContainerProps) {

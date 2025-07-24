@@ -70,7 +70,6 @@ import useUpdateRefs from '../../../hooks/useUpdateRefs';
 import { unlockItem } from '../../../state/actions/content';
 import ApiResponse from '../../../models/ApiResponse';
 import { getFormsEngineCloseAfterSave, getFormsEngineCollapseToCKey } from '../../../utils/state';
-
 import { createComponentId } from '../../../utils/system';
 
 /**

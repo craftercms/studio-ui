@@ -28,7 +28,6 @@ import { useActiveSiteId } from '../../../hooks/useActiveSiteId';
 import { messages } from './translations';
 import { ConfirmDialog } from '../../ConfirmDialog';
 import { pushDialog } from '../../../state/actions/dialogStack';
-
 import { createComponentId } from '../../../utils/system';
 
 export interface RepoStatusProps {

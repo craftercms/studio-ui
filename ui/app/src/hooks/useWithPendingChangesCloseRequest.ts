@@ -20,7 +20,6 @@ import translations from '../components/CodeEditorDialog/translations';
 import { EnhancedDialogProps as DialogProps } from '../components/EnhancedDialog';
 import { popDialog, pushDialog } from '../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
-
 import { createComponentId } from '../utils/system';
 
 export function useWithPendingChangesCloseRequest(onClose: DialogProps['onClose']): DialogProps['onClose'] {

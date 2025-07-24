@@ -25,7 +25,6 @@ import Typography from '@mui/material/Typography';
 import { ItemTypeIcon } from '../../ItemTypeIcon';
 import { FormattedMessage } from 'react-intl';
 import React from 'react';
-
 import { createComponentId } from '../../../utils/system';
 
 export type TypeDetailsHeaderActionTarget = 'properties' | 'template' | 'jsController' | 'groovyController' | 'deleted';

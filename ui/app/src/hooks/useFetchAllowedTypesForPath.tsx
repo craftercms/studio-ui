@@ -22,7 +22,6 @@ import { fetchLegacyContentTypes, parseLegacyContentType } from '../services/con
 import { map } from 'rxjs/operators';
 import useActiveSiteId from './useActiveSiteId';
 import { pushDialog } from '../state/actions/dialogStack';
-
 import { createComponentId } from '../utils/system';
 
 export function useFetchAllowedTypesForPath(path: string, responseFilterFn?: (types: ContentType[]) => ContentType[]) {

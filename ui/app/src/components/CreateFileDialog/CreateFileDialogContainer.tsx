@@ -36,7 +36,6 @@ import { applyAssetNameRules } from '../../utils/content';
 import { getFileNameWithExtensionForItemType, pickExtensionForItemType } from '../../utils/path';
 import ApiResponse from '../../models/ApiResponse';
 import { pushDialog } from '../../state/actions/dialogStack';
-
 import { createComponentId } from '../../utils/system';
 
 export function CreateFileDialogContainer(props: CreateFileContainerProps) {

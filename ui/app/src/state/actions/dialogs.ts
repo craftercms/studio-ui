@@ -42,16 +42,16 @@ import { EditSiteDialogStateProps } from '../../components/EditSiteDialog/utils'
 import { LegacyFormDialogStateProps } from '../../components/LegacyFormDialog/utils';
 import { SingleFileUploadDialogStateProps } from '../../components/SingleFileUploadDialog';
 import ContentInstance from '../../models/ContentInstance';
-import { ContentItem, ContentTypeFieldValidation, type LegacyItem } from '../../models';
+import type { ContentItem, ContentTypeFieldValidation, LegacyItem } from '../../models';
 import { RenameAssetStateProps } from '../../components/RenameAssetDialog';
 import { AjaxError } from 'rxjs/ajax';
 import { BrokenReferencesDialogStateProps } from '../../components/BrokenReferencesDialog/types';
 import { PublishingPackageReviewDialogStateProps } from '../../components/PublishPackageReviewDialog/types';
 import { CancelPackageDialogProps } from '../../components/CancelPackageDialog';
 import { PublishingPackageResubmitDialogStateProps } from '../../components/PublishingPackageResubmitDialog/types';
-import { ErrorDialogStateProps, PackageDetailsDialogProps } from '../../components';
+import type { ErrorDialogStateProps, PackageDetailsDialogProps } from '../../components';
 import { ViewPackagesDialogProps } from '../../components/ViewPackagesDialog';
-import { FolderMoveAlertDialogStateProps } from '../../components/FolderMoveAlertDialog/FolderMoveAlertDialog';
+import type { FolderMoveAlertDialogStateProps } from '../../components/FolderMoveAlertDialog/FolderMoveAlertDialog';
 
 // region History
 export const showHistoryDialog = /*#__PURE__*/ createAction<Partial<HistoryDialogStateProps>>('SHOW_HISTORY_DIALOG');

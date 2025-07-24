@@ -37,7 +37,6 @@ import GlobalState from '../../models/GlobalState';
 import { getHostToGuestBus } from '../../utils/subjects';
 import { CrafterCMSEpic } from '../store';
 import { pushDialog } from '../actions/dialogStack';
-
 import { createComponentId } from '../../utils/system';
 
 export default [

@@ -26,7 +26,7 @@ import PrimaryButton from '../PrimaryButton';
 import { CopyDialogBaseProps, CopyDialogCallbacks, messages } from './utils';
 import { fetchLegacyItemsTree } from '../../services/content';
 import Typography from '@mui/material/Typography';
-import { EnhancedDialogProps, useEnhancedDialogContext } from '../EnhancedDialog';
+import { type EnhancedDialogProps, useEnhancedDialogContext } from '../EnhancedDialog';
 import { useDispatch } from 'react-redux';
 
 export interface CopyDialogBodyProps

@@ -21,7 +21,6 @@ import { popDialog, pushDialog } from '../state/actions/dialogStack';
 import type { ConfirmDialogProps } from '../components';
 import type { Theme } from '@mui/material';
 import type { SxProps } from '@mui/system';
-
 import { createComponentId } from './system';
 
 export const displayWithPendingChangesConfirm = (

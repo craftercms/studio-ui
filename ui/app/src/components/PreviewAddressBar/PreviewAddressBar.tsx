@@ -44,7 +44,6 @@ import ErrorOutlineOutlined from '@mui/icons-material/ErrorOutlineOutlined';
 import useEnv from '../../hooks/useEnv';
 import { Subscription } from 'rxjs';
 import { pushDialog } from '../../state/actions/dialogStack';
-
 import { createComponentId } from '../../utils/system';
 
 export interface AddressBarProps {

@@ -24,7 +24,7 @@ import { batchActions } from '../../state/actions/misc';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useEnv } from '../../hooks/useEnv';
 import { usePossibleTranslation } from '../../hooks/usePossibleTranslation';
-import { createComponentId, getSystemLink, SystemLinkId } from '../../utils/system';
+import { createComponentId, getSystemLink, type SystemLinkId } from '../../utils/system';
 import { pushDialog } from '../../state/actions/dialogStack';
 
 export interface LauncherLinkTileProps {

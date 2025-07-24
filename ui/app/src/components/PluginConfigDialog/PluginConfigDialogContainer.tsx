@@ -31,7 +31,6 @@ import { showSystemNotification } from '../../state/actions/system';
 import { translations } from '../SiteConfigurationManagement/translations';
 import { parseValidateDocument } from '../../utils/xml';
 import { pushDialog } from '../../state/actions/dialogStack';
-
 import { createComponentId } from '../../utils/system';
 
 export function PluginConfigDialogContainer(props: PluginConfigDialogContainerProps) {

@@ -24,7 +24,6 @@ import Paper from '@mui/material/Paper';
 import SiteExplorer from '../../icons/SiteExplorer';
 import { popDialog, pushDialog } from '../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
-
 import { createComponentId } from '../../utils/system';
 
 const messages = defineMessages({
