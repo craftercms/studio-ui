@@ -36,7 +36,7 @@ import type { LegacyItem } from '../../models';
 import { parseLegacyItemToContentItem } from '../../utils/content';
 import { pushDialog } from '../../state/actions/dialogStack';
 
-import { createComponentId } from '../../utils/system';
+import { createComponentId, pickShowContentFormAction } from '../../utils/system';
 
 export function BrokenReferencesDialogContainer(props: BrokenReferencesDialogContainerProps) {
 	const { path, references: initialReferences, error, onClose, onContinue } = props;
@@ -52,30 +52,26 @@ export function BrokenReferencesDialogContainer(props: BrokenReferencesDialogCon
 
 	const onEditReferenceClick = (referencePath: string) => {
 		dispatch(
-			pushDialog({
-				component: createComponentId('LegacyFormDialog'),
-
-				props: {
-					path: referencePath,
-					authoringBase,
-					site,
-					onSaveSuccess: () => {
-						// Fetch broken references again after editing
-						fetchDependant(site, path).subscribe({
-							next: (response: LegacyItem[]) => {
-								const refs = parseLegacyItemToContentItem(response);
-								setReferences(refs);
-							},
-							error: ({ response }) => {
-								dispatch(
-									pushDialog({
-										component: createComponentId('ErrorDialog'),
-										props: { error: response.response }
-									})
-								);
-							}
-						});
-					}
+			pickShowContentFormAction({
+				path: referencePath,
+				authoringBase,
+				site,
+				onSaveSuccess: () => {
+					// Fetch broken references again after editing
+					fetchDependant(site, path).subscribe({
+						next: (response: LegacyItem[]) => {
+							const refs = parseLegacyItemToContentItem(response);
+							setReferences(refs);
+						},
+						error: ({ response }) => {
+							dispatch(
+								pushDialog({
+									component: createComponentId('ErrorDialog'),
+									props: { error: response.response }
+								})
+							);
+						}
+					});
 				}
 			})
 		);
