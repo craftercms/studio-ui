@@ -64,8 +64,7 @@ import UltraStyledTooltip from './UltraStyledTooltip';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import { unlockItem } from '@craftercms/studio-ui/state/actions/content';
-import { pushDialog } from '@craftercms/studio-ui/state/actions/dialogStack';
-import { createComponentId } from '@craftercms/studio-ui/utils/system';
+import { showItemMegaMenu } from '@craftercms/studio-ui/state/actions/dialogs';
 
 export interface ZoneMenuProps {
 	record: ElementRecord;
@@ -385,13 +384,10 @@ export function ZoneMenu(props: ZoneMenuProps) {
 		const top = e.clientY;
 		const left = e.clientX;
 		post(
-			pushDialog({
-				component: createComponentId('ItemMegaMenu'),
-				props: {
-					path,
-					anchorReference: 'anchorPosition',
-					anchorPosition: { top, left }
-				}
+			showItemMegaMenu({
+				path,
+				anchorReference: 'anchorPosition',
+				anchorPosition: { top, left }
 			})
 		);
 	};

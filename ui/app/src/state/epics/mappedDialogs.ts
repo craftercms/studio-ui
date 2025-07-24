@@ -34,8 +34,6 @@ import {
 	closeErrorDialog,
 	closeFolderMoveAlertDialog,
 	closeHistoryDialog,
-	closeItemMegaMenu,
-	closeItemMenu,
 	closeNewContentDialog,
 	closePackageDetailsDialog,
 	closePathSelectionDialog,
@@ -67,8 +65,6 @@ import {
 	showErrorDialog,
 	showFolderMoveAlertDialog,
 	showHistoryDialog,
-	showItemMegaMenu,
-	showItemMenu,
 	showNewContentDialog,
 	showPackageDetailsDialog,
 	showPathSelectionDialog,
@@ -139,8 +135,6 @@ const dialogsMap = {
 	[showRenameAssetDialog.type]: 'craftercms.components.RenameAssetDialog',
 	[showDeleteDialog.type]: 'craftercms.components.DeleteDialog',
 	[showEditDialog.type]: 'craftercms.components.LegacyFormDialog',
-	[showItemMenu.type]: 'craftercms.components.ItemActionsMenu',
-	[showItemMegaMenu.type]: 'craftercms.components.ItemMegaMenu',
 	[blockUI.type]: 'craftercms.components.UIBlocker',
 	[showFolderMoveAlertDialog.type]: 'craftercms.components.FolderMoveAlertDialog'
 };
@@ -180,8 +174,6 @@ const showDialogsEpics: CrafterCMSEpic[] = [
 				showRenameAssetDialog.type,
 				showDeleteDialog.type,
 				showEditDialog.type,
-				showItemMenu.type,
-				showItemMegaMenu.type,
 				showFolderMoveAlertDialog.type
 			),
 			withLatestFrom(state$),
@@ -263,7 +255,6 @@ const showDialogsEpics: CrafterCMSEpic[] = [
 				closeUploadDialog.type,
 				closeSingleFileUploadDialog.type,
 				closePreviewDialog.type,
-				closeItemMegaMenu.type,
 				closeWidgetDialog.type,
 				closeHistoryDialog.type,
 				closePublishingStatusDialog.type,
@@ -282,8 +273,6 @@ const showDialogsEpics: CrafterCMSEpic[] = [
 				closeRenameAssetDialog.type,
 				closeDeleteDialog.type,
 				closeEditDialog.type,
-				closeItemMenu.type,
-				closeItemMegaMenu.type,
 				closeFolderMoveAlertDialog.type
 			),
 			withLatestFrom(state$),

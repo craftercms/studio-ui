@@ -43,8 +43,7 @@ import Button from '@mui/material/Button';
 import ErrorOutlineOutlined from '@mui/icons-material/ErrorOutlineOutlined';
 import useEnv from '../../hooks/useEnv';
 import { Subscription } from 'rxjs';
-import { pushDialog } from '../../state/actions/dialogStack';
-import { createComponentId } from '../../utils/system';
+import { showItemMegaMenu } from '../../state/actions/dialogs';
 
 export interface AddressBarProps {
 	site: string;
@@ -83,14 +82,11 @@ export function PreviewAddressBar(props: AddressBarProps) {
 			path = withIndex(item.path);
 		}
 		dispatch(
-			pushDialog({
-				component: createComponentId('ItemMegaMenu'),
-				props: {
-					path: path,
-					anchorReference: 'anchorPosition',
-					anchorPosition: { top, left },
-					loaderItems: getNumOfMenuOptionsForItem(item)
-				}
+			showItemMegaMenu({
+				path: path,
+				anchorReference: 'anchorPosition',
+				anchorPosition: { top, left },
+				loaderItems: getNumOfMenuOptionsForItem(item)
 			})
 		);
 	};

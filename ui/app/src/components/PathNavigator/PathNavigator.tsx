@@ -64,6 +64,7 @@ import { useActiveUser } from '../../hooks/useActiveUser';
 import { GetChildrenOptions, PartialSxRecord } from '../../models';
 import { pushDialog } from '../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
+import { showItemMegaMenu } from '../../state/actions/dialogs';
 
 interface Menu {
 	path?: string;
@@ -329,14 +330,11 @@ export function PathNavigator(props: PathNavigatorProps) {
 			path = withIndex(state.currentPath);
 		}
 		dispatch(
-			pushDialog({
-				component: createComponentId('ItemMegaMenu'),
-				props: {
-					path,
-					anchorReference: 'anchorPosition',
-					anchorPosition: { top, left },
-					loaderItems: getNumOfMenuOptionsForItem(lookupItemByPath(path, itemsByPath))
-				}
+			showItemMegaMenu({
+				path: path,
+				anchorReference: 'anchorPosition',
+				anchorPosition: { top, left },
+				loaderItems: getNumOfMenuOptionsForItem(lookupItemByPath(path, itemsByPath))
 			})
 		);
 	};
@@ -347,14 +345,11 @@ export function PathNavigator(props: PathNavigatorProps) {
 		const left = anchorRect.left + getOffsetLeft(anchorRect, 'left');
 
 		dispatch(
-			pushDialog({
-				component: createComponentId('ItemMegaMenu'),
-				props: {
-					path: item.path,
-					anchorReference: 'anchorPosition',
-					anchorPosition: { top, left },
-					loaderItems: getNumOfMenuOptionsForItem(item)
-				}
+			showItemMegaMenu({
+				path: item.path,
+				anchorReference: 'anchorPosition',
+				anchorPosition: { top, left },
+				loaderItems: getNumOfMenuOptionsForItem(item)
 			})
 		);
 	};

@@ -58,8 +58,7 @@ import { SimpleTreeView } from '@mui/x-tree-view';
 import { LoadingState } from '../LoadingState';
 import { svgIconClasses, typographyClasses } from '@mui/material';
 import Box from '@mui/material/Box';
-import { pushDialog } from '../../state/actions/dialogStack';
-import { createComponentId } from '../../utils/system';
+import { showItemMegaMenu } from '../../state/actions/dialogs';
 
 const rootPrefix = '{root}_';
 
@@ -623,13 +622,10 @@ export function PreviewPageExplorerPanel() {
 
 		if (path) {
 			dispatch(
-				pushDialog({
-					component: createComponentId('ItemMegaMenu'),
-					props: {
-						path: path,
-						anchorReference: 'anchorPosition',
-						anchorPosition: { top, left }
-					}
+				showItemMegaMenu({
+					path: path,
+					anchorReference: 'anchorPosition',
+					anchorPosition: { top, left }
 				})
 			);
 		}

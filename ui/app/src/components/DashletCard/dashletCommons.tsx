@@ -44,8 +44,7 @@ import IconButton, { IconButtonProps } from '@mui/material/IconButton';
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
 import Tooltip from '@mui/material/Tooltip';
 import { getPersonFullName } from '../../utils/object';
-import { pushDialog } from '../../state/actions/dialogStack';
-import { createComponentId } from '../../utils/system';
+import { showItemMegaMenu } from '../../state/actions/dialogs';
 
 export const actionsToBeShown: AllItemActions[] = [
 	'edit',
@@ -190,13 +189,10 @@ export function DashletItemOptions(props: { path: string; iconButtonProps?: Icon
 		const top = anchorRect.top + getOffsetTop(anchorRect, 'top');
 		const left = anchorRect.left + getOffsetLeft(anchorRect, 'left');
 		dispatch(
-			pushDialog({
-				component: createComponentId('ItemMegaMenu'),
-				props: {
-					path,
-					anchorReference: 'anchorPosition',
-					anchorPosition: { top, left }
-				}
+			showItemMegaMenu({
+				path,
+				anchorReference: 'anchorPosition',
+				anchorPosition: { top, left }
 			})
 		);
 	};

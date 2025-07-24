@@ -44,6 +44,8 @@ import DialogStackItemContainer from './DialogStackItemContainer';
 const ViewVersionDialog = lazy(() => import('../ViewVersionDialog'));
 const CompareVersionsDialog = lazy(() => import('../CompareVersionsDialog'));
 const HistoryDialog = lazy(() => import('../HistoryDialog'));
+const ItemMenu = lazy(() => import('../ItemActionsMenu'));
+const ItemMegaMenu = lazy(() => import('../ItemMegaMenu'));
 const AuthMonitor = lazy(() => import('../AuthMonitor'));
 const UIBlocker = lazy(() => import('../UIBlocker'));
 // endregion
@@ -276,6 +278,18 @@ function GlobalDialogManager() {
 
 				{/* region Auth Monitor */}
 				<AuthMonitor />
+				{/* endregion */}
+
+				{/* region Item Menu */}
+				<ItemMenu {...state.itemMenu} onClose={createCallback(state.itemMenu.onClose, dispatch)} />
+				{/* endregion */}
+
+				{/* region Item Mega Menu */}
+				<ItemMegaMenu
+					{...state.itemMegaMenu}
+					onClose={createCallback(state.itemMegaMenu.onClose, dispatch)}
+					onClosed={createCallback(state.itemMegaMenu.onClosed, dispatch)}
+				/>
 				{/* endregion */}
 
 				{/* region Launcher */}

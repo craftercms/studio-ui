@@ -136,7 +136,10 @@ import { usePreviewNavigation } from '../../hooks/usePreviewNavigation';
 import { useActiveSite } from '../../hooks/useActiveSite';
 import { getPathFromPreviewURL, processPathMacros, withIndex } from '../../utils/path';
 import {
+	closeItemMegaMenu,
 	rtePickerActionResult,
+	showItemMegaMenu,
+	itemMegaMenuClosed,
 	showRtePickerActions,
 	type ShowRtePickerActionsPayload
 } from '../../state/actions/dialogs';
@@ -162,7 +165,7 @@ import {
 import useSpreadState from '../../hooks/useSpreadState';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
 import { useHotkeys } from 'react-hotkeys-hook';
-import { batchActions, editContentTypeTemplate } from '../../state/actions/misc';
+import { batchActions, dispatchDOMEvent, editContentTypeTemplate } from '../../state/actions/misc';
 import SocketEventBase from '../../models/SocketEvent';
 import RefreshRounded from '@mui/icons-material/RefreshRounded';
 import { useTheme } from '@mui/material/styles';
@@ -179,6 +182,7 @@ import ContentType from '../../models/ContentType';
 import { Dispatch } from 'redux';
 import { ActionCreatorWithOptionalPayload } from '@reduxjs/toolkit';
 import { ItemMegaMenuStateProps } from '../ItemMegaMenu';
+import StandardAction from '../../models/StandardAction';
 import { createComponentId, pickShowContentFormAction } from '../../utils/system';
 import { popDialog, pushDialog } from '../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
@@ -415,11 +419,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 					break;
 				case 'a':
 					{
-						const itemMegaMenuState = Object.values(store.getState().dialogStack.byId ?? {}).find(
-							(dialogState) => dialogState.component === 'craftercms.components.ItemMegaMenu'
-						);
-						if ((itemMegaMenuState?.props as ItemMegaMenuStateProps)?.open) {
-							dispatch(popDialog({ id: itemMegaMenuState.id }));
+						if (store.getState().dialogs.itemMegaMenu.open) {
+							dispatch(closeItemMegaMenu());
 						} else if (upToDateRefs.current.item) {
 							let top, left;
 							let menuButton = document.querySelector('#previewAddressBarActionsMenuButton');
@@ -436,14 +437,11 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 								path = withIndex(path);
 							}
 							dispatch(
-								pushDialog({
-									component: createComponentId('ItemMegaMenu'),
-									props: {
-										path: path,
-										anchorReference: 'anchorPosition',
-										anchorPosition: { top, left },
-										loaderItems: getNumOfMenuOptionsForItem(item)
-									}
+								showItemMegaMenu({
+									path: path,
+									anchorReference: 'anchorPosition',
+									anchorPosition: { top, left },
+									loaderItems: getNumOfMenuOptionsForItem(item)
 								})
 							);
 						}
@@ -1119,21 +1117,16 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 					);
 					break;
 				}
-				case pushDialog.type: {
-					if (action.payload?.component === 'craftercms.components.ItemMegaMenu') {
-						const extendedAction = action;
-
-						const iframe: HTMLIFrameElement = document.querySelector('#crafterCMSPreviewIframe');
-						const iframeRect = iframe.getBoundingClientRect();
-						const id = 'xbItemMegaMenuClosed';
-						extendedAction.payload.props.anchorPosition.top += iframeRect.top;
-						extendedAction.payload.props.anchorPosition.left += iframeRect.left;
-						extendedAction.payload.onClosed = () => {
-							iframe.contentWindow.focus();
-						};
-						createCustomDocumentEventListener(id, () => iframe.contentWindow.focus());
-						dispatch(extendedAction);
-					}
+				case showItemMegaMenu.type: {
+					const extendedAction = action as StandardAction<Partial<ItemMegaMenuStateProps>>;
+					const iframe: HTMLIFrameElement = document.querySelector('#crafterCMSPreviewIframe');
+					const iframeRect = iframe.getBoundingClientRect();
+					const id = 'xbItemMegaMenuClosed';
+					extendedAction.payload.anchorPosition.top += iframeRect.top;
+					extendedAction.payload.anchorPosition.left += iframeRect.left;
+					extendedAction.payload.onClosed = batchActions([itemMegaMenuClosed(), dispatchDOMEvent({ id })]);
+					createCustomDocumentEventListener(id, () => iframe.contentWindow.focus());
+					dispatch(action);
 					break;
 				}
 				// region actions whitelisted

@@ -36,7 +36,6 @@ import { RenameItemView } from '../RenameDialogBody';
 import { applyAssetNameRules } from '../../utils/content';
 import { DialogBody } from '../DialogBody';
 import { pushDialog, updateDialogState } from '../../state/actions/dialogStack';
-
 import { createComponentId } from '../../utils/system';
 
 export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {

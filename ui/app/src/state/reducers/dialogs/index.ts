@@ -19,6 +19,8 @@ import minimizedTabs from './minimizedTabs';
 import history from './history';
 import viewVersion from './viewVersion';
 import compareVersions from './compareVersions';
+import itemMenu from './itemMenu';
+import itemMegaMenu from './itemMegaMenu';
 import launcher from './launcher';
 import uiBlocker from './uiBlocker';
 
@@ -27,6 +29,8 @@ export default combineReducers({
 	history,
 	viewVersion,
 	compareVersions,
+	itemMenu,
+	itemMegaMenu,
 	launcher,
 	uiBlocker
 });

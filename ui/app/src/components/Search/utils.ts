@@ -24,7 +24,6 @@ import { useSelection } from '../../hooks/useSelection';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useEnv } from '../../hooks/useEnv';
 import { ContextMenuOption } from '../ContextMenu';
-import { updatePreviewDialog } from '../../state/actions/dialogs';
 import { getNumOfMenuOptionsForItem, getSystemTypeFromPath } from '../../utils/content';
 import LookupTable from '../../models/LookupTable';
 import { search } from '../../services/search';
@@ -33,13 +32,13 @@ import { ApiResponse } from '../../models/ApiResponse';
 import { contentEvent, deleteContentEvent, deleteContentEvents, moveContentEvent } from '../../state/actions/system';
 import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
-import { fetchContentXML } from '../../services/content';
 import { getPreviewURLFromPath } from '../../utils/path';
 import { IconButtonProps } from '@mui/material/IconButton';
 import useFetchContentItems from '../../hooks/useFetchContentItems';
 import { pushDialog } from '../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
 import { createComponentId, pickShowContentFormAction } from '../../utils/system';
+import { showItemMegaMenu } from '../../state/actions/dialogs';
 
 export const drawerWidth = 300;
 
@@ -295,17 +294,14 @@ export const useSearchState = ({
 	const onHeaderButtonClick = (event: any, item: MediaItem) => {
 		const path = item.path;
 		dispatch(
-			pushDialog({
-				component: createComponentId('ItemMegaMenu'),
-				props: {
-					path,
-					anchorReference: 'anchorPosition',
-					anchorPosition: { top: event.clientY, left: event.clientX },
-					numOfLoaderItems: getNumOfMenuOptionsForItem({
-						path: item.path,
-						systemType: getSystemTypeFromPath(item.path)
-					} as ContentItem)
-				}
+			showItemMegaMenu({
+				path,
+				anchorReference: 'anchorPosition',
+				anchorPosition: { top: event.clientY, left: event.clientX },
+				numOfLoaderItems: getNumOfMenuOptionsForItem({
+					path: item.path,
+					systemType: getSystemTypeFromPath(item.path)
+				} as ContentItem)
 			})
 		);
 	};

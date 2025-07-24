@@ -64,6 +64,7 @@ import SimpleAjaxError from '../../models/SimpleAjaxError';
 import { createComponentId, pickShowContentFormAction } from '../../utils/system';
 import { pushDialog } from '../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
+import { showItemMegaMenu } from '../../state/actions/dialogs';
 
 export interface PathNavigatorTreeProps
 	extends Pick<
@@ -271,14 +272,11 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
 		const top = anchorRect.top + getOffsetTop(anchorRect, 'top');
 		const left = anchorRect.left + getOffsetLeft(anchorRect, 'left');
 		dispatch(
-			pushDialog({
-				component: createComponentId('ItemMegaMenu'),
-				props: {
-					path,
-					anchorReference: 'anchorPosition',
-					anchorPosition: { top, left },
-					loaderItems: getNumOfMenuOptionsForItem(getItemByPath(path))
-				}
+			showItemMegaMenu({
+				path,
+				anchorReference: 'anchorPosition',
+				anchorPosition: { top, left },
+				loaderItems: getNumOfMenuOptionsForItem(getItemByPath(path))
 			})
 		);
 	};
