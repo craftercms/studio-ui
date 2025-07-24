@@ -19,7 +19,6 @@ import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 
 export interface CreateFolderBaseProps {
-	dialogId?: string;
 	path?: string;
 	rename?: boolean;
 	value?: string;
@@ -41,5 +40,5 @@ export interface CreateFolderStateProps extends CreateFolderBaseProps, EnhancedD
 export interface CreateFolderContainerProps
 	extends Pick<
 		CreateFolderProps,
-		'path' | 'allowBraces' | 'value' | 'rename' | 'onRenamed' | 'onCreated' | 'onClose' | 'dialogId'
+		'path' | 'allowBraces' | 'value' | 'rename' | 'onRenamed' | 'onCreated' | 'onClose'
 	> {}

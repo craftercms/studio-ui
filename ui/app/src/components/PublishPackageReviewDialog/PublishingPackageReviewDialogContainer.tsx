@@ -45,15 +45,15 @@ import Collapse from '@mui/material/Collapse';
 import DateTimeTimezonePicker, { DateTimeTimezonePickerProps } from '../DateTimeTimezonePicker';
 import { createAtLeastHalfHourInFutureDate } from '../../utils/datetime';
 import { approvePackage, rejectPackage } from '../../services/workflow';
-import { batchActions } from '../../state/actions/misc';
 import { useDispatch } from 'react-redux';
 import { AsDayMonthDateTime } from '../VersionList';
 import PackageDetails from '../PackageDetailsDialog/PackageDetails';
 import { showSystemNotification } from '../../state/actions/system';
 import { hasApproveAction, hasRejectAction } from '../../utils/content';
-import { pushDialog, updateDialogState } from '../../state/actions/dialogStack';
+import { pushDialog } from '../../state/actions/dialogStack';
 
 import { createComponentId } from '../../utils/system';
+import { useEnhancedDialogContext } from '../EnhancedDialog';
 
 export type PackageReviewAction = 'approve' | 'reject';
 interface InternalDialogState {
@@ -66,7 +66,7 @@ interface InternalDialogState {
 }
 
 export function PublishingPackageReviewDialogContainer(props: PublishingPackageReviewDialogContainerProps) {
-	const { packageId, isSubmitting, onSuccess, onClose, dialogId } = props;
+	const { packageId, isSubmitting, onSuccess, onClose } = props;
 	const { activeEnvironment } = useEnv();
 	const [publishingPackage, setPublishingPackage] = useState<PublishPackage>();
 	const [cannedMessages, setCannedMessages] = useState<CannedMessage[]>([]);
@@ -89,6 +89,7 @@ export function PublishingPackageReviewDialogContainer(props: PublishingPackageR
 		);
 	const dispatch = useDispatch();
 	const { formatMessage } = useIntl();
+	const { updateSubmittingOrHasPendingChanges } = useEnhancedDialogContext();
 	const { hasApprovePermission, hasRejectPermission } = useMemo(() => {
 		let hasApprovePermission = false;
 		let hasRejectPermission = false;
@@ -157,7 +158,7 @@ export function PublishingPackageReviewDialogContainer(props: PublishingPackageR
 
 	const onArgumentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		let value: unknown;
-		dialogId && dispatch(updateDialogState({ id: dialogId, props: { hasPendingChanges: true } }));
+		updateSubmittingOrHasPendingChanges({ hasPendingChanges: true });
 		switch (e.target.type) {
 			case 'textarea':
 			case 'radio':
@@ -190,7 +191,7 @@ export function PublishingPackageReviewDialogContainer(props: PublishingPackageR
 	};
 
 	const handleSubmit = () => {
-		dialogId && dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: true } }));
+		updateSubmittingOrHasPendingChanges({ isSubmitting: true });
 		if (state.action === 'approve') {
 			const data: PublishingPackageApproveParams = {
 				comment: state.approverComment,
@@ -200,51 +201,29 @@ export function PublishingPackageReviewDialogContainer(props: PublishingPackageR
 
 			approvePackage(siteId, packageId, data).subscribe({
 				next() {
+					updateSubmittingOrHasPendingChanges({ isSubmitting: false, hasPendingChanges: false });
 					dispatch(
-						batchActions(
-							[
-								dialogId &&
-									updateDialogState({ id: dialogId, props: { isSubmitting: false, hasPendingChanges: false } }),
-								showSystemNotification({ message: formatMessage({ defaultMessage: 'Package approved successfully.' }) })
-							].filter(Boolean)
-						)
+						showSystemNotification({ message: formatMessage({ defaultMessage: 'Package approved successfully.' }) })
 					);
 					onSuccess?.();
 				},
 				error({ response }) {
-					dispatch(
-						batchActions(
-							[
-								dialogId && updateDialogState({ id: dialogId, props: { isSubmitting: false } }),
-								pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response.response } })
-							].filter(Boolean)
-						)
-					);
+					updateSubmittingOrHasPendingChanges({ isSubmitting: false });
+					dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response.response } }));
 				}
 			});
 		} else {
 			rejectPackage(siteId, packageId, state.rejectComment).subscribe({
 				next() {
+					updateSubmittingOrHasPendingChanges({ isSubmitting: false, hasPendingChanges: false });
 					dispatch(
-						batchActions(
-							[
-								dialogId &&
-									updateDialogState({ id: dialogId, props: { isSubmitting: false, hasPendingChanges: false } }),
-								showSystemNotification({ message: formatMessage({ defaultMessage: 'Package rejected successfully.' }) })
-							].filter(Boolean)
-						)
+						showSystemNotification({ message: formatMessage({ defaultMessage: 'Package rejected successfully.' }) })
 					);
 					onSuccess?.();
 				},
 				error({ response }) {
-					dispatch(
-						batchActions(
-							[
-								dialogId && updateDialogState({ id: dialogId, props: { isSubmitting: false } }),
-								pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response.response } })
-							].filter(Boolean)
-						)
-					);
+					updateSubmittingOrHasPendingChanges({ isSubmitting: false });
+					dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response.response } }));
 				}
 			});
 		}

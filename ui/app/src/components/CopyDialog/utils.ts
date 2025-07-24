@@ -22,7 +22,6 @@ import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 export interface CopyDialogBaseProps {
 	site: string;
 	item: ContentItem;
-	dialogId?: string;
 }
 
 export interface CopyDialogCallbacks {

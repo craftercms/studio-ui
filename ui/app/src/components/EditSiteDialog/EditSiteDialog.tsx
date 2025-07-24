@@ -21,7 +21,7 @@ import EnhancedDialog from '../EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
 
 export function EditSiteDialog(props: EditSiteDialogProps) {
-	const { site, onSaveSuccess, onSiteImageChange, isSubmitting, dialogId, ...rest } = props;
+	const { site, onSaveSuccess, onSiteImageChange, isSubmitting, ...rest } = props;
 	return (
 		<EnhancedDialog
 			title={<FormattedMessage id="editSiteDialog.title" defaultMessage="Edit Project" />}
@@ -30,7 +30,6 @@ export function EditSiteDialog(props: EditSiteDialogProps) {
 			{...rest}
 		>
 			<EditSiteDialogContainer
-				dialogId={dialogId}
 				site={site}
 				onSaveSuccess={onSaveSuccess}
 				onSiteImageChange={onSiteImageChange}

@@ -24,7 +24,6 @@ export type Return = Omit<Source, 'error'>;
 
 export interface EditSiteDialogBaseProps {
 	site: Site;
-	dialogId?: string;
 }
 
 export interface EditSiteDialogProps extends EditSiteDialogBaseProps, EnhancedDialogProps {
@@ -41,4 +40,4 @@ export interface EditSiteDialogStateProps extends EditSiteDialogBaseProps, Enhan
 
 export interface EditSiteDialogContainerProps
 	extends EditSiteDialogBaseProps,
-		Pick<EditSiteDialogProps, 'isSubmitting' | 'onSaveSuccess' | 'onSiteImageChange' | 'onClose' | 'dialogId'> {}
+		Pick<EditSiteDialogProps, 'isSubmitting' | 'onSaveSuccess' | 'onSiteImageChange' | 'onClose'> {}

@@ -22,7 +22,6 @@ export interface CreateFileBaseProps {
 	type: 'controller' | 'template';
 	path: string;
 	allowBraces?: boolean;
-	dialogId?: string;
 }
 
 export interface CreateFileProps extends CreateFileBaseProps, EnhancedDialogProps {
@@ -35,6 +34,4 @@ export interface CreateFileStateProps extends CreateFileBaseProps, EnhancedDialo
 	onCreated?: StandardAction;
 }
 
-export interface CreateFileContainerProps
-	extends CreateFileBaseProps,
-		Pick<CreateFileProps, 'onCreated' | 'onClose' | 'dialogId'> {}
+export interface CreateFileContainerProps extends CreateFileBaseProps, Pick<CreateFileProps, 'onCreated' | 'onClose'> {}

@@ -29,18 +29,18 @@ import { isBlank } from '../../utils/string';
 import useSpreadState from '../../hooks/useSpreadState';
 import { useDispatch } from 'react-redux';
 import { Divider } from '@mui/material';
-import { batchActions } from '../../state/actions/misc';
 import { showSystemNotification } from '../../state/actions/system';
-import { pushDialog, updateDialogState } from '../../state/actions/dialogStack';
+import { pushDialog } from '../../state/actions/dialogStack';
 
 import { createComponentId } from '../../utils/system';
+import { useEnhancedDialogContext } from '../EnhancedDialog';
 
 export interface CancelPackageDialogContainerProps
 	extends CancelPackageDialogBaseProps,
-		Pick<CancelPackageDialogProps, 'onSuccess' | 'onClose' | 'isSubmitting' | 'dialogId'> {}
+		Pick<CancelPackageDialogProps, 'onSuccess' | 'onClose' | 'isSubmitting'> {}
 
 export function CancelPackageDialogContainer(props: CancelPackageDialogContainerProps) {
-	const { packageId, onSuccess, onClose, isSubmitting, dialogId } = props;
+	const { packageId, onSuccess, onClose, isSubmitting } = props;
 	const [state, setState] = useSpreadState({
 		comment: '',
 		error: null
@@ -49,33 +49,24 @@ export function CancelPackageDialogContainer(props: CancelPackageDialogContainer
 	const siteId = useActiveSiteId();
 	const submitDisabled = isBlank(state.comment);
 	const { formatMessage } = useIntl();
+	const { updateSubmittingOrHasPendingChanges } = useEnhancedDialogContext();
 
 	const handleSubmit = () => {
-		dialogId && dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: true } }));
+		updateSubmittingOrHasPendingChanges({ isSubmitting: true });
 		cancelPackages(siteId, {
 			packageIds: [packageId],
 			comment: state.comment
 		}).subscribe({
 			next() {
+				updateSubmittingOrHasPendingChanges({ isSubmitting: false });
 				dispatch(
-					batchActions(
-						[
-							dialogId && updateDialogState({ id: dialogId, props: { isSubmitting: false } }),
-							showSystemNotification({ message: formatMessage({ defaultMessage: 'Package cancelled successfully.' }) })
-						].filter(Boolean)
-					)
+					showSystemNotification({ message: formatMessage({ defaultMessage: 'Package cancelled successfully.' }) })
 				);
 				onSuccess?.();
 			},
 			error({ response }) {
-				dispatch(
-					batchActions(
-						[
-							dialogId && updateDialogState({ id: dialogId, props: { isSubmitting: false } }),
-							pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response.response } })
-						].filter(Boolean)
-					)
-				);
+				updateSubmittingOrHasPendingChanges({ isSubmitting: false });
+				dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response.response } }));
 			}
 		});
 	};

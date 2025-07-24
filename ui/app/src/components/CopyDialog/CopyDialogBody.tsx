@@ -26,19 +26,18 @@ import PrimaryButton from '../PrimaryButton';
 import { CopyDialogBaseProps, CopyDialogCallbacks, messages } from './utils';
 import { fetchLegacyItemsTree } from '../../services/content';
 import Typography from '@mui/material/Typography';
-import { EnhancedDialogProps } from '../EnhancedDialog';
+import { EnhancedDialogProps, useEnhancedDialogContext } from '../EnhancedDialog';
 import { useDispatch } from 'react-redux';
-import { updateDialogState } from '../../state/actions/dialogStack';
 
 export interface CopyDialogBodyProps
 	extends CopyDialogCallbacks,
-		Pick<CopyDialogBaseProps, 'site' | 'item' | 'dialogId'>,
+		Pick<CopyDialogBaseProps, 'site' | 'item'>,
 		Pick<EnhancedDialogProps, 'onClose'> {
 	disabled: boolean;
 }
 
 export function CopyDialogBody(props: CopyDialogBodyProps) {
-	const { onOk, item, site, onClose, disabled, dialogId } = props;
+	const { onOk, item, site, onClose, disabled } = props;
 	const { formatMessage } = useIntl();
 	const dispatch = useDispatch();
 	const [data, setData] = useState<{
@@ -47,8 +46,8 @@ export function CopyDialogBody(props: CopyDialogBodyProps) {
 		children: LookupTable<Array<string>>;
 		paths: string[];
 	}>(null);
-
 	const [selected, setSelected] = useState([]);
+	const { updateSubmittingOrHasPendingChanges } = useEnhancedDialogContext();
 
 	const onItemSelected = (checked: boolean, node: LegacyItem) => {
 		if (checked) {
@@ -77,7 +76,7 @@ export function CopyDialogBody(props: CopyDialogBodyProps) {
 	useEffect(() => {
 		// Disable dismissing the dialog until the data has finished fetching. The call is expensive; don't want people
 		// dismissing by mistake.
-		dialogId && dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: true } }));
+		updateSubmittingOrHasPendingChanges({ isSubmitting: true });
 		fetchLegacyItemsTree(site, item.path, { depth: 1000, order: 'default' }).subscribe({
 			next(item: LegacyItem) {
 				let paths = [];
@@ -99,10 +98,10 @@ export function CopyDialogBody(props: CopyDialogBodyProps) {
 				process(item);
 				setSelected(paths);
 				setData({ item, parents, children, paths });
-				dialogId && dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: false } }));
+				updateSubmittingOrHasPendingChanges({ isSubmitting: false });
 			}
 		});
-	}, [dispatch, item.path, site, dialogId]);
+	}, [dispatch, item.path, site, updateSubmittingOrHasPendingChanges]);
 
 	return (
 		<>

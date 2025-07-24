@@ -23,7 +23,6 @@ export interface SingleFileUploadDialogBaseProps {
 	path: string;
 	customFileName?: string;
 	fileTypes?: [string];
-	dialogId?: string;
 }
 
 export interface SingleFileUploadDialogProps extends SingleFileUploadDialogBaseProps, EnhancedDialogProps {
@@ -46,7 +45,7 @@ export interface SingleFileUploadDialogContainerProps
 	extends SingleFileUploadDialogBaseProps,
 		Pick<
 			SingleFileUploadDialogProps,
-			'site' | 'customFileName' | 'fileTypes' | 'onUploadStart' | 'onUploadComplete' | 'onUploadError' | 'dialogId'
+			'site' | 'customFileName' | 'fileTypes' | 'onUploadStart' | 'onUploadComplete' | 'onUploadError'
 		> {}
 
-export type SingleFileUploadDialogUIProps = Omit<SingleFileUploadDialogContainerProps, 'dialogId'>;
+export interface SingleFileUploadDialogUIProps extends SingleFileUploadDialogContainerProps {}

@@ -23,7 +23,7 @@ import { useIntl } from 'react-intl';
 export interface CopyDialogProps extends EnhancedDialogProps, CopyDialogBaseProps, CopyDialogCallbacks {}
 
 export function CopyDialog(props: CopyDialogProps) {
-	const { item, site, onOk, dialogId, ...rest } = props;
+	const { item, site, onOk, ...rest } = props;
 	const { formatMessage } = useIntl();
 	return (
 		<EnhancedDialog
@@ -33,14 +33,7 @@ export function CopyDialog(props: CopyDialogProps) {
 				subtitle: formatMessage(messages.copyDialogSubtitle)
 			}}
 		>
-			<CopyDialogBody
-				dialogId={dialogId}
-				item={item}
-				site={site}
-				onOk={onOk}
-				onClose={props.onClose}
-				disabled={props.isSubmitting}
-			/>
+			<CopyDialogBody item={item} site={site} onOk={onOk} onClose={props.onClose} disabled={props.isSubmitting} />
 		</EnhancedDialog>
 	);
 }

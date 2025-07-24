@@ -21,7 +21,6 @@ import { PublishPackage, StandardAction } from '../../models';
 export interface PublishingPackageResubmitDialogBaseProps {
 	type: 'resubmit' | 'promote';
 	pkg: PublishPackage;
-	dialogId?: string;
 }
 
 export interface PublishingPackageResubmitDialogProps
@@ -40,4 +39,4 @@ export interface PublishingPackageResubmitDialogStateProps
 
 export interface PublishingPackageResubmitDialogContainerProps
 	extends PublishingPackageResubmitDialogBaseProps,
-		Pick<PublishingPackageResubmitDialogProps, 'isSubmitting' | 'onSuccess' | 'onClose' | 'dialogId'> {}
+		Pick<PublishingPackageResubmitDialogProps, 'isSubmitting' | 'onSuccess' | 'onClose'> {}

@@ -41,16 +41,16 @@ import { createLookupTable } from '../../utils/object';
 import { Fade } from '@mui/material';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
-import { batchActions } from '../../state/actions/misc';
 import { isBlank } from '../../utils/string';
 import { LoadingState } from '../LoadingState';
 import useActiveUser from '../../hooks/useActiveUser';
-import { pushDialog, updateDialogState } from '../../state/actions/dialogStack';
+import { pushDialog } from '../../state/actions/dialogStack';
 
 import { createComponentId } from '../../utils/system';
+import { useEnhancedDialogContext } from '../EnhancedDialog';
 
 export function PublishingPackageResubmitDialogContainer(props: PublishingPackageResubmitDialogContainerProps) {
-	const { pkg, type, isSubmitting, onSuccess, onClose, dialogId } = props;
+	const { pkg, type, isSubmitting, onSuccess, onClose } = props;
 	const siteId = useActiveSiteId();
 	const { permissionsBySite } = useActiveUser();
 	const dispatch = useDispatch();
@@ -78,6 +78,7 @@ export function PublishingPackageResubmitDialogContainer(props: PublishingPackag
 		itemsAndDependenciesPaths,
 		itemsAndDependenciesMap
 	} = usePublishState({ mainItems });
+	const { updateSubmittingOrHasPendingChanges } = useEnhancedDialogContext();
 	const disabled = isSubmitting;
 	const hasPublishPermission = permissionsBySite[siteId].includes('publish_approve');
 	const showRequestApproval = hasPublishPermission;
@@ -114,7 +115,7 @@ export function PublishingPackageResubmitDialogContainer(props: PublishingPackag
 
 	const onPublishingArgumentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		let value: unknown;
-		dialogId && dispatch(updateDialogState({ id: dialogId, props: { hasPendingChanges: true } }));
+		updateSubmittingOrHasPendingChanges({ hasPendingChanges: true });
 		switch (e.target.type) {
 			case 'checkbox':
 				value = e.target.checked;
@@ -173,23 +174,16 @@ export function PublishingPackageResubmitDialogContainer(props: PublishingPackag
 			comment: submissionComment
 		};
 
-		dialogId && dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: true } }));
+		updateSubmittingOrHasPendingChanges({ isSubmitting: true });
 
 		publish(siteId, data).subscribe({
 			next() {
-				dialogId &&
-					dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: false, hasPendingChanges: false } }));
+				updateSubmittingOrHasPendingChanges({ isSubmitting: false, hasPendingChanges: false });
 				onSuccess?.();
 			},
 			error({ response }) {
-				dispatch(
-					batchActions(
-						[
-							dialogId && updateDialogState({ id: dialogId, props: { isSubmitting: false } }),
-							pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response.response } })
-						].filter(Boolean)
-					)
-				);
+				updateSubmittingOrHasPendingChanges({ isSubmitting: false });
+				dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response.response } }));
 			}
 		});
 	};

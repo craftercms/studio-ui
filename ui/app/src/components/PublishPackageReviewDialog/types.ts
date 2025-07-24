@@ -20,7 +20,6 @@ import { StandardAction } from '../../models';
 
 export interface PublishingPackageReviewDialogBaseProps {
 	packageId: number;
-	dialogId?: string;
 }
 
 export interface PublishingPackageReviewDialogProps
@@ -39,4 +38,4 @@ export interface PublishingPackageReviewDialogStateProps
 
 export interface PublishingPackageReviewDialogContainerProps
 	extends PublishingPackageReviewDialogBaseProps,
-		Pick<PublishingPackageReviewDialogProps, 'isSubmitting' | 'onSuccess' | 'onClose' | 'dialogId'> {}
+		Pick<PublishingPackageReviewDialogProps, 'isSubmitting' | 'onSuccess' | 'onClose'> {}

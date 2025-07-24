@@ -21,7 +21,7 @@ import { EnhancedDialog } from '../EnhancedDialog';
 import PublishingPackageResubmitDialogContainer from './PublishingPackageResubmitDialogContainer';
 
 export function PublishingPackageResubmitDialog(props: PublishingPackageResubmitDialogProps) {
-	const { pkg, type, isSubmitting, onSuccess, dialogId, ...rest } = props;
+	const { pkg, type, isSubmitting, onSuccess, ...rest } = props;
 
 	return (
 		<EnhancedDialog
@@ -37,7 +37,6 @@ export function PublishingPackageResubmitDialog(props: PublishingPackageResubmit
 			isSubmitting={isSubmitting}
 		>
 			<PublishingPackageResubmitDialogContainer
-				dialogId={dialogId}
 				type={type}
 				pkg={pkg}
 				onSuccess={onSuccess}

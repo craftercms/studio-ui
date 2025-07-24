@@ -37,7 +37,6 @@ export interface PublishDialogBaseProps {
 	items?: ContentItem[];
 	// if null it means the dialog should determinate which one to use
 	scheduling?: 'now' | 'custom';
-	dialogId?: string;
 }
 
 export interface PublishDialogProps extends PublishDialogBaseProps, EnhancedDialogProps {
@@ -52,7 +51,7 @@ export interface PublishDialogStateProps extends PublishDialogBaseProps, Enhance
 
 export interface PublishDialogContainerProps
 	extends PublishDialogBaseProps,
-		Pick<PublishDialogProps, 'isSubmitting' | 'onSuccess' | 'onClose' | 'dialogId'> {}
+		Pick<PublishDialogProps, 'isSubmitting' | 'onSuccess' | 'onClose'> {}
 
 export interface InternalDialogState {
 	packageTitle: string;

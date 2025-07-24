@@ -21,7 +21,6 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { ContentItem } from '../../models/Item';
 import { getParentPath, getRootPath, withoutIndex } from '../../utils/path';
 import { checkPathExistence, createFolder, renameFolder } from '../../services/content';
-import { batchActions } from '../../state/actions/misc';
 import { validateActionPolicy } from '../../services/sites';
 import { translations } from './translations';
 import DialogBody from '../DialogBody/DialogBody';
@@ -45,12 +44,12 @@ import Checkbox from '@mui/material/Checkbox';
 import Typography from '@mui/material/Typography';
 import { cancelPackages, fetchAffectedPackages } from '../../services/workflow';
 import { map, switchMap } from 'rxjs/operators';
-import { pushDialog, updateDialogState } from '../../state/actions/dialogStack';
+import { pushDialog } from '../../state/actions/dialogStack';
 
 import { createComponentId } from '../../utils/system';
 
 export function CreateFolderContainer(props: CreateFolderContainerProps) {
-	const { onClose, onCreated, onRenamed, rename = false, value = '', allowBraces = false, dialogId } = props;
+	const { onClose, onCreated, onRenamed, rename = false, value = '', allowBraces = false } = props;
 	const { isSubmitting, hasPendingChanges } = useEnhancedDialogContext();
 	const [name, setName] = useState(value);
 	const [confirm, setConfirm] = useState(null);
@@ -87,6 +86,7 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
 				moveFolderAck &&
 				!fetchingAffectedPackages &&
 				(!containsItemsInWorkflow || cancelPackagesAck)));
+	const { updateSubmittingOrHasPendingChanges } = useEnhancedDialogContext();
 
 	useEffect(() => {
 		if (item && rename === false) setSelectedItem(item);
@@ -115,19 +115,14 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
 	const onCancelPackagesAckChange = (e: React.ChangeEvent<HTMLInputElement>) => setCancelPackagesAck(e.target.checked);
 
 	const onError = (error: ApiResponse) => {
-		dispatch(
-			batchActions([
-				pushDialog({ component: createComponentId('ErrorDialog'), props: { error: error } }),
-				dialogId && updateDialogState({ id: dialogId, props: { isSubmitting: false } })
-			])
-		);
+		updateSubmittingOrHasPendingChanges({ isSubmitting: false });
+		dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: error } }));
 	};
 
 	const onRenameFolder = (site: string, path: string, name: string) => {
 		renameFolder(site, path, name).subscribe({
 			next() {
-				dialogId &&
-					dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: false, hasPendingChanges: false } }));
+				updateSubmittingOrHasPendingChanges({ isSubmitting: false, hasPendingChanges: false });
 				onRenamed?.({ path, name, rename });
 			},
 			error: onError
@@ -137,7 +132,7 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
 	const onCreateFolder = (site: string, path: string, name: string) => {
 		createFolder(site, path, name).subscribe({
 			next() {
-				dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: false, hasPendingChanges: false } }));
+				updateSubmittingOrHasPendingChanges({ isSubmitting: false, hasPendingChanges: false });
 				onCreated?.({ path, name, rename });
 			},
 			error: onError
@@ -146,7 +141,7 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
 
 	const onSubmit = () => {
 		if (!name) return;
-		dialogId && dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: true } }));
+		updateSubmittingOrHasPendingChanges({ isSubmitting: true });
 		const parentPath = rename ? getParentPath(path) : path;
 		validateActionPolicy(site, { type: rename ? 'RENAME' : 'CREATE', target: `${parentPath}/${name}` })
 			.pipe(
@@ -157,7 +152,7 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
 							error: true,
 							body: formatMessage(translations.policyError, { fileName: name, detail: message })
 						});
-						dialogId && dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: false } }));
+						updateSubmittingOrHasPendingChanges({ isSubmitting: false });
 						return [];
 					}
 					const pathToCheckExists = modifiedValue ?? `${parentPath}/${name}`;
@@ -170,7 +165,7 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
 					// Note: Block of guard statements (each if ends function)
 					if (exists) {
 						setItemExists(true);
-						dialogId && dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: false } }));
+						updateSubmittingOrHasPendingChanges({ isSubmitting: false });
 						return;
 					} else if (modifiedValue) {
 						setConfirm({ body: message });
@@ -204,7 +199,7 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
 
 	const onConfirmCancel = () => {
 		setConfirm(null);
-		dialogId && dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: false } }));
+		updateSubmittingOrHasPendingChanges({ isSubmitting: false });
 	};
 
 	const onInputChanges = (newValue: string) => {
@@ -212,8 +207,7 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
 		setItemExists(false);
 		const newHasPendingChanges = rename ? newValue !== value : !isBlank(newValue);
 		hasPendingChanges !== newHasPendingChanges &&
-			dialogId &&
-			dispatch(updateDialogState({ id: dialogId, props: { hasPendingChanges: newHasPendingChanges } }));
+			updateSubmittingOrHasPendingChanges({ hasPendingChanges: newHasPendingChanges });
 	};
 
 	const itemSelectorFilterChildren = useMemo(() => (item: ContentItem) => item.availableActionsMap.createFolder, []);

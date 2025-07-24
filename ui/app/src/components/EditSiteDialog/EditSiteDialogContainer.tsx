@@ -41,13 +41,14 @@ import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import { PROJECT_PREVIEW_IMAGE_UPDATED } from '../../utils/constants';
 import { showSystemNotification } from '../../state/actions/system';
-import { popDialog, pushDialog, updateDialogState } from '../../state/actions/dialogStack';
+import { popDialog, pushDialog } from '../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
 
 import { createComponentId } from '../../utils/system';
+import { useEnhancedDialogContext } from '../EnhancedDialog';
 
 export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
-	const { site, onClose, onSaveSuccess, onSiteImageChange, isSubmitting, dialogId } = props;
+	const { site, onClose, onSaveSuccess, onSiteImageChange, isSubmitting } = props;
 	const [hasNameConflict, setHasNameConflict] = useState(false);
 	const sites = useSelector<GlobalState, LookupTable>((state) => state.sites.byId);
 	const dispatch = useDispatch();
@@ -62,6 +63,7 @@ export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
 	const disableSubmit =
 		hasNameConflict || (originalName === name.trim() && originalDescription === description.trim()) || isBlank(name);
 	const { formatMessage } = useIntl();
+	const { updateSubmittingOrHasPendingChanges } = useEnhancedDialogContext();
 
 	function checkSiteName(value: string) {
 		if (
@@ -76,29 +78,16 @@ export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
 
 	const handleSubmit = (id: string, name: string, description: string) => {
 		if (!disableSubmit) {
-			dialogId && dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: true } }));
+			updateSubmittingOrHasPendingChanges({ isSubmitting: true });
 			update({ id, name: name.trim(), description: description.trim() }).subscribe({
 				next(response) {
-					dispatch(
-						batchActions(
-							[
-								dialogId &&
-									updateDialogState({ id: dialogId, props: { hasPendingChanges: false, isSubmitting: false } }),
-								fetchSites()
-							].filter(Boolean)
-						)
-					);
+					updateSubmittingOrHasPendingChanges({ hasPendingChanges: false, isSubmitting: false });
+					dispatch(fetchSites());
 					onSaveSuccess?.(response);
 				},
 				error({ response: { response } }) {
-					dispatch(
-						batchActions(
-							[
-								dialogId && updateDialogState({ id: dialogId, props: { isSubmitting: false } }),
-								pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response } })
-							].filter(Boolean)
-						)
-					);
+					updateSubmittingOrHasPendingChanges({ isSubmitting: false });
+					dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response } }));
 				}
 			});
 		}
@@ -109,15 +98,9 @@ export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
 	const onSiteNameChange = (value: string) => {
 		checkSiteName(value);
 		setName(value);
-		dialogId &&
-			dispatch(
-				updateDialogState({
-					id: dialogId,
-					props: {
-						hasPendingChanges: originalDescription !== description.trim() || originalName !== value.trim()
-					}
-				})
-			);
+		updateSubmittingOrHasPendingChanges({
+			hasPendingChanges: originalDescription !== description.trim() || originalName !== value.trim()
+		});
 	};
 
 	const onKeyPress = (event: React.KeyboardEvent) => {
@@ -128,13 +111,9 @@ export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
 
 	const onSiteDescriptionChange = (value: string) => {
 		setDescription(value);
-		dialogId &&
-			dispatch(
-				updateDialogState({
-					id: dialogId,
-					props: { hasPendingChanges: originalName !== name.trim() || originalDescription !== value.trim() }
-				})
-			);
+		updateSubmittingOrHasPendingChanges({
+			hasPendingChanges: originalName !== name.trim() || originalDescription !== value.trim()
+		});
 	};
 
 	const onEditSiteImage = () => {

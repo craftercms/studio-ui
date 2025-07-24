@@ -22,7 +22,6 @@ import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import StandardAction from '../../models/StandardAction';
 
 export interface CancelPackageDialogBaseProps {
-	dialogId?: string;
 	packageId?: number;
 }
 
@@ -37,7 +36,7 @@ export interface CancelPackageDialogStateProps extends CancelPackageDialogBasePr
 }
 
 export function CancelPackageDialog(props: CancelPackageDialogProps) {
-	const { packageId, onSuccess, isSubmitting, dialogId, ...enhancedDialogProps } = props;
+	const { packageId, onSuccess, isSubmitting, ...enhancedDialogProps } = props;
 	return (
 		<EnhancedDialog
 			fullWidth
@@ -46,12 +45,7 @@ export function CancelPackageDialog(props: CancelPackageDialogProps) {
 			title={<FormattedMessage defaultMessage="Cancel Package" />}
 			isSubmitting={isSubmitting}
 		>
-			<CancelPackageDialogContainer
-				dialogId={dialogId}
-				packageId={packageId}
-				onSuccess={onSuccess}
-				isSubmitting={isSubmitting}
-			/>
+			<CancelPackageDialogContainer packageId={packageId} onSuccess={onSuccess} isSubmitting={isSubmitting} />
 		</EnhancedDialog>
 	);
 }

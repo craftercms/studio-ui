@@ -23,7 +23,6 @@ import BulkCancelPackageDialogContainer from './BulkCancelPackageDialogContainer
 import StandardAction from '../../models/StandardAction';
 
 export interface BulkCancelPackageDialogBaseProps {
-	dialogId?: string;
 	packages?: PublishPackage[];
 }
 
@@ -38,7 +37,7 @@ export interface BulkCancelPackageDialogStateProps extends BulkCancelPackageDial
 }
 
 export function BulkCancelPackageDialog(props: BulkCancelPackageDialogProps) {
-	const { packages, onSuccess, isSubmitting, dialogId, ...enhancedDialogProps } = props;
+	const { packages, onSuccess, isSubmitting, ...enhancedDialogProps } = props;
 
 	return (
 		<EnhancedDialog
@@ -49,12 +48,7 @@ export function BulkCancelPackageDialog(props: BulkCancelPackageDialogProps) {
 			subtitle={<FormattedMessage defaultMessage="Confirm the cancellation of the following packages?" />}
 			isSubmitting={isSubmitting}
 		>
-			<BulkCancelPackageDialogContainer
-				dialogId={dialogId}
-				packages={packages}
-				onSuccess={onSuccess}
-				isSubmitting={isSubmitting}
-			/>
+			<BulkCancelPackageDialogContainer packages={packages} onSuccess={onSuccess} isSubmitting={isSubmitting} />
 		</EnhancedDialog>
 	);
 }

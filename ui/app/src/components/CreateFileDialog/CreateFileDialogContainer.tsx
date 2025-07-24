@@ -28,7 +28,6 @@ import PrimaryButton from '../PrimaryButton';
 import ConfirmDialog from '../ConfirmDialog';
 import { CreateFileContainerProps } from './utils';
 import { translations } from './translations';
-import { batchActions } from '../../state/actions/misc';
 import useEnhancedDialogContext from '../EnhancedDialog/useEnhancedDialogContext';
 import useItemsByPath from '../../hooks/useItemsByPath';
 import { UNDEFINED } from '../../utils/constants';
@@ -36,12 +35,12 @@ import { isBlank } from '../../utils/string';
 import { applyAssetNameRules } from '../../utils/content';
 import { getFileNameWithExtensionForItemType, pickExtensionForItemType } from '../../utils/path';
 import ApiResponse from '../../models/ApiResponse';
-import { pushDialog, updateDialogState } from '../../state/actions/dialogStack';
+import { pushDialog } from '../../state/actions/dialogStack';
 
 import { createComponentId } from '../../utils/system';
 
 export function CreateFileDialogContainer(props: CreateFileContainerProps) {
-	const { onClose, onCreated, type, path, allowBraces, dialogId } = props;
+	const { onClose, onCreated, type, path, allowBraces } = props;
 	const { isSubmitting, hasPendingChanges } = useEnhancedDialogContext();
 	const [name, setName] = useState('');
 	const [confirm, setConfirm] = useState(null);
@@ -55,21 +54,17 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
 	const [itemExists, setItemExists] = useState(false);
 	const fileExists = itemExists || itemLookup[computedFilePath] !== UNDEFINED;
 	const isValid = !isBlank(name) && !fileExists;
+	const { updateSubmittingOrHasPendingChanges } = useEnhancedDialogContext();
 
 	const onError = (error: ApiResponse) => {
-		dispatch(
-			batchActions([
-				pushDialog({ component: createComponentId('ErrorDialog'), props: { error } }),
-				updateDialogState({ id: dialogId, props: { isSubmitting: false } })
-			])
-		);
+		updateSubmittingOrHasPendingChanges({ isSubmitting: false });
+		dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error } }));
 	};
 
 	const onCreateFile = (site: string, path: string, fileName: string) => {
 		createFile(site, path, fileName).subscribe({
 			next() {
-				dialogId &&
-					dispatch(updateDialogState({ id: dialogId, props: { hasPendingChanges: false, isSubmitting: false } }));
+				updateSubmittingOrHasPendingChanges({ hasPendingChanges: false, isSubmitting: false });
 				onCreated?.({ path, fileName, mode: pickExtensionForItemType(type), openOnSuccess: true });
 			},
 			error: onError
@@ -77,7 +72,7 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
 	};
 
 	const onSubmit = () => {
-		dialogId && dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: true } }));
+		updateSubmittingOrHasPendingChanges({ isSubmitting: true });
 		if (name) {
 			validateActionPolicy(site, {
 				type: 'CREATE',
@@ -92,7 +87,7 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
 							next: (exists) => {
 								if (exists) {
 									setItemExists(true);
-									dialogId && dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: false } }));
+									updateSubmittingOrHasPendingChanges({ isSubmitting: false });
 								} else {
 									if (modifiedValue) {
 										setConfirm({ body: message });
@@ -108,7 +103,7 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
 							error: true,
 							body: formatMessage(translations.policyError, { fileName: name, detail: message })
 						});
-						dialogId && dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: false } }));
+						updateSubmittingOrHasPendingChanges({ isSubmitting: false });
 					}
 				},
 				error: onError
@@ -123,16 +118,14 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
 
 	const onConfirmCancel = () => {
 		setConfirm(null);
-		dialogId && dispatch(updateDialogState({ id: dialogId, props: { isSubmitting: false } }));
+		updateSubmittingOrHasPendingChanges({ isSubmitting: false });
 	};
 
 	const onInputChanges = (value: string) => {
 		setName(value);
 		setItemExists(false);
 		const newHasPending = !isBlank(value);
-		hasPendingChanges !== newHasPending &&
-			dialogId &&
-			dispatch(updateDialogState({ id: dialogId, props: { hasPendingChanges: newHasPending } }));
+		hasPendingChanges !== newHasPending && updateSubmittingOrHasPendingChanges({ hasPendingChanges: newHasPending });
 	};
 
 	return (
