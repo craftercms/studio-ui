@@ -36,7 +36,6 @@ import {
 	closeHistoryDialog,
 	closeItemMegaMenu,
 	closeItemMenu,
-	closeLauncher,
 	closeNewContentDialog,
 	closePackageDetailsDialog,
 	closePathSelectionDialog,
@@ -70,7 +69,6 @@ import {
 	showHistoryDialog,
 	showItemMegaMenu,
 	showItemMenu,
-	showLauncher,
 	showNewContentDialog,
 	showPackageDetailsDialog,
 	showPathSelectionDialog,
@@ -94,7 +92,6 @@ import {
 	updateDeleteDialog,
 	updateEditDialogConfig,
 	updateEditSiteDialog,
-	updateLauncher,
 	updatePreviewDialog,
 	updatePublishDialog,
 	updatePublishingPackageResubmitDialog,
@@ -144,7 +141,6 @@ const dialogsMap = {
 	[showEditDialog.type]: 'craftercms.components.LegacyFormDialog',
 	[showItemMenu.type]: 'craftercms.components.ItemActionsMenu',
 	[showItemMegaMenu.type]: 'craftercms.components.ItemMegaMenu',
-	[showLauncher.type]: 'craftercms.components.Launcher',
 	[blockUI.type]: 'craftercms.components.UIBlocker',
 	[showFolderMoveAlertDialog.type]: 'craftercms.components.FolderMoveAlertDialog'
 };
@@ -186,7 +182,6 @@ const showDialogsEpics: CrafterCMSEpic[] = [
 				showEditDialog.type,
 				showItemMenu.type,
 				showItemMegaMenu.type,
-				showLauncher.type,
 				showFolderMoveAlertDialog.type
 			),
 			withLatestFrom(state$),
@@ -239,8 +234,7 @@ const showDialogsEpics: CrafterCMSEpic[] = [
 				updateBrokenReferencesDialog.type,
 				updateRenameAssetDialog.type,
 				updateDeleteDialog.type,
-				updateEditDialogConfig.type,
-				updateLauncher.type
+				updateEditDialogConfig.type
 			),
 			withLatestFrom(state$),
 			map(([{ payload, type }]) => {
@@ -290,7 +284,6 @@ const showDialogsEpics: CrafterCMSEpic[] = [
 				closeEditDialog.type,
 				closeItemMenu.type,
 				closeItemMegaMenu.type,
-				closeLauncher.type,
 				closeFolderMoveAlertDialog.type
 			),
 			withLatestFrom(state$),

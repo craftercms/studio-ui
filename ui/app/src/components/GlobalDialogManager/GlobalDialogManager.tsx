@@ -22,6 +22,7 @@ import { isPlainObject } from '../../utils/object';
 import { SnackbarKey, useSnackbar } from 'notistack';
 import { getHostToHostBus } from '../../utils/subjects';
 import { blockUI, newProjectReady, showSystemNotification, unblockUI } from '../../state/actions/system';
+import Launcher from '../Launcher/Launcher';
 import useSelection from '../../hooks/useSelection';
 import MinimizedBar from '../MinimizedBar';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -275,6 +276,10 @@ function GlobalDialogManager() {
 
 				{/* region Auth Monitor */}
 				<AuthMonitor />
+				{/* endregion */}
+
+				{/* region Launcher */}
+				<Launcher {...state.launcher} />
 				{/* endregion */}
 
 				{/* region Minimized Tabs */}
