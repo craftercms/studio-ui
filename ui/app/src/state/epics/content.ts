@@ -168,13 +168,6 @@ const content: CrafterCMSEpic[] = [
 			ofType(showItemMegaMenu.type),
 			map(({ payload }) => fetchContentItem({ path: payload.path }))
 		),
-	(action$, state$) =>
-		action$.pipe(
-			ofType(pushDialog.type),
-			withLatestFrom(state$),
-			filter(([{ payload }]) => payload.component === 'craftercms.components.ItemMegaMenu'),
-			map(([{ payload }]) => fetchContentItem({ path: payload.props.path }))
-		),
 	// endregion
 	// region fetchContentItem, reloadContentItem
 	(action$, state$) =>
