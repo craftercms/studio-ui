@@ -1103,10 +1103,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 					break;
 				}
 				case requestWorkflowCancellationDialog.type: {
-					const dialogId = nanoid();
 					dispatch(
 						pushDialog({
-							id: dialogId,
 							component: createComponentId('ViewPackagesDialog'),
 							props: {
 								item: payload.item,
