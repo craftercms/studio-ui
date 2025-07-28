@@ -203,31 +203,6 @@ const dialogEpics: CrafterCMSEpic[] = [
 			)
 		),
 	// endregion
-	// region fetchRenameAssetDependants
-	(action$, state$) =>
-		action$.pipe(
-			ofType(fetchRenameAssetDependants.type),
-			withLatestFrom(state$),
-			switchMap(([{ payload }, state]) =>
-				fetchDependant(state.sites.active, payload.path).pipe(
-					takeUntil(action$.pipe(ofType(closeRenameAssetDialog.type))),
-					map((response: LegacyItem[]) => {
-						const dependantItems = parseLegacyItemToContentItem(response);
-						return updateDialogState({
-							id: payload.dialogId,
-							props: { dependantItems, fetchingDependantItems: false }
-						});
-					}),
-					catchAjaxError((error) =>
-						updateDialogState({
-							id: payload.dialogId,
-							props: { error, fetchingDependantItems: false }
-						})
-					)
-				)
-			)
-		),
-	// endregion
 	// region pushDialog
 	(action$, state$) =>
 		action$.pipe(

@@ -14,13 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { EnhancedDialog } from '../EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
 import { RenameAssetDialogProps } from './utils';
 import { RenameAssetDialogContainer } from './RenameAssetDialogContainer';
 import { useDispatch } from 'react-redux';
-import { fetchDependant } from '../../services/dependencies';
+import { fetchDependant as fetchDependantService } from '../../services/dependencies';
 import { parseLegacyItemToContentItem } from '../../utils/content';
 import { pushDialog } from '../../state/actions/dialogStack';
 import { createComponentId } from '../../utils/system';
@@ -33,9 +33,8 @@ export function RenameAssetDialog(props: RenameAssetDialogProps) {
 	const [fetchingDependantItems, setFetchingDependantItems] = useState(false);
 	const dispatch = useDispatch();
 
-	useEffect(() => {
-		setFetchingDependantItems(true);
-		fetchDependant(siteId, path).subscribe({
+	const fetchDependant = useCallback(() => {
+		fetchDependantService(siteId, path).subscribe({
 			next: (response) => {
 				setDependantItems(parseLegacyItemToContentItem(response));
 				setFetchingDependantItems(false);
@@ -50,7 +49,12 @@ export function RenameAssetDialog(props: RenameAssetDialogProps) {
 				);
 			}
 		});
-	}, [dispatch, siteId, path]);
+	}, [dispatch, path, siteId]);
+
+	useEffect(() => {
+		setFetchingDependantItems(true);
+		fetchDependant();
+	}, [fetchDependant]);
 
 	return (
 		<EnhancedDialog
@@ -63,6 +67,7 @@ export function RenameAssetDialog(props: RenameAssetDialogProps) {
 				allowBraces={allowBraces}
 				value={value}
 				type={type}
+				fetchDependant={fetchDependant}
 				dependantItems={dependantItems}
 				fetchingDependantItems={fetchingDependantItems}
 				onRenamed={onRenamed}

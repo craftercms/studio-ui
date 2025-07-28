@@ -42,4 +42,5 @@ export interface RenameAssetContainerProps
 	extends Pick<RenameAssetDialogProps, 'path' | 'value' | 'allowBraces' | 'onRenamed' | 'onClose' | 'type' | 'error'> {
 	fetchingDependantItems: boolean;
 	dependantItems: ContentItem[];
+	fetchDependant(): void;
 }

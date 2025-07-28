@@ -1048,7 +1048,7 @@ export const openItemEditor = (
 	authoringBase: string,
 	siteId: string,
 	dispatch: Dispatch<AnyAction>,
-	onSaveSuccess?: AnyAction
+	onSaveSuccess?: () => void
 ) => {
 	let type = 'controller';
 
@@ -1064,7 +1064,7 @@ export const openItemEditor = (
 				path: item.path,
 				authoringBase,
 				site: siteId,
-				onSaveSuccess: () => dispatch(onSaveSuccess)
+				onSaveSuccess: () => onSaveSuccess?.()
 			})
 		);
 	} else {
@@ -1079,7 +1079,7 @@ export const openItemEditor = (
 					path: item.path,
 					type,
 					mode: getEditorMode(item.mimeType),
-					onSuccess: onSaveSuccess,
+					onSuccess: () => onSaveSuccess?.(),
 					onClose: () => dispatch(popCodeEditorDialog({ id: dialogId }))
 				}
 			})

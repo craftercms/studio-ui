@@ -47,7 +47,8 @@ export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
 		type,
 		dependantItems,
 		fetchingDependantItems,
-		error
+		error,
+		fetchDependant
 	} = props;
 	const { isSubmitting, hasPendingChanges } = useEnhancedDialogContext();
 	const [name, setName] = useState(value);
@@ -119,6 +120,7 @@ export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
 					name={name}
 					disabled={renameDisabled}
 					newNameExists={assetExists}
+					fetchDependant={fetchDependant}
 					dependantItems={dependantItems}
 					isSubmitting={isSubmitting}
 					confirmBrokenReferences={confirmBrokenReferences}
