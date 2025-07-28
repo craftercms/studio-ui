@@ -15,16 +15,14 @@
  */
 
 import { ofType } from 'redux-observable';
-import { filter, ignoreElements, map, switchMap, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
+import { filter, ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { NEVER, of } from 'rxjs';
 import { camelize, dasherize } from '../../utils/string';
 import {
 	closeCodeEditorDialog,
-	closeRenameAssetDialog,
 	fetchContentVersion,
 	fetchContentVersionComplete,
 	fetchContentVersionFailed,
-	fetchRenameAssetDependants,
 	newContentCreationComplete,
 	popCodeEditorDialog,
 	showCodeEditorDialog,
@@ -34,7 +32,6 @@ import {
 	updateEditDialogConfig,
 	updatePreviewDialog
 } from '../actions/dialogs';
-import { fetchDependant } from '../../services/dependencies';
 import { fetchContentXML, fetchItemVersion } from '../../services/content';
 import { catchAjaxError } from '../../utils/ajax';
 import { batchActions } from '../actions/misc';
@@ -45,8 +42,6 @@ import infoGraphic from '../../assets/information.svg';
 import { nnou, nou } from '../../utils/object';
 import { getHostToGuestBus } from '../../utils/subjects';
 import { unlockItem } from '../actions/content';
-import { parseLegacyItemToContentItem } from '../../utils/content';
-import { LegacyItem } from '../../models';
 import { generateDialogId } from '../../utils/dialogs';
 import type { LegacyFormDialogStateProps } from '../../components/LegacyFormDialog/utils';
 import type {
