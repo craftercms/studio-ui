@@ -50,8 +50,7 @@ import { forkJoin, switchMap } from 'rxjs';
 import { cancelPackages, fetchAffectedPackages } from '../../services/workflow';
 import { PublishPackage } from '../../models';
 import Alert, { alertClasses } from '@mui/material/Alert';
-import { popDialog, pushDialog } from '../../state/actions/dialogStack';
-import { nanoid } from 'nanoid';
+import { pushDialog } from '../../state/actions/dialogStack';
 import { createComponentId } from '../../utils/system';
 
 export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps) {
@@ -127,17 +126,14 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 		// Before saving, check if the item is part of a package in active workflow. If so, show a dialog to review the
 		// packages before continuing with the cancellation of the packages and saving the item.
 		if (affectedPackages?.length) {
-			const viewPackagesDialogId = nanoid();
 			dispatch(
 				pushDialog({
-					id: viewPackagesDialogId,
 					component: createComponentId('ViewPackagesDialog'),
 					props: {
 						item,
 						onContinue: () => {
 							save(callback);
-						},
-						onClose: () => dispatch(popDialog({ id: viewPackagesDialogId }))
+						}
 					}
 				})
 			);

@@ -317,7 +317,6 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
 		} else if (isMediaContent(item.mimeType) || isPdfDocument(item.mimeType)) {
 			dispatch(
 				pushDialog({
-					id: nanoid(),
 					component: createComponentId('PreviewDialog'),
 					allowMinimize: true,
 					allowFullScreen: true,

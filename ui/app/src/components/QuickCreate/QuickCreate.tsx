@@ -43,7 +43,6 @@ import useActiveSiteId from '../../hooks/useActiveSiteId';
 import useSystemVersion from '../../hooks/useSystemVersion';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { LoadingState } from '../LoadingState';
-import { nanoid } from 'nanoid';
 import { pushDialog } from '../../state/actions/dialogStack';
 import { createComponentId, pickShowContentFormAction } from '../../utils/system';
 import useEnv from '../../hooks/useEnv';
@@ -279,10 +278,8 @@ const QuickCreate = forwardRef<HTMLButtonElement, { item?: ContentItem }>((props
 
 	const onNewContentSelected = () => {
 		onMenuClose();
-		const dialogId = nanoid();
 		dispatch(
 			pushDialog({
-				id: dialogId,
 				component: createComponentId('NewContentDialog'),
 				props: {
 					item: lookupItemByPath(currentPreviewItemPath, items),

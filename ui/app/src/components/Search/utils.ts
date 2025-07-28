@@ -36,7 +36,6 @@ import { getPreviewURLFromPath } from '../../utils/path';
 import { IconButtonProps } from '@mui/material/IconButton';
 import useFetchContentItems from '../../hooks/useFetchContentItems';
 import { pushDialog } from '../../state/actions/dialogStack';
-import { nanoid } from 'nanoid';
 import { createComponentId, pickShowContentFormAction } from '../../utils/system';
 import { showItemMegaMenu } from '../../state/actions/dialogs';
 
@@ -390,7 +389,6 @@ export const useSearchState = ({
 			case 'Image': {
 				dispatch(
 					pushDialog({
-						id: nanoid(),
 						component: createComponentId('PreviewDialog'),
 						allowMinimize: true,
 						allowFullScreen: true,
@@ -406,7 +404,6 @@ export const useSearchState = ({
 			case 'Page': {
 				dispatch(
 					pushDialog({
-						id: nanoid(),
 						component: createComponentId('PreviewDialog'),
 						allowMinimize: true,
 						allowFullScreen: true,
@@ -427,7 +424,6 @@ export const useSearchState = ({
 			case 'Video':
 				dispatch(
 					pushDialog({
-						id: nanoid(),
 						component: createComponentId('PreviewDialog'),
 						allowMinimize: true,
 						allowFullScreen: true,
@@ -442,7 +438,6 @@ export const useSearchState = ({
 			case 'Audio':
 				dispatch(
 					pushDialog({
-						id: nanoid(),
 						component: createComponentId('PreviewDialog'),
 						allowMinimize: true,
 						allowFullScreen: true,
@@ -458,7 +453,6 @@ export const useSearchState = ({
 			case 'PDF':
 				dispatch(
 					pushDialog({
-						id: nanoid(),
 						component: createComponentId('PreviewDialog'),
 						allowMinimize: true,
 						allowFullScreen: true,
@@ -483,7 +477,6 @@ export const useSearchState = ({
 				}
 				dispatch(
 					pushDialog({
-						id: nanoid(),
 						component: createComponentId('PreviewDialog'),
 						allowMinimize: true,
 						allowFullScreen: true,

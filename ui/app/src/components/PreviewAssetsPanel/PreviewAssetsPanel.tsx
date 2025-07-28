@@ -254,7 +254,6 @@ export function PreviewAssetsPanel() {
 											onPreview={() =>
 												dispatch(
 													pushDialog({
-														id: nanoid(),
 														component: createComponentId('PreviewDialog'),
 														allowMinimize: true,
 														allowFullScreen: true,

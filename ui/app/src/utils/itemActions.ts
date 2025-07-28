@@ -859,10 +859,8 @@ export const itemActionDispatcher = ({
 				break;
 			}
 			case 'dependencies': {
-				const dialogId = nanoid();
 				dispatch(
 					pushDialog({
-						id: dialogId,
 						component: createComponentId('DependenciesDialog'),
 						props: { item, rootPath: getRootPath(item.path) }
 					})
@@ -941,7 +939,6 @@ export const itemActionDispatcher = ({
 			case 'viewMedia': {
 				dispatch(
 					pushDialog({
-						id: nanoid(),
 						component: createComponentId('PreviewDialog'),
 						allowMinimize: true,
 						allowFullScreen: true,
@@ -955,15 +952,12 @@ export const itemActionDispatcher = ({
 				break;
 			}
 			case 'upload': {
-				const dialogId = nanoid();
 				dispatch(
 					pushDialog({
-						id: dialogId,
 						component: createComponentId('UploadDialog'),
 						props: {
 							path: item.path,
-							site,
-							onClose: () => dispatch(popDialog({ id: dialogId }))
+							site
 						}
 					})
 				);

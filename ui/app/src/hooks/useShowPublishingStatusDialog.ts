@@ -19,7 +19,6 @@ import { useDispatch } from 'react-redux';
 import useActiveUser from './useActiveUser';
 import useActiveSiteId from './useActiveSiteId';
 import { pushDialog } from '../state/actions/dialogStack';
-import { nanoid } from 'nanoid';
 import { createComponentId } from '../utils/system';
 
 export function useShowPublishingStatusDialog() {
@@ -31,14 +30,12 @@ export function useShowPublishingStatusDialog() {
 	const userPermissions = user?.permissionsBySite[site] ?? [];
 
 	return () => {
-		const dialogId = nanoid();
 		dispatch(
 			// If user has either of these permissions or roles, then he'll see more than one widget, and it's worth showing the
 			// Publishing Dashboard. Otherwise, just show the simple status dialog.
 			userPermissions.some((permission) => permission === 'get_publishing_queue' || permission === 'publish') ||
 				userRoles.some((role) => role.toLowerCase() === 'developer' || role.toLowerCase() === 'admin')
 				? pushDialog({
-						id: dialogId,
 						component: createComponentId('WidgetDialog'),
 						props: {
 							title: formatMessage({ defaultMessage: 'Publishing' }),

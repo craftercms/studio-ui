@@ -258,7 +258,6 @@ export function PathNavigator(props: PathNavigatorProps) {
 		} else if (isImage(item) || isVideo(item) || isPdfDocument(item.mimeType)) {
 			dispatch(
 				pushDialog({
-					id: nanoid(),
 					component: createComponentId('PreviewDialog'),
 					allowMinimize: true,
 					allowFullScreen: true,
