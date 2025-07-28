@@ -31,8 +31,7 @@ const reducer = createReducer<GlobalState['dialogStack']>(
 		builder.addCase(pushDialog, (state, { payload }) => {
 			const component = payload.component;
 			// If the dialog is a CodeEditorDialog, FormsEngineDialog or LegacyFormDialog, we run extra verification.
-			// If the same type of dialog is already open for the same path, we update its props instead of creating a new
-			// dialog, and reset the isMinimized state.
+			// If the same type of dialog is already open for the same path, we set minimized to false.
 			if (
 				component === 'craftercms.components.CodeEditorDialog' ||
 				component === 'craftercms.components.LegacyFormDialog' ||
@@ -55,7 +54,6 @@ const reducer = createReducer<GlobalState['dialogStack']>(
 					state.byId[dialogState.id].props = {
 						// @ts-expect-error TS2698: TypeScript doesn't think the WritableDraft can be spread.
 						...state.byId[dialogState.id].props,
-						...payloadProps,
 						isMinimized: false
 					};
 					return state;
