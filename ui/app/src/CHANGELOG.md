@@ -36,6 +36,7 @@
   * [ContentTypesLoader] Removed
   * [NewContentDialog] Props `rootPath`, `copact` removed. Prop `initialCompact` added.
     * Prop `onContentTypeSelected` changed its signature from sending an object with `authoringBase`, `path`, `isNewContent`, `contentTypeId`, `onSaveSuccess` to `{ path: string; contentType: ContentType }`
+  * Removed `ItemActionsMenu` component and dialog actions. Use `ItemMegaMenu` instead.
 * [hooks]
   * Removed `useLogicResource` hook.
   * Removed `useSelectorResource` hook.
