@@ -128,9 +128,6 @@ export const showDeleteDialog = /*#__PURE__*/ createAction<Partial<DeleteDialogS
 export const updateDeleteDialog = /*#__PURE__*/ createAction<Partial<DeleteDialogStateProps>>('UPDATE_DELETE_DIALOG');
 export const closeDeleteDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_DELETE_DIALOG');
 export const deleteDialogClosed = /*#__PURE__*/ createAction('DELETE_DIALOG_CLOSED');
-export const fetchDeleteDependencies = /*#__PURE__*/ createAction<{ paths: string[]; dialogId: string }>(
-	'FETCH_DELETE_DEPENDENCIES'
-);
 // endregion
 
 // region New Content

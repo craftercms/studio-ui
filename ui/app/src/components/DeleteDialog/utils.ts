@@ -2,7 +2,6 @@ import StandardAction from '../../models/StandardAction';
 import { ContentItem, LightItem } from '../../models/Item';
 import React from 'react';
 import LookupTable from '../../models/LookupTable';
-import { InputProps } from '@mui/material/Input';
 import { SelectionListProps } from '../DependencySelection/SelectionList';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
@@ -11,13 +10,10 @@ import ApiResponse from '../../models/ApiResponse';
 export interface DeleteDialogBaseProps {
 	items: ContentItem[];
 	isFetching: boolean;
-	childItems: LightItem[];
-	dependentItems: LightItem[];
 	error: ApiResponse;
 }
 
 export interface DeleteDialogProps extends DeleteDialogBaseProps, EnhancedDialogProps {
-	dialogId: string;
 	onSuccess?(response?: any): any;
 }
 
@@ -29,12 +25,12 @@ export interface DeleteDialogStateProps extends DeleteDialogBaseProps, EnhancedD
 
 export interface DeleteDialogContainerProps
 	extends DeleteDialogBaseProps,
-		Pick<DeleteDialogProps, 'isSubmitting' | 'onClose' | 'onSuccess' | 'dialogId'> {}
+		Pick<DeleteDialogProps, 'isSubmitting' | 'onClose' | 'onSuccess'> {}
 
 export interface DeleteDialogContentUIProps {
 	items: ContentItem[];
-	childItems: DeleteDialogBaseProps['childItems'];
-	dependentItems: DeleteDialogBaseProps['dependentItems'];
+	childItems: LightItem[];
+	dependentItems: LightItem[];
 	title: string;
 	comment: string;
 	selectedItems: LookupTable<boolean>;

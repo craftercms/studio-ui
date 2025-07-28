@@ -24,7 +24,6 @@ import {
 	fetchContentVersion,
 	fetchContentVersionComplete,
 	fetchContentVersionFailed,
-	fetchDeleteDependencies,
 	fetchRenameAssetDependants,
 	newContentCreationComplete,
 	popCodeEditorDialog,
@@ -35,7 +34,7 @@ import {
 	updateEditDialogConfig,
 	updatePreviewDialog
 } from '../actions/dialogs';
-import { fetchDeleteDependencies as fetchDeleteDependenciesService, fetchDependant } from '../../services/dependencies';
+import { fetchDependant } from '../../services/dependencies';
 import { fetchContentXML, fetchItemVersion } from '../../services/content';
 import { catchAjaxError } from '../../utils/ajax';
 import { batchActions } from '../actions/misc';
@@ -50,7 +49,12 @@ import { parseLegacyItemToContentItem } from '../../utils/content';
 import { LegacyItem } from '../../models';
 import { generateDialogId } from '../../utils/dialogs';
 import type { LegacyFormDialogStateProps } from '../../components/LegacyFormDialog/utils';
-import type { CodeEditorDialogStateProps, PreviewDialogStateProps } from '../../components';
+import type {
+	CodeEditorDialogProps,
+	CodeEditorDialogStateProps,
+	PreviewDialogProps,
+	PreviewDialogStateProps
+} from '../../components';
 import { popDialog, pushDialog, updateDialogState } from '../actions/dialogStack';
 import { nanoid } from 'nanoid';
 import { createComponentId } from '../../utils/system';
@@ -79,39 +83,11 @@ const dialogEpics: CrafterCMSEpic[] = [
 		),
 	// endregion
 	// region newContentCreationComplete
-	(action$, state$) =>
+	(action$) =>
 		action$.pipe(
 			ofType(newContentCreationComplete.type),
 			filter(({ payload }) => payload.item?.isPage && payload.item.isPreviewable),
 			map(({ payload }) => changeCurrentUrl(payload.redirectUrl))
-		),
-	// endregion
-	// region fetchDeleteDependencies
-	(action$, state$) =>
-		action$.pipe(
-			ofType(fetchDeleteDependencies.type),
-			withLatestFrom(state$),
-			switchMap(
-				([
-					{
-						payload: { paths, dialogId }
-					},
-					state
-				]) =>
-					fetchDeleteDependenciesService(state.sites.active, paths).pipe(
-						map((response) => {
-							return updateDialogState({
-								id: dialogId,
-								props: {
-									isFetching: false,
-									dependentItems: response.dependentItems,
-									childItems: response.childItems
-								}
-							});
-						}),
-						catchAjaxError((error) => updateDialogState({ id: dialogId, props: { error, isFetching: false } }))
-					)
-			)
 		),
 	// endregion
 	// region showEditDialog, showCodeEditorDialog
@@ -184,7 +160,10 @@ const dialogEpics: CrafterCMSEpic[] = [
 			ofType(showPreviewDialog.type),
 			withLatestFrom(state$),
 			filter(
-				([{ payload }, state]) => payload.type === 'editor' && nnou(payload.url) && nou(state.dialogs.preview.content)
+				([{ payload }, state]) =>
+					payload.type === 'editor' &&
+					nnou(payload.url) &&
+					nou((state.dialogStack.byId[generateDialogId(showPreviewDialog.type)]?.props as PreviewDialogProps)?.content)
 			),
 			switchMap(([{ payload }, state]) =>
 				fetchContentXML(state.sites.active, payload.url).pipe(map((content) => updatePreviewDialog({ content })))
@@ -211,10 +190,17 @@ const dialogEpics: CrafterCMSEpic[] = [
 			withLatestFrom(state$),
 			filter(([, state]) => {
 				const username = state.user.username;
-				const item = state.content.itemsByPath[state.dialogs.codeEditor.path];
+				const codeEditorState = state.dialogStack.byId[generateDialogId(closeCodeEditorDialog.type)]
+					?.props as CodeEditorDialogProps;
+				const item = state.content.itemsByPath[codeEditorState?.path];
 				return item.stateMap.locked && item.lockOwner.username === username;
 			}),
-			map(([, state]) => unlockItem({ path: state.dialogs.codeEditor.path }))
+			map(([, state]) =>
+				unlockItem({
+					path: (state.dialogStack.byId[generateDialogId(closeCodeEditorDialog.type)]?.props as CodeEditorDialogProps)
+						.path
+				})
+			)
 		),
 	// endregion
 	// region fetchRenameAssetDependants

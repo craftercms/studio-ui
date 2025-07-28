@@ -29,10 +29,8 @@ import type { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import type StandardAction from '../../models/StandardAction';
 import { useDispatch } from 'react-redux';
 import Tooltip from '@mui/material/Tooltip';
-import { popDialog } from '../../state/actions/dialogStack';
 
 export interface FolderMoveAlertDialogProps extends EnhancedDialogProps {
-	dialogId: string;
 	item: ContentItem;
 }
 
@@ -44,7 +42,7 @@ export interface FolderMoveAlertDialogStateProps extends EnhancedDialogState {
 
 export function FolderMoveAlertDialog(props: FolderMoveAlertDialogProps) {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars -- Need `item` removed to pass down props to EnhancedDialog
-	const { item, dialogId, ...rest } = props;
+	const { item, ...rest } = props;
 	return (
 		<EnhancedDialog maxWidth="sm" title={<FormattedMessage defaultMessage="Warning" />} {...rest}>
 			{createElement(Body, props)}
@@ -52,7 +50,7 @@ export function FolderMoveAlertDialog(props: FolderMoveAlertDialogProps) {
 	);
 }
 
-function Body({ item, onClose, dialogId }: FolderMoveAlertDialogProps) {
+function Body({ item, onClose }: FolderMoveAlertDialogProps) {
 	const [moveAck, setMoveAck] = useState(false);
 	const dispatch = useDispatch();
 	const onContinue = () => {
@@ -60,10 +58,10 @@ function Body({ item, onClose, dialogId }: FolderMoveAlertDialogProps) {
 			batchActions([
 				setClipboard({ type: 'CUT', paths: [item.path], sourcePath: item.path }),
 				emitSystemEvent(itemCut({ target: item.path })),
-				popDialog({ id: dialogId }),
 				showCutItemSuccessNotification()
 			])
 		);
+		onClose?.(null, null);
 	};
 	return (
 		<>

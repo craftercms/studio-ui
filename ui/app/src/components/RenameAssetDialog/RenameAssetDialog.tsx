@@ -14,25 +14,44 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { EnhancedDialog } from '../EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
 import { RenameAssetDialogProps } from './utils';
 import { RenameAssetDialogContainer } from './RenameAssetDialogContainer';
+import { useDispatch } from 'react-redux';
+import { fetchDependant } from '../../services/dependencies';
+import { parseLegacyItemToContentItem } from '../../utils/content';
+import { pushDialog } from '../../state/actions/dialogStack';
+import { createComponentId } from '../../utils/system';
+import useActiveSiteId from '../../hooks/useActiveSiteId';
 
 export function RenameAssetDialog(props: RenameAssetDialogProps) {
-	const {
-		path,
-		allowBraces,
-		value,
-		onRenamed,
-		type,
-		dependantItems,
-		fetchingDependantItems,
-		error,
-		dialogId,
-		...rest
-	} = props;
+	const { path, allowBraces, value, onRenamed, type, error, ...rest } = props;
+	const siteId = useActiveSiteId();
+	const [dependantItems, setDependantItems] = useState([]);
+	const [fetchingDependantItems, setFetchingDependantItems] = useState(false);
+	const dispatch = useDispatch();
+
+	useEffect(() => {
+		setFetchingDependantItems(true);
+		fetchDependant(siteId, path).subscribe({
+			next: (response) => {
+				setDependantItems(parseLegacyItemToContentItem(response));
+				setFetchingDependantItems(false);
+			},
+			error: ({ response }) => {
+				setFetchingDependantItems(false);
+				dispatch(
+					pushDialog({
+						component: createComponentId('ErrorDialog'),
+						props: { error: response.response }
+					})
+				);
+			}
+		});
+	}, [dispatch, siteId, path]);
+
 	return (
 		<EnhancedDialog
 			title={<FormattedMessage defaultMessage="Rename Asset" />}
@@ -40,7 +59,6 @@ export function RenameAssetDialog(props: RenameAssetDialogProps) {
 			{...rest}
 		>
 			<RenameAssetDialogContainer
-				dialogId={dialogId}
 				path={path}
 				allowBraces={allowBraces}
 				value={value}
