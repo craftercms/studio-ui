@@ -38,6 +38,7 @@ const reducer = createReducer<GlobalState['dialogStack']>(
 				component === 'craftercms.components.LegacyFormDialog' ||
 				component === 'craftercms.components.FormsEngineDialog'
 			) {
+				const payloadProps = payload.props as CodeEditorDialogProps | LegacyFormDialogProps;
 				const dialogState = Object.values(state.byId).find((dialog) => {
 					if (dialog.component === 'craftercms.components.FormsEngineDialog') {
 						return (
@@ -46,7 +47,6 @@ const reducer = createReducer<GlobalState['dialogStack']>(
 								(payload.props as FormsEngineDialogProps).formProps.update?.path
 						);
 					} else {
-						const payloadProps = payload.props as CodeEditorDialogProps | LegacyFormDialogProps;
 						const dialogProps = dialog.props as CodeEditorDialogProps | LegacyFormDialogProps;
 						return dialog.component === component && dialogProps.path === payloadProps.path;
 					}
@@ -55,8 +55,7 @@ const reducer = createReducer<GlobalState['dialogStack']>(
 					state.byId[dialogState.id].props = {
 						// @ts-expect-error TS2698: TypeScript doesn't think the WritableDraft can be spread.
 						...state.byId[dialogState.id].props,
-						// @ts-expect-error TS2698: Props may be type CodeEditorDialogProps or LegacyFormDialogProps or FormsEngineDialogProps.
-						...payload.props,
+						...payloadProps,
 						isMinimized: false
 					};
 					return state;
