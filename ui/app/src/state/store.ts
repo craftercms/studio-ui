@@ -53,11 +53,7 @@ import { batchActions, dispatchDOMEvent } from './actions/misc';
 import { closeSingleFileUploadDialog } from './actions/dialogs';
 import { pushDialog, pushNonDialog } from './actions/dialogStack';
 
-export type EpicMiddlewareDependencies = {
-	getIntl: () => IntlShape;
-	store: CrafterCMSStore;
-	worker: SharedWorker;
-};
+export type EpicMiddlewareDependencies = { getIntl: () => IntlShape; worker: SharedWorker };
 
 export type CrafterCMSStore = EnhancedStore<GlobalState, StandardAction, any>;
 
@@ -172,13 +168,7 @@ export function getStoreSync(): CrafterCMSStore {
 export function createStoreSync(args: { preloadedState?: any; dependencies?: any } = {}): CrafterCMSStore {
 	const { preloadedState, dependencies } = args;
 	const epicMiddleware = createEpicMiddleware<StandardAction, StandardAction, GlobalState, EpicMiddlewareDependencies>({
-		dependencies: {
-			getIntl: getCurrentIntl,
-			get store() {
-				return store;
-			},
-			...dependencies
-		}
+		dependencies: { getIntl: getCurrentIntl, ...dependencies }
 	});
 	const store = configureStore({
 		reducer,
