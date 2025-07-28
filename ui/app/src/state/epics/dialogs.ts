@@ -190,24 +190,6 @@ const dialogEpics: CrafterCMSEpic[] = [
 				fetchContentXML(state.sites.active, payload.url).pipe(map((content) => updatePreviewDialog({ content })))
 			)
 		),
-	(action$, state$) =>
-		action$.pipe(
-			ofType(pushDialog.type),
-			withLatestFrom(state$),
-			filter(([{ payload }, state]) => {
-				return (
-					payload.component === 'craftercms.components.PreviewDialog' &&
-					payload.props.type === 'editor' &&
-					nnou(payload.props.url) &&
-					nou((state.dialogStack.byId[payload.id]?.props as PreviewDialogStateProps)?.content)
-				);
-			}),
-			switchMap(([{ payload }, state]) =>
-				fetchContentXML(state.sites.active, payload.props.url).pipe(
-					map((content) => updateDialogState({ id: payload.id, props: { content } }))
-				)
-			)
-		),
 	// endregion
 	// region requestWorkflowCancellationDialogOnResult
 	(action$) =>
@@ -234,29 +216,8 @@ const dialogEpics: CrafterCMSEpic[] = [
 			}),
 			map(([, state]) => unlockItem({ path: state.dialogs.codeEditor.path }))
 		),
-	(action$, state$) =>
-		action$.pipe(
-			ofType(popCodeEditorDialog.type),
-			withLatestFrom(state$),
-			filter(([{ payload }, state]) => {
-				const dialogId = payload.id;
-				// Check if the dialog has a path set in its state.
-				if (!(state.dialogStack.byId[dialogId]?.props as CodeEditorDialogStateProps)?.path) return false;
-
-				const username = state.user.username;
-				const item =
-					state.content.itemsByPath[(state.dialogStack.byId[dialogId]?.props as CodeEditorDialogStateProps)?.path];
-				return item.stateMap.locked && item.lockOwner.username === username;
-			}),
-			map(([{ payload }, state]) =>
-				batchActions([
-					unlockItem({ path: (state.dialogStack.byId[payload.id].props as CodeEditorDialogStateProps).path }),
-					popDialog({ id: payload.id })
-				])
-			)
-		),
 	// endregion
-	// region renameAssetDialog
+	// region fetchRenameAssetDependants
 	(action$, state$) =>
 		action$.pipe(
 			ofType(fetchRenameAssetDependants.type),
@@ -278,6 +239,49 @@ const dialogEpics: CrafterCMSEpic[] = [
 						})
 					)
 				)
+			)
+		),
+	// endregion
+	// region pushDialog
+	(action$, state$) =>
+		action$.pipe(
+			ofType(pushDialog.type),
+			withLatestFrom(state$),
+			filter(([{ payload }, state]) => {
+				return (
+					payload.component === 'craftercms.components.PreviewDialog' &&
+					payload.props.type === 'editor' &&
+					nnou(payload.props.url) &&
+					nou((state.dialogStack.byId[payload.id]?.props as PreviewDialogStateProps)?.content)
+				);
+			}),
+			switchMap(([{ payload }, state]) =>
+				fetchContentXML(state.sites.active, payload.props.url).pipe(
+					map((content) => updateDialogState({ id: payload.id, props: { content } }))
+				)
+			)
+		),
+	// endregion
+	// region popDialog
+	(action$, state$) =>
+		action$.pipe(
+			ofType(popCodeEditorDialog.type),
+			withLatestFrom(state$),
+			filter(([{ payload }, state]) => {
+				const dialogId = payload.id;
+				// Check if the dialog has a path set in its state.
+				if (!(state.dialogStack.byId[dialogId]?.props as CodeEditorDialogStateProps)?.path) return false;
+
+				const username = state.user.username;
+				const item =
+					state.content.itemsByPath[(state.dialogStack.byId[dialogId]?.props as CodeEditorDialogStateProps)?.path];
+				return item.stateMap.locked && item.lockOwner.username === username;
+			}),
+			map(([{ payload }, state]) =>
+				batchActions([
+					unlockItem({ path: (state.dialogStack.byId[payload.id].props as CodeEditorDialogStateProps).path }),
+					popDialog({ id: payload.id })
+				])
 			)
 		)
 	// endregion
