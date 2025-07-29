@@ -43,9 +43,11 @@ import useActiveSiteId from '../../hooks/useActiveSiteId';
 import useSystemVersion from '../../hooks/useSystemVersion';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { LoadingState } from '../LoadingState';
-import { pushDialog } from '../../state/actions/dialogStack';
+import { popDialog, pushDialog } from '../../state/actions/dialogStack';
 import { createComponentId, pickShowContentFormAction } from '../../utils/system';
 import useEnv from '../../hooks/useEnv';
+import { nanoid } from 'nanoid';
+import { batchActions } from '../../state/actions/misc';
 
 const translations = defineMessages({
 	quickCreateBtnLabel: {
@@ -278,19 +280,24 @@ const QuickCreate = forwardRef<HTMLButtonElement, { item?: ContentItem }>((props
 
 	const onNewContentSelected = () => {
 		onMenuClose();
+		const dialogId = nanoid();
 		dispatch(
 			pushDialog({
+				id: dialogId,
 				component: createComponentId('NewContentDialog'),
 				props: {
 					item: lookupItemByPath(currentPreviewItemPath, items),
 					onContentTypeSelected: ({ path, contentType }) => {
 						dispatch(
-							showEditDialog({
-								authoringBase,
-								path,
-								contentTypeId: contentType.id,
-								isNewContent: true
-							})
+							batchActions([
+								popDialog({ id: dialogId }),
+								pickShowContentFormAction({
+									authoringBase,
+									path,
+									contentTypeId: contentType.id,
+									isNewContent: true
+								})
+							])
 						);
 					}
 				}
