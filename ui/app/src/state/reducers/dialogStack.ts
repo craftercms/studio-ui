@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { GlobalState } from '../../models/GlobalState';
+import { type DialogStackItem, GlobalState } from '../../models/GlobalState';
 import { createReducer } from '@reduxjs/toolkit';
 import { nanoid } from 'nanoid';
 import { WidgetDialogProps } from '../../components/WidgetDialog/utils';
@@ -51,9 +51,12 @@ const reducer = createReducer<GlobalState['dialogStack']>(
 					}
 				});
 				if (dialogState) {
+					const byIdState = state.byId[dialogState.id] as
+						| DialogStackItem<CodeEditorDialogProps>
+						| DialogStackItem<LegacyFormDialogProps>
+						| DialogStackItem<FormsEngineDialogProps>;
 					state.byId[dialogState.id].props = {
-						// @ts-expect-error TS2698: TypeScript doesn't think the WritableDraft can be spread.
-						...state.byId[dialogState.id].props,
+						...byIdState.props,
 						isMinimized: false
 					};
 					return state;
