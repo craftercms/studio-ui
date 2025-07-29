@@ -27,6 +27,7 @@ import { getHostToGuestBus } from './subjects';
 import { reloadRequest } from '../state/actions/preview';
 import { Context, useContext } from 'react';
 import type { LegacyFormDialogProps } from '../components/LegacyFormDialog/utils';
+import { nanoid } from 'nanoid';
 import { DialogStackItem } from '../models';
 import type { ConfirmDialogProps, ErrorDialogProps } from '../components';
 
@@ -104,12 +105,14 @@ export function consolidateSx(...sxs: SxProps<Theme>[]): SxProps<Theme> {
 
 export function pickShowContentFormAction(oldProps: LegacyFormDialogProps) {
 	const useLegacy = window.localStorage.getItem('useLegacyFormEngine') === 'true';
+	const dialogId = nanoid();
 	return useLegacy
 		? pushDialog({
+				id: dialogId,
 				component: createComponentId('LegacyFormDialog'),
 				allowFullScreen: true,
 				allowMinimize: true,
-				props: oldProps
+				props: { ...oldProps, dialogId }
 			})
 		: pushDialog({
 				component: createComponentId('FormsEngineDialog'),
