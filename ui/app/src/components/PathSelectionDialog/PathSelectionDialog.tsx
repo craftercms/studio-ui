@@ -21,14 +21,11 @@ import StandardAction from '../../models/StandardAction';
 import TranslationOrText from '../../models/TranslationOrText';
 import { useUnmount } from '../../hooks/useUnmount';
 import { usePossibleTranslation } from '../../hooks/usePossibleTranslation';
-import { useSelection } from '../../hooks/useSelection';
-import { useWithPendingChangesCloseRequest } from '../../hooks/useWithPendingChangesCloseRequest';
 import { FormattedMessage } from 'react-intl';
 import DialogBody from '../DialogBody/DialogBody';
 import DialogFooter from '../DialogFooter/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
-import CreateFolderDialog from '../CreateFolderDialog';
 import DialogHeader from '../DialogHeader';
 import FolderBrowserTreeView from '../FolderBrowserTreeView';
 import PathSelectionInput from '../PathSelectionInput';
@@ -37,6 +34,10 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import BasePathSelector from '../BasePathSelector';
 import { UNDEFINED } from '../../utils/constants';
+import { useDispatch } from 'react-redux';
+import { popDialog, pushDialog } from '../../state/actions/dialogStack';
+import { createComponentId } from '../../utils/system';
+import { nanoid } from 'nanoid';
 
 export interface PathSelectionDialogBaseProps {
 	open: boolean;
@@ -90,22 +91,28 @@ export function PathSelectionDialogContainer(props: PathSelectionDialogProps) {
 	} = props;
 	const [root, setRoot] = useState(rootPath);
 	const [currentPath, setCurrentPath] = useState(initialPath ?? root);
-	const [openCreateFolderDialog, setOpenCreateFolderDialog] = useState(false);
 	const title = usePossibleTranslation(props.title);
-	const createFolderState = useSelection((state) => state.dialogs.createFolder);
+	const dispatch = useDispatch();
 
 	useUnmount(onClosed);
 
-	const onCloseCreateFolder = () => setOpenCreateFolderDialog(false);
-
-	const onWithPendingChangesCloseRequest = useWithPendingChangesCloseRequest(onCloseCreateFolder);
-
-	const onCreateFolder = () => setOpenCreateFolderDialog(true);
-
-	const onFolderCreated = ({ path, name }: { path: string; name: string }) => {
-		setOpenCreateFolderDialog(false);
-		let id = `${path}/${name}`;
-		setCurrentPath(id);
+	const onCreateFolder = () => {
+		const dialogId = nanoid();
+		dispatch(
+			pushDialog({
+				id: dialogId,
+				component: createComponentId('CreateFolderDialog'),
+				props: {
+					title: <FormattedMessage id="newFolder.title" defaultMessage="Create a New Folder" />,
+					path: currentPath,
+					onCreated: ({ path, name }: { path: string; name: string }) => {
+						dispatch(popDialog({ id: dialogId }));
+						const id = `${path}/${name}`;
+						setCurrentPath(id);
+					}
+				}
+			})
+		);
 	};
 
 	const onPathChanged = (path: string) => {
@@ -173,17 +180,6 @@ export function PathSelectionDialogContainer(props: PathSelectionDialogProps) {
 					<FormattedMessage id="words.accept" defaultMessage="Accept" />
 				</PrimaryButton>
 			</DialogFooter>
-			<CreateFolderDialog
-				title={<FormattedMessage id="newFolder.title" defaultMessage="Create a New Folder" />}
-				path={currentPath}
-				isSubmitting={createFolderState?.isSubmitting}
-				hasPendingChanges={createFolderState?.hasPendingChanges}
-				isMinimized={createFolderState?.isMinimized}
-				onWithPendingChangesCloseRequest={onWithPendingChangesCloseRequest}
-				open={openCreateFolderDialog}
-				onClose={onCloseCreateFolder}
-				onCreated={onFolderCreated}
-			/>
 		</>
 	);
 }
