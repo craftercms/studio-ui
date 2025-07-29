@@ -146,3 +146,20 @@ export function createAtLeastHalfHourInFutureDate(): Date {
 	}
 	return date;
 }
+
+/**
+ * Convert a time string from UTC to a custom timezone.
+ * @param utcTime {string} The time string in HH:MM:SS format.
+ * @param targetTimezone {string} The target timezone.
+ * @returns {string} The time string in the target timezone.
+ */
+export function convertUtcTimeToTimezone(utcTime: string, targetTimezone: string = getUserTimeZone()): string {
+	// Parse the time string in UTC
+	const timeInUTC = moment.utc(utcTime, 'HH:mm:ss');
+
+	// Convert the time to the desired timezone
+	const timeInTargetZone = timeInUTC.tz(targetTimezone);
+
+	// Format the time in the desired timezone
+	return timeInTargetZone.format('HH:mm:ss');
+}
