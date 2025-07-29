@@ -72,7 +72,7 @@ export function RenameItemView(props: RenameItemViewProps) {
 	const dispatch = useDispatch();
 
 	const handleEditorDisplay = (item: ContentItem) => {
-		openItemEditor(item, authoringBase, siteId, dispatch, fetchDependant);
+		openItemEditor(item, authoringBase, siteId, dispatch, () => fetchDependant());
 	};
 
 	return fetchingDependantItems ? (
