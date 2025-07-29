@@ -51,7 +51,7 @@ import { cancelPackages, fetchAffectedPackages } from '../../services/workflow';
 import { PublishPackage } from '../../models';
 import Alert, { alertClasses } from '@mui/material/Alert';
 import { pushDialog } from '../../state/actions/dialogStack';
-import { createComponentId } from '../../utils/system';
+import { createComponentId, pushErrorDialog } from '../../utils/system';
 
 export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps) {
 	const { path, onMinimize, onClose, mode, readonly, contentType, onFullScreen, onSuccess } = props;
@@ -116,7 +116,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 				},
 				error({ response }) {
 					updateSubmittingOrHasPendingChanges({ isSubmitting: false });
-					dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response } }));
+					dispatch(pushErrorDialog({ props: { error: response } }));
 				}
 			});
 		}

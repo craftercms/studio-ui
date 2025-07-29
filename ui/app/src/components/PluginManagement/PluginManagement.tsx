@@ -65,8 +65,7 @@ import { fetchMyPermissions } from '../../services/users';
 import Tooltip from '@mui/material/Tooltip';
 import PencilIcon from '@mui/icons-material/EditOutlined';
 import { styled } from '@mui/material/styles';
-import { pushDialog } from '../../state/actions/dialogStack';
-import { createComponentId } from '../../utils/system';
+import { pushErrorDialog } from '../../utils/system';
 
 const messages = defineMessages({
 	pluginInstalled: {
@@ -131,7 +130,7 @@ export const PluginManagement = (props: PluginManagementProps) => {
 					);
 				},
 				(error) => {
-					dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error } }));
+					dispatch(pushErrorDialog({ props: { error } }));
 				}
 			),
 		[dispatch, siteId]

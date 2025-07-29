@@ -50,8 +50,8 @@ import { nnou } from '../../utils/object';
 import { useFetchItem } from '../../hooks/useFetchItem';
 import Box from '@mui/material/Box';
 import usePreviewNavigation from '../../hooks/usePreviewNavigation';
-import { createComponentId, getSystemLink } from '../../utils/system';
-import { pushDialog, updateDialogState } from '../../state/actions/dialogStack';
+import { getSystemLink, pushErrorDialog } from '../../utils/system';
+import { updateDialogState } from '../../state/actions/dialogStack';
 
 // FE2 TODO: for removal after FE1 removal
 export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyEditor(
@@ -222,8 +222,7 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
 				case EMBEDDED_LEGACY_FORM_RENDER_FAILED: {
 					onClose();
 					dispatch(
-						pushDialog({
-							component: createComponentId('ErrorDialog'),
+						pushErrorDialog({
 							props: { error: { message: formatMessage(translations.error) } }
 						})
 					);

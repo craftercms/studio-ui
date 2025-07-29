@@ -28,8 +28,7 @@ import { EditUserDialogContainerProps } from './utils';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
 import { isInvalidEmail, validateFieldMinLength } from '../UserManagement/utils';
 import { pluckProps } from '../../utils/object';
-import { pushDialog } from '../../state/actions/dialogStack';
-import { createComponentId } from '../../utils/system';
+import { pushErrorDialog } from '../../utils/system';
 
 const translations = defineMessages({
 	userDeleted: {
@@ -108,7 +107,7 @@ export function EditUserDialogContainer(props: EditUserDialogContainerProps) {
 					);
 				},
 				error({ response: { response } }) {
-					dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response } }));
+					dispatch(pushErrorDialog({ props: { error: response } }));
 				}
 			});
 		} else {
@@ -121,7 +120,7 @@ export function EditUserDialogContainer(props: EditUserDialogContainerProps) {
 					);
 				},
 				error({ response: { response } }) {
-					dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response } }));
+					dispatch(pushErrorDialog({ props: { error: response } }));
 				}
 			});
 		}
@@ -149,7 +148,7 @@ export function EditUserDialogContainer(props: EditUserDialogContainerProps) {
 				});
 			},
 			error({ response: { response } }) {
-				dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response } }));
+				dispatch(pushErrorDialog({ props: { error: response } }));
 				fnRefs.current.onSubmittingAndOrPendingChange({
 					isSubmitting: false
 				});
@@ -169,7 +168,7 @@ export function EditUserDialogContainer(props: EditUserDialogContainerProps) {
 				fnRefs.current.onUserEdited();
 			},
 			error({ response: { response } }) {
-				dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response } }));
+				dispatch(pushErrorDialog({ props: { error: response } }));
 			}
 		});
 	};

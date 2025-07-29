@@ -30,8 +30,7 @@ import useSpreadState from '../../hooks/useSpreadState';
 import { useDispatch } from 'react-redux';
 import { Divider } from '@mui/material';
 import { showSystemNotification } from '../../state/actions/system';
-import { pushDialog } from '../../state/actions/dialogStack';
-import { createComponentId } from '../../utils/system';
+import { pushErrorDialog } from '../../utils/system';
 import { useEnhancedDialogContext } from '../EnhancedDialog';
 
 export interface CancelPackageDialogContainerProps
@@ -65,7 +64,7 @@ export function CancelPackageDialogContainer(props: CancelPackageDialogContainer
 			},
 			error({ response }) {
 				updateSubmittingOrHasPendingChanges({ isSubmitting: false });
-				dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response.response } }));
+				dispatch(pushErrorDialog({ props: { error: response.response } }));
 			}
 		});
 	};

@@ -47,9 +47,8 @@ import TableBody from '@mui/material/TableBody';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import { preferencesGroups } from './utils';
-import { pushDialog } from '../../state/actions/dialogStack';
 
-import { createComponentId } from '../../utils/system';
+import { pushErrorDialog } from '../../utils/system';
 
 interface AccountManagementProps {
 	passwordRequirementsMinComplexity?: number;
@@ -111,7 +110,7 @@ export function AccountManagement(props: AccountManagementProps) {
 				setNewPassword('');
 			},
 			error({ response: { response } }) {
-				dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response } }));
+				dispatch(pushErrorDialog({ props: { error: response } }));
 			}
 		});
 	};

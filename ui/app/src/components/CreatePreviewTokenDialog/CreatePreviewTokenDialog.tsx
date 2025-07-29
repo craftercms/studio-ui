@@ -42,7 +42,7 @@ import FormLabel from '@mui/material/FormLabel';
 import Alert from '@mui/material/Alert';
 import Divider from '@mui/material/Divider';
 import { encrypt } from '../../services/security';
-import { copyToClipboard, createComponentId } from '../../utils/system';
+import { copyToClipboard, pushErrorDialog } from '../../utils/system';
 import { showSystemNotification } from '../../state/actions/system';
 import useSitesBranch from '../../hooks/useSitesBranch';
 import Tabs from '@mui/material/Tabs';
@@ -51,7 +51,6 @@ import Typography from '@mui/material/Typography';
 import hljs from '../../env/hljs';
 import useEnv from '../../hooks/useEnv';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
-import { pushDialog } from '../../state/actions/dialogStack';
 
 interface BodyProps extends Pick<EnhancedDialogProps, 'isSubmitting' | 'onClose'> {
 	onTokenGenerated?(token: string): void;
@@ -193,7 +192,7 @@ function Body(props: BodyProps) {
 			},
 			error(response) {
 				functionRefs.current.onSubmittingAndOrPendingChange({ isSubmitting: false });
-				dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response } }));
+				dispatch(pushErrorDialog({ props: { error: response } }));
 			}
 		});
 	};

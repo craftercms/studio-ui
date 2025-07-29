@@ -25,8 +25,7 @@ import useUpdateRefs from '../../hooks/useUpdateRefs';
 import useSpreadState from '../../hooks/useSpreadState';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { LoadingState } from '../LoadingState';
-import { pushDialog } from '../../state/actions/dialogStack';
-import { createComponentId } from '../../utils/system';
+import { pushErrorDialog } from '../../utils/system';
 
 export function UninstallPluginDialogContainer(props: UninstallPluginDialogContainerProps) {
 	const { onClose, pluginId, onComplete, isSubmitting, onSubmittingAndOrPendingChange } = props;
@@ -76,7 +75,7 @@ export function UninstallPluginDialogContainer(props: UninstallPluginDialogConta
 				callbacksRef.current.onSubmittingAndOrPendingChange({
 					isSubmitting: false
 				});
-				dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response } }));
+				dispatch(pushErrorDialog({ props: { error: response } }));
 			}
 		});
 	};

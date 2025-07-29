@@ -49,8 +49,7 @@ import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { useWithPendingChangesCloseRequest } from '../../hooks/useWithPendingChangesCloseRequest';
 import Tooltip from '@mui/material/Tooltip';
 import { CreatePreviewTokenDialog } from '../CreatePreviewTokenDialog';
-import { pushDialog } from '../../state/actions/dialogStack';
-import { createComponentId } from '../../utils/system';
+import { pushErrorDialog } from '../../utils/system';
 
 const StyledTableCell = styled(TableCell)(() => ({
 	padding: '5px'
@@ -198,12 +197,7 @@ export function TokenManagement() {
 			},
 			(response) => {
 				setTokens(_tokens);
-				dispatch(
-					pushDialog({
-						component: createComponentId('ErrorDialog'),
-						props: { error: response }
-					})
-				);
+				dispatch(pushErrorDialog({ props: { error: response } }));
 			}
 		);
 	};
@@ -230,7 +224,7 @@ export function TokenManagement() {
 					...checkedLookup,
 					[id]: false
 				});
-				dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response } }));
+				dispatch(pushErrorDialog({ props: { error: response } }));
 			}
 		);
 	};
@@ -263,7 +257,7 @@ export function TokenManagement() {
 					},
 					(response) => {
 						fetchTokens();
-						dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response } }));
+						dispatch(pushErrorDialog({ props: { error: response } }));
 					}
 				);
 				break;

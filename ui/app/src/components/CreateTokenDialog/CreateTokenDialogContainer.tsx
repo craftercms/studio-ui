@@ -35,8 +35,7 @@ import { useDispatch } from 'react-redux';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
 import { createAtLeastHalfHourInFutureDate } from '../../utils/datetime';
 import Box from '@mui/material/Box';
-import { pushDialog } from '../../state/actions/dialogStack';
-import { createComponentId } from '../../utils/system';
+import { pushErrorDialog } from '../../utils/system';
 
 const translations = defineMessages({
 	placeholder: {
@@ -88,8 +87,7 @@ export function CreateTokenDialogContainer(props: CreateTokenContainerProps) {
 					isSubmitting: false
 				});
 				dispatch(
-					pushDialog({
-						component: createComponentId('ErrorDialog'),
+					pushErrorDialog({
 						props: {
 							error: response.response,
 							validationErrors: response.validationErrors

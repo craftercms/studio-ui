@@ -50,8 +50,7 @@ import { AsDayMonthDateTime } from '../VersionList';
 import PackageDetails from '../PackageDetailsDialog/PackageDetails';
 import { showSystemNotification } from '../../state/actions/system';
 import { hasApproveAction, hasRejectAction } from '../../utils/content';
-import { pushDialog } from '../../state/actions/dialogStack';
-import { createComponentId } from '../../utils/system';
+import { pushErrorDialog } from '../../utils/system';
 import { useEnhancedDialogContext } from '../EnhancedDialog';
 
 export type PackageReviewAction = 'approve' | 'reject';
@@ -208,7 +207,7 @@ export function PublishingPackageReviewDialogContainer(props: PublishingPackageR
 				},
 				error({ response }) {
 					updateSubmittingOrHasPendingChanges({ isSubmitting: false });
-					dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response.response } }));
+					dispatch(pushErrorDialog({ props: { error: response.response } }));
 				}
 			});
 		} else {
@@ -222,7 +221,7 @@ export function PublishingPackageReviewDialogContainer(props: PublishingPackageR
 				},
 				error({ response }) {
 					updateSubmittingOrHasPendingChanges({ isSubmitting: false });
-					dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response.response } }));
+					dispatch(pushErrorDialog({ props: { error: response.response } }));
 				}
 			});
 		}

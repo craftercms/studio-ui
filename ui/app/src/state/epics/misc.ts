@@ -35,7 +35,7 @@ import { getFileNameFromPath, getParentPath } from '../../utils/path';
 import { popPiece } from '../../utils/string';
 import { associateTemplate } from '../actions/preview';
 import { pushDialog } from '../actions/dialogStack';
-import { createComponentId, pickShowContentFormAction } from '../../utils/system';
+import { createComponentId, pickShowContentFormAction, pushErrorDialog } from '../../utils/system';
 import { nanoid } from 'nanoid';
 import { popCodeEditorDialog } from '../actions/dialogs';
 
@@ -140,12 +140,7 @@ const epics = [
 									})
 								);
 							} else {
-								return of(
-									batchActions([
-										pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response.response } }),
-										unblockUI()
-									])
-								);
+								return of(batchActions([pushErrorDialog({ props: { error: response.response } }), unblockUI()]));
 							}
 						})
 					)

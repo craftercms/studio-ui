@@ -36,7 +36,7 @@ import { getPreviewURLFromPath } from '../../utils/path';
 import { IconButtonProps } from '@mui/material/IconButton';
 import useFetchContentItems from '../../hooks/useFetchContentItems';
 import { pushDialog } from '../../state/actions/dialogStack';
-import { createComponentId, pickShowContentFormAction } from '../../utils/system';
+import { createComponentId, pickShowContentFormAction, pushErrorDialog } from '../../utils/system';
 import { showItemMegaMenu } from '../../state/actions/dialogs';
 
 export const drawerWidth = 300;
@@ -322,8 +322,7 @@ export const useSearchState = ({
 				} else {
 					console.error(error);
 					dispatch(
-						pushDialog({
-							component: createComponentId('ErrorDialog'),
+						pushErrorDialog({
 							props: {
 								error: {
 									message: formatMessage(translations.unknownError)

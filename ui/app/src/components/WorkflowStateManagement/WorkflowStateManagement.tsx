@@ -55,8 +55,7 @@ import useMount from '../../hooks/useMount';
 import { fetchPublishingTargets } from '../../services/publishing';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { EmptyState } from '../EmptyState';
-import { pushDialog } from '../../state/actions/dialogStack';
-import { createComponentId } from '../../utils/system';
+import { pushErrorDialog } from '../../utils/system';
 
 const workflowStateManagementMessages = defineMessages({
 	statesUpdatedMessage: {
@@ -274,7 +273,7 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
 	};
 
 	const onError = (error: ApiResponse) => {
-		dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error } }));
+		dispatch(pushErrorDialog({ props: { error } }));
 	};
 
 	const onSetItemStateDialogConfirm = (update: StatesToUpdate) => {

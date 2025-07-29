@@ -88,7 +88,7 @@ import { isBlank } from '../../utils/string';
 import SocketEvent, { MoveContentEventPayload } from '../../models/SocketEvent';
 import { popDialog, pushDialog } from '../actions/dialogStack';
 import { nanoid } from 'nanoid';
-import { createComponentId, pickShowContentFormAction, pushConfirmDialog } from '../../utils/system';
+import { createComponentId, pickShowContentFormAction, pushConfirmDialog, pushErrorDialog } from '../../utils/system';
 import type { ContentItem } from '../../models';
 import { popCodeEditorDialog, showItemMegaMenu } from '../actions/dialogs';
 
@@ -242,7 +242,7 @@ const content: CrafterCMSEpic[] = [
 			),
 			catchAjaxError(
 				() => unblockUI(),
-				(error) => pushDialog({ component: createComponentId('ErrorDialog'), props: { error: error.response } })
+				(error) => pushErrorDialog({ props: { error: error.response } })
 			)
 		),
 	// endregion
@@ -328,7 +328,7 @@ const content: CrafterCMSEpic[] = [
 						}),
 						catchAjaxError(
 							() => unblockUI(),
-							(error) => pushDialog({ component: createComponentId('ErrorDialog'), props: { error: error.response } })
+							(error) => pushErrorDialog({ props: { error: error.response } })
 						)
 					)
 				)
@@ -439,7 +439,7 @@ const content: CrafterCMSEpic[] = [
 						map(() => batchActions([unblockUI(), clearClipboard(), showPasteItemSuccessNotification()])),
 						catchAjaxError(
 							() => unblockUI(),
-							(error) => pushDialog({ component: createComponentId('ErrorDialog'), props: { error: error.response } })
+							(error) => pushErrorDialog({ props: { error: error.response } })
 						)
 					)
 				)
@@ -588,10 +588,7 @@ const content: CrafterCMSEpic[] = [
 													onOk: () => store.dispatch(popDialog({ id: dialogId }))
 												}
 											})
-										: pushDialog({
-												component: createComponentId('ErrorDialog'),
-												props: { error: error.response ?? error }
-											})
+										: pushErrorDialog({ props: { error: error.response ?? error } })
 								]);
 							})
 						)

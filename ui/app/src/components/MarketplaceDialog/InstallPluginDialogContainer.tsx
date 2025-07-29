@@ -43,8 +43,7 @@ import LoadingState from '../LoadingState/LoadingState';
 import { AjaxError } from 'rxjs/ajax';
 import ApiResponseErrorState from '../ApiResponseErrorState/ApiResponseErrorState';
 import ApiResponse from '../../models/ApiResponse';
-import { pushDialog } from '../../state/actions/dialogStack';
-import { createComponentId } from '../../utils/system';
+import { pushErrorDialog } from '../../utils/system';
 
 export function InstallPluginDialogContainer(props: InstallPluginDialogProps) {
 	const siteId = useActiveSiteId();
@@ -133,12 +132,7 @@ export function InstallPluginDialogContainer(props: InstallPluginDialogProps) {
 			},
 			error({ response }) {
 				setInstallingLookup({ [plugin.id]: false });
-				dispatch(
-					batchActions([
-						pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response.response } }),
-						unblockUI()
-					])
-				);
+				dispatch(batchActions([pushErrorDialog({ props: { error: response.response } }), unblockUI()]));
 			}
 		});
 	};

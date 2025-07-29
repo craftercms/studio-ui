@@ -48,8 +48,7 @@ import useUpdateRefs from '../../hooks/useUpdateRefs';
 import { showSystemNotification } from '../../state/actions/system';
 import { PasswordStrengthDisplayPopper } from '../PasswordStrengthDisplayPopper';
 import Box from '@mui/material/Box';
-import { pushDialog } from '../../state/actions/dialogStack';
-import { createComponentId } from '../../utils/system';
+import { pushErrorDialog } from '../../utils/system';
 
 const translations = defineMessages({
 	invalidMinLength: {
@@ -124,7 +123,7 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
 							functionRefs.current.onSubmittingAndOrPendingChange({
 								isSubmitting: false
 							});
-							dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response } }));
+							dispatch(pushErrorDialog({ props: { error: response } }));
 						}
 					});
 			} else {

@@ -100,7 +100,7 @@ import { fetchDependant } from '../services/dependencies';
 import { NewContentDialogProps } from '../components/NewContentDialog/utils';
 import { nanoid } from 'nanoid';
 import { popDialog, pushDialog, updateDialogState } from '../state/actions/dialogStack';
-import { createComponentId, pickShowContentFormAction, pushConfirmDialog } from './system';
+import { createComponentId, pickShowContentFormAction, pushConfirmDialog, pushErrorDialog } from './system';
 
 export type ContextMenuOptionDescriptor<ID extends string = string> = {
 	id: ID;
@@ -680,7 +680,7 @@ export const itemActionDispatcher = ({
 							}
 						},
 						error({ response }) {
-							dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response } }));
+							dispatch(pushErrorDialog({ props: { error: response } }));
 						}
 					});
 				}
@@ -711,8 +711,7 @@ export const itemActionDispatcher = ({
 							dispatch(
 								batchActions([
 									unblockUI(),
-									pushDialog({
-										component: createComponentId('ErrorDialog'),
+									pushErrorDialog({
 										props: {
 											error: {
 												code: '7000',
@@ -726,12 +725,7 @@ export const itemActionDispatcher = ({
 						}
 					},
 					error(response) {
-						dispatch(
-							batchActions([
-								unblockUI(),
-								pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response } })
-							])
-						);
+						dispatch(batchActions([unblockUI(), pushErrorDialog({ props: { error: response } })]));
 					}
 				});
 				break;

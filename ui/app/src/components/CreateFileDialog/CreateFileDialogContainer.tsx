@@ -35,8 +35,7 @@ import { isBlank } from '../../utils/string';
 import { applyAssetNameRules } from '../../utils/content';
 import { getFileNameWithExtensionForItemType, pickExtensionForItemType } from '../../utils/path';
 import ApiResponse from '../../models/ApiResponse';
-import { pushDialog } from '../../state/actions/dialogStack';
-import { createComponentId } from '../../utils/system';
+import { pushErrorDialog } from '../../utils/system';
 
 export function CreateFileDialogContainer(props: CreateFileContainerProps) {
 	const { onClose, onCreated, type, path, allowBraces } = props;
@@ -57,7 +56,7 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
 
 	const onError = (error: ApiResponse) => {
 		updateSubmittingOrHasPendingChanges({ isSubmitting: false });
-		dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error } }));
+		dispatch(pushErrorDialog({ props: { error } }));
 	};
 
 	const onCreateFile = (site: string, path: string, fileName: string) => {

@@ -34,9 +34,8 @@ import ApiResponseErrorState from '../ApiResponseErrorState';
 import { fetchDependant } from '../../services/dependencies';
 import type { LegacyItem } from '../../models';
 import { parseLegacyItemToContentItem } from '../../utils/content';
-import { pushDialog } from '../../state/actions/dialogStack';
 
-import { createComponentId, pickShowContentFormAction } from '../../utils/system';
+import { pickShowContentFormAction, pushErrorDialog } from '../../utils/system';
 
 export function BrokenReferencesDialogContainer(props: BrokenReferencesDialogContainerProps) {
 	const { path, references: initialReferences, error, onClose, onContinue } = props;
@@ -64,12 +63,7 @@ export function BrokenReferencesDialogContainer(props: BrokenReferencesDialogCon
 							setReferences(refs);
 						},
 						error: ({ response }) => {
-							dispatch(
-								pushDialog({
-									component: createComponentId('ErrorDialog'),
-									props: { error: response.response }
-								})
-							);
+							dispatch(pushErrorDialog({ props: { error: response.response } }));
 						}
 					});
 				}

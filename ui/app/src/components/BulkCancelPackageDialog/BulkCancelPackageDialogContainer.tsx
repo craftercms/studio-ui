@@ -32,8 +32,7 @@ import { useDispatch } from 'react-redux';
 import { cancelPackages } from '../../services/workflow';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { showSystemNotification } from '../../state/actions/system';
-import { pushDialog } from '../../state/actions/dialogStack';
-import { createComponentId } from '../../utils/system';
+import { pushErrorDialog } from '../../utils/system';
 import { useEnhancedDialogContext } from '../EnhancedDialog';
 
 export interface BulkCancelPackageDialogContainerProps
@@ -65,7 +64,7 @@ export function BulkCancelPackageDialogContainer(props: BulkCancelPackageDialogC
 			},
 			error({ response }) {
 				updateSubmittingOrHasPendingChanges({ isSubmitting: false });
-				dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response.response } }));
+				dispatch(pushErrorDialog({ props: { error: response.response } }));
 			}
 		});
 	};

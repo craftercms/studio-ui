@@ -40,8 +40,7 @@ import useMount from '../../hooks/useMount';
 import { createPresenceTable } from '../../utils/array';
 import { pluckProps, reversePluckProps } from '../../utils/object';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
-import { pushDialog } from '../../state/actions/dialogStack';
-import { createComponentId } from '../../utils/system';
+import { pushErrorDialog } from '../../utils/system';
 
 const translations = defineMessages({
 	groupCreated: {
@@ -115,7 +114,7 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
 				onGroupDeleted(group);
 			},
 			error({ response: { response } }) {
-				dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response } }));
+				dispatch(pushErrorDialog({ props: { error: response } }));
 			}
 		});
 	};
@@ -149,7 +148,7 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
 					});
 				},
 				error({ response: { response } }) {
-					dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response } }));
+					dispatch(pushErrorDialog({ props: { error: response } }));
 				}
 			});
 		}
@@ -180,7 +179,7 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
 					});
 				},
 				error({ response: { response } }) {
-					dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response } }));
+					dispatch(pushErrorDialog({ props: { error: response } }));
 				}
 			});
 		}
@@ -210,7 +209,7 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
 					});
 				},
 				error({ response: { response } }) {
-					dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response } }));
+					dispatch(pushErrorDialog({ props: { error: response } }));
 					fnRefs.current.onSubmittingAndOrPendingChange({
 						isSubmitting: false
 					});
@@ -234,7 +233,7 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
 					fetchMembers(group.id);
 				},
 				error({ response: { response } }) {
-					dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response } }));
+					dispatch(pushErrorDialog({ props: { error: response } }));
 					fnRefs.current.onSubmittingAndOrPendingChange({
 						isSubmitting: false
 					});

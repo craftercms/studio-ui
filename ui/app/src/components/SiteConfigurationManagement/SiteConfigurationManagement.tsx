@@ -76,8 +76,8 @@ import { ProjectToolsRoutes } from '../../env/routes';
 import ListItemButton from '@mui/material/ListItemButton';
 import { SiteToolsContext } from '../SiteTools/siteToolsContext';
 import { nanoid } from 'nanoid';
-import { popDialog, pushDialog } from '../../state/actions/dialogStack';
-import { createComponentId, pushConfirmDialog } from '../../utils/system';
+import { popDialog } from '../../state/actions/dialogStack';
+import { pushConfirmDialog, pushErrorDialog } from '../../utils/system';
 
 interface SiteConfigurationManagementProps {
 	embedded?: boolean;
@@ -143,7 +143,7 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
 				setEnvironment(env);
 			},
 			error({ response }) {
-				dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response } }));
+				dispatch(pushErrorDialog({ props: { error: response } }));
 			}
 		});
 	});
@@ -207,7 +207,7 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
 					setFiles(files.map((file) => ({ ...file, id: `${file.module}/${file.path}` })));
 				},
 				error({ response }) {
-					dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response.response } }));
+					dispatch(pushErrorDialog({ props: { error: response.response } }));
 				}
 			});
 		}
@@ -303,7 +303,7 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
 					setEncrypting(false);
 				},
 				error({ response: { response } }) {
-					dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response } }));
+					dispatch(pushErrorDialog({ props: { error: response } }));
 				}
 			});
 		} else {
@@ -534,7 +534,7 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
 					},
 					error: ({ response: { response } }) => {
 						functionRefs.current.onSubmittingAndOrPendingChange?.({ isSubmitting: false });
-						dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response } }));
+						dispatch(pushErrorDialog({ props: { error: response } }));
 					}
 				});
 			} else {

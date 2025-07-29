@@ -30,12 +30,11 @@ import InputBase from '@mui/material/InputBase';
 import Button from '@mui/material/Button';
 import Snackbar from '@mui/material/Snackbar';
 import { useSnackbar } from 'notistack';
-import { copyToClipboard, createComponentId } from '../../../utils/system';
+import { copyToClipboard, pushErrorDialog } from '../../../utils/system';
 import PublishCommitDialog from '../PublishCommitDialog/PublishCommitDialog';
 import useSpreadState from '../../../hooks/useSpreadState';
 import RepoGridSkeleton from './RepoGridSkeleton';
 import { ApiResponse } from '../../../models';
-import { pushDialog } from '../../../state/actions/dialogStack';
 
 export interface RepoGridProps {
 	repositories: Array<Repository>;
@@ -144,12 +143,7 @@ export function RepoGrid(props: RepoGridProps) {
 
 	const onPushError = (response) => {
 		pushToRemoteDialogState.onClose();
-		dispatch(
-			pushDialog({
-				component: createComponentId('ErrorDialog'),
-				props: { error: response }
-			})
-		);
+		dispatch(pushErrorDialog({ props: { error: response } }));
 	};
 
 	const deleteRemote = (remoteName: string) => {
@@ -163,12 +157,7 @@ export function RepoGrid(props: RepoGridProps) {
 				);
 			},
 			({ response }) => {
-				dispatch(
-					pushDialog({
-						component: createComponentId('ErrorDialog'),
-						props: { error: response }
-					})
-				);
+				dispatch(pushErrorDialog({ props: { error: response } }));
 			}
 		);
 	};

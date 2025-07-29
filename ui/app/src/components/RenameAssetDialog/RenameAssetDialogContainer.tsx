@@ -34,8 +34,7 @@ import { translations } from '../CreateFileDialog/translations';
 import { RenameItemView } from '../RenameDialogBody';
 import { applyAssetNameRules } from '../../utils/content';
 import { DialogBody } from '../DialogBody';
-import { pushDialog } from '../../state/actions/dialogStack';
-import { createComponentId } from '../../utils/system';
+import { pushErrorDialog } from '../../utils/system';
 
 export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
 	const {
@@ -81,7 +80,7 @@ export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
 				onRenamed?.({ path, name });
 			},
 			error({ response }) {
-				dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response.response } }));
+				dispatch(pushErrorDialog({ props: { error: response.response } }));
 				updateSubmittingOrHasPendingChanges({ isSubmitting: false });
 			}
 		});

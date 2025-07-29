@@ -22,8 +22,7 @@ import { RenameAssetDialogContainer } from './RenameAssetDialogContainer';
 import { useDispatch } from 'react-redux';
 import { fetchDependant as fetchDependantService } from '../../services/dependencies';
 import { parseLegacyItemToContentItem } from '../../utils/content';
-import { pushDialog } from '../../state/actions/dialogStack';
-import { createComponentId } from '../../utils/system';
+import { pushErrorDialog } from '../../utils/system';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 
 export function RenameAssetDialog(props: RenameAssetDialogProps) {
@@ -41,12 +40,7 @@ export function RenameAssetDialog(props: RenameAssetDialogProps) {
 			},
 			error: ({ response }) => {
 				setFetchingDependantItems(false);
-				dispatch(
-					pushDialog({
-						component: createComponentId('ErrorDialog'),
-						props: { error: response.response }
-					})
-				);
+				dispatch(pushErrorDialog({ props: { error: response.response } }));
 			}
 		});
 	}, [dispatch, path, siteId]);

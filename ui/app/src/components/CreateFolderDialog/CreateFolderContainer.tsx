@@ -44,8 +44,7 @@ import Checkbox from '@mui/material/Checkbox';
 import Typography from '@mui/material/Typography';
 import { cancelPackages, fetchAffectedPackages } from '../../services/workflow';
 import { map, switchMap } from 'rxjs/operators';
-import { pushDialog } from '../../state/actions/dialogStack';
-import { createComponentId } from '../../utils/system';
+import { pushErrorDialog } from '../../utils/system';
 
 export function CreateFolderContainer(props: CreateFolderContainerProps) {
 	const { onClose, onCreated, onRenamed, rename = false, value = '', allowBraces = false } = props;
@@ -115,7 +114,7 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
 
 	const onError = (error: ApiResponse) => {
 		updateSubmittingOrHasPendingChanges({ isSubmitting: false });
-		dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: error } }));
+		dispatch(pushErrorDialog({ props: { error: error } }));
 	};
 
 	const onRenameFolder = (site: string, path: string, name: string) => {

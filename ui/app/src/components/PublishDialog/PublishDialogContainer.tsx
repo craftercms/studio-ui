@@ -47,8 +47,7 @@ import PublishPackageItemsView from './PublishPackageItemsView';
 import PublishReferencesLegend from './PublishReferencesLegend';
 import { PublishDialogForm } from './PublishDialogForm';
 import useActiveUser from '../../hooks/useActiveUser';
-import { pushDialog } from '../../state/actions/dialogStack';
-import { createComponentId } from '../../utils/system';
+import { pushErrorDialog } from '../../utils/system';
 import { useEnhancedDialogContext } from '../EnhancedDialog';
 
 export type DependencyType = 'soft' | 'hard';
@@ -250,7 +249,7 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 			},
 			error({ response }) {
 				updateSubmittingOrHasPendingChanges({ isSubmitting: false });
-				dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response.response } }));
+				dispatch(pushErrorDialog({ props: { error: response.response } }));
 			}
 		});
 	};

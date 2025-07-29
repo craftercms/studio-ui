@@ -26,10 +26,9 @@ import { createPresenceTable } from '../../utils/array';
 import { ContentItem, LightItem } from '../../models/Item';
 import { isBlank } from '../../utils/string';
 import { ApiResponse } from '../../models';
-import { createComponentId, pickShowContentFormAction } from '../../utils/system';
+import { pickShowContentFormAction, pushErrorDialog } from '../../utils/system';
 import { useEnhancedDialogContext } from '../EnhancedDialog';
 import { fetchDeleteDependencies as fetchDeleteDependenciesService } from '../../services/dependencies';
-import { pushDialog } from '../../state/actions/dialogStack';
 
 function createCheckedList(selectedItems: LookupTable<boolean>, excludedPaths?: string[]) {
 	return Object.entries(selectedItems)
@@ -94,7 +93,7 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
 					setIsFetching(false);
 				},
 				error: ({ response }) => {
-					dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response.response } }));
+					dispatch(pushErrorDialog({ props: { error: response.response } }));
 				}
 			});
 		},

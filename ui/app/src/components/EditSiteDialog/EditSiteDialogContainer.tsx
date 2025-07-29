@@ -43,7 +43,7 @@ import { PROJECT_PREVIEW_IMAGE_UPDATED } from '../../utils/constants';
 import { showSystemNotification } from '../../state/actions/system';
 import { popDialog, pushDialog } from '../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
-import { createComponentId } from '../../utils/system';
+import { createComponentId, pushErrorDialog } from '../../utils/system';
 import { useEnhancedDialogContext } from '../EnhancedDialog';
 
 export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
@@ -86,7 +86,7 @@ export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
 				},
 				error({ response: { response } }) {
 					updateSubmittingOrHasPendingChanges({ isSubmitting: false });
-					dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response } }));
+					dispatch(pushErrorDialog({ props: { error: response } }));
 				}
 			});
 		}

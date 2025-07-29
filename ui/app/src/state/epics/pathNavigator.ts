@@ -71,8 +71,7 @@ import {
 	workflowEventReject,
 	workflowEventSubmit
 } from '../actions/system';
-import { pushDialog } from '../actions/dialogStack';
-import { createComponentId } from '../../utils/system';
+import { pushErrorDialog } from '../../utils/system';
 
 export default [
 	// region pathNavigatorInit
@@ -208,11 +207,7 @@ export default [
 						map(({ item, children }) => pathNavigatorFetchPathComplete({ id, parent: item, children })),
 						catchAjaxError(
 							(error) => pathNavigatorFetchPathFailed({ id, error }),
-							(error) =>
-								pushDialog({
-									component: createComponentId('ErrorDialog'),
-									props: { error: error.response ?? error }
-								})
+							(error) => pushErrorDialog({ props: { error: error.response ?? error } })
 						)
 					)
 			)
@@ -242,11 +237,7 @@ export default [
 						),
 						catchAjaxError(
 							(error) => pathNavigatorConditionallySetPathFailed({ id, error }),
-							(error) =>
-								pushDialog({
-									component: createComponentId('ErrorDialog'),
-									props: { error: error.response ?? error }
-								})
+							(error) => pushErrorDialog({ props: { error: error.response ?? error } })
 						)
 					)
 			)

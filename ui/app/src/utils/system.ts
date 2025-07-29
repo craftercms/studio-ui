@@ -28,7 +28,7 @@ import { reloadRequest } from '../state/actions/preview';
 import { Context, useContext } from 'react';
 import type { LegacyFormDialogProps } from '../components/LegacyFormDialog/utils';
 import { DialogStackItem } from '../models';
-import type { ConfirmDialogProps } from '../components';
+import type { ConfirmDialogProps, ErrorDialogProps } from '../components';
 
 export type SystemLinkId =
 	| 'preview'
@@ -155,9 +155,18 @@ export function createComponentId(componentName: string) {
 	return `craftercms.components.${componentName}`;
 }
 
-export function pushConfirmDialog(props: Omit<Partial<DialogStackItem<Partial<ConfirmDialogProps>>>, 'component'>) {
+type confirmDialogStackItemProps = Partial<DialogStackItem<Partial<ConfirmDialogProps>>>;
+export function pushConfirmDialog(props: Omit<confirmDialogStackItemProps, 'component'>) {
 	return pushDialog({
 		component: createComponentId('ConfirmDialog'),
+		...props
+	});
+}
+
+type errorDialogStackItemProps = Partial<DialogStackItem<Partial<ErrorDialogProps>>>;
+export function pushErrorDialog(props: Omit<errorDialogStackItemProps, 'component'>) {
+	return pushDialog({
+		component: createComponentId('ErrorDialog'),
 		...props
 	});
 }

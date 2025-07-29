@@ -32,8 +32,7 @@ import LogConsoleDetailsDialog from '../LogConsoleDetailsDialog';
 import EmptyState from '../EmptyState/EmptyState';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useMount } from '../../hooks/useMount';
-import { pushDialog } from '../../state/actions/dialogStack';
-import { createComponentId } from '../../utils/system';
+import { pushErrorDialog } from '../../utils/system';
 
 interface LogConsoleManagementProps {
 	logType?: 'studio' | 'preview';
@@ -65,7 +64,7 @@ export function LogConsole(props: LogConsoleManagementProps) {
 				error(response) {
 					response = response.response ? response.response.response : response;
 					setError(response);
-					dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error: response } }));
+					dispatch(pushErrorDialog({ props: { error: response } }));
 				}
 			});
 		},

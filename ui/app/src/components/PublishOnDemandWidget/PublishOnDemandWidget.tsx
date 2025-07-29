@@ -49,7 +49,7 @@ import Checkbox from '@mui/material/Checkbox';
 import Alert, { alertClasses } from '@mui/material/Alert';
 import { popDialog, pushDialog } from '../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
-import { createComponentId, pushConfirmDialog } from '../../utils/system';
+import { createComponentId, pushConfirmDialog, pushErrorDialog } from '../../utils/system';
 
 const messages = defineMessages({
 	publishStudioWarning: {
@@ -235,7 +235,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 				setHasInitialPublish(response);
 			},
 			error(error) {
-				dispatch(pushDialog({ component: createComponentId('ErrorDialog'), props: { error } }));
+				dispatch(pushErrorDialog({ props: { error } }));
 			}
 		});
 		fetchPublishingTargets(siteId).subscribe({
