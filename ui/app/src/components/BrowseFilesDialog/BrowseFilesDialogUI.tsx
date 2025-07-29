@@ -152,8 +152,8 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
                     anchorEl={buttonRef.current}
                     open={sortMenuOpen}
                     onClose={() => setSortMenuOpen(false)}
-                    MenuListProps={{
-                      'aria-labelledby': 'sort-button'
+                    slotProps={{
+                      list: { 'aria-labelledby': 'sort-button' }
                     }}
                   >
                     <MenuItem>

@@ -224,7 +224,7 @@ export function AccountManagement(props: AccountManagementProps) {
               }
               onFocus={(e) => setAnchorEl(e.target)}
               onBlur={() => setAnchorEl(null)}
-              inputProps={{ autoComplete: 'new-password' }}
+              slotProps={{ htmlInput: { autoComplete: 'new-password' } }}
             />
             <PasswordTextField
               margin="normal"

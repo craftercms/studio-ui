@@ -223,8 +223,10 @@ const UserDisplaySection = ({ classes, formatMessage, user, onLogout }) => (
         }
         title={`${user.firstName} ${user.lastName}`}
         subheader={user.username || user.email}
-        subheaderTypographyProps={{
-          className: classes.username
+        slotProps={{
+          subheader: {
+            className: classes.username
+          }
         }}
       />
     </Card>

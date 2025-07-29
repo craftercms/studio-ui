@@ -119,7 +119,7 @@ export function PathNavigatorTreeUI(props: PathNavigatorTreeUIProps) {
       square
       disableGutters
       elevation={0}
-      TransitionProps={{ unmountOnExit: true }}
+      slotProps={{ transition: { unmountOnExit: true } }}
       expanded={!isCollapsed}
       onChange={() => onChangeCollapsed(!isCollapsed)}
       className={cx(

@@ -97,12 +97,14 @@ export function DeleteDialogUIBody(props: DeleteDialogContentUIProps) {
                   >
                     <ListItemText
                       primary={path}
-                      primaryTypographyProps={{
-                        title: path,
-                        sx: {
-                          overflow: 'hidden',
-                          whiteSpace: 'nowrap',
-                          textOverflow: 'ellipsis'
+                      slotProps={{
+                        primary: {
+                          title: path,
+                          sx: {
+                            overflow: 'hidden',
+                            whiteSpace: 'nowrap',
+                            textOverflow: 'ellipsis'
+                          }
                         }
                       }}
                     />
