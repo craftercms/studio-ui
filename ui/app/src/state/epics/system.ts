@@ -77,16 +77,15 @@ import { closeToolsPanel, openToolsPanel } from '../actions/preview';
 import { getXSRFToken, removeSiteCookie, setSiteCookie } from '../../utils/auth';
 import { changeSiteComplete, fetchSites, popSite } from '../actions/sites';
 import { defineMessages } from 'react-intl';
-import { createCustomDocumentEventListener } from '../../utils/dom';
 import { batchActions } from '../actions/misc';
 import StandardAction from '../../models/StandardAction';
 import { ProjectLifecycleEvent } from '../../models/ProjectLifecycleEvent';
-import { createComponentId, isDashboardAppUrl, isPreviewAppUrl, isProjectToolsAppUrl } from '../../utils/system';
+import { isDashboardAppUrl, isPreviewAppUrl, isProjectToolsAppUrl, pushConfirmDialog } from '../../utils/system';
 import { GlobalRoutes } from '../../env/routes';
 import { previewSwitch } from '../../services/security';
 import { getPublishingStatusState } from '../../components';
 import { nanoid } from 'nanoid';
-import { popDialog, pushDialog } from '../actions/dialogStack';
+import { popDialog } from '../actions/dialogStack';
 
 const msgs = defineMessages({
 	siteSwitchedOnAnotherTab: {
@@ -514,9 +513,8 @@ const systemEpics: CrafterCMSEpic[] = [
 				const currentProject = sites[currentProjectId].name;
 				const newProject = sites[newProjectId].name;
 				const dialogId = nanoid();
-				return pushDialog({
+				return pushConfirmDialog({
 					id: dialogId,
-					component: createComponentId('ConfirmDialog'),
 					props: {
 						body: getIntl().formatMessage(msgs.siteSwitchedOnAnotherTab, {
 							newProject,

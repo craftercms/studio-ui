@@ -77,7 +77,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 import { SiteToolsContext } from '../SiteTools/siteToolsContext';
 import { nanoid } from 'nanoid';
 import { popDialog, pushDialog } from '../../state/actions/dialogStack';
-import { createComponentId } from '../../utils/system';
+import { createComponentId, pushConfirmDialog } from '../../utils/system';
 
 interface SiteConfigurationManagementProps {
 	embedded?: boolean;
@@ -161,9 +161,8 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
 			const dialogId = nanoid();
 			if (refs.current.setTool) {
 				dispatch(
-					pushDialog({
+					pushConfirmDialog({
 						id: dialogId,
-						component: createComponentId('ConfirmDialog'),
 						props: {
 							body: formatMessage({ defaultMessage: 'You left unsaved changes on "{title}"' }, { title }),
 							onCancel: () => {
@@ -181,9 +180,8 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
 				);
 			} else {
 				dispatch(
-					pushDialog({
+					pushConfirmDialog({
 						id: dialogId,
-						component: createComponentId('ConfirmDialog'),
 						props: {
 							body: formatMessage(
 								{

@@ -26,9 +26,9 @@ import { translations } from './translations';
 import { UploadDialogContainer } from './UploadDialogContainer';
 import MinimizedBar from '../MinimizedBar';
 import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
-import { popDialog, pushDialog } from '../../state/actions/dialogStack';
+import { popDialog } from '../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
-import { createComponentId } from '../../utils/system';
+import { pushConfirmDialog } from '../../utils/system';
 
 export function UploadDialog(props: UploadDialogProps) {
 	const { formatMessage } = useIntl();
@@ -52,9 +52,8 @@ export function UploadDialog(props: UploadDialogProps) {
 		if (hasPendingChanges) {
 			const dialogId = nanoid();
 			dispatch(
-				pushDialog({
+				pushConfirmDialog({
 					id: dialogId,
-					component: createComponentId('ConfirmDialog'),
 					props: {
 						body: formatMessage(translations.uploadInProgressConfirmation),
 						onOk: () => {

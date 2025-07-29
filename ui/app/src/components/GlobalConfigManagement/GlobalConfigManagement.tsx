@@ -36,9 +36,9 @@ import useUnmount from '../../hooks/useUnmount';
 import useActiveUser from '../../hooks/useActiveUser';
 import { useBeforeUnload, useNavigate } from 'react-router';
 import { GlobalRoutes } from '../../env/routes';
-import { popDialog, pushDialog } from '../../state/actions/dialogStack';
+import { popDialog } from '../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
-import { createComponentId } from '../../utils/system';
+import { pushConfirmDialog } from '../../utils/system';
 
 const translations = defineMessages({
 	configSaved: {
@@ -97,9 +97,8 @@ export function GlobalConfigManagement() {
 			sessionStorage.setItem(sessionStorageKey, aceEditorRef.current.getValue());
 			const dialogId = nanoid();
 			dispatch(
-				pushDialog({
+				pushConfirmDialog({
 					id: dialogId,
-					component: createComponentId('ConfirmDialog'),
 					props: {
 						body: <FormattedMessage defaultMessage="You left unsaved changes. Go back and continue editing?" />,
 						onCancel: () => {

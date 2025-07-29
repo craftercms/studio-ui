@@ -49,7 +49,7 @@ import Checkbox from '@mui/material/Checkbox';
 import Alert, { alertClasses } from '@mui/material/Alert';
 import { popDialog, pushDialog } from '../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
-import { createComponentId } from '../../utils/system';
+import { createComponentId, pushConfirmDialog } from '../../utils/system';
 
 const messages = defineMessages({
 	publishStudioWarning: {
@@ -294,9 +294,8 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 		const studioNote = formatMessage(messages.publishStudioNote, { a: (msg) => msg[0] });
 		const dialogId = nanoid();
 		dispatch(
-			pushDialog({
+			pushConfirmDialog({
 				id: dialogId,
-				component: createComponentId('ConfirmDialog'),
 				props: {
 					body: `${formatMessage(messages.publishStudioWarning)} ${studioNote}`,
 					onCancel: () => {

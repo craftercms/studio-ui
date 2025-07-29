@@ -27,6 +27,8 @@ import { getHostToGuestBus } from './subjects';
 import { reloadRequest } from '../state/actions/preview';
 import { Context, useContext } from 'react';
 import type { LegacyFormDialogProps } from '../components/LegacyFormDialog/utils';
+import { DialogStackItem } from '../models';
+import type { ConfirmDialogProps } from '../components';
 
 export type SystemLinkId =
 	| 'preview'
@@ -151,4 +153,11 @@ export function createUseContextHook<T, K extends keyof T>(
 
 export function createComponentId(componentName: string) {
 	return `craftercms.components.${componentName}`;
+}
+
+export function pushConfirmDialog(props: Omit<Partial<DialogStackItem<Partial<ConfirmDialogProps>>>, 'component'>) {
+	return pushDialog({
+		component: createComponentId('ConfirmDialog'),
+		...props
+	});
 }

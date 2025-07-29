@@ -88,7 +88,7 @@ import { isBlank } from '../../utils/string';
 import SocketEvent, { MoveContentEventPayload } from '../../models/SocketEvent';
 import { popDialog, pushDialog } from '../actions/dialogStack';
 import { nanoid } from 'nanoid';
-import { createComponentId, pickShowContentFormAction } from '../../utils/system';
+import { createComponentId, pickShowContentFormAction, pushConfirmDialog } from '../../utils/system';
 import type { ContentItem } from '../../models';
 import { popCodeEditorDialog, showItemMegaMenu } from '../actions/dialogs';
 
@@ -349,9 +349,8 @@ const content: CrafterCMSEpic[] = [
 					map(({ allowed, modifiedValue, target, message }) => {
 						if (allowed && modifiedValue) {
 							const dialogId = nanoid();
-							return pushDialog({
+							return pushConfirmDialog({
 								id: dialogId,
-								component: createComponentId('ConfirmDialog'),
 								props: {
 									body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyConfirm, {
 										action: getIntl().formatMessage(sitePolicyMessages.duplicate),
@@ -394,9 +393,8 @@ const content: CrafterCMSEpic[] = [
 									});
 						} else {
 							const dialogId = nanoid();
-							return pushDialog({
+							return pushConfirmDialog({
 								id: dialogId,
-								component: createComponentId('ConfirmDialog'),
 								props: {
 									body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyError, {
 										action: getIntl().formatMessage(sitePolicyMessages.duplicate),
@@ -478,9 +476,8 @@ const content: CrafterCMSEpic[] = [
 								const dialogId = nanoid();
 								return [
 									unblockUI(),
-									pushDialog({
+									pushConfirmDialog({
 										id: dialogId,
-										component: createComponentId('ConfirmDialog'),
 										props: {
 											body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyConfirm, {
 												action: state.content.clipboard.type === 'CUT' ? 'cut' : 'copy',
@@ -505,9 +502,8 @@ const content: CrafterCMSEpic[] = [
 								const dialogId = nanoid();
 								return [
 									unblockUI(),
-									pushDialog({
+									pushConfirmDialog({
 										id: dialogId,
-										component: createComponentId('ConfirmDialog'),
 										props: {
 											body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyError, {
 												action: state.content.clipboard.type === 'CUT' ? 'cut' : 'copy',
@@ -538,9 +534,8 @@ const content: CrafterCMSEpic[] = [
 				if (isBlank(path)) {
 					const dialogId = nanoid();
 					return of(
-						pushDialog({
+						pushConfirmDialog({
 							id: dialogId,
-							component: createComponentId('ConfirmDialog'),
 							props: {
 								body: getIntl().formatMessage(
 									itemFailureMessages[type === 'DELETE_CONTROLLER' ? 'controllerNotFound' : 'templateNotFound']
@@ -582,9 +577,8 @@ const content: CrafterCMSEpic[] = [
 								return batchActions([
 									unblockUI(),
 									error.status === 404
-										? pushDialog({
+										? pushConfirmDialog({
 												id: dialogId,
-												component: createComponentId('ConfirmDialog'),
 												props: {
 													body: getIntl().formatMessage(
 														itemFailureMessages[

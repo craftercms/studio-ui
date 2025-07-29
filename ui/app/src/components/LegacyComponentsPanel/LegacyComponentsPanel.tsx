@@ -46,9 +46,9 @@ import { forEach } from '../../utils/array';
 import { useEnv } from '../../hooks/useEnv';
 import { guestMessages } from '../../assets/guestMessages';
 import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
-import { popDialog, pushDialog } from '../../state/actions/dialogStack';
+import { popDialog } from '../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
-import { createComponentId, pickShowContentFormAction } from '../../utils/system';
+import { pickShowContentFormAction, pushConfirmDialog } from '../../utils/system';
 
 export interface LegacyComponentsPanelProps {
 	title: string;
@@ -482,9 +482,8 @@ export function LegacyComponentsPanel(props: LegacyComponentsPanelProps) {
 					const { messageKey, message } = payload;
 					const dialogId = nanoid();
 					dispatch(
-						pushDialog({
+						pushConfirmDialog({
 							id: dialogId,
-							component: createComponentId('ConfirmDialog'),
 							props: {
 								body: messageKey ? formatMessage(dragAndDropMessages[messageKey]) : message,
 								onOk: () => dispatch(popDialog({ id: dialogId }))

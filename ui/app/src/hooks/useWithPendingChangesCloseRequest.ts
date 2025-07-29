@@ -18,9 +18,9 @@ import { useDispatch } from 'react-redux';
 import { useIntl } from 'react-intl';
 import translations from '../components/CodeEditorDialog/translations';
 import { EnhancedDialogProps as DialogProps } from '../components/EnhancedDialog';
-import { popDialog, pushDialog } from '../state/actions/dialogStack';
+import { popDialog } from '../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
-import { createComponentId } from '../utils/system';
+import { pushConfirmDialog } from '../utils/system';
 
 export function useWithPendingChangesCloseRequest(onClose: DialogProps['onClose']): DialogProps['onClose'] {
 	const dispatch = useDispatch();
@@ -28,9 +28,8 @@ export function useWithPendingChangesCloseRequest(onClose: DialogProps['onClose'
 	return (e, reason) => {
 		const dialogId = nanoid();
 		dispatch(
-			pushDialog({
+			pushConfirmDialog({
 				id: dialogId,
-				component: createComponentId('ConfirmDialog'),
 				props: {
 					title: formatMessage(translations.pendingChanges),
 					onOk: () => {

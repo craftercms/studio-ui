@@ -18,9 +18,9 @@ import { useStore } from 'react-redux';
 import { hasMinimizedBar } from '../components/MinimizedBarPortal/minimizedBarCounter';
 import infoGraphic from '../assets/information.svg';
 import { defineMessages, useIntl } from 'react-intl';
-import { popDialog, pushDialog } from '../state/actions/dialogStack';
+import { popDialog } from '../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
-import { createComponentId } from '../utils/system';
+import { pushConfirmDialog } from '../utils/system';
 
 const messages = defineMessages({
 	main: {
@@ -36,9 +36,8 @@ export function useMinimizedDialogWarning() {
 		if (hasMinimizedBar()) {
 			const dialogId = nanoid();
 			store.dispatch(
-				pushDialog({
+				pushConfirmDialog({
 					id: dialogId,
-					component: createComponentId('ConfirmDialog'),
 					props: {
 						body: formatMessage(messages.main),
 						imageUrl: infoGraphic,

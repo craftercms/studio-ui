@@ -137,9 +137,9 @@ import { useActiveSite } from '../../hooks/useActiveSite';
 import { getPathFromPreviewURL, processPathMacros, withIndex } from '../../utils/path';
 import {
 	closeItemMegaMenu,
+	itemMegaMenuClosed,
 	rtePickerActionResult,
 	showItemMegaMenu,
-	itemMegaMenuClosed,
 	showRtePickerActions,
 	type ShowRtePickerActionsPayload
 } from '../../state/actions/dialogs';

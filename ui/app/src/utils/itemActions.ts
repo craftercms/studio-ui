@@ -100,7 +100,7 @@ import { fetchDependant } from '../services/dependencies';
 import { NewContentDialogProps } from '../components/NewContentDialog/utils';
 import { nanoid } from 'nanoid';
 import { popDialog, pushDialog, updateDialogState } from '../state/actions/dialogStack';
-import { createComponentId, pickShowContentFormAction } from './system';
+import { createComponentId, pickShowContentFormAction, pushConfirmDialog } from './system';
 
 export type ContextMenuOptionDescriptor<ID extends string = string> = {
 	id: ID;
@@ -608,9 +608,8 @@ export const itemActionDispatcher = ({
 			case 'changeContentType': {
 				const dialogId = nanoid();
 				dispatch(
-					pushDialog({
+					pushConfirmDialog({
 						id: dialogId,
-						component: createComponentId('ConfirmDialog'),
 						props: {
 							title: formatMessage(translations.changeContentType),
 							body: formatMessage(translations.changeContentTypeBody),
@@ -799,9 +798,8 @@ export const itemActionDispatcher = ({
 			case 'duplicateAsset': {
 				const dialogId = nanoid();
 				dispatch(
-					pushDialog({
+					pushConfirmDialog({
 						id: dialogId,
-						component: createComponentId('ConfirmDialog'),
 						props: {
 							title: formatMessage(translations.duplicate),
 							body: formatMessage(translations.duplicateDialogBody),
@@ -824,9 +822,8 @@ export const itemActionDispatcher = ({
 			case 'duplicate': {
 				const dialogId = nanoid();
 				dispatch(
-					pushDialog({
+					pushConfirmDialog({
 						id: dialogId,
-						component: createComponentId('ConfirmDialog'),
 						props: {
 							title: formatMessage(translations.duplicate),
 							body: formatMessage(translations.duplicateDialogBody),

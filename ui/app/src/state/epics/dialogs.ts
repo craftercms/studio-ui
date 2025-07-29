@@ -52,7 +52,7 @@ import type {
 } from '../../components';
 import { popDialog, pushDialog, updateDialogState } from '../actions/dialogStack';
 import { nanoid } from 'nanoid';
-import { createComponentId } from '../../utils/system';
+import { pushConfirmDialog } from '../../utils/system';
 
 function getDialogNameFromType(type: string): string {
 	let name = getDialogActionNameFromType(type);
@@ -135,9 +135,8 @@ const dialogEpics: CrafterCMSEpic[] = [
 				} else {
 					const dialogId = nanoid();
 					return of(
-						pushDialog({
+						pushConfirmDialog({
 							id: dialogId,
-							component: createComponentId('ConfirmDialog'),
 							props: {
 								body: getIntl().formatMessage(formEngineMessages.inProgressConfirmation),
 								imageUrl: infoGraphic,
