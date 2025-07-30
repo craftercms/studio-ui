@@ -98,7 +98,7 @@ function LauncherSiteCard(props: LauncherSiteCardProps) {
       >
         <ListItemText
           primary={title}
-          primaryTypographyProps={{ className: classes.siteName, noWrap: true }}
+          slotProps={{ primary: { className: classes.siteName, noWrap: true } }}
           sx={isSiteReady ? undefined : { paddingRight: '35px' }}
         />
       </ListItemButton>

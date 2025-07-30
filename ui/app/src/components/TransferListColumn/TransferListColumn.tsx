@@ -146,7 +146,7 @@ export function TransferListColumn(props: TransferListColumnProps) {
                   <ListItemText
                     primary={item.title}
                     secondary={item.subtitle}
-                    primaryTypographyProps={{ noWrap: true, title: item.title }}
+                    slotProps={{ primary: { noWrap: true, title: item.title } }}
                   />
                 </ListItemButton>
               ))}

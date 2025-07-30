@@ -170,7 +170,7 @@ export function EditUserDialogUI(props: EditUserDialogUIProps) {
                       onChange={(e) => onEnableChange({ enabled: e.target.checked })}
                       color="primary"
                       name="enabled"
-                      inputProps={{ 'aria-label': 'enabled checkbox' }}
+                      slotProps={{ input: { 'aria-label': 'enabled checkbox' } }}
                     />
                   </div>
                 </div>

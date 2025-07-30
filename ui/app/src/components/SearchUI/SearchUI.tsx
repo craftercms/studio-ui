@@ -412,11 +412,15 @@ export function SearchUI(props: SearchUIProps) {
             count={searchResults?.total ?? 0}
             rowsPerPage={searchParameters.limit}
             page={Math.ceil(searchParameters.offset / searchParameters.limit)}
-            backIconButtonProps={{
-              'aria-label': formatMessage(translations.previousPage)
-            }}
-            nextIconButtonProps={{
-              'aria-label': formatMessage(translations.nextPage)
+            slotProps={{
+              actions: {
+                previousButton: {
+                  'aria-label': formatMessage(translations.previousPage)
+                },
+                nextButton: {
+                  'aria-label': formatMessage(translations.nextPage)
+                }
+              }
             }}
             onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}

@@ -225,7 +225,9 @@ export function ResizeableDrawer(props: ResizeableDrawerProps) {
           resizeActive && classes.resizingOverlay
         )
       }}
-      PaperProps={{ ...PaperProps, style: { width } }}
+      slotProps={{
+        paper: { ...PaperProps, style: { width } }
+      }}
       {...rest}
     >
       {onWidthChange && (

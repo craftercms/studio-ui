@@ -86,15 +86,17 @@ const DefaultCardContent = (props) => {
         classes={{
           content: classes.cardHeader
         }}
-        titleTypographyProps={{
-          variant: 'body1',
-          title: headerTitle,
-          classes: { root: classes.cardHeaderContentTypography }
-        }}
-        subheaderTypographyProps={{
-          noWrap: true,
-          title: subheader,
-          classes: { root: classes.cardHeaderContentTypography }
+        slotProps={{
+          title: {
+            variant: 'body1',
+            title: headerTitle,
+            classes: { root: classes.cardHeaderContentTypography }
+          },
+          subheader: {
+            noWrap: true,
+            title: subheader,
+            classes: { root: classes.cardHeaderContentTypography }
+          }
         }}
       />
       <Divider />
@@ -116,15 +118,17 @@ const CompactCardContent = (props) => {
           root: classes.cardHeader,
           content: classes.cardHeader
         }}
-        titleTypographyProps={{
-          variant: 'body1',
-          title: headerTitle,
-          classes: { root: classes.cardHeaderContentTypography }
-        }}
-        subheaderTypographyProps={{
-          noWrap: true,
-          title: subheader,
-          classes: { root: classes.cardHeaderContentTypography }
+        slotProps={{
+          title: {
+            variant: 'body1',
+            title: headerTitle,
+            classes: { root: classes.cardHeaderContentTypography }
+          },
+          subheader: {
+            noWrap: true,
+            title: subheader,
+            classes: { root: classes.cardHeaderContentTypography }
+          }
         }}
       />
     </>

@@ -446,7 +446,7 @@ function ResetView(props: SubViewProps) {
           placeholder={formatMessage(translations.resetPasswordFieldPlaceholderLabel)}
           onFocus={(e) => setAnchorEl(e.target)}
           onBlur={() => setAnchorEl(null)}
-          inputProps={{ autoComplete: 'new-password' }}
+          slotProps={{ htmlInput: { autoComplete: 'new-password' } }}
         />
         <PasswordTextField
           id="resetFormPasswordConfirmField"
@@ -615,7 +615,7 @@ export function LoginViewContainer(props: LoginViewProps) {
         open={true}
         maxWidth="xs"
         className={cx(classes.dialogRoot, isFetching && classes.dialogRootFetching)}
-        PaperProps={{ className: classes.dialogPaper }}
+        slotProps={{ paper: { className: classes.dialogPaper } }}
         aria-labelledby="loginDialog"
       >
         <DialogTitle id="loginDialog">

@@ -52,7 +52,9 @@ export function RejectDialogContentUI(props: RejectDialogContentUIProps) {
                 checked={checkedItems.includes(item.path)}
                 tabIndex={-1}
                 disableRipple
-                inputProps={{ 'aria-labelledby': labelId }}
+                slotProps={{
+                  input: { 'aria-labelledby': labelId }
+                }}
                 color="primary"
               />
             </ListItemIcon>
@@ -60,11 +62,9 @@ export function RejectDialogContentUI(props: RejectDialogContentUIProps) {
               primary={item.label}
               secondary={item.path}
               id={labelId}
-              primaryTypographyProps={{
-                classes: { root: classes.ellipsis }
-              }}
-              secondaryTypographyProps={{
-                classes: { root: classes.ellipsis }
+              slotProps={{
+                primary: { classes: { root: classes.ellipsis } },
+                secondary: { classes: { root: classes.ellipsis } }
               }}
             />
             <ListItemText disableTypography={true} className={classes.submittedBy}>
