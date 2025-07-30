@@ -18,7 +18,6 @@ import * as React from 'react';
 import IconButton from '@mui/material/IconButton';
 import DeleteRounded from '@mui/icons-material/DeleteRounded';
 import ContentType from '../models/ContentType';
-import { useEnhancedDialogState } from '../hooks/useEnhancedDialogState';
 import { useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
 import { popDialog, pushDialog } from '../state/actions/dialogStack';
@@ -30,7 +29,6 @@ export interface DeleteContentTypeButtonProps {
 }
 
 function DeleteContentTypeButton({ contentType, onComplete }: DeleteContentTypeButtonProps) {
-	const deleteContentTypeDialogState = useEnhancedDialogState();
 	const { formatMessage } = useIntl();
 	const dispatch = useDispatch();
 
@@ -47,8 +45,7 @@ function DeleteContentTypeButton({ contentType, onComplete }: DeleteContentTypeB
 						dispatch(popDialog({ id: dialogId }));
 						onComplete?.();
 					},
-					onClose: () => dispatch(popDialog({ id: dialogId })),
-					isMinimized: deleteContentTypeDialogState.isMinimized
+					onClose: () => dispatch(popDialog({ id: dialogId }))
 				}
 			})
 		);
