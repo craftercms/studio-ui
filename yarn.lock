@@ -1722,7 +1722,7 @@ __metadata:
     "@eslint/js": "npm:^9.21.0"
     "@formatjs/cli": "npm:^6.6.1"
     "@graphiql/plugin-explorer": "npm:^3.2.5"
-    "@monaco-editor/react": "npm:^4.7.0"
+    "@monaco-editor/react": "npm:^4.6.0"
     "@mui/icons-material": "npm:^7.0.1"
     "@mui/lab": "npm:7.0.0-beta.10"
     "@mui/material": "npm:^7.0.1"
@@ -1735,6 +1735,7 @@ __metadata:
     "@stomp/stompjs": "npm:^7.0.0"
     "@tinymce/tinymce-react": "npm:^5.1.1"
     "@types/ace": "npm:^0.0.52"
+    "@types/diff": "npm:^6.0.0"
     "@types/js-cookie": "npm:^3.0.6"
     "@types/react": "npm:^19.1.0"
     "@types/react-dom": "npm:^19.0.4"
@@ -1752,6 +1753,7 @@ __metadata:
     babel-plugin-formatjs: "npm:^10.5.35"
     build-if-changed: "npm:^1.5.5"
     clsx: "npm:^2.1.1"
+    diff: "npm:^7.0.0"
     eslint: "npm:^9.21.0"
     eslint-plugin-formatjs: "npm:^4.13.3"
     eslint-plugin-react-hooks: "npm:^5.1.0"
@@ -2860,7 +2862,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@monaco-editor/react@npm:^4.7.0":
+"@monaco-editor/react@npm:^4.6.0":
   version: 4.7.0
   resolution: "@monaco-editor/react@npm:4.7.0"
   dependencies:
@@ -4918,6 +4920,13 @@ __metadata:
   dependencies:
     "@types/tern": "npm:*"
   checksum: 10/1c5431cacc97a4c4a4b12a484b6d3bf32f745ffa444095087437204395e239b26b44903706ab29ff413759ea17e3be9a12caf399db09e34a359b2e4f99fce785
+  languageName: node
+  linkType: hard
+
+"@types/diff@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "@types/diff@npm:6.0.0"
+  checksum: 10/ad2dc8ca9e7594c7d06b60832ef1a51c717e39fd92434043be35a5a5a038f61ee7e1b9e89d1e2a49b8c4fa0f020166d1d41f7ccbd62f6cadc9ca1bd3e5df4e5b
   languageName: node
   linkType: hard
 
@@ -7584,6 +7593,13 @@ __metadata:
   version: 1.1.0
   resolution: "detect-node-es@npm:1.1.0"
   checksum: 10/e46307d7264644975b71c104b9f028ed1d3d34b83a15b8a22373640ce5ea630e5640b1078b8ea15f202b54641da71e4aa7597093bd4b91f113db520a26a37449
+  languageName: node
+  linkType: hard
+
+"diff@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "diff@npm:7.0.0"
+  checksum: 10/e9b8e48d054c9c0c093c65ce8e2637af94b35f2427001607b14e5e0589e534ea3413a7f91ebe6d7c5a1494ace49cb7c7c3972f442ddd96a4767ff091999a082e
   languageName: node
   linkType: hard
 

@@ -15,31 +15,31 @@
  */
 
 import { EntityState } from '../../models/EntityState';
-import ContentType from '../../models/ContentType';
+import ContentType, { ContentTypeField } from '../../models/ContentType';
 import { DialogHeaderStateAction } from '../DialogHeader';
 import { DialogHeaderActionProps } from '../DialogHeaderAction';
 import { ApiResponse } from '../../models/ApiResponse';
 import StandardAction from '../../models/StandardAction';
+import { LookupTable } from '../../models/LookupTable';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
-
-export interface VersionViewProps {
-	version: {
-		content: string;
-		path: string;
-		site: string;
-		versionNumber: string;
-	};
-}
+import { ContentInstance, ItemHistoryEntry } from '../../models';
+import type { BuiltInControlType } from '../FormsEngine/lib/controlMap';
+import { ElementType } from 'react';
 
 export interface ViewVersionDialogBaseProps {
 	error: ApiResponse;
 	isFetching: boolean;
-	version: any;
+	version?: ItemHistoryEntry;
+	data?: {
+		content: ContentInstance;
+		xml: string;
+		fields: LookupTable<ContentTypeField>;
+	};
 }
 
 export interface ViewVersionDialogProps extends ViewVersionDialogBaseProps, EnhancedDialogProps {
-	contentTypesBranch: EntityState<ContentType>;
+	contentTypesBranch?: EntityState<ContentType>;
 	leftActions?: DialogHeaderActionProps[];
 	rightActions?: DialogHeaderActionProps[];
 }
@@ -53,4 +53,19 @@ export interface ViewVersionDialogStateProps extends ViewVersionDialogBaseProps,
 
 export interface ViewVersionDialogContainerProps
 	extends ViewVersionDialogBaseProps,
-		Pick<ViewVersionDialogProps, 'contentTypesBranch'> {}
+		Pick<ViewVersionDialogProps, 'contentTypesBranch'> {
+	showXml: boolean;
+}
+
+export interface ViewComponentBaseProps {
+	xml?: string;
+	field?: ContentTypeField;
+	content?: string;
+}
+
+export const textViewLanguageMap = {
+	'file-name': 'text',
+	textarea: 'text',
+	rte: 'html',
+	dropdown: 'text'
+} as Record<Partial<BuiltInControlType>, ElementType>;
