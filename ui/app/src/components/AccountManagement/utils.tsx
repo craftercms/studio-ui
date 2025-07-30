@@ -37,8 +37,7 @@ import {
 	removeStoredPushBranch,
 	removeStoredShowToolsPanel,
 	removeCompareVersionDialogViewModes,
-	removeViewVersionDialogViewModes
-	removeStoredShowToolsPanel,
+	removeViewVersionDialogViewModes,
 	removeTypeViewCompactMode
 } from '../../utils/state';
 
