@@ -460,7 +460,6 @@ function parseLegacyFormDefinition(definition: LegacyFormDefinition): ContentTyp
 		description: definition.description,
 		quickCreate: definition.quickCreate?.trim() === 'true',
 		quickCreatePath: definition.quickCreatePath,
-		onDemandEditorInitialization: definition.onDemandEditorInitialization?.trim() === 'true',
 		type: definition.objectType as LegacyContentType['type'],
 		displayTemplate: topLevelPropMap[XmlKeys.displayTemplate]?.value?.trim() || null,
 		mergeStrategy: topLevelPropMap[XmlKeys.mergeStrategy]?.value?.trim() || null,
@@ -504,8 +503,7 @@ export function parseLegacyContentType(legacy: LegacyContentType): ContentType {
 		sections: null,
 		displayTemplate: null,
 		dataSources: null,
-		mergeStrategy: null,
-		onDemandEditorInitialization: legacy.onDemandEditorInitialization
+		mergeStrategy: null
 	};
 }
 

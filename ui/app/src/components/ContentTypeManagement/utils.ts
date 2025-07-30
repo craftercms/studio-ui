@@ -86,7 +86,6 @@ export type TypePropsToEdit = Pick<
 	| 'isHeadless'
 	| 'paths'
 	| 'sections'
-	| 'onDemandEditorInitialization'
 >;
 
 type ContentTypeValuesObject = TypePropsToEdit & { groovyController: string };
@@ -104,8 +103,7 @@ export const typePropsToEdit: Array<keyof TypePropsToEdit> = [
 	'displayTemplate',
 	'isHeadless',
 	'paths',
-	'sections',
-	'onDemandEditorInitialization'
+	'sections'
 ];
 
 // Some system fields resolve to other built-in controls, so we need to map them to the correct type
@@ -339,7 +337,6 @@ export function createEmptyTypeStructure(mixin?: Partial<ContentType>): ContentT
 		thumbnailFileName: null,
 		isHeadless: null,
 		paths: null,
-		onDemandEditorInitialization: null,
 		fields: {},
 		sections: [],
 		...mixin
@@ -567,7 +564,6 @@ export function prepareSerializeToXmlTypeObject(
 		quickCreate: toBooleanString(type.quickCreate),
 		quickCreatePath: type.quickCreatePath,
 		imageThumbnail: type.thumbnailFileName,
-		onDemandEditorInitialization: type.onDemandEditorInitialization,
 		paths: type.paths,
 		properties: {
 			property: [
