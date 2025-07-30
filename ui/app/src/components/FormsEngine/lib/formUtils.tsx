@@ -444,7 +444,7 @@ export function createObjectWithSystemProps(
 		// TODO: These are part of the type
 		[XmlKeys.disabled]: mixin?.[XmlKeys.disabled] ?? false,
 		[XmlKeys.placeInNav]: mixin?.[XmlKeys.placeInNav] ?? false,
-		[XmlKeys.navLabel]: mixin?.[XmlKeys.placeInNav] ?? ''
+		[XmlKeys.navLabel]: mixin?.[XmlKeys.navLabel] ?? ''
 	};
 	return contentObject;
 }
