@@ -443,7 +443,8 @@ export function createObjectWithSystemProps(
 		[XmlKeys.fileName]: mixin?.[XmlKeys.fileName] ?? 'index.xml',
 		// TODO: These are part of the type
 		[XmlKeys.disabled]: mixin?.[XmlKeys.disabled] ?? false,
-		[XmlKeys.placeInNav]: mixin?.[XmlKeys.placeInNav] ?? false
+		[XmlKeys.placeInNav]: mixin?.[XmlKeys.placeInNav] ?? false,
+		[XmlKeys.navLabel]: mixin?.[XmlKeys.placeInNav] ?? ''
 	};
 	return contentObject;
 }

@@ -52,6 +52,7 @@ import { popDialog, pushDialog } from '../../state/actions/dialogStack';
 import type { BuiltInControlType } from '../FormsEngine/lib/controlMap';
 import { asArray } from '../../utils/array';
 import { componentsDataSourceContentTypesPropertyNames, systemValidationsKeysMap } from '../../utils/contentType';
+import { XmlKeys } from '../FormsEngine/lib/formConsts';
 
 // TODO: assess which of the utils here should go to utils/contentType.ts, or other places (serializers, etc.)
 
@@ -108,26 +109,26 @@ export const typePropsToEdit: Array<keyof TypePropsToEdit> = [
 
 // Some system fields resolve to other built-in controls, so we need to map them to the correct type
 export const systemFieldsTypesMap: Partial<Record<BuiltInControlType, string>> = {
-	disabled: 'checkbox',
-	'internal-name': 'input'
+	[XmlKeys['disabled']]: 'checkbox',
+	[XmlKeys['internalName']]: 'input'
 };
 
 // Some system fields have a pre-set id which is not editable.
 export type readOnlyFieldIdsType = 'disabled' | 'file-name' | 'internal-name' | 'placeInNav' | 'navLabel';
 export const readOnlyFieldsIds: readOnlyFieldIdsType[] = [
-	'disabled',
-	'file-name',
-	'internal-name',
-	'placeInNav',
-	'navLabel'
+	XmlKeys['disabled'],
+	XmlKeys['fileName'],
+	XmlKeys['internalName'],
+	XmlKeys['placeInNav'],
+	XmlKeys['navLabel']
 ];
 
 // Some system fields have a pre-set id. This map is to map the built-in control type to the id.
 export const systemFieldsIdsMap: Partial<Record<BuiltInControlType, readOnlyFieldIdsType>> = {
-	disabled: 'disabled',
-	'file-name': 'file-name',
+	[XmlKeys['disabled']]: 'disabled',
+	[XmlKeys['fileName']]: 'file-name',
 	'auto-filename': 'file-name',
-	'internal-name': 'internal-name',
+	[XmlKeys['internalName']]: 'internal-name',
 	'page-nav-order': 'placeInNav'
 	// 'locale-selector: 'locale-selector' // This one doesn't have a pre-set id
 };
