@@ -31,44 +31,18 @@ export type PostFixesType =
 	| '_en'
 	| '_txt';
 
-export const postFixesMap: Record<PostFixesType, { description: MessageDescriptor }> = {
-	_s: {
-		description: defineMessage({ defaultMessage: 'For string.' })
-	},
-	_t: {
-		description: defineMessage({ defaultMessage: 'For multiple words or tokens.' })
-	},
-	_i: {
-		description: defineMessage({ defaultMessage: 'For integer number.' })
-	},
-	_l: {
-		description: defineMessage({ defaultMessage: 'For long integer number.' })
-	},
-	_b: {
-		description: defineMessage({ defaultMessage: 'For boolean (true or false).' })
-	},
-	_f: {
-		description: defineMessage({ defaultMessage: 'For floating point number.' })
-	},
-	_d: {
-		description: defineMessage({ defaultMessage: 'For long floating point number.' })
-	},
-	_dt: {
-		description: defineMessage({ defaultMessage: 'For date in ISO 8601 date format.' })
-	},
-	_to: {
-		description: defineMessage({ defaultMessage: 'For time in HH:mm:ss format.' })
-	},
-	_html: {
-		description: defineMessage({ defaultMessage: 'For text with HTML tags.' })
-	},
-	_o: {
-		description: defineMessage({ defaultMessage: 'For object.' })
-	},
-	_en: {
-		description: defineMessage({ defaultMessage: 'For multiple words or tokens.' })
-	},
-	_txt: {
-		description: defineMessage({ defaultMessage: 'For multiple words or tokens.' })
-	}
+export const postFixesMap: Record<PostFixesType, MessageDescriptor> = {
+	_s: defineMessage({ defaultMessage: 'For string.' }),
+	_t: defineMessage({ defaultMessage: 'For multiple words or tokens.' }),
+	_i: defineMessage({ defaultMessage: 'For integer number.' }),
+	_l: defineMessage({ defaultMessage: 'For long integer number.' }),
+	_b: defineMessage({ defaultMessage: 'For boolean (true or false).' }),
+	_f: defineMessage({ defaultMessage: 'For floating point number.' }),
+	_d: defineMessage({ defaultMessage: 'For long floating point number.' }),
+	_dt: defineMessage({ defaultMessage: 'For date in ISO 8601 date format.' }),
+	_to: defineMessage({ defaultMessage: 'For time in HH:mm:ss format.' }),
+	_html: defineMessage({ defaultMessage: 'For text with HTML tags.' }),
+	_o: defineMessage({ defaultMessage: 'For object.' }),
+	_en: defineMessage({ defaultMessage: 'For multiple words or tokens.' }),
+	_txt: defineMessage({ defaultMessage: 'For multiple words or tokens.' })
 };

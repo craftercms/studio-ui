@@ -99,7 +99,7 @@ export function Variable(props: VariableProps) {
 							<DropDownMenu
 								onMenuItemClick={(event, optionId) => onAddPostFix(optionId)}
 								options={supportedPostFixes.map((postFix) => {
-									const translation = formatMessage(postFixesMap[postFix].description);
+									const translation = formatMessage(postFixesMap[postFix]);
 									return {
 										id: postFix,
 										primaryText: postFix,
