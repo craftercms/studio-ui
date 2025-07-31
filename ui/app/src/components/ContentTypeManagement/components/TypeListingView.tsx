@@ -90,7 +90,7 @@ export const TypeListingView = forwardRef<HTMLDivElement, TypeListingViewProps>(
 				onClosed={openCreateDialogState.onResetState}
 				onAccept={handleCreateTypeDialogAccept}
 				hasPendingChanges={openCreateDialogState.hasPendingChanges}
-				onSubmittingAndOrPendingChange={openCreateDialogState.onSubmittingAndOrPendingChange}
+				updateSubmittingOrHasPendingChanges={openCreateDialogState.onSubmittingAndOrPendingChange}
 				onWithPendingChangesCloseRequest={createDialogPendingChangesCloseRequest}
 			/>
 		</Box>

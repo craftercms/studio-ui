@@ -30,7 +30,6 @@ import PrimaryButton from '../../PrimaryButton';
 import { EnhancedDialog, EnhancedDialogProps } from '../../EnhancedDialog';
 import { camelize } from '../../../utils/string';
 import useEnhancedDialogContext from '../../EnhancedDialog/useEnhancedDialogContext';
-import { onSubmittingAndOrPendingChangeProps } from '../../../hooks/useEnhancedDialogState';
 import useContentTypes from '../../../hooks/useContentTypes';
 import type { LookupTable } from '../../../models';
 import { fetchContentTypes } from '../../../services/contentTypes';
@@ -42,14 +41,13 @@ import { fetchContentTypesComplete } from '../../../state/actions/preview';
 
 export interface CreateTypeDialogBaseProps {
 	onAccept(typeData: Pick<ContentType, 'id' | 'name' | 'type'>): void;
-	onSubmittingAndOrPendingChange(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
 export interface CreateTypeDialogProps extends EnhancedDialogProps, CreateTypeDialogBaseProps {}
 
 export function CreateTypeDialog(props: CreateTypeDialogProps) {
 	// Make sure to extract all non-dialog props.
-	const { onAccept, onSubmittingAndOrPendingChange, ...dialogProps } = props;
+	const { onAccept, ...dialogProps } = props;
 	return (
 		<EnhancedDialog
 			maxWidth="xs"
@@ -57,7 +55,7 @@ export function CreateTypeDialog(props: CreateTypeDialogProps) {
 			title={<FormattedMessage defaultMessage="Create Content Type" />}
 			{...dialogProps}
 		>
-			<CreateTypeDialogBody onAccept={onAccept} onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange} />
+			<CreateTypeDialogBody onAccept={onAccept} />
 		</EnhancedDialog>
 	);
 }
@@ -68,14 +66,14 @@ const prefixes = {
 };
 
 function CreateTypeDialogBody(props: CreateTypeDialogBaseProps) {
-	const { onAccept, onSubmittingAndOrPendingChange } = props;
+	const { onAccept } = props;
 	const siteId = useActiveSiteId();
 	const [type, setType] = useState<'page' | 'component'>('page');
 	const [name, setName] = useState<string>('');
 	const [id, setId] = useState<string>('');
 	const prefix = useRef<string>(undefined);
 	prefix.current = prefixes[type];
-	const dialogContext = useEnhancedDialogContext();
+	const { onClose, updateSubmittingOrHasPendingChanges } = useEnhancedDialogContext();
 	const contentTypes = useContentTypes();
 	const [nameExists, setNameExists] = useState<boolean>(false);
 	const [idExists, setIdExists] = useState<boolean>(false);
@@ -89,11 +87,11 @@ function CreateTypeDialogBody(props: CreateTypeDialogBaseProps) {
 
 	const validateAndSubmit = () => {
 		setFetchingContentTypes(true);
-		onSubmittingAndOrPendingChange({ isSubmitting: true });
+		updateSubmittingOrHasPendingChanges({ isSubmitting: true });
 		fetchContentTypes(siteId).subscribe({
 			next: (typesList) => {
 				setFetchingContentTypes(false);
-				onSubmittingAndOrPendingChange({ isSubmitting: false });
+				updateSubmittingOrHasPendingChanges({ isSubmitting: true });
 				// Update content types list
 				dispatch(fetchContentTypesComplete(typesList));
 				const valid = validate({
@@ -110,13 +108,13 @@ function CreateTypeDialogBody(props: CreateTypeDialogBaseProps) {
 			error: ({ response }) => {
 				dispatch(showErrorDialog({ error: response.response }));
 				setFetchingContentTypes(false);
-				onSubmittingAndOrPendingChange({ isSubmitting: false });
+				updateSubmittingOrHasPendingChanges({ isSubmitting: false });
 			}
 		});
 	};
 	const handleChange: SelectProps['onChange'] = (e) => {
 		const archetype = e.target.value as keyof typeof prefixes;
-		onSubmittingAndOrPendingChange({ hasPendingChanges: true });
+		updateSubmittingOrHasPendingChanges({ hasPendingChanges: true });
 		setType(archetype);
 	};
 	const handleNameChange = (name: string) => {
@@ -124,12 +122,12 @@ function CreateTypeDialogBody(props: CreateTypeDialogBaseProps) {
 		if (!idManuallyChanged) {
 			setId(suggestTypeId(name));
 		}
-		onSubmittingAndOrPendingChange({ hasPendingChanges: true });
+		updateSubmittingOrHasPendingChanges({ hasPendingChanges: true });
 	};
 	const handleIdChange = (id: string) => {
 		setId(id);
 		setIdManuallyChanged(id !== '');
-		onSubmittingAndOrPendingChange({ hasPendingChanges: true });
+		updateSubmittingOrHasPendingChanges({ hasPendingChanges: true });
 	};
 	const handleFormSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
 		e.preventDefault();
@@ -186,7 +184,7 @@ function CreateTypeDialogBody(props: CreateTypeDialogBaseProps) {
 				/>
 			</DialogBody>
 			<DialogFooter>
-				<SecondaryButton onClick={(e) => dialogContext?.onClose?.(e, null)}>
+				<SecondaryButton onClick={(e) => onClose?.(e, null)}>
 					<FormattedMessage defaultMessage="Cancel" />
 				</SecondaryButton>
 				<PrimaryButton type="submit" loading={fetchingContentTypes} disabled={!enableSubmit}>
