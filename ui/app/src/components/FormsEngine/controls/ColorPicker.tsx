@@ -93,9 +93,9 @@ export function ColorPicker(props: ColorPickerProps) {
 		setOpen(false);
 	};
 	const throttledSetValue = useMemo(() => throttle(setValue), [setValue]);
-	// TODO: Verify other react-colorful inputs have the same onChange signature
 	const handleChange = (value: string) => {
 		setColour(value);
+		// TODO: Check an issue when format = 'hsl', input change doesn't update properly when doing throttledSetValue
 		throttledSetValue(value);
 	};
 	useEffect(() => {
