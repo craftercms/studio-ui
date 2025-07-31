@@ -17,7 +17,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import DialogHeader from '../DialogHeader/DialogHeader';
 import DialogBody from '../DialogBody/DialogBody';
-import { fetchContentItem, fetchContentXML, lock, writeContent } from '../../services/content';
+import { fetchContentXML, lock, writeContent } from '../../services/content';
 import { ConditionalLoadingState } from '../LoadingState/LoadingState';
 import AceEditor from '../AceEditor/AceEditor';
 import { useDispatch } from 'react-redux';
@@ -53,11 +53,12 @@ import { cancelPackages, fetchAffectedPackages } from '../../services/workflow';
 import { PublishPackage } from '../../models';
 import Alert, { alertClasses } from '@mui/material/Alert';
 import { createCustomDocumentEventListener } from '../../utils/dom';
+import { useContentItem } from '../../hooks/useContentItem';
 
 export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps) {
 	const { path, onMinimize, onClose, mode, readonly, contentType, onFullScreen, onSuccess } = props;
 	const { open, isSubmitting } = useEnhancedDialogContext();
-	const [item, setItem] = useState(null);
+	const item = useContentItem(path);
 	const site = useActiveSiteId();
 	const user = useActiveUser();
 	const [loading, setLoading] = useState(false);
@@ -202,18 +203,6 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 	};
 
 	const fnRefs = useUpToDateRefs({ onSaveButtonClick, onClose });
-
-	useEffect(() => {
-		fetchContentItem(site, path).subscribe({
-			next: (item) => {
-				setItem(item);
-			},
-			error: ({ response }) => {
-				dispatch(showErrorDialog({ error: response.response }));
-				onClose?.(null, null);
-			}
-		});
-	}, [site, path, dispatch, onClose]);
 
 	// add content model variables
 	useEffect(() => {
