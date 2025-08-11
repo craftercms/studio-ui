@@ -405,11 +405,11 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
           const deleteBtn = $(
             '<button class="fa fa-trash node-selector-item-icon" title="Delete" aria-label="Delete" role="button"></button>'
           );
-          let selectedDatasource =
-            _self.datasources.find((item) => item.id === _self.items[itemIndex].datasource) || _self.datasources[0];
+          const ds = _self.datasources ?? [];
+          const selectedDatasource = ds.find((item) => item.id === _self.items[itemIndex].datasource) || ds[0];
           // isEditable: studio-ui has mechanisms to edit the item (e.g. a component or a text file)
           const isEditable =
-            Boolean(selectedDatasource.edit) && // the datasource has edit capabilities (datasource.edit exists).
+            Boolean(selectedDatasource?.edit) && // the datasource has edit capabilities (datasource.edit exists).
             (isComponent ||
               craftercms.utils.content.isAsset(item.key) ||
               craftercms.utils.content.isEditableAsset(item.key));
