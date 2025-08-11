@@ -84,7 +84,7 @@ YAHOO.extend(CStudioForms.Datasources.FileBrowseRepo, CStudioForms.CStudioFormDa
       next(sandboxItem) {
         const readonly = !sandboxItem.availableActionsMap.edit;
 
-        if (readonly || !sandboxItem.availableActionsMap.edit) {
+        if (readonly) {
           CStudioAuthoring.Operations.showPreviewAsset(sandboxItem);
         } else {
           CStudioAuthoring.Operations.editContent(
