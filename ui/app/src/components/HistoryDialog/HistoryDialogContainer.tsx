@@ -35,7 +35,7 @@ import translations from './translations';
 import { batchActions } from '../../state/actions/misc';
 import { fetchContentTypes } from '../../state/actions/preview';
 import { fetchContentByCommitId } from '../../services/content';
-import { getEditorMode, isImage, isPdfDocument, isPreviewable, isVideo } from '../PathNavigator/utils';
+import { getEditorMode, isImage, isPreviewable } from '../PathNavigator/utils';
 import {
   compareBothVersions,
   compareToPreviousVersion,
@@ -60,6 +60,7 @@ import { LoadingState } from '../LoadingState';
 import Box from '@mui/material/Box';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
+import { isPdfDocument, isVideo } from '../../utils/content';
 
 export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
   const { versionsBranch } = props;

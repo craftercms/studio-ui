@@ -80,29 +80,24 @@ YAHOO.extend(CStudioForms.Datasources.FileBrowseRepo, CStudioForms.CStudioFormDa
   },
 
   edit: function (key) {
-    var getContentItemCb = {
-      success: function (contentTO) {
-        var editCallback = {
-          success: function () {
-            // update label?
-          },
-          failure: function () {}
-        };
+    craftercms.services.content.fetchSandboxItem(CStudioAuthoringContext.site, key).subscribe({
+      next(sandboxItem) {
+        const readonly = !sandboxItem.availableActionsMap.edit;
 
-        CStudioAuthoring.Operations.editContent(
-          contentTO.item.contentType,
-          CStudioAuthoringContext.siteId,
-          contentTO.item.mimeType,
-          contentTO.item.nodeRef,
-          contentTO.item.uri,
-          false,
-          editCallback
-        );
-      },
-      failure: function () {}
-    };
-
-    CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, key, getContentItemCb);
+        if (readonly || !sandboxItem.availableActionsMap.edit) {
+          CStudioAuthoring.Operations.showPreviewAsset(sandboxItem);
+        } else {
+          CStudioAuthoring.Operations.editContent(
+            sandboxItem.contentTypeId,
+            CStudioAuthoringContext.siteId,
+            sandboxItem.mimeType,
+            null,
+            sandboxItem.path,
+            false
+          );
+        }
+      }
+    });
   },
 
   getLabel: function () {

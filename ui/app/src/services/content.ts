@@ -42,6 +42,7 @@ import { ItemHistoryEntry } from '../models/Version';
 import { GetChildrenOptions } from '../models/GetChildrenOptions';
 import {
   generateComponentPath,
+  isPdfDocument,
   parseContentXML,
   parseSandBoxItemToDetailedItem,
   prepareVirtualItemProps
@@ -57,7 +58,7 @@ import { GetItemWithChildrenResponse } from '../models/GetItemWithChildrenRespon
 import { FetchItemsByPathOptions } from '../models/FetchItemsByPath';
 import { v4 as uuid } from 'uuid';
 import FetchItemsByPathArray from '../models/FetchItemsByPathArray';
-import { isPdfDocument, isMediaContent, isTextContent } from '../components/PathNavigator/utils';
+import { isMediaContent, isTextContent } from '../components/PathNavigator/utils';
 import { fromPromise } from 'rxjs/internal/observable/innerFrom';
 
 export function fetchComponentInstanceHTML(path: string): Observable<string> {
