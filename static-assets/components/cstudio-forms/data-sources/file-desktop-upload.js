@@ -105,7 +105,7 @@ YAHOO.extend(CStudioForms.Datasources.FileDesktopUpload, CStudioForms.CStudioFor
       next(sandboxItem) {
         const readonly = !sandboxItem.availableActionsMap.edit;
 
-        if (readonly || !sandboxItem.availableActionsMap.edit) {
+        if (readonly) {
           CStudioAuthoring.Operations.showPreviewAsset(sandboxItem);
         } else {
           CStudioAuthoring.Operations.editContent(
@@ -117,6 +117,9 @@ YAHOO.extend(CStudioForms.Datasources.FileDesktopUpload, CStudioForms.CStudioFor
             false
           );
         }
+      },
+      error(err) {
+        console.error(err?.response?.response);
       }
     });
   },

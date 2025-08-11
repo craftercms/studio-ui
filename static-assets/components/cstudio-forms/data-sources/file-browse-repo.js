@@ -96,6 +96,9 @@ YAHOO.extend(CStudioForms.Datasources.FileBrowseRepo, CStudioForms.CStudioFormDa
             false
           );
         }
+      },
+      error(error) {
+        console.error(error?.response?.response);
       }
     });
   },
