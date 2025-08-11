@@ -2222,7 +2222,7 @@ var nodeOpen = false,
                 } else {
                   CStudioAuthoring.SelectedContent.init();
                 }
-                callback.success && callback.success(nodeRef);
+                callback?.success?.(nodeRef);
               }
             });
           }
