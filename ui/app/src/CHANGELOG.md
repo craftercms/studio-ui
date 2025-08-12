@@ -4,6 +4,7 @@
 * [utils/resource] Removed `createFakeResource`, `createResource` and `createResourceBundle` utils.
 * [utils/content]:
   * Removed `parseLegacyItemToBaseItem`, `parseLegacyItemToSandBoxItem` and `parseLegacyItemToDetailedItem`. Replaced by `parseLegacyItemToContentItem`.
+  * Moved `PathNavigator/utils.ts` `isVideo`, `isAudio` and `isPdfDocument` functions to `utils/content.ts`.
 * [components]
   * Removed `pages/QuickCreateMenu` component.
   * Removed `SuspenseWithEmptyState` and `WithEmptyState` components.
