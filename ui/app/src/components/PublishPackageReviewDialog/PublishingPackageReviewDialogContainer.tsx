@@ -193,7 +193,7 @@ export function PublishingPackageReviewDialogContainer(props: PublishingPackageR
 		if (state.action === 'approve') {
 			const data: PublishingPackageApproveParams = {
 				comment: state.approverComment,
-				schedule: state.scheduling === 'custom' ? state.schedule.toISOString() : null,
+				schedule: state.scheduling === 'custom' || state.scheduling === 'keep' ? state.schedule.toISOString() : null,
 				updateSchedule: true
 			};
 
