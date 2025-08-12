@@ -101,16 +101,11 @@ import {
 	hasSchedulePublishAction,
 	hasUnlockAction,
 	hasUploadAction,
-	isInActiveWorkflow
-} from './content';
-import {
-	getEditorMode,
-	isImage,
-	isNavigable,
+	isInActiveWorkflow,
 	isPdfDocument,
-	isPreviewable,
 	isVideo
-} from '../components/PathNavigator/utils';
+} from './content';
+import { getEditorMode, isImage, isNavigable, isPreviewable } from '../components/PathNavigator/utils';
 import React from 'react';
 import { previewItem } from '../state/actions/preview';
 import { createPresenceTable } from './array';

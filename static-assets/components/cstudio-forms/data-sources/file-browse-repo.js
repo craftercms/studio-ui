@@ -88,29 +88,27 @@ YAHOO.extend(CStudioForms.Datasources.FileBrowseRepo, CStudioForms.CStudioFormDa
 	},
 
 	edit: function (key) {
-		var getContentItemCb = {
-			success: function (contentTO) {
-				var editCallback = {
-					success: function () {
-						// update label?
-					},
-					failure: function () {}
-				};
+		craftercms.services.content.fetchContentItem(CStudioAuthoringContext.site, key).subscribe({
+			next(contentItem) {
+				const readonly = !contentItem.availableActionsMap.edit;
 
-				CStudioAuthoring.Operations.editContent(
-					contentTO.item.contentType,
-					CStudioAuthoringContext.siteId,
-					contentTO.item.mimeType,
-					contentTO.item.nodeRef,
-					contentTO.item.uri,
-					false,
-					editCallback
-				);
+				if (readonly) {
+					CStudioAuthoring.Operations.showPreviewAsset(contentItem);
+				} else {
+					CStudioAuthoring.Operations.editContent(
+						contentItem.contentTypeId,
+						CStudioAuthoringContext.siteId,
+						contentItem.mimeType,
+						null,
+						contentItem.path,
+						false
+					);
+				}
 			},
-			failure: function () {}
-		};
-
-		CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, key, getContentItemCb);
+			error(error) {
+				console.error(error?.response?.response);
+			}
+		});
 	},
 
 	getLabel: function () {

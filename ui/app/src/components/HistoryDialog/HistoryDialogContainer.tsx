@@ -35,7 +35,7 @@ import translations from './translations';
 import { batchActions } from '../../state/actions/misc';
 import { fetchContentTypes } from '../../state/actions/preview';
 import { fetchContentByCommitId } from '../../services/content';
-import { getEditorMode, isImage, isPdfDocument, isPreviewable, isVideo } from '../PathNavigator/utils';
+import { getEditorMode, isImage, isPreviewable } from '../PathNavigator/utils';
 import {
 	compareBothVersions,
 	compareToPreviousVersion,
@@ -65,7 +65,7 @@ import { contentEvent } from '../../state/actions/system';
 import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
 import { getRootPath } from '../../utils/path';
-import { isComparableAsset } from '../../utils/content';
+import { isComparableAsset, isPdfDocument, isVideo } from '../../utils/content';
 
 export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
 	const { versionsBranch, error } = props;

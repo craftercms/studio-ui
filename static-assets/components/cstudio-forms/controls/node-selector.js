@@ -405,17 +405,21 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
 					const deleteBtn = $(
 						'<button class="fa fa-trash node-selector-item-icon" title="Delete" aria-label="Delete" role="button"></button>'
 					);
+					const ds = _self.datasources ?? [];
+					const selectedDatasource = ds.find((item) => item.id === _self.items[itemIndex].datasource) || ds[0];
 					// isEditable: studio-ui has mechanisms to edit the item (e.g. a component or a text file)
 					// allowEdit: the datasource has edit capabilities (datasource.edit exists).
-					const isEditable = this.allowEdit && (isComponent || craftercms.utils.content.isEditableAsset(item.key));
+					const isEditable =
+						Boolean(selectedDatasource?.edit) && // the datasource has edit capabilities (datasource.edit exists).
+						(isComponent ||
+							craftercms.utils.content.isAsset(item.key) ||
+							craftercms.utils.content.isEditableAsset(item.key));
 					// At this point, we only need to check if the item is editable (see definition above). If the user doesn't
 					// have write permission, the datasource.edit method will open the item in view mode.
 					if (isEditable) {
 						$actionsContainer.append(editBtn);
 						editBtn.on('click', function () {
 							const elIndex = $(this).data('index');
-							let selectedDatasource =
-								_self.datasources.find((item) => item.id === _self.items[elIndex].datasource) || _self.datasources[0];
 							selectedDatasource.edit(item.key, _self, elIndex, {
 								failure: function (error) {
 									if (error.status === 404) {
