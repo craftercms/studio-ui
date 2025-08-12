@@ -135,6 +135,6 @@
     "rollup": "^4.21.0",
     "rollup-plugin-swc3": "^0.11.2",
     "tinymce": "^7.1.1",
-    "yargs": "^17.7.2"
+    "yargs": "^18.0.0"
   }
 }
