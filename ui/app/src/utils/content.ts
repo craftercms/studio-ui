@@ -1206,3 +1206,15 @@ export function generatePlaceholderImageDataUrl(attributes?: Partial<GeneratePla
 
   return canvas.toDataURL();
 }
+
+export function isVideo(item: DetailedItem | SandboxItem): boolean {
+  return item?.mimeType.startsWith('video/');
+}
+
+export function isAudio(item: DetailedItem | SandboxItem): boolean {
+  return item?.mimeType.startsWith('audio/');
+}
+
+export function isPdfDocument(mimeType: string) {
+  return 'application/pdf' === mimeType;
+}
