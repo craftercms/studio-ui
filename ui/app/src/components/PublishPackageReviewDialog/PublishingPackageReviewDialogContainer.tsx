@@ -290,7 +290,7 @@ export function PublishingPackageReviewDialogContainer(props: PublishingPackageR
 										<Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
 											<FormattedMessage defaultMessage="Scheduling" />
 										</Typography>
-										<RadioGroup sx={{ mb: 1 }} onChange={onArgumentChange} name="scheduling">
+										<RadioGroup sx={{ mb: 1 }} onChange={onArgumentChange} name="scheduling" value={state.scheduling}>
 											{publishingPackage?.schedule && (
 												<FormControlLabel
 													value="keep"

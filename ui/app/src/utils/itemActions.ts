@@ -924,7 +924,7 @@ export const itemActionDispatcher = ({
 		case 'schedulePublish':
 		case 'requestPublish': {
 			const schedulingMap = {
-				approvePublish: null,
+				approvePublish: undefined,
 				schedulePublish: 'custom',
 				requestPublish: 'now',
 				publish: 'now'
