@@ -124,7 +124,7 @@
   },
   "devDependencies": {
     "@rollup/plugin-swc": "^0.3.0",
-    "@swc/core": "^1.5.7",
+    "@swc/core": "^1.13.3",
     "@types/jquery": "^3.5.32",
     "@types/js-cookie": "^3.0.6",
     "@types/prop-types": "^15.7.15",
