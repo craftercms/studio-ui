@@ -1692,12 +1692,12 @@ __metadata:
     "@mui/icons-material": "npm:^7.3.1"
     "@mui/material": "npm:^7.3.1"
     "@reduxjs/toolkit": "npm:^2.2.5"
-    "@rollup/plugin-alias": "npm:^5.1.0"
+    "@rollup/plugin-alias": "npm:^5.1.1"
     "@rollup/plugin-swc": "npm:^0.3.0"
     "@swc/core": "npm:^1.5.7"
     "@types/jquery": "npm:^3.5.32"
     "@types/js-cookie": "npm:^3.0.6"
-    "@types/prop-types": "npm:^15.7.14"
+    "@types/prop-types": "npm:^15.7.15"
     "@types/react-dom": "npm:^18.3.5"
     "@types/react-is": "npm:^18.3.1"
     build-if-changed: "npm:^1.5.5"
@@ -1811,7 +1811,7 @@ __metadata:
     "@emotion/css": "npm:^11.13.5"
     "@emotion/react": "npm:^11.14.0"
     "@emotion/styled": "npm:^11.14.1"
-    "@formatjs/cli": "npm:^6.2.12"
+    "@formatjs/cli": "npm:^6.7.2"
     "@graphiql/plugin-explorer": "npm:^3.0.1"
     "@mui/icons-material": "npm:^7.3.1"
     "@mui/lab": "npm:7.0.0-beta.16"
@@ -1831,7 +1831,7 @@ __metadata:
     "@types/react-swipeable-views": "npm:^0.13.6"
     "@types/uuid": "npm:^10"
     "@types/video.js": "npm:^7.3.58"
-    "@types/zxcvbn": "npm:^4.4.4"
+    "@types/zxcvbn": "npm:^4.4.5"
     "@typescript-eslint/eslint-plugin": "npm:^8.39.1"
     "@typescript-eslint/parser": "npm:^8.39.1"
     "@vitejs/plugin-react": "npm:^4.2.1"
@@ -1877,7 +1877,7 @@ __metadata:
     rollup: "npm:^4.46.2"
     rxjs: "npm:^7.8.1"
     slugify: "npm:^1.6.6"
-    tss-react: "npm:^4.9.10"
+    tss-react: "npm:^4.9.19"
     typescript: "npm:^5.4.5"
     uppy: "npm:^3.27.3"
     uuid: "npm:^10.0.0"
@@ -2448,18 +2448,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/cli@npm:^6.2.12":
-  version: 6.2.12
-  resolution: "@formatjs/cli@npm:6.2.12"
+"@formatjs/cli@npm:^6.7.2":
+  version: 6.7.2
+  resolution: "@formatjs/cli@npm:6.7.2"
   peerDependencies:
-    "@glimmer/env": ^0.1.7
-    "@glimmer/reference": ^0.91.1 || ^0.92.0
-    "@glimmer/syntax": ^0.92.0
-    "@glimmer/validator": ^0.92.0
-    "@vue/compiler-core": ^3.4.0
-    content-tag: ^2.0.1
-    ember-template-recast: ^6.1.4
-    vue: ^3.4.0
+    "@glimmer/syntax": ^0.94.9
+    "@vue/compiler-core": ^3.5.12
+    content-tag: ^3.0.0
+    ember-template-recast: ^6.1.5
+    vue: ^3.5.12
   peerDependenciesMeta:
     "@glimmer/env":
       optional: true
@@ -2479,7 +2476,7 @@ __metadata:
       optional: true
   bin:
     formatjs: bin/formatjs
-  checksum: 10/468123112ddd3c26ae2c11cead5ab684b1c7712c841c976e42cc3d9ab7aa10fa6ea02208b2beeaabfd3872fab16a10fa44eb3e9d611c716f7d80dfaf6f420962
+  checksum: 10/034af0ed9baffa8f13699c1cee8e492445dcbf103d4b9cc8d446f538df9393c835c28ebb21487981098c6dd6f4b215656e62a333a4590e993648052a33770e8f
   languageName: node
   linkType: hard
 
@@ -3985,17 +3982,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rollup/plugin-alias@npm:^5.1.0":
-  version: 5.1.0
-  resolution: "@rollup/plugin-alias@npm:5.1.0"
-  dependencies:
-    slash: "npm:^4.0.0"
+"@rollup/plugin-alias@npm:^5.1.1":
+  version: 5.1.1
+  resolution: "@rollup/plugin-alias@npm:5.1.1"
   peerDependencies:
     rollup: ^1.20.0||^2.0.0||^3.0.0||^4.0.0
   peerDependenciesMeta:
     rollup:
       optional: true
-  checksum: 10/2749f9563dba9274e4324fcd14ffe761fa66ee3baab307ba583d0348adfa2c1d2a164f59eac8c26a9ce7c713a99a991a831c072101e83697157ccf082c362310
+  checksum: 10/1f1ab178aa2726c81e2ae1709f73b3688491f14655b97c54d43bea35ac3f783f8855d701d1e5eac234e3ffe89fef56ce975726b036a97049fefa9b514686e55c
   languageName: node
   linkType: hard
 
@@ -4818,7 +4813,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/prop-types@npm:*, @types/prop-types@npm:^15.7.14":
+"@types/prop-types@npm:*":
   version: 15.7.14
   resolution: "@types/prop-types@npm:15.7.14"
   checksum: 10/d0c5407b9ccc3dd5fae0ccf9b1007e7622ba5e6f1c18399b4f24dff33619d469da4b9fa918a374f19dc0d9fe6a013362aab0b844b606cfc10676efba3f5f736d
@@ -4956,10 +4951,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/zxcvbn@npm:^4.4.4":
-  version: 4.4.4
-  resolution: "@types/zxcvbn@npm:4.4.4"
-  checksum: 10/d5de69c1e34d6d3988b2f23d0e4d1e8ca136d039480cca265d7358c921937da50648bef29154835670dadcc1c8449349339c2a87cd77cfc3ff6a9b19ce669864
+"@types/zxcvbn@npm:^4.4.5":
+  version: 4.4.5
+  resolution: "@types/zxcvbn@npm:4.4.5"
+  checksum: 10/279b0d43e21b8de48a9ef98b5753e343673fdb6cfdd2679e2afbb292410d610a0f01d7c1cb1dad1acbd0d35ee01e8a8dbe21cb034a2e2f3458492cf5fd3b44c3
   languageName: node
   linkType: hard
 
@@ -12627,13 +12622,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"slash@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "slash@npm:4.0.0"
-  checksum: 10/da8e4af73712253acd21b7853b7e0dbba776b786e82b010a5bfc8b5051a1db38ed8aba8e1e8f400dd2c9f373be91eb1c42b66e91abb407ff42b10feece5e1d2d
-  languageName: node
-  linkType: hard
-
 "slugify@npm:^1.6.6":
   version: 1.6.6
   resolution: "slugify@npm:1.6.6"
@@ -13214,9 +13202,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tss-react@npm:^4.9.10":
-  version: 4.9.10
-  resolution: "tss-react@npm:4.9.10"
+"tss-react@npm:^4.9.19":
+  version: 4.9.19
+  resolution: "tss-react@npm:4.9.19"
   dependencies:
     "@emotion/cache": "npm:*"
     "@emotion/serialize": "npm:*"
@@ -13224,14 +13212,15 @@ __metadata:
   peerDependencies:
     "@emotion/react": ^11.4.1
     "@emotion/server": ^11.4.0
-    "@mui/material": ^5.0.0
-    react: ^16.8.0 || ^17.0.2 || ^18.0.0
+    "@mui/material": ^5.0.0 || ^6.0.0 || ^7.0.0
+    "@types/react": ^16.8.0 || ^17.0.2 || ^18.0.0 || ^19.0.0
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
   peerDependenciesMeta:
     "@emotion/server":
       optional: true
     "@mui/material":
       optional: true
-  checksum: 10/5c316cc787acf2aeb4235ac1cb304b27684adb8546cb73d11dac5de5b3044956ef441790bf5bd79ee3c0063b7e7231d001e6d5e0f973625505fb93ff7009670d
+  checksum: 10/a2e346bcf7443485ae545ffa7c171632fb591587e8b616ba553bcb321e269bfcdf8524a9252219d30fdfc2062ec47d9a51315f4bd9ad714effea02866b582893
   languageName: node
   linkType: hard
 
