@@ -121,7 +121,7 @@
     "@typescript-eslint/parser": "^8.39.1",
     "@vitejs/plugin-react": "^4.2.1",
     "@vitejs/plugin-react-swc": "^3.6.0",
-    "babel-plugin-formatjs": "^10.5.16",
+    "babel-plugin-formatjs": "^10.5.39",
     "build-if-changed": "^1.5.5",
     "eslint": "^9.33.0",
     "eslint-plugin-formatjs": "^5.4.0",
