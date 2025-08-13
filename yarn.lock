@@ -1822,13 +1822,13 @@ __metadata:
     "@prettier/plugin-xml": "npm:3.3.0"
     "@reduxjs/toolkit": "npm:^2.2.5"
     "@rollup/plugin-swc": "npm:^0.3.0"
-    "@stomp/stompjs": "npm:^7.0.0"
+    "@stomp/stompjs": "npm:^7.1.1"
     "@types/ace": "npm:^0.0.52"
     "@types/js-cookie": "npm:^3.0.6"
     "@types/react": "npm:^18.3.20"
     "@types/react-dom": "npm:^18.3.5"
     "@types/react-infinite-scroller": "npm:^1.2.5"
-    "@types/react-swipeable-views": "npm:^0.13.5"
+    "@types/react-swipeable-views": "npm:^0.13.6"
     "@types/uuid": "npm:^10"
     "@types/video.js": "npm:^7.3.58"
     "@types/zxcvbn": "npm:^4.4.4"
@@ -4343,10 +4343,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@stomp/stompjs@npm:^7.0.0":
-  version: 7.0.0
-  resolution: "@stomp/stompjs@npm:7.0.0"
-  checksum: 10/f60db460e0cb3a48ddb0aa6ee7cd3fd3de6cffadccce153a791580ee7c0c89a1bc5e90d612cab621d539c237bece361f3f019e48f2de847789074373eaca037d
+"@stomp/stompjs@npm:^7.1.1":
+  version: 7.1.1
+  resolution: "@stomp/stompjs@npm:7.1.1"
+  checksum: 10/e1c3aa5b4c2d01cb4950fce8b19fcd1aa89a26deeb99c338f23ffd69ee294e99783366ec7ca26fc1162032085354d5929d98071ba9f0ebf73f7db338dcdbfd2e
   languageName: node
   linkType: hard
 
@@ -4859,12 +4859,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-swipeable-views@npm:^0.13.5":
-  version: 0.13.5
-  resolution: "@types/react-swipeable-views@npm:0.13.5"
+"@types/react-swipeable-views@npm:^0.13.6":
+  version: 0.13.6
+  resolution: "@types/react-swipeable-views@npm:0.13.6"
   dependencies:
     "@types/react": "npm:*"
-  checksum: 10/09982781f66d9d366b0fe5461dfdd05e7db98642898b4bcc9e401927d2e2cb90fdb0709b87ccc961227cdd9db9f9c40be08da8bcea6c4d4b07425ee011e50f56
+  checksum: 10/85fdd5d68fd4d23b9dec2c31abf6bbca89bbe18909645cc1e5eb65f11c0db7b3ac02193ba858d8a0b656a1c3c319057964e3ecc8074d0205bf0ea99e564246a5
   languageName: node
   linkType: hard
 
