@@ -119,7 +119,7 @@
     "redux": "^5.0.1",
     "redux-observable": "^3.0.0-rc.2",
     "rxjs": "^7.8.1",
-    "typescript": "^5.4.5",
+    "typescript": "^5.9.2",
     "uuid": "^10.0.0"
   },
   "devDependencies": {
