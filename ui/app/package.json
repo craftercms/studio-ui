@@ -70,7 +70,7 @@
 		"@mui/x-data-grid": "^8.10.0",
 		"@mui/x-date-pickers": "^8.10.0",
 		"@mui/x-tree-view": "^8.10.0",
-		"@prettier/plugin-xml": "3.4.2",
+		"@prettier/plugin-xml": "3.3.0",
 		"@reduxjs/toolkit": "^2.6.0",
 		"@stomp/stompjs": "^7.0.0",
 		"@tinymce/tinymce-react": "^5.1.1",
