@@ -84,8 +84,8 @@ export default [{
     globals: {
       ...globals.browser
     },
-    ecmaVersion: 2015,
-    sourceType: 'script'
+    ecmaVersion: 'latest',
+    sourceType: 'module'
   },
   rules: {
     'prettier/prettier': ['error'],
