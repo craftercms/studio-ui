@@ -95,5 +95,9 @@
     "rollup": "^4.46.2",
     "rollup-plugin-copy": "^3.5.0",
     "yargs": "^17.7.2"
+  },
+  "engines": {
+    "node": ">=22.0.0",
+    "yarn": ">=4.0.0"
   }
 }
