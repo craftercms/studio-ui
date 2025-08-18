@@ -120,7 +120,7 @@
 		"unique-names-generator": "^4.7.1",
 		"uppy": "^4.13.4",
 		"uuid": "^11.1.0",
-		"video.js": "^8.22.0",
+		"video.js": "^8.23.4",
 		"zxcvbn": "^4.4.2"
 	},
 	"devDependencies": {
