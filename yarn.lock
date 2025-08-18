@@ -2018,7 +2018,7 @@ __metadata:
     "@reduxjs/toolkit": "npm:^2.8.2"
     "@rollup/plugin-swc": "npm:^0.4.0"
     "@stomp/stompjs": "npm:^7.1.1"
-    "@tinymce/tinymce-react": "npm:^5.1.1"
+    "@tinymce/tinymce-react": "npm:^6.3.0"
     "@types/ace": "npm:^0.0.52"
     "@types/diff": "npm:^8.0.0"
     "@types/js-cookie": "npm:^3.0.6"
@@ -4907,16 +4907,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tinymce/tinymce-react@npm:^5.1.1":
-  version: 5.1.1
-  resolution: "@tinymce/tinymce-react@npm:5.1.1"
+"@tinymce/tinymce-react@npm:^6.3.0":
+  version: 6.3.0
+  resolution: "@tinymce/tinymce-react@npm:6.3.0"
   dependencies:
     prop-types: "npm:^15.6.2"
-    tinymce: "npm:^7.0.0 || ^6.0.0 || ^5.5.1"
   peerDependencies:
-    react: ^18.0.0 || ^17.0.1 || ^16.7.0
-    react-dom: ^18.0.0 || ^17.0.1 || ^16.7.0
-  checksum: 10/82c5df31cdab0b4fd762d7c100d1a3baebefef77f26c51490c0959e97ffadbdeb44e207bce0175b1d128cd3f0bd0a91bb6f5d1a704f2280b4f78a0bcc541f94c
+    react: ^19.0.0 || ^18.0.0 || ^17.0.1 || ^16.7.0
+    react-dom: ^19.0.0 || ^18.0.0 || ^17.0.1 || ^16.7.0
+    tinymce: ^8.0.0 || ^7.0.0 || ^6.0.0 || ^5.5.1
+  peerDependenciesMeta:
+    tinymce:
+      optional: true
+  checksum: 10/adb67ae2d23a6d16a2a33bc52ec51db4110bcfded47d58b861832442057922157aa0c8938c5706cfa6850fcbfb4965a5683fe067d35f7a9be0d15f7298a319d7
   languageName: node
   linkType: hard
 
@@ -13674,13 +13677,6 @@ __metadata:
     fdir: "npm:^6.4.4"
     picomatch: "npm:^4.0.2"
   checksum: 10/3d306d319718b7cc9d79fb3f29d8655237aa6a1f280860a217f93417039d0614891aee6fc47c5db315f4fcc6ac8d55eb8e23e2de73b2c51a431b42456d9e5764
-  languageName: node
-  linkType: hard
-
-"tinymce@npm:^7.0.0 || ^6.0.0 || ^5.5.1":
-  version: 7.7.2
-  resolution: "tinymce@npm:7.7.2"
-  checksum: 10/b23258af0ad6ac02f880aa9ae0ffcc813fa64c3bafa67bd74878b971dcfdbbe747f0736bf54c96256ab20870ac913bbeccaef18f53083fa59facc116bd2b22b8
   languageName: node
   linkType: hard
 

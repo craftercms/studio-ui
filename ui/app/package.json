@@ -73,7 +73,7 @@
 		"@prettier/plugin-xml": "3.3.0",
 		"@reduxjs/toolkit": "^2.8.2",
 		"@stomp/stompjs": "^7.1.1",
-		"@tinymce/tinymce-react": "^5.1.1",
+		"@tinymce/tinymce-react": "^6.3.0",
 		"@types/ace": "^0.0.52",
 		"@types/react": "^19.1.10",
 		"@types/react-dom": "^19.1.7",
