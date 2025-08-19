@@ -43,11 +43,11 @@ const siteInitialState: DuplicateSiteState = {
 interface DuplicateSiteDialogProps extends EnhancedDialogProps {
 	siteId?: string;
 	onGoBack?(): void;
-	onSubmittingAndOrPendingChange(value: onSubmittingAndOrPendingChangeProps): void;
+	updateSubmittingOrHasPendingChanges(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
 export function DuplicateSiteDialog(props: DuplicateSiteDialogProps) {
-	const { siteId, onSubmittingAndOrPendingChange, onClose, onGoBack, ...dialogProps } = props;
+	const { siteId, updateSubmittingOrHasPendingChanges, onClose, onGoBack, ...dialogProps } = props;
 	const [site, setSite] = useSpreadState({
 		...siteInitialState,
 		...(siteId && { sourceSiteId: siteId })
@@ -58,7 +58,7 @@ export function DuplicateSiteDialog(props: DuplicateSiteDialogProps) {
 		disableEscapeKeyDown: dialogProps.isSubmitting
 	});
 	const pendingChangesCloseRequest = useWithPendingChangesCloseRequest(onCloseHandler);
-	const fnRefs = useUpdateRefs({ onSubmittingAndOrPendingChange });
+	const fnRefs = useUpdateRefs({ updateSubmittingOrHasPendingChanges });
 
 	useEffect(() => {
 		if (siteId) {
@@ -70,7 +70,7 @@ export function DuplicateSiteDialog(props: DuplicateSiteDialogProps) {
 		const { sourceSiteId, siteId, siteName, description, gitBranch } = site;
 		const dialogHasChanges =
 			Boolean(sourceSiteId) || Boolean(siteId) || Boolean(siteName) || Boolean(description) || Boolean(gitBranch);
-		fnRefs.current.onSubmittingAndOrPendingChange({ hasPendingChanges: dialogHasChanges });
+		fnRefs.current.updateSubmittingOrHasPendingChanges({ hasPendingChanges: dialogHasChanges });
 	}, [site, fnRefs]);
 
 	const views: Views = {
@@ -104,7 +104,6 @@ export function DuplicateSiteDialog(props: DuplicateSiteDialogProps) {
 				handleClose={onClose}
 				onGoBack={onGoBack}
 				isSubmitting={dialogProps.isSubmitting}
-				onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
 			/>
 		</EnhancedDialog>
 	);

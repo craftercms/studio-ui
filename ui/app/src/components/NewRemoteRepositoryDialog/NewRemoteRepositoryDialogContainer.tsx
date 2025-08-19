@@ -21,20 +21,22 @@ import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import { inputsInitialState, isFormValid, NewRemoteRepositoryDialogContainerProps } from './utils';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
+import { useEnhancedDialogContext } from '../EnhancedDialog';
 
 export function NewRemoteRepositoryDialogContainer(props: NewRemoteRepositoryDialogContainerProps) {
-	const { onClose, onCreateSuccess, onCreateError, isSubmitting, onSubmittingAndOrPendingChange } = props;
+	const { onClose, onCreateSuccess, onCreateError, isSubmitting } = props;
 	const siteId = useActiveSiteId();
 	const [inputs, setInputs] = useSpreadState(inputsInitialState);
 	const isValid = useMemo(() => isFormValid(inputs), [inputs]);
+	const { updateSubmittingOrHasPendingChanges } = useEnhancedDialogContext();
 	const functionRefs = useUpdateRefs({
-		onSubmittingAndOrPendingChange
+		updateSubmittingOrHasPendingChanges
 	});
 
 	const createRemote = () => {
 		setInputs({ submitted: true });
 		if (isValid) {
-			functionRefs.current.onSubmittingAndOrPendingChange({
+			functionRefs.current.updateSubmittingOrHasPendingChanges({
 				isSubmitting: true
 			});
 			addRemote({
@@ -51,14 +53,14 @@ export function NewRemoteRepositoryDialogContainer(props: NewRemoteRepositoryDia
 							: {})
 			}).subscribe({
 				next: () => {
-					functionRefs.current.onSubmittingAndOrPendingChange({
+					functionRefs.current.updateSubmittingOrHasPendingChanges({
 						isSubmitting: false,
 						hasPendingChanges: false
 					});
 					onCreateSuccess?.();
 				},
 				error: (e) => {
-					functionRefs.current.onSubmittingAndOrPendingChange({
+					functionRefs.current.updateSubmittingOrHasPendingChanges({
 						isSubmitting: false
 					});
 					onCreateError?.(e);
@@ -69,10 +71,10 @@ export function NewRemoteRepositoryDialogContainer(props: NewRemoteRepositoryDia
 
 	useEffect(() => {
 		const { remoteName, repoKey, repoPassword, repoToken, repoUsername } = inputs;
-		onSubmittingAndOrPendingChange({
+		updateSubmittingOrHasPendingChanges({
 			hasPendingChanges: Boolean(remoteName || repoKey || repoPassword || repoToken || repoUsername)
 		});
-	}, [inputs, onSubmittingAndOrPendingChange]);
+	}, [inputs, updateSubmittingOrHasPendingChanges]);
 
 	const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
 

@@ -21,7 +21,7 @@ import EnhancedDialog from '../EnhancedDialog';
 import { UninstallPluginDialogContainer } from './UninstallPluginDialogContainer';
 
 function UninstallPluginDialog(props: UninstallPluginDialogProps) {
-	const { pluginId, onSubmittingAndOrPendingChange, isSubmitting, onComplete, ...rest } = props;
+	const { pluginId, isSubmitting, onComplete, ...rest } = props;
 	return (
 		<EnhancedDialog
 			title={<FormattedMessage id="uninstallPluginDialog.headerTitle" defaultMessage="Uninstall Plugin" />}
@@ -37,12 +37,7 @@ function UninstallPluginDialog(props: UninstallPluginDialogProps) {
 			isSubmitting={isSubmitting}
 			{...rest}
 		>
-			<UninstallPluginDialogContainer
-				pluginId={pluginId}
-				isSubmitting={isSubmitting}
-				onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
-				onComplete={onComplete}
-			/>
+			<UninstallPluginDialogContainer pluginId={pluginId} isSubmitting={isSubmitting} onComplete={onComplete} />
 		</EnhancedDialog>
 	);
 }

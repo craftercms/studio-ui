@@ -358,7 +358,7 @@ export const PluginManagement = (props: PluginManagementProps) => {
 				isSubmitting={deletePluginDialogState.isSubmitting}
 				hasPendingChanges={deletePluginDialogState.hasPendingChanges}
 				isMinimized={deletePluginDialogState.isMinimized}
-				onSubmittingAndOrPendingChange={deletePluginDialogState.onSubmittingAndOrPendingChange}
+				updateSubmittingOrHasPendingChanges={deletePluginDialogState.onSubmittingAndOrPendingChange}
 				pluginId={pluginToDelete}
 				onComplete={onDeletePlugin}
 			/>
@@ -373,7 +373,7 @@ export const PluginManagement = (props: PluginManagementProps) => {
 				isFullScreen={configPluginDialogState.isFullScreen}
 				onFullScreen={configPluginDialogState.onFullScreen}
 				onCancelFullScreen={configPluginDialogState.onCancelFullScreen}
-				onSubmittingAndOrPendingChange={configPluginDialogState.onSubmittingAndOrPendingChange}
+				updateSubmittingOrHasPendingChanges={configPluginDialogState.onSubmittingAndOrPendingChange}
 				pluginId={pluginToConfig}
 				onSaved={onSavedPluginConfig}
 				onWithPendingChangesCloseRequest={onWithPendingChangesCloseRequest}

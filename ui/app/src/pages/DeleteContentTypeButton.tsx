@@ -45,7 +45,7 @@ function DeleteContentTypeButton({ contentType, onComplete }: DeleteContentTypeB
 				isSubmitting={deleteContentTypeDialogState.isSubmitting}
 				hasPendingChanges={deleteContentTypeDialogState.hasPendingChanges}
 				isMinimized={deleteContentTypeDialogState.isMinimized}
-				onSubmittingAndOrPendingChange={deleteContentTypeDialogState.onSubmittingAndOrPendingChange}
+				updateSubmittingOrHasPendingChanges={deleteContentTypeDialogState.onSubmittingAndOrPendingChange}
 				contentType={contentType}
 				onComplete={() => {
 					deleteContentTypeDialogState.onClose();

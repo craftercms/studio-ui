@@ -21,7 +21,7 @@ import { DeleteContentTypeDialogContainer } from './DeleteContentTypeDialogConta
 import { EnhancedDialog } from '../EnhancedDialog';
 
 function DeleteContentTypeDialog(props: DeleteContentTypeDialogProps) {
-	const { contentType, onSubmittingAndOrPendingChange, isSubmitting, onComplete, ...rest } = props;
+	const { contentType, isSubmitting, onComplete, ...rest } = props;
 	return (
 		<EnhancedDialog
 			title={<FormattedMessage id="deleteContentTypeDialog.headerTitle" defaultMessage="Delete Content Type" />}
@@ -37,12 +37,7 @@ function DeleteContentTypeDialog(props: DeleteContentTypeDialogProps) {
 			isSubmitting={isSubmitting}
 			{...rest}
 		>
-			<DeleteContentTypeDialogContainer
-				contentType={contentType}
-				isSubmitting={isSubmitting}
-				onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
-				onComplete={onComplete}
-			/>
+			<DeleteContentTypeDialogContainer contentType={contentType} isSubmitting={isSubmitting} onComplete={onComplete} />
 		</EnhancedDialog>
 	);
 }

@@ -17,20 +17,18 @@ import ContentType from '../../models/ContentType';
 import { FetchContentTypeUsageResponse } from '../../services/contentTypes';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 import React from 'react';
-import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 
 export interface DeleteContentTypeBaseProps {
 	contentType: ContentType;
 }
 
 export interface DeleteContentTypeDialogProps extends DeleteContentTypeBaseProps, EnhancedDialogProps {
-	onSubmittingAndOrPendingChange(value: onSubmittingAndOrPendingChangeProps): void;
 	onComplete?();
 }
 
 export interface DeleteContentTypeDialogContainerProps
 	extends DeleteContentTypeBaseProps,
-		Pick<DeleteContentTypeDialogProps, 'onComplete' | 'onClose' | 'isSubmitting' | 'onSubmittingAndOrPendingChange'> {}
+		Pick<DeleteContentTypeDialogProps, 'onComplete' | 'onClose' | 'isSubmitting'> {}
 
 export interface DeleteContentTypeDialogBodyProps {
 	submitting: boolean;

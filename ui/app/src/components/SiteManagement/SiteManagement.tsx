@@ -300,7 +300,7 @@ export function SiteManagement() {
 				onGoBack={isDuplicateDialogFromCreateDialog ? createSiteDialogGoBackFromDuplicate : null}
 				hasPendingChanges={duplicateSiteDialogState.hasPendingChanges}
 				isSubmitting={duplicateSiteDialogState.isSubmitting}
-				onSubmittingAndOrPendingChange={duplicateSiteDialogState.onSubmittingAndOrPendingChange}
+				updateSubmittingOrHasPendingChanges={duplicateSiteDialogState.onSubmittingAndOrPendingChange}
 			/>
 			<ConfirmDialog
 				open={confirmDeleteState.open}

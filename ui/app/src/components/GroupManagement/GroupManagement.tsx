@@ -182,7 +182,7 @@ export function GroupManagement() {
 				isMinimized={editGroupDialogState.isMinimized}
 				hasPendingChanges={editGroupDialogState.hasPendingChanges}
 				onWithPendingChangesCloseRequest={editGroupDialogPendingChangesCloseRequest}
-				onSubmittingAndOrPendingChange={editGroupDialogState.onSubmittingAndOrPendingChange}
+				updateSubmittingOrHasPendingChanges={editGroupDialogState.onSubmittingAndOrPendingChange}
 			/>
 		</Paper>
 	);

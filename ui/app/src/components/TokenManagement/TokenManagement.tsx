@@ -480,7 +480,7 @@ export function TokenManagement() {
 				hasPendingChanges={createTokenDialogState.hasPendingChanges}
 				isSubmitting={createTokenDialogState.isSubmitting}
 				isMinimized={createTokenDialogState.isMinimized}
-				onSubmittingAndOrPendingChange={createTokenDialogState.onSubmittingAndOrPendingChange}
+				updateSubmittingOrHasPendingChanges={createTokenDialogState.onSubmittingAndOrPendingChange}
 				onWithPendingChangesCloseRequest={createTokenDialogPendingChangesCloseRequest}
 				onCreated={onTokenCreated}
 				onClose={createTokenDialogState.onClose}
@@ -490,7 +490,7 @@ export function TokenManagement() {
 				hasPendingChanges={createPreviewTokenDialogState.hasPendingChanges}
 				isSubmitting={createPreviewTokenDialogState.isSubmitting}
 				isMinimized={createPreviewTokenDialogState.isMinimized}
-				onSubmittingAndOrPendingChange={createPreviewTokenDialogState.onSubmittingAndOrPendingChange}
+				updateSubmittingOrHasPendingChanges={createPreviewTokenDialogState.onSubmittingAndOrPendingChange}
 				onWithPendingChangesCloseRequest={createPreviewTokenDialogPendingChangesCloseRequest}
 				onClose={createPreviewTokenDialogState.onClose}
 			/>
