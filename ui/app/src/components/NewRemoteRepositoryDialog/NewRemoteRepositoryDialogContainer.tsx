@@ -70,9 +70,9 @@ export function NewRemoteRepositoryDialogContainer(props: NewRemoteRepositoryDia
 	};
 
 	useEffect(() => {
-		const { remoteName, repoKey, repoPassword, repoToken, repoUsername } = inputs;
+		const { remoteName, remoteUrl, repoKey, repoPassword, repoToken, repoUsername } = inputs;
 		updateSubmittingOrHasPendingChanges({
-			hasPendingChanges: Boolean(remoteName || repoKey || repoPassword || repoToken || repoUsername)
+			hasPendingChanges: Boolean(remoteName || remoteUrl || repoKey || repoPassword || repoToken || repoUsername)
 		});
 	}, [inputs, updateSubmittingOrHasPendingChanges]);
 
