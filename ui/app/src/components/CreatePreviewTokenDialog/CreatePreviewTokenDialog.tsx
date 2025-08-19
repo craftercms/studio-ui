@@ -68,7 +68,7 @@ export function CreatePreviewTokenDialog(props: CreateTokenDialogProps) {
 			maxWidth="sm"
 			{...rest}
 		>
-			<Body onTokenGenerated={onTokenGenerated} isSubmitting={props.isSubmitting} />
+			<Body onTokenGenerated={onTokenGenerated} isSubmitting={props.isSubmitting} onClose={props.onClose} />
 		</EnhancedDialog>
 	);
 }
