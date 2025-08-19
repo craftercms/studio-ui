@@ -40,9 +40,10 @@ export interface RenameContentDialogContainerProps
 
 export function RenameContentDialogContainer(props: RenameContentDialogContainerProps) {
 	const { path, value, onRenamed, onClose, dependantItems, fetchingDependantItems, error } = props;
-	const isPage = value.includes('/index.xml');
+	const safeValue = value ?? '';
+	const isPage = safeValue.includes('/index.xml');
+	const strippedValue = isPage ? safeValue.replace('/index.xml', '') : safeValue.replace('.xml', '');
 	const { isSubmitting, updateSubmittingOrHasPendingChanges } = useEnhancedDialogContext();
-	const strippedValue = isPage ? value.replace('/index.xml', '') : value.replace('.xml', '');
 	const [name, setName] = useState(strippedValue);
 	const [itemExists, setItemExists] = useState(false);
 	const isValid = !isBlank(name) && !itemExists && name !== strippedValue;
