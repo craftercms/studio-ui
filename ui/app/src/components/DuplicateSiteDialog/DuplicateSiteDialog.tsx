@@ -93,6 +93,7 @@ export function DuplicateSiteDialog(props: DuplicateSiteDialogProps) {
 				[`& .${dialogClasses.paper}`]: { height: 'calc(100% - 100px)', maxHeight: '1200px' }
 			}}
 			data-dialog-id="create-site-dialog"
+			updateSubmittingOrHasPendingChanges={updateSubmittingOrHasPendingChanges}
 			onWithPendingChangesCloseRequest={pendingChangesCloseRequest}
 			onClosed={() => setSite(siteInitialState)}
 			{...dialogProps}
