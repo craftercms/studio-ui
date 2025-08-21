@@ -107,6 +107,7 @@ export function TransferListColumn(props: TransferListColumnProps) {
               }
             />
           ) : (
+            // @ts-expect-error - TS2786: InfiniteScroll cannot be used as a JSX component. Lib Types are not compatible with the latest react types.
             <InfiniteScroll
               initialLoad={false}
               pageStart={0}
