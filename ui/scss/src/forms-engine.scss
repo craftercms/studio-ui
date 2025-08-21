@@ -191,8 +191,9 @@ hr.MuiDivider-root {
   overflow-y: auto;
 }
 
-// Dark mode styles should not apply on the .contentTypePopupBtn buttons
-.contentTypePopupBtn {
+// Dark mode styles should not apply on the .contentTypePopupBtn and #richTextDialog buttons
+.contentTypePopupBtn,
+#richTextDialog {
   .btn {
     border-color: rgba(0, 0, 0, 0) !important;
   }
