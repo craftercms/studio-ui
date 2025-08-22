@@ -1140,6 +1140,10 @@ const initializeCStudioForms = () => {
 
 					CrafterCMSNext.system.getStore().subscribe(() => {
 						getInitialConfiguration();
+
+						if (!craftercms.getStore().getState().contentTypes?.byId) {
+							craftercms.getStore().dispatch({ type: 'FETCH_CONTENT_TYPES' });
+						}
 					});
 				},
 

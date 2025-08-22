@@ -58,6 +58,7 @@
 
 	Components.prototype = {
 		add: function (control) {
+			this.contentTypesById = craftercms.getStore().getState().contentTypes.byId;
 			control.$dropdownMenu.append(
 				`<li><div class="cstudio-form-control-node-selector-add-container-item-block-label">${this.title}</div></li>`
 			);
@@ -417,8 +418,13 @@
 			);
 		},
 
-		_getContentTypeName(contentType) {
-			return CrafterCMSNext.util.string.capitalize(contentType.replace('/component/', '').replace(/-/g, ' '));
+		_getContentTypeName(contentTypeId) {
+			const contentTypesById = this.contentTypesById;
+			const contentTypeName = contentTypesById?.[contentTypeId]?.name;
+			return (
+				contentTypeName ??
+				CrafterCMSNext.util.string.capitalize(contentTypeId.replace('/component/', '').replace(/-/g, ' '))
+			);
 		}
 	};
 
