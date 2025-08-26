@@ -34,7 +34,7 @@
   * [NewContentCard] Removed
   * [ContentTypesGrid] Removed
   * [ContentTypesLoader] Removed
-  * [NewContentDialog] Props `rootPath`, `copact` removed. Prop `initialCompact` added.
+  * [NewContentDialog] Props `rootPath`, `compact` removed. Prop `initialCompact` added.
     * Prop `onContentTypeSelected` changed its signature from sending an object with `authoringBase`, `path`, `isNewContent`, `contentTypeId`, `onSaveSuccess` to `{ path: string; contentType: ContentType }`
   * [CompareVersions] Removed.
   * [EnhancedDialog] Removed unused `id` prop.
@@ -91,7 +91,7 @@
 * Removed `SandboxItem` and `DetailedItem` interfaces, replaced by `ContentItem`.
 * `DeleteDialogBaseProps` and `FetchDeleteDependenciesResponse` interfaces: Update `childItems` and `dependentItems` to be of type `LightItem[]`.
 * `CalculatedPackageResponse` interface: Update `hardDependencies`, `softDependencies` and `items` to be of type `LightItem[]`.
-* `approvePublish` anb `rejectPublish` are no longer item actions in BaseItem's `availableActionsMap` property.
+* `approvePublish` and `rejectPublish` are no longer item actions in BaseItem's `availableActionsMap` property.
 * [SiteDashboard/utils] Renamed `getValidatedSelectionState` to `getItemsValidatedSelectionState`.
 * [state]
   * `actions/content`:
