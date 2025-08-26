@@ -17,7 +17,15 @@
 import { ControlProps } from '../types';
 import Alert from '@mui/material/Alert';
 import { FormattedMessage } from 'react-intl';
-import React, { ComponentType, ElementType, lazy, LazyExoticComponent, memo, Suspense } from 'react';
+import React, {
+	ComponentType,
+	ElementType,
+	lazy,
+	LazyExoticComponent,
+	memo,
+	MouseEvent as ReactMouseEvent,
+	Suspense
+} from 'react';
 import useActiveSiteId from '../../../hooks/useActiveSiteId';
 import { Atom, useAtom } from 'jotai/index';
 import { buildFileUrl } from '../../../services/plugin';
@@ -29,6 +37,14 @@ import { ContentTypeField } from '../../../models';
 import ContentType from '../../../models/ContentType';
 import FormsEngineField from '../components/FormsEngineField';
 import { FormsEngineAtoms } from './formsEngineContext';
+import type { ConsolidatedMediaPickerData } from '../dataSourceHooks/useConsolidatedImagePickerData';
+import MenuItem from '@mui/material/MenuItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import TravelExploreOutlined from '@mui/icons-material/TravelExploreOutlined';
+import SearchRounded from '@mui/icons-material/SearchRounded';
+import UploadFileOutlinedIcon from '@mui/icons-material/UploadFileOutlined';
+import { getFileNameFromPath } from '../../../utils/path';
 
 // Note: These persist past the closing of the form.
 const lazyControlMap = new Map<string, LazyExoticComponent<ComponentType>>();
@@ -166,4 +182,57 @@ export function renderFieldControl(
 			customControlMap={customControlsMap}
 		/>
 	);
+}
+
+export function createMediaMenuOptions(
+	dataSourceSummary: ConsolidatedMediaPickerData,
+	handleDataSourceOptionClick: (
+		event: ReactMouseEvent<HTMLLIElement, MouseEvent>,
+		option: 'browse' | 'search' | 'upload'
+	) => void,
+	readonly: boolean = false
+) {
+	const { allowedBrowsePaths, allowedUploadPaths, allowedSearchPaths } = dataSourceSummary;
+	const menuOptions = [];
+
+	if (allowedBrowsePaths.length > 0) {
+		menuOptions.push(
+			<MenuItem key="browse" onClick={(event) => handleDataSourceOptionClick(event, 'browse')} disabled={readonly}>
+				<ListItemIcon sx={{ mr: 0 }}>
+					<TravelExploreOutlined fontSize="small" />
+				</ListItemIcon>
+				<ListItemText children={<FormattedMessage defaultMessage="Browse" />} />
+			</MenuItem>
+		);
+	}
+	if (allowedSearchPaths.length > 0) {
+		menuOptions.push(
+			<MenuItem key="search" onClick={(event) => handleDataSourceOptionClick(event, 'search')} disabled={readonly}>
+				<ListItemIcon sx={{ mr: 0 }}>
+					<SearchRounded fontSize="small" />
+				</ListItemIcon>
+				<ListItemText children={<FormattedMessage defaultMessage="Search" />} />
+			</MenuItem>
+		);
+	}
+	if (allowedUploadPaths.length > 0) {
+		menuOptions.push(
+			<MenuItem key="upload" onClick={(event) => handleDataSourceOptionClick(event, 'upload')} disabled={readonly}>
+				<ListItemIcon sx={{ mr: 0 }}>
+					<UploadFileOutlinedIcon fontSize="small" />
+				</ListItemIcon>
+				<ListItemText children={<FormattedMessage defaultMessage="Upload" />} />
+			</MenuItem>
+		);
+	}
+	return menuOptions;
+}
+
+export function downloadMedia(base: string, url: string) {
+	const link = document.createElement('a');
+	link.href = `${base}${url}`;
+	link.download = getFileNameFromPath(url); // Extracts the file name from the URL
+	document.body.appendChild(link);
+	link.click();
+	document.body.removeChild(link);
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2024 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2025 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -15,67 +15,70 @@
  */
 
 import React, { MouseEvent as ReactMouseEvent, useRef, useState } from 'react';
-import Box from '@mui/material/Box';
+import type { ControlProps } from '../types';
+import useEnv from '../../../hooks/useEnv';
+import FormsEngineField from '../components/FormsEngineField';
 import Card from '@mui/material/Card';
+import CardMedia from '@mui/material/CardMedia';
+import Box from '@mui/material/Box';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
-import CardMedia from '@mui/material/CardMedia';
 import IconButton from '@mui/material/IconButton';
 import { DeleteOutlined, DownloadOutlined, EditOutlined } from '@mui/icons-material';
-import { FormsEngineField } from '../components/FormsEngineField';
-import useEnv from '../../../hooks/useEnv';
-import { ControlProps } from '../types';
-import { FormattedMessage } from 'react-intl';
-import { useConsolidatedImagePickerData } from '../dataSourceHooks/useConsolidatedImagePickerData';
+import { useExtractDataSources } from '../dataSourceHooks/useExtractDataSources';
+import { useConsolidatedVideoPickerData } from '../dataSourceHooks/useConsolidatedVideoPickerData';
+import { createMediaMenuOptions, downloadMedia } from '../lib/controlHelpers';
+import { svgIconClasses } from '@mui/material';
 import { menuItemClasses } from '@mui/material/MenuItem';
 import { listItemIconClasses } from '@mui/material/ListItemIcon';
 import Menu from '@mui/material/Menu';
-import useImageInfo from '../../../hooks/useImageInfo';
-import { svgIconClasses } from '@mui/material';
-import Dialog from '@mui/material/Dialog';
-import { DialogHeader } from '../../DialogHeader';
-import { DialogBody } from '../../DialogBody';
+import useVideoInfo from '../../../hooks/useVideoInfo';
 import type { AllowedPathsData } from './NodeSelector';
 import { processPathMacros } from '../../../utils/path';
-import { popDialog, pushDialog, pushNonDialog } from '../../../state/actions/dialogStack';
+import { useItemContext, useItemMetaContext } from '../lib/formsEngineContext';
 import { nanoid } from 'nanoid';
-import type { BrowseFilesDialogProps } from '../../BrowseFilesDialog';
+import { popDialog, pushDialog, pushNonDialog } from '../../../state/actions/dialogStack';
 import type { MediaItem } from '../../../models';
+import type { BrowseFilesDialogProps } from '../../BrowseFilesDialog';
 import { ensureSingleSlash } from '../../../utils/string';
 import type { SearchProps } from '../../Search';
-import { useDispatch } from 'react-redux';
-import { useItemContext, useItemMetaContext } from '../lib/formsEngineContext';
 import type { FileUploadResult } from '../../SingleFileUpload';
 import type { SingleFileUploadDialogProps } from '../../SingleFileUploadDialog';
-import { ContentPicker } from '../components/ContentPicker';
+import { useDispatch } from 'react-redux';
 import useActiveSiteId from '../../../hooks/useActiveSiteId';
-import Tooltip from '@mui/material/Tooltip';
-import { useExtractDataSources } from '../dataSourceHooks/useExtractDataSources';
-import { createMediaMenuOptions, downloadMedia } from '../lib/controlHelpers';
+import { DialogHeader } from '../../DialogHeader';
+import { FormattedMessage } from 'react-intl';
+import { DialogBody } from '../../DialogBody';
+import { ContentPicker } from '../components/ContentPicker';
+import Dialog from '@mui/material/Dialog';
 
-export interface ImagePickerProps extends ControlProps {
+export interface VideoPickerProps extends ControlProps {
 	value: string;
 }
 
-type PickerType = 'browse' | 'upload' | 'search';
-
-export function ImagePicker(props: ImagePickerProps) {
-	const { field, value, setValue, contentType, autoFocus, readonly } = props;
+export function VideoPicker(props: VideoPickerProps) {
+	const { field, value, setValue, contentType, readonly } = props;
 	const siteId = useActiveSiteId();
 	const { guestBase } = useEnv();
+	// For testing, by using 3000 as the guestBase both the fetch in `useVideoInfo` and the download functionality will work
+	// const guestBase = 'http://localhost:3000';
 	const contextItem = useItemContext();
 	const { id, pathInSite } = useItemMetaContext();
-	const imageInfo = useImageInfo(value ? `${guestBase}${value}` : null);
+	const videoInfo = useVideoInfo(value ? `${guestBase}${value}` : null);
+	console.log('videoInfo', videoInfo);
 	const hasValue = Boolean(value);
-	const dataSourceSummary = useConsolidatedImagePickerData(useExtractDataSources(contentType, field, 'imageManager'));
+	const dataSourceSummary = useConsolidatedVideoPickerData(useExtractDataSources(contentType, field, 'videoManager'));
 	const { allowedBrowsePaths, allowedUploadPaths, allowedSearchPaths } = dataSourceSummary;
 	const addMenuButtonRef = useRef<HTMLButtonElement>(undefined);
 	const [addMenuOpen, setAddMenuOpen] = useState(false);
-	const dispatch = useDispatch();
 	const [openPickerDialog, setOpenPickerDialog] = useState(false);
-	const [pickerType, setPickerType] = useState<PickerType>(null);
+	const [pickerType, setPickerType] = useState<'browse' | 'upload' | 'search'>(null);
+	const dispatch = useDispatch();
 
-	const handleDataSourceOptionClick = (event: ReactMouseEvent<HTMLLIElement, MouseEvent>, option: PickerType) => {
+	const handleDataSourceOptionClick = (
+		event: ReactMouseEvent<HTMLLIElement, MouseEvent>,
+		option: 'upload' | 'browse' | 'search'
+	) => {
 		setAddMenuOpen(false);
 		switch (option) {
 			case 'browse': {
@@ -90,7 +93,7 @@ export function ImagePicker(props: ImagePickerProps) {
 			}
 			case 'upload': {
 				if (allowedUploadPaths.length === 1) {
-					executeDataSourceOption('upload', allowedSearchPaths[0]);
+					executeDataSourceOption('upload', allowedUploadPaths[0]);
 				} else {
 					// Open upload picker
 					setPickerType('upload');
@@ -109,7 +112,7 @@ export function ImagePicker(props: ImagePickerProps) {
 			}
 		}
 	};
-	const executeDataSourceOption = (optionType: PickerType, choice: AllowedPathsData) => {
+	const executeDataSourceOption = (optionType: 'browse' | 'upload' | 'search', choice: AllowedPathsData) => {
 		const processPath = (path: string) =>
 			processPathMacros({ path, objectId: id, fullParentPath: contextItem?.path ?? pathInSite });
 
@@ -164,7 +167,7 @@ export function ImagePicker(props: ImagePickerProps) {
 						props: {
 							site: siteId,
 							path: processPath(choice.path),
-							fileTypes: ['image/*'],
+							fileTypes: ['video/*'],
 							onUploadComplete(result: FileUploadResult) {
 								if (result.successful.length) {
 									const newValue = ensureSingleSlash(
@@ -181,6 +184,7 @@ export function ImagePicker(props: ImagePickerProps) {
 			}
 		}
 	};
+
 	const handleDataSourcePickerDialogChange = (event, choice: AllowedPathsData) => {
 		executeDataSourceOption(pickerType, choice);
 		setOpenPickerDialog(false);
@@ -188,7 +192,7 @@ export function ImagePicker(props: ImagePickerProps) {
 
 	const menuOptions = createMediaMenuOptions(dataSourceSummary, handleDataSourceOptionClick, readonly);
 
-	const handleRemoveImage = () => {
+	const handleRemoveVideo = () => {
 		setValue(null);
 	};
 
@@ -242,52 +246,43 @@ export function ImagePicker(props: ImagePickerProps) {
 			<FormsEngineField field={field}>
 				{hasValue ? (
 					<Card sx={{ display: 'flex' }}>
-						<CardMedia
-							component="img"
-							sx={{ width: '40%' }}
-							image={`${guestBase}${value}`}
-							alt="Live from space album cover"
-						/>
+						{/* TODO: show media controls? */}
+						<CardMedia component="video" sx={{ width: '40%' }} image={`${guestBase}${value}`} />
 						<Box sx={{ display: 'flex', flexDirection: 'column' }}>
 							<CardContent sx={{ flex: '1 0 auto' }}>
 								<Typography component="div" variant="body1" marginBottom={1}>
 									{value}
 								</Typography>
 								<Typography variant="body2" component="div" color="textSecondary" marginBottom={1}>
-									{imageInfo?.contentType}
+									{videoInfo?.contentType}
 									<br />
-									{imageInfo?.width} x {imageInfo?.height}
+									{videoInfo?.width} x {videoInfo?.height}
 									<br />
-									{imageInfo?.size ? `${imageInfo.size} Kb` : ''}
+									{videoInfo?.size ? `${videoInfo.size} Kb` : ''}
 								</Typography>
+
 								<Box>
-									<Tooltip title={<FormattedMessage defaultMessage="Replace" />}>
-										<IconButton
-											size="small"
-											ref={addMenuButtonRef}
-											disabled={readonly}
-											onClick={() => {
-												setAddMenuOpen(true);
-											}}
-										>
-											<EditOutlined />
-										</IconButton>
-									</Tooltip>
-									<Tooltip title={<FormattedMessage defaultMessage="Download" />}>
-										<IconButton size="small" onClick={() => downloadMedia(guestBase, value)}>
-											<DownloadOutlined />
-										</IconButton>
-									</Tooltip>
-									<Tooltip title={<FormattedMessage defaultMessage="Delete" />}>
-										<IconButton size="small" onClick={handleRemoveImage} disabled={readonly}>
-											<DeleteOutlined />
-										</IconButton>
-									</Tooltip>
+									<IconButton
+										size="small"
+										ref={addMenuButtonRef}
+										onClick={() => {
+											setAddMenuOpen(true);
+										}}
+									>
+										<EditOutlined />
+									</IconButton>
+									<IconButton component="a" size="small" onClick={() => downloadMedia(guestBase, value)}>
+										<DownloadOutlined />
+									</IconButton>
+									<IconButton size="small" onClick={handleRemoveVideo}>
+										<DeleteOutlined />
+									</IconButton>
 								</Box>
 							</CardContent>
 						</Box>
 					</Card>
 				) : (
+					// TODO: same as in NodeSelector and ImagePicker
 					<Box
 						children={menuOptions}
 						sx={{
@@ -318,4 +313,4 @@ export function ImagePicker(props: ImagePickerProps) {
 	);
 }
 
-export default ImagePicker;
+export default VideoPicker;
