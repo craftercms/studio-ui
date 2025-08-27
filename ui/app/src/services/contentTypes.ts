@@ -314,11 +314,13 @@ function parseLegacyFormDefinitionFields(
 					}
 					break;
 				case 'pattern':
-					field.validations.pattern = {
-						id: 'pattern',
-						value,
-						level: 'required'
-					};
+					if (value) {
+						field.validations.pattern = {
+							id: 'pattern',
+							value,
+							level: 'required'
+						};
+					}
 					break;
 				case 'minSize':
 					break;
