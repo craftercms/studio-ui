@@ -212,7 +212,7 @@ function FieldBreadcrumbs(props: FieldFormViewProps): React.ReactNode {
 				{fieldPathIds.map((id) => {
 					// Retrieve the fieldPathId by removing everything after `id` in fieldPathIds
 					const currentFieldPathId = fieldPathIds.slice(0, fieldPathIds.indexOf(id) + 1).join('.');
-					const currentField = getFieldFromType(props.type, currentFieldPathId);
+					const currentField = props.type ? getFieldFromType(props.type, currentFieldPathId) : undefined;
 					return (
 						<Typography variant="body2" key={id}>
 							{currentField?.name ?? id}
