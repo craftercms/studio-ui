@@ -118,8 +118,7 @@
 						const value = (this.value = selected.join(','));
 						updateFn(null, { fieldName: this.fieldName, value });
 					}}
-				/>,
-				element
+				/>
 			);
 			this.value = value;
 		},
