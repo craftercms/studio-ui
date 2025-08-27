@@ -699,18 +699,13 @@ function convertDataSourceStructToXmlStruct(
 			//    <properties>
 			//      <enableSearchExisting>true</enableSearchExisting>
 			// TODO: note type usage in `services/contentTypes.ts, parseLegacyFormDefinition when parsing the data sources`
-			property: Object.entries(dataSource?.properties ?? []).map(([name, value]) => {
-				let type = descriptor?.fields[name] ? descriptor?.fields[name].type : typeof value;
+			property: Object.entries(dataSource?.properties ?? {}).map(([name, value]) => {
+				let type = descriptor?.fields?.[name]?.type ?? typeof value;
 				// some properties are simple types, so we need to get the proper type.
 				if (propertiesSimpleTypes.includes(type)) {
 					type = typeof value;
 				}
-
-				return {
-					name,
-					value,
-					type
-				};
+				return { name, value, type };
 			})
 		}
 	};
