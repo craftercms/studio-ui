@@ -425,7 +425,7 @@
     },
 
     _getContentTypeName(contentTypeId) {
-      const contentTypesById = craftercms.getStore().getState().contentTypes.byId;
+      const contentTypesById = craftercms.getStore().getState().contentTypes?.byId;
       const contentTypeName = contentTypesById?.[contentTypeId]?.name;
       return (
         contentTypeName ??
