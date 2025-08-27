@@ -347,12 +347,13 @@ function parseLegacyFormDefinitionFields(
 						value: min,
 						level: 'required'
 					});
-				!isNaN(max) &&
-					(field.validations.maxCount = {
+				if (max != null && !Number.isNaN(max)) {
+					field.validations.maxCount = {
 						id: 'maxCount',
 						value: max,
 						level: 'required'
-					});
+					};
+				}
 				parseLegacyFormDefinitionFields(legacyField.fields.field, field.fields, dropTargetsLookup, null, dataSources);
 				break;
 			}
