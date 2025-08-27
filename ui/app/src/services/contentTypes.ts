@@ -110,15 +110,19 @@ export function parseComponentsDataSourceContentTypesProperty(
 	value.forEach((typeId) => {
 		allowedContentTypesMeta[typeId] = allowedContentTypesMeta[typeId] ?? {};
 		const propsLookup = createLookupTable(asArray(dataSource.properties.property), 'name');
-		if (propsLookup.allowEmbedded) {
+		const allowEmbedded = propsLookup.allowEmbedded?.value?.trim() === 'true';
+		const allowShared = propsLookup.allowShared?.value?.trim() === 'true';
+		const allowSharedExisting =
+			propsLookup.enableBrowse?.value?.trim() === 'true' || propsLookup.enableSearch?.value?.trim() === 'true';
+		if (allowEmbedded) {
 			allowedContentTypesMeta[typeId].embedded = true;
 			validations.allowedEmbeddedContentTypes.value.push(typeId);
 		}
-		if (propsLookup.allowShared) {
+		if (allowShared) {
 			allowedContentTypesMeta[typeId].shared = true;
 			validations.allowedSharedContentTypes.value.push(typeId);
 		}
-		if (propsLookup.enableBrowse || propsLookup.enableSearch) {
+		if (allowSharedExisting) {
 			allowedContentTypesMeta[typeId].sharedExisting = true;
 			validations.allowedSharedExistingContentTypes.value.push(typeId);
 		}
