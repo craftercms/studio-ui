@@ -431,8 +431,10 @@ export function createVirtualSection<K extends ContentTypeSection | DescriptorSe
 	} as K;
 }
 
-export function createVirtualDataSourceFields(type: ContentType): Partial<ContentTypeField | NewContentTypeField> {
-	const dataSourceFields: Partial<ContentTypeField | NewContentTypeField> = {};
+type VirtualDataSourceFields = (ContentTypeField & { validations: Partial<DescriptorFieldValidations> }) &
+	Partial<NewContentTypeField>;
+export function createVirtualDataSourceFields(type: ContentType): LookupTable<VirtualDataSourceFields> {
+	const dataSourceFields: LookupTable<VirtualDataSourceFields> = {};
 	for (const dataSource of type.dataSources ?? []) {
 		dataSourceFields[dataSource.id] = {
 			...((dataSource as NewDataSource).NEW && { NEW: true }),
