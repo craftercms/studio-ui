@@ -73,7 +73,6 @@
 		},
 
 		_renderControlEntries: function (control) {
-			debugger;
 			control.$dropdownMenu.append(
 				`<li><div class="cstudio-form-control-node-selector-add-container-item-block-label">${this.title}</div></li>`
 			);
