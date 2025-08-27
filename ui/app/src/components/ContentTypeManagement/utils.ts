@@ -25,8 +25,8 @@ import type {
 	NewDataSource,
 	ValidationKeys
 } from '../../models';
-import LookupTable from '../../models/LookupTable';
-import ContentType, { SerializeToXmlContentTypeStructure } from '../../models/ContentType';
+import type LookupTable from '../../models/LookupTable';
+import type { ContentType, SerializeToXmlContentTypeStructure } from '../../models/ContentType';
 import { createLookupTable, nnou, noOp, pluckProps } from '../../utils/object';
 import { commonControlFieldsDescriptors, defaultDataSourcesSection } from './descriptors/controls';
 import {
@@ -43,7 +43,7 @@ import { toBooleanString, toColor } from '../../utils/string';
 import { getXmlBuilder } from '../FormsEngine/lib/valueSerializers';
 import { nanoid } from 'nanoid';
 import { commonDataSourceDescriptors, dataSourceDescriptors } from './descriptors/dataSources';
-import { ControlProps } from '../FormsEngine/types';
+import type { ControlProps } from '../FormsEngine/types';
 import { IntlShape, type MessageDescriptor } from 'react-intl';
 import TranslationOrText from '../../models/TranslationOrText';
 import { getFileNameFromPath } from '../../utils/path';
