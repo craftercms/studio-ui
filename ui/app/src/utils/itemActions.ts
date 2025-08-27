@@ -18,30 +18,7 @@ import { translations } from '../components/ItemActionsMenu/translations';
 import { AllItemActions, ContentItem, LegacyItem } from '../models/Item';
 import { ContextMenuOption } from '../components/ContextMenu';
 import { getControllerPath, getRootPath, withoutIndex } from './path';
-import {
-	closeChangeContentTypeDialog,
-	closeConfirmDialog,
-	closeCreateFileDialog,
-	closeCreateFolderDialog,
-	closeDeleteDialog,
-	closePublishDialog,
-	closeUploadDialog,
-	showBrokenReferencesDialog,
-	showChangeContentTypeDialog,
-	showCodeEditorDialog,
-	showConfirmDialog,
-	showCreateFileDialog,
-	showCreateFolderDialog,
-	showDeleteDialog,
-	showDependenciesDialog,
-	showFolderMoveAlertDialog,
-	showHistoryDialog,
-	showPreviewDialog,
-	showPublishDialog,
-	showRenameAssetDialog,
-	showUploadDialog,
-	showViewPackagesDialog
-} from '../state/actions/dialogs';
+import { popCodeEditorDialog, showHistoryDialog } from '../state/actions/dialogs';
 import { checkPathExistence, fetchContentItem, fetchContentItems, fetchLegacyItemsTree } from '../services/content';
 import {
 	batchActions,
@@ -74,7 +51,6 @@ import {
 	setClipboard,
 	unlockItem
 } from '../state/actions/content';
-import { showErrorDialog } from '../state/reducers/dialogs/error';
 import { popPiece } from './string';
 import { IntlFormatters, MessageDescriptor } from 'react-intl';
 import {
@@ -123,8 +99,8 @@ import StandardAction from '../models/StandardAction';
 import { fetchDependant } from '../services/dependencies';
 import { NewContentDialogProps } from '../components/NewContentDialog/utils';
 import { nanoid } from 'nanoid';
-import { pushDialog, updateDialogState } from '../state/actions/dialogStack';
-import { pickShowContentFormAction } from './system';
+import { popDialog, pushDialog, updateDialogState } from '../state/actions/dialogStack';
+import { createComponentId, pickShowContentFormAction, pushConfirmDialog, pushErrorDialog } from './system';
 
 export type ContextMenuOptionDescriptor<ID extends string = string> = {
 	id: ID;
@@ -534,33 +510,49 @@ export const itemActionDispatcher = ({
 						site,
 						path,
 						authoringBase,
-						onSaveSuccess: batchActions([
-							showEditItemSuccessNotification(),
-							...(onActionSuccess ? [onActionSuccess] : [])
-						]),
+						onSaveSuccess: ({ action }) =>
+							dispatch(
+								batchActions([
+									showEditItemSuccessNotification({ action }),
+									...(onActionSuccess ? [onActionSuccess] : [])
+								])
+							),
 						...extraPayload
 					})
 				);
 				break;
 			}
 			case 'createFolder': {
+				const dialogId = nanoid();
 				dispatch(
-					showCreateFolderDialog({
-						path: item.path,
-						allowBraces: item.path.startsWith('/scripts/rest'),
-						onCreated: batchActions([closeCreateFolderDialog(), showCreateFolderSuccessNotification()])
+					pushDialog({
+						id: dialogId,
+						component: createComponentId('CreateFolderDialog'),
+						props: {
+							path: item.path,
+							allowBraces: item.path.startsWith('/scripts/rest'),
+							onCreated: () =>
+								dispatch(batchActions([popDialog({ id: dialogId }), showCreateFolderSuccessNotification()])),
+							isSubmitting: null
+						}
 					})
 				);
 				break;
 			}
 			case 'rename': {
 				if (item.systemType === 'folder') {
+					const dialogId = nanoid();
 					dispatch(
-						showCreateFolderDialog({
-							path: item.path,
-							allowBraces: item.path.startsWith('/scripts/rest'),
-							rename: true,
-							value: item.label
+						pushDialog({
+							id: dialogId,
+							component: createComponentId('CreateFolderDialog'),
+							props: {
+								path: item.path,
+								allowBraces: item.path.startsWith('/scripts/rest'),
+								rename: true,
+								value: item.label,
+								onRenamed: () => dispatch(popDialog({ id: dialogId }))
+							}
 						})
 					);
 				} else {
@@ -571,12 +563,18 @@ export const itemActionDispatcher = ({
 								? 'controller'
 								: 'asset';
 
+					const dialogId = nanoid();
 					dispatch(
-						showRenameAssetDialog({
-							path: item.path,
-							allowBraces: item.path.startsWith('/scripts/rest'),
-							type,
-							value: item.label
+						pushDialog({
+							id: dialogId,
+							component: createComponentId('RenameAssetDialog'),
+							props: {
+								path: item.path,
+								allowBraces: item.path.startsWith('/scripts/rest'),
+								type,
+								value: item.label,
+								onRenamed: () => dispatch(popDialog({ id: dialogId }))
+							}
 						})
 					);
 				}
@@ -587,7 +585,7 @@ export const itemActionDispatcher = ({
 				dispatch(
 					pushDialog({
 						id,
-						component: 'craftercms.components.NewContentDialog',
+						component: createComponentId('NewContentDialog'),
 						props: {
 							item,
 							onContentTypeSelected(response) {
@@ -608,23 +606,38 @@ export const itemActionDispatcher = ({
 				break;
 			}
 			case 'changeContentType': {
+				const dialogId = nanoid();
 				dispatch(
-					showConfirmDialog({
-						title: formatMessage(translations.changeContentType),
-						body: formatMessage(translations.changeContentTypeBody),
-						onCancel: closeConfirmDialog(),
-						onOk: batchActions([
-							closeConfirmDialog(),
-							showChangeContentTypeDialog({
-								item,
-								rootPath: getRootPath(item.path),
-								selectedContentType: item.contentTypeId,
-								onContentTypeSelected: batchActions([
-									closeChangeContentTypeDialog(),
-									changeContentType({ originalContentTypeId: item.contentTypeId, path: item.path })
-								])
-							})
-						])
+					pushConfirmDialog({
+						id: dialogId,
+						props: {
+							title: formatMessage(translations.changeContentType),
+							body: formatMessage(translations.changeContentTypeBody),
+							onCancel: () => dispatch(popDialog({ id: dialogId })),
+							onOk: () => {
+								const changeContentTypeDialogId = nanoid();
+								dispatch(
+									batchActions([
+										popDialog({ id: dialogId }),
+										pushDialog({
+											id: changeContentTypeDialogId,
+											component: createComponentId('ChangeContentTypeDialog'),
+											props: {
+												item,
+												onContentTypeSelected: () => {
+													dispatch(
+														batchActions([
+															popDialog({ id: changeContentTypeDialogId }),
+															changeContentType({ originalContentTypeId: item.contentTypeId, path: item.path })
+														])
+													);
+												}
+											}
+										})
+									])
+								);
+							}
+						}
 					})
 				);
 				break;
@@ -632,7 +645,7 @@ export const itemActionDispatcher = ({
 			case 'cut': {
 				const path = item.path;
 				if (item.systemType === 'folder') {
-					dispatch(showFolderMoveAlertDialog({ item }));
+					dispatch(pushDialog({ component: createComponentId('FolderMoveAlertDialog'), props: { item } }));
 				} else {
 					fetchDependant(site, path).subscribe({
 						next(dependantItems) {
@@ -652,7 +665,14 @@ export const itemActionDispatcher = ({
 									dependantItems.map((item) => item.uri ?? item.path)
 								).subscribe((contentItems) => {
 									dispatch(
-										showBrokenReferencesDialog({ path, references: contentItems, onContinue: actionToDispatch })
+										pushDialog({
+											component: createComponentId('BrokenReferencesDialog'),
+											props: {
+												path,
+												references: contentItems,
+												onContinue: () => dispatch(actionToDispatch)
+											}
+										})
 									);
 								});
 							} else {
@@ -660,7 +680,7 @@ export const itemActionDispatcher = ({
 							}
 						},
 						error({ response }) {
-							dispatch(showErrorDialog({ error: response }));
+							dispatch(pushErrorDialog({ props: { error: response } }));
 						}
 					});
 				}
@@ -691,11 +711,13 @@ export const itemActionDispatcher = ({
 							dispatch(
 								batchActions([
 									unblockUI(),
-									showErrorDialog({
-										error: {
-											code: '7000',
-											message: `Content not found`,
-											remedialAction: `Check if the item was deleted from the system or blob store`
+									pushErrorDialog({
+										props: {
+											error: {
+												code: '7000',
+												message: `Content not found`,
+												remedialAction: `Check if the item was deleted from the system or blob store`
+											}
 										}
 									})
 								])
@@ -703,7 +725,7 @@ export const itemActionDispatcher = ({
 						}
 					},
 					error(response) {
-						dispatch(batchActions([unblockUI(), showErrorDialog({ error: response })]));
+						dispatch(batchActions([unblockUI(), pushErrorDialog({ props: { error: response } })]));
 					}
 				});
 				break;
@@ -750,9 +772,12 @@ export const itemActionDispatcher = ({
 					fetchContentItem(site, clipboard.sourcePath).subscribe((clipboardItem) => {
 						if (isInActiveWorkflow(clipboardItem)) {
 							dispatch(
-								showViewPackagesDialog({
-									item: clipboardItem,
-									onContinue: pasteItem({ path: item.path })
+								pushDialog({
+									component: createComponentId('ViewPackagesDialog'),
+									props: {
+										item: clipboardItem,
+										onContinue: () => dispatch(pasteItem({ path: item.path }))
+									}
 								})
 							);
 						} else {
@@ -765,35 +790,49 @@ export const itemActionDispatcher = ({
 				break;
 			}
 			case 'duplicateAsset': {
+				const dialogId = nanoid();
 				dispatch(
-					showConfirmDialog({
-						title: formatMessage(translations.duplicate),
-						body: formatMessage(translations.duplicateDialogBody),
-						onCancel: closeConfirmDialog(),
-						onOk: batchActions([
-							closeConfirmDialog(),
-							duplicateWithPolicyValidation({
-								path: item.path,
-								type: 'asset'
-							})
-						])
+					pushConfirmDialog({
+						id: dialogId,
+						props: {
+							title: formatMessage(translations.duplicate),
+							body: formatMessage(translations.duplicateDialogBody),
+							onCancel: () => dispatch(popDialog({ id: dialogId })),
+							onOk: () =>
+								dispatch(
+									batchActions([
+										popDialog({ id: dialogId }),
+										duplicateWithPolicyValidation({
+											path: item.path,
+											type: 'asset'
+										})
+									])
+								)
+						}
 					})
 				);
 				break;
 			}
 			case 'duplicate': {
+				const dialogId = nanoid();
 				dispatch(
-					showConfirmDialog({
-						title: formatMessage(translations.duplicate),
-						body: formatMessage(translations.duplicateDialogBody),
-						onCancel: closeConfirmDialog(),
-						onOk: batchActions([
-							closeConfirmDialog(),
-							duplicateWithPolicyValidation({
-								path: item.path,
-								type: 'item'
-							})
-						])
+					pushConfirmDialog({
+						id: dialogId,
+						props: {
+							title: formatMessage(translations.duplicate),
+							body: formatMessage(translations.duplicateDialogBody),
+							onCancel: () => dispatch(popDialog({ id: dialogId })),
+							onOk: () =>
+								dispatch(
+									batchActions([
+										popDialog({ id: dialogId }),
+										duplicateWithPolicyValidation({
+											path: item.path,
+											type: 'item'
+										})
+									])
+								)
+						}
 					})
 				);
 				break;
@@ -811,7 +850,12 @@ export const itemActionDispatcher = ({
 				break;
 			}
 			case 'dependencies': {
-				dispatch(showDependenciesDialog({ item, rootPath: getRootPath(item.path) }));
+				dispatch(
+					pushDialog({
+						component: createComponentId('DependenciesDialog'),
+						props: { item, rootPath: getRootPath(item.path) }
+					})
+				);
 				break;
 			}
 			case 'editTemplate': {
@@ -824,25 +868,42 @@ export const itemActionDispatcher = ({
 			}
 			case 'createTemplate':
 			case 'createController': {
+				const dialogId = nanoid();
 				dispatch(
-					showCreateFileDialog({
-						path: withoutIndex(item.path),
-						type: option === 'createController' ? 'controller' : 'template',
-						allowBraces: option === 'createController' ? item.path.startsWith('/scripts/rest') : false,
-						onCreated: batchActions([
-							closeCreateFileDialog(),
-							showCreateItemSuccessNotification(),
-							option === 'createController' ? editController() : editTemplate()
-						])
+					pushDialog({
+						id: dialogId,
+						component: createComponentId('CreateFileDialog'),
+						props: {
+							path: withoutIndex(item.path),
+							type: option === 'createController' ? 'controller' : 'template',
+							allowBraces: option === 'createController' ? item.path.startsWith('/scripts/rest') : false,
+							onCreated: (payload) =>
+								dispatch(
+									batchActions([
+										popDialog({ id: dialogId }),
+										showCreateItemSuccessNotification(),
+										option === 'createController' ? editController(payload) : editTemplate(payload)
+									])
+								),
+							isSubmitting: null
+						}
 					})
 				);
 				break;
 			}
 			case 'editCode': {
+				const dialogId = nanoid();
 				dispatch(
-					showCodeEditorDialog({
-						path: item.path,
-						mode: getEditorMode(item)
+					pushDialog({
+						id: dialogId,
+						component: createComponentId('CodeEditorDialog'),
+						allowMinimize: true,
+						allowFullScreen: true,
+						props: {
+							path: item.path,
+							mode: getEditorMode(item),
+							onClose: () => dispatch(popCodeEditorDialog({ id: dialogId }))
+						}
 					})
 				);
 				break;
@@ -850,32 +911,45 @@ export const itemActionDispatcher = ({
 			case 'viewCode': {
 				const mode = getEditorMode(item);
 				dispatch(
-					showPreviewDialog({
-						type: 'editor',
-						title: item.label,
-						url: item.path,
-						path: item.path,
-						mode
+					pushDialog({
+						id: nanoid(),
+						component: createComponentId('PreviewDialog'),
+						allowMinimize: true,
+						allowFullScreen: true,
+						props: {
+							type: 'editor',
+							title: item.label,
+							url: item.path,
+							path: item.path,
+							mode
+						}
 					})
 				);
 				break;
 			}
 			case 'viewMedia': {
 				dispatch(
-					showPreviewDialog({
-						type: isImage(item) ? 'image' : isVideo(item) ? 'video' : 'pdf',
-						title: item.label,
-						url: item.path
+					pushDialog({
+						component: createComponentId('PreviewDialog'),
+						allowMinimize: true,
+						allowFullScreen: true,
+						props: {
+							type: isImage(item) ? 'image' : isVideo(item) ? 'video' : 'pdf',
+							title: item.label,
+							url: item.path
+						}
 					})
 				);
 				break;
 			}
 			case 'upload': {
 				dispatch(
-					showUploadDialog({
-						path: item.path,
-						site,
-						onClose: closeUploadDialog()
+					pushDialog({
+						component: createComponentId('UploadDialog'),
+						props: {
+							path: item.path,
+							site
+						}
 					})
 				);
 				break;
@@ -889,7 +963,7 @@ export const itemActionDispatcher = ({
 				break;
 			}
 			case 'viewPackages': {
-				dispatch(showViewPackagesDialog({ item }));
+				dispatch(pushDialog({ component: createComponentId('ViewPackagesDialog'), props: { item } }));
 				break;
 			}
 			default:
@@ -900,14 +974,22 @@ export const itemActionDispatcher = ({
 	// TODO: some actions below aren't really well covered for multiple actions (e.g. deleting controller or template)
 	switch (option) {
 		case 'delete': {
+			const dialogId = nanoid();
 			dispatch(
-				showDeleteDialog({
-					items,
-					onSuccess: batchActions([
-						showDeleteItemSuccessNotification(),
-						closeDeleteDialog(),
-						...(onActionSuccess ? [onActionSuccess] : [])
-					])
+				pushDialog({
+					id: dialogId,
+					component: createComponentId('DeleteDialog'),
+					props: {
+						items,
+						onSuccess: ({ items }: { items: ContentItem[] }) =>
+							dispatch(
+								batchActions([
+									showDeleteItemSuccessNotification({ items }),
+									popDialog({ id: dialogId }),
+									...(onActionSuccess ? [onActionSuccess] : [])
+								])
+							)
+					}
 				})
 			);
 			break;
@@ -929,17 +1011,26 @@ export const itemActionDispatcher = ({
 				requestPublish: 'now',
 				publish: 'now'
 			};
+			const dialogId = nanoid();
 			dispatch(
-				showPublishDialog({
-					items,
-					scheduling: schedulingMap[option],
-					onSuccess: batchActions([
-						showPublishItemSuccessNotification(),
-						...items.map((item) => reloadContentItem({ path: item.path })),
-						closePublishDialog(),
-						fetchPublishingStatus(),
-						...(onActionSuccess ? [onActionSuccess] : [])
-					])
+				pushDialog({
+					id: dialogId,
+					component: createComponentId('PublishDialog'),
+					props: {
+						items,
+						scheduling: schedulingMap[option],
+						onSuccess: (payload) => {
+							dispatch(
+								batchActions([
+									showPublishItemSuccessNotification(payload),
+									...items.map((item) => reloadContentItem({ path: item.path })),
+									popDialog({ id: dialogId }),
+									fetchPublishingStatus(),
+									...(onActionSuccess ? [onActionSuccess] : [])
+								])
+							);
+						}
+					}
 				})
 			);
 			break;

@@ -21,7 +21,7 @@ import EnhancedDialog from '../EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
 
 export function DeleteDialog(props: DeleteDialogProps) {
-	const { items, isSubmitting, onSuccess, isFetching, childItems, dependentItems, error, ...rest } = props;
+	const { items, isSubmitting, onSuccess, isFetching, error, ...rest } = props;
 	return (
 		<EnhancedDialog
 			title={<FormattedMessage id="deleteDialog.title" defaultMessage="Delete" />}
@@ -40,8 +40,6 @@ export function DeleteDialog(props: DeleteDialogProps) {
 				items={items}
 				onSuccess={onSuccess}
 				isFetching={isFetching}
-				childItems={childItems}
-				dependentItems={dependentItems}
 				isSubmitting={isSubmitting}
 				error={error}
 			/>

@@ -136,6 +136,7 @@ export const components = {
 	ExpiringDashlet: lazy(() => import('../components/ExpiringDashlet')),
 	FolderBrowserTreeView: lazy(() => import('../components/FolderBrowserTreeView')),
 	FolderMoveAlert: lazy(() => import('../components/FolderMoveAlert')),
+	FolderMoveAlertDialog: lazy(() => import('../components/FolderMoveAlertDialog')),
 	FormEngineControls: lazy(() => import('../components/FormEngineControls')),
 	FormsEngine: lazy(() => import('../components/FormsEngine/FormsEngine')),
 	FormsEngineDialog: lazy(() => import('../components/FormsEngine/FormsEngineDialog')),

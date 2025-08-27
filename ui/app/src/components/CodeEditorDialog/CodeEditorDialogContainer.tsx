@@ -21,13 +21,11 @@ import { fetchContentXML, lock, writeContent } from '../../services/content';
 import { ConditionalLoadingState } from '../LoadingState/LoadingState';
 import AceEditor from '../AceEditor/AceEditor';
 import { useDispatch } from 'react-redux';
-import { closeViewPackagesDialog, showViewPackagesDialog, updateCodeEditorDialog } from '../../state/actions/dialogs';
 import Skeleton from '@mui/material/Skeleton';
 import ListSubheader from '@mui/material/ListSubheader';
 import DialogFooter from '../DialogFooter/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { showSystemNotification } from '../../state/actions/system';
 import translations from './translations';
 import MenuItem from '@mui/material/MenuItem';
@@ -44,7 +42,6 @@ import { useReferences } from '../../hooks/useReferences';
 import { getHostToGuestBus } from '../../utils/subjects';
 import { reloadRequest } from '../../state/actions/preview';
 import { CodeEditorDialogContainerProps, getContentModelSnippets } from './utils';
-import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
 import { MultiChoiceSaveButton } from '../MultiChoiceSaveButton';
 import useUpToDateRefs from '../../hooks/useUpdateRefs';
 import { useEnhancedDialogContext } from '../EnhancedDialog';
@@ -53,7 +50,8 @@ import { forkJoin, switchMap } from 'rxjs';
 import { cancelPackages, fetchAffectedPackages } from '../../services/workflow';
 import { PublishPackage } from '../../models';
 import Alert, { alertClasses } from '@mui/material/Alert';
-import { createCustomDocumentEventListener } from '../../utils/dom';
+import { pushDialog } from '../../state/actions/dialogStack';
+import { createComponentId, pushErrorDialog } from '../../utils/system';
 
 export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps) {
 	const { path, onMinimize, onClose, mode, readonly, contentType, onFullScreen, onSuccess } = props;
@@ -75,27 +73,24 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 	const [snippets, setSnippets] = useState<LookupTable<{ label: string; value: string }>>({});
 	const [contentModelSnippets, setContentModelSnippets] = useState<Array<{ label: string; value: string }>>(null);
 	const [affectedPackages, setAffectedPackages] = useState<PublishPackage[]>(undefined);
+	const { updateSubmittingOrHasPendingChanges } = useEnhancedDialogContext();
 	const storedId = 'codeEditor';
 	const {
 		'craftercms.freemarkerCodeSnippets': freemarkerCodeSnippets,
 		'craftercms.groovyCodeSnippets': groovyCodeSnippets
-	} = useReferences();
+	} = useReferences() ?? {};
 	const onChangeTimeoutRef = useRef<any>(null);
 
 	const onEditorChanges = () => {
 		clearTimeout(onChangeTimeoutRef.current);
 		onChangeTimeoutRef.current = setTimeout(() => {
-			dispatch(
-				updateCodeEditorDialog({
-					hasPendingChanges: content !== editorRef.current.getValue()
-				})
-			);
+			updateSubmittingOrHasPendingChanges({ hasPendingChanges: content !== editorRef.current.getValue() });
 		}, 150);
 	};
 
 	const save = (callback?: () => void) => {
 		if (!isLockedForMe && !readonly) {
-			dispatch(updateCodeEditorDialog({ isSubmitting: true }));
+			updateSubmittingOrHasPendingChanges({ isSubmitting: true });
 			const value = editorRef.current.getValue();
 			const isConfig = path.startsWith('/config');
 			const module = isConfig ? (path.split('/')[2] as 'studio') : null;
@@ -113,20 +108,15 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 
 			preWriteAction$.subscribe({
 				next() {
-					dispatch(
-						batchActions([
-							showSystemNotification({ message: formatMessage(translations.saved) }),
-							updateCodeEditorDialog({ isSubmitting: false, hasPendingChanges: false })
-						])
-					);
+					updateSubmittingOrHasPendingChanges({ isSubmitting: false, hasPendingChanges: false });
+					dispatch(showSystemNotification({ message: formatMessage(translations.saved) }));
 					setTimeout(callback);
 					getHostToGuestBus().next(reloadRequest());
 					onSuccess?.();
 				},
 				error({ response }) {
-					dispatch(
-						batchActions([updateCodeEditorDialog({ isSubmitting: false }), showErrorDialog({ error: response })])
-					);
+					updateSubmittingOrHasPendingChanges({ isSubmitting: false });
+					dispatch(pushErrorDialog({ props: { error: response } }));
 				}
 			});
 		}
@@ -136,18 +126,17 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 		// Before saving, check if the item is part of a package in active workflow. If so, show a dialog to review the
 		// packages before continuing with the cancellation of the packages and saving the item.
 		if (affectedPackages?.length) {
-			const callbackId = 'viewPackagesDialogCallback';
 			dispatch(
-				showViewPackagesDialog({
-					item,
-					onContinue: dispatchDOMEvent({ id: callbackId, type: 'continue' }),
-					onClose: batchActions([dispatchDOMEvent({ id: callbackId, type: 'close' }), closeViewPackagesDialog()])
+				pushDialog({
+					component: createComponentId('ViewPackagesDialog'),
+					props: {
+						item,
+						onContinue: () => {
+							save(callback);
+						}
+					}
 				})
 			);
-			createCustomDocumentEventListener(callbackId, ({ type }) => {
-				if (type === 'close') return;
-				save(callback);
-			});
 		} else {
 			save(callback);
 		}
@@ -229,20 +218,20 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 	useEffect(() => {
 		if (content === null) {
 			setLoading(true);
-			dispatch(updateCodeEditorDialog({ isSubmitting: true }));
+			updateSubmittingOrHasPendingChanges({ isSubmitting: true });
 			const subscription = forkJoin([fetchContentXML(site, path), fetchAffectedPackages(site, path)]).subscribe(
 				([xml, affectedPackages]) => {
 					setContent(xml);
 					setAffectedPackages(affectedPackages);
 					setLoading(false);
-					dispatch(updateCodeEditorDialog({ isSubmitting: false }));
+					updateSubmittingOrHasPendingChanges({ isSubmitting: false });
 				}
 			);
 			return () => {
 				subscription.unsubscribe();
 			};
 		}
-	}, [content, dispatch, path, site]);
+	}, [content, dispatch, path, site, updateSubmittingOrHasPendingChanges]);
 
 	useEffect(() => {
 		if (shouldPerformLock) {
@@ -275,7 +264,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 									size="small"
 									sx={{ p: 0 }}
 									onClick={() => {
-										dispatch(showViewPackagesDialog({ item }));
+										dispatch(pushDialog({ component: createComponentId('ViewPackagesDialog'), props: { item } }));
 									}}
 								>
 									<FormattedMessage defaultMessage="Review" />

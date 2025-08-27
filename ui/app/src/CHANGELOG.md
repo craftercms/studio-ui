@@ -41,6 +41,8 @@
   * [CompareVersionsDialog] Added `subtitle`, `selectionContent`, and `fields` properties.
   * [ViewVersionDialog] Added `onClose` property.
   * [ViewVersionDialogContainer] Added `contentTypesBranch`, `showXml` and `data` properties.
+  * [DeleteDialog] Removed `childItems` and `dependentItems` props. Dependencies are not in redux state anymore.
+  * [RenameAssetDialog] Removed `dependantItems` and `fetchingDependantItems` props. Dependencies are not in redux state anymore.
 * [hooks]
   * Removed `useLogicResource` hook.
   * Removed `useSelectorResource` hook.
@@ -105,6 +107,16 @@
     * Removed `fetchDetailedItems` action. Replaced by `fetchContentItems`.
     * Removed `fetchDetailedItemsComplete` action. Replaced by `fetchContentItemsComplete`.
     * Removed `completeDetailedItem` action.
+  * `actions/dialogs`:
+    * Updated `historyDialogUpdate` action type to `UPDATE_HISTORY_DIALOG`.
+    * Removed `fetchDeleteDependencies`, `fetchDeleteDependenciesComplete`, `fetchDeleteDependenciesFailed` actions.
+    * Updated `newContentCreationComplete` action payload to be `{ item: LegacyItem; redirectUrl: string }`.
+    * Updated `updateEditDialogConfig` action type to `UPDATE_EDIT_DIALOG`.
+    * Updated `fetchRenameAssetDependants` action payload to be `{ path: string; dialogId: string }`.
+    * Updated `updateSingleFileUploadDialog` action payload to be `Partial<CreateFileStateProps>`
+    * Created `updateLauncher` action.
+  * `actions/system`:
+    * Updated `showEditItemSuccessNotification` action payload to be `{ action: CommonSaveOptions; }`.
 * [common-api.js]
   * Removed `CStudioAuthoring.Operations.uploadCMISAsset` and `CStudioAuthoring.Operations.openCMISUploadDialog`.
 * Removed LegacyVersionDialog and the entire associated `/studio/diff` route
