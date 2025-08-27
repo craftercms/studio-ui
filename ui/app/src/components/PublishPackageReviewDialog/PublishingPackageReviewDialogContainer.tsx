@@ -128,7 +128,7 @@ export function PublishingPackageReviewDialogContainer(props: PublishingPackageR
 	useEffect(() => {
 		setState({
 			scheduling: publishingPackage?.schedule ? 'keep' : 'now',
-			schedule: new Date(publishingPackage?.schedule) ?? createAtLeastHalfHourInFutureDate()
+			schedule: publishingPackage?.schedule ? new Date(publishingPackage.schedule) : createAtLeastHalfHourInFutureDate()
 		});
 	}, [publishingPackage, setState]);
 
