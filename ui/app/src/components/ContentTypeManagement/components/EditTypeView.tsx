@@ -88,7 +88,6 @@ import useEnv from '../../../hooks/useEnv';
 import { deserialize, fromString } from '../../../utils/xml';
 import useSpreadState from '../../../hooks/useSpreadState';
 import { asArray } from '../../../utils/array';
-import { showErrorDialog } from '../../../state/reducers/dialogs/error';
 import { fetchContentItem } from '../../../services/content';
 import { batchActions } from '../../../state/actions/misc';
 import { fetchItemVersions } from '../../../state/actions/versions';
@@ -102,6 +101,7 @@ import PickControlDialog from './PickControlDialog';
 import PickDataSourceDialog from './PickDataSourceDialog';
 import { fetchContentTypes } from '../../../state/actions/preview';
 import { getXmlBuilder } from '../../FormsEngine/lib/valueSerializers';
+import { pushErrorDialog } from '../../../utils/system';
 
 export interface EditTypeAppProps {
 	/**
@@ -754,7 +754,7 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 				}
 			},
 			error: ({ response }) => {
-				dispatch(showErrorDialog({ error: response.response }));
+				dispatch(pushErrorDialog({ props: { error: response.response } }));
 			}
 		});
 
