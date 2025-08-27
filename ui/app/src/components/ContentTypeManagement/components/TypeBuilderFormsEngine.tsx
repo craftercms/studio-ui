@@ -202,7 +202,7 @@ export function TypeBuilderFormsEngine(props: FieldFormViewProps) {
 	);
 }
 
-function FieldBreadcrumbs(props: FieldFormViewProps): React.JSX.Element {
+function FieldBreadcrumbs(props: FieldFormViewProps): React.ReactNode {
 	if (!props.field) return;
 	const fieldPathIds = props.fieldIdPath?.split('.') ?? [];
 	return (
