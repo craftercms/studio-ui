@@ -1138,11 +1138,11 @@ const initializeCStudioForms = () => {
 							});
 					};
 
-					CrafterCMSNext.system.getStore().subscribe(() => {
+					CrafterCMSNext.system.getStore().subscribe((store) => {
 						getInitialConfiguration();
 
-						if (!craftercms.getStore().getState().contentTypes?.byId) {
-							craftercms.getStore().dispatch({ type: 'FETCH_CONTENT_TYPES' });
+						if (!store.getState().contentTypes?.byId) {
+							store.dispatch({ type: 'FETCH_CONTENT_TYPES' });
 						}
 					});
 				},

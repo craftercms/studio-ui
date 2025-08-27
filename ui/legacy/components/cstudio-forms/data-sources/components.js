@@ -58,7 +58,22 @@
 
 	Components.prototype = {
 		add: function (control) {
-			this.contentTypesById = craftercms.getStore().getState().contentTypes.byId;
+			CrafterCMSNext.system.getStore().subscribe((store) => {
+				if (store.getState().contentTypes?.byId) {
+					this._renderControlEntries(control);
+				} else {
+					const unsubscribe = store.subscribe(() => {
+						if (store.getState().contentTypes?.byId) {
+							unsubscribe();
+							this._renderControlEntries(control);
+						}
+					});
+				}
+			});
+		},
+
+		_renderControlEntries: function (control) {
+			debugger;
 			control.$dropdownMenu.append(
 				`<li><div class="cstudio-form-control-node-selector-add-container-item-block-label">${this.title}</div></li>`
 			);
@@ -419,7 +434,7 @@
 		},
 
 		_getContentTypeName(contentTypeId) {
-			const contentTypesById = this.contentTypesById;
+			const contentTypesById = craftercms.getStore().getState().contentTypes?.byId;
 			const contentTypeName = contentTypesById?.[contentTypeId]?.name;
 			return (
 				contentTypeName ??

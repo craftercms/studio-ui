@@ -108,7 +108,8 @@
 		render(value, updateFn) {
 			const element = $('<div class="content-type-selector"/>').appendTo(this.container)[0];
 			const contentTypes = CStudioAuthoring.Dialogs.DialogSelectContentType.contentTypes;
-			ReactDOM.render(
+			const root = craftercms.libs.ReactDOMClient.createRoot(element);
+			root.render(
 				<Selector
 					initialValue={value}
 					contentTypes={contentTypes}
@@ -116,8 +117,7 @@
 						const value = (this.value = selected.join(','));
 						updateFn(null, { fieldName: this.fieldName, value });
 					}}
-				/>,
-				element
+				/>
 			);
 			this.value = value;
 		},
