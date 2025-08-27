@@ -14,13 +14,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
+import type {
 	ContentTypeField,
 	ContentTypeFieldValidation,
 	ContentTypeSection,
 	DataSource,
 	LegacyDataSource,
 	LegacyFormDefinitionField,
+	NewContentTypeField,
 	NewDataSource,
 	ValidationKeys
 } from '../../models';
@@ -430,8 +431,8 @@ export function createVirtualSection<K extends ContentTypeSection | DescriptorSe
 	} as K;
 }
 
-export function createVirtualDataSourceFields(type: ContentType): Partial<DescriptorContentType> {
-	const dataSourceFields: Partial<DescriptorContentType> = {};
+export function createVirtualDataSourceFields(type: ContentType): Partial<ContentTypeField | NewContentTypeField> {
+	const dataSourceFields: Partial<ContentTypeField | NewContentTypeField> = {};
 	for (const dataSource of type.dataSources ?? []) {
 		dataSourceFields[dataSource.id] = {
 			...((dataSource as NewDataSource).NEW && { NEW: true }),
