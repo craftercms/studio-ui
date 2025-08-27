@@ -46,7 +46,8 @@ import ListItemText from '@mui/material/ListItemText';
 import SectionAccordion from '../../FormsEngine/components/SectionAccordion';
 import { renderFieldControl } from '../../FormsEngine/lib/controlHelpers';
 import FormBackToTop from '../../FormsEngine/components/FormBackToTop';
-import ContentType, {
+import type {
+	ContentType,
 	ContentTypeField,
 	ContentTypeSection,
 	DataSource,
