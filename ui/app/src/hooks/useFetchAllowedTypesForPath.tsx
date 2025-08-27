@@ -20,8 +20,8 @@ import { useEffect, useState } from 'react';
 import useUpdateRefs from './useUpdateRefs';
 import { fetchLegacyContentTypes, parseLegacyContentType } from '../services/contentTypes';
 import { map } from 'rxjs/operators';
-import { showErrorDialog } from '../state/reducers/dialogs/error';
 import useActiveSiteId from './useActiveSiteId';
+import { pushErrorDialog } from '../utils/system';
 
 export function useFetchAllowedTypesForPath(path: string, responseFilterFn?: (types: ContentType[]) => ContentType[]) {
 	const site = useActiveSiteId();
@@ -42,7 +42,7 @@ export function useFetchAllowedTypesForPath(path: string, responseFilterFn?: (ty
 					},
 					error(response) {
 						setIsFetching(false);
-						dispatch(showErrorDialog({ error: response }));
+						dispatch(pushErrorDialog({ props: { error: response } }));
 					}
 				});
 			return () => {

@@ -45,14 +45,13 @@ import Collapse from '@mui/material/Collapse';
 import DateTimeTimezonePicker, { DateTimeTimezonePickerProps } from '../DateTimeTimezonePicker';
 import { createAtLeastHalfHourInFutureDate } from '../../utils/datetime';
 import { approvePackage, rejectPackage } from '../../services/workflow';
-import { batchActions } from '../../state/actions/misc';
 import { useDispatch } from 'react-redux';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
-import { updatePublishingPackageReviewDialog } from '../../state/actions/dialogs';
 import { AsDayMonthDateTime } from '../VersionList';
 import PackageDetails from '../PackageDetailsDialog/PackageDetails';
 import { showSystemNotification } from '../../state/actions/system';
 import { hasApproveAction, hasRejectAction } from '../../utils/content';
+import { pushErrorDialog } from '../../utils/system';
+import { useEnhancedDialogContext } from '../EnhancedDialog';
 
 export type PackageReviewAction = 'approve' | 'reject';
 interface InternalDialogState {
@@ -88,6 +87,7 @@ export function PublishingPackageReviewDialogContainer(props: PublishingPackageR
 		);
 	const dispatch = useDispatch();
 	const { formatMessage } = useIntl();
+	const { updateSubmittingOrHasPendingChanges } = useEnhancedDialogContext();
 	const { hasApprovePermission, hasRejectPermission } = useMemo(() => {
 		let hasApprovePermission = false;
 		let hasRejectPermission = false;
@@ -156,7 +156,7 @@ export function PublishingPackageReviewDialogContainer(props: PublishingPackageR
 
 	const onArgumentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		let value: unknown;
-		dispatch(updatePublishingPackageReviewDialog({ hasPendingChanges: true }));
+		updateSubmittingOrHasPendingChanges({ hasPendingChanges: true });
 		switch (e.target.type) {
 			case 'textarea':
 			case 'radio':
@@ -189,7 +189,7 @@ export function PublishingPackageReviewDialogContainer(props: PublishingPackageR
 	};
 
 	const handleSubmit = () => {
-		dispatch(updatePublishingPackageReviewDialog({ isSubmitting: true }));
+		updateSubmittingOrHasPendingChanges({ isSubmitting: true });
 		if (state.action === 'approve') {
 			const data: PublishingPackageApproveParams = {
 				comment: state.approverComment,
@@ -199,41 +199,29 @@ export function PublishingPackageReviewDialogContainer(props: PublishingPackageR
 
 			approvePackage(siteId, packageId, data).subscribe({
 				next() {
+					updateSubmittingOrHasPendingChanges({ isSubmitting: false, hasPendingChanges: false });
 					dispatch(
-						batchActions([
-							updatePublishingPackageReviewDialog({ isSubmitting: false, hasPendingChanges: false }),
-							showSystemNotification({ message: formatMessage({ defaultMessage: 'Package approved successfully.' }) })
-						])
+						showSystemNotification({ message: formatMessage({ defaultMessage: 'Package approved successfully.' }) })
 					);
 					onSuccess?.();
 				},
 				error({ response }) {
-					dispatch(
-						batchActions([
-							updatePublishingPackageReviewDialog({ isSubmitting: false }),
-							showErrorDialog({ error: response.response })
-						])
-					);
+					updateSubmittingOrHasPendingChanges({ isSubmitting: false });
+					dispatch(pushErrorDialog({ props: { error: response.response } }));
 				}
 			});
 		} else {
 			rejectPackage(siteId, packageId, state.rejectComment).subscribe({
 				next() {
+					updateSubmittingOrHasPendingChanges({ isSubmitting: false, hasPendingChanges: false });
 					dispatch(
-						batchActions([
-							updatePublishingPackageReviewDialog({ isSubmitting: false, hasPendingChanges: false }),
-							showSystemNotification({ message: formatMessage({ defaultMessage: 'Package rejected successfully.' }) })
-						])
+						showSystemNotification({ message: formatMessage({ defaultMessage: 'Package rejected successfully.' }) })
 					);
 					onSuccess?.();
 				},
 				error({ response }) {
-					dispatch(
-						batchActions([
-							updatePublishingPackageReviewDialog({ isSubmitting: false }),
-							showErrorDialog({ error: response.response })
-						])
-					);
+					updateSubmittingOrHasPendingChanges({ isSubmitting: false });
+					dispatch(pushErrorDialog({ props: { error: response.response } }));
 				}
 			});
 		}

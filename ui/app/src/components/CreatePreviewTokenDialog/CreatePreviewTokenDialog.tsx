@@ -42,8 +42,7 @@ import FormLabel from '@mui/material/FormLabel';
 import Alert from '@mui/material/Alert';
 import Divider from '@mui/material/Divider';
 import { encrypt } from '../../services/security';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
-import { copyToClipboard } from '../../utils/system';
+import { copyToClipboard, pushErrorDialog } from '../../utils/system';
 import { showSystemNotification } from '../../state/actions/system';
 import useSitesBranch from '../../hooks/useSitesBranch';
 import Tabs from '@mui/material/Tabs';
@@ -193,7 +192,7 @@ function Body(props: BodyProps) {
 			},
 			error(response) {
 				functionRefs.current.onSubmittingAndOrPendingChange({ isSubmitting: false });
-				dispatch(showErrorDialog({ error: response }));
+				dispatch(pushErrorDialog({ props: { error: response } }));
 			}
 		});
 	};

@@ -41,12 +41,11 @@ import { createLookupTable } from '../../utils/object';
 import { Fade } from '@mui/material';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
-import { updatePublishingPackageResubmitDialog } from '../../state/actions/dialogs';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
-import { batchActions } from '../../state/actions/misc';
 import { isBlank } from '../../utils/string';
 import { LoadingState } from '../LoadingState';
 import useActiveUser from '../../hooks/useActiveUser';
+import { pushErrorDialog } from '../../utils/system';
+import { useEnhancedDialogContext } from '../EnhancedDialog';
 
 export function PublishingPackageResubmitDialogContainer(props: PublishingPackageResubmitDialogContainerProps) {
 	const { pkg, type, isSubmitting, onSuccess, onClose } = props;
@@ -77,6 +76,7 @@ export function PublishingPackageResubmitDialogContainer(props: PublishingPackag
 		itemsAndDependenciesPaths,
 		itemsAndDependenciesMap
 	} = usePublishState({ mainItems });
+	const { updateSubmittingOrHasPendingChanges } = useEnhancedDialogContext();
 	const disabled = isSubmitting;
 	const hasPublishPermission = permissionsBySite[siteId].includes('publish_approve');
 	const showRequestApproval = hasPublishPermission;
@@ -113,7 +113,7 @@ export function PublishingPackageResubmitDialogContainer(props: PublishingPackag
 
 	const onPublishingArgumentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		let value: unknown;
-		dispatch(updatePublishingPackageResubmitDialog({ hasPendingChanges: true }));
+		updateSubmittingOrHasPendingChanges({ hasPendingChanges: true });
 		switch (e.target.type) {
 			case 'checkbox':
 				value = e.target.checked;
@@ -172,20 +172,16 @@ export function PublishingPackageResubmitDialogContainer(props: PublishingPackag
 			comment: submissionComment
 		};
 
-		dispatch(updatePublishingPackageResubmitDialog({ isSubmitting: true }));
+		updateSubmittingOrHasPendingChanges({ isSubmitting: true });
 
 		publish(siteId, data).subscribe({
 			next() {
-				dispatch(updatePublishingPackageResubmitDialog({ isSubmitting: false, hasPendingChanges: false }));
+				updateSubmittingOrHasPendingChanges({ isSubmitting: false, hasPendingChanges: false });
 				onSuccess?.();
 			},
 			error({ response }) {
-				dispatch(
-					batchActions([
-						updatePublishingPackageResubmitDialog({ isSubmitting: false }),
-						showErrorDialog({ error: response.response })
-					])
-				);
+				updateSubmittingOrHasPendingChanges({ isSubmitting: false });
+				dispatch(pushErrorDialog({ props: { error: response.response } }));
 			}
 		});
 	};

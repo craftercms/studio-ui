@@ -26,6 +26,7 @@ import { ItemTypeIcon } from '../../ItemTypeIcon';
 import { FormattedMessage } from 'react-intl';
 import React from 'react';
 import { nanoid } from 'nanoid';
+import { createComponentId } from '../../../utils/system';
 
 export type TypeDetailsHeaderActionTarget = 'properties' | 'template' | 'jsController' | 'groovyController' | 'deleted';
 
@@ -41,7 +42,7 @@ export function TypeDetailsViewHeader({ type, onActionClick }: TypeDetailsViewHe
 		dispatch(
 			pushDialog({
 				id,
-				component: 'craftercms.components.DeleteContentTypeDialog',
+				component: createComponentId('DeleteContentTypeDialog'),
 				props: {
 					contentType: type,
 					onComplete() {
