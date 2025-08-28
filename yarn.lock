@@ -1802,7 +1802,7 @@ __metadata:
     build-if-changed: "npm:^1.5.5"
     eslint: "npm:^9.33.0"
   peerDependencies:
-    uppy: ^3.27.3
+    uppy: ^4.13.4
   languageName: unknown
   linkType: soft
 
