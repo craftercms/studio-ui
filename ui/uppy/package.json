@@ -48,7 +48,7 @@
 		"eslint": "^9.33.0"
 	},
 	"peerDependencies": {
-		"uppy": "^3.27.3"
+		"uppy": "^4.13.4"
 	},
 	"files": [
 		"lib/*",
