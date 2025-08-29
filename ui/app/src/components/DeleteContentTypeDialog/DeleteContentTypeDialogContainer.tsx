@@ -27,6 +27,7 @@ import useSpreadState from '../../hooks/useSpreadState';
 import ApiResponseErrorState from '../ApiResponseErrorState';
 import LoadingState from '../LoadingState';
 import { useEnhancedDialogContext } from '../EnhancedDialog';
+import useUpdateRefs from '../../hooks/useUpdateRefs';
 
 const messages = defineMessages({
 	deleteComplete: {
