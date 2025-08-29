@@ -37,7 +37,6 @@ import { isItemLockedForMe, isLockedState } from '../../utils/content';
 import { useContentTypes } from '../../hooks/useContentTypes';
 import { useActiveUser } from '../../hooks/useActiveUser';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
-import { useContentItem } from '../../hooks/useContentItem';
 import { useReferences } from '../../hooks/useReferences';
 import { getHostToGuestBus } from '../../utils/subjects';
 import { reloadRequest } from '../../state/actions/preview';
@@ -52,6 +51,7 @@ import { PublishPackage } from '../../models';
 import Alert, { alertClasses } from '@mui/material/Alert';
 import { pushDialog } from '../../state/actions/dialogStack';
 import { createComponentId, pushErrorDialog } from '../../utils/system';
+import { useContentItem } from '../../hooks/useContentItem';
 
 export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps) {
 	const { path, onMinimize, onClose, mode, readonly, contentType, onFullScreen, onSuccess } = props;

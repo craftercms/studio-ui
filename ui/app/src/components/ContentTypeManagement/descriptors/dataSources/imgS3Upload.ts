@@ -14,42 +14,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createVirtualSection, PartialContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
+import { createVirtualSection, DescriptorContentType } from '../../utils';
+import { defineMessage } from 'react-intl';
 
-//  TODO: REMOVE
-
-export const boxFileUploadDescriptor: PartialContentType = {
-	id: 'box-file-upload',
-	name: 'Box File Upload',
-	description: 'Upload files to Box',
+export const imgS3UploadDataSourceDescriptor: DescriptorContentType = {
+	id: 'img-s3-upload',
+	name: defineMessage({ defaultMessage: 'Image Uploaded to S3 Repository' }),
+	description: '',
+	type: 'image',
 	sections: [
-		createVirtualSection({ title: 'Options', fields: ['path', 'readonly'] }),
-		createVirtualSection({ title: 'Constraints', fields: ['required'] })
+		createVirtualSection({
+			id: 'properties',
+			title: defineMessage({ defaultMessage: 'Options' }),
+			fields: ['repoPath', 'profileId']
+		})
 	],
 	fields: {
-		path: {
-			id: 'path',
+		repoPath: {
+			id: 'repoPath',
 			type: 'input',
-			name: 'Path',
+			name: defineMessage({ defaultMessage: 'Repository Path' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
-		readonly: {
-			id: 'readonly',
-			type: 'checkbox',
-			name: 'Read Only',
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		},
-		required: {
-			id: 'required',
-			type: 'checkbox',
-			name: 'Required',
+		profileId: {
+			id: 'profileId',
+			type: 'input',
+			name: defineMessage({ defaultMessage: 'Profile ID' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}
 	}
 };
 
-export default boxFileUploadDescriptor;
+export default imgS3UploadDataSourceDescriptor;

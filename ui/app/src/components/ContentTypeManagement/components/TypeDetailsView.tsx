@@ -14,15 +14,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import ContentType, { ContentTypeSection, DataSource, PossibleContentTypeDraft } from '../../../models/ContentType';
-import FieldChip, { FieldChipProps } from './FieldChip';
+import {
+	ContentTypeField,
+	ContentTypeSection,
+	DataSource,
+	PossibleContentTypeDraft
+} from '../../../models/ContentType';
+import FieldChip from './FieldChip';
 import React, { useMemo, useRef, useState } from 'react';
 import { createStore, Provider } from 'jotai/index';
 import { StableFormContext, StableFormContextProps } from '../../FormsEngine/lib/formsEngineContext';
 import { createStableFormContextProps, createVirtualDataSourceFields, createVirtualSection } from '../utils';
 import ErrorBoundary from '../../ErrorBoundary';
 import Box from '@mui/material/Box';
-import TypeBuilderAddButton from './TypeBuilderAddButton';
 import { FormattedMessage } from 'react-intl';
 import Divider from '@mui/material/Divider';
 import Tooltip from '@mui/material/Tooltip';
@@ -35,27 +39,21 @@ import Button from '@mui/material/Button';
 import TypeDetailsViewHeader, { TypeDetailsViewHeaderProps } from './TypeDetailsViewHeader';
 import LookupTable from '../../../models/LookupTable';
 import { defaultDataSourcesSection } from '../descriptors/controls';
-import { EnhancedDialog, EnhancedDialogProps } from '../../EnhancedDialog';
-import { DialogBody } from '../../DialogBody';
-import FormControl from '@mui/material/FormControl';
-import FormLabel from '@mui/material/FormLabel';
-import RadioGroup from '@mui/material/RadioGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Radio from '@mui/material/Radio';
-import DialogFooter from '../../DialogFooter/DialogFooter';
-import SecondaryButton from '../../SecondaryButton/SecondaryButton';
-import PrimaryButton from '../../PrimaryButton/PrimaryButton';
 import { atom } from 'jotai';
+import SectionInsertionDialog, { SectionInsertionProps } from './SectionInsertionDialog';
 
 export interface TypeDetailsViewProps {
 	type: PossibleContentTypeDraft;
 	fieldPathsWithErrors: LookupTable<boolean>;
 	selectedFieldIdPath: string;
-	onFieldSelected: FieldChipProps['onFieldSelected'];
+	onFieldSelected(fieldPath: string, field: ContentTypeField, sectionId: string): void;
 	onDataSourceSelected(dataSource: DataSource): void;
 	onSectionSelected(section: ContentTypeSection): void;
 	onEditTypeAction: TypeDetailsViewHeaderProps['onActionClick'];
 	onInsertSection: SectionInsertionProps['onInsertSection'];
+	onOpenInsertFieldDialog(sectionId: string, fieldPath?: string): void;
+	onOpenInsertDataSourceDialog(): void;
+	performCurrentFormErrorCheckAndWarning?(): boolean;
 }
 
 export function TypeDetailsView(props: TypeDetailsViewProps) {
@@ -66,7 +64,10 @@ export function TypeDetailsView(props: TypeDetailsViewProps) {
 		fieldPathsWithErrors,
 		onSectionSelected,
 		onDataSourceSelected,
-		onEditTypeAction
+		onEditTypeAction,
+		onOpenInsertFieldDialog,
+		onOpenInsertDataSourceDialog,
+		performCurrentFormErrorCheckAndWarning
 	} = props;
 
 	const store = useMemo(() => createStore(), []); // TODO: Use stable memo?
@@ -74,7 +75,12 @@ export function TypeDetailsView(props: TypeDetailsViewProps) {
 	if (stableFormContextRef.current === null)
 		stableFormContextRef.current = createStableFormContextProps({ type }, true);
 
-	const [openSectionInserter, setOpenSectionInserter] = useState(false);
+	const [openSectionInserter, setOpenSectionInserter] = useState<boolean>(false);
+
+	const onAddSection = () => {
+		if (!performCurrentFormErrorCheckAndWarning()) return false;
+		setOpenSectionInserter(true);
+	};
 
 	const dataSourcesSection = useMemo(
 		() =>
@@ -118,9 +124,9 @@ export function TypeDetailsView(props: TypeDetailsViewProps) {
 					<TypeDetailsViewHeader type={type} onActionClick={onEditTypeAction} />
 
 					<Box display="flex" justifyContent="space-between" mt={(theme) => `${theme.spacing(1)} !important`}>
-						<TypeBuilderAddButton onClick={() => setOpenSectionInserter(true)}>
+						<Button onClick={() => onAddSection()}>
 							<FormattedMessage defaultMessage="Add Section" />
-						</TypeBuilderAddButton>
+						</Button>
 						<div>
 							<Divider orientation="vertical" flexItem />
 							<Tooltip title={<FormattedMessage defaultMessage="Expand All" />}>
@@ -145,9 +151,9 @@ export function TypeDetailsView(props: TypeDetailsViewProps) {
 								accordionDetails: {
 									className: '',
 									children: (
-										<TypeBuilderAddButton>
+										<Button onClick={() => onOpenInsertFieldDialog(section.id)}>
 											<FormattedMessage defaultMessage="Add Field" />
-										</TypeBuilderAddButton>
+										</Button>
 									)
 								}
 							}}
@@ -156,8 +162,9 @@ export function TypeDetailsView(props: TypeDetailsViewProps) {
 									key={fieldId}
 									field={type.fields[fieldId]}
 									fieldPathsWithErrors={fieldPathsWithErrors}
-									onFieldSelected={onFieldSelected}
+									onFieldSelected={(fieldIdPath, field) => onFieldSelected(fieldIdPath, field, section.id)}
 									selectedFieldIdPath={selectedFieldIdPath}
+									onInsertField={(fieldPath) => onOpenInsertFieldDialog(section.id, fieldPath)}
 								/>
 							)}
 						>
@@ -172,14 +179,14 @@ export function TypeDetailsView(props: TypeDetailsViewProps) {
 					<SectionAccordion
 						colorize={false}
 						variant="outlined"
-						section={dataSourcesSection}
+						section={dataSourcesSection as ContentTypeSection}
 						slotProps={{
 							accordionDetails: {
 								className: '',
 								children: (
-									<TypeBuilderAddButton>
+									<Button onClick={() => onOpenInsertDataSourceDialog()}>
 										<FormattedMessage defaultMessage="Add Data Source" />
-									</TypeBuilderAddButton>
+									</Button>
 								)
 							}
 						}}
@@ -193,7 +200,6 @@ export function TypeDetailsView(props: TypeDetailsViewProps) {
 							/>
 						)}
 					/>
-
 					<SectionInsertionDialog
 						type={type}
 						open={openSectionInserter}
@@ -203,72 +209,6 @@ export function TypeDetailsView(props: TypeDetailsViewProps) {
 				</StableFormContext.Provider>
 			</Provider>
 		</ErrorBoundary>
-	);
-}
-
-interface SectionInsertionProps extends EnhancedDialogProps {
-	type: ContentType;
-	onInsertSection: (section: ContentTypeSection, position: number) => void;
-}
-
-function SectionInsertionDialog({ type, onInsertSection, ...dialogProps }: SectionInsertionProps) {
-	const [position, setPosition] = useState(type.sections.length);
-	const handleAccept = () => {
-		onInsertSection?.(createVirtualSection({ title: 'New Section', fields: [] }), position);
-	};
-	return (
-		<EnhancedDialog
-			{...dialogProps}
-			maxWidth="xs"
-			fullWidth
-			title={<FormattedMessage defaultMessage="Insert New Section" />}
-		>
-			<DialogBody>
-				<FormControl>
-					<FormLabel id="sectionInsertionRadioGroupLabel">
-						<FormattedMessage defaultMessage="Pick the position for the new section:" />
-					</FormLabel>
-					<RadioGroup
-						aria-labelledby="sectionInsertionRadioGroupLabel"
-						name="sectionInsertionRadioGroup"
-						value={position}
-						onChange={(e) => setPosition(parseInt(e.target.value))}
-						sx={{ padding: '10px' }}
-					>
-						<FormControlLabel
-							control={<Radio />}
-							value={0}
-							sx={{ marginBottom: '10px' }}
-							slotProps={{ typography: { variant: 'body2' } }}
-							label={<FormattedMessage defaultMessage="Insert first" />}
-						/>
-						{type.sections.map((section, index) => (
-							<FormControlLabel
-								key={section.id}
-								control={<Radio />}
-								value={index + 1}
-								sx={{ marginBottom: '10px' }}
-								slotProps={{ typography: { variant: 'body2' } }}
-								label={
-									<FormattedMessage
-										defaultMessage='Insert after "{sectionName}"'
-										values={{ sectionName: section.title }}
-									/>
-								}
-							/>
-						))}
-					</RadioGroup>
-				</FormControl>
-			</DialogBody>
-			<DialogFooter>
-				<SecondaryButton onClick={(e) => dialogProps.onClose?.(e, null)}>
-					<FormattedMessage defaultMessage="Cancel" />
-				</SecondaryButton>
-				<PrimaryButton onClick={handleAccept}>
-					<FormattedMessage defaultMessage="Accept" />
-				</PrimaryButton>
-			</DialogFooter>
-		</EnhancedDialog>
 	);
 }
 

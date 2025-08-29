@@ -14,68 +14,77 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from 'react';
-import { Box, ListItemIcon, ListItemText } from '@mui/material';
-import StarBorderIcon from '@mui/icons-material/StarBorder';
-import { EnhancedDialog, EnhancedDialogProps } from '../../EnhancedDialog';
+import React, { useMemo } from 'react';
+import { EnhancedDialogProps } from '../../EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
-import SecondaryButton from '../../SecondaryButton';
-import PrimaryButton from '../../PrimaryButton';
-import { DialogBody } from '../../DialogBody';
-import { DialogFooter } from '../../DialogFooter';
-import ListItemButton from '@mui/material/ListItemButton';
-import { SearchBar, SearchBarProps } from '../../SearchBar';
 import controlDescriptors from '../descriptors/controls';
+import { nou } from '../../../utils/object';
+import { ContentType, ContentTypeField } from '../../../models';
+import PickFieldDialog from './PickFieldDialog';
+import { BuiltInControlType } from '../../FormsEngine/lib/controlMap';
+import { DescriptorContentType } from '../utils';
+import { ContentTypeManagementConfig } from './EditTypeView';
 
-export interface PickControlDialogProps extends EnhancedDialogProps {}
-
-const fieldTypes = Object.values(controlDescriptors).sort((a, b) => (a?.name > b?.name ? 1 : -1));
-
-function PickControlDialogBody({ onClose }: PickControlDialogProps) {
-	const [searchTerm, setSearchTerm] = useState('');
-
-	const handleSearchChange: SearchBarProps['onChange'] = (value) => {
-		setSearchTerm(value);
-	};
-
-	const filteredFields = fieldTypes.filter(
-		(field) =>
-			field.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-			field.description.toLowerCase().includes(searchTerm.toLowerCase())
-	);
-
-	return (
-		<>
-			<DialogBody sx={{ transition: 'height 0.3s ease-in-out' }}>
-				<SearchBar keyword={searchTerm} onChange={handleSearchChange} />
-				<Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr' }}>
-					{filteredFields.map((field, index) => (
-						<ListItemButton key={index}>
-							<ListItemIcon>
-								<StarBorderIcon />
-							</ListItemIcon>
-							<ListItemText primary={field.name} secondary={field.description} />
-						</ListItemButton>
-					))}
-				</Box>
-			</DialogBody>
-			<DialogFooter>
-				<SecondaryButton onClick={(e) => onClose?.(e, null)}>
-					<FormattedMessage defaultMessage="Cancel" />
-				</SecondaryButton>
-				<PrimaryButton>
-					<FormattedMessage defaultMessage="Accept" />
-				</PrimaryButton>
-			</DialogFooter>
-		</>
-	);
+export interface PickControlDialogProps extends EnhancedDialogProps {
+	sectionId: string;
+	type: ContentType;
+	fieldIdPath?: string;
+	onInsertField: (fieldType: string, position: number) => void;
+	configDescriptors?: DescriptorContentType[];
+	controlExclusions: ContentTypeManagementConfig['controlExclusions'];
 }
 
-export function PickControlDialog({ ...dialogProps }: PickControlDialogProps) {
+const types = Object.values(controlDescriptors).sort((a, b) => (a?.name > b?.name ? 1 : -1));
+
+// TODO: finalize handling of systemFields
+export const systemFieldsIds: BuiltInControlType[] = [
+	'file-name',
+	'auto-filename',
+	'internal-name',
+	'disabled',
+	'page-nav-order',
+	'locale-selector'
+];
+
+export function PickControlDialog(props: PickControlDialogProps) {
+	const { onInsertField, type, sectionId, fieldIdPath, configDescriptors, controlExclusions, ...dialogProps } = props;
+	const { sectionFields } = useMemo(() => {
+		let sectionFields: ContentTypeField[];
+		if (nou(fieldIdPath)) {
+			// If fieldIdPath is null or undefined (not a composed id path), get the sectionFields from the root of 'type'.
+			// Here we retrieve the array of ids so we can ensure the order of the fields.
+			const sectionFieldIds = type.sections.find((section) => section.id === sectionId)?.fields;
+			sectionFields = sectionFieldIds?.map((fieldId) => type.fields[fieldId]) ?? [];
+		} else {
+			// If fieldIdPath has a value (composed id path), get the sectionFields from the specified path.
+			const fieldPathParts = fieldIdPath.split('.');
+			let subFields = type.fields;
+			fieldPathParts.forEach((fieldPathPart) => {
+				subFields = subFields?.[fieldPathPart]?.fields ?? {};
+			});
+			sectionFields = Object.values(subFields);
+		}
+		return { sectionFields };
+	}, [fieldIdPath, sectionId, type]);
+
+	// Before rendering the PickFieldDialog we need to do two things:
+	// 1. Filter out the controls that are in the controlExclusions list.
+	// 2. Add the configDescriptors (plugins) to the list of controls.
+	const typesFullList = [
+		...types.filter((type) => !(controlExclusions ?? []).includes(type.id)),
+		...(configDescriptors ?? [])
+	];
+
 	return (
-		<EnhancedDialog open title={<FormattedMessage defaultMessage="Pick a Control" />} maxWidth="sm" {...dialogProps}>
-			<PickControlDialogBody {...dialogProps} />
-		</EnhancedDialog>
+		<PickFieldDialog
+			{...dialogProps}
+			onInsert={onInsertField}
+			type={type}
+			title={<FormattedMessage defaultMessage="Insert Control" />}
+			typesFullList={typesFullList}
+			typesCurrentList={sectionFields}
+			systemFieldsIds={systemFieldsIds}
+		/>
 	);
 }
 
