@@ -690,7 +690,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
 	updateEditedItem: function (updatedItem, datasource, index) {
 		let item = this.items[index];
 		if (datasource) {
-			item.datasource;
+			item.datasource = datasource;
 		}
 		this.items[index] = {
 			...item,
