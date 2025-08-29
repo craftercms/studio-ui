@@ -92,6 +92,7 @@
   * Renamed `content/fetchItemsByPath` to `fetchContentItems`.
   * Removed `content/fetchSandboxItem`. Replaced by `fetchContentItem`.
   * Removed `content/fetchDetailedItems`. Replaced by `fetchContentItems`.
+  * Removed `content/changeContentType`.
   * Updated `dashboard/fetchPublishingHistoryPackageItems` `packageId` parameter to be of type `number`.
   * Updated `dependencies/fetchDependencies` `items` parameter to be of type `string[]`, renamed variable to `paths`
   * Updated `publishing/fetchPackage` `packageId` parameter to be of type `number`, and added the parameter `data`.

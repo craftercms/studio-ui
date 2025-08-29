@@ -45,7 +45,7 @@ const epics = [
 			ofType(changeContentTypeAction.type),
 			withLatestFrom(state$),
 			switchMap(([{ payload }, state]) => {
-				const newContentTypeId = payload.contentType.id;
+				const newContentTypeId = payload.newContentTypeId;
 				const path = payload.path;
 				if (payload.originalContentTypeId !== newContentTypeId) {
 					return of(

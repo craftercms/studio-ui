@@ -624,11 +624,15 @@ export const itemActionDispatcher = ({
 											component: createComponentId('ChangeContentTypeDialog'),
 											props: {
 												item,
-												onContentTypeSelected: () => {
+												onContentTypeSelected: ({ contentType }) => {
 													dispatch(
 														batchActions([
 															popDialog({ id: changeContentTypeDialogId }),
-															changeContentType({ originalContentTypeId: item.contentTypeId, path: item.path })
+															changeContentType({
+																originalContentTypeId: item.contentTypeId,
+																path: item.path,
+																newContentTypeId: contentType.id
+															})
 														])
 													);
 												}
