@@ -24,6 +24,9 @@ import { filterTypesByKeywordsAndObjectType } from '../../../utils/contentType';
 import useUpdateRefs from '../../../hooks/useUpdateRefs';
 import ContentType from '../../../models/ContentType';
 import { consolidateSx } from '../../../utils/system';
+import { getTypeViewCompactMode, setTypeViewCompactMode } from '../../../utils/state';
+import useActiveUser from '../../../hooks/useActiveUser';
+import { nnou } from '../../../utils/object';
 
 export interface SelectContentTypeProps {
 	sx?: BoxProps['sx'];
@@ -39,7 +42,9 @@ export interface SelectContentTypeProps {
 
 export function SelectTypeView(props: SelectContentTypeProps) {
 	const { slotProps, contentTypesList, initialCompact = false, initialObjectTypeFilter = 'all', sx } = props;
-	const [compact, setCompact] = useState(initialCompact); // TODO: Add preference storage. Note this is used in several places, not just type builder.
+	const { username } = useActiveUser();
+	const storedViewCompact = getTypeViewCompactMode(username);
+	const [compact, setCompact] = useState(nnou(storedViewCompact) ? storedViewCompact : initialCompact);
 	const [keywords, setKeywords] = useState('');
 	const [filteredTypes, setFilteredTypes] = useState<ContentType[]>();
 	const [objectTypeFilter, setObjectTypeFilter] = useState<ObjectTypeOption>(initialObjectTypeFilter);
@@ -59,12 +64,17 @@ export function SelectTypeView(props: SelectContentTypeProps) {
 		onKeyword$.next(value);
 	};
 
+	const handleSetCompact = (value: boolean) => {
+		setCompact(value);
+		setTypeViewCompactMode(username, value);
+	};
+
 	return (
 		<Box {...slotProps.box} sx={consolidateSx(sx, slotProps?.box?.sx)}>
 			<TypeListControlBar
 				{...slotProps.bar}
 				compact={compact}
-				onCompactChange={setCompact}
+				onCompactChange={handleSetCompact}
 				keywords={keywords}
 				onKeywordsChange={handleKeywordsChange}
 				objectTypeFilter={objectTypeFilter}

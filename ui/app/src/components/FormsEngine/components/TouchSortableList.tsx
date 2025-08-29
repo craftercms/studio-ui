@@ -31,15 +31,16 @@ import Box from '@mui/material/Box';
 export interface TouchSortableListProps<T = unknown> {
 	items: TItem<T>[];
 	onChange(newList: TItem<T>[]): void;
+	selectedItemId?: string;
 }
 
-export function TouchSortableList({ items, onChange }: TouchSortableListProps) {
+export function TouchSortableList({ items, onChange, selectedItemId }: TouchSortableListProps) {
 	const handleMove = (action: SortAction, moveToEdge: boolean, index: number) =>
 		sortableListActionProcessor(action, moveToEdge, items, index, onChange);
 	return (
 		<List>
 			{items.map((item, index) => (
-				<ListItem key={index} sx={{ display: 'flex' }}>
+				<ListItem key={index} sx={{ display: 'flex', bgcolor: item.key === selectedItemId && 'action.selected' }}>
 					<ListItemText
 						disableTypography
 						primary={

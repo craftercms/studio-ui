@@ -226,7 +226,7 @@ export function GitManagement(props: GitManagementProps) {
 								fetchRepositories();
 								fetchRepoStatus();
 							}}
-							aria-label={formatMessage({ defaultMessage: 'Refresh' })}
+							aria-label={formatMessage({ id: 'words.refresh', defaultMessage: 'Refresh' })}
 						>
 							<RefreshRounded />
 						</IconButton>

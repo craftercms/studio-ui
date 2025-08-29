@@ -15,7 +15,7 @@
  */
 
 (function () {
-	const { React, ReactDOM } = CrafterCMSNext;
+	const { React } = CrafterCMSNext;
 	const { useState } = React;
 
 	function Selector({ initialValue, updateFn, defaultValue, rootPath, validations }) {
@@ -89,15 +89,15 @@
 				updateFn(null, { fieldName: this.fieldName, value });
 			};
 
-			ReactDOM.render(
+			const root = craftercms.libs.ReactDOMClient.createRoot(element);
+			root.render(
 				<Selector
 					initialValue={initialValue}
 					rootPath={properties.rootPath}
 					updateFn={onChange}
 					defaultValue={defaultValue}
 					validations={properties.validations}
-				/>,
-				element
+				/>
 			);
 
 			this.value = value;

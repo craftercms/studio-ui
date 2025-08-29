@@ -48,6 +48,7 @@ export interface RenameItemViewProps {
 	onRename: () => void;
 	onInputChanges: (event: React.ChangeEvent<HTMLInputElement>) => void;
 	helperText?: ReactNode;
+	fetchDependant(): void;
 }
 
 export function RenameItemView(props: RenameItemViewProps) {
@@ -63,14 +64,15 @@ export function RenameItemView(props: RenameItemViewProps) {
 		helperText,
 		setConfirmBrokenReferences,
 		onRename,
-		onInputChanges
+		onInputChanges,
+		fetchDependant
 	} = props;
 	const { authoringBase } = useEnv();
 	const siteId = useActiveSiteId();
 	const dispatch = useDispatch();
 
 	const handleEditorDisplay = (item: ContentItem) => {
-		openItemEditor(item, authoringBase, siteId, dispatch, fetchRenameAssetDependants());
+		openItemEditor(item, authoringBase, siteId, dispatch, () => fetchDependant());
 	};
 
 	return fetchingDependantItems ? (

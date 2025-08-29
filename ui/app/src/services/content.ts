@@ -1455,16 +1455,6 @@ export function renameContent(siteId: string, path: string, name: string) {
 	return postJSON(`/studio/api/2/content/rename`, { siteId, path, name }).pipe(pluck('response'));
 }
 
-export function changeContentType(site: string, path: string, contentType: string): Observable<boolean> {
-	return post(
-		`/studio/api/1/services/api/1/content/change-content-type.json${toQueryString({
-			site,
-			path,
-			contentType: contentType
-		})}`
-	).pipe(pluck('response'), catchError(errorSelectorApi1));
-}
-
 export function checkPathExistence(site: string, path: string): Observable<boolean> {
 	return get(`/studio/api/1/services/api/1/content/content-exists.json${toQueryString({ site_id: site, path })}`).pipe(
 		pluck('response', 'content'),

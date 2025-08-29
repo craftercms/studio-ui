@@ -21,11 +21,11 @@ import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { fetchMarketplacePluginUsage, uninstallMarketplacePlugin } from '../../services/marketplace';
 import { UninstallPluginDialogBody } from './UninstallPluginDialogBody';
 import { useDispatch } from 'react-redux';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
 import useSpreadState from '../../hooks/useSpreadState';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { LoadingState } from '../LoadingState';
+import { pushErrorDialog } from '../../utils/system';
 
 export function UninstallPluginDialogContainer(props: UninstallPluginDialogContainerProps) {
 	const { onClose, pluginId, onComplete, isSubmitting, onSubmittingAndOrPendingChange } = props;
@@ -75,7 +75,7 @@ export function UninstallPluginDialogContainer(props: UninstallPluginDialogConta
 				callbacksRef.current.onSubmittingAndOrPendingChange({
 					isSubmitting: false
 				});
-				dispatch(showErrorDialog({ error: response }));
+				dispatch(pushErrorDialog({ props: { error: response } }));
 			}
 		});
 	};

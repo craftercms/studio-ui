@@ -14,47 +14,87 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createVirtualSection, PartialContentType } from '../../utils';
+import { createValidation, createVirtualSection, DescriptorContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
+import { defineMessage } from 'react-intl';
 
-export const nodeSelectorDescriptor: PartialContentType = {
+export const nodeSelectorDescriptor: DescriptorContentType = {
 	id: 'node-selector',
-	name: 'Node Selector',
-	description: 'Content node selection',
+	name: defineMessage({ defaultMessage: 'Item Selector' }),
+	description: defineMessage({ defaultMessage: 'Content item selection' }),
 	sections: [
-		createVirtualSection({ title: 'Options', fields: ['readonly', 'minSize', 'maxSize'] }),
-		createVirtualSection({ title: 'Constraints', fields: ['required'] })
+		createVirtualSection({
+			id: 'properties',
+			title: defineMessage({ defaultMessage: 'Options' }),
+			fields: ['minSize', 'maxSize', 'itemManager', 'readonly', 'disableFlattening', 'useSingleValueFilename', 'useMVS']
+		}),
+		createVirtualSection({
+			id: 'constraints',
+			title: defineMessage({ defaultMessage: 'Constraints' }),
+			fields: ['allowDuplicates']
+		})
 	],
 	fields: {
-		readonly: {
-			id: 'readonly',
-			type: 'checkbox',
-			name: 'Read Only',
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		},
 		minSize: {
 			id: 'minSize',
 			type: 'numeric-input',
-			name: 'Minimum Size',
+			name: defineMessage({ defaultMessage: 'Minimum Size' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		maxSize: {
 			id: 'maxSize',
 			type: 'numeric-input',
-			name: 'Maximum Size',
+			name: defineMessage({ defaultMessage: 'Maximum Size' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
-		required: {
-			id: 'required',
+		itemManager: {
+			id: 'itemManager',
+			type: 'datasource-selector',
+			name: defineMessage({ defaultMessage: 'Item Manager' }),
+			defaultValue: undefined,
+			validations: {
+				type: createValidation('type', 'item')
+			}
+		},
+		readonly: {
+			id: 'readonly',
 			type: 'checkbox',
-			name: 'Required',
+			name: defineMessage({ defaultMessage: 'Read Only' }),
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		disableFlattening: {
+			id: 'disableFlattening',
+			type: 'checkbox',
+			name: defineMessage({ defaultMessage: 'Disable Flattening for Search' }),
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		useSingleValueFilename: {
+			id: 'useSingleValueFilename',
+			type: 'checkbox',
+			name: defineMessage({ defaultMessage: 'Use single value filename (backward compat)' }),
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		useMVS: {
+			id: 'useMVS',
+			type: 'checkbox',
+			name: defineMessage({ defaultMessage: 'Use _mvs postfix (backward compat)' }),
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		allowDuplicates: {
+			id: 'allowDuplicates',
+			type: 'checkbox',
+			name: defineMessage({ defaultMessage: 'Allow Duplicates' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}
-	}
+	},
+	supportedPostFixes: ['_o']
 };
 
 export default nodeSelectorDescriptor;

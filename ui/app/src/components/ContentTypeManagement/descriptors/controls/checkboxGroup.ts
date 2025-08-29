@@ -14,54 +14,77 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createVirtualSection, PartialContentType } from '../../utils';
+import { createValidation, createVirtualSection, DescriptorContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
+import { defineMessage } from 'react-intl';
 
-export const checkboxGroupDescriptor: PartialContentType = {
+export const checkboxGroupDescriptor: DescriptorContentType = {
 	id: 'checkbox-group',
-	name: 'Checkbox Group',
-	description: 'Multiple checkbox inputs',
+	name: defineMessage({ defaultMessage: 'Grouped Checkboxes' }),
+	description: defineMessage({ defaultMessage: 'Multiple checkbox inputs' }),
 	sections: [
-		createVirtualSection({ title: 'Options', fields: ['options', 'readonly'] }),
-		createVirtualSection({ title: 'Constraints', fields: ['required', 'minSize', 'maxSize'] })
+		createVirtualSection({
+			id: 'properties',
+			title: defineMessage({ defaultMessage: 'Options' }),
+			fields: ['datasource', 'selectAll', 'listDirection', 'readonly']
+		}),
+		createVirtualSection({
+			id: 'constraints',
+			title: defineMessage({ defaultMessage: 'Constraints' }),
+			fields: ['minSize']
+		})
 	],
 	fields: {
-		options: {
-			id: 'options',
-			type: 'repeat',
-			name: 'Options',
+		datasource: {
+			id: 'datasource',
+			type: 'datasource-single-selector',
+			name: defineMessage({ defaultMessage: 'Data Source' }),
 			defaultValue: undefined,
+			validations: {
+				type: createValidation('type', 'item')
+			}
+		},
+		selectAll: {
+			id: 'selectAll',
+			type: 'checkbox',
+			name: defineMessage({ defaultMessage: 'Show select all' }),
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		listDirection: {
+			id: 'listDirection',
+			type: 'dropdown-static-values',
+			name: defineMessage({ defaultMessage: 'List Direction' }),
+			defaultValue: `[
+				{
+					"value": "horizontal",
+					"label": "Horizontal",
+					"selected": true
+				},
+				{
+					"value": "vertical",
+					"label": "Vertical",
+					"selected": false
+				}
+			]`,
 			validations: immutableEmptyObject
 		},
 		readonly: {
 			id: 'readonly',
 			type: 'checkbox',
-			name: 'Read Only',
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		},
-		required: {
-			id: 'required',
-			type: 'checkbox',
-			name: 'Required',
+			name: defineMessage({ defaultMessage: 'Read Only' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		minSize: {
 			id: 'minSize',
 			type: 'numeric-input',
-			name: 'Minimum Selected',
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		},
-		maxSize: {
-			id: 'maxSize',
-			type: 'numeric-input',
-			name: 'Maximum Selected',
+			name: defineMessage({ defaultMessage: 'Minimum Selected' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}
-	}
+	},
+	supportedPostFixes: ['_o']
 };
 
 export default checkboxGroupDescriptor;

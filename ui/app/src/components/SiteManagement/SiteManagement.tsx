@@ -32,8 +32,6 @@ import { trash } from '../../services/sites';
 import { batchActions } from '../../state/actions/misc';
 import { showSystemNotification } from '../../state/actions/system';
 import { fetchSites, popSite } from '../../state/actions/sites';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
-import { showEditSiteDialog } from '../../state/actions/dialogs';
 import { ErrorBoundary } from '../ErrorBoundary/ErrorBoundary';
 import SitesGrid from '../SitesGrid/SitesGrid';
 import PublishingStatusDialog from '../PublishingStatusDialog';
@@ -47,7 +45,7 @@ import { useActiveUser } from '../../hooks/useActiveUser';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import { useSitesBranch } from '../../hooks/useSitesBranch';
 import Paper from '@mui/material/Paper';
-import { getSystemLink } from '../../utils/system';
+import { createComponentId, getSystemLink, pushErrorDialog } from '../../utils/system';
 import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { DuplicateSiteDialog } from '../DuplicateSiteDialog';
 import Card from '@mui/material/Card';
@@ -60,6 +58,8 @@ import Checkbox from '@mui/material/Checkbox';
 import { ConfirmDialog } from '../ConfirmDialog';
 import { previewSwitch } from '../../services/security';
 import { EmptyState } from '../EmptyState';
+import { popDialog, pushDialog } from '../../state/actions/dialogStack';
+import { nanoid } from 'nanoid';
 
 const translations = defineMessages({
 	siteDeleted: {
@@ -132,13 +132,23 @@ export function SiteManagement() {
 			},
 			error({ response: { response } }) {
 				setDisabledSitesLookup({ [site.id]: false });
-				dispatch(showErrorDialog({ error: response }));
+				dispatch(pushErrorDialog({ props: { error: response } }));
 			}
 		});
 	};
 
 	const onEditSiteClick = (site: Site) => {
-		dispatch(showEditSiteDialog({ site }));
+		const dialogId = nanoid();
+		dispatch(
+			pushDialog({
+				id: dialogId,
+				component: createComponentId('EditSiteDialog'),
+				props: {
+					site,
+					onSaveSuccess: () => dispatch(popDialog({ id: dialogId }))
+				}
+			})
+		);
 	};
 
 	const onPublishButtonClick = (
@@ -209,7 +219,7 @@ export function SiteManagement() {
 						<IconButton
 							onClick={handleChangeView}
 							size="large"
-							aria-label={formatMessage({ defaultMessage: 'Change view' })}
+							aria-label={formatMessage({ id: 'sites.ChangeView', defaultMessage: 'Change view' })}
 						>
 							{currentView === 'grid' ? <ListViewIcon /> : <GridViewIcon />}
 						</IconButton>

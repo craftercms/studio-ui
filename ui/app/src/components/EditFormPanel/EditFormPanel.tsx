@@ -24,7 +24,6 @@ import { nnou } from '../../utils/object';
 import * as ModelHelper from '../../utils/model';
 import { findParentModelId } from '../../utils/model';
 import { popPiece } from '../../utils/string';
-import { showCodeEditorDialog, showEditDialog } from '../../state/actions/dialogs';
 import { getField } from '../../utils/contentType';
 import { Menu, MenuItem } from '@mui/material';
 import { GuestData } from '../../models/GlobalState';
@@ -32,6 +31,10 @@ import { useSelection } from '../../hooks/useSelection';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { usePreviewState } from '../../hooks/usePreviewState';
 import ContentInstance from '../../models/ContentInstance';
+import { pushDialog } from '../../state/actions/dialogStack';
+import { nanoid } from 'nanoid';
+import { createComponentId, pickShowContentFormAction } from '../../utils/system';
+import { popCodeEditorDialog } from '../../state/actions/dialogs';
 
 interface EditFormPanelProps {
 	open: boolean;
@@ -193,19 +196,25 @@ function EditFormPanelBody(props: EditFormPanelBodyProps) {
 		if (type === 'form') {
 			const selectedFields = selected[0]?.fieldId.length ? selected[0].fieldId : null;
 			dispatch(
-				showEditDialog(
+				pickShowContentFormAction(
 					getEditDialogProps({ authoringBase, hierarchyMap, model, models, path, selectedFields, selectedId, site })
 				)
 			);
 		} else {
+			const dialogId = nanoid();
 			dispatch(
-				showCodeEditorDialog({
-					path:
-						type === 'template'
-							? contentType.displayTemplate
-							: `/scripts/pages/${popPiece(selectedContentTypeId, '/')}.groovy`,
-					contentType: selectedContentTypeId,
-					mode: type === 'template' ? 'ftl' : 'groovy'
+				pushDialog({
+					id: dialogId,
+					component: createComponentId('CodeEditorDialog'),
+					props: {
+						path:
+							type === 'template'
+								? contentType.displayTemplate
+								: `/scripts/pages/${popPiece(selectedContentTypeId, '/')}.groovy`,
+						contentType: selectedContentTypeId,
+						mode: type === 'template' ? 'ftl' : 'groovy',
+						onClose: () => dispatch(popCodeEditorDialog({ id: dialogId }))
+					}
 				})
 			);
 		}

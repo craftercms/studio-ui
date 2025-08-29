@@ -15,49 +15,26 @@
  */
 
 import { ofType } from 'redux-observable';
-import { filter, ignoreElements, map, switchMap, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
+import { filter, ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { NEVER, of } from 'rxjs';
-import GlobalState from '../../models/GlobalState';
 import { camelize, dasherize } from '../../utils/string';
 import {
 	closeCodeEditorDialog,
-	closeCompareVersionsDialog,
-	closeConfirmDialog,
-	closeDeleteDialog,
-	closeDependenciesDialog,
-	closeHistoryDialog,
-	closeNewContentDialog,
-	closePublishDialog,
-	closeRenameAssetDialog,
-	closeSingleFileUploadDialog,
-	closeViewVersionDialog,
-	fetchBrokenReferences,
-	fetchBrokenReferencesFailed,
 	fetchContentVersion,
 	fetchContentVersionComplete,
 	fetchContentVersionFailed,
-	fetchDeleteDependencies,
-	fetchDeleteDependenciesComplete,
-	fetchDeleteDependenciesFailed,
-	fetchRenameAssetDependants,
-	fetchRenameAssetDependantsComplete,
-	fetchRenameAssetDependantsFailed,
 	newContentCreationComplete,
+	popCodeEditorDialog,
 	showCodeEditorDialog,
-	showConfirmDialog,
 	showEditDialog,
 	showPreviewDialog,
-	updateBrokenReferencesDialog,
 	updateCodeEditorDialog,
 	updateEditDialogConfig,
 	updatePreviewDialog
 } from '../actions/dialogs';
-import { fetchDeleteDependencies as fetchDeleteDependenciesService, fetchDependant } from '../../services/dependencies';
 import { fetchContentXML, fetchItemVersion } from '../../services/content';
 import { catchAjaxError } from '../../utils/ajax';
 import { batchActions } from '../actions/misc';
-import StandardAction from '../../models/StandardAction';
-import { asArray } from '../../utils/array';
 import { changeCurrentUrl, requestWorkflowCancellationDialogOnResult } from '../actions/preview';
 import { CrafterCMSEpic } from '../store';
 import { formEngineMessages } from '../../env/i18n-legacy';
@@ -65,8 +42,17 @@ import infoGraphic from '../../assets/information.svg';
 import { nnou, nou } from '../../utils/object';
 import { getHostToGuestBus } from '../../utils/subjects';
 import { unlockItem } from '../actions/content';
-import { parseLegacyItemToContentItem } from '../../utils/content';
-import { LegacyItem } from '../../models';
+import { generateDialogId } from '../../utils/dialogs';
+import type { LegacyFormDialogStateProps } from '../../components/LegacyFormDialog/utils';
+import type {
+	CodeEditorDialogProps,
+	CodeEditorDialogStateProps,
+	PreviewDialogProps,
+	PreviewDialogStateProps
+} from '../../components';
+import { popDialog, pushDialog, updateDialogState } from '../actions/dialogStack';
+import { nanoid } from 'nanoid';
+import { pushConfirmDialog } from '../../utils/system';
 
 function getDialogNameFromType(type: string): string {
 	let name = getDialogActionNameFromType(type);
@@ -77,51 +63,7 @@ function getDialogActionNameFromType(type: string): string {
 	return type.replace(/(CLOSE_)|(_DIALOG)/g, '');
 }
 
-function getDialogState(type: string, state: GlobalState): { onClose: StandardAction } {
-	const stateName = getDialogNameFromType(type);
-	const dialog = state.dialogs[stateName];
-	if (!dialog) {
-		console.error(`[epics/dialogs] Unable to retrieve dialog state from "${stateName}" action`);
-	}
-	return dialog;
-}
-
 const dialogEpics: CrafterCMSEpic[] = [
-	// region onClose Actions
-	(action$, state$) =>
-		action$.pipe(
-			ofType(
-				closeConfirmDialog.type,
-				closePublishDialog.type,
-				closeDeleteDialog.type,
-				closeNewContentDialog.type,
-				closeHistoryDialog.type,
-				closeViewVersionDialog.type,
-				closeCompareVersionsDialog.type,
-				closeDependenciesDialog.type,
-				closeSingleFileUploadDialog.type
-			),
-			withLatestFrom(state$),
-			map(([{ type, payload }, state]) => {
-				// Setting both onDismiss & onClose to the "CLOSE_*_DIALOG" action, allows escape
-				// and backdrop click to work. MUI dialogs will call onClose either when escape is
-				// pressed or the backdrop is clicked which is fine. When onDismiss is called, however
-				// the MUI dialog would later also call the onClose action and this causes a infinite
-				// "loop" of "CLOSE_*_DIALOG" actions. The filter insures the actions to be called
-				// don't include the "CLOSE_*_DIALOG" action to avoid said loop.
-				const onClose = getDialogState(type, state)?.onClose;
-
-				return [
-					// In the case of batch actions, save the additional BATCH_ACTIONS action itself
-					// and jump straight to the actions to dispatch.
-					...asArray(payload?.type === batchActions.type ? payload.payload : payload),
-					...asArray(onClose?.type === batchActions.type ? onClose.payload : onClose)
-				].filter((action) => Boolean(action) && action.type && action.type !== type);
-			}),
-			filter((actions) => actions.length > 0),
-			switchMap((actions) => actions)
-		),
-	// endregion
 	// region fetchContentVersion
 	(action$, state$) =>
 		action$.pipe(
@@ -136,34 +78,15 @@ const dialogEpics: CrafterCMSEpic[] = [
 		),
 	// endregion
 	// region newContentCreationComplete
-	(action$, state$) =>
+	(action$) =>
 		action$.pipe(
 			ofType(newContentCreationComplete.type),
 			filter(({ payload }) => payload.item?.isPage && payload.item.isPreviewable),
 			map(({ payload }) => changeCurrentUrl(payload.redirectUrl))
 		),
 	// endregion
-	// region fetchDeleteDependencies
-	(action$, state$) =>
-		action$.pipe(
-			ofType(fetchDeleteDependencies.type),
-			withLatestFrom(state$),
-			switchMap(
-				([
-					{
-						payload: { paths }
-					},
-					state
-				]) =>
-					fetchDeleteDependenciesService(state.sites.active, paths).pipe(
-						map(fetchDeleteDependenciesComplete),
-						catchAjaxError(fetchDeleteDependenciesFailed)
-					)
-			)
-		),
-	// endregion
 	// region showEditDialog, showCodeEditorDialog
-	(action$, state$, { getIntl }) =>
+	(action$, state$, { getIntl, store }) =>
 		action$.pipe(
 			ofType(showEditDialog.type, showCodeEditorDialog.type),
 			withLatestFrom(state$),
@@ -173,33 +96,52 @@ const dialogEpics: CrafterCMSEpic[] = [
 				// form before opening another.
 				let showValidation = false;
 
-				if (type === showEditDialog.type) {
-					showValidation =
-						payload.path !== state.dialogs.edit.path ||
-						payload.iceGroupId !== state.dialogs.edit.iceGroupId ||
-						payload.modelId !== state.dialogs.edit.modelId;
-				} else {
-					showValidation = payload.path !== state.dialogs.codeEditor.path;
+				const dialogId = generateDialogId(type);
+				const dialogState = state.dialogStack.byId[dialogId];
+
+				if (dialogState) {
+					if (type === showEditDialog.type) {
+						showValidation =
+							payload.path !== (dialogState.props as LegacyFormDialogStateProps).path ||
+							payload.iceGroupId !== (dialogState.props as LegacyFormDialogStateProps).iceGroupId ||
+							payload.modelId !== (dialogState.props as LegacyFormDialogStateProps).modelId;
+					} else {
+						showValidation = payload.path !== (dialogState.props as CodeEditorDialogStateProps).path;
+					}
 				}
 
 				if (nou(payload.path) || !showValidation) {
 					// If showEditDialog action is called while the dialog is already open & minimized, we maximize it.
 					// Differences in the showEditDialog payload — to what's on the state — are ignored, except for the path,
 					// which is used to check if it's the same form that's getting opened.
-					const { isMinimized, updateDialogAction } =
-						type === showEditDialog.type
-							? { isMinimized: state.dialogs.edit.isMinimized, updateDialogAction: updateEditDialogConfig }
-							: { isMinimized: state.dialogs.codeEditor.isMinimized, updateDialogAction: updateCodeEditorDialog };
-					if (isMinimized === true) {
-						return of(updateDialogAction({ isMinimized: false }));
+
+					if (dialogState) {
+						const { isMinimized, updateDialogAction } =
+							type === showEditDialog.type
+								? {
+										isMinimized: (dialogState.props as LegacyFormDialogStateProps).isMinimized,
+										updateDialogAction: updateEditDialogConfig
+									}
+								: {
+										isMinimized: (dialogState.props as CodeEditorDialogStateProps).isMinimized,
+										updateDialogAction: updateCodeEditorDialog
+									};
+						if (isMinimized === true) {
+							return of(updateDialogAction({ isMinimized: false }));
+						}
 					} else {
 						return NEVER;
 					}
 				} else {
+					const dialogId = nanoid();
 					return of(
-						showConfirmDialog({
-							body: getIntl().formatMessage(formEngineMessages.inProgressConfirmation),
-							imageUrl: infoGraphic
+						pushConfirmDialog({
+							id: dialogId,
+							props: {
+								body: getIntl().formatMessage(formEngineMessages.inProgressConfirmation),
+								imageUrl: infoGraphic,
+								onOk: () => store.dispatch(popDialog({ id: dialogId }))
+							}
 						})
 					);
 				}
@@ -212,7 +154,10 @@ const dialogEpics: CrafterCMSEpic[] = [
 			ofType(showPreviewDialog.type),
 			withLatestFrom(state$),
 			filter(
-				([{ payload }, state]) => payload.type === 'editor' && nnou(payload.url) && nou(state.dialogs.preview.content)
+				([{ payload }, state]) =>
+					payload.type === 'editor' &&
+					nnou(payload.url) &&
+					nou((state.dialogStack.byId[generateDialogId(showPreviewDialog.type)]?.props as PreviewDialogProps)?.content)
 			),
 			switchMap(([{ payload }, state]) =>
 				fetchContentXML(state.sites.active, payload.url).pipe(map((content) => updatePreviewDialog({ content })))
@@ -239,42 +184,59 @@ const dialogEpics: CrafterCMSEpic[] = [
 			withLatestFrom(state$),
 			filter(([, state]) => {
 				const username = state.user.username;
-				const item = state.content.itemsByPath[state.dialogs.codeEditor.path];
-				return item.stateMap.locked && item.lockOwner?.username === username;
+				const codeEditorState = state.dialogStack.byId[generateDialogId(closeCodeEditorDialog.type)]
+					?.props as CodeEditorDialogProps;
+				const item = state.content.itemsByPath[codeEditorState?.path];
+				return item?.stateMap.locked && item.lockOwner?.username === username;
 			}),
-			map(([, state]) => unlockItem({ path: state.dialogs.codeEditor.path }))
+			map(([, state]) =>
+				unlockItem({
+					path: (state.dialogStack.byId[generateDialogId(closeCodeEditorDialog.type)]?.props as CodeEditorDialogProps)
+						.path
+				})
+			)
 		),
 	// endregion
-	// region renameAssetDialog
+	// region pushDialog
 	(action$, state$) =>
 		action$.pipe(
-			ofType(fetchRenameAssetDependants.type),
+			ofType(pushDialog.type),
 			withLatestFrom(state$),
-			switchMap(([, state]) =>
-				fetchDependant(state.sites.active, state.dialogs.renameAsset.path).pipe(
-					takeUntil(action$.pipe(ofType(closeRenameAssetDialog.type))),
-					map((response: LegacyItem[]) => {
-						const dependants = parseLegacyItemToContentItem(response);
-						return fetchRenameAssetDependantsComplete({ dependants });
-					}),
-					catchAjaxError(fetchRenameAssetDependantsFailed)
+			filter(([{ payload }, state]) => {
+				return (
+					payload.component === 'craftercms.components.PreviewDialog' &&
+					payload.props.type === 'editor' &&
+					nnou(payload.props.url) &&
+					nou((state.dialogStack.byId[payload.id]?.props as PreviewDialogStateProps)?.content)
+				);
+			}),
+			switchMap(([{ payload }, state]) =>
+				fetchContentXML(state.sites.active, payload.props.url).pipe(
+					map((content) => updateDialogState({ id: payload.id, props: { content } }))
 				)
 			)
 		),
 	// endregion
-	// region fetchBrokenReferences
+	// region popDialog
 	(action$, state$) =>
 		action$.pipe(
-			ofType(fetchBrokenReferences.type),
+			ofType(popCodeEditorDialog.type),
 			withLatestFrom(state$),
-			switchMap(([, state]) =>
-				fetchDependant(state.sites.active, state.dialogs.brokenReferences.path).pipe(
-					map((response: LegacyItem[]) => {
-						const references = parseLegacyItemToContentItem(response);
-						return updateBrokenReferencesDialog({ references });
-					}),
-					catchAjaxError(fetchBrokenReferencesFailed)
-				)
+			filter(([{ payload }, state]) => {
+				const dialogId = payload.id;
+				// Check if the dialog has a path set in its state.
+				if (!(state.dialogStack.byId[dialogId]?.props as CodeEditorDialogStateProps)?.path) return false;
+
+				const username = state.user.username;
+				const item =
+					state.content.itemsByPath[(state.dialogStack.byId[dialogId]?.props as CodeEditorDialogStateProps)?.path];
+				return item.stateMap.locked && item.lockOwner.username === username;
+			}),
+			map(([{ payload }, state]) =>
+				batchActions([
+					unlockItem({ path: (state.dialogStack.byId[payload.id].props as CodeEditorDialogStateProps).path }),
+					popDialog({ id: payload.id })
+				])
 			)
 		)
 	// endregion
