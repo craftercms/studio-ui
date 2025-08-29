@@ -17,10 +17,11 @@
 import * as React from 'react';
 import IconButton from '@mui/material/IconButton';
 import DeleteRounded from '@mui/icons-material/DeleteRounded';
-import DeleteContentTypeDialog from '../components/DeleteContentTypeDialog';
 import ContentType from '../models/ContentType';
-import { useEnhancedDialogState } from '../hooks/useEnhancedDialogState';
 import { useIntl } from 'react-intl';
+import { useDispatch } from 'react-redux';
+import { popDialog, pushDialog } from '../state/actions/dialogStack';
+import { nanoid } from 'nanoid';
 
 export interface DeleteContentTypeButtonProps {
 	contentType: ContentType;
@@ -28,30 +29,37 @@ export interface DeleteContentTypeButtonProps {
 }
 
 function DeleteContentTypeButton({ contentType, onComplete }: DeleteContentTypeButtonProps) {
-	const deleteContentTypeDialogState = useEnhancedDialogState();
 	const { formatMessage } = useIntl();
+	const dispatch = useDispatch();
+
+	const onOpenDeleteContentTypeDialog = () => {
+		const dialogId = nanoid();
+		dispatch(
+			pushDialog({
+				id: dialogId,
+				// TODO: update to use 'createComponentId' when 'dialogs-system' PR is merged.
+				component: 'craftercms.components.DeleteContentTypeDialog',
+				props: {
+					contentType,
+					onComplete: () => {
+						dispatch(popDialog({ id: dialogId }));
+						onComplete?.();
+					},
+					onClose: () => dispatch(popDialog({ id: dialogId }))
+				}
+			})
+		);
+	};
+
 	return (
 		<>
 			<IconButton
-				onClick={() => deleteContentTypeDialogState.onOpen()}
+				onClick={() => onOpenDeleteContentTypeDialog()}
 				size="large"
 				aria-label={formatMessage({ defaultMessage: 'Delete' })}
 			>
 				<DeleteRounded />
 			</IconButton>
-			<DeleteContentTypeDialog
-				open={deleteContentTypeDialogState.open}
-				onClose={deleteContentTypeDialogState.onClose}
-				isSubmitting={deleteContentTypeDialogState.isSubmitting}
-				hasPendingChanges={deleteContentTypeDialogState.hasPendingChanges}
-				isMinimized={deleteContentTypeDialogState.isMinimized}
-				onSubmittingAndOrPendingChange={deleteContentTypeDialogState.onSubmittingAndOrPendingChange}
-				contentType={contentType}
-				onComplete={() => {
-					deleteContentTypeDialogState.onClose();
-					onComplete?.();
-				}}
-			/>
 		</>
 	);
 }

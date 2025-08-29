@@ -39,6 +39,7 @@ export interface RenameContentDialogContainerProps
 	dependantItems: ContentItem[];
 	fetchingDependantItems: boolean;
 	error: AjaxError;
+	fetchDependant(): void;
 }
 
 export function RenameContentDialogContainer(props: RenameContentDialogContainerProps) {
@@ -47,6 +48,7 @@ export function RenameContentDialogContainer(props: RenameContentDialogContainer
 		value,
 		onRenamed,
 		onClose,
+		fetchDependant,
 		dependantItems,
 		fetchingDependantItems,
 		error,
@@ -89,6 +91,7 @@ export function RenameContentDialogContainer(props: RenameContentDialogContainer
 					name={name}
 					disabled={renameDisabled}
 					newNameExists={itemExists}
+					fetchDependant={fetchDependant}
 					dependantItems={dependantItems}
 					isSubmitting={false}
 					confirmBrokenReferences={confirmBrokenReferences}

@@ -24,7 +24,6 @@ export const validatorsMap: Record<BuiltInControlType, ElementType> = {
 	repeat: null,
 	'auto-filename': null,
 	'aws-file-upload': null,
-	'box-file-upload': null,
 	'checkbox-group': null,
 	checkbox: null,
 	'date-time': null,

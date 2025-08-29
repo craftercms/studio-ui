@@ -25,6 +25,23 @@ import type { Theme } from '@mui/material';
 import type { ObjectTypeOption } from '../components/ContentTypeFilter/ContentTypesFilter';
 import { ContentItem } from '../models/Item';
 import type { BuiltInControlType } from '../components/FormsEngine/lib/controlMap';
+import { defineMessages, IntlShape } from 'react-intl';
+import { XmlKeys } from '../components/FormsEngine/lib/formConsts';
+
+const messages = defineMessages({
+	[XmlKeys.displayTemplate]: {
+		defaultMessage: 'Display template'
+	},
+	[XmlKeys.templateNotRequired]: {
+		defaultMessage: 'No template required'
+	},
+	[XmlKeys.dateModified]: {
+		defaultMessage: 'Last modified date'
+	},
+	[XmlKeys.dateCreated]: {
+		defaultMessage: 'Created date'
+	}
+});
 
 // TODO: Not used.
 export function getRelatedContentTypeIds(contentType: ContentType): string[] {
@@ -207,3 +224,93 @@ export function getNormalizedFolderPathForApi1GetTypes(item: ContentItem): strin
 export function createFormDefinitionPathFromTypeId(contentTypeId: string): string {
 	return ensureSingleSlash(`/content-types/${contentTypeId}/form-definition.xml`);
 }
+
+/**
+ * Retrieves the internal content-type fields used by studio.
+ *
+ * @param formatMessage - i18n formatter.
+ * @returns An array of `ContentTypeField` objects representing the internal fields.
+ */
+export function getStudioContentInternalFields(formatMessage: IntlShape['formatMessage']): ContentTypeField[] {
+	return [
+		{
+			id: XmlKeys.templateNotRequired,
+			name: formatMessage(messages[XmlKeys.templateNotRequired]),
+			type: 'boolean',
+			validations: {},
+			defaultValue: ''
+		},
+		{
+			id: XmlKeys.dateModified,
+			name: formatMessage(messages[XmlKeys.dateModified]),
+			type: 'date-time',
+			validations: {},
+			defaultValue: ''
+		},
+		{
+			id: XmlKeys.dateCreated,
+			name: formatMessage(messages[XmlKeys.dateCreated]),
+			type: 'date-time',
+			validations: {},
+			defaultValue: ''
+		}
+	];
+}
+
+export function createConfigPathFromTypeId(contentTypeId: string): string {
+	return ensureSingleSlash(`/content-types/${contentTypeId}/config.xml`);
+}
+
+export const systemValidationsNames = [
+	'itemManager',
+	'minSize',
+	'maxSize',
+	'maxlength',
+	'readonly',
+	'width',
+	'height',
+	'minWidth',
+	'minHeight',
+	'maxWidth',
+	'maxHeight',
+	'minValue',
+	'maxValue',
+	'imgRepositoryUpload',
+	'imgDesktopUpload',
+	'videoDesktopUpload',
+	'videoBrowseRepo',
+	'audioDesktopUpload',
+	'audioBrowseRepo',
+	'fileBrowseRepo'
+];
+
+export const systemValidationsKeysMap = {
+	minSize: 'minCount',
+	maxSize: 'maxCount',
+	maxlength: 'maxLength',
+	contentTypes: 'allowedContentTypes',
+	tags: 'allowedContentTypeTags',
+	readonly: 'readOnly',
+	width: 'width',
+	height: 'height',
+	minWidth: 'minWidth',
+	minHeight: 'minHeight',
+	maxWidth: 'maxWidth',
+	maxHeight: 'maxHeight',
+	minValue: 'minValue',
+	maxValue: 'maxValue',
+	imgRepositoryUpload: 'allowImagesFromRepo',
+	imgDesktopUpload: 'allowImageUpload',
+	videoDesktopUpload: 'allowVideoUpload',
+	videoBrowseRepo: 'allowVideosFromRepo',
+	audioDesktopUpload: 'allowAudioUpload',
+	audioBrowseRepo: 'allowAudioFromRepo',
+	fileBrowseRepo: 'allowFilesFromRepo'
+};
+
+export const componentsDataSourceContentTypesPropertyNames = [
+	'allowedContentTypes',
+	'allowedEmbeddedContentTypes',
+	'allowedSharedContentTypes',
+	'allowedSharedExistingContentTypes'
+];

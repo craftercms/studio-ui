@@ -26,8 +26,6 @@ export const PropsChangedError = Symbol('PropsChangedError');
 // TODO: should be defined in GlobalFormContext
 export const stackFormCountAtom = atom(0);
 
-// TODO: Is `navLabel` a system field? Add here if so.
-
 export enum XmlKeys {
 	modelId = 'objectId',
 	contentTypeId = 'content-type',
@@ -43,7 +41,8 @@ export enum XmlKeys {
 	dateCreatedDt = 'createdDate_dt',
 	dateModified = 'lastModifiedDate',
 	dateModifiedDt = 'lastModifiedDate_dt',
-	savedAsDraft = 'savedAsDraft'
+	savedAsDraft = 'savedAsDraft',
+	navLabel = 'navLabel'
 }
 
 // These are not in the content type definition

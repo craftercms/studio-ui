@@ -28,11 +28,10 @@ import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { isBlank } from '../../utils/string';
 import useSpreadState from '../../hooks/useSpreadState';
 import { useDispatch } from 'react-redux';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { Divider } from '@mui/material';
-import { updateCancelPackageDialog } from '../../state/actions/dialogs';
-import { batchActions } from '../../state/actions/misc';
 import { showSystemNotification } from '../../state/actions/system';
+import { pushErrorDialog } from '../../utils/system';
+import { useEnhancedDialogContext } from '../EnhancedDialog';
 
 export interface CancelPackageDialogContainerProps
 	extends CancelPackageDialogBaseProps,
@@ -48,29 +47,24 @@ export function CancelPackageDialogContainer(props: CancelPackageDialogContainer
 	const siteId = useActiveSiteId();
 	const submitDisabled = isBlank(state.comment);
 	const { formatMessage } = useIntl();
+	const { updateSubmittingOrHasPendingChanges } = useEnhancedDialogContext();
 
 	const handleSubmit = () => {
-		dispatch(updateCancelPackageDialog({ isSubmitting: true }));
+		updateSubmittingOrHasPendingChanges({ isSubmitting: true });
 		cancelPackages(siteId, {
 			packageIds: [packageId],
 			comment: state.comment
 		}).subscribe({
 			next() {
+				updateSubmittingOrHasPendingChanges({ isSubmitting: false });
 				dispatch(
-					batchActions([
-						updateCancelPackageDialog({ isSubmitting: false }),
-						showSystemNotification({ message: formatMessage({ defaultMessage: 'Package cancelled successfully.' }) })
-					])
+					showSystemNotification({ message: formatMessage({ defaultMessage: 'Package cancelled successfully.' }) })
 				);
 				onSuccess?.();
 			},
 			error({ response }) {
-				dispatch(
-					batchActions([
-						updateCancelPackageDialog({ isSubmitting: false }),
-						showErrorDialog({ error: response.response })
-					])
-				);
+				updateSubmittingOrHasPendingChanges({ isSubmitting: false });
+				dispatch(pushErrorDialog({ props: { error: response.response } }));
 			}
 		});
 	};

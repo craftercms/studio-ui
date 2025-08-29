@@ -22,7 +22,7 @@ import Menu, { menuClasses } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import { useDispatch } from 'react-redux';
-import { newContentCreationComplete, showEditDialog, showNewContentDialog } from '../../state/actions/dialogs';
+import { newContentCreationComplete, showEditDialog } from '../../state/actions/dialogs';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
@@ -43,6 +43,11 @@ import useActiveSiteId from '../../hooks/useActiveSiteId';
 import useSystemVersion from '../../hooks/useSystemVersion';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { LoadingState } from '../LoadingState';
+import { popDialog, pushDialog } from '../../state/actions/dialogStack';
+import { createComponentId, pickShowContentFormAction } from '../../utils/system';
+import useEnv from '../../hooks/useEnv';
+import { nanoid } from 'nanoid';
+import { batchActions } from '../../state/actions/misc';
 
 const translations = defineMessages({
 	quickCreateBtnLabel: {
@@ -254,6 +259,7 @@ const QuickCreate = forwardRef<HTMLButtonElement, { item?: ContentItem }>((props
 	const dispatch = useDispatch();
 	const items = useItemsByPath();
 	const site = useActiveSiteId();
+	const { authoringBase } = useEnv();
 
 	useEffect(() => {
 		site && dispatch(fetchQuickCreateList());
@@ -274,11 +280,27 @@ const QuickCreate = forwardRef<HTMLButtonElement, { item?: ContentItem }>((props
 
 	const onNewContentSelected = () => {
 		onMenuClose();
+		const dialogId = nanoid();
 		dispatch(
-			showNewContentDialog({
-				item: lookupItemByPath(currentPreviewItemPath, items),
-				// @ts-ignore - required attributes of `showEditDialog` are submitted by new content dialog `onContentTypeSelected` callback and injected into the showEditDialog action by the GlobalDialogManger
-				onContentTypeSelected: showEditDialog({})
+			pushDialog({
+				id: dialogId,
+				component: createComponentId('NewContentDialog'),
+				props: {
+					item: lookupItemByPath(currentPreviewItemPath, items),
+					onContentTypeSelected: ({ path, contentType }) => {
+						dispatch(
+							batchActions([
+								popDialog({ id: dialogId }),
+								pickShowContentFormAction({
+									authoringBase,
+									path,
+									contentTypeId: contentType.id,
+									isNewContent: true
+								})
+							])
+						);
+					}
+				}
 			})
 		);
 	};
@@ -286,10 +308,10 @@ const QuickCreate = forwardRef<HTMLButtonElement, { item?: ContentItem }>((props
 	const onQuickCreateItemSelected = (props) => {
 		onMenuClose();
 		dispatch(
-			showEditDialog({
+			pickShowContentFormAction({
 				...props,
 				inProgress: false,
-				onSaveSuccess: newContentCreationComplete()
+				onSaveSuccess: ({ item, redirectUrl }) => dispatch(newContentCreationComplete({ item, redirectUrl }))
 			})
 		);
 	};

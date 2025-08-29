@@ -37,7 +37,6 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import { useDispatch } from 'react-redux';
 import { fetchInstalledMarketplacePlugins } from '../../services/marketplace';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import {
 	emitSystemEvent,
 	pluginInstalled,
@@ -66,6 +65,7 @@ import { fetchMyPermissions } from '../../services/users';
 import Tooltip from '@mui/material/Tooltip';
 import PencilIcon from '@mui/icons-material/EditOutlined';
 import { styled } from '@mui/material/styles';
+import { pushErrorDialog } from '../../utils/system';
 
 const messages = defineMessages({
 	pluginInstalled: {
@@ -130,11 +130,7 @@ export const PluginManagement = (props: PluginManagementProps) => {
 					);
 				},
 				(error) => {
-					dispatch(
-						showErrorDialog({
-							error
-						})
-					);
+					dispatch(pushErrorDialog({ props: { error } }));
 				}
 			),
 		[dispatch, siteId]

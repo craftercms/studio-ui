@@ -133,7 +133,7 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
 							edge="end"
 							onClick={onCloseButtonClick}
 							size="large"
-							aria-label={formatMessage({ defaultMessage: 'Close' })}
+							aria-label={formatMessage({ id: 'editGroupDialog.close', defaultMessage: 'Close' })}
 						>
 							<CloseRoundedIcon />
 						</IconButton>

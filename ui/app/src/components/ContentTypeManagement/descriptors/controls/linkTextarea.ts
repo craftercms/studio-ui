@@ -14,29 +14,59 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createVirtualSection, PartialContentType } from '../../utils';
+import { createVirtualSection, DescriptorContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
+import { defineMessage } from 'react-intl';
 
-export const linkTextareaDescriptor: PartialContentType = {
+export const linkTextareaDescriptor: DescriptorContentType = {
 	id: 'link-textarea',
-	name: 'Link Textarea',
-	description: 'Multiple URL/Link input',
+	name: defineMessage({ defaultMessage: 'Link Text Area' }),
+	description: defineMessage({ defaultMessage: 'Multiple URL/Link input' }),
 	sections: [
-		createVirtualSection({ title: 'Options', fields: ['readonly'] }),
-		createVirtualSection({ title: 'Constraints', fields: ['required'] })
+		createVirtualSection({
+			id: 'properties',
+			title: defineMessage({ defaultMessage: 'Options' }),
+			fields: ['rows', 'maxlength', 'allowResize', 'readonly']
+		}),
+		createVirtualSection({
+			id: 'constraints',
+			title: defineMessage({ defaultMessage: 'Constraints' }),
+			fields: ['required']
+		})
 	],
 	fields: {
+		rows: {
+			id: 'rows',
+			type: 'numeric-input',
+			name: defineMessage({ defaultMessage: 'Rows' }),
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		maxlength: {
+			id: 'maxlength',
+			type: 'numeric-input',
+			name: defineMessage({ defaultMessage: 'Maximum Length' }),
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		allowResize: {
+			id: 'allowResize',
+			type: 'checkbox',
+			name: defineMessage({ defaultMessage: 'Allow Resize' }),
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
 		readonly: {
 			id: 'readonly',
 			type: 'checkbox',
-			name: 'Read Only',
+			name: defineMessage({ defaultMessage: 'Read Only' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		required: {
 			id: 'required',
 			type: 'checkbox',
-			name: 'Required',
+			name: defineMessage({ defaultMessage: 'Required' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}

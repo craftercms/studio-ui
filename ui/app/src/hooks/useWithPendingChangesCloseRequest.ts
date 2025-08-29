@@ -16,27 +16,30 @@
 
 import { useDispatch } from 'react-redux';
 import { useIntl } from 'react-intl';
-import { closeConfirmDialog, showConfirmDialog } from '../state/actions/dialogs';
 import translations from '../components/CodeEditorDialog/translations';
-import { batchActions, dispatchDOMEvent } from '../state/actions/misc';
-import { createCustomDocumentEventListener } from '../utils/dom';
 import { EnhancedDialogProps as DialogProps } from '../components/EnhancedDialog';
+import { popDialog } from '../state/actions/dialogStack';
+import { nanoid } from 'nanoid';
+import { pushConfirmDialog } from '../utils/system';
 
 export function useWithPendingChangesCloseRequest(onClose: DialogProps['onClose']): DialogProps['onClose'] {
 	const dispatch = useDispatch();
 	const { formatMessage } = useIntl();
 	return (e, reason) => {
-		const customEventId = 'dialogDismissConfirm';
+		const dialogId = nanoid();
 		dispatch(
-			showConfirmDialog({
-				title: formatMessage(translations.pendingChanges),
-				onOk: batchActions([dispatchDOMEvent({ id: customEventId, type: 'success' }), closeConfirmDialog()]),
-				onCancel: batchActions([dispatchDOMEvent({ id: customEventId, type: 'cancel' }), closeConfirmDialog()])
+			pushConfirmDialog({
+				id: dialogId,
+				props: {
+					title: formatMessage(translations.pendingChanges),
+					onOk: () => {
+						dispatch(popDialog({ id: dialogId }));
+						onClose(e, reason);
+					},
+					onCancel: () => dispatch(popDialog({ id: dialogId }))
+				}
 			})
 		);
-		createCustomDocumentEventListener(customEventId, ({ type }) => {
-			type === 'success' && onClose(e, reason);
-		});
 	};
 }
 

@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { createElement, useEffect, useRef } from 'react';
+import React, { createElement, useEffect, useRef, useState } from 'react';
 import {
 	FormsEngineFormApiContextProps,
 	FormsEngineFormContextApi,
@@ -46,10 +46,31 @@ import ListItemText from '@mui/material/ListItemText';
 import SectionAccordion from '../../FormsEngine/components/SectionAccordion';
 import { renderFieldControl } from '../../FormsEngine/lib/controlHelpers';
 import FormBackToTop from '../../FormsEngine/components/FormBackToTop';
-import ContentType, { ContentTypeField, ContentTypeSection } from '../../../models/ContentType';
-import { fooStableGlobalContext, PartialContentType } from '../utils';
+import type {
+	ContentType,
+	ContentTypeField,
+	ContentTypeSection,
+	DataSource,
+	NewContentTypeField
+} from '../../../models/ContentType';
+import {
+	fooStableGlobalContext,
+	getFieldFromType,
+	PartialContentType,
+	type readOnlyFieldIdsType,
+	readOnlyFieldsIds
+} from '../utils';
 import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
 import Alert from '@mui/material/Alert';
+import { controlMap } from '../controlMap';
+import { ConfirmDropdown } from '../../ConfirmDropdown';
+import { MoveFieldToSectionDialog } from './MoveFieldToSectionDialog';
+import { useEnhancedDialogState } from '../../../hooks/useEnhancedDialogState';
+import { SwapFieldDialog } from './SwapFieldDialog';
+import { nanoid } from 'nanoid';
+import MoveDownIcon from '@mui/icons-material/MoveDown';
+import { ReorderFieldsDialog, type ReorderFieldsDialogProps } from './ReorderFieldsDialog';
+import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
 
 interface TypeModeProps {
 	type: ContentType;
@@ -58,33 +79,57 @@ interface TypeModeProps {
 interface FieldModeProps {
 	field: ContentTypeField;
 	fieldIdPath: string;
+	sectionId: string;
 	controlDescriptor: PartialContentType;
+	isPanelReady?: boolean;
+	onDeleteField(fieldIdPath: string, sectionId: string): void;
+	onMoveFieldToSection(
+		fieldIdPath: string,
+		originSectionId: string,
+		newSectionId: string,
+		fieldIndex: number,
+		isTargetRepeatGroup: boolean
+	): void;
+	onSwapField(fieldId: string, sectionId: string, newField: PartialContentType): void;
+	onReorderRepGroupFields?(fields: ReorderFieldsDialogProps['fields'], fieldIdPath: string, sectionId: string): void;
+	performCurrentFormErrorCheckAndWarning(): boolean;
 }
 
 interface SectionModeProps {
 	section: ContentTypeSection;
+	isMainSection: boolean;
+	onDeleteSection(section: ContentTypeSection): void;
+	onReorderSectionFields?(fields: ReorderFieldsDialogProps['fields'], sectionId: string): void;
+	onOpenInsertFieldDialog?(sectionId: string, fieldPath?: string): void;
 }
 
 interface DataSourceModeProps {
-	dataSource: unknown;
+	dataSource: DataSource;
+	onDeleteDataSource(dataSourceId: string): void;
 }
 
 interface BaseProps extends Partial<FieldModeProps & SectionModeProps & DataSourceModeProps & TypeModeProps> {
 	virtualType: ContentType;
 	formApiContext: FormsEngineFormApiContextProps;
 	stableFormContext: StableFormContextProps;
+	onReorderTypeSections?(fields: ReorderFieldsDialogProps['fields']): void;
 	onClose(): void;
 }
 
 export type FieldFormViewProps = BaseProps & (TypeModeProps | FieldModeProps | SectionModeProps | DataSourceModeProps);
 
 function FieldFormViewBody(props: FieldFormViewProps) {
-	const { virtualType, onClose } = props;
+	const { virtualType, isPanelReady = true, onClose } = props;
 	const containerRef = useRef<HTMLDivElement>(undefined);
 	const stableFormContext = useStableFormContext();
+	// We're using nanoid to generate a unique ID for the typeId. This is to ensure that the component re-renders
+	// when the virtualType changes, so the autoFocus is set properly when the new set of fields render.
+	const [typeId, setTypeId] = useState<string>(undefined);
+	const isReadOnlyField = props.field && readOnlyFieldsIds.includes(props.field.id as readOnlyFieldIdsType);
 
 	useEffect(() => {
 		containerRef.current.scroll({ top: 0, behavior: 'smooth' });
+		setTypeId(nanoid());
 	}, [virtualType]);
 
 	return (
@@ -98,6 +143,7 @@ function FieldFormViewBody(props: FieldFormViewProps) {
 					{createElement(FieldActions, props)}
 					{createElement(SectionActions, props)}
 					{createElement(DataSourceActions, props)}
+					{createElement(ContentTypeActions, props)}
 					<Divider sx={{ ml: 1, mr: 2 }} orientation="vertical" flexItem />
 					<Button variant="outlined" onClick={onClose}>
 						<FormattedMessage defaultMessage="Done" />
@@ -106,33 +152,31 @@ function FieldFormViewBody(props: FieldFormViewProps) {
 			</Box>
 			<Container ref={containerRef} maxWidth="md" sx={{ overflow: 'auto', flex: 1 }}>
 				{createElement(FieldSwapper, props)}
-
-				{virtualType.sections.map((section, index) => (
-					<SectionAccordion
-						key={section.title}
-						section={section}
-						colorize={false}
-						renderControl={(fieldId) => {
-							const field = virtualType.fields[fieldId];
-							// TODO: tokenize not found on file-name
-							if (!field)
-								return (
-									<Alert key={fieldId} severity="error">
-										Field {fieldId} not found
-									</Alert>
+				{isPanelReady &&
+					virtualType.sections.map((section, sectionIndex) => (
+						<SectionAccordion
+							key={`${typeId}-${section.title}`}
+							section={section}
+							colorize={false}
+							renderControl={(fieldId, fieldIndex) => {
+								const field = virtualType.fields[fieldId];
+								if (!field)
+									return (
+										<Alert key={fieldId} severity="error">
+											Field {fieldId} not found
+										</Alert>
+									);
+								return renderFieldControl(
+									field,
+									stableFormContext.atoms.valueByFieldId,
+									sectionIndex === 0 && fieldIndex === 0,
+									field.id === 'id' && isReadOnlyField,
+									virtualType,
+									controlMap
 								);
-							return renderFieldControl(
-								field,
-								stableFormContext.atoms.valueByFieldId,
-								// TODO: Fix auto focus layout shift. See FE2 solution (render this whole area until panel animation is done).
-								false, // index === 0,
-								false,
-								virtualType
-							);
-						}}
-					/>
-				))}
-
+							}}
+						/>
+					))}
 				<FormBackToTop containerRef={containerRef} />
 			</Container>
 		</Box>
@@ -159,110 +203,258 @@ export function TypeBuilderFormsEngine(props: FieldFormViewProps) {
 	);
 }
 
-function FieldBreadcrumbs(props: FieldFormViewProps): React.JSX.Element {
+function FieldBreadcrumbs(props: FieldFormViewProps): React.ReactNode {
 	if (!props.field) return;
 	const fieldPathIds = props.fieldIdPath?.split('.') ?? [];
 	return (
 		fieldPathIds.length > 1 && (
 			<Breadcrumbs separator={<NavigateNextIcon fontSize="small" />}>
-				{fieldPathIds.map((id) => (
-					// TODO: Render field names instead of ids
-					<Typography variant="body2" key={id} children={id} />
-				))}
+				{fieldPathIds.map((id) => {
+					// Retrieve the fieldPathId by removing everything after `id` in fieldPathIds
+					const currentFieldPathId = fieldPathIds.slice(0, fieldPathIds.indexOf(id) + 1).join('.');
+					const currentField = props.type ? getFieldFromType(props.type, currentFieldPathId) : undefined;
+					return (
+						<Typography variant="body2" key={id}>
+							{currentField?.name ?? id}
+						</Typography>
+					);
+				})}
 			</Breadcrumbs>
 		)
 	);
 }
 
 function FieldActions(props: FieldFormViewProps): React.JSX.Element {
-	if (!props.field) return;
-	const field = props.field;
+	const {
+		field,
+		fieldIdPath,
+		sectionId,
+		onDeleteField,
+		onMoveFieldToSection,
+		type,
+		onReorderRepGroupFields,
+		performCurrentFormErrorCheckAndWarning
+	} = props;
+	const [openMoveFieldDialog, setOpenMoveFieldDialog] = useState(false);
+	const [openReorderFieldsDialog, setOpenReorderFieldsDialog] = useState(false);
+	if (!field) return;
+	const fields = Object.values(field.fields ?? {}).map((f) => ({ key: f.id, value: f.name })) || [];
+
+	const onOpenMoveFieldDialog = () => {
+		if (!performCurrentFormErrorCheckAndWarning()) return;
+		setOpenMoveFieldDialog(true);
+	};
+
+	const handleMoveFieldToSection: FieldFormViewProps['onMoveFieldToSection'] = (
+		fieldId,
+		originSectionId,
+		newSectionId,
+		fieldIndex,
+		isRepeatGroup
+	) => {
+		setOpenMoveFieldDialog(false);
+		onMoveFieldToSection?.(fieldIdPath, originSectionId, newSectionId, fieldIndex, isRepeatGroup);
+	};
+
+	const onReorderFields = (newFields: ReorderFieldsDialogProps['fields']) => {
+		setOpenReorderFieldsDialog(false);
+		onReorderRepGroupFields?.(newFields, fieldIdPath, sectionId);
+	};
+
 	return (
 		<>
+			{field.type === 'repeat' && Object.keys(field.fields ?? {}).length > 0 && (
+				<Tooltip title={<FormattedMessage defaultMessage="Reorder fields" />}>
+					<IconButton onClick={() => setOpenReorderFieldsDialog(true)}>
+						<MoveDownIcon />
+					</IconButton>
+				</Tooltip>
+			)}
 			<Tooltip title={<FormattedMessage defaultMessage="Move to another section" />}>
-				<IconButton>
+				<IconButton onClick={() => onOpenMoveFieldDialog()}>
 					<DriveFileMoveOutlined />
 				</IconButton>
 			</Tooltip>
 			{field.id !== XmlKeys.internalName && field.id !== XmlKeys.fileName && (
-				<Tooltip title={<FormattedMessage defaultMessage="Delete field" />}>
-					<IconButton>
-						<DeleteRounded />
-					</IconButton>
-				</Tooltip>
+				<ConfirmDropdown
+					icon={DeleteRounded}
+					iconTooltip={<FormattedMessage defaultMessage="Delete field" />}
+					confirmHelperText={
+						!(field as NewContentTypeField).NEW ? (
+							<FormattedMessage
+								defaultMessage={'Delete "{fieldName} ({fieldId})"?'}
+								values={{
+									fieldName: field.name,
+									fieldId: field.id
+								}}
+							/>
+						) : (
+							<FormattedMessage defaultMessage="Delete new field?" />
+						)
+					}
+					cancelText={<FormattedMessage defaultMessage="No" />}
+					confirmText={<FormattedMessage defaultMessage="Yes" />}
+					onConfirm={() => onDeleteField?.(fieldIdPath, sectionId)}
+				/>
 			)}
+			<MoveFieldToSectionDialog
+				fieldIdPath={fieldIdPath}
+				field={field}
+				sectionId={sectionId}
+				type={type}
+				open={openMoveFieldDialog}
+				onClose={() => setOpenMoveFieldDialog(false)}
+				onMoveFieldToSection={handleMoveFieldToSection}
+			/>
+			<ReorderFieldsDialog
+				fields={fields}
+				open={openReorderFieldsDialog}
+				onClose={() => setOpenReorderFieldsDialog(false)}
+				onReorderFields={onReorderFields}
+			/>
 		</>
 	);
 }
 
+const fileNameTypeIds = ['file-name', 'auto-filename'];
+
 function FieldSwapper(props: FieldFormViewProps): React.JSX.Element {
+	const { field, sectionId, controlDescriptor, onSwapField } = props;
+	const swapFieldDialogState = useEnhancedDialogState();
 	if (!props.field) return;
-	const { field, controlDescriptor } = props;
+
+	const handleSwapField = (newField: PartialContentType) => {
+		onSwapField?.(field.id, sectionId, newField);
+		swapFieldDialogState.onClose();
+	};
+
 	return (
-		<ListItem
-			component="div"
-			secondaryAction={
-				field.type === 'file-name' && (
-					<Tooltip title={<FormattedMessage defaultMessage="Swap Field" />}>
-						<IconButton>
-							<SwapCallsOutlined />
-						</IconButton>
-					</Tooltip>
-				)
-			}
-		>
-			<ListItemIcon>
-				<ContentTypeFieldIcon />
-			</ListItemIcon>
-			<ListItemText
-				primary={controlDescriptor.name}
-				secondary={controlDescriptor.description || controlDescriptor.id}
+		<>
+			<ListItem
+				component="div"
+				secondaryAction={
+					field.id === 'file-name' && (
+						<Tooltip title={<FormattedMessage defaultMessage="Swap Field" />}>
+							<IconButton onClick={() => swapFieldDialogState.onOpen()}>
+								<SwapCallsOutlined />
+							</IconButton>
+						</Tooltip>
+					)
+				}
+			>
+				<ListItemIcon>
+					<ContentTypeFieldIcon />
+				</ListItemIcon>
+				<ListItemText
+					primary={controlDescriptor.name}
+					secondary={controlDescriptor.description || controlDescriptor.id}
+				/>
+			</ListItem>
+			<SwapFieldDialog
+				currentFieldType={field.type}
+				open={swapFieldDialogState.open}
+				onClose={swapFieldDialogState.onClose}
+				onSwapField={handleSwapField}
+				allowedTypeIds={fileNameTypeIds}
 			/>
-		</ListItem>
+		</>
 	);
 }
 
 function SectionActions(props: FieldFormViewProps): React.JSX.Element {
-	if (!props.section) return;
-	const section = props.section;
+	const { section, isMainSection, onDeleteSection, onReorderSectionFields, onOpenInsertFieldDialog } = props;
+	const [openReorderFieldsDialog, setOpenReorderFieldsDialog] = useState(false);
+	if (!section) return;
+	const fields = section.fields.map((field) => ({ key: field, value: field })) || [];
+
+	const onReorderFields = (newFields: ReorderFieldsDialogProps['fields']) => {
+		setOpenReorderFieldsDialog(false);
+		onReorderSectionFields?.(newFields, section.id);
+	};
+
 	return (
 		<>
-			<Tooltip title={<FormattedMessage defaultMessage="Delete Section" />}>
-				<IconButton>
-					<DeleteRounded />
-				</IconButton>
-			</Tooltip>
+			{section.fields?.length > 0 ? (
+				<Tooltip title={<FormattedMessage defaultMessage="Reorder fields" />}>
+					<IconButton onClick={() => setOpenReorderFieldsDialog(true)}>
+						<MoveDownIcon />
+					</IconButton>
+				</Tooltip>
+			) : (
+				<Tooltip title={<FormattedMessage defaultMessage="Add field" />}>
+					<IconButton onClick={() => onOpenInsertFieldDialog?.(section.id)}>
+						<AddCircleOutlineOutlinedIcon />
+					</IconButton>
+				</Tooltip>
+			)}
+			{!isMainSection && (
+				<ConfirmDropdown
+					icon={DeleteRounded}
+					iconTooltip={<FormattedMessage defaultMessage="Delete Section" />}
+					confirmHelperText={
+						<FormattedMessage defaultMessage={'Delete "{title}"?'} values={{ title: section.title }} />
+					}
+					cancelText={<FormattedMessage defaultMessage="No" />}
+					confirmText={<FormattedMessage defaultMessage="Yes" />}
+					onConfirm={() => onDeleteSection?.(section)}
+				/>
+			)}
+			<ReorderFieldsDialog
+				fields={fields}
+				open={openReorderFieldsDialog}
+				onClose={() => setOpenReorderFieldsDialog(false)}
+				onReorderFields={onReorderFields}
+			/>
 		</>
 	);
 }
 
 function DataSourceActions(props: FieldFormViewProps): React.JSX.Element {
-	if (!props.dataSource) return;
-	const dataSource = props.dataSource;
+	const { dataSource, onDeleteDataSource } = props;
+	if (!dataSource) return;
 	return (
 		<>
-			<Tooltip title={<FormattedMessage defaultMessage="Delete Data Source" />}>
-				<IconButton>
-					<DeleteRounded />
-				</IconButton>
-			</Tooltip>
+			<ConfirmDropdown
+				icon={DeleteRounded}
+				iconTooltip={<FormattedMessage defaultMessage="Delete Data Source" />}
+				confirmHelperText={<FormattedMessage defaultMessage={'Delete "{name}"?'} values={{ name: dataSource.title }} />}
+				cancelText={<FormattedMessage defaultMessage="No" />}
+				confirmText={<FormattedMessage defaultMessage="Yes" />}
+				onConfirm={() => {
+					onDeleteDataSource?.(dataSource.id);
+				}}
+			/>
 		</>
 	);
 }
 
-type Mode = 'field' | 'section' | 'dataSource' | 'type';
+function ContentTypeActions(props: FieldFormViewProps): React.JSX.Element {
+	const { section, field, dataSource, type, onReorderTypeSections } = props;
+	const [openReorderFieldsDialog, setOpenReorderFieldsDialog] = useState(false);
+	if (section || field || dataSource) return;
 
-// TODO: Remove if unnecessary
-function identifyMode(props: FieldFormViewProps): Mode {
-	if (props.type) {
-		return 'type';
-	} else if (props.field) {
-		return 'field';
-	} else if (props.section) {
-		return 'section';
-	} else if (props.dataSource) {
-		return 'dataSource';
-	}
+	const sections = type.sections.map((section) => ({ key: section.id, value: section.title, content: section })) || [];
+
+	const onReorderSections = (newSections: ReorderFieldsDialogProps['fields']) => {
+		setOpenReorderFieldsDialog(false);
+		onReorderTypeSections?.(newSections);
+	};
+
+	return (
+		<>
+			<Tooltip title={<FormattedMessage defaultMessage="Reorder sections" />}>
+				<IconButton onClick={() => setOpenReorderFieldsDialog(true)}>
+					<MoveDownIcon />
+				</IconButton>
+			</Tooltip>
+			<ReorderFieldsDialog
+				fields={sections}
+				open={openReorderFieldsDialog}
+				onClose={() => setOpenReorderFieldsDialog(false)}
+				onReorderFields={onReorderSections}
+			/>
+		</>
+	);
 }
 
 function pickPanelTitleByMode(props: FieldFormViewProps): React.JSX.Element {

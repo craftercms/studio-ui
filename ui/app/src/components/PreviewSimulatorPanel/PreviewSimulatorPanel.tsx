@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { defineMessages, useIntl } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import React, { useEffect, useMemo, useReducer } from 'react';
 import { getTranslation } from '../../utils/i18n';
 import IconButton from '@mui/material/IconButton';
@@ -31,6 +31,7 @@ import { useDispatch } from 'react-redux';
 import { WidthAndHeight } from '../../models/WidthAndHeight';
 import { useSelection } from '../../hooks/useSelection';
 import Box from '@mui/material/Box';
+import Tooltip from '@mui/material/Tooltip';
 
 const SIMULATOR_PANEL_RESPONSIVE_MODE = 'previewSimulatorPanel.previewWindowSize';
 const SIMULATOR_PANEL_CUSTOM_MODE = 'previewSimulatorPanel.custom';
@@ -227,9 +228,16 @@ export function PreviewSimulatorPanel(props: any) {
 					onChange={(e) => setHeight(e.target.value)}
 					value={height}
 				/>
-				<IconButton onClick={onFlipDimensions} edge="end" size="large">
-					<ScreenRotationRounded />
-				</IconButton>
+				<Tooltip title={<FormattedMessage defaultMessage="Rotate screen" />}>
+					<IconButton
+						onClick={onFlipDimensions}
+						edge="end"
+						size="large"
+						aria-label={formatMessage({ defaultMessage: 'Rotate screen' })}
+					>
+						<ScreenRotationRounded />
+					</IconButton>
+				</Tooltip>
 			</Box>
 			<Divider />
 			<FormControl

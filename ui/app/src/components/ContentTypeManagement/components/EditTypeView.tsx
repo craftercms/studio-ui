@@ -18,28 +18,49 @@ import ContentType, {
 	ContentTypeField,
 	ContentTypeSection,
 	DataSource,
+	NewContentTypeField,
+	NewDataSource,
 	PossibleContentTypeDraft
 } from '../../../models/ContentType';
 import LookupTable from '../../../models/LookupTable';
 import React, { createElement, forwardRef, useEffect, useMemo, useRef, useState } from 'react';
 import {
+	applyTranslations,
 	buildContentTypeXml,
+	CONTENT_TYPES_BASE_PATH,
+	createDataSourceValuesObject,
 	createEmptyTypeStructure,
 	createFieldFormContextApi,
 	createTypeFieldValuesObject,
 	createTypeFormValuesObject,
+	createTypeTemplate,
+	createVirtualTypeForDataSource,
 	createVirtualTypeForField,
 	createVirtualTypeFormContext,
 	createVirtualTypeForSection,
+	DescriptorContentType,
+	editTypeController,
+	editTypeTemplate,
+	getFieldFromType,
+	getPropertiesAndValidationsFromDescriptor,
+	getSectionFromType,
+	initializeConfigFromType,
+	isComposedPath,
+	NEW_DATASOURCE_ID,
+	NEW_FIELD_ID,
 	prepareSerializeToXmlTypeObject,
 	reverseTypeFieldValuesObject,
+	systemFieldsIdsMap,
+	systemFieldsTypesMap,
+	TYPE_GROOVY_CONTROLLER_BASE_PATH,
+	TYPE_TEMPLATE_BASE_PATH,
 	TypePropsToEdit,
 	typePropsToEdit
 } from '../utils';
 import { extractAtomValues, useShowAlert } from '../../FormsEngine/lib/formUtils';
 import TypeBuilderFormsEngine, { FieldFormViewProps } from './TypeBuilderFormsEngine';
-import { FieldChipProps } from './FieldChip';
 import controlDescriptors, { sectionDescriptor, typeBasicDetailsDescriptor } from '../descriptors/controls';
+import dataSourceDescriptors from '../descriptors/dataSources';
 import type { BuiltInControlType } from '../../FormsEngine/lib/controlMap';
 import TypeDetailsView, { TypeDetailsViewProps } from './TypeDetailsView';
 import {
@@ -49,22 +70,38 @@ import {
 } from '../../FormsEngine/lib/formsEngineContext';
 import useContentTypes from '../../../hooks/useContentTypes';
 import { createStore as createJotai, Provider } from 'jotai';
-import { Observable, of, Subject, debounceTime, map } from 'rxjs';
+import { debounceTime, forkJoin, map, Observable, Subject } from 'rxjs';
 import EditTypeViewLayout, { EditAppLayoutProps } from './EditTypeViewLayout';
 import useUpdateRefs from '../../../hooks/useUpdateRefs';
 import useActiveSiteId from '../../../hooks/useActiveSiteId';
 import { JotaiStore } from '../../FormsEngine/types';
-import { useIntl } from 'react-intl';
-import Dialog from '@mui/material/Dialog';
-import hljs from '../../../env/hljs';
-import Typography from '@mui/material/Typography';
-import { pluckProps } from '../../../utils/object';
-import Box, { BoxProps } from '@mui/material/Box';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { createLookupTable, nnou, pluckProps, reversePluckProps } from '../../../utils/object';
+import { BoxProps } from '@mui/material/Box';
 import useEnhancedDialogContext from '../../EnhancedDialog/useEnhancedDialogContext';
-import Checkbox from '@mui/material/Checkbox';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import { writeConfiguration } from '../../../services/configuration';
-import { createFormDefinitionPathFromTypeId } from '../../../utils/contentType';
+import { fetchSiteUiConfig, writeConfiguration } from '../../../services/configuration';
+import { createConfigPathFromTypeId, createFormDefinitionPathFromTypeId } from '../../../utils/contentType';
+import { useDispatch } from 'react-redux';
+import { popDialog, pushDialog } from '../../../state/actions/dialogStack';
+import { nanoid } from 'nanoid';
+import useEnv from '../../../hooks/useEnv';
+import { deserialize, fromString } from '../../../utils/xml';
+import useSpreadState from '../../../hooks/useSpreadState';
+import { asArray } from '../../../utils/array';
+import { fetchContentItem } from '../../../services/content';
+import { batchActions } from '../../../state/actions/misc';
+import { fetchItemVersions } from '../../../state/actions/versions';
+import { getRootPath } from '../../../utils/path';
+import { showHistoryDialog } from '../../../state/actions/dialogs';
+import { XmlViewerDialog } from './XmlViewerDialog';
+import useEnhancedDialogState from '../../../hooks/useEnhancedDialogState';
+import { XmlDiffDialog } from './XmlDiffDialog';
+import type { ReorderFieldsDialogProps } from './ReorderFieldsDialog';
+import PickControlDialog from './PickControlDialog';
+import PickDataSourceDialog from './PickDataSourceDialog';
+import { fetchContentTypes } from '../../../state/actions/preview';
+import { getXmlBuilder } from '../../FormsEngine/lib/valueSerializers';
+import { pushErrorDialog } from '../../../utils/system';
 
 export interface EditTypeAppProps {
 	/**
@@ -106,6 +143,13 @@ interface EditAppContextProps {
 	formFieldsChanged: boolean;
 }
 
+export interface ContentTypeManagementConfig {
+	controls: LookupTable<{ descriptor: DescriptorContentType; icon: { id: string }; id: string }>;
+	controlExclusions: string[];
+	dataSources: LookupTable<{ descriptor: DescriptorContentType; icon: { id: string }; id: string }>;
+	dataSourceExclusions: string[];
+}
+
 export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props, ref) => {
 	const { onClose } = props;
 
@@ -114,19 +158,60 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 	const showAlert = useShowAlert();
 	const { formatMessage } = useIntl();
 	const jotai = useMemo(() => createJotai(), []); // TODO: Use stable memo?
+	const dispatch = useDispatch();
+	const { activeEnvironment } = useEnv();
 
-	const dialogContext = useEnhancedDialogContext(); // TODO: keep dialog context inform of pending changes/submitting
+	const dialogContext = useEnhancedDialogContext();
 	const stateRef = useRef<EditAppContextProps>(null);
 	if (!stateRef.current) stateRef.current = createContextObject();
 
 	const [type, setType] = useState(() => ({ ...props.type })); // Working copy of the ContentType being edited.
 	const [open, setOpen] = useState(false);
-	const [openXmlViewer, setOpenXmlViewer] = useState<string>(); // TODO: Temp, for testing, remove.
+	const xmlViewerDialogState = useEnhancedDialogState();
+	const [xmlViewerContent, setXmlViewerContent] = useState<string>(undefined);
+	const xmlDiffDialogState = useEnhancedDialogState();
+	const [xmlDiffContent, setXmlDiffContent] = useState<{ initialContent: string; currentContent }>(undefined);
 	const [selectedFieldIdPath, setSelectedFieldIdPath] = useState<string>(null);
 	const [hasPendingChanges, setHasPendingChanges] = useState(false);
 	const [virtualContentType, setVirtualContentType] = useState<ContentType>(null);
 	const [fieldFormViewProps, setFieldFormViewProps] = useState<FieldFormViewProps>(null);
 	const [fieldPathsWithErrors, setFieldPathsWithErrors] = useState<LookupTable<boolean>>({});
+	const [config, setConfig] = useSpreadState<ContentTypeManagementConfig>({
+		controls: null,
+		controlExclusions: null,
+		dataSources: null,
+		dataSourceExclusions: null
+	});
+	const [drawerOpenTransitionEnded, setDrawerOpenTransitionEnded] = useState(false);
+	const [insertFieldData, setInsertFieldData] = useState<{ sectionId: string; fieldPath?: string }>({
+		sectionId: null,
+		fieldPath: null
+	});
+	const [openDataSourceInserter, setOpenDataSourceInserter] = useState<boolean>(false);
+
+	const configDescriptors = useMemo(() => {
+		const controlDescriptors = Object.values(config?.controls ?? {}).map(({ descriptor }) => descriptor);
+		const dataSourceDescriptors = Object.values(config?.dataSources ?? {}).map(({ descriptor }) => descriptor);
+
+		return {
+			controlDescriptors: controlDescriptors.length ? createLookupTable(controlDescriptors) : null,
+			dataSourceDescriptors: dataSourceDescriptors.length ? createLookupTable(dataSourceDescriptors) : null
+		};
+	}, [config?.controls, config?.dataSources]);
+	const { configControlDescriptors, configDataSourceDescriptors } = useMemo(() => {
+		return {
+			configControlDescriptors: config?.controls
+				? Object.values(config?.controls)
+						.map(({ descriptor }) => descriptor)
+						.filter((descriptor) => nnou(descriptor))
+				: [],
+			configDataSourceDescriptors: config?.dataSources
+				? Object.values(config?.dataSources)
+						.map(({ descriptor }) => descriptor)
+						.filter((descriptor) => nnou(descriptor))
+				: []
+		};
+	}, [config]);
 
 	/** Saves and commits the state changes. Returns undefined if no changes occurred. */
 	const commitOpenFormChanges = () => {
@@ -135,7 +220,13 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 		let updatedType: ContentType;
 		const values = extractAtomValues(jotai, stateRef.current.activeFormContext.atoms.valueByFieldId);
 		if (stateRef.current.selectedField) {
-			updatedType = updateTypeFromFieldUpdate(type, stateRef.current.selectedField, values);
+			updatedType = updateTypeFromFieldUpdate(
+				type,
+				stateRef.current,
+				values,
+				selectedFieldIdPath,
+				configDescriptors.controlDescriptors
+			);
 		} else if (stateRef.current.selectedSection) {
 			updatedType = updateTypeFromSectionUpdate(type, stateRef.current.selectedSection, values);
 		} else if (stateRef.current.selectedDataSource) {
@@ -181,7 +272,19 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 			virtualType,
 			stableFormContext,
 			formApiContext: stateRef.current.formContextApi,
-			onClose: () => effectRefs.current.closeAndCleanup(),
+			onClose: () => {
+				const formValid = effectRefs.current.closeAndCleanup();
+				if (!formValid) return;
+				setDrawerOpenTransitionEnded(false);
+			},
+			onDeleteField: handleDeleteField,
+			onDeleteSection: handleDeleteSection,
+			onDeleteDataSource: handleDeleteDataSource,
+			onMoveFieldToSection: handleMoveFieldToSection,
+			onReorderSectionFields: handleReorderSectionFields,
+			onReorderTypeSections: handleReorderTypeSections,
+			onReorderRepGroupFields: handleReorderRepGroupFields,
+			onSwapField: handleSwapFileNameField,
 			...extraFormProps
 		});
 		// Note: things set here should be cleaned up in closeAndCleanup
@@ -190,60 +293,88 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 		setOpen(true);
 	};
 
-	const handleFieldSelected: FieldChipProps['onFieldSelected'] = (fieldIdPath, field) => {
+	const handleFieldSelected = (
+		fieldIdPath: string,
+		field: ContentTypeField,
+		sectionId: string,
+		overrideType?: ContentType
+	) => {
 		if (!closeAndCleanup()) return;
 
-		const controlDescriptor = controlDescriptors[field.type as BuiltInControlType];
+		const controlDescriptor =
+			controlDescriptors[field.type as BuiltInControlType] ?? config.controls?.[field.type].descriptor;
 		if (!controlDescriptor)
 			return showAlert(`No control descriptor found for field "${field.name}" of type "${field.type}"`);
 
-		const virtualType = createVirtualTypeForField(controlDescriptor);
+		// Adding data sources to the virtual type to ensure they are available for rendering in the dataSourceSelector.
+		const virtualType = createVirtualTypeForField(
+			{ ...controlDescriptor, dataSources: type.dataSources },
+			formatMessage
+		);
 		handleArtefactSelected(
 			virtualType,
 			createVirtualTypeFormContext(virtualType, createTypeFieldValuesObject(field), contentTypesLookup, {
 				fieldUpdates$: stateRef.current.fieldUpdates$
 			}),
-			{ field, fieldIdPath, controlDescriptor }
+			{
+				field,
+				fieldIdPath,
+				controlDescriptor: applyTranslations(controlDescriptor, formatMessage),
+				sectionId,
+				...(overrideType && { type: overrideType })
+			}
 		);
-
 		setSelectedFieldIdPath(fieldIdPath);
 		stateRef.current.selectedField = field;
 	};
-	const handleSectionSelected: TypeDetailsViewProps['onSectionSelected'] = (section) => {
+	const handleSectionSelected = (section: ContentTypeSection, overrideType?: ContentType) => {
 		if (!closeAndCleanup()) return;
-		const virtualType = createVirtualTypeForSection(sectionDescriptor);
+		const sectionIndex = type.sections.findIndex((s) => s.id === section.id);
+		const virtualType = createVirtualTypeForSection(sectionDescriptor, formatMessage);
 		handleArtefactSelected(
 			virtualType,
 			createVirtualTypeFormContext(virtualType, section as unknown as LookupTable<unknown>, contentTypesLookup, {
 				fieldUpdates$: stateRef.current.fieldUpdates$
 			}),
-			{ section }
+			{ section, isMainSection: sectionIndex === 0, ...(overrideType && { type: overrideType }) }
 		);
 		stateRef.current.selectedSection = section;
 	};
 	const handleDataSourceSelected: TypeDetailsViewProps['onDataSourceSelected'] = (dataSource) => {
-		return showAlert('Not implemented');
-		// TODO: Similar to fields...
-		// if (!closeAndCleanup()) return;
-		// const virtualType =
-		// stateRef.current.selectedDataSource = dataSource;
-		// handleArtefactSelected(
-		// 	virtualType,
-		// 	createVirtualTypeFormContext(virtualType, createTypeFormValuesObject(type), contentTypesLookup, {
-		// 		fieldUpdates$: stateRef.current.fieldUpdates$
-		// 	}),
-		// 	{ dataSource }
-		// );
-	};
-	const handleEditTypeProperties = () => {
 		if (!closeAndCleanup()) return;
-		const virtualType = createEmptyTypeStructure(typeBasicDetailsDescriptor);
+
+		const dataSourceDescriptor =
+			dataSourceDescriptors[dataSource.type] ?? config.dataSources?.[dataSource.type]?.descriptor;
+		if (!dataSourceDescriptor)
+			return showAlert(`No control descriptor found for field "${dataSource.title}" of type "${dataSource.type}"`);
+
+		const virtualType = createVirtualTypeForDataSource(dataSourceDescriptor, formatMessage);
+		handleArtefactSelected(
+			virtualType,
+			createVirtualTypeFormContext(virtualType, createDataSourceValuesObject(dataSource), contentTypesLookup, {
+				fieldUpdates$: stateRef.current.fieldUpdates$
+			}),
+			{ dataSource }
+		);
+		const dataSourceId = dataSource.id ? dataSource.id : NEW_DATASOURCE_ID;
+		setSelectedFieldIdPath(dataSourceId);
+		stateRef.current.selectedDataSource = dataSource;
+	};
+	const handleEditTypeProperties = (overrideType?: ContentType) => {
+		if (!closeAndCleanup()) return;
+		const virtualType = createEmptyTypeStructure(applyTranslations(typeBasicDetailsDescriptor, formatMessage));
 		handleArtefactSelected(
 			virtualType,
 			createVirtualTypeFormContext(virtualType, createTypeFormValuesObject(type), contentTypesLookup, {
 				fieldUpdates$: stateRef.current.fieldUpdates$
-			})
+			}),
+			{ ...(overrideType && { type: overrideType }) }
 		);
+	};
+
+	const onUpdateHasPendingChanges = (hasPendingChanges: boolean) => {
+		setHasPendingChanges(hasPendingChanges);
+		dialogContext?.updateSubmittingOrHasPendingChanges({ hasPendingChanges });
 	};
 
 	const effectRefs = useUpdateRefs({
@@ -251,7 +382,8 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 		selectedFieldIdPath,
 		fieldPathsWithErrors,
 		closeAndCleanup,
-		handleEditTypeProperties
+		handleEditTypeProperties,
+		onUpdateHasPendingChanges
 	});
 
 	const handleCloseDrawer: EditAppLayoutProps['onClose'] = () => effectRefs.current.closeAndCleanup();
@@ -261,73 +393,329 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 				handleEditTypeProperties();
 				break;
 			}
-			case 'template':
-				showAlert(`Not implemented (template)`);
+			case 'template': {
+				const templatePath = type.displayTemplate;
+				if (templatePath) {
+					editTypeTemplate(templatePath, dispatch);
+				} else {
+					createTypeTemplate(TYPE_TEMPLATE_BASE_PATH, dispatch, (item) => {
+						editTypeTemplate(`${item.path}/${item.fileName}`, dispatch);
+					});
+				}
 				break;
+			}
 			case 'jsController':
-				showAlert({
-					message: `Not implemented (jsController)`,
-					children: (
-						<Typography component="ol" variant="body2" marginTop={1} textAlign="left">
-							<li>Open code editor</li>
-							<li>Two</li>
-							<li>Three</li>
-						</Typography>
-					)
-				});
+				editTypeController(TYPE_GROOVY_CONTROLLER_BASE_PATH, type.id, dispatch, 'javascript');
 				break;
 			case 'groovyController':
-				showAlert(`Not implemented (groovyController)`);
+				editTypeController(TYPE_GROOVY_CONTROLLER_BASE_PATH, type.id, dispatch, 'groovy');
 				break;
 			case 'deleted':
-				showAlert(`Not implemented (deleted)`);
+				onClose?.();
+				window.top.postMessage(
+					{
+						type: 'CONTENT_TYPES_ON_DELETED'
+					},
+					'*'
+				);
 				break;
 		}
 	};
 	const handleToolbarActionClick: EditAppLayoutProps['onActionClick'] = (e, action) => {
 		switch (action) {
 			case 'exit':
-				// TODO: Don't close with pending changes...
 				if (!performCurrentFormErrorCheckAndWarning()) break;
-				onClose?.();
+				if (hasPendingChanges) {
+					const id = nanoid();
+					dispatch(
+						pushDialog({
+							id,
+							component: 'craftercms.components.ConfirmDialog',
+							props: {
+								title: <FormattedMessage defaultMessage="Discard changes?" />,
+								onOk: () => {
+									onClose?.();
+									onUpdateHasPendingChanges(false);
+									dispatch(popDialog({ id }));
+								},
+								onCancel: () => dispatch(popDialog({ id }))
+							}
+						})
+					);
+				} else {
+					onClose?.();
+				}
 				break;
 			case 'save': {
 				if (!performCurrentFormErrorCheckAndWarning()) break;
 				const latestUpdate = commitOpenFormChanges();
-				const tempActuallySaveToServer =
-					(document.getElementById('tempSaveToServerCheckbox') as HTMLInputElement)?.checked ?? false;
-				save(site, latestUpdate ?? type, tempActuallySaveToServer).subscribe({
-					next(xml) {
-						const highlighted = hljs.highlight(xml, { language: 'xml' }).value;
-						setOpenXmlViewer(highlighted);
-						if (tempActuallySaveToServer) showAlert(`Save successful.`);
+				dialogContext?.updateSubmittingOrHasPendingChanges({ isSubmitting: true });
+				const typeToSave = latestUpdate ?? type;
+				save(site, typeToSave, configDescriptors).subscribe({
+					next() {
+						onUpdateHasPendingChanges(false);
+						dialogContext?.updateSubmittingOrHasPendingChanges({ isSubmitting: false });
+						// If the type being saved is new, update the type state to remove the NEW property.
+						if ((typeToSave as PossibleContentTypeDraft).NEW) {
+							setType(reversePluckProps(typeToSave as PossibleContentTypeDraft, 'NEW'));
+						}
+						dispatch(fetchContentTypes());
+						showAlert(`Save successful.`);
 					},
 					error() {
+						dialogContext?.updateSubmittingOrHasPendingChanges({ isSubmitting: false });
 						showAlert(formatMessage({ defaultMessage: `Error saving content type` }));
 					}
 				});
 				break;
 			}
+			case 'viewXml': {
+				const xml = buildXmlFromType(type, configDescriptors);
+				openViewXml(xml);
+				break;
+			}
+			case 'diff': {
+				const initialXml = buildXmlFromType(props.type, configDescriptors);
+				const currentXml = buildXmlFromType(type, configDescriptors);
+				openDiffXml(initialXml, currentXml);
+				break;
+			}
+			case 'history': {
+				fetchContentItem(site, `${CONTENT_TYPES_BASE_PATH}${type.id}/form-definition.xml`).subscribe((item) => {
+					dispatch(
+						batchActions([
+							fetchItemVersions({
+								item,
+								rootPath: getRootPath(item.path)
+							}),
+							showHistoryDialog({})
+						])
+					);
+				});
+				break;
+			}
+			case 'rollback': {
+				const id = nanoid();
+				dispatch(
+					pushDialog({
+						id,
+						component: 'craftercms.components.ConfirmDialog',
+						props: {
+							body: (
+								<FormattedMessage defaultMessage="Are you sure you want to revert all changes made during this session?" />
+							),
+							onOk: () => {
+								resetSelection();
+								setType(props.type);
+								dispatch(popDialog({ id }));
+							},
+							onCancel: () => dispatch(popDialog({ id }))
+						}
+					})
+				);
+				break;
+			}
 		}
 	};
+
+	const resetSelection = () => {
+		setSelectedFieldIdPath(null);
+		stateRef.current.selectedField = null;
+		setVirtualContentType(null);
+		setFieldFormViewProps(null);
+		setHasPendingChanges(false);
+		setDrawerOpenTransitionEnded(false);
+		setOpen(false);
+	};
+
+	// region insert
+	const onOpenInsertFieldDialog = (sectionId: string, fieldPath?: string) => {
+		if (!performCurrentFormErrorCheckAndWarning()) return false;
+		setInsertFieldData({ sectionId, fieldPath });
+	};
+
+	const onOpenInsertDataSourceDialog = () => {
+		if (!performCurrentFormErrorCheckAndWarning()) return false;
+		setOpenDataSourceInserter(true);
+	};
+
 	const handleInsertSection: TypeDetailsViewProps['onInsertSection'] = (section, position) => {
 		setType(insertSection(type, section, position));
+		onUpdateHasPendingChanges(true);
 		handleSectionSelected(section);
+	};
+	const handleInsertField = (fieldType: string, position: number): void => {
+		const { sectionId, fieldPath } = insertFieldData;
+		setInsertFieldData({ sectionId: null });
+		const descriptor = controlDescriptors[fieldType] ?? config.controls?.[fieldType].descriptor;
+		if (!descriptor) {
+			showAlert(`No control descriptor found for field type "${fieldType}"`);
+			return;
+		}
+		const newField = getNewFieldFromDescriptor(fieldType, descriptor);
+		const newFieldPath = fieldPath ? `${fieldPath}.${NEW_FIELD_ID}` : NEW_FIELD_ID;
+		setType(addField(type, newField, newFieldPath, sectionId, position));
+		handleFieldSelected(newFieldPath, newField, sectionId);
+	};
+	const handleInsertDataSource = (dataSourceType: string, position: number) => {
+		const descriptor = dataSourceDescriptors[dataSourceType] ?? config.dataSources?.[dataSourceType].descriptor;
+		if (!descriptor) {
+			showAlert(`No data source descriptor found for type "${dataSourceType}"`);
+			return;
+		}
+
+		const newDataSource = getNewDataSourceFromDescriptor(dataSourceType, descriptor);
+
+		setOpenDataSourceInserter(false);
+		const nextDataSources = type.dataSources?.concat() ?? [];
+		nextDataSources.splice(position, 0, newDataSource);
+		setType({ ...type, dataSources: nextDataSources });
+		handleDataSourceSelected(newDataSource);
+	};
+	// endregion
+
+	// region delete
+	const handleDeleteSection: FieldFormViewProps['onDeleteSection'] = (section) => {
+		resetSelection();
+		onUpdateHasPendingChanges(true);
+		setType((currentType) => deleteSection(currentType, section));
+	};
+	const handleDeleteField: FieldFormViewProps['onDeleteField'] = (fieldIdPath: string, sectionId) => {
+		resetSelection();
+		onUpdateHasPendingChanges(true);
+		setType((currentType) => deleteField(currentType, fieldIdPath, sectionId));
+	};
+	const handleDeleteDataSource: FieldFormViewProps['onDeleteDataSource'] = (dataSourceId) => {
+		resetSelection();
+		onUpdateHasPendingChanges(true);
+		const nextDataSources = type.dataSources.filter((dataSource) => dataSource.id !== dataSourceId);
+		setType((currentType) => ({ ...currentType, dataSources: nextDataSources }));
+	};
+	// endregion
+
+	const handleSwapFileNameField: FieldFormViewProps['onSwapField'] = (fieldId, sectionId, newField) => {
+		onUpdateHasPendingChanges(true);
+		setType((prevType) => {
+			const nextType = {
+				...prevType,
+				fields: {
+					...prevType.fields,
+					[fieldId]: {
+						...prevType.fields[fieldId],
+						type: newField.id
+					}
+				}
+			};
+			handleFieldSelected(fieldId, nextType.fields[fieldId], sectionId, nextType);
+			return nextType;
+		});
 	};
 
 	// region const fieldEditorView = ...
-	// TODO: Add field, add section also to render on the reactive side panel
-	const fieldEditorView = virtualContentType ? createElement(TypeBuilderFormsEngine, fieldFormViewProps) : null;
+	const fieldEditorView = virtualContentType
+		? createElement(TypeBuilderFormsEngine, {
+				...fieldFormViewProps,
+				isPanelReady: drawerOpenTransitionEnded,
+				onOpenInsertFieldDialog,
+				performCurrentFormErrorCheckAndWarning
+			})
+		: null;
+	// endregion
+
+	const handleMoveFieldToSection: FieldFormViewProps['onMoveFieldToSection'] = (
+		fieldIdPath,
+		originSectionId,
+		newSectionId,
+		fieldIndex,
+		isTargetRepeatGroup
+	) => {
+		onUpdateHasPendingChanges(true);
+		if (isTargetRepeatGroup) {
+			const fieldId = getIdFromIdPath(fieldIdPath);
+			// For repeat groups as targets, newSectionId is the path of the selected repeating group
+			const newFieldIdPath = `${newSectionId}.${fieldId}`;
+			const fieldIdRoot = newFieldIdPath.split('.')[0];
+			// Section where the field will be added (when moving to a repeat group, newSectionId is the path of the selected repeating group)
+			const targetSectionId = type.sections.find((section) => section.fields.includes(fieldIdRoot)).id;
+			setType((prevType) => {
+				const field = getFieldFromType(prevType, fieldIdPath);
+				let nextType = deleteField(prevType, fieldIdPath, originSectionId);
+				nextType = addField(nextType, field, newFieldIdPath, targetSectionId, fieldIndex);
+				handleFieldSelected(newFieldIdPath, field, targetSectionId, nextType);
+				return nextType;
+			});
+		} else {
+			setType((prevType) => {
+				const field = getFieldFromType(prevType, fieldIdPath);
+				let nextType = deleteField(prevType, fieldIdPath, originSectionId);
+				nextType = addField(nextType, field, field.id, newSectionId, fieldIndex);
+				handleFieldSelected(fieldIdPath, field, newSectionId, nextType);
+				return nextType;
+			});
+		}
+	};
+
+	// region view/diff xml
+	const openViewXml = (xml: string) => {
+		setXmlViewerContent(xml);
+		xmlViewerDialogState.onOpen();
+	};
+	const closeViewXml = () => {
+		xmlViewerDialogState.onClose();
+	};
+
+	const openDiffXml = (initialContent: string, currentContent: string) => {
+		setXmlDiffContent({ initialContent, currentContent });
+		xmlDiffDialogState.onOpen();
+	};
+	const closeDiffXml = () => {
+		xmlDiffDialogState.onClose();
+	};
+	// endregion
+
+	// region reorder
+	const handleReorderRepGroupFields: FieldFormViewProps['onReorderRepGroupFields'] = (
+		fields,
+		fieldIdPath,
+		sectionId
+	) => {
+		setType((currentType) => {
+			const nextType = reorderRepGroupFields(currentType, fields, fieldIdPath);
+			const field = getFieldFromType(nextType, fieldIdPath);
+			handleFieldSelected(fieldIdPath, field, sectionId, nextType);
+			return nextType;
+		});
+	};
+
+	const handleReorderSectionFields = (fields: ReorderFieldsDialogProps['fields'], sectionId: string) => {
+		setType((currentType) => {
+			const nextType = reorderSectionFields(currentType, fields, sectionId);
+			const nextSection = getSectionFromType(nextType, sectionId);
+			handleSectionSelected(nextSection, nextType);
+			return nextType;
+		});
+	};
+
+	const handleReorderTypeSections = (sections: ReorderFieldsDialogProps['fields']) => {
+		setType((currentType) => {
+			const newSections = sections.map((section) => {
+				return currentType.sections.find((s) => s.id === section.key);
+			});
+			const nextType = { ...currentType, sections: newSections };
+			handleEditTypeProperties(nextType);
+			return nextType;
+		});
+	};
 	// endregion
 
 	// `fieldUpdates$` subscription
 	useEffect(() => {
 		const sub = stateRef.current.fieldUpdates$.pipe(debounceTime(500)).subscribe(() => {
-			setHasPendingChanges(true);
+			const { jotai, fieldPathsWithErrors, selectedFieldIdPath, onUpdateHasPendingChanges } = effectRefs.current;
+			onUpdateHasPendingChanges(true);
 			stateRef.current.formFieldsChanged = true;
 
 			const { activeFormContext } = stateRef.current;
-			const { jotai, fieldPathsWithErrors, selectedFieldIdPath } = effectRefs.current;
 			const { atoms } = activeFormContext;
 			const nextFieldPathsWithErrors = { ...fieldPathsWithErrors };
 
@@ -348,8 +736,32 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 		}
 	}, [type.NEW, effectRefs]);
 
-	const disableSave = !hasPendingChanges || Object.keys(fieldPathsWithErrors).length !== 0;
-	// value={} onChange={}
+	useEffect(() => {
+		const sub = fetchSiteUiConfig(site, activeEnvironment).subscribe({
+			next: (config) => {
+				const configDOM = fromString(config);
+				const contentTypesConfigDOM = configDOM.querySelector(
+					'widget[id="craftercms.components.ContentTypeManagement"] > configuration'
+				);
+				const contentTypesConfig = contentTypesConfigDOM ? deserialize(contentTypesConfigDOM).configuration : null;
+				if (contentTypesConfig) {
+					setConfig({
+						controls: parseConfigPlugins(contentTypesConfig.controls),
+						controlExclusions: asArray(contentTypesConfig.controlExclusions),
+						dataSources: parseConfigPlugins(contentTypesConfig.dataSources),
+						dataSourceExclusions: asArray(contentTypesConfig.dataSourceExclusions)
+					});
+				}
+			},
+			error: ({ response }) => {
+				dispatch(pushErrorDialog({ props: { error: response.response } }));
+			}
+		});
+
+		return () => sub.unsubscribe();
+	}, [site, activeEnvironment, setConfig, dispatch]);
+
+	const disableSave = (!type.NEW && !hasPendingChanges) || Object.keys(fieldPathsWithErrors).length !== 0;
 	return (
 		<Provider store={jotai}>
 			<EditTypeViewLayout
@@ -361,41 +773,64 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 				disableSave={disableSave}
 				onActionClick={handleToolbarActionClick}
 				drawerContent={fieldEditorView}
+				drawerProps={{
+					// onTransitionEnd keeps triggering after the Drawer transition has finished on certain interactions (e.g. when hovering buttons)
+					onTransitionEnd: (e) => {
+						// Make sure it is the drawer paper that finished transitioning before considering the transition complete.
+						// If 'EditTypeViewDrawer' transition ended, and 'open' is true, then the opening transition is complete.
+						if ((e.target as HTMLElement).getAttribute('data-area-id') === 'EditTypeViewDrawer') {
+							setDrawerOpenTransitionEnded(open);
+						}
+					},
+					slotProps: {
+						paper: {
+							// @ts-expect-error Setting a html prop
+							['data-area-id']: 'EditTypeViewDrawer'
+						}
+					}
+				}}
 				mainContent={
-					<>
-						<TypeDetailsView
-							type={type}
-							onInsertSection={handleInsertSection}
-							onEditTypeAction={handleEditTypeAction}
-							onFieldSelected={handleFieldSelected}
-							onDataSourceSelected={handleDataSourceSelected}
-							onSectionSelected={handleSectionSelected}
-							fieldPathsWithErrors={fieldPathsWithErrors}
-							selectedFieldIdPath={selectedFieldIdPath}
-						/>
-						<Box>
-							{/* TODO: Remove this whole box and the fragment container. */}
-							<FormControlLabel control={<Checkbox id="tempSaveToServerCheckbox" />} label="Actually save to server?" />
-							<Typography variant="body2">
-								While we have this module in "beta", when you press save, you'll be shown the XML that would be saved to
-								the server. If you want to actually save, mark this checkbox.
-							</Typography>
-						</Box>
-					</>
-				}
-			/>
-			{
-				// region TODO: Temp Dialog to show XML
-				<Dialog open={Boolean(openXmlViewer)} onClose={() => setOpenXmlViewer(null)} maxWidth="lg" fullWidth>
-					<Typography
-						variant="body2"
-						component="pre"
-						dangerouslySetInnerHTML={{ __html: openXmlViewer }}
-						sx={{ py: 1, px: 2, fontFamily: 'monospace' }}
+					<TypeDetailsView
+						type={type}
+						onInsertSection={handleInsertSection}
+						onOpenInsertFieldDialog={onOpenInsertFieldDialog}
+						onOpenInsertDataSourceDialog={onOpenInsertDataSourceDialog}
+						onEditTypeAction={handleEditTypeAction}
+						onFieldSelected={handleFieldSelected}
+						onDataSourceSelected={handleDataSourceSelected}
+						onSectionSelected={handleSectionSelected}
+						fieldPathsWithErrors={fieldPathsWithErrors}
+						selectedFieldIdPath={selectedFieldIdPath}
+						performCurrentFormErrorCheckAndWarning={performCurrentFormErrorCheckAndWarning}
 					/>
-				</Dialog>
-				// endregion
-			}
+				}
+				isNew={type.NEW}
+			/>
+			<XmlViewerDialog xml={xmlViewerContent} open={xmlViewerDialogState.open} onClose={closeViewXml} />
+			<XmlDiffDialog
+				initialXml={xmlDiffContent?.initialContent}
+				currentXml={xmlDiffContent?.currentContent}
+				open={xmlDiffDialogState.open}
+				onClose={closeDiffXml}
+			/>
+			<PickControlDialog
+				open={Boolean(insertFieldData.sectionId)}
+				type={type}
+				sectionId={insertFieldData.sectionId}
+				fieldIdPath={insertFieldData.fieldPath}
+				onClose={() => setInsertFieldData({ sectionId: null })}
+				onInsertField={handleInsertField}
+				configDescriptors={configControlDescriptors}
+				controlExclusions={config.controlExclusions}
+			/>
+			<PickDataSourceDialog
+				type={type}
+				onInsert={handleInsertDataSource}
+				open={openDataSourceInserter}
+				onClose={() => setOpenDataSourceInserter(false)}
+				configDescriptors={configDataSourceDescriptors}
+				dataSourceExclusions={config.dataSourceExclusions}
+			/>
 		</Provider>
 	);
 });
@@ -423,45 +858,252 @@ function insertSection(type: ContentType, section: ContentTypeSection, position:
 	return nextType;
 }
 
-function addField(type: ContentType, field: ContentTypeField): ContentType {
-	const nextFields = { ...type.fields, [field.id]: field };
-	const nextSections = type.sections.concat();
-	return { ...type, sections: nextSections, fields: nextFields };
+function deleteSection(type: ContentType, section: ContentTypeSection): ContentType {
+	const nextType = { ...type, sections: type.sections.concat() };
+	const sectionIndex = nextType.sections.findIndex((s) => s.id === section.id);
+	nextType.sections.splice(sectionIndex, 1);
+	return nextType;
+}
+
+function addSubField(
+	parentField: ContentTypeField,
+	newField: ContentTypeField,
+	subFieldPath: string,
+	position: number
+): ContentTypeField {
+	if (isComposedPath(subFieldPath)) {
+		// If still composed, we need to find the root field and add the new field to it recursively
+		const rootFieldId = subFieldPath.split('.').shift();
+		return {
+			...parentField,
+			fields: {
+				...(parentField.fields ?? {}),
+				[rootFieldId]: addSubField(
+					parentField.fields[rootFieldId],
+					newField,
+					subFieldPath.replace(`${rootFieldId}.`, ''),
+					position
+				)
+			}
+		};
+	} else {
+		// If not composed, we can add the field directly to the parent fields lookup.
+		// Since the fields prop under a parentField is a lookupTable and we need to insert on a specific position, we first
+		// convert it to an array, insert the new field and then convert it back to a lookupTable.
+		const nextFieldsArray = Object.values(parentField.fields ?? {});
+		nextFieldsArray.splice(position, 0, newField);
+		const nextFields = {};
+		nextFieldsArray.forEach((field) => {
+			const fieldId = field.id ? field.id : NEW_FIELD_ID;
+			nextFields[fieldId] = field;
+		});
+		return {
+			...parentField,
+			fields: nextFields
+		};
+	}
+}
+
+function addField(
+	type: ContentType,
+	field: ContentTypeField,
+	fieldIdPath: string,
+	sectionId: string,
+	position: number
+): ContentType {
+	if (isComposedPath(fieldIdPath)) {
+		// If the fieldIdPath is composed, we need to find the root field and add the new field to it recursively
+		const rootFieldId = fieldIdPath.split('.').shift();
+		// When fieldIdPath is composed (inside a rep-group), sections don't change since the root fields remain the same
+		return {
+			...type,
+			fields: {
+				...type.fields,
+				[rootFieldId]: addSubField(
+					type.fields[rootFieldId],
+					field,
+					fieldIdPath.replace(`${rootFieldId}.`, ''),
+					position
+				)
+			}
+		};
+	} else {
+		// If not composed, we can add the field directly to the fields lookup and to the sections list
+		const nextFields = { ...type.fields, [fieldIdPath]: field };
+		const nextSections = type.sections.concat();
+		const sectionIndex = nextSections.findIndex((section) => section.id === sectionId);
+		const section = nextSections[sectionIndex];
+		const nextSectionFields = nextSections[sectionIndex].fields.concat();
+		nextSectionFields.splice(position, 0, fieldIdPath);
+		nextSections[sectionIndex] = {
+			...section,
+			fields: nextSectionFields
+		};
+		return { ...type, sections: nextSections, fields: nextFields };
+	}
+}
+
+function deleteSubField(parentField: ContentTypeField, fieldIdPath: string): ContentTypeField {
+	if (isComposedPath(fieldIdPath)) {
+		// If still composed, we need to find the root field and delete the field recursively
+		const rootFieldId = fieldIdPath.split('.').shift();
+		return {
+			...parentField,
+			fields: {
+				...(parentField.fields ?? {}),
+				[rootFieldId]: deleteSubField(parentField.fields[rootFieldId], fieldIdPath.replace(`${rootFieldId}.`, ''))
+			}
+		};
+	} else {
+		const nextFields = { ...(parentField.fields ?? {}) };
+		delete nextFields[fieldIdPath];
+		return { ...parentField, fields: nextFields };
+	}
+}
+
+function deleteField(type: ContentType, fieldIdPath: string, sectionId: string): ContentType {
+	if (isComposedPath(fieldIdPath)) {
+		// If the fieldIdPath is composed, we need to find the root field and remove the field recursively
+		const rootFieldId = fieldIdPath.split('.').shift();
+		// When fieldIdPath is composed (inside a rep-group), sections don't change since the root fields remain the same
+		return {
+			...type,
+			fields: {
+				...type.fields,
+				[rootFieldId]: deleteSubField(type.fields[rootFieldId], fieldIdPath.replace(`${rootFieldId}.`, ''))
+			}
+		};
+	} else {
+		const nextFields = { ...type.fields };
+		delete nextFields[fieldIdPath];
+
+		const nextSections = type.sections.concat();
+		const sectionIndex = nextSections.findIndex((section) => section.id === sectionId);
+		const section = nextSections[sectionIndex];
+		const nextSectionFields = nextSections[sectionIndex].fields.concat();
+		const fieldIndex = nextSectionFields.findIndex((fieldId) => fieldId === fieldIdPath);
+		nextSectionFields.splice(fieldIndex, 1);
+		nextSections[sectionIndex] = {
+			...section,
+			fields: nextSectionFields
+		};
+
+		return { ...type, sections: nextSections, fields: nextFields };
+	}
 }
 
 function updateTypeProps(type: ContentType, updatedTypeDetails: TypePropsToEdit): ContentType {
-	return { ...type, ...pluckProps(updatedTypeDetails, ...typePropsToEdit) };
+	const newProps = pluckProps(updatedTypeDetails, ...typePropsToEdit);
+	// If the sections property have not changed, retain the current type's sections to prevent unintentional
+	// data loss (e.g., sections being set to 'undefined').
+	if (!newProps.sections) {
+		newProps.sections = type.sections;
+	}
+	return { ...type, ...newProps };
+}
+
+function updateTypeFromSubFieldUpdate(
+	fields: LookupTable<ContentTypeField>,
+	state: EditAppContextProps,
+	updatedValues: LookupTable<unknown>,
+	fieldIdPath: string,
+	descriptor: DescriptorContentType
+): LookupTable<ContentTypeField> {
+	if (isComposedPath(fieldIdPath)) {
+		const rootFieldId = fieldIdPath.split('.').shift();
+		return {
+			...fields,
+			[rootFieldId]: {
+				...fields[rootFieldId],
+				fields: updateTypeFromSubFieldUpdate(
+					fields[rootFieldId].fields,
+					state,
+					updatedValues,
+					fieldIdPath.replace(`${rootFieldId}.`, ''),
+					descriptor
+				)
+			}
+		};
+	} else {
+		const updatedField = reverseTypeFieldValuesObject(state.selectedField, updatedValues, descriptor);
+		let updatedFields = { ...fields };
+
+		if (updatedField.id !== state.selectedField.id) {
+			// Since the order of the fields is determined by the lookupTable order, we need to convert it to array, set the
+			// field in the proper position and convert it back to a lookupTable.
+			const updatedFieldsArray = Object.values(updatedFields);
+			const originalFieldIndex = updatedFieldsArray.findIndex((field) => field.id === state.selectedField.id);
+			updatedFieldsArray.splice(originalFieldIndex, 0, updatedField);
+			updatedFields = createLookupTable(updatedFieldsArray, 'id');
+
+			// Delete the old id
+			delete updatedFields[state.selectedField.id];
+		} else {
+			updatedFields[updatedField.id] = updatedField;
+		}
+		state.selectedField = updatedField;
+		return updatedFields;
+	}
 }
 
 function updateTypeFromFieldUpdate(
 	type: ContentType,
-	selectedField: ContentTypeField,
-	updatedValues: LookupTable<unknown>
+	state: EditAppContextProps,
+	updatedValues: LookupTable<unknown>,
+	fieldIdPath: string,
+	configDescriptors?: LookupTable<DescriptorContentType>
 ): ContentType {
-	if (!selectedField) return;
+	if (!state.selectedField) return;
 
-	const updatedType: ContentType = { ...type, fields: { ...type.fields } };
-	const updatedField = reverseTypeFieldValuesObject(selectedField, updatedValues);
-
-	updatedType.fields[updatedField.id] = updatedField;
-
-	if (updatedField.id !== selectedField.id) {
-		// Delete the old id
-		delete updatedType.fields[selectedField.id];
-		// Find the section in which the field is located
-		const sectionIndex = updatedType.sections.findIndex((section) => section.fields.includes(selectedField.id));
-		const section: ContentTypeSection = {
-			...updatedType.sections[sectionIndex],
-			fields: updatedType.sections[sectionIndex].fields.concat()
+	const fieldType = state.selectedField.type;
+	const descriptor = configDescriptors?.[fieldType] ?? controlDescriptors[fieldType];
+	if (isComposedPath(fieldIdPath)) {
+		// When the field is not on the root level (composed fieldIdPath), the field is under another field, where each
+		// field contains a lookupTable of fields. In that screnario sections should not be updated.
+		const rootFieldId = fieldIdPath.split('.').shift();
+		return {
+			...type,
+			fields: {
+				...type.fields,
+				[rootFieldId]: {
+					...type.fields[rootFieldId],
+					fields: updateTypeFromSubFieldUpdate(
+						type.fields[rootFieldId].fields,
+						state,
+						updatedValues,
+						fieldIdPath.replace(`${rootFieldId}.`, ''),
+						descriptor
+					)
+				}
+			}
 		};
-		// Replace the field in the section
-		const fieldIndex = section.fields.findIndex((fieldId) => fieldId === selectedField.id);
-		section.fields[fieldIndex] = updatedField.id;
-		updatedType.sections = updatedType.sections.concat();
-		updatedType.sections[sectionIndex] = section;
-	}
+	} else {
+		const isNewField = (state.selectedField as NewContentTypeField).NEW;
+		const selectedFieldId = isNewField ? NEW_FIELD_ID : state.selectedField.id;
 
-	return updatedType;
+		// If the field is on the root level, the edition is different since the structure of `type` has sections with the
+		// fields (string array) and the lookupTable of the fields. Both properties need to be updated.
+		const updatedType: ContentType = { ...type, fields: { ...type.fields } };
+		const updatedField = reverseTypeFieldValuesObject(state.selectedField, updatedValues, descriptor);
+		updatedType.fields[updatedField.id] = updatedField;
+		if (updatedField.id !== selectedFieldId) {
+			// Delete the old id
+			delete updatedType.fields[selectedFieldId];
+			// Find the section in which the field is located
+			const sectionIndex = updatedType.sections.findIndex((section) => section.fields.includes(selectedFieldId));
+			const section: ContentTypeSection = {
+				...updatedType.sections[sectionIndex],
+				fields: updatedType.sections[sectionIndex].fields.concat()
+			};
+			// Replace the field in the section
+			const fieldIndex = section.fields.findIndex((fieldId) => fieldId === selectedFieldId);
+			section.fields[fieldIndex] = updatedField.id;
+			updatedType.sections = updatedType.sections.concat();
+			updatedType.sections[sectionIndex] = section;
+		}
+		state.selectedField = updatedField;
+		return updatedType;
+	}
 }
 
 function updateTypeFromSectionUpdate(
@@ -472,7 +1114,6 @@ function updateTypeFromSectionUpdate(
 	const updatedType: ContentType = { ...type, sections: type.sections.concat() };
 	const index = updatedType.sections.findIndex((item) => item.id === selectedSection.id);
 	updatedType.sections[index] = { ...selectedSection, ...updatedValues };
-	console.log(index, selectedSection, updatedValues, updatedType);
 	return updatedType;
 }
 
@@ -481,25 +1122,55 @@ function updateTypeFromDataSourceUpdate(
 	selectedDataSource: DataSource,
 	updatedValues: LookupTable<unknown>
 ): ContentType {
-	console.log(selectedDataSource, updatedValues);
 	const updatedType: ContentType = { ...type, dataSources: type.dataSources.concat() };
-	const index = updatedType.dataSources.findIndex((item) => item.id === selectedDataSource.id);
-	updatedType.dataSources[index] = selectedDataSource;
+	const index = updatedType.dataSources.findIndex((item) => {
+		if (selectedDataSource.id) {
+			return item.id === selectedDataSource.id;
+		} else {
+			return (item as NewDataSource).NEW;
+		}
+	});
+
+	const nextDataSource = { ...selectedDataSource };
+	// When updating a new data source, we need to exclude NEW prop from the new datasource content
+	delete (nextDataSource as NewDataSource).NEW;
+	const { title, id, ...properties }: Partial<DataSource> = updatedValues;
+	updatedType.dataSources[index] = { ...nextDataSource, id, title, properties };
 	return updatedType;
+}
+
+function buildXmlFromType(
+	type: ContentType,
+	configDescriptors?: {
+		controlDescriptors: LookupTable<DescriptorContentType>;
+		dataSourceDescriptors: LookupTable<DescriptorContentType>;
+	}
+): string {
+	const typeStructure = prepareSerializeToXmlTypeObject(type, configDescriptors);
+	return buildContentTypeXml(typeStructure);
 }
 
 // merge the basic details, the non-edited field values, the manipulated field atoms into a single object
 // that gets serialized to XML and stored
-function save(siteId: string, type: ContentType, tempSaveSaveToServerArgumentToBeRemoved: boolean): Observable<string> {
-	const typeStructure = prepareSerializeToXmlTypeObject(type);
-	// console.log(typeStructure);
-	const xml = buildContentTypeXml(typeStructure);
-	// TODO: Validation? This get pre-validated?
-	if (tempSaveSaveToServerArgumentToBeRemoved) {
-		return writeConfiguration(siteId, createFormDefinitionPathFromTypeId(type.id), 'studio', xml).pipe(map(() => xml));
-	} else {
-		return of(xml);
+function save(
+	siteId: string,
+	type: ContentType,
+	configDescriptors?: {
+		controlDescriptors: LookupTable<DescriptorContentType>;
+		dataSourceDescriptors: LookupTable<DescriptorContentType>;
 	}
+): Observable<string> {
+	const xml = buildXmlFromType(type, configDescriptors);
+	const requests = [writeConfiguration(siteId, createFormDefinitionPathFromTypeId(type.id), 'studio', xml)];
+
+	if ((type as PossibleContentTypeDraft).NEW) {
+		const config = initializeConfigFromType(type);
+		const builder = getXmlBuilder();
+		const configXml = builder.build(config);
+		requests.push(writeConfiguration(siteId, createConfigPathFromTypeId(type.id), 'studio', configXml));
+	}
+
+	return forkJoin(requests).pipe(map(() => xml));
 }
 
 function validityAtomsHaveErrors(jotai: JotaiStore, atoms: FormsEngineAtoms['validationByFieldId']) {
@@ -507,12 +1178,165 @@ function validityAtomsHaveErrors(jotai: JotaiStore, atoms: FormsEngineAtoms['val
 	return Object.values(atoms).some((atom) => !jotai.get(atom).isValid);
 }
 
+function parseConfigPlugins(
+	plugins: { descriptor: DescriptorContentType; icon: { id: string }; id: string }[]
+): ContentTypeManagementConfig['controls'] {
+	if (!plugins) return;
+	const parsedControls = asArray(plugins).map((plugin) => {
+		const fields = Object.values(plugin.descriptor.fields ?? {})?.map((field) => {
+			return {
+				...field,
+				validations: field.validations ?? {}
+			};
+		});
+		return {
+			...plugin,
+			descriptor: {
+				...plugin.descriptor,
+				fields: createLookupTable(fields),
+				sections: asArray(plugin.descriptor?.sections) ?? []
+			}
+		};
+	});
+	return createLookupTable(parsedControls);
+}
+
+function getNewFieldFromDescriptor(fieldType: string, descriptor: DescriptorContentType): NewContentTypeField {
+	const newField: NewContentTypeField = {
+		NEW: true,
+		id: systemFieldsIdsMap[fieldType] ?? '',
+		name: '',
+		helpText: '',
+		description: '',
+		type: systemFieldsTypesMap[fieldType] ?? fieldType,
+		validations: {},
+		defaultValue: '',
+		properties: {}
+	};
+	if (!descriptor) return newField;
+
+	if (descriptor.id === 'repeat') newField.fields = {};
+	const { properties, validations } = getPropertiesAndValidationsFromDescriptor(descriptor);
+
+	newField.properties = properties;
+	newField.validations = validations;
+
+	return newField;
+}
+
+function getNewDataSourceFromDescriptor(dataSourceType: string, descriptor: DescriptorContentType): NewDataSource {
+	const newDataSource: NewDataSource = {
+		NEW: true,
+		id: '',
+		title: '',
+		type: dataSourceType,
+		interface: '',
+		properties: {}
+	};
+	if (!descriptor) return newDataSource;
+
+	const sections = createLookupTable(descriptor.sections);
+
+	newDataSource.interface = descriptor.type;
+	const propertiesFieldIds = sections.properties?.fields ?? [];
+	const properties = {};
+	propertiesFieldIds.forEach((field) => (properties[field] = descriptor.fields[field]?.defaultValue));
+	newDataSource.properties = properties;
+
+	return newDataSource;
+}
+
+function reorderSectionFields(
+	type: ContentType,
+	fields: ReorderFieldsDialogProps['fields'],
+	sectionId: string
+): ContentType {
+	const newFields = fields.map((field) => field.key);
+	const nextSections = type.sections.map((section) => {
+		if (section.id !== sectionId) return section;
+		return {
+			...section,
+			fields: newFields
+		};
+	});
+
+	return { ...type, sections: nextSections };
+}
+
+function reorderRepGroupSubFields(
+	field: ContentTypeField,
+	fields: ReorderFieldsDialogProps['fields'],
+	subFieldPath: string
+): ContentTypeField {
+	if (isComposedPath(subFieldPath)) {
+		const rootFieldId = subFieldPath.split('.').shift();
+
+		return {
+			...field,
+			fields: {
+				...field.fields,
+				[rootFieldId]: reorderRepGroupSubFields(
+					field.fields[rootFieldId],
+					fields,
+					subFieldPath.replace(`${rootFieldId}.`, '')
+				)
+			}
+		};
+	} else {
+		const fieldsContainer = field.fields[subFieldPath];
+		const newFields = fields.map(({ key }) => fieldsContainer.fields[key]);
+		return {
+			...field,
+			fields: {
+				...field.fields,
+				[subFieldPath]: {
+					...field.fields[subFieldPath],
+					fields: createLookupTable(newFields)
+				}
+			}
+		};
+	}
+}
+
+function reorderRepGroupFields(
+	type: ContentType,
+	fields: ReorderFieldsDialogProps['fields'],
+	fieldIdPath: string
+): ContentType {
+	if (isComposedPath(fieldIdPath)) {
+		const rootFieldId = fieldIdPath.split('.').shift();
+
+		return {
+			...type,
+			fields: {
+				...type.fields,
+				[rootFieldId]: reorderRepGroupSubFields(
+					type.fields[rootFieldId],
+					fields,
+					fieldIdPath.replace(`${rootFieldId}.`, '')
+				)
+			}
+		};
+	} else {
+		const fieldsContainer = type.fields[fieldIdPath];
+		const newFields = fields.map(({ key }) => fieldsContainer.fields[key]);
+		return {
+			...type,
+			fields: {
+				...type.fields,
+				[fieldIdPath]: {
+					...type.fields[fieldIdPath],
+					fields: createLookupTable(newFields)
+				}
+			}
+		};
+	}
+}
+
 export default EditTypeView;
 
 // TODO:
-//  - i18n
-//  - Because IDs can be modified, keep a lookup table of `{ [nanoid]: id }`?
-//  - Filter based on archetypes on type listing.
+//  - Because IDs can be modified, keep a lookup table of `{ [nanoid]: id }`? - Probably N/A
 //  - BE tickets for APIs etc
 //  - BE ticket for UM section ids
 //  - BE ticket for UM config.xml transfer props to form-def.xml and remove file.
@@ -522,6 +1346,7 @@ export default EditTypeView;
 //    - If not moved, drop `label` & `type`?
 //  - Should we rename the root tag on form-def.xml from `form` to something like `type`, `contentType` or so?
 //  - Can we drop iceId?
-//  - Translation of control descriptors and archetype templates
 // 	- Should we use UM to remove from maxlength property and move into constraints? Also fix spelling to `maxLength`
 // 	- Can we add created, modified, createdBy and modifiedBy to the XML?
+//  - Assess removal of internalName/disabled controls.
+//  - Dynamic default values (eg. can't have a text field for the node selector). An idea is to have a custom control that renders depending on the type.

@@ -1138,8 +1138,12 @@ const initializeCStudioForms = () => {
 							});
 					};
 
-					CrafterCMSNext.system.getStore().subscribe(() => {
+					CrafterCMSNext.system.getStore().subscribe((store) => {
 						getInitialConfiguration();
+
+						if (!store.getState().contentTypes?.byId) {
+							store.dispatch({ type: 'FETCH_CONTENT_TYPES' });
+						}
 					});
 				},
 
@@ -2531,8 +2535,12 @@ const initializeCStudioForms = () => {
 
 				// Renders the set of actions for a repeat group item, considering min/max and position of the item.
 				_renderRepeatItemActions: function (repeatContainerEl, repeatInstanceContainerEl) {
-					const maxOccurs = repeatContainerEl.maxOccurs;
-					const minOccurs = repeatContainerEl.minOccurs;
+					// If value for min/max is not set, use default values (0 for min and '*' for max)
+					const nou = craftercms.utils.object.nou;
+					const maxOccurs =
+						nou(repeatContainerEl.maxOccurs) || repeatContainerEl.maxOccurs === '' ? '*' : repeatContainerEl.maxOccurs;
+					const minOccurs =
+						nou(repeatContainerEl.minOccurs) || repeatContainerEl.minOccurs === '' ? 0 : repeatContainerEl.minOccurs;
 					const repeat = repeatContainerEl.repeat;
 					const form = repeatContainerEl.form;
 					const containerEl = repeatContainerEl;
@@ -2690,8 +2698,11 @@ const initializeCStudioForms = () => {
 				 * repeat manipulation events
 				 */
 				_renderRepeatBody: function (repeatContainerEl) {
-					var maxOccurs = repeatContainerEl.maxOccurs;
-					var minOccurs = repeatContainerEl.minOccurs;
+					const nou = craftercms.utils.object.nou;
+					const maxOccurs =
+						nou(repeatContainerEl.maxOccurs) || repeatContainerEl.maxOccurs === '' ? '*' : repeatContainerEl.maxOccurs;
+					const minOccurs =
+						nou(repeatContainerEl.minOccurs) || repeatContainerEl.minOccurs === '' ? 0 : repeatContainerEl.minOccurs;
 					var formDef = repeatContainerEl.formDef;
 					var repeat = repeatContainerEl.repeat;
 					var form = repeatContainerEl.form;
