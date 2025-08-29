@@ -87,7 +87,7 @@ YAHOO.extend(CStudioForms.Datasources.FileBrowseRepo, CStudioForms.CStudioFormDa
 		}
 	},
 
-	edit: function (key) {
+	edit: function (key, _control, _index, cb) {
 		craftercms.services.content.fetchContentItem(CStudioAuthoringContext.site, key).subscribe({
 			next(contentItem) {
 				const readonly = !contentItem.availableActionsMap.edit;
@@ -106,7 +106,7 @@ YAHOO.extend(CStudioForms.Datasources.FileBrowseRepo, CStudioForms.CStudioFormDa
 				}
 			},
 			error(error) {
-				console.error(error?.response?.response);
+				cb?.failure?.(error?.response?.response);
 			}
 		});
 	},
