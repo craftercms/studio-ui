@@ -33,8 +33,16 @@ import {
 	pathNavigatorSetKeyword,
 	pathNavigatorSetLocaleCode
 } from '../../state/actions/pathNavigator';
-import { showEditDialog, showItemMegaMenu, showPreviewDialog } from '../../state/actions/dialogs';
-import { getEditorMode, isEditableViaFormEditor, isFolder, isImage, isNavigable, isPreviewable } from './utils';
+import {
+	getEditorMode,
+	isEditableViaFormEditor,
+	isFolder,
+	isImage,
+	isNavigable,
+	isPdfDocument,
+	isPreviewable,
+	isVideo
+} from './utils';
 import { StateStylingProps } from '../../models/UiConfig';
 import { debounceTime } from 'rxjs/operators';
 import PathNavigatorUI from './PathNavigatorUI';
@@ -42,18 +50,21 @@ import PathNavigatorSkeleton from './PathNavigatorSkeleton';
 import GlobalState from '../../models/GlobalState';
 import { SystemIconDescriptor } from '../SystemIcon';
 import { getOffsetLeft, getOffsetTop } from '@mui/material/Popover';
-import { getNumOfMenuOptionsForItem, isPdfDocument, isVideo, lookupItemByPath } from '../../utils/content';
+import { getNumOfMenuOptionsForItem, lookupItemByPath } from '../../utils/content';
 import { useSelection } from '../../hooks/useSelection';
 import { useEnv } from '../../hooks/useEnv';
 import { useItemsByPath } from '../../hooks/useItemsByPath';
 import { useSubject } from '../../hooks/useSubject';
 import { useSiteLocales } from '../../hooks/useSiteLocales';
 import { useMount } from '../../hooks/useMount';
-import { getSystemLink } from '../../utils/system';
+import { createComponentId, getSystemLink, pickShowContentFormAction } from '../../utils/system';
 import { getStoredPathNavigator } from '../../utils/state';
 import { useActiveSite } from '../../hooks/useActiveSite';
 import { useActiveUser } from '../../hooks/useActiveUser';
 import { GetChildrenOptions, PartialSxRecord } from '../../models';
+import { pushDialog } from '../../state/actions/dialogStack';
+import { nanoid } from 'nanoid';
+import { showItemMegaMenu } from '../../state/actions/dialogs';
 
 interface Menu {
 	path?: string;
@@ -243,24 +254,35 @@ export function PathNavigator(props: PathNavigatorProps) {
 
 	const onPreview = (item: ContentItem) => {
 		if (isEditableViaFormEditor(item)) {
-			dispatch(showEditDialog({ path: item.path, authoringBase, site: siteId, readonly: true }));
+			dispatch(pickShowContentFormAction({ path: item.path, authoringBase, site: siteId, readonly: true }));
 		} else if (isImage(item) || isVideo(item) || isPdfDocument(item.mimeType)) {
 			dispatch(
-				showPreviewDialog({
-					type: isImage(item) ? 'image' : isVideo(item) ? 'video' : 'pdf',
-					title: item.label,
-					url: item.path
+				pushDialog({
+					component: createComponentId('PreviewDialog'),
+					allowMinimize: true,
+					allowFullScreen: true,
+					props: {
+						type: isImage(item) ? 'image' : isVideo(item) ? 'video' : 'pdf',
+						title: item.label,
+						url: item.path
+					}
 				})
 			);
 		} else {
 			const mode = getEditorMode(item);
 			dispatch(
-				showPreviewDialog({
-					type: 'editor',
-					title: item.label,
-					url: item.path,
-					path: item.path,
-					mode
+				pushDialog({
+					id: nanoid(),
+					component: createComponentId('PreviewDialog'),
+					allowMinimize: true,
+					allowFullScreen: true,
+					props: {
+						type: 'editor',
+						title: item.label,
+						url: item.path,
+						path: item.path,
+						mode
+					}
 				})
 			);
 		}

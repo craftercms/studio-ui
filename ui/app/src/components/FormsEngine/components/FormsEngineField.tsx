@@ -68,6 +68,7 @@ export type FormsEngineFieldProps = PropsWithChildren<{
 	field: ContentTypeField;
 	autoFocus?: boolean;
 	htmlFor?: string;
+	labelId?: string;
 	value?: unknown;
 	min?: number;
 	max?: number;
@@ -96,6 +97,7 @@ export const FormsEngineField = forwardRef<HTMLDivElement, FormsEngineFieldProps
 		length,
 		action,
 		htmlFor,
+		labelId,
 		autoFocus,
 		menu = true,
 		menuOptions,
@@ -140,7 +142,13 @@ export const FormsEngineField = forwardRef<HTMLDivElement, FormsEngineFieldProps
 		>
 			<Box display="flex" justifyContent="space-between" alignItems="center">
 				<Box display="flex" alignItems="center">
-					<FormLabel htmlFor={htmlFor} component="label" ref={labelRef} tabIndex={autoFocus ? 0 : undefined}>
+					<FormLabel
+						htmlFor={htmlFor}
+						id={labelId}
+						component="label"
+						ref={labelRef}
+						tabIndex={autoFocus ? 0 : undefined}
+					>
 						{field.name}
 					</FormLabel>
 					{isRequired && <FieldRequiredStateIndicator isValid={isValid} />}

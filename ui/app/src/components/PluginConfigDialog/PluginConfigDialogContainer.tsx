@@ -27,10 +27,10 @@ import { getPluginConfiguration, setPluginConfiguration } from '../../services/m
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
 import { useDispatch } from 'react-redux';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { showSystemNotification } from '../../state/actions/system';
 import { translations } from '../SiteConfigurationManagement/translations';
 import { parseValidateDocument } from '../../utils/xml';
+import { pushErrorDialog } from '../../utils/system';
 
 export function PluginConfigDialogContainer(props: PluginConfigDialogContainerProps) {
 	const siteId = useActiveSiteId();
@@ -53,11 +53,7 @@ export function PluginConfigDialogContainer(props: PluginConfigDialogContainerPr
 				setLoading(false);
 			},
 			error: ({ response }) => {
-				dispatch(
-					showErrorDialog({
-						error: response
-					})
-				);
+				dispatch(pushErrorDialog({ props: { error: response } }));
 			}
 		});
 	}, [dispatch, pluginId, siteId]);
@@ -113,11 +109,7 @@ export function PluginConfigDialogContainer(props: PluginConfigDialogContainerPr
 				},
 				error: ({ response }) => {
 					functionRefs.current.onSubmittingAndOrPendingChange({ isSubmitting: false });
-					dispatch(
-						showErrorDialog({
-							error: response.response
-						})
-					);
+					dispatch(pushErrorDialog({ props: { error: response.response } }));
 				}
 			});
 		}

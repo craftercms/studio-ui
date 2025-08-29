@@ -2268,7 +2268,8 @@ var nodeOpen = false,
               type: 'BATCH_ACTIONS',
               payload: [
                 {
-                  type: 'CLOSE_CODE_EDITOR_DIALOG'
+                  type: 'POP_CODE_EDITOR_DIALOG',
+                  payload: { id: 'CODE_EDITOR_DIALOG' }
                 },
                 {
                   type: 'DISPATCH_DOM_EVENT',
@@ -6138,7 +6139,7 @@ var nodeOpen = false,
                 ]
               },
               onCancel: {
-                type: 'CONFIRM_DIALOG_CLOSED'
+                type: 'CLOSE_CONFIRM_DIALOG'
               },
               onClosed: {
                 type: 'BATCH_ACTIONS',
@@ -6166,7 +6167,10 @@ var nodeOpen = false,
             payload: {
               open: true,
               title,
-              body
+              body,
+              onOk: {
+                type: 'CLOSE_CONFIRM_DIALOG'
+              },
             }
           });
         }

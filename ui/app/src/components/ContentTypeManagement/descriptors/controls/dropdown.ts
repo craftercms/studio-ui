@@ -14,47 +14,59 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createVirtualSection } from '../../utils';
+import { createValidation, createVirtualSection, DescriptorContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
+import { defineMessage } from 'react-intl';
 
-export const dropdownDescriptor = {
+export const dropdownDescriptor: DescriptorContentType = {
 	id: 'dropdown',
-	name: 'Dropdown',
-	description: 'Dropdown select input',
+	name: defineMessage({ defaultMessage: 'Dropdown' }),
+	description: defineMessage({ defaultMessage: 'Dropdown select input' }),
 	sections: [
-		createVirtualSection({ title: 'Options', fields: ['options', 'readonly', 'allowEmpty'] }),
-		createVirtualSection({ title: 'Constraints', fields: ['required'] })
+		createVirtualSection({
+			id: 'properties',
+			title: defineMessage({ defaultMessage: 'Options' }),
+			fields: ['datasource', 'emptyvalue', 'readonly']
+		}),
+		createVirtualSection({
+			id: 'constraints',
+			title: defineMessage({ defaultMessage: 'Constraints' }),
+			fields: ['required']
+		})
 	],
 	fields: {
-		options: {
-			id: 'options',
-			type: 'repeat',
-			name: 'Options',
+		datasource: {
+			id: 'datasource',
+			type: 'datasource-selector',
+			name: defineMessage({ defaultMessage: 'Data Source' }),
+			defaultValue: undefined,
+			validations: {
+				type: createValidation('type', 'item')
+			}
+		},
+		emptyvalue: {
+			id: 'emptyvalue',
+			type: 'checkbox',
+			name: defineMessage({ defaultMessage: 'Allow Empty Value' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		readonly: {
 			id: 'readonly',
 			type: 'checkbox',
-			name: 'Read Only',
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		},
-		allowEmpty: {
-			id: 'allowEmpty',
-			type: 'checkbox',
-			name: 'Allow Empty',
+			name: defineMessage({ defaultMessage: 'Read Only' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		required: {
 			id: 'required',
 			type: 'checkbox',
-			name: 'Required',
+			name: defineMessage({ defaultMessage: 'Required' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}
-	}
+	},
+	supportedPostFixes: ['_s', '_i', '_f']
 };
 
 export default dropdownDescriptor;

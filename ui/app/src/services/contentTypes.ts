@@ -43,7 +43,11 @@ import { Api2ResponseFormat } from '../models/ApiResponse';
 import { asArray, immutableEmptyArray } from '../utils/array';
 import { fromPromise } from 'rxjs/internal/observable/innerFrom';
 import AllowedContentTypesData from '../models/AllowedContentTypesData';
-import { createFormDefinitionPathFromTypeId } from '../utils/contentType';
+import {
+	createFormDefinitionPathFromTypeId,
+	systemValidationsKeysMap,
+	systemValidationsNames
+} from '../utils/contentType';
 import { XmlKeys } from '../components/FormsEngine/lib/formConsts';
 import { AjaxResponse } from 'rxjs/ajax';
 
@@ -54,53 +58,6 @@ import { AjaxResponse } from 'rxjs/ajax';
 //   checkbox: 'boolean',
 //   'image-picker': 'image'
 // };
-
-const systemValidationsNames = [
-	'itemManager',
-	'minSize',
-	'maxSize',
-	'maxlength',
-	'readonly',
-	'width',
-	'height',
-	'minWidth',
-	'minHeight',
-	'maxWidth',
-	'maxHeight',
-	'minValue',
-	'maxValue',
-	'imgRepositoryUpload',
-	'imgDesktopUpload',
-	'videoDesktopUpload',
-	'videoBrowseRepo',
-	'audioDesktopUpload',
-	'audioBrowseRepo',
-	'fileBrowseRepo'
-];
-
-const systemValidationsKeysMap = {
-	minSize: 'minCount',
-	maxSize: 'maxCount',
-	maxlength: 'maxLength',
-	contentTypes: 'allowedContentTypes',
-	tags: 'allowedContentTypeTags',
-	readonly: 'readOnly',
-	width: 'width',
-	height: 'height',
-	minWidth: 'minWidth',
-	minHeight: 'minHeight',
-	maxWidth: 'maxWidth',
-	maxHeight: 'maxHeight',
-	minValue: 'minValue',
-	maxValue: 'maxValue',
-	imgRepositoryUpload: 'allowImagesFromRepo',
-	imgDesktopUpload: 'allowImageUpload',
-	videoDesktopUpload: 'allowVideoUpload',
-	videoBrowseRepo: 'allowVideosFromRepo',
-	audioDesktopUpload: 'allowAudioUpload',
-	audioBrowseRepo: 'allowAudioFromRepo',
-	fileBrowseRepo: 'allowFilesFromRepo'
-};
 
 function bestGuessParse(value: unknown): unknown {
 	if (nou(value)) {
@@ -152,15 +109,20 @@ export function parseComponentsDataSourceContentTypesProperty(
 	const allowedContentTypesMeta: LookupTable<AllowedContentTypesData> = validations.allowedContentTypes.value;
 	value.forEach((typeId) => {
 		allowedContentTypesMeta[typeId] = allowedContentTypesMeta[typeId] ?? {};
-		if (dataSource.properties.allowEmbedded) {
+		const propsLookup = createLookupTable(asArray(dataSource.properties.property), 'name');
+		const allowEmbedded = propsLookup.allowEmbedded?.value?.trim() === 'true';
+		const allowShared = propsLookup.allowShared?.value?.trim() === 'true';
+		const allowSharedExisting =
+			propsLookup.enableBrowse?.value?.trim() === 'true' || propsLookup.enableSearch?.value?.trim() === 'true';
+		if (allowEmbedded) {
 			allowedContentTypesMeta[typeId].embedded = true;
 			validations.allowedEmbeddedContentTypes.value.push(typeId);
 		}
-		if (dataSource.properties.allowShared) {
+		if (allowShared) {
 			allowedContentTypesMeta[typeId].shared = true;
 			validations.allowedSharedContentTypes.value.push(typeId);
 		}
-		if (dataSource.properties.enableBrowse || dataSource.properties.enableSearch) {
+		if (allowSharedExisting) {
 			allowedContentTypesMeta[typeId].sharedExisting = true;
 			validations.allowedSharedExistingContentTypes.value.push(typeId);
 		}
@@ -174,7 +136,7 @@ function getFieldValidations(
 ): Partial<ContentTypeFieldValidations> {
 	const map = asArray<LegacyFormDefinitionProperty>(fieldProperty).reduce<LookupTable<LegacyFormDefinitionProperty>>(
 		(table, prop) => {
-			if (prop.name === 'width' || prop.name === 'height') {
+			if ((prop.name === 'width' || prop.name === 'height') && Boolean(prop.value)) {
 				const parsedValidation = JSON.parse(prop.value);
 				if (parsedValidation.exact) {
 					table[prop.name] = {
@@ -315,10 +277,18 @@ function parseLegacyFormDefinitionFields(
 					value = legacyProp.value === 'true';
 					break;
 				case 'int':
-					value = parseInt(legacyProp.value);
+					value = legacyProp.value ? parseInt(legacyProp.value) : null;
 					break;
 				default:
-					value = legacyProp.value;
+					if (
+						legacyField.type === 'repeat' &&
+						(legacyProp.name === 'minOccurs' || legacyProp.name === 'maxOccurs') &&
+						legacyProp.value === '*'
+					) {
+						value = null;
+					} else {
+						value = legacyProp.value;
+					}
 			}
 			field.properties[legacyProp.name] = {
 				...legacyProp,
@@ -327,10 +297,10 @@ function parseLegacyFormDefinitionFields(
 		});
 
 		asArray<LegacyFormDefinitionProperty>(legacyField.constraints?.constraint).forEach((legacyProp) => {
-			const value = legacyProp.value.trim();
+			const value = legacyProp.value?.trim();
 			switch (legacyProp.name) {
 				case 'required':
-					if (value === 'true') {
+					if (value) {
 						field.validations.required = {
 							id: 'required',
 							value: value === 'true',
@@ -339,8 +309,22 @@ function parseLegacyFormDefinitionFields(
 					}
 					break;
 				case 'allowDuplicates':
+					if (value === 'true') {
+						field.validations.allowDuplicates = {
+							id: 'allowDuplicates',
+							value: value === 'true',
+							level: 'required'
+						};
+					}
 					break;
 				case 'pattern':
+					if (value) {
+						field.validations.pattern = {
+							id: 'pattern',
+							value,
+							level: 'required'
+						};
+					}
 					break;
 				case 'minSize':
 					break;
@@ -353,8 +337,8 @@ function parseLegacyFormDefinitionFields(
 		switch (legacyField.type) {
 			case 'repeat': {
 				field.fields = {};
-				let min = parseInt(legacyField?.minOccurs);
-				const max = parseInt(legacyField?.maxOccurs);
+				let min = legacyField?.minOccurs !== '*' ? parseInt(legacyField?.minOccurs) : null;
+				const max = legacyField?.maxOccurs !== '*' ? parseInt(legacyField?.maxOccurs) : null;
 				isNaN(min) && (min = 0);
 				field.validations.required = {
 					id: 'required',
@@ -367,12 +351,13 @@ function parseLegacyFormDefinitionFields(
 						value: min,
 						level: 'required'
 					});
-				!isNaN(max) &&
-					(field.validations.maxCount = {
+				if (max != null && !Number.isNaN(max)) {
+					field.validations.maxCount = {
 						id: 'maxCount',
 						value: max,
 						level: 'required'
-					});
+					};
+				}
 				parseLegacyFormDefinitionFields(legacyField.fields.field, field.fields, dropTargetsLookup, null, dataSources);
 				break;
 			}

@@ -14,61 +14,71 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createVirtualSection } from '../../utils';
+import { createVirtualSection, DescriptorContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
+import { defineMessage } from 'react-intl';
 
-export const textareaDescriptor = {
+export const textareaDescriptor: DescriptorContentType = {
 	id: 'textarea',
-	name: 'Text Area',
-	description: 'Multi-line text input',
+	name: defineMessage({ defaultMessage: 'Text Area' }),
+	description: defineMessage({ defaultMessage: 'Multi-line text input' }),
 	sections: [
-		createVirtualSection({ title: 'Options', fields: ['height', 'width', 'maxlength', 'readonly', 'tokenize'] }),
-		createVirtualSection({ title: 'Constraints', fields: ['required'] })
+		createVirtualSection({
+			id: 'properties',
+			title: defineMessage({ defaultMessage: 'Options' }),
+			fields: ['rows', 'maxlength', 'allowResize', 'readonly', 'escapeContent']
+		}),
+		createVirtualSection({
+			id: 'constraints',
+			title: defineMessage({ defaultMessage: 'Constraints' }),
+			fields: ['required']
+		})
 	],
 	fields: {
-		height: {
-			id: 'height',
+		rows: {
+			id: 'rows',
 			type: 'numeric-input',
-			name: 'Height',
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		},
-		width: {
-			id: 'width',
-			type: 'numeric-input',
-			name: 'Width',
-			defaultValue: undefined,
+			name: defineMessage({ defaultMessage: 'Rows' }),
+			defaultValue: 5,
 			validations: immutableEmptyObject
 		},
 		maxlength: {
 			id: 'maxlength',
 			type: 'numeric-input',
-			name: 'Maximum Length',
-			defaultValue: undefined,
+			name: defineMessage({ defaultMessage: 'Maximum Length' }),
+			defaultValue: 100000,
+			validations: immutableEmptyObject
+		},
+		allowResize: {
+			id: 'allowResize',
+			type: 'checkbox',
+			name: defineMessage({ defaultMessage: 'Allow Resize' }),
+			defaultValue: true,
 			validations: immutableEmptyObject
 		},
 		readonly: {
 			id: 'readonly',
 			type: 'checkbox',
-			name: 'Read Only',
+			name: defineMessage({ defaultMessage: 'Read Only' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
-		tokenize: {
-			id: 'tokenize',
+		escapeContent: {
+			id: 'escapeContent',
 			type: 'checkbox',
-			name: 'Tokenize for Indexing',
+			name: defineMessage({ defaultMessage: 'Escape Content' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		required: {
 			id: 'required',
 			type: 'checkbox',
-			name: 'Required',
+			name: defineMessage({ defaultMessage: 'Required' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}
-	}
+	},
+	supportedPostFixes: ['_t', '_s']
 };
 
 export default textareaDescriptor;

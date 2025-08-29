@@ -28,7 +28,6 @@ import { ContentItem } from '../../models/Item';
 import MoreRounded from '@mui/icons-material/MoreVertRounded';
 import Popover, { getOffsetLeft, getOffsetTop } from '@mui/material/Popover';
 import { withIndex, withoutIndex } from '../../utils/path';
-import { showItemMegaMenu } from '../../state/actions/dialogs';
 import { getNumOfMenuOptionsForItem } from '../../utils/content';
 import Tooltip from '@mui/material/Tooltip';
 import { changeCurrentUrl, reloadRequest } from '../../state/actions/preview';
@@ -44,6 +43,7 @@ import Button from '@mui/material/Button';
 import ErrorOutlineOutlined from '@mui/icons-material/ErrorOutlineOutlined';
 import useEnv from '../../hooks/useEnv';
 import { Subscription } from 'rxjs';
+import { showItemMegaMenu } from '../../state/actions/dialogs';
 
 export interface AddressBarProps {
 	site: string;
@@ -167,7 +167,7 @@ export function PreviewAddressBar(props: AddressBarProps) {
 					onClick={noSiteSet ? undefined : onRefresh}
 					size="large"
 					disabled={noSiteSet}
-					aria-label={formatMessage({ defaultMessage: 'Reload this page' })}
+					aria-label={formatMessage({ defaultMessage: 'Reload this page (r)' })}
 				>
 					<RefreshRounded />
 				</IconButton>
@@ -223,7 +223,7 @@ export function PreviewAddressBar(props: AddressBarProps) {
 						sx={error ? { visibility: 'hidden' } : undefined}
 						size="medium"
 						id="previewAddressBarActionsMenuButton"
-						aria-label={formatMessage({ defaultMessage: 'Options' })}
+						aria-label={formatMessage({ defaultMessage: 'Options (a)' })}
 					>
 						<MoreRounded sx={alertLevel === 2 ? { visibility: 'hidden' } : undefined} />
 						{!item && !error && (

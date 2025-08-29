@@ -16,6 +16,7 @@
 
 import { PropsWithChildren } from 'react';
 import StandardAction from '../../models/StandardAction';
+import { type DialogProps } from '@mui/material/Dialog';
 
 export interface LegacyFormDialogBaseProps {
 	open?: boolean;
@@ -41,11 +42,13 @@ export interface LegacyFormDialogBaseProps {
 		fieldId: string;
 	};
 	index?: string | number;
+	dialogId?: string;
 }
 
 export type LegacyFormDialogProps = PropsWithChildren<
 	LegacyFormDialogBaseProps & {
 		isMinimized?: boolean;
+		onTransitionExited?: DialogProps['onTransitionExited'];
 		onMaximize?(): any;
 		onMinimize?(): any;
 		onClose?(): any;

@@ -26,7 +26,6 @@ import React, { forwardRef, useRef, useState } from 'react';
 import Layout, { LayoutProps } from './Layout';
 import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem, { MenuItemProps } from '@mui/material/MenuItem';
-import { useShowAlert } from '../../FormsEngine/lib/formUtils';
 
 export type EditAppLayoutAction = 'exit' | 'save' | 'viewXml' | 'diff' | 'history' | 'rollback';
 
@@ -35,6 +34,7 @@ type MenuItemOrButtonEvent = Parameters<MenuItemProps['onClick']>[0] | Parameter
 export interface EditAppLayoutProps extends Omit<LayoutProps, 'toolbarContent'> {
 	onActionClick(e: MenuItemOrButtonEvent, action: EditAppLayoutAction): void;
 	disableSave?: boolean;
+	isNew?: boolean;
 }
 
 const actionsMap: Record<EditAppLayoutAction, EditAppLayoutAction> = {
@@ -49,15 +49,12 @@ const actionsMap: Record<EditAppLayoutAction, EditAppLayoutAction> = {
 export const EditTypeViewLayout = forwardRef<HTMLDivElement, EditAppLayoutProps>((props, ref) => {
 	const [open, setOpen] = useState(false);
 	const anchorElRef = useRef(undefined);
-	const showAlert = useShowAlert();
 	const handleOpenMenuButton: IconButtonProps['onClick'] = () => setOpen(true);
 	const handleClose: MenuProps['onClose'] = () => setOpen(false);
 	const handleMenuItemClick = (e: MenuItemOrButtonEvent) => {
 		setOpen(false);
 		const action = e.currentTarget.getAttribute('data-action-id') as EditAppLayoutAction;
 		props.onActionClick?.(e, action);
-		// TODO: Remove...
-		if (!['exit', 'save'].includes(action)) showAlert('Implement: View XML, diff, history & rollback');
 	};
 	return (
 		<Layout
@@ -72,8 +69,11 @@ export const EditTypeViewLayout = forwardRef<HTMLDivElement, EditAppLayoutProps>
 							</IconButton>
 						</Tooltip>
 						<Typography variant="h5" component="h1" noWrap>
-							{/* TODO: Make title dynamic based on create/edit */}
-							<FormattedMessage defaultMessage="New Content Type" />
+							{props.isNew ? (
+								<FormattedMessage defaultMessage="New Content Type" />
+							) : (
+								<FormattedMessage defaultMessage="Edit Content Type" />
+							)}
 						</Typography>
 					</Box>
 					<Box display="flex" alignItems="center">
@@ -101,9 +101,11 @@ export const EditTypeViewLayout = forwardRef<HTMLDivElement, EditAppLayoutProps>
 							<MenuItem onClick={handleMenuItemClick} data-action-id={actionsMap.diff}>
 								<FormattedMessage defaultMessage="Diff" />
 							</MenuItem>
-							<MenuItem onClick={handleMenuItemClick} data-action-id={actionsMap.history}>
-								<FormattedMessage defaultMessage="History" />
-							</MenuItem>
+							{!props.isNew && (
+								<MenuItem onClick={handleMenuItemClick} data-action-id={actionsMap.history}>
+									<FormattedMessage defaultMessage="History" />
+								</MenuItem>
+							)}
 							<MenuItem onClick={handleMenuItemClick} data-action-id={actionsMap.rollback}>
 								<FormattedMessage defaultMessage="Rollback" />
 							</MenuItem>

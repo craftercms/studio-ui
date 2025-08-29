@@ -70,6 +70,7 @@ import useUpdateRefs from '../../../hooks/useUpdateRefs';
 import { unlockItem } from '../../../state/actions/content';
 import ApiResponse from '../../../models/ApiResponse';
 import { getFormsEngineCloseAfterSave, getFormsEngineCollapseToCKey } from '../../../utils/state';
+import { createComponentId } from '../../../utils/system';
 
 /**
  * Returns the scroll container for the form's container.
@@ -230,7 +231,7 @@ export function showAlert({
 	dispatch(
 		pushDialog({
 			id,
-			component: 'craftercms.components.AlertDialog',
+			component: createComponentId('AlertDialog'),
 			allowFullScreen: false,
 			allowMinimize: false,
 			props: {
@@ -443,7 +444,8 @@ export function createObjectWithSystemProps(
 		[XmlKeys.fileName]: mixin?.[XmlKeys.fileName] ?? 'index.xml',
 		// TODO: These are part of the type
 		[XmlKeys.disabled]: mixin?.[XmlKeys.disabled] ?? false,
-		[XmlKeys.placeInNav]: mixin?.[XmlKeys.placeInNav] ?? false
+		[XmlKeys.placeInNav]: mixin?.[XmlKeys.placeInNav] ?? false,
+		[XmlKeys.navLabel]: mixin?.[XmlKeys.navLabel] ?? ''
 	};
 	return contentObject;
 }

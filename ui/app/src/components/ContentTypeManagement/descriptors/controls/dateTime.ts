@@ -14,64 +14,117 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createVirtualSection, PartialContentType } from '../../utils';
+import { createVirtualSection, DescriptorContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
+import { defineMessage } from 'react-intl';
 
-export const dateTimeDescriptor: PartialContentType = {
+export const dateTimeDescriptor: DescriptorContentType = {
 	id: 'date-time',
-	name: 'Date Time',
-	description: 'Date and time picker',
+	name: defineMessage({ defaultMessage: 'Date / Time' }),
+	description: defineMessage({ defaultMessage: 'Date and time picker' }),
 	sections: [
 		createVirtualSection({
-			title: 'Options',
-			fields: ['readonly', 'showNowLink', 'showClear', 'showDate', 'showTime']
+			id: 'properties',
+			title: defineMessage({ defaultMessage: 'Options' }),
+			fields: [
+				'showDate',
+				'showTime',
+				'showClear',
+				'showNowLink',
+				'populate',
+				'allowPastDate',
+				'populateDateExp',
+				'useCustomTimezone',
+				'readonly',
+				'readonlyEdit'
+			]
 		}),
-		createVirtualSection({ title: 'Constraints', fields: ['required'] })
+		createVirtualSection({
+			id: 'constraints',
+			title: defineMessage({ defaultMessage: 'Constraints' }),
+			fields: ['required']
+		})
 	],
 	fields: {
-		readonly: {
-			id: 'readonly',
-			type: 'checkbox',
-			name: 'Read Only',
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		},
-		showNowLink: {
-			id: 'showNowLink',
-			type: 'checkbox',
-			name: 'Show Now Link',
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		},
-		showClear: {
-			id: 'showClear',
-			type: 'checkbox',
-			name: 'Show Clear',
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		},
 		showDate: {
 			id: 'showDate',
 			type: 'checkbox',
-			name: 'Show Date',
+			name: defineMessage({ defaultMessage: 'Show Date' }),
 			defaultValue: true,
 			validations: immutableEmptyObject
 		},
 		showTime: {
 			id: 'showTime',
 			type: 'checkbox',
-			name: 'Show Time',
+			name: defineMessage({ defaultMessage: 'Show Time' }),
+			defaultValue: false,
+			validations: immutableEmptyObject
+		},
+		showClear: {
+			id: 'showClear',
+			type: 'checkbox',
+			name: defineMessage({ defaultMessage: 'Show Clear' }),
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		showNowLink: {
+			id: 'showNowLink',
+			type: 'checkbox',
+			name: defineMessage({ defaultMessage: 'Show Now Link' }),
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		populate: {
+			id: 'populate',
+			type: 'checkbox',
+			name: defineMessage({ defaultMessage: 'Populated' }),
 			defaultValue: true,
+			validations: immutableEmptyObject
+		},
+		allowPastDate: {
+			id: 'allowPastDate',
+			type: 'checkbox',
+			name: defineMessage({ defaultMessage: 'Allow Past Date' }),
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		populateDateExp: {
+			id: 'populateDateExp',
+			type: 'input',
+			name: defineMessage({ defaultMessage: 'Populate Expression' }),
+			defaultValue: 'now',
+			validations: immutableEmptyObject
+		},
+		useCustomTimezone: {
+			id: 'useCustomTimezone',
+			type: 'checkbox',
+			name: defineMessage({ defaultMessage: 'Use Custom Timezone' }),
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		readonly: {
+			id: 'readonly',
+			type: 'checkbox',
+			name: defineMessage({ defaultMessage: 'Read Only' }),
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		readonlyEdit: {
+			id: 'readonlyEdit',
+			type: 'checkbox',
+			name: defineMessage({ defaultMessage: 'Read Only on Edit' }),
+			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		required: {
 			id: 'required',
 			type: 'checkbox',
-			name: 'Required',
+			name: defineMessage({ defaultMessage: 'Required' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}
-	}
+	},
+	supportedPostFixes: ['_dt']
 };
 
 export default dateTimeDescriptor;

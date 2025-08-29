@@ -14,12 +14,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export const disabledDescriptor = {
+import { createVirtualSection, DescriptorContentType } from '../../utils';
+import { immutableEmptyObject } from '../../../../utils/object';
+import { defineMessage } from 'react-intl';
+
+// TODO: Why is disabled a control type? Doesn't seem to be in use.
+export const disabledDescriptor: DescriptorContentType = {
 	id: 'disabled',
-	name: 'Disabled',
-	description: 'Disabled field',
-	sections: [],
-	fields: {}
+	name: defineMessage({ defaultMessage: 'Disabled' }),
+	description: defineMessage({ defaultMessage: 'Disabled field' }),
+	sections: [
+		createVirtualSection({
+			id: 'properties',
+			title: defineMessage({ defaultMessage: 'Options' }),
+			fields: ['readonly']
+		})
+	],
+	fields: {
+		readonly: {
+			id: 'readonly',
+			type: 'checkbox',
+			name: defineMessage({ defaultMessage: 'readonly' }),
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		}
+	}
 };
 
 export default disabledDescriptor;

@@ -17,7 +17,7 @@
 import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
 import EmptyState from '../EmptyState/EmptyState';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import Typography from '@mui/material/Typography';
 import ItemDisplay from '../ItemDisplay';
 import ItemStateIcon from '../ItemStateIcon/ItemStateIcon';
@@ -105,6 +105,7 @@ export function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
 	} = props;
 	const isFolder = item?.systemType === 'folder';
 	const inWorkflow = isInWorkflow(item?.stateMap);
+	const { formatMessage } = useIntl();
 	return (
 		<Popover
 			open={open}
@@ -206,7 +207,7 @@ export function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
 										sxs={{ root: { fontSize: '0.8rem', verticalAlign: 'middle', ...sxs?.icon } }}
 									/>
 									<Typography variant="body2" component="span">
-										{getItemStateText(item?.stateMap, { user: item?.lockOwner?.username })}
+										{getItemStateText(item?.stateMap, formatMessage, { user: item?.lockOwner?.username })}
 									</Typography>
 								</>
 							) : (
@@ -217,7 +218,7 @@ export function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
 										sxs={{ root: { fontSize: '0.8rem', verticalAlign: 'middle', ...sxs?.icon } }}
 									/>
 									<Typography variant="body2" component="span">
-										{getItemPublishingTargetText(item?.stateMap)}
+										{getItemPublishingTargetText(item?.stateMap, formatMessage)}
 									</Typography>
 								</>
 							))}

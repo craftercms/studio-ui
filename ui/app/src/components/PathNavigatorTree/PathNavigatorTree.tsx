@@ -41,7 +41,6 @@ import ContextMenu, { ContextMenuOption } from '../ContextMenu/ContextMenu';
 import { getNumOfMenuOptionsForItem, isAudio, isPdfDocument, isVideo, lookupItemByPath } from '../../utils/content';
 import { previewItem } from '../../state/actions/preview';
 import { getOffsetLeft, getOffsetTop } from '@mui/material/Popover';
-import { showItemMegaMenu, showPreviewDialog } from '../../state/actions/dialogs';
 import { getStoredPathNavigatorTree } from '../../utils/state';
 import GlobalState from '../../models/GlobalState';
 import PathNavigatorSkeleton from '../PathNavigator/PathNavigatorSkeleton';
@@ -59,7 +58,10 @@ import SystemType from '../../models/SystemType';
 import { PathNavigatorTreeItemProps } from './PathNavigatorTreeItem';
 import { UNDEFINED } from '../../utils/constants';
 import SimpleAjaxError from '../../models/SimpleAjaxError';
-import { pickShowContentFormAction } from '../../utils/system';
+import { createComponentId, pickShowContentFormAction } from '../../utils/system';
+import { pushDialog } from '../../state/actions/dialogStack';
+import { nanoid } from 'nanoid';
+import { showItemMegaMenu } from '../../state/actions/dialogs';
 
 export interface PathNavigatorTreeProps
 	extends Pick<
@@ -311,21 +313,32 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
 			dispatch(pickShowContentFormAction({ path: item.path, authoringBase, site: siteId, readonly: true }));
 		} else if (isMediaContent(item.mimeType) || isPdfDocument(item.mimeType)) {
 			dispatch(
-				showPreviewDialog({
-					type: isImage(item) ? 'image' : isVideo(item) ? 'video' : isAudio(item) ? 'audio' : 'pdf',
-					title: item.label,
-					url: item.path
+				pushDialog({
+					component: createComponentId('PreviewDialog'),
+					allowMinimize: true,
+					allowFullScreen: true,
+					props: {
+						type: isImage(item) ? 'image' : isVideo(item) ? 'video' : isAudio(item) ? 'audio' : 'pdf',
+						title: item.label,
+						url: item.path
+					}
 				})
 			);
 		} else {
 			const mode = getEditorMode(item);
 			dispatch(
-				showPreviewDialog({
-					type: 'editor',
-					title: item.label,
-					url: item.path,
-					path: item.path,
-					mode
+				pushDialog({
+					id: nanoid(),
+					component: createComponentId('PreviewDialog'),
+					allowMinimize: true,
+					allowFullScreen: true,
+					props: {
+						type: 'editor',
+						title: item.label,
+						url: item.path,
+						path: item.path,
+						mode
+					}
 				})
 			);
 		}
