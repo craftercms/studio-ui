@@ -1265,6 +1265,7 @@ export function isAudio(item: Pick<ContentItem, 'mimeType'>): boolean {
 	return item?.mimeType.startsWith('audio/');
 }
 
-export function isPdfDocument(mimeType: string) {
-	return 'application/pdf' === mimeType;
+export function isPdfDocument(mimeType: string): boolean {
+	// Using `startsWith` to cover possible mime types like `application/pdf; charset=UTF-8`
+	return mimeType.toLowerCase().startsWith('application/pdf');
 }
