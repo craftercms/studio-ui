@@ -168,14 +168,13 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
 				const image = isImage(item);
 				const video = isVideo(item);
 				const pdf = isPdfDocument(item.mimeType);
+				const isBinary = image || video || pdf;
 				dispatch(
 					showPreviewDialog({
 						type: image ? 'image' : video ? 'video' : pdf ? 'pdf' : 'editor',
 						title: item.label,
-						[image || video || pdf ? 'url' : 'content']: content,
-						mode: image || video || pdf ? UNDEFINED : getEditorMode(item),
+						...(isBinary ? { url: content } : { content, mode: getEditorMode(item) }),
 						path: item.path,
-						url: item.path,
 						showEdit: current === version.versionNumber,
 						subtitle: `v.${version.versionNumber}`,
 						...(video ? { mimeType: item.mimeType } : {})
