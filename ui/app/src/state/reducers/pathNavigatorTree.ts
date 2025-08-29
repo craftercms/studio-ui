@@ -177,7 +177,7 @@ const deleteContentEventHandler: CaseReducer<
 	contentAndDeleteEventForEachApplicableTree(state, targetPath, (tree, targetPath, parentPathOfTargetPath) => {
 		if (targetPath === tree.rootPath) {
 			tree.isRootPathMissing = true;
-		} else if (parentPathOfTargetPath in tree.totalByPath) {
+		} else if (parentPathOfTargetPath in tree.totalByPath || withIndex(parentPathOfTargetPath) in tree.totalByPath) {
 			deleteItemFromState(tree, targetPath);
 		}
 	});
