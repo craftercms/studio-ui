@@ -31,10 +31,9 @@ import { isBlank } from '../../utils/string';
 import { useDispatch } from 'react-redux';
 import { cancelPackages } from '../../services/workflow';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
-import { batchActions } from '../../state/actions/misc';
-import { updateBulkCancelPackageDialog } from '../../state/actions/dialogs';
 import { showSystemNotification } from '../../state/actions/system';
+import { pushErrorDialog } from '../../utils/system';
+import { useEnhancedDialogContext } from '../EnhancedDialog';
 
 export interface BulkCancelPackageDialogContainerProps
 	extends BulkCancelPackageDialogBaseProps,
@@ -48,29 +47,24 @@ export function BulkCancelPackageDialogContainer(props: BulkCancelPackageDialogC
 	const packageIds = packages?.map((pkg) => pkg.id);
 	const dispatch = useDispatch();
 	const { formatMessage } = useIntl();
+	const { updateSubmittingOrHasPendingChanges } = useEnhancedDialogContext();
 
 	const handleSubmit = () => {
-		dispatch(updateBulkCancelPackageDialog({ isSubmitting: true }));
+		updateSubmittingOrHasPendingChanges({ isSubmitting: true });
 		cancelPackages(siteId, {
 			packageIds,
 			comment
 		}).subscribe({
 			next() {
+				updateSubmittingOrHasPendingChanges({ isSubmitting: false });
 				dispatch(
-					batchActions([
-						updateBulkCancelPackageDialog({ isSubmitting: false }),
-						showSystemNotification({ message: formatMessage({ defaultMessage: 'Packages cancelled successfully.' }) })
-					])
+					showSystemNotification({ message: formatMessage({ defaultMessage: 'Packages cancelled successfully.' }) })
 				);
 				onSuccess?.();
 			},
 			error({ response }) {
-				dispatch(
-					batchActions([
-						updateBulkCancelPackageDialog({ isSubmitting: false }),
-						showErrorDialog({ error: response.response })
-					])
-				);
+				updateSubmittingOrHasPendingChanges({ isSubmitting: false });
+				dispatch(pushErrorDialog({ props: { error: response.response } }));
 			}
 		});
 	};

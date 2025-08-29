@@ -115,7 +115,13 @@ export function PreviewComponentsPanel() {
 				continue;
 			}
 			// if contentType.type === 'component' ...
-			if (allowedTypesData[id]?.embedded || allowedTypesData[id]?.shared) {
+			// When selecting 'Allow any component' in the content type editor, there will be a key '*' in the allowedTypesData
+			if (
+				allowedTypesData[id]?.embedded ||
+				allowedTypesData[id]?.shared ||
+				allowedTypesData['*']?.embedded ||
+				allowedTypesData['*']?.shared
+			) {
 				allowedTypes.push(contentType);
 			} else {
 				otherTypes.push(contentType);
@@ -243,7 +249,12 @@ export function PreviewComponentsPanel() {
 										arrow
 										title={<FormattedMessage defaultMessage="Compatible types are configured in the content model." />}
 									>
-										<IconButton size="small">
+										<IconButton
+											size="small"
+											aria-label={formatMessage({
+												defaultMessage: 'Compatible types are configured in the content model.'
+											})}
+										>
 											<InfoRounded fontSize="small" />
 										</IconButton>
 									</Tooltip>

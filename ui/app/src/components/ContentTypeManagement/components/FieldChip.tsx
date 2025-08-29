@@ -23,19 +23,22 @@ import { Theme } from '@mui/material';
 import { alpha } from '@mui/system/colorManipulator';
 import Typography from '@mui/material/Typography';
 import { capitalize } from '../../../utils/string';
-import TypeBuilderAddButton from './TypeBuilderAddButton';
-import { FormattedMessage } from 'react-intl';
-import { ContentTypeField } from '../../../models';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { ContentTypeField, NewContentTypeField } from '../../../models';
 import useIsDarkModeTheme from '../../../hooks/useIsDarkModeTheme';
 import LookupTable from '../../../models/LookupTable';
 import Asterisk from '../../../icons/Asterisk';
+import controlDescriptors from '../descriptors/controls';
+import dataSourceDescriptors from '../descriptors/dataSources';
+import { applyTranslations } from '../utils';
+import Button from '@mui/material/Button';
 
 function composeFieldPath(fieldPath: string, fieldId: string): string {
 	return fieldPath ? `${fieldPath}.${fieldId}` : fieldId;
 }
 
 export interface FieldChipProps {
-	field: ContentTypeField;
+	field: ContentTypeField | NewContentTypeField;
 	fieldPath?: string;
 	fieldPathsWithErrors: LookupTable<boolean>;
 	selectedFieldIdPath?: string;
@@ -44,10 +47,13 @@ export interface FieldChipProps {
 		field: ContentTypeField,
 		event: React.MouseEvent<HTMLButtonElement, MouseEvent>
 	): void;
+	onInsertField?(fieldPath: string): void;
 }
 
+const descriptors = { ...controlDescriptors, ...dataSourceDescriptors };
+
 export function FieldChip(props: FieldChipProps) {
-	const { field, fieldPathsWithErrors, fieldPath, selectedFieldIdPath, onFieldSelected } = props;
+	const { field, fieldPathsWithErrors, fieldPath, selectedFieldIdPath, onFieldSelected, onInsertField } = props;
 	const theme = useTheme();
 	const isDark = useIsDarkModeTheme();
 	const isRepeat = field.type === 'repeat';
@@ -70,6 +76,7 @@ export function FieldChip(props: FieldChipProps) {
 		bgcolor: 'action.selected',
 		'&:hover': { bgcolor: 'action.selected' }
 	};
+	const { formatMessage } = useIntl();
 	return (
 		<Root
 			disabled={isSelected}
@@ -113,16 +120,27 @@ export function FieldChip(props: FieldChipProps) {
 				]}
 			>
 				<Box display="flex" alignItems="center">
-					<Typography component="strong" sx={{ mr: 0.5, fontWeight: 600 }}>
-						{field.name}
-					</Typography>
-					<Typography component="span" variant="body2">
-						({field.id})
-					</Typography>
-					{error && <Asterisk fontSize="small" sx={{}} />}
+					{(field as NewContentTypeField).NEW ? (
+						<Typography component="strong" sx={{ mr: 0.5, fontWeight: 600 }}>
+							<FormattedMessage defaultMessage={`Draft ({type})`} values={{ type: field.type }} />
+						</Typography>
+					) : (
+						<>
+							<Typography component="strong" sx={{ mr: 0.5, fontWeight: 600 }}>
+								{field.name}
+							</Typography>
+							<Typography component="span" variant="body2">
+								({field.id})
+							</Typography>
+						</>
+					)}
+					{error && <Asterisk fontSize="small" />}
 				</Box>
-				{/* TODO: Render the field type label */}
-				<Typography variant="body2">{capitalize(field.type).replaceAll('-', ' ')}</Typography>
+				<Typography variant="body2">
+					{descriptors[field.type]
+						? applyTranslations(descriptors[field.type], formatMessage).name
+						: capitalize(field.type).replaceAll('-', ' ')}
+				</Typography>
 			</Box>
 			{isRepeat && (
 				<Box p={1} pt={0}>
@@ -134,15 +152,12 @@ export function FieldChip(props: FieldChipProps) {
 							selectedFieldIdPath={selectedFieldIdPath}
 							fieldPath={currentFieldPath}
 							onFieldSelected={onFieldSelected}
+							onInsertField={onInsertField}
 						/>
 					))}
-					<TypeBuilderAddButton
-						onClick={() => {
-							/* TODO: invoke field addition prop */
-						}}
-					>
+					<Button onClick={() => onInsertField(currentFieldPath)}>
 						<FormattedMessage defaultMessage="Add Field" />
-					</TypeBuilderAddButton>
+					</Button>
 				</Box>
 			)}
 		</Root>

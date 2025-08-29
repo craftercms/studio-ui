@@ -42,6 +42,12 @@ export type TItem<T = unknown> = { key: string; value: string; data?: T };
 
 export type TItemData = { [itemDataKey]: true; itemId: TItem['key'] };
 
+export interface SortableListProps<T = unknown> {
+	items: TItem<T>[];
+	onChange(items: TItem<T>[]): void;
+	selectedItemId?: string;
+}
+
 const strokeSize = 2;
 const terminalSize = 8;
 const gapBetweenItems = '4px';
@@ -156,7 +162,7 @@ function DragPreview({ item }: { item: TItem }) {
 	);
 }
 
-function SortableItem({ item }: { item: TItem }) {
+function SortableItem({ item, selected }: { item: TItem; selected?: boolean }) {
 	const ref = useRef<HTMLDivElement | null>(null);
 	const [state, setState] = useState<ItemState>(idle);
 	useEffect(() => {
@@ -242,6 +248,7 @@ function SortableItem({ item }: { item: TItem }) {
 					{ position: 'relative', borderRadius: 1, cursor: 'grab' },
 					state.type === 'is-dragging' && { opacity: 0.4 }
 				]}
+				selected={selected}
 			>
 				<ListItemIcon>
 					<DragIndicator fontSize="small" />
@@ -256,7 +263,7 @@ function SortableItem({ item }: { item: TItem }) {
 	);
 }
 
-export function SortableList({ items, onChange }: { items: TItem[]; onChange(items: TItem[]): void }) {
+export function SortableList({ items, onChange, selectedItemId }: SortableListProps) {
 	const onChangeRef = useUpdateRefs(onChange);
 	useEffect(() => {
 		return monitorForElements({
@@ -321,7 +328,7 @@ export function SortableList({ items, onChange }: { items: TItem[]; onChange(ite
 	return (
 		<List sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, px: 1 }}>
 			{items.map((item) => (
-				<SortableItem key={item.key} item={item} />
+				<SortableItem key={item.key} item={item} selected={item.key === selectedItemId} />
 			))}
 		</List>
 	);

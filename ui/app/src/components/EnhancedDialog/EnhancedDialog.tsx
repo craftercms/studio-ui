@@ -43,7 +43,6 @@ export interface EnhancedDialogProps extends Omit<MuiDialogProps, 'title'>, Enha
 export function EnhancedDialog(props: EnhancedDialogProps) {
 	// region const { ... } = props
 	const {
-		id,
 		open,
 		isSubmitting = false,
 		hasPendingChanges = false,
@@ -137,7 +136,7 @@ export function EnhancedDialog(props: EnhancedDialogProps) {
 
 export default EnhancedDialog;
 
-function OnClosedInvoker({ onClosed }: { onClosed }) {
+function OnClosedInvoker({ onClosed }: { onClosed }): React.JSX.Element | null {
 	useUnmount(onClosed);
-	return null as JSX.Element;
+	return null;
 }

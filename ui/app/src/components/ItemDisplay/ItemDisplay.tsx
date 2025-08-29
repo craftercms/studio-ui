@@ -28,6 +28,7 @@ import Box from '@mui/material/Box';
 import { PartialSxRecord } from '../../models';
 import { SxProps } from '@mui/system';
 import { Theme } from '@mui/material/styles';
+import { DisabledItemIcon } from '../DisabledItemIcon';
 
 export type ItemDisplayClassKey = 'root' | 'label' | 'labelPreviewable' | 'icon' | 'typeIcon';
 
@@ -80,6 +81,7 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
 		// Prevents crashing if the item is nullish
 		return null;
 	}
+	const isDisabledItem = item.stateMap?.disabled;
 	const inWorkflow = isInWorkflow(item.stateMap) || item.systemType === 'folder';
 	return (
 		<Box
@@ -123,14 +125,17 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
 							}}
 						/>
 					)}
-			{showItemType && (
-				<ItemTypeIcon
-					{...itemTypeIconProps}
-					item={item}
-					className={[classes?.icon, itemTypeIconProps?.className].filter(Boolean).join(' ')}
-					sx={{ fontSize: '1.1rem', ...sxs?.icon }}
-				/>
-			)}
+			{showItemType &&
+				(isDisabledItem ? (
+					<DisabledItemIcon item={item} itemTypeIconProps={itemTypeIconProps} sxs={sxs} classes={classes} />
+				) : (
+					<ItemTypeIcon
+						{...itemTypeIconProps}
+						item={item}
+						className={[classes?.icon, itemTypeIconProps?.className].filter(Boolean).join(' ')}
+						sx={{ fontSize: '1.1rem', ...sxs?.icon }}
+					/>
+				))}
 			<Typography
 				noWrap
 				component={labelComponent}

@@ -61,9 +61,9 @@ export function isEditActionAvailable(args: {
 }): boolean {
 	const { record, models, contentItemsByPath, parentModelId } = args;
 	const model = models[record.modelId];
-	let path = model.craftercms.path;
+	let path = model?.craftercms.path;
 	if (!path) {
-		path = models[parentModelId].craftercms.path;
+		path = models[parentModelId]?.craftercms.path;
 	}
 	return contentItemsByPath[path]?.availableActionsMap.edit;
 }

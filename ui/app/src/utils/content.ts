@@ -20,10 +20,10 @@ import { nnou, nou } from './object';
 import { ContentType, ContentTypeField } from '../models/ContentType';
 import LookupTable from '../models/LookupTable';
 import ContentInstance, { ContentInstanceBase } from '../models/ContentInstance';
-import { deserialize, getInnerHtml, getInnerHtmlNumber, wrapElementInAuxDocument } from './xml';
+import { deserialize, fromString, getInnerHtml, getInnerHtmlNumber, serialize, wrapElementInAuxDocument } from './xml';
 import { fileNameFromPath, replaceAccentedVowels, unescapeHTML } from './string';
 import { getRootPath, isRootPath, withIndex, withoutIndex } from './path';
-import { isFolder, isNavigable, isPreviewable } from '../components/PathNavigator/utils';
+import { isFolder, isNavigable, isPdfDocument, isPreviewable, isVideo } from '../components/PathNavigator/utils';
 import {
 	CONTENT_CHANGE_TYPE_MASK,
 	CONTENT_COPY_MASK,
@@ -77,10 +77,14 @@ import { getStateBitmap } from '../components/WorkflowStateManagement/utils';
 import { forEach } from './array';
 import { PublishingTargets } from '../models';
 import slugify from 'slugify';
-import { showCodeEditorDialog, showEditDialog } from '../state/actions/dialogs';
 import { Dispatch } from 'react';
 import { AnyAction } from 'redux';
 import { findParentModelId, getModelIdFromInheritedField, isInheritedField } from './model';
+import { XmlKeys } from '../components/FormsEngine/lib/formConsts';
+import { pushDialog } from '../state/actions/dialogStack';
+import { nanoid } from 'nanoid';
+import { createComponentId, pickShowContentFormAction } from './system';
+import { popCodeEditorDialog } from '../state/actions/dialogs';
 
 export function isEditableAsset(path: string) {
 	return (
@@ -289,7 +293,7 @@ export function parseLegacyItemToContentItem(item: LegacyItem | LegacyItem[]): C
 	};
 }
 
-const systemPropsList = [
+export const systemPropsList = [
 	'orderDefault_f',
 	'savedAsDraft',
 	'content-type',
@@ -307,6 +311,18 @@ const systemPropsList = [
 	'lastModifiedDate',
 	'lastModifiedDate_dt'
 ];
+
+export const systemPropMap = {
+	[XmlKeys.fileName]: 'fileName',
+	[XmlKeys.internalName]: 'label',
+	[XmlKeys.contentTypeId]: 'contentTypeId',
+	[XmlKeys.dateCreated]: 'dateCreated',
+	[XmlKeys.dateCreatedDt]: 'dateCreated',
+	[XmlKeys.dateModified]: 'dateModified',
+	[XmlKeys.dateModifiedDt]: 'dateModified',
+	disabled: 'disabled',
+	orderDefault_f: 'orderInNav'
+};
 
 /**
  * doc {XMLDocument}
@@ -346,11 +362,12 @@ export function parseContentXML(
 	}
 	if (nnou(doc)) {
 		current.craftercms.label = getInnerHtml(
-			doc.querySelector(':scope > internal-name') ?? doc.querySelector(':scope > file-name'),
+			doc.querySelector(':scope > internal-name') ?? doc.querySelector(`:scope > ${XmlKeys.fileName}`),
 			{ applyLegacyUnescaping: true }
 		);
-		current.craftercms.dateCreated = getInnerHtml(doc.querySelector(':scope > createdDate_dt'));
-		current.craftercms.dateModified = getInnerHtml(doc.querySelector(':scope > lastModifiedDate_dt'));
+		current.craftercms.dateCreated = getInnerHtml(doc.querySelector(`:scope > ${XmlKeys.dateCreatedDt}`));
+		current.craftercms.dateModified = getInnerHtml(doc.querySelector(`:scope > ${XmlKeys.dateModifiedDt}`));
+		current.craftercms.disabled = getInnerHtml(doc.querySelector(':scope > disabled'), { trim: true }) === 'true';
 	}
 	id && (instanceLookup[id] = current);
 	if (nnou(doc)) {
@@ -405,7 +422,7 @@ export function parseContentXML(
  * instanceLookup {LookupTable<ContentInstance>}
  * unflattenedPaths {LookupTable<ContentInstance>} A lookup table directly completed/mutated by this function indexed by path of those objects that are incomplete/unflattened
  */
-function parseElementByContentType(
+export function parseElementByContentType(
 	element: Element,
 	field: ContentTypeField,
 	contentTypesLookup: LookupTable<ContentType>,
@@ -1045,7 +1062,7 @@ export const openItemEditor = (
 	authoringBase: string,
 	siteId: string,
 	dispatch: Dispatch<AnyAction>,
-	onSaveSuccess?: AnyAction
+	onSaveSuccess?: () => void
 ) => {
 	let type = 'controller';
 
@@ -1056,16 +1073,29 @@ export const openItemEditor = (
 	}
 
 	if (type === 'form') {
-		dispatch(showEditDialog({ path: item.path, authoringBase, site: siteId, onSaveSuccess }));
-	} else {
 		dispatch(
-			showCodeEditorDialog({
-				site: siteId,
-				authoringBase,
+			pickShowContentFormAction({
 				path: item.path,
-				type,
-				mode: getEditorMode(item.mimeType),
-				onSuccess: onSaveSuccess
+				authoringBase,
+				site: siteId,
+				onSaveSuccess: () => onSaveSuccess?.()
+			})
+		);
+	} else {
+		const dialogId = nanoid();
+		dispatch(
+			pushDialog({
+				id: dialogId,
+				component: createComponentId('CodeEditorDialog'),
+				props: {
+					site: siteId,
+					authoringBase,
+					path: item.path,
+					type,
+					mode: getEditorMode(item.mimeType),
+					onSuccess: () => onSaveSuccess?.(),
+					onClose: () => dispatch(popCodeEditorDialog({ id: dialogId }))
+				}
 			})
 		);
 	}
@@ -1146,6 +1176,80 @@ export function generatePlaceholderImageDataUrl(attributes?: Partial<GeneratePla
 
 	return canvas.toDataURL();
 }
+
+/**
+ * Retrieves the value of a property from a content instance model, considering system properties.
+ *
+ * @param model - The content instance model to retrieve the value from.
+ * @param prop - The property to retrieve the value from.
+ * @returns The value of the property from the model.
+ * */
+export function getContentInstanceValueFromProp(model: ContentInstance, prop: string) {
+	const systemProp = systemPropMap[prop];
+	if (systemProp) {
+		if (systemProp === 'fileName') {
+			return getContentInstanceFileName(model);
+		} else {
+			return model.craftercms[systemProp];
+		}
+	} else {
+		return model[prop];
+	}
+}
+
+export function getContentInstanceXmlValueFromProp(xml: string, prop: string): string {
+	const selectionProp = XmlKeys[prop] ?? prop;
+	const doc = fromString(xml).querySelector(selectionProp);
+	return doc ? serialize(doc) : '';
+}
+
+export function getContentFileNameFromPath(path: string): string {
+	let fileName = path.replace('/site/website', '');
+
+	if (path.endsWith('/index.xml')) {
+		fileName = fileName.replace('/index.xml', '');
+		return fileName.substring(fileName.lastIndexOf('/')) || '/';
+	}
+
+	if (path.includes('.xml')) {
+		return fileName.substring(fileName.lastIndexOf('/') + 1).replace('.xml', '');
+	}
+	return fileName;
+}
+
+/**
+ * Retrieves the file name from the given content instance model.
+ *
+ * @param model - The content instance model containing the path.
+ * @returns The file name extracted from the model's path, or null if the path is not defined.
+ */
+export function getContentInstanceFileName(model: ContentInstance) {
+	const path = model.craftercms.path;
+	if (!path) return null;
+
+	return getContentFileNameFromPath(path);
+}
+
+export const getMockContentInstance = () => {
+	return {
+		craftercms: {
+			id: null,
+			path: null,
+			label: null,
+			dateCreated: null,
+			dateModified: null,
+			contentTypeId: null,
+			disabled: false
+		}
+	};
+};
+
+export const isComparableAsset = (item) => {
+	return (
+		item?.systemType === 'asset' &&
+		(isEditableAsset(item.path) || isImage(item.path) || isVideo(item) || isPdfDocument(item.mimeType))
+	);
+};
 
 // region Package presence checker functions
 export const hasApproveAction = (value: number) => Boolean(value & PACKAGE_APPROVE_MASK);

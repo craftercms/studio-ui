@@ -91,6 +91,7 @@ export * from './ErrorState';
 export * from './ExpiringDashlet';
 export * from './FolderBrowserTreeView';
 export * from './FolderMoveAlert';
+export * from './FolderMoveAlertDialog';
 export * from './FormEngineControls';
 export * from './FormsEngine';
 export * from './Gears';

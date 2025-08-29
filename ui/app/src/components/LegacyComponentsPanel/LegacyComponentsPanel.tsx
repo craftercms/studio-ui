@@ -34,7 +34,6 @@ import BrowseFilesDialog from '../BrowseFilesDialog';
 import { MediaItem } from '../../models/Search';
 import { deleteItem, fetchContentDOM, fetchLegacyItem, sortItem } from '../../services/content';
 import { useDispatch } from 'react-redux';
-import { showConfirmDialog, showEditDialog } from '../../state/actions/dialogs';
 import { dragAndDropMessages } from '../../env/i18n-legacy';
 import { fetchAndInsertContentInstance, legacyLoadFormDefinition, legacyXmlModelToMap } from './utils';
 import LookupTable from '../../models/LookupTable';
@@ -45,9 +44,11 @@ import { showSystemNotification } from '../../state/actions/system';
 import { nou } from '../../utils/object';
 import { forEach } from '../../utils/array';
 import { useEnv } from '../../hooks/useEnv';
-import { createCustomDocumentEventListener } from '../../utils/dom';
 import { guestMessages } from '../../assets/guestMessages';
 import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
+import { popDialog } from '../../state/actions/dialogStack';
+import { nanoid } from 'nanoid';
+import { pickShowContentFormAction, pushConfirmDialog } from '../../utils/system';
 
 export interface LegacyComponentsPanelProps {
 	title: string;
@@ -175,10 +176,8 @@ export function LegacyComponentsPanel(props: LegacyComponentsPanelProps) {
 								index = i;
 							}
 						});
-						const editDialogSuccess = 'editDialogSuccess';
-						const editDialogCancel = 'editDialogCancel';
 						dispatch(
-							showEditDialog({
+							pickShowContentFormAction({
 								site: siteId,
 								authoringBase,
 								path: compPath ? compPath : guestPath,
@@ -189,111 +188,67 @@ export function LegacyComponentsPanel(props: LegacyComponentsPanelProps) {
 									fieldId,
 									datasource
 								},
-								onSaveSuccess: {
-									type: 'DISPATCH_DOM_EVENT',
-									payload: { id: editDialogSuccess }
+								onSaveSuccess: () => {
+									dispatch(
+										showSystemNotification({
+											message: formatMessage(guestMessages.insertOperationComplete)
+										})
+									);
+									hostToGuest$.next({
+										type: 'REFRESH_PREVIEW'
+									});
 								},
-								onClosed: {
-									type: 'BATCH_ACTIONS',
-									payload: [
-										{
-											type: 'DISPATCH_DOM_EVENT',
-											payload: { id: editDialogCancel }
-										},
-										{
-											type: 'EDIT_DIALOG_CLOSED'
-										}
-									]
+								onClosed: () => {
+									hostToGuest$.next({
+										type: 'REFRESH_PREVIEW'
+									});
 								}
 							})
 						);
-						let unsubscribe, cancelUnsubscribe;
-
-						unsubscribe = createCustomDocumentEventListener(editDialogSuccess, (response) => {
-							dispatch(
-								showSystemNotification({
-									message: formatMessage(guestMessages.insertOperationComplete)
-								})
-							);
-							hostToGuest$.next({
-								type: 'REFRESH_PREVIEW'
-							});
-							cancelUnsubscribe();
-						});
-
-						cancelUnsubscribe = createCustomDocumentEventListener(editDialogCancel, () => {
-							hostToGuest$.next({
-								type: 'REFRESH_PREVIEW'
-							});
-							unsubscribe();
-						});
 						// endregion
 					} else {
 						// region shared component
 						let index = 0;
-						const editDialogSuccess = 'editDialogSuccess';
-						const editDialogCancel = 'editDialogCancel';
 						dispatch(
-							showEditDialog({
+							pickShowContentFormAction({
 								authoringBase,
 								path,
 								contentTypeId: type,
 								isNewContent: true,
-								onSaveSuccess: {
-									type: 'DISPATCH_DOM_EVENT',
-									payload: { id: editDialogSuccess }
-								},
-								onClosed: {
-									type: 'BATCH_ACTIONS',
-									payload: [
-										{
-											type: 'DISPATCH_DOM_EVENT',
-											payload: { id: editDialogCancel }
-										},
-										{
-											type: 'EDIT_DIALOG_CLOSED'
+								onSaveSuccess: (response) => {
+									zone.forEach((zone, i) => {
+										if (zone === trackingNumber) {
+											index = i;
 										}
-									]
+									});
+									fetchAndInsertContentInstance(
+										siteId,
+										parentPath,
+										response.item.uri,
+										fieldId,
+										index,
+										datasource,
+										contentTypesLookup,
+										parentModelId,
+										parentContentTypeId
+									).subscribe(() => {
+										dispatch(
+											showSystemNotification({
+												message: formatMessage(guestMessages.insertOperationComplete)
+											})
+										);
+										hostToGuest$.next({
+											type: 'REFRESH_PREVIEW'
+										});
+									});
+								},
+								onClosed: () => {
+									hostToGuest$.next({
+										type: 'REFRESH_PREVIEW'
+									});
 								}
 							})
 						);
-						let unsubscribe, cancelUnsubscribe;
-
-						unsubscribe = createCustomDocumentEventListener(editDialogSuccess, (response) => {
-							zone.forEach((zone, i) => {
-								if (zone === trackingNumber) {
-									index = i;
-								}
-							});
-							fetchAndInsertContentInstance(
-								siteId,
-								parentPath,
-								response.item.uri,
-								fieldId,
-								index,
-								datasource,
-								contentTypesLookup,
-								parentModelId,
-								parentContentTypeId
-							).subscribe(() => {
-								dispatch(
-									showSystemNotification({
-										message: formatMessage(guestMessages.insertOperationComplete)
-									})
-								);
-								hostToGuest$.next({
-									type: 'REFRESH_PREVIEW'
-								});
-							});
-							cancelUnsubscribe();
-						});
-
-						cancelUnsubscribe = createCustomDocumentEventListener(editDialogCancel, () => {
-							hostToGuest$.next({
-								type: 'REFRESH_PREVIEW'
-							});
-							unsubscribe();
-						});
 						// endregion
 					}
 				} else {
@@ -525,9 +480,14 @@ export function LegacyComponentsPanel(props: LegacyComponentsPanelProps) {
 				}
 				case 'START_DIALOG': {
 					const { messageKey, message } = payload;
+					const dialogId = nanoid();
 					dispatch(
-						showConfirmDialog({
-							body: messageKey ? formatMessage(dragAndDropMessages[messageKey]) : message
+						pushConfirmDialog({
+							id: dialogId,
+							props: {
+								body: messageKey ? formatMessage(dragAndDropMessages[messageKey]) : message,
+								onOk: () => dispatch(popDialog({ id: dialogId }))
+							}
 						})
 					);
 					break;

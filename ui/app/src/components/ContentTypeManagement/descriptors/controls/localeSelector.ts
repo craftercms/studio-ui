@@ -14,29 +14,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createVirtualSection, PartialContentType } from '../../utils';
+import { createVirtualSection, DescriptorContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
+import { defineMessage } from 'react-intl';
 
-export const localeSelectorDescriptor: PartialContentType = {
+export const localeSelectorDescriptor: DescriptorContentType = {
 	id: 'locale-selector',
-	name: 'Locale Selector',
-	description: 'Language/locale selection',
+	name: defineMessage({ defaultMessage: 'Locale Selector' }),
+	description: defineMessage({ defaultMessage: 'Language/locale selection' }),
 	sections: [
-		createVirtualSection({ title: 'Options', fields: ['readonly'] }),
-		createVirtualSection({ title: 'Constraints', fields: ['required'] })
+		createVirtualSection({
+			id: 'properties',
+			title: defineMessage({ defaultMessage: 'Options' }),
+			fields: ['readonly']
+		}),
+		createVirtualSection({
+			id: 'constraints',
+			title: defineMessage({ defaultMessage: 'Constraints' }),
+			fields: ['required']
+		})
 	],
 	fields: {
 		readonly: {
 			id: 'readonly',
 			type: 'checkbox',
-			name: 'Read Only',
+			name: defineMessage({ defaultMessage: 'Read Only' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		required: {
 			id: 'required',
 			type: 'checkbox',
-			name: 'Required',
+			name: defineMessage({ defaultMessage: 'Required' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}

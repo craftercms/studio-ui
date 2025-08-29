@@ -27,19 +27,21 @@ import {
 	editTemplate
 } from '../actions/misc';
 import { createFile, fetchContentItem } from '../../services/content';
-import { showCodeEditorDialog } from '../actions/dialogs';
 import { reloadContentItem } from '../actions/content';
 import { blockUI, showEditItemSuccessNotification, unblockUI } from '../actions/system';
 import { CrafterCMSEpic } from '../store';
 import { translations } from '../../components/ItemActionsMenu/translations';
-import { showErrorDialog } from '../reducers/dialogs/error';
 import { getFileNameFromPath, getParentPath } from '../../utils/path';
 import { popPiece } from '../../utils/string';
 import { associateTemplate } from '../actions/preview';
+import { pushDialog } from '../actions/dialogStack';
+import { createComponentId, pickShowContentFormAction, pushErrorDialog } from '../../utils/system';
+import { nanoid } from 'nanoid';
+import { popCodeEditorDialog } from '../actions/dialogs';
 import { pickShowContentFormAction } from '../../utils/system';
 
 const epics = [
-	(action$, state$: Observable<GlobalState>) =>
+	(action$, state$: Observable<GlobalState>, { store }) =>
 		action$.pipe(
 			ofType(changeContentTypeAction.type),
 			withLatestFrom(state$),
@@ -53,14 +55,15 @@ const epics = [
 							path,
 							authoringBase: state.env.authoringBase,
 							changeTemplate: newContentTypeId,
-							onSaveSuccess: batchActions([showEditItemSuccessNotification(), reloadContentItem({ path })])
+							onSaveSuccess: ({ action }) =>
+								store.dispatch(batchActions([showEditItemSuccessNotification({ action }), reloadContentItem({ path })]))
 						})
 					);
 				}
 				return NEVER;
 			})
 		),
-	(action$, state$, { getIntl }) =>
+	(action$, state$, { getIntl, store }) =>
 		action$.pipe(
 			ofType(editTemplate.type, editController.type, editContentTypeTemplate.type),
 			filter(({ payload }) => payload.openOnSuccess || payload.openOnSuccess === void 0),
@@ -90,19 +93,28 @@ const epics = [
 				return merge(
 					of(blockUI({ message: getIntl().formatMessage(translations.verifyingAffectedWorkflows) })),
 					fetchContentItem(state.sites.active, path).pipe(
-						map((item) =>
-							batchActions([
-								showCodeEditorDialog({
-									site: state.sites.active,
-									path,
-									mode,
-									contentType
+						map((item) => {
+							const dialogId = nanoid();
+							return batchActions([
+								pushDialog({
+									id: dialogId,
+									component: createComponentId('CodeEditorDialog'),
+									allowFullScreen: true,
+									allowMinimize: true,
+									props: {
+										site: state.sites.active,
+										path,
+										mode,
+										contentType,
+										onClose: () => store.dispatch(popCodeEditorDialog({ id: dialogId }))
+									}
 								}),
 								unblockUI()
-							])
-						),
+							]);
+						}),
 						catchError(({ response }) => {
 							if (response.response.code === 7000) {
+								const dialogId = nanoid();
 								return of(
 									createFileAction({
 										path: destinationPath,
@@ -112,11 +124,16 @@ const epics = [
 												// Only editing templates should associate. Groovy controllers are not on the content type definition.
 												type !== editController.type &&
 													associateTemplate({ contentTypeId: contentType, displayTemplate: path }),
-												showCodeEditorDialog({
-													site: state.sites.active,
-													path,
-													mode,
-													contentType
+												pushDialog({
+													id: dialogId,
+													component: createComponentId('CodeEditorDialog'),
+													props: {
+														site: state.sites.active,
+														path,
+														mode,
+														contentType,
+														onClose: () => store.dispatch(popCodeEditorDialog({ id: dialogId }))
+													}
 												}),
 												unblockUI()
 											].filter(Boolean)
@@ -124,14 +141,7 @@ const epics = [
 									})
 								);
 							} else {
-								return of(
-									batchActions([
-										showErrorDialog({
-											error: response.response
-										}),
-										unblockUI()
-									])
-								);
+								return of(batchActions([pushErrorDialog({ props: { error: response.response } }), unblockUI()]));
 							}
 						})
 					)

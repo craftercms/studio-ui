@@ -22,7 +22,6 @@ import { ElementType, lazy } from 'react';
 export type BuiltInControlType =
 	| 'auto-filename'
 	| 'aws-file-upload'
-	| 'box-file-upload' // TODO: Remove
 	| 'checkbox'
 	| 'checkbox-group'
 	| 'date-time'
@@ -53,7 +52,6 @@ export type BuiltInControlType =
 export const controlMap: Record<BuiltInControlType, ElementType> = {
 	'auto-filename': lazy(() => import('../controls/AutoFileName')),
 	'aws-file-upload': null,
-	'box-file-upload': null,
 	checkbox: lazy(() => import('../controls/Checkbox')),
 	'checkbox-group': lazy(() => import('../controls/CheckboxGroup')),
 	'date-time': null,

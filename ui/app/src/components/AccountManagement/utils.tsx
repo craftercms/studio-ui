@@ -35,11 +35,14 @@ import {
 	removeStoredPullBranch,
 	removeStoredPullMergeStrategy,
 	removeStoredPushBranch,
-	removeStoredShowToolsPanel
+	removeStoredShowToolsPanel,
+	removeCompareVersionDialogViewModes,
+	removeViewVersionDialogViewModes,
+	removeTypeViewCompactMode
 } from '../../utils/state';
 
 export const preferencesGroups: Array<{
-	label: string | JSX.Element;
+	label: string | React.JSX.Element;
 	onClear: (props: { siteId: string; siteUuid: string; username: string }) => void;
 }> = [
 	{
@@ -132,6 +135,9 @@ export const preferencesGroups: Array<{
 			removeStoredPreviewBackgroundMode(props.username);
 			removeStoredBrowseDialogViewMode(props.username);
 			removeStoredItems((key) => widgetsAccordionsKeyRegex.test(key));
+			removeCompareVersionDialogViewModes(props.username);
+			removeViewVersionDialogViewModes(props.username);
+			removeTypeViewCompactMode(props.username);
 		}
 	}
 ];

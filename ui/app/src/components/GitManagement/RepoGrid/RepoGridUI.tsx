@@ -60,7 +60,7 @@ export function RepoGridUI(props: RepoGridUIProps) {
 											onClick={() => onPullClick(repository.name, repository.branches)}
 											disabled={disableActions}
 											size="large"
-											aria-label={formatMessage({ defaultMessage: 'Pull' })}
+											aria-label={formatMessage({ id: 'words.pull', defaultMessage: 'Pull' })}
 										>
 											<ArrowDownwardRoundedIcon />
 										</IconButton>
@@ -72,7 +72,7 @@ export function RepoGridUI(props: RepoGridUIProps) {
 											onClick={() => onPushClick(repository.name, repository.branches)}
 											disabled={disableActions}
 											size="large"
-											aria-label={formatMessage({ defaultMessage: 'Push' })}
+											aria-label={formatMessage({ id: 'words.push', defaultMessage: 'Push' })}
 										>
 											<ArrowUpwardRoundedIcon />
 										</IconButton>

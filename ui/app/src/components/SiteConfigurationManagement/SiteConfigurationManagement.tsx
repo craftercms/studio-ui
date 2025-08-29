@@ -49,8 +49,8 @@ import { fetchItemVersions } from '../../state/actions/versions';
 import { fetchItemByPath } from '../../services/content';
 import SearchBar from '../SearchBar/SearchBar';
 import Alert, { alertClasses } from '@mui/material/Alert';
-import { closeConfirmDialog, showConfirmDialog, showHistoryDialog } from '../../state/actions/dialogs';
-import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
+import { showHistoryDialog } from '../../state/actions/dialogs';
+import { batchActions } from '../../state/actions/misc';
 import { capitalize, stripCData } from '../../utils/string';
 import { itemReverted, showSystemNotification } from '../../state/actions/system';
 import { getHostToHostBus } from '../../utils/subjects';
@@ -58,7 +58,6 @@ import { filter, map } from 'rxjs/operators';
 import { parseValidateDocument, serialize } from '../../utils/xml';
 import { forkJoin } from 'rxjs';
 import { encrypt } from '../../services/security';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import ResizeBar from '../ResizeBar';
 import { useSelection } from '../../hooks/useSelection';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
@@ -73,10 +72,12 @@ import { nnou } from '../../utils/object';
 import { MaxLengthCircularProgress } from '../MaxLengthCircularProgress';
 import useUnmount from '../../hooks/useUnmount';
 import useActiveUser from '../../hooks/useActiveUser';
-import { createCustomDocumentEventListener } from '../../utils/dom';
 import { ProjectToolsRoutes } from '../../env/routes';
 import ListItemButton from '@mui/material/ListItemButton';
 import { SiteToolsContext } from '../SiteTools/siteToolsContext';
+import { nanoid } from 'nanoid';
+import { popDialog } from '../../state/actions/dialogStack';
+import { pushConfirmDialog, pushErrorDialog } from '../../utils/system';
 
 interface SiteConfigurationManagementProps {
 	embedded?: boolean;
@@ -142,7 +143,7 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
 				setEnvironment(env);
 			},
 			error({ response }) {
-				dispatch(showErrorDialog({ error: response }));
+				dispatch(pushErrorDialog({ props: { error: response } }));
 			}
 		});
 	});
@@ -156,35 +157,43 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
 					selectedConfigFile: refs.current.selectedConfigFile
 				})
 			);
-			const eventId = 'unsavedConfigurationChangesConfirmation';
 			const title = getTranslation(refs.current.selectedConfigFile.title, translations, formatMessage);
+			const dialogId = nanoid();
 			if (refs.current.setTool) {
 				dispatch(
-					showConfirmDialog({
-						body: formatMessage({ defaultMessage: 'You left unsaved changes on "{title}"' }, { title }),
-						onCancel: batchActions([closeConfirmDialog(), dispatchDOMEvent({ id: eventId, button: 'cancel' })]),
-						onOk: batchActions([closeConfirmDialog(), dispatchDOMEvent({ id: eventId, button: 'ok' })]),
-						okButtonText: <FormattedMessage defaultMessage="Go back and recover changes" />,
-						cancelButtonText: <FormattedMessage defaultMessage="Discard changes" />
+					pushConfirmDialog({
+						id: dialogId,
+						props: {
+							body: formatMessage({ defaultMessage: 'You left unsaved changes on "{title}"' }, { title }),
+							onCancel: () => {
+								dispatch(popDialog({ id: dialogId }));
+								sessionStorage.removeItem(sessionStorageKey);
+							},
+							onOk: () => {
+								dispatch(popDialog({ id: dialogId }));
+								refs.current.setTool(ProjectToolsRoutes.Configuration);
+							},
+							okButtonText: <FormattedMessage defaultMessage="Go back and recover changes" />,
+							cancelButtonText: <FormattedMessage defaultMessage="Discard changes" />
+						}
 					})
 				);
-				createCustomDocumentEventListener<{ button: 'ok' | 'cancel' }>(eventId, ({ button }) => {
-					if (button === 'ok') {
-						refs.current.setTool(ProjectToolsRoutes.Configuration);
-					} else {
-						sessionStorage.removeItem(sessionStorageKey);
-					}
-				});
 			} else {
 				dispatch(
-					showConfirmDialog({
-						body: formatMessage(
-							{
-								defaultMessage:
-									'You left unsaved changes on "{title}". You may go back to configuration now if you wish to recover or ignore to discard changes.'
-							},
-							{ title }
-						)
+					pushConfirmDialog({
+						id: dialogId,
+						props: {
+							body: formatMessage(
+								{
+									defaultMessage:
+										'You left unsaved changes on "{title}". You may go back to configuration now if you wish to recover or ignore to discard changes.'
+								},
+								{ title }
+							),
+							onOk: () => {
+								dispatch(popDialog({ id: dialogId }));
+							}
+						}
 					})
 				);
 			}
@@ -198,7 +207,7 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
 					setFiles(files.map((file) => ({ ...file, id: `${file.module}/${file.path}` })));
 				},
 				error({ response }) {
-					dispatch(showErrorDialog({ error: response.response }));
+					dispatch(pushErrorDialog({ props: { error: response.response } }));
 				}
 			});
 		}
@@ -294,7 +303,7 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
 					setEncrypting(false);
 				},
 				error({ response: { response } }) {
-					dispatch(showErrorDialog({ error: response }));
+					dispatch(pushErrorDialog({ props: { error: response } }));
 				}
 			});
 		} else {
@@ -525,7 +534,7 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
 					},
 					error: ({ response: { response } }) => {
 						functionRefs.current.onSubmittingAndOrPendingChange?.({ isSubmitting: false });
-						dispatch(showErrorDialog({ error: response }));
+						dispatch(pushErrorDialog({ props: { error: response } }));
 					}
 				});
 			} else {

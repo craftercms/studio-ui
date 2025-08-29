@@ -319,7 +319,7 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
 										e.stopPropagation();
 										onOpenItemMenu(e.currentTarget, path);
 									}}
-									aria-label={formatMessage({ defaultMessage: 'Options' })}
+									aria-label={formatMessage({ id: 'words.options', defaultMessage: 'Options' })}
 								>
 									<MoreVertRoundedIcon />
 								</IconButton>
@@ -337,7 +337,7 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
 										onClearKeywords();
 										onFilterButtonClick();
 									}}
-									aria-label={formatMessage({ defaultMessage: 'Filter' })}
+									aria-label={formatMessage({ id: 'words.filter', defaultMessage: 'Filter' })}
 								>
 									<SearchRoundedIcon color={showFilter ? 'primary' : 'action'} />
 								</IconButton>

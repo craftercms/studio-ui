@@ -19,12 +19,13 @@ import React from 'react';
 import { SystemIconDescriptor } from '../SystemIcon';
 import TranslationOrText from '../../models/TranslationOrText';
 import { useDispatch } from 'react-redux';
-import { closeLauncher, showWidgetDialog } from '../../state/actions/dialogs';
+import { closeLauncher } from '../../state/actions/dialogs';
 import { batchActions } from '../../state/actions/misc';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useEnv } from '../../hooks/useEnv';
 import { usePossibleTranslation } from '../../hooks/usePossibleTranslation';
-import { getSystemLink, SystemLinkId } from '../../utils/system';
+import { createComponentId, getSystemLink, type SystemLinkId } from '../../utils/system';
+import { pushDialog } from '../../state/actions/dialogStack';
 
 export interface LauncherLinkTileProps {
 	title: TranslationOrText;
@@ -54,10 +55,13 @@ const LauncherLinkTile = (props: LauncherLinkTileProps) => {
 					dispatch(
 						batchActions([
 							closeLauncher(),
-							showWidgetDialog({
-								id: systemLinkId,
-								title,
-								widget: { id, ...(systemLinkId === 'siteSearchDialog' && { configuration: { embedded: true } }) }
+							pushDialog({
+								component: createComponentId('WidgetDialog'),
+								props: {
+									id: systemLinkId,
+									title,
+									widget: { id, ...(systemLinkId === 'siteSearchDialog' && { configuration: { embedded: true } }) }
+								}
 							})
 						])
 					);
