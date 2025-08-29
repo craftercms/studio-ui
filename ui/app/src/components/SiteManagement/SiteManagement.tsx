@@ -219,7 +219,7 @@ export function SiteManagement() {
 						<IconButton
 							onClick={handleChangeView}
 							size="large"
-							aria-label={formatMessage({ defaultMessage: 'Change view' })}
+							aria-label={formatMessage({ id: 'sites.ChangeView', defaultMessage: 'Change view' })}
 						>
 							{currentView === 'grid' ? <ListViewIcon /> : <GridViewIcon />}
 						</IconButton>

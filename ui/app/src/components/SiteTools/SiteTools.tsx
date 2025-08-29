@@ -127,7 +127,7 @@ export function SiteTools(props: SiteToolsProps) {
 								<IconButton
 									onClick={onBackClick}
 									size="large"
-									aria-label={formatMessage({ defaultMessage: 'Preview' })}
+									aria-label={formatMessage({ id: 'words.preview', defaultMessage: 'Preview' })}
 								>
 									<KeyboardArrowLeftRoundedIcon />
 								</IconButton>

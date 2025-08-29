@@ -42,7 +42,7 @@ export function PreviewBackButton(props: PreviewBackButtonProps) {
 					disabled={stack.length === 0 || (stack.length === 1 && currentUrlPath === stack[0])}
 					onClick={onClick}
 					size="large"
-					aria-label={formatMessage({ defaultMessage: 'Back' })}
+					aria-label={formatMessage({ id: 'words.back', defaultMessage: 'Back' })}
 					{...props}
 				>
 					<ArrowBackRoundedIcon />

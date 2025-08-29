@@ -120,6 +120,9 @@
 * [common-api.js]
   * Removed `CStudioAuthoring.Operations.uploadCMISAsset` and `CStudioAuthoring.Operations.openCMISUploadDialog`.
 * Removed LegacyVersionDialog and the entire associated `/studio/diff` route
+* [ItemDisplay/utils]
+  * Updated `getItemPublishingTargetText` to return a string. It now receives `formatMessage` as a parameter.
+  * Updated `getItemStateText` to return a string. It now receives `formatMessage` as a parameter.
 
 ## 4.2.0
 

@@ -310,7 +310,7 @@ export function AuditGridUI(props: AuditGridUIProps) {
 							<IconButton
 								onClick={() => onGetParameters(params)}
 								size="large"
-								aria-label={formatMessage({ defaultMessage: 'Show parameters' })}
+								aria-label={formatMessage({ id: 'auditGrid.showParameters', defaultMessage: 'Show parameters' })}
 							>
 								<VisibilityRoundedIcon />
 							</IconButton>

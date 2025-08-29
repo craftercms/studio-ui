@@ -511,12 +511,12 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
 													<ItemPublishingTargetIcon
 														item={{ stateMap: { [id]: true } } as ItemPublishingTargetIconProps['item']}
 													/>
-													{getItemPublishingTargetText({ [id]: true } as ItemStateMap)}
+													{getItemPublishingTargetText({ [id]: true } as ItemStateMap, formatMessage)}
 												</>
 											) : (
 												<>
 													<ItemStateIcon item={{ stateMap: { [id]: true } } as ItemStateIconProps['item']} />
-													{getItemStateText({ [id]: true } as ItemStateMap)}
+													{getItemStateText({ [id]: true } as ItemStateMap, formatMessage)}
 												</>
 											)
 										}
