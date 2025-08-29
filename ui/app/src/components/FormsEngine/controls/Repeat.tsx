@@ -14,6 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import React from 'react';
 import { useStableGlobalApiContext } from '../lib/formsEngineContext';
 import IconButton, { IconButtonProps } from '@mui/material/IconButton';
 import AddRounded from '@mui/icons-material/AddRounded';

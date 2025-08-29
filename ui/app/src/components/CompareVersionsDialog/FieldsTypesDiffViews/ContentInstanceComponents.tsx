@@ -25,7 +25,7 @@ import {
 	getItemDiffStatus,
 	SelectionContentVersion
 } from '../utils';
-import { diffArrays } from 'diff/lib/diff/array';
+import { diffArrays } from 'diff';
 import Box from '@mui/material/Box';
 import { EmptyState } from '../../EmptyState';
 import LookupTable from '../../../models/LookupTable';
