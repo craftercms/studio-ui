@@ -2545,10 +2545,8 @@ const initializeCStudioForms = () => {
 					const repeatIndex = repeatContainerEl.index;
 					const repeatIndexNOU = repeatIndex === null || repeatIndex === undefined;
 
-					// const actionsContainerEl = repeatInstanceContainerEl;
 					const actionsContainerEl = document.createElement('div');
 					YAHOO.util.Dom.addClass(actionsContainerEl, 'cstudio-form-repeat-actions');
-					// repeatInstanceContainerEl.appendChild(actionsContainerEl);
 					repeatInstanceContainerEl.insertBefore(actionsContainerEl, repeatInstanceContainerEl.firstChild);
 
 					const titleEl = document.createElement('span');
