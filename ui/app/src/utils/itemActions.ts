@@ -77,6 +77,7 @@ import {
 	hasSchedulePublishAction,
 	hasUnlockAction,
 	hasUploadAction,
+	isAudio,
 	isInActiveWorkflow,
 	isPdfDocument,
 	isVideo
@@ -336,7 +337,7 @@ export function generateSingleItemOptions(
 		if (['page', 'component', 'taxonomy', 'levelDescriptor'].includes(type)) {
 			sectionA.push(menuOptions.view);
 		} else if (isPreviewable(item)) {
-			if (isImage(item) || isVideo(item) || isPdfDocument(item.mimeType)) {
+			if (isImage(item) || isVideo(item) || isAudio(item) || isPdfDocument(item.mimeType)) {
 				sectionA.push(menuOptions.viewMedia);
 			} else {
 				sectionA.push(menuOptions.viewCode);
@@ -929,7 +930,7 @@ export const itemActionDispatcher = ({
 						allowMinimize: true,
 						allowFullScreen: true,
 						props: {
-							type: isImage(item) ? 'image' : isVideo(item) ? 'video' : 'pdf',
+							type: isImage(item) ? 'image' : isVideo(item) ? 'video' : isAudio(item) ? 'audio' : 'pdf',
 							title: item.label,
 							url: item.path
 						}
