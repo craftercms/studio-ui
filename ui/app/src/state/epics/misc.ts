@@ -38,7 +38,6 @@ import { pushDialog } from '../actions/dialogStack';
 import { createComponentId, pickShowContentFormAction, pushErrorDialog } from '../../utils/system';
 import { nanoid } from 'nanoid';
 import { popCodeEditorDialog } from '../actions/dialogs';
-import { pickShowContentFormAction } from '../../utils/system';
 
 const epics = [
 	(action$, state$: Observable<GlobalState>, { store }) =>
