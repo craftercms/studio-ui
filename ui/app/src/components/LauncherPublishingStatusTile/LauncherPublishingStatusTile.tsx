@@ -25,8 +25,8 @@ import { publishingStatusMessages } from '../PublishingStatusDisplay';
 import useShowPublishingStatusDialog from '../../hooks/useShowPublishingStatusDialog';
 
 function LauncherPublishingStatusTile() {
-	const state = useSelection((state) => state.dialogs.publishingStatus);
 	const onShowDialog = useShowPublishingStatusDialog();
+	const state = useSelection((state) => state.publishing);
 	const { formatMessage } = useIntl();
 	const dispatch = useDispatch();
 

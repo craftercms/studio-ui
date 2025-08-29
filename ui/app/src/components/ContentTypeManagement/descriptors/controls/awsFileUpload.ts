@@ -14,36 +14,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createVirtualSection, PartialContentType } from '../../utils';
+import { createVirtualSection, DescriptorContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
+import { defineMessage } from 'react-intl';
 
-export const awsFileUploadDescriptor: PartialContentType = {
+export const awsFileUploadDescriptor: DescriptorContentType = {
 	id: 'aws-file-upload',
-	name: 'AWS File Upload',
-	description: 'Upload files to AWS S3',
+	name: defineMessage({ defaultMessage: 'AWS File Upload' }),
+	description: defineMessage({ defaultMessage: 'Upload files to AWS S3' }),
 	sections: [
-		createVirtualSection({ title: 'Options', fields: ['path', 'readonly'] }),
-		createVirtualSection({ title: 'Constraints', fields: ['required'] })
+		createVirtualSection({
+			id: 'properties',
+			title: defineMessage({ defaultMessage: 'Options' }),
+			fields: ['profile_id']
+		}),
+		createVirtualSection({
+			id: 'constraints',
+			title: defineMessage({ defaultMessage: 'Constraints' }),
+			fields: ['required']
+		})
 	],
 	fields: {
-		path: {
-			id: 'path',
+		profile_id: {
+			id: 'profile_id',
 			type: 'input',
-			name: 'Path',
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		},
-		readonly: {
-			id: 'readonly',
-			type: 'checkbox',
-			name: 'Read Only',
-			defaultValue: undefined,
+			name: defineMessage({ defaultMessage: 'Profile ID' }),
+			defaultValue: 's3-default',
 			validations: immutableEmptyObject
 		},
 		required: {
 			id: 'required',
 			type: 'checkbox',
-			name: 'Required',
+			name: defineMessage({ defaultMessage: 'Required' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}

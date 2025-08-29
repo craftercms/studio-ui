@@ -33,7 +33,6 @@ import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import Fade from '@mui/material/Fade';
 import { FeedbackOutlined } from '@mui/icons-material';
-import useContentTypeList from '../../hooks/useContentTypeList';
 import { fetchContentTypes } from '../../state/actions/preview';
 
 export interface ContentTypeManagementProps {
@@ -54,7 +53,7 @@ export interface ContentTypeManagementProps {
 
 export function ContentTypeManagement(props: ContentTypeManagementProps) {
 	const { embedded = false, showAppsButton } = props;
-
+	const dispatch = useDispatch();
 	const [view, setView] = useState<'list' | 'edit' | 'create'>('list');
 	const [selectedType, setSelectedType] = useState<ContentType>(null);
 	const [useLegacy, setUseLegacy] = useState(false);
@@ -67,17 +66,23 @@ export function ContentTypeManagement(props: ContentTypeManagementProps) {
 		setSelectedType(null);
 		setView('list');
 	};
-	// const handleCreateNewType:
 
-	// TODO: Temp. For development purposes. Remove.
-	// const types = useContentTypeList();
-	// useEffect(() => {
-	// 	const type = types?.find((type) => type.id === '/page/article');
-	// 	if (type) {
-	// 		setSelectedType(type);
-	// 		setView('edit');
-	// 	}
-	// }, [types]);
+	useEffect(() => {
+		const messagesSubscription = fromEvent<MessageEvent>(window, 'message')
+			.pipe(filter((e) => ['CONTENT_TYPES_ON_DELETED'].includes(e.data?.type)))
+			.subscribe((e) => {
+				switch (e.data?.type) {
+					case 'CONTENT_TYPES_ON_DELETED': {
+						dispatch(fetchContentTypes());
+						break;
+					}
+				}
+			});
+
+		return () => {
+			messagesSubscription.unsubscribe();
+		};
+	}, [dispatch]);
 
 	return (
 		<>
@@ -92,13 +97,18 @@ export function ContentTypeManagement(props: ContentTypeManagementProps) {
 										color="error"
 										component="a"
 										startIcon={<FeedbackOutlined />}
+										// TODO: what about this?
 										href={`mailto:roy.art@craftercms.com?subject=${encodeURIComponent('New Content Type Tool Feedback')}&body=${encodeURIComponent('My Feedback: (this could go to studio@craftercms.com)')}`}
 									>
 										Why did you switch?
 									</Button>
 								)}
 								<Button onClick={() => setUseLegacy(!useLegacy)}>
-									{useLegacy ? 'Use New Tool' : 'Use Legacy Tool'}
+									{useLegacy ? (
+										<FormattedMessage defaultMessage="Use New Tool" />
+									) : (
+										<FormattedMessage defaultMessage="Use Legacy Tool" />
+									)}
 								</Button>
 							</>
 						}
@@ -109,7 +119,11 @@ export function ContentTypeManagement(props: ContentTypeManagementProps) {
 							icon: { sx: { display: 'flex', alignItems: 'center' } }
 						}}
 					>
-						{useLegacy ? "You're using the legacy Content Type UX" : "You're viewing the new Content Type UX"}
+						{useLegacy ? (
+							<FormattedMessage defaultMessage="You're using the legacy Content Type UX" />
+						) : (
+							<FormattedMessage defaultMessage="You're viewing the new Content Type UX" />
+						)}
 					</Alert>
 					{useLegacy ? (
 						createElement(LegacyTypeManagement, props)

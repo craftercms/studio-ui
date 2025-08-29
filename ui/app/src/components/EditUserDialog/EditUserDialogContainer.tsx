@@ -21,7 +21,6 @@ import React, { useEffect, useMemo, useState } from 'react';
 import LookupTable from '../../models/LookupTable';
 import { disable, enable, fetchRolesBySite, trash, update } from '../../services/users';
 import { showSystemNotification } from '../../state/actions/system';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { EditUserDialogUI } from './EditUserDialogUI';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import { useSitesBranch } from '../../hooks/useSitesBranch';
@@ -29,6 +28,7 @@ import { EditUserDialogContainerProps } from './utils';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
 import { isInvalidEmail, validateFieldMinLength } from '../UserManagement/utils';
 import { pluckProps } from '../../utils/object';
+import { pushErrorDialog } from '../../utils/system';
 
 const translations = defineMessages({
 	userDeleted: {
@@ -107,7 +107,7 @@ export function EditUserDialogContainer(props: EditUserDialogContainerProps) {
 					);
 				},
 				error({ response: { response } }) {
-					dispatch(showErrorDialog({ error: response }));
+					dispatch(pushErrorDialog({ props: { error: response } }));
 				}
 			});
 		} else {
@@ -120,7 +120,7 @@ export function EditUserDialogContainer(props: EditUserDialogContainerProps) {
 					);
 				},
 				error({ response: { response } }) {
-					dispatch(showErrorDialog({ error: response }));
+					dispatch(pushErrorDialog({ props: { error: response } }));
 				}
 			});
 		}
@@ -148,7 +148,7 @@ export function EditUserDialogContainer(props: EditUserDialogContainerProps) {
 				});
 			},
 			error({ response: { response } }) {
-				dispatch(showErrorDialog({ error: response }));
+				dispatch(pushErrorDialog({ props: { error: response } }));
 				fnRefs.current.onSubmittingAndOrPendingChange({
 					isSubmitting: false
 				});
@@ -168,7 +168,7 @@ export function EditUserDialogContainer(props: EditUserDialogContainerProps) {
 				fnRefs.current.onUserEdited();
 			},
 			error({ response: { response } }) {
-				dispatch(showErrorDialog({ error: response }));
+				dispatch(pushErrorDialog({ props: { error: response } }));
 			}
 		});
 	};

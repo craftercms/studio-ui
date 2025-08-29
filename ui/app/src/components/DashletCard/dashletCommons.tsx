@@ -40,11 +40,11 @@ import { AllItemActions } from '../../models';
 import { SxProps } from '@mui/system';
 import { useDispatch } from 'react-redux';
 import { getOffsetLeft, getOffsetTop } from '@mui/material/Popover';
-import { showItemMegaMenu } from '../../state/actions/dialogs';
 import IconButton, { IconButtonProps } from '@mui/material/IconButton';
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
 import Tooltip from '@mui/material/Tooltip';
 import { getPersonFullName } from '../../utils/object';
+import { showItemMegaMenu } from '../../state/actions/dialogs';
 
 export const actionsToBeShown: AllItemActions[] = [
 	'edit',

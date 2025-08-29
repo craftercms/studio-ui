@@ -14,33 +14,52 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createVirtualSection, PartialContentType } from '../../utils';
+import { createValidation, createVirtualSection, DescriptorContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
+import { defineMessage } from 'react-intl';
 
-export const transcodedVideoPickerDescriptor: PartialContentType = {
+export const transcodedVideoPickerDescriptor: DescriptorContentType = {
 	id: 'transcoded-video-picker',
-	name: 'Transcoded Video Picker',
-	description: 'Select transcoded video',
+	name: defineMessage({ defaultMessage: 'Transcoded Video' }),
+	description: defineMessage({ defaultMessage: 'Select transcoded video' }),
 	sections: [
-		createVirtualSection({ title: 'Options', fields: ['readonly'] }),
-		createVirtualSection({ title: 'Constraints', fields: ['required'] })
+		createVirtualSection({
+			id: 'properties',
+			title: defineMessage({ defaultMessage: 'Options' }),
+			fields: ['videoManager', 'readonly']
+		}),
+		createVirtualSection({
+			id: 'constraints',
+			title: defineMessage({ defaultMessage: 'Constraints' }),
+			fields: ['required']
+		})
 	],
 	fields: {
+		videoManager: {
+			id: 'videoManager',
+			type: 'datasource-selector',
+			name: defineMessage({ defaultMessage: 'Data Source' }),
+			defaultValue: undefined,
+			validations: {
+				type: createValidation('type', 'transcoded-video')
+			}
+		},
 		readonly: {
 			id: 'readonly',
 			type: 'checkbox',
-			name: 'Read Only',
+			name: defineMessage({ defaultMessage: 'Read Only' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		required: {
 			id: 'required',
 			type: 'checkbox',
-			name: 'Required',
+			name: defineMessage({ defaultMessage: 'Required' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}
-	}
+	},
+	supportedPostFixes: ['_o']
 };
 
 export default transcodedVideoPickerDescriptor;

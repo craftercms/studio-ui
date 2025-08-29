@@ -408,7 +408,11 @@
 				? this._processPathsForMacros(this.baseRepoPath)
 				: craftercms.utils.content.generateComponentBasePath(contentType);
 
-			let parentPath = self.form.path;
+			const urlParams = new URLSearchParams(window.location.search);
+			// If `self.form.path` is undefined, but the URL has a `parentPath` parameter, it means that the form is embedded.
+			// In that case, we use the `parentPath` parameter as the parent path (meaning that the parent path is the immediate
+			// shared parent).
+			let parentPath = Boolean(self.form.path) ? self.form.path : urlParams.get('parentPath');
 			CStudioAuthoring.Operations.openContentWebForm(
 				contentType,
 				null,

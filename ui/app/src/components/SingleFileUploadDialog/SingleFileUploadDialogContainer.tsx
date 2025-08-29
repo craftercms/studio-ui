@@ -16,46 +16,33 @@
 
 import React, { useCallback } from 'react';
 import { SingleFileUploadDialogContainerProps } from './utils';
-import { useDispatch } from 'react-redux';
 import DialogBody from '../DialogBody/DialogBody';
 import SingleFileUploadDialogUI from './SingleFileUploadDialogUI';
-import { updateSingleFileUploadDialog } from '../../state/actions/dialogs';
+import { useEnhancedDialogContext } from '../EnhancedDialog';
 
 export function SingleFileUploadDialogContainer(props: SingleFileUploadDialogContainerProps) {
 	const { onUploadComplete, onUploadStart, onUploadError, ...rest } = props;
-	const dispatch = useDispatch();
+	const { updateSubmittingOrHasPendingChanges } = useEnhancedDialogContext();
 	const onStart = useCallback(() => {
 		onUploadStart?.();
-		dispatch(
-			updateSingleFileUploadDialog({
-				isSubmitting: true
-			})
-		);
-	}, [dispatch, onUploadStart]);
+		updateSubmittingOrHasPendingChanges({ isSubmitting: true });
+	}, [onUploadStart, updateSubmittingOrHasPendingChanges]);
 
 	const onComplete = useCallback(
 		(result) => {
-			dispatch(
-				updateSingleFileUploadDialog({
-					isSubmitting: false
-				})
-			);
+			updateSubmittingOrHasPendingChanges({ isSubmitting: false });
 			onUploadComplete?.(result);
 		},
-		[dispatch, onUploadComplete]
+		[onUploadComplete, updateSubmittingOrHasPendingChanges]
 	);
 
 	const onError = useCallback(
 		({ file, error, response }) => {
-			dispatch(
-				updateSingleFileUploadDialog({
-					isSubmitting: false
-				})
-			);
+			updateSubmittingOrHasPendingChanges({ isSubmitting: false });
 
 			onUploadError?.({ file, error, response });
 		},
-		[dispatch, onUploadError]
+		[onUploadError, updateSubmittingOrHasPendingChanges]
 	);
 
 	return (

@@ -14,33 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createVirtualSection, PartialContentType } from '../../utils';
-import { immutableEmptyObject } from '../../../../utils/object';
+import { DescriptorContentType } from '../../utils';
+import { defineMessage } from 'react-intl';
 
-export const autoFileNameDescriptor: PartialContentType = {
+export const autoFileNameDescriptor: DescriptorContentType = {
 	id: 'auto-filename',
-	name: 'Auto Filename',
-	description: 'Automatically generated filename',
-	sections: [
-		createVirtualSection({ title: 'Options', fields: ['readonly'] }),
-		createVirtualSection({ title: 'Constraints', fields: ['required'] })
-	],
-	fields: {
-		readonly: {
-			id: 'readonly',
-			type: 'checkbox',
-			name: 'Read Only',
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		},
-		required: {
-			id: 'required',
-			type: 'checkbox',
-			name: 'Required',
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		}
-	}
+	name: defineMessage({ defaultMessage: 'Auto Filename' }),
+	description: defineMessage({ defaultMessage: 'Automatically generated filename' }),
+	sections: [],
+	fields: {}
 };
 
 export default autoFileNameDescriptor;

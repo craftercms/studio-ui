@@ -63,6 +63,23 @@ YAHOO.extend(
 			}
 
 			this.valueEl = valueEl;
+
+			// If not into state, fetch site UI config
+			const { take } = craftercms.libs.rxjs;
+			CrafterCMSNext.system
+				.getStore()
+				.pipe(take(1))
+				.subscribe((store) => {
+					const state = store.getState();
+					if (!state?.uiConfig?.xml) {
+						store.dispatch({
+							type: 'FETCH_SITE_UI_CONFIG',
+							payload: {
+								site: state.sites.active
+							}
+						});
+					}
+				});
 		},
 
 		getValue: function () {

@@ -22,10 +22,12 @@ import { FormattedMessage } from 'react-intl';
 import Box, { BoxProps } from '@mui/material/Box';
 import GlobalAppToolbar from '../../GlobalAppToolbar';
 import SelectTypeView from './SelectTypeView';
-import React, { forwardRef, useState } from 'react';
+import React, { forwardRef } from 'react';
 import CreateTypeDialog, { CreateTypeDialogProps } from './CreateTypeDialog';
 import { PossibleContentTypeDraft } from '../../../models';
 import { initializeTypeForCreate } from '../descriptors/archetypes';
+import useEnhancedDialogState from '../../../hooks/useEnhancedDialogState';
+import useWithPendingChangesCloseRequest from '../../../hooks/useWithPendingChangesCloseRequest';
 
 interface TypeListingViewProps {
 	sx?: BoxProps['sx'];
@@ -37,7 +39,8 @@ interface TypeListingViewProps {
 
 export const TypeListingView = forwardRef<HTMLDivElement, TypeListingViewProps>(function (props, ref) {
 	const { renderAppBar = true, showOpenLauncherButton = true, onTypeSelected, sx, style } = props;
-	const [openCreateDialog, setOpenCreateDialog] = useState(false);
+	const openCreateDialogState = useEnhancedDialogState();
+	const createDialogPendingChangesCloseRequest = useWithPendingChangesCloseRequest(openCreateDialogState.onClose);
 	const handleCreateTypeDialogAccept: CreateTypeDialogProps['onAccept'] = (typeData) => {
 		const type = initializeTypeForCreate(
 			typeData,
@@ -47,16 +50,13 @@ export const TypeListingView = forwardRef<HTMLDivElement, TypeListingViewProps>(
 		);
 		onTypeSelected?.(null, { ...type, NEW: true });
 	};
-	const handleCreateTypeDialogClose: CreateTypeDialogProps['onClose'] = () => {
-		setOpenCreateDialog(false);
-	};
 	const contentTypesList = useContentTypeList();
 	const loading = contentTypesList == null;
 	const createNewButton = (
 		<Button
 			variant={renderAppBar ? 'outlined' : 'text'}
 			startIcon={<AddRounded />}
-			onClick={() => setOpenCreateDialog(true)}
+			onClick={() => openCreateDialogState.onOpen()}
 		>
 			<FormattedMessage defaultMessage="Create Type" />
 		</Button>
@@ -85,9 +85,13 @@ export const TypeListingView = forwardRef<HTMLDivElement, TypeListingViewProps>(
 				}}
 			/>
 			<CreateTypeDialog
-				open={openCreateDialog}
-				onClose={handleCreateTypeDialogClose}
+				open={openCreateDialogState.open}
+				onClose={openCreateDialogState.onClose}
+				onClosed={openCreateDialogState.onResetState}
 				onAccept={handleCreateTypeDialogAccept}
+				hasPendingChanges={openCreateDialogState.hasPendingChanges}
+				updateSubmittingOrHasPendingChanges={openCreateDialogState.onSubmittingAndOrPendingChange}
+				onWithPendingChangesCloseRequest={createDialogPendingChangesCloseRequest}
 			/>
 		</Box>
 	);

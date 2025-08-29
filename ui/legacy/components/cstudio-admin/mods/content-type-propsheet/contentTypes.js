@@ -109,6 +109,7 @@
 			const element = $('<div class="content-type-selector"/>').appendTo(this.container)[0];
 			const contentTypes = CStudioAuthoring.Dialogs.DialogSelectContentType.contentTypes;
 			const root = craftercms.libs.ReactDOMClient.createRoot(element);
+
 			root.render(
 				<Selector
 					initialValue={value}

@@ -32,6 +32,7 @@ import palette from '../../styles/palette';
 import { ContentItem, ItemStates } from '../../models/Item';
 import { SvgIconProps } from '@mui/material/SvgIcon';
 import { PartialSxRecord } from '../../models';
+import { useIntl } from 'react-intl';
 
 export type ItemStateIconClassKey =
 	| 'root'
@@ -146,18 +147,21 @@ export function ItemStateIcon(props: ItemStateIconProps) {
 			}
 		);
 	}, [sxs, classes, item]);
+	const { formatMessage } = useIntl();
 	return Icon === null ? null : item.systemType === 'folder' ? (
 		<Icon
 			sx={{
 				...sxs?.root,
 				...stateSpecificSx
 			}}
+			aria-label={getItemStateText(item.stateMap, formatMessage, { user: item.lockOwner?.username })}
+			aria-hidden={false}
 			className={[className, stateSpecificClass].filter(Boolean).join(' ')}
 			fontSize={fontSize}
 		/>
 	) : (
 		<Tooltip
-			title={displayTooltip ? getItemStateText(item.stateMap, { user: item.lockOwner?.username }) : ''}
+			title={displayTooltip ? getItemStateText(item.stateMap, formatMessage, { user: item.lockOwner?.username }) : ''}
 			open={displayTooltip ? void 0 : false}
 		>
 			<Icon
@@ -165,6 +169,8 @@ export function ItemStateIcon(props: ItemStateIconProps) {
 					...sxs?.root,
 					...stateSpecificSx
 				}}
+				aria-label={getItemStateText(item.stateMap, formatMessage, { user: item.lockOwner?.username })}
+				aria-hidden={false}
 				className={[className, stateSpecificClass].filter(Boolean).join(' ')}
 				fontSize={fontSize}
 			/>

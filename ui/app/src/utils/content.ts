@@ -77,11 +77,14 @@ import { getStateBitmap } from '../components/WorkflowStateManagement/utils';
 import { forEach } from './array';
 import { PublishingTargets } from '../models';
 import slugify from 'slugify';
-import { showCodeEditorDialog, showEditDialog } from '../state/actions/dialogs';
 import { Dispatch } from 'react';
 import { AnyAction } from 'redux';
 import { findParentModelId, getModelIdFromInheritedField, isInheritedField } from './model';
 import { XmlKeys } from '../components/FormsEngine/lib/formConsts';
+import { pushDialog } from '../state/actions/dialogStack';
+import { nanoid } from 'nanoid';
+import { createComponentId, pickShowContentFormAction } from './system';
+import { popCodeEditorDialog } from '../state/actions/dialogs';
 
 export function isEditableAsset(path: string) {
 	return (
@@ -1059,7 +1062,7 @@ export const openItemEditor = (
 	authoringBase: string,
 	siteId: string,
 	dispatch: Dispatch<AnyAction>,
-	onSaveSuccess?: AnyAction
+	onSaveSuccess?: () => void
 ) => {
 	let type = 'controller';
 
@@ -1070,16 +1073,29 @@ export const openItemEditor = (
 	}
 
 	if (type === 'form') {
-		dispatch(showEditDialog({ path: item.path, authoringBase, site: siteId, onSaveSuccess }));
-	} else {
 		dispatch(
-			showCodeEditorDialog({
-				site: siteId,
-				authoringBase,
+			pickShowContentFormAction({
 				path: item.path,
-				type,
-				mode: getEditorMode(item.mimeType),
-				onSuccess: onSaveSuccess
+				authoringBase,
+				site: siteId,
+				onSaveSuccess: () => onSaveSuccess?.()
+			})
+		);
+	} else {
+		const dialogId = nanoid();
+		dispatch(
+			pushDialog({
+				id: dialogId,
+				component: createComponentId('CodeEditorDialog'),
+				props: {
+					site: siteId,
+					authoringBase,
+					path: item.path,
+					type,
+					mode: getEditorMode(item.mimeType),
+					onSuccess: () => onSaveSuccess?.(),
+					onClose: () => dispatch(popCodeEditorDialog({ id: dialogId }))
+				}
 			})
 		);
 	}

@@ -23,6 +23,7 @@ import Box, { BoxProps } from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import MinusRounded from '@mui/icons-material/RemoveRounded';
 import { NumberField } from '@base-ui-components/react/number-field';
+import { nou } from '../../../utils/object';
 
 type NumberFieldRootProps = ComponentProps<typeof NumberField.Root>;
 
@@ -87,7 +88,7 @@ export function Numeric(props: NumberProps) {
 }
 
 function parseValue(value: string | number) {
-	if (!value) return null;
+	if (nou(value)) return null;
 	if (typeof value === 'string') {
 		const number = parseFloat(value);
 		if (isNaN(number)) return null;

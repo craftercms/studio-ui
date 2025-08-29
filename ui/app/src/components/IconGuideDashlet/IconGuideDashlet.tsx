@@ -141,7 +141,7 @@ export function IconGuideDashlet(props: IconGuideDashletProps) {
 										sxs={{ root: { display: 'flex', alignItems: 'center' } }}
 									/>
 									<Typography variant="body2" component="span">
-										{getItemPublishingTargetText(status[key].stateMap)}
+										{getItemPublishingTargetText(status[key].stateMap, formatMessage)}
 									</Typography>
 								</Grid>
 							))}
@@ -155,7 +155,7 @@ export function IconGuideDashlet(props: IconGuideDashletProps) {
 								<Grid key={key} size={{ xs: 6, sm: 4, md: 3, lg: 2 }} sx={{ display: 'flex', alignItems: 'center' }}>
 									<ItemStateIcon item={states[key]} sxs={{ root: { marginRight: (theme) => theme.spacing(1) } }} />
 									<Typography variant="body2" component="span">
-										{getItemStateText(states[key].stateMap)}
+										{getItemStateText(states[key].stateMap, formatMessage)}
 									</Typography>
 								</Grid>
 							))}
