@@ -2372,7 +2372,7 @@ const initializeCStudioForms = () => {
 							// Clear rte callbacks using rteId
 							form.beforeSaveCallbacks = form.beforeSaveCallbacks.filter((callback) => !(callback.rteId === rteId));
 
-							const editor = tinymce.get(rteId);
+							const editor = window.tinymce?.get(rteId);
 							if (editor) editor.remove();
 						});
 					}
