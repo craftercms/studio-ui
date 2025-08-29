@@ -49,8 +49,8 @@
 		"lint": "eslint ."
 	},
 	"dependencies": {
-		"@craftercms/classes": "4.3.0",
-		"@craftercms/content": "4.3.0",
+		"@craftercms/classes": "4.4.0",
+		"@craftercms/content": "4.4.1",
 		"@craftercms/ice": "4.3.0",
 		"@craftercms/npm-content": "workspace:^",
 		"@craftercms/search": "4.3.0",
@@ -88,6 +88,6 @@
 		"replace-in-file": "^8.3.0",
 		"rollup": "^4.46.2",
 		"rollup-plugin-swc3": "^0.12.1",
-		"yargs": "^17.7.2"
+		"yargs": "^18.0.0"
 	}
 }
