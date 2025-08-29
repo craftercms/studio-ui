@@ -1497,7 +1497,7 @@ export function fetchContentByCommitId(site: string, path: string, commitId: str
 	).pipe(
 		switchMap((ajax) => {
 			const blob = ajax.response;
-			const type = ajax.xhr.getResponseHeader('content-type');
+			const type = (ajax.xhr.getResponseHeader('content-type') || '').toLowerCase();
 			if (isMediaContent(type) || isPdfDocument(type)) {
 				return of(URL.createObjectURL(blob));
 			} else if (isTextContent(type)) {
