@@ -101,7 +101,6 @@ import { NewContentDialogProps } from '../components/NewContentDialog/utils';
 import { nanoid } from 'nanoid';
 import { popDialog, pushDialog, updateDialogState } from '../state/actions/dialogStack';
 import { createComponentId, pickShowContentFormAction, pushConfirmDialog, pushErrorDialog } from './system';
-import { pickShowContentFormAction } from './system';
 import { checkAndCancelAffectedPackages } from '../components/ViewPackagesDialog/utils';
 
 export type ContextMenuOptionDescriptor<ID extends string = string> = {

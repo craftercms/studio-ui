@@ -112,7 +112,7 @@ export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
 	};
 
 	const onRenameSubmit = () => {
-		dispatch(updateRenameAssetDialog({ isSubmitting: true }));
+		updateSubmittingOrHasPendingChanges({ isSubmitting: true });
 		if (name) {
 			checkAndCancelAffectedPackages({
 				siteId,
@@ -120,7 +120,7 @@ export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
 				dispatch,
 				onContinue: () => renameAsset(),
 				onClose: () => {
-					dispatch(updateRenameAssetDialog({ isSubmitting: false }));
+					updateSubmittingOrHasPendingChanges({ isSubmitting: false });
 				},
 				cancelPackagesMessage: `Cancel packages to rename "${item.path}"`
 			});

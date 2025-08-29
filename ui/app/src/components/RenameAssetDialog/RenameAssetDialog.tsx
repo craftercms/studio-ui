@@ -33,17 +33,19 @@ export function RenameAssetDialog(props: RenameAssetDialogProps) {
 	const dispatch = useDispatch();
 
 	const fetchDependant = useCallback(() => {
-		fetchDependantService(siteId, path).subscribe({
-			next: (response) => {
-				setDependantItems(parseLegacyItemToContentItem(response));
-				setFetchingDependantItems(false);
-			},
-			error: ({ response }) => {
-				setFetchingDependantItems(false);
-				dispatch(pushErrorDialog({ props: { error: response.response } }));
-			}
-		});
-	}, [dispatch, path, siteId]);
+		if (item) {
+			fetchDependantService(siteId, item.path).subscribe({
+				next: (response) => {
+					setDependantItems(parseLegacyItemToContentItem(response));
+					setFetchingDependantItems(false);
+				},
+				error: ({ response }) => {
+					setFetchingDependantItems(false);
+					dispatch(pushErrorDialog({ props: { error: response.response } }));
+				}
+			});
+		}
+	}, [dispatch, item, siteId]);
 
 	useEffect(() => {
 		setFetchingDependantItems(true);
