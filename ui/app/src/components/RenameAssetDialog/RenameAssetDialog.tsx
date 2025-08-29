@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { EnhancedDialog } from '../EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
 import { RenameAssetDialogProps } from './utils';
@@ -24,17 +24,21 @@ import { fetchDependant as fetchDependantService } from '../../services/dependen
 import { parseLegacyItemToContentItem } from '../../utils/content';
 import { pushErrorDialog } from '../../utils/system';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
+import type { Subscription } from 'rxjs';
 
 export function RenameAssetDialog(props: RenameAssetDialogProps) {
 	const { item, allowBraces, onRenamed, type, error, ...rest } = props;
 	const siteId = useActiveSiteId();
 	const [dependantItems, setDependantItems] = useState([]);
 	const [fetchingDependantItems, setFetchingDependantItems] = useState(false);
+	const subRef = useRef<Subscription | null>(null);
 	const dispatch = useDispatch();
 
 	const fetchDependant = useCallback(() => {
 		if (item) {
-			fetchDependantService(siteId, item.path).subscribe({
+			setFetchingDependantItems(true);
+			subRef.current?.unsubscribe();
+			subRef.current = fetchDependantService(siteId, item.path).subscribe({
 				next: (response) => {
 					setDependantItems(parseLegacyItemToContentItem(response));
 					setFetchingDependantItems(false);
@@ -48,8 +52,8 @@ export function RenameAssetDialog(props: RenameAssetDialogProps) {
 	}, [dispatch, item, siteId]);
 
 	useEffect(() => {
-		setFetchingDependantItems(true);
 		fetchDependant();
+		return () => subRef.current?.unsubscribe();
 	}, [fetchDependant]);
 
 	return (
