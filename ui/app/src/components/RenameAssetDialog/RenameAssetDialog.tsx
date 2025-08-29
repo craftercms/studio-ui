@@ -14,14 +14,42 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { EnhancedDialog } from '../EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
 import { RenameAssetDialogProps } from './utils';
 import { RenameAssetDialogContainer } from './RenameAssetDialogContainer';
+import { useDispatch } from 'react-redux';
+import { fetchDependant as fetchDependantService } from '../../services/dependencies';
+import { parseLegacyItemToContentItem } from '../../utils/content';
+import { pushErrorDialog } from '../../utils/system';
+import useActiveSiteId from '../../hooks/useActiveSiteId';
 
 export function RenameAssetDialog(props: RenameAssetDialogProps) {
-	const { item, allowBraces, onRenamed, type, dependantItems, fetchingDependantItems, error, ...rest } = props;
+	const { item, allowBraces, onRenamed, type, error, ...rest } = props;
+	const siteId = useActiveSiteId();
+	const [dependantItems, setDependantItems] = useState([]);
+	const [fetchingDependantItems, setFetchingDependantItems] = useState(false);
+	const dispatch = useDispatch();
+
+	const fetchDependant = useCallback(() => {
+		fetchDependantService(siteId, path).subscribe({
+			next: (response) => {
+				setDependantItems(parseLegacyItemToContentItem(response));
+				setFetchingDependantItems(false);
+			},
+			error: ({ response }) => {
+				setFetchingDependantItems(false);
+				dispatch(pushErrorDialog({ props: { error: response.response } }));
+			}
+		});
+	}, [dispatch, path, siteId]);
+
+	useEffect(() => {
+		setFetchingDependantItems(true);
+		fetchDependant();
+	}, [fetchDependant]);
+
 	return (
 		<EnhancedDialog
 			title={<FormattedMessage defaultMessage="Rename Asset" />}
@@ -32,6 +60,7 @@ export function RenameAssetDialog(props: RenameAssetDialogProps) {
 				item={item}
 				allowBraces={allowBraces}
 				type={type}
+				fetchDependant={fetchDependant}
 				dependantItems={dependantItems}
 				fetchingDependantItems={fetchingDependantItems}
 				onRenamed={onRenamed}

@@ -374,7 +374,7 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
 								</Grid>
 								<Grid size={12}>
 									<Typography variant="h6" gutterBottom>
-										<FormattedMessage defaultMessage="Project info" />
+										<FormattedMessage defaultMessage="Project Info" />
 										<IconButton
 											onClick={handleBack}
 											size="large"

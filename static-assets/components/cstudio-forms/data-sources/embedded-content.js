@@ -56,7 +56,11 @@ YAHOO.extend(CStudioForms.Datasources.EmbeddedContent, CStudioForms.CStudioFormD
 				(contentType) => contentType.type === 'component' && contentType.name !== '/component/level-descriptor'
 			);
 		} else {
-			let parentPath = _self.form.path;
+			const urlParams = new URLSearchParams(window.location.search);
+			// If `self.form.path` is undefined, but the URL has a `parentPath` parameter, it means that the form is embedded.
+			// In that case, we use the `parentPath` parameter as the parent path (meaning that the parent path is the immediate
+			// shared parent).
+			let parentPath = Boolean(_self.form.path) ? _self.form.path : urlParams.get('parentPath');
 			CStudioAuthoring.Operations.openContentWebForm(
 				_self.contentType,
 				null,

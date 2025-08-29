@@ -22,11 +22,14 @@ import PublishingStatusDisplay, { publishingStatusMessages } from '../Publishing
 import { PublishingStatusDialogContainerProps } from './utils';
 import useActiveUser from '../../hooks/useActiveUser';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
+import useSelection from '../../hooks/useSelection';
 
 const permittedRoles = ['developer', 'admin'];
 
 export function PublishingStatusDialogContainer(props: PublishingStatusDialogContainerProps) {
-	const { enabled, published, currentTask, onClose, onRefresh, onStartStop, isFetching } = props;
+	const { onClose, onRefresh, onStartStop } = props;
+	const state = useSelection((state) => state.publishing);
+	const { enabled, published, currentTask, isFetching } = state;
 	const { formatMessage } = useIntl();
 	const user = useActiveUser();
 	const siteId = useActiveSiteId();

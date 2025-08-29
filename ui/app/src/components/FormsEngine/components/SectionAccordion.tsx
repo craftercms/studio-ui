@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { toColor } from '../../../utils/string';
 import AccordionSummary, { AccordionSummaryProps } from '@mui/material/AccordionSummary';
 import Typography from '@mui/material/Typography';
 import AccordionDetails, { AccordionDetailsProps } from '@mui/material/AccordionDetails';

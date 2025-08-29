@@ -49,7 +49,9 @@ export type ValidationKeys =
 	| 'allowVideosFromRepo'
 	| 'allowVideoUpload'
 	| 'allowAudioUpload'
-	| 'allowAudioFromRepo';
+	| 'allowAudioFromRepo'
+	| 'pattern'
+	| 'allowDuplicates';
 
 export type ContentTypeFieldValidations = Record<ValidationKeys, ContentTypeFieldValidation>;
 
@@ -143,12 +145,20 @@ export interface ContentTypeRepeatField extends ContentTypeField {
 	fields: LookupTable<ContentTypeField>;
 }
 
+export interface NewContentTypeField extends ContentTypeField {
+	NEW?: true;
+}
+
 export interface DataSource {
 	id: string;
 	type: string;
 	title: string;
 	interface: string;
 	properties: LookupTable;
+}
+
+export interface NewDataSource extends DataSource {
+	NEW?: true;
 }
 
 export type LegacyComponentType = 'component' | 'page' | 'file';

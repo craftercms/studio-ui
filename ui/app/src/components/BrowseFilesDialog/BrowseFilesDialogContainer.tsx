@@ -21,7 +21,6 @@ import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useEnv } from '../../hooks/useEnv';
 import { useDebouncedInput } from '../../hooks/useDebouncedInput';
 import { useSpreadState } from '../../hooks/useSpreadState';
-import { closeSingleFileUploadDialog, showSingleFileUploadDialog } from '../../state/actions/dialogs';
 import { useDispatch } from 'react-redux';
 import LookupTable from '../../models/LookupTable';
 import { BrowseFilesDialogUI } from '.';
@@ -30,8 +29,6 @@ import { checkPathExistence } from '../../services/content';
 import { FormattedMessage } from 'react-intl';
 import EmptyState from '../EmptyState';
 import BrowseFilesDialogContainerSkeleton from './BrowseFilesDialogContainerSkeleton';
-import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
-import { createCustomDocumentEventListener } from '../../utils/dom';
 import { getStoredBrowseDialogViewMode, setStoredBrowseDialogViewMode } from '../../utils/state';
 import useActiveUser from '../../hooks/useActiveUser';
 import { withIndex, withoutIndex } from '../../utils/path';
@@ -39,6 +36,10 @@ import { MediaCardViewModes } from '../MediaCard';
 import { createPresenceTable } from '../../utils/array';
 import { createLookupTable } from '../../utils/object';
 import { prepareSearchParams } from '../Search/utils';
+import { popDialog, pushDialog } from '../../state/actions/dialogStack';
+import { nanoid } from 'nanoid';
+
+import { createComponentId } from '../../utils/system';
 
 const viewModes: MediaCardViewModes[] = ['card', 'compact', 'row'];
 const defaultPreselectedPaths = [];
@@ -201,21 +202,25 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
 	const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
 
 	const onUpload = () => {
+		const dialogId = nanoid();
 		dispatch(
-			showSingleFileUploadDialog({
-				site,
-				path: currentPath,
-				fileTypes: mimeTypes,
-				onClose: closeSingleFileUploadDialog(),
-				onUploadComplete: batchActions([closeSingleFileUploadDialog(), dispatchDOMEvent({ id: 'imageUploaded' })])
+			pushDialog({
+				id: dialogId,
+				component: createComponentId('SingleFileUploadDialog'),
+				props: {
+					site,
+					path: currentPath,
+					fileTypes: mimeTypes,
+					onClose: () => dispatch(popDialog({ id: dialogId })),
+					onUploadComplete: () => {
+						dispatch(popDialog({ id: dialogId }));
+						setTimeout(() => {
+							fetchItems();
+						}, 2000);
+					}
+				}
 			})
 		);
-
-		createCustomDocumentEventListener('imageUploaded', (response) => {
-			setTimeout(() => {
-				fetchItems();
-			}, 2000);
-		});
 	};
 
 	const onRefresh = () => {

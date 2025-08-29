@@ -23,10 +23,10 @@ import { useEffect } from 'react';
 import { deleteContentType, fetchContentTypeUsage } from '../../services/contentTypes';
 import { showSystemNotification } from '../../state/actions/system';
 import DeleteContentTypeDialogBody from './DeleteContentTypeDialogBody';
-import useUpdateRefs from '../../hooks/useUpdateRefs';
 import useSpreadState from '../../hooks/useSpreadState';
 import ApiResponseErrorState from '../ApiResponseErrorState';
 import LoadingState from '../LoadingState';
+import { useEnhancedDialogContext } from '../EnhancedDialog';
 
 const messages = defineMessages({
 	deleteComplete: {
@@ -40,13 +40,11 @@ const messages = defineMessages({
 });
 
 export function DeleteContentTypeDialogContainer(props: DeleteContentTypeDialogContainerProps) {
-	const { onClose, contentType, onComplete, isSubmitting, onSubmittingAndOrPendingChange } = props;
+	const { onClose, contentType, onComplete } = props;
 	const site = useActiveSiteId();
 	const { formatMessage } = useIntl();
 	const dispatch = useDispatch();
-	const functionRefs = useUpdateRefs({
-		onSubmittingAndOrPendingChange
-	});
+	const { isSubmitting, updateSubmittingOrHasPendingChanges } = useEnhancedDialogContext();
 	const [{ data, isFetching, error }, setState] = useSpreadState({
 		data: null,
 		isFetching: false,
@@ -76,21 +74,15 @@ export function DeleteContentTypeDialogContainer(props: DeleteContentTypeDialogC
 	}, [site, contentType.id, setState]);
 
 	const onSubmit = () => {
-		functionRefs.current.onSubmittingAndOrPendingChange({
-			isSubmitting: true
-		});
+		updateSubmittingOrHasPendingChanges({ isSubmitting: true });
 		deleteContentType(site, contentType.id).subscribe({
 			next() {
-				functionRefs.current.onSubmittingAndOrPendingChange({
-					isSubmitting: false
-				});
+				updateSubmittingOrHasPendingChanges({ isSubmitting: false });
 				dispatch(showSystemNotification({ message: formatMessage(messages.deleteComplete) }));
 				onComplete?.();
 			},
 			error(e) {
-				functionRefs.current.onSubmittingAndOrPendingChange({
-					isSubmitting: false
-				});
+				updateSubmittingOrHasPendingChanges({ isSubmitting: false });
 				const response = e.response?.response ?? e.response;
 				dispatch(
 					showSystemNotification({

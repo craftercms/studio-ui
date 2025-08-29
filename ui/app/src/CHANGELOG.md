@@ -35,13 +35,15 @@
   * [NewContentCard] Removed
   * [ContentTypesGrid] Removed
   * [ContentTypesLoader] Removed
-  * [NewContentDialog] Props `rootPath`, `copact` removed. Prop `initialCompact` added.
+  * [NewContentDialog] Props `rootPath`, `compact` removed. Prop `initialCompact` added.
     * Prop `onContentTypeSelected` changed its signature from sending an object with `authoringBase`, `path`, `isNewContent`, `contentTypeId`, `onSaveSuccess` to `{ path: string; contentType: ContentType }`
   * [CompareVersions] Removed.
   * [EnhancedDialog] Removed unused `id` prop.
   * [CompareVersionsDialog] Added `subtitle`, `selectionContent`, and `fields` properties.
   * [ViewVersionDialog] Added `onClose` property.
   * [ViewVersionDialogContainer] Added `contentTypesBranch`, `showXml` and `data` properties.
+  * [DeleteDialog] Removed `childItems` and `dependentItems` props. Dependencies are not in redux state anymore.
+  * [RenameAssetDialog] Removed `dependantItems` and `fetchingDependantItems` props. Dependencies are not in redux state anymore.
   * [PublishingStatusTile] Removed `enabled` and `status` properties. Replaced by `publishingStatus` property of type `PublishingStatus`.
   * [PublishDialog]
     * Added `buildPathTrees` util that builds a tree structure from a list of paths, grouping them by root directories.
@@ -110,7 +112,7 @@
 * Removed `SandboxItem` and `DetailedItem` interfaces, replaced by `ContentItem`.
 * `DeleteDialogBaseProps` and `FetchDeleteDependenciesResponse` interfaces: Update `childItems` and `dependentItems` to be of type `LightItem[]`.
 * `CalculatedPackageResponse` interface: Update `hardDependencies`, `softDependencies` and `items` to be of type `LightItem[]`.
-* `approvePublish` anb `rejectPublish` are no longer item actions in BaseItem's `availableActionsMap` property.
+* `approvePublish` and `rejectPublish` are no longer item actions in BaseItem's `availableActionsMap` property.
 * [SiteDashboard/utils] Renamed `getValidatedSelectionState` to `getItemsValidatedSelectionState`.
 * [state]
   * `actions/content`:
@@ -124,10 +126,19 @@
     * Removed `fetchDetailedItems` action. Replaced by `fetchContentItems`.
     * Removed `fetchDetailedItemsComplete` action. Replaced by `fetchContentItemsComplete`.
     * Removed `completeDetailedItem` action.
+  * `actions/dialogs`:
+    * Updated `historyDialogUpdate` action type to `UPDATE_HISTORY_DIALOG`.
+    * Removed `fetchDeleteDependencies`, `fetchDeleteDependenciesComplete`, `fetchDeleteDependenciesFailed` actions.
+    * Updated `newContentCreationComplete` action payload to be `{ item: LegacyItem; redirectUrl: string }`.
+    * Updated `updateEditDialogConfig` action type to `UPDATE_EDIT_DIALOG`.
+    * Updated `fetchRenameAssetDependants` action payload to be `{ path: string; dialogId: string }`.
+    * Updated `updateSingleFileUploadDialog` action payload to be `Partial<CreateFileStateProps>`
+    * Created `updateLauncher` action.
+  * `actions/system`:
+    * Updated `showEditItemSuccessNotification` action payload to be `{ action: CommonSaveOptions; }`.
+    * * Removed `workflowEvent`. Replaced by `workflowEventSubmit`, `workflowEventDirectPublish`, `workflowEventApprove`, `workflowEventReject` and `workflowEventCancel`.
   * `actions/preview`:
     * `requestWorkflowCancellationDialog`: Removed `path`, replaced by `item`.
-  * `actions/system`:
-    * Removed `workflowEvent`. Replaced by `workflowEventSubmit`, `workflowEventDirectPublish`, `workflowEventApprove`, `workflowEventReject` and `workflowEventCancel`.
 * [models/Publishing]
   * `Package`: Updated id to be of type `number`.
   * `CurrentFilters`: Removed `environment` and `path`, `state` and `page` properties. Added `target`, `states`, `approvalStates`, `submitter`, `reviewer`, `isScheduled`, `sort` and `offset` properties.
@@ -141,6 +152,9 @@
 * [common-api.js]
   * Removed `CStudioAuthoring.Operations.uploadCMISAsset` and `CStudioAuthoring.Operations.openCMISUploadDialog`.
 * Removed LegacyVersionDialog and the entire associated `/studio/diff` route
+* [ItemDisplay/utils]
+  * Updated `getItemPublishingTargetText` to return a string. It now receives `formatMessage` as a parameter.
+  * Updated `getItemStateText` to return a string. It now receives `formatMessage` as a parameter.
 
 ## 4.2.0
 

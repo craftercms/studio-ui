@@ -23,6 +23,7 @@ import { SvgIconProps } from '@mui/material/SvgIcon';
 import { PartialSxRecord } from '../../models';
 import palette from '../../styles/palette';
 import { LIVE_COLOUR, STAGING_COLOUR } from './styles';
+import { useIntl } from 'react-intl';
 
 export type ItemPublishingTargetIconClassKey =
 	| 'root'
@@ -40,14 +41,17 @@ export interface ItemPublishingTargetIconProps {
 
 export function ItemPublishingTargetIcon(props: ItemPublishingTargetIconProps) {
 	const { item, classes, sxs, className, displayTooltip = true, fontSize } = props;
+	const { formatMessage } = useIntl();
 	return (
 		<Tooltip
-			title={displayTooltip ? getItemPublishingTargetText(item.stateMap) : ''}
+			title={displayTooltip ? getItemPublishingTargetText(item.stateMap, formatMessage) : ''}
 			open={displayTooltip ? void 0 : false}
 		>
 			<PublishingTargetIcon
 				fontSize={fontSize}
 				className={[className, classes?.root].join(' ')}
+				aria-label={getItemPublishingTargetText(item.stateMap, formatMessage)}
+				aria-hidden={false}
 				sx={{
 					color: item.stateMap.live ? LIVE_COLOUR : item.stateMap.staged ? STAGING_COLOUR : palette.gray.medium2,
 					...sxs?.root

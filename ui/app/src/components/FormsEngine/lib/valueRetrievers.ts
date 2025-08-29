@@ -21,6 +21,8 @@ import type { RepeatItem } from '../controls/Repeat';
 import type { NodeSelectorItem } from '../controls/NodeSelector';
 import { systemFieldsNotInType, XmlKeys } from './formConsts';
 import { deserialize } from '../../../utils/xml';
+import { DescriptorControlType } from '../../ContentTypeManagement/controlMap';
+import { nnou } from '../../../utils/object';
 
 export type ValueRetriever<T = unknown> = (value: unknown, field: ContentTypeField) => T;
 
@@ -32,14 +34,13 @@ export const textFieldExtractor: ValueRetriever<string> = (value) => (value && S
 
 export const textOrNullExtractor: ValueRetriever<string> = (value) => (value && String(value)) || null;
 
-export const numberFieldExtractor: ValueRetriever<number> = (value) => (value != null && Number(value)) ?? null;
+export const numberFieldExtractor: ValueRetriever<number> = (value) => (nnou(value) ? Number(value) : null);
 
 export const booleanFieldExtractor: ValueRetriever<boolean> = (value) => (value === true || value === 'true') ?? false;
 
-export const valueRetrieverLookup: Record<BuiltInControlType, ValueRetriever> = {
+export const valueRetrieverLookup: Record<BuiltInControlType | DescriptorControlType, ValueRetriever> = {
 	'auto-filename': textFieldExtractor,
 	'aws-file-upload': null,
-	'box-file-upload': null,
 	'checkbox-group': arrayFieldExtractor,
 	checkbox: booleanFieldExtractor,
 	'date-time': null,
@@ -58,14 +59,30 @@ export const valueRetrieverLookup: Record<BuiltInControlType, ValueRetriever> = 
 	repeat: arrayFieldExtractor,
 	'node-selector': arrayFieldExtractor,
 	'numeric-input': numberFieldExtractor,
-	'page-nav-order': null,
+	'page-nav-order': booleanFieldExtractor,
 	rte: textFieldExtractor,
 	textarea: textFieldExtractor,
 	time: null,
 	'transcoded-video-picker': textFieldExtractor,
 	uuid: textFieldExtractor,
 	'video-picker': textFieldExtractor,
-	colorPicker: textOrNullExtractor
+	colorPicker: textOrNullExtractor,
+	'content-path-input': textFieldExtractor,
+	contentTypes: textFieldExtractor,
+	'dropdown-static-values': textFieldExtractor,
+	'template-selector': textFieldExtractor,
+	'type-image-selector': textFieldExtractor,
+	'datasource-selector': textFieldExtractor,
+	'read-only-value': textFieldExtractor,
+	range: textFieldExtractor,
+	'type-js-controller-selector': textFieldExtractor,
+	'key-value-map': textFieldExtractor,
+	'type-destination-paths-selector': textFieldExtractor,
+	'path-with-macro-creator': textFieldExtractor,
+	'merge-strategy-selector': textFieldExtractor,
+	'datasource-single-selector': textFieldExtractor,
+	variable: textFieldExtractor,
+	'type-configuration': textFieldExtractor
 };
 
 /**

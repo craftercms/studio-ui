@@ -14,17 +14,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
+import type {
 	ContentTypeField,
+	ContentTypeFieldValidation,
 	ContentTypeSection,
 	DataSource,
 	LegacyDataSource,
 	LegacyFormDefinitionField,
+	NewContentTypeField,
+	NewDataSource,
 	ValidationKeys
 } from '../../models';
-import LookupTable from '../../models/LookupTable';
-import ContentType, { SerializeToXmlContentTypeStructure } from '../../models/ContentType';
-import { immutableEmptyObject, noOp, pluckProps } from '../../utils/object';
+import type LookupTable from '../../models/LookupTable';
+import type { ContentType, SerializeToXmlContentTypeStructure } from '../../models/ContentType';
+import { createLookupTable, nnou, noOp, pluckProps } from '../../utils/object';
 import { commonControlFieldsDescriptors, defaultDataSourcesSection } from './descriptors/controls';
 import {
 	FormsEngineFormApiContextProps,
@@ -39,10 +42,28 @@ import { createParsedValueForField } from '../FormsEngine/lib/valueRetrievers';
 import { toBooleanString, toColor } from '../../utils/string';
 import { getXmlBuilder } from '../FormsEngine/lib/valueSerializers';
 import { nanoid } from 'nanoid';
+import { commonDataSourceDescriptors, dataSourceDescriptors } from './descriptors/dataSources';
+import type { ControlProps } from '../FormsEngine/types';
+import { IntlShape, type MessageDescriptor } from 'react-intl';
+import TranslationOrText from '../../models/TranslationOrText';
+import { getFileNameFromPath } from '../../utils/path';
+import type { Dispatch } from 'redux';
+import { editController, editTemplate } from '../../state/actions/misc';
+import { popDialog, pushDialog } from '../../state/actions/dialogStack';
+import type { BuiltInControlType } from '../FormsEngine/lib/controlMap';
+import { asArray } from '../../utils/array';
+import { componentsDataSourceContentTypesPropertyNames, systemValidationsKeysMap } from '../../utils/contentType';
+import { XmlKeys } from '../FormsEngine/lib/formConsts';
 
 // TODO: assess which of the utils here should go to utils/contentType.ts, or other places (serializers, etc.)
 
 export const DeserializerNullSymbol = Symbol(null);
+
+export const NEW_FIELD_ID = '{NEW}';
+export const NEW_DATASOURCE_ID = '{NEW}';
+export const TYPE_TEMPLATE_BASE_PATH = '/templates/web';
+export const CONTENT_TYPES_BASE_PATH = '/config/studio/content-types';
+export const TYPE_GROOVY_CONTROLLER_BASE_PATH = '/config/studio/content-types';
 
 // Some properties in ContentTypeField differ from the name in the XML.
 // Descriptors for controls, sections, data sources, etc., declare their form fields with the XML name,
@@ -66,6 +87,7 @@ export type TypePropsToEdit = Pick<
 	| 'displayTemplate'
 	| 'isHeadless'
 	| 'paths'
+	| 'sections'
 >;
 
 type ContentTypeValuesObject = TypePropsToEdit & { groovyController: string };
@@ -82,8 +104,35 @@ export const typePropsToEdit: Array<keyof TypePropsToEdit> = [
 	'hasJsController',
 	'displayTemplate',
 	'isHeadless',
-	'paths'
+	'paths',
+	'sections'
 ];
+
+// Some system fields resolve to other built-in controls, so we need to map them to the correct type
+export const systemFieldsTypesMap: Partial<Record<BuiltInControlType, string>> = {
+	[XmlKeys['disabled']]: 'checkbox',
+	[XmlKeys['internalName']]: 'input'
+};
+
+// Some system fields have a pre-set id which is not editable.
+export type readOnlyFieldIdsType = 'disabled' | 'file-name' | 'internal-name' | 'placeInNav' | 'navLabel';
+export const readOnlyFieldsIds: readOnlyFieldIdsType[] = [
+	XmlKeys['disabled'],
+	XmlKeys['fileName'],
+	XmlKeys['internalName'],
+	XmlKeys['placeInNav'],
+	XmlKeys['navLabel']
+];
+
+// Some system fields have a pre-set id. This map is to map the built-in control type to the id.
+export const systemFieldsIdsMap: Partial<Record<BuiltInControlType, readOnlyFieldIdsType>> = {
+	[XmlKeys['disabled']]: 'disabled',
+	[XmlKeys['fileName']]: 'file-name',
+	'auto-filename': 'file-name',
+	[XmlKeys['internalName']]: 'internal-name',
+	'page-nav-order': 'placeInNav'
+	// 'locale-selector: 'locale-selector' // This one doesn't have a pre-set id
+};
 
 export function createTypeFormValuesObject(type: ContentType): ContentTypeValuesObject {
 	const values: Partial<ContentTypeValuesObject> = pluckProps(type, false, ...typePropsToEdit);
@@ -123,8 +172,7 @@ export function populateFieldPropertiesValues(
 ): void {
 	for (const property in properties ?? {}) {
 		if (property === 'plugin') {
-			// TODO: Not handled...
-			console.error('Plugin case not handled.');
+			values[property] = properties[property];
 			continue;
 		}
 		const propObject = properties[property];
@@ -148,41 +196,79 @@ export function populateFieldValidationsValues(
 	}
 }
 
+export function populateDataSourcePropertiesValues(
+	values: LookupTable<unknown>,
+	properties: ContentTypeField['properties']
+): void {
+	for (const property in properties ?? {}) {
+		if (property === 'plugin') {
+			values[property] = properties[property];
+			continue;
+		}
+		values[property] = properties[property];
+	}
+}
+
+export function createDataSourceValuesObject(datasource: DataSource): LookupTable<unknown> {
+	const values: LookupTable<unknown> = {};
+	for (const property in datasource) {
+		if (property === 'properties') {
+			populateDataSourcePropertiesValues(values, datasource.properties);
+		} else {
+			values[property] = datasource[property];
+		}
+	}
+	return values;
+}
+
 // values is a lookup table of values which needs to be set
-export function reverseTypeFieldValuesObject(field: ContentTypeField, values: LookupTable<unknown>): ContentTypeField {
+export function reverseTypeFieldValuesObject(
+	field: ContentTypeField,
+	values: LookupTable<unknown>,
+	descriptor: DescriptorContentType
+): ContentTypeField {
 	const fieldWithReversedValues: ContentTypeField = { ...field };
 	let property: ContentTypeFieldProperties;
 	for (property in field) {
 		if (ignoredContentTypeFieldProps.includes(property)) continue;
+
+		// It may happen that the original XML doesn't have some properties/validations that the field has (in the descriptor).
+		// So we need to ge the defaults from the descriptor to ensure we don't drop them when retrieving the values.
+		const defaults = getPropertiesAndValidationsFromDescriptor(descriptor);
 		if (property === 'fields') {
-			for (const fieldId in field.fields) {
-				fieldWithReversedValues.fields[fieldId] = reverseTypeFieldValuesObject(
-					field.fields[fieldId],
-					values.fields[fieldId]
-				);
+			if (values.fields) {
+				for (const fieldId in field.fields) {
+					fieldWithReversedValues.fields[fieldId] = reverseTypeFieldValuesObject(
+						field.fields[fieldId],
+						values.fields[fieldId],
+						descriptor
+					);
+				}
 			}
 		} else if (property === 'properties') {
 			fieldWithReversedValues.properties = {};
 			const properties = fieldWithReversedValues.properties;
-			for (const property in field.properties ?? {}) {
+			const mergedProperties = { ...defaults.properties, ...(field.properties ?? {}) };
+
+			for (const property in mergedProperties) {
 				// A stored property that's no longer in the descriptor would get cleaned/dropped up by this check.
-				if (!(property in values)) {
+				if (property !== 'plugin' && !(property in values)) {
 					continue;
 				}
 				if (property === 'plugin') {
-					// TODO: Not handled...
-					console.error('Plugin case not handled.');
+					properties[property] = mergedProperties[property];
 					continue;
 				}
-				properties[property] = { ...field.properties[property] };
+				properties[property] = { ...mergedProperties[property] };
 				properties[property].value = values[property] as never;
 			}
 		} else if (property === 'validations') {
 			fieldWithReversedValues.validations = { ...field.validations };
 			const validations = fieldWithReversedValues.validations;
+			const mergedValidations = { ...defaults.validations, ...(field.validations ?? {}) };
 			let validationKey: ValidationKeys;
-			for (validationKey in validations ?? {}) {
-				validations[validationKey as ValidationKeys] = { ...validations[validationKey as ValidationKeys] };
+			for (validationKey in mergedValidations) {
+				validations[validationKey as ValidationKeys] = { ...mergedValidations[validationKey as ValidationKeys] };
 				validations[validationKey as ValidationKeys].value =
 					// TODO: Should we use upgrade manager to remove from properties and into constraints?
 					// The maxlength property is mapped from properties to `field.validations` as `maxLength`.
@@ -197,7 +283,46 @@ export function reverseTypeFieldValuesObject(field: ContentTypeField, values: Lo
 	return fieldWithReversedValues;
 }
 
-export type PartialContentType = Pick<ContentType, 'id' | 'name' | 'description' | 'sections' | 'fields'>;
+export type PartialContentType = Pick<ContentType, 'id' | 'name' | 'description' | 'sections' | 'fields'> & {
+	dataSources?: DataSource[];
+};
+
+export type DescriptorContentType = Pick<ContentType, 'id'> & {
+	dataSources?: DataSource[];
+	name: TranslationOrText;
+	description: TranslationOrText;
+	sections: DescriptorSection[];
+	fields: LookupTable<DescriptorField>;
+	type?: 'image' | 'item' | 'audio' | 'flash' | 'video' | 'transcoded-video';
+	supportedPostFixes?: string[];
+};
+
+export type DescriptorSection = Omit<ContentTypeSection, 'title' | 'description'> & {
+	title: TranslationOrText;
+	description: TranslationOrText;
+};
+
+export type DescriptorField = Omit<ContentTypeField, 'name' | 'description' | 'fields'> & {
+	name: TranslationOrText;
+	description?: TranslationOrText;
+	helpText?: TranslationOrText;
+	fields?: LookupTable<DescriptorField>;
+	validations: Partial<DescriptorFieldValidations>;
+};
+
+export type DescriptorFieldValidationKeys = ValidationKeys | 'root' | 'regex' | 'type';
+
+export type DescriptorContentTypeFieldValidation = Omit<ContentTypeFieldValidation, 'id'> & {
+	id: DescriptorFieldValidationKeys;
+};
+
+export type DescriptorFieldValidations = Record<DescriptorFieldValidationKeys, DescriptorContentTypeFieldValidation>;
+
+export interface TypeBuilderControl extends Omit<ControlProps, 'field'> {
+	field: ContentTypeField & {
+		validations: Partial<DescriptorFieldValidations>;
+	};
+}
 
 export function createEmptyTypeStructure(mixin?: Partial<ContentType>): ContentType {
 	return {
@@ -220,78 +345,106 @@ export function createEmptyTypeStructure(mixin?: Partial<ContentType>): ContentT
 	};
 }
 
-export function createVirtualTypeForField(controlDescriptor: PartialContentType): ContentType {
-	return createEmptyTypeStructure({
-		...controlDescriptor,
-		fields: {
-			...commonControlFieldsDescriptors,
-			...controlDescriptor.fields
-		},
-		sections: [
-			{
-				id: 'properties',
-				color: null,
-				title: 'Basic Properties',
-				description: '',
-				fields: Object.keys(commonControlFieldsDescriptors),
-				expandByDefault: true
+export function createVirtualTypeForField(
+	controlDescriptor: DescriptorContentType,
+	formatMessage: IntlShape['formatMessage']
+): ContentType {
+	const translatedControlDescriptor = applyTranslations(
+		{
+			...controlDescriptor,
+			fields: {
+				...commonControlFieldsDescriptors,
+				...controlDescriptor.fields
 			},
-			...(controlDescriptor.sections ?? [])
-		]
-	});
+			sections: [
+				{
+					id: 'properties',
+					color: null,
+					title: 'Basic Properties',
+					description: '',
+					fields: Object.keys(commonControlFieldsDescriptors),
+					expandByDefault: true
+				},
+				...(controlDescriptor.sections ?? [])
+			]
+		},
+		formatMessage
+	);
+	return createEmptyTypeStructure(translatedControlDescriptor);
 }
 
-export function createVirtualTypeForSection(descriptor: PartialContentType): ContentType {
-	return createEmptyTypeStructure({
-		...descriptor,
-		fields: descriptor.fields,
-		sections: descriptor.sections
-	});
+export function createVirtualTypeForSection(
+	descriptor: DescriptorContentType,
+	formatMessage: IntlShape['formatMessage']
+): ContentType {
+	const translatedDescriptor = applyTranslations(
+		{
+			...descriptor,
+			fields: descriptor.fields,
+			sections: descriptor.sections
+		},
+		formatMessage
+	);
+	return createEmptyTypeStructure(translatedDescriptor);
 }
 
-export function createVirtualTypeForDataSource(controlDescriptor: PartialContentType): ContentType {
-	throw new Error('Not implemented');
-	// return createEmptyTypeStructure({
-	// 	...controlDescriptor,
-	// 	fields: {
-	// 		...commonControlFieldsDescriptors,
-	// 		...controlDescriptor.fields
-	// 	},
-	// 	sections: [
-	// 		{
-	// 			id: 'properties',
-	// 			color: null,
-	// 			title: 'Basic Properties',
-	// 			description: '',
-	// 			fields: Object.keys(commonControlFieldsDescriptors),
-	// 			expandByDefault: true
-	// 		},
-	// 		...(controlDescriptor.sections ?? [])
-	// 	]
-	// });
+export function createVirtualTypeForDataSource(
+	dataSourceDescriptor: DescriptorContentType,
+	formatMessage: IntlShape['formatMessage']
+): ContentType {
+	const translatedDataSourceDescriptor = applyTranslations(
+		{
+			...dataSourceDescriptor,
+			fields: {
+				...commonDataSourceDescriptors,
+				...dataSourceDescriptor.fields
+			},
+			sections: [
+				{
+					id: 'properties',
+					color: null,
+					title: 'Basic Properties',
+					description: '',
+					fields: Object.keys(commonDataSourceDescriptors),
+					expandByDefault: true
+				},
+				...(dataSourceDescriptor.sections ?? [])
+			]
+		},
+		formatMessage
+	);
+	return createEmptyTypeStructure(translatedDataSourceDescriptor);
 }
 
-export function createVirtualSection(
-	sectionData: Partial<ContentTypeSection> & Pick<ContentTypeSection, 'title' | 'fields'>
-): ContentTypeSection {
+export function createVirtualSection<K extends ContentTypeSection | DescriptorSection>(
+	sectionData: Partial<K> & Pick<K, 'title' | 'fields'>
+): K {
+	const title = JSON.stringify(
+		typeof sectionData.title === 'object' ? sectionData.title.defaultMessage : sectionData.title
+	);
 	return {
 		id: sectionData?.id || nanoid(),
 		description: '',
 		expandByDefault: true,
-		color: sectionData?.color ?? toColor(sectionData.title),
-		...sectionData
-	};
+		...sectionData,
+		color: sectionData?.color ?? toColor(title)
+	} as K;
 }
 
-export function createVirtualDataSourceFields(type: ContentType): LookupTable<ContentTypeField> {
-	const dataSourceFields: LookupTable<ContentTypeField> = {};
+type VirtualDataSourceFields = (ContentTypeField & { validations: Partial<DescriptorFieldValidations> }) &
+	Partial<NewContentTypeField>;
+export function createVirtualDataSourceFields(type: ContentType): LookupTable<VirtualDataSourceFields> {
+	const dataSourceFields: LookupTable<VirtualDataSourceFields> = {};
 	for (const dataSource of type.dataSources ?? []) {
 		dataSourceFields[dataSource.id] = {
+			...((dataSource as NewDataSource).NEW && { NEW: true }),
 			id: dataSource.id,
 			type: dataSource.type,
 			name: dataSource.title,
 			defaultValue: undefined,
-			validations: immutableEmptyObject
+			validations: {
+				type: createValidation('type', dataSource.interface)
+			}
 		};
 	}
 	return dataSourceFields;
@@ -383,7 +536,10 @@ export const createStableFormContextProps = (
 		state: null
 	};
 	if (createRootTypeSections) {
-		Object.assign(context.atoms.expandedStateBySectionId, buildSectionExpandedStateAtoms([defaultDataSourcesSection]));
+		Object.assign(
+			context.atoms.expandedStateBySectionId,
+			buildSectionExpandedStateAtoms([defaultDataSourcesSection as ContentTypeSection])
+		);
 	}
 	return context;
 };
@@ -396,7 +552,13 @@ export function makeIntoTypeFieldStructPath(fieldPath: string): string {
 		.replace(/.fields$/, '');
 }
 
-export function prepareSerializeToXmlTypeObject(type: ContentType): SerializeToXmlContentTypeStructure {
+export function prepareSerializeToXmlTypeObject(
+	type: ContentType,
+	configDescriptors?: {
+		controlDescriptors: LookupTable<DescriptorContentType>;
+		dataSourceDescriptors: LookupTable<DescriptorContentType>;
+	}
+): SerializeToXmlContentTypeStructure {
 	return {
 		'content-type': type.id,
 		title: type.name,
@@ -437,12 +599,17 @@ export function prepareSerializeToXmlTypeObject(type: ContentType): SerializeToX
 				defaultOpen: toBooleanString(section.expandByDefault),
 				fields: {
 					field: section.fields.map((fieldId) => convertFieldStructToXmlStruct(type.fields[fieldId]))
-				}
+				},
+				color: section.color
 			}))
 		},
 		datasources:
 			type.dataSources?.length > 0
-				? { datasource: type.dataSources?.map((ds) => convertDataSourceStructToXmlStruct(ds)) }
+				? {
+						datasource: type.dataSources?.map((ds) =>
+							convertDataSourceStructToXmlStruct(ds, configDescriptors?.dataSourceDescriptors)
+						)
+					}
 				: null
 	};
 }
@@ -453,9 +620,40 @@ export function buildContentTypeXml(serializeTypeStructureObject: SerializeToXml
 }
 
 function convertFieldStructToXmlStruct(field: ContentTypeField): Required<LegacyFormDefinitionField> {
-	// TODO: sections other than properties & constraints?
-	// field.properties
-	// field.constraints
+	const minOccurs = field.properties?.minOccurs?.value as string;
+	const maxOccurs = field.properties?.maxOccurs?.value as string;
+
+	// 'plugin' comes in 'field.properties'. (see ContentTypeField['properties'], but it's a separate object in the XML.
+	let plugin: LegacyFormDefinitionField['plugin'];
+	const properties: LegacyFormDefinitionField['properties'] = field.properties
+		? ({
+				property: Object.entries(field.properties ?? {})
+					.filter(([key, value]) => {
+						if (key === 'plugin') plugin = value as LegacyFormDefinitionField['plugin'];
+						return key !== 'plugin';
+					})
+					.map(([, value]) => value)
+			} as LegacyFormDefinitionField['properties'])
+		: undefined;
+
+	const invertedSystemValidationsNames = [
+		...Object.values(systemValidationsKeysMap),
+		...componentsDataSourceContentTypesPropertyNames
+	];
+
+	const constraints =
+		field.validations && Object.keys(field.validations).length > 0
+			? {
+					constraint: Object.values(field.validations)
+						.map((validation) => ({
+							name: validation.id,
+							value: validation.value,
+							type: typeof validation.value
+						}))
+						.filter((validation) => !invertedSystemValidationsNames.includes(validation.name))
+				}
+			: undefined;
+
 	// Note: `undefined` suppresses nodes in the XML, empty strings doesn't.
 	return {
 		id: field.id,
@@ -465,25 +663,32 @@ function convertFieldStructToXmlStruct(field: ContentTypeField): Required<Legacy
 		type: field.type,
 		help: field.helpText,
 		iceId: undefined, // TODO: drop?
-		// region TODO: ∨∨∨ Repeat Groups ∨∨∨
-		maxOccurs: undefined,
-		minOccurs: undefined,
-		fields: undefined, // { field: undefined },
-		// endregion TODO: ^^^ Repeat Groups ^^^
-		// TODO: Populate `plugin` property
-		plugin: undefined, // { filename: '', name: '', pluginId: '', type: '' },
-		properties: undefined, // { property: undefined },
-		constraints: undefined // { constraint: undefined }
+		// region Repeat Groups
+		maxOccurs,
+		minOccurs,
+		fields: field.fields
+			? {
+					field: Object.values(field.fields).map((value) => convertFieldStructToXmlStruct(value))
+				}
+			: undefined,
+		// endregion
+		plugin,
+		properties,
+		constraints
 	};
 }
 
-function convertDataSourceStructToXmlStruct(dataSource: DataSource): Required<LegacyDataSource> {
+const propertiesSimpleTypes = ['checkbox', 'input', 'numeric-input'];
+function convertDataSourceStructToXmlStruct(
+	dataSource: DataSource,
+	configDataSourceDescriptors?: LookupTable<DescriptorContentType>
+): Required<LegacyDataSource> {
+	const descriptor = configDataSourceDescriptors?.[dataSource.type] ?? dataSourceDescriptors[dataSource.type];
 	return {
 		id: dataSource.id,
 		interface: dataSource.interface,
 		title: dataSource.title,
 		type: dataSource.type,
-		// TODO: Double check the dataSource.properties struct matches the XML struct
 		properties: {
 			// TODO: Ideally, suppress these objects into simple key-value pairs.
 			//   <properties>
@@ -495,11 +700,237 @@ function convertDataSourceStructToXmlStruct(dataSource: DataSource): Required<Le
 			//  ===>
 			//    <properties>
 			//      <enableSearchExisting>true</enableSearchExisting>
-			property: Object.entries(dataSource.properties).map(([name, value]) => ({
-				name,
-				value,
-				type: typeof value
-			}))
+			// TODO: note type usage in `services/contentTypes.ts, parseLegacyFormDefinition when parsing the data sources`
+			property: Object.entries(dataSource?.properties ?? {}).map(([name, value]) => {
+				let type = descriptor?.fields?.[name]?.type ?? typeof value;
+				// some properties are simple types, so we need to get the proper type.
+				if (propertiesSimpleTypes.includes(type)) {
+					type = typeof value;
+				}
+				return { name, value, type };
+			})
+		}
+	};
+}
+
+export function createValidation<T = unknown>(
+	key: DescriptorFieldValidationKeys,
+	value: T,
+	level?: ContentTypeFieldValidation['level']
+): DescriptorContentTypeFieldValidation {
+	return {
+		id: key,
+		value,
+		level: level ?? 'required'
+	};
+}
+
+export function applyTranslations(
+	descriptor: DescriptorContentType,
+	formatMessage: IntlShape['formatMessage']
+): PartialContentType {
+	const translatedSections = descriptor.sections.map((section) => ({
+		...section,
+		title: translateIfMessageDescriptor(formatMessage, section, 'title'),
+		description: translateIfMessageDescriptor(formatMessage, section, 'description')
+	}));
+
+	const translatedFieldsArray = Object.values(descriptor.fields).map((field) => {
+		return {
+			...field,
+			name: translateIfMessageDescriptor(formatMessage, field, 'name'),
+			description: translateIfMessageDescriptor(formatMessage, field, 'description')
+		};
+	});
+	const translatedFieldsLookup = createLookupTable(translatedFieldsArray, 'id');
+
+	return {
+		...descriptor,
+		name: translateIfMessageDescriptor(formatMessage, descriptor, 'name'),
+		description: translateIfMessageDescriptor(formatMessage, descriptor, 'description'),
+		sections: translatedSections,
+		fields: translatedFieldsLookup as unknown as LookupTable<ContentTypeField>
+	};
+}
+
+function translateIfMessageDescriptor(
+	formatMessage: IntlShape['formatMessage'],
+	target: DescriptorContentType,
+	property: 'name' | 'description'
+): string;
+function translateIfMessageDescriptor(
+	formatMessage: IntlShape['formatMessage'],
+	target: DescriptorSection,
+	property: 'title' | 'description'
+): string;
+function translateIfMessageDescriptor(
+	formatMessage: IntlShape['formatMessage'],
+	target: DescriptorField,
+	property: 'name' | 'description' | 'helpText'
+): string;
+function translateIfMessageDescriptor<K>(
+	formatMessage: IntlShape['formatMessage'],
+	target: K,
+	property: keyof K
+): string {
+	const value = target[property];
+	if (nnou(value) && typeof value === 'object') {
+		return formatMessage(value as MessageDescriptor);
+	}
+	return typeof value === 'string' ? value : '';
+}
+
+export function editTypeTemplate(path: string, dispatch: Dispatch) {
+	const fileName = getFileNameFromPath(path);
+	const pathNoFileName = path.slice(0, path.lastIndexOf(fileName));
+
+	dispatch(
+		editTemplate({
+			path: pathNoFileName,
+			fileName,
+			mode: 'ftl',
+			openOnSuccess: true
+		})
+	);
+}
+
+export function createTypeTemplate(basePath: string, dispatch, onCreated: (item) => void) {
+	const id = nanoid();
+	dispatch(
+		pushDialog({
+			id,
+			component: 'craftercms.components.CreateFileDialog',
+			props: {
+				path: basePath,
+				type: 'template',
+				onClose: () => dispatch(popDialog({ id })),
+				onCreated: (item) => {
+					onCreated(item);
+					dispatch(popDialog({ id }));
+				}
+			}
+		})
+	);
+}
+
+export function editTypeController(
+	basePath: string,
+	contentTypeId: string,
+	dispatch: Dispatch,
+	type: 'groovy' | 'javascript'
+) {
+	const fileName = type === 'groovy' ? 'controller.groovy' : 'form-controller.js';
+	// editController creates the config file if it doesn't exist.
+	dispatch(
+		editController({
+			path: `${basePath}${contentTypeId}/`,
+			fileName,
+			mode: type,
+			contentType: contentTypeId,
+			openOnSuccess: true
+		})
+	);
+}
+
+export const isComposedPath = (path: string): boolean => {
+	return path.includes('.');
+};
+
+function getSubFieldFromType(parentField: ContentTypeField, fieldIdPath: string): ContentTypeField {
+	if (isComposedPath(fieldIdPath)) {
+		// If still composed, we need to find the root field and get the field recursively
+		const rootFieldId = fieldIdPath.split('.').shift();
+		return getSubFieldFromType(parentField.fields[rootFieldId], fieldIdPath.replace(`${rootFieldId}.`, ''));
+	} else {
+		return parentField.fields[fieldIdPath];
+	}
+}
+
+export function getFieldFromType(type: ContentType, fieldIdPath: string): ContentTypeField {
+	if (isComposedPath(fieldIdPath)) {
+		const rootFieldId = fieldIdPath.split('.').shift();
+		return getSubFieldFromType(type.fields[rootFieldId], fieldIdPath.replace(`${rootFieldId}.`, ''));
+	} else {
+		return type.fields[fieldIdPath];
+	}
+}
+
+export function getSectionFromType(type: ContentType, sectionId: string): ContentTypeSection | undefined {
+	return type.sections.find((section) => section.id === sectionId);
+}
+
+export function getPropertiesAndValidationsFromDescriptor(descriptor: DescriptorContentType): {
+	properties: ContentTypeField['properties'];
+	validations: ContentTypeField['validations'];
+} {
+	const properties = {};
+	const validations = {};
+	if (!descriptor || !descriptor.sections || !descriptor.fields) {
+		return { properties, validations };
+	}
+
+	const sections = createLookupTable(descriptor.sections);
+	const propertiesFieldIds = sections.properties?.fields ?? [];
+	propertiesFieldIds.forEach((field) => {
+		const fieldDescriptor = descriptor.fields?.[field];
+		if (!fieldDescriptor) return;
+		let type = fieldDescriptor.type;
+		switch (type) {
+			case 'datasource-selector': {
+				type = `datasource:${descriptor.fields[field]?.validations?.type?.value ?? 'item'}`;
+				break;
+			}
+			case 'datasource-single-selector': {
+				type = `datasource:${descriptor.fields[field]?.validations?.type?.value ?? 'item'}:singleSelection`;
+				break;
+			}
+			case 'checkbox':
+				type = 'boolean';
+				break;
+			case 'numeric-input':
+				type = 'int';
+				break;
+			case 'input':
+				type = 'string';
+				break;
+		}
+
+		properties[field] = {
+			name: field,
+			value: descriptor.fields[field]?.defaultValue,
+			type
+		};
+	});
+
+	const constraintsFieldIds = (asArray(sections.constraints?.fields) as DescriptorFieldValidationKeys[]) ?? [];
+	constraintsFieldIds.forEach((field) => {
+		validations[field] = {
+			...createValidation(field, descriptor.fields[field]?.defaultValue)
+		};
+	});
+
+	return { properties, validations };
+}
+
+export function initializeConfigFromType(type: ContentType) {
+	return {
+		'content-type': {
+			label: type.name,
+			form: type.id,
+			'form-path': 'simple',
+			'model-instance-path': 'NOT-USED-BY-SIMPLE-FORM-ENGINE',
+			'file-extension': 'xml',
+			'content-as-folder': type.type === 'page',
+			previewable: type.type === 'page',
+			quickCreate: Boolean(type.quickCreate),
+			quickCreatePath: type.quickCreatePath ?? '',
+			controller: Boolean(type.hasJsController),
+			noThumbnail: !type.thumbnailFileName,
+			'image-thumbnail': type.thumbnailFileName ?? '',
+			paths: {
+				includes: {},
+				excludes: {}
+			}
 		}
 	};
 }

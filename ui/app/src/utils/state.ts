@@ -487,3 +487,16 @@ export function setViewVersionDialogViewModes(username: string, singleFieldView:
 export function removeViewVersionDialogViewModes(username: string) {
 	localStorage.removeItem(`craftercms.${username}.viewVersionDialog.viewModes`);
 }
+
+export function setTypeViewCompactMode(user: string, value: boolean) {
+	window.localStorage.setItem(`craftercms.${user}.typeViewCompactMode`, JSON.stringify(value));
+}
+
+export function getTypeViewCompactMode(user: string): boolean {
+	const value = window.localStorage.getItem(`craftercms.${user}.typeViewCompactMode`);
+	return value ? value === 'true' : null;
+}
+
+export function removeTypeViewCompactMode(user: string) {
+	window.localStorage.removeItem(`craftercms.${user}.typeViewCompactMode`);
+}

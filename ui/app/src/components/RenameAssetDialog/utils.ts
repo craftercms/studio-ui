@@ -44,5 +44,7 @@ export interface RenameAssetContainerProps
 		RenameAssetDialogProps,
 		'item' | 'allowBraces' | 'onRenamed' | 'onClose' | 'type' | 'fetchingDependantItems' | 'error'
 	> {
+	fetchingDependantItems: boolean;
 	dependantItems: ContentItem[];
+	fetchDependant(): void;
 }
