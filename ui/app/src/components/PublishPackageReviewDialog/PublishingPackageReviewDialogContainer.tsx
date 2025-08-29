@@ -128,7 +128,7 @@ export function PublishingPackageReviewDialogContainer(props: PublishingPackageR
 	useEffect(() => {
 		setState({
 			scheduling: publishingPackage?.schedule ? 'keep' : 'now',
-			schedule: new Date(publishingPackage?.schedule) ?? createAtLeastHalfHourInFutureDate()
+			schedule: publishingPackage?.schedule ? new Date(publishingPackage.schedule) : createAtLeastHalfHourInFutureDate()
 		});
 	}, [publishingPackage, setState]);
 
@@ -193,7 +193,12 @@ export function PublishingPackageReviewDialogContainer(props: PublishingPackageR
 		if (state.action === 'approve') {
 			const data: PublishingPackageApproveParams = {
 				comment: state.approverComment,
-				schedule: state.scheduling === 'custom' ? state.schedule.toISOString() : null,
+				schedule:
+					state.scheduling === 'custom'
+						? state.schedule.toISOString()
+						: state.scheduling === 'keep'
+							? new Date(publishingPackage.schedule).toISOString()
+							: null,
 				updateSchedule: true
 			};
 
@@ -278,7 +283,7 @@ export function PublishingPackageReviewDialogContainer(props: PublishingPackageR
 										<Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
 											<FormattedMessage defaultMessage="Scheduling" />
 										</Typography>
-										<RadioGroup sx={{ mb: 1 }} onChange={onArgumentChange} name="scheduling">
+										<RadioGroup sx={{ mb: 1 }} onChange={onArgumentChange} name="scheduling" value={state.scheduling}>
 											{publishingPackage?.schedule && (
 												<FormControlLabel
 													value="keep"
