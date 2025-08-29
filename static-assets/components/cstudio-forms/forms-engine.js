@@ -2580,7 +2580,7 @@ const initializeCStudioForms = () => {
 								self._addRepeatItem(repeatContainerEl, repeatArrayIndex + 1);
 
 								const containerElNodes = $(containerEl.childNodes);
-								containerElLastChildTop = $(containerElNodes.get(repeatArrayIndex + 1)).offset().top;
+								const containerElLastChildTop = $(containerElNodes.get(repeatArrayIndex + 1)).offset().top;
 								$('html').scrollTop(containerElLastChildTop);
 
 								repeatEdited = true;
@@ -2608,7 +2608,7 @@ const initializeCStudioForms = () => {
 								self._moveRepeatItem(containerEl, repeatArrayIndex, repeatArrayIndex - 1);
 
 								const containerElNodes = $(containerEl.childNodes);
-								containerElLastChildTop = $(containerElNodes.get(repeatArrayIndex - 1)).offset().top;
+								const containerElLastChildTop = $(containerElNodes.get(repeatArrayIndex - 1)).offset().top;
 								$('html').scrollTop(containerElLastChildTop);
 
 								repeatEdited = true;
@@ -2636,7 +2636,7 @@ const initializeCStudioForms = () => {
 								self._moveRepeatItem(containerEl, repeatArrayIndex, repeatArrayIndex + 1);
 
 								const containerElNodes = $(containerEl.childNodes);
-								containerElLastChildTop = $(containerElNodes.get(repeatArrayIndex + 1)).offset().top;
+								const containerElLastChildTop = $(containerElNodes.get(repeatArrayIndex + 1)).offset().top;
 								$('html').scrollTop(containerElLastChildTop);
 
 								repeatEdited = true;
@@ -2667,7 +2667,7 @@ const initializeCStudioForms = () => {
 
 								if (repeatArrayIndex) {
 									const containerElNodes = $(containerEl.childNodes);
-									containerElLastChildTop = $(containerElNodes.get(repeatArrayIndex - 1)).offset().top;
+									const containerElLastChildTop = $(containerElNodes.get(repeatArrayIndex - 1)).offset().top;
 									$('html').scrollTop(containerElLastChildTop);
 								}
 
