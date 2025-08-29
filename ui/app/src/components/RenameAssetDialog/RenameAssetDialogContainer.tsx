@@ -124,6 +124,8 @@ export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
 				},
 				cancelPackagesMessage: `Cancel packages to rename "${item.path}"`
 			});
+		} else {
+			updateSubmittingOrHasPendingChanges({ isSubmitting: false });
 		}
 	};
 
