@@ -14,57 +14,80 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createVirtualSection, PartialContentType } from '../../utils';
+import { createValidation, createVirtualSection, DescriptorContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
+import { defineMessage } from 'react-intl';
 
-export const imagePickerDescriptor: PartialContentType = {
+export const imagePickerDescriptor: DescriptorContentType = {
 	id: 'image-picker',
-	name: 'Image Picker',
-	description: 'Image selection tool',
+	name: defineMessage({ defaultMessage: 'Image' }),
+	description: defineMessage({ defaultMessage: 'Image selection tool' }),
 	sections: [
 		createVirtualSection({
-			title: 'Options',
-			fields: ['readonly', 'thumbnailWidth', 'thumbnailHeight', 'datasource']
+			id: 'properties',
+			title: defineMessage({ defaultMessage: 'Options' }),
+			fields: ['width', 'height', 'thumbnailWidth', 'thumbnailHeight', 'imageManager', 'readonly']
 		}),
-		createVirtualSection({ title: 'Constraints', fields: ['required'] })
+		createVirtualSection({
+			id: 'constraints',
+			title: defineMessage({ defaultMessage: 'Constraints' }),
+			fields: ['required']
+		})
 	],
 	fields: {
-		readonly: {
-			id: 'readonly',
-			type: 'checkbox',
-			name: 'Read Only',
+		width: {
+			id: 'width',
+			type: 'range',
+			name: defineMessage({ defaultMessage: 'Width' }),
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		height: {
+			id: 'height',
+			type: 'range',
+			name: defineMessage({ defaultMessage: 'Height' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		thumbnailWidth: {
 			id: 'thumbnailWidth',
 			type: 'numeric-input',
-			name: 'Thumbnail Width',
+			name: defineMessage({ defaultMessage: 'Thumbnail Width' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		thumbnailHeight: {
 			id: 'thumbnailHeight',
 			type: 'numeric-input',
-			name: 'Thumbnail Height',
+			name: defineMessage({ defaultMessage: 'Thumbnail Height' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
-		datasource: {
-			id: 'datasource',
-			type: 'dropdown',
-			name: 'Data Source',
+		imageManager: {
+			id: 'imageManager',
+			type: 'datasource-selector',
+			name: defineMessage({ defaultMessage: 'Data Source' }),
+			defaultValue: undefined,
+			validations: {
+				type: createValidation('type', 'image')
+			}
+		},
+		readonly: {
+			id: 'readonly',
+			type: 'checkbox',
+			name: defineMessage({ defaultMessage: 'Read Only' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		required: {
 			id: 'required',
 			type: 'checkbox',
-			name: 'Required',
+			name: defineMessage({ defaultMessage: 'Required' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}
-	}
+	},
+	supportedPostFixes: ['_s']
 };
 
 export default imagePickerDescriptor;

@@ -34,7 +34,6 @@ function DeleteContentTypeDialog(props: DeleteContentTypeDialogProps) {
 					/>
 				)
 			}}
-			isSubmitting={isSubmitting}
 			{...rest}
 		>
 			<DeleteContentTypeDialogContainer contentType={contentType} isSubmitting={isSubmitting} onComplete={onComplete} />

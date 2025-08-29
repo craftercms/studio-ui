@@ -88,11 +88,14 @@ export function ColorPicker(props: ColorPickerProps) {
 	const ColourPicker: ElementType = pickers[format][String(alpha)] ?? HexColorPicker;
 	const hexColorInputProps: ComponentProps<typeof HexColorInput> = { color: colour, alpha: alpha, prefixed: true };
 	const handleOpen = () => setOpen(true);
-	const handleClose = () => setOpen(false);
+	const handleClose = () => {
+		setValue(colour);
+		setOpen(false);
+	};
 	const throttledSetValue = useMemo(() => throttle(setValue), [setValue]);
-	// TODO: Verify other react-colorful inputs have the same onChange signature
 	const handleChange = (value: string) => {
 		setColour(value);
+		// TODO: Check an issue when format = 'hsl', input change doesn't update properly when doing throttledSetValue
 		throttledSetValue(value);
 	};
 	useEffect(() => {

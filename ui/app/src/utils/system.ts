@@ -21,12 +21,15 @@ import Monaco from '../models/Monaco';
 import { ProjectToolsRoutes } from '../env/routes';
 import type { SxProps } from '@mui/system';
 import type { Theme } from '@mui/material/styles';
-import { showEditDialog } from '../state/actions/dialogs';
 import { pushDialog } from '../state/actions/dialogStack';
 import type { FormsEngineProps } from '../components/FormsEngine/FormsEngine';
 import { getHostToGuestBus } from './subjects';
 import { reloadRequest } from '../state/actions/preview';
 import { Context, useContext } from 'react';
+import type { LegacyFormDialogProps } from '../components/LegacyFormDialog/utils';
+import { nanoid } from 'nanoid';
+import { DialogStackItem } from '../models';
+import type { ConfirmDialogProps, ErrorDialogProps } from '../components';
 
 export type SystemLinkId =
 	| 'preview'
@@ -100,12 +103,19 @@ export function consolidateSx(...sxs: SxProps<Theme>[]): SxProps<Theme> {
 	return sxs.flatMap((item) => item ?? []);
 }
 
-export function pickShowContentFormAction(oldProps: ReturnType<typeof showEditDialog>['payload']) {
+export function pickShowContentFormAction(oldProps: LegacyFormDialogProps) {
 	const useLegacy = window.localStorage.getItem('useLegacyFormEngine') === 'true';
+	const dialogId = nanoid();
 	return useLegacy
-		? showEditDialog(oldProps)
+		? pushDialog({
+				id: dialogId,
+				component: createComponentId('LegacyFormDialog'),
+				allowFullScreen: true,
+				allowMinimize: true,
+				props: { ...oldProps, dialogId }
+			})
 		: pushDialog({
-				component: 'craftercms.components.FormsEngineDialog',
+				component: createComponentId('FormsEngineDialog'),
 				allowFullScreen: true,
 				allowMinimize: true,
 				props: {
@@ -142,4 +152,24 @@ export function createUseContextHook<T, K extends keyof T>(
 		}
 		return selector?.(instance) ?? instance;
 	};
+}
+
+export function createComponentId(componentName: string) {
+	return `craftercms.components.${componentName}`;
+}
+
+type confirmDialogStackItemProps = Partial<DialogStackItem<Partial<ConfirmDialogProps>>>;
+export function pushConfirmDialog(props: Omit<confirmDialogStackItemProps, 'component'>) {
+	return pushDialog({
+		component: createComponentId('ConfirmDialog'),
+		...props
+	});
+}
+
+type errorDialogStackItemProps = Partial<DialogStackItem<Partial<ErrorDialogProps>>>;
+export function pushErrorDialog(props: Omit<errorDialogStackItemProps, 'component'>) {
+	return pushDialog({
+		component: createComponentId('ErrorDialog'),
+		...props
+	});
 }

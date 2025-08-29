@@ -36,10 +36,12 @@ export interface RenameContentDialogContainerProps
 	dependantItems: ContentItem[];
 	fetchingDependantItems: boolean;
 	error: AjaxError;
+
+	fetchDependant(): void;
 }
 
 export function RenameContentDialogContainer(props: RenameContentDialogContainerProps) {
-	const { path, value, onRenamed, onClose, dependantItems, fetchingDependantItems, error } = props;
+	const { path, value, onRenamed, onClose, fetchDependant, dependantItems, fetchingDependantItems, error } = props;
 	const safeValue = value ?? '';
 	const isPage = safeValue.includes('/index.xml');
 	const strippedValue = isPage ? safeValue.replace('/index.xml', '') : safeValue.replace('.xml', '');
@@ -78,6 +80,7 @@ export function RenameContentDialogContainer(props: RenameContentDialogContainer
 					name={name}
 					disabled={renameDisabled}
 					newNameExists={itemExists}
+					fetchDependant={fetchDependant}
 					dependantItems={dependantItems}
 					isSubmitting={isSubmitting}
 					confirmBrokenReferences={confirmBrokenReferences}

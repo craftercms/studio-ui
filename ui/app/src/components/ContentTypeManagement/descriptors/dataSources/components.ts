@@ -15,63 +15,87 @@
  */
 
 import { immutableEmptyObject } from '../../../../utils/object';
+import { createVirtualSection, DescriptorContentType } from '../../utils';
+import { defineMessage } from 'react-intl';
 
-export const componentsDataSourceDescriptor = {
-	allowEmbedded: {
-		id: 'allowEmbedded',
-		type: 'checkbox',
-		name: '',
-		defaultValue: undefined,
-		validations: immutableEmptyObject
-	},
-	allowShared: {
-		id: 'allowShared',
-		type: 'checkbox',
-		name: '',
-		defaultValue: undefined,
-		validations: immutableEmptyObject
-	},
-	enableBrowse: {
-		id: 'enableBrowse',
-		type: 'checkbox',
-		name: '',
-		defaultValue: undefined,
-		validations: immutableEmptyObject
-	},
-	enableSearch: {
-		id: 'enableSearch',
-		type: 'checkbox',
-		name: '',
-		defaultValue: undefined,
-		validations: immutableEmptyObject
-	},
-	baseRepoPath: {
-		id: 'baseRepoPath',
-		type: '',
-		name: '',
-		defaultValue: undefined,
-		validations: immutableEmptyObject
-	},
-	baseBrowsePath: {
-		id: 'baseBrowsePath',
-		type: '',
-		name: '',
-		defaultValue: undefined,
-		validations: immutableEmptyObject
-	},
-	contentTypes: {
-		id: 'contentTypes',
-		type: '',
-		name: '',
-		defaultValue: undefined,
-		validations: immutableEmptyObject
-	},
-	tags: {
-		id: 'tags',
-		type: '',
-		name: '',
-		defaultValue: undefined,
-		validations: immutableEmptyObject
+export const componentsDataSourceDescriptor: DescriptorContentType = {
+	id: 'components',
+	name: 'Components',
+	description: '',
+	type: 'item',
+	sections: [
+		createVirtualSection({
+			id: 'properties',
+			title: defineMessage({ defaultMessage: 'Options' }),
+			fields: [
+				'allowEmbedded',
+				'allowShared',
+				'enableBrowse',
+				'enableSearch',
+				'baseRepoPath',
+				'baseBrowsePath',
+				'contentTypes',
+				'tags'
+			]
+		})
+	],
+	fields: {
+		allowEmbedded: {
+			id: 'allowEmbedded',
+			type: 'checkbox',
+			name: defineMessage({ defaultMessage: 'Allow Embedded' }),
+			defaultValue: true,
+			validations: immutableEmptyObject
+		},
+		allowShared: {
+			id: 'allowShared',
+			type: 'checkbox',
+			name: defineMessage({ defaultMessage: 'Allow New Shared' }),
+			defaultValue: true,
+			validations: immutableEmptyObject
+		},
+		enableBrowse: {
+			id: 'enableBrowse',
+			type: 'checkbox',
+			name: defineMessage({ defaultMessage: 'Enable Browsing Shared' }),
+			defaultValue: true,
+			validations: immutableEmptyObject
+		},
+		enableSearch: {
+			id: 'enableSearch',
+			type: 'checkbox',
+			name: defineMessage({ defaultMessage: 'Enable Search' }),
+			defaultValue: false,
+			validations: immutableEmptyObject
+		},
+		baseRepoPath: {
+			id: 'baseRepoPath',
+			type: 'content-path-input',
+			name: defineMessage({ defaultMessage: 'Path for New Items' }),
+			defaultValue: '/site/components',
+			validations: immutableEmptyObject
+		},
+		baseBrowsePath: {
+			id: 'baseBrowsePath',
+			type: 'content-path-input',
+			name: defineMessage({ defaultMessage: 'Base Browse Path' }),
+			defaultValue: '/site/components',
+			validations: immutableEmptyObject
+		},
+		contentTypes: {
+			id: 'contentTypes',
+			type: 'contentTypes',
+			name: defineMessage({ defaultMessage: 'Content Types' }),
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		tags: {
+			id: 'tags',
+			type: 'input',
+			name: defineMessage({ defaultMessage: 'Tags' }),
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		}
 	}
 };
 

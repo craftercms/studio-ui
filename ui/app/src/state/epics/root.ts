@@ -35,6 +35,7 @@ import pathNavigatorTree from './pathNavigatorTree';
 import misc from './misc';
 import system from './system';
 import users from './users';
+import mappedDialogs from './mappedDialogs';
 import { CrafterCMSEpic } from '../store';
 import { Observable } from 'rxjs';
 import StandardAction from '../../models/StandardAction';
@@ -62,7 +63,8 @@ const epic: CrafterCMSEpic = combineEpics(
 	...pathNavigatorTree,
 	...misc,
 	...system,
-	...users
+	...users,
+	...mappedDialogs
 );
 
 export default epic;

@@ -23,7 +23,6 @@ import { useEffect } from 'react';
 import { deleteContentType, fetchContentTypeUsage } from '../../services/contentTypes';
 import { showSystemNotification } from '../../state/actions/system';
 import DeleteContentTypeDialogBody from './DeleteContentTypeDialogBody';
-import useUpdateRefs from '../../hooks/useUpdateRefs';
 import useSpreadState from '../../hooks/useSpreadState';
 import ApiResponseErrorState from '../ApiResponseErrorState';
 import LoadingState from '../LoadingState';

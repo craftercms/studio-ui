@@ -24,20 +24,20 @@ import { useSelection } from '../../hooks/useSelection';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useEnv } from '../../hooks/useEnv';
 import { ContextMenuOption } from '../ContextMenu';
-import { showEditDialog, showItemMegaMenu, showPreviewDialog, updatePreviewDialog } from '../../state/actions/dialogs';
 import { getNumOfMenuOptionsForItem, getSystemTypeFromPath } from '../../utils/content';
 import LookupTable from '../../models/LookupTable';
 import { search } from '../../services/search';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { translations } from './translations';
 import { ApiResponse } from '../../models/ApiResponse';
 import { contentEvent, deleteContentEvent, deleteContentEvents, moveContentEvent } from '../../state/actions/system';
 import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
-import { fetchContentXML } from '../../services/content';
 import { getPreviewURLFromPath } from '../../utils/path';
 import { IconButtonProps } from '@mui/material/IconButton';
 import useFetchContentItems from '../../hooks/useFetchContentItems';
+import { pushDialog } from '../../state/actions/dialogStack';
+import { createComponentId, pickShowContentFormAction, pushErrorDialog } from '../../utils/system';
+import { showItemMegaMenu } from '../../state/actions/dialogs';
 
 export const drawerWidth = 300;
 
@@ -73,6 +73,11 @@ export interface BaseSearchProps {
 
 export interface URLDrivenSearchProps extends Partial<BaseSearchProps> {
 	location: Location;
+	mode?: 'default' | 'select';
+	embedded?: boolean;
+	onClose?(): void;
+	onSelect?(path: string, selected: boolean): any;
+	onAcceptSelection?(items: string[]): any;
 }
 
 export interface SearchParameters extends Partial<ElasticParams> {
@@ -317,9 +322,11 @@ export const useSearchState = ({
 				} else {
 					console.error(error);
 					dispatch(
-						showErrorDialog({
-							error: {
-								message: formatMessage(translations.unknownError)
+						pushErrorDialog({
+							props: {
+								error: {
+									message: formatMessage(translations.unknownError)
+								}
 							}
 						})
 					);
@@ -380,54 +387,79 @@ export const useSearchState = ({
 		switch (type) {
 			case 'Image': {
 				dispatch(
-					showPreviewDialog({
-						type: 'image',
-						title,
-						url: path
+					pushDialog({
+						component: createComponentId('PreviewDialog'),
+						allowMinimize: true,
+						allowFullScreen: true,
+						props: {
+							type: 'image',
+							title,
+							url: path
+						}
 					})
 				);
 				break;
 			}
 			case 'Page': {
 				dispatch(
-					showPreviewDialog({
-						type: 'page',
-						title,
-						url: `${guestBase}${getPreviewURLFromPath(path)}?crafterCMSGuestDisabled=true`
+					pushDialog({
+						component: createComponentId('PreviewDialog'),
+						allowMinimize: true,
+						allowFullScreen: true,
+						props: {
+							type: 'page',
+							title,
+							url: `${guestBase}${getPreviewURLFromPath(path)}?crafterCMSGuestDisabled=true`
+						}
 					})
 				);
 				break;
 			}
 			case 'Component':
 			case 'Taxonomy': {
-				dispatch(showEditDialog({ site, path: item.path, authoringBase, readonly: true }));
+				dispatch(pickShowContentFormAction({ site, path: item.path, authoringBase, readonly: true }));
 				break;
 			}
 			case 'Video':
 				dispatch(
-					showPreviewDialog({
-						type: 'video',
-						title,
-						url: path
+					pushDialog({
+						component: createComponentId('PreviewDialog'),
+						allowMinimize: true,
+						allowFullScreen: true,
+						props: {
+							type: 'video',
+							title,
+							url: path
+						}
 					})
 				);
 				break;
 			case 'Audio':
 				dispatch(
-					showPreviewDialog({
-						type: 'audio',
-						title,
-						url: path,
-						mimeType: item.mimeType
+					pushDialog({
+						component: createComponentId('PreviewDialog'),
+						allowMinimize: true,
+						allowFullScreen: true,
+						props: {
+							type: 'audio',
+							title,
+							url: path,
+							mimeType: item.mimeType
+						}
 					})
 				);
 				break;
 			case 'PDF':
 				dispatch(
-					showPreviewDialog({
-						type: 'pdf',
-						title,
-						url: path
+					pushDialog({
+						component: createComponentId('PreviewDialog'),
+						allowMinimize: true,
+						allowFullScreen: true,
+						props: {
+							type: 'pdf',
+							title,
+							url: path
+						}
 					})
 				);
 				break;
@@ -443,22 +475,19 @@ export const useSearchState = ({
 					mode = 'css';
 				}
 				dispatch(
-					showPreviewDialog({
-						type: 'editor',
-						title,
-						url: path,
-						path: path,
-						mode
+					pushDialog({
+						component: createComponentId('PreviewDialog'),
+						allowMinimize: true,
+						allowFullScreen: true,
+						props: {
+							type: 'editor',
+							title,
+							url: path,
+							path: path,
+							mode
+						}
 					})
 				);
-
-				fetchContentXML(site, path).subscribe((content) => {
-					dispatch(
-						updatePreviewDialog({
-							content
-						})
-					);
-				});
 				break;
 			}
 		}

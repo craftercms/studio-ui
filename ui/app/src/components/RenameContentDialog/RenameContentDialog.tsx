@@ -16,9 +16,9 @@
 
 import { EnhancedDialog, EnhancedDialogProps } from '../EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import RenameContentDialogContainer from './RenameContentDialogContainer';
-import { fetchDependant } from '../../services/dependencies';
+import { fetchDependant as fetchDependantService } from '../../services/dependencies';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { parseLegacyItemToContentItem } from '../../utils/content';
 import useWithPendingChangesCloseRequest from '../../hooks/useWithPendingChangesCloseRequest';
@@ -40,22 +40,26 @@ export function RenameContentDialog(props: RenameContentDialogProps) {
 	const siteId = useActiveSiteId();
 	const pendingChangesCloseRequest = useWithPendingChangesCloseRequest(dialogProps.onClose);
 
+	const fetchDependant = useCallback(() => {
+		setFetchingDependantItems(true);
+		fetchDependantService(siteId, ensureSingleSlash(`${path}/${value}`)).subscribe({
+			next: (response) => {
+				const dependants = parseLegacyItemToContentItem(response);
+				setDependantItems(dependants);
+				setFetchingDependantItems(false);
+			},
+			error: ({ response }) => {
+				setError(response);
+				setFetchingDependantItems(false);
+			}
+		});
+	}, [path, value, siteId]);
+
 	useEffect(() => {
 		if (!isBlank(value) && !isBlank(path)) {
-			setFetchingDependantItems(true);
-			fetchDependant(siteId, ensureSingleSlash(`${path}/${value}`)).subscribe({
-				next: (response) => {
-					const dependants = parseLegacyItemToContentItem(response);
-					setDependantItems(dependants);
-					setFetchingDependantItems(false);
-				},
-				error: ({ response }) => {
-					setError(response);
-					setFetchingDependantItems(false);
-				}
-			});
+			fetchDependant();
 		}
-	}, [path, value, siteId]);
+	}, [fetchDependant, path, value]);
 
 	return (
 		<EnhancedDialog
@@ -67,6 +71,7 @@ export function RenameContentDialog(props: RenameContentDialogProps) {
 			<RenameContentDialogContainer
 				path={path}
 				value={value}
+				fetchDependant={fetchDependant}
 				dependantItems={dependantItems}
 				fetchingDependantItems={fetchingDependantItems}
 				onRenamed={onRenamed}

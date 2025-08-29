@@ -26,6 +26,7 @@ import { FormattedMessage } from 'react-intl';
 import { popDialog, updateDialogState } from '../../state/actions/dialogStack';
 import { displayWithPendingChangesConfirm } from '../../utils/ui';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
+import { batchActions } from '../../state/actions/misc';
 
 export function DialogStackItemContainer(props: DialogStackItem<EnhancedDialogProps>) {
 	const { component } = props;
@@ -66,7 +67,10 @@ function createUnknownComponent(component: string) {
 	const dispatch = useDispatch();
 	const propsRef = useUpdateRefs(props.props);
 	return useMemo(() => {
-		const onClose: EnhancedDialogProps['onClose'] = () => dispatch(updateDialogState({ id, props: { open: false } }));
+		const onClose: EnhancedDialogProps['onClose'] = (e) =>
+			propsRef.current?.onClose
+				? props.props.onClose(e, null)
+				: dispatch(batchActions([updateDialogState({ id, props: { open: false } }), popDialog({ id })]));
 
 		const onMaximize: EnhancedDialogProps['onMaximize'] = allowMinimize
 			? () => dispatch(updateDialogState({ id, props: { isMinimized: false } }))

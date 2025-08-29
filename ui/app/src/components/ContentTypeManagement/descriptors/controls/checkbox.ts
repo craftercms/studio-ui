@@ -14,33 +14,43 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createVirtualSection } from '../../utils';
+import { createVirtualSection, DescriptorContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
+import { defineMessage } from 'react-intl';
 
-export const checkboxDescriptor = {
+export const checkboxDescriptor: DescriptorContentType = {
 	id: 'checkbox',
-	name: 'Checkbox',
-	description: 'Single checkbox input',
+	name: defineMessage({ defaultMessage: 'Checkbox' }),
+	description: defineMessage({ defaultMessage: 'Single checkbox input' }),
 	sections: [
-		createVirtualSection({ title: 'Options', fields: ['readonly'] }),
-		createVirtualSection({ title: 'Constraints', fields: ['required'] })
+		createVirtualSection({
+			id: 'properties',
+			title: defineMessage({ defaultMessage: 'Options' }),
+			fields: ['readonly']
+		}),
+		createVirtualSection({
+			id: 'constraints',
+			title: defineMessage({ defaultMessage: 'Constraints' }),
+			fields: ['required']
+		})
 	],
 	fields: {
 		readonly: {
 			id: 'readonly',
 			type: 'checkbox',
-			name: 'Read Only',
+			name: defineMessage({ defaultMessage: 'Read Only' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		required: {
 			id: 'required',
 			type: 'checkbox',
-			name: 'Required',
-			defaultValue: undefined,
+			name: defineMessage({ defaultMessage: 'Required' }),
+			defaultValue: false,
 			validations: immutableEmptyObject
 		}
-	}
+	},
+	supportedPostFixes: ['_b']
 };
 
 export default checkboxDescriptor;

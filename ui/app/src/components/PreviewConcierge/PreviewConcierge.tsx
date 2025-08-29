@@ -80,8 +80,8 @@ import {
 	duplicateItem,
 	fetchContentInstance,
 	fetchContentInstanceDescriptor,
-	fetchContentItems,
 	fetchContentItem as fetchContentItemService,
+	fetchContentItems,
 	insertComponent,
 	insertInstance,
 	insertItem,
@@ -137,16 +137,11 @@ import { useActiveSite } from '../../hooks/useActiveSite';
 import { getPathFromPreviewURL, processPathMacros, withIndex } from '../../utils/path';
 import {
 	closeItemMegaMenu,
-	closeSingleFileUploadDialog,
 	itemMegaMenuClosed,
 	rtePickerActionResult,
-	showEditDialog,
 	showItemMegaMenu,
 	showRtePickerActions,
-	ShowRtePickerActionsPayload,
-	showSingleFileUploadDialog,
-	showViewPackagesDialog,
-	viewPackagesDialogClosed
+	type ShowRtePickerActionsPayload
 } from '../../state/actions/dialogs';
 import { UNDEFINED } from '../../utils/constants';
 import { useCurrentPreviewItem } from '../../hooks/useCurrentPreviewItem';
@@ -188,7 +183,9 @@ import { Dispatch } from 'redux';
 import { ActionCreatorWithOptionalPayload } from '@reduxjs/toolkit';
 import { ItemMegaMenuStateProps } from '../ItemMegaMenu';
 import StandardAction from '../../models/StandardAction';
-import { pickShowContentFormAction } from '../../utils/system';
+import { createComponentId, pickShowContentFormAction } from '../../utils/system';
+import { popDialog, pushDialog } from '../../state/actions/dialogStack';
+import { nanoid } from 'nanoid';
 
 const issueDescriptorRequest = (props: {
 	site: string;
@@ -421,31 +418,33 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 						);
 					break;
 				case 'a':
-					if (store.getState().dialogs.itemMegaMenu.open) {
-						dispatch(closeItemMegaMenu());
-					} else if (upToDateRefs.current.item) {
-						let top, left;
-						let menuButton = document.querySelector('#previewAddressBarActionsMenuButton');
-						if (menuButton) {
-							let anchorRect = menuButton.getBoundingClientRect();
-							top = anchorRect.top + getOffsetTop(anchorRect, 'top');
-							left = anchorRect.left + getOffsetLeft(anchorRect, 'left');
-						} else {
-							top = 80;
-							left = (upToDateRefs.current.showToolsPanel ? upToDateRefs.current.toolsPanelWidth : 0) + 20;
+					{
+						if (store.getState().dialogs.itemMegaMenu.open) {
+							dispatch(closeItemMegaMenu());
+						} else if (upToDateRefs.current.item) {
+							let top, left;
+							let menuButton = document.querySelector('#previewAddressBarActionsMenuButton');
+							if (menuButton) {
+								let anchorRect = menuButton.getBoundingClientRect();
+								top = anchorRect.top + getOffsetTop(anchorRect, 'top');
+								left = anchorRect.left + getOffsetLeft(anchorRect, 'left');
+							} else {
+								top = 80;
+								left = (upToDateRefs.current.showToolsPanel ? upToDateRefs.current.toolsPanelWidth : 0) + 20;
+							}
+							let path = upToDateRefs.current.item.path;
+							if (path === '/site/website') {
+								path = withIndex(path);
+							}
+							dispatch(
+								showItemMegaMenu({
+									path: path,
+									anchorReference: 'anchorPosition',
+									anchorPosition: { top, left },
+									loaderItems: getNumOfMenuOptionsForItem(item)
+								})
+							);
 						}
-						let path = upToDateRefs.current.item.path;
-						if (path === '/site/website') {
-							path = withIndex(path);
-						}
-						dispatch(
-							showItemMegaMenu({
-								path: path,
-								anchorReference: 'anchorPosition',
-								anchorPosition: { top, left },
-								loaderItems: getNumOfMenuOptionsForItem(item)
-							})
-						);
 					}
 					break;
 			}
@@ -621,7 +620,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 				}
 				case 'ICE_ZONE_ON': {
 					dispatch(
-						showEditDialog({
+						pickShowContentFormAction({
 							path: payload.itemId,
 							authoringBase,
 							site: siteId,
@@ -1058,7 +1057,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 				}
 				case showEditDialogAction.type: {
 					dispatch(
-						showEditDialog({
+						pickShowContentFormAction({
 							authoringBase,
 							path: upToDateRefs.current.guest.path,
 							selectedFields: payload.selectedFields,
@@ -1105,13 +1104,13 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 				}
 				case requestWorkflowCancellationDialog.type: {
 					dispatch(
-						showViewPackagesDialog({
-							item: payload.item,
-							onClosed: batchActions([
-								viewPackagesDialogClosed(),
-								requestWorkflowCancellationDialogOnResult({ type: 'close' })
-							]),
-							onContinue: requestWorkflowCancellationDialogOnResult({ type: 'continue' })
+						pushDialog({
+							component: createComponentId('ViewPackagesDialog'),
+							props: {
+								item: payload.item,
+								onClosed: () => dispatch(requestWorkflowCancellationDialogOnResult({ type: 'close' })),
+								onContinue: () => dispatch(requestWorkflowCancellationDialogOnResult({ type: 'continue' }))
+							}
 						})
 					);
 					break;
@@ -1144,33 +1143,28 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 						setDataSourceActionsListState(dataSourceActionsListInitialState);
 
 						if (path) {
+							const dialogId = nanoid();
 							dispatch(
-								showSingleFileUploadDialog({
-									site: siteId,
-									path,
-									fileTypes: type === 'image' ? ['image/*'] : type === 'video' ? ['video/*'] : ['audio/*'],
-									onClose: batchActions([
-										closeSingleFileUploadDialog(),
-										dispatchDOMEvent({ id: 'fileUploadCanceled' })
-									]),
-									onUploadComplete: batchActions([
-										closeSingleFileUploadDialog(),
-										dispatchDOMEvent({ id: 'fileUploaded' })
-									])
+								pushDialog({
+									id: dialogId,
+									component: createComponentId('SingleFileUploadDialog'),
+									props: {
+										site: siteId,
+										path,
+										fileTypes: type === 'image' ? ['image/*'] : type === 'video' ? ['video/*'] : ['audio/*'],
+										onClose: () => {
+											onRtePickerResult();
+											dispatch(popDialog({ id: dialogId }));
+										},
+										onUploadComplete: ({ successful: response }) => {
+											const file = response[0];
+											const filePath = `${file.meta.path}${file.meta.path.endsWith('/') ? '' : '/'}${file.meta.name}`;
+											onRtePickerResult({ path: filePath, name: file.meta.name });
+											dispatch(popDialog({ id: dialogId }));
+										}
+									}
 								})
 							);
-							let unsubscribe, cancelUnsubscribe;
-							unsubscribe = createCustomDocumentEventListener('fileUploaded', ({ successful: response }) => {
-								const file = response[0];
-								const filePath = `${file.meta.path}${file.meta.path.endsWith('/') ? '' : '/'}${file.meta.name}`;
-								onRtePickerResult({ path: filePath, name: file.meta.name });
-								cancelUnsubscribe();
-							});
-
-							cancelUnsubscribe = createCustomDocumentEventListener('fileUploadCanceled', () => {
-								onRtePickerResult();
-								unsubscribe();
-							});
 						} else {
 							dispatch(
 								showSystemNotification({

@@ -49,7 +49,6 @@ import { useSystemVersion } from '../../hooks/useSystemVersion';
 import { useActiveUser } from '../../hooks/useActiveUser';
 import { useSiteList } from '../../hooks/useSiteList';
 import { useSiteUIConfig } from '../../hooks/useSiteUIConfig';
-import { initLauncherConfig } from '../../state/actions/launcher';
 import { getSystemLink, SystemLinkId } from '../../utils/system';
 import { PREVIEW_URL_PATH } from '../../utils/constants';
 import { WidgetDescriptor } from '../../models';
@@ -57,6 +56,7 @@ import useMinimizedDialogWarning from '../../hooks/useMinimizedDialogWarning';
 import TranslationOrText from '../../models/TranslationOrText';
 import { SystemIconDescriptor } from '../SystemIcon';
 import Box from '@mui/material/Box';
+import { initLauncherConfig } from '../../state/actions/launcher';
 
 export interface LauncherStateProps {
 	open: boolean;

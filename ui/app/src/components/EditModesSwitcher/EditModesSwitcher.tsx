@@ -79,7 +79,10 @@ export function EditModesSwitcher(props: EditModesSwitcherProps) {
 						borderBottomRightRadius: 0,
 						...(!editMode && { cursor: 'default' })
 					}}
-					aria-label={formatMessage({ defaultMessage: 'Switch off editing' })}
+					aria-label={formatMessage(
+						{ id: 'editModesSwitcher.offButtonTooltip', defaultMessage: 'Switch off editing ({shortcutKey})' },
+						{ shortcutKey: editMode ? (isAllHighlightMode ? 'e' : 'm') : 'e | m' }
+					)}
 				>
 					<PowerSettingsNewRoundedIcon />
 				</IconButton>
@@ -98,7 +101,7 @@ export function EditModesSwitcher(props: EditModesSwitcherProps) {
 						borderRadius: 0,
 						...(isAllHighlightMode && commonModeButtonStyle)
 					}}
-					aria-label={formatMessage({ defaultMessage: 'Edit mode' })}
+					aria-label={formatMessage({ id: 'editModesSwitcher.editModeTooltip', defaultMessage: 'Edit mode (e)' })}
 				>
 					<EditRoundedIcon />
 				</IconButton>
@@ -118,7 +121,7 @@ export function EditModesSwitcher(props: EditModesSwitcherProps) {
 						borderBottomLeftRadius: 0,
 						...(isMoveHighlightMode && commonModeButtonStyle)
 					}}
-					aria-label={formatMessage({ defaultMessage: 'Move mode' })}
+					aria-label={formatMessage({ id: 'editModesSwitcher.moveModeTooltip', defaultMessage: 'Move mode (m)' })}
 				>
 					<DragIndicatorRoundedIcon />
 				</IconButton>

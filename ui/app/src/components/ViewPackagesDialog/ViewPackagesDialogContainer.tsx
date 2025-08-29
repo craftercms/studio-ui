@@ -20,7 +20,6 @@ import { fetchAffectedPackages } from '../../services/workflow';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import { useDispatch } from 'react-redux';
-import { showPackageDetailsDialog } from '../../state/actions/dialogs';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { LoadingState } from '../LoadingState';
 import { EmptyState } from '../EmptyState';
@@ -38,6 +37,8 @@ import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import ListItemButton from '@mui/material/ListItemButton';
 import ItemDisplay from '../ItemDisplay';
+import { pushDialog } from '../../state/actions/dialogStack';
+import { createComponentId } from '../../utils/system';
 
 export interface ViewPackagesDialogContainerProps
 	extends Pick<ViewPackagesDialogProps, 'item' | 'onContinue' | 'onClose'> {}
@@ -53,7 +54,12 @@ export function ViewPackagesDialogContainer(props: ViewPackagesDialogContainerPr
 	});
 
 	const onShowPackageDetails = (packageId: number) => {
-		dispatch(showPackageDetailsDialog({ packageId }));
+		dispatch(
+			pushDialog({
+				component: createComponentId('PackageDetailsDialog'),
+				props: { packageId }
+			})
+		);
 	};
 
 	const onContinueClick = (e: React.MouseEvent) => {
@@ -109,7 +115,7 @@ export function ViewPackagesDialogContainer(props: ViewPackagesDialogContainerPr
 										secondaryTypographyProps={{ noWrap: true, title: pkg.title }}
 									/>
 									<Tooltip title={<FormattedMessage defaultMessage="View package details" />}>
-										<IconButton onClick={() => onShowPackageDetails?.(pkg.id)}>
+										<IconButton>
 											<ChevronRightRoundedIcon />
 										</IconButton>
 									</Tooltip>

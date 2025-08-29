@@ -28,6 +28,7 @@ import {
 	historyDialogUpdate,
 	showCompareVersionsDialog,
 	showConfirmDialog,
+	showErrorDialog,
 	showPreviewDialog,
 	showViewVersionDialog
 } from '../../state/actions/dialogs';
@@ -60,7 +61,6 @@ import { LoadingState } from '../LoadingState';
 import Box from '@mui/material/Box';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { contentEvent } from '../../state/actions/system';
 import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';

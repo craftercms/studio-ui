@@ -22,7 +22,6 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import PushDialog from '../PushDialog';
 import { deleteRemote as deleteRemoteService, PullResponse } from '../../../services/repositories';
 import { showSystemNotification } from '../../../state/actions/system';
-import { showErrorDialog } from '../../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';
 import { useActiveSiteId } from '../../../hooks/useActiveSiteId';
 import { useEnhancedDialogState } from '../../../hooks/useEnhancedDialogState';
@@ -31,7 +30,7 @@ import InputBase from '@mui/material/InputBase';
 import Button from '@mui/material/Button';
 import Snackbar from '@mui/material/Snackbar';
 import { useSnackbar } from 'notistack';
-import { copyToClipboard } from '../../../utils/system';
+import { copyToClipboard, pushErrorDialog } from '../../../utils/system';
 import PublishCommitDialog from '../PublishCommitDialog/PublishCommitDialog';
 import useSpreadState from '../../../hooks/useSpreadState';
 import RepoGridSkeleton from './RepoGridSkeleton';
@@ -144,7 +143,7 @@ export function RepoGrid(props: RepoGridProps) {
 
 	const onPushError = (response) => {
 		pushToRemoteDialogState.onClose();
-		dispatch(showErrorDialog({ error: response }));
+		dispatch(pushErrorDialog({ props: { error: response } }));
 	};
 
 	const deleteRemote = (remoteName: string) => {
@@ -158,7 +157,7 @@ export function RepoGrid(props: RepoGridProps) {
 				);
 			},
 			({ response }) => {
-				dispatch(showErrorDialog({ error: response }));
+				dispatch(pushErrorDialog({ props: { error: response } }));
 			}
 		);
 	};
