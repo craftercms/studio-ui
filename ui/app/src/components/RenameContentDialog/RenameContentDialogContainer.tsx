@@ -79,7 +79,7 @@ export function RenameContentDialogContainer(props: RenameContentDialogContainer
 					disabled={renameDisabled}
 					newNameExists={itemExists}
 					dependantItems={dependantItems}
-					isSubmitting={false}
+					isSubmitting={isSubmitting}
 					confirmBrokenReferences={confirmBrokenReferences}
 					fetchingDependantItems={fetchingDependantItems}
 					error={error}
