@@ -14,47 +14,71 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createVirtualSection, PartialContentType } from '../../utils';
+import { createVirtualSection, DescriptorContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
+import { defineMessage } from 'react-intl';
 
-export const numericInputDescriptor: PartialContentType = {
+export const numericInputDescriptor: DescriptorContentType = {
 	id: 'numeric-input',
-	name: 'Numeric Input',
-	description: 'Input field that accepts numbers',
+	name: defineMessage({ defaultMessage: 'Numeric Input' }),
+	description: defineMessage({ defaultMessage: 'Input field that accepts numbers' }),
 	sections: [
-		createVirtualSection({ title: 'Options', fields: ['readonly'] }),
-		createVirtualSection({ title: 'Constraints', fields: ['required', 'minValue', 'maxValue'] })
+		createVirtualSection({
+			id: 'properties',
+			title: defineMessage({ defaultMessage: 'Options' }),
+			fields: ['maxValue', 'minValue', 'readonly', 'tokenize']
+		}),
+		createVirtualSection({
+			id: 'constraints',
+			title: defineMessage({ defaultMessage: 'Constraints' }),
+			fields: ['required', 'pattern']
+		})
 	],
 	fields: {
-		readonly: {
-			id: 'readonly',
-			type: 'checkbox',
-			name: 'Read Only',
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		},
-		required: {
-			id: 'required',
-			type: 'checkbox',
-			name: 'Required',
+		maxValue: {
+			id: 'maxValue',
+			type: 'numeric-input',
+			name: defineMessage({ defaultMessage: 'Maximum Value' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		minValue: {
 			id: 'minValue',
 			type: 'numeric-input',
-			name: 'Minimum Value',
+			name: defineMessage({ defaultMessage: 'Minimum Value' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
-		maxValue: {
-			id: 'maxValue',
-			type: 'numeric-input',
-			name: 'Maximum Value',
+		readonly: {
+			id: 'readonly',
+			type: 'checkbox',
+			name: defineMessage({ defaultMessage: 'Read Only' }),
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		tokenize: {
+			id: 'tokenize',
+			type: 'checkbox',
+			name: defineMessage({ defaultMessage: 'Tokenize for Indexing' }),
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		required: {
+			id: 'required',
+			type: 'checkbox',
+			name: defineMessage({ defaultMessage: 'Required' }),
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		pattern: {
+			id: 'pattern',
+			type: 'input',
+			name: defineMessage({ defaultMessage: 'Match Pattern' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}
-	}
+	},
+	supportedPostFixes: ['_i', '_l', '_f', '_d']
 };
 
 export default numericInputDescriptor;

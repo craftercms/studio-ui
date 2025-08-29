@@ -19,6 +19,7 @@ import { filter, map, mergeMap, switchMap, tap, withLatestFrom } from 'rxjs/oper
 import {
 	clearClipboard,
 	conditionallyUnlockItem,
+	contentItemsMissing,
 	deleteController,
 	deleteTemplate,
 	duplicateAsset,
@@ -27,42 +28,32 @@ import {
 	fetchContentItem,
 	fetchContentItemComplete,
 	fetchContentItemFailed,
-	fetchQuickCreateList as fetchQuickCreateListAction,
-	fetchQuickCreateListComplete,
-	fetchQuickCreateListFailed,
 	fetchContentItems,
 	fetchContentItemsComplete,
 	fetchContentItemsFailed,
+	fetchQuickCreateList as fetchQuickCreateListAction,
+	fetchQuickCreateListComplete,
+	fetchQuickCreateListFailed,
 	lockItem,
 	lockItemCompleted,
 	lockItemFailed,
 	pasteItem,
 	pasteItemWithPolicyValidation,
 	reloadContentItem,
-	contentItemsMissing,
 	unlockItem
 } from '../actions/content';
 import { catchAjaxError } from '../../utils/ajax';
 import {
 	duplicate,
 	fetchContentItem as fetchContentItemService,
-	fetchItemByPath,
 	fetchContentItems as fetchContentItemsService,
+	fetchItemByPath,
 	fetchQuickCreateList,
 	lock,
 	paste,
 	unlock
 } from '../../services/content';
 import { merge, Observable, of } from 'rxjs';
-import {
-	closeConfirmDialog,
-	closeDeleteDialog,
-	showCodeEditorDialog,
-	showConfirmDialog,
-	showDeleteDialog,
-	showEditDialog,
-	showItemMegaMenu
-} from '../actions/dialogs';
 import { getEditorMode, isEditableAsset } from '../../utils/content';
 import {
 	blockUI,
@@ -92,10 +83,14 @@ import { CrafterCMSEpic } from '../store';
 import StandardAction from '../../models/StandardAction';
 import { asArray } from '../../utils/array';
 import { AjaxError } from 'rxjs/ajax';
-import { showErrorDialog } from '../reducers/dialogs/error';
 import { dissociateTemplate } from '../actions/preview';
 import { isBlank } from '../../utils/string';
 import SocketEvent, { MoveContentEventPayload } from '../../models/SocketEvent';
+import { popDialog, pushDialog } from '../actions/dialogStack';
+import { nanoid } from 'nanoid';
+import { createComponentId, pickShowContentFormAction, pushConfirmDialog, pushErrorDialog } from '../../utils/system';
+import type { ContentItem } from '../../models';
+import { popCodeEditorDialog, showItemMegaMenu } from '../actions/dialogs';
 
 export const sitePolicyMessages = defineMessages({
 	itemPastePolicyConfirm: {
@@ -220,7 +215,7 @@ const content: CrafterCMSEpic[] = [
 		),
 	// endregion
 	// region duplicateItem
-	(action$, state$, { getIntl }) =>
+	(action$, state$, { getIntl, store }) =>
 		action$.pipe(
 			ofType(duplicateItem.type),
 			withLatestFrom(state$),
@@ -235,11 +230,11 @@ const content: CrafterCMSEpic[] = [
 					duplicate(state.sites.active, payload.path).pipe(
 						switchMap(({ item: path }) => [
 							unblockUI(),
-							showEditDialog({
+							pickShowContentFormAction({
 								site: state.sites.active,
 								path,
 								authoringBase: state.env.authoringBase,
-								onSaveSuccess: payload.onSuccess
+								onSaveSuccess: () => store.dispatch(payload.onSuccess)
 							})
 						])
 					)
@@ -247,7 +242,7 @@ const content: CrafterCMSEpic[] = [
 			),
 			catchAjaxError(
 				() => unblockUI(),
-				(error) => showErrorDialog({ error: error.response })
+				(error) => pushErrorDialog({ props: { error: error.response } })
 			)
 		),
 	// endregion
@@ -294,7 +289,7 @@ const content: CrafterCMSEpic[] = [
 		),
 	// endregion
 	// region duplicateAsset
-	(action$, state$, { getIntl }) =>
+	(action$, state$, { getIntl, store }) =>
 		action$.pipe(
 			ofType(duplicateAsset.type),
 			withLatestFrom(state$),
@@ -310,16 +305,22 @@ const content: CrafterCMSEpic[] = [
 						switchMap(({ item: path }) => {
 							const mode = getEditorMode(state.content.itemsByPath[payload.path].mimeType);
 							const editableAsset = isEditableAsset(payload.path);
+							const dialogId = nanoid();
 							return [
 								unblockUI(),
 								...(editableAsset
 									? [
-											showCodeEditorDialog({
-												authoringBase: state.env.authoringBase,
-												site: state.sites.active,
-												path,
-												mode,
-												onSuccess: payload.onSuccess
+											pushDialog({
+												id: dialogId,
+												component: createComponentId('CodeEditorDialog'),
+												props: {
+													authoringBase: state.env.authoringBase,
+													site: state.sites.active,
+													path,
+													mode,
+													onSuccess: () => store.dispatch(payload.onSuccess),
+													onClose: () => store.dispatch(popCodeEditorDialog({ id: dialogId }))
+												}
 											})
 										]
 									: [])
@@ -327,7 +328,7 @@ const content: CrafterCMSEpic[] = [
 						}),
 						catchAjaxError(
 							() => unblockUI(),
-							(error) => showErrorDialog({ error: error.response })
+							(error) => pushErrorDialog({ props: { error: error.response } })
 						)
 					)
 				)
@@ -335,7 +336,7 @@ const content: CrafterCMSEpic[] = [
 		),
 	// endregion
 	// region duplicateWithPolicyValidation
-	(action$, state$, { getIntl }) =>
+	(action$, state$, { getIntl, store }) =>
 		action$.pipe(
 			ofType(duplicateWithPolicyValidation.type),
 			withLatestFrom(state$),
@@ -347,30 +348,38 @@ const content: CrafterCMSEpic[] = [
 				}).pipe(
 					map(({ allowed, modifiedValue, target, message }) => {
 						if (allowed && modifiedValue) {
-							return showConfirmDialog({
-								body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyConfirm, {
-									action: getIntl().formatMessage(sitePolicyMessages.duplicate),
-									path: target,
-									modifiedPath: modifiedValue,
-									detail: message
-								}),
-								onCancel: closeConfirmDialog(),
-								onOk: batchActions([
-									...(payload.type === 'item'
-										? [
-												duplicateItem({
-													path: payload.path,
-													onSuccess: showDuplicatedItemSuccessNotification()
-												})
-											]
-										: [
-												duplicateAsset({
-													path: payload.path,
-													onSuccess: showDuplicatedItemSuccessNotification()
-												})
-											]),
-									closeConfirmDialog()
-								])
+							const dialogId = nanoid();
+							return pushConfirmDialog({
+								id: dialogId,
+								props: {
+									body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyConfirm, {
+										action: getIntl().formatMessage(sitePolicyMessages.duplicate),
+										path: target,
+										modifiedPath: modifiedValue,
+										detail: message
+									}),
+									onCancel: () => store.dispatch(popDialog({ id: dialogId })),
+									onOk: () => {
+										store.dispatch(
+											batchActions([
+												...(payload.type === 'item'
+													? [
+															duplicateItem({
+																path: payload.path,
+																onSuccess: showDuplicatedItemSuccessNotification()
+															})
+														]
+													: [
+															duplicateAsset({
+																path: payload.path,
+																onSuccess: showDuplicatedItemSuccessNotification()
+															})
+														]),
+												popDialog({ id: dialogId })
+											])
+										);
+									}
+								}
 							});
 						} else if (allowed) {
 							return payload.type === 'item'
@@ -383,11 +392,16 @@ const content: CrafterCMSEpic[] = [
 										onSuccess: showDuplicatedItemSuccessNotification()
 									});
 						} else {
-							return showConfirmDialog({
-								body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyError, {
-									action: getIntl().formatMessage(sitePolicyMessages.duplicate),
-									detail: message
-								})
+							const dialogId = nanoid();
+							return pushConfirmDialog({
+								id: dialogId,
+								props: {
+									body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyError, {
+										action: getIntl().formatMessage(sitePolicyMessages.duplicate),
+										detail: message
+									}),
+									onOk: () => store.dispatch(popDialog({ id: dialogId }))
+								}
 							});
 						}
 					})
@@ -425,7 +439,7 @@ const content: CrafterCMSEpic[] = [
 						map(() => batchActions([unblockUI(), clearClipboard(), showPasteItemSuccessNotification()])),
 						catchAjaxError(
 							() => unblockUI(),
-							(error) => showErrorDialog({ error: error.response })
+							(error) => pushErrorDialog({ props: { error: error.response } })
 						)
 					)
 				)
@@ -433,7 +447,7 @@ const content: CrafterCMSEpic[] = [
 		),
 	// endregion
 	// region pasteItemWithPolicyValidation
-	(action$, state$, { getIntl }) =>
+	(action$, state$, { getIntl, store }) =>
 		action$.pipe(
 			ofType(pasteItemWithPolicyValidation.type),
 			withLatestFrom(state$),
@@ -459,17 +473,23 @@ const content: CrafterCMSEpic[] = [
 					}).pipe(
 						switchMap(({ allowed, modifiedValue, target, message }) => {
 							if (allowed && modifiedValue) {
+								const dialogId = nanoid();
 								return [
 									unblockUI(),
-									showConfirmDialog({
-										body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyConfirm, {
-											action: state.content.clipboard.type === 'CUT' ? 'cut' : 'copy',
-											path: target,
-											modifiedPath: modifiedValue,
-											detail: message
-										}),
-										onCancel: closeConfirmDialog(),
-										onOk: batchActions([pasteItem({ path: payload.path }), closeConfirmDialog()])
+									pushConfirmDialog({
+										id: dialogId,
+										props: {
+											body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyConfirm, {
+												action: state.content.clipboard.type === 'CUT' ? 'cut' : 'copy',
+												path: target,
+												modifiedPath: modifiedValue,
+												detail: message
+											}),
+											onCancel: () => store.dispatch(popDialog({ id: dialogId })),
+											onOk: () => {
+												store.dispatch(batchActions([pasteItem({ path: payload.path }), popDialog({ id: dialogId })]));
+											}
+										}
 									})
 								];
 							} else if (allowed) {
@@ -479,13 +499,18 @@ const content: CrafterCMSEpic[] = [
 									})
 								];
 							} else {
+								const dialogId = nanoid();
 								return [
 									unblockUI(),
-									showConfirmDialog({
-										body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyError, {
-											action: state.content.clipboard.type === 'CUT' ? 'cut' : 'copy',
-											detail: message
-										})
+									pushConfirmDialog({
+										id: dialogId,
+										props: {
+											body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyError, {
+												action: state.content.clipboard.type === 'CUT' ? 'cut' : 'copy',
+												detail: message
+											}),
+											onOk: () => store.dispatch(popDialog({ id: dialogId }))
+										}
 									})
 								];
 							}
@@ -496,7 +521,7 @@ const content: CrafterCMSEpic[] = [
 		),
 	// endregion
 	// region deleteController, deleteTemplate
-	(action$, state$, { getIntl }) =>
+	(action$, state$, { getIntl, store }) =>
 		action$.pipe(
 			ofType(deleteController.type, deleteTemplate.type),
 			withLatestFrom(state$),
@@ -507,43 +532,65 @@ const content: CrafterCMSEpic[] = [
 
 				// path may be empty string if the displayTemplate has not been set for a content type.
 				if (isBlank(path)) {
+					const dialogId = nanoid();
 					return of(
-						showConfirmDialog({
-							body: getIntl().formatMessage(
-								itemFailureMessages[type === 'DELETE_CONTROLLER' ? 'controllerNotFound' : 'templateNotFound']
-							)
+						pushConfirmDialog({
+							id: dialogId,
+							props: {
+								body: getIntl().formatMessage(
+									itemFailureMessages[type === 'DELETE_CONTROLLER' ? 'controllerNotFound' : 'templateNotFound']
+								),
+								onOk: () => store.dispatch(popDialog({ id: dialogId }))
+							}
 						})
 					);
 				} else {
 					return merge(
 						of(blockUI({ message: `${getIntl().formatMessage(inProgressMessages.processing)}...` })),
 						fetchItemByPath(state.sites.active, path).pipe(
-							switchMap((itemToDelete) => [
-								showDeleteDialog({
-									items: asArray(itemToDelete),
-									onSuccess: batchActions(
-										[
-											showDeleteItemSuccessNotification(),
-											type === 'DELETE_TEMPLATE' && dissociateTemplate({ contentTypeId: item.contentTypeId }),
-											closeDeleteDialog(),
-											onSuccess
-										].filter(Boolean)
-									)
-								}),
-								unblockUI()
-							]),
-							catchAjaxError((error: AjaxError) =>
-								batchActions([
+							switchMap((itemToDelete) => {
+								const dialogId = nanoid();
+								return [
+									pushDialog({
+										id: dialogId,
+										component: createComponentId('DeleteDialog'),
+										props: {
+											items: asArray(itemToDelete),
+											onSuccess: ({ items }: { items: ContentItem[] }) =>
+												store.dispatch(
+													batchActions(
+														[
+															showDeleteItemSuccessNotification({ items }),
+															type === 'DELETE_TEMPLATE' && dissociateTemplate({ contentTypeId: item.contentTypeId }),
+															popDialog({ id: dialogId }),
+															onSuccess
+														].filter(Boolean)
+													)
+												)
+										}
+									}),
+									unblockUI()
+								];
+							}),
+							catchAjaxError((error: AjaxError) => {
+								const dialogId = nanoid();
+								return batchActions([
 									unblockUI(),
 									error.status === 404
-										? showConfirmDialog({
-												body: getIntl().formatMessage(
-													itemFailureMessages[type === 'DELETE_CONTROLLER' ? 'controllerNotFound' : 'templateNotFound']
-												)
+										? pushConfirmDialog({
+												id: dialogId,
+												props: {
+													body: getIntl().formatMessage(
+														itemFailureMessages[
+															type === 'DELETE_CONTROLLER' ? 'controllerNotFound' : 'templateNotFound'
+														]
+													),
+													onOk: () => store.dispatch(popDialog({ id: dialogId }))
+												}
 											})
-										: showErrorDialog({ error: error.response ?? error })
-								])
-							)
+										: pushErrorDialog({ props: { error: error.response ?? error } })
+								]);
+							})
 						)
 					);
 				}

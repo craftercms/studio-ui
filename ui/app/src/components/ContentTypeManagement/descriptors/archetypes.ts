@@ -17,8 +17,9 @@
 import ContentType from '../../../models/ContentType';
 import { XmlKeys } from '../../FormsEngine/lib/formConsts';
 import { immutableEmptyObject } from '../../../utils/object';
-import { createEmptyTypeStructure } from '../utils';
+import { createEmptyTypeStructure, getPropertiesAndValidationsFromDescriptor } from '../utils';
 import LookupTable from '../../../models/LookupTable';
+import controlDescriptors from './controls';
 
 type OutOfTheBoxArchetype = 'page' | 'component';
 
@@ -31,6 +32,10 @@ export function initializeTypeForCreate(
 	archetype: OutOfTheBoxArchetype | string,
 	archetypeMap?: LookupTable<ContentType>
 ): ContentType {
+	const fileNameDescriptor = controlDescriptors['auto-filename'];
+	const fileNameProps = getPropertiesAndValidationsFromDescriptor(fileNameDescriptor);
+	const inputDescriptor = controlDescriptors['input'];
+	const inputProps = getPropertiesAndValidationsFromDescriptor(inputDescriptor);
 	switch (archetype) {
 		case 'component':
 			return createEmptyTypeStructure({
@@ -46,8 +51,8 @@ export function initializeTypeForCreate(
 						name: 'Component ID',
 						description: '',
 						helpText: '',
-						defaultValue: undefined,
-						validations: immutableEmptyObject
+						defaultValue: '',
+						...fileNameProps
 					},
 					[XmlKeys.internalName]: {
 						id: XmlKeys.internalName,
@@ -55,8 +60,8 @@ export function initializeTypeForCreate(
 						name: 'Internal Name',
 						description: '',
 						helpText: '',
-						defaultValue: undefined,
-						validations: immutableEmptyObject
+						defaultValue: '',
+						...inputProps
 					},
 					...mixin?.fields
 				},
@@ -72,7 +77,9 @@ export function initializeTypeForCreate(
 					...(mixin?.sections ?? [])
 				]
 			});
-		case 'page':
+		case 'page': {
+			const pageNavOrderDescriptor = controlDescriptors['page-nav-order'];
+			const pageNavOrderProps = getPropertiesAndValidationsFromDescriptor(pageNavOrderDescriptor);
 			return createEmptyTypeStructure({
 				mergeStrategy: 'inherit-levels',
 				type: 'page',
@@ -84,8 +91,8 @@ export function initializeTypeForCreate(
 						name: 'Component ID',
 						description: '',
 						helpText: '',
-						defaultValue: undefined,
-						validations: immutableEmptyObject
+						defaultValue: '',
+						...fileNameProps
 					},
 					[XmlKeys.internalName]: {
 						id: XmlKeys.internalName,
@@ -93,8 +100,8 @@ export function initializeTypeForCreate(
 						name: 'Internal Name',
 						description: '',
 						helpText: '',
-						defaultValue: undefined,
-						validations: immutableEmptyObject
+						defaultValue: '',
+						...inputProps
 					},
 					[XmlKeys.placeInNav]: {
 						id: XmlKeys.placeInNav,
@@ -102,8 +109,9 @@ export function initializeTypeForCreate(
 						name: 'Place in Nav',
 						description: '',
 						helpText: '',
-						defaultValue: undefined,
-						validations: immutableEmptyObject
+						defaultValue: '',
+						validations: immutableEmptyObject,
+						...pageNavOrderProps
 					},
 					navLabel: {
 						id: 'navLabel',
@@ -111,8 +119,9 @@ export function initializeTypeForCreate(
 						name: 'Nav Label',
 						description: '',
 						helpText: '',
-						defaultValue: undefined,
-						validations: immutableEmptyObject
+						defaultValue: '',
+						validations: immutableEmptyObject,
+						...inputProps
 					},
 					...mixin?.fields
 				},
@@ -128,6 +137,7 @@ export function initializeTypeForCreate(
 					...(mixin?.sections ?? [])
 				]
 			});
+		}
 		default:
 			return createEmptyTypeStructure({
 				mergeStrategy: 'inherit-levels',

@@ -22,13 +22,7 @@ import { isBlank } from '../../utils/string';
 import { update } from '../../services/sites';
 import { fetchSites } from '../../state/actions/sites';
 import { EditSiteDialogContainerProps } from './utils';
-import {
-	closeSingleFileUploadDialog,
-	showSingleFileUploadDialog,
-	updateEditSiteDialog
-} from '../../state/actions/dialogs';
 import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { ConditionalLoadingState } from '../LoadingState/LoadingState';
 import useProjectPreviewImage from '../../hooks/useProjectPreviewImage';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
@@ -47,6 +41,10 @@ import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import { PROJECT_PREVIEW_IMAGE_UPDATED } from '../../utils/constants';
 import { showSystemNotification } from '../../state/actions/system';
+import { popDialog, pushDialog } from '../../state/actions/dialogStack';
+import { nanoid } from 'nanoid';
+import { createComponentId, pushErrorDialog } from '../../utils/system';
+import { useEnhancedDialogContext } from '../EnhancedDialog';
 
 export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
 	const { site, onClose, onSaveSuccess, onSiteImageChange, isSubmitting } = props;
@@ -64,6 +62,7 @@ export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
 	const disableSubmit =
 		hasNameConflict || (originalName === name.trim() && originalDescription === description.trim()) || isBlank(name);
 	const { formatMessage } = useIntl();
+	const { updateSubmittingOrHasPendingChanges } = useEnhancedDialogContext();
 
 	function checkSiteName(value: string) {
 		if (
@@ -78,22 +77,16 @@ export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
 
 	const handleSubmit = (id: string, name: string, description: string) => {
 		if (!disableSubmit) {
-			dispatch(updateEditSiteDialog({ isSubmitting: true }));
+			updateSubmittingOrHasPendingChanges({ isSubmitting: true });
 			update({ id, name: name.trim(), description: description.trim() }).subscribe({
 				next(response) {
-					dispatch(
-						batchActions([
-							updateEditSiteDialog({
-								hasPendingChanges: false,
-								isSubmitting: false
-							}),
-							fetchSites()
-						])
-					);
+					updateSubmittingOrHasPendingChanges({ hasPendingChanges: false, isSubmitting: false });
+					dispatch(fetchSites());
 					onSaveSuccess?.(response);
 				},
 				error({ response: { response } }) {
-					dispatch(batchActions([updateEditSiteDialog({ isSubmitting: false }), showErrorDialog({ error: response })]));
+					updateSubmittingOrHasPendingChanges({ isSubmitting: false });
+					dispatch(pushErrorDialog({ props: { error: response } }));
 				}
 			});
 		}
@@ -104,11 +97,9 @@ export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
 	const onSiteNameChange = (value: string) => {
 		checkSiteName(value);
 		setName(value);
-		dispatch(
-			updateEditSiteDialog({
-				hasPendingChanges: originalDescription !== description.trim() || originalName !== value.trim()
-			})
-		);
+		updateSubmittingOrHasPendingChanges({
+			hasPendingChanges: originalDescription !== description.trim() || originalName !== value.trim()
+		});
 	};
 
 	const onKeyPress = (event: React.KeyboardEvent) => {
@@ -119,23 +110,31 @@ export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
 
 	const onSiteDescriptionChange = (value: string) => {
 		setDescription(value);
-		dispatch(
-			updateEditSiteDialog({ hasPendingChanges: originalName !== name.trim() || originalDescription !== value.trim() })
-		);
+		updateSubmittingOrHasPendingChanges({
+			hasPendingChanges: originalName !== name.trim() || originalDescription !== value.trim()
+		});
 	};
 
 	const onEditSiteImage = () => {
+		const singleFileUploadDialogDialogId = nanoid();
 		dispatch(
-			showSingleFileUploadDialog({
-				path: '/.crafter/screenshots',
-				site: site.id,
-				customFileName: 'default.png',
-				fileTypes: ['image/png'],
-				onClose: closeSingleFileUploadDialog(),
-				onUploadComplete: batchActions([
-					closeSingleFileUploadDialog(),
-					dispatchDOMEvent({ id: PROJECT_PREVIEW_IMAGE_UPDATED })
-				])
+			pushDialog({
+				id: singleFileUploadDialogDialogId,
+				component: createComponentId('SingleFileUploadDialog'),
+				props: {
+					path: '/.crafter/screenshots',
+					site: site.id,
+					customFileName: 'default.png',
+					fileTypes: ['image/png'],
+					onClose: () => dispatch(popDialog({ id: singleFileUploadDialogDialogId })),
+					onUploadComplete: () =>
+						dispatch(
+							batchActions([
+								popDialog({ id: singleFileUploadDialogDialogId }),
+								dispatchDOMEvent({ id: PROJECT_PREVIEW_IMAGE_UPDATED })
+							])
+						)
+				}
 			})
 		);
 	};
@@ -170,7 +169,10 @@ export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
 								<CardMedia component="img" image={imageUrl} title={name} sx={{ height: '234px' }} />
 								<CardActions sx={{ placeContent: 'center' }} disableSpacing>
 									<Tooltip title={<FormattedMessage id="words.edit" defaultMessage="Edit" />}>
-										<IconButton onClick={onEditSiteImage} aria-label={formatMessage({ defaultMessage: 'Edit' })}>
+										<IconButton
+											onClick={onEditSiteImage}
+											aria-label={formatMessage({ id: 'words.edit', defaultMessage: 'Edit' })}
+										>
 											<EditRoundedIcon />
 										</IconButton>
 									</Tooltip>

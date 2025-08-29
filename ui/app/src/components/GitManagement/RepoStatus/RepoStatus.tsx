@@ -22,12 +22,12 @@ import CommitResolutionDialog from '../../CommitResolutionDialog/CommitResolutio
 import { bulkResolveConflict, cancelFailedPull, resolveConflict } from '../../../services/repositories';
 import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../../state/actions/system';
-import { showErrorDialog } from '../../../state/reducers/dialogs/error';
 import { FormattedMessage, useIntl } from 'react-intl';
 import ConflictedPathDiffDialog from '../../ConflictedPathDiffDialog';
 import { useActiveSiteId } from '../../../hooks/useActiveSiteId';
 import { messages } from './translations';
 import { ConfirmDialog } from '../../ConfirmDialog';
+import { pushErrorDialog } from '../../../utils/system';
 
 export interface RepoStatusProps {
 	status: RepositoryStatus;
@@ -76,7 +76,7 @@ export function RepoStatus(props: RepoStatusProps) {
 				);
 			},
 			error({ response }) {
-				dispatch(showErrorDialog({ error: response }));
+				dispatch(pushErrorDialog({ props: { error: response } }));
 			}
 		});
 	};
@@ -99,7 +99,7 @@ export function RepoStatus(props: RepoStatusProps) {
 	};
 
 	const onResolveConflictsError = (response) => {
-		dispatch(showErrorDialog({ error: response }));
+		dispatch(pushErrorDialog({ props: { error: response } }));
 		setFetching(false);
 	};
 
@@ -128,7 +128,7 @@ export function RepoStatus(props: RepoStatusProps) {
 	};
 
 	const onCommitError = (response) => {
-		dispatch(showErrorDialog({ error: response }));
+		dispatch(pushErrorDialog({ props: { error: response } }));
 	};
 
 	const openDiffDialog = (path) => {

@@ -22,13 +22,13 @@ import GlobalAppToolbar from '../GlobalAppToolbar';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import LogLevelGrid, { LogLevelGridSkeleton } from './LogLevelGrid';
 import { useDispatch } from 'react-redux';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { showSystemNotification } from '../../state/actions/system';
 import Paper from '@mui/material/Paper';
 import useDebouncedInput from '../../hooks/useDebouncedInput';
 import IconButton from '@mui/material/IconButton';
 import RefreshRounded from '@mui/icons-material/RefreshRounded';
 import Tooltip from '@mui/material/Tooltip';
+import { pushErrorDialog } from '../../utils/system';
 
 const messages = defineMessages({
 	levelChangedSuccess: {
@@ -80,7 +80,7 @@ export function LogLevelManagement() {
 				setFetching(false);
 			},
 			error({ response }) {
-				dispatch(showErrorDialog({ error: response }));
+				dispatch(pushErrorDialog({ props: { error: response } }));
 				setFetching(false);
 			}
 		});
@@ -102,7 +102,7 @@ export function LogLevelManagement() {
 				);
 			},
 			error(response) {
-				dispatch(showErrorDialog({ error: response }));
+				dispatch(pushErrorDialog({ props: { error: response } }));
 			}
 		});
 	};
@@ -113,7 +113,10 @@ export function LogLevelManagement() {
 				title={<FormattedMessage id="globalMenu.loggingLevelsEntryLabel" defaultMessage="Logging Levels" />}
 				rightContent={
 					<Tooltip title={<FormattedMessage id="word.refresh" defaultMessage="Refresh" />}>
-						<IconButton onClick={() => fnRefs.current.fetchLoggers()}>
+						<IconButton
+							onClick={() => fnRefs.current.fetchLoggers()}
+							aria-label={formatMessage({ id: 'word.refresh', defaultMessage: 'Refresh' })}
+						>
 							<RefreshRounded />
 						</IconButton>
 					</Tooltip>

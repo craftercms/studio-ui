@@ -41,7 +41,7 @@ export function PreviewForwardButton(props: PreviewForwardButtonProps) {
 					onClick={onClick}
 					{...props}
 					size="large"
-					aria-label={formatMessage({ defaultMessage: 'Forward' })}
+					aria-label={formatMessage({ id: 'words.forward', defaultMessage: 'Forward' })}
 				>
 					<ArrowForwardRoundedIcon />
 				</IconButton>

@@ -27,7 +27,7 @@ import Box from '@mui/material/Box';
 import ItemTypeIcon from '../../ItemTypeIcon';
 import Typography from '@mui/material/Typography';
 import Chip, { chipClasses } from '@mui/material/Chip';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { EditOffOutlined, EditOutlined } from '@mui/icons-material';
 import CalendarTodayRounded from '@mui/icons-material/CalendarTodayRounded';
 import ItemPublishingTargetIcon from '../../ItemPublishingTargetIcon';
@@ -52,6 +52,7 @@ export function EditModeHeader({ isEmbedded }: { isEmbedded: boolean }) {
 	const isLargeContainer = useAtomValue(atoms.isLargeContainer);
 	const [collapseToC, setCollapseToC] = useAtom(atoms.collapseToC);
 	const useCollapsedToC = useAtomValue(atoms.useCollapsedToC);
+	const { formatMessage } = useIntl();
 	const itemLabel = isEmbedded
 		? (getFieldAtomValue(atoms.valueByFieldId[XmlKeys.internalName], store) as string)
 		: item.label;
@@ -144,11 +145,11 @@ export function EditModeHeader({ isEmbedded }: { isEmbedded: boolean }) {
 							>
 								<Box component="span" display="flex" alignItems="center" marginRight={1}>
 									<ItemPublishingTargetIcon fontSize="inherit" sxs={{ root: { marginRight: 0.25 } }} item={item} />{' '}
-									{getItemPublishingTargetText(item.stateMap)}
+									{getItemPublishingTargetText(item.stateMap, formatMessage)}
 								</Box>
 								<Box component="span" display="flex" alignItems="center">
 									<ItemStateIcon fontSize="inherit" sxs={{ root: { mr: 0.25 } }} item={item} />{' '}
-									{getItemStateText(item.stateMap, { user: item.lockOwner?.username })}
+									{getItemStateText(item.stateMap, formatMessage, { user: item.lockOwner?.username })}
 								</Box>
 							</Typography>
 						</div>

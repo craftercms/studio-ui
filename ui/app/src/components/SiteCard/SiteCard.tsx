@@ -203,7 +203,7 @@ export function SiteCard(props: SiteCardProps) {
 							onClick={() => onEditSiteClick(site)}
 							size={compact ? 'small' : 'medium'}
 							disabled={disabled}
-							aria-label={formatMessage({ defaultMessage: 'Edit' })}
+							aria-label={formatMessage({ id: 'words.edit', defaultMessage: 'Edit' })}
 						>
 							<EditRoundedIcon />
 						</IconButton>

@@ -26,7 +26,7 @@ import List from '@mui/material/List';
 import Box from '@mui/material/Box';
 import ItemStateIcon from '../ItemStateIcon';
 import { getDateScheduled, isEditableAsset } from '../../utils/content';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { asLocalizedDateTime } from '../../utils/datetime';
 import ItemPublishingTargetIcon from '../ItemPublishingTargetIcon';
 import { getItemStateText } from '../ItemDisplay/utils';
@@ -71,6 +71,7 @@ export function SelectionList(props: SelectionListProps) {
 	// endregion
 
 	const locale = useLocale();
+	const { formatMessage } = useIntl();
 	const isAllChecked = useMemo(
 		() => (selectedItems ? !paths?.some((path) => !selectedItems[path]) : null),
 		[paths, selectedItems]
@@ -212,7 +213,7 @@ export function SelectionList(props: SelectionListProps) {
 												}
 											/>
 											<Typography variant="body2" color="textSecondary">
-												{getItemStateText(item.stateMap, { user: item.lockOwner?.username })}
+												{getItemStateText(item.stateMap, formatMessage, { user: item.lockOwner?.username })}
 											</Typography>
 										</Box>
 									)}

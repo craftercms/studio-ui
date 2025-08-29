@@ -1470,6 +1470,7 @@ const initializeCStudioForms = () => {
 								CStudioAuthoring.Utils.showConfirmDialog({
 									body: formatMessage(formEngineMessages.formNotReadyForSaving)
 								});
+								setButtonsEnabled(true);
 								return;
 							}
 
@@ -2394,6 +2395,12 @@ const initializeCStudioForms = () => {
 								tinymce.get(rteId).remove();
 							});
 						}
+						// When rendering the items of a repeat group, if there are RTE fields we need to clear beforeSaveCallbacks
+						// to avoid having multiple callbacks for the same RTE field (since callbacks are going to be added on each
+						// RTE rendering)
+						controlEl.form.beforeSaveCallbacks = controlEl.form.beforeSaveCallbacks.filter(
+							(callback) => !(callback.repeatGroupId === repeat.id)
+						);
 						controlEl.formEngine._cleanUpRepeatBodyFields(controlEl, this.repeat.id);
 						controlEl.innerHTML = '';
 						controlEl.formEngine._renderRepeatBody(controlEl);
@@ -2438,8 +2445,12 @@ const initializeCStudioForms = () => {
 				 * repeat manipulation events
 				 */
 				_renderRepeatBody: function (repeatContainerEl) {
-					var maxOccurs = repeatContainerEl.maxOccurs;
-					var minOccurs = repeatContainerEl.minOccurs;
+					// If value for min/max is not set, use default values (0 for min and '*' for max)
+					const nou = craftercms.utils.object.nou;
+					const maxOccurs =
+						nou(repeatContainerEl.maxOccurs) || repeatContainerEl.maxOccurs === '' ? '*' : repeatContainerEl.maxOccurs;
+					const minOccurs =
+						nou(repeatContainerEl.minOccurs) || repeatContainerEl.minOccurs === '' ? 0 : repeatContainerEl.minOccurs;
 					var formDef = repeatContainerEl.formDef;
 					var repeat = repeatContainerEl.repeat;
 					var form = repeatContainerEl.form;
@@ -2686,7 +2697,11 @@ const initializeCStudioForms = () => {
 									pencilMode
 								);
 
-								formField.initialize(moduleConfig.config.field, this.containerEl, lastTwo);
+								formField.initialize(
+									{ ...moduleConfig.config.field, repeatContainer: moduleConfig.config.repeatField },
+									this.containerEl,
+									lastTwo
+								);
 
 								var value = '';
 								if (repeatField) {

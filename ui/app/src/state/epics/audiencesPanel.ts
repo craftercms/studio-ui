@@ -36,7 +36,7 @@ import { Observable } from 'rxjs';
 import GlobalState from '../../models/GlobalState';
 import { getHostToGuestBus } from '../../utils/subjects';
 import { CrafterCMSEpic } from '../store';
-import { showErrorDialog } from '../reducers/dialogs/error';
+import { pushErrorDialog } from '../../utils/system';
 
 export default [
 	(action$, state$: Observable<GlobalState>) =>
@@ -64,7 +64,7 @@ export default [
 	(action$) =>
 		action$.pipe(
 			ofType(setActiveTargetingModelFailed.type),
-			map(({ payload }) => showErrorDialog({ error: payload.response }))
+			map(({ payload }) => pushErrorDialog({ props: { error: payload.response } }))
 		),
 	(action$) =>
 		action$.pipe(
