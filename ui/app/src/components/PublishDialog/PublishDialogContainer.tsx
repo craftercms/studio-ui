@@ -24,11 +24,8 @@ import { useDispatch } from 'react-redux';
 import { calculatePackage, publish } from '../../services/publishing';
 import { FormattedMessage } from 'react-intl';
 import { isBlank } from '../../utils/string';
-import { updatePublishDialog } from '../../state/actions/dialogs';
 import { ContentItem, LightItem } from '../../models';
 import { createAtLeastHalfHourInFutureDate } from '../../utils/datetime';
-import { batchActions } from '../../state/actions/misc';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
 import DialogBody from '../DialogBody';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
@@ -50,6 +47,8 @@ import PublishPackageItemsView from './PublishPackageItemsView';
 import PublishReferencesLegend from './PublishReferencesLegend';
 import { PublishDialogForm } from './PublishDialogForm';
 import useActiveUser from '../../hooks/useActiveUser';
+import { pushErrorDialog } from '../../utils/system';
+import { useEnhancedDialogContext } from '../EnhancedDialog';
 
 export type DependencyType = 'soft' | 'hard';
 export type DependencyMap = Record<string, DependencyType>;
@@ -105,6 +104,7 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 		itemsAndDependenciesPaths,
 		itemsAndDependenciesMap
 	} = usePublishState({ mainItems });
+	const { updateSubmittingOrHasPendingChanges } = useEnhancedDialogContext();
 	const effectRefs = useUpdateRefs({ initialItems, state });
 	const hasPublishPermission = permissionsBySite[siteId].includes('publish_approve');
 	const publishingTarget = useMemo(() => {
@@ -233,11 +233,11 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 			comment: submissionComment
 		};
 
-		dispatch(updatePublishDialog({ isSubmitting: true }));
+		updateSubmittingOrHasPendingChanges({ isSubmitting: true });
 
 		publish(siteId, data).subscribe({
 			next() {
-				dispatch(updatePublishDialog({ isSubmitting: false, hasPendingChanges: false }));
+				updateSubmittingOrHasPendingChanges({ isSubmitting: false, hasPendingChanges: false });
 				onSuccess?.({
 					schedule: schedule,
 					publishingTarget,
@@ -248,16 +248,15 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 				});
 			},
 			error({ response }) {
-				dispatch(
-					batchActions([updatePublishDialog({ isSubmitting: false }), showErrorDialog({ error: response.response })])
-				);
+				updateSubmittingOrHasPendingChanges({ isSubmitting: false });
+				dispatch(pushErrorDialog({ props: { error: response.response } }));
 			}
 		});
 	};
 
 	const onPublishingArgumentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		let value: unknown;
-		dispatch(updatePublishDialog({ hasPendingChanges: true }));
+		updateSubmittingOrHasPendingChanges({ hasPendingChanges: true });
 		switch (e.target.type) {
 			case 'checkbox':
 				value = e.target.checked;

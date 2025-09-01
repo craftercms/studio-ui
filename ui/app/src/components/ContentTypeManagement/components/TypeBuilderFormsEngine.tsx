@@ -46,7 +46,8 @@ import ListItemText from '@mui/material/ListItemText';
 import SectionAccordion from '../../FormsEngine/components/SectionAccordion';
 import { renderFieldControl } from '../../FormsEngine/lib/controlHelpers';
 import FormBackToTop from '../../FormsEngine/components/FormBackToTop';
-import ContentType, {
+import type {
+	ContentType,
 	ContentTypeField,
 	ContentTypeSection,
 	DataSource,
@@ -63,9 +64,9 @@ import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
 import Alert from '@mui/material/Alert';
 import { controlMap } from '../controlMap';
 import { ConfirmDropdown } from '../../ConfirmDropdown';
-import MoveFieldToSectionDialog from './MoveFieldToSectionDialog';
-import useEnhancedDialogState from '../../../hooks/useEnhancedDialogState';
-import SwapFieldDialog from './SwapFieldDialog';
+import { MoveFieldToSectionDialog } from './MoveFieldToSectionDialog';
+import { useEnhancedDialogState } from '../../../hooks/useEnhancedDialogState';
+import { SwapFieldDialog } from './SwapFieldDialog';
 import { nanoid } from 'nanoid';
 import MoveDownIcon from '@mui/icons-material/MoveDown';
 import { ReorderFieldsDialog, type ReorderFieldsDialogProps } from './ReorderFieldsDialog';
@@ -202,7 +203,7 @@ export function TypeBuilderFormsEngine(props: FieldFormViewProps) {
 	);
 }
 
-function FieldBreadcrumbs(props: FieldFormViewProps): React.JSX.Element {
+function FieldBreadcrumbs(props: FieldFormViewProps): React.ReactNode {
 	if (!props.field) return;
 	const fieldPathIds = props.fieldIdPath?.split('.') ?? [];
 	return (
@@ -211,7 +212,7 @@ function FieldBreadcrumbs(props: FieldFormViewProps): React.JSX.Element {
 				{fieldPathIds.map((id) => {
 					// Retrieve the fieldPathId by removing everything after `id` in fieldPathIds
 					const currentFieldPathId = fieldPathIds.slice(0, fieldPathIds.indexOf(id) + 1).join('.');
-					const currentField = getFieldFromType(props.type, currentFieldPathId);
+					const currentField = props.type ? getFieldFromType(props.type, currentFieldPathId) : undefined;
 					return (
 						<Typography variant="body2" key={id}>
 							{currentField?.name ?? id}

@@ -16,7 +16,7 @@
 
 import React, { createElement, useState } from 'react';
 import EnhancedDialog, { EnhancedDialogProps } from '../EnhancedDialog/EnhancedDialog';
-import FolderMoveAlert from './FolderMoveAlert';
+import FolderMoveAlert from '../FolderMoveAlert/FolderMoveAlert';
 import { batchActions } from '../../state/actions/misc';
 import { setClipboard } from '../../state/actions/content';
 import { emitSystemEvent, itemCut, showCutItemSuccessNotification } from '../../state/actions/system';
@@ -28,7 +28,6 @@ import DialogFooter from '../DialogFooter';
 import type { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import type StandardAction from '../../models/StandardAction';
 import { useDispatch } from 'react-redux';
-import { closeFolderMoveAlertDialog } from '../../state/actions/dialogs';
 import Tooltip from '@mui/material/Tooltip';
 
 export interface FolderMoveAlertDialogProps extends EnhancedDialogProps {
@@ -59,10 +58,10 @@ function Body({ item, onClose }: FolderMoveAlertDialogProps) {
 			batchActions([
 				setClipboard({ type: 'CUT', paths: [item.path], sourcePath: item.path }),
 				emitSystemEvent(itemCut({ target: item.path })),
-				closeFolderMoveAlertDialog(),
 				showCutItemSuccessNotification()
 			])
 		);
+		onClose?.(null, null);
 	};
 	return (
 		<>

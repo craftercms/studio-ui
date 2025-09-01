@@ -38,7 +38,7 @@ import Paper from '@mui/material/Paper';
 import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { useDispatch } from 'react-redux';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
+import { pushErrorDialog } from '../../utils/system';
 
 interface AuditManagementProps {
 	site?: string;
@@ -142,7 +142,7 @@ export function AuditManagement(props: AuditManagementProps) {
 					}
 				},
 				error({ response }) {
-					dispatch(showErrorDialog({ error: response.response }));
+					dispatch(pushErrorDialog({ props: { error: response.response } }));
 				}
 			});
 		}

@@ -14,18 +14,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
+import type {
 	ContentTypeField,
 	ContentTypeFieldValidation,
 	ContentTypeSection,
 	DataSource,
 	LegacyDataSource,
 	LegacyFormDefinitionField,
+	NewContentTypeField,
 	NewDataSource,
 	ValidationKeys
 } from '../../models';
-import LookupTable from '../../models/LookupTable';
-import ContentType, { SerializeToXmlContentTypeStructure } from '../../models/ContentType';
+import type LookupTable from '../../models/LookupTable';
+import type { ContentType, SerializeToXmlContentTypeStructure } from '../../models/ContentType';
 import { createLookupTable, nnou, noOp, pluckProps } from '../../utils/object';
 import { commonControlFieldsDescriptors, defaultDataSourcesSection } from './descriptors/controls';
 import {
@@ -42,7 +43,7 @@ import { toBooleanString, toColor } from '../../utils/string';
 import { getXmlBuilder } from '../FormsEngine/lib/valueSerializers';
 import { nanoid } from 'nanoid';
 import { commonDataSourceDescriptors, dataSourceDescriptors } from './descriptors/dataSources';
-import { ControlProps } from '../FormsEngine/types';
+import type { ControlProps } from '../FormsEngine/types';
 import { IntlShape, type MessageDescriptor } from 'react-intl';
 import TranslationOrText from '../../models/TranslationOrText';
 import { getFileNameFromPath } from '../../utils/path';
@@ -430,8 +431,10 @@ export function createVirtualSection<K extends ContentTypeSection | DescriptorSe
 	} as K;
 }
 
-export function createVirtualDataSourceFields(type: ContentType): Partial<DescriptorContentType> {
-	const dataSourceFields: Partial<DescriptorContentType> = {};
+type VirtualDataSourceFields = (ContentTypeField & { validations: Partial<DescriptorFieldValidations> }) &
+	Partial<NewContentTypeField>;
+export function createVirtualDataSourceFields(type: ContentType): LookupTable<VirtualDataSourceFields> {
+	const dataSourceFields: LookupTable<VirtualDataSourceFields> = {};
 	for (const dataSource of type.dataSources ?? []) {
 		dataSourceFields[dataSource.id] = {
 			...((dataSource as NewDataSource).NEW && { NEW: true }),
@@ -698,18 +701,13 @@ function convertDataSourceStructToXmlStruct(
 			//    <properties>
 			//      <enableSearchExisting>true</enableSearchExisting>
 			// TODO: note type usage in `services/contentTypes.ts, parseLegacyFormDefinition when parsing the data sources`
-			property: Object.entries(dataSource.properties).map(([name, value]) => {
-				let type = descriptor?.fields[name] ? descriptor?.fields[name].type : typeof value;
+			property: Object.entries(dataSource?.properties ?? {}).map(([name, value]) => {
+				let type = descriptor?.fields?.[name]?.type ?? typeof value;
 				// some properties are simple types, so we need to get the proper type.
 				if (propertiesSimpleTypes.includes(type)) {
 					type = typeof value;
 				}
-
-				return {
-					name,
-					value,
-					type
-				};
+				return { name, value, type };
 			})
 		}
 	};

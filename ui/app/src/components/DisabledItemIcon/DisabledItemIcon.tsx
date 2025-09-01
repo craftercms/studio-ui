@@ -67,6 +67,7 @@ export function DisabledItemIcon(props: DisabledItemIconProps) {
 					{...itemTypeIconProps}
 					className={[classes?.icon, itemTypeIconProps?.className].filter(Boolean).join(' ')}
 					aria-label={getItemTypeText(item, formatMessage)}
+					aria-hidden={false}
 					sx={{
 						fontSize: '1.1rem',
 						position: 'absolute',
@@ -79,6 +80,7 @@ export function DisabledItemIcon(props: DisabledItemIconProps) {
 				<BlockRoundedIcon
 					className={[classes?.icon, itemTypeIconProps?.className].filter(Boolean).join(' ')}
 					aria-label={formatMessage({ defaultMessage: 'Disabled' })}
+					aria-hidden={false}
 					sx={{
 						fontSize: '1.1rem',
 						color: (theme) => theme.palette.error.main,

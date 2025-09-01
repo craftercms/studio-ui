@@ -28,7 +28,6 @@ import {
 	update
 } from '../../services/groups';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../state/actions/system';
 import Typography from '@mui/material/Typography';
@@ -41,6 +40,7 @@ import useMount from '../../hooks/useMount';
 import { createPresenceTable } from '../../utils/array';
 import { pluckProps, reversePluckProps } from '../../utils/object';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
+import { pushErrorDialog } from '../../utils/system';
 
 const translations = defineMessages({
 	groupCreated: {
@@ -114,7 +114,7 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
 				onGroupDeleted(group);
 			},
 			error({ response: { response } }) {
-				dispatch(showErrorDialog({ error: response }));
+				dispatch(pushErrorDialog({ props: { error: response } }));
 			}
 		});
 	};
@@ -148,7 +148,7 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
 					});
 				},
 				error({ response: { response } }) {
-					dispatch(showErrorDialog({ error: response }));
+					dispatch(pushErrorDialog({ props: { error: response } }));
 				}
 			});
 		}
@@ -179,7 +179,7 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
 					});
 				},
 				error({ response: { response } }) {
-					dispatch(showErrorDialog({ error: response }));
+					dispatch(pushErrorDialog({ props: { error: response } }));
 				}
 			});
 		}
@@ -209,7 +209,7 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
 					});
 				},
 				error({ response: { response } }) {
-					dispatch(showErrorDialog({ error: response }));
+					dispatch(pushErrorDialog({ props: { error: response } }));
 					fnRefs.current.onSubmittingAndOrPendingChange({
 						isSubmitting: false
 					});
@@ -233,7 +233,7 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
 					fetchMembers(group.id);
 				},
 				error({ response: { response } }) {
-					dispatch(showErrorDialog({ error: response }));
+					dispatch(pushErrorDialog({ props: { error: response } }));
 					fnRefs.current.onSubmittingAndOrPendingChange({
 						isSubmitting: false
 					});

@@ -51,7 +51,6 @@ import {
 } from '../actions/pathNavigator';
 import { setStoredPathNavigator } from '../../utils/state';
 import { CrafterCMSEpic } from '../store';
-import { showErrorDialog } from '../reducers/dialogs/error';
 import { AjaxError } from 'rxjs/ajax';
 import StandardAction from '../../models/StandardAction';
 import {
@@ -72,6 +71,7 @@ import {
 	workflowEventReject,
 	workflowEventSubmit
 } from '../actions/system';
+import { pushErrorDialog } from '../../utils/system';
 
 export default [
 	// region pathNavigatorInit
@@ -207,7 +207,7 @@ export default [
 						map(({ item, children }) => pathNavigatorFetchPathComplete({ id, parent: item, children })),
 						catchAjaxError(
 							(error) => pathNavigatorFetchPathFailed({ id, error }),
-							(error) => showErrorDialog({ error: error.response ?? error })
+							(error) => pushErrorDialog({ props: { error: error.response ?? error } })
 						)
 					)
 			)
@@ -237,7 +237,7 @@ export default [
 						),
 						catchAjaxError(
 							(error) => pathNavigatorConditionallySetPathFailed({ id, error }),
-							(error) => showErrorDialog({ error: error.response ?? error })
+							(error) => pushErrorDialog({ props: { error: error.response ?? error } })
 						)
 					)
 			)

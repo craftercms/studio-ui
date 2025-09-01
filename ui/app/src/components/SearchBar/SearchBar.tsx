@@ -113,7 +113,7 @@ export function SearchBar(props: SearchBarProps) {
 				<IconButton
 					onClick={onDecoratorButtonClick}
 					size="large"
-					aria-label={formatMessage({ defaultMessage: 'decorator' })}
+					aria-label={formatMessage({ defaultMessage: 'Filter' })}
 				>
 					<DecoratorIcon sx={{ color: (theme) => theme.palette.text.secondary }} />
 				</IconButton>

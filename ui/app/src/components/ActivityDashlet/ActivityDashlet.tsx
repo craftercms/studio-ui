@@ -559,7 +559,10 @@ export function ActivityDashlet(props: ActivityDashletProps) {
 											color="primary"
 											size="small"
 											onClick={loadNextPage}
-											aria-label={formatMessage({ defaultMessage: 'Load {limit} more' }, { limit })}
+											aria-label={formatMessage(
+												{ id: 'activityDashlet.loadMore', defaultMessage: 'Load {limit} more' },
+												{ limit }
+											)}
 										>
 											<MoreVertRounded />
 										</IconButton>

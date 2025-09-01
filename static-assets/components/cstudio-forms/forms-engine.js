@@ -1138,8 +1138,12 @@ const initializeCStudioForms = () => {
 							});
 					};
 
-					CrafterCMSNext.system.getStore().subscribe(() => {
+					CrafterCMSNext.system.getStore().subscribe((store) => {
 						getInitialConfiguration();
+
+						if (!store.getState().contentTypes?.byId) {
+							store.dispatch({ type: 'FETCH_CONTENT_TYPES' });
+						}
 					});
 				},
 
@@ -1470,6 +1474,7 @@ const initializeCStudioForms = () => {
 								CStudioAuthoring.Utils.showConfirmDialog({
 									body: formatMessage(formEngineMessages.formNotReadyForSaving)
 								});
+								setButtonsEnabled(true);
 								return;
 							}
 
@@ -2394,6 +2399,12 @@ const initializeCStudioForms = () => {
 								tinymce.get(rteId).remove();
 							});
 						}
+						// When rendering the items of a repeat group, if there are RTE fields we need to clear beforeSaveCallbacks
+						// to avoid having multiple callbacks for the same RTE field (since callbacks are going to be added on each
+						// RTE rendering)
+						controlEl.form.beforeSaveCallbacks = controlEl.form.beforeSaveCallbacks.filter(
+							(callback) => !(callback.repeatGroupId === repeat.id)
+						);
 						controlEl.formEngine._cleanUpRepeatBodyFields(controlEl, this.repeat.id);
 						controlEl.innerHTML = '';
 						controlEl.formEngine._renderRepeatBody(controlEl);
@@ -2690,7 +2701,11 @@ const initializeCStudioForms = () => {
 									pencilMode
 								);
 
-								formField.initialize(moduleConfig.config.field, this.containerEl, lastTwo);
+								formField.initialize(
+									{ ...moduleConfig.config.field, repeatContainer: moduleConfig.config.repeatField },
+									this.containerEl,
+									lastTwo
+								);
 
 								var value = '';
 								if (repeatField) {

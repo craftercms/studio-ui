@@ -35,9 +35,9 @@ import type { LookupTable } from '../../../models';
 import { fetchContentTypes } from '../../../services/contentTypes';
 import useActiveSiteId from '../../../hooks/useActiveSiteId';
 import { createLookupTable } from '../../../utils/object';
-import { showErrorDialog } from '../../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';
 import { fetchContentTypesComplete } from '../../../state/actions/preview';
+import { pushErrorDialog } from '../../../utils/system';
 
 export interface CreateTypeDialogBaseProps {
 	onAccept(typeData: Pick<ContentType, 'id' | 'name' | 'type'>): void;
@@ -106,7 +106,7 @@ function CreateTypeDialogBody(props: CreateTypeDialogBaseProps) {
 				onAccept?.({ type, name, id: `${prefixes[type] ?? ''}${id}` });
 			},
 			error: ({ response }) => {
-				dispatch(showErrorDialog({ error: response.response }));
+				dispatch(pushErrorDialog({ props: { error: response.response } }));
 				setFetchingContentTypes(false);
 				updateSubmittingOrHasPendingChanges({ isSubmitting: false });
 			}

@@ -59,7 +59,7 @@ export const inputDescriptor: DescriptorContentType = {
 		escapeContent: {
 			id: 'escapeContent',
 			type: 'checkbox',
-			name: 'escapeContent',
+			name: defineMessage({ defaultMessage: 'Escape Content' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},

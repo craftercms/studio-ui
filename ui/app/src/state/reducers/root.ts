@@ -31,6 +31,7 @@ import dashboard from './dashboard';
 import globalNavigation from './globalNavigation';
 import { combineReducers } from 'redux';
 import dialogStack from './dialogStack';
+import publishing from './publishing';
 
 const reducer = combineReducers({
 	auth,
@@ -48,7 +49,8 @@ const reducer = combineReducers({
 	pathNavigatorTree,
 	uiConfig,
 	dashboard,
-	globalNavigation
+	globalNavigation,
+	publishing
 });
 
 export default reducer;

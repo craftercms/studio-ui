@@ -24,7 +24,6 @@ import { TypeListProps } from '../ContentTypeManagement/components/TypeList';
 import ItemDisplay from '../ItemDisplay';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import { withoutIndex } from '../../utils/path';
 import useFetchAllowedTypesForPath from '../../hooks/useFetchAllowedTypesForPath';
 import { ObjectTypeOption } from '../ContentTypeFilter';
 
@@ -32,7 +31,10 @@ export function ChangeContentTypeDialogContainer(props: ChangeContentTypeDialogC
 	const { item, onContentTypeSelected, initialCompact = false } = props;
 
 	const handleContentTypeSelected: TypeListProps['onCardClick'] = (_, contentType) => {
-		onContentTypeSelected?.({ path: withoutIndex(item.path), contentType: contentType });
+		onContentTypeSelected?.({
+			path: item.path,
+			contentType: contentType
+		});
 	};
 
 	const { contentTypes, isFetching } = useFetchAllowedTypesForPath(

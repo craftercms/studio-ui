@@ -15,24 +15,29 @@
  */
 
 import { createReducer } from '@reduxjs/toolkit';
-import GlobalState from '../../../models/GlobalState';
-import { closeViewPackagesDialog, showViewPackagesDialog, viewPackagesDialogClosed } from '../../actions/dialogs';
-import { ViewPackagesDialogStateProps } from '../../../components/ViewPackagesDialog';
+import {
+	fetchPublishingStatus,
+	fetchPublishingStatusComplete,
+	fetchPublishingStatusFailed
+} from '../actions/publishingStatus';
+import type { GlobalState } from '../../models';
 
-const initialState = {
-	open: false,
-	item: null
+const initialState: GlobalState['publishing'] = {
+	isFetching: false,
+	enabled: null,
+	published: null,
+	currentTask: null
 };
 
-export default createReducer<GlobalState['dialogs']['viewPackages']>(initialState, (builder) => {
+const publishing = createReducer<GlobalState['publishing']>(initialState, (builder) => {
 	builder
-		.addCase(showViewPackagesDialog, (state, { payload }) => ({
+		.addCase(fetchPublishingStatus, (state) => ({ ...state, isFetching: true }))
+		.addCase(fetchPublishingStatusComplete, (state, { payload }) => ({
 			...state,
-			onClose: closeViewPackagesDialog(),
-			onClosed: viewPackagesDialogClosed(),
-			...(payload as Partial<ViewPackagesDialogStateProps>),
-			open: true
+			...(payload as Partial<GlobalState['publishing']>),
+			isFetching: false
 		}))
-		.addCase(closeViewPackagesDialog, (state) => ({ ...state, open: false }))
-		.addCase(viewPackagesDialogClosed, () => initialState);
+		.addCase(fetchPublishingStatusFailed, (state) => ({ ...state, isFetching: false }));
 });
+
+export default publishing;

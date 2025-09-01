@@ -55,7 +55,7 @@ import useMount from '../../hooks/useMount';
 import { fetchPublishingTargets } from '../../services/publishing';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { EmptyState } from '../EmptyState';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
+import { pushErrorDialog } from '../../utils/system';
 
 const workflowStateManagementMessages = defineMessages({
 	statesUpdatedMessage: {
@@ -273,11 +273,7 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
 	};
 
 	const onError = (error: ApiResponse) => {
-		dispatch(
-			showErrorDialog({
-				error
-			})
-		);
+		dispatch(pushErrorDialog({ props: { error } }));
 	};
 
 	const onSetItemStateDialogConfirm = (update: StatesToUpdate) => {
@@ -515,12 +511,12 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
 													<ItemPublishingTargetIcon
 														item={{ stateMap: { [id]: true } } as ItemPublishingTargetIconProps['item']}
 													/>
-													{getItemPublishingTargetText({ [id]: true } as ItemStateMap)}
+													{getItemPublishingTargetText({ [id]: true } as ItemStateMap, formatMessage)}
 												</>
 											) : (
 												<>
 													<ItemStateIcon item={{ stateMap: { [id]: true } } as ItemStateIconProps['item']} />
-													{getItemStateText({ [id]: true } as ItemStateMap)}
+													{getItemStateText({ [id]: true } as ItemStateMap, formatMessage)}
 												</>
 											)
 										}

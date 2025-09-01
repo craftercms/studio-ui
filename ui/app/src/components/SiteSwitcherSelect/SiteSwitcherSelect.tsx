@@ -31,6 +31,7 @@ import SiteStatusIndicator from '../SiteStatusIndicator/SiteStatusIndicator';
 import { previewSwitch } from '../../services/security';
 import { BaseSelectProps } from '@mui/material/Select/Select';
 import { PartialSxRecord } from '../../models';
+import { outlinedInputClasses } from '@mui/material/OutlinedInput';
 
 export interface SiteSwitcherSelectProps extends BaseSelectProps {
 	site: string;
@@ -65,18 +66,13 @@ function SiteSwitcherSelect(props: SiteSwitcherSelectProps) {
 	return (
 		<Select
 			displayEmpty
-			variant="standard"
+			variant="outlined"
 			{...rest}
 			className={props.className}
 			sx={{
 				maxWidth: 150,
 				background: 'transparent',
-				'&.MuiInput-underline::before': {
-					display: 'none'
-				},
-				'&.MuiInput-underline::after': {
-					display: 'none'
-				},
+				[`.${outlinedInputClasses.notchedOutline}`]: { border: 0 },
 				...sxs?.menuRoot,
 				[`& .${selectClasses.select}`]: {
 					border: 'none',

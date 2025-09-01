@@ -17,10 +17,11 @@
 import type { Dispatch as ReduxDispatch } from 'redux';
 import { FormattedMessage } from 'react-intl';
 import { nanoid } from 'nanoid';
-import { popDialog, pushDialog } from '../state/actions/dialogStack';
+import { popDialog } from '../state/actions/dialogStack';
 import type { ConfirmDialogProps } from '../components';
 import type { Theme } from '@mui/material';
 import type { SxProps } from '@mui/system';
+import { pushConfirmDialog } from './system';
 
 export const displayWithPendingChangesConfirm = (
 	dispatch: ReduxDispatch,
@@ -29,9 +30,8 @@ export const displayWithPendingChangesConfirm = (
 ) => {
 	const id = nanoid();
 	dispatch(
-		pushDialog({
+		pushConfirmDialog({
 			id,
-			component: 'craftercms.components.ConfirmDialog',
 			props: {
 				title: message,
 				onOk() {

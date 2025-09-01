@@ -72,7 +72,8 @@ import { BulkCancelPackageDialogStateProps } from '../components/BulkCancelPacka
 import { PublishingPackageResubmitDialogStateProps } from '../components/PublishingPackageResubmitDialog/types';
 import { PackageDetailsDialogStateProps } from '../components';
 import { ViewPackagesDialogStateProps } from '../components/ViewPackagesDialog';
-import type { FolderMoveAlertDialogStateProps } from '../components/FolderMoveAlert/FolderMoveAlertDialog';
+import type { FolderMoveAlertDialogStateProps } from '../components/FolderMoveAlertDialog/FolderMoveAlertDialog';
+import type { PublishingStatus } from './Publishing';
 
 export type HighlightMode = 'all' | 'move';
 
@@ -234,42 +235,14 @@ export interface GlobalState {
 		byId: LookupTable<DialogStackItem<unknown>>;
 	};
 	dialogs: {
-		confirm: ConfirmDialogStateProps;
-		error: ErrorDialogStateProps;
 		minimizedTabs: MinimizedDialogsStateProps;
-		newContent: NewContentDialogStateProps;
 		history: HistoryDialogStateProps;
 		viewVersion: ViewVersionDialogStateProps;
 		compareVersions: CompareVersionsDialogStateProps;
-		publish: PublishDialogStateProps;
-		publishingPackageApproval: PublishingPackageReviewDialogStateProps;
-		dependencies: DependenciesDialogStateProps;
-		delete: DeleteDialogStateProps;
-		edit: LegacyFormDialogStateProps;
-		codeEditor: CodeEditorDialogStateProps;
-		createFolder: CreateFolderStateProps;
-		createFile: CreateFileStateProps;
-		renameAsset: RenameAssetStateProps;
-		copy: CopyDialogStateProps;
-		upload: UploadDialogStateProps;
-		singleFileUpload: SingleFileUploadDialogStateProps;
-		preview: PreviewDialogStateProps;
-		editSite: EditSiteDialogStateProps;
-		pathSelection: PathSelectionDialogStateProps;
-		changeContentType: ChangeContentTypeDialogStateProps;
 		itemMenu: ItemMenuStateProps;
 		itemMegaMenu: ItemMegaMenuStateProps;
 		launcher: LauncherStateProps;
-		publishingStatus: PublishingStatusDialogStateProps;
-		widget: WidgetDialogStateProps;
 		uiBlocker: UIBlockerStateProps;
-		brokenReferences: BrokenReferencesDialogStateProps;
-		cancelPackage: CancelPackageDialogStateProps;
-		bulkCancelPackage: BulkCancelPackageDialogStateProps;
-		publishingPackageResubmit: PublishingPackageResubmitDialogStateProps;
-		packageDetails: PackageDetailsDialogStateProps;
-		viewPackages: ViewPackagesDialogStateProps;
-		folderMoveAlert: FolderMoveAlertDialogStateProps;
 	};
 	uiConfig: {
 		error: ApiResponse;
@@ -315,6 +288,12 @@ export interface GlobalState {
 		error: AjaxError;
 		items: Array<{ icon: SystemIconDescriptor; id: string; label: string }>;
 		isFetching: boolean;
+	};
+	publishing: {
+		isFetching: boolean;
+		enabled: PublishingStatus['enabled'];
+		published: PublishingStatus['published'];
+		currentTask: PublishingStatus['currentTask'];
 	};
 }
 
