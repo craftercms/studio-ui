@@ -21,9 +21,10 @@ import { ContentItem } from '../../models';
 import { AjaxError } from 'rxjs/ajax';
 
 export interface RenameAssetBaseProps {
-	path: string;
+	item: ContentItem;
 	type: 'controller' | 'template' | 'asset';
-	value?: string;
+	dependantItems: ContentItem[];
+	fetchingDependantItems: boolean;
 	allowBraces?: boolean;
 	error: AjaxError;
 }
@@ -39,7 +40,10 @@ export interface RenameAssetStateProps extends RenameAssetBaseProps, EnhancedDia
 }
 
 export interface RenameAssetContainerProps
-	extends Pick<RenameAssetDialogProps, 'path' | 'value' | 'allowBraces' | 'onRenamed' | 'onClose' | 'type' | 'error'> {
+	extends Pick<
+		RenameAssetDialogProps,
+		'item' | 'allowBraces' | 'onRenamed' | 'onClose' | 'type' | 'fetchingDependantItems' | 'error'
+	> {
 	fetchingDependantItems: boolean;
 	dependantItems: ContentItem[];
 	fetchDependant(): void;

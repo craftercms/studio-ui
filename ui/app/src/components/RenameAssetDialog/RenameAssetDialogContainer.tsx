@@ -35,13 +35,13 @@ import { RenameItemView } from '../RenameDialogBody';
 import { applyAssetNameRules } from '../../utils/content';
 import { DialogBody } from '../DialogBody';
 import { pushErrorDialog } from '../../utils/system';
+import { checkAndCancelAffectedPackages } from '../ViewPackagesDialog/utils';
 
 export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
 	const {
 		onClose,
 		onRenamed,
-		path,
-		value = '',
+		item,
 		allowBraces = false,
 		type,
 		dependantItems,
@@ -49,6 +49,8 @@ export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
 		error,
 		fetchDependant
 	} = props;
+	const path = item?.path ?? '';
+	const value = item?.label ?? '';
 	const { isSubmitting, hasPendingChanges } = useEnhancedDialogContext();
 	const [name, setName] = useState(value);
 	const dispatch = useDispatch();
@@ -91,24 +93,39 @@ export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
 		updateSubmittingOrHasPendingChanges({ isSubmitting: false });
 	};
 
-	const onRename = () => {
+	const renameAsset = () => {
+		validateActionPolicy(siteId, {
+			type: 'RENAME',
+			target: newAssetPath
+		}).subscribe(({ allowed, modifiedValue, message }) => {
+			if (allowed && modifiedValue) {
+				setConfirm({ body: message });
+			} else if (allowed) {
+				onRenameAsset(siteId, path, name);
+			} else {
+				setConfirm({
+					error: true,
+					body: formatMessage(translations.policyError, { fileName: name, detail: message })
+				});
+			}
+		});
+	};
+
+	const onRenameSubmit = () => {
 		updateSubmittingOrHasPendingChanges({ isSubmitting: true });
 		if (name) {
-			validateActionPolicy(siteId, {
-				type: 'RENAME',
-				target: newAssetPath
-			}).subscribe(({ allowed, modifiedValue, message }) => {
-				if (allowed && modifiedValue) {
-					setConfirm({ body: message });
-				} else if (allowed) {
-					onRenameAsset(siteId, path, name);
-				} else {
-					setConfirm({
-						error: true,
-						body: formatMessage(translations.policyError, { fileName: name, detail: message })
-					});
-				}
+			checkAndCancelAffectedPackages({
+				siteId,
+				item,
+				dispatch,
+				onContinue: () => renameAsset(),
+				onClose: () => {
+					updateSubmittingOrHasPendingChanges({ isSubmitting: false });
+				},
+				cancelPackagesMessage: `Cancel packages to rename "${item.path}"`
 			});
+		} else {
+			updateSubmittingOrHasPendingChanges({ isSubmitting: false });
 		}
 	};
 
@@ -126,7 +143,7 @@ export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
 					fetchingDependantItems={fetchingDependantItems}
 					error={error}
 					setConfirmBrokenReferences={setConfirmBrokenReferences}
-					onRename={onRename}
+					onRename={onRenameSubmit}
 					onInputChanges={(event) => onInputChanges(applyAssetNameRules(event.target.value, { allowBraces }))}
 					helperText={
 						assetExists ? (
@@ -149,7 +166,7 @@ export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
 				<SecondaryButton onClick={(e) => onClose(e, null)} disabled={isSubmitting}>
 					<FormattedMessage id="words.cancel" defaultMessage="Cancel" />
 				</SecondaryButton>
-				<PrimaryButton onClick={onRename} disabled={renameDisabled} loading={isSubmitting}>
+				<PrimaryButton onClick={onRenameSubmit} disabled={renameDisabled} loading={isSubmitting}>
 					<FormattedMessage id="words.rename" defaultMessage="Rename" />
 				</PrimaryButton>
 			</DialogFooter>

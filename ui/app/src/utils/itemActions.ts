@@ -101,6 +101,7 @@ import { NewContentDialogProps } from '../components/NewContentDialog/utils';
 import { nanoid } from 'nanoid';
 import { popDialog, pushDialog, updateDialogState } from '../state/actions/dialogStack';
 import { createComponentId, pickShowContentFormAction, pushConfirmDialog, pushErrorDialog } from './system';
+import { checkAndCancelAffectedPackages } from '../components/ViewPackagesDialog/utils';
 
 export type ContextMenuOptionDescriptor<ID extends string = string> = {
 	id: ID;
@@ -569,10 +570,9 @@ export const itemActionDispatcher = ({
 							id: dialogId,
 							component: createComponentId('RenameAssetDialog'),
 							props: {
-								path: item.path,
+								item,
 								allowBraces: item.path.startsWith('/scripts/rest'),
 								type,
-								value: item.label,
 								onRenamed: () => dispatch(popDialog({ id: dialogId }))
 							}
 						})
@@ -651,40 +651,47 @@ export const itemActionDispatcher = ({
 				if (item.systemType === 'folder') {
 					dispatch(pushDialog({ component: createComponentId('FolderMoveAlertDialog'), props: { item } }));
 				} else {
-					fetchDependant(site, path).subscribe({
-						next(dependantItems) {
-							const actionToDispatch = batchActions([
-								setClipboard({
-									type: 'CUT',
-									paths: [item.path],
-									sourcePath: item.path
-								}),
-								emitSystemEvent(itemCut({ target: item.path })),
-								showCutItemSuccessNotification()
-							]);
+					checkAndCancelAffectedPackages({
+						siteId: site,
+						item,
+						dispatch,
+						onContinue: () => {
+							fetchDependant(site, path).subscribe({
+								next(dependantItems) {
+									const actionToDispatch = batchActions([
+										setClipboard({
+											type: 'CUT',
+											paths: [item.path],
+											sourcePath: item.path
+										}),
+										emitSystemEvent(itemCut({ target: item.path })),
+										showCutItemSuccessNotification()
+									]);
 
-							if (dependantItems?.length) {
-								fetchContentItems(
-									site,
-									dependantItems.map((item) => item.uri ?? item.path)
-								).subscribe((contentItems) => {
-									dispatch(
-										pushDialog({
-											component: createComponentId('BrokenReferencesDialog'),
-											props: {
-												path,
-												references: contentItems,
-												onContinue: () => dispatch(actionToDispatch)
-											}
-										})
-									);
-								});
-							} else {
-								dispatch(actionToDispatch);
-							}
-						},
-						error({ response }) {
-							dispatch(pushErrorDialog({ props: { error: response } }));
+									if (dependantItems?.length) {
+										fetchContentItems(
+											site,
+											dependantItems.map((item) => item.uri ?? item.path)
+										).subscribe((contentItems) => {
+											dispatch(
+												pushDialog({
+													component: createComponentId('BrokenReferencesDialog'),
+													props: {
+														path,
+														references: contentItems,
+														onContinue: () => dispatch(actionToDispatch)
+													}
+												})
+											);
+										});
+									} else {
+										dispatch(actionToDispatch);
+									}
+								},
+								error({ response }) {
+									dispatch(pushErrorDialog({ props: { error: response } }));
+								}
+							});
 						}
 					});
 				}
