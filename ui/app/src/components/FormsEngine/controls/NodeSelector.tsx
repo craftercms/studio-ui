@@ -815,7 +815,7 @@ function NodeSelector(props: NodeSelectorProps) {
 									(isEmbedded ||
 										(itemsByPath[item.include]?.availableActionsMap.edit &&
 											(itemsByPath[item.include]?.lockOwner == null ||
-												user.username === itemsByPath[item.include]?.lockOwner.username)));
+												user.username === itemsByPath[item.include]?.lockOwner?.username)));
 								return (
 									<ListItemButton
 										key={item.key}

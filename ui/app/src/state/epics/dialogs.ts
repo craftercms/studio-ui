@@ -187,7 +187,7 @@ const dialogEpics: CrafterCMSEpic[] = [
 				const codeEditorState = state.dialogStack.byId[generateDialogId(closeCodeEditorDialog.type)]
 					?.props as CodeEditorDialogProps;
 				const item = state.content.itemsByPath[codeEditorState?.path];
-				return item?.stateMap.locked && item.lockOwner.username === username;
+				return item?.stateMap.locked && item.lockOwner?.username === username;
 			}),
 			map(([, state]) =>
 				unlockItem({
