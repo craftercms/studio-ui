@@ -15,7 +15,7 @@
  */
 
 import React, { ReactNode, useMemo } from 'react';
-import { isImage, isPdfDocument, isVideo } from '../PathNavigator/utils';
+import { isImage } from '../PathNavigator/utils';
 import TextDiffView from './FieldsTypesDiffViews/TextDiffView';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -25,6 +25,7 @@ import VideoView from '../ViewVersionDialog/FieldTypesViews/VideoView';
 import { PDFView } from '../ViewVersionDialog/AssetTypesViews/PDFView';
 import { ContentItem } from '../../models';
 import { FormattedMessage } from 'react-intl';
+import { isPdfDocument, isVideo } from '../../utils/content';
 
 const typesDiffMap = {
 	image: ImageView,

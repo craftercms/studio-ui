@@ -23,7 +23,7 @@ import ContentInstance, { ContentInstanceBase } from '../models/ContentInstance'
 import { deserialize, fromString, getInnerHtml, getInnerHtmlNumber, serialize, wrapElementInAuxDocument } from './xml';
 import { fileNameFromPath, replaceAccentedVowels, unescapeHTML } from './string';
 import { getRootPath, isRootPath, withIndex, withoutIndex } from './path';
-import { isFolder, isNavigable, isPdfDocument, isPreviewable, isVideo } from '../components/PathNavigator/utils';
+import { isFolder, isNavigable, isPreviewable } from '../components/PathNavigator/utils';
 import {
 	CONTENT_CHANGE_TYPE_MASK,
 	CONTENT_COPY_MASK,
@@ -1256,3 +1256,16 @@ export const hasApproveAction = (value: number) => Boolean(value & PACKAGE_APPRO
 export const hasRejectAction = (value: number) => Boolean(value & PACKAGE_REJECT_MASK);
 export const hasCancelAction = (value: number) => Boolean(value & PACKAGE_CANCEL_MASK);
 export const hasResubmitAction = (value: number) => Boolean(value & PACKAGE_RESUBMIT_MASK);
+
+export function isVideo(item: Pick<ContentItem, 'mimeType'>): boolean {
+	return item?.mimeType.startsWith('video/');
+}
+
+export function isAudio(item: Pick<ContentItem, 'mimeType'>): boolean {
+	return item?.mimeType.startsWith('audio/');
+}
+
+export function isPdfDocument(mimeType: string): boolean {
+	// Using `startsWith` to cover possible mime types like `application/pdf; charset=UTF-8`
+	return mimeType.toLowerCase().startsWith('application/pdf');
+}

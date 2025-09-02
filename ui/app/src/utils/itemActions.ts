@@ -77,16 +77,12 @@ import {
 	hasSchedulePublishAction,
 	hasUnlockAction,
 	hasUploadAction,
-	isInActiveWorkflow
-} from './content';
-import {
-	getEditorMode,
-	isImage,
-	isNavigable,
+	isAudio,
+	isInActiveWorkflow,
 	isPdfDocument,
-	isPreviewable,
 	isVideo
-} from '../components/PathNavigator/utils';
+} from './content';
+import { getEditorMode, isImage, isNavigable, isPreviewable } from '../components/PathNavigator/utils';
 import React from 'react';
 import { previewItem } from '../state/actions/preview';
 import { createPresenceTable } from './array';
@@ -342,7 +338,7 @@ export function generateSingleItemOptions(
 		if (['page', 'component', 'taxonomy', 'levelDescriptor'].includes(type)) {
 			sectionA.push(menuOptions.view);
 		} else if (isPreviewable(item)) {
-			if (isImage(item) || isVideo(item) || isPdfDocument(item.mimeType)) {
+			if (isImage(item) || isVideo(item) || isAudio(item) || isPdfDocument(item.mimeType)) {
 				sectionA.push(menuOptions.viewMedia);
 			} else {
 				sectionA.push(menuOptions.viewCode);
@@ -945,7 +941,7 @@ export const itemActionDispatcher = ({
 						allowMinimize: true,
 						allowFullScreen: true,
 						props: {
-							type: isImage(item) ? 'image' : isVideo(item) ? 'video' : 'pdf',
+							type: isImage(item) ? 'image' : isVideo(item) ? 'video' : isAudio(item) ? 'audio' : 'pdf',
 							title: item.label,
 							url: item.path
 						}

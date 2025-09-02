@@ -36,7 +36,7 @@ import translations from './translations';
 import { batchActions } from '../../state/actions/misc';
 import { fetchContentTypes } from '../../state/actions/preview';
 import { fetchContentByCommitId } from '../../services/content';
-import { getEditorMode, isImage, isPdfDocument, isPreviewable, isVideo } from '../PathNavigator/utils';
+import { getEditorMode, isImage, isPreviewable } from '../PathNavigator/utils';
 import {
 	compareBothVersions,
 	compareToPreviousVersion,
@@ -65,7 +65,7 @@ import { contentEvent } from '../../state/actions/system';
 import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
 import { getRootPath } from '../../utils/path';
-import { isComparableAsset } from '../../utils/content';
+import { isComparableAsset, isPdfDocument, isVideo } from '../../utils/content';
 
 export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
 	const { versionsBranch, error } = props;
@@ -168,14 +168,13 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
 				const image = isImage(item);
 				const video = isVideo(item);
 				const pdf = isPdfDocument(item.mimeType);
+				const isBinary = image || video || pdf;
 				dispatch(
 					showPreviewDialog({
 						type: image ? 'image' : video ? 'video' : pdf ? 'pdf' : 'editor',
 						title: item.label,
-						[image || video || pdf ? 'url' : 'content']: content,
-						mode: image || video || pdf ? UNDEFINED : getEditorMode(item),
+						...(isBinary ? { url: content } : { content, mode: getEditorMode(item) }),
 						path: item.path,
-						url: item.path,
 						showEdit: current === version.versionNumber,
 						subtitle: `v.${version.versionNumber}`,
 						...(video ? { mimeType: item.mimeType } : {})

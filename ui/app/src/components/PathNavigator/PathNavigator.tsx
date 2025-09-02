@@ -33,16 +33,7 @@ import {
 	pathNavigatorSetKeyword,
 	pathNavigatorSetLocaleCode
 } from '../../state/actions/pathNavigator';
-import {
-	getEditorMode,
-	isEditableViaFormEditor,
-	isFolder,
-	isImage,
-	isNavigable,
-	isPdfDocument,
-	isPreviewable,
-	isVideo
-} from './utils';
+import { getEditorMode, isEditableViaFormEditor, isFolder, isImage, isNavigable, isPreviewable } from './utils';
 import { StateStylingProps } from '../../models/UiConfig';
 import { debounceTime } from 'rxjs/operators';
 import PathNavigatorUI from './PathNavigatorUI';
@@ -50,7 +41,7 @@ import PathNavigatorSkeleton from './PathNavigatorSkeleton';
 import GlobalState from '../../models/GlobalState';
 import { SystemIconDescriptor } from '../SystemIcon';
 import { getOffsetLeft, getOffsetTop } from '@mui/material/Popover';
-import { getNumOfMenuOptionsForItem, lookupItemByPath } from '../../utils/content';
+import { getNumOfMenuOptionsForItem, isPdfDocument, isVideo, lookupItemByPath } from '../../utils/content';
 import { useSelection } from '../../hooks/useSelection';
 import { useEnv } from '../../hooks/useEnv';
 import { useItemsByPath } from '../../hooks/useItemsByPath';

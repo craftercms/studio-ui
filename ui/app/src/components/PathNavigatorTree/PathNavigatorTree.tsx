@@ -31,17 +31,14 @@ import { StateStylingProps } from '../../models/UiConfig';
 import LookupTable from '../../models/LookupTable';
 import {
 	getEditorMode,
-	isAudio,
 	isEditableViaFormEditor,
 	isImage,
 	isMediaContent,
 	isNavigable,
-	isPdfDocument,
-	isPreviewable,
-	isVideo
+	isPreviewable
 } from '../PathNavigator/utils';
 import ContextMenu, { ContextMenuOption } from '../ContextMenu/ContextMenu';
-import { getNumOfMenuOptionsForItem, lookupItemByPath } from '../../utils/content';
+import { getNumOfMenuOptionsForItem, isAudio, isPdfDocument, isVideo, lookupItemByPath } from '../../utils/content';
 import { previewItem } from '../../state/actions/preview';
 import { getOffsetLeft, getOffsetTop } from '@mui/material/Popover';
 import { getStoredPathNavigatorTree } from '../../utils/state';
