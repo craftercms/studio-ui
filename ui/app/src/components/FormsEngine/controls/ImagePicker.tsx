@@ -90,7 +90,7 @@ export function ImagePicker(props: ImagePickerProps) {
 			}
 			case 'upload': {
 				if (allowedUploadPaths.length === 1) {
-					executeDataSourceOption('upload', allowedSearchPaths[0]);
+					executeDataSourceOption('upload', allowedUploadPaths[0]);
 				} else {
 					// Open upload picker
 					setPickerType('upload');

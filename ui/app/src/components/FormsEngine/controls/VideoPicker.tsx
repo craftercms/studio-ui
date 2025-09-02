@@ -65,7 +65,6 @@ export function VideoPicker(props: VideoPickerProps) {
 	const contextItem = useItemContext();
 	const { id, pathInSite } = useItemMetaContext();
 	const videoInfo = useVideoInfo(value ? `${guestBase}${value}` : null);
-	console.log('videoInfo', videoInfo);
 	const hasValue = Boolean(value);
 	const dataSourceSummary = useConsolidatedVideoPickerData(useExtractDataSources(contentType, field, 'videoManager'));
 	const { allowedBrowsePaths, allowedUploadPaths, allowedSearchPaths } = dataSourceSummary;

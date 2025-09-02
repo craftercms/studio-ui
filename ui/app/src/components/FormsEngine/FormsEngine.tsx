@@ -818,15 +818,19 @@ function FormOrchestrator(props: FormsEngineProps) {
 								<SectionAccordion
 									key={sectionIndex}
 									section={section}
-									renderControl={(fieldId, fieldIndex) =>
-										renderFieldControl(
+									renderControl={(fieldId, fieldIndex) => {
+										if (fieldId.endsWith('_dt')) {
+											// console.log('fieldId', fieldId);
+											// console.log('section', section);
+										}
+										return renderFieldControl(
 											contentTypeFields[fieldId],
 											stableFormContext.atoms.valueByFieldId,
 											sectionIndex === 0 && fieldIndex === 0,
 											readonly,
 											contentType
-										)
-									}
+										);
+									}}
 								/>
 							))
 						)}
