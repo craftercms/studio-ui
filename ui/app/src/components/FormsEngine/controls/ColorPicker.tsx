@@ -72,7 +72,7 @@ const hexColorInputSx: SxProps<Theme> = {
 };
 
 export function ColorPicker(props: ColorPickerProps) {
-	const { field, readonly, value, autoFocus, setValue } = props;
+	const { field, readonly: formReadonly, value, autoFocus, setValue } = props;
 	// const presetColors = ['#cd9323', '#1a53d8', '#9a2151', '#0d6416', '#8d2808'];
 	// return (
 	// 	<FormsEngineField field={field}>
@@ -87,6 +87,7 @@ export function ColorPicker(props: ColorPickerProps) {
 	const isHex = format === 'hex';
 	const ColourPicker: ElementType = pickers[format][String(alpha)] ?? HexColorPicker;
 	const hexColorInputProps: ComponentProps<typeof HexColorInput> = { color: colour, alpha: alpha, prefixed: true };
+	const readonly = formReadonly || (field.properties.readonly?.value as boolean);
 	const handleOpen = () => setOpen(true);
 	const handleClose = () => {
 		setValue(colour);
@@ -104,7 +105,7 @@ export function ColorPicker(props: ColorPickerProps) {
 	return (
 		<FormsEngineField field={field}>
 			<Box>
-				<ButtonBase ref={buttonRef} sx={{ px: 1 }} onClick={() => handleOpen()}>
+				<ButtonBase ref={buttonRef} sx={{ px: 1 }} onClick={() => handleOpen()} disabled={readonly}>
 					<Box
 						sx={{
 							mr: isHex ? 0 : 1,

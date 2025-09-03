@@ -24,9 +24,10 @@ export interface TextProps extends ControlProps {
 }
 
 export function Text(props: TextProps) {
-	const { field, value, setValue, readonly, autoFocus } = props;
+	const { field, value, setValue, readonly: formReadonly, autoFocus } = props;
 	const htmlId = useId();
 	const maxLength = field.validations.maxLength?.value;
+	const readonly = formReadonly || (field.properties.readonly?.value as boolean);
 	const handleChange: OutlinedInputProps['onChange'] = (e) => setValue(e.currentTarget.value);
 	return (
 		<FormsEngineField htmlFor={htmlId} field={field} max={maxLength} length={value.length}>

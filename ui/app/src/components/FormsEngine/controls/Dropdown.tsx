@@ -31,10 +31,11 @@ export interface DropdownProps extends ControlProps {
 }
 
 export function Dropdown(props: DropdownProps) {
-	const { field, contentType, value, setValue, readonly, autoFocus } = props;
+	const { field, contentType, value, setValue, readonly: formReadonly, autoFocus } = props;
 	const contentTypes = useContentTypes();
 	const effectRefs = useUpdateRefs({ contentTypes });
 	const maxLength = field.validations.maxLength?.value;
+	const readonly = formReadonly || (field.properties.readonly?.value as boolean);
 	const handleChange = (event: SelectChangeEvent) => setValue(event.target.value);
 	const optionGroups = useKVPLoader(
 		useActiveSiteId(),

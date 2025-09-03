@@ -44,11 +44,12 @@ const parseDateToTime = (date: Date): string => {
 };
 
 export function Time(props: TimeProps) {
-	const { field, value, setValue, readonly, autoFocus } = props;
+	const { field, value, setValue, readonly: formReadonly, autoFocus } = props;
 	const dateValue = parseTimeToDate(value);
 	const htmlId = useId();
 	const allowPastDate = field.properties.allowPastDate?.value ?? false;
 	const useCustomTimezone = field.properties.useCustomTimezone?.value ?? false;
+	const readonly = formReadonly || (field.properties.readonly?.value as boolean);
 	const handleChange: DateTimeTimezonePickerProps['onChange'] = (date) => {
 		setValue(parseDateToTime(date));
 	};
@@ -70,6 +71,7 @@ export function Time(props: TimeProps) {
 				value={dateValue}
 				disablePast={!allowPastDate}
 				disabled={readonly}
+				autoFocus={autoFocus}
 				onChange={handleChange}
 				disableTimezoneSelection={!useCustomTimezone}
 				pickers={['time']}
@@ -80,10 +82,11 @@ export function Time(props: TimeProps) {
 				}}
 			/>
 			<Box display="flex" gap={2} justifyContent="flex-end">
-				<SecondaryButton onClick={setNow}>
+				{/* TODO: read properties and display buttons if enabled */}
+				<SecondaryButton onClick={setNow} disabled={readonly}>
 					<FormattedMessage defaultMessage="Set now" />
 				</SecondaryButton>
-				<SecondaryButton onClick={clearValue}>
+				<SecondaryButton onClick={clearValue} disabled={readonly}>
 					<FormattedMessage defaultMessage="Clear value" />
 				</SecondaryButton>
 			</Box>

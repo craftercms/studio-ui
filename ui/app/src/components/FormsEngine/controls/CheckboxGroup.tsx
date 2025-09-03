@@ -36,12 +36,14 @@ export interface CheckboxGroupProps extends ControlProps {
 const buildOption = (
 	option: KVPLoaderItem['items'][0],
 	onChange: CheckboxProps['onChange'],
-	checkedValuesLookup: LookupTable<boolean>
+	checkedValuesLookup: LookupTable<boolean>,
+	readonly: boolean = false
 ) => (
 	<FormControlLabel
 		key={option.key}
 		control={
 			<Checkbox
+				disabled={readonly}
 				color="info"
 				checked={checkedValuesLookup[option.key] ?? false}
 				onChange={onChange}
@@ -76,9 +78,10 @@ const VirtualRow = (
 
 export function CheckboxGroup(props: CheckboxGroupProps) {
 	const theme = useTheme();
-	const { contentType, field, value, setValue, autoFocus } = props;
+	const { contentType, field, value, setValue, autoFocus, readonly: formReadonly } = props;
 	const [searchFieldValue, setSearchFieldValue] = useState('');
 	const [keyword, setKeyword] = useState('');
+	const readonly = formReadonly || (field.properties.readonly?.value as boolean);
 	const onKeyword$ = useDebouncedInput(() => {
 		setKeyword(searchFieldValue);
 	});
@@ -126,6 +129,7 @@ export function CheckboxGroup(props: CheckboxGroupProps) {
 		<FormsEngineField field={field} autoFocus={!showFilter && autoFocus}>
 			{showFilter && (
 				<SearchBar
+					disabled={readonly}
 					sx={{ mb: 1 }}
 					autoFocus={autoFocus}
 					showActionButton={searchFieldValue !== ''}
@@ -175,7 +179,7 @@ export function CheckboxGroup(props: CheckboxGroupProps) {
 						itemData={{ options: finalOptions, onChange: handleChange, checkedValuesLookup }}
 					/>
 				) : (
-					finalOptions?.map((option) => buildOption(option, handleChange, checkedValuesLookup))
+					finalOptions?.map((option) => buildOption(option, handleChange, checkedValuesLookup, readonly))
 				)}
 			</FormGroup>
 		</FormsEngineField>

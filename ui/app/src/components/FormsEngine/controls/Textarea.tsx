@@ -24,9 +24,10 @@ export interface TextareaProps extends ControlProps {
 }
 
 export function Textarea(props: TextareaProps) {
-	const { field, value, setValue, readonly, autoFocus } = props;
+	const { field, value, setValue, readonly: formReadonly, autoFocus } = props;
 	const htmlId = useId();
 	const maxLength = field.validations.maxLength?.value;
+	const readonly = formReadonly || (field.properties.readonly?.value as boolean);
 	return (
 		<FormsEngineField htmlFor={htmlId} field={field} max={maxLength} length={value.length}>
 			<OutlinedInput

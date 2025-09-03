@@ -24,8 +24,9 @@ export interface CheckboxProps extends ControlProps {
 }
 
 export function Checkbox(props: CheckboxProps) {
-	const { field, value, setValue, readonly, autoFocus } = props;
+	const { field, value, setValue, readonly: formReadonly, autoFocus } = props;
 	const htmlId = useId();
+	const readonly = formReadonly || (field.properties.readonly?.value as boolean);
 	const handleChange = (e: ChangeEvent<HTMLInputElement>) => setValue(e.target.checked);
 	return (
 		<FormsEngineField htmlFor={htmlId} field={field}>

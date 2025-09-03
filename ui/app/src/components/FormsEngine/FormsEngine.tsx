@@ -364,7 +364,7 @@ function FormBootstrap(props: FormsEngineProps) {
 				pathInSite: parentPathInSite,
 				contentType: parentContentType,
 				contentObject,
-				contentXml: element.outerHTML
+				contentXml: element?.outerHTML
 			});
 		} else if (
 			// An embedded component is being opened as a stacked form.

@@ -65,7 +65,8 @@ function getRepeatItemSummary(item: RepeatItem): string {
 }
 
 export function Repeat(props: RepeatProps) {
-	const { field, value, setValue, readonly, autoFocus } = props;
+	const { field, value, setValue, readonly: formReadonly, autoFocus } = props;
+	const readonly = formReadonly || (field.properties.readonly?.value as boolean);
 	const [sortMode, setSortMode] = useState(false);
 	const useTouchSorting = useMemo(() => isTouchDevice(), []);
 	const handleCancelReorder = () => setSortMode(false);
@@ -152,8 +153,10 @@ export function Repeat(props: RepeatProps) {
 									<ListItemText
 										primary={getRepeatItemTitle(item)}
 										secondary={getRepeatItemSummary(item)}
-										primaryTypographyProps={{ noWrap: true }}
-										secondaryTypographyProps={{ noWrap: true }}
+										slotProps={{
+											primary: { noWrap: true },
+											secondary: { noWrap: true }
+										}}
 									/>
 									{!readonly && (
 										<ListItemSecondaryAction sx={{ position: 'static', display: 'flex', transform: 'none' }}>

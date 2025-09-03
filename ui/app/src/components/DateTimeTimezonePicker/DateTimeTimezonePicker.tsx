@@ -41,6 +41,7 @@ export interface DateTimeTimezonePickerProps {
 	value: string | Date | number;
 	disabled?: boolean;
 	disablePast?: boolean;
+	autoFocus?: boolean;
 	disableTimezoneSelection?: boolean;
 	localeCode?: string;
 	dateTimeFormatOptions?: Intl.DateTimeFormatOptions;
@@ -58,6 +59,7 @@ export function DateTimeTimezonePicker(props: DateTimeTimezonePickerProps) {
 		value: dateProp,
 		disabled = false,
 		disablePast = false,
+		autoFocus = false,
 		disableTimezoneSelection = false,
 		localeCode = locale.localeCode || 'en-US',
 		dateTimeFormatOptions = locale.dateTimeFormatOptions ?? resolvedLocaleData,
@@ -153,6 +155,7 @@ export function DateTimeTimezonePicker(props: DateTimeTimezonePickerProps) {
 						onChange={handleChange}
 						disablePast={disablePast}
 						disabled={disabled}
+						autoFocus={autoFocus}
 						onError={onError}
 						slotProps={{ textField: { size: 'small' } }}
 						// Not using the timezone prop since it would cause the date to get adjusted to that timezone.

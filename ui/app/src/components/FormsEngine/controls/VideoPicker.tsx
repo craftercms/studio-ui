@@ -57,7 +57,8 @@ export interface VideoPickerProps extends ControlProps {
 }
 
 export function VideoPicker(props: VideoPickerProps) {
-	const { field, value, setValue, contentType, readonly } = props;
+	const { field, value, setValue, contentType, readonly: formReadonly, autoFocus } = props;
+	const readonly = formReadonly || (field.properties.readonly?.value as boolean);
 	const siteId = useActiveSiteId();
 	const { guestBase } = useEnv();
 	// For testing, by using 3000 as the guestBase both the fetch in `useVideoInfo` and the download functionality will work
@@ -267,6 +268,7 @@ export function VideoPicker(props: VideoPickerProps) {
 										onClick={() => {
 											setAddMenuOpen(true);
 										}}
+										autoFocus={autoFocus}
 									>
 										<EditOutlined />
 									</IconButton>

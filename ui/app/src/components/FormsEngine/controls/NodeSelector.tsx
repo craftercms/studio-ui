@@ -507,8 +507,8 @@ const showUploadDialog = ({
 };
 
 function NodeSelector(props: NodeSelectorProps) {
-	// TODO: readonly prop - check what exactly is (FE in readonly mode?)
-	const { field, contentType, value, setValue, readonly, autoFocus } = props;
+	const { field, contentType, value, setValue, readonly: formReadonly, autoFocus } = props;
+	const readonly = formReadonly || (field.properties.readonly?.value as boolean);
 	useFetchContentItems(value.flatMap((item) => item.include ?? []));
 	const [sortMode, setSortMode] = useState(false);
 	const useTouchSorting = useMemo(() => isTouchDevice(), []);

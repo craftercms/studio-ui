@@ -60,7 +60,8 @@ export interface ImagePickerProps extends ControlProps {
 type PickerType = 'browse' | 'upload' | 'search';
 
 export function ImagePicker(props: ImagePickerProps) {
-	const { field, value, setValue, contentType, autoFocus, readonly } = props;
+	const { field, value, setValue, contentType, autoFocus, readonly: formReadonly } = props;
+	const readonly = formReadonly || (field.properties.readonly?.value as boolean);
 	const siteId = useActiveSiteId();
 	const { guestBase } = useEnv();
 	const contextItem = useItemContext();
@@ -266,6 +267,7 @@ export function ImagePicker(props: ImagePickerProps) {
 											size="small"
 											ref={addMenuButtonRef}
 											disabled={readonly}
+											autoFocus={autoFocus}
 											onClick={() => {
 												setAddMenuOpen(true);
 											}}

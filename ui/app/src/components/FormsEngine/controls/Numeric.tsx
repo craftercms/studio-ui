@@ -59,10 +59,11 @@ const OutlinedInputWithRef = forwardRef<HTMLInputElement, OutlinedInputProps>((p
 });
 
 export function Numeric(props: NumberProps) {
-	const { field, setValue, readonly, autoFocus } = props;
+	const { field, setValue, readonly: formReadonly, autoFocus } = props;
 	const htmlId = useId();
 	const maxLength = field.validations.maxLength?.value;
 	const value = parseValue(props.value);
+	const readonly = formReadonly || (field.properties.readonly?.value as boolean);
 	const handleChange: NumberFieldRootProps['onValueChange'] = (value) => setValue(value);
 	return (
 		<FormsEngineField htmlFor={htmlId} field={field} max={maxLength}>
