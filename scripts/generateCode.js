@@ -46,6 +46,7 @@ function muiIcons(iconSetName) {
       .replace(/export \{.+?\} from ['"]\.\/(.+)(\.js)?['"];/g, '$1')
       .split('\n')
       .filter((iconName) => iconName.includes(iconSetName))
+      .map((iconName) => iconName.replace(/\.js$/, '')) // Add this line to remove .js extensions
       .map((iconName) => `@mui/icons-material/${iconName}`)
       .map((iconPath) => `components.set('${iconPath}', lazy(() => import('${iconPath}')));`)
       .join('\n');

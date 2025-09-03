@@ -1,7 +1,7 @@
 {
   "name": "@craftercms/experience-builder",
   "description": "CrafterCMS' Experience Builder integration sdk.",
-  "version": "4.3.1",
+  "version": "5.0.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/craftercms/studio-ui.git",
@@ -13,7 +13,7 @@
   "typings": "build_tsc/index.d.ts",
   "craftercms": {
     "id": "craftercms.guest",
-    "minStudioVersion": "4.3.0"
+    "minStudioVersion": "4.4.3"
   },
   "browserslist": {
     "production": [
