@@ -90,7 +90,7 @@
 		"@types/rimraf": "^4.0.5",
 		"build-if-changed": "^1.5.5",
 		"eslint": "^9.33.0",
-		"eslint-config-prettier": "^9.1.2",
+		"eslint-config-prettier": "^10.1.8",
 		"eslint-plugin-prettier": "^5.5.4",
 		"glob-gitignore": "^1.0.15",
 		"globals": "^16.3.0",
@@ -98,10 +98,10 @@
 		"rimraf": "^6.0.1",
 		"rollup": "^4.46.2",
 		"rollup-plugin-copy": "^3.5.0",
-		"yargs": "^17.7.2"
+		"yargs": "^18.0.0"
 	},
 	"dependencies": {
-		"@prettier/plugin-xml": "3.4.1",
+		"@prettier/plugin-xml": "3.4.2",
 		"prettier": "^3.6.2"
 	}
 }
