@@ -109,20 +109,19 @@ export function parseComponentsDataSourceContentTypesProperty(
 	const allowedContentTypesMeta: LookupTable<AllowedContentTypesData> = validations.allowedContentTypes.value;
 	value.forEach((typeId) => {
 		allowedContentTypesMeta[typeId] = allowedContentTypesMeta[typeId] ?? {};
-		const propsLookup = createLookupTable(asArray(dataSource.properties.property), 'name');
-		const allowEmbedded = propsLookup.allowEmbedded?.value?.trim() === 'true';
-		const allowShared = propsLookup.allowShared?.value?.trim() === 'true';
-		const allowSharedExisting =
-			propsLookup.enableBrowse?.value?.trim() === 'true' || propsLookup.enableSearch?.value?.trim() === 'true';
-		if (allowEmbedded) {
+		// TODO: check this - affecting nodeSelector dataSources not having '.property' array, .properties already a lookup
+		const propsLookup = dataSource.properties.property
+			? createLookupTable(asArray(dataSource.properties.property), 'name')
+			: dataSource.properties;
+		if (propsLookup.allowEmbedded) {
 			allowedContentTypesMeta[typeId].embedded = true;
 			validations.allowedEmbeddedContentTypes.value.push(typeId);
 		}
-		if (allowShared) {
+		if (propsLookup.allowShared) {
 			allowedContentTypesMeta[typeId].shared = true;
 			validations.allowedSharedContentTypes.value.push(typeId);
 		}
-		if (allowSharedExisting) {
+		if (propsLookup.enableBrowse || propsLookup.enableSearch) {
 			allowedContentTypesMeta[typeId].sharedExisting = true;
 			validations.allowedSharedExistingContentTypes.value.push(typeId);
 		}
