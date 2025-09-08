@@ -14,20 +14,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import OutlinedInput from '@mui/material/OutlinedInput';
-import React, { useId } from 'react';
+import OutlinedInput, { OutlinedInputProps } from '@mui/material/OutlinedInput';
+import React, { useId, useMemo } from 'react';
 import { FormsEngineField } from '../components/FormsEngineField';
 import { ControlProps } from '../types';
+import { escapeXml, unescapeXml } from '../../../utils/xml';
 
 export interface TextareaProps extends ControlProps {
 	value: string;
 }
 
 export function Textarea(props: TextareaProps) {
-	const { field, value, setValue, readonly: formReadonly, autoFocus } = props;
+	const { field, value: valueProp, setValue, readonly: formReadonly, autoFocus } = props;
 	const htmlId = useId();
+
+	// region field properties/validations
 	const maxLength = field.validations.maxLength?.value;
 	const readonly = formReadonly || (field.properties.readonly?.value as boolean);
+	const escapeContent = (field.properties.escapeContent?.value as boolean) ?? false;
+	// endregion
+
+	const value = useMemo(() => {
+		return escapeContent ? unescapeXml(valueProp) : valueProp;
+	}, [valueProp, escapeContent]);
+
+	const handleChange: OutlinedInputProps['onChange'] = (e) => {
+		setValue(escapeContent ? escapeXml(e.currentTarget.value) : e.currentTarget.value);
+	};
+
 	return (
 		<FormsEngineField htmlFor={htmlId} field={field} max={maxLength} length={value.length}>
 			<OutlinedInput
@@ -37,7 +51,7 @@ export function Textarea(props: TextareaProps) {
 				inputProps={{ maxLength }}
 				id={htmlId}
 				value={value}
-				onChange={(e) => setValue(e.currentTarget.value)}
+				onChange={handleChange}
 				disabled={readonly}
 			/>
 		</FormsEngineField>
