@@ -25,8 +25,9 @@ import { IntlShape } from 'react-intl';
 import { generateMultipleItemOptions, generateSingleItemOptions } from '../../utils/itemActions';
 import { actionsToBeShown } from '../DashletCard/dashletCommons';
 import { ActionsBarAction } from '../ActionsBar';
-import { isImage, isPdfDocument, isPreviewable, isVideo } from '../PathNavigator/utils';
+import { isImage, isPreviewable } from '../PathNavigator/utils';
 import { FetchPackagesResponse } from '../../services/publishing';
+import { isPdfDocument, isVideo } from '../../utils/content';
 
 export interface CommonDashletProps {
 	contentHeight?: number | string;

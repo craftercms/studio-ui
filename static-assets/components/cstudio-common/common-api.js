@@ -2226,7 +2226,7 @@ var nodeOpen = false,
               } else {
                 CStudioAuthoring.SelectedContent.init();
               }
-              callback.success && callback.success(nodeRef);
+              callback?.success?.(nodeRef);
             }
           });
         }
@@ -2720,6 +2720,41 @@ var nodeOpen = false,
           }
         }
         storage.write(treeCookieName, JSON.stringify(treeCookie), 360);
+      },
+      showPreviewAsset: function (sandboxItem) {
+        if (
+          craftercms.utils.content.isImage(sandboxItem.path) ||
+          craftercms.utils.content.isVideo(sandboxItem) ||
+          craftercms.utils.content.isPdfDocument(sandboxItem.mimeType)
+        ) {
+          // View media
+          craftercms.getStore().dispatch({
+            type: 'SHOW_PREVIEW_DIALOG',
+            payload: {
+              open: true,
+              type: craftercms.utils.content.isImage(sandboxItem.path)
+                ? 'image'
+                : craftercms.utils.content.isVideo(sandboxItem)
+                  ? 'video'
+                  : 'pdf',
+              title: sandboxItem.label,
+              url: sandboxItem.path
+            }
+          });
+        } else {
+          // View code
+          craftercms.getStore().dispatch({
+            type: 'SHOW_PREVIEW_DIALOG',
+            payload: {
+              open: true,
+              type: 'editor',
+              title: sandboxItem.label,
+              url: sandboxItem.path,
+              path: sandboxItem.path,
+              mode: craftercms.utils.content.getEditorMode(sandboxItem.mimeType)
+            }
+          });
+        }
       }
     },
     /**

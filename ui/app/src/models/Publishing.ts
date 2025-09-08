@@ -53,6 +53,14 @@ export interface CurrentFilters {
 
 export type PublishingStatusCodes = 'ready' | 'publishing' | 'stopped';
 
+export interface currentTaskStage {
+	name: string;
+	state: PublishingStatus['currentTask']['state'];
+	processed: number;
+	errors: boolean;
+	total: number;
+}
+
 export interface PublishingStatus {
 	enabled: boolean;
 	published: boolean;
@@ -64,13 +72,8 @@ export interface PublishingStatus {
 		type: string;
 		startTime: string;
 		endTime: string;
-		state: string;
-		stages: {
-			name: string;
-			state: string;
-			processed: number;
-			errors: boolean;
-		}[];
+		state: 'READY' | 'IN_PROGRESS' | 'COMPLETED';
+		stages: currentTaskStage[];
 	};
 }
 

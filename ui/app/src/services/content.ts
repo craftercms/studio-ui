@@ -40,7 +40,7 @@ import { getRequestForgeryToken } from '../utils/auth';
 import { ContentItem, LegacyItem } from '../models/Item';
 import { ItemHistoryEntry } from '../models/Version';
 import { GetChildrenOptions } from '../models/GetChildrenOptions';
-import { generateComponentPath, parseContentXML, prepareVirtualItemProps } from '../utils/content';
+import { generateComponentPath, isPdfDocument, parseContentXML, prepareVirtualItemProps } from '../utils/content';
 import QuickCreateItem from '../models/content/QuickCreateItem';
 import ApiResponse from '../models/ApiResponse';
 import { fetchContentTypes } from './contentTypes';
@@ -52,7 +52,7 @@ import { GetItemWithChildrenResponse } from '../models/GetItemWithChildrenRespon
 import { FetchItemsByPathOptions } from '../models/FetchItemsByPath';
 import { v4 as uuid } from 'uuid';
 import FetchItemsByPathArray from '../models/FetchItemsByPathArray';
-import { isPdfDocument, isMediaContent, isTextContent } from '../components/PathNavigator/utils';
+import { isMediaContent, isTextContent } from '../components/PathNavigator/utils';
 import { fromPromise } from 'rxjs/internal/observable/innerFrom';
 
 export function fetchComponentInstanceHTML(path: string): Observable<string> {
@@ -1487,7 +1487,7 @@ export function fetchContentByCommitId(site: string, path: string, commitId: str
 	).pipe(
 		switchMap((ajax) => {
 			const blob = ajax.response;
-			const type = ajax.xhr.getResponseHeader('content-type');
+			const type = (ajax.xhr.getResponseHeader('content-type') || '').toLowerCase();
 			if (isMediaContent(type) || isPdfDocument(type)) {
 				return of(URL.createObjectURL(blob));
 			} else if (isTextContent(type)) {
