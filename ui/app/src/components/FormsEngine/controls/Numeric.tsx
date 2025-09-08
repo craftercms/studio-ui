@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ComponentProps, forwardRef, useId } from 'react';
+import { ComponentProps, forwardRef, useId, useState } from 'react';
 import OutlinedInput, { OutlinedInputProps } from '@mui/material/OutlinedInput';
 import { FormsEngineField } from '../components/FormsEngineField';
 import type { ControlProps } from '../types';
@@ -24,6 +24,7 @@ import Button from '@mui/material/Button';
 import MinusRounded from '@mui/icons-material/RemoveRounded';
 import { NumberField } from '@base-ui-components/react/number-field';
 import { nou } from '../../../utils/object';
+import { isFieldRequired } from '../lib/validators';
 
 type NumberFieldRootProps = ComponentProps<typeof NumberField.Root>;
 
@@ -61,10 +62,30 @@ const OutlinedInputWithRef = forwardRef<HTMLInputElement, OutlinedInputProps>((p
 export function Numeric(props: NumberProps) {
 	const { field, setValue, readonly: formReadonly, autoFocus } = props;
 	const htmlId = useId();
-	const maxLength = field.validations.maxLength?.value;
 	const value = parseValue(props.value);
+
+	// region field properties/validations
+	const maxLength = field.validations.maxLength?.value;
+	const maxValue = field.validations.maxValue?.value;
+	const minValue = field.validations.minValue?.value;
 	const readonly = formReadonly || (field.properties.readonly?.value as boolean);
-	const handleChange: NumberFieldRootProps['onValueChange'] = (value) => setValue(value);
+	const pattern = field.validations.pattern?.value as string;
+	const isRequired = isFieldRequired(field);
+	// TODO: where to set this?
+	const [patternError, setPatternError] = useState(isRequired && !value);
+	// endregion
+
+	const handleChange: NumberFieldRootProps['onValueChange'] = (newValue) => {
+		let isInError = false;
+		if (pattern) {
+			isInError = Boolean(newValue) && !String(newValue).match(pattern);
+		}
+		if (isRequired && !newValue) {
+			isInError = true;
+		}
+		setPatternError(isInError);
+		setValue(newValue);
+	};
 	return (
 		<FormsEngineField htmlFor={htmlId} field={field} max={maxLength}>
 			<NumberField.Root
@@ -73,6 +94,8 @@ export function Numeric(props: NumberProps) {
 				onValueChange={handleChange}
 				readOnly={readonly}
 				autoFocus={autoFocus}
+				min={minValue}
+				max={maxValue}
 			>
 				<NumberField.Group render={<Box display="flex" />}>
 					<NumberField.Decrement render={<Button variant="outlined" sx={decrementButtonSx} />}>
