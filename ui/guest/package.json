@@ -49,8 +49,8 @@
 		"lint": "eslint ."
 	},
 	"dependencies": {
-		"@craftercms/classes": "4.3.0",
-		"@craftercms/content": "4.3.0",
+		"@craftercms/classes": "4.4.0",
+		"@craftercms/content": "4.4.2",
 		"@craftercms/ice": "4.3.0",
 		"@craftercms/npm-content": "workspace:^",
 		"@craftercms/search": "4.3.0",
@@ -74,7 +74,7 @@
 		"redux-observable": "^3.0.0-rc.2",
 		"rxjs": "^7.8.2",
 		"typescript": "^5.9.2",
-		"uuid": "^11.1.0"
+		"uuid": "^13.0.0"
 	},
 	"devDependencies": {
 		"@rollup/plugin-swc": "^0.4.0",
@@ -88,6 +88,6 @@
 		"replace-in-file": "^8.3.0",
 		"rollup": "^4.46.2",
 		"rollup-plugin-swc3": "^0.12.1",
-		"yargs": "^17.7.2"
+		"yargs": "^18.0.0"
 	}
 }
