@@ -23,6 +23,14 @@ export interface SingleFileUploadDialogBaseProps {
 	path: string;
 	customFileName?: string;
 	fileTypes?: [string];
+	restrictions?: {
+		height?: number;
+		width?: number;
+		maxHeight?: number;
+		maxWidth?: number;
+		minHeight?: number;
+		minWidth?: number;
+	};
 }
 
 export interface SingleFileUploadDialogProps extends SingleFileUploadDialogBaseProps, EnhancedDialogProps {
@@ -45,7 +53,7 @@ export interface SingleFileUploadDialogContainerProps
 	extends SingleFileUploadDialogBaseProps,
 		Pick<
 			SingleFileUploadDialogProps,
-			'site' | 'customFileName' | 'fileTypes' | 'onUploadStart' | 'onUploadComplete' | 'onUploadError'
+			'site' | 'customFileName' | 'fileTypes' | 'onUploadStart' | 'onUploadComplete' | 'onUploadError' | 'restrictions'
 		> {}
 
 export interface SingleFileUploadDialogUIProps extends SingleFileUploadDialogContainerProps {}

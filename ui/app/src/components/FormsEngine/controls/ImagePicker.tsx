@@ -52,6 +52,7 @@ import useActiveSiteId from '../../../hooks/useActiveSiteId';
 import Tooltip from '@mui/material/Tooltip';
 import { useExtractDataSources } from '../dataSourceHooks/useExtractDataSources';
 import { createMediaMenuOptions, downloadMedia } from '../lib/controlHelpers';
+import { createComponentId } from '../../../utils/system';
 
 export interface ImagePickerProps extends ControlProps {
 	value: string;
@@ -61,7 +62,6 @@ type PickerType = 'browse' | 'upload' | 'search';
 
 export function ImagePicker(props: ImagePickerProps) {
 	const { field, value, setValue, contentType, autoFocus, readonly: formReadonly } = props;
-	const readonly = formReadonly || (field.properties.readonly?.value as boolean);
 	const siteId = useActiveSiteId();
 	const { guestBase } = useEnv();
 	const contextItem = useItemContext();
@@ -75,6 +75,18 @@ export function ImagePicker(props: ImagePickerProps) {
 	const dispatch = useDispatch();
 	const [openPickerDialog, setOpenPickerDialog] = useState(false);
 	const [pickerType, setPickerType] = useState<PickerType>(null);
+
+	// region field properties/validations
+	const readonly = formReadonly || (field.properties.readonly?.value as boolean);
+	const restrictions = {
+		height: field.validations.height?.value ?? null,
+		width: field.validations.width?.value ?? null,
+		maxHeight: field.validations.maxHeight?.value ?? null,
+		maxWidth: field.validations.maxWidth?.value ?? null,
+		minHeight: field.validations.minHeight?.value ?? null,
+		minWidth: field.validations.minWidth?.value ?? null
+	};
+	// endregion
 
 	const handleDataSourceOptionClick = (event: ReactMouseEvent<HTMLLIElement, MouseEvent>, option: PickerType) => {
 		setAddMenuOpen(false);
@@ -166,6 +178,7 @@ export function ImagePicker(props: ImagePickerProps) {
 							site: siteId,
 							path: processPath(choice.path),
 							fileTypes: ['image/*'],
+							restrictions,
 							onUploadComplete(result: FileUploadResult) {
 								if (result.successful.length) {
 									const newValue = ensureSingleSlash(

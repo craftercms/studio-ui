@@ -1730,11 +1730,11 @@ __metadata:
     prop-types: "npm:^15.8.1"
     query-string: "npm:^9.2.2"
     react: "npm:19.1.1"
-    react-advanced-cropper: "npm:^0.20.1"
     react-animations: "npm:^1.0.0"
     react-colorful: "npm:^5.6.1"
     react-dom: "npm:19.1.1"
     react-hotkeys-hook: "npm:^5.1.0"
+    react-image-crop: "npm:^11.0.10"
     react-intl: "npm:^7.1.11"
     react-redux: "npm:^9.2.0"
     react-router: "npm:^7.8.1"
@@ -5885,15 +5885,6 @@ __metadata:
   bin:
     acorn: bin/acorn
   checksum: 10/77f2de5051a631cf1729c090e5759148459cdb76b5f5c70f890503d629cf5052357b0ce783c0f976dd8a93c5150f59f6d18df1def3f502396a20f81282482fa4
-  languageName: node
-  linkType: hard
-
-"advanced-cropper@npm:~0.17.1":
-  version: 0.17.1
-  resolution: "advanced-cropper@npm:0.17.1"
-  dependencies:
-    tslib: "npm:^2.4.0"
-  checksum: 10/861a57111774c7a290911adf44bc9d677d07015a3530edb7d4b66eb460ad0ea64bcdff5be09346625dc9c8729609ec3aecc92a9a7a5da1c4b86c132ba8545499
   languageName: node
   linkType: hard
 
@@ -11190,19 +11181,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-advanced-cropper@npm:^0.20.1":
-  version: 0.20.1
-  resolution: "react-advanced-cropper@npm:0.20.1"
-  dependencies:
-    advanced-cropper: "npm:~0.17.1"
-    classnames: "npm:^2.2.6"
-    tslib: "npm:^2.4.0"
-  peerDependencies:
-    react: ">=16.8.0"
-  checksum: 10/5d2f88bbe31dd466508228d6b25e7ddfb0e820a9fa96f8f5b5f60e6d08fa3a3dcf85031bd00c5c1c46cd4c019fb55186505663f5e5bfff48f91f75a7920cebb1
-  languageName: node
-  linkType: hard
-
 "react-animations@npm:^1.0.0":
   version: 1.0.0
   resolution: "react-animations@npm:1.0.0"
@@ -11260,6 +11238,15 @@ __metadata:
     react: ">=16.8.0"
     react-dom: ">=16.8.0"
   checksum: 10/e912c0178fbfb04b841007aa3fc50cb326082346f860d3b92a22ff71516dfd487c6f60c0474d9609b982ad15e6b4741c35ca2b38adfeb133789d43ff6b0029c6
+  languageName: node
+  linkType: hard
+
+"react-image-crop@npm:^11.0.10":
+  version: 11.0.10
+  resolution: "react-image-crop@npm:11.0.10"
+  peerDependencies:
+    react: ">=16.13.1"
+  checksum: 10/5f38841ec89ac346a69e9bc3460eec71ccb8e154ef7364e7d8f87f902f6ecde2746dfd887230826d3d4fbe23314aa20cd19f80061bd9d3772d4464ba020987b8
   languageName: node
   linkType: hard
 
@@ -12881,7 +12868,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:^2.0.0, tslib@npm:^2.1.0, tslib@npm:^2.3.1, tslib@npm:^2.4.0, tslib@npm:^2.8.0":
+"tslib@npm:^2.0.0, tslib@npm:^2.1.0, tslib@npm:^2.3.1, tslib@npm:^2.8.0":
   version: 2.8.1
   resolution: "tslib@npm:2.8.1"
   checksum: 10/3e2e043d5c2316461cb54e5c7fe02c30ef6dccb3384717ca22ae5c6b5bc95232a6241df19c622d9c73b809bea33b187f6dbc73030963e29950c2141bc32a79f7

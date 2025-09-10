@@ -39,6 +39,10 @@ import Tooltip from '@mui/material/Tooltip';
 import { getResponseError } from '../UploadDialog/util';
 import ReplayRoundedIcon from '@mui/icons-material/ReplayRounded';
 import Box from '@mui/material/Box';
+import { popDialog, pushDialog } from '../../state/actions/dialogStack';
+import { createComponentId } from '../../utils/system';
+import { nanoid } from 'nanoid';
+import type { SingleFileUploadDialogProps } from '../SingleFileUploadDialog';
 
 const messages = defineMessages({
 	chooseFile: {
@@ -97,9 +101,31 @@ export interface SingleFileUploadProps {
 	path: string;
 	customFileName?: string;
 	fileTypes?: [string];
+	restrictions?: SingleFileUploadDialogProps['restrictions'];
 	onUploadStart?(): void;
 	onComplete?(result: FileUploadResult): void;
 	onError?({ file, error, response }): void;
+}
+
+export function imageMeetRestrictions(
+	file: HTMLImageElement,
+	restrictions?: SingleFileUploadDialogProps['restrictions']
+): boolean {
+	let meetRestrictions = true;
+	if (restrictions) {
+		const { width, height, minWidth, minHeight, maxWidth, maxHeight } = restrictions;
+		if (
+			(width && file.width !== width) ||
+			(height && file.height !== height) ||
+			(minWidth && file.width < minWidth) ||
+			(minHeight && file.height < minHeight) ||
+			(maxWidth && file.width > maxWidth) ||
+			(maxHeight && file.height > maxHeight)
+		) {
+			meetRestrictions = false;
+		}
+	}
+	return meetRestrictions;
 }
 
 export function SingleFileUpload(props: SingleFileUploadProps) {
@@ -112,7 +138,8 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 		customFileName,
 		fileTypes,
 		path,
-		site
+		site,
+		restrictions
 	} = props;
 	const { formatMessage } = useIntl();
 	const dispatch = useDispatch();
@@ -255,36 +282,77 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 		const onFileAdded = (file: UppyFile<Meta, Body>) => {
 			setError(null);
 			setDescription(`${formatMessage(messages.validatingFile)}:`);
-			setFile(file);
 			setFileNameErrorClass('');
-			validateActionPolicy(site, {
-				type: 'CREATE',
-				target: ensureSingleSlash(`${path}/${file.name}`),
-				contentMetadata: {
-					fileSize: file.size
-				}
-			}).subscribe(({ allowed, modifiedValue, message }) => {
-				if (allowed) {
-					setDisableInput(true);
-					if (modifiedValue) {
-						// Modified value is expected to be a path.
-						const modifiedName = modifiedValue.match(/[^/]+$/)?.[0] ?? modifiedValue;
-						setConfirm({ body: message });
-						setSuggestedName(modifiedName);
-					} else {
-						// When uploading large files to aws/s3, something causes requests to fail and get retried n times before finally stating it failed; despite the file seemingly actually getting uploaded.
-						// This setTimeout avoids that issue. The mechanism of failure or why this avoids it is unknown.
-						setTimeout(() => uppy.upload(), 50);
-						setDescription(`${formatMessage(messages.uploadingFile)}:`);
-						onUploadStart?.();
+
+			const validatePolicy = () => {
+				validateActionPolicy(site, {
+					type: 'CREATE',
+					target: ensureSingleSlash(`${path}/${file.name}`),
+					contentMetadata: {
+						fileSize: file.size
 					}
-				} else {
-					setConfirm({
-						error: true,
-						body: formatMessage(messages.policyError, { fileName: file.name, detail: message })
-					});
-				}
-			});
+				}).subscribe(({ allowed, modifiedValue, message }) => {
+					if (allowed) {
+						setDisableInput(true);
+						if (modifiedValue) {
+							// Modified value is expected to be a path.
+							const modifiedName = modifiedValue.match(/[^/]+$/)?.[0] ?? modifiedValue;
+							setConfirm({ body: message });
+							setSuggestedName(modifiedName);
+						} else {
+							// When uploading large files to aws/s3, something causes requests to fail and get retried n times before finally stating it failed; despite the file seemingly actually getting uploaded.
+							// This setTimeout avoids that issue. The mechanism of failure or why this avoids it is unknown.
+							setTimeout(() => uppy.upload(), 50);
+							setDescription(`${formatMessage(messages.uploadingFile)}:`);
+							onUploadStart?.();
+						}
+					} else {
+						setConfirm({
+							error: true,
+							body: formatMessage(messages.policyError, { fileName: file.name, detail: message })
+						});
+					}
+				});
+			};
+			if (file.data.type.includes('image/')) {
+				const data = file.data; // is a Blob instance
+				const url = URL.createObjectURL(data);
+				const image = new Image();
+				image.src = url;
+				image.onload = () => {
+					if (!imageMeetRestrictions(image, restrictions)) {
+						const dialogId = nanoid();
+						dispatch(
+							pushDialog({
+								id: dialogId,
+								component: createComponentId('ImageCropDialog'),
+								props: {
+									path: url,
+									restrictions,
+									onCrop: (blob: Blob) => {
+										dispatch(popDialog({ id: dialogId }));
+										uppy.setFileState(file.id, {
+											...file.meta,
+											source: 'crop',
+											name: file.name,
+											type: blob.type,
+											data: blob
+										});
+										setFile(file);
+										validatePolicy();
+									}
+								}
+							})
+						);
+					} else {
+						setFile(file);
+						validatePolicy();
+					}
+				};
+			} else {
+				setFile(file);
+				validatePolicy();
+			}
 		};
 
 		uppy.on('file-added', onFileAdded);
@@ -292,7 +360,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 		return () => {
 			uppy.off('file-added', onFileAdded);
 		};
-	}, [onUploadStart, formatMessage, path, site, uppy]);
+	}, [onUploadStart, formatMessage, path, site, uppy, dispatch, restrictions]);
 
 	const onConfirm = () => {
 		uppy.upload();
@@ -317,6 +385,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 			try {
 				uppy.addFile({
 					source: 'file input',
+
 					name: file.name,
 					type: file.type,
 					data: file
