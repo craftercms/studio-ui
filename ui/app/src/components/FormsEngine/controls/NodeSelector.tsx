@@ -118,7 +118,7 @@ export type AllowedContentTypesDataWithDestinations = AllowedContentTypesData & 
 export interface AllowedPathsData {
 	path: string;
 	title: string;
-	allowedContentTypes: string[];
+	allowedContentTypes?: string[];
 }
 
 type ContentCreationStrategy = 'embedded' | 'shared';
