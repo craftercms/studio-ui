@@ -20,11 +20,17 @@ import { FormattedMessage } from 'react-intl';
 import ImageCropDialogContainer from './ImageCropDialogContainer';
 
 export function ImageCropDialog(props: ImageCropDialogProps) {
-	const { path, restrictions, onCrop, ...rest } = props;
+	const { path, restrictions, writeContent, onCrop, ...rest } = props;
 
 	return (
 		<EnhancedDialog title={<FormattedMessage defaultMessage="Image Crop Dialog" />} {...rest} maxWidth="md">
-			<ImageCropDialogContainer path={path} onCrop={onCrop} restrictions={restrictions} {...rest} />
+			<ImageCropDialogContainer
+				path={path}
+				onCrop={onCrop}
+				restrictions={restrictions}
+				writeContent={writeContent}
+				{...rest}
+			/>
 		</EnhancedDialog>
 	);
 }

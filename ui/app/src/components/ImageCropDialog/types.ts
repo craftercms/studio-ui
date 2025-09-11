@@ -15,13 +15,23 @@
  */
 
 import type { EnhancedDialogProps } from '../EnhancedDialog';
-import type { SingleFileUploadDialogProps } from '../SingleFileUploadDialog';
 
 export interface ImageCropDialogBaseProps {
 	path?: string;
-	restrictions?: SingleFileUploadDialogProps['restrictions'];
+	restrictions?: ImageRestrictions;
+	writeContent?: boolean;
+}
+
+export interface ImageRestrictions {
+	width?: number;
+	height?: number;
+	minWidth?: number;
+	minHeight?: number;
+	maxWidth?: number;
+	maxHeight?: number;
 }
 
 export interface ImageCropDialogProps extends ImageCropDialogBaseProps, EnhancedDialogProps {
 	onCrop?(blob: Blob): void;
+	// TODO: onCrop?(blob: Blob, path (no write => null)): void;
 }

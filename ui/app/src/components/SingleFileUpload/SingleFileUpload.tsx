@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import Core from '@uppy/core';
+import Core, { type Uppy } from '@uppy/core';
 import XHRUpload from '@uppy/xhr-upload';
 import ProgressBar from '@uppy/progress-bar';
 import Form from '@uppy/form';
@@ -26,7 +26,7 @@ import '@uppy/file-input/src/style.scss';
 import { getGlobalHeaders } from '../../utils/ajax';
 import { validateActionPolicy } from '../../services/sites';
 import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
-import type { UppyFile, Meta, Body } from '@uppy/utils/lib/UppyFile';
+import type { Body, Meta, UppyFile } from '@uppy/utils/lib/UppyFile';
 import { useDispatch } from 'react-redux';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
@@ -39,10 +39,6 @@ import Tooltip from '@mui/material/Tooltip';
 import { getResponseError } from '../UploadDialog/util';
 import ReplayRoundedIcon from '@mui/icons-material/ReplayRounded';
 import Box from '@mui/material/Box';
-import { popDialog, pushDialog } from '../../state/actions/dialogStack';
-import { createComponentId } from '../../utils/system';
-import { nanoid } from 'nanoid';
-import type { SingleFileUploadDialogProps } from '../SingleFileUploadDialog';
 
 const messages = defineMessages({
 	chooseFile: {
@@ -101,31 +97,10 @@ export interface SingleFileUploadProps {
 	path: string;
 	customFileName?: string;
 	fileTypes?: [string];
-	restrictions?: SingleFileUploadDialogProps['restrictions'];
+	onFileAdded?: (file: UppyFile<Meta, Body>, uppy: Uppy, callback: () => void) => void;
 	onUploadStart?(): void;
 	onComplete?(result: FileUploadResult): void;
 	onError?({ file, error, response }): void;
-}
-
-export function imageMeetRestrictions(
-	file: HTMLImageElement,
-	restrictions?: SingleFileUploadDialogProps['restrictions']
-): boolean {
-	let meetRestrictions = true;
-	if (restrictions) {
-		const { width, height, minWidth, minHeight, maxWidth, maxHeight } = restrictions;
-		if (
-			(width && file.width !== width) ||
-			(height && file.height !== height) ||
-			(minWidth && file.width < minWidth) ||
-			(minHeight && file.height < minHeight) ||
-			(maxWidth && file.width > maxWidth) ||
-			(maxHeight && file.height > maxHeight)
-		) {
-			meetRestrictions = false;
-		}
-	}
-	return meetRestrictions;
 }
 
 export function SingleFileUpload(props: SingleFileUploadProps) {
@@ -139,7 +114,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 		fileTypes,
 		path,
 		site,
-		restrictions
+		onFileAdded: onFileAddedProp
 	} = props;
 	const { formatMessage } = useIntl();
 	const dispatch = useDispatch();
@@ -314,41 +289,12 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 					}
 				});
 			};
-			if (file.data.type.includes('image/')) {
-				const data = file.data; // is a Blob instance
-				const url = URL.createObjectURL(data);
-				const image = new Image();
-				image.src = url;
-				image.onload = () => {
-					if (!imageMeetRestrictions(image, restrictions)) {
-						const dialogId = nanoid();
-						dispatch(
-							pushDialog({
-								id: dialogId,
-								component: createComponentId('ImageCropDialog'),
-								props: {
-									path: url,
-									restrictions,
-									onCrop: (blob: Blob) => {
-										dispatch(popDialog({ id: dialogId }));
-										uppy.setFileState(file.id, {
-											...file.meta,
-											source: 'crop',
-											name: file.name,
-											type: blob.type,
-											data: blob
-										});
-										setFile(file);
-										validatePolicy();
-									}
-								}
-							})
-						);
-					} else {
-						setFile(file);
-						validatePolicy();
-					}
-				};
+			if (onFileAddedProp) {
+				// TODO: function to return Promise -> avoid callback
+				onFileAddedProp?.(file, uppy, () => {
+					setFile(file);
+					validatePolicy();
+				});
 			} else {
 				setFile(file);
 				validatePolicy();
@@ -360,7 +306,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 		return () => {
 			uppy.off('file-added', onFileAdded);
 		};
-	}, [onUploadStart, formatMessage, path, site, uppy, dispatch, restrictions]);
+	}, [onUploadStart, formatMessage, path, site, uppy, dispatch, onFileAddedProp]);
 
 	const onConfirm = () => {
 		uppy.upload();

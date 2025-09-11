@@ -29,7 +29,7 @@ export function SingleFileUploadDialog(props: SingleFileUploadDialogProps) {
 		onUploadStart,
 		onUploadComplete,
 		onUploadError,
-		restrictions,
+		onFileAdded,
 		...rest
 	} = props;
 
@@ -40,10 +40,10 @@ export function SingleFileUploadDialog(props: SingleFileUploadDialogProps) {
 				path={path}
 				customFileName={customFileName}
 				fileTypes={fileTypes}
-				restrictions={restrictions}
 				onUploadStart={onUploadStart}
 				onUploadComplete={onUploadComplete}
 				onUploadError={onUploadError}
+				onFileAdded={onFileAdded}
 			/>
 		</EnhancedDialog>
 	);

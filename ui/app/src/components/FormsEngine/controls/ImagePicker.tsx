@@ -53,12 +53,31 @@ import Tooltip from '@mui/material/Tooltip';
 import { useExtractDataSources } from '../dataSourceHooks/useExtractDataSources';
 import { createMediaMenuOptions, downloadMedia } from '../lib/controlHelpers';
 import { createComponentId } from '../../../utils/system';
+import type { ImageRestrictions } from '../../ImageCropDialog/types';
 
 export interface ImagePickerProps extends ControlProps {
 	value: string;
 }
 
 type PickerType = 'browse' | 'upload' | 'search';
+
+function imageMeetRestrictions(file: HTMLImageElement, restrictions?: ImageRestrictions): boolean {
+	let meetRestrictions = true;
+	if (restrictions) {
+		const { width, height, minWidth, minHeight, maxWidth, maxHeight } = restrictions;
+		if (
+			(width && file.width !== width) ||
+			(height && file.height !== height) ||
+			(minWidth && file.width < minWidth) ||
+			(minHeight && file.height < minHeight) ||
+			(maxWidth && file.width > maxWidth) ||
+			(maxHeight && file.height > maxHeight)
+		) {
+			meetRestrictions = false;
+		}
+	}
+	return meetRestrictions;
+}
 
 export function ImagePicker(props: ImagePickerProps) {
 	const { field, value, setValue, contentType, autoFocus, readonly: formReadonly } = props;
@@ -78,7 +97,7 @@ export function ImagePicker(props: ImagePickerProps) {
 
 	// region field properties/validations
 	const readonly = formReadonly || (field.properties.readonly?.value as boolean);
-	const restrictions = {
+	const restrictions: ImageRestrictions = {
 		height: field.validations.height?.value ?? null,
 		width: field.validations.width?.value ?? null,
 		maxHeight: field.validations.maxHeight?.value ?? null,
@@ -137,8 +156,48 @@ export function ImagePicker(props: ImagePickerProps) {
 							path: processPath(choice.path),
 							allowUpload: false,
 							onSuccess(imageData: MediaItem) {
-								setValue(imageData.path);
-								dispatch(popDialog({ id }));
+								// Check if the image meets restrictions
+								if (restrictions) {
+									const img = new window.Image();
+									const { width, height, minWidth, minHeight, maxWidth, maxHeight } = restrictions;
+									img.onload = () => {
+										if (
+											(width && img.width !== width) ||
+											(height && img.height !== height) ||
+											(minWidth && img.width < minWidth) ||
+											(minHeight && img.height < minHeight) ||
+											(maxWidth && img.width > maxWidth) ||
+											(maxHeight && img.height > maxHeight)
+										) {
+											console.log('need to crop!');
+											const dialogId = nanoid();
+											dispatch(
+												pushDialog({
+													id: dialogId,
+													component: createComponentId('ImageCropDialog'),
+													props: {
+														path: imageData.path,
+														restrictions,
+														writeContent: true,
+														onCrop: (blob: Blob) => {
+															// dispatch(popDialog({ id: dialogId }));
+															// setFile(file);
+															// setFile(file);
+															// validatePolicy();
+														}
+													}
+												})
+											);
+										} else {
+											setValue(imageData.path);
+											dispatch(popDialog({ id }));
+										}
+									};
+									img.src = imageData.path;
+								} else {
+									setValue(imageData.path);
+									dispatch(popDialog({ id }));
+								}
 							}
 						} as BrowseFilesDialogProps
 					})
@@ -178,7 +237,41 @@ export function ImagePicker(props: ImagePickerProps) {
 							site: siteId,
 							path: processPath(choice.path),
 							fileTypes: ['image/*'],
-							restrictions,
+							onFileAdded: (file, uppy, callback) => {
+								// TODO: util to show cropDialog
+								const data = file.data;
+								const url = URL.createObjectURL(data);
+								const image = new Image();
+								image.src = url;
+								image.onload = () => {
+									if (!imageMeetRestrictions(image, restrictions)) {
+										const dialogId = nanoid();
+										dispatch(
+											pushDialog({
+												id: dialogId,
+												component: createComponentId('ImageCropDialog'),
+												props: {
+													path: url,
+													restrictions,
+													onCrop: (blob: Blob) => {
+														dispatch(popDialog({ id: dialogId }));
+														uppy.setFileState(file.id, {
+															...file.meta,
+															source: 'crop',
+															name: file.name,
+															type: blob.type,
+															data: blob
+														});
+														callback?.();
+													}
+												}
+											})
+										);
+									} else {
+										callback?.();
+									}
+								};
+							},
 							onUploadComplete(result: FileUploadResult) {
 								if (result.successful.length) {
 									const newValue = ensureSingleSlash(

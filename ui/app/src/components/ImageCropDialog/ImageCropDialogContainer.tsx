@@ -23,55 +23,60 @@ import Button from '@mui/material/Button';
 import SecondaryButton from '../SecondaryButton';
 import { FormattedMessage } from 'react-intl';
 import PrimaryButton from '../PrimaryButton';
-import ReactCrop, { type Crop } from 'react-image-crop';
-import 'react-image-crop/dist/ReactCrop.css';
 import Grid from '@mui/material/Grid';
 import FormControl from '@mui/material/FormControl';
 import TextField from '@mui/material/TextField';
 import CachedIcon from '@mui/icons-material/Cached';
+import useSpreadState from '../../hooks/useSpreadState';
+import Typography from '@mui/material/Typography';
+import { Cropper, CropperRef } from 'react-advanced-cropper';
+import 'react-advanced-cropper/dist/style.css';
+import useActiveSiteId from '../../hooks/useActiveSiteId';
 
 export function ImageCropDialogContainer(props: ImageCropDialogProps) {
-	const { path, onCrop, restrictions } = props;
-	const [crop, setCrop] = useState<Crop>();
-	const imageRef = useRef<HTMLImageElement>(null);
-
-	const getCroppedCanvas = (image, crop) => {
-		const canvas = document.createElement('canvas');
-		const pixelRatio = window.devicePixelRatio;
-		const scaleX = image.naturalWidth / image.width;
-		const scaleY = image.naturalHeight / image.height;
-		const ctx = canvas.getContext('2d');
-
-		canvas.width = crop.width * pixelRatio * scaleX;
-		canvas.height = crop.height * pixelRatio * scaleY;
-
-		ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
-		ctx.imageSmoothingQuality = 'high';
-
-		ctx.drawImage(
-			image,
-			crop.x * scaleX,
-			crop.y * scaleY,
-			crop.width * scaleX,
-			crop.height * scaleY,
-			0,
-			0,
-			crop.width * scaleX,
-			crop.height * scaleY
-		);
-		return canvas;
-	};
+	// TODO: writeContent rename prop
+	const { path, onCrop, restrictions, writeContent, onClose } = props;
+	const cropperRef = useRef<CropperRef>(null);
+	const [overwriteState, setOverwriteState] = useSpreadState<{
+		validate: boolean;
+		rename: boolean;
+		overwrite: boolean;
+		blobToWrite: Blob | null;
+	}>({
+		validate: false,
+		rename: false,
+		overwrite: false,
+		blobToWrite: null
+	});
+	const [coordinates, setCoordinates] = useState(null);
 
 	const onSubmit = () => {
-		const croppedCanvas = getCroppedCanvas(imageRef.current, crop);
-		croppedCanvas.toBlob(
-			(blob) => {
-				onCrop?.(blob);
-			},
-			'image/jpeg',
-			1
-		);
+		const cropper = cropperRef.current;
+		if (cropper) {
+			const croppedCanvas = cropper.getCanvas();
+			console.log('base64', croppedCanvas?.toDataURL());
+			croppedCanvas.toBlob(
+				(blob) => {
+					if (writeContent) {
+						setOverwriteState({
+							validate: true,
+							blobToWrite: blob
+						});
+					} else {
+						onCrop?.(blob);
+					}
+				},
+				'image/jpeg',
+				1
+			);
+		}
 	};
+
+	const onChange = (cropper: CropperRef) => {
+		setCoordinates(cropper.getCoordinates());
+	};
+
+	const onWriteContent = () => {};
 
 	return (
 		<>
@@ -79,16 +84,20 @@ export function ImageCropDialogContainer(props: ImageCropDialogProps) {
 				<Grid container spacing={2}>
 					<Grid size={{ xs: 12, sm: 8 }}>
 						<Box maxHeight={600}>
-							<ReactCrop
-								crop={crop}
-								onChange={(c) => setCrop(c)}
+							<Cropper
+								ref={cropperRef}
+								className="example__cropper"
+								backgroundClassName="example__cropper-background"
+								src={path}
 								minHeight={restrictions?.height ?? restrictions?.minHeight}
 								minWidth={restrictions?.width ?? restrictions?.minWidth}
 								maxHeight={restrictions?.height ?? restrictions?.maxHeight}
 								maxWidth={restrictions?.width ?? restrictions?.maxWidth}
-							>
-								<img src={path} ref={imageRef} />
-							</ReactCrop>
+								stencilProps={{
+									handlers: !(restrictions?.height && restrictions?.width)
+								}}
+								onChange={onChange}
+							/>
 						</Box>
 					</Grid>
 					<Grid size={{ xs: 12, sm: 4 }} rowSpacing={2} container direction="column">
@@ -98,7 +107,7 @@ export function ImageCropDialogContainer(props: ImageCropDialogProps) {
 								slotProps={{ inputLabel: { shrink: true } }}
 								variant="outlined"
 								disabled
-								value={crop?.width ?? ''}
+								value={coordinates?.width ?? ''}
 							/>
 						</FormControl>
 						<FormControl>
@@ -107,13 +116,14 @@ export function ImageCropDialogContainer(props: ImageCropDialogProps) {
 								slotProps={{ inputLabel: { shrink: true } }}
 								variant="outlined"
 								disabled
-								value={crop?.height ?? ''}
+								value={coordinates?.height ?? ''}
 							/>
 						</FormControl>
 						<FormControl>
 							<Button
 								onClick={() => {
-									setCrop(null);
+									// TODO: this should be the initial state
+									setCoordinates(null);
 								}}
 								startIcon={<CachedIcon />}
 							>
@@ -124,15 +134,38 @@ export function ImageCropDialogContainer(props: ImageCropDialogProps) {
 				</Grid>
 			</DialogBody>
 			<DialogFooter>
-				<SecondaryButton>
-					<FormattedMessage defaultMessage="Cancel" />
-				</SecondaryButton>
-				<PrimaryButton onClick={() => onSubmit()}>
-					<FormattedMessage defaultMessage="Crop" />
-				</PrimaryButton>
+				{!overwriteState.validate && (
+					<SecondaryButton onClick={(e) => onClose?.(e, null)}>
+						<FormattedMessage defaultMessage="Cancel" />
+					</SecondaryButton>
+				)}
+				{overwriteState.validate ? (
+					<>
+						<Typography>
+							<FormattedMessage defaultMessage="File already exists. Do you want to overwrite it?" />
+						</Typography>
+						<PrimaryButton onClick={() => onWriteContent()}>
+							<FormattedMessage defaultMessage="Overwrite" />
+						</PrimaryButton>
+						<PrimaryButton onClick={() => setOverwriteState({ rename: true })}>
+							<FormattedMessage defaultMessage="Rename" />
+						</PrimaryButton>
+						<SecondaryButton onClick={(e) => onClose?.(e, null)}>
+							<FormattedMessage defaultMessage="Cancel" />
+						</SecondaryButton>
+					</>
+				) : (
+					<PrimaryButton onClick={() => onSubmit()}>
+						<FormattedMessage defaultMessage="Crop" />
+					</PrimaryButton>
+				)}
 			</DialogFooter>
 		</>
 	);
 }
 
 export default ImageCropDialogContainer;
+
+// TODO:
+// 	- validate crop state, if no selection, disable crop submit button.
+//  - preview cropped image (?)
