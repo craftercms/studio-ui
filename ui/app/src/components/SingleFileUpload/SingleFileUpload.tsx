@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import Core from '@uppy/core';
+import Core, { type Uppy } from '@uppy/core';
 import XHRUpload from '@uppy/xhr-upload';
 import ProgressBar from '@uppy/progress-bar';
 import Form from '@uppy/form';
@@ -26,7 +26,7 @@ import '@uppy/file-input/src/style.scss';
 import { getGlobalHeaders } from '../../utils/ajax';
 import { validateActionPolicy } from '../../services/sites';
 import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
-import type { UppyFile, Meta, Body } from '@uppy/utils/lib/UppyFile';
+import type { Body, Meta, UppyFile } from '@uppy/utils/lib/UppyFile';
 import { useDispatch } from 'react-redux';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
@@ -97,6 +97,7 @@ export interface SingleFileUploadProps {
 	path: string;
 	customFileName?: string;
 	fileTypes?: [string];
+	onFileAdded?: (file: UppyFile<Meta, Body>, uppy: Uppy, callback: () => void) => void;
 	onUploadStart?(): void;
 	onComplete?(result: FileUploadResult): void;
 	onError?({ file, error, response }): void;
@@ -112,7 +113,8 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 		customFileName,
 		fileTypes,
 		path,
-		site
+		site,
+		onFileAdded: onFileAddedProp
 	} = props;
 	const { formatMessage } = useIntl();
 	const dispatch = useDispatch();
@@ -255,7 +257,6 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 		const onFileAdded = (file: UppyFile<Meta, Body>) => {
 			setError(null);
 			setDescription(`${formatMessage(messages.validatingFile)}:`);
-			setFile(file);
 			setFileNameErrorClass('');
 			validateActionPolicy(site, {
 				type: 'CREATE',
@@ -285,6 +286,46 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 					});
 				}
 			});
+
+			const validatePolicy = () => {
+				validateActionPolicy(site, {
+					type: 'CREATE',
+					target: ensureSingleSlash(`${path}/${file.name}`),
+					contentMetadata: {
+						fileSize: file.size
+					}
+				}).subscribe(({ allowed, modifiedValue, message }) => {
+					if (allowed) {
+						setDisableInput(true);
+						if (modifiedValue) {
+							// Modified value is expected to be a path.
+							const modifiedName = modifiedValue.match(/[^/]+$/)?.[0] ?? modifiedValue;
+							setConfirm({ body: message });
+							setSuggestedName(modifiedName);
+						} else {
+							// When uploading large files to aws/s3, something causes requests to fail and get retried n times before finally stating it failed; despite the file seemingly actually getting uploaded.
+							// This setTimeout avoids that issue. The mechanism of failure or why this avoids it is unknown.
+							setTimeout(() => uppy.upload(), 50);
+							setDescription(`${formatMessage(messages.uploadingFile)}:`);
+							onUploadStart?.();
+						}
+					} else {
+						setConfirm({
+							error: true,
+							body: formatMessage(messages.policyError, { fileName: file.name, detail: message })
+						});
+					}
+				});
+			};
+			if (onFileAddedProp) {
+				onFileAddedProp?.(file, uppy, () => {
+					setFile(file);
+					validatePolicy();
+				});
+			} else {
+				setFile(file);
+				validatePolicy();
+			}
 		};
 
 		uppy.on('file-added', onFileAdded);
@@ -292,7 +333,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 		return () => {
 			uppy.off('file-added', onFileAdded);
 		};
-	}, [onUploadStart, formatMessage, path, site, uppy]);
+	}, [onUploadStart, formatMessage, path, site, uppy, dispatch, onFileAddedProp]);
 
 	const onConfirm = () => {
 		uppy.upload();
@@ -317,6 +358,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 			try {
 				uppy.addFile({
 					source: 'file input',
+
 					name: file.name,
 					type: file.type,
 					data: file
