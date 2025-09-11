@@ -258,34 +258,6 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 			setError(null);
 			setDescription(`${formatMessage(messages.validatingFile)}:`);
 			setFileNameErrorClass('');
-			validateActionPolicy(site, {
-				type: 'CREATE',
-				target: ensureSingleSlash(`${path}/${file.name}`),
-				contentMetadata: {
-					fileSize: file.size
-				}
-			}).subscribe(({ allowed, modifiedValue, message }) => {
-				if (allowed) {
-					setDisableInput(true);
-					if (modifiedValue) {
-						// Modified value is expected to be a path.
-						const modifiedName = modifiedValue.match(/[^/]+$/)?.[0] ?? modifiedValue;
-						setConfirm({ body: message });
-						setSuggestedName(modifiedName);
-					} else {
-						// When uploading large files to aws/s3, something causes requests to fail and get retried n times before finally stating it failed; despite the file seemingly actually getting uploaded.
-						// This setTimeout avoids that issue. The mechanism of failure or why this avoids it is unknown.
-						setTimeout(() => uppy.upload(), 50);
-						setDescription(`${formatMessage(messages.uploadingFile)}:`);
-						onUploadStart?.();
-					}
-				} else {
-					setConfirm({
-						error: true,
-						body: formatMessage(messages.policyError, { fileName: file.name, detail: message })
-					});
-				}
-			});
 
 			const validatePolicy = () => {
 				validateActionPolicy(site, {

@@ -54,6 +54,7 @@ import { useExtractDataSources } from '../dataSourceHooks/useExtractDataSources'
 import { createMediaMenuOptions, downloadMedia } from '../lib/controlHelpers';
 import { createComponentId } from '../../../utils/system';
 import type { ImageRestrictions } from '../../ImageCropDialog/types';
+import { batchActions } from '../../../state/actions/misc';
 
 export interface ImagePickerProps extends ControlProps {
 	value: string;
@@ -156,8 +157,6 @@ export function ImagePicker(props: ImagePickerProps) {
 							path: processPath(choice.path),
 							allowUpload: false,
 							onSuccess(imageData: MediaItem) {
-								setValue(imageData.path);
-								dispatch(popDialog({ id }));
 								// Check if the image meets restrictions
 								if (restrictions) {
 									const img = new window.Image();
@@ -171,7 +170,6 @@ export function ImagePicker(props: ImagePickerProps) {
 											(maxWidth && img.width > maxWidth) ||
 											(maxHeight && img.height > maxHeight)
 										) {
-											console.log('need to crop!');
 											const dialogId = nanoid();
 											dispatch(
 												pushDialog({
@@ -181,7 +179,9 @@ export function ImagePicker(props: ImagePickerProps) {
 														path: imageData.path,
 														restrictions,
 														writeContent: true,
-														onCrop: (blob: Blob) => {
+														onCrop: (blob: Blob, newPath) => {
+															setValue(newPath ?? imageData.path);
+															dispatch(batchActions([popDialog({ id: dialogId }), popDialog({ id })]));
 														}
 													}
 												})

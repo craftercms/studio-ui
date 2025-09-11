@@ -32,5 +32,5 @@ export interface ImageRestrictions {
 }
 
 export interface ImageCropDialogProps extends ImageCropDialogBaseProps, EnhancedDialogProps {
-	onCrop?(blob: Blob): void;
+	onCrop?(blob: Blob, path: string): void;
 }

@@ -30,28 +30,33 @@ import Typography from '@mui/material/Typography';
 import { Cropper, CropperRef } from 'react-advanced-cropper';
 import 'react-advanced-cropper/dist/style.css';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
+import { uploadFile } from '../../services/content';
 
 import TextField from '@mui/material/TextField';
 import CachedIcon from '@mui/icons-material/Cached';
+import { getFileNameFromPath } from '../../utils/path';
 
 export function ImageCropDialogContainer(props: ImageCropDialogProps) {
 	// TODO: writeContent rename prop
 	const { path, onCrop, restrictions, writeContent, onClose } = props;
 	const cropperRef = useRef<CropperRef>(null);
+	const siteId = useActiveSiteId();
 	const [overwriteState, setOverwriteState] = useSpreadState<{
 		validate: boolean;
 		rename: boolean;
 		overwrite: boolean;
 		blobToWrite: Blob | null;
+		fileName: string;
 	}>({
 		validate: false,
 		rename: false,
 		overwrite: false,
-		blobToWrite: null
+		blobToWrite: null,
+		fileName: getFileNameFromPath(path)
 	});
 	const [coordinates, setCoordinates] = useState(null);
 
-	const onSubmit = () => {
+	const onSubmit = (newPath?: string) => {
 		const cropper = cropperRef.current;
 		if (!cropper) return;
 
@@ -59,13 +64,13 @@ export function ImageCropDialogContainer(props: ImageCropDialogProps) {
 		croppedCanvas.toBlob(
 			(blob) => {
 				if (!blob) return;
-				if (writeContent) {
+				if (writeContent && !overwriteState?.validate) {
 					setOverwriteState({
 						validate: true,
 						blobToWrite: blob
 					});
 				} else {
-					onCrop?.(blob);
+					onCrop?.(blob, newPath);
 				}
 			},
 			'image/jpeg',
@@ -77,7 +82,30 @@ export function ImageCropDialogContainer(props: ImageCropDialogProps) {
 		setCoordinates(cropper.getCoordinates());
 	};
 
-	const onWriteContent = () => {};
+	const onWriteContent = (writePath: string) => {
+		const fileName = getFileNameFromPath(writePath);
+		const formData = new FormData();
+		formData.append('file', overwriteState.blobToWrite, fileName);
+		formData.append('path', writePath);
+		uploadFile(siteId, formData).subscribe({
+			next: (response) => {
+				onSubmit(writePath !== path ? writePath : null);
+			},
+			error: ({ response }) => {
+				// 	TODO: error handling
+			}
+		});
+	};
+
+	const onRename = () => {
+		if (!overwriteState.rename) {
+			setOverwriteState({ rename: true });
+		} else {
+			const newFileName = overwriteState.fileName;
+			const newPath = path.replace(getFileNameFromPath(path), newFileName);
+			onWriteContent(newPath);
+		}
+	};
 
 	return (
 		<>
@@ -148,6 +176,32 @@ export function ImageCropDialogContainer(props: ImageCropDialogProps) {
 							<FormattedMessage defaultMessage="Overwrite" />
 						</PrimaryButton>
 						<PrimaryButton onClick={() => setOverwriteState({ rename: true })}>
+						{overwriteState?.rename ? (
+							<FormControl>
+								<TextField
+									size="small"
+									label={<FormattedMessage defaultMessage="Width" />}
+									slotProps={{ inputLabel: { shrink: true } }}
+									variant="outlined"
+									value={overwriteState.fileName}
+									onChange={(e) => setOverwriteState({ fileName: e.target.value })}
+								/>
+							</FormControl>
+						) : (
+							<>
+								<Typography>
+									<FormattedMessage defaultMessage="File already exists. Do you want to overwrite it?" />
+								</Typography>
+								<PrimaryButton onClick={() => onWriteContent(path)}>
+									<FormattedMessage defaultMessage="Overwrite" />
+								</PrimaryButton>
+							</>
+						)}
+
+						<PrimaryButton
+							onClick={onRename}
+							disabled={overwriteState.rename && overwriteState.fileName === getFileNameFromPath(path)}
+						>
 							<FormattedMessage defaultMessage="Rename" />
 						</PrimaryButton>
 						<SecondaryButton onClick={(e) => onClose?.(e, null)}>
@@ -155,7 +209,7 @@ export function ImageCropDialogContainer(props: ImageCropDialogProps) {
 						</SecondaryButton>
 					</>
 				) : (
-					<PrimaryButton disabled={!coordinates?.width || !coordinates?.height} onClick={onSubmit}>
+					<PrimaryButton disabled={!coordinates?.width || !coordinates?.height} onClick={() => onSubmit()}>
 						<FormattedMessage defaultMessage="Crop" />
 					</PrimaryButton>
 				)}

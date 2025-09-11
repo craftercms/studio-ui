@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { errorSelectorApi1, get, getBinary, getGlobalHeaders, getText, post, postJSON } from '../utils/ajax';
+import { errorSelectorApi1, get, getBinary, getGlobalHeaders, getText, post, postJSON, put } from '../utils/ajax';
 import { catchError, map, pluck, switchMap, tap } from 'rxjs/operators';
 import { forkJoin, Observable, of, zip } from 'rxjs';
 import {
@@ -159,6 +159,10 @@ export function writeContent(
 			} else return true;
 		})
 	);
+}
+
+export function uploadFile(siteId: string, formData: FormData) {
+	return put(`/studio/api/2/content/${siteId}`, formData);
 }
 
 export function fetchContentInstanceDescriptor(
