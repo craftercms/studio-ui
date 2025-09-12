@@ -35,6 +35,9 @@ import { uploadFile } from '../../services/content';
 import TextField from '@mui/material/TextField';
 import CachedIcon from '@mui/icons-material/Cached';
 import { getFileNameFromPath } from '../../utils/path';
+import { pushDialog } from '../../state/actions/dialogStack';
+import { useDispatch } from 'react-redux';
+import { createComponentId } from '../../utils/system';
 
 export function ImageCropDialogContainer(props: ImageCropDialogProps) {
 	// TODO: writeContent rename prop
@@ -55,6 +58,7 @@ export function ImageCropDialogContainer(props: ImageCropDialogProps) {
 		fileName: getFileNameFromPath(path)
 	});
 	const [coordinates, setCoordinates] = useState(null);
+	const dispatch = useDispatch();
 
 	const onSubmit = (newPath?: string) => {
 		const cropper = cropperRef.current;
@@ -88,11 +92,16 @@ export function ImageCropDialogContainer(props: ImageCropDialogProps) {
 		formData.append('file', overwriteState.blobToWrite, fileName);
 		formData.append('path', writePath);
 		uploadFile(siteId, formData).subscribe({
-			next: (response) => {
+			next: () => {
 				onSubmit(writePath !== path ? writePath : null);
 			},
 			error: ({ response }) => {
-				// 	TODO: error handling
+				dispatch(
+					pushDialog({
+						component: createComponentId('ErrorDialog'),
+						props: { error: response?.response }
+					})
+				);
 			}
 		});
 	};
@@ -169,13 +178,6 @@ export function ImageCropDialogContainer(props: ImageCropDialogProps) {
 				)}
 				{overwriteState.validate ? (
 					<>
-						<Typography>
-							<FormattedMessage defaultMessage="File already exists. Do you want to overwrite it?" />
-						</Typography>
-						<PrimaryButton onClick={() => onWriteContent()}>
-							<FormattedMessage defaultMessage="Overwrite" />
-						</PrimaryButton>
-						<PrimaryButton onClick={() => setOverwriteState({ rename: true })}>
 						{overwriteState?.rename ? (
 							<FormControl>
 								<TextField
