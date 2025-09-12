@@ -62,7 +62,7 @@ export interface ImagePickerProps extends ControlProps {
 
 type PickerType = 'browse' | 'upload' | 'search';
 
-function imageMeetRestrictions(file: HTMLImageElement, restrictions?: ImageRestrictions): boolean {
+function doesImageMeetSizeRestrictions(file: HTMLImageElement, restrictions?: ImageRestrictions): boolean {
 	let meetRestrictions = true;
 	if (restrictions) {
 		const { width, height, minWidth, minHeight, maxWidth, maxHeight } = restrictions;
@@ -160,16 +160,8 @@ export function ImagePicker(props: ImagePickerProps) {
 								// Check if the image meets restrictions
 								if (restrictions) {
 									const img = new window.Image();
-									const { width, height, minWidth, minHeight, maxWidth, maxHeight } = restrictions;
 									img.onload = () => {
-										if (
-											(width && img.width !== width) ||
-											(height && img.height !== height) ||
-											(minWidth && img.width < minWidth) ||
-											(minHeight && img.height < minHeight) ||
-											(maxWidth && img.width > maxWidth) ||
-											(maxHeight && img.height > maxHeight)
-										) {
+										if (!doesImageMeetSizeRestrictions(img, restrictions)) {
 											const dialogId = nanoid();
 											dispatch(
 												pushDialog({
@@ -216,6 +208,7 @@ export function ImagePicker(props: ImagePickerProps) {
 								sortBy: 'internalName'
 							},
 							onAcceptSelection(images) {
+								// TODO: how do I set Search to single selection?
 								setValue(images[0]);
 								dispatch(popDialog({ id }));
 							}
@@ -241,7 +234,7 @@ export function ImagePicker(props: ImagePickerProps) {
 								const image = new Image();
 								image.src = url;
 								image.onload = () => {
-									if (!imageMeetRestrictions(image, restrictions)) {
+									if (!doesImageMeetSizeRestrictions(image, restrictions)) {
 										const dialogId = nanoid();
 										dispatch(
 											pushDialog({
