@@ -45,6 +45,7 @@ import TravelExploreOutlined from '@mui/icons-material/TravelExploreOutlined';
 import SearchRounded from '@mui/icons-material/SearchRounded';
 import UploadFileOutlinedIcon from '@mui/icons-material/UploadFileOutlined';
 import { getFileNameFromPath } from '../../../utils/path';
+import { ensureSingleSlash } from '../../../utils/string';
 
 // Note: These persist past the closing of the form.
 const lazyControlMap = new Map<string, LazyExoticComponent<ComponentType>>();
@@ -236,7 +237,7 @@ export function createMediaMenuOptions(
 
 export function downloadMedia(base: string, url: string) {
 	const link = document.createElement('a');
-	link.href = `${base}${url}`;
+	link.href = ensureSingleSlash(`${base}${url}`);
 	link.download = getFileNameFromPath(url); // Extracts the file name from the URL
 	document.body.appendChild(link);
 	link.click();
