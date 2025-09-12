@@ -22,11 +22,7 @@ import Radio from '@mui/material/Radio';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { ReactNode, SyntheticEvent } from 'react';
-
-export interface AllowedPathsData {
-	title: string;
-	path: string;
-}
+import type { AllowedPathsData } from '../controls/NodeSelector';
 
 export function ContentPicker(props: {
 	label: ReactNode;
