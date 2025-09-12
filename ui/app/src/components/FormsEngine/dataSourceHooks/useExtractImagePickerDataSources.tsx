@@ -20,7 +20,7 @@ import { useMemo } from 'react';
 
 export function useExtractImagePickerDataSources(contentType: ContentType, field: ContentTypeField): DataSource[] {
 	const dataSources = contentType.dataSources;
-	const dataSourceIdString = (field.properties.imageManager?.value as string) ?? '';
+	const dataSourceIdString = (field.properties?.imageManager?.value as string) ?? '';
 	return useMemo(() => {
 		const dataSourceIds = dataSourceIdString.split(',');
 		return dataSources.filter((ds) => dataSourceIds.includes(ds.id));
