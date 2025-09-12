@@ -34,16 +34,20 @@ import { uploadFile } from '../../services/content';
 
 import TextField from '@mui/material/TextField';
 import CachedIcon from '@mui/icons-material/Cached';
-import { getFileNameFromPath } from '../../utils/path';
+import { getFileExtension, getFileNameFromPath, removeExtension } from '../../utils/path';
 import { pushDialog } from '../../state/actions/dialogStack';
 import { useDispatch } from 'react-redux';
 import { createComponentId } from '../../utils/system';
+import { applyAssetNameRules } from '../../utils/content';
+import { isEmpty } from '../../utils/string';
 
 export function ImageCropDialogContainer(props: ImageCropDialogProps) {
 	// TODO: writeContent rename prop
 	const { path, onCrop, restrictions, writeContent, onClose } = props;
 	const cropperRef = useRef<CropperRef>(null);
 	const siteId = useActiveSiteId();
+	const fileExtension = getFileExtension(path);
+	const fileNameWithoutExtension = removeExtension(getFileNameFromPath(path));
 	const [overwriteState, setOverwriteState] = useSpreadState<{
 		validate: boolean;
 		rename: boolean;
@@ -55,7 +59,7 @@ export function ImageCropDialogContainer(props: ImageCropDialogProps) {
 		rename: false,
 		overwrite: false,
 		blobToWrite: null,
-		fileName: getFileNameFromPath(path)
+		fileName: fileNameWithoutExtension
 	});
 	const [coordinates, setCoordinates] = useState(null);
 	const dispatch = useDispatch();
@@ -110,10 +114,15 @@ export function ImageCropDialogContainer(props: ImageCropDialogProps) {
 		if (!overwriteState.rename) {
 			setOverwriteState({ rename: true });
 		} else {
-			const newFileName = overwriteState.fileName;
+			const newFileName = `${overwriteState.fileName}.${fileExtension}`;
 			const newPath = path.replace(getFileNameFromPath(path), newFileName);
 			onWriteContent(newPath);
 		}
+	};
+
+	const onReset = () => {
+		setCoordinates(null);
+		cropperRef.current?.reset();
 	};
 
 	return (
@@ -158,12 +167,7 @@ export function ImageCropDialogContainer(props: ImageCropDialogProps) {
 							/>
 						</FormControl>
 						<FormControl>
-							<Button
-								onClick={() => {
-									setCoordinates(null);
-								}}
-								startIcon={<CachedIcon />}
-							>
+							<Button onClick={onReset} startIcon={<CachedIcon />}>
 								<FormattedMessage defaultMessage="Reset" />
 							</Button>
 						</FormControl>
@@ -182,11 +186,10 @@ export function ImageCropDialogContainer(props: ImageCropDialogProps) {
 							<FormControl>
 								<TextField
 									size="small"
-									label={<FormattedMessage defaultMessage="Width" />}
 									slotProps={{ inputLabel: { shrink: true } }}
 									variant="outlined"
 									value={overwriteState.fileName}
-									onChange={(e) => setOverwriteState({ fileName: e.target.value })}
+									onChange={(e) => setOverwriteState({ fileName: applyAssetNameRules(e.target.value) })}
 								/>
 							</FormControl>
 						) : (
@@ -202,7 +205,10 @@ export function ImageCropDialogContainer(props: ImageCropDialogProps) {
 
 						<PrimaryButton
 							onClick={onRename}
-							disabled={overwriteState.rename && overwriteState.fileName === getFileNameFromPath(path)}
+							disabled={
+								overwriteState.rename &&
+								(isEmpty(overwriteState.fileName) || overwriteState.fileName === fileNameWithoutExtension)
+							}
 						>
 							<FormattedMessage defaultMessage="Rename" />
 						</PrimaryButton>
@@ -221,7 +227,3 @@ export function ImageCropDialogContainer(props: ImageCropDialogProps) {
 }
 
 export default ImageCropDialogContainer;
-
-// TODO:
-// 	- validate crop state, if no selection, disable crop submit button.
-//  - preview cropped image (?)
