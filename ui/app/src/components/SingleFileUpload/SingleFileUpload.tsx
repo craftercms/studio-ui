@@ -39,6 +39,7 @@ import Tooltip from '@mui/material/Tooltip';
 import { getResponseError } from '../UploadDialog/util';
 import ReplayRoundedIcon from '@mui/icons-material/ReplayRounded';
 import Box from '@mui/material/Box';
+import { pushErrorDialog } from '../../utils/system';
 
 const messages = defineMessages({
 	chooseFile: {
@@ -96,7 +97,7 @@ export interface SingleFileUploadProps {
 	url?: string;
 	path: string;
 	customFileName?: string;
-	fileTypes?: [string];
+	fileTypes?: string[];
 	onFileAdded?: (file: UppyFile<Meta, Body>, uppy: Uppy, callback: () => void) => void;
 	onUploadStart?(): void;
 	onComplete?(result: FileUploadResult): void;
@@ -266,26 +267,31 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 					contentMetadata: {
 						fileSize: file.size
 					}
-				}).subscribe(({ allowed, modifiedValue, message }) => {
-					if (allowed) {
-						setDisableInput(true);
-						if (modifiedValue) {
-							// Modified value is expected to be a path.
-							const modifiedName = modifiedValue.match(/[^/]+$/)?.[0] ?? modifiedValue;
-							setConfirm({ body: message });
-							setSuggestedName(modifiedName);
+				}).subscribe({
+					next: ({ allowed, modifiedValue, message }) => {
+						if (allowed) {
+							setDisableInput(true);
+							if (modifiedValue) {
+								// Modified value is expected to be a path.
+								const modifiedName = modifiedValue.match(/[^/]+$/)?.[0] ?? modifiedValue;
+								setConfirm({ body: message });
+								setSuggestedName(modifiedName);
+							} else {
+								// When uploading large files to aws/s3, something causes requests to fail and get retried n times before finally stating it failed; despite the file seemingly actually getting uploaded.
+								// This setTimeout avoids that issue. The mechanism of failure or why this avoids it is unknown.
+								setTimeout(() => uppy.upload(), 50);
+								setDescription(`${formatMessage(messages.uploadingFile)}:`);
+								onUploadStart?.();
+							}
 						} else {
-							// When uploading large files to aws/s3, something causes requests to fail and get retried n times before finally stating it failed; despite the file seemingly actually getting uploaded.
-							// This setTimeout avoids that issue. The mechanism of failure or why this avoids it is unknown.
-							setTimeout(() => uppy.upload(), 50);
-							setDescription(`${formatMessage(messages.uploadingFile)}:`);
-							onUploadStart?.();
+							setConfirm({
+								error: true,
+								body: formatMessage(messages.policyError, { fileName: file.name, detail: message })
+							});
 						}
-					} else {
-						setConfirm({
-							error: true,
-							body: formatMessage(messages.policyError, { fileName: file.name, detail: message })
-						});
+					},
+					error: ({ response }) => {
+						dispatch(pushErrorDialog({ props: { error: response?.response } }));
 					}
 				});
 			};
