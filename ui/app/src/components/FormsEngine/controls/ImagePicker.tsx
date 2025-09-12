@@ -97,7 +97,7 @@ export function ImagePicker(props: ImagePickerProps) {
 	const [pickerType, setPickerType] = useState<PickerType>(null);
 
 	// region field properties/validations
-	const readonly = formReadonly || (field.properties.readonly?.value as boolean);
+	const readonly = formReadonly || (field.properties?.readonly?.value as boolean);
 	const restrictions: ImageRestrictions = {
 		height: field.validations.height?.value ?? null,
 		width: field.validations.width?.value ?? null,
@@ -298,8 +298,9 @@ export function ImagePicker(props: ImagePickerProps) {
 				sx={{
 					[`.${menuItemClasses.root}`]: { pl: 3 }
 				}}
-				children={menuOptions}
-			/>
+			>
+				{menuOptions}
+			</Menu>
 			<Dialog open={openPickerDialog} onClose={() => setOpenPickerDialog(false)} fullWidth maxWidth="sm">
 				<DialogHeader
 					title={<FormattedMessage defaultMessage="Choose how to proceed" />}
@@ -387,7 +388,6 @@ export function ImagePicker(props: ImagePickerProps) {
 					</Card>
 				) : (
 					<Box
-						children={menuOptions}
 						sx={{
 							p: 1,
 							gap: 1,
@@ -409,7 +409,9 @@ export function ImagePicker(props: ImagePickerProps) {
 								justifyContent: 'center'
 							}
 						}}
-					/>
+					>
+						{menuOptions}
+					</Box>
 				)}
 			</FormsEngineField>
 		</>
