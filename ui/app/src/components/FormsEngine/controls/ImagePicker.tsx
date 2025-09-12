@@ -37,24 +37,24 @@ import { DialogHeader } from '../../DialogHeader';
 import { DialogBody } from '../../DialogBody';
 import type { AllowedPathsData } from './NodeSelector';
 import { processPathMacros } from '../../../utils/path';
-import { popDialog, pushDialog, pushNonDialog } from '../../../state/actions/dialogStack';
-import { nanoid } from 'nanoid';
-import type { BrowseFilesDialogProps } from '../../BrowseFilesDialog';
 import type { MediaItem } from '../../../models';
 import { ensureSingleSlash } from '../../../utils/string';
-import type { SearchProps } from '../../Search';
 import { useDispatch } from 'react-redux';
 import { useItemContext, useItemMetaContext } from '../lib/formsEngineContext';
 import type { FileUploadResult } from '../../SingleFileUpload';
-import type { SingleFileUploadDialogProps } from '../../SingleFileUploadDialog';
 import { ContentPicker } from '../components/ContentPicker';
 import useActiveSiteId from '../../../hooks/useActiveSiteId';
 import Tooltip from '@mui/material/Tooltip';
 import { useExtractDataSources } from '../dataSourceHooks/useExtractDataSources';
-import { createMediaMenuOptions, downloadMedia } from '../lib/controlHelpers';
-import { createComponentId } from '../../../utils/system';
+import {
+	createMediaMenuOptions,
+	downloadMedia,
+	showBrowseFilesDialog,
+	showImageCropDialog,
+	showSearchDialog,
+	showSingleFileUploadDialog
+} from '../lib/controlHelpers';
 import type { ImageRestrictions } from '../../ImageCropDialog/types';
-import { batchActions } from '../../../state/actions/misc';
 
 export interface ImagePickerProps extends ControlProps {
 	value: string;
@@ -78,6 +78,20 @@ function doesImageMeetSizeRestrictions(file: HTMLImageElement, restrictions?: Im
 		}
 	}
 	return meetRestrictions;
+}
+
+function validateImageRestrictions(path: string, restrictions?: ImageRestrictions): Promise<boolean> {
+	return new Promise((resolve) => {
+		if (restrictions) {
+			const img = new window.Image();
+			img.onload = () => {
+				resolve(doesImageMeetSizeRestrictions(img, restrictions));
+			};
+			img.src = path;
+		} else {
+			resolve(true);
+		}
+	});
 }
 
 export function ImagePicker(props: ImagePickerProps) {
@@ -148,132 +162,93 @@ export function ImagePicker(props: ImagePickerProps) {
 
 		switch (optionType) {
 			case 'browse': {
-				const id = nanoid();
-				dispatch(
-					pushDialog({
-						id,
-						component: 'craftercms.components.BrowseFilesDialog',
-						props: {
-							path: processPath(choice.path),
-							allowUpload: false,
-							onSuccess(imageData: MediaItem) {
-								// Check if the image meets restrictions
-								if (restrictions) {
-									const img = new window.Image();
-									img.onload = () => {
-										if (!doesImageMeetSizeRestrictions(img, restrictions)) {
-											const dialogId = nanoid();
-											dispatch(
-												pushDialog({
-													id: dialogId,
-													component: createComponentId('ImageCropDialog'),
-													props: {
-														path: imageData.path,
-														restrictions,
-														writeContent: true,
-														onCrop: (blob: Blob, newPath) => {
-															setValue(newPath ?? imageData.path);
-															dispatch(batchActions([popDialog({ id: dialogId }), popDialog({ id })]));
-														}
-													}
-												})
-											);
-										} else {
-											setValue(imageData.path);
-											dispatch(popDialog({ id }));
-										}
-									};
-									img.src = imageData.path;
-								} else {
-									setValue(imageData.path);
-									dispatch(popDialog({ id }));
-								}
+				showBrowseFilesDialog({
+					dispatch,
+					path: processPath(choice.path),
+					multiSelect: false,
+					onSuccess(imageData: MediaItem) {
+						// Check if the image meets restrictions
+						validateImageRestrictions(imageData.path, restrictions).then((meetsRestrictions) => {
+							if (!meetsRestrictions) {
+								showImageCropDialog({
+									dispatch,
+									path: imageData.path,
+									restrictions,
+									writeContent: true,
+									onCrop: (blob: Blob, newPath: string) => {
+										setValue(newPath ?? imageData.path);
+									}
+								});
+							} else {
+								setValue(imageData.path);
 							}
-						} as BrowseFilesDialogProps
-					})
-				);
+						});
+					}
+				});
 				break;
 			}
 			case 'search': {
-				const id = nanoid();
-				dispatch(
-					pushNonDialog({
-						id,
-						component: 'craftercms.components.Search',
-						props: {
-							mode: 'select',
-							embedded: true,
-							initialParameters: {
-								path: ensureSingleSlash(`${processPath(choice.path)}/.+`),
-								sortBy: 'internalName'
-							},
-							onAcceptSelection(images) {
-								// TODO: how do I set Search to single selection?
+				showSearchDialog({
+					dispatch,
+					path: ensureSingleSlash(`${processPath(choice.path)}/.+`),
+					onAcceptSelection(images) {
+						validateImageRestrictions(images[0], restrictions).then((meetsRestrictions) => {
+							if (!meetsRestrictions) {
+								showImageCropDialog({
+									dispatch,
+									path: images[0],
+									restrictions,
+									writeContent: true,
+									onCrop: (blob: Blob, newPath: string) => {
+										setValue(newPath ?? images[0]);
+									}
+								});
+							} else {
 								setValue(images[0]);
-								dispatch(popDialog({ id }));
 							}
-						} as SearchProps
-					})
-				);
+						});
+					}
+				});
 				break;
 			}
 			case 'upload': {
-				const id = nanoid();
-				dispatch(
-					pushDialog({
-						id,
-						component: 'craftercms.components.SingleFileUploadDialog',
-						props: {
-							site: siteId,
-							path: processPath(choice.path),
-							fileTypes: ['image/*'],
-							onFileAdded: (file, uppy, callback) => {
-								// TODO: util to show cropDialog
-								const data = file.data;
-								const url = URL.createObjectURL(data);
-								const image = new Image();
-								image.src = url;
-								image.onload = () => {
-									if (!doesImageMeetSizeRestrictions(image, restrictions)) {
-										const dialogId = nanoid();
-										dispatch(
-											pushDialog({
-												id: dialogId,
-												component: createComponentId('ImageCropDialog'),
-												props: {
-													path: url,
-													restrictions,
-													onCrop: (blob: Blob) => {
-														dispatch(popDialog({ id: dialogId }));
-														uppy.setFileState(file.id, {
-															...file.meta,
-															source: 'crop',
-															name: file.name,
-															type: blob.type,
-															data: blob
-														});
-														callback?.();
-													}
-												}
-											})
-										);
-									} else {
+				showSingleFileUploadDialog({
+					dispatch,
+					siteId,
+					path: processPath(choice.path),
+					fileTypes: ['image/*'],
+					onFileAdded: (file, uppy, callback) => {
+						const data = file.data;
+						const url = URL.createObjectURL(data);
+						validateImageRestrictions(url, restrictions).then((meetsRestrictions) => {
+							if (!meetsRestrictions) {
+								showImageCropDialog({
+									dispatch,
+									path: url,
+									restrictions,
+									onCrop: (blob: Blob) => {
+										uppy.setFileState(file.id, {
+											...file.meta,
+											source: 'crop',
+											name: file.name,
+											type: blob.type,
+											data: blob
+										});
 										callback?.();
 									}
-								};
-							},
-							onUploadComplete(result: FileUploadResult) {
-								if (result.successful.length) {
-									const newValue = ensureSingleSlash(
-										`${result.successful[0].meta.path}/${result.successful[0].meta.name}`
-									);
-									setValue(newValue);
-									dispatch(popDialog({ id }));
-								}
+								});
+							} else {
+								callback?.();
 							}
-						} as SingleFileUploadDialogProps
-					})
-				);
+						});
+					},
+					onUploadComplete(result: FileUploadResult) {
+						if (result.successful.length) {
+							const newValue = ensureSingleSlash(`${result.successful[0].meta.path}/${result.successful[0].meta.name}`);
+							setValue(newValue);
+						}
+					}
+				});
 				break;
 			}
 		}

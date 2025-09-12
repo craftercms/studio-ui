@@ -29,8 +29,6 @@ export function useConsolidatedImagePickerData(dataSources: DataSource[]): Conso
 		const allowedBrowsePaths: AllowedPathsData[] = [];
 		const allowedUploadPaths: AllowedPathsData[] = [];
 		const allowedSearchPaths: AllowedPathsData[] = [];
-
-		// TODO: pretty similar to video picker, though the extra DSs like s3, etc (or custom DSs) are still not handled.
 		dataSources.forEach((ds) => {
 			switch (ds.type) {
 				case 'img-repository-upload': {

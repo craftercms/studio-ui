@@ -46,6 +46,15 @@ import SearchRounded from '@mui/icons-material/SearchRounded';
 import UploadFileOutlinedIcon from '@mui/icons-material/UploadFileOutlined';
 import { getFileNameFromPath } from '../../../utils/path';
 import { ensureSingleSlash } from '../../../utils/string';
+import { Dispatch as ReduxDispatch } from 'redux';
+import { BrowseFilesDialogProps } from '../../BrowseFilesDialog';
+import { nanoid } from 'nanoid';
+import { popDialog, pushDialog, pushNonDialog } from '../../../state/actions/dialogStack';
+import { createComponentId } from '../../../utils/system';
+import { SearchProps } from '../../Search';
+import type { ImageRestrictions } from '../../ImageCropDialog/types';
+import type { SingleFileUploadDialogProps } from '../../SingleFileUploadDialog';
+import type { FileUploadResult } from '../../SingleFileUpload';
 
 // Note: These persist past the closing of the form.
 const lazyControlMap = new Map<string, LazyExoticComponent<ComponentType>>();
@@ -243,3 +252,135 @@ export function downloadMedia(base: string, url: string) {
 	link.click();
 	document.body.removeChild(link);
 }
+
+export const showBrowseFilesDialog = ({
+	dispatch,
+	onSuccess,
+	path,
+	contentTypes,
+	multiSelect = true
+}: {
+	path: string;
+	dispatch: ReduxDispatch;
+	onSuccess: BrowseFilesDialogProps['onSuccess'];
+	contentTypes?: string[];
+	multiSelect?: boolean;
+}): void => {
+	const id = nanoid();
+	dispatch(
+		pushDialog({
+			id,
+			component: createComponentId('BrowseFilesDialog'),
+			props: {
+				path,
+				multiSelect,
+				allowUpload: false,
+				contentTypes: contentTypes ?? [],
+				onClose: () => dispatch(popDialog({ id })),
+				onSuccess(items) {
+					dispatch(popDialog({ id }));
+					onSuccess(items);
+				}
+			} as Partial<BrowseFilesDialogProps>
+		})
+	);
+};
+
+export const showSearchDialog = ({
+	dispatch,
+	path,
+	contentTypes,
+	onAcceptSelection
+}: {
+	path: string;
+	contentTypes?: string[];
+	dispatch: ReduxDispatch;
+	onAcceptSelection: SearchProps['onAcceptSelection'];
+}): void => {
+	const id = nanoid();
+	dispatch(
+		pushNonDialog({
+			id,
+			component: createComponentId('Search'),
+			props: {
+				mode: 'select',
+				embedded: true,
+				initialParameters: {
+					path,
+					sortBy: 'internalName',
+					...(contentTypes && { filters: { 'content-type': contentTypes } })
+				},
+				onClose: () => dispatch(popDialog({ id })),
+				onAcceptSelection(paths, items) {
+					dispatch(popDialog({ id }));
+					onAcceptSelection(paths, items);
+				}
+			} as Partial<SearchProps>
+		})
+	);
+};
+
+export const showSingleFileUploadDialog = ({
+	dispatch,
+	siteId,
+	path,
+	fileTypes,
+	onFileAdded,
+	onUploadComplete
+}: {
+	dispatch: ReduxDispatch;
+	siteId: string;
+	path: string;
+	fileTypes?: string[];
+	onFileAdded?: SingleFileUploadDialogProps['onFileAdded'];
+	onUploadComplete?: SingleFileUploadDialogProps['onUploadComplete'];
+}): void => {
+	const id = nanoid();
+	dispatch(
+		pushDialog({
+			id,
+			component: createComponentId('SingleFileUploadDialog'),
+			props: {
+				site: siteId,
+				path,
+				fileTypes,
+				onFileAdded,
+				onUploadComplete: (result: FileUploadResult) => {
+					dispatch(popDialog({ id }));
+					onUploadComplete?.(result);
+				}
+			} as SingleFileUploadDialogProps
+		})
+	);
+};
+
+export const showImageCropDialog = ({
+	dispatch,
+	path,
+	restrictions,
+	writeContent,
+	onCrop
+}: {
+	dispatch: ReduxDispatch;
+	path: string;
+	restrictions?: ImageRestrictions;
+	writeContent?: boolean;
+	onCrop: (blob: Blob, newPath?: string) => void;
+}): void => {
+	const dialogId = nanoid();
+	dispatch(
+		pushDialog({
+			id: dialogId,
+			component: createComponentId('ImageCropDialog'),
+			props: {
+				path,
+				restrictions,
+				writeContent,
+				onCrop: (blob: Blob, newPath: string) => {
+					dispatch(popDialog({ id: dialogId }));
+					onCrop?.(blob, newPath);
+				}
+			}
+		})
+	);
+};
