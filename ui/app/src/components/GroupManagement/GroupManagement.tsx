@@ -38,9 +38,9 @@ export function GroupManagement() {
   const [offset, setOffset] = useState(0);
   const [limit, setLimit] = useState(10);
   const [fetching, setFetching] = useState(false);
-  const [groups, setGroups] = useState<PagedArray<Group>>(null);
-  const [error, setError] = useState<ApiResponse>();
-  const [selectedGroup, setSelectedGroup] = useState<Group>(null);
+  const [groups, setGroups] = useState<PagedArray<Group> | null>(null);
+  const [error, setError] = useState<ApiResponse | null>(null);
+  const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
   const [showSearchBox, setShowSearchBox] = useState(false);
   const [keyword, setKeyword] = useState('');
   const { classes, cx: clsx } = useStyles();
@@ -55,7 +55,7 @@ export function GroupManagement() {
           setFetching(false);
         },
         error({ response }) {
-          setError(response.response);
+          setError(response?.response);
           setFetching(false);
         }
       });
