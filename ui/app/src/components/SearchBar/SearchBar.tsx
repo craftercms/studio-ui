@@ -97,7 +97,7 @@ interface SearchBarProps {
   onKeyPress?(key: string): void;
   onKeyDown?: InputBaseProps['onKeyDown'];
   onActionButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>, input: HTMLInputElement): void;
-  onDecoratorButtonClick?(input?: HTMLInputElement): void;
+  onDecoratorButtonClick?(input: HTMLInputElement): void;
 }
 
 export function SearchBar(props: SearchBarProps) {
