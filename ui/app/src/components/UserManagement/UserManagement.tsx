@@ -57,10 +57,11 @@ export function UserManagement(props: UserManagementProps) {
       fetchAll({ limit, offset: _offset, keyword }).subscribe({
         next(users) {
           setUsers(users);
+          setError(null);
           setFetching(false);
         },
         error({ response }) {
-          setError(response);
+          setError(response.response);
           setFetching(false);
         }
       });
