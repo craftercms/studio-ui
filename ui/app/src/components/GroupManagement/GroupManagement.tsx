@@ -49,10 +49,11 @@ export function GroupManagement() {
 			fetchAll({ limit, offset: _offset, keyword }).subscribe({
 				next(users) {
 					setGroups(users);
+					setError(null);
 					setFetching(false);
 				},
 				error({ response }) {
-					setError(response);
+					setError(response.response);
 					setFetching(false);
 				}
 			});
