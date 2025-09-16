@@ -46,7 +46,6 @@ export function UserManagement(props: UserManagementProps) {
 	const [users, setUsers] = useState<PagedArray<User>>(null);
 	const [error, setError] = useState<ApiResponse>();
 	const [viewUser, setViewUser] = useState(null);
-	const [showSearchBox, setShowSearchBox] = useState(false);
 	const [keyword, setKeyword] = useState('');
 
 	const fetchUsers = useCallback(
@@ -101,8 +100,8 @@ export function UserManagement(props: UserManagementProps) {
 		setLimit(e.target.value);
 	};
 
-	const onShowSearchBox = () => {
-		setShowSearchBox(!showSearchBox);
+	const onSearchButtonClick = (searchInput: HTMLInputElement) => {
+		searchInput.focus();
 	};
 
 	const onSearch = useCallback(
@@ -138,22 +137,12 @@ export function UserManagement(props: UserManagementProps) {
 						sxs={{
 							root: {
 								transition: 'width 500ms',
-								width: '210px',
-								...(showSearchBox
-									? {}
-									: {
-											width: '50px',
-											border: '0',
-											background: 'none',
-											'& input': {
-												visibility: 'hidden'
-											}
-										})
+								width: '210px'
 							}
 						}}
 						keyword={keyword}
 						onChange={handleSearchKeyword}
-						onDecoratorButtonClick={onShowSearchBox}
+						onDecoratorButtonClick={onSearchButtonClick}
 						showActionButton={Boolean(keyword)}
 					/>
 				}
