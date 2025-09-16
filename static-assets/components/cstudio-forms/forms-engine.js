@@ -2870,7 +2870,7 @@ const initializeCStudioForms = () => {
           const formSection = repeatContainerEl.formSection;
           const repeatId = repeatContainerEl.repeat.id;
           formSection.fields = formSection.fields.filter((field) => {
-            return !field.id.startsWith(`${repeatId}|${index}`);
+            return !field.id.startsWith(`${repeatId}|${index}|`);
           });
           // Update validation status.
           formSection.notifyValidation();
