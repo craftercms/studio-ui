@@ -35,11 +35,11 @@
     "bom": "mkdir -p target && yarn cyclonedx --output-file target/bom.json"
   },
   "devDependencies": {
-    "@babel/cli": "^7.28.0",
+    "@babel/cli": "^7.28.3",
     "@babel/plugin-proposal-class-properties": "^7.18.6",
     "@babel/plugin-proposal-object-rest-spread": "^7.20.7",
     "@babel/plugin-transform-react-jsx": "^7.27.1",
-    "@babel/preset-env": "^7.28.0",
+    "@babel/preset-env": "^7.28.3",
     "@babel/preset-react": "^7.27.1",
     "@types/babel__preset-env": "^7.9.6",
     "@types/eslint": "^9.6.1",
