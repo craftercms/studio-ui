@@ -121,7 +121,7 @@
     "@vitejs/plugin-react-swc": "^4.0.0",
     "babel-plugin-formatjs": "^10.5.39",
     "build-if-changed": "^1.5.5",
-    "eslint": "^9.33.0",
+    "eslint": "^9.35.0",
     "eslint-plugin-formatjs": "^5.4.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
@@ -129,7 +129,7 @@
     "npm-run-all": "^4.1.5",
     "prop-types": "^15.8.1",
     "rimraf": "^6.0.1",
-    "rollup": "^4.46.2",
+    "rollup": "^4.50.2",
     "typescript": "^5.9.2",
     "vite": "^7.1.2"
   }
