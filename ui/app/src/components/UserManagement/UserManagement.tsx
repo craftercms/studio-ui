@@ -103,7 +103,7 @@ export function UserManagement(props: UserManagementProps) {
   };
 
   const onSearchButtonClick = (searchInput: HTMLInputElement) => {
-    searchInput.focus();
+    searchInput?.focus();
   };
 
   const onSearch = useCallback(

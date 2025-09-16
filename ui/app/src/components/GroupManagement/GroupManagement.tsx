@@ -96,7 +96,7 @@ export function GroupManagement() {
   };
 
   const onSearchButtonClick = (searchInput: HTMLInputElement) => {
-    searchInput.focus();
+    searchInput?.focus();
   };
 
   const onSearch = useCallback(
