@@ -97,7 +97,7 @@ interface SearchBarProps {
   onKeyPress?(key: string): void;
   onKeyDown?: InputBaseProps['onKeyDown'];
   onActionButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>, input: HTMLInputElement): void;
-  onDecoratorButtonClick?(): void;
+  onDecoratorButtonClick?(input?: HTMLInputElement): void;
 }
 
 export function SearchBar(props: SearchBarProps) {
@@ -131,7 +131,7 @@ export function SearchBar(props: SearchBarProps) {
       className={cx(classes.search, focus && 'focus', showActionButton && 'noPadded', props.classes?.root)}
     >
       {showDecoratorIcon && onDecoratorButtonClick ? (
-        <IconButton onClick={onDecoratorButtonClick} size="large">
+        <IconButton onClick={() => onDecoratorButtonClick(inputRef.current)} size="large">
           <DecoratorIcon className={classes.searchIcon} />
         </IconButton>
       ) : (

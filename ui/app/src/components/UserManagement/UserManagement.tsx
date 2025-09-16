@@ -47,9 +47,8 @@ export function UserManagement(props: UserManagementProps) {
   const [users, setUsers] = useState<PagedArray<User>>(null);
   const [error, setError] = useState<ApiResponse>();
   const [viewUser, setViewUser] = useState(null);
-  const [showSearchBox, setShowSearchBox] = useState(false);
   const [keyword, setKeyword] = useState('');
-  const { classes, cx: clsx } = useStyles();
+  const { classes } = useStyles();
 
   const fetchUsers = useCallback(
     (keyword = '', _offset = offset) => {
@@ -103,8 +102,8 @@ export function UserManagement(props: UserManagementProps) {
     setLimit(e.target.value);
   };
 
-  const onShowSearchBox = () => {
-    setShowSearchBox(!showSearchBox);
+  const onSearchButtonClick = (searchInput: HTMLInputElement) => {
+    searchInput.focus();
   };
 
   const onSearch = useCallback(
@@ -137,10 +136,10 @@ export function UserManagement(props: UserManagementProps) {
         }
         rightContent={
           <SearchBar
-            classes={{ root: clsx(classes.searchBarRoot, !showSearchBox && 'hidden') }}
+            classes={{ root: classes.searchBarRoot }}
             keyword={keyword}
             onChange={handleSearchKeyword}
-            onDecoratorButtonClick={onShowSearchBox}
+            onDecoratorButtonClick={onSearchButtonClick}
             showActionButton={Boolean(keyword)}
           />
         }

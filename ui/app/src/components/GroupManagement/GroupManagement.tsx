@@ -41,9 +41,8 @@ export function GroupManagement() {
   const [groups, setGroups] = useState<PagedArray<Group>>(null);
   const [error, setError] = useState<ApiResponse>();
   const [selectedGroup, setSelectedGroup] = useState<Group>(null);
-  const [showSearchBox, setShowSearchBox] = useState(false);
   const [keyword, setKeyword] = useState('');
-  const { classes, cx: clsx } = useStyles();
+  const { classes } = useStyles();
 
   const fetchGroups = useCallback(
     (keyword = '', _offset = offset) => {
@@ -96,8 +95,8 @@ export function GroupManagement() {
     setSelectedGroup(null);
   };
 
-  const onShowSearchBox = () => {
-    setShowSearchBox(!showSearchBox);
+  const onSearchButtonClick = (searchInput: HTMLInputElement) => {
+    searchInput.focus();
   };
 
   const onSearch = useCallback(
@@ -130,10 +129,10 @@ export function GroupManagement() {
         }
         rightContent={
           <SearchBar
-            classes={{ root: clsx(classes.searchBarRoot, !showSearchBox && 'hidden') }}
+            classes={{ root: classes.searchBarRoot }}
             keyword={keyword}
             onChange={handleSearchKeyword}
-            onDecoratorButtonClick={onShowSearchBox}
+            onDecoratorButtonClick={onSearchButtonClick}
             showActionButton={Boolean(keyword)}
           />
         }

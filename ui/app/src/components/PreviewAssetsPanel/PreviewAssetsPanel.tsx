@@ -239,7 +239,7 @@ export function PreviewAssetsPanel() {
     <div className={dragInProgress ? classes.noScroll : null}>
       <div ref={elementRef}>
         <div className={classes.search}>
-          <SearchBar showActionButton={Boolean(keyword)} onChange={handleSearchKeyword} keyword={keyword} />
+          <SearchBar showActionButton={Boolean(keyword)} onChange={handleSearchKeyword} keyword={keyword} autoFocus />
         </div>
         <ErrorBoundary>
           {assets.error ? (
