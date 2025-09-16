@@ -52,7 +52,7 @@ export function UserManagement(props: UserManagementProps) {
 	const fetchUsers = useCallback(
 		(keyword = '', _offset = offset) => {
 			setFetching(true);
-			fetchAll({ limit, offset: _offset, keyword }).subscribe({
+			return fetchAll({ limit, offset: _offset, keyword }).subscribe({
 				next(users) {
 					setUsers(users);
 					setError(null);
@@ -68,7 +68,8 @@ export function UserManagement(props: UserManagementProps) {
 	);
 
 	useEffect(() => {
-		fetchUsers();
+		const sub = fetchUsers();
+		return () => sub?.unsubscribe();
 	}, [fetchUsers]);
 
 	const createUserDialogState = useEnhancedDialogState();

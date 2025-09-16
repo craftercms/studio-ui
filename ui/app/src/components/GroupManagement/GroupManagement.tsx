@@ -46,7 +46,7 @@ export function GroupManagement() {
 	const fetchGroups = useCallback(
 		(keyword = '', _offset = offset) => {
 			setFetching(true);
-			fetchAll({ limit, offset: _offset, keyword }).subscribe({
+			return fetchAll({ limit, offset: _offset, keyword }).subscribe({
 				next(users) {
 					setGroups(users);
 					setError(null);
@@ -62,7 +62,8 @@ export function GroupManagement() {
 	);
 
 	useEffect(() => {
-		fetchGroups();
+		const sub = fetchGroups();
+		return () => sub?.unsubscribe();
 	}, [fetchGroups]);
 
 	const editGroupDialogState = useEnhancedDialogState();
