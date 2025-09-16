@@ -43,9 +43,9 @@ export function UserManagement(props: UserManagementProps) {
 	const [offset, setOffset] = useState(0);
 	const [limit, setLimit] = useState(10);
 	const [fetching, setFetching] = useState(false);
-	const [users, setUsers] = useState<PagedArray<User>>(null);
-	const [error, setError] = useState<ApiResponse>();
-	const [viewUser, setViewUser] = useState(null);
+	const [users, setUsers] = useState<PagedArray<User> | null>(null);
+	const [error, setError] = useState<ApiResponse | null>(null);
+	const [viewUser, setViewUser] = useState<User | null>(null);
 	const [showSearchBox, setShowSearchBox] = useState(false);
 	const [keyword, setKeyword] = useState('');
 
@@ -59,7 +59,7 @@ export function UserManagement(props: UserManagementProps) {
 					setFetching(false);
 				},
 				error({ response }) {
-					setError(response.response);
+					setError(response?.response);
 					setFetching(false);
 				}
 			});
