@@ -2457,6 +2457,7 @@ const initializeCStudioForms = () => {
 					const containers = repeatContainerEl.querySelectorAll('.cstudio-form-repeat-container');
 					const numOfItems = containers.length;
 					if (containers[index]) {
+						this._removeSectionFieldRef(repeatContainerEl, index);
 						this._clearRteEditorInstances(containers[index], repeatContainerEl.form);
 						containers[index].parentNode.removeChild(containers[index]);
 						this._recalculateRepeatItemsIndexes(repeatContainerEl);
@@ -2473,6 +2474,7 @@ const initializeCStudioForms = () => {
 					const containers = repeatContainerEl.querySelectorAll('.cstudio-form-repeat-container');
 					if (containers[originalIndex] && containers[newIndex]) {
 						const itemToMove = containers[originalIndex];
+						this._removeSectionFieldRef(repeatContainerEl, originalIndex);
 						this._clearRteEditorInstances(containers[originalIndex], repeatContainerEl.form);
 						const parent = itemToMove.parentNode;
 						parent.removeChild(itemToMove);
@@ -2931,6 +2933,17 @@ const initializeCStudioForms = () => {
 					if (pluginInfo.missingProp.length > 0) {
 						pluginError.control.push(pluginInfo.missingProp);
 					}
+				},
+
+				// Removes the field reference from the section and updates its validation status.
+				_removeSectionFieldRef: function (repeatContainerEl, index) {
+					const formSection = repeatContainerEl.formSection;
+					const repeatId = repeatContainerEl.repeat.id;
+					formSection.fields = formSection.fields.filter((field) => {
+						return !field.id.startsWith(`${repeatId}|${index}|`);
+					});
+					// Update validation status.
+					formSection.notifyValidation();
 				},
 
 				_renderInContextEdit: function (form, iceId) {
