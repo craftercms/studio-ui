@@ -24,7 +24,7 @@ import Box from '@mui/material/Box';
 import { useDispatch } from 'react-redux';
 import queryString from 'query-string';
 import { useIntl } from 'react-intl';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router';
 import usePreviewNavigation from '../../hooks/usePreviewNavigation';
 import useSiteLookup from '../../hooks/useSiteLookup';
 import useActiveSiteId from '../../hooks/useActiveSiteId';

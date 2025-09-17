@@ -28,7 +28,7 @@ import {
   RouterProvider,
   useLocation,
   Outlet
-} from 'react-router-dom';
+} from 'react-router';
 import SiteManagement from '../SiteManagement';
 import { getLauncherSectionLink, urlMapping } from '../LauncherSection/utils';
 import EmptyState from '../EmptyState/EmptyState';
