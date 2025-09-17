@@ -42,7 +42,7 @@ interface PluginCardProps {
   inUse?: boolean;
   usePermission?: boolean;
   beingInstalled?: boolean;
-  useLabel?: string | JSX.Element;
+  useLabel?: string | ReactJSXElement;
   disableCardActionClick?: boolean;
   onPluginSelected(plugin: MarketplacePlugin, view: number): any;
   onDetails(plugin: MarketplacePlugin, index?: number): any;
@@ -348,15 +348,17 @@ function PluginCard(props: PluginCardProps) {
           <CardHeader
             title={name}
             subheader={!isGitOrDuplicateCard ? renderSubtitle() : ''}
-            titleTypographyProps={{
-              variant: 'subtitle2',
-              component: 'h2',
-              className: 'cardTitle'
-            }}
-            subheaderTypographyProps={{
-              variant: 'subtitle2',
-              component: 'h2',
-              color: 'textSecondary'
+            slotProps={{
+              title: {
+                variant: 'subtitle2',
+                component: 'h2',
+                className: 'cardTitle'
+              },
+              subheader: {
+                variant: 'subtitle2',
+                component: 'h2',
+                color: 'textSecondary'
+              }
             }}
           />
         </CardActionArea>

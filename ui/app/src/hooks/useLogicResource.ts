@@ -23,7 +23,7 @@ export function useLogicResource<ReturnType = unknown, SourceType = unknown, Err
   source: SourceType,
   checkers: CustomResourceSelectors<ReturnType, SourceType, ErrorType>
 ): Resource<ReturnType> {
-  const checkersRef = useRef<CustomResourceSelectors<ReturnType, SourceType, ErrorType>>();
+  const checkersRef = useRef<CustomResourceSelectors<ReturnType, SourceType, ErrorType>>(undefined);
   const [[resource, resolve, reject], setBundle] = useState(() => createResourceBundle<ReturnType>());
 
   checkersRef.current = checkers;

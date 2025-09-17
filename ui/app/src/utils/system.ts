@@ -41,7 +41,7 @@ export function getSystemLink({
   page?: string;
 }) {
   return {
-    preview: `${authoringBase}${PREVIEW_URL_PATH}#/?page=${page}&site=${site}`,
+    preview: `${authoringBase}${PREVIEW_URL_PATH}#/?page=${encodeURIComponent(page)}&site=${site}`,
     siteTools: `${authoringBase}${ProjectToolsRoutes.ProjectTools}`,
     siteSearch: `${authoringBase}${ProjectToolsRoutes.Search}`,
     siteDashboard: `${authoringBase}${ProjectToolsRoutes.SiteDashboard}`
@@ -63,7 +63,7 @@ export function withMonaco(onReady: (api: Monaco) => void): void {
   if (!monaco$) {
     monaco$ = new ReplaySubject(1);
     const script = document.createElement('script');
-    script.src = '/studio/static-assets/libs/monaco/monaco.0.48.0.js';
+    script.src = '/studio/static-assets/libs/monaco/monaco.0.52.2.js';
     script.onload = () => {
       // @ts-ignore
       monaco$.next(window.monaco);

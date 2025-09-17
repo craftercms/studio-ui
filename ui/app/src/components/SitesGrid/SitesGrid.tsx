@@ -55,7 +55,7 @@ export function SitesGrid(props: SitesGridProps) {
     <section className={classes.root}>
       <Grid container spacing={3}>
         {sites.map((site) => (
-          <Grid item key={site.id}>
+          <Grid key={site.id}>
             <SiteCard
               site={site}
               onSiteClick={onSiteClick}

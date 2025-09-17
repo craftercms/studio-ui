@@ -63,7 +63,7 @@ export function GlobalConfigManagement() {
   hasChangesRef.current = hasChanges;
   const { classes } = useStyles();
   const [contentSize, setContentSize] = useState(0);
-  const aceEditorRef = useRef<any>();
+  const aceEditorRef = useRef<any>(undefined);
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const { username } = useActiveUser();

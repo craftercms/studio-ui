@@ -101,16 +101,25 @@ YAHOO.extend(CStudioForms.Datasources.FileDesktopUpload, CStudioForms.CStudioFor
   },
 
   edit: function (key, control) {
-    CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, key, {
-      success: function (contentTO) {
-        CStudioAuthoring.Operations.editContent(
-          contentTO.item.contentType,
-          CStudioAuthoringContext.siteId,
-          contentTO.item.mimeType,
-          contentTO.item.nodeRef,
-          contentTO.item.uri,
-          false
-        );
+    craftercms.services.content.fetchSandboxItem(CStudioAuthoringContext.site, key).subscribe({
+      next(sandboxItem) {
+        const readonly = !sandboxItem.availableActionsMap.edit;
+
+        if (readonly) {
+          CStudioAuthoring.Operations.showPreviewAsset(sandboxItem);
+        } else {
+          CStudioAuthoring.Operations.editContent(
+            sandboxItem.contentTypeId,
+            CStudioAuthoringContext.siteId,
+            sandboxItem.mimeType,
+            null,
+            sandboxItem.path,
+            false
+          );
+        }
+      },
+      error(err) {
+        console.error(err?.response?.response);
       }
     });
   },

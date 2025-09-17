@@ -141,7 +141,7 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
   refts.setSite = setSite;
   const { formatMessage } = useIntl();
   const { authoringBase, useBaseDomain } = useEnv();
-  const siteCreateSubscription = useRef<Subscription>();
+  const siteCreateSubscription = useRef<Subscription>(undefined);
   const mounted = useRef(false);
 
   useMount(() => {
@@ -501,7 +501,10 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
       const disableCard = isDuplicateItem && !permissionsLookup['duplicate_site'];
 
       return (
-        <Grid item xs={12} sm={6} md={isGitOrDuplicateItem ? 6 : 4} lg={isGitOrDuplicateItem ? 6 : 3} key={item.id}>
+        <Grid
+          size={{ xs: 12, sm: 6, md: isGitOrDuplicateItem ? 6 : 4, lg: isGitOrDuplicateItem ? 6 : 3 }}
+          key={item.id}
+        >
           <PluginCard
             plugin={item}
             onPluginSelected={handleBlueprintSelected}
@@ -640,10 +643,10 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
                     {renderBlueprints(blueprints)}
                     {hasListPluginPermission && (
                       <>
-                        <Grid item xs={12}>
+                        <Grid size={12}>
                           <Divider sx={{ ml: -3, mr: -3 }} />
                         </Grid>
-                        <Grid item xs={12} className={classes.marketplaceActions}>
+                        <Grid size={12} className={classes.marketplaceActions}>
                           <Typography color="text.secondary" variant="overline" sx={{ mr: 2 }}>
                             {formatMessage(messages.publicMarketplaceBlueprints)}
                           </Typography>
@@ -669,7 +672,7 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
                           />
                         </Grid>
                         {search.searchSelected && site.selectedView === 0 && (
-                          <Grid item xs={12}>
+                          <Grid size={12}>
                             <div className={classes.searchContainer}>
                               <SearchBar
                                 showActionButton={Boolean(search.searchKey)}

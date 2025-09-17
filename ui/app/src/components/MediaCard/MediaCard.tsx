@@ -174,18 +174,20 @@ function MediaCard(props: MediaCardProps) {
         title={name}
         subheader={showPath ? item.path : null}
         action={action}
-        titleTypographyProps={{
-          variant: 'subtitle2',
-          component: 'h2',
-          className: classes.cardTitle,
-          title: item.name
-        }}
-        subheaderTypographyProps={{
-          variant: 'subtitle2',
-          component: 'div',
-          className: classes.cardSubtitle,
-          color: 'textSecondary',
-          title: item.path
+        slotProps={{
+          title: {
+            variant: 'subtitle2',
+            component: 'h2',
+            className: classes.cardTitle,
+            title: item.name
+          },
+          subheader: {
+            variant: 'subtitle2',
+            component: 'div',
+            className: classes.cardSubtitle,
+            color: 'textSecondary',
+            title: item.path
+          }
         }}
       />
       {viewMode !== 'compact' && (

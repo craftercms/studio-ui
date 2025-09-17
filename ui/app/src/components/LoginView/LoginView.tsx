@@ -327,7 +327,9 @@ function RecoverView(props: SubViewProps) {
           onChange={(e: any) => setUsername(e.target.value)}
           className={classes?.username}
           label={<FormattedMessage id="loginView.usernameTextFieldLabel" defaultMessage="Username" />}
-          inputProps={{ maxLength: USER_USERNAME_MAX_LENGTH }}
+          slotProps={{
+            htmlInput: { maxLength: USER_USERNAME_MAX_LENGTH }
+          }}
         />
         <Button
           type="submit"
@@ -444,7 +446,7 @@ function ResetView(props: SubViewProps) {
           placeholder={formatMessage(translations.resetPasswordFieldPlaceholderLabel)}
           onFocus={(e) => setAnchorEl(e.target)}
           onBlur={() => setAnchorEl(null)}
-          inputProps={{ autoComplete: 'new-password' }}
+          slotProps={{ htmlInput: { autoComplete: 'new-password' } }}
         />
         <PasswordTextField
           id="resetFormPasswordConfirmField"
@@ -495,7 +497,7 @@ function UnrecognizedView({ classes }: any) {
 
 function LanguageDropDown(props: LanguageDropDownProps) {
   const { formatMessage } = useIntl();
-  const buttonRef = useRef();
+  const buttonRef = useRef(undefined);
   const [openMenu, setOpenMenu] = useState(false);
   const { language, languages, onChange } = props;
   return (
@@ -613,7 +615,7 @@ export function LoginViewContainer(props: LoginViewProps) {
         open={true}
         maxWidth="xs"
         className={cx(classes.dialogRoot, isFetching && classes.dialogRootFetching)}
-        PaperProps={{ className: classes.dialogPaper }}
+        slotProps={{ paper: { className: classes.dialogPaper } }}
         aria-labelledby="loginDialog"
       >
         <DialogTitle id="loginDialog">

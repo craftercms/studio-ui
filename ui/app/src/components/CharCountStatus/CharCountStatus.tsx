@@ -17,7 +17,7 @@
 import React from 'react';
 import { makeStyles } from 'tss-react/mui';
 import palette from '../../styles/palette';
-import { Grid } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
@@ -48,7 +48,7 @@ function CharCountStatus(props: CharCountStatusProps) {
 
   return (
     <Grid container direction="row" justifyContent="space-between" className={classes.countContainer}>
-      <Grid item>
+      <Grid>
         <Typography className={classes.submissionCommentCount}>
           <FormattedMessage
             id="deleteDialog.maxCharacters"
@@ -58,7 +58,7 @@ function CharCountStatus(props: CharCountStatusProps) {
         </Typography>
       </Grid>
 
-      <Grid item>
+      <Grid>
         <Typography className={classes.submissionCommentCount}>
           {commentLength}/{commentMaxLength}
         </Typography>

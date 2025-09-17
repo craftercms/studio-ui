@@ -1,5 +1,17 @@
 # Changelog
 
+## 5.0.0 (CrafterCMS 4.4.3)
+* Version 5.0.0 should be paired with CrafterCMS 4.4.3 or later.
+* Upgrade to the latest version to date of the following libraries:
+  * @mui/icons-material
+  * @mui/lab
+  * @mui/material
+  * @mui/x-data-grid
+  * @mui/x-date-pickers
+  * @mui/x-tree-view
+* [utils/content]:
+  * Moved `PathNavigator/utils.ts` `isVideo`, `isAudio` and `isPdfDocument` functions to `utils/content.ts`.
+
 ## 4.2.0
 
 * [utils/xml] Upgrade prettier to v3x which changed from sync apis to async

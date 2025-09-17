@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ReactNode, useMemo } from 'react';
+import React, { ElementType, ReactNode, useMemo } from 'react';
 import { DetailedItem } from '../../models/Item';
 import { useLocale } from '../../hooks/useLocale';
 import ListItem from '@mui/material/ListItem';
@@ -34,6 +34,7 @@ import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import Button from '@mui/material/Button';
 import InfoIcon from '@mui/icons-material/InfoOutlined';
 import { makeStyles } from 'tss-react/mui';
+import ListItemButton from '@mui/material/ListItemButton';
 
 import LookupTable from '../../models/LookupTable';
 
@@ -158,15 +159,8 @@ export function SelectionList(props: SelectionListProps) {
         <List className={classes.selectionList}>
           {items.map((item) => {
             const labelId = `checkbox-list-label-${item.path}`;
-            return (
-              <ListItem
-                dense
-                key={item.path}
-                disabled={disabled || disabledPaths[item.path]}
-                // @ts-ignore
-                button={Boolean(onItemClicked)}
-                onClick={onItemClicked ? (e) => onItemClicked(e, item.path) : void 0}
-              >
+            const listItemComponentChildren = (
+              <>
                 {onItemClicked && (
                   <ListItemIcon>
                     <Checkbox
@@ -247,8 +241,22 @@ export function SelectionList(props: SelectionListProps) {
                     {item.path}
                   </Typography>
                 </ListItemText>
-              </ListItem>
+              </>
             );
+
+            if (onItemClicked) {
+              return (
+                <ListItemButton
+                  dense
+                  key={item.path}
+                  disabled={disabled || disabledPaths[item.path]}
+                  onClick={(e) => onItemClicked(e, item.path)}
+                  children={listItemComponentChildren}
+                />
+              );
+            } else {
+              return <ListItem dense key={item.path} children={listItemComponentChildren} />;
+            }
           })}
         </List>
       ) : (
@@ -256,15 +264,8 @@ export function SelectionList(props: SelectionListProps) {
           {paths.length ? (
             paths.map((path: string) => {
               const labelId = `checkbox-list-label-${path}`;
-              return (
-                <ListItem
-                  dense
-                  key={path}
-                  disabled={disabled || disabledPaths[path]}
-                  // @ts-ignore
-                  button={Boolean(onItemClicked)}
-                  onClick={onItemClicked ? (e) => onItemClicked(e, path) : null}
-                >
+              const listItemComponentChildren = (
+                <>
                   {onItemClicked && (
                     <ListItemIcon>
                       <Checkbox
@@ -298,8 +299,22 @@ export function SelectionList(props: SelectionListProps) {
                       </Button>
                     </ListItemSecondaryAction>
                   )}
-                </ListItem>
+                </>
               );
+
+              if (onItemClicked) {
+                return (
+                  <ListItemButton
+                    dense
+                    key={path}
+                    disabled={disabled || disabledPaths[path]}
+                    onClick={(e) => onItemClicked(e, path)}
+                    children={listItemComponentChildren}
+                  />
+                );
+              } else {
+                return <ListItem key={path} dense children={listItemComponentChildren} />;
+              }
             })
           ) : (
             <Box className={classes.emptyDependencies}>

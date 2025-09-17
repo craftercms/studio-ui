@@ -51,6 +51,7 @@ import ListViewIcon from '@mui/icons-material/ViewStreamRounded';
 import GridViewIcon from '@mui/icons-material/GridOnRounded';
 import ReorderRoundedIcon from '@mui/icons-material/ReorderRounded';
 import { SORT_AUTO } from '../Search/utils';
+import Checkbox from '@mui/material/Checkbox';
 
 export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
   // region const { ... } = props;
@@ -83,13 +84,16 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
     onUpload,
     allowUpload = true,
     viewMode = 'card',
-    onToggleViewMode
+    onToggleViewMode,
+    allSelected,
+    someSelected,
+    onSelectAll
   } = props;
   // endregion
   const { classes, cx: clsx } = useStyles();
   const { formatMessage } = useIntl();
   const [sortMenuOpen, setSortMenuOpen] = useState(false);
-  const buttonRef = useRef();
+  const buttonRef = useRef(undefined);
 
   return (
     <>
@@ -102,6 +106,14 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
             <Paper className={classes.actionsBar}>
               <Toolbar disableGutters variant="dense">
                 <Box sx={{ flexGrow: 1, display: 'flex' }}>
+                  {multiSelect && (
+                    <>
+                      <Tooltip title={<FormattedMessage defaultMessage="Select all on this page" />}>
+                        <Checkbox checked={allSelected} indeterminate={someSelected} onChange={onSelectAll} />
+                      </Tooltip>
+                      <Divider orientation="vertical" flexItem className={classes.actionsBarDivider} />
+                    </>
+                  )}
                   <Tooltip title={<FormattedMessage id="word.refresh" defaultMessage="Refresh" />}>
                     <IconButton onClick={onRefresh}>
                       <RefreshIcon />
@@ -140,8 +152,8 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
                     anchorEl={buttonRef.current}
                     open={sortMenuOpen}
                     onClose={() => setSortMenuOpen(false)}
-                    MenuListProps={{
-                      'aria-labelledby': 'sort-button'
+                    slotProps={{
+                      list: { 'aria-labelledby': 'sort-button' }
                     }}
                   >
                     <MenuItem>

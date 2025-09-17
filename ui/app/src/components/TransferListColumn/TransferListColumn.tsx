@@ -70,7 +70,7 @@ export function TransferListColumn(props: TransferListColumnProps) {
     hasMoreItems
   } = props;
   const { classes } = useStyles();
-  const listRef = useRef();
+  const listRef = useRef(undefined);
 
   const onSearch = (value) => {
     onFilter?.(value);
@@ -107,6 +107,7 @@ export function TransferListColumn(props: TransferListColumnProps) {
               }
             />
           ) : (
+            // @ts-expect-error - TS2786: InfiniteScroll cannot be used as a JSX component. Lib Types are not compatible with the latest react types.
             <InfiniteScroll
               initialLoad={false}
               pageStart={0}
@@ -146,7 +147,7 @@ export function TransferListColumn(props: TransferListColumnProps) {
                   <ListItemText
                     primary={item.title}
                     secondary={item.subtitle}
-                    primaryTypographyProps={{ noWrap: true, title: item.title }}
+                    slotProps={{ primary: { noWrap: true, title: item.title } }}
                   />
                 </ListItemButton>
               ))}

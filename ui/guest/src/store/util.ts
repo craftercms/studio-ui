@@ -114,9 +114,9 @@ export const checkIfLockedOrModified = (state: GuestState, record: ElementRecord
       modelId = model.craftercms.id;
     }
   }
-  const parentModelId = model.craftercms.path ? null : getParentModelId(modelId, getCachedModels(), modelHierarchyMap);
+  const parentModelId = model?.craftercms.path ? null : getParentModelId(modelId, getCachedModels(), modelHierarchyMap);
   const parentModel = parentModelId ? getCachedModel(parentModelId) : null;
-  const path = model.craftercms.path ?? parentModel.craftercms.path;
+  const path = model?.craftercms.path ?? parentModel?.craftercms.path;
   const isLocked = Boolean(state.lockedPaths[path]);
   const isExternallyModified = Boolean(state.externallyModifiedPaths[path]);
   return { isLocked, isExternallyModified, model, parentModelId, parentModel, path };

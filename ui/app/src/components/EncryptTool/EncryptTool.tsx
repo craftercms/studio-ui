@@ -101,7 +101,7 @@ const notificationInitialState = {
 export const EncryptTool = (props: EncryptToolProps) => {
   const { site, embedded = false, showAppsButton, onSubmittingAndOrPendingChange } = props;
   const { classes } = useStyles();
-  const inputRef = useRef<HTMLInputElement>();
+  const inputRef = useRef<HTMLInputElement>(undefined);
   const [text, setText] = useState('');
   const [result, setResult] = useState(null);
   const [fetching, setFetching] = useState(null);
@@ -191,7 +191,9 @@ export const EncryptTool = (props: EncryptToolProps) => {
               sx={{ mb: 2 }}
               ref={inputRef}
               label={<FormattedMessage id="words.result" defaultMessage="Result" />}
-              InputProps={{ readOnly: true }}
+              slotProps={{
+                input: { readOnly: true }
+              }}
               value={result}
               onClick={(e: any) => {
                 const input = e.target;

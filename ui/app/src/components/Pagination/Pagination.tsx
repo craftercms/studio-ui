@@ -124,15 +124,19 @@ export function Pagination(props: PaginationProps) {
       labelRowsPerPage={formatMessage(translations.itemsPerPage)}
       {...tablePaginationProps}
       rowsPerPageOptions={props.rowsPerPageOptions ?? [5, 10, 25, 50]}
-      backIconButtonProps={{
-        'aria-label': formatMessage(translations.previousPage),
-        size: 'small',
-        ...props.backIconButtonProps
-      }}
-      nextIconButtonProps={{
-        'aria-label': formatMessage(translations.nextPage),
-        size: 'small',
-        ...props.nextIconButtonProps
+      slotProps={{
+        actions: {
+          previousButton: {
+            'aria-label': formatMessage(translations.previousPage),
+            size: 'small',
+            ...props.backIconButtonProps
+          },
+          nextButton: {
+            'aria-label': formatMessage(translations.nextPage),
+            size: 'small',
+            ...props.nextIconButtonProps
+          }
+        }
       }}
     />
   );

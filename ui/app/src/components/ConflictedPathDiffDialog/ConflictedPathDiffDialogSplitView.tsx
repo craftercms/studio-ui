@@ -25,7 +25,7 @@ export interface SplitViewProps {
 
 export function ConflictedPathDiffDialogSplitView(props: SplitViewProps) {
   const { diff, className } = props;
-  const ref = useRef();
+  const ref = useRef(undefined);
 
   useEffect(() => {
     if (diff) {

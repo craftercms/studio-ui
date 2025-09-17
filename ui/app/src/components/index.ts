@@ -88,6 +88,7 @@ export * from './ErrorDialog';
 export * from './ErrorState';
 export * from './ExpiringDashlet';
 export * from './FolderBrowserTreeView';
+export * from './FolderMoveAlert';
 export * from './FormEngineControls';
 export * from './Gears';
 export * from './GitAuthForm';

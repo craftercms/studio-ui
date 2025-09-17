@@ -15,6 +15,7 @@
  */
 
 import { DetailedItem, SandboxItem } from '../../models/Item';
+import { isPdfDocument } from '../../utils/content';
 
 export function isNavigable(item: DetailedItem | SandboxItem): boolean {
   if (item) {
@@ -33,14 +34,6 @@ export function isImage(item: DetailedItem | SandboxItem): boolean {
   return item?.mimeType.startsWith('image/');
 }
 
-export function isVideo(item: DetailedItem | SandboxItem): boolean {
-  return item?.mimeType.startsWith('video/');
-}
-
-export function isAudio(item: DetailedItem | SandboxItem): boolean {
-  return item?.mimeType.startsWith('audio/');
-}
-
 export function isTextContent(mimeType: string): boolean {
   return (
     /^text\//.test(mimeType) ||
@@ -52,10 +45,6 @@ export function isTextContent(mimeType: string): boolean {
 
 export function isMediaContent(mimeType: string) {
   return /^image\//.test(mimeType) || /^video\//.test(mimeType) || /^audio\//.test(mimeType);
-}
-
-export function isPdfDocument(mimeType: string) {
-  return 'application/pdf' === mimeType;
 }
 
 export function isPreviewable(item: DetailedItem | SandboxItem): boolean {

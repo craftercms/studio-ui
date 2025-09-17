@@ -45,7 +45,7 @@ export function PluginList(props: PluginListProps) {
         />
       ) : (
         plugins.map((plugin) => (
-          <Grid item xs={12} sm={6} md={4} key={plugin.id}>
+          <Grid size={{ xs: 12, sm: 6, md: 4 }} key={plugin.id}>
             <PluginCard
               plugin={plugin}
               inUse={Boolean(installedPlugins[plugin.id])}

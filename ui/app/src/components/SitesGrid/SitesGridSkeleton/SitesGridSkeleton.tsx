@@ -32,7 +32,7 @@ export function SitesGridSkeleton(props: SitesGridSkeletonProps) {
     <section className={classes.root}>
       <Grid container spacing={3}>
         {items.map((num, i) => (
-          <Grid item key={i}>
+          <Grid key={i}>
             <SiteCardSkeleton compact={currentView === 'list'} />
           </Grid>
         ))}

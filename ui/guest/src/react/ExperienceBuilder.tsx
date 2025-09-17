@@ -192,7 +192,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
           const { type } = event;
           const record = elementRegistry.get(dispatcherElementRecordId);
           if (nullOrUndefined(record)) {
-            console.error('[Guest] No record found for dispatcher element');
+            console.warn('[Guest] No record found for dispatcher element');
           } else {
             if (refs.current.keysPressed.z && type === 'click') {
               return false;
@@ -644,6 +644,8 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
               const hasValidations = Boolean(validations.length);
               const hasFailedRequired = validations.some(({ level }) => level === 'required');
               const elementRecord = elementRegistry.get(highlight.id);
+              // If no elementRecord is found, the item was removed while the hover was on top. Skip.
+              if (!elementRecord) return null;
               const elementPath = models[elementRecord.modelId]?.craftercms.path ?? path;
               const { isLocked, isExternallyModified } = checkIfLockedOrModified(state, elementRecord);
               const lockInfo = isLocked ? state.lockedPaths[elementPath]?.user : null;
@@ -733,9 +735,9 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
   );
 }
 
-export function ExperienceBuilder(props: GenericXBProps<{ model: ContentInstance }>): JSX.Element;
-export function ExperienceBuilder(props: GenericXBProps<{ path: string }>): JSX.Element;
-export function ExperienceBuilder(props: ExperienceBuilderProps): JSX.Element {
+export function ExperienceBuilder(props: GenericXBProps<{ model: ContentInstance }>): ReactJSXElement;
+export function ExperienceBuilder(props: GenericXBProps<{ path: string }>): ReactJSXElement;
+export function ExperienceBuilder(props: ExperienceBuilderProps): ReactJSXElement{
   let { children, isAuthoring = false, path, model } = props as CompleteGuestProps;
   let store = useMemo(() => isAuthoring && createGuestStore(), [isAuthoring]);
   path = path || prop(model, 'path');
@@ -744,7 +746,7 @@ export function ExperienceBuilder(props: ExperienceBuilderProps): JSX.Element {
       <ExperienceBuilderInternal {...props} path={path} />
     </Provider>
   ) : (
-    (children as JSX.Element)
+    (children as ReactJSXElement)
   );
 }
 

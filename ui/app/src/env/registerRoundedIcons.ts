@@ -410,6 +410,10 @@ export default function register() {
     lazy(() => import('@mui/icons-material/ArchiveRounded'))
   );
   components.set(
+    '@mui/icons-material/AreaChartRounded',
+    lazy(() => import('@mui/icons-material/AreaChartRounded'))
+  );
+  components.set(
     '@mui/icons-material/ArrowBackIosNewRounded',
     lazy(() => import('@mui/icons-material/ArrowBackIosNewRounded'))
   );
@@ -1562,6 +1566,10 @@ export default function register() {
     lazy(() => import('@mui/icons-material/CompassCalibrationRounded'))
   );
   components.set(
+    '@mui/icons-material/CompostRounded',
+    lazy(() => import('@mui/icons-material/CompostRounded'))
+  );
+  components.set(
     '@mui/icons-material/CompressRounded',
     lazy(() => import('@mui/icons-material/CompressRounded'))
   );
@@ -1762,6 +1770,10 @@ export default function register() {
     lazy(() => import('@mui/icons-material/CropSquareRounded'))
   );
   components.set(
+    '@mui/icons-material/CrueltyFreeRounded',
+    lazy(() => import('@mui/icons-material/CrueltyFreeRounded'))
+  );
+  components.set(
     '@mui/icons-material/CssRounded',
     lazy(() => import('@mui/icons-material/CssRounded'))
   );
@@ -1832,6 +1844,10 @@ export default function register() {
   components.set(
     '@mui/icons-material/DataArrayRounded',
     lazy(() => import('@mui/icons-material/DataArrayRounded'))
+  );
+  components.set(
+    '@mui/icons-material/DataExplorationRounded',
+    lazy(() => import('@mui/icons-material/DataExplorationRounded'))
   );
   components.set(
     '@mui/icons-material/DataObjectRounded',
@@ -2082,6 +2098,10 @@ export default function register() {
     lazy(() => import('@mui/icons-material/DisabledByDefaultRounded'))
   );
   components.set(
+    '@mui/icons-material/DisabledVisibleRounded',
+    lazy(() => import('@mui/icons-material/DisabledVisibleRounded'))
+  );
+  components.set(
     '@mui/icons-material/DiscFullRounded',
     lazy(() => import('@mui/icons-material/DiscFullRounded'))
   );
@@ -2260,6 +2280,10 @@ export default function register() {
   components.set(
     '@mui/icons-material/DriveFileMoveRounded',
     lazy(() => import('@mui/icons-material/DriveFileMoveRounded'))
+  );
+  components.set(
+    '@mui/icons-material/DriveFileMoveRtlRounded',
+    lazy(() => import('@mui/icons-material/DriveFileMoveRtlRounded'))
   );
   components.set(
     '@mui/icons-material/DriveFileRenameOutlineRounded',
@@ -2446,6 +2470,10 @@ export default function register() {
     lazy(() => import('@mui/icons-material/EmergencyRecordingRounded'))
   );
   components.set(
+    '@mui/icons-material/EmergencyRounded',
+    lazy(() => import('@mui/icons-material/EmergencyRounded'))
+  );
+  components.set(
     '@mui/icons-material/EmergencyShareRounded',
     lazy(() => import('@mui/icons-material/EmergencyShareRounded'))
   );
@@ -2628,6 +2656,10 @@ export default function register() {
   components.set(
     '@mui/icons-material/FaceRounded',
     lazy(() => import('@mui/icons-material/FaceRounded'))
+  );
+  components.set(
+    '@mui/icons-material/FaceUnlockRounded',
+    lazy(() => import('@mui/icons-material/FaceUnlockRounded'))
   );
   components.set(
     '@mui/icons-material/FacebookRounded',
@@ -3222,6 +3254,14 @@ export default function register() {
     lazy(() => import('@mui/icons-material/FreeBreakfastRounded'))
   );
   components.set(
+    '@mui/icons-material/FreeCancellationRounded',
+    lazy(() => import('@mui/icons-material/FreeCancellationRounded'))
+  );
+  components.set(
+    '@mui/icons-material/FrontHandRounded',
+    lazy(() => import('@mui/icons-material/FrontHandRounded'))
+  );
+  components.set(
     '@mui/icons-material/FullscreenExitRounded',
     lazy(() => import('@mui/icons-material/FullscreenExitRounded'))
   );
@@ -3260,6 +3300,10 @@ export default function register() {
   components.set(
     '@mui/icons-material/GavelRounded',
     lazy(() => import('@mui/icons-material/GavelRounded'))
+  );
+  components.set(
+    '@mui/icons-material/GeneratingTokensRounded',
+    lazy(() => import('@mui/icons-material/GeneratingTokensRounded'))
   );
   components.set(
     '@mui/icons-material/GestureRounded',
@@ -3364,6 +3408,10 @@ export default function register() {
   components.set(
     '@mui/icons-material/GroupAddRounded',
     lazy(() => import('@mui/icons-material/GroupAddRounded'))
+  );
+  components.set(
+    '@mui/icons-material/GroupOffRounded',
+    lazy(() => import('@mui/icons-material/GroupOffRounded'))
   );
   components.set(
     '@mui/icons-material/GroupRemoveRounded',
@@ -3614,6 +3662,10 @@ export default function register() {
     lazy(() => import('@mui/icons-material/HotTubRounded'))
   );
   components.set(
+    '@mui/icons-material/HotelClassRounded',
+    lazy(() => import('@mui/icons-material/HotelClassRounded'))
+  );
+  components.set(
     '@mui/icons-material/HotelRounded',
     lazy(() => import('@mui/icons-material/HotelRounded'))
   );
@@ -3722,8 +3774,16 @@ export default function register() {
     lazy(() => import('@mui/icons-material/InboxRounded'))
   );
   components.set(
+    '@mui/icons-material/IncompleteCircleRounded',
+    lazy(() => import('@mui/icons-material/IncompleteCircleRounded'))
+  );
+  components.set(
     '@mui/icons-material/IndeterminateCheckBoxRounded',
     lazy(() => import('@mui/icons-material/IndeterminateCheckBoxRounded'))
+  );
+  components.set(
+    '@mui/icons-material/InfoOutlineRounded',
+    lazy(() => import('@mui/icons-material/InfoOutlineRounded'))
   );
   components.set(
     '@mui/icons-material/InfoRounded',
@@ -3946,6 +4006,10 @@ export default function register() {
     lazy(() => import('@mui/icons-material/KitesurfingRounded'))
   );
   components.set(
+    '@mui/icons-material/LabelImportantOutlineRounded',
+    lazy(() => import('@mui/icons-material/LabelImportantOutlineRounded'))
+  );
+  components.set(
     '@mui/icons-material/LabelImportantRounded',
     lazy(() => import('@mui/icons-material/LabelImportantRounded'))
   );
@@ -4056,6 +4120,10 @@ export default function register() {
   components.set(
     '@mui/icons-material/LightbulbCircleRounded',
     lazy(() => import('@mui/icons-material/LightbulbCircleRounded'))
+  );
+  components.set(
+    '@mui/icons-material/LightbulbOutlineRounded',
+    lazy(() => import('@mui/icons-material/LightbulbOutlineRounded'))
   );
   components.set(
     '@mui/icons-material/LightbulbRounded',
@@ -4264,6 +4332,10 @@ export default function register() {
   components.set(
     '@mui/icons-material/LockOpenRounded',
     lazy(() => import('@mui/icons-material/LockOpenRounded'))
+  );
+  components.set(
+    '@mui/icons-material/LockOutlineRounded',
+    lazy(() => import('@mui/icons-material/LockOutlineRounded'))
   );
   components.set(
     '@mui/icons-material/LockPersonRounded',
@@ -4830,6 +4902,10 @@ export default function register() {
     lazy(() => import('@mui/icons-material/NetworkWifiRounded'))
   );
   components.set(
+    '@mui/icons-material/NewLabelRounded',
+    lazy(() => import('@mui/icons-material/NewLabelRounded'))
+  );
+  components.set(
     '@mui/icons-material/NewReleasesRounded',
     lazy(() => import('@mui/icons-material/NewReleasesRounded'))
   );
@@ -5374,6 +5450,10 @@ export default function register() {
     lazy(() => import('@mui/icons-material/PersonSearchRounded'))
   );
   components.set(
+    '@mui/icons-material/PersonalInjuryRounded',
+    lazy(() => import('@mui/icons-material/PersonalInjuryRounded'))
+  );
+  components.set(
     '@mui/icons-material/PersonalVideoRounded',
     lazy(() => import('@mui/icons-material/PersonalVideoRounded'))
   );
@@ -5540,6 +5620,14 @@ export default function register() {
   components.set(
     '@mui/icons-material/PinDropRounded',
     lazy(() => import('@mui/icons-material/PinDropRounded'))
+  );
+  components.set(
+    '@mui/icons-material/PinEndRounded',
+    lazy(() => import('@mui/icons-material/PinEndRounded'))
+  );
+  components.set(
+    '@mui/icons-material/PinInvokeRounded',
+    lazy(() => import('@mui/icons-material/PinInvokeRounded'))
   );
   components.set(
     '@mui/icons-material/PinRounded',
@@ -5722,6 +5810,10 @@ export default function register() {
     lazy(() => import('@mui/icons-material/PrivacyTipRounded'))
   );
   components.set(
+    '@mui/icons-material/PrivateConnectivityRounded',
+    lazy(() => import('@mui/icons-material/PrivateConnectivityRounded'))
+  );
+  components.set(
     '@mui/icons-material/ProductionQuantityLimitsRounded',
     lazy(() => import('@mui/icons-material/ProductionQuantityLimitsRounded'))
   );
@@ -5864,6 +5956,10 @@ export default function register() {
   components.set(
     '@mui/icons-material/ReadMoreRounded',
     lazy(() => import('@mui/icons-material/ReadMoreRounded'))
+  );
+  components.set(
+    '@mui/icons-material/RealEstateAgentRounded',
+    lazy(() => import('@mui/icons-material/RealEstateAgentRounded'))
   );
   components.set(
     '@mui/icons-material/ReceiptLongRounded',

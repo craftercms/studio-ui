@@ -71,16 +71,16 @@ export function PublishingDashboard(props: PublishingDashboardProps) {
               })
         }}
       >
-        <Grid item xs={12}>
+        <Grid size={12}>
           <PublishingStatusWidget siteId={site} />
         </Grid>
         {userPermissions.includes('get_publishing_queue') && (
-          <Grid item xs={12}>
+          <Grid size={12}>
             <PublishingQueueWidget siteId={site} readOnly={!hasPublishPermission} />
           </Grid>
         )}
         {hasPublishPermission && (
-          <Grid item xs={12}>
+          <Grid size={12}>
             <PublishOnDemandWidget
               siteId={site}
               mode={allowedPublishOnDemandModes}

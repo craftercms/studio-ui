@@ -245,7 +245,7 @@ export function ActivityDashlet(props: ActivityDashletProps) {
     });
   }, [activities, dateFrom, dateTo, limit, setState, site, usernames]);
   // endregion
-  const listRef = useRef();
+  const listRef = useRef(undefined);
   const loadNextPage = () => {
     let newOffset = offset + limit;
     setState({ loadingChunk: true });
@@ -329,8 +329,8 @@ export function ActivityDashlet(props: ActivityDashletProps) {
   // region author filter
   const [authorFilterOpen, setAuthorFilterOpen] = useState(false);
   const [authorFilterValue, setAuthorFilterValue] = useState('');
-  const authorFilterButtonRef = useRef<HTMLButtonElement>();
-  const authorFilterInputRef = useRef<HTMLInputElement>();
+  const authorFilterButtonRef = useRef<HTMLButtonElement>(undefined);
+  const authorFilterInputRef = useRef<HTMLInputElement>(undefined);
 
   const onAuthorFilterChange = (users) => {
     if (users.length === 0 && (usernames === null || usernames.length === 0)) return;
@@ -425,30 +425,32 @@ export function ActivityDashlet(props: ActivityDashletProps) {
               onChange={handleAuthorFilterInputChange}
               placeholder='e.g. "jon.doe, jdoe, jane@example.com"'
               onKeyUp={handleAuthorFilterKeyUp}
-              InputProps={{
-                inputRef: authorFilterInputRef,
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      disabled={isFetching}
-                      title={formatMessage({ defaultMessage: 'Submit' })}
-                      edge="end"
-                      onClick={submitAuthorFilterChanges}
-                      size="small"
-                    >
-                      <ReplyRounded sx={{ transform: 'scaleX(-1)' }} />
-                    </IconButton>
-                    <IconButton
-                      disabled={isFetching}
-                      title={formatMessage({ defaultMessage: 'Clear & close' })}
-                      edge="end"
-                      onClick={clearAuthorFilterValue}
-                      size="small"
-                    >
-                      <ClearRounded />
-                    </IconButton>
-                  </InputAdornment>
-                )
+              slotProps={{
+                input: {
+                  inputRef: authorFilterInputRef,
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        disabled={isFetching}
+                        title={formatMessage({ defaultMessage: 'Submit' })}
+                        edge="end"
+                        onClick={submitAuthorFilterChanges}
+                        size="small"
+                      >
+                        <ReplyRounded sx={{ transform: 'scaleX(-1)' }} />
+                      </IconButton>
+                      <IconButton
+                        disabled={isFetching}
+                        title={formatMessage({ defaultMessage: 'Clear & close' })}
+                        edge="end"
+                        onClick={clearAuthorFilterValue}
+                        size="small"
+                      >
+                        <ClearRounded />
+                      </IconButton>
+                    </InputAdornment>
+                  )
+                }
               }}
             />
           </Popover>
@@ -536,6 +538,7 @@ export function ActivityDashlet(props: ActivityDashletProps) {
             </SizedTimelineSeparator>
             <TimelineContent sx={emptyTimelineContentSx} />
           </CustomTimelineItem>
+          {/* @ts-expect-error - TS2786: InfiniteScroll cannot be used as a JSX component. Lib Types are not compatible with the latest react types. */}
           <InfiniteScroll
             initialLoad={false}
             pageStart={0}

@@ -83,7 +83,7 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
   );
   const [sourceSiteHasBlobStores, setSourceSiteHasBlobStores] = useState(null);
   const primaryButtonRef = useRef(null);
-  const siteDuplicateSubscription = useRef<Subscription>();
+  const siteDuplicateSubscription = useRef<Subscription>(undefined);
   const [sites, setSites] = useState(null);
   const fnRefs = useUpdateRefs({ onSubmittingAndOrPendingChange, handleClose });
   const mountedRef = useRef(true);
@@ -281,7 +281,7 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
             {site.selectedView === 0 && (
               <Box component="form" sx={{ width: '100%', maxWidth: '600px', margin: '0 auto' }}>
                 <Grid container spacing={3}>
-                  <Grid item xs={12} data-field-id="sourceSiteId">
+                  <Grid size={12} data-field-id="sourceSiteId">
                     <FormControl fullWidth>
                       <InputLabel>
                         <FormattedMessage defaultMessage="Project" />
@@ -318,7 +318,7 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
                     onKeyPress={onKeyPress}
                   />
                   {sourceSiteHasBlobStores && (
-                    <Grid item xs={12} data-field-id="readOnlyBlobStores">
+                    <Grid size={12} data-field-id="readOnlyBlobStores">
                       <FormControlLabel
                         control={
                           <Switch
@@ -342,7 +342,7 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
             )}
             {site.selectedView === 1 && (
               <Grid container spacing={3} sx={{ maxWidth: '600px', margin: 'auto' }}>
-                <Grid item xs={12}>
+                <Grid size={12}>
                   <Typography variant="h6" gutterBottom sx={{ mb: onGoBack ? 0 : null }}>
                     <FormattedMessage defaultMessage="Creation Strategy" />
                     {onGoBack && (
@@ -372,7 +372,7 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
                     </Typography>
                   </div>
                 </Grid>
-                <Grid item xs={12}>
+                <Grid size={12}>
                   <Typography variant="h6" gutterBottom>
                     <FormattedMessage defaultMessage="Project info" />
                     <IconButton

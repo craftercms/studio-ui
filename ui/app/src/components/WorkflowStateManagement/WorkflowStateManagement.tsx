@@ -125,7 +125,7 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
     [items, selectedItems]
   );
 
-  const rootRef = useRef<HTMLDivElement>();
+  const rootRef = useRef<HTMLDivElement>(undefined);
 
   const fetchStates = useCallback(() => {
     let stateBitmap = getStateBitmap(filtersLookup as ItemStateMap);
@@ -241,7 +241,7 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
     } else if (option === 'clearSelected') {
       clearSelectedItems();
       setIsSelectedItemsOnAllPages(false);
-    } else if ('selectAll') {
+    } else if (option === 'selectAll') {
       clearSelectedItems();
       setIsSelectedItemsOnAllPages(true);
     }
@@ -421,8 +421,8 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
               fullWidth
               variant="outlined"
               error={invalidPathRegex}
-              FormHelperTextProps={{
-                className: classes.helperText
+              slotProps={{
+                formHelperText: { className: classes.helperText }
               }}
               helperText={
                 invalidPathRegex ? (

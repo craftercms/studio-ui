@@ -146,7 +146,7 @@ export function ResizeableDrawer(props: ResizeableDrawerProps) {
   const { classes, cx } = useStyles(props.styles);
   const [resizeActive, setResizeActive] = useState(false);
 
-  const drawerRef = useRef<HTMLDivElement>();
+  const drawerRef = useRef<HTMLDivElement>(undefined);
 
   const {
     open,
@@ -225,7 +225,9 @@ export function ResizeableDrawer(props: ResizeableDrawerProps) {
           resizeActive && classes.resizingOverlay
         )
       }}
-      PaperProps={{ ...PaperProps, style: { width } }}
+      slotProps={{
+        paper: { ...PaperProps, style: { width } }
+      }}
       {...rest}
     >
       {onWidthChange && (

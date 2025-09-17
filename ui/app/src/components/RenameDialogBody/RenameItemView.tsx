@@ -98,8 +98,8 @@ export function RenameItemView(props: RenameItemViewProps) {
           helperText={helperText}
           disabled={isSubmitting}
           margin="normal"
-          InputLabelProps={{
-            shrink: true
+          slotProps={{
+            inputLabel: { shrink: true }
           }}
           onChange={onInputChanges}
           autoComplete="off"
@@ -128,7 +128,7 @@ export function RenameItemView(props: RenameItemViewProps) {
                 <Checkbox
                   checked={confirmBrokenReferences}
                   onChange={() => setConfirmBrokenReferences(!confirmBrokenReferences)}
-                  inputProps={{ 'aria-label': 'controlled' }}
+                  slotProps={{ input: { 'aria-label': 'controlled' } }}
                 />
               }
               label={

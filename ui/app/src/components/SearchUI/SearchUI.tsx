@@ -23,10 +23,7 @@ import palette from '../../styles/palette';
 import { ElasticParams, Filter, MediaItem, SearchResult } from '../../models/Search';
 import { CheckedFilter, drawerWidth } from '../Search/utils';
 import LookupTable from '../../models/LookupTable';
-import FormGroup from '@mui/material/FormGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
-import Typography from '@mui/material/Typography';
 import { translations } from '../Search/translations';
 import TablePagination from '@mui/material/TablePagination';
 import ApiResponseErrorState from '../ApiResponseErrorState';
@@ -44,6 +41,7 @@ import IconButton from '@mui/material/IconButton';
 import MoreVertRounded from '@mui/icons-material/MoreVertRounded';
 import { UNDEFINED } from '../../utils/constants';
 import { LoadingState } from '../LoadingState';
+import Tooltip from '@mui/material/Tooltip';
 
 export interface SearchUIProps {
   selectedPath: string;
@@ -125,7 +123,7 @@ const useStyles = makeStyles()((theme) => ({
   },
   searchHelperBar: {
     display: 'flex',
-    padding: '0 6px 0 20px',
+    padding: '0 6px',
     alignItems: 'center',
     background: theme.palette.background.paper,
     borderBottom: `1px solid ${theme.palette.divider}`
@@ -313,7 +311,7 @@ export function SearchUI(props: SearchUIProps) {
 
   const { formatMessage } = useIntl();
 
-  const container = useRef();
+  const container = useRef(undefined);
 
   return (
     <section ref={container} className={classes.container}>
@@ -372,18 +370,9 @@ export function SearchUI(props: SearchUIProps) {
         }
       >
         <div className={classes.searchHelperBar}>
-          <FormGroup>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  color="primary"
-                  checked={areAllSelected}
-                  onClick={(e: any) => handleSelectAll(e.target.checked)}
-                />
-              }
-              label={<Typography color="textPrimary">{formatMessage(translations.selectAll)}</Typography>}
-            />
-          </FormGroup>
+          <Tooltip title={<FormattedMessage defaultMessage="Select all on this page" />}>
+            <Checkbox checked={areAllSelected} onChange={(e) => handleSelectAll(e.target.checked)} />
+          </Tooltip>
           <TablePagination
             rowsPerPageOptions={[9, 15, 21]}
             className={classes.pagination}
@@ -423,11 +412,15 @@ export function SearchUI(props: SearchUIProps) {
             count={searchResults?.total ?? 0}
             rowsPerPage={searchParameters.limit}
             page={Math.ceil(searchParameters.offset / searchParameters.limit)}
-            backIconButtonProps={{
-              'aria-label': formatMessage(translations.previousPage)
-            }}
-            nextIconButtonProps={{
-              'aria-label': formatMessage(translations.nextPage)
+            slotProps={{
+              actions: {
+                previousButton: {
+                  'aria-label': formatMessage(translations.previousPage)
+                },
+                nextButton: {
+                  'aria-label': formatMessage(translations.nextPage)
+                }
+              }
             }}
             onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}
@@ -454,7 +447,10 @@ export function SearchUI(props: SearchUIProps) {
                 <>
                   {searchResults.items.length > 0 ? (
                     searchResults.items.map((item: MediaItem, i) => (
-                      <Grid key={i} item xs={12} {...(currentView === 'grid' ? { sm: 6, md: 4, lg: 4, xl: 3 } : {})}>
+                      <Grid
+                        key={i}
+                        size={{ xs: 12, ...(currentView === 'grid' ? { sm: 6, md: 4, lg: 4, xl: 3 } : {}) }}
+                      >
                         <MediaCard
                           classes={
                             currentView === 'list'

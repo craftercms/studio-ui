@@ -35,7 +35,7 @@ export function MinimizedBarPortal(props: PropsWithChildren<{}>) {
     incrementMinimizedBarCount();
     return () => decrementMinimizedBarCount();
   }, []);
-  return createPortal(props.children, el) as JSX.Element;
+  return createPortal(props.children, el) as ReactJSXElement;
 }
 
 export default MinimizedBarPortal;

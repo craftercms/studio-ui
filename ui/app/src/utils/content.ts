@@ -145,7 +145,7 @@ export function isImage(path: string): boolean {
 }
 
 export function isItemLockedForMe(item: DetailedItem | SandboxItem | LegacyItem, username: string): boolean {
-  return item ? isLockedState(item.state) && item.lockOwner.username !== username : true;
+  return item ? isLockedState(item.state) && item.lockOwner?.username !== username : true;
 }
 
 export function isBlobUrl(url: string): boolean {
@@ -1205,4 +1205,16 @@ export function generatePlaceholderImageDataUrl(attributes?: Partial<GeneratePla
   context.fillText(attrs.text, attrs.textPositionX, attrs.textPositionY);
 
   return canvas.toDataURL();
+}
+
+export function isVideo(item: DetailedItem | SandboxItem): boolean {
+  return item?.mimeType.startsWith('video/');
+}
+
+export function isAudio(item: DetailedItem | SandboxItem): boolean {
+  return item?.mimeType.startsWith('audio/');
+}
+
+export function isPdfDocument(mimeType: string) {
+  return 'application/pdf' === mimeType;
 }

@@ -111,16 +111,11 @@ import {
   hasRenameAction,
   hasSchedulePublishAction,
   hasUnlockAction,
-  hasUploadAction
-} from './content';
-import {
-  getEditorMode,
+  hasUploadAction,
   isPdfDocument,
-  isImage,
-  isNavigable,
-  isPreviewable,
   isVideo
-} from '../components/PathNavigator/utils';
+} from './content';
+import { getEditorMode, isImage, isNavigable, isPreviewable } from '../components/PathNavigator/utils';
 import React from 'react';
 import { previewItem } from '../state/actions/preview';
 import { createPresenceTable } from './array';
@@ -965,7 +960,7 @@ export const itemActionDispatcher = ({
     case 'schedulePublish':
     case 'requestPublish': {
       const schedulingMap = {
-        approvePublish: null,
+        approvePublish: undefined,
         schedulePublish: 'custom',
         requestPublish: 'now',
         publish: 'now'

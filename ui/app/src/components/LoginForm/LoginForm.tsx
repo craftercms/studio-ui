@@ -87,8 +87,10 @@ export function LogInForm(props: LogInFormProps) {
         onChange={(e: any) => onSetUsername?.(e.target.value)}
         className={cx(cls.spacing, classes?.username)}
         label={<FormattedMessage id="loginView.usernameTextFieldLabel" defaultMessage="Username" />}
-        InputLabelProps={{ className: cls.inputLabel }}
-        inputProps={{ maxLength: USER_USERNAME_MAX_LENGTH }}
+        slotProps={{
+          inputLabel: { className: cls.inputLabel },
+          htmlInput: { maxLength: USER_USERNAME_MAX_LENGTH }
+        }}
       />
       <PasswordTextField
         id="loginFormPasswordField"
@@ -99,8 +101,10 @@ export function LogInForm(props: LogInFormProps) {
         onChange={(e: any) => onSetPassword?.(e.target.value)}
         className={cx(cls.spacing, classes?.password, 'last-before-button')}
         label={<FormattedMessage id="authMonitor.passwordTextFieldLabel" defaultMessage="Password" />}
-        InputLabelProps={{ className: cls.inputLabel }}
-        inputProps={{ maxLength: USER_PASSWORD_MAX_LENGTH }}
+        slotProps={{
+          inputLabel: { className: cls.inputLabel },
+          htmlInput: { maxLength: USER_PASSWORD_MAX_LENGTH }
+        }}
       />
       {xsrfParamName && <input type="hidden" name={xsrfParamName} value={xsrfToken} />}
       <Button

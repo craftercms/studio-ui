@@ -44,7 +44,6 @@ import { LoadingState } from '../LoadingState';
 
 const messages = defineMessages({
   selectAll: {
-    id: 'publishingDashboard.selectAll',
     defaultMessage: 'Select all on this page'
   },
   cancelSelected: {
@@ -467,11 +466,15 @@ function PublishingQueue(props: PublishingQueueProps) {
         count={total}
         rowsPerPage={currentFilters.limit}
         page={currentFilters.page}
-        backIconButtonProps={{
-          'aria-label': formatMessage(messages.previous)
-        }}
-        nextIconButtonProps={{
-          'aria-label': formatMessage(messages.next)
+        slotProps={{
+          actions: {
+            previousButton: {
+              'aria-label': formatMessage(messages.previous)
+            },
+            nextButton: {
+              'aria-label': formatMessage(messages.next)
+            }
+          }
         }}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}

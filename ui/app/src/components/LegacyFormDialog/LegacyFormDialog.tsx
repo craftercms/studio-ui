@@ -41,7 +41,7 @@ export function LegacyFormDialog(props: LegacyFormDialogProps) {
   const renameContentDialogState = useEnhancedDialogState();
   const [renameContentDialogData, setRenameContentDialogData] = useState(renameContentDialogDataInitialState);
   const [iframeLoaded, setIframeLoaded] = useState(false);
-  const iframeRef = useRef<HTMLIFrameElement>();
+  const iframeRef = useRef<HTMLIFrameElement>(undefined);
   const messages = fromEvent(window, 'message').pipe(filter((e: any) => e.data && e.data.type));
 
   const title = formatMessage(translations.title);

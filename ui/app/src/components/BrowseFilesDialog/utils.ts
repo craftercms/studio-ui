@@ -63,6 +63,8 @@ export interface BrowseFilesDialogUIProps {
   numOfLoaderItems?: number;
   allowUpload?: boolean;
   sortKeys: Array<string>;
+  allSelected: boolean;
+  someSelected: boolean;
   onCardSelected(item: MediaItem): void;
   onPreviewImage?(item: MediaItem): void;
   onCheckboxChecked(path: string, selected: boolean): void;
@@ -75,6 +77,7 @@ export interface BrowseFilesDialogUIProps {
   onRefresh(): void;
   onUpload(): void;
   onToggleViewMode?(): void;
+  onSelectAll(): void;
 }
 
 export const initialParameters: ElasticParams = {

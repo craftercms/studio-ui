@@ -58,6 +58,21 @@
 
   Components.prototype = {
     add: function (control) {
+      CrafterCMSNext.system.getStore().subscribe((store) => {
+        if (store.getState().contentTypes?.byId) {
+          this._renderControlEntries(control);
+        } else {
+          const unsubscribe = store.subscribe(() => {
+            if (store.getState().contentTypes?.byId) {
+              unsubscribe();
+              this._renderControlEntries(control);
+            }
+          });
+        }
+      });
+    },
+
+    _renderControlEntries: function (control) {
       control.$dropdownMenu.append(
         `<li><div class="cstudio-form-control-node-selector-add-container-item-block-label">${this.title}</div></li>`
       );
@@ -381,7 +396,11 @@
         ? this._processPathsForMacros(this.baseRepoPath)
         : craftercms.utils.content.generateComponentBasePath(contentType);
 
-      let parentPath = self.form.path;
+      const urlParams = new URLSearchParams(window.location.search);
+      // If `self.form.path` is undefined, but the URL has a `parentPath` parameter, it means that the form is embedded.
+      // In that case, we use the `parentPath` parameter as the parent path (meaning that the parent path is the immediate
+      // shared parent).
+      let parentPath = Boolean(self.form.path) ? self.form.path : urlParams.get('parentPath');
       CStudioAuthoring.Operations.openContentWebForm(
         contentType,
         null,
@@ -405,8 +424,13 @@
       );
     },
 
-    _getContentTypeName(contentType) {
-      return CrafterCMSNext.util.string.capitalize(contentType.replace('/component/', '').replace(/-/g, ' '));
+    _getContentTypeName(contentTypeId) {
+      const contentTypesById = craftercms.getStore().getState().contentTypes?.byId;
+      const contentTypeName = contentTypesById?.[contentTypeId]?.name;
+      return (
+        contentTypeName ??
+        CrafterCMSNext.util.string.capitalize(contentTypeId.replace('/component/', '').replace(/-/g, ' '))
+      );
     }
   };
 

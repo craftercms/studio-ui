@@ -123,7 +123,7 @@ export function DashletCard(props: DashletCardProps) {
         >
           <CardHeader
             title={title}
-            titleTypographyProps={{ variant: 'h6', component: 'h2' }}
+            slotProps={{ title: { variant: 'h6', component: 'h2' } }}
             action={
               <div
                 onClick={(e) => e.stopPropagation()}

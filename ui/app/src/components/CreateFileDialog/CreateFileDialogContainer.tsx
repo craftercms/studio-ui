@@ -191,8 +191,8 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
             }
             disabled={isSubmitting}
             margin="normal"
-            InputLabelProps={{
-              shrink: true
+            slotProps={{
+              inputLabel: { shrink: true }
             }}
             onChange={(event) => onInputChanges(applyAssetNameRules(event.target.value, { allowBraces }))}
           />

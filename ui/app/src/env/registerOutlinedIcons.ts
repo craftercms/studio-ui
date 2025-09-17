@@ -410,6 +410,10 @@ export default function register() {
     lazy(() => import('@mui/icons-material/ArchiveOutlined'))
   );
   components.set(
+    '@mui/icons-material/AreaChartOutlined',
+    lazy(() => import('@mui/icons-material/AreaChartOutlined'))
+  );
+  components.set(
     '@mui/icons-material/ArrowBackIosNewOutlined',
     lazy(() => import('@mui/icons-material/ArrowBackIosNewOutlined'))
   );
@@ -1562,6 +1566,10 @@ export default function register() {
     lazy(() => import('@mui/icons-material/CompassCalibrationOutlined'))
   );
   components.set(
+    '@mui/icons-material/CompostOutlined',
+    lazy(() => import('@mui/icons-material/CompostOutlined'))
+  );
+  components.set(
     '@mui/icons-material/CompressOutlined',
     lazy(() => import('@mui/icons-material/CompressOutlined'))
   );
@@ -1762,6 +1770,10 @@ export default function register() {
     lazy(() => import('@mui/icons-material/CropSquareOutlined'))
   );
   components.set(
+    '@mui/icons-material/CrueltyFreeOutlined',
+    lazy(() => import('@mui/icons-material/CrueltyFreeOutlined'))
+  );
+  components.set(
     '@mui/icons-material/CssOutlined',
     lazy(() => import('@mui/icons-material/CssOutlined'))
   );
@@ -1832,6 +1844,10 @@ export default function register() {
   components.set(
     '@mui/icons-material/DataArrayOutlined',
     lazy(() => import('@mui/icons-material/DataArrayOutlined'))
+  );
+  components.set(
+    '@mui/icons-material/DataExplorationOutlined',
+    lazy(() => import('@mui/icons-material/DataExplorationOutlined'))
   );
   components.set(
     '@mui/icons-material/DataObjectOutlined',
@@ -2082,6 +2098,10 @@ export default function register() {
     lazy(() => import('@mui/icons-material/DisabledByDefaultOutlined'))
   );
   components.set(
+    '@mui/icons-material/DisabledVisibleOutlined',
+    lazy(() => import('@mui/icons-material/DisabledVisibleOutlined'))
+  );
+  components.set(
     '@mui/icons-material/DiscFullOutlined',
     lazy(() => import('@mui/icons-material/DiscFullOutlined'))
   );
@@ -2262,6 +2282,10 @@ export default function register() {
     lazy(() => import('@mui/icons-material/DriveFileMoveOutlined'))
   );
   components.set(
+    '@mui/icons-material/DriveFileMoveRtlOutlined',
+    lazy(() => import('@mui/icons-material/DriveFileMoveRtlOutlined'))
+  );
+  components.set(
     '@mui/icons-material/DriveFileRenameOutlineOutlined',
     lazy(() => import('@mui/icons-material/DriveFileRenameOutlineOutlined'))
   );
@@ -2440,6 +2464,10 @@ export default function register() {
   components.set(
     '@mui/icons-material/EmailOutlined',
     lazy(() => import('@mui/icons-material/EmailOutlined'))
+  );
+  components.set(
+    '@mui/icons-material/EmergencyOutlined',
+    lazy(() => import('@mui/icons-material/EmergencyOutlined'))
   );
   components.set(
     '@mui/icons-material/EmergencyRecordingOutlined',
@@ -2628,6 +2656,10 @@ export default function register() {
   components.set(
     '@mui/icons-material/FaceRetouchingOffOutlined',
     lazy(() => import('@mui/icons-material/FaceRetouchingOffOutlined'))
+  );
+  components.set(
+    '@mui/icons-material/FaceUnlockOutlined',
+    lazy(() => import('@mui/icons-material/FaceUnlockOutlined'))
   );
   components.set(
     '@mui/icons-material/FacebookOutlined',
@@ -3222,6 +3254,14 @@ export default function register() {
     lazy(() => import('@mui/icons-material/FreeBreakfastOutlined'))
   );
   components.set(
+    '@mui/icons-material/FreeCancellationOutlined',
+    lazy(() => import('@mui/icons-material/FreeCancellationOutlined'))
+  );
+  components.set(
+    '@mui/icons-material/FrontHandOutlined',
+    lazy(() => import('@mui/icons-material/FrontHandOutlined'))
+  );
+  components.set(
     '@mui/icons-material/FullscreenExitOutlined',
     lazy(() => import('@mui/icons-material/FullscreenExitOutlined'))
   );
@@ -3260,6 +3300,10 @@ export default function register() {
   components.set(
     '@mui/icons-material/GavelOutlined',
     lazy(() => import('@mui/icons-material/GavelOutlined'))
+  );
+  components.set(
+    '@mui/icons-material/GeneratingTokensOutlined',
+    lazy(() => import('@mui/icons-material/GeneratingTokensOutlined'))
   );
   components.set(
     '@mui/icons-material/GestureOutlined',
@@ -3364,6 +3408,10 @@ export default function register() {
   components.set(
     '@mui/icons-material/GroupAddOutlined',
     lazy(() => import('@mui/icons-material/GroupAddOutlined'))
+  );
+  components.set(
+    '@mui/icons-material/GroupOffOutlined',
+    lazy(() => import('@mui/icons-material/GroupOffOutlined'))
   );
   components.set(
     '@mui/icons-material/GroupOutlined',
@@ -3614,6 +3662,10 @@ export default function register() {
     lazy(() => import('@mui/icons-material/HotTubOutlined'))
   );
   components.set(
+    '@mui/icons-material/HotelClassOutlined',
+    lazy(() => import('@mui/icons-material/HotelClassOutlined'))
+  );
+  components.set(
     '@mui/icons-material/HotelOutlined',
     lazy(() => import('@mui/icons-material/HotelOutlined'))
   );
@@ -3720,6 +3772,10 @@ export default function register() {
   components.set(
     '@mui/icons-material/InboxOutlined',
     lazy(() => import('@mui/icons-material/InboxOutlined'))
+  );
+  components.set(
+    '@mui/icons-material/IncompleteCircleOutlined',
+    lazy(() => import('@mui/icons-material/IncompleteCircleOutlined'))
   );
   components.set(
     '@mui/icons-material/IndeterminateCheckBoxOutlined',
@@ -4842,6 +4898,10 @@ export default function register() {
     lazy(() => import('@mui/icons-material/NetworkWifiOutlined'))
   );
   components.set(
+    '@mui/icons-material/NewLabelOutlined',
+    lazy(() => import('@mui/icons-material/NewLabelOutlined'))
+  );
+  components.set(
     '@mui/icons-material/NewReleasesOutlined',
     lazy(() => import('@mui/icons-material/NewReleasesOutlined'))
   );
@@ -5402,6 +5462,10 @@ export default function register() {
     lazy(() => import('@mui/icons-material/PersonSearchOutlined'))
   );
   components.set(
+    '@mui/icons-material/PersonalInjuryOutlined',
+    lazy(() => import('@mui/icons-material/PersonalInjuryOutlined'))
+  );
+  components.set(
     '@mui/icons-material/PersonalVideoOutlined',
     lazy(() => import('@mui/icons-material/PersonalVideoOutlined'))
   );
@@ -5568,6 +5632,14 @@ export default function register() {
   components.set(
     '@mui/icons-material/PinDropOutlined',
     lazy(() => import('@mui/icons-material/PinDropOutlined'))
+  );
+  components.set(
+    '@mui/icons-material/PinEndOutlined',
+    lazy(() => import('@mui/icons-material/PinEndOutlined'))
+  );
+  components.set(
+    '@mui/icons-material/PinInvokeOutlined',
+    lazy(() => import('@mui/icons-material/PinInvokeOutlined'))
   );
   components.set(
     '@mui/icons-material/PinOutlined',
@@ -5750,6 +5822,10 @@ export default function register() {
     lazy(() => import('@mui/icons-material/PrivacyTipOutlined'))
   );
   components.set(
+    '@mui/icons-material/PrivateConnectivityOutlined',
+    lazy(() => import('@mui/icons-material/PrivateConnectivityOutlined'))
+  );
+  components.set(
     '@mui/icons-material/ProductionQuantityLimitsOutlined',
     lazy(() => import('@mui/icons-material/ProductionQuantityLimitsOutlined'))
   );
@@ -5892,6 +5968,10 @@ export default function register() {
   components.set(
     '@mui/icons-material/ReadMoreOutlined',
     lazy(() => import('@mui/icons-material/ReadMoreOutlined'))
+  );
+  components.set(
+    '@mui/icons-material/RealEstateAgentOutlined',
+    lazy(() => import('@mui/icons-material/RealEstateAgentOutlined'))
   );
   components.set(
     '@mui/icons-material/ReceiptLongOutlined',

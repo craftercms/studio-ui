@@ -361,7 +361,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   const item = useCurrentPreviewItem();
   const { currentUrlPath } = usePreviewNavigation();
   const contentTypes = useContentTypes();
-  const contentTypes$Ref = useRef<BehaviorSubject<Record<string, ContentType>>>();
+  const contentTypes$Ref = useRef<BehaviorSubject<Record<string, ContentType>>>(undefined);
   const { authoringBase, guestBase, xsrfArgument } = useSelection((state) => state.env);
   const priorState = useRef({ site: siteId });
   const { enqueueSnackbar } = useSnackbar();
@@ -1221,13 +1221,15 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
             }
           };
 
-          const onShowBrowseFilesDialog = (path: string, type: 'image' | 'audio' | 'video') => {
+          const onShowBrowseFilesDialog = (path: string, type: 'image' | 'audio' | 'video' | 'file') => {
             const mimeTypes =
               type === 'image'
                 ? ['image/png', 'image/jpeg', 'image/gif', 'image/jpg']
                 : type === 'video'
                   ? ['video/mp4']
-                  : ['audio/mpeg', 'audio/mp3', 'audio/ogg', 'audio/wav'];
+                  : type === 'audio'
+                    ? ['audio/mpeg', 'audio/mp3', 'audio/ogg', 'audio/wav']
+                    : null;
             setDataSourceActionsListState(dataSourceActionsListInitialState);
 
             if (path) {
@@ -1245,7 +1247,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 
           const dataSourcesByType = {
             image: ['allowImageUpload', 'allowImagesFromRepo'],
-            media: ['allowVideoUpload', 'allowVideosFromRepo', 'allowAudioUpload', 'allowAudioFromRepo']
+            media: ['allowVideoUpload', 'allowVideosFromRepo', 'allowAudioUpload', 'allowAudioFromRepo'],
+            file: ['allowFilesFromRepo']
           };
 
           // Tinymce handles both audio and video as 'media' types. This lookup is used to determine which type of media to handle.
@@ -1253,7 +1256,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
             allowAudioUpload: 'audio',
             allowAudioFromRepo: 'audio',
             allowVideoUpload: 'video',
-            allowVideosFromRepo: 'video'
+            allowVideosFromRepo: 'video',
+            allowFilesFromRepo: 'file'
           };
 
           // filter data sources to only the ones that match the type
@@ -1270,7 +1274,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
               objectId: typedPayload.model.craftercms.id,
               objectGroupId: typedPayload.model.objectGroupId
             });
-            if (key === 'allowImageUpload' || key === 'allowVideoUpload' || 'allowAudioUpload') {
+            if (key === 'allowImageUpload' || key === 'allowVideoUpload' || key === 'allowAudioUpload') {
               onShowSingleFileUploadDialog(processedPath, mediaTypes[key] ?? typedPayload.type);
             } else {
               onShowBrowseFilesDialog(processedPath, mediaTypes[key] ?? typedPayload.type);

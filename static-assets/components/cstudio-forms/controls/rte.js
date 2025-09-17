@@ -404,7 +404,7 @@ CStudioAuthoring.Module.requireModule(
                 _thisControl._onChange(null, _thisControl);
               });
 
-              editor.on('keyup paste undo redo', function (e) {
+              editor.on('keyup paste undo redo external_change', function (e) {
                 _thisControl.save();
                 _thisControl._onChangeVal(null, _thisControl);
               });
@@ -515,10 +515,13 @@ CStudioAuthoring.Module.requireModule(
             })
           });
 
+          const isInRepeatGroup = Boolean(config.repeatContainer);
           // Update all content before saving the form (all content is automatically updated on focusOut)
-          callback = {};
-          callback.beforeSave = function () {
-            _thisControl.save();
+          callback = {
+            beforeSave: function () {
+              _thisControl.save();
+            },
+            ...(isInRepeatGroup ? { repeatGroupId: config.repeatContainer.id, rteId } : {})
           };
           _thisControl.form.registerBeforeSaveCallback(callback);
 

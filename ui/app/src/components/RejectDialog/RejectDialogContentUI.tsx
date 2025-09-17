@@ -18,12 +18,12 @@ import { RejectDialogContentUIProps } from './utils';
 import List from '@mui/material/List';
 import ListSubheader from '@mui/material/ListSubheader';
 import { FormattedMessage } from 'react-intl';
-import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Checkbox from '@mui/material/Checkbox';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import React from 'react';
+import ListItemButton from '@mui/material/ListItemButton';
 
 export function RejectDialogContentUI(props: RejectDialogContentUIProps) {
   const { items: rejectItems, checkedItems, onUpdateChecked, classes } = props;
@@ -45,14 +45,16 @@ export function RejectDialogContentUI(props: RejectDialogContentUIProps) {
         const labelId = `checkbox-list-label-${item.path}`;
 
         return (
-          <ListItem key={item.path} onClick={() => onUpdateChecked(item.path)} button>
+          <ListItemButton key={item.path} onClick={() => onUpdateChecked(item.path)}>
             <ListItemIcon>
               <Checkbox
                 edge="start"
                 checked={checkedItems.includes(item.path)}
                 tabIndex={-1}
                 disableRipple
-                inputProps={{ 'aria-labelledby': labelId }}
+                slotProps={{
+                  input: { 'aria-labelledby': labelId }
+                }}
                 color="primary"
               />
             </ListItemIcon>
@@ -60,17 +62,15 @@ export function RejectDialogContentUI(props: RejectDialogContentUIProps) {
               primary={item.label}
               secondary={item.path}
               id={labelId}
-              primaryTypographyProps={{
-                classes: { root: classes.ellipsis }
-              }}
-              secondaryTypographyProps={{
-                classes: { root: classes.ellipsis }
+              slotProps={{
+                primary: { classes: { root: classes.ellipsis } },
+                secondary: { classes: { root: classes.ellipsis } }
               }}
             />
             <ListItemText disableTypography={true} className={classes.submittedBy}>
               <Typography>{item.modifier?.username}</Typography>
             </ListItemText>
-          </ListItem>
+          </ListItemButton>
         );
       })}
     </List>

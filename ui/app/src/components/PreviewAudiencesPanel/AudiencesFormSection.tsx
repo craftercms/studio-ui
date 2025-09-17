@@ -29,7 +29,7 @@ export function AudiencesFormSection(props: AudiencesFormSectionProps) {
   const { field, showDivider, children } = props;
   return (
     <>
-      <Grid item xs={12}>
+      <Grid size={12}>
         {children}
         <FormHelperText>{field.helpText}</FormHelperText>
       </Grid>
