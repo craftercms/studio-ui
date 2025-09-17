@@ -1,5 +1,12 @@
 # Changelog
 
+## 5.0.1 (CrafterCMS 4.5.0)
+* Upgrade to the latest version to date of the following libraries:
+  * react
+  * react-dom
+  * react-router
+  * vite
+
 ## 5.0.0 (CrafterCMS 4.4.3)
 * Version 5.0.0 should be paired with CrafterCMS 4.4.3 or later.
 * Upgrade to the latest version to date of the following libraries:
