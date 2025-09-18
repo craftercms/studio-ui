@@ -1671,12 +1671,12 @@ __metadata:
     "@prettier/plugin-xml": "npm:3.3.0"
     "@reduxjs/toolkit": "npm:^2.8.2"
     "@rollup/plugin-swc": "npm:^0.4.0"
-    "@stomp/stompjs": "npm:^7.1.1"
+    "@stomp/stompjs": "npm:^7.2.0"
     "@tinymce/tinymce-react": "npm:^6.3.0"
     "@types/ace": "npm:^0.0.52"
     "@types/diff": "npm:^8.0.0"
     "@types/js-cookie": "npm:^3.0.6"
-    "@types/react": "npm:^19.1.10"
+    "@types/react": "npm:^19.1.13"
     "@types/react-dom": "npm:^19.1.7"
     "@types/react-swipeable-views": "npm:^0.13.6"
     "@types/react-window": "npm:^1.8.8"
@@ -1704,10 +1704,10 @@ __metadata:
     graphql-ws: "npm:^6.0.6"
     highlight.js: "npm:^11.11.1"
     jabber: "npm:^1.5.3"
-    jotai: "npm:^2.13.1"
-    jotai-effect: "npm:^2.0.5"
+    jotai: "npm:^2.14.0"
+    jotai-effect: "npm:^2.1.1"
     js-cookie: "npm:^3.0.5"
-    marked: "npm:^16.1.2"
+    marked: "npm:^16.3.0"
     marked-highlight: "npm:^2.2.2"
     moment-timezone: "npm:^0.6.0"
     nanoid: "npm:^5.1.5"
@@ -1716,7 +1716,7 @@ __metadata:
     npm-run-all: "npm:^4.1.5"
     prettier: "npm:^3.6.2"
     prop-types: "npm:^15.8.1"
-    query-string: "npm:^9.2.2"
+    query-string: "npm:^9.3.1"
     react: "npm:19.1.1"
     react-animations: "npm:^1.0.0"
     react-colorful: "npm:^5.6.1"
@@ -1724,7 +1724,7 @@ __metadata:
     react-hotkeys-hook: "npm:^5.1.0"
     react-intl: "npm:^7.1.11"
     react-redux: "npm:^9.2.0"
-    react-router: "npm:^7.8.1"
+    react-router: "npm:^7.9.1"
     react-swipeable-views: "npm:^0.14.0"
     react-swipeable-views-utils: "npm:^0.14.0"
     react-virtualized-auto-sizer: "npm:^1.0.25"
@@ -4326,10 +4326,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@stomp/stompjs@npm:^7.1.1":
-  version: 7.1.1
-  resolution: "@stomp/stompjs@npm:7.1.1"
-  checksum: 10/e1c3aa5b4c2d01cb4950fce8b19fcd1aa89a26deeb99c338f23ffd69ee294e99783366ec7ca26fc1162032085354d5929d98071ba9f0ebf73f7db338dcdbfd2e
+"@stomp/stompjs@npm:^7.2.0":
+  version: 7.2.0
+  resolution: "@stomp/stompjs@npm:7.2.0"
+  checksum: 10/39c7bbe259542bc835e0bbf045e31d895769fff61c64b0b62897b98a8580390eb45fa508076b8bec60c0e4fc552cc34910e7a9389c2c7b47e76a10347ca96fe7
   languageName: node
   linkType: hard
 
@@ -4842,12 +4842,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:*, @types/react@npm:16 || 17 || 18 || 19, @types/react@npm:^19.1.10":
+"@types/react@npm:*, @types/react@npm:16 || 17 || 18 || 19":
   version: 19.1.12
   resolution: "@types/react@npm:19.1.12"
   dependencies:
     csstype: "npm:^3.0.2"
   checksum: 10/c03d595b84faecb15079757555c96871e84ea6eef9a5eddb13ec1f648f718f9624bebc4199e86267edb825b23df97758324ea39ff840d9ad328386f96971f588
+  languageName: node
+  linkType: hard
+
+"@types/react@npm:^19.1.13":
+  version: 19.1.13
+  resolution: "@types/react@npm:19.1.13"
+  dependencies:
+    csstype: "npm:^3.0.2"
+  checksum: 10/a4e12df335ded76e931cc2ba2a4c8a61872ed840081eca83612fbdadc4afbf0cbd0ae31fdedc7fae7f0e02c90dac98dda517dfa73bec653dd4b1de2755431a62
   languageName: node
   linkType: hard
 
@@ -9489,18 +9498,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jotai-effect@npm:^2.0.5":
-  version: 2.0.5
-  resolution: "jotai-effect@npm:2.0.5"
+"jotai-effect@npm:^2.1.1":
+  version: 2.1.1
+  resolution: "jotai-effect@npm:2.1.1"
   peerDependencies:
-    jotai: ">=2.12.1"
-  checksum: 10/871308de6eb58bcef1c81a760e71f260d928fd1bd76b46079d8d6a9ea15f63ec1ebc1f9fe2d20d009c2da26a967a389a69fa3003bef51f7a04c43caafb67f9d4
+    jotai: ">=2.14.0"
+  checksum: 10/f552182d78be1446dbb34b2fa6d363274cb043c84ab960a6377a52607babaa8882a1c06cde9a9e2bc35c3f3ff6ffd7e95721f035d9d4e05ffd9e0e65c79e5e4f
   languageName: node
   linkType: hard
 
-"jotai@npm:^2.13.1":
-  version: 2.13.1
-  resolution: "jotai@npm:2.13.1"
+"jotai@npm:^2.14.0":
+  version: 2.14.0
+  resolution: "jotai@npm:2.14.0"
   peerDependencies:
     "@babel/core": ">=7.0.0"
     "@babel/template": ">=7.0.0"
@@ -9515,7 +9524,7 @@ __metadata:
       optional: true
     react:
       optional: true
-  checksum: 10/6176f24c351dbcac7129ecc8000c12d3a358197963ecb71e24963873995f4286d8608575a36d4c6d6579e17d31a229f32eeab34676f2edeca63f372623661c20
+  checksum: 10/d9b614cf28ad8ab0c799bc97527440d22a40dcf5d6c12eeaa4dcf4a65d98896f402837a1a06eb5358004c0a4e3c7089bb114e4716bc38c158762919b05f98845
   languageName: node
   linkType: hard
 
@@ -10039,12 +10048,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"marked@npm:^16.1.2":
-  version: 16.2.1
-  resolution: "marked@npm:16.2.1"
+"marked@npm:^16.3.0":
+  version: 16.3.0
+  resolution: "marked@npm:16.3.0"
   bin:
     marked: bin/marked.js
-  checksum: 10/67e911a7dd416869649dee18dc4a9683c0ccd8e72ba0fee3b3f578f857416e69780013e9d63762c600e6f9cf997c5af9fa0507a2053f8e65d39c5459c245c0cd
+  checksum: 10/60497834b9acfb3b3994222509d359ecb9a197c885dfeb77e2050a287cd2f4ab19f00d5597172b47f9e0c54d9e1e13d8b2dd73322b7838599e1f16d1d6283f5b
   languageName: node
   linkType: hard
 
@@ -11221,7 +11230,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"query-string@npm:^9.1.0, query-string@npm:^9.2.2":
+"query-string@npm:^9.1.0":
   version: 9.2.2
   resolution: "query-string@npm:9.2.2"
   dependencies:
@@ -11229,6 +11238,17 @@ __metadata:
     filter-obj: "npm:^5.1.0"
     split-on-first: "npm:^3.0.0"
   checksum: 10/fb9a33dcbe1fe4f3b7fdc1fa6428794b422d7b67b8c30b06b343833d13d96e25065cc74883d587e5688f271dc713edb14bc69187d6e3e426742693527d4d9746
+  languageName: node
+  linkType: hard
+
+"query-string@npm:^9.3.1":
+  version: 9.3.1
+  resolution: "query-string@npm:9.3.1"
+  dependencies:
+    decode-uri-component: "npm:^0.4.1"
+    filter-obj: "npm:^5.1.0"
+    split-on-first: "npm:^3.0.0"
+  checksum: 10/c56a2242ba749b14413998f620fa52dafaf6fe4fbc4572e46c3d7f5ad1ef2811d4ed4d256f53ed8b9d5e073d2dd672c20cc05ae363b65c8745120e81a5d520a6
   languageName: node
   linkType: hard
 
@@ -11426,9 +11446,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-router@npm:^7.8.1":
-  version: 7.8.2
-  resolution: "react-router@npm:7.8.2"
+"react-router@npm:^7.9.1":
+  version: 7.9.1
+  resolution: "react-router@npm:7.9.1"
   dependencies:
     cookie: "npm:^1.0.1"
     set-cookie-parser: "npm:^2.6.0"
@@ -11438,7 +11458,7 @@ __metadata:
   peerDependenciesMeta:
     react-dom:
       optional: true
-  checksum: 10/d1af3980cdfe8b915f6a8b219d57f18f9e3c4c062fa33bbb0946d4ff18c4c09fbf2f5c3616f5953f576c1d3be31616e4578773794cbb6eacf7812050997e04a2
+  checksum: 10/f15aa70bfe95bf05f755283c2b67d3316cd037c99aebf5cc6b4fd49db99a5a4a36ba0664661a84bf7d60a7643dd0457f1835896891dbf7b8f16e670e79e80491
   languageName: node
   linkType: hard
 
