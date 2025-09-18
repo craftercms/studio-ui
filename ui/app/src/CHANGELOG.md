@@ -1,11 +1,12 @@
 # Changelog
 
 ## 5.0.1 (CrafterCMS 4.5.0)
-* Upgrade to the latest version to date of the following libraries:
-  * react
-  * react-dom
-  * react-router
-  * vite
+* Upgraded:
+  * react to 19.1.1
+  * react-dom to 19.1.1
+  * react-router to 7.9.1
+  * uuid to 13.0.0
+  * and a host of other deps. See [4639](https://github.com/craftercms/studio-ui/pull/4639)
 
 ## 5.0.0 (CrafterCMS 4.4.3)
 * Version 5.0.0 should be paired with CrafterCMS 4.4.3 or later.
