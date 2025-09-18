@@ -50,8 +50,8 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@craftercms/classes": "^4.3.0",
-    "@craftercms/content": "^4.3.0",
+    "@craftercms/classes": "^4.4.0",
+    "@craftercms/content": "^4.4.2",
     "@craftercms/ice": "^4.3.0",
     "@craftercms/npm-content": "workspace:^",
     "@craftercms/search": "^4.3.0",
