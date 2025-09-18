@@ -122,7 +122,7 @@ export function SearchBar(props: SearchBarProps) {
   const [focus, setFocus] = useState(false);
   const { formatMessage } = useIntl();
   const finalPlaceholder = placeholder || formatMessage(messages.placeholder);
-  const inputRef = useRef<HTMLInputElement | null>(undefined);
+  const inputRef = useRef<HTMLInputElement | null>(null);
   return (
     <Paper
       onClick={onClick}
