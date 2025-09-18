@@ -1315,18 +1315,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@craftercms/classes@npm:^4.3.0":
-  version: 4.3.0
-  resolution: "@craftercms/classes@npm:4.3.0"
-  dependencies:
-    "@craftercms/models": "npm:^4.3.0"
-    "@craftercms/utils": "npm:^4.3.0"
-    query-string: "npm:^9.1.0"
-  checksum: 10/3731db8852ab586030e1329fdf7c699d801a0b421d863c290ac0aade6c88f18a44db8d80e4e61e87992c4ad08f17b4ba993ff7e04bfb69c1e5a91d69e7959c0a
-  languageName: node
-  linkType: hard
-
-"@craftercms/classes@npm:^4.4.0":
+"@craftercms/classes@npm:^4.3.0, @craftercms/classes@npm:^4.4.0":
   version: 4.4.0
   resolution: "@craftercms/classes@npm:4.4.0"
   dependencies:
