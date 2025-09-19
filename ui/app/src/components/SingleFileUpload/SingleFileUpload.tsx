@@ -257,10 +257,10 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 	useEffect(() => {
 		const onFileAdded = (file: UppyFile<Meta, Body>) => {
 			setError(null);
-			setDescription(`${formatMessage(messages.validatingFile)}:`);
 			setFileNameErrorClass('');
 
 			const validatePolicy = () => {
+				setDescription(`${formatMessage(messages.validatingFile)}:`);
 				validateActionPolicy(site, {
 					type: 'CREATE',
 					target: ensureSingleSlash(`${path}/${file.name}`),

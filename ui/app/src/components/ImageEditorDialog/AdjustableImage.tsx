@@ -1,5 +1,6 @@
-import React, { useRef, CSSProperties, useLayoutEffect } from 'react';
+import React, { useRef, CSSProperties, useLayoutEffect, forwardRef } from 'react';
 import cn from 'classnames';
+import { mergeRefs } from 'react-advanced-cropper';
 
 interface AdjustableImageProps {
 	src?: string;
@@ -10,7 +11,7 @@ interface AdjustableImageProps {
 	style?: CSSProperties;
 }
 
-export const AdjustableImage = (props: AdjustableImageProps) => {
+export const AdjustableImage = forwardRef<HTMLCanvasElement, AdjustableImageProps>((props, ref) => {
 	const { src, className, brightness = 0, saturation = 0, contrast = 0, style } = props;
 	const imageRef = useRef<HTMLImageElement>(null);
 	const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -43,7 +44,7 @@ export const AdjustableImage = (props: AdjustableImageProps) => {
 		<>
 			<canvas
 				key={`${src}-canvas`}
-				ref={canvasRef}
+				ref={mergeRefs([ref, canvasRef])}
 				className={cn('adjustable-image-element', className)}
 				style={style}
 			/>
@@ -59,6 +60,6 @@ export const AdjustableImage = (props: AdjustableImageProps) => {
 			) : null}
 		</>
 	);
-};
+});
 
 export default AdjustableImage;

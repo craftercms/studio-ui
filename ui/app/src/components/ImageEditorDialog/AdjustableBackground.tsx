@@ -14,26 +14,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { CropperTransitions, CropperImage, CropperState } from 'react-advanced-cropper';
+import { forwardRef } from 'react';
+import { CropperRef } from 'react-advanced-cropper';
 import { getBackgroundStyle } from 'advanced-cropper';
 import { AdjustableImage } from './AdjustableImage';
 
-interface DesiredCropperRef {
-	getState: () => CropperState;
-	getTransitions: () => CropperTransitions;
-	getImage: () => CropperImage;
-}
-
 interface AdjustableBackgroundProps {
 	className?: string;
-	cropper: DesiredCropperRef;
+	cropper: CropperRef;
 	brightness?: number;
 	saturation?: number;
 	hue?: number;
 	contrast?: number;
 }
 
-export const AdjustableBackground = (props: AdjustableBackgroundProps) => {
+export const AdjustableBackground = forwardRef<HTMLCanvasElement, AdjustableBackgroundProps>((props, ref) => {
 	const { className, cropper, brightness = 0, saturation = 0, contrast = 0 } = props;
 	const state = cropper.getState();
 	const transitions = cropper.getTransitions();
@@ -47,10 +42,11 @@ export const AdjustableBackground = (props: AdjustableBackgroundProps) => {
 			brightness={brightness}
 			saturation={saturation}
 			contrast={contrast}
+			ref={ref}
 			className={className}
 			style={style}
 		/>
 	);
-};
+});
 
 export default AdjustableBackground;

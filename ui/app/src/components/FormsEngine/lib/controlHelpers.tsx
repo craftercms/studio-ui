@@ -374,6 +374,9 @@ export const showImageCropDialog = ({
 			component: createComponentId('ImageEditorDialog'),
 			props: {
 				path,
+				subtitle: (
+					<FormattedMessage defaultMessage="The uploaded file does not meet the specified width & height constraints" />
+				),
 				restrictions,
 				writeContent,
 				tools: ['crop'],

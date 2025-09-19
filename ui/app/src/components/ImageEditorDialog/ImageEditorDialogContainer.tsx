@@ -48,8 +48,15 @@ const sliderModes = ['saturation', 'brightness', 'contrast'];
 const initialAdjustments = { brightness: 0, saturation: 0, contrast: 0 };
 
 export function ImageEditorDialogContainer(props: ImageEditorDialogProps) {
-	const { path, onCrop, restrictions, writeContent, tools = ['rotate', 'flip', 'adjustments'], onClose } = props;
-	const cropperRef = useRef<CropperRef>(null);
+	const {
+		path,
+		onCrop,
+		restrictions,
+		writeContent,
+		tools = ['crop', 'rotate', 'flip', 'adjustments'],
+		onClose
+	} = props;
+	const cropperRef = useRef<CropperRef | null>(null);
 	const siteId = useActiveSiteId();
 	const fileExtension = getFileExtension(path);
 	const fileNameWithoutExtension = removeExtension(getFileNameFromPath(path));
@@ -168,8 +175,6 @@ export function ImageEditorDialogContainer(props: ImageEditorDialogProps) {
 						<Box maxHeight={600}>
 							<Cropper
 								ref={cropperRef}
-								className="example__cropper"
-								backgroundClassName="example__cropper-background"
 								src={path}
 								minHeight={restrictions?.height ?? restrictions?.minHeight}
 								minWidth={restrictions?.width ?? restrictions?.minWidth}
@@ -181,7 +186,7 @@ export function ImageEditorDialogContainer(props: ImageEditorDialogProps) {
 									resizable: cropperEnabled,
 									lines: cropperEnabled
 								}}
-								onChange={onChange}
+								onUpdate={onChange}
 								backgroundComponent={AdjustableBackground}
 								backgroundProps={adjustments}
 								backgroundWrapperProps={{
