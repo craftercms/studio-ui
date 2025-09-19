@@ -30,7 +30,7 @@ import { useConsolidatedImagePickerData } from '../dataSourceHooks/useConsolidat
 import { menuItemClasses } from '@mui/material/MenuItem';
 import { listItemIconClasses } from '@mui/material/ListItemIcon';
 import Menu from '@mui/material/Menu';
-import useImageInfo from '../../../hooks/useImageInfo';
+import { useImageInfo } from '../../../hooks/useImageInfo';
 import { svgIconClasses } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import { DialogHeader } from '../../DialogHeader';
