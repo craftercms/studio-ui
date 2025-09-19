@@ -14,23 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { EnhancedDialogProps } from '../EnhancedDialog';
+export { default } from './ImageEditorDialog';
 
-export interface ImageCropDialogBaseProps {
-	path?: string;
-	restrictions?: ImageRestrictions;
-	writeContent?: boolean;
-}
-
-export interface ImageRestrictions {
-	width?: number;
-	height?: number;
-	minWidth?: number;
-	minHeight?: number;
-	maxWidth?: number;
-	maxHeight?: number;
-}
-
-export interface ImageCropDialogProps extends ImageCropDialogBaseProps, EnhancedDialogProps {
-	onCrop?(blob: Blob, path: string): void;
-}
+export * from './ImageEditorDialog';

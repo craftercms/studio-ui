@@ -14,25 +14,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { ImageCropDialogProps } from './types';
-import { EnhancedDialog } from '../EnhancedDialog';
-import { FormattedMessage } from 'react-intl';
-import ImageCropDialogContainer from './ImageCropDialogContainer';
+import type { EnhancedDialogProps } from '../EnhancedDialog';
+import type { ReactNode } from 'react';
 
-export function ImageCropDialog(props: ImageCropDialogProps) {
-	const { path, restrictions, writeContent, onCrop, ...rest } = props;
-
-	return (
-		<EnhancedDialog title={<FormattedMessage defaultMessage="Image Crop Dialog" />} {...rest} maxWidth="md">
-			<ImageCropDialogContainer
-				path={path}
-				onCrop={onCrop}
-				restrictions={restrictions}
-				writeContent={writeContent}
-				{...rest}
-			/>
-		</EnhancedDialog>
-	);
+export interface ImageEditorDialogBaseProps {
+	path?: string;
+	restrictions?: ImageRestrictions;
+	writeContent?: boolean;
+	title?: ReactNode;
+	subtitle?: ReactNode;
+	tools?: ('crop' | 'rotate' | 'flip' | 'adjustments')[];
 }
 
-export default ImageCropDialog;
+export interface ImageRestrictions {
+	width?: number;
+	height?: number;
+	minWidth?: number;
+	minHeight?: number;
+	maxWidth?: number;
+	maxHeight?: number;
+}
+
+export interface ImageEditorDialogProps extends ImageEditorDialogBaseProps, EnhancedDialogProps {
+	onCrop?(blob: Blob, path: string): void;
+}

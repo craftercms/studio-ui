@@ -52,7 +52,7 @@ import { nanoid } from 'nanoid';
 import { popDialog, pushDialog, pushNonDialog } from '../../../state/actions/dialogStack';
 import { createComponentId } from '../../../utils/system';
 import { SearchProps } from '../../Search';
-import type { ImageRestrictions } from '../../ImageCropDialog/types';
+import type { ImageRestrictions } from '../../ImageEditorDialog/types';
 import type { SingleFileUploadDialogProps } from '../../SingleFileUploadDialog';
 import type { FileUploadResult } from '../../SingleFileUpload';
 
@@ -371,11 +371,12 @@ export const showImageCropDialog = ({
 	dispatch(
 		pushDialog({
 			id: dialogId,
-			component: createComponentId('ImageCropDialog'),
+			component: createComponentId('ImageEditorDialog'),
 			props: {
 				path,
 				restrictions,
 				writeContent,
+				tools: ['crop'],
 				onCrop: (blob: Blob, newPath: string) => {
 					dispatch(popDialog({ id: dialogId }));
 					onCrop?.(blob, newPath);

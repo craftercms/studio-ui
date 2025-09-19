@@ -54,7 +54,7 @@ import {
 	showSearchDialog,
 	showSingleFileUploadDialog
 } from '../lib/controlHelpers';
-import type { ImageRestrictions } from '../../ImageCropDialog/types';
+import type { ImageRestrictions } from '../../ImageEditorDialog/types';
 
 export interface ImagePickerProps extends ControlProps {
 	value: string;

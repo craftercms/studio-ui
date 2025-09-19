@@ -17,7 +17,7 @@
 import { DialogBody } from '../DialogBody';
 import { DialogFooter } from '../DialogFooter';
 import { useRef, useState } from 'react';
-import type { ImageCropDialogProps } from './types';
+import type { ImageEditorDialogProps } from './types';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import SecondaryButton from '../SecondaryButton';
@@ -31,7 +31,6 @@ import { Cropper, CropperRef } from 'react-advanced-cropper';
 import 'react-advanced-cropper/dist/style.css';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { uploadFile } from '../../services/content';
-
 import TextField from '@mui/material/TextField';
 import CachedIcon from '@mui/icons-material/Cached';
 import { getFileExtension, getFileNameFromPath, removeExtension } from '../../utils/path';
@@ -40,10 +39,16 @@ import { useDispatch } from 'react-redux';
 import { createComponentId } from '../../utils/system';
 import { applyAssetNameRules } from '../../utils/content';
 import { isEmpty } from '../../utils/string';
+import { Slider } from '@mui/material';
+import AdjustableBackground from './AdjustableBackground';
+import ActionsBar from './ActionsBar';
 
-export function ImageCropDialogContainer(props: ImageCropDialogProps) {
-	// TODO: writeContent rename prop
-	const { path, onCrop, restrictions, writeContent, onClose } = props;
+export type EditorMode = 'crop' | 'saturation' | 'brightness' | 'contrast';
+const sliderModes = ['saturation', 'brightness', 'contrast'];
+const initialAdjustments = { brightness: 0, saturation: 0, contrast: 0 };
+
+export function ImageEditorDialogContainer(props: ImageEditorDialogProps) {
+	const { path, onCrop, restrictions, writeContent, tools = ['rotate', 'flip', 'adjustments'], onClose } = props;
 	const cropperRef = useRef<CropperRef>(null);
 	const siteId = useActiveSiteId();
 	const fileExtension = getFileExtension(path);
@@ -63,6 +68,11 @@ export function ImageCropDialogContainer(props: ImageCropDialogProps) {
 	});
 	const [coordinates, setCoordinates] = useState(null);
 	const dispatch = useDispatch();
+	const [editorMode, setEditorMode] = useState<EditorMode>(tools.includes('crop') ? 'crop' : null);
+	const [adjustments, setAdjustments] = useState<{ brightness: number; saturation: number; contrast: number }>(
+		initialAdjustments
+	);
+	const cropperEnabled = editorMode === 'crop';
 
 	const onSubmit = (newPath?: string) => {
 		const cropper = cropperRef.current;
@@ -121,15 +131,40 @@ export function ImageCropDialogContainer(props: ImageCropDialogProps) {
 	};
 
 	const onReset = () => {
-		setCoordinates(null);
+		setCoordinates({
+			height: restrictions?.height ?? restrictions?.maxHeight,
+			width: restrictions?.width ?? restrictions?.maxWidth
+		});
+		setAdjustments(initialAdjustments);
 		cropperRef.current?.reset();
+	};
+
+	const rotate = (angle: number) => {
+		if (cropperRef.current) {
+			cropperRef.current.rotateImage(angle);
+		}
+	};
+
+	const flip = (horizontal: boolean, vertical: boolean) => {
+		if (cropperRef.current) {
+			cropperRef.current.flipImage(horizontal, vertical);
+		}
+	};
+
+	const onChangeAdjustment = (value: number) => {
+		if (editorMode in adjustments) {
+			setAdjustments((previousValue) => ({
+				...previousValue,
+				[editorMode]: value / 100
+			}));
+		}
 	};
 
 	return (
 		<>
 			<DialogBody>
 				<Grid container spacing={2}>
-					<Grid size={{ xs: 12, sm: 8 }}>
+					<Grid size={{ xs: 12, sm: 9 }}>
 						<Box maxHeight={600}>
 							<Cropper
 								ref={cropperRef}
@@ -141,13 +176,45 @@ export function ImageCropDialogContainer(props: ImageCropDialogProps) {
 								maxHeight={restrictions?.height ?? restrictions?.maxHeight}
 								maxWidth={restrictions?.width ?? restrictions?.maxWidth}
 								stencilProps={{
-									handlers: !(restrictions?.height && restrictions?.width)
+									handlers: cropperEnabled && !(restrictions?.height && restrictions?.width),
+									movable: cropperEnabled,
+									resizable: cropperEnabled,
+									lines: cropperEnabled
 								}}
 								onChange={onChange}
+								backgroundComponent={AdjustableBackground}
+								backgroundProps={adjustments}
+								backgroundWrapperProps={{
+									scaleImage: cropperEnabled,
+									moveImage: cropperEnabled
+								}}
 							/>
 						</Box>
+						{sliderModes.includes(editorMode) && (
+							<Box sx={{ px: 1, mt: 1 }}>
+								<Slider
+									size="small"
+									min={-100}
+									max={100}
+									marks={[{ value: 0 }]}
+									value={editorMode !== 'crop' ? Math.trunc(adjustments[editorMode] * 100) : 0}
+									aria-label="Slider"
+									valueLabelDisplay="auto"
+									onChange={(_, value) => onChangeAdjustment(value as number)}
+								/>
+							</Box>
+						)}
+						{!tools.every((tool) => tool === 'crop') && (
+							<ActionsBar
+								tools={tools}
+								currentMode={editorMode}
+								setMode={setEditorMode}
+								onRotate={rotate}
+								onFlip={flip}
+							/>
+						)}
 					</Grid>
-					<Grid size={{ xs: 12, sm: 4 }} rowSpacing={2} container direction="column">
+					<Grid size={{ xs: 12, sm: 3 }} rowSpacing={2} container direction="column">
 						<FormControl>
 							<TextField
 								label={<FormattedMessage defaultMessage="Width" />}
@@ -218,7 +285,7 @@ export function ImageCropDialogContainer(props: ImageCropDialogProps) {
 					</>
 				) : (
 					<PrimaryButton disabled={!coordinates?.width || !coordinates?.height} onClick={() => onSubmit()}>
-						<FormattedMessage defaultMessage="Crop" />
+						<FormattedMessage defaultMessage="Accept" />
 					</PrimaryButton>
 				)}
 			</DialogFooter>
@@ -226,4 +293,4 @@ export function ImageCropDialogContainer(props: ImageCropDialogProps) {
 	);
 }
 
-export default ImageCropDialogContainer;
+export default ImageEditorDialogContainer;
