@@ -51,6 +51,7 @@ export function SectionAccordion({
 	const [isExpanded, setExpanded] = useAtom(useContext(StableFormContext).atoms.expandedStateBySectionId[section.id]);
 	return (
 		<Accordion
+			data-section-id={section.id}
 			elevation={isDarkMode ? 2 : undefined}
 			{...accordionProps}
 			expanded={isExpanded}
