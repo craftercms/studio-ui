@@ -399,7 +399,7 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
                 onActionButtonClick={(e, input) => {
                   e.stopPropagation();
                   onClearKeywords();
-                  input.focus();
+                  input?.focus();
                 }}
                 showActionButton={keyword && true}
                 classes={{

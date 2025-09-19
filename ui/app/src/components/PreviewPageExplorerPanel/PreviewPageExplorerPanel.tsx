@@ -750,7 +750,7 @@ export function PreviewPageExplorerPanel() {
         onExpandedItemsChange={handleChange}
       >
         <div className={classes.searchWrapper}>
-          <SearchBar showActionButton={Boolean(keyword)} onChange={handleSearchKeyword} keyword={keyword} />
+          <SearchBar showActionButton={Boolean(keyword)} onChange={handleSearchKeyword} keyword={keyword} autoFocus />
           <Divider className={classes.divider} />
         </div>
         <Suspencified loadingStateProps={{ title: formatMessage(translations.loading) }}>

@@ -1,6 +1,8 @@
 # Changelog
 
 ## 5.0.1 (CrafterCMS 4.5.0)
+* [components]
+  * `SearchBar`: Update the default DecoratorIcon to select the search input on click.
 * Upgraded:
   * react to 19.1.1
   * react-dom to 19.1.1

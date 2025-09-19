@@ -44,12 +44,11 @@ export function UserManagement(props: UserManagementProps) {
   const [offset, setOffset] = useState(0);
   const [limit, setLimit] = useState(10);
   const [fetching, setFetching] = useState(false);
-  const [users, setUsers] = useState<PagedArray<User>>(null);
-  const [error, setError] = useState<ApiResponse>();
-  const [viewUser, setViewUser] = useState(null);
-  const [showSearchBox, setShowSearchBox] = useState(false);
+  const [users, setUsers] = useState<PagedArray<User> | null>(null);
+  const [error, setError] = useState<ApiResponse | null>(null);
+  const [viewUser, setViewUser] = useState<User | null>(null);
   const [keyword, setKeyword] = useState('');
-  const { classes, cx: clsx } = useStyles();
+  const { classes } = useStyles();
 
   const fetchUsers = useCallback(
     (keyword = '', _offset = offset) => {
@@ -57,10 +56,11 @@ export function UserManagement(props: UserManagementProps) {
       fetchAll({ limit, offset: _offset, keyword }).subscribe({
         next(users) {
           setUsers(users);
+          setError(null);
           setFetching(false);
         },
         error({ response }) {
-          setError(response);
+          setError(response?.response);
           setFetching(false);
         }
       });
@@ -103,10 +103,6 @@ export function UserManagement(props: UserManagementProps) {
     setLimit(e.target.value);
   };
 
-  const onShowSearchBox = () => {
-    setShowSearchBox(!showSearchBox);
-  };
-
   const onSearch = useCallback(
     (keyword) => {
       fetchUsers(keyword, 0);
@@ -137,10 +133,9 @@ export function UserManagement(props: UserManagementProps) {
         }
         rightContent={
           <SearchBar
-            classes={{ root: clsx(classes.searchBarRoot, !showSearchBox && 'hidden') }}
+            classes={{ root: classes.searchBarRoot }}
             keyword={keyword}
             onChange={handleSearchKeyword}
-            onDecoratorButtonClick={onShowSearchBox}
             showActionButton={Boolean(keyword)}
           />
         }
