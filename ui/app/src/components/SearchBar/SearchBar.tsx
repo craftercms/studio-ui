@@ -96,7 +96,7 @@ interface SearchBarProps {
   onChange(value: string, event: React.SyntheticEvent): void;
   onKeyPress?(key: string): void;
   onKeyDown?: InputBaseProps['onKeyDown'];
-  onActionButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>, input: HTMLInputElement): void;
+  onActionButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>, input: HTMLInputElement | null): void;
   onDecoratorButtonClick?(): void;
 }
 
@@ -122,7 +122,7 @@ export function SearchBar(props: SearchBarProps) {
   const [focus, setFocus] = useState(false);
   const { formatMessage } = useIntl();
   const finalPlaceholder = placeholder || formatMessage(messages.placeholder);
-  const inputRef = useRef<HTMLInputElement>(undefined);
+  const inputRef = useRef<HTMLInputElement | null>(null);
   return (
     <Paper
       onClick={onClick}
@@ -135,7 +135,7 @@ export function SearchBar(props: SearchBarProps) {
           <DecoratorIcon className={classes.searchIcon} />
         </IconButton>
       ) : (
-        <DecoratorIcon className={classes.searchIcon} />
+        <DecoratorIcon className={classes.searchIcon} onClick={() => inputRef.current?.select()} />
       )}
       <InputBase
         onChange={(e) => onChange(e.target.value, e)}

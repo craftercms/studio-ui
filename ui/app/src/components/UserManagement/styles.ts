@@ -16,18 +16,13 @@
 
 import { makeStyles } from 'tss-react/mui';
 
-const useStyles = makeStyles()(() => ({
+const useStyles = makeStyles()((theme) => ({
   searchBarRoot: {
     transition: 'width 500ms',
     width: '210px',
-    '&.hidden': {
-      width: '50px',
-      border: '0',
-      background: 'none',
-      '& input': {
-        visibility: 'hidden'
-      }
-    }
+    border: '0',
+    background: 'none',
+    marginRight: theme.spacing(1)
   }
 }));
 

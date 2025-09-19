@@ -280,6 +280,7 @@ export function PreviewSearchPanel() {
           onChange={(keyword) => handleSearchKeyword(keyword)}
           showDecoratorIcon={true}
           showActionButton={Boolean(keyword)}
+          autoFocus
         />
       </div>
       {state.items && !error && (
