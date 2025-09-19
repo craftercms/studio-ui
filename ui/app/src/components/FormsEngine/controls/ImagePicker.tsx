@@ -333,6 +333,32 @@ export function ImagePicker(props: ImagePickerProps) {
 									<br />
 									{imageInfo?.size ? `${imageInfo.size} Kb` : ''}
 								</Typography>
+								{Object.values(restrictions).some((restriction) => restriction) && (
+									<>
+										<Typography variant="caption" fontWeight="bold">
+											<FormattedMessage defaultMessage="Image Requirements:" />
+										</Typography>
+										<Typography variant="caption" component="div" color="textSecondary" marginBottom={1}>
+											<FormattedMessage defaultMessage="Width: " />
+											{[
+												restrictions.width ? ` equal to ${restrictions.width}px` : null,
+												restrictions.minWidth ? ` minimum ${restrictions.minWidth}px` : null,
+												restrictions.maxWidth ? ` maximum ${restrictions.maxWidth}px` : null
+											]
+												.filter(Boolean)
+												.join(',')}
+											<br />
+											<FormattedMessage defaultMessage="Height:" />
+											{[
+												restrictions.height ? ` equal to ${restrictions.height}px` : null,
+												restrictions.minHeight ? ` minimum ${restrictions.minHeight}px` : null,
+												restrictions.maxHeight ? ` maximum ${restrictions.maxHeight}px` : null
+											]
+												.filter(Boolean)
+												.join(',')}
+										</Typography>
+									</>
+								)}
 								<Box>
 									<Tooltip title={<FormattedMessage defaultMessage="Replace" />}>
 										<IconButton
