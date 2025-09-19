@@ -23,7 +23,7 @@ export function useImageInfo(url: string) {
 		height: number;
 		contentType?: string;
 		size?: number;
-	}>(null);
+	} | null>(null);
 	useEffect(() => {
 		if (url) {
 			const img = new Image();
