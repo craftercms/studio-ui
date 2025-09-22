@@ -14,19 +14,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { ElementType } from 'react';
 import type { ContentTypeField } from '../../../models/ContentType';
 import type { BuiltInControlType } from './controlMap';
 import LookupTable from '../../../models/LookupTable';
 import { XmlKeys } from './formConsts';
 
-export const validatorsMap: Record<BuiltInControlType, ElementType> = {
+type ValidatorFunctionDef = (field: ContentTypeField, currentValue: unknown, messages: string[]) => boolean;
+export const validatorsMap: Record<BuiltInControlType, ValidatorFunctionDef> = {
 	repeat: null,
 	'auto-filename': null,
 	'aws-file-upload': null,
 	'checkbox-group': null,
 	checkbox: null,
-	'date-time': null,
+	'date-time': (field, currentValue, messages) => {
+		let isValid = true;
+		const allowPastDate = field.properties.allowPastDate?.value ?? false;
+		const fieldDate = new Date(currentValue as string);
+		const currentDate = new Date();
+		if (!allowPastDate && fieldDate < currentDate) {
+			messages.push('The date cannot be in the past.');
+			isValid = false;
+		}
+		return isValid;
+	},
 	disabled: null,
 	dropdown: null,
 	'file-name': null,
@@ -58,18 +68,24 @@ export interface FieldValidityState {
 
 export function validateFieldValue(field: ContentTypeField, currentValue: unknown): FieldValidityState {
 	let isValid = false;
+	const messages = [];
 	const isRequired = isFieldRequired(field);
 	const isEmpty = isEmptyValue(field, currentValue);
 	if (!isRequired && isEmpty) {
 		// If not required and its empty, then it's valid.
 		isValid = true;
 	} else if (!isEmpty) {
-		// FE2 TODO: Add other validation types (max length, etc)...
-		isValid = true;
+		if (validatorsMap[field.type]) {
+			isValid = validatorsMap[field.type](field, currentValue, messages);
+		} else {
+			isValid = true;
+		}
+	} else {
+		messages.push('This field is required.');
 	}
 	return {
 		isValid,
-		messages: isValid ? null : ['This field is required.']
+		messages: isValid ? null : messages
 	};
 }
 
