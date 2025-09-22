@@ -43,7 +43,7 @@ import { Slider } from '@mui/material';
 import AdjustableBackground from './AdjustableBackground';
 import ActionsBar from './ActionsBar';
 
-export type EditorMode = 'crop' | 'saturation' | 'brightness' | 'contrast';
+export type EditorMode = 'crop' | 'saturation' | 'brightness' | 'contrast' | null;
 const sliderModes = ['saturation', 'brightness', 'contrast'];
 const initialAdjustments = { brightness: 0, saturation: 0, contrast: 0 };
 
