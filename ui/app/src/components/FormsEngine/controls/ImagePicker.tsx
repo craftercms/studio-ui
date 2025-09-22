@@ -84,8 +84,15 @@ function validateImageRestrictions(path: string, restrictions?: ImageRestriction
 	return new Promise((resolve) => {
 		if (restrictions) {
 			const img = new window.Image();
+			const done = (result: boolean) => resolve(result);
+			const timeout = window.setTimeout(() => done(true), 5000);
 			img.onload = () => {
-				resolve(doesImageMeetSizeRestrictions(img, restrictions));
+				window.clearTimeout(timeout);
+				done(doesImageMeetSizeRestrictions(img, restrictions));
+			};
+			img.onerror = img.onabort = () => {
+				window.clearTimeout(timeout);
+				done(true);
 			};
 			img.src = path;
 		} else {
@@ -108,7 +115,7 @@ export function ImagePicker(props: ImagePickerProps) {
 	const [addMenuOpen, setAddMenuOpen] = useState(false);
 	const dispatch = useDispatch();
 	const [openPickerDialog, setOpenPickerDialog] = useState(false);
-	const [pickerType, setPickerType] = useState<PickerType>(null);
+	const [pickerType, setPickerType] = useState<PickerType | null>(null);
 
 	// region field properties/validations
 	const readonly = formReadonly || (field.properties?.readonly?.value as boolean);
@@ -228,14 +235,12 @@ export function ImagePicker(props: ImagePickerProps) {
 									path: url,
 									restrictions,
 									onCrop: (blob: Blob) => {
-										console.log('file', file);
 										uppy.setFileState(file.id, {
 											source: 'crop',
 											name: file.name,
 											type: blob.type,
 											data: blob
 										});
-										console.log('uppy file', uppy.getFile(file.id));
 										callback?.();
 										URL.revokeObjectURL(url);
 									}
@@ -258,6 +263,7 @@ export function ImagePicker(props: ImagePickerProps) {
 		}
 	};
 	const handleDataSourcePickerDialogChange = (event, choice: AllowedPathsData) => {
+		if (!pickerType) return;
 		executeDataSourceOption(pickerType, choice);
 		setOpenPickerDialog(false);
 	};
