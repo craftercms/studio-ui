@@ -36,5 +36,5 @@ export interface ImageRestrictions {
 }
 
 export interface ImageEditorDialogProps extends ImageEditorDialogBaseProps, EnhancedDialogProps {
-	onCrop?(blob: Blob, path: string): void;
+	onCrop?(blob: Blob, path?: string | null): void;
 }
