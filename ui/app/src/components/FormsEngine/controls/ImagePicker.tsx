@@ -57,7 +57,7 @@ import {
 import type { ImageRestrictions } from '../../ImageEditorDialog/types';
 
 export interface ImagePickerProps extends ControlProps {
-	value: string;
+	value: string | null;
 }
 
 type PickerType = 'browse' | 'upload' | 'search';
@@ -100,7 +100,7 @@ export function ImagePicker(props: ImagePickerProps) {
 	const { guestBase } = useEnv();
 	const contextItem = useItemContext();
 	const { id, pathInSite } = useItemMetaContext();
-	const imageInfo = useImageInfo(value ? `${guestBase}${value}` : null);
+	const imageInfo = useImageInfo(value ? ensureSingleSlash(`${guestBase}${value}`) : '');
 	const hasValue = Boolean(value);
 	const dataSourceSummary = useConsolidatedImagePickerData(useExtractDataSources(contentType, field, 'imageManager'));
 	const { allowedBrowsePaths, allowedUploadPaths, allowedSearchPaths } = dataSourceSummary;
@@ -112,13 +112,14 @@ export function ImagePicker(props: ImagePickerProps) {
 
 	// region field properties/validations
 	const readonly = formReadonly || (field.properties?.readonly?.value as boolean);
+
 	const restrictions: ImageRestrictions = {
-		height: field.validations.height?.value ?? null,
-		width: field.validations.width?.value ?? null,
-		maxHeight: field.validations.maxHeight?.value ?? null,
-		maxWidth: field.validations.maxWidth?.value ?? null,
-		minHeight: field.validations.minHeight?.value ?? null,
-		minWidth: field.validations.minWidth?.value ?? null
+		height: field.validations?.height?.value,
+		width: field.validations?.width?.value,
+		maxHeight: field.validations?.maxHeight?.value,
+		maxWidth: field.validations?.maxWidth?.value,
+		minHeight: field.validations?.minHeight?.value,
+		minWidth: field.validations?.minWidth?.value
 	};
 	// endregion
 
@@ -227,18 +228,21 @@ export function ImagePicker(props: ImagePickerProps) {
 									path: url,
 									restrictions,
 									onCrop: (blob: Blob) => {
+										console.log('file', file);
 										uppy.setFileState(file.id, {
-											...file.meta,
 											source: 'crop',
 											name: file.name,
 											type: blob.type,
 											data: blob
 										});
+										console.log('uppy file', uppy.getFile(file.id));
 										callback?.();
+										URL.revokeObjectURL(url);
 									}
 								});
 							} else {
 								callback?.();
+								URL.revokeObjectURL(url);
 							}
 						});
 					},
