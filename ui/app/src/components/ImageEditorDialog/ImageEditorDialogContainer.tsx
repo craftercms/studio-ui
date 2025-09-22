@@ -25,7 +25,7 @@ import { FormattedMessage } from 'react-intl';
 import PrimaryButton from '../PrimaryButton';
 import Grid from '@mui/material/Grid';
 import FormControl from '@mui/material/FormControl';
-import useSpreadState from '../../hooks/useSpreadState';
+import { useSpreadState } from '../../hooks/useSpreadState';
 import Typography from '@mui/material/Typography';
 import { Cropper, CropperRef } from 'react-advanced-cropper';
 import 'react-advanced-cropper/dist/style.css';
@@ -79,7 +79,8 @@ export function ImageEditorDialogContainer(props: ImageEditorDialogProps) {
 	const [adjustments, setAdjustments] = useState<{ brightness: number; saturation: number; contrast: number }>(
 		initialAdjustments
 	);
-	const cropperEnabled = editorMode === 'crop';
+	const cropperEnabled = editorMode && editorMode === 'crop';
+	const isSliderMode = editorMode && sliderModes.includes(editorMode);
 
 	const onSubmit = (newPath?: string) => {
 		const cropper = cropperRef.current;
@@ -159,7 +160,7 @@ export function ImageEditorDialogContainer(props: ImageEditorDialogProps) {
 	};
 
 	const onChangeAdjustment = (value: number) => {
-		if (editorMode in adjustments) {
+		if (isSliderMode) {
 			setAdjustments((previousValue) => ({
 				...previousValue,
 				[editorMode]: value / 100
@@ -195,14 +196,14 @@ export function ImageEditorDialogContainer(props: ImageEditorDialogProps) {
 								}}
 							/>
 						</Box>
-						{sliderModes.includes(editorMode) && (
+						{isSliderMode && (
 							<Box sx={{ px: 1, mt: 1 }}>
 								<Slider
 									size="small"
 									min={-100}
 									max={100}
 									marks={[{ value: 0 }]}
-									value={editorMode !== 'crop' ? Math.trunc(adjustments[editorMode] * 100) : 0}
+									value={isSliderMode ? Math.trunc(adjustments[editorMode] * 100) : 0}
 									aria-label="Slider"
 									valueLabelDisplay="auto"
 									onChange={(_, value) => onChangeAdjustment(value as number)}
