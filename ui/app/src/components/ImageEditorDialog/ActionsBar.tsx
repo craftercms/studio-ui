@@ -31,10 +31,10 @@ import Box from '@mui/material/Box';
 
 export interface ActionsBarProps {
 	tools: ImageEditorDialogProps['tools'];
-	currentMode: EditorMode;
-	setMode(mode: EditorMode): void;
+	currentMode: EditorMode | null;
+	setMode(mode: EditorMode | null): void;
 	onRotate(angle: number): void;
-	onFlip(vertical: boolean, horizontal: boolean): void;
+	onFlip(horizontal: boolean, vertical: boolean): void;
 }
 
 const shouldRenderCrop = (tools: ImageEditorDialogProps['tools']) => tools && tools.includes('crop');
