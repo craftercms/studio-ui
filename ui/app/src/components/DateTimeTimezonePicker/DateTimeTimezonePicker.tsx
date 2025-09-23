@@ -41,6 +41,7 @@ export interface DateTimeTimezonePickerProps {
 	value: string | Date | number | null;
 	disabled?: boolean;
 	disablePast?: boolean;
+	autoUpdatePastDate?: boolean;
 	autoFocus?: boolean;
 	disableTimezoneSelection?: boolean;
 	localeCode?: string;
@@ -60,6 +61,7 @@ export function DateTimeTimezonePicker(props: DateTimeTimezonePickerProps) {
 		value: dateProp,
 		disabled = false,
 		disablePast = false,
+		autoUpdatePastDate = false,
 		autoFocus = false,
 		disableTimezoneSelection = false,
 		localeCode = locale.localeCode || 'en-US',
@@ -103,7 +105,7 @@ export function DateTimeTimezonePicker(props: DateTimeTimezonePickerProps) {
 			mountedRef.current = true;
 			// Date is nullish; clear the field.
 			setSelectedDate(null);
-		} else if (disablePast && new Date(dateProp) < new Date()) {
+		} else if (autoUpdatePastDate && disablePast && new Date(dateProp) < new Date()) {
 			mountedRef.current = true;
 			const future = createAtLeastHalfHourInFutureDate();
 			setSelectedDate(moment(future));
