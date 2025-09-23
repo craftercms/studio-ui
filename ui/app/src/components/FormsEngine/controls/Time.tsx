@@ -23,10 +23,10 @@ import { FormattedMessage } from 'react-intl';
 import Box from '@mui/material/Box';
 
 export interface TimeProps extends ControlProps {
-	value: string;
+	value: string | null;
 }
 
-const parseTimeToDate = (time: string): Date => {
+const parseTimeToDate = (time: string): Date | null => {
 	if (!time) {
 		return null;
 	}
