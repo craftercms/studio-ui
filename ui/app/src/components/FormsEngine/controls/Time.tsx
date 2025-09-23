@@ -100,13 +100,13 @@ export function Time(props: TimeProps) {
 	const htmlId = useId();
 
 	// region field properties/validations
-	const allowPastDate = field.properties.allowPastDate?.value ?? false;
-	const useCustomTimezone = field.properties.useCustomTimezone?.value ?? false;
-	const readonly = formReadonly || (field.properties.readonly?.value as boolean);
-	const showClear = field.properties.showClear?.value ?? false;
-	const showSetNow = field.properties.showNowLink?.value ?? false;
-	const populate = field.properties.populate?.value ?? false;
-	const populateDateExp = field.properties.populateDateExp?.value as string;
+	const allowPastDate = Boolean(field.properties?.allowPastDate?.value);
+	const useCustomTimezone = Boolean(field.properties?.useCustomTimezone?.value);
+	const readonly = formReadonly || (field.properties?.readonly?.value as boolean);
+	const showClear = Boolean(field.properties?.showClear?.value);
+	const showSetNow = Boolean(field.properties?.showNowLink?.value);
+	const populate = Boolean(field.properties?.populate?.value);
+	const populateDateExp = (field.properties?.populateDateExp?.value as string) ?? '';
 	// endregion
 
 	// If populate is true and there is no value, set it to the current time
