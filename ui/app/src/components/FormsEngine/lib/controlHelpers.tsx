@@ -357,12 +357,14 @@ export const showSingleFileUploadDialog = ({
 export const showImageCropDialog = ({
 	dispatch,
 	path,
+	mimeType,
 	restrictions,
 	writeContent,
 	onCrop
 }: {
 	dispatch: ReduxDispatch;
 	path: string;
+	mimeType?: string;
 	restrictions?: ImageRestrictions;
 	writeContent?: boolean;
 	onCrop: (blob: Blob, newPath?: string) => void;
@@ -374,6 +376,7 @@ export const showImageCropDialog = ({
 			component: createComponentId('ImageEditorDialog'),
 			props: {
 				path,
+				mimeType,
 				subtitle: (
 					<FormattedMessage defaultMessage="The uploaded file does not meet the specified width & height constraints" />
 				),

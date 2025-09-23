@@ -19,6 +19,7 @@ import type { ReactNode } from 'react';
 
 export interface ImageEditorDialogBaseProps {
 	path?: string;
+	mimeType?: string;
 	restrictions?: ImageRestrictions;
 	writeContent?: boolean;
 	title?: ReactNode;

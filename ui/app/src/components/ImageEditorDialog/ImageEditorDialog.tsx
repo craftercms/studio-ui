@@ -20,7 +20,7 @@ import { FormattedMessage } from 'react-intl';
 import ImageEditorDialogContainer from './ImageEditorDialogContainer';
 
 export function ImageEditorDialog(props: ImageEditorDialogProps) {
-	const { path, restrictions, writeContent, onCrop, title, subtitle, ...rest } = props;
+	const { path, mimeType, restrictions, writeContent, onCrop, title, subtitle, ...rest } = props;
 
 	return (
 		<EnhancedDialog
@@ -31,6 +31,7 @@ export function ImageEditorDialog(props: ImageEditorDialogProps) {
 		>
 			<ImageEditorDialogContainer
 				path={path}
+				mimeType={mimeType}
 				onCrop={onCrop}
 				restrictions={restrictions}
 				writeContent={writeContent}

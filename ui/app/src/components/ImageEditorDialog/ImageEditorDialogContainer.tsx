@@ -50,6 +50,7 @@ const initialAdjustments = { brightness: 0, saturation: 0, contrast: 0 };
 export function ImageEditorDialogContainer(props: ImageEditorDialogProps) {
 	const {
 		path,
+		mimeType,
 		onCrop,
 		restrictions,
 		writeContent,
@@ -87,6 +88,11 @@ export function ImageEditorDialogContainer(props: ImageEditorDialogProps) {
 		if (!cropper) return;
 
 		const croppedCanvas = cropper.getCanvas();
+		const ext = (fileExtension || '').toLowerCase();
+		const mime =
+			mimeType ??
+			(ext === 'png' ? 'image/png' : ext === 'webp' ? 'image/webp' : ext === 'svg' ? 'image/svg+xml' : 'image/jpeg');
+		const quality = mime === 'image/jpeg' ? 0.92 : undefined;
 		croppedCanvas.toBlob(
 			(blob) => {
 				if (!blob) return;
@@ -99,8 +105,8 @@ export function ImageEditorDialogContainer(props: ImageEditorDialogProps) {
 					onCrop?.(blob, newPath);
 				}
 			},
-			'image/jpeg',
-			1
+			mime,
+			quality
 		);
 	};
 

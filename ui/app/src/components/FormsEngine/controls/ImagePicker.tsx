@@ -181,6 +181,7 @@ export function ImagePicker(props: ImagePickerProps) {
 								showImageCropDialog({
 									dispatch,
 									path: imageData.path,
+									mimeType: imageData.mimeType,
 									restrictions,
 									writeContent: true,
 									onCrop: (blob: Blob, newPath: string) => {
@@ -233,6 +234,7 @@ export function ImagePicker(props: ImagePickerProps) {
 								showImageCropDialog({
 									dispatch,
 									path: url,
+									mimeType: file.type,
 									restrictions,
 									onCrop: (blob: Blob) => {
 										uppy.setFileState(file.id, {
