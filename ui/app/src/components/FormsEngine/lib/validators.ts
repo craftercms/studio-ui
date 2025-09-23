@@ -20,7 +20,7 @@ import LookupTable from '../../../models/LookupTable';
 import { XmlKeys } from './formConsts';
 
 type ValidatorFunctionDef = (field: ContentTypeField, currentValue: unknown, messages: string[]) => boolean;
-export const validatorsMap: Record<BuiltInControlType, ValidatorFunctionDef | null> = {
+export const validatorsMap: Partial<Record<BuiltInControlType, ValidatorFunctionDef>> = {
 	repeat: null,
 	'auto-filename': null,
 	'aws-file-upload': null,
@@ -28,7 +28,7 @@ export const validatorsMap: Record<BuiltInControlType, ValidatorFunctionDef | nu
 	checkbox: null,
 	'date-time': (field, currentValue, messages) => {
 		let isValid = true;
-		const allowPastDate = field.properties.allowPastDate?.value ?? false;
+		const allowPastDate = Boolean(field.properties?.allowPastDate?.value);
 		const fieldDate = new Date(currentValue as string);
 		const currentDate = new Date();
 		if (!allowPastDate && !isNaN(fieldDate.valueOf()) && fieldDate < currentDate) {
