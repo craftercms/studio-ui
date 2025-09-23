@@ -68,7 +68,7 @@ export interface FieldValidityState {
 
 export function validateFieldValue(field: ContentTypeField, currentValue: unknown): FieldValidityState {
 	let isValid = false;
-	const messages = [];
+	const messages: string[] = [];
 	const isRequired = isFieldRequired(field);
 	const isEmpty = isEmptyValue(field, currentValue);
 	if (!isRequired && isEmpty) {
@@ -85,7 +85,7 @@ export function validateFieldValue(field: ContentTypeField, currentValue: unknow
 	}
 	return {
 		isValid,
-		messages: isValid ? null : messages
+		messages
 	};
 }
 
