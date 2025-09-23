@@ -72,11 +72,11 @@ export function DateTimeTimezonePicker(props: DateTimeTimezonePickerProps) {
 	} = props;
 	const hour12 = dateTimeFormatOptions?.hour12;
 	const timeZones = useMemo(() => moment.tz.names(), []);
-	const [selectedDate, setSelectedDate] = useState<Moment>(null);
-	const [selectedTimezone, setSelectedTimezone] = useState<string>(resolvedLocaleData.timeZone ?? null);
+	const [selectedDate, setSelectedDate] = useState<Moment | null>(null);
+	const [selectedTimezone, setSelectedTimezone] = useState<string | null>(resolvedLocaleData.timeZone ?? null);
 	// The control timezone lags behind selectedTimezone. It is only updated when there's a different
 	// selectedTimezone to the navigator's locale, and the value (date) prop changes.
-	const [controlTimezone, setControlTimezone] = useState<string>(resolvedLocaleData.timeZone ?? null);
+	const [controlTimezone, setControlTimezone] = useState<string | null>(resolvedLocaleData.timeZone ?? null);
 	const mountedRef = useRef(false);
 	const effectRefs = useUpdateRefs({
 		dateProp,
@@ -88,6 +88,7 @@ export function DateTimeTimezonePicker(props: DateTimeTimezonePickerProps) {
 	});
 	const handleChange = ((newValue) => {
 		setSelectedDate(newValue);
+		if (!newValue) return;
 		if (newValue.toISOString() !== moment(effectRefs.current.dateProp).toISOString()) {
 			effectRefs.current.onChange?.(createTransposedToTimezoneDate(newValue, selectedTimezone));
 		}
@@ -102,14 +103,14 @@ export function DateTimeTimezonePicker(props: DateTimeTimezonePickerProps) {
 			mountedRef.current = true;
 			// Date is nullish; clear the field.
 			setSelectedDate(null);
-		} else if (disablePast && dateProp < new Date()) {
+		} else if (disablePast && new Date(dateProp) < new Date()) {
 			mountedRef.current = true;
 			const future = createAtLeastHalfHourInFutureDate();
 			setSelectedDate(moment(future));
 			effectRefs.current.onChange?.(future);
 		} else if (mountedRef.current) {
 			const { selectedTimezone, controlTimezone, selectedDate } = effectRefs.current;
-			if (moment(dateProp).toISOString() === selectedDate.toISOString()) {
+			if (selectedDate && moment(dateProp).toISOString() === selectedDate.toISOString()) {
 				// Skip if dateProp is the same as the selected date.
 				return;
 			}
