@@ -31,7 +31,7 @@ export const validatorsMap: Record<BuiltInControlType, ValidatorFunctionDef> = {
 		const allowPastDate = field.properties.allowPastDate?.value ?? false;
 		const fieldDate = new Date(currentValue as string);
 		const currentDate = new Date();
-		if (!allowPastDate && fieldDate < currentDate) {
+		if (!allowPastDate && !isNaN(fieldDate.valueOf()) && fieldDate < currentDate) {
 			messages.push('The date cannot be in the past.');
 			isValid = false;
 		}
