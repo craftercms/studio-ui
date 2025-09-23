@@ -45,7 +45,9 @@ import ActionsBar from './ActionsBar';
 
 export type EditorMode = 'crop' | 'saturation' | 'brightness' | 'contrast' | null;
 const sliderModes = ['saturation', 'brightness', 'contrast'];
-const initialAdjustments = { brightness: 0, saturation: 0, contrast: 0 };
+type SliderMode = (typeof sliderModes)[number];
+type Adjustments = Record<SliderMode, number>;
+const initialAdjustments: Adjustments = { brightness: 0, saturation: 0, contrast: 0 };
 
 export function ImageEditorDialogContainer(props: ImageEditorDialogProps) {
 	const {
@@ -77,9 +79,7 @@ export function ImageEditorDialogContainer(props: ImageEditorDialogProps) {
 	const [coordinates, setCoordinates] = useState(null);
 	const dispatch = useDispatch();
 	const [editorMode, setEditorMode] = useState<EditorMode>(tools.includes('crop') ? 'crop' : null);
-	const [adjustments, setAdjustments] = useState<{ brightness: number; saturation: number; contrast: number }>(
-		initialAdjustments
-	);
+	const [adjustments, setAdjustments] = useState<Adjustments>(initialAdjustments);
 	const cropperEnabled = editorMode && editorMode === 'crop';
 	const isSliderMode = editorMode && sliderModes.includes(editorMode);
 

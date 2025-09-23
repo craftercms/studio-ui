@@ -31,7 +31,7 @@ import { menuItemClasses } from '@mui/material/MenuItem';
 import { listItemIconClasses } from '@mui/material/ListItemIcon';
 import Menu from '@mui/material/Menu';
 import { useImageInfo } from '../../../hooks/useImageInfo';
-import { svgIconClasses } from '@mui/material';
+import { svgIconClasses } from '@mui/material/SvgIcon';
 import Dialog from '@mui/material/Dialog';
 import { DialogHeader } from '../../DialogHeader';
 import { DialogBody } from '../../DialogBody';
@@ -386,7 +386,12 @@ export function ImagePicker(props: ImagePickerProps) {
 										</IconButton>
 									</Tooltip>
 									<Tooltip title={<FormattedMessage defaultMessage="Download" />}>
-										<IconButton size="small" onClick={() => downloadMedia(guestBase, value)}>
+										<IconButton
+											size="small"
+											onClick={() => {
+												if (value) downloadMedia(guestBase, value);
+											}}
+										>
 											<DownloadOutlined />
 										</IconButton>
 									</Tooltip>
