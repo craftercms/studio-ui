@@ -27,27 +27,41 @@ export interface TimeProps extends ControlProps {
 }
 
 const parseTimeToDate = (time: string): Date | null => {
-	if (!time) {
-		return null;
-	}
+	if (!time) return null;
 	const [h, m = '0', s = '0'] = time.split(':');
 	const hours = Number(h);
 	const minutes = Number(m);
 	const seconds = Number(s);
+
+	// Check time ranges
+	if (
+		!Number.isFinite(hours) ||
+		!Number.isFinite(minutes) ||
+		!Number.isFinite(seconds) ||
+		hours < 0 ||
+		hours > 23 ||
+		minutes < 0 ||
+		minutes > 59 ||
+		seconds < 0 ||
+		seconds > 59
+	) {
+		return null;
+	}
+
 	const date = new Date();
 	date.setHours(hours, minutes, seconds, 0);
 	return date;
 };
 
-const parseDateToTime = (date: Date): string => {
-	if (!date) {
-		return null;
-	}
+const parseDateToTime = (date: Date | null): string | null => {
+	if (!date || Number.isNaN(date.valueOf())) return null;
 	return date.toLocaleTimeString('en-US', { hour12: false });
 };
 
 const validatePopulateDateExp = (expr: string): boolean => {
-	return Boolean(expr.replace(/ /g, '').match(/(now)?(\+|\-)\d+((hours)|(minutes))/gi));
+	const trimmed = (expr ?? '').replace(/ /g, '').toLowerCase();
+	if (trimmed === 'now') return true;
+	return /(now)?(\+|\-)\d+((hours)|(minutes))$/i.test(trimmed);
 };
 
 const processPopulateExpression = (expr: string): Date => {
