@@ -30,7 +30,10 @@ const parseTimeToDate = (time: string): Date => {
 	if (!time) {
 		return null;
 	}
-	const [hours, minutes, seconds] = time.split(':').map(Number);
+	const [h, m = '0', s = '0'] = time.split(':');
+	const hours = Number(h);
+	const minutes = Number(m);
+	const seconds = Number(s);
 	const date = new Date();
 	date.setHours(hours, minutes, seconds, 0);
 	return date;

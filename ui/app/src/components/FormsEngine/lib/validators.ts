@@ -20,7 +20,7 @@ import LookupTable from '../../../models/LookupTable';
 import { XmlKeys } from './formConsts';
 
 type ValidatorFunctionDef = (field: ContentTypeField, currentValue: unknown, messages: string[]) => boolean;
-export const validatorsMap: Record<BuiltInControlType, ValidatorFunctionDef> = {
+export const validatorsMap: Record<BuiltInControlType, ValidatorFunctionDef | null> = {
 	repeat: null,
 	'auto-filename': null,
 	'aws-file-upload': null,
