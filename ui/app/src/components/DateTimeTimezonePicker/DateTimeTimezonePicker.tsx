@@ -38,7 +38,7 @@ import type { PartialSxRecord } from '../../models';
 
 export interface DateTimeTimezonePickerProps {
 	id?: string;
-	value: string | Date | number;
+	value: string | Date | number | null;
 	disabled?: boolean;
 	disablePast?: boolean;
 	autoFocus?: boolean;
