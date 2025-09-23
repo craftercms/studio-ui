@@ -29,14 +29,14 @@ const validatePopulateDateExp = (expr: string): boolean => {
 	return Boolean(expr.replace(/ /g, '').match(/(now)?(\+|\-)\d+((days)|(weeks)|(years)|(hours)|(minutes))/gi));
 };
 
-const processPopulateExpression = (expr: string): Date => {
+const processPopulateExpression = (expr: string, allowPastDate: boolean): Date => {
 	const date = new Date();
 	const daysInWeek = 7;
 	let modifier = 1;
 
 	if (validatePopulateDateExp(expr)) {
 		if (expr.toLowerCase() === 'now') {
-			date.setSeconds(59, 0);
+			if (!allowPastDate) date.setSeconds(59, 0);
 		} else {
 			const populateDateExp = expr.replace(/ /g, '');
 			const action = populateDateExp.match(/(\+|\-)/gi)[0];
@@ -58,7 +58,7 @@ const processPopulateExpression = (expr: string): Date => {
 			}
 		}
 	} else {
-		date.setSeconds(59, 0);
+		if (!allowPastDate) date.setSeconds(59, 0);
 	}
 	return date;
 };
@@ -68,25 +68,30 @@ export function DateTime(props: DateTimeProps) {
 	const htmlId = useId();
 
 	// region field properties/validations
-	const allowPastDate = field.properties.allowPastDate?.value ?? false;
-	const useCustomTimezone = field.properties.useCustomTimezone?.value ?? false;
-	const showTime = field.properties.showTime?.value ?? false;
-	const readonly = formReadonly || (field.properties.readonly?.value as boolean);
-	const showClear = field.properties.showClear?.value ?? false;
-	const showSetNow = field.properties.showNowLink?.value ?? false;
-	const populate = field.properties.populate?.value ?? false;
-	const populateDateExp = field.properties.populateDateExp?.value as string;
+	const allowPastDate = Boolean(field.properties?.allowPastDate?.value);
+	const useCustomTimezone = Boolean(field.properties?.useCustomTimezone?.value);
+	const showTime = Boolean(field.properties?.showTime?.value);
+	const readonly = formReadonly || Boolean(field.properties?.readonly?.value as boolean);
+	const showClear = Boolean(field.properties?.showClear?.value);
+	const showSetNow = Boolean(field.properties?.showNowLink?.value);
+	const populate = Boolean(field.properties?.populate?.value);
+	const populateDateExp = field.properties?.populateDateExp?.value as string;
 	// endregion
 
 	const value = useMemo(() => {
 		if (populate && populateDateExp && !valueProp) {
-			return processPopulateExpression(populateDateExp).toISOString();
+			return processPopulateExpression(populateDateExp, allowPastDate).toISOString();
 		}
 		return valueProp;
-	}, [valueProp, populate, populateDateExp]);
+	}, [valueProp, populate, populateDateExp, allowPastDate]);
 
 	const handleChange: DateTimeTimezonePickerProps['onChange'] = (value) => setValue(value);
-	const setNow = () => setValue(new Date());
+	const setNow = () => {
+		const date = new Date();
+		// If allowPastDate is false, set it to the end of the current minute to avoid setting it to a past date.
+		if (!allowPastDate) date.setSeconds(59, 0);
+		setValue(date);
+	};
 	const clearValue = () => setValue(null);
 	const pickers: DateTimeTimezonePickerProps['pickers'] = useMemo(() => {
 		const pickers: DateTimeTimezonePickerProps['pickers'] = ['date'];
