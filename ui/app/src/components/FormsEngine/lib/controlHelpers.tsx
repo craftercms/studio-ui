@@ -370,6 +370,7 @@ export const showImageCropDialog = ({
 	onCrop: (blob: Blob, newPath?: string) => void;
 }): void => {
 	const dialogId = nanoid();
+	const imageRestrictionMessages = getImageRestrictionMessages(restrictions);
 	dispatch(
 		pushDialog({
 			id: dialogId,
@@ -378,7 +379,13 @@ export const showImageCropDialog = ({
 				path,
 				mimeType,
 				subtitle: (
-					<FormattedMessage defaultMessage="The uploaded file does not meet the specified width & height constraints" />
+					<FormattedMessage
+						defaultMessage="The image does not meet the width & height constraints (Width: {width}. Height: {height})."
+						values={{
+							width: imageRestrictionMessages.width,
+							height: imageRestrictionMessages.height
+						}}
+					/>
 				),
 				restrictions,
 				writeContent,
@@ -389,4 +396,22 @@ export const showImageCropDialog = ({
 			}
 		})
 	);
+};
+
+export const getImageRestrictionMessages = (restrictions: ImageRestrictions) => {
+	const width = [
+		restrictions.width ? ` equal to ${restrictions.width}px` : null,
+		restrictions.minWidth ? ` minimum ${restrictions.minWidth}px` : null,
+		restrictions.maxWidth ? ` maximum ${restrictions.maxWidth}px` : null
+	]
+		.filter(Boolean)
+		.join(',');
+	const height = [
+		restrictions.height ? ` equal to ${restrictions.height}px` : null,
+		restrictions.minHeight ? ` minimum ${restrictions.minHeight}px` : null,
+		restrictions.maxHeight ? ` maximum ${restrictions.maxHeight}px` : null
+	]
+		.filter(Boolean)
+		.join(',');
+	return { width, height };
 };

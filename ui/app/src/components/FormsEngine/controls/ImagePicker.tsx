@@ -49,6 +49,7 @@ import { useExtractDataSources } from '../dataSourceHooks/useExtractDataSources'
 import {
 	createMediaMenuOptions,
 	downloadMedia,
+	getImageRestrictionMessages,
 	showBrowseFilesDialog,
 	showImageCropDialog,
 	showSearchDialog,
@@ -130,6 +131,7 @@ export function ImagePicker(props: ImagePickerProps) {
 	};
 	// endregion
 
+	const imageRestrictionMessages = getImageRestrictionMessages(restrictions);
 	const handleDataSourceOptionClick = (event: ReactMouseEvent<HTMLLIElement, MouseEvent>, option: PickerType) => {
 		setAddMenuOpen(false);
 		switch (option) {
@@ -352,22 +354,10 @@ export function ImagePicker(props: ImagePickerProps) {
 										</Typography>
 										<Typography variant="caption" component="div" color="textSecondary" marginBottom={1}>
 											<FormattedMessage defaultMessage="Width: " />
-											{[
-												restrictions.width ? ` equal to ${restrictions.width}px` : null,
-												restrictions.minWidth ? ` minimum ${restrictions.minWidth}px` : null,
-												restrictions.maxWidth ? ` maximum ${restrictions.maxWidth}px` : null
-											]
-												.filter(Boolean)
-												.join(',')}
+											{imageRestrictionMessages.width}
 											<br />
 											<FormattedMessage defaultMessage="Height:" />
-											{[
-												restrictions.height ? ` equal to ${restrictions.height}px` : null,
-												restrictions.minHeight ? ` minimum ${restrictions.minHeight}px` : null,
-												restrictions.maxHeight ? ` maximum ${restrictions.maxHeight}px` : null
-											]
-												.filter(Boolean)
-												.join(',')}
+											{imageRestrictionMessages.height}
 										</Typography>
 									</>
 								)}
