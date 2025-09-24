@@ -109,6 +109,7 @@ export function ImageEditorDialogContainer(props: ImageEditorDialogProps) {
 		if (!cropper) return;
 
 		getBlob(cropper, fileExtension, mimeType).then((blob) => {
+			if (!blob) return;
 			onCrop?.(blob, newPath);
 		});
 	};
@@ -124,6 +125,7 @@ export function ImageEditorDialogContainer(props: ImageEditorDialogProps) {
 		const fileName = getFileNameFromPath(writePath);
 		const formData = new FormData();
 		getBlob(cropper, fileExtension, mimeType).then((blob) => {
+			if (!blob) return;
 			formData.append('file', blob, fileName);
 			formData.append('path', writePath);
 			uploadFile(siteId, formData).subscribe({
