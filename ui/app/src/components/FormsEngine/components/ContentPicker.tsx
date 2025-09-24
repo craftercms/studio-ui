@@ -35,7 +35,9 @@ export function ContentPicker(props: {
 
 	return (
 		<FormControl>
-			<FormLabel id="contentTypeLabel">{label}</FormLabel>
+			<FormLabel id="contentTypeLabel" sx={{ mb: 1 }}>
+				{label}
+			</FormLabel>
 			<RadioGroup aria-labelledby="contentTypeLabel" name="contentType">
 				{allowedPaths?.map((data, index) => (
 					<FormControlLabel
@@ -44,7 +46,7 @@ export function ContentPicker(props: {
 						value={index}
 						control={<Radio />}
 						label={
-							<Box display="flex" flexDirection="column">
+							<Box display="flex" flexDirection="column" py={1}>
 								<Typography component="span">{data.title}</Typography>
 								<Typography variant="body2" color="textSecondary" component="span">
 									{data.path}
