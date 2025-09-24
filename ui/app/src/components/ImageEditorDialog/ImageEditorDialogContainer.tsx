@@ -55,6 +55,10 @@ const getBlob = (cropper: CropperRef, fileExtension: string, mimeType: string) =
 
 	return new Promise<Blob | null>((resolve) => {
 		const croppedCanvas = cropper.getCanvas();
+		if (!croppedCanvas) {
+			resolve(null);
+			return;
+		}
 		const ext = (fileExtension || '').toLowerCase();
 		const mime =
 			mimeType ??
