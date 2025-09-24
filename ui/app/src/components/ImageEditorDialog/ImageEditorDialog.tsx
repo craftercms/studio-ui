@@ -17,7 +17,7 @@
 import type { ImageEditorDialogProps } from './types';
 import { EnhancedDialog } from '../EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
-import ImageEditorDialogContainer from './ImageEditorDialogContainer';
+import { ImageEditorDialogContainer } from './ImageEditorDialogContainer';
 
 export function ImageEditorDialog(props: ImageEditorDialogProps) {
 	const { path, mimeType, restrictions, writeContent, onCrop, title, subtitle, ...rest } = props;
