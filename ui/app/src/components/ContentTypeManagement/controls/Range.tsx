@@ -58,12 +58,16 @@ export function Range(props: RangeProps) {
 			setValue(JSON.stringify({ exact: event.currentTarget.value, min: '', max: '' }));
 		}
 	};
+	const switchRange = () => {
+		setValue(JSON.stringify({ ...value, min: '', max: '', exact: '' }));
+		setIsRange(!isRange);
+	};
 	return (
 		<FormsEngineField htmlFor={htmlId} field={field}>
 			<Box sx={{ display: 'flex', mt: 1, gap: 2 }}>
 				<Box display="flex" alignItems="center">
 					<Tooltip title={<FormattedMessage defaultMessage="Switch mode" />}>
-						<IconButton onClick={() => setIsRange(!isRange)}>
+						<IconButton onClick={switchRange}>
 							<CompareArrowsOutlinedIcon />
 						</IconButton>
 					</Tooltip>
