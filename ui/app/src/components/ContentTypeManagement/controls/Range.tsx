@@ -60,7 +60,7 @@ export function Range(props: RangeProps) {
 	};
 	const switchRange = () => {
 		setValue(JSON.stringify({ ...value, min: '', max: '', exact: '' }));
-		setIsRange(!isRange);
+		setIsRange((prev) => !prev);
 	};
 	return (
 		<FormsEngineField htmlFor={htmlId} field={field}>
