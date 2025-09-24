@@ -17,6 +17,7 @@
 import { useEffect, useState } from 'react';
 import useSpreadState from './useSpreadState';
 
+// Retrieves image dimensions and metadata (content type and size in KB) from a given URL
 export function useImageInfo(url: string): {
 	imageInfo: { width: number; height: number; contentType?: string; size?: number } | null;
 	isFetchingDimensions: boolean;
@@ -37,6 +38,9 @@ export function useImageInfo(url: string): {
 
 	useEffect(() => {
 		if (url) {
+			// We need to fetch dimensions and metadata separately
+			// because the Image object doesn't provide metadata like content type and size,
+			// and the fetch API doesn't provide dimensions
 			setIsFetchingDimensions(true);
 			setErrorDimensions(null);
 			const img = new Image();

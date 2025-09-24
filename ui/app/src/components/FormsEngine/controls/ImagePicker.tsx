@@ -64,6 +64,8 @@ export interface ImagePickerProps extends ControlProps {
 
 type PickerType = 'browse' | 'upload' | 'search';
 
+// Validates if an HTMLImageElement meets the given size restrictions. The restrictions may be a range (min/max) or an
+// exact value (width/height). If no restrictions are provided, the image is considered valid.
 function doesImageMeetSizeRestrictions(file: HTMLImageElement, restrictions?: ImageRestrictions): boolean {
 	let meetRestrictions = true;
 	if (restrictions) {
@@ -82,6 +84,7 @@ function doesImageMeetSizeRestrictions(file: HTMLImageElement, restrictions?: Im
 	return meetRestrictions;
 }
 
+// Loads an image from the given path and validates it against the provided size restrictions.
 function validateImageRestrictions(path: string, restrictions?: ImageRestrictions): Promise<boolean> {
 	return new Promise((resolve) => {
 		if (restrictions) {
@@ -135,6 +138,8 @@ export function ImagePicker(props: ImagePickerProps) {
 	// endregion
 
 	const imageRestrictionMessages = getImageRestrictionMessages(restrictions);
+	/* TODO: handleDataSourceOptionClick and executeDataSourceOption only handle hardcoded 'browse', 'upload' and 'search' options.
+	    We need to make them dynamic to support plugins. */
 	const handleDataSourceOptionClick = (event: ReactMouseEvent<HTMLLIElement, MouseEvent>, option: PickerType) => {
 		setAddMenuOpen(false);
 		switch (option) {

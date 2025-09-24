@@ -113,6 +113,7 @@ export function ImageEditorDialogContainer(props: ImageEditorDialogProps) {
 		setCoordinates(cropper.getCoordinates());
 	};
 
+	// Called when the `writeContent` param is true. Uploads the cropped image to the specified path.
 	const onWriteContent = (writePath: string) => {
 		const cropper = cropperRef.current;
 		if (!cropper) return;
@@ -137,6 +138,7 @@ export function ImageEditorDialogContainer(props: ImageEditorDialogProps) {
 		});
 	};
 
+	// Handles renaming the file when the user changes the file name and clicks "Accept".
 	const onRename = () => {
 		const newFileName = `${overwriteState.fileName}.${fileExtension}`;
 		const newPath = path.replace(getFileNameFromPath(path), newFileName);
@@ -152,6 +154,7 @@ export function ImageEditorDialogContainer(props: ImageEditorDialogProps) {
 		cropperRef.current?.reset();
 	};
 
+	// region Image editing functions
 	const rotate = (angle: number) => {
 		if (cropperRef.current) {
 			cropperRef.current.rotateImage(angle);
@@ -172,6 +175,7 @@ export function ImageEditorDialogContainer(props: ImageEditorDialogProps) {
 			}));
 		}
 	};
+	// endregion
 
 	return (
 		<>

@@ -161,6 +161,7 @@ export function writeContent(
 	);
 }
 
+// TODO: add link to API docs when available
 export function uploadFile(siteId: string, formData: FormData) {
 	return put(`/studio/api/2/content/${siteId}`, formData);
 }

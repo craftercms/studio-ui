@@ -42,6 +42,8 @@ const shouldRenderAdjustments = (tools: ImageEditorDialogProps['tools']) => tool
 const shouldRenderRotate = (tools: ImageEditorDialogProps['tools']) => tools && tools.includes('rotate');
 const shouldRenderFlip = (tools: ImageEditorDialogProps['tools']) => tools && tools.includes('flip');
 
+// Toolbar of actions for the image editor. Contains crop, rotate, flip and adjustments (saturation, brightness, contrast),
+// and it renders only the actions configured in the `tools` prop
 export function ActionsBar(props: ActionsBarProps) {
 	const { tools, currentMode, setMode: setEditorMode, onRotate, onFlip } = props;
 

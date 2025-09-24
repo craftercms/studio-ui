@@ -24,6 +24,8 @@ export interface ConsolidatedMediaPickerData {
 	allowedSearchPaths: AllowedPathsData[];
 }
 
+// TODO: Handle custom data sources (plugins).
+// Gets a list of data sources and categorizes them into browse, upload and search paths.
 export function useConsolidatedImagePickerData(dataSources: DataSource[]): ConsolidatedMediaPickerData {
 	return useMemo(() => {
 		const allowedBrowsePaths: AllowedPathsData[] = [];

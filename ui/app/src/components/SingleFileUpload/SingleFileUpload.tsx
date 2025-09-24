@@ -295,6 +295,10 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 					}
 				});
 			};
+			// When using the 'onFileAdded' prop, we need to make sure the 'file' state is set after the callback is executed,
+			// then we call 'validatePolicy' to validate the file against action policies. If no 'onFileAdded' prop is provided,
+			// we just set the 'file' state and call 'validatePolicy'.
+			// 'onFileAdded' is useful when you need to do something with the file before starting the upload.
 			if (onFileAddedProp) {
 				onFileAddedProp?.(file, uppy, () => {
 					setFile(file);
@@ -336,7 +340,6 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 			try {
 				uppy.addFile({
 					source: 'file input',
-
 					name: file.name,
 					type: file.type,
 					data: file

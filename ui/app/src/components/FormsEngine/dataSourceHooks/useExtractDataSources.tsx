@@ -18,6 +18,8 @@ import type { ContentType, DataSource } from '../../../models/ContentType';
 import type { ContentTypeField } from '../../../models';
 import { useMemo } from 'react';
 
+// Extracts the data sources list from a field using a datasourceProperty, which is the property of the field that
+// contains the list of datasource ids for the given field.
 export function useExtractDataSources(
 	contentType: ContentType,
 	field: ContentTypeField,

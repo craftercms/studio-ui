@@ -24,6 +24,8 @@ import Typography from '@mui/material/Typography';
 import { ReactNode, SyntheticEvent } from 'react';
 import type { AllowedPathsData } from '../controls/NodeSelector';
 
+// Renders a FormControl with a RadioGroup to select from allowed content paths in the datasource selection dialog in
+// the Forms Engine Controls.
 export function ContentPicker(props: {
 	label: ReactNode;
 	allowedPaths: AllowedPathsData[];
