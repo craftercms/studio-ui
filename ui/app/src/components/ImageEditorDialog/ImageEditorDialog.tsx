@@ -27,7 +27,7 @@ export function ImageEditorDialog(props: ImageEditorDialogProps) {
 			title={title ?? <FormattedMessage defaultMessage="Image Editor" />}
 			subtitle={subtitle}
 			{...rest}
-			maxWidth="md"
+			maxWidth="lg"
 		>
 			<ImageEditorDialogContainer
 				path={path}

@@ -382,7 +382,6 @@ export const showImageCropDialog = ({
 				),
 				restrictions,
 				writeContent,
-				tools: ['crop'],
 				onCrop: (blob: Blob, newPath: string) => {
 					dispatch(popDialog({ id: dialogId }));
 					onCrop?.(blob, newPath);

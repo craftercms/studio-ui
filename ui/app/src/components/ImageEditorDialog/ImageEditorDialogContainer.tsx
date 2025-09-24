@@ -26,7 +26,6 @@ import PrimaryButton from '../PrimaryButton';
 import Grid from '@mui/material/Grid';
 import FormControl from '@mui/material/FormControl';
 import { useSpreadState } from '../../hooks/useSpreadState';
-import Typography from '@mui/material/Typography';
 import { Cropper, CropperRef } from 'react-advanced-cropper';
 import 'react-advanced-cropper/dist/style.css';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
@@ -42,12 +41,35 @@ import { isEmpty } from '../../utils/string';
 import { Slider } from '@mui/material';
 import AdjustableBackground from './AdjustableBackground';
 import ActionsBar from './ActionsBar';
+import Alert from '@mui/material/Alert';
 
 export type EditorMode = 'crop' | 'saturation' | 'brightness' | 'contrast' | null;
 const sliderModes = ['saturation', 'brightness', 'contrast'];
 type SliderMode = (typeof sliderModes)[number];
 type Adjustments = Record<SliderMode, number>;
 const initialAdjustments: Adjustments = { brightness: 0, saturation: 0, contrast: 0 };
+
+const maxHeight = 550;
+const getBlob = (cropper: CropperRef, fileExtension: string, mimeType: string) => {
+	if (!cropper) return null;
+
+	return new Promise<Blob | null>((resolve) => {
+		const croppedCanvas = cropper.getCanvas();
+		const ext = (fileExtension || '').toLowerCase();
+		const mime =
+			mimeType ??
+			(ext === 'png' ? 'image/png' : ext === 'webp' ? 'image/webp' : ext === 'svg' ? 'image/svg+xml' : 'image/jpeg');
+		const quality = mime === 'image/jpeg' ? 0.92 : undefined;
+		croppedCanvas.toBlob(
+			(blob) => {
+				if (!blob) return;
+				resolve(blob);
+			},
+			mime,
+			quality
+		);
+	});
+};
 
 export function ImageEditorDialogContainer(props: ImageEditorDialogProps) {
 	const {
@@ -64,15 +86,9 @@ export function ImageEditorDialogContainer(props: ImageEditorDialogProps) {
 	const fileExtension = getFileExtension(path);
 	const fileNameWithoutExtension = removeExtension(getFileNameFromPath(path));
 	const [overwriteState, setOverwriteState] = useSpreadState<{
-		validate: boolean;
-		rename: boolean;
-		overwrite: boolean;
 		blobToWrite: Blob | null;
 		fileName: string;
 	}>({
-		validate: false,
-		rename: false,
-		overwrite: false,
 		blobToWrite: null,
 		fileName: fileNameWithoutExtension
 	});
@@ -82,32 +98,15 @@ export function ImageEditorDialogContainer(props: ImageEditorDialogProps) {
 	const [adjustments, setAdjustments] = useState<Adjustments>(initialAdjustments);
 	const cropperEnabled = editorMode && editorMode === 'crop';
 	const isSliderMode = editorMode && sliderModes.includes(editorMode);
+	const isNewFileName = overwriteState.fileName !== fileNameWithoutExtension;
 
 	const onSubmit = (newPath?: string) => {
 		const cropper = cropperRef.current;
 		if (!cropper) return;
 
-		const croppedCanvas = cropper.getCanvas();
-		const ext = (fileExtension || '').toLowerCase();
-		const mime =
-			mimeType ??
-			(ext === 'png' ? 'image/png' : ext === 'webp' ? 'image/webp' : ext === 'svg' ? 'image/svg+xml' : 'image/jpeg');
-		const quality = mime === 'image/jpeg' ? 0.92 : undefined;
-		croppedCanvas.toBlob(
-			(blob) => {
-				if (!blob) return;
-				if (writeContent && !overwriteState?.validate) {
-					setOverwriteState({
-						validate: true,
-						blobToWrite: blob
-					});
-				} else {
-					onCrop?.(blob, newPath);
-				}
-			},
-			mime,
-			quality
-		);
+		getBlob(cropper, fileExtension, mimeType).then((blob) => {
+			onCrop?.(blob, newPath);
+		});
 	};
 
 	const onChange = (cropper: CropperRef) => {
@@ -115,33 +114,33 @@ export function ImageEditorDialogContainer(props: ImageEditorDialogProps) {
 	};
 
 	const onWriteContent = (writePath: string) => {
+		const cropper = cropperRef.current;
+		if (!cropper) return;
 		const fileName = getFileNameFromPath(writePath);
 		const formData = new FormData();
-		formData.append('file', overwriteState.blobToWrite, fileName);
-		formData.append('path', writePath);
-		uploadFile(siteId, formData).subscribe({
-			next: () => {
-				onSubmit(writePath !== path ? writePath : null);
-			},
-			error: ({ response }) => {
-				dispatch(
-					pushDialog({
-						component: createComponentId('ErrorDialog'),
-						props: { error: response?.response }
-					})
-				);
-			}
+		getBlob(cropper, fileExtension, mimeType).then((blob) => {
+			formData.append('file', blob, fileName);
+			formData.append('path', writePath);
+			uploadFile(siteId, formData).subscribe({
+				next: () => {
+					onSubmit(writePath !== path ? writePath : null);
+				},
+				error: ({ response }) => {
+					dispatch(
+						pushDialog({
+							component: createComponentId('ErrorDialog'),
+							props: { error: response?.response }
+						})
+					);
+				}
+			});
 		});
 	};
 
 	const onRename = () => {
-		if (!overwriteState.rename) {
-			setOverwriteState({ rename: true });
-		} else {
-			const newFileName = `${overwriteState.fileName}.${fileExtension}`;
-			const newPath = path.replace(getFileNameFromPath(path), newFileName);
-			onWriteContent(newPath);
-		}
+		const newFileName = `${overwriteState.fileName}.${fileExtension}`;
+		const newPath = path.replace(getFileNameFromPath(path), newFileName);
+		onWriteContent(newPath);
 	};
 
 	const onReset = () => {
@@ -178,8 +177,70 @@ export function ImageEditorDialogContainer(props: ImageEditorDialogProps) {
 		<>
 			<DialogBody>
 				<Grid container spacing={2}>
-					<Grid size={{ xs: 12, sm: 9 }}>
-						<Box maxHeight={600}>
+					<Grid size={{ xs: 12, md: 6 }} rowSpacing={2} container alignItems="start" justifyContent="space-between">
+						<FormControl fullWidth>
+							<TextField
+								label={<FormattedMessage defaultMessage="File name" />}
+								size="small"
+								slotProps={{
+									inputLabel: { shrink: true },
+									input: {
+										sx: {
+											maxWidth: { md: 500 },
+											...(writeContent &&
+												!isNewFileName && {
+													borderBottomRightRadius: 0,
+													borderBottomLeftRadius: 0,
+													borderBottomWidth: 0
+												})
+										}
+									}
+								}}
+								variant="outlined"
+								value={overwriteState.fileName}
+								onChange={(e) => setOverwriteState({ fileName: applyAssetNameRules(e.target.value) })}
+							/>
+							{writeContent && !isNewFileName && (
+								<Alert
+									severity="warning"
+									sx={{ maxWidth: { md: 500 }, borderTopLeftRadius: 0, borderTopRightRadius: 0 }}
+								>
+									<FormattedMessage defaultMessage="File already exists" />
+								</Alert>
+							)}
+						</FormControl>
+					</Grid>
+					<Grid size={{ xs: 12, md: 6 }} container alignItems="start">
+						<Box display="flex" gap={2}>
+							<FormControl>
+								<TextField
+									label={<FormattedMessage defaultMessage="Width" />}
+									size="small"
+									slotProps={{ inputLabel: { shrink: true } }}
+									variant="outlined"
+									disabled
+									value={coordinates?.width ?? ''}
+								/>
+							</FormControl>
+							<FormControl>
+								<TextField
+									label={<FormattedMessage defaultMessage="Height" />}
+									size="small"
+									slotProps={{ inputLabel: { shrink: true } }}
+									variant="outlined"
+									disabled
+									value={coordinates?.height ?? ''}
+								/>
+							</FormControl>
+							<FormControl>
+								<Button onClick={onReset} startIcon={<CachedIcon />}>
+									<FormattedMessage defaultMessage="Reset" />
+								</Button>
+							</FormControl>
+						</Box>
+					</Grid>
+					<Grid size={{ xs: 12 }}>
+						<Box maxHeight={maxHeight}>
 							<Cropper
 								ref={cropperRef}
 								src={path}
@@ -200,6 +261,7 @@ export function ImageEditorDialogContainer(props: ImageEditorDialogProps) {
 									scaleImage: cropperEnabled,
 									moveImage: cropperEnabled
 								}}
+								style={{ maxHeight: maxHeight }}
 							/>
 						</Box>
 						{isSliderMode && (
@@ -226,78 +288,28 @@ export function ImageEditorDialogContainer(props: ImageEditorDialogProps) {
 							/>
 						)}
 					</Grid>
-					<Grid size={{ xs: 12, sm: 3 }} rowSpacing={2} container direction="column">
-						<FormControl>
-							<TextField
-								label={<FormattedMessage defaultMessage="Width" />}
-								slotProps={{ inputLabel: { shrink: true } }}
-								variant="outlined"
-								disabled
-								value={coordinates?.width ?? ''}
-							/>
-						</FormControl>
-						<FormControl>
-							<TextField
-								label={<FormattedMessage defaultMessage="Height" />}
-								slotProps={{ inputLabel: { shrink: true } }}
-								variant="outlined"
-								disabled
-								value={coordinates?.height ?? ''}
-							/>
-						</FormControl>
-						<FormControl>
-							<Button onClick={onReset} startIcon={<CachedIcon />}>
-								<FormattedMessage defaultMessage="Reset" />
-							</Button>
-						</FormControl>
-					</Grid>
 				</Grid>
 			</DialogBody>
 			<DialogFooter>
-				{!overwriteState.validate && (
-					<SecondaryButton onClick={(e) => onClose?.(e, null)}>
-						<FormattedMessage defaultMessage="Cancel" />
-					</SecondaryButton>
-				)}
-				{overwriteState.validate ? (
-					<>
-						{overwriteState?.rename ? (
-							<FormControl>
-								<TextField
-									size="small"
-									slotProps={{ inputLabel: { shrink: true } }}
-									variant="outlined"
-									value={overwriteState.fileName}
-									onChange={(e) => setOverwriteState({ fileName: applyAssetNameRules(e.target.value) })}
-								/>
-							</FormControl>
-						) : (
-							<>
-								<Typography>
-									<FormattedMessage defaultMessage="File already exists. Do you want to overwrite it?" />
-								</Typography>
-								<PrimaryButton onClick={() => onWriteContent(path)}>
-									<FormattedMessage defaultMessage="Overwrite" />
-								</PrimaryButton>
-							</>
-						)}
-
-						<PrimaryButton
-							onClick={onRename}
-							disabled={
-								overwriteState.rename &&
-								(isEmpty(overwriteState.fileName) || overwriteState.fileName === fileNameWithoutExtension)
+				<SecondaryButton onClick={(e) => onClose?.(e, null)}>
+					<FormattedMessage defaultMessage="Cancel" />
+				</SecondaryButton>
+				{!writeContent || (writeContent && isNewFileName) ? (
+					<PrimaryButton
+						disabled={isEmpty(overwriteState.fileName)}
+						onClick={() => {
+							if (writeContent) {
+								onRename();
+							} else {
+								onSubmit();
 							}
-						>
-							<FormattedMessage defaultMessage="Rename" />
-						</PrimaryButton>
-						<SecondaryButton onClick={(e) => onClose?.(e, null)}>
-							<FormattedMessage defaultMessage="Cancel" />
-						</SecondaryButton>
-					</>
-				) : (
-					<PrimaryButton disabled={!coordinates?.width || !coordinates?.height} onClick={() => onSubmit()}>
+						}}
+					>
 						<FormattedMessage defaultMessage="Accept" />
+					</PrimaryButton>
+				) : (
+					<PrimaryButton disabled={!coordinates?.width || !coordinates?.height} onClick={() => onWriteContent(path)}>
+						<FormattedMessage defaultMessage="Overwrite" />
 					</PrimaryButton>
 				)}
 			</DialogFooter>
