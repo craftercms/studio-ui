@@ -17,6 +17,19 @@
 import { useEffect, useState } from 'react';
 import useSpreadState from './useSpreadState';
 
+interface ImageInfo {
+	width: number | null;
+	height: number | null;
+	contentType?: string | null;
+	size?: number | null; // size in KB
+}
+const imageInfoInitialState: ImageInfo = {
+	width: null,
+	height: null,
+	contentType: null,
+	size: null
+};
+
 // Retrieves image dimensions and metadata (content type and size in KB) from a given URL
 export function useImageInfo(url: string): {
 	imageInfo: { width: number; height: number; contentType?: string; size?: number } | null;
@@ -25,12 +38,7 @@ export function useImageInfo(url: string): {
 	errorDimensions: Error | null;
 	errorMetadata: Error | null;
 } {
-	const [imageInfo, setImageInfo] = useSpreadState<{
-		width: number;
-		height: number;
-		contentType?: string;
-		size?: number;
-	} | null>(null);
+	const [imageInfo, setImageInfo] = useSpreadState<ImageInfo>(imageInfoInitialState);
 	const [isFetchingDimensions, setIsFetchingDimensions] = useState<boolean>(false);
 	const [isFetchingMetadata, setIsFetchingMetadata] = useState<boolean>(false);
 	const [errorDimensions, setErrorDimensions] = useState<Error | null>(null);
@@ -74,7 +82,7 @@ export function useImageInfo(url: string): {
 					setIsFetchingMetadata(false);
 				});
 		} else {
-			setImageInfo(null);
+			setImageInfo(imageInfoInitialState);
 		}
 	}, [url, setImageInfo]);
 
