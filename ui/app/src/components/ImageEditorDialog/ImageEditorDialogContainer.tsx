@@ -181,39 +181,41 @@ export function ImageEditorDialogContainer(props: ImageEditorDialogProps) {
 		<>
 			<DialogBody>
 				<Grid container spacing={2}>
-					<Grid size={{ xs: 12, md: 6 }} rowSpacing={2} container alignItems="start" justifyContent="space-between">
-						<FormControl fullWidth>
-							<TextField
-								label={<FormattedMessage defaultMessage="File name" />}
-								size="small"
-								slotProps={{
-									inputLabel: { shrink: true },
-									input: {
-										sx: {
-											maxWidth: { md: 500 },
-											...(writeContent &&
-												!isNewFileName && {
-													borderBottomRightRadius: 0,
-													borderBottomLeftRadius: 0,
-													borderBottomWidth: 0
-												})
+					{writeContent && (
+						<Grid size={{ xs: 12, md: 6 }} rowSpacing={2} container alignItems="start" justifyContent="space-between">
+							<FormControl fullWidth>
+								<TextField
+									label={<FormattedMessage defaultMessage="File name" />}
+									size="small"
+									slotProps={{
+										inputLabel: { shrink: true },
+										input: {
+											sx: {
+												maxWidth: { md: 500 },
+												...(writeContent &&
+													!isNewFileName && {
+														borderBottomRightRadius: 0,
+														borderBottomLeftRadius: 0,
+														borderBottomWidth: 0
+													})
+											}
 										}
-									}
-								}}
-								variant="outlined"
-								value={overwriteState.fileName}
-								onChange={(e) => setOverwriteState({ fileName: applyAssetNameRules(e.target.value) })}
-							/>
-							{writeContent && !isNewFileName && (
-								<Alert
-									severity="warning"
-									sx={{ maxWidth: { md: 500 }, borderTopLeftRadius: 0, borderTopRightRadius: 0 }}
-								>
-									<FormattedMessage defaultMessage="File already exists" />
-								</Alert>
-							)}
-						</FormControl>
-					</Grid>
+									}}
+									variant="outlined"
+									value={overwriteState.fileName}
+									onChange={(e) => setOverwriteState({ fileName: applyAssetNameRules(e.target.value) })}
+								/>
+								{writeContent && !isNewFileName && (
+									<Alert
+										severity="warning"
+										sx={{ maxWidth: { md: 500 }, borderTopLeftRadius: 0, borderTopRightRadius: 0 }}
+									>
+										<FormattedMessage defaultMessage="File already exists" />
+									</Alert>
+								)}
+							</FormControl>
+						</Grid>
+					)}
 					<Grid size={{ xs: 12, md: 6 }} container alignItems="start">
 						<Box display="flex" gap={2}>
 							<FormControl>
