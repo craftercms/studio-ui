@@ -26,7 +26,8 @@ export interface DateTimeProps extends ControlProps {
 }
 
 const validatePopulateDateExp = (expr: string): boolean => {
-	return Boolean(expr.replace(/ /g, '').match(/(now)?(\+|\-)\d+((days)|(weeks)|(years)|(hours)|(minutes))/gi));
+	const normalized = expr.replace(/ /g, '');
+	return /^(now|((now)?[+-]\d+(days|weeks|years|hours|minutes)))$/i.test(normalized);
 };
 
 const processPopulateExpression = (expr: string, allowPastDate: boolean): Date => {
@@ -34,14 +35,16 @@ const processPopulateExpression = (expr: string, allowPastDate: boolean): Date =
 	const daysInWeek = 7;
 	let modifier = 1;
 
+	const populateDateExp = expr.replace(/ /g, '');
+	const normalized = populateDateExp.toLowerCase();
+
 	if (validatePopulateDateExp(expr)) {
-		if (expr.toLowerCase() === 'now') {
+		if (normalized === 'now') {
 			if (!allowPastDate) date.setSeconds(59, 0);
 		} else {
-			const populateDateExp = expr.replace(/ /g, '');
-			const action = populateDateExp.match(/(\+|\-)/gi)[0];
-			const expValue = parseInt(populateDateExp.match(/\d+/gi)[0]);
-			const type = populateDateExp.match(/((days)|(weeks)|(years)|(hours)|(minutes))/gi)[0];
+			const action = normalized.match(/(\+|\-)/gi)[0];
+			const expValue = parseInt(normalized.match(/\d+/gi)[0]);
+			const type = normalized.match(/((days)|(weeks)|(years)|(hours)|(minutes))/gi)[0];
 			if (action === '-') {
 				modifier = modifier * -1;
 			}
