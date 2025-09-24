@@ -56,6 +56,7 @@ import {
 	showSingleFileUploadDialog
 } from '../lib/controlHelpers';
 import type { ImageRestrictions } from '../../ImageEditorDialog/types';
+import Skeleton from '@mui/material/Skeleton';
 
 export interface ImagePickerProps extends ControlProps {
 	value: string | null;
@@ -108,7 +109,9 @@ export function ImagePicker(props: ImagePickerProps) {
 	const { guestBase } = useEnv();
 	const contextItem = useItemContext();
 	const { id, pathInSite } = useItemMetaContext();
-	const imageInfo = useImageInfo(value ? ensureSingleSlash(`${guestBase}${value}`) : '');
+	const { imageInfo, isFetchingDimensions, isFetchingMetadata, errorDimensions, errorMetadata } = useImageInfo(
+		value ? ensureSingleSlash(`${guestBase}${value}`) : ''
+	);
 	const hasValue = Boolean(value);
 	const dataSourceSummary = useConsolidatedImagePickerData(useExtractDataSources(contentType, field, 'imageManager'));
 	const { allowedBrowsePaths, allowedUploadPaths, allowedSearchPaths } = dataSourceSummary;
@@ -341,11 +344,32 @@ export function ImagePicker(props: ImagePickerProps) {
 									{value}
 								</Typography>
 								<Typography variant="body2" component="div" color="textSecondary" marginBottom={1}>
-									{imageInfo?.contentType}
-									<br />
-									{imageInfo?.width} x {imageInfo?.height}
-									<br />
-									{imageInfo?.size ? `${imageInfo.size} Kb` : ''}
+									{isFetchingMetadata ? (
+										<>
+											<Skeleton variant="text" />
+											<Skeleton variant="text" />
+										</>
+									) : errorMetadata ? (
+										<Typography color="error" variant="body2">
+											<FormattedMessage defaultMessage="Error loading image metadata" />
+										</Typography>
+									) : (
+										<>
+											{imageInfo?.contentType}
+											<br />
+											{imageInfo?.size ? `${imageInfo.size} Kb` : ''}
+											<br />
+										</>
+									)}
+									{isFetchingDimensions ? (
+										<Skeleton variant="text" />
+									) : errorDimensions ? (
+										<Typography color="error" variant="body2">
+											<FormattedMessage defaultMessage="Error loading image dimensions" />
+										</Typography>
+									) : (
+										`${imageInfo?.width} x ${imageInfo?.height}`
+									)}
 								</Typography>
 								{Object.values(restrictions).some((restriction) => restriction) && (
 									<>

@@ -14,41 +14,67 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import useSpreadState from './useSpreadState';
 
-export function useImageInfo(url: string) {
+export function useImageInfo(url: string): {
+	imageInfo: { width: number; height: number; contentType?: string; size?: number } | null;
+	isFetchingDimensions: boolean;
+	isFetchingMetadata: boolean;
+	errorDimensions: Error | null;
+	errorMetadata: Error | null;
+} {
 	const [imageInfo, setImageInfo] = useSpreadState<{
 		width: number;
 		height: number;
 		contentType?: string;
 		size?: number;
 	} | null>(null);
+	const [isFetchingDimensions, setIsFetchingDimensions] = useState<boolean>(false);
+	const [isFetchingMetadata, setIsFetchingMetadata] = useState<boolean>(false);
+	const [errorDimensions, setErrorDimensions] = useState<Error | null>(null);
+	const [errorMetadata, setErrorMetadata] = useState<Error | null>(null);
+
 	useEffect(() => {
 		if (url) {
+			setIsFetchingDimensions(true);
+			setErrorDimensions(null);
 			const img = new Image();
 			img.onload = () => {
 				setImageInfo({
 					width: img.width,
 					height: img.height
 				});
+				setIsFetchingDimensions(false);
+			};
+			img.onerror = () => {
+				setErrorDimensions(new Error('Image failed to load'));
+				setIsFetchingDimensions(false);
 			};
 			img.src = url;
 
-			fetch(url).then((response) => {
-				const contentType = response.headers.get('Content-Type');
-				setImageInfo({ contentType });
-				response.blob().then((blob) => {
-					const sizeKb = Math.round(blob.size / 1024);
-					setImageInfo({ size: sizeKb });
+			setIsFetchingMetadata(true);
+			setErrorMetadata(null);
+			fetch(url)
+				.then((response) => {
+					const contentType = response.headers.get('Content-Type');
+					setImageInfo({ contentType });
+					response.blob().then((blob) => {
+						setIsFetchingMetadata(false);
+						const sizeKb = Math.round(blob.size / 1024);
+						setImageInfo({ size: sizeKb });
+					});
+				})
+				.catch((error) => {
+					setErrorMetadata(error);
+					setIsFetchingMetadata(false);
 				});
-			});
 		} else {
 			setImageInfo(null);
 		}
 	}, [url, setImageInfo]);
 
-	return imageInfo;
+	return { imageInfo, isFetchingDimensions, isFetchingMetadata, errorDimensions, errorMetadata };
 }
 
 export default useImageInfo;
