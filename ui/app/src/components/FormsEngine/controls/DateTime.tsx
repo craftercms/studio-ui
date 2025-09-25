@@ -14,13 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useId, useMemo } from 'react';
+import React, { useContext, useId, useMemo } from 'react';
 import { FormsEngineField } from '../components/FormsEngineField';
 import { ControlProps } from '../types';
 import { DateTimeTimezonePicker, type DateTimeTimezonePickerProps } from '../../DateTimeTimezonePicker';
 import SecondaryButton from '../../SecondaryButton';
 import { FormattedMessage } from 'react-intl';
 import Box from '@mui/material/Box';
+import { StableFormContext } from '../lib/formsEngineContext';
+
 export interface DateTimeProps extends ControlProps {
 	value: string;
 }
@@ -69,16 +71,24 @@ const processPopulateExpression = (expr: string, allowPastDate: boolean): Date =
 export function DateTime(props: DateTimeProps) {
 	const { field, value: valueProp, setValue, readonly: formReadonly, autoFocus } = props;
 	const htmlId = useId();
+	const stableFormContext = useContext(StableFormContext);
+	const isCreateMode = Boolean(stableFormContext?.props?.create);
 
 	// region field properties/validations
 	const allowPastDate = Boolean(field.properties?.allowPastDate?.value);
 	const useCustomTimezone = Boolean(field.properties?.useCustomTimezone?.value);
 	const showTime = Boolean(field.properties?.showTime?.value);
-	const readonly = formReadonly || Boolean(field.properties?.readonly?.value as boolean);
 	const showClear = Boolean(field.properties?.showClear?.value);
 	const showSetNow = Boolean(field.properties?.showNowLink?.value);
 	const populate = Boolean(field.properties?.populate?.value);
 	const populateDateExp = field.properties?.populateDateExp?.value as string;
+	const readonlyEdit = Boolean(field.properties?.readonlyEdit?.value);
+	// There are 3 scenarios for the field to be readonly:
+	// 1. The form is in readonly mode (formReadonly is true)
+	// 2. The field is set to readonly in TB (field.properties.readonly.value is true)
+	// 3. The field is set to readonly for edit mode only, and the form is not in create mode (readonlyEdit is true and isCreateMode is false)
+	const readonly =
+		formReadonly || Boolean(field.properties?.readonly?.value as boolean) || (readonlyEdit && !isCreateMode);
 	// endregion
 
 	const value = useMemo(() => {
