@@ -44,9 +44,9 @@ const processPopulateExpression = (expr: string, allowPastDate: boolean): Date =
 		if (normalized === 'now') {
 			if (!allowPastDate) date.setSeconds(59, 0);
 		} else {
-			const action = normalized.match(/(\+|\-)/gi)[0];
-			const expValue = parseInt(normalized.match(/\d+/gi)[0]);
-			const type = normalized.match(/((days)|(weeks)|(years)|(hours)|(minutes))/gi)[0];
+			const action = normalized.match(/[+-]/)![0];
+			const expValue = parseInt(normalized.match(/\d+/)![0], 10);
+			const type = normalized.match(/(days|weeks|years|hours|minutes)/)![0];
 			if (action === '-') {
 				modifier = modifier * -1;
 			}
@@ -106,7 +106,7 @@ export function DateTime(props: DateTimeProps) {
 		}
 	}, [readonly, populate, populateDateExp, valueProp, allowPastDate, setValue]);
 
-	const handleChange: DateTimeTimezonePickerProps['onChange'] = (value) => setValue(value);
+	const handleChange: DateTimeTimezonePickerProps['onChange'] = (value) => setValue(value.toISOString());
 	const setNow = () => {
 		const date = new Date();
 		// If allowPastDate is false, set it to the end of the current minute to avoid setting it to a past date.

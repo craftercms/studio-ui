@@ -76,9 +76,9 @@ const processPopulateExpression = (expr: string): Date => {
 		} else {
 			let modifier = 1;
 			const dateExp = expr.replace(/ /g, '');
-			const action = dateExp.match(/(\+|\-)/gi)[0];
-			const expValue = parseInt(dateExp.match(/\d+/gi)[0]);
-			const type = dateExp.match(/((hours)|(minutes))/gi)[0];
+			const action = dateExp.match(/[+-]/)![0];
+			const expValue = parseInt(dateExp.match(/\d+/)![0], 10);
+			const type = dateExp.match(/(hours|minutes)/)![0];
 			if (action === '-') {
 				modifier = modifier * -1;
 			}
@@ -127,6 +127,14 @@ export function Time(props: TimeProps) {
 		return valueProp;
 	}, [valueProp, populate, populateDateExp]);
 	const dateValue = parseTimeToDate(value);
+
+	React.useEffect(() => {
+		// If populate is true, and populateDateExp is valid, and valueProp is empty, set the value to the result of the populate expression.
+		if (!readonly && populate && populateDateExp && !valueProp) {
+			const computed = parseDateToTime(processPopulateExpression(populateDateExp));
+			if (computed != null) setValue(computed);
+		}
+	}, [readonly, populate, populateDateExp, valueProp, setValue]);
 
 	const handleChange: DateTimeTimezonePickerProps['onChange'] = (date) => {
 		setValue(parseDateToTime(date));
