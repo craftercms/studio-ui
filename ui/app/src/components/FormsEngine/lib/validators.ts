@@ -18,8 +18,13 @@ import type { ContentTypeField } from '../../../models/ContentType';
 import type { BuiltInControlType } from './controlMap';
 import LookupTable from '../../../models/LookupTable';
 import { XmlKeys } from './formConsts';
+import { defineMessage, type MessageDescriptor } from 'react-intl';
 
-type ValidatorFunctionDef = (field: ContentTypeField, currentValue: unknown, messages: string[]) => boolean;
+type ValidatorFunctionDef = (
+	field: ContentTypeField,
+	currentValue: unknown,
+	messages: FieldValidityState['messages']
+) => boolean;
 export const validatorsMap: Partial<Record<BuiltInControlType, ValidatorFunctionDef>> = {
 	repeat: null,
 	'auto-filename': null,
@@ -32,7 +37,7 @@ export const validatorsMap: Partial<Record<BuiltInControlType, ValidatorFunction
 		const fieldDate = new Date(currentValue as string);
 		const currentDate = new Date();
 		if (!allowPastDate && !isNaN(fieldDate.valueOf()) && fieldDate < currentDate) {
-			messages.push('The date cannot be in the past.');
+			messages.push(defineMessage({ defaultMessage: 'The date cannot be in the past.' }));
 			isValid = false;
 		}
 		return isValid;
@@ -63,12 +68,12 @@ export const validatorsMap: Partial<Record<BuiltInControlType, ValidatorFunction
 
 export interface FieldValidityState {
 	isValid: boolean;
-	messages: string[];
+	messages: (string | MessageDescriptor)[];
 }
 
 export function validateFieldValue(field: ContentTypeField, currentValue: unknown): FieldValidityState {
 	let isValid = false;
-	const messages: string[] = [];
+	const messages: FieldValidityState['messages'] = [];
 	const isRequired = isFieldRequired(field);
 	const isEmpty = isEmptyValue(field, currentValue);
 	if (!isRequired && isEmpty) {
@@ -81,7 +86,7 @@ export function validateFieldValue(field: ContentTypeField, currentValue: unknow
 			isValid = true;
 		}
 	} else {
-		messages.push('This field is required.');
+		messages.push(defineMessage({ defaultMessage: 'This field is required.' }));
 	}
 	return {
 		isValid,
