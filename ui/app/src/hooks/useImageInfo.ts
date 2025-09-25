@@ -32,7 +32,7 @@ const imageInfoInitialState: ImageInfo = {
 
 // Retrieves image dimensions and metadata (content type and size in KB) from a given URL
 export function useImageInfo(url: string): {
-	imageInfo: { width: number; height: number; contentType?: string; size?: number } | null;
+	imageInfo: ImageInfo;
 	isFetchingDimensions: boolean;
 	isFetchingMetadata: boolean;
 	errorDimensions: Error | null;
@@ -54,8 +54,8 @@ export function useImageInfo(url: string): {
 			const img = new Image();
 			img.onload = () => {
 				setImageInfo({
-					width: img.width,
-					height: img.height
+					width: img.naturalWidth,
+					height: img.naturalHeight
 				});
 				setIsFetchingDimensions(false);
 			};
@@ -83,6 +83,10 @@ export function useImageInfo(url: string): {
 				});
 		} else {
 			setImageInfo(imageInfoInitialState);
+			setIsFetchingDimensions(false);
+			setIsFetchingMetadata(false);
+			setErrorDimensions(null);
+			setErrorMetadata(null);
 		}
 	}, [url, setImageInfo]);
 
