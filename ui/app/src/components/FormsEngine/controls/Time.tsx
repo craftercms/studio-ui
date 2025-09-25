@@ -96,6 +96,7 @@ const processPopulateExpression = (expr: string): Date => {
 	}
 };
 
+// TODO: How are we going to handle the timezone selector?. FE1 uses an extra `_tz` field to store the timezone value.
 export function Time(props: TimeProps) {
 	const { field, value: valueProp, setValue, readonly: formReadonly, autoFocus } = props;
 	const htmlId = useId();

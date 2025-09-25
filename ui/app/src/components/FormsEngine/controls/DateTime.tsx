@@ -68,6 +68,7 @@ const processPopulateExpression = (expr: string, allowPastDate: boolean): Date =
 	return date;
 };
 
+// TODO: How are we going to handle the timezone selector?. FE1 uses an extra `_tz` field to store the timezone value.
 export function DateTime(props: DateTimeProps) {
 	const { field, value: valueProp, setValue, readonly: formReadonly, autoFocus } = props;
 	const htmlId = useId();
@@ -97,6 +98,13 @@ export function DateTime(props: DateTimeProps) {
 		}
 		return valueProp;
 	}, [valueProp, populate, populateDateExp, allowPastDate]);
+
+	React.useEffect(() => {
+		// If populate is true, and populateDateExp is valid, and valueProp is empty, set the value to the result of the populate expression.
+		if (!readonly && populate && populateDateExp && !valueProp) {
+			setValue(processPopulateExpression(populateDateExp, allowPastDate));
+		}
+	}, [readonly, populate, populateDateExp, valueProp, allowPastDate, setValue]);
 
 	const handleChange: DateTimeTimezonePickerProps['onChange'] = (value) => setValue(value);
 	const setNow = () => {
