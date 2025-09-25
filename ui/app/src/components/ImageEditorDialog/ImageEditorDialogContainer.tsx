@@ -42,6 +42,7 @@ import { Slider } from '@mui/material';
 import AdjustableBackground from './AdjustableBackground';
 import ActionsBar from './ActionsBar';
 import Alert from '@mui/material/Alert';
+import WarningAmberRoundedIcon from '@mui/icons-material/WarningAmberRounded';
 
 export type EditorMode = 'crop' | 'saturation' | 'brightness' | 'contrast' | null;
 const sliderModes = ['saturation', 'brightness', 'contrast'];
@@ -214,9 +215,22 @@ export function ImageEditorDialogContainer(props: ImageEditorDialogProps) {
 								{writeContent && !isNewFileName && (
 									<Alert
 										severity="warning"
-										sx={{ maxWidth: { md: 500 }, borderTopLeftRadius: 0, borderTopRightRadius: 0 }}
+										sx={{
+											maxWidth: { md: 500 },
+											py: '2px',
+											borderTopLeftRadius: 0,
+											borderTopRightRadius: 0,
+											border: (theme) =>
+												`1px solid ${
+													theme.palette.mode === 'dark' ? theme.palette.grey[800] : theme.palette.grey[400]
+												}`,
+											borderTop: 'none'
+										}}
+										iconMapping={{
+											warning: <WarningAmberRoundedIcon sx={{ fontSize: '16px', alignSelf: 'center' }} />
+										}}
 									>
-										<FormattedMessage defaultMessage="File already exists" />
+										<FormattedMessage defaultMessage="File already exists. Rename to avoid overwriting existing." />
 									</Alert>
 								)}
 							</FormControl>
