@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext, useId, useMemo } from 'react';
+import React, { useContext, useEffect, useId, useMemo } from 'react';
 import { FormsEngineField } from '../components/FormsEngineField';
 import { ControlProps } from '../types';
 import { DateTimeTimezonePicker, type DateTimeTimezonePickerProps } from '../../DateTimeTimezonePicker';
@@ -27,11 +27,15 @@ export interface DateTimeProps extends ControlProps {
 	value: string;
 }
 
+// Checks if the populate date expression is valid.
 const validatePopulateDateExp = (expr: string): boolean => {
 	const normalized = expr.replace(/ /g, '');
 	return /^(now|((now)?[+-]\d+(days|weeks|years|hours|minutes)))$/i.test(normalized);
 };
 
+// Takes an expression like "now", "now+5days", "now-3weeks", "now+2years", "now-4hours", "now+30minutes"
+// and returns a Date object representing the calculated date.
+// If the expression is invalid, it returns the current date.
 const processPopulateExpression = (expr: string, allowPastDate: boolean): Date => {
 	const date = new Date();
 	const daysInWeek = 7;
@@ -99,7 +103,7 @@ export function DateTime(props: DateTimeProps) {
 		return valueProp;
 	}, [valueProp, populate, populateDateExp, allowPastDate]);
 
-	React.useEffect(() => {
+	useEffect(() => {
 		// If populate is true, and populateDateExp is valid, and valueProp is empty, set the value to the result of the populate expression.
 		if (!readonly && populate && populateDateExp && !valueProp) {
 			const populatedDate = processPopulateExpression(populateDateExp, allowPastDate);

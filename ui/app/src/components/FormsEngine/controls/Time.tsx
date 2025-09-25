@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext, useId, useMemo } from 'react';
+import React, { useContext, useEffect, useId, useMemo } from 'react';
 import { FormsEngineField } from '../components/FormsEngineField';
 import { ControlProps } from '../types';
 import { DateTimeTimezonePicker, type DateTimeTimezonePickerProps } from '../../DateTimeTimezonePicker';
@@ -59,12 +59,16 @@ const parseDateToTime = (date: Date | null): string | null => {
 	return date.toLocaleTimeString('en-US', { hour12: false });
 };
 
+// Checks if the populate time expression is valid.
 const validatePopulateDateExp = (expr: string): boolean => {
 	const trimmed = (expr ?? '').replace(/ /g, '').toLowerCase();
 	if (trimmed === 'now') return true;
 	return /(now)?(\+|\-)\d+((hours)|(minutes))$/i.test(trimmed);
 };
 
+// Takes an expression like "now", "now+5hours", "now-30minutes"
+// and returns a Date object representing the calculated time.
+// If the expression is invalid, it returns the current time.
 const processPopulateExpression = (expr: string): Date => {
 	const date = new Date();
 	if (validatePopulateDateExp(expr)) {
@@ -128,7 +132,7 @@ export function Time(props: TimeProps) {
 	}, [valueProp, populate, populateDateExp]);
 	const dateValue = parseTimeToDate(value);
 
-	React.useEffect(() => {
+	useEffect(() => {
 		// If populate is true, and populateDateExp is valid, and valueProp is empty, set the value to the result of the populate expression.
 		if (!readonly && populate && populateDateExp && !valueProp) {
 			const computed = parseDateToTime(processPopulateExpression(populateDateExp));
