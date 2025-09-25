@@ -217,13 +217,9 @@ export function ImageEditorDialogContainer(props: ImageEditorDialogProps) {
 										severity="warning"
 										sx={{
 											maxWidth: { md: 500 },
-											py: '2px',
+											py: 0,
 											borderTopLeftRadius: 0,
 											borderTopRightRadius: 0,
-											border: (theme) =>
-												`1px solid ${
-													theme.palette.mode === 'dark' ? theme.palette.grey[800] : theme.palette.grey[400]
-												}`,
 											borderTop: 'none'
 										}}
 										iconMapping={{
