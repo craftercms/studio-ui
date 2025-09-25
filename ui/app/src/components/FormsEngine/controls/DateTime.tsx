@@ -102,7 +102,8 @@ export function DateTime(props: DateTimeProps) {
 	React.useEffect(() => {
 		// If populate is true, and populateDateExp is valid, and valueProp is empty, set the value to the result of the populate expression.
 		if (!readonly && populate && populateDateExp && !valueProp) {
-			setValue(processPopulateExpression(populateDateExp, allowPastDate));
+			const populatedDate = processPopulateExpression(populateDateExp, allowPastDate);
+			setValue(populatedDate.toISOString());
 		}
 	}, [readonly, populate, populateDateExp, valueProp, allowPastDate, setValue]);
 
@@ -111,7 +112,7 @@ export function DateTime(props: DateTimeProps) {
 		const date = new Date();
 		// If allowPastDate is false, set it to the end of the current minute to avoid setting it to a past date.
 		if (!allowPastDate) date.setSeconds(59, 0);
-		setValue(date);
+		setValue(date.toISOString());
 	};
 	const clearValue = () => setValue(null);
 	const pickers: DateTimeTimezonePickerProps['pickers'] = useMemo(() => {
