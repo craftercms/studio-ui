@@ -24,7 +24,12 @@ export const validatorsMap: Record<BuiltInControlType, ElementType> = {
 	repeat: null,
 	'auto-filename': null,
 	'aws-file-upload': null,
-	'checkbox-group': null,
+	'checkbox-group': (field, currentValue, messages) => {
+		const minSelected = (field.validations.minSize?.value as number) ?? 0;
+		const isValid = Array.isArray(currentValue) ? currentValue.length >= minSelected : true;
+		if (!isValid) messages.push(defineMessage({ defaultMessage: 'Minimum items selection not met' }));
+		return isValid;
+	},
 	checkbox: null,
 	'date-time': null,
 	disabled: null,
