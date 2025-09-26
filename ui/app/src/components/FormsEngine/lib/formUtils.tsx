@@ -44,7 +44,7 @@ import { nanoid } from 'nanoid';
 import { popDialog, pushDialog } from '../../../state/actions/dialogStack';
 import alertDialogUrl from '../../../assets/warning.svg';
 import PrimaryButton from '../../PrimaryButton';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, type MessageDescriptor } from 'react-intl';
 import { AlertDialogProps } from '../../AlertDialog';
 import { Theme } from '@mui/material/styles';
 import { AtomWithStorage, JotaiStore } from '../types';
@@ -720,4 +720,11 @@ export function prepareEmbeddedItemForm(props: {
 			contentObject
 		}
 	};
+}
+
+export function translateIfMessageDescriptor(
+	message: string | MessageDescriptor,
+	formatMessage: IntlShape['formatMessage']
+): string {
+	return typeof message === 'string' ? message : formatMessage(message);
 }

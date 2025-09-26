@@ -14,20 +14,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { ElementType } from 'react';
 import type { ContentTypeField } from '../../../models/ContentType';
 import type { BuiltInControlType } from './controlMap';
 import LookupTable from '../../../models/LookupTable';
 import { XmlKeys } from './formConsts';
+import { defineMessage, type MessageDescriptor } from 'react-intl';
 
-export const validatorsMap: Record<BuiltInControlType, ElementType> = {
+type ValidatorFunctionDef = (
+	field: ContentTypeField,
+	currentValue: unknown,
+	messages: FieldValidityState['messages']
+) => boolean;
+export const validatorsMap: Partial<Record<BuiltInControlType, ValidatorFunctionDef>> = {
 	repeat: null,
 	'auto-filename': null,
 	'aws-file-upload': null,
 	'checkbox-group': (field, currentValue, messages) => {
 		const minSelected = (field.validations.minSize?.value as number) ?? 0;
 		const isValid = Array.isArray(currentValue) ? currentValue.length >= minSelected : true;
-		if (!isValid) messages.push(defineMessage({ defaultMessage: 'Minimum items selection not met' }));
+		if (!isValid)
+			messages.push(defineMessage({ defaultMessage: 'Please select at least the minimum required items.' }));
 		return isValid;
 	},
 	checkbox: null,
@@ -58,23 +64,31 @@ export const validatorsMap: Record<BuiltInControlType, ElementType> = {
 
 export interface FieldValidityState {
 	isValid: boolean;
-	messages: string[];
+	messages: (string | MessageDescriptor)[];
 }
 
 export function validateFieldValue(field: ContentTypeField, currentValue: unknown): FieldValidityState {
 	let isValid = false;
+	const messages: FieldValidityState['messages'] = [];
 	const isRequired = isFieldRequired(field);
 	const isEmpty = isEmptyValue(field, currentValue);
-	if (!isRequired && isEmpty) {
-		// If not required and its empty, then it's valid.
-		isValid = true;
-	} else if (!isEmpty) {
-		// FE2 TODO: Add other validation types (max length, etc)...
+	if (!isRequired) {
+		// If it's not required, we still need to check for validator.
+		if (validatorsMap[field.type]) {
+			isValid = validatorsMap[field.type](field, currentValue, messages);
+		} else {
+			// If it's not required and there's no validator, then it's valid.
+			isValid = true;
+		}
+		// If it's required and empty, then it's invalid.
+	} else if (isRequired && isEmpty) {
+		messages.push(defineMessage({ defaultMessage: 'This field is required.' }));
+	} else {
 		isValid = true;
 	}
 	return {
 		isValid,
-		messages: isValid ? null : ['This field is required.']
+		messages
 	};
 }
 
