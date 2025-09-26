@@ -104,8 +104,15 @@ export function CheckboxGroup(props: CheckboxGroupProps) {
 	const selectAll = Boolean(field.properties?.selectAll?.value as boolean);
 	const listDirection: 'horizontal' | 'vertical' = useMemo(() => {
 		let listDirection: 'horizontal' | 'vertical' = 'horizontal';
-		const directionArray = JSON.parse((field.properties?.listDirection?.value as string) ?? '{}') ?? [];
-		const verticalValue: boolean = Boolean(directionArray.find((item) => item.value === 'vertical')?.selected);
+		let directionArray: Array<{ value: string; selected?: boolean }> = [];
+		try {
+			const raw = field.properties?.listDirection?.value as string;
+			const parsed = raw ? JSON.parse(raw) : [];
+			directionArray = Array.isArray(parsed) ? parsed : [];
+		} catch {
+			directionArray = [];
+		}
+		const verticalValue = Boolean(directionArray.find((item) => item.value === 'vertical')?.selected);
 		if (verticalValue) listDirection = 'vertical';
 		return listDirection;
 	}, [field.properties?.listDirection]);
