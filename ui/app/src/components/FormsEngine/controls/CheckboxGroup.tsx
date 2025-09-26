@@ -179,9 +179,10 @@ export function CheckboxGroup(props: CheckboxGroupProps) {
 			return finalOptions;
 		}
 		const lowerKeyword = keyword.toLowerCase();
-		return finalOptions?.filter(
-			(option) => option.value.toLowerCase().includes(lowerKeyword) || option.key.includes(lowerKeyword)
-		);
+		return finalOptions?.filter((option) => {
+			const label = typeof option.value === 'string' ? option.value.toLowerCase() : '';
+			return label.includes(lowerKeyword) || option.key?.includes(lowerKeyword);
+		});
 	}, [options, keyword, listDirection, numColumns]);
 	const checkedValuesLookup = useMemo(() => {
 		return value.reduce((acc, item) => {
