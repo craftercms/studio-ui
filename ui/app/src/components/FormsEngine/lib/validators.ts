@@ -69,28 +69,19 @@ export interface FieldValidityState {
 }
 
 export function validateFieldValue(field: ContentTypeField, currentValue: unknown): FieldValidityState {
-	let isValid = false;
 	const messages: FieldValidityState['messages'] = [];
 	const isRequired = isFieldRequired(field);
 	const isEmpty = isEmptyValue(field, currentValue);
-	if (!isRequired) {
-		// If it's not required, we still need to check for validator.
-		if (validatorsMap[field.type]) {
-			isValid = validatorsMap[field.type](field, currentValue, messages);
-		} else {
-			// If it's not required and there's no validator, then it's valid.
-			isValid = true;
-		}
-		// If it's required and empty, then it's invalid.
-	} else if (isRequired && isEmpty) {
+
+	// If it's required, and the value is empty, then it's invalid.
+	if (isRequired && isEmpty) {
 		messages.push(defineMessage({ defaultMessage: 'This field is required.' }));
-	} else {
-		isValid = true;
+		return { isValid: false, messages };
 	}
-	return {
-		isValid,
-		messages
-	};
+	const validator = validatorsMap[field.type as BuiltInControlType];
+	// If there's a validator, run it. If not, it's valid.
+	const isValid = validator ? validator(field, currentValue, messages) : true;
+	return { isValid, messages };
 }
 
 export function isEmptyValue(field: ContentTypeField, currentValue: unknown): boolean {
