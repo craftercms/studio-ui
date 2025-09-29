@@ -27,15 +27,22 @@ export interface DateTimeProps extends ControlProps {
 	value: string;
 }
 
-// Checks if the populate date expression is valid.
+/** Checks if the populate date expression is valid.
+ *
+ * @param expr The populate date expression to validate.
+ */
 const validatePopulateDateExp = (expr: string): boolean => {
 	const normalized = expr.replace(/ /g, '');
 	return /^(now|((now)?[+-]\d+(days|weeks|years|hours|minutes)))$/i.test(normalized);
 };
 
-// Takes an expression like "now", "now+5days", "now-3weeks", "now+2years", "now-4hours", "now+30minutes"
-// and returns a Date object representing the calculated date.
-// If the expression is invalid, it returns the current date.
+/** Takes an expression like "now", "now+5days", "now-3weeks", "now+2years", "now-4hours", "now+30minutes"
+ * and returns a Date object representing the calculated date. If the expression is invalid, it returns the
+ * current date.
+ *
+ * @param expr The populate date expression.
+ * @param allowPastDate If false, the time will be set to the end of the current minute to avoid past dates.
+ */
 const processPopulateExpression = (expr: string, allowPastDate: boolean): Date => {
 	const date = new Date();
 	const daysInWeek = 7;

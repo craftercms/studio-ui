@@ -66,9 +66,11 @@ const validatePopulateDateExp = (expr: string): boolean => {
 	return /(now)?(\+|\-)\d+((hours)|(minutes))$/i.test(trimmed);
 };
 
-// Takes an expression like "now", "now+5hours", "now-30minutes"
-// and returns a Date object representing the calculated time.
-// If the expression is invalid, it returns the current time.
+/** Takes an expression like "now", "now+5hours", "now-30minutes" and returns a Date object representing the calculated
+ * time. If the expression is invalid, it returns the current time.
+ *
+ * @param expr The populate time expression.
+ */
 const processPopulateExpression = (expr: string): Date => {
 	const date = new Date();
 	if (validatePopulateDateExp(expr)) {
