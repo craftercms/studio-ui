@@ -20,6 +20,7 @@ import { FormsEngineField } from '../components/FormsEngineField';
 import { ControlProps } from '../types';
 import { escapeXml, unescapeXml } from '../../../utils/xml';
 import { isFieldRequired } from '../lib/validators';
+import { nnou, nou } from '../../../utils/object';
 
 export interface TextProps extends ControlProps {
 	value: string;
@@ -37,27 +38,36 @@ export function Text(props: TextProps) {
 	const defaultValue = field.defaultValue as string;
 	// endregion
 	const isRequired = isFieldRequired(field);
-	const rawValue = valueProp && typeof valueProp === 'string' ? valueProp : (defaultValue ?? '');
+	const rawValue = nnou(valueProp) ? valueProp : (defaultValue ?? '');
 	const [patternError, setPatternError] = useState(false);
 
 	const value = useMemo(() => (escapeContent ? unescapeXml(rawValue) : rawValue), [rawValue, escapeContent]);
 
 	useEffect(() => {
 		// If there's a default value and no value has been set yet, set it as the value.
-		if (defaultValue && !valueProp) {
+		if (nou(valueProp) && defaultValue != null) {
 			setValue(defaultValue);
 		}
 	}, [defaultValue, setValue, valueProp]);
+
+	const compiledPattern = useMemo(() => {
+		if (!pattern) return null;
+		try {
+			return new RegExp(`^(?:${pattern})$`);
+		} catch {
+			return null; // ignore invalid pattern strings
+		}
+	}, [pattern]);
 
 	useEffect(() => {
 		let isInError = false;
 		if (isRequired && !value) {
 			isInError = true;
-		} else if (pattern) {
-			isInError = Boolean(value) && !value.match(pattern);
+		} else if (compiledPattern) {
+			isInError = Boolean(value) && !compiledPattern.test(value);
 		}
 		setPatternError(isInError);
-	}, [value, pattern, isRequired]);
+	}, [value, compiledPattern, isRequired]);
 
 	const handleChange: OutlinedInputProps['onChange'] = (e) => {
 		setValue(escapeContent ? escapeXml(e.currentTarget.value) : e.currentTarget.value);

@@ -19,6 +19,7 @@ import React, { useEffect, useId, useMemo } from 'react';
 import { FormsEngineField } from '../components/FormsEngineField';
 import { ControlProps } from '../types';
 import { escapeXml, unescapeXml } from '../../../utils/xml';
+import { nnou, nou } from '../../../utils/object';
 
 export interface TextareaProps extends ControlProps {
 	value: string;
@@ -37,12 +38,13 @@ export function Textarea(props: TextareaProps) {
 	// endregion
 
 	const value = useMemo(() => {
-		return valueProp ? (escapeContent ? unescapeXml(valueProp) : valueProp) : (defaultValue ?? '');
+		const hasValue = nnou(valueProp); // allows '' as a valid value
+		return hasValue ? (escapeContent ? unescapeXml(valueProp) : valueProp) : (defaultValue ?? '');
 	}, [valueProp, escapeContent, defaultValue]);
 
 	useEffect(() => {
 		// If there's a default value and no value has been set yet, set it as the value.
-		if (defaultValue && !valueProp) {
+		if (nou(valueProp) && defaultValue) {
 			setValue(defaultValue);
 		}
 	}, [defaultValue, setValue, valueProp]);

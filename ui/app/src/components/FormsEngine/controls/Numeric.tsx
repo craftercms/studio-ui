@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ComponentProps, forwardRef, useEffect, useId, useState } from 'react';
+import { ComponentProps, forwardRef, useEffect, useId } from 'react';
 import OutlinedInput, { OutlinedInputProps } from '@mui/material/OutlinedInput';
 import { FormsEngineField } from '../components/FormsEngineField';
 import type { ControlProps } from '../types';
@@ -68,17 +68,16 @@ export function Numeric(props: NumberProps) {
 	const maxValue = field.validations?.maxValue?.value;
 	const minValue = field.validations?.minValue?.value;
 	const readonly = formReadonly || (field.properties?.readonly?.value as boolean);
-	const defaultValue = Number.parseFloat(field.defaultValue as string);
+	const defaultValueRaw = field.defaultValue as unknown as string | number;
+	const defaultValue = parseValue(defaultValueRaw);
 	// endregion
 
 	useEffect(() => {
-		// If there's a default value and no value has been set yet, set it as the value.
-		if (defaultValue && !value) {
+		// Initialize only when value is not set (null/undefined), preserving 0 and empty values.
+		if (nou(value) && defaultValue != null) {
 			setValue(defaultValue);
 		}
 	}, [defaultValue, setValue, value]);
-
-	console.log('field', field);
 
 	const handleChange: NumberFieldRootProps['onValueChange'] = (newValue) => {
 		setValue(newValue);

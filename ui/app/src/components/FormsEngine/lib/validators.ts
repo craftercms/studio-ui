@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { ElementType } from 'react';
 import type { ContentTypeField } from '../../../models/ContentType';
 import type { BuiltInControlType } from './controlMap';
 import LookupTable from '../../../models/LookupTable';
@@ -32,7 +31,16 @@ export const validatorsMap: Record<BuiltInControlType, ElementType> = {
 	'file-name': null,
 	forcehttps: null,
 	'image-picker': null,
-	input: null,
+	input: (field, currentValue, messages) => {
+		let isValid = true;
+		const pattern = field.validations.pattern?.value as string;
+		// If there's a pattern and it doesn't match, it's invalid.
+		if (pattern && !String(currentValue).match(pattern)) {
+			messages.push(defineMessage({ defaultMessage: 'The value does not match the required pattern.' }));
+			isValid = false;
+		}
+		return isValid;
+	},
 	'internal-name': null,
 	label: null,
 	'link-input': null,
@@ -40,7 +48,32 @@ export const validatorsMap: Record<BuiltInControlType, ElementType> = {
 	'linked-dropdown': null,
 	'locale-selector': null,
 	'node-selector': null,
-	'numeric-input': null,
+	'numeric-input': (field, currentValue, messages) => {
+		let isValid = true;
+		const pattern = field.validations.pattern?.value as string;
+		const maxValue = field.validations.maxValue?.value;
+		const minValue = field.validations.minValue?.value;
+
+		if (currentValue !== null) {
+			// If there's a pattern and it doesn't match
+			if (pattern && !String(currentValue).match(pattern)) {
+				messages.push(defineMessage({ defaultMessage: 'The value does not match the required pattern.' }));
+				isValid = false;
+			}
+			// If there's a max and the value is greater than the max
+			if (maxValue != null && Number(currentValue) > Number(maxValue)) {
+				messages.push(defineMessage({ defaultMessage: `The value is greater than the maximum allowed.` }));
+				isValid = false;
+			}
+			// If there's a min and the value is less than the min
+			if (minValue != null && Number(currentValue) < Number(minValue)) {
+				messages.push(defineMessage({ defaultMessage: 'The value is less than the minimum allowed.' }));
+				isValid = false;
+			}
+		}
+
+		return isValid;
+	},
 	'page-nav-order': null,
 	rte: null,
 	textarea: null,

@@ -220,4 +220,15 @@ export const entityEncodingTagValueProcessor = (tag, value) =>
 		.replace(/&lt;/g, '<')
 		.replace(/&gt;/g, '>')
 		.replace(/&quot;/g, '"')
+		.replace(/&apos;/g, "'")
 		.replace(/&amp;/g, '&');
+
+export const escapeXml = (str: string) =>
+	str
+		.replace(/&/g, '&amp;')
+		.replace(/</g, '&lt;')
+		.replace(/>/g, '&gt;')
+		.replace(/"/g, '&quot;')
+		.replace(/'/g, '&apos;');
+
+export const unescapeXml = (str: string) => entityEncodingTagValueProcessor(null, str);
