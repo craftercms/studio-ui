@@ -732,29 +732,29 @@ export function applyTranslations(
 ): PartialContentType {
 	const translatedSections = descriptor.sections.map((section) => ({
 		...section,
-		title: translateIfMessageDescriptor(section['title'], formatMessage) as string,
-		description: translateIfMessageDescriptor(section['description'], formatMessage) as string
+		title: translateIfMessageDescriptor(section['title'], formatMessage),
+		description: translateIfMessageDescriptor(section['description'], formatMessage)
 	}));
 
 	const translatedFieldsArray = Object.values(descriptor.fields).map((field) => {
 		return {
 			...field,
-			name: translateIfMessageDescriptor(field['name'], formatMessage) as string,
-			description: translateIfMessageDescriptor(field['description'], formatMessage) as string
+			name: translateIfMessageDescriptor(field['name'], formatMessage),
+			description: translateIfMessageDescriptor(field['description'], formatMessage)
 		};
 	});
 	const translatedFieldsLookup = createLookupTable(translatedFieldsArray, 'id');
 
 	return {
 		...descriptor,
-		name: translateIfMessageDescriptor(descriptor['name'], formatMessage) as string,
-		description: translateIfMessageDescriptor(descriptor['description'], formatMessage) as string,
+		name: translateIfMessageDescriptor(descriptor['name'], formatMessage),
+		description: translateIfMessageDescriptor(descriptor['description'], formatMessage),
 		sections: translatedSections,
 		fields: translatedFieldsLookup as unknown as LookupTable<ContentTypeField>
 	};
 }
 
-function translateIfMessageDescriptor(
+export function translateIfMessageDescriptor(
 	titleOrDescriptor: TranslationOrText,
 	formatMessage: IntlShape['formatMessage']
 ): string {

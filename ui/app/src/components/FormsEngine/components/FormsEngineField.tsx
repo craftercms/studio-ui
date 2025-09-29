@@ -43,7 +43,7 @@ import {
 	useStableGlobalApiContext
 } from '../lib/formsEngineContext';
 import { useAtomValue } from 'jotai';
-import { getPossibleTranslation } from '../../../utils/i18n';
+import { translateIfMessageDescriptor } from '../../ContentTypeManagement/utils';
 
 function createLengthBlock({ length, max, min }: { length: number; max: number; min: number }) {
 	const pieces = [];
@@ -275,7 +275,7 @@ export const FormsEngineField = forwardRef<HTMLDivElement, FormsEngineFieldProps
 			{!isValid &&
 				!!validityData?.messages?.length &&
 				validityData.messages.map((message, key) => (
-					<FormHelperText key={key}>{getPossibleTranslation(message, formatMessage)}</FormHelperText>
+					<FormHelperText key={key}>{translateIfMessageDescriptor(message, formatMessage)}</FormHelperText>
 				))}
 		</FormControl>
 	);
