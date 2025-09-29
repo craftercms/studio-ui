@@ -38,23 +38,27 @@ export function useConsolidatedImagePickerData(dataSources: DataSource[]): Conso
 		dataSources.forEach((ds) => {
 			switch (ds.type) {
 				case 'img-repository-upload': {
+					const path = ds.properties.repoPath || ds.properties.path;
+					if (!path) break;
 					if (ds.properties.useSearch) {
 						allowedSearchPaths.push({
 							title: ds.title,
-							path: ds.properties.repoPath || ds.properties.path
+							path
 						});
 					} else {
 						allowedBrowsePaths.push({
 							title: ds.title,
-							path: ds.properties.repoPath || ds.properties.path
+							path
 						});
 					}
 					break;
 				}
 				case 'img-desktop-upload': {
+					const path = ds.properties.repoPath || ds.properties.path;
+					if (!path) break;
 					allowedUploadPaths.push({
 						title: ds.title,
-						path: ds.properties.repoPath || ds.properties.path
+						path
 					});
 					break;
 				}
