@@ -25,7 +25,11 @@ export interface ConsolidatedMediaPickerData {
 }
 
 // TODO: Handle custom data sources (plugins).
-// Gets a list of data sources and categorizes them into browse, upload and search paths.
+/** Gets a list of data sources and categorizes them into browse, upload and search paths.
+ *
+ * @param dataSources List of data sources to consolidate.
+ * @return An object containing categorized paths for browsing, uploading, and searching.
+ * */
 export function useConsolidatedImagePickerData(dataSources: DataSource[]): ConsolidatedMediaPickerData {
 	return useMemo(() => {
 		const allowedBrowsePaths: AllowedPathsData[] = [];

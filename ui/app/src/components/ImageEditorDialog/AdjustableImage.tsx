@@ -11,7 +11,7 @@ interface AdjustableImageProps {
 	style?: CSSProperties;
 }
 
-// Util component that helps with the rendering of the background image with adjustments like brightness, saturation and contrast.
+/** Util component that helps with the rendering of the background image with adjustments like brightness, saturation and contrast. */
 // https://advanced-cropper.github.io/react-advanced-cropper/docs/tutorials/image-editor/
 export const AdjustableImage = forwardRef<HTMLCanvasElement, AdjustableImageProps>((props, ref) => {
 	const { src, className, brightness = 0, saturation = 0, contrast = 0, style } = props;

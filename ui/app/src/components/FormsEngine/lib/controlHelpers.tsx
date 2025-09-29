@@ -194,7 +194,14 @@ export function renderFieldControl(
 	);
 }
 
-// Returns menu options for media controls based on allowed paths. The options are categorized into "Browse", "Search", and "Upload".
+/** Returns menu options for media controls based on allowed paths. The options are categorized into "Browse", "Search",
+ * and "Upload".
+ *
+ * @param dataSourceSummary - Summary of allowed paths for browsing, searching, and uploading media.
+ * @param handleDataSourceOptionClick - Callback function to handle clicks on the menu options.
+ * @param readonly - If true, the menu options will be disabled.
+ * @returns An array of JSX elements representing the menu options.
+ * */
 export function createMediaMenuOptions(
 	dataSourceSummary: ConsolidatedMediaPickerData,
 	handleDataSourceOptionClick: (
@@ -399,7 +406,11 @@ export const showImageCropDialog = ({
 	);
 };
 
-// Generates user-friendly messages for image width and height restrictions.
+/** Generates user-friendly messages for image width and height restrictions.
+ *
+ * @param restrictions - An object containing image dimension restrictions.
+ * @returns An object with formatted width and height restriction messages.
+ */
 export const getImageRestrictionMessages = (restrictions: ImageRestrictions) => {
 	const width = [
 		restrictions.width ? ` equal to ${restrictions.width}px` : null,

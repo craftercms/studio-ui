@@ -30,7 +30,11 @@ const imageInfoInitialState: ImageInfo = {
 	size: null
 };
 
-// Retrieves image dimensions and metadata (content type and size in KB) from a given URL
+/** Retrieves image dimensions and metadata (content type and size in KB) from a given URL
+ *
+ * @param url Image URL
+ * @returns Object containing image info, loading states, and error states
+ */
 export function useImageInfo(url: string): {
 	imageInfo: ImageInfo;
 	isFetchingDimensions: boolean;

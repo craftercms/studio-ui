@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { MouseEvent as ReactMouseEvent, useRef, useState } from 'react';
+import React, { MouseEvent as ReactMouseEvent, useEffect, useRef, useState } from 'react';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -57,6 +57,7 @@ import {
 } from '../lib/controlHelpers';
 import type { ImageRestrictions } from '../../ImageEditorDialog/types';
 import Skeleton from '@mui/material/Skeleton';
+import { nnou, nou } from '../../../utils/object';
 
 export interface ImagePickerProps extends ControlProps {
 	value: string | null;
@@ -64,8 +65,13 @@ export interface ImagePickerProps extends ControlProps {
 
 type PickerType = 'browse' | 'upload' | 'search';
 
-// Validates if an HTMLImageElement meets the given size restrictions. The restrictions may be a range (min/max) or an
-// exact value (width/height). If no restrictions are provided, the image is considered valid.
+/** Validates if an HTMLImageElement meets the given size restrictions. The restrictions may be a range (min/max) or an
+ * exact value (width/height). If no restrictions are provided, the image is considered valid.
+ *
+ * @param file - The HTMLImageElement to validate.
+ * @param restrictions - Optional image size restrictions (width, height, minWidth, minHeight, maxWidth, maxHeight).
+ * @returns True if the image meets the restrictions or if no restrictions are provided, false otherwise.
+ */
 function doesImageMeetSizeRestrictions(file: HTMLImageElement, restrictions?: ImageRestrictions): boolean {
 	let meetRestrictions = true;
 	if (restrictions) {
@@ -84,7 +90,12 @@ function doesImageMeetSizeRestrictions(file: HTMLImageElement, restrictions?: Im
 	return meetRestrictions;
 }
 
-// Loads an image from the given path and validates it against the provided size restrictions.
+/** Loads an image from the given path and validates it against the provided size restrictions.
+ *
+ * @param path - The image path or URL to load.
+ * @param restrictions - Optional size restrictions to validate the image against.
+ * @returns Promise that resolves to true if the image meets the restrictions or no restrictions are provided, false otherwise.
+ * */
 function validateImageRestrictions(path: string, restrictions?: ImageRestrictions): Promise<boolean> {
 	return new Promise((resolve) => {
 		if (restrictions) {
@@ -107,11 +118,26 @@ function validateImageRestrictions(path: string, restrictions?: ImageRestriction
 }
 
 export function ImagePicker(props: ImagePickerProps) {
-	const { field, value, setValue, contentType, autoFocus, readonly: formReadonly } = props;
+	const { field, value: valueProp, setValue, contentType, autoFocus, readonly: formReadonly } = props;
 	const siteId = useActiveSiteId();
 	const { guestBase } = useEnv();
 	const contextItem = useItemContext();
 	const { id, pathInSite } = useItemMetaContext();
+
+	// region field properties/validations
+	const readonly = formReadonly || (field.properties?.readonly?.value as boolean);
+	const defaultValue = field.defaultValue as string;
+	const restrictions: ImageRestrictions = {
+		height: field.validations?.height?.value,
+		width: field.validations?.width?.value,
+		maxHeight: field.validations?.maxHeight?.value,
+		maxWidth: field.validations?.maxWidth?.value,
+		minHeight: field.validations?.minHeight?.value,
+		minWidth: field.validations?.minWidth?.value
+	};
+	// endregion
+
+	const value = nnou(valueProp) ? valueProp : (defaultValue ?? '');
 	const { imageInfo, isFetchingDimensions, isFetchingMetadata, errorDimensions, errorMetadata } = useImageInfo(
 		value ? ensureSingleSlash(`${guestBase}${value}`) : ''
 	);
@@ -124,18 +150,12 @@ export function ImagePicker(props: ImagePickerProps) {
 	const [openPickerDialog, setOpenPickerDialog] = useState(false);
 	const [pickerType, setPickerType] = useState<PickerType | null>(null);
 
-	// region field properties/validations
-	const readonly = formReadonly || (field.properties?.readonly?.value as boolean);
-
-	const restrictions: ImageRestrictions = {
-		height: field.validations?.height?.value,
-		width: field.validations?.width?.value,
-		maxHeight: field.validations?.maxHeight?.value,
-		maxWidth: field.validations?.maxWidth?.value,
-		minHeight: field.validations?.minHeight?.value,
-		minWidth: field.validations?.minWidth?.value
-	};
-	// endregion
+	useEffect(() => {
+		// If there's a default value and no value has been set yet, set it as the value.
+		if (nou(valueProp) && defaultValue != null) {
+			setValue(defaultValue);
+		}
+	}, [defaultValue, setValue, valueProp]);
 
 	const imageRestrictionMessages = getImageRestrictionMessages(restrictions);
 	/* TODO: handleDataSourceOptionClick and executeDataSourceOption only handle hardcoded 'browse', 'upload' and 'search' options.
