@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ComponentProps, forwardRef, useId } from 'react';
+import { ComponentProps, forwardRef, useEffect, useId, useState } from 'react';
 import OutlinedInput, { OutlinedInputProps } from '@mui/material/OutlinedInput';
 import { FormsEngineField } from '../components/FormsEngineField';
 import type { ControlProps } from '../types';
@@ -59,11 +59,30 @@ const OutlinedInputWithRef = forwardRef<HTMLInputElement, OutlinedInputProps>((p
 });
 
 export function Numeric(props: NumberProps) {
-	const { field, setValue, readonly, autoFocus } = props;
+	const { field, setValue, readonly: formReadonly, autoFocus } = props;
 	const htmlId = useId();
-	const maxLength = field.validations.maxLength?.value;
 	const value = parseValue(props.value);
-	const handleChange: NumberFieldRootProps['onValueChange'] = (value) => setValue(value);
+
+	// region field properties/validations
+	const maxLength = field.validations?.maxLength?.value;
+	const maxValue = field.validations?.maxValue?.value;
+	const minValue = field.validations?.minValue?.value;
+	const readonly = formReadonly || (field.properties?.readonly?.value as boolean);
+	const defaultValue = Number.parseFloat(field.defaultValue as string);
+	// endregion
+
+	useEffect(() => {
+		// If there's a default value and no value has been set yet, set it as the value.
+		if (defaultValue && !value) {
+			setValue(defaultValue);
+		}
+	}, [defaultValue, setValue, value]);
+
+	console.log('field', field);
+
+	const handleChange: NumberFieldRootProps['onValueChange'] = (newValue) => {
+		setValue(newValue);
+	};
 	return (
 		<FormsEngineField htmlFor={htmlId} field={field} max={maxLength}>
 			<NumberField.Root
@@ -72,6 +91,8 @@ export function Numeric(props: NumberProps) {
 				onValueChange={handleChange}
 				readOnly={readonly}
 				autoFocus={autoFocus}
+				min={minValue}
+				max={maxValue}
 			>
 				<NumberField.Group render={<Box display="flex" />}>
 					<NumberField.Decrement render={<Button variant="outlined" sx={decrementButtonSx} />}>

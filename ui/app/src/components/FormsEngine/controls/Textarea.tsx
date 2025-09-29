@@ -14,29 +14,54 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import OutlinedInput from '@mui/material/OutlinedInput';
-import React, { useId } from 'react';
+import OutlinedInput, { OutlinedInputProps } from '@mui/material/OutlinedInput';
+import React, { useEffect, useId, useMemo } from 'react';
 import { FormsEngineField } from '../components/FormsEngineField';
 import { ControlProps } from '../types';
+import { escapeXml, unescapeXml } from '../../../utils/xml';
 
 export interface TextareaProps extends ControlProps {
 	value: string;
 }
 
 export function Textarea(props: TextareaProps) {
-	const { field, value, setValue, readonly, autoFocus } = props;
+	const { field, value: valueProp, setValue, readonly: formReadonly, autoFocus } = props;
 	const htmlId = useId();
-	const maxLength = field.validations.maxLength?.value;
+
+	// region field properties/validations
+	const maxLength = field.validations?.maxLength?.value;
+	const readonly = formReadonly || (field.properties?.readonly?.value as boolean);
+	const escapeContent = (field.properties?.escapeContent?.value as boolean) ?? false;
+	const rows = (field.properties?.rows?.value as number) ?? 1;
+	const defaultValue = field.defaultValue as string;
+	// endregion
+
+	const value = useMemo(() => {
+		return valueProp ? (escapeContent ? unescapeXml(valueProp) : valueProp) : (defaultValue ?? '');
+	}, [valueProp, escapeContent, defaultValue]);
+
+	useEffect(() => {
+		// If there's a default value and no value has been set yet, set it as the value.
+		if (defaultValue && !valueProp) {
+			setValue(defaultValue);
+		}
+	}, [defaultValue, setValue, valueProp]);
+
+	const handleChange: OutlinedInputProps['onChange'] = (e) => {
+		setValue(escapeContent ? escapeXml(e.currentTarget.value) : e.currentTarget.value);
+	};
+
 	return (
 		<FormsEngineField htmlFor={htmlId} field={field} max={maxLength} length={value.length}>
 			<OutlinedInput
 				autoFocus={autoFocus}
 				fullWidth
 				multiline
+				rows={rows}
 				inputProps={{ maxLength }}
 				id={htmlId}
 				value={value}
-				onChange={(e) => setValue(e.currentTarget.value)}
+				onChange={handleChange}
 				disabled={readonly}
 			/>
 		</FormsEngineField>
