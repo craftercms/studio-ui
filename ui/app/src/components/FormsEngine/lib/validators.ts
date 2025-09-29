@@ -19,8 +19,14 @@ import type { ContentTypeField } from '../../../models/ContentType';
 import type { BuiltInControlType } from './controlMap';
 import LookupTable from '../../../models/LookupTable';
 import { XmlKeys } from './formConsts';
+import { defineMessage, type MessageDescriptor } from 'react-intl';
 
-export const validatorsMap: Record<BuiltInControlType, ElementType> = {
+type ValidatorFunctionDef = (
+	field: ContentTypeField,
+	currentValue: unknown,
+	messages: FieldValidityState['messages']
+) => boolean;
+export const validatorsMap: Partial<Record<BuiltInControlType, ValidatorFunctionDef>> = {
 	repeat: null,
 	'auto-filename': null,
 	'aws-file-upload': null,
@@ -53,24 +59,23 @@ export const validatorsMap: Record<BuiltInControlType, ElementType> = {
 
 export interface FieldValidityState {
 	isValid: boolean;
-	messages: string[];
+	messages: (string | MessageDescriptor)[];
 }
 
 export function validateFieldValue(field: ContentTypeField, currentValue: unknown): FieldValidityState {
-	let isValid = false;
+	const messages: FieldValidityState['messages'] = [];
 	const isRequired = isFieldRequired(field);
 	const isEmpty = isEmptyValue(field, currentValue);
-	if (!isRequired && isEmpty) {
-		// If not required and its empty, then it's valid.
-		isValid = true;
-	} else if (!isEmpty) {
-		// FE2 TODO: Add other validation types (max length, etc)...
-		isValid = true;
+
+	// If it's required, and the value is empty, then it's invalid.
+	if (isRequired && isEmpty) {
+		messages.push(defineMessage({ defaultMessage: 'This field is required.' }));
+		return { isValid: false, messages };
 	}
-	return {
-		isValid,
-		messages: isValid ? null : ['This field is required.']
-	};
+	const validator = validatorsMap[field.type as BuiltInControlType];
+	// If there's a validator, run it. If not, it's valid.
+	const isValid = validator ? validator(field, currentValue, messages) : true;
+	return { isValid, messages };
 }
 
 export function isEmptyValue(field: ContentTypeField, currentValue: unknown): boolean {
