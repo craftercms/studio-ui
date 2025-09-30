@@ -28,7 +28,8 @@ export function Checkbox(props: CheckboxProps) {
 	const { field, value: valueProp, setValue, readonly: formReadonly, autoFocus } = props;
 
 	//  region field properties/validations
-	const readonly = formReadonly || Boolean(field.properties?.readonly?.value);
+	const fieldReadonly = field.properties?.readonly?.value as boolean;
+	const readonly = formReadonly || fieldReadonly;
 	const defaultValue = field.defaultValue === 'true';
 	// endregion
 	const value = nnou(valueProp) ? valueProp : defaultValue;

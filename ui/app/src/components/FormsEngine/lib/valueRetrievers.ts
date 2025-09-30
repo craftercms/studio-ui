@@ -37,7 +37,7 @@ export const textOrNullExtractor: ValueRetriever<string> = (value) => (value && 
 export const numberFieldExtractor: ValueRetriever<number> = (value) => (nnou(value) ? Number(value) : null);
 
 /** Handles boolean values that may come as actual booleans or as strings. An empty string or null/undefined becomes (no value set). */
-export const booleanFieldExtractor: ValueRetriever<boolean> = (value) =>
+export const booleanFieldExtractor: ValueRetriever<boolean | null> = (value) =>
 	nnou(value) && value !== '' ? value === true || value === 'true' : null;
 
 export const valueRetrieverLookup: Record<BuiltInControlType | DescriptorControlType, ValueRetriever> = {
