@@ -33,7 +33,7 @@ import { FormattedMessage } from 'react-intl';
 import LinkOffRoundedIcon from '@mui/icons-material/LinkOffRounded';
 import Tooltip from '@mui/material/Tooltip';
 import useContentTypes from '../../../hooks/useContentTypes';
-import {
+import React, {
 	lazy,
 	MouseEvent as ReactMouseEvent,
 	ReactNode,
@@ -90,14 +90,17 @@ import { XmlKeys } from '../lib/formConsts';
 import useConsolidatedItemPickerData, {
 	ConsolidatedItemPickerData
 } from '../dataSourceHooks/useConsolidatedItemPickerData';
-import { useExtractItemPickerDataSources } from '../dataSourceHooks/useExtractItemPickerDataSources';
 import { Dispatch as ReduxDispatch } from 'redux';
+import { useExtractDataSources } from '../dataSourceHooks/useExtractDataSources';
+import UploadFileOutlinedIcon from '@mui/icons-material/UploadFileOutlined';
+import type { FileUploadResult } from '../../SingleFileUpload';
+import type { SingleFileUploadDialogProps } from '../../SingleFileUploadDialog';
+import { showCodeEditorDialog } from '../../../state/actions/dialogs';
+import { getEditorMode, isEditableAsset } from '../../../utils/content';
 import { createComponentId } from '../../../utils/system';
 
 const SortableList = lazy(() => import('../components/SortableList'));
 const TouchSortableList = lazy(() => import('../components/TouchSortableList'));
-
-// TODO: process path macros
 
 export interface NodeSelectorProps extends ControlProps {
 	value: NodeSelectorItem[];
@@ -109,16 +112,18 @@ export interface NodeSelectorItem {
 	include?: string;
 	disableFlattening?: boolean;
 	component?: Record<string, Primitive>;
+	fileSize_smv?: number;
+	fileType_smv?: string;
 }
 
-export type DataSourcePickerType = 'search' | 'browse' | 'create';
+export type DataSourcePickerType = 'search' | 'browse' | 'create' | 'upload';
 
 export type AllowedContentTypesDataWithDestinations = AllowedContentTypesData & { createPaths?: string[] };
 
 export interface AllowedPathsData {
 	path: string;
 	title: string;
-	allowedContentTypes: string[];
+	allowedContentTypes?: string[];
 }
 
 type ContentCreationStrategy = 'embedded' | 'shared';
@@ -193,7 +198,7 @@ function CreateDataSourcePicker(props: {
 					setAllowedTypes(result);
 					setAllowedCreateTypes(allowedLookup);
 					const value: CreateDataSourcePickerData = {
-						path: allowedLookup[result[0]].createPaths[0] ?? '',
+						path: allowedLookup[result[0]].createPaths?.[0] ?? '',
 						strategy: allowedLookup[result[0]].embedded ? 'embedded' : 'shared',
 						contentTypeId: result[0]
 					};
@@ -205,7 +210,7 @@ function CreateDataSourcePicker(props: {
 			const result = Object.keys(allowedCreateTypes);
 			setAllowedTypes(result);
 			const value: CreateDataSourcePickerData = {
-				path: allowedCreateTypes[result[0]].createPaths[0] ?? '',
+				path: allowedCreateTypes[result[0]].createPaths?.[0] ?? '',
 				strategy: allowedCreateTypes[result[0]].embedded ? 'embedded' : 'shared',
 				contentTypeId: result[0]
 			};
@@ -341,7 +346,7 @@ const createAddMenuOptions = ({
 	itemPickerDataSourceData: ConsolidatedItemPickerData;
 	readonly: boolean;
 }): ReactNode[] => {
-	const { allowedCreateTypes, allowedBrowsePaths, allowedSearchPaths } = itemPickerDataSourceData;
+	const { allowedCreateTypes, allowedBrowsePaths, allowedSearchPaths, allowedUploadPaths } = itemPickerDataSourceData;
 	const createAllowed = Object.keys(allowedCreateTypes).length > 0;
 	const menuOptions = [];
 
@@ -370,6 +375,20 @@ const createAddMenuOptions = ({
 					<TravelExploreOutlined fontSize="small" />
 				</ListItemIcon>
 				<ListItemText children={<FormattedMessage defaultMessage="Browse" />} />
+			</MenuItem>
+		);
+	}
+	if (allowedUploadPaths.length > 0) {
+		menuOptions.push(
+			<MenuItem
+				key="upload"
+				disabled={readonly}
+				onClick={(event) => refs.current.handleDataSourceOptionClick(event, 'upload')}
+			>
+				<ListItemIcon sx={{ mr: 0 }}>
+					<UploadFileOutlinedIcon fontSize="small" />
+				</ListItemIcon>
+				<ListItemText children={<FormattedMessage defaultMessage="Upload" />} />
 			</MenuItem>
 		);
 	}
@@ -456,8 +475,40 @@ const showSearchDialog = ({
 	);
 };
 
+const showUploadDialog = ({
+	dispatch,
+	path,
+	siteId,
+	onUploadComplete
+}: {
+	dispatch: ReduxDispatch;
+	path: string;
+	siteId: string;
+	onUploadComplete: SingleFileUploadDialogProps['onUploadComplete'];
+}) => {
+	const id = nanoid();
+	dispatch(
+		pushDialog({
+			id,
+			component: 'craftercms.components.SingleFileUploadDialog',
+			props: {
+				site: siteId,
+				path,
+				onUploadComplete: (result: FileUploadResult) => {
+					onUploadComplete(result);
+					dispatch(popDialog({ id }));
+				}
+			} as SingleFileUploadDialogProps
+		})
+	);
+};
+
 function NodeSelector(props: NodeSelectorProps) {
-	const { field, contentType, value, setValue, readonly, autoFocus } = props;
+	const { field, contentType, value, setValue, readonly: formReadonly, autoFocus } = props;
+	// region field properties/validations
+	const readonly = formReadonly || (field.properties.readonly?.value as boolean);
+	// endregion
+
 	useFetchContentItems(value.flatMap((item) => item.include ?? []));
 	const [sortMode, setSortMode] = useState(false);
 	const useTouchSorting = useMemo(() => isTouchDevice(), []);
@@ -477,7 +528,7 @@ function NodeSelector(props: NodeSelectorProps) {
 	const addMenuButtonRef = useRef<HTMLButtonElement>(undefined);
 	const contentTypes = useContentTypes();
 	const siteId = useActiveSiteId();
-	const dataSourceSummary = useConsolidatedItemPickerData(useExtractItemPickerDataSources(contentType, field));
+	const dataSourceSummary = useConsolidatedItemPickerData(useExtractDataSources(contentType, field, 'itemManager'));
 	const handleRemoveItem = (event: ReactMouseEvent, index: number) => {
 		event.stopPropagation();
 		const nextValue = value.concat();
@@ -487,7 +538,7 @@ function NodeSelector(props: NodeSelectorProps) {
 	const handleOpenItem = (event: { stopPropagation(): void }, index: number, edit: boolean = false) => {
 		event.stopPropagation();
 		const item: NodeSelectorItem = value[index];
-		if (item.component || item.include) {
+		if (item.component || (item.include && (item.include.startsWith('/site/') || !isEditableAsset(item.include)))) {
 			const isEmbedded = Boolean(item.component);
 			api.pushForm({
 				readonly: !edit,
@@ -516,8 +567,12 @@ function NodeSelector(props: NodeSelectorProps) {
 				}
 			});
 		} else {
-			// TODO: Handle files?
-			console.log('Edit file requested', item);
+			dispatch(
+				showCodeEditorDialog({
+					path: item.include,
+					mode: getEditorMode(itemsByPath[item.include].mimeType)
+				})
+			);
 		}
 	};
 	const handleItemKeyDown = (e: KeyDownEvent, index: number) => {
@@ -533,7 +588,6 @@ function NodeSelector(props: NodeSelectorProps) {
 		optionType: DataSourcePickerType,
 		choice: AllowedPathsData | CreateDataSourcePickerData
 	) => {
-		// TODO: Test cases with paths macros; ensure behaviour is consistent with FE1
 		const processPath = (path: string) =>
 			processPathMacros({ path, objectId: id, fullParentPath: contextItem?.path ?? pathInSite });
 		switch (optionType) {
@@ -609,6 +663,29 @@ function NodeSelector(props: NodeSelectorProps) {
 				});
 				break;
 			}
+			case 'upload': {
+				showUploadDialog({
+					dispatch,
+					path: processPath(choice.path),
+					siteId,
+					onUploadComplete: (result: FileUploadResult) => {
+						if (result.successful.length) {
+							const nextValue = value.concat();
+							asArray(result.successful).forEach((item) => {
+								const value = ensureSingleSlash(`${result.successful[0].meta.path}/${result.successful[0].meta.name}`);
+								nextValue.push({
+									key: value,
+									value: item.meta.name,
+									include: value,
+									disableFlattening: Boolean(field.properties?.disableFlattening?.value)
+								});
+							});
+							setValue(nextValue);
+						}
+					}
+				});
+				break;
+			}
 		}
 	};
 	const handleCloseDataSourcePickerDialog = () => setPickerDialogOpen(false);
@@ -657,7 +734,7 @@ function NodeSelector(props: NodeSelectorProps) {
 					const strategy = allowedCreateTypes[contentTypeId].embedded ? 'embedded' : 'shared';
 					// Open create dialog
 					executeDataSourceOption('create', {
-						path: strategy === 'embedded' ? '' : allowedCreateTypes[contentTypeId].createPaths[0],
+						path: strategy === 'embedded' ? '' : allowedCreateTypes[contentTypeId].createPaths?.[0],
 						strategy: strategy,
 						contentTypeId
 					});
@@ -668,12 +745,22 @@ function NodeSelector(props: NodeSelectorProps) {
 				}
 				break;
 			}
+			case 'upload': {
+				if (allowedUploadPaths.length === 1) {
+					executeDataSourceOption('upload', allowedUploadPaths[0]);
+				} else {
+					setPickerType('upload');
+					setPickerDialogOpen(true);
+				}
+				break;
+			}
 		}
 	};
 	const handleDataSourcePickerDialogChange = (event, choice: AllowedPathsData | CreateDataSourcePickerData) => {
 		switch (pickerType) {
 			case 'search':
 			case 'browse':
+			case 'upload':
 				executeDataSourceOption(pickerType, choice);
 				setPickerDialogOpen(false);
 				break;
@@ -691,7 +778,8 @@ function NodeSelector(props: NodeSelectorProps) {
 		() => createAddMenuOptions({ refs: memoRefs, itemPickerDataSourceData: dataSourceSummary, readonly }),
 		[memoRefs, readonly, dataSourceSummary]
 	);
-	const { allowedCreateTypes, allowedCreatePaths, allowedBrowsePaths, allowedSearchPaths } = dataSourceSummary;
+	const { allowedCreateTypes, allowedCreatePaths, allowedBrowsePaths, allowedSearchPaths, allowedUploadPaths } =
+		dataSourceSummary;
 	const maxLimitReached = value.length >= field.validations.maxCount?.value;
 	const isAddDisabled = readonly || maxLimitReached || !menuOptions.length;
 	return (
@@ -717,6 +805,9 @@ function NodeSelector(props: NodeSelectorProps) {
 							),
 							search: (
 								<DataSourcePicker allowedPaths={allowedSearchPaths} onChange={handleDataSourcePickerDialogChange} />
+							),
+							upload: (
+								<DataSourcePicker allowedPaths={allowedUploadPaths} onChange={handleDataSourcePickerDialogChange} />
 							),
 							create: (
 								<CreateDataSourcePicker
