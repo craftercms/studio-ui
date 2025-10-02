@@ -672,7 +672,7 @@ function NodeSelector(props: NodeSelectorProps) {
 						if (result.successful.length) {
 							const nextValue = value.concat();
 							asArray(result.successful).forEach((item) => {
-								const value = ensureSingleSlash(`${result.successful[0].meta.path}/${result.successful[0].meta.name}`);
+								const value = ensureSingleSlash(`${item.meta.path}/${item.meta.name}`);
 								nextValue.push({
 									key: value,
 									value: item.meta.name,
