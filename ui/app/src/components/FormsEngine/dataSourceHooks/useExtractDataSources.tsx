@@ -26,7 +26,10 @@ export function useExtractDataSources(
 	const dataSources = contentType.dataSources;
 	const dataSourceIdString = (field.properties[dataSourceProperty]?.value as string) ?? '';
 	return useMemo(() => {
-		const dataSourceIds = dataSourceIdString.split(',');
+		const dataSourceIds = dataSourceIdString
+			.split(',')
+			.map((id) => id.trim())
+			.filter((id) => id.length > 0);
 		return dataSources.filter((ds) => dataSourceIds.includes(ds.id));
 	}, [dataSources, dataSourceIdString]);
 }
