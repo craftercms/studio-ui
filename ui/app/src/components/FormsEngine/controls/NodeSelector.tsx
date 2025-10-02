@@ -507,6 +507,7 @@ function NodeSelector(props: NodeSelectorProps) {
 	const { field, contentType, value, setValue, readonly: formReadonly, autoFocus } = props;
 	// region field properties/validations
 	const readonly = formReadonly || (field.properties.readonly?.value as boolean);
+	const disableFlattening = (field.properties.disableFlattening?.value as boolean) ?? false;
 	// endregion
 
 	useFetchContentItems(value.flatMap((item) => item.include ?? []));
@@ -653,7 +654,7 @@ function NodeSelector(props: NodeSelectorProps) {
 							key,
 							value: result.values[XmlKeys.internalName] as string,
 							[isEmbedded ? 'component' : 'include']: isEmbedded ? (result.values as LookupTable<Primitive>) : key,
-							disableFlattening: (field.properties.disableFlattening?.value as boolean) ?? false
+							disableFlattening
 						};
 						const nextValue = value.concat();
 						nextValue.push(newItem);
