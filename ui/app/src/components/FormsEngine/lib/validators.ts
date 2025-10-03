@@ -39,7 +39,29 @@ export const validatorsMap: Record<BuiltInControlType, ElementType> = {
 	'link-textarea': null,
 	'linked-dropdown': null,
 	'locale-selector': null,
-	'node-selector': null,
+	'node-selector': (field, currentValue, messages) => {
+		let isValid = true;
+		const minCount = field.validations?.minCount?.value ?? 0;
+		const maxCount = field.validations?.maxCount?.value ?? Infinity;
+		const selectedCount = Array.isArray(currentValue) ? currentValue.length : 0;
+		if (selectedCount < minCount) {
+			isValid = false;
+			messages.push(
+				defineMessage({
+					defaultMessage: `Please select at least the minimum required items.`
+				})
+			);
+		}
+		if (selectedCount > maxCount) {
+			isValid = false;
+			messages.push(
+				defineMessage({
+					defaultMessage: `Please select no more than the maximum allowed items.`
+				})
+			);
+		}
+		return isValid;
+	},
 	'numeric-input': null,
 	'page-nav-order': null,
 	rte: null,
