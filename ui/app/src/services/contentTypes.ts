@@ -109,9 +109,7 @@ export function parseComponentsDataSourceContentTypesProperty(
 	const allowedContentTypesMeta: LookupTable<AllowedContentTypesData> = validations.allowedContentTypes.value;
 	value.forEach((typeId) => {
 		allowedContentTypesMeta[typeId] = allowedContentTypesMeta[typeId] ?? {};
-		const propsLookup = dataSource.properties.property
-			? createLookupTable(asArray(dataSource.properties.property), 'name')
-			: dataSource.properties;
+		const propsLookup = dataSource.properties;
 		if (propsLookup.allowEmbedded) {
 			allowedContentTypesMeta[typeId].embedded = true;
 			validations.allowedEmbeddedContentTypes.value.push(typeId);
