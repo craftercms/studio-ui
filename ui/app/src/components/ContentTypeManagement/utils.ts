@@ -759,6 +759,7 @@ export function translateIfMessageDescriptor(
 	formatMessage: IntlShape['formatMessage']
 ): string {
 	const value = getPossibleTranslation(titleOrDescriptor, formatMessage);
+	// TODO: Ignoring non string values. Must adjust to not ignore and actually handle either here or at the consumer level.
 	return typeof value === 'string' ? value : '';
 }
 
