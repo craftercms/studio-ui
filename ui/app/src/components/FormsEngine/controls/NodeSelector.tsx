@@ -79,7 +79,7 @@ import useFetchContentItems from '../../../hooks/useFetchContentItems';
 import useItemsByPath from '../../../hooks/useItemsByPath';
 import ItemDisplay from '../../ItemDisplay';
 import useActiveUser from '../../../hooks/useActiveUser';
-import { processPathMacros } from '../../../utils/path';
+import { getFileExtension, processPathMacros } from '../../../utils/path';
 import { ensureSingleSlash } from '../../../utils/string';
 import { popDialog, pushDialog, pushNonDialog } from '../../../state/actions/dialogStack';
 import FieldBox from '../components/FieldBox';
@@ -503,11 +503,52 @@ const showUploadDialog = ({
 	);
 };
 
+type FileMetadata = {
+	fileType_smv?: string;
+	fileSize_smv?: number;
+	fileType_mvs?: string;
+	fileType_s?: string;
+	fileSize_s?: number;
+};
+
+/** Returns an object with the appropriate file metadata fields based on the configuration.
+ * @param fileType - The file type (e.g., 'jpg', 'png').
+ * @param fileSize - The file size (e.g., 2048).
+ * @param useSingleValueFilename - Whether single value filename is used.
+ * @param useMVS - Whether multi-value support is used.
+ * */
+const getFileMetaData = ({
+	fileType,
+	fileSize,
+	useSingleValueFilename,
+	useMVS
+}: {
+	fileType: string;
+	fileSize?: number;
+	useSingleValueFilename: boolean;
+	useMVS: boolean;
+}): FileMetadata => {
+	const metaData: FileMetadata = {};
+	if (!useSingleValueFilename && !useMVS) {
+		metaData['fileType_smv'] = fileType;
+		if (fileSize) metaData['fileSize_smv'] = fileSize;
+	} else if (useMVS) {
+		metaData['fileType_mvs'] = fileType;
+		if (fileSize) metaData['fileSize_s'] = fileSize;
+	} else if (useSingleValueFilename) {
+		metaData['fileType_s'] = fileType;
+		if (fileSize) metaData['fileSize_s'] = fileSize;
+	}
+	return metaData;
+};
+
 function NodeSelector(props: NodeSelectorProps) {
 	const { field, contentType, value, setValue, readonly: formReadonly, autoFocus } = props;
 	// region field properties/validations
-	const readonly = formReadonly || (field.properties.readonly?.value as boolean);
-	const disableFlattening = (field.properties.disableFlattening?.value as boolean) ?? false;
+	const readonly = formReadonly || (field.properties?.readonly?.value as boolean);
+	const disableFlattening = (field.properties?.disableFlattening?.value as boolean) ?? false;
+	const useSingleValueFilename = (field.properties?.useSingleValueFilename?.value as boolean) ?? false;
+	const useMVS = (field.properties?.useMVS?.value as boolean) ?? false;
 	// endregion
 
 	useFetchContentItems(value.flatMap((item) => item.include ?? []));
@@ -559,7 +600,7 @@ function NodeSelector(props: NodeSelectorProps) {
 						key,
 						value: values[XmlKeys.internalName] as string,
 						[isEmbedded ? 'component' : 'include']: isEmbedded ? (values as LookupTable<Primitive>) : key,
-						disableFlattening: (field.properties.disableFlattening?.value as boolean) ?? false
+						disableFlattening
 					};
 					const nextValue = value.concat();
 					nextValue.splice(index, 1, newItem);
@@ -602,11 +643,13 @@ function NodeSelector(props: NodeSelectorProps) {
 					onSuccess(items: MediaItem | MediaItem[]) {
 						const nextValue = value.concat();
 						asArray(items).forEach((item) => {
+							const fileType = getFileExtension(item.name);
 							nextValue.push({
 								key: item.path,
 								value: item.name,
 								include: item.path,
-								disableFlattening: Boolean(field.properties?.disableFlattening?.value)
+								disableFlattening,
+								...(fileType ? getFileMetaData({ fileType, useSingleValueFilename, useMVS }) : {})
 							});
 						});
 						setValue(nextValue);
@@ -628,7 +671,7 @@ function NodeSelector(props: NodeSelectorProps) {
 								key: item.path,
 								value: item.name,
 								include: item.path,
-								disableFlattening: Boolean(field.properties?.disableFlattening?.value)
+								disableFlattening
 							});
 						});
 						setValue(nextValue);
@@ -673,12 +716,15 @@ function NodeSelector(props: NodeSelectorProps) {
 						if (result.successful.length) {
 							const nextValue = value.concat();
 							asArray(result.successful).forEach((item) => {
+								const fileType = item.extension;
+								const fileSize = item.size;
 								const value = ensureSingleSlash(`${item.meta.path}/${item.meta.name}`);
 								nextValue.push({
 									key: value,
 									value: item.meta.name,
 									include: value,
-									disableFlattening: Boolean(field.properties?.disableFlattening?.value)
+									disableFlattening: Boolean(field.properties?.disableFlattening?.value),
+									...(fileType ? getFileMetaData({ fileType, fileSize, useSingleValueFilename, useMVS }) : {})
 								});
 							});
 							setValue(nextValue);
