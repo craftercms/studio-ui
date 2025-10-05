@@ -19,7 +19,7 @@ import { createVirtualSection, DescriptorContentType } from '../../utils';
 import { defineMessage } from 'react-intl';
 
 export const videoS3RepoDataSourceDescriptor: DescriptorContentType = {
-	id: 'video-s3-repo',
+	id: 'video-S3-repo',
 	name: defineMessage({ defaultMessage: 'Video From S3 Repository' }),
 	description: '',
 	type: 'video',
