@@ -102,6 +102,7 @@ import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import { isEditableViaFormEditor, isImage, isMediaContent } from '../../PathNavigator/utils';
 import useSelection from '../../../hooks/useSelection';
 import { getEditorMode as getItemEditorMode } from '../../PathNavigator/utils';
+import { showAlert } from '../lib/formUtils';
 
 const SortableList = lazy(() => import('../components/SortableList'));
 const TouchSortableList = lazy(() => import('../components/TouchSortableList'));
@@ -546,19 +547,85 @@ const getFileMetaData = ({
 	return metaData;
 };
 
+/** Validates if a NodeSelectorItem represents a component (embedded or shared).
+ *
+ * @param item - The NodeSelectorItem to validate.
+ * @returns {boolean} True if the item is a component, false otherwise.
+ */
 const isItemComponent = (item: NodeSelectorItem): boolean => {
 	return Boolean(
 		item.component || (item.include && (item.include.startsWith('/site/') || !isEditableAsset(item.include)))
 	);
 };
 
+/**
+ * Validates and separates new items into valid and duplicate categories.
+ * validItems will contain the existing items plus any new items that are not duplicates (if allowDuplicates = true).
+ *
+ * @param {NodeSelectorItem[]} newItems - The array of new items to validate.
+ * @param {NodeSelectorItem[]} items - The existing array of items to compare against.
+ * @param {boolean} allowDuplicates - A flag indicating whether duplicates are allowed.
+ * @returns {Object} An object containing two arrays:
+ *   - `validItems`: The combined array of valid items (existing and new non-duplicates if allowDuplicates = true).
+ *   - `duplicateItems`: The array of items that were identified as duplicates.
+ */
+const validateNewItems = (
+	newItems: NodeSelectorItem[],
+	items: NodeSelectorItem[],
+	allowDuplicates: boolean
+): {
+	validItems: NodeSelectorItem[];
+	duplicateItems: NodeSelectorItem[];
+} => {
+	const validItems: NodeSelectorItem[] = [...items];
+	const duplicateItems: NodeSelectorItem[] = [];
+
+	newItems.forEach((newItem) => {
+		const isDuplicate = validItems.find((item) => item.key === newItem.key);
+		if (isDuplicate) {
+			duplicateItems.push(newItem);
+			if (allowDuplicates) validItems.push(newItem);
+		} else {
+			validItems.push(newItem);
+		}
+	});
+
+	return { validItems, duplicateItems };
+};
+
+const showDuplicatesWarning = (dispatch: ReduxDispatch, duplicateItems: NodeSelectorItem[]) => {
+	if (duplicateItems.length) {
+		showAlert({
+			message: 'The following items are duplicates and were not added:',
+			children: (
+				<List>
+					{duplicateItems.map((item) => (
+						<ListItemText
+							key={item.key}
+							primary={item.value}
+							secondary={item.include}
+							slotProps={{
+								primary: { noWrap: true },
+								secondary: { noWrap: true }
+							}}
+						/>
+					))}
+				</List>
+			),
+			dispatch
+		});
+	}
+};
+
 function NodeSelector(props: NodeSelectorProps) {
 	const { field, contentType, value, setValue, readonly: formReadonly, autoFocus } = props;
+
 	// region field properties/validations
 	const readonly = formReadonly || (field.properties?.readonly?.value as boolean);
 	const disableFlattening = (field.properties?.disableFlattening?.value as boolean) ?? false;
 	const useSingleValueFilename = (field.properties?.useSingleValueFilename?.value as boolean) ?? false;
 	const useMVS = (field.properties?.useMVS?.value as boolean) ?? false;
+	const allowDuplicates = (field.validations?.allowDuplicates?.value as boolean) ?? false;
 	// endregion
 
 	useFetchContentItems(value.flatMap((item) => item.include ?? []));
@@ -593,8 +660,10 @@ function NodeSelector(props: NodeSelectorProps) {
 		const item: ContentItem = itemsByPath[value[index].key];
 
 		if (isEditableViaFormEditor(item)) {
+			// If the item is editable via form editor (page, component or taxonomy), open the form editor in read-only mode
 			dispatch(pickShowContentFormAction({ path: item.path, authoringBase, site: siteId, readonly: true }));
 		} else {
+			// Otherwise, open the preview dialog, it may be a preview of media (image, video, audio) or document (pdf) or code editor for other text-based files
 			const dialogProps =
 				isMediaContent(item.mimeType) || isPdfDocument(item.mimeType)
 					? {
@@ -684,10 +753,10 @@ function NodeSelector(props: NodeSelectorProps) {
 					path: processPath(pickerChoice.path),
 					contentTypes: pickerChoice.allowedContentTypes,
 					onSuccess(items: MediaItem | MediaItem[]) {
-						const nextValue = value.concat();
+						const newNodeSelectorItems = [];
 						asArray(items).forEach((item) => {
 							const fileType = getFileExtension(item.name);
-							nextValue.push({
+							newNodeSelectorItems.push({
 								key: item.path,
 								value: item.name,
 								include: item.path,
@@ -695,7 +764,9 @@ function NodeSelector(props: NodeSelectorProps) {
 								...(fileType ? getFileMetaData({ fileType, useSingleValueFilename, useMVS }) : {})
 							});
 						});
-						setValue(nextValue);
+						const { validItems, duplicateItems } = validateNewItems(newNodeSelectorItems, value, allowDuplicates);
+						setValue(validItems);
+						if (!allowDuplicates && duplicateItems.length) showDuplicatesWarning(dispatch, duplicateItems);
 					}
 				});
 				break;
@@ -708,16 +779,18 @@ function NodeSelector(props: NodeSelectorProps) {
 					path: ensureSingleSlash(`${processPath(pickerChoice.path)}/.+`),
 					contentTypes: pickerChoice.allowedContentTypes,
 					onAcceptSelection(paths, items) {
-						const nextValue = value.concat();
+						const newNodeSelectorItems = [];
 						items?.forEach((item) => {
-							nextValue.push({
+							newNodeSelectorItems.push({
 								key: item.path,
 								value: item.name,
 								include: item.path,
 								disableFlattening
 							});
 						});
-						setValue(nextValue);
+						const { validItems, duplicateItems } = validateNewItems(newNodeSelectorItems, value, allowDuplicates);
+						setValue(validItems);
+						if (!allowDuplicates && duplicateItems.length) showDuplicatesWarning(dispatch, duplicateItems);
 					}
 				});
 				break;
@@ -742,9 +815,9 @@ function NodeSelector(props: NodeSelectorProps) {
 							[isEmbedded ? 'component' : 'include']: isEmbedded ? (result.values as LookupTable<Primitive>) : key,
 							disableFlattening
 						};
-						const nextValue = value.concat();
-						nextValue.push(newItem);
-						setValue(nextValue);
+						const { validItems, duplicateItems } = validateNewItems([newItem], value, allowDuplicates);
+						setValue(validItems);
+						if (!allowDuplicates && duplicateItems.length) showDuplicatesWarning(dispatch, duplicateItems);
 						return Promise.resolve({ close: true });
 					}
 				});
@@ -757,12 +830,12 @@ function NodeSelector(props: NodeSelectorProps) {
 					siteId,
 					onUploadComplete: (result: FileUploadResult) => {
 						if (result.successful.length) {
-							const nextValue = value.concat();
+							const newNodeSelectorItems = [];
 							asArray(result.successful).forEach((item) => {
 								const fileType = item.extension;
 								const fileSize = item.size;
 								const value = ensureSingleSlash(`${item.meta.path}/${item.meta.name}`);
-								nextValue.push({
+								newNodeSelectorItems.push({
 									key: value,
 									value: item.meta.name,
 									include: value,
@@ -770,7 +843,9 @@ function NodeSelector(props: NodeSelectorProps) {
 									...(fileType ? getFileMetaData({ fileType, fileSize, useSingleValueFilename, useMVS }) : {})
 								});
 							});
-							setValue(nextValue);
+							const { validItems, duplicateItems } = validateNewItems(newNodeSelectorItems, value, allowDuplicates);
+							setValue(validItems);
+							if (!allowDuplicates && duplicateItems.length) showDuplicatesWarning(dispatch, duplicateItems);
 						}
 					}
 				});
@@ -1006,7 +1081,7 @@ function NodeSelector(props: NodeSelectorProps) {
 											user.username === itemsByPath[item.include]?.lockOwner?.username));
 								return (
 									<ListItemButton
-										key={item.key}
+										key={index} // Using index as the key because there can be duplicate items (same item included more than once)
 										divider={index !== value.length - 1}
 										onClick={(e) => (canBeEdited ? handleOpenItem(e, index, false) : handleViewItem(e, index))}
 										onKeyDown={(e) => handleItemKeyDown(e, index)}
