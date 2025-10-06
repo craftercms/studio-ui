@@ -24,7 +24,7 @@ import HelpOutline from '@mui/icons-material/HelpOutline';
 import SearchRounded from '@mui/icons-material/SearchRounded';
 import { FormsEngineField } from '../components/FormsEngineField';
 import { ControlProps } from '../types';
-import { MediaItem, Primitive } from '../../../models';
+import { type ContentItem, MediaItem, Primitive } from '../../../models';
 import List from '@mui/material/List';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
@@ -96,8 +96,12 @@ import UploadFileOutlinedIcon from '@mui/icons-material/UploadFileOutlined';
 import type { FileUploadResult } from '../../SingleFileUpload';
 import type { SingleFileUploadDialogProps } from '../../SingleFileUploadDialog';
 import { showCodeEditorDialog } from '../../../state/actions/dialogs';
-import { getEditorMode, isEditableAsset } from '../../../utils/content';
-import { createComponentId } from '../../../utils/system';
+import { isAudio, getEditorMode, isEditableAsset, isPdfDocument, isVideo } from '../../../utils/content';
+import { createComponentId, pickShowContentFormAction } from '../../../utils/system';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import { isEditableViaFormEditor, isImage, isMediaContent } from '../../PathNavigator/utils';
+import useSelection from '../../../hooks/useSelection';
+import { getEditorMode as getItemEditorMode } from '../../PathNavigator/utils';
 
 const SortableList = lazy(() => import('../components/SortableList'));
 const TouchSortableList = lazy(() => import('../components/TouchSortableList'));
@@ -542,6 +546,12 @@ const getFileMetaData = ({
 	return metaData;
 };
 
+const isItemComponent = (item: NodeSelectorItem): boolean => {
+	return Boolean(
+		item.component || (item.include && (item.include.startsWith('/site/') || !isEditableAsset(item.include)))
+	);
+};
+
 function NodeSelector(props: NodeSelectorProps) {
 	const { field, contentType, value, setValue, readonly: formReadonly, autoFocus } = props;
 	// region field properties/validations
@@ -570,6 +580,7 @@ function NodeSelector(props: NodeSelectorProps) {
 	const addMenuButtonRef = useRef<HTMLButtonElement>(undefined);
 	const contentTypes = useContentTypes();
 	const siteId = useActiveSiteId();
+	const authoringBase = useSelection((state) => state.env.authoringBase);
 	const dataSourceSummary = useConsolidatedItemPickerData(useExtractDataSources(contentType, field, 'itemManager'));
 	const handleRemoveItem = (event: ReactMouseEvent, index: number) => {
 		event.stopPropagation();
@@ -577,10 +588,42 @@ function NodeSelector(props: NodeSelectorProps) {
 		nextValue.splice(index, 1);
 		setValue(nextValue);
 	};
+	const handleViewItem = (event: { stopPropagation(): void }, index: number) => {
+		event.stopPropagation();
+		const item: ContentItem = itemsByPath[value[index].key];
+
+		if (isEditableViaFormEditor(item)) {
+			dispatch(pickShowContentFormAction({ path: item.path, authoringBase, site: siteId, readonly: true }));
+		} else {
+			const dialogProps =
+				isMediaContent(item.mimeType) || isPdfDocument(item.mimeType)
+					? {
+							type: isImage(item) ? 'image' : isVideo(item) ? 'video' : isAudio(item) ? 'audio' : 'pdf',
+							title: item.label,
+							url: item.path
+						}
+					: {
+							type: 'editor',
+							title: item.label,
+							url: item.path,
+							path: item.path,
+							mode: getItemEditorMode(item)
+						};
+
+			dispatch(
+				pushDialog({
+					component: createComponentId('PreviewDialog'),
+					allowMinimize: true,
+					allowFullScreen: true,
+					props: dialogProps
+				})
+			);
+		}
+	};
 	const handleOpenItem = (event: { stopPropagation(): void }, index: number, edit: boolean = false) => {
 		event.stopPropagation();
 		const item: NodeSelectorItem = value[index];
-		if (item.component || (item.include && (item.include.startsWith('/site/') || !isEditableAsset(item.include)))) {
+		if (isItemComponent(item)) {
 			const isEmbedded = Boolean(item.component);
 			api.pushForm({
 				readonly: !edit,
@@ -947,18 +990,25 @@ function NodeSelector(props: NodeSelectorProps) {
 								) : (
 									<FormattedMessage defaultMessage="Unlink" />
 								);
-								const isComponent = item.include || item.component;
+								const isComponent = isItemComponent(item);
 								const canBeEdited =
-									isComponent &&
-									(isEmbedded ||
-										(itemsByPath[item.include]?.availableActionsMap.edit &&
-											(itemsByPath[item.include]?.lockOwner == null ||
-												user.username === itemsByPath[item.include]?.lockOwner?.username)));
+									// Is a component and is embedded or is shared, and user can edit it (has edit action and is not locked)
+									(isComponent &&
+										(isEmbedded ||
+											(itemsByPath[item.include]?.availableActionsMap.edit &&
+												(itemsByPath[item.include]?.lockOwner == null ||
+													user.username === itemsByPath[item.include]?.lockOwner?.username)))) ||
+									// is an editable asset, and the user can edit it (has edit action and is not locked)
+									(!isComponent &&
+										isEditableAsset(item.key) &&
+										itemsByPath[item.include]?.availableActionsMap.edit &&
+										(itemsByPath[item.include]?.lockOwner == null ||
+											user.username === itemsByPath[item.include]?.lockOwner?.username));
 								return (
 									<ListItemButton
 										key={item.key}
 										divider={index !== value.length - 1}
-										onClick={(e) => handleOpenItem(e, index, false)}
+										onClick={(e) => (canBeEdited ? handleOpenItem(e, index, false) : handleViewItem(e, index))}
 										onKeyDown={(e) => handleItemKeyDown(e, index)}
 									>
 										<ListItemText
@@ -984,24 +1034,28 @@ function NodeSelector(props: NodeSelectorProps) {
 												)
 											}
 										/>
-										{(canBeEdited || !readonly) && (
-											<ListItemSecondaryAction sx={{ position: 'static', display: 'flex', transform: 'none' }}>
-												{canBeEdited && (
-													<Tooltip title="Edit">
-														<IconButton size="small" onClick={(e) => handleOpenItem(e, index, !readonly)}>
-															<EditOutlined fontSize="small" />
-														</IconButton>
-													</Tooltip>
-												)}
-												{!readonly && (
-													<Tooltip title={iconTooltip}>
-														<IconButton size="small" onClick={(e) => handleRemoveItem(e, index)}>
-															<Icon fontSize="small" />
-														</IconButton>
-													</Tooltip>
-												)}
-											</ListItemSecondaryAction>
-										)}
+										<ListItemSecondaryAction sx={{ position: 'static', display: 'flex', transform: 'none' }}>
+											{canBeEdited ? (
+												<Tooltip title="Edit">
+													<IconButton size="small" onClick={(e) => handleOpenItem(e, index, !readonly)}>
+														<EditOutlined fontSize="small" />
+													</IconButton>
+												</Tooltip>
+											) : (
+												<Tooltip title="View">
+													<IconButton size="small" onClick={(e) => handleViewItem(e, index)}>
+														<VisibilityOutlinedIcon fontSize="small" />
+													</IconButton>
+												</Tooltip>
+											)}
+											{!readonly && (
+												<Tooltip title={iconTooltip}>
+													<IconButton size="small" onClick={(e) => handleRemoveItem(e, index)}>
+														<Icon fontSize="small" />
+													</IconButton>
+												</Tooltip>
+											)}
+										</ListItemSecondaryAction>
 									</ListItemButton>
 								);
 							})}
