@@ -59,17 +59,18 @@ export function TableOfContents({ containerRef, fieldsToRender }: TableOfContent
 	};
 	const handleSectionClick = (event: SyntheticEvent) => {
 		setOpenDrawerSidebar(false);
-		const sectionId = event.currentTarget.parentElement.getAttribute('data-section-id');
+		const sectionId = event.currentTarget.getAttribute('data-section-id');
 		if (!store.get(expandedStateAtoms[sectionId])) {
 			store.set(expandedStateAtoms[sectionId], true);
 		}
 		scrollToTarget(containerRef.current.querySelector(`[data-area-id="formBody"] [data-section-id="${sectionId}"]`));
 	};
 	const handleFieldClick = (event: SyntheticEvent) => {
+		event.stopPropagation();
 		// TODO: When filtering and clicked, the section may be collapsed. Through DOM, we can't
 		//  get the section id since sections aren't rendered when filtering. How do we get to the section to expand it?
 		setOpenDrawerSidebar(false);
-		const fieldId = event.currentTarget.parentElement.getAttribute('data-field-id');
+		const fieldId = event.currentTarget.getAttribute('data-field-id');
 		scrollToTarget(containerRef.current.querySelector(`[data-area-id="formBody"] [data-field-id="${fieldId}"]`));
 	};
 	const handleSectionExpansionToggleClick = (event: SyntheticEvent, itemId: string, expanded: boolean) => {
