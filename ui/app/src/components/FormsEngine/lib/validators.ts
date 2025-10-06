@@ -14,23 +14,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import type { ElementType } from 'react';
 import type { ContentTypeField } from '../../../models/ContentType';
 import type { BuiltInControlType } from './controlMap';
 import LookupTable from '../../../models/LookupTable';
 import { XmlKeys } from './formConsts';
+import { defineMessage, type MessageDescriptor } from 'react-intl';
 
-export const validatorsMap: Record<BuiltInControlType, ElementType> = {
-	repeat: null,
-	'auto-filename': null,
-	'aws-file-upload': null,
-	'checkbox-group': null,
-	checkbox: null,
-	'date-time': null,
-	disabled: null,
-	dropdown: null,
-	'file-name': null,
-	forcehttps: null,
-	'image-picker': null,
+type ValidatorFunctionDef = (
+	field: ContentTypeField,
+	currentValue: unknown,
+	messages: FieldValidityState['messages']
+) => boolean;
+export const validatorsMap: Partial<Record<BuiltInControlType, ValidatorFunctionDef>> = {
+	repeat: undefined,
+	'auto-filename': undefined,
+	'aws-file-upload': undefined,
+	'checkbox-group': undefined,
+	checkbox: undefined,
+	'date-time': undefined,
+	disabled: undefined,
+	dropdown: undefined,
+	'file-name': undefined,
+	forcehttps: undefined,
+	'image-picker': undefined,
 	input: (field, currentValue, messages) => {
 		let isValid = true;
 		const pattern = field.validations.pattern?.value as string;
@@ -41,13 +48,13 @@ export const validatorsMap: Record<BuiltInControlType, ElementType> = {
 		}
 		return isValid;
 	},
-	'internal-name': null,
-	label: null,
-	'link-input': null,
-	'link-textarea': null,
-	'linked-dropdown': null,
-	'locale-selector': null,
-	'node-selector': null,
+	'internal-name': undefined,
+	label: undefined,
+	'link-input': undefined,
+	'link-textarea': undefined,
+	'linked-dropdown': undefined,
+	'locale-selector': undefined,
+	'node-selector': undefined,
 	'numeric-input': (field, currentValue, messages) => {
 		let isValid = true;
 		const pattern = field.validations.pattern?.value as string;
@@ -74,36 +81,35 @@ export const validatorsMap: Record<BuiltInControlType, ElementType> = {
 
 		return isValid;
 	},
-	'page-nav-order': null,
-	rte: null,
-	textarea: null,
-	time: null,
-	'transcoded-video-picker': null,
-	uuid: null,
-	'video-picker': null,
+	'page-nav-order': undefined,
+	rte: undefined,
+	textarea: undefined,
+	time: undefined,
+	'transcoded-video-picker': undefined,
+	uuid: undefined,
+	'video-picker': undefined,
 	colorPicker: undefined
 };
 
 export interface FieldValidityState {
 	isValid: boolean;
-	messages: string[];
+	messages: (string | MessageDescriptor)[];
 }
 
 export function validateFieldValue(field: ContentTypeField, currentValue: unknown): FieldValidityState {
-	let isValid = false;
+	const messages: FieldValidityState['messages'] = [];
 	const isRequired = isFieldRequired(field);
 	const isEmpty = isEmptyValue(field, currentValue);
-	if (!isRequired && isEmpty) {
-		// If not required and its empty, then it's valid.
-		isValid = true;
-	} else if (!isEmpty) {
-		// FE2 TODO: Add other validation types (max length, etc)...
-		isValid = true;
+
+	// If it's required, and the value is empty, then it's invalid.
+	if (isRequired && isEmpty) {
+		messages.push(defineMessage({ defaultMessage: 'This field is required.' }));
+		return { isValid: false, messages };
 	}
-	return {
-		isValid,
-		messages: isValid ? null : ['This field is required.']
-	};
+	const validator = validatorsMap[field.type as BuiltInControlType];
+	// If there's a validator, run it. If not, it's valid.
+	const isValid = typeof validator === 'function' ? validator(field, currentValue, messages) : true;
+	return { isValid, messages };
 }
 
 export function isEmptyValue(field: ContentTypeField, currentValue: unknown): boolean {
