@@ -19,7 +19,7 @@ import { createVirtualSection, DescriptorContentType } from '../../utils';
 import { defineMessage } from 'react-intl';
 
 export const s3UploadDataSourceDescriptor: DescriptorContentType = {
-	id: 's3-upload',
+	id: 'S3-upload',
 	name: defineMessage({ defaultMessage: 'File Uploaded to S3 Repository' }),
 	description: '',
 	type: 'item',

@@ -26,11 +26,11 @@ type ValidatorFunctionDef = (
 	messages: FieldValidityState['messages']
 ) => boolean;
 export const validatorsMap: Partial<Record<BuiltInControlType, ValidatorFunctionDef>> = {
-	repeat: null,
-	'auto-filename': null,
-	'aws-file-upload': null,
-	'checkbox-group': null,
-	checkbox: null,
+	repeat: undefined,
+	'auto-filename': undefined,
+	'aws-file-upload': undefined,
+	'checkbox-group': undefined,
+	checkbox: undefined,
 	'date-time': (field, currentValue, messages) => {
 		let isValid = true;
 		const allowPastDate = Boolean(field.properties?.allowPastDate?.value);
@@ -42,27 +42,27 @@ export const validatorsMap: Partial<Record<BuiltInControlType, ValidatorFunction
 		}
 		return isValid;
 	},
-	disabled: null,
-	dropdown: null,
-	'file-name': null,
-	forcehttps: null,
-	'image-picker': null,
-	input: null,
-	'internal-name': null,
-	label: null,
-	'link-input': null,
-	'link-textarea': null,
-	'linked-dropdown': null,
-	'locale-selector': null,
-	'node-selector': null,
-	'numeric-input': null,
-	'page-nav-order': null,
-	rte: null,
-	textarea: null,
-	time: null,
-	'transcoded-video-picker': null,
-	uuid: null,
-	'video-picker': null,
+	disabled: undefined,
+	dropdown: undefined,
+	'file-name': undefined,
+	forcehttps: undefined,
+	'image-picker': undefined,
+	input: undefined,
+	'internal-name': undefined,
+	label: undefined,
+	'link-input': undefined,
+	'link-textarea': undefined,
+	'linked-dropdown': undefined,
+	'locale-selector': undefined,
+	'node-selector': undefined,
+	'numeric-input': undefined,
+	'page-nav-order': undefined,
+	rte: undefined,
+	textarea: undefined,
+	time: undefined,
+	'transcoded-video-picker': undefined,
+	uuid: undefined,
+	'video-picker': undefined,
 	colorPicker: undefined
 };
 
@@ -72,26 +72,19 @@ export interface FieldValidityState {
 }
 
 export function validateFieldValue(field: ContentTypeField, currentValue: unknown): FieldValidityState {
-	let isValid = false;
 	const messages: FieldValidityState['messages'] = [];
 	const isRequired = isFieldRequired(field);
 	const isEmpty = isEmptyValue(field, currentValue);
-	if (!isRequired && isEmpty) {
-		// If not required and its empty, then it's valid.
-		isValid = true;
-	} else if (!isEmpty) {
-		if (validatorsMap[field.type]) {
-			isValid = validatorsMap[field.type](field, currentValue, messages);
-		} else {
-			isValid = true;
-		}
-	} else {
+
+	// If it's required, and the value is empty, then it's invalid.
+	if (isRequired && isEmpty) {
 		messages.push(defineMessage({ defaultMessage: 'This field is required.' }));
+		return { isValid: false, messages };
 	}
-	return {
-		isValid,
-		messages
-	};
+	const validator = validatorsMap[field.type as BuiltInControlType];
+	// If there's a validator, run it. If not, it's valid.
+	const isValid = typeof validator === 'function' ? validator(field, currentValue, messages) : true;
+	return { isValid, messages };
 }
 
 export function isEmptyValue(field: ContentTypeField, currentValue: unknown): boolean {
