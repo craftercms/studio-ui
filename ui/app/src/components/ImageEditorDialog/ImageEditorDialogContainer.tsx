@@ -105,7 +105,7 @@ export function ImageEditorDialogContainer(props: ImageEditorDialogProps) {
 	const isSliderMode = editorMode && sliderModes.includes(editorMode);
 	const isNewFileName = overwriteState.fileName !== fileNameWithoutExtension;
 
-	const onSubmit = (newPath?: string) => {
+	const handleSubmit = (newPath?: string) => {
 		const cropper = cropperRef.current;
 		if (!cropper) return;
 
@@ -115,7 +115,7 @@ export function ImageEditorDialogContainer(props: ImageEditorDialogProps) {
 		});
 	};
 
-	const onChange = (cropper: CropperRef) => {
+	const handleChange = (cropper: CropperRef) => {
 		setCoordinates(cropper.getCoordinates());
 	};
 
@@ -123,7 +123,7 @@ export function ImageEditorDialogContainer(props: ImageEditorDialogProps) {
 	 *
 	 * @param writePath The path where the cropped image will be saved.
 	 */
-	const onWriteContent = (writePath: string) => {
+	const handleWriteContent = (writePath: string) => {
 		const cropper = cropperRef.current;
 		if (!cropper) return;
 		const fileName = getFileNameFromPath(writePath);
@@ -134,7 +134,7 @@ export function ImageEditorDialogContainer(props: ImageEditorDialogProps) {
 			formData.append('path', writePath);
 			uploadFile(siteId, formData).subscribe({
 				next: () => {
-					onSubmit(writePath !== path ? writePath : null);
+					handleSubmit(writePath !== path ? writePath : null);
 				},
 				error: ({ response }) => {
 					dispatch(
@@ -149,13 +149,13 @@ export function ImageEditorDialogContainer(props: ImageEditorDialogProps) {
 	};
 
 	/** Handles renaming the file when the user changes the file name and clicks "Accept". */
-	const onRename = () => {
+	const handleRename = () => {
 		const newFileName = `${overwriteState.fileName}.${fileExtension}`;
 		const newPath = path.replace(getFileNameFromPath(path), newFileName);
-		onWriteContent(newPath);
+		handleWriteContent(newPath);
 	};
 
-	const onReset = () => {
+	const handleReset = () => {
 		setCoordinates({
 			height: restrictions?.height ?? restrictions?.maxHeight,
 			width: restrictions?.width ?? restrictions?.maxWidth
@@ -263,7 +263,7 @@ export function ImageEditorDialogContainer(props: ImageEditorDialogProps) {
 								/>
 							</FormControl>
 							<FormControl>
-								<Button onClick={onReset} startIcon={<CachedIcon />}>
+								<Button onClick={handleReset} startIcon={<CachedIcon />}>
 									<FormattedMessage defaultMessage="Reset" />
 								</Button>
 							</FormControl>
@@ -284,7 +284,7 @@ export function ImageEditorDialogContainer(props: ImageEditorDialogProps) {
 									resizable: cropperEnabled,
 									lines: cropperEnabled
 								}}
-								onUpdate={onChange}
+								onUpdate={handleChange}
 								backgroundComponent={AdjustableBackground}
 								backgroundProps={adjustments}
 								backgroundWrapperProps={{
@@ -329,16 +329,19 @@ export function ImageEditorDialogContainer(props: ImageEditorDialogProps) {
 						disabled={isEmpty(overwriteState.fileName)}
 						onClick={() => {
 							if (writeContent) {
-								onRename();
+								handleRename();
 							} else {
-								onSubmit();
+								handleSubmit();
 							}
 						}}
 					>
 						<FormattedMessage defaultMessage="Accept" />
 					</PrimaryButton>
 				) : (
-					<PrimaryButton disabled={!coordinates?.width || !coordinates?.height} onClick={() => onWriteContent(path)}>
+					<PrimaryButton
+						disabled={!coordinates?.width || !coordinates?.height}
+						onClick={() => handleWriteContent(path)}
+					>
 						<FormattedMessage defaultMessage="Overwrite" />
 					</PrimaryButton>
 				)}
