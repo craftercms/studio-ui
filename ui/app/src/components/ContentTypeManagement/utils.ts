@@ -54,6 +54,7 @@ import type { BuiltInControlType } from '../FormsEngine/lib/controlMap';
 import { asArray } from '../../utils/array';
 import { componentsDataSourceContentTypesPropertyNames, systemValidationsKeysMap } from '../../utils/contentType';
 import { XmlKeys } from '../FormsEngine/lib/formConsts';
+import { getPossibleTranslation } from '../../utils/i18n';
 
 // TODO: assess which of the utils here should go to utils/contentType.ts, or other places (serializers, etc.)
 
@@ -731,52 +732,34 @@ export function applyTranslations(
 ): PartialContentType {
 	const translatedSections = descriptor.sections.map((section) => ({
 		...section,
-		title: translateIfMessageDescriptor(formatMessage, section, 'title'),
-		description: translateIfMessageDescriptor(formatMessage, section, 'description')
+		title: translateIfMessageDescriptor(section['title'], formatMessage),
+		description: translateIfMessageDescriptor(section['description'], formatMessage)
 	}));
 
 	const translatedFieldsArray = Object.values(descriptor.fields).map((field) => {
 		return {
 			...field,
-			name: translateIfMessageDescriptor(formatMessage, field, 'name'),
-			description: translateIfMessageDescriptor(formatMessage, field, 'description')
+			name: translateIfMessageDescriptor(field['name'], formatMessage),
+			description: translateIfMessageDescriptor(field['description'], formatMessage)
 		};
 	});
 	const translatedFieldsLookup = createLookupTable(translatedFieldsArray, 'id');
 
 	return {
 		...descriptor,
-		name: translateIfMessageDescriptor(formatMessage, descriptor, 'name'),
-		description: translateIfMessageDescriptor(formatMessage, descriptor, 'description'),
+		name: translateIfMessageDescriptor(descriptor['name'], formatMessage),
+		description: translateIfMessageDescriptor(descriptor['description'], formatMessage),
 		sections: translatedSections,
 		fields: translatedFieldsLookup as unknown as LookupTable<ContentTypeField>
 	};
 }
 
-function translateIfMessageDescriptor(
-	formatMessage: IntlShape['formatMessage'],
-	target: DescriptorContentType,
-	property: 'name' | 'description'
-): string;
-function translateIfMessageDescriptor(
-	formatMessage: IntlShape['formatMessage'],
-	target: DescriptorSection,
-	property: 'title' | 'description'
-): string;
-function translateIfMessageDescriptor(
-	formatMessage: IntlShape['formatMessage'],
-	target: DescriptorField,
-	property: 'name' | 'description' | 'helpText'
-): string;
-function translateIfMessageDescriptor<K>(
-	formatMessage: IntlShape['formatMessage'],
-	target: K,
-	property: keyof K
+export function translateIfMessageDescriptor(
+	titleOrDescriptor: TranslationOrText,
+	formatMessage: IntlShape['formatMessage']
 ): string {
-	const value = target[property];
-	if (nnou(value) && typeof value === 'object') {
-		return formatMessage(value as MessageDescriptor);
-	}
+	const value = getPossibleTranslation(titleOrDescriptor, formatMessage);
+	// TODO: Ignoring non string values. Must adjust to not ignore and actually handle either here or at the consumer level.
 	return typeof value === 'string' ? value : '';
 }
 

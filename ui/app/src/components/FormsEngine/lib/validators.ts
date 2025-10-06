@@ -14,6 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import type { ElementType } from 'react';
 import type { ContentTypeField } from '../../../models/ContentType';
 import type { BuiltInControlType } from './controlMap';
 import LookupTable from '../../../models/LookupTable';
@@ -26,9 +27,9 @@ type ValidatorFunctionDef = (
 	messages: FieldValidityState['messages']
 ) => boolean;
 export const validatorsMap: Partial<Record<BuiltInControlType, ValidatorFunctionDef>> = {
-	repeat: null,
-	'auto-filename': null,
-	'aws-file-upload': null,
+	repeat: undefined,
+	'auto-filename': undefined,
+	'aws-file-upload': undefined,
 	'checkbox-group': (field, currentValue, messages) => {
 		const minSelected = Number(field.validations?.minSize?.value ?? 0);
 		const selectedCount = Array.isArray(currentValue) ? currentValue.length : 0;
@@ -37,29 +38,29 @@ export const validatorsMap: Partial<Record<BuiltInControlType, ValidatorFunction
 			messages.push(defineMessage({ defaultMessage: 'Please select at least the minimum required items.' }));
 		return isValid;
 	},
-	checkbox: null,
-	'date-time': null,
-	disabled: null,
-	dropdown: null,
-	'file-name': null,
-	forcehttps: null,
-	'image-picker': null,
-	input: null,
-	'internal-name': null,
-	label: null,
-	'link-input': null,
-	'link-textarea': null,
-	'linked-dropdown': null,
-	'locale-selector': null,
-	'node-selector': null,
-	'numeric-input': null,
-	'page-nav-order': null,
-	rte: null,
-	textarea: null,
-	time: null,
-	'transcoded-video-picker': null,
-	uuid: null,
-	'video-picker': null,
+	checkbox: undefined,
+	'date-time': undefined,
+	disabled: undefined,
+	dropdown: undefined,
+	'file-name': undefined,
+	forcehttps: undefined,
+	'image-picker': undefined,
+	input: undefined,
+	'internal-name': undefined,
+	label: undefined,
+	'link-input': undefined,
+	'link-textarea': undefined,
+	'linked-dropdown': undefined,
+	'locale-selector': undefined,
+	'node-selector': undefined,
+	'numeric-input': undefined,
+	'page-nav-order': undefined,
+	rte: undefined,
+	textarea: undefined,
+	time: undefined,
+	'transcoded-video-picker': undefined,
+	uuid: undefined,
+	'video-picker': undefined,
 	colorPicker: undefined
 };
 
@@ -80,7 +81,7 @@ export function validateFieldValue(field: ContentTypeField, currentValue: unknow
 	}
 	const validator = validatorsMap[field.type as BuiltInControlType];
 	// If there's a validator, run it. If not, it's valid.
-	const isValid = validator ? validator(field, currentValue, messages) : true;
+	const isValid = typeof validator === 'function' ? validator(field, currentValue, messages) : true;
 	return { isValid, messages };
 }
 
