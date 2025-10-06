@@ -119,6 +119,9 @@ export interface NodeSelectorItem {
 	component?: Record<string, Primitive>;
 	fileSize_smv?: number;
 	fileType_smv?: string;
+	fileType_mvs?: string;
+	fileType_s?: string;
+	fileSize_s?: number;
 }
 
 export type DataSourcePickerType = 'search' | 'browse' | 'create' | 'upload';
@@ -724,7 +727,7 @@ function NodeSelector(props: NodeSelectorProps) {
 			dispatch(
 				showCodeEditorDialog({
 					path: item.include,
-					mode: getEditorMode(itemsByPath[item.include].mimeType)
+					mode: getEditorMode(itemsByPath[item.include]?.mimeType ?? 'text/plain')
 				})
 			);
 		}
