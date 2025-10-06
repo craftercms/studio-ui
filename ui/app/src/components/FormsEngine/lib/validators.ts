@@ -20,6 +20,7 @@ import type { BuiltInControlType } from './controlMap';
 import LookupTable from '../../../models/LookupTable';
 import { XmlKeys } from './formConsts';
 import { defineMessage, type MessageDescriptor } from 'react-intl';
+import { nnou } from '../../../utils/object';
 
 type ValidatorFunctionDef = (
 	field: ContentTypeField,
@@ -40,6 +41,10 @@ export const validatorsMap: Partial<Record<BuiltInControlType, ValidatorFunction
 	'image-picker': undefined,
 	input: (field, currentValue, messages) => {
 		let isValid = true;
+		// Skip validation if value is empty and field is not required
+		if (currentValue == null || (typeof currentValue === 'string' && currentValue.trim() === '')) {
+			return isValid;
+		}
 		const pattern = field.validations.pattern?.value as string;
 		// If there's a pattern and it doesn't match, it's invalid.
 		if (pattern && !String(currentValue).match(pattern)) {
@@ -61,7 +66,7 @@ export const validatorsMap: Partial<Record<BuiltInControlType, ValidatorFunction
 		const maxValue = field.validations.maxValue?.value;
 		const minValue = field.validations.minValue?.value;
 
-		if (currentValue !== null) {
+		if (nnou(currentValue)) {
 			// If there's a pattern and it doesn't match
 			if (pattern && !String(currentValue).match(pattern)) {
 				messages.push(defineMessage({ defaultMessage: 'The value does not match the required pattern.' }));
