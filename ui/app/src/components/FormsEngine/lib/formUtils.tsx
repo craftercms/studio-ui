@@ -31,7 +31,7 @@ import {
 	StableGlobalContext,
 	StableGlobalContextProps
 } from './formsEngineContext';
-import { fetchContentItem, fetchContentXML, fetchDescriptorXML, lock, unlock } from '../../../services/content';
+import { fetchContentXML, fetchDescriptorXML, fetchContentItem, lock, unlock } from '../../../services/content';
 import { AjaxError } from 'rxjs/ajax';
 import { fetchAffectedPackages } from '../../../services/workflow';
 import { Dispatch as ReduxDispatch } from 'redux';
