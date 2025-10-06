@@ -19,7 +19,7 @@ import { createVirtualSection, DescriptorContentType } from '../../utils';
 import { defineMessage } from 'react-intl';
 
 export const s3RepoDataSourceDescriptor: DescriptorContentType = {
-	id: 's3-repo',
+	id: 'S3-repo',
 	name: defineMessage({ defaultMessage: 'File From S3 Repository' }),
 	description: '',
 	type: 'item',
