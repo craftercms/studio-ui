@@ -557,6 +557,10 @@ const getFileMetaData = ({
  */
 const isItemComponent = (item: NodeSelectorItem): boolean => {
 	return Boolean(
+		// There are 3 scenarios when an item is considered a component:
+		// 1. It has the 'component' property (embedded component).
+		// 2. It has an 'include' property that starts with '/site/' (shared component).
+		// 3. It has an 'include' property that does not point to an editable asset (shared component).
 		item.component || (item.include && (item.include.startsWith('/site/') || !isEditableAsset(item.include)))
 	);
 };
