@@ -200,6 +200,11 @@ export function ImageEditorDialogContainer(props: ImageEditorDialogProps) {
 									slotProps={{
 										inputLabel: { shrink: true },
 										input: {
+											endAdornment: (
+												<Box component="span" sx={{ color: (theme) => theme.palette.text.disabled }}>
+													.{fileExtension}
+												</Box>
+											),
 											sx: {
 												maxWidth: { md: 500 },
 												...(writeContent &&
