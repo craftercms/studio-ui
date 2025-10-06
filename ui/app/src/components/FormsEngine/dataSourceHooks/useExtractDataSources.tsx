@@ -24,7 +24,8 @@ export function useExtractDataSources(
 	dataSourceProperty: string
 ): DataSource[] {
 	const dataSources = contentType.dataSources;
-	const dataSourceIdString = (field.properties[dataSourceProperty]?.value as string) ?? '';
+	const dataSourceIdString =
+		typeof field.properties[dataSourceProperty]?.value === 'string' ? field.properties[dataSourceProperty].value : '';
 	return useMemo(() => {
 		const dataSourceIds = dataSourceIdString
 			.split(',')
