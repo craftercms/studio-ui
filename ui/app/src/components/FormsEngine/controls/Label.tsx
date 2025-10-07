@@ -16,6 +16,7 @@
 
 import type { ControlProps } from '../types';
 import Typography from '@mui/material/Typography';
+import DOMPurify from 'dompurify';
 
 export function Label(props: ControlProps) {
 	const { field } = props;
@@ -26,9 +27,7 @@ export function Label(props: ControlProps) {
 	// endregion
 
 	return renderAsHTML ? (
-		<>
-			<span dangerouslySetInnerHTML={{ __html: labelText || field.defaultValue || '' }} />
-		</>
+		<span dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(labelText || field.defaultValue || '') }} />
 	) : (
 		<Typography variant="body2">{labelText || field.defaultValue || ''}</Typography>
 	);
