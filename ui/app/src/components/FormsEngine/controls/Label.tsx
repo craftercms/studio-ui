@@ -30,7 +30,7 @@ export function Label(props: ControlProps) {
 			<span dangerouslySetInnerHTML={{ __html: labelText || field.defaultValue || '' }} />
 		</>
 	) : (
-		<Typography variant="body2">{labelText || field.defaultValue}</Typography>
+		<Typography variant="body2">{labelText || field.defaultValue || ''}</Typography>
 	);
 }
 
