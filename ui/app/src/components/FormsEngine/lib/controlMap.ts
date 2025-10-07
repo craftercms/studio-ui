@@ -62,7 +62,7 @@ export const controlMap: Record<BuiltInControlType, ElementType> = {
 	'image-picker': lazy(() => import('../controls/ImagePicker')),
 	input: lazy(() => import('../controls/Text')),
 	'internal-name': null,
-	label: null,
+	label: lazy(() => import('../controls/Label')),
 	'link-input': null,
 	'link-textarea': null,
 	'linked-dropdown': null,
