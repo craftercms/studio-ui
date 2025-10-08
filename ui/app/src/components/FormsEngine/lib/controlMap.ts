@@ -69,7 +69,7 @@ export const controlMap: Record<BuiltInControlType, ElementType> = {
 	'locale-selector': null,
 	'node-selector': lazy(() => import('../controls/NodeSelector')),
 	'numeric-input': lazy(() => import('../controls/Numeric')),
-	'page-nav-order': null,
+	'page-nav-order': lazy(() => import('../controls/PageNavOrder')),
 	repeat: lazy(() => import('../controls/Repeat')),
 	rte: lazy(() => import('../controls/RichTextEditor')),
 	textarea: lazy(() => import('../controls/Textarea')),

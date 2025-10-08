@@ -1498,3 +1498,28 @@ export function fetchContentByCommitId(site: string, path: string, commitId: str
 		})
 	);
 }
+
+export interface PageNavItem {
+	order: number;
+	name: string;
+	id: string;
+	disabled: string;
+	placeInNav: string;
+}
+
+export function getNavItemsOrder(site: string, path: string, order: string = 'default'): Observable<PageNavItem[]> {
+	const qs = toQueryString({ site, path, order });
+	return get(`/studio/api/1/services/api/1/content/get-item-orders.json${qs}`).pipe(
+		map((response) => response?.response?.order),
+		catchError(errorSelectorApi1)
+	);
+}
+
+export function reorderNavItems(site: string, path: string, before: string, after: string) {
+	const qs = toQueryString({ site, path, before, after });
+	return get(`/studio/api/1/services/api/1/content/reorder-items.json${qs}`).pipe(
+		tap((response) => console.log('response', response)),
+		map((response) => response?.response?.orderValue),
+		catchError(errorSelectorApi1)
+	);
+}
