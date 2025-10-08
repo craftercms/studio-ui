@@ -32,6 +32,7 @@ export interface RangeProps extends TypeBuilderControl {
  * Enables selection of a range of values through two text fields.
  * It allows switching between a range and an exact value using a button.
  */
+// TODO: Rename or rethink control as it does more than only range. It may also be very specific to ImagePicker. We might want to do a show/hide of controls based on the value of another.
 export function Range(props: RangeProps) {
 	const { field, setValue } = props;
 	const htmlId = useId();
