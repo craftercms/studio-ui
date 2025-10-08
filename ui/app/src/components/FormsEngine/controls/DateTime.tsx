@@ -27,58 +27,6 @@ export interface DateTimeProps extends ControlProps {
 	value: string;
 }
 
-/** Checks if the populate date expression is valid.
- *
- * @param expr The populate date expression to validate.
- */
-const validatePopulateDateExp = (expr: string): boolean => {
-	const normalized = expr.replace(/ /g, '');
-	return /^(now|((now)?[+-]\d+(days|weeks|years|hours|minutes)))$/i.test(normalized);
-};
-
-/** Takes an expression like "now", "now+5days", "now-3weeks", "now+2years", "now-4hours", "now+30minutes"
- * and returns a Date object representing the calculated date. If the expression is invalid, it returns the
- * current date.
- *
- * @param expr The populate date expression.
- * @param allowPastDate If false, the time will be set to the end of the current minute to avoid past dates.
- */
-const processPopulateExpression = (expr: string, allowPastDate: boolean): Date => {
-	const date = new Date();
-	const daysInWeek = 7;
-	let modifier = 1;
-
-	const populateDateExp = expr.replace(/ /g, '');
-	const normalized = populateDateExp.toLowerCase();
-
-	if (validatePopulateDateExp(expr)) {
-		if (normalized === 'now') {
-			if (!allowPastDate) date.setSeconds(59, 0);
-		} else {
-			const action = normalized.match(/[+-]/)![0];
-			const expValue = parseInt(normalized.match(/\d+/)![0], 10);
-			const type = normalized.match(/(days|weeks|years|hours|minutes)/)![0];
-			if (action === '-') {
-				modifier = modifier * -1;
-			}
-			if (type === 'years') {
-				date.setFullYear(date.getFullYear() + modifier * expValue);
-			} else if (type === 'weeks') {
-				date.setDate(date.getDate() + modifier * expValue * daysInWeek);
-			} else if (type === 'days') {
-				date.setDate(date.getDate() + modifier * expValue);
-			} else if (type === 'hours') {
-				date.setTime(date.getTime() + modifier * (expValue * 3600000));
-			} else if (type === 'minutes') {
-				date.setTime(date.getTime() + modifier * expValue * 60000);
-			}
-		}
-	} else {
-		if (!allowPastDate) date.setSeconds(59, 0);
-	}
-	return date;
-};
-
 // TODO: How are we going to handle the timezone selector?. FE1 uses an extra `_tz` field to store the timezone value.
 export function DateTime(props: DateTimeProps) {
 	const { field, value: valueProp, setValue, readonly: formReadonly, autoFocus } = props;
@@ -167,6 +115,62 @@ export function DateTime(props: DateTimeProps) {
 			</FormsEngineField>
 		</>
 	);
+}
+
+/**
+ * Checks if the populate date expression is valid.
+ *
+ * @param expr {string} The populate date expression to validate.
+ * @returns true if the expression is valid, false otherwise.
+ */
+function validatePopulateDateExp(expr: string): boolean {
+	const normalized = expr.replace(/ /g, '');
+	return /^(now|((now)?[+-]\d+(days|weeks|years|hours|minutes)))$/i.test(normalized);
+}
+
+/**
+ * Takes an expression like "now", "now+5days", "now-3weeks", "now+2years", "now-4hours", "now+30minutes"
+ * and returns a Date object representing the calculated date. If the expression is invalid, it returns the
+ * current date.
+ *
+ * @param expr {string} The populate date expression.
+ * @param allowPastDate {boolean} If false, the time will be set to the end of the current minute to avoid past dates.
+ * @return {Date} The calculated date.
+ */
+function processPopulateExpression(expr: string, allowPastDate: boolean): Date {
+	const date = new Date();
+	const daysInWeek = 7;
+	let modifier = 1;
+
+	const populateDateExp = expr.replace(/ /g, '');
+	const normalized = populateDateExp.toLowerCase();
+
+	if (validatePopulateDateExp(expr)) {
+		if (normalized === 'now') {
+			if (!allowPastDate) date.setSeconds(59, 0);
+		} else {
+			const action = normalized.match(/[+-]/)![0];
+			const expValue = parseInt(normalized.match(/\d+/)![0], 10);
+			const type = normalized.match(/(days|weeks|years|hours|minutes)/)![0];
+			if (action === '-') {
+				modifier = modifier * -1;
+			}
+			if (type === 'years') {
+				date.setFullYear(date.getFullYear() + modifier * expValue);
+			} else if (type === 'weeks') {
+				date.setDate(date.getDate() + modifier * expValue * daysInWeek);
+			} else if (type === 'days') {
+				date.setDate(date.getDate() + modifier * expValue);
+			} else if (type === 'hours') {
+				date.setTime(date.getTime() + modifier * (expValue * 3600000));
+			} else if (type === 'minutes') {
+				date.setTime(date.getTime() + modifier * expValue * 60000);
+			}
+		}
+	} else {
+		if (!allowPastDate) date.setSeconds(59, 0);
+	}
+	return date;
 }
 
 export default DateTime;

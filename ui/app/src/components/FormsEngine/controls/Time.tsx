@@ -27,81 +27,6 @@ export interface TimeProps extends ControlProps {
 	value: string | null;
 }
 
-const parseTimeToDate = (time: string): Date | null => {
-	if (!time) return null;
-	const [h, m = '0', s = '0'] = time.split(':');
-	const hours = Number(h);
-	const minutes = Number(m);
-	const seconds = Number(s);
-
-	// Check time ranges
-	if (
-		!Number.isFinite(hours) ||
-		!Number.isFinite(minutes) ||
-		!Number.isFinite(seconds) ||
-		hours < 0 ||
-		hours > 23 ||
-		minutes < 0 ||
-		minutes > 59 ||
-		seconds < 0 ||
-		seconds > 59
-	) {
-		return null;
-	}
-
-	const date = new Date();
-	date.setHours(hours, minutes, seconds, 0);
-	return date;
-};
-
-const parseDateToTime = (date: Date | null): string | null => {
-	if (!date || Number.isNaN(date.valueOf())) return null;
-	return date.toLocaleTimeString('en-US', { hour12: false });
-};
-
-// Checks if the populate time expression is valid.
-const validatePopulateDateExp = (expr: string): boolean => {
-	const trimmed = (expr ?? '').replace(/ /g, '').toLowerCase();
-	if (trimmed === 'now') return true;
-	return /(now)?(\+|\-)\d+((hours)|(minutes))$/i.test(trimmed);
-};
-
-/** Takes an expression like "now", "now+5hours", "now-30minutes" and returns a Date object representing the calculated
- * time. If the expression is invalid, it returns the current time.
- *
- * @param expr The populate time expression.
- */
-const processPopulateExpression = (expr: string): Date => {
-	const date = new Date();
-	if (validatePopulateDateExp(expr)) {
-		if (expr === 'now') {
-			// This is to allow setting the time to the end of the current minute to avoid the time being in the past
-			// when seconds are > 0 and allowPastDate is false
-			date.setSeconds(59, 0);
-			return date;
-		} else {
-			let modifier = 1;
-			const dateExp = expr.replace(/ /g, '');
-			const action = dateExp.match(/[+-]/)![0];
-			const expValue = parseInt(dateExp.match(/\d+/)![0], 10);
-			const type = dateExp.match(/(hours|minutes)/)![0];
-			if (action === '-') {
-				modifier = modifier * -1;
-			}
-
-			if (type === 'hours') {
-				date.setTime(date.getTime() + modifier * (expValue * 60 * 60 * 1000));
-			} else if (type === 'minutes') {
-				date.setTime(date.getTime() + modifier * expValue * 60000);
-			}
-			return date;
-		}
-	} else {
-		date.setSeconds(59, 0);
-		return date;
-	}
-};
-
 // TODO: How are we going to handle the timezone selector?. FE1 uses an extra `_tz` field to store the timezone value.
 export function Time(props: TimeProps) {
 	const { field, value: valueProp, setValue, readonly: formReadonly, autoFocus } = props;
@@ -187,6 +112,99 @@ export function Time(props: TimeProps) {
 			</Box>
 		</FormsEngineField>
 	);
+}
+
+/**
+ * Converts a time string in the format "HH:mm:ss" into a `Date` object.
+ *
+ * @param time {string} - The time string to convert, formatted as "HH:mm:ss".
+ * @returns {Date | null} - A `Date` object representing the parsed time, or `null` if the input is invalid.
+ */
+function parseTimeToDate(time: string): Date | null {
+	if (!time) return null;
+	const [h, m = '0', s = '0'] = time.split(':');
+	const hours = Number(h);
+	const minutes = Number(m);
+	const seconds = Number(s);
+
+	// Check time ranges
+	if (
+		!Number.isFinite(hours) ||
+		!Number.isFinite(minutes) ||
+		!Number.isFinite(seconds) ||
+		hours < 0 ||
+		hours > 23 ||
+		minutes < 0 ||
+		minutes > 59 ||
+		seconds < 0 ||
+		seconds > 59
+	) {
+		return null;
+	}
+
+	const date = new Date();
+	date.setHours(hours, minutes, seconds, 0);
+	return date;
+}
+
+/**
+ * Converts a `Date` object into a time string in the format "HH:mm:ss".
+ *
+ * @param date {Date | null} - The `Date` object to convert to a time string.
+ * @returns {string | null} - The formatted time string or `null` if the input is invalid.
+ */
+function parseDateToTime(date: Date | null): string | null {
+	if (!date || Number.isNaN(date.valueOf())) return null;
+	return date.toLocaleTimeString('en-US', { hour12: false });
+}
+
+/**
+ * Checks if the populate date expression is valid.
+ *
+ * @param expr {string} The populate date expression to validate.
+ * @returns true if the expression is valid, false otherwise.
+ */
+function validatePopulateDateExp(expr: string): boolean {
+	const trimmed = (expr ?? '').replace(/ /g, '').toLowerCase();
+	if (trimmed === 'now') return true;
+	return /(now)?(\+|\-)\d+((hours)|(minutes))$/i.test(trimmed);
+}
+
+/**
+ * Takes an expression like "now", "now+5hours", "now-30minutes" and returns a Date object representing the calculated
+ * time. If the expression is invalid, it returns the current time.
+ *
+ * @param expr {string} The populate time expression.
+ */
+function processPopulateExpression(expr: string): Date {
+	const date = new Date();
+	if (validatePopulateDateExp(expr)) {
+		if (expr === 'now') {
+			// This is to allow setting the time to the end of the current minute to avoid the time being in the past
+			// when seconds are > 0 and allowPastDate is false
+			date.setSeconds(59, 0);
+			return date;
+		} else {
+			let modifier = 1;
+			const dateExp = expr.replace(/ /g, '');
+			const action = dateExp.match(/[+-]/)![0];
+			const expValue = parseInt(dateExp.match(/\d+/)![0], 10);
+			const type = dateExp.match(/(hours|minutes)/)![0];
+			if (action === '-') {
+				modifier = modifier * -1;
+			}
+
+			if (type === 'hours') {
+				date.setTime(date.getTime() + modifier * (expValue * 60 * 60 * 1000));
+			} else if (type === 'minutes') {
+				date.setTime(date.getTime() + modifier * expValue * 60000);
+			}
+			return date;
+		}
+	} else {
+		date.setSeconds(59, 0);
+		return date;
+	}
 }
 
 export default Time;
