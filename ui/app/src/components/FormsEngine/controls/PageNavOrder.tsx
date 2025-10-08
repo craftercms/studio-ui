@@ -17,8 +17,7 @@
 import type { ControlProps } from '../types';
 import FormsEngineField from '../components/FormsEngineField';
 import React, { useEffect, useId, useState } from 'react';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
+import { SelectChangeEvent } from '@mui/material/Select';
 import { FormattedMessage, useIntl } from 'react-intl';
 import ChangeCircleOutlinedIcon from '@mui/icons-material/ChangeCircleOutlined';
 import Button from '@mui/material/Button';
@@ -41,6 +40,10 @@ import { useDispatch } from 'react-redux';
 import Paper from '@mui/material/Paper';
 import useUpdateRefs from '../../../hooks/useUpdateRefs';
 import { showSystemNotification } from '../../../state/actions/system';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Radio from '@mui/material/Radio';
+import Alert from '@mui/material/Alert';
 
 export interface PageNavOrderProps extends ControlProps {
 	value: string;
@@ -111,6 +114,8 @@ export function PageNavOrder(props: PageNavOrderProps) {
 		const previewItemPath = previewItemIndex >= 0 ? pagesOrderState.order?.[previewItemIndex]?.key : null;
 		const nextItemPath =
 			nextItemIndex < (pagesOrderState.order?.length ?? 0) ? pagesOrderState.order?.[nextItemIndex]?.key : null;
+		// TODO: Waiting for the new v2 API to handle reordering the full items list. Currently, this only reorders
+		//  the current item, and no other items can be re-arranged.
 		reorderNavItems(siteId, currentPath, previewItemPath, nextItemPath).subscribe({
 			next: () => {
 				dispatch(showSystemNotification({ message: formatMessage({ defaultMessage: 'Navigation items reordered.' }) }));
@@ -123,18 +128,15 @@ export function PageNavOrder(props: PageNavOrderProps) {
 
 	return (
 		<FormsEngineField htmlFor={htmlId} field={field}>
-			<Box display="flex" flexDirection="row" gap={2}>
-				<Select value={value} label="" onChange={handleChange} disabled={readonly} autoFocus={autoFocus} fullWidth>
-					<MenuItem value="true">
-						<FormattedMessage defaultMessage="Yes" />
-					</MenuItem>
-					<MenuItem value="false">
-						<FormattedMessage defaultMessage="No" />
-					</MenuItem>
-				</Select>
+			<Box display="flex" flexDirection="row" gap={2} justifyContent="space-between">
+				<RadioGroup row value={value} onChange={handleChange} sx={{ display: 'inline-flex' }} autoFocus={autoFocus}>
+					<FormControlLabel value="true" control={<Radio />} label={<FormattedMessage defaultMessage="Yes" />} />
+					<FormControlLabel value="false" control={<Radio />} label={<FormattedMessage defaultMessage="No" />} />
+				</RadioGroup>
+
 				{value && (
 					<Button
-						variant="outlined"
+						variant="text"
 						startIcon={<ChangeCircleOutlinedIcon />}
 						onClick={() => orderDialogState.onOpen()}
 						disabled={readonly}
@@ -159,6 +161,11 @@ export function PageNavOrder(props: PageNavOrderProps) {
 							}}
 						/>
 					</Typography>
+					{/* TODO: Remove after switching to API v2. */}
+					<Alert severity="warning" sx={{ mt: 2 }}>
+						Development draft. Waiting for 'content/reorder-items' new v2 API to be implemented. The new API will handle
+						reordering the full items list.
+					</Alert>
 					<Paper elevation={0} sx={{ mt: 2 }}>
 						<SortableList
 							items={pagesOrderState.order}
