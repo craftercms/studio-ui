@@ -49,14 +49,6 @@ export interface PageNavOrderProps extends ControlProps {
 	value: string;
 }
 
-const createSortableItemList = (order: PageNavItem[]): TItem<PageNavItem>[] => {
-	return order.map((item) => ({
-		key: item.id,
-		value: item.name,
-		data: item
-	}));
-};
-
 export function PageNavOrder(props: PageNavOrderProps) {
 	const { value, setValue, field, autoFocus, readonly } = props;
 	const [initialValue] = useState(value);
@@ -190,6 +182,21 @@ export function PageNavOrder(props: PageNavOrderProps) {
 			</EnhancedDialog>
 		</FormsEngineField>
 	);
+}
+
+/**
+ * Converts an array of `PageNavItem` objects into an array of sortable items (`TItem<PageNavItem>`).
+ * This function is used to transform navigation items into a format compatible with the `SortableList` component.
+ *
+ * @param order {PageNavItem[]} - The array of navigation items to be converted.
+ * @returns {TItem<PageNavItem>[]} - The transformed array of sortable items.
+ */
+function createSortableItemList(order: PageNavItem[]): TItem<PageNavItem>[] {
+	return order.map((item) => ({
+		key: item.id,
+		value: item.name,
+		data: item
+	}));
 }
 
 export default PageNavOrder;
