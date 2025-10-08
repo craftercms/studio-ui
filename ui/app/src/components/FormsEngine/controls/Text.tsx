@@ -50,16 +50,8 @@ export function Text(props: TextProps) {
 		}
 	}, [defaultValue, setValue, valueProp]);
 
-	const compiledPattern = useMemo(() => {
-		if (!pattern) return null;
-		try {
-			return new RegExp(`^(?:${pattern})$`);
-		} catch {
-			return null; // ignore invalid pattern strings
-		}
-	}, [pattern]);
-
 	useEffect(() => {
+		const compiledPattern = getCompiledPattern(pattern);
 		let isInError = false;
 		if (isRequired && !value) {
 			isInError = true;
@@ -67,7 +59,7 @@ export function Text(props: TextProps) {
 			isInError = Boolean(value) && !compiledPattern.test(value);
 		}
 		setPatternError(isInError);
-	}, [value, compiledPattern, isRequired]);
+	}, [value, pattern, isRequired]);
 
 	const handleChange: OutlinedInputProps['onChange'] = (e) => {
 		setValue(escapeContent ? escapeXml(e.currentTarget.value) : e.currentTarget.value);
@@ -89,6 +81,22 @@ export function Text(props: TextProps) {
 			/>
 		</FormsEngineField>
 	);
+}
+
+/**
+ * Compiles a string pattern into a regular expression.
+ * If the pattern is empty or invalid, it returns `null` instead of throwing an error.
+ *
+ * @param pattern {string} - The string pattern to compile into a regular expression.
+ * @returns {RegExp | null} - The compiled `RegExp` object, or `null` if the pattern is empty or invalid.
+ */
+function getCompiledPattern(pattern: string) {
+	if (!pattern) return null;
+	try {
+		return new RegExp(`^(?:${pattern})$`);
+	} catch {
+		return null; // ignore invalid pattern strings
+	}
 }
 
 export default Text;
