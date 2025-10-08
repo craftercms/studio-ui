@@ -37,6 +37,7 @@ export function Range(props: RangeProps) {
 	const { field, setValue } = props;
 	const htmlId = useId();
 	const maxLength = field.validations.maxLength?.value;
+	// TODO: Component should be controlled
 	const value = props.value ? JSON.parse(props.value) : { exact: '', min: '', max: '' };
 	const minValue = value?.min ? (isNaN(parseInt(value.min)) ? 0 : parseInt(value.min)) : null;
 	const maxValue = value?.max ? (isNaN(parseInt(value.max)) ? 0 : parseInt(value.max)) : null;
