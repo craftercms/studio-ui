@@ -162,7 +162,6 @@ export function PageNavOrder(props: PageNavOrderProps) {
 						<SortableList
 							items={pagesOrderState.order}
 							selectedItemId={currentPath}
-							onlySelectedSortable={true}
 							onChange={(fields: TItem<PageNavItem>[]) =>
 								setPagesOrderState({
 									order: fields
