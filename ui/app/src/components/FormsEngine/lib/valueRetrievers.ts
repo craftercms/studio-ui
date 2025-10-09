@@ -20,7 +20,7 @@ import type { BuiltInControlType } from './controlMap';
 import type { RepeatItem } from '../controls/Repeat';
 import type { NodeSelectorItem } from '../controls/NodeSelector';
 import { systemFieldsNotInType, XmlKeys } from './formConsts';
-import { deserialize } from '../../../utils/xml';
+import { deserialize, unescapeXml } from '../../../utils/xml';
 import { DescriptorControlType } from '../../ContentTypeManagement/controlMap';
 import { nnou } from '../../../utils/object';
 
@@ -30,7 +30,11 @@ export const arrayFieldExtractor: ValueRetriever<unknown[]> = (value) =>
 	// Controls needn't worry about packaging as `items: { item: [] }`, but when it first gets deserialised, it will have that format.
 	Array.isArray(value) ? value : ((value as Record<'item', unknown[]>)?.item ?? []);
 
-export const textFieldExtractor: ValueRetriever<string> = (value) => (value && String(value)) ?? '';
+export const textFieldExtractor: ValueRetriever<string> = (value, field) => {
+	const escapeContent = (field.properties?.escapeContent?.value as boolean) ?? false;
+	const rawValue: string = nnou(value) ? (value as string) : '';
+	return escapeContent ? unescapeXml(rawValue) : rawValue;
+};
 
 export const textOrNullExtractor: ValueRetriever<string> = (value) => (value && String(value)) || null;
 
@@ -151,11 +155,14 @@ export function createParsedValueForField<T = unknown>(
 
 export function retrieveFieldValue<T = unknown>(field: ContentTypeField, value: unknown): T {
 	const retriever: ValueRetriever<T> | undefined = valueRetrieverLookup[field.type];
+	const defaultValue = field.defaultValue as string;
+	// Value considering the defaultValue
+	const fieldValue = value ?? defaultValue;
 	if (!retriever) {
 		console.warn(`No value retriever for field ${field.id} of type ${field.type}`);
-		return value as T;
+		return fieldValue as T;
 	}
-	return retriever(value, field);
+	return retriever(fieldValue, field);
 }
 
 /** Takes in the CrafterCMS content XML and returns a JS object with the values */

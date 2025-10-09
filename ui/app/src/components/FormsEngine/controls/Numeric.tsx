@@ -68,20 +68,9 @@ export function Numeric(props: NumberProps) {
 	const maxValue = field.validations?.maxValue?.value;
 	const minValue = field.validations?.minValue?.value;
 	const readonly = formReadonly || (field.properties?.readonly?.value as boolean);
-	const defaultValueRaw = field.defaultValue as unknown as string | number;
-	const defaultValue = parseValue(defaultValueRaw);
 	// endregion
 
-	useEffect(() => {
-		// Initialize only when value is not set (null/undefined), preserving 0 and empty values.
-		if (nou(value) && defaultValue != null) {
-			setValue(defaultValue);
-		}
-	}, [defaultValue, setValue, value]);
-
-	const handleChange: NumberFieldRootProps['onValueChange'] = (newValue) => {
-		setValue(newValue);
-	};
+	const handleChange: NumberFieldRootProps['onValueChange'] = (newValue) => setValue(newValue);
 	return (
 		<FormsEngineField htmlFor={htmlId} field={field} max={maxLength}>
 			<NumberField.Root

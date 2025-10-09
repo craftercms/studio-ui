@@ -22,6 +22,7 @@ import { XmlKeys } from './formConsts';
 import { BuiltInControlType } from './controlMap';
 import { RepeatItem } from '../controls/Repeat';
 import { XMLBuilder, XmlBuilderOptions } from 'fast-xml-parser';
+import { escapeXml } from '../../../utils/xml';
 
 const attributeNamePrefix = '@:';
 const cdataPropName = '__cdata__';
@@ -44,6 +45,12 @@ function prepareValuesForXmlSerialising(
 		const fieldAttributes = {};
 		// Field type specific hinting...
 		switch (fieldType) {
+			case 'input':
+			case 'textarea': {
+				const escapeContent = (field.properties?.escapeContent?.value as boolean) ?? false;
+				jObj[id] = escapeContent ? escapeXml(value as string) : value;
+				break;
+			}
 			case 'repeat':
 			case 'node-selector': {
 				jObj[id] =
@@ -70,7 +77,8 @@ function prepareValuesForXmlSerialising(
 			jObj[id] =
 				typeof jObj[id] === 'object'
 					? { ...fieldAttributes, ...jObj[id] }
-					: { ...fieldAttributes, [textNodeName]: value };
+					: // The serializer may have made changes to 'value', so we need to use that instead of the original 'value'
+						{ ...fieldAttributes, [textNodeName]: jObj[id] ?? value };
 		}
 	});
 	return jObj;

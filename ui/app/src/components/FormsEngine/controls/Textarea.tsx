@@ -26,32 +26,16 @@ export interface TextareaProps extends ControlProps {
 }
 
 export function Textarea(props: TextareaProps) {
-	const { field, value: valueProp, setValue, readonly: formReadonly, autoFocus } = props;
+	const { field, value, setValue, readonly: formReadonly, autoFocus } = props;
 	const htmlId = useId();
 
 	// region field properties/validations
 	const maxLength = field.validations?.maxLength?.value;
 	const readonly = formReadonly || (field.properties?.readonly?.value as boolean);
-	const escapeContent = (field.properties?.escapeContent?.value as boolean) ?? false;
 	const rows = (field.properties?.rows?.value as number) ?? 1;
-	const defaultValue = field.defaultValue as string;
 	// endregion
 
-	const value = useMemo(() => {
-		const hasValue = nnou(valueProp); // allows '' as a valid value
-		return hasValue ? (escapeContent ? unescapeXml(valueProp) : valueProp) : (defaultValue ?? '');
-	}, [valueProp, escapeContent, defaultValue]);
-
-	useEffect(() => {
-		// If there's a default value and no value has been set yet, set it as the value.
-		if (nou(valueProp) && defaultValue) {
-			setValue(defaultValue);
-		}
-	}, [defaultValue, setValue, valueProp]);
-
-	const handleChange: OutlinedInputProps['onChange'] = (e) => {
-		setValue(escapeContent ? escapeXml(e.currentTarget.value) : e.currentTarget.value);
-	};
+	const handleChange: OutlinedInputProps['onChange'] = (e) => setValue(e.currentTarget.value);
 
 	return (
 		<FormsEngineField htmlFor={htmlId} field={field} max={maxLength} length={value.length}>
