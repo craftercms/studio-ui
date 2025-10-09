@@ -15,12 +15,10 @@
  */
 
 import OutlinedInput, { OutlinedInputProps } from '@mui/material/OutlinedInput';
-import React, { useEffect, useId, useMemo, useState } from 'react';
+import React, { useEffect, useId, useState } from 'react';
 import { FormsEngineField } from '../components/FormsEngineField';
 import { ControlProps } from '../types';
-import { escapeXml, unescapeXml } from '../../../utils/xml';
 import { isFieldRequired } from '../lib/validators';
-import { nnou, nou } from '../../../utils/object';
 
 export interface TextProps extends ControlProps {
 	value: string;
@@ -39,12 +37,11 @@ export function Text(props: TextProps) {
 	const [patternError, setPatternError] = useState(false);
 
 	useEffect(() => {
-		const compiledPattern = getCompiledPattern(pattern);
 		let isInError = false;
 		if (isRequired && !value) {
 			isInError = true;
-		} else if (compiledPattern) {
-			isInError = Boolean(value) && !compiledPattern.test(value);
+		} else if (pattern) {
+			isInError = !String(value).match(pattern);
 		}
 		setPatternError(isInError);
 	}, [value, pattern, isRequired]);
@@ -67,22 +64,6 @@ export function Text(props: TextProps) {
 			/>
 		</FormsEngineField>
 	);
-}
-
-/**
- * Compiles a string pattern into a regular expression.
- * If the pattern is empty or invalid, it returns `null` instead of throwing an error.
- *
- * @param pattern {string} - The string pattern to compile into a regular expression.
- * @returns {RegExp | null} - The compiled `RegExp` object, or `null` if the pattern is empty or invalid.
- */
-function getCompiledPattern(pattern: string) {
-	if (!pattern) return null;
-	try {
-		return new RegExp(`^(?:${pattern})$`);
-	} catch {
-		return null; // ignore invalid pattern strings
-	}
 }
 
 export default Text;

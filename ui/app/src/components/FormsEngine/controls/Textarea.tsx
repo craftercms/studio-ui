@@ -15,11 +15,9 @@
  */
 
 import OutlinedInput, { OutlinedInputProps } from '@mui/material/OutlinedInput';
-import React, { useEffect, useId, useMemo } from 'react';
+import React, { useId } from 'react';
 import { FormsEngineField } from '../components/FormsEngineField';
 import { ControlProps } from '../types';
-import { escapeXml, unescapeXml } from '../../../utils/xml';
-import { nnou, nou } from '../../../utils/object';
 
 export interface TextareaProps extends ControlProps {
 	value: string;
