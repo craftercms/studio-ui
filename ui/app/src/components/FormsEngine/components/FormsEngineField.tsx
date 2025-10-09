@@ -294,7 +294,7 @@ function translateValidityMessage(
 	formatMessage: IntlFormatters['formatMessage']
 ): string {
 	const message = Array.isArray(messageData) ? messageData[0] : messageData;
-	const values = Array.isArray(messageData) && messageData[1];
+	const values = Array.isArray(messageData) ? messageData[1] : undefined;
 	return translateIfMessageDescriptor(message, formatMessage, values);
 }
 
