@@ -44,7 +44,7 @@ import { nanoid } from 'nanoid';
 import { popDialog, pushDialog } from '../../../state/actions/dialogStack';
 import alertDialogUrl from '../../../assets/warning.svg';
 import PrimaryButton from '../../PrimaryButton';
-import { FormattedMessage, type MessageDescriptor } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import { AlertDialogProps } from '../../AlertDialog';
 import { Theme } from '@mui/material/styles';
 import { AtomWithStorage, JotaiStore } from '../types';
