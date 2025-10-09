@@ -721,10 +721,3 @@ export function prepareEmbeddedItemForm(props: {
 		}
 	};
 }
-
-export function translateIfMessageDescriptor(
-	message: string | MessageDescriptor,
-	formatMessage: IntlShape['formatMessage']
-): string {
-	return typeof message === 'string' ? message : formatMessage(message);
-}
