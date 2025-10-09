@@ -55,6 +55,7 @@ import { asArray } from '../../utils/array';
 import { componentsDataSourceContentTypesPropertyNames, systemValidationsKeysMap } from '../../utils/contentType';
 import { XmlKeys } from '../FormsEngine/lib/formConsts';
 import { getPossibleTranslation } from '../../utils/i18n';
+import { FormatXMLElementFn, PrimitiveType } from 'intl-messageformat';
 
 // TODO: assess which of the utils here should go to utils/contentType.ts, or other places (serializers, etc.)
 
@@ -756,9 +757,11 @@ export function applyTranslations(
 
 export function translateIfMessageDescriptor(
 	titleOrDescriptor: TranslationOrText,
-	formatMessage: IntlShape['formatMessage']
+	formatMessage: IntlShape['formatMessage'],
+	// TODO: Fix FormatXMLElementFn generics
+	values?: Record<string, PrimitiveType | FormatXMLElementFn<any, any>>
 ): string {
-	const value = getPossibleTranslation(titleOrDescriptor, formatMessage);
+	const value = getPossibleTranslation(titleOrDescriptor, formatMessage, values);
 	// TODO: Ignoring non string values. Must adjust to not ignore and actually handle either here or at the consumer level.
 	return typeof value === 'string' ? value : '';
 }

@@ -21,6 +21,7 @@ import LookupTable from '../../../models/LookupTable';
 import { XmlKeys } from './formConsts';
 import { defineMessage, type MessageDescriptor } from 'react-intl';
 import { nnou } from '../../../utils/object';
+import { FormatXMLElementFn, PrimitiveType } from 'intl-messageformat';
 
 type ValidatorFunctionDef = (
 	field: ContentTypeField,
@@ -48,7 +49,7 @@ export const validatorsMap: Partial<Record<BuiltInControlType, ValidatorFunction
 		const pattern = field.validations.pattern?.value as string;
 		// If there's a pattern and it doesn't match, it's invalid.
 		if (pattern && !String(currentValue).match(pattern)) {
-			messages.push(defineMessage({ defaultMessage: 'The value does not match the required pattern.' }));
+			messages.push([defineMessage({ defaultMessage: 'The value does not match the required pattern.' })]);
 			isValid = false;
 		}
 		return isValid;
@@ -69,17 +70,23 @@ export const validatorsMap: Partial<Record<BuiltInControlType, ValidatorFunction
 		if (nnou(currentValue)) {
 			// If there's a pattern and it doesn't match
 			if (pattern && !String(currentValue).match(pattern)) {
-				messages.push(defineMessage({ defaultMessage: 'The value does not match the required pattern.' }));
+				messages.push([defineMessage({ defaultMessage: 'The value does not match the required pattern.' })]);
 				isValid = false;
 			}
 			// If there's a max and the value is greater than the max
 			if (maxValue != null && Number(currentValue) > Number(maxValue)) {
-				messages.push(defineMessage({ defaultMessage: `The value is greater than the maximum allowed.` }));
+				messages.push([
+					defineMessage({ defaultMessage: `The value is greater than the allowed maximum ({maxValue}).` }),
+					{ maxValue }
+				]);
 				isValid = false;
 			}
 			// If there's a min and the value is less than the min
 			if (minValue != null && Number(currentValue) < Number(minValue)) {
-				messages.push(defineMessage({ defaultMessage: 'The value is less than the minimum allowed.' }));
+				messages.push([
+					defineMessage({ defaultMessage: 'The value is less than the minimum ({minValue}).' }),
+					{ minValue }
+				]);
 				isValid = false;
 			}
 		}
@@ -96,9 +103,14 @@ export const validatorsMap: Partial<Record<BuiltInControlType, ValidatorFunction
 	colorPicker: undefined
 };
 
+// TODO: Fix FormatXMLElementFn generics
+export type FieldValidityMessage =
+	| string
+	| [MessageDescriptor, values?: Record<string, PrimitiveType | FormatXMLElementFn<any, any>>];
+
 export interface FieldValidityState {
 	isValid: boolean;
-	messages: (string | MessageDescriptor)[];
+	messages: FieldValidityMessage[];
 }
 
 export function validateFieldValue(field: ContentTypeField, currentValue: unknown): FieldValidityState {
@@ -108,7 +120,7 @@ export function validateFieldValue(field: ContentTypeField, currentValue: unknow
 
 	// If it's required, and the value is empty, then it's invalid.
 	if (isRequired && isEmpty) {
-		messages.push(defineMessage({ defaultMessage: 'This field is required.' }));
+		messages.push([defineMessage({ defaultMessage: 'This field is required.' })]);
 		return { isValid: false, messages };
 	}
 	const validator = validatorsMap[field.type as BuiltInControlType];
