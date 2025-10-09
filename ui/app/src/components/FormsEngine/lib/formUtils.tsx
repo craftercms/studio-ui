@@ -31,7 +31,7 @@ import {
 	StableGlobalContext,
 	StableGlobalContextProps
 } from './formsEngineContext';
-import { fetchContentXML, fetchDescriptorXML, fetchContentItem, lock, unlock } from '../../../services/content';
+import { fetchContentItem, fetchContentXML, fetchDescriptorXML, lock, unlock } from '../../../services/content';
 import { AjaxError } from 'rxjs/ajax';
 import { fetchAffectedPackages } from '../../../services/workflow';
 import { Dispatch as ReduxDispatch } from 'redux';
@@ -720,4 +720,16 @@ export function prepareEmbeddedItemForm(props: {
 			contentObject
 		}
 	};
+}
+
+export function getPropertyValue<I = Record<string, unknown>, R = undefined>(
+	source: I,
+	property: string,
+	defaultValue: R = undefined
+): R | unknown {
+	return source?.[property]?.value ?? defaultValue;
+}
+
+export function isFieldReadOnly(field: ContentTypeField, formReadonly: boolean): boolean {
+	return formReadonly || (getPropertyValue(field.properties, 'readonly') as boolean);
 }

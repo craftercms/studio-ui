@@ -19,6 +19,7 @@ import React, { useEffect, useId, useState } from 'react';
 import { FormsEngineField } from '../components/FormsEngineField';
 import { ControlProps } from '../types';
 import { isFieldRequired } from '../lib/validators';
+import { getPropertyValue, isFieldReadOnly } from '../lib/formUtils';
 
 export interface TextProps extends ControlProps {
 	value: string;
@@ -29,9 +30,9 @@ export function Text(props: TextProps) {
 	const htmlId = useId();
 
 	// region field properties/validations
-	const maxLength = field.validations?.maxLength?.value;
-	const readonly = formReadonly || (field.properties?.readonly?.value as boolean);
-	const pattern = field.validations?.pattern?.value as string;
+	const maxLength: number = getPropertyValue(field.validations, 'maxLength') as number;
+	const readonly: boolean = isFieldReadOnly(field, formReadonly);
+	const pattern: string = getPropertyValue(field.validations, 'pattern') as string;
 	// endregion
 	const isRequired = isFieldRequired(field);
 	const [patternError, setPatternError] = useState(false);
