@@ -30,9 +30,9 @@ export function Text(props: TextProps) {
 	const htmlId = useId();
 
 	// region field properties/validations
-	const maxLength: number = getPropertyValue(field.validations, 'maxLength') as number;
-	const readonly: boolean = isFieldReadOnly(field, formReadonly);
-	const pattern: string = getPropertyValue(field.validations, 'pattern') as string;
+	const maxLength: number | undefined = getPropertyValue(field.validations, 'maxLength') as number | undefined;
+	const readonly: boolean | undefined = isFieldReadOnly(field, formReadonly);
+	const pattern: string | undefined = getPropertyValue(field.validations, 'pattern') as string | undefined;
 	// endregion
 	const isRequired = isFieldRequired(field);
 	const [patternError, setPatternError] = useState(false);
