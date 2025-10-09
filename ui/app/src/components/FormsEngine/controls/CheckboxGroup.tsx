@@ -37,59 +37,6 @@ export interface CheckboxGroupProps extends ControlProps {
 	value: Array<{ key: string; value_smv: string }>;
 }
 
-const buildOption = (
-	option: KVPLoaderItem['items'][0],
-	onChange: CheckboxProps['onChange'],
-	checkedValuesLookup: LookupTable<boolean>,
-	readonly: boolean = false
-) => (
-	<FormControlLabel
-		key={option.key}
-		sx={{ width: '50%' }}
-		control={
-			<Checkbox
-				disabled={readonly}
-				color="info"
-				checked={checkedValuesLookup[option.key] ?? false}
-				onChange={onChange}
-				value={option.key}
-			/>
-		}
-		label={option.value}
-	/>
-);
-
-const VirtualRow = (
-	props: ListChildComponentProps<{
-		options: KVPLoaderItem['items'];
-		onChange: CheckboxProps['onChange'];
-		checkedValuesLookup: LookupTable<boolean>;
-		numColumns: number;
-		readonly: boolean;
-	}>
-) => {
-	const {
-		index,
-		style,
-		data: { options, onChange, checkedValuesLookup, numColumns, readonly }
-	} = props;
-	const adjustedIndex = index * numColumns;
-	return (
-		<Grid container className="checkbox-group-virtual-row" spacing={2} sx={{ width: '100%' }} style={style}>
-			{options.slice(adjustedIndex, adjustedIndex + numColumns).map((option) => (
-				<Grid size={{ sm: 12, md: 6, lg: 4 }} key={option.key}>
-					{option.value ? (
-						buildOption(option, onChange, checkedValuesLookup, readonly)
-					) : (
-						// to keep the grid structure
-						<></>
-					)}
-				</Grid>
-			))}
-		</Grid>
-	);
-};
-
 export function CheckboxGroup(props: CheckboxGroupProps) {
 	const htmlId = useId();
 	const theme = useTheme();
@@ -300,5 +247,58 @@ export function CheckboxGroup(props: CheckboxGroupProps) {
 		</FormsEngineField>
 	);
 }
+
+const buildOption = (
+	option: KVPLoaderItem['items'][0],
+	onChange: CheckboxProps['onChange'],
+	checkedValuesLookup: LookupTable<boolean>,
+	readonly: boolean = false
+) => (
+	<FormControlLabel
+		key={option.key}
+		sx={{ width: '50%' }}
+		control={
+			<Checkbox
+				disabled={readonly}
+				color="info"
+				checked={checkedValuesLookup[option.key] ?? false}
+				onChange={onChange}
+				value={option.key}
+			/>
+		}
+		label={option.value}
+	/>
+);
+
+const VirtualRow = (
+	props: ListChildComponentProps<{
+		options: KVPLoaderItem['items'];
+		onChange: CheckboxProps['onChange'];
+		checkedValuesLookup: LookupTable<boolean>;
+		numColumns: number;
+		readonly: boolean;
+	}>
+) => {
+	const {
+		index,
+		style,
+		data: { options, onChange, checkedValuesLookup, numColumns, readonly }
+	} = props;
+	const adjustedIndex = index * numColumns;
+	return (
+		<Grid container className="checkbox-group-virtual-row" spacing={2} sx={{ width: '100%' }} style={style}>
+			{options.slice(adjustedIndex, adjustedIndex + numColumns).map((option) => (
+				<Grid size={{ sm: 12, md: 6, lg: 4 }} key={option.key}>
+					{option.value ? (
+						buildOption(option, onChange, checkedValuesLookup, readonly)
+					) : (
+						// to keep the grid structure
+						<></>
+					)}
+				</Grid>
+			))}
+		</Grid>
+	);
+};
 
 export default CheckboxGroup;
