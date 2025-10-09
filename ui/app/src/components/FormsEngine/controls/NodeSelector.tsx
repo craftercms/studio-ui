@@ -519,11 +519,13 @@ type FileMetadata = {
 	fileSize_s?: number;
 };
 
-/** Returns an object with the appropriate file metadata fields based on the configuration.
- * @param fileType - The file type (e.g., 'jpg', 'png').
- * @param fileSize - The file size (e.g., 2048).
- * @param useSingleValueFilename - Whether single value filename is used.
- * @param useMVS - Whether multi-value support is used.
+/**
+ * Returns an object with the appropriate file metadata fields based on the configuration.
+ * @param fileType {string} - The file type (e.g., 'jpg', 'png').
+ * @param fileSize {number} - The file size (e.g., 2048).
+ * @param useSingleValueFilename {boolean} - Whether single value filename is used.
+ * @param useMVS {boolean} - Whether multi-value support is used.
+ * @returns {FileMetadata} An object containing the appropriate file metadata fields.
  * */
 const getFileMetaData = ({
 	fileType,
@@ -550,9 +552,10 @@ const getFileMetaData = ({
 	return metaData;
 };
 
-/** Validates if a NodeSelectorItem represents a component (embedded or shared).
+/**
+ * Validates if a NodeSelectorItem represents a component (embedded or shared).
  *
- * @param item - The NodeSelectorItem to validate.
+ * @param item {NodeSelectorItem} - The NodeSelectorItem to validate.
  * @returns {boolean} True if the item is a component, false otherwise.
  */
 const isItemComponent = (item: NodeSelectorItem): boolean => {
@@ -569,9 +572,9 @@ const isItemComponent = (item: NodeSelectorItem): boolean => {
  * Validates and separates new items into valid and duplicate categories.
  * validItems will contain the existing items plus any new items that are not duplicates (if allowDuplicates = true).
  *
- * @param {NodeSelectorItem[]} newItems - The array of new items to validate.
- * @param {NodeSelectorItem[]} items - The existing array of items to compare against.
- * @param {boolean} allowDuplicates - A flag indicating whether duplicates are allowed.
+ * @param newItems {NodeSelectorItem[]} - The array of new items to validate.
+ * @param items {NodeSelectorItem[]} - The existing array of items to compare against.
+ * @param allowDuplicates {boolean} - A flag indicating whether duplicates are allowed.
  * @returns {Object} An object containing two arrays:
  *   - `validItems`: The combined array of valid items (existing and new non-duplicates if allowDuplicates = true).
  *   - `duplicateItems`: The array of items that were identified as duplicates.
@@ -600,6 +603,12 @@ const validateNewItems = (
 	return { validItems, duplicateItems };
 };
 
+/**
+ * Displays a warning message for duplicate items that were not added.
+ *
+ * @param dispatch {ReduxDispatch} - The Redux dispatch function used to trigger the alert.
+ * @param duplicateItems {NodeSelectorItem[]} - An array of duplicate items that were not added.
+ */
 const showDuplicatesWarning = (dispatch: ReduxDispatch, duplicateItems: NodeSelectorItem[]) => {
 	if (duplicateItems.length) {
 		showAlert({
