@@ -23,12 +23,11 @@ import Box, { BoxProps } from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import MinusRounded from '@mui/icons-material/RemoveRounded';
 import { NumberField } from '@base-ui-components/react/number-field';
-import { nou } from '../../../utils/object';
 
 type NumberFieldRootProps = ComponentProps<typeof NumberField.Root>;
 
 export interface NumberProps extends ControlProps {
-	value: string;
+	value: number;
 }
 
 const decrementButtonSx: BoxProps['sx'] = {
@@ -59,9 +58,8 @@ const OutlinedInputWithRef = forwardRef<HTMLInputElement, OutlinedInputProps>((p
 });
 
 export function Numeric(props: NumberProps) {
-	const { field, setValue, readonly: formReadonly, autoFocus } = props;
+	const { field, value, setValue, readonly: formReadonly, autoFocus } = props;
 	const htmlId = useId();
-	const value = parseValue(props.value);
 
 	// region field properties/validations
 	const maxLength = field.validations?.maxLength?.value;
@@ -94,16 +92,6 @@ export function Numeric(props: NumberProps) {
 			</NumberField.Root>
 		</FormsEngineField>
 	);
-}
-
-function parseValue(value: string | number) {
-	if (nou(value)) return null;
-	if (typeof value === 'string') {
-		const number = parseFloat(value);
-		if (isNaN(number)) return null;
-		return number;
-	}
-	return value;
 }
 
 export default Numeric;
