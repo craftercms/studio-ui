@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ContentTypeField, ContentTypeSection, PublishPackage } from '../../../models';
+import { ContentTypeField, type ContentTypeFieldValidation, ContentTypeSection, PublishPackage } from '../../../models';
 import LookupTable from '../../../models/LookupTable';
 import ContentType from '../../../models/ContentType';
 import validateFieldValue, { FieldValidityState } from './validators';
@@ -722,12 +722,20 @@ export function prepareEmbeddedItemForm(props: {
 	};
 }
 
-export function getPropertyValue<I = Record<string, unknown>, R = undefined>(
-	source: I,
+export function getValidationValue(
+	validations: ContentTypeField['validations'],
 	property: string,
-	defaultValue: R = undefined
-): R | unknown {
-	return source?.[property]?.value ?? defaultValue;
+	defaultValue: ContentTypeFieldValidation['value'] | undefined = undefined
+): ContentTypeFieldValidation['value'] {
+	return validations?.[property]?.value ?? defaultValue;
+}
+
+export function getPropertyValue(
+	properties: ContentTypeField['properties'],
+	property: string,
+	defaultValue?: ContentTypeField['properties'][string]['value'] | undefined
+): ContentTypeField['properties'][string]['value'] {
+	return properties?.[property]?.value ?? defaultValue;
 }
 
 export function isFieldReadOnly(field: ContentTypeField, formReadonly: boolean): boolean {
