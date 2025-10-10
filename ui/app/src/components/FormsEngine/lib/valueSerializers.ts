@@ -22,10 +22,65 @@ import { XmlKeys } from './formConsts';
 import { BuiltInControlType } from './controlMap';
 import { RepeatItem } from '../controls/Repeat';
 import { XMLBuilder, XmlBuilderOptions } from 'fast-xml-parser';
+import type { DescriptorControlType } from '../../ContentTypeManagement/controlMap';
 
 const attributeNamePrefix = '@:';
 const cdataPropName = '__cdata__';
 const textNodeName = '#text';
+
+export type ValueSerializer<T = unknown> = (
+	field: ContentTypeField,
+	value: unknown,
+	contentTypesLookup?: LookupTable<ContentType>
+) => T;
+
+export const valueSerializersLookup: Record<BuiltInControlType | DescriptorControlType, ValueSerializer> = {
+	'auto-filename': undefined,
+	'aws-file-upload': undefined,
+	'checkbox-group': prepareArray,
+	checkbox: undefined,
+	'date-time': undefined,
+	disabled: undefined,
+	dropdown: undefined,
+	'file-name': undefined,
+	forcehttps: undefined,
+	'image-picker': undefined,
+	input: undefined,
+	'internal-name': undefined,
+	label: undefined,
+	'link-input': undefined,
+	'link-textarea': undefined,
+	'linked-dropdown': undefined,
+	'locale-selector': undefined,
+	repeat: (field, value, contentTypesLookup) => prepareRepeat(field, value as RepeatItem[], contentTypesLookup),
+	'node-selector': (field, value, contentTypesLookup) =>
+		prepareNodeSelector(field, value as NodeSelectorItem[], contentTypesLookup),
+	'numeric-input': undefined,
+	'page-nav-order': undefined,
+	rte: prepareRTE,
+	textarea: undefined,
+	time: undefined,
+	'transcoded-video-picker': undefined,
+	uuid: undefined,
+	'video-picker': undefined,
+	colorPicker: undefined,
+	'content-path-input': undefined,
+	contentTypes: undefined,
+	'dropdown-static-values': undefined,
+	'template-selector': undefined,
+	'type-image-selector': undefined,
+	'datasource-selector': undefined,
+	'read-only-value': undefined,
+	range: undefined,
+	'type-js-controller-selector': undefined,
+	'key-value-map': undefined,
+	'type-destination-paths-selector': undefined,
+	'path-with-macro-creator': undefined,
+	'merge-strategy-selector': undefined,
+	'datasource-single-selector': undefined,
+	variable: undefined,
+	'type-configuration': undefined
+};
 
 /**
  * Formats a FormsEngine values object with "hints" for attributes or other specifics for the XML serialiser to serialise
@@ -43,24 +98,10 @@ function prepareValuesForXmlSerialising(
 		const fieldType = field?.type as BuiltInControlType;
 		const fieldAttributes = {};
 		// Field type specific hinting...
-		switch (fieldType) {
-			case 'repeat':
-			case 'node-selector': {
-				jObj[id] =
-					fieldType === 'repeat'
-						? prepareRepeat(field, value as RepeatItem[], contentTypesLookup)
-						: prepareNodeSelector(field, value as NodeSelectorItem[], contentTypesLookup);
-				break;
-			}
-			case 'rte': {
-				// TODO: CDATA wrap based on config
-				jObj[id] = { [cdataPropName]: value };
-				break;
-			}
-			case 'checkbox-group': {
-				jObj[id] = prepareArray(field, value);
-				break;
-			}
+
+		const serializer = valueSerializersLookup[fieldType];
+		if (serializer) {
+			jObj[id] = serializer(field, value, contentTypesLookup);
 		}
 		if (field?.properties.tokenize?.value) {
 			fieldAttributes[createAttrHint('tokenize')] = true;
@@ -70,7 +111,8 @@ function prepareValuesForXmlSerialising(
 			jObj[id] =
 				typeof jObj[id] === 'object'
 					? { ...fieldAttributes, ...jObj[id] }
-					: { ...fieldAttributes, [textNodeName]: value };
+					: // The serializer may have made changes to 'value', so we need to use that instead of the original 'value'
+						{ ...fieldAttributes, [textNodeName]: jObj[id] ?? value };
 		}
 	});
 	return jObj;
@@ -126,6 +168,11 @@ function prepareArray(field: ContentTypeField, value: unknown) {
 		//  '@:item-list': true,
 		item: value
 	};
+}
+
+function prepareRTE(field: ContentTypeField, value: unknown) {
+	// TODO: CDATA wrap based on config
+	return { [cdataPropName]: value };
 }
 
 function createAttrHint(attributeName: string): string {

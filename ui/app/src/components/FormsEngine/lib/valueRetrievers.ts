@@ -26,18 +26,6 @@ import { nnou } from '../../../utils/object';
 
 export type ValueRetriever<T = unknown> = (value: unknown, field: ContentTypeField) => T;
 
-export const arrayFieldExtractor: ValueRetriever<unknown[]> = (value) =>
-	// Controls needn't worry about packaging as `items: { item: [] }`, but when it first gets deserialised, it will have that format.
-	Array.isArray(value) ? value : ((value as Record<'item', unknown[]>)?.item ?? []);
-
-export const textFieldExtractor: ValueRetriever<string> = (value) => (value && String(value)) ?? '';
-
-export const textOrNullExtractor: ValueRetriever<string> = (value) => (value && String(value)) || null;
-
-export const numberFieldExtractor: ValueRetriever<number> = (value) => (nnou(value) ? Number(value) : null);
-
-export const booleanFieldExtractor: ValueRetriever<boolean> = (value) => (value === true || value === 'true') ?? false;
-
 export const valueRetrieverLookup: Record<BuiltInControlType | DescriptorControlType, ValueRetriever> = {
 	'auto-filename': textFieldExtractor,
 	'aws-file-upload': null,
@@ -151,11 +139,14 @@ export function createParsedValueForField<T = unknown>(
 
 export function retrieveFieldValue<T = unknown>(field: ContentTypeField, value: unknown): T {
 	const retriever: ValueRetriever<T> | undefined = valueRetrieverLookup[field.type];
+	const defaultValue = field.defaultValue as string;
+	// Value considering the defaultValue
+	const fieldValue = value ?? defaultValue;
 	if (!retriever) {
 		console.warn(`No value retriever for field ${field.id} of type ${field.type}`);
-		return value as T;
+		return fieldValue as T;
 	}
-	return retriever(value, field);
+	return retriever(fieldValue, field);
 }
 
 /** Takes in the CrafterCMS content XML and returns a JS object with the values */
@@ -168,4 +159,25 @@ export function deserializeContentDoc(contentDom: XMLDocument | Element): Lookup
 		// e.g.collectionFieldIds.map((fieldId) => `${rootTagName}.${fieldId}.item`).includes(jPath);
 		isArray: (tagName: string, jPath: string) => jPath.endsWith('.item')
 	})[(contentDom as XMLDocument).documentElement?.tagName ?? (contentDom as Element).tagName];
+}
+
+export function arrayFieldExtractor(value: unknown): unknown[] {
+	// Controls needn't worry about packaging as `items: { item: [] }`, but when it first gets deserialised, it will have that format.
+	return Array.isArray(value) ? value : ((value as Record<'item', unknown[]>)?.item ?? []);
+}
+
+export function textFieldExtractor(value: unknown): string {
+	return (value && String(value)) ?? '';
+}
+
+export function textOrNullExtractor(value: unknown): string | null {
+	return (value && String(value)) || null;
+}
+
+export function numberFieldExtractor(value: unknown): number | null {
+	return nnou(value) ? Number(value) : null;
+}
+
+export function booleanFieldExtractor(value: unknown): boolean {
+	return value === true || value === 'true';
 }
