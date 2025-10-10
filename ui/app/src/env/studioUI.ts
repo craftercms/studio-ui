@@ -165,6 +165,7 @@ export const components = {
 	ICEToolsPanel: lazy(() => import('../components/ICEToolsPanel')),
 	IFrame: lazy(() => import('../components/IFrame')),
 	IconGuideDashlet: lazy(() => import('../components/IconGuideDashlet')),
+	ImageEditorDialog: lazy(() => import('../components/ImageEditorDialog/ImageEditorDialog')),
 	ItemActionsMenu: lazy(() => import('../components/ItemActionsMenu')),
 	ItemActionsSnackbar: lazy(() => import('../components/ItemActionsSnackbar')),
 	ItemDisplay: lazy(() => import('../components/ItemDisplay')),
