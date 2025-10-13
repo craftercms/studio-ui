@@ -34,7 +34,7 @@ export type ValueSerializer<T = unknown> = (
 	contentTypesLookup?: LookupTable<ContentType>
 ) => T;
 
-export const valueSerializersLookup: Record<BuiltInControlType | DescriptorControlType, ValueSerializer> = {
+export const valueSerializersLookup: Record<BuiltInControlType | DescriptorControlType, ValueSerializer | undefined> = {
 	'auto-filename': undefined,
 	'aws-file-upload': undefined,
 	'checkbox-group': prepareArray,
