@@ -95,7 +95,7 @@ function prepareValuesForXmlSerialising(
 	Object.entries(jObj).forEach(([id, value]) => {
 		// System props are not in the model, hence field might be undefined at times.
 		const field = fields[id];
-		const fieldType = field?.type as BuiltInControlType;
+		const fieldType = field?.type as BuiltInControlType | DescriptorControlType;
 		const fieldAttributes = {};
 		// Field type specific hinting...
 
