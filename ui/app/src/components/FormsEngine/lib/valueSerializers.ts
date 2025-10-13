@@ -23,6 +23,7 @@ import { BuiltInControlType } from './controlMap';
 import { RepeatItem } from '../controls/Repeat';
 import { XMLBuilder, XmlBuilderOptions } from 'fast-xml-parser';
 import type { DescriptorControlType } from '../../ContentTypeManagement/controlMap';
+import { nnou } from '../../../utils/object';
 
 const attributeNamePrefix = '@:';
 const cdataPropName = '__cdata__';
@@ -96,7 +97,7 @@ function prepareValuesForXmlSerialising(
 		// System props are not in the model, hence field might be undefined at times.
 		const field = fields[id];
 		const fieldType = field?.type as BuiltInControlType | DescriptorControlType;
-		const fieldAttributes = {};
+		const fieldAttributes: Record<string, unknown> = {};
 		// Field type specific hinting...
 
 		const serializer = valueSerializersLookup[fieldType];
@@ -108,9 +109,10 @@ function prepareValuesForXmlSerialising(
 		}
 		// TODO: Carry/implement attributes (no-default, remote, others?)
 		if (Object.keys(fieldAttributes).length) {
+			const current = jObj[id];
 			jObj[id] =
-				typeof jObj[id] === 'object'
-					? { ...fieldAttributes, ...jObj[id] }
+				nnou(current) && typeof current === 'object'
+					? { ...fieldAttributes, ...current }
 					: // The serializer may have made changes to 'value', so we need to use that instead of the original 'value'
 						{ ...fieldAttributes, [textNodeName]: jObj[id] ?? value };
 		}
