@@ -44,21 +44,18 @@ export function TypeDestinationPathsSelector(props: TypeDestinationPathsSelector
 	const htmlId = useId();
 	const maxLength = field.validations.maxLength?.value;
 	const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, prop: Destination, index: number) => {
-		const newValue = { ...value };
-		newValue[prop][index] = e.currentTarget.value;
-		setValue(newValue);
+		const nextArr = value[prop].slice();
+		nextArr[index] = e.currentTarget.value;
+		setValue({ ...value, [prop]: nextArr });
 	};
 
 	const addPath = (prop: Destination) => {
-		const newValue = { ...value };
-		newValue[prop].push('');
-		setValue(newValue);
+		setValue({ ...value, [prop]: [...value[prop], ''] });
 	};
 
 	const removePath = (prop: Destination, index: number) => {
-		const newValue = { ...value };
-		newValue[prop].splice(index, 1);
-		setValue(newValue);
+		const nextArr = value[prop].filter((_, i) => i !== index);
+		setValue({ ...value, [prop]: nextArr });
 	};
 
 	return (
