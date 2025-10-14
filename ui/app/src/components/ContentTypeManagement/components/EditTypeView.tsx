@@ -1139,12 +1139,12 @@ function updateTypeFromDataSourceUpdate(
 		}
 	});
 
-	const descriptorFields = descriptor.fields;
+	const descriptorFields = descriptor?.fields ?? {};
 	// Serialize datasource values
-	const serializedValues = {};
+	const serializedValues: LookupTable<unknown> = {};
 	Object.entries(updatedValues).forEach(([key, value]) => {
-		const fieldType = descriptorFields?.[key]?.type;
-		const serializer = fieldType ? valueSerializersLookup[fieldType] : null;
+		const fieldType = descriptorFields[key]?.type;
+		const serializer = fieldType ? valueSerializersLookup[fieldType] : undefined;
 		serializedValues[key] = serializer ? serializer(null, value) : value;
 	});
 	const nextDataSource = { ...selectedDataSource };
