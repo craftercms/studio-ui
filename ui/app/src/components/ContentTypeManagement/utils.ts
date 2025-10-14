@@ -262,10 +262,14 @@ export function reverseTypeFieldValuesObject(
 					properties[property] = mergedProperties[property];
 					continue;
 				}
+				const fieldDescriptor = datasourceFields[property];
+				if (!fieldDescriptor) {
+					// Drop unknown/obsolete property not present in descriptor
+					continue;
+				}
 				properties[property] = { ...mergedProperties[property] };
 				// Serialize field properties
-				const descriptorType = datasourceFields[property].type;
-				const serializer = valueSerializersLookup[descriptorType];
+				const serializer = valueSerializersLookup[fieldDescriptor.type];
 				properties[property].value = serializer ? serializer(null, values[property]) : (values[property] as never);
 			}
 		} else if (property === 'validations') {
