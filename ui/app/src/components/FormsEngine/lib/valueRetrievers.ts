@@ -56,16 +56,16 @@ export const valueRetrieverLookup: Record<BuiltInControlType | DescriptorControl
 	'video-picker': textFieldExtractor,
 	colorPicker: textOrNullExtractor,
 	'content-path-input': textFieldExtractor,
-	contentTypes: textFieldExtractor,
-	'dropdown-static-values': textFieldExtractor,
+	contentTypes: contentTypesExtractor,
+	'dropdown-static-values': objectArrayExtractor,
 	'template-selector': textFieldExtractor,
 	'type-image-selector': textFieldExtractor,
-	'datasource-selector': textFieldExtractor,
+	'datasource-selector': stringArrayExtractor,
 	'read-only-value': textFieldExtractor,
-	range: textFieldExtractor,
+	range: objectExtractor,
 	'type-js-controller-selector': textFieldExtractor,
-	'key-value-map': textFieldExtractor,
-	'type-destination-paths-selector': textFieldExtractor,
+	'key-value-map': objectArrayExtractor,
+	'type-destination-paths-selector': objectExtractor,
 	'path-with-macro-creator': textFieldExtractor,
 	'merge-strategy-selector': textFieldExtractor,
 	'datasource-single-selector': textFieldExtractor,
@@ -161,6 +161,10 @@ export function deserializeContentDoc(contentDom: XMLDocument | Element): Lookup
 	})[(contentDom as XMLDocument).documentElement?.tagName ?? (contentDom as Element).tagName];
 }
 
+export function stringArrayExtractor(value): string[] {
+	return value ? (value as string)?.split(',') : [];
+}
+
 export function arrayFieldExtractor(value: unknown): unknown[] {
 	// Controls needn't worry about packaging as `items: { item: [] }`, but when it first gets deserialised, it will have that format.
 	return Array.isArray(value) ? value : ((value as Record<'item', unknown[]>)?.item ?? []);
@@ -180,4 +184,26 @@ export function numberFieldExtractor(value: unknown): number | null {
 
 export function booleanFieldExtractor(value: unknown): boolean {
 	return value === true || value === 'true';
+}
+
+export function contentTypesExtractor(value): string[] | '*' {
+	return value === '*' ? '*' : stringArrayExtractor(value);
+}
+
+export function objectArrayExtractor(value): object[] {
+	try {
+		return value ? JSON.parse(value) : [];
+	} catch (e) {
+		console.error('Invalid JSON', e);
+		return [];
+	}
+}
+
+export function objectExtractor(value): object {
+	try {
+		return value ? JSON.parse(value) : {};
+	} catch (e) {
+		console.error('Invalid JSON', e);
+		return {};
+	}
 }

@@ -19,7 +19,6 @@ import FormsEngineField from '../../FormsEngine/components/FormsEngineField';
 import Box from '@mui/material/Box';
 import { FormattedMessage } from 'react-intl';
 import TextField from '@mui/material/TextField';
-import FormLabel from '@mui/material/FormLabel';
 import IconButton from '@mui/material/IconButton';
 import AddCircleOutlineRoundedIcon from '@mui/icons-material/AddCircleOutlineRounded';
 import Tooltip from '@mui/material/Tooltip';
@@ -28,7 +27,7 @@ import { TypeBuilderControl } from '../utils';
 import Typography from '@mui/material/Typography';
 
 export interface TypeDestinationPathsSelectorProps extends TypeBuilderControl {
-	value: string;
+	value: DestinationPaths;
 }
 
 type Destination = 'includes' | 'excludes';
@@ -41,34 +40,25 @@ interface DestinationPaths {
  * Allows users to specify "includes" and "excludes" destination paths for content types.
  */
 export function TypeDestinationPathsSelector(props: TypeDestinationPathsSelectorProps) {
-	const { field, setValue } = props;
-	const value: DestinationPaths = React.useMemo(() => {
-		if (!props.value) return { includes: [], excludes: [] };
-		try {
-			return JSON.parse(props.value);
-		} catch (e) {
-			console.error('Invalid JSON value for TypeDestinationPathsSelector', e);
-			return { includes: [], excludes: [] };
-		}
-	}, [props.value]);
+	const { value, field, setValue } = props;
 	const htmlId = useId();
 	const maxLength = field.validations.maxLength?.value;
 	const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, prop: Destination, index: number) => {
 		const newValue = { ...value };
 		newValue[prop][index] = e.currentTarget.value;
-		setValue(JSON.stringify(newValue));
+		setValue(newValue);
 	};
 
 	const addPath = (prop: Destination) => {
 		const newValue = { ...value };
 		newValue[prop].push('');
-		setValue(JSON.stringify(newValue));
+		setValue(newValue);
 	};
 
 	const removePath = (prop: Destination, index: number) => {
 		const newValue = { ...value };
 		newValue[prop].splice(index, 1);
-		setValue(JSON.stringify(newValue));
+		setValue(newValue);
 	};
 
 	return (

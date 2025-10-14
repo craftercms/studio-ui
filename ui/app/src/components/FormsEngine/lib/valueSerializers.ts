@@ -66,16 +66,16 @@ export const valueSerializersLookup: Record<BuiltInControlType | DescriptorContr
 	'video-picker': undefined,
 	colorPicker: undefined,
 	'content-path-input': undefined,
-	contentTypes: undefined,
-	'dropdown-static-values': undefined,
+	contentTypes: (field, value) => prepareContentTypes(field, value as string[]),
+	'dropdown-static-values': (field, value) => prepareObjectArray(field, value as object[]),
 	'template-selector': undefined,
 	'type-image-selector': undefined,
-	'datasource-selector': undefined,
+	'datasource-selector': (field, value) => prepareStringArray(field, value as string[]),
 	'read-only-value': undefined,
-	range: undefined,
+	range: (field, value) => prepareObject(field, value as object),
 	'type-js-controller-selector': undefined,
-	'key-value-map': undefined,
-	'type-destination-paths-selector': undefined,
+	'key-value-map': (field, value) => prepareObjectArray(field, value as object[]),
+	'type-destination-paths-selector': (field, value) => prepareObject(field, value as object),
 	'path-with-macro-creator': undefined,
 	'merge-strategy-selector': undefined,
 	'datasource-single-selector': undefined,
@@ -175,6 +175,22 @@ function prepareArray(field: ContentTypeField, value: unknown) {
 function prepareRTE(field: ContentTypeField, value: unknown) {
 	// TODO: CDATA wrap based on config
 	return { [cdataPropName]: value };
+}
+
+function prepareStringArray(field: ContentTypeField, value: string[]) {
+	return value.join(',');
+}
+
+function prepareContentTypes(field: ContentTypeField, value: string[]) {
+	return value?.join(',') ?? '';
+}
+
+function prepareObjectArray(field: ContentTypeField, value: object[]) {
+	return JSON.stringify(value);
+}
+
+function prepareObject(field: ContentTypeField, value: object) {
+	return JSON.stringify(value);
 }
 
 function createAttrHint(attributeName: string): string {
