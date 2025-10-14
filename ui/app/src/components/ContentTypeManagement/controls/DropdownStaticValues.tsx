@@ -37,10 +37,12 @@ export function DropdownStaticValues(props: DropdownStaticValuesProps) {
 	const selectedOption = options.find((option) => option.selected);
 
 	const handleChange = (event: SelectChangeEvent) => {
-		const newOptions = options.map((option) => {
-			option.selected = option.value === event.target.value;
-			return option;
-		});
+		const selectedValue = event.target.value;
+		const newOptions = options.map((option) => ({
+			...option,
+			selected: option.value === selectedValue
+		}));
+
 		setValue(newOptions);
 	};
 	return (
