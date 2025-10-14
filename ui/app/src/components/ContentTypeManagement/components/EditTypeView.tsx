@@ -100,7 +100,7 @@ import type { ReorderFieldsDialogProps } from './ReorderFieldsDialog';
 import PickControlDialog from './PickControlDialog';
 import PickDataSourceDialog from './PickDataSourceDialog';
 import { fetchContentTypes } from '../../../state/actions/preview';
-import { getXmlBuilder } from '../../FormsEngine/lib/valueSerializers';
+import { getXmlBuilder, valueSerializersLookup } from '../../FormsEngine/lib/valueSerializers';
 import { pushErrorDialog } from '../../../utils/system';
 
 export interface EditTypeAppProps {
@@ -230,7 +230,10 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 		} else if (stateRef.current.selectedSection) {
 			updatedType = updateTypeFromSectionUpdate(type, stateRef.current.selectedSection, values);
 		} else if (stateRef.current.selectedDataSource) {
-			updatedType = updateTypeFromDataSourceUpdate(type, stateRef.current.selectedDataSource, values);
+			const currentDataSource = stateRef.current.selectedDataSource;
+			const descriptor =
+				dataSourceDescriptors[currentDataSource.type] ?? config.dataSources?.[currentDataSource.type]?.descriptor;
+			updatedType = updateTypeFromDataSourceUpdate(type, currentDataSource, values, descriptor);
 		} else {
 			// There's no selected field, section or data source, so assume the type itself is being edited.
 			updatedType = updateTypeProps(type, values as TypePropsToEdit);
@@ -1120,7 +1123,8 @@ function updateTypeFromSectionUpdate(
 function updateTypeFromDataSourceUpdate(
 	type: ContentType,
 	selectedDataSource: DataSource,
-	updatedValues: LookupTable<unknown>
+	updatedValues: LookupTable<unknown>,
+	descriptor: DescriptorContentType
 ): ContentType {
 	const updatedType: ContentType = { ...type, dataSources: type.dataSources.concat() };
 	const index = updatedType.dataSources.findIndex((item) => {
@@ -1131,10 +1135,18 @@ function updateTypeFromDataSourceUpdate(
 		}
 	});
 
+	const descriptorFields = descriptor.fields;
+	// Serialize datasource values
+	const serializedValues = {};
+	Object.entries(updatedValues).forEach(([key, value]) => {
+		const fieldType = descriptorFields?.[key]?.type;
+		const serializer = fieldType ? valueSerializersLookup[fieldType] : null;
+		serializedValues[key] = serializer ? serializer(null, value) : value;
+	});
 	const nextDataSource = { ...selectedDataSource };
 	// When updating a new data source, we need to exclude NEW prop from the new datasource content
 	delete (nextDataSource as NewDataSource).NEW;
-	const { title, id, ...properties }: Partial<DataSource> = updatedValues;
+	const { title, id, ...properties }: Partial<DataSource> = serializedValues;
 	updatedType.dataSources[index] = { ...nextDataSource, id, title, properties };
 	return updatedType;
 }

@@ -27,7 +27,7 @@ import type {
 } from '../../models';
 import type LookupTable from '../../models/LookupTable';
 import type { ContentType, SerializeToXmlContentTypeStructure } from '../../models/ContentType';
-import { createLookupTable, nnou, noOp, pluckProps } from '../../utils/object';
+import { createLookupTable, noOp, pluckProps } from '../../utils/object';
 import { commonControlFieldsDescriptors, defaultDataSourcesSection } from './descriptors/controls';
 import {
 	FormsEngineFormApiContextProps,
@@ -40,11 +40,11 @@ import { RefObject } from 'react';
 import { Subject } from 'rxjs';
 import { createParsedValueForField } from '../FormsEngine/lib/valueRetrievers';
 import { toBooleanString, toColor } from '../../utils/string';
-import { getXmlBuilder } from '../FormsEngine/lib/valueSerializers';
+import { getXmlBuilder, valueSerializersLookup } from '../FormsEngine/lib/valueSerializers';
 import { nanoid } from 'nanoid';
 import { commonDataSourceDescriptors, dataSourceDescriptors } from './descriptors/dataSources';
 import type { ControlProps } from '../FormsEngine/types';
-import { IntlShape, type MessageDescriptor } from 'react-intl';
+import { IntlShape } from 'react-intl';
 import TranslationOrText from '../../models/TranslationOrText';
 import { getFileNameFromPath } from '../../utils/path';
 import type { Dispatch } from 'redux';
@@ -251,6 +251,7 @@ export function reverseTypeFieldValuesObject(
 			fieldWithReversedValues.properties = {};
 			const properties = fieldWithReversedValues.properties;
 			const mergedProperties = { ...defaults.properties, ...(field.properties ?? {}) };
+			const datasourceFields = descriptor.fields;
 
 			for (const property in mergedProperties) {
 				// A stored property that's no longer in the descriptor would get cleaned/dropped up by this check.
@@ -262,7 +263,10 @@ export function reverseTypeFieldValuesObject(
 					continue;
 				}
 				properties[property] = { ...mergedProperties[property] };
-				properties[property].value = values[property] as never;
+				// Serialize field properties
+				const descriptorType = datasourceFields[property].type;
+				const serializer = valueSerializersLookup[descriptorType];
+				properties[property].value = serializer ? serializer(null, values[property]) : (values[property] as never);
 			}
 		} else if (property === 'validations') {
 			fieldWithReversedValues.validations = { ...field.validations };
