@@ -21,12 +21,12 @@ import type { RepeatItem } from '../controls/Repeat';
 import type { NodeSelectorItem } from '../controls/NodeSelector';
 import { systemFieldsNotInType, XmlKeys } from './formConsts';
 import { deserialize } from '../../../utils/xml';
-import { DescriptorControlType } from '../../ContentTypeManagement/controlMap';
+import type { DescriptorControlType } from '../../ContentTypeManagement/controlMap';
 import { nnou } from '../../../utils/object';
 
 export type ValueRetriever<T = unknown> = (value: unknown, field: ContentTypeField) => T;
 
-export const valueRetrieverLookup: Record<BuiltInControlType | DescriptorControlType, ValueRetriever> = {
+export const valueRetrieverLookup: Record<BuiltInControlType | DescriptorControlType, ValueRetriever | null> = {
 	'auto-filename': textFieldExtractor,
 	'aws-file-upload': null,
 	'checkbox-group': arrayFieldExtractor,
@@ -111,7 +111,7 @@ export function createParsedValueForField<T = unknown>(
 	switch (controlType) {
 		case 'repeat': {
 			return (value as Array<RepeatItem>).map((item) =>
-				createParsedValuesObject(field.fields, item, contentTypesLookup)
+				createParsedValuesObject(field.fields ?? ({} as LookupTable<ContentTypeField>), item, contentTypesLookup)
 			) as T;
 		}
 		case 'node-selector': {
