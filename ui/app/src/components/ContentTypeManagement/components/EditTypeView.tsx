@@ -233,6 +233,10 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 			const currentDataSource = stateRef.current.selectedDataSource;
 			const descriptor =
 				dataSourceDescriptors[currentDataSource.type] ?? config.dataSources?.[currentDataSource.type]?.descriptor;
+			if (!descriptor) {
+				console.error(`No data source descriptor found for type "${currentDataSource.type}"`);
+				return type;
+			}
 			updatedType = updateTypeFromDataSourceUpdate(type, currentDataSource, values, descriptor);
 		} else {
 			// There's no selected field, section or data source, so assume the type itself is being edited.
