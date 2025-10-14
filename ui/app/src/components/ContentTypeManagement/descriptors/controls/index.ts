@@ -321,7 +321,7 @@ export const typeBasicDetailsDescriptor: DescriptorContentType = {
 			name: defineMessage({ defaultMessage: 'Paths' }),
 			description: '',
 			helpText: '',
-			defaultValue: undefined,
+			defaultValue: '{ "includes": [], "excludes": [] }',
 			validations: immutableEmptyObject
 		}*/
 	}

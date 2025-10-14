@@ -39,14 +39,14 @@ export const imagePickerDescriptor: DescriptorContentType = {
 			id: 'width',
 			type: 'range',
 			name: defineMessage({ defaultMessage: 'Width' }),
-			defaultValue: undefined,
+			defaultValue: '{ "exact": "", "min": "", "max": "" }',
 			validations: immutableEmptyObject
 		},
 		height: {
 			id: 'height',
 			type: 'range',
 			name: defineMessage({ defaultMessage: 'Height' }),
-			defaultValue: undefined,
+			defaultValue: '{ "exact": "", "min": "", "max": "" }',
 			validations: immutableEmptyObject
 		},
 		thumbnailWidth: {
