@@ -158,9 +158,10 @@ function prepareRepeat(
 	value: RepeatItem[],
 	contentTypesLookup: LookupTable<ContentType>
 ): XmlNuancedArrayFormat {
+	const nestedFields = field.fields ?? ({} as LookupTable<ContentTypeField>);
 	return {
 		'@:item-list': true,
-		item: value.map((item) => prepareValuesForXmlSerialising(field.fields, item, contentTypesLookup))
+		item: value.map((item) => prepareValuesForXmlSerialising(nestedFields, item, contentTypesLookup))
 	};
 }
 
