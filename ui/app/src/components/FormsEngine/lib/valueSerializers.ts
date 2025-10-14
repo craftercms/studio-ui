@@ -182,7 +182,8 @@ function prepareStringArray(field: ContentTypeField, value: string[]) {
 	return value.join(',');
 }
 
-function prepareContentTypes(field: ContentTypeField, value: string[]) {
+function prepareContentTypes(field: ContentTypeField, value: string[] | '*') {
+	if (value === '*') return '*';
 	return value?.join(',') ?? '';
 }
 
