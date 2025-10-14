@@ -49,7 +49,7 @@ export function Range(props: RangeProps) {
 	const exactValue = value?.exact ? (isNaN(parseInt(value.exact)) ? 0 : parseInt(value.exact)) : null;
 	// Parsed value is an object like `{ exact: '', min: '50', max: '100' }` or `{ exact: '50', min: '', max: '' }`.
 	// So to determine if it's a range or exact value, we check if any of the values are set.
-	const [isRange, setIsRange] = useState<boolean>(Boolean(minValue) || Boolean(maxValue));
+	const [isRange, setIsRange] = useState<boolean>((value?.min ?? '') !== '' || (value?.max ?? '') !== '');
 
 	const handleChange: TextFieldProps['onChange'] = (event) => {
 		if (isRange) {
