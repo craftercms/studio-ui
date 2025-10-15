@@ -120,10 +120,10 @@ export function PageNavOrder(props: PageNavOrderProps) {
 
 	return (
 		<FormsEngineField htmlFor={htmlId} field={field}>
-			<Box display="flex" flexDirection="row" gap={2} justifyContent="space-between">
+			<Box display="flex" flexDirection="row" gap={2}>
 				<RadioGroup row value={value} onChange={handleChange} sx={{ display: 'inline-flex' }} autoFocus={autoFocus}>
-					<FormControlLabel value="true" control={<Radio />} label={<FormattedMessage defaultMessage="Yes" />} />
 					<FormControlLabel value="false" control={<Radio />} label={<FormattedMessage defaultMessage="No" />} />
+					<FormControlLabel value="true" control={<Radio />} label={<FormattedMessage defaultMessage="Yes" />} />
 				</RadioGroup>
 
 				{value && (
