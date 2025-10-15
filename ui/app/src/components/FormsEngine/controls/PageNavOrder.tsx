@@ -168,7 +168,7 @@ export function PageNavOrder(props: PageNavOrderProps) {
 					</Alert>
 					<Paper elevation={0} sx={{ mt: 2 }}>
 						<SortableList
-							items={pagesOrderState.order}
+							items={pagesOrderState.order ?? []}
 							selectedItemId={currentPath}
 							onChange={(fields: TItem<PageNavItem>[]) =>
 								setPagesOrderState({
