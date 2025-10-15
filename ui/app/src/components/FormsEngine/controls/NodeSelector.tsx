@@ -142,497 +142,6 @@ interface CreateDataSourcePickerData {
 	contentTypeId: string;
 }
 
-const oppositeStrategy: Record<ContentCreationStrategy, ContentCreationStrategy> = {
-	embedded: 'shared',
-	shared: 'embedded'
-};
-
-// Internal/private component
-function CreateDataSourcePicker(props: {
-	siteId: string;
-	contentTypesLookup: LookupTable<ContentType>;
-	allowedCreateTypes: LookupTable<AllowedContentTypesDataWithDestinations>;
-	allowedCreatePaths: string[];
-	onChange(e, choice: CreateDataSourcePickerData): void;
-}) {
-	const { siteId, allowedCreatePaths, contentTypesLookup, onChange } = props;
-	const [allowedTypes, setAllowedTypes] = useState<string[]>();
-	const [allowedCreateTypes, setAllowedCreateTypes] = useState<LookupTable<AllowedContentTypesDataWithDestinations>>(
-		props.allowedCreateTypes
-	);
-	const [value, setValue] = useState<CreateDataSourcePickerData>(() => {
-		for (const key in allowedCreateTypes) {
-			return {
-				path: allowedCreateTypes[key].createPaths?.[0] ?? '',
-				strategy: allowedCreateTypes[key].embedded ? 'embedded' : 'shared',
-				contentTypeId: key
-			};
-		}
-		return null;
-	});
-	const refs = useUpdateRefs({ value, onChange });
-	const [allowedStrategies, setAllowedStrategies] = useState({ embedded: false, shared: false });
-	const handleTypeChange = (event: SyntheticEvent) => {
-		const newValue = { ...value, contentTypeId: (event.target as HTMLInputElement).value };
-		setValue(newValue);
-		onChange?.(event, newValue);
-	};
-	const handleStrategyChange = (event: SyntheticEvent) => {
-		const newValue = { ...value, strategy: (event.target as HTMLInputElement).value as ContentCreationStrategy };
-		setValue(newValue);
-		onChange?.(event, newValue);
-	};
-	const handlePathChange = (event: SyntheticEvent) => {
-		const newValue = { ...value, path: (event.target as HTMLInputElement).value };
-		setValue(newValue);
-		onChange?.(event, newValue);
-	};
-	useEffect(() => {
-		const allowedCreateTypes = props.allowedCreateTypes;
-		if (allowedCreatePaths.length) {
-			// Find out all the types that can be created on the allowed creation paths (coming from shared-content DS).
-			const sub = forkJoin(allowedCreatePaths.map((path) => fetchLegacyContentTypes(siteId, path))).subscribe(
-				(responses) => {
-					const result = [
-						...new Set(
-							responses.flatMap((types) => types.map((type) => type.name)).concat(Object.keys(allowedCreateTypes))
-						)
-					];
-					const allowedLookup = { ...allowedCreateTypes };
-					result.forEach((contentTypeId) => {
-						allowedLookup[contentTypeId] = { ...allowedLookup[contentTypeId] };
-						allowedLookup[contentTypeId].shared = true;
-					});
-					setAllowedTypes(result);
-					setAllowedCreateTypes(allowedLookup);
-					const value: CreateDataSourcePickerData = {
-						path: allowedLookup[result[0]].createPaths?.[0] ?? '',
-						strategy: allowedLookup[result[0]].embedded ? 'embedded' : 'shared',
-						contentTypeId: result[0]
-					};
-					setValue(value);
-				}
-			);
-			return () => sub.unsubscribe();
-		} else {
-			const result = Object.keys(allowedCreateTypes);
-			setAllowedTypes(result);
-			const value: CreateDataSourcePickerData = {
-				path: allowedCreateTypes[result[0]].createPaths?.[0] ?? '',
-				strategy: allowedCreateTypes[result[0]].embedded ? 'embedded' : 'shared',
-				contentTypeId: result[0]
-			};
-			setValue(value);
-		}
-	}, [allowedCreatePaths, props.allowedCreateTypes, refs, siteId]);
-	useEffect(() => {
-		if (value.contentTypeId) {
-			const newValue: CreateDataSourcePickerData = { ...refs.current.value };
-			const strategy = refs.current.value.strategy;
-			if (!allowedCreateTypes[value.contentTypeId][strategy]) {
-				newValue.strategy = oppositeStrategy[strategy];
-			}
-			newValue.path = allowedCreateTypes[value.contentTypeId].createPaths?.[0] ?? '';
-			setValue(newValue);
-			setAllowedStrategies({
-				shared: allowedCreateTypes[value.contentTypeId].shared,
-				embedded: allowedCreateTypes[value.contentTypeId].embedded
-			});
-		}
-	}, [allowedCreateTypes, refs, value.contentTypeId]);
-	useEffect(() => {
-		refs.current.onChange?.(null, value);
-	}, [refs, value]);
-	return (
-		<Grid container spacing={2} justifyContent="center">
-			<Grid sx={{ display: 'flex', flexDirection: 'column' }}>
-				<FormControl>
-					<FormLabel id="contentTypeLabel" sx={{ minHeight: 28, display: 'flex', alignItems: 'center' }}>
-						<FormattedMessage defaultMessage="Content Type" />
-					</FormLabel>
-					<RadioGroup aria-labelledby="contentTypeLabel" name="contentType" value={value.contentTypeId}>
-						{allowedTypes?.map((contentTypeId) => (
-							<FormControlLabel
-								key={contentTypeId}
-								value={contentTypeId}
-								control={<Radio />}
-								label={contentTypesLookup[contentTypeId].name}
-								onChange={handleTypeChange}
-							/>
-						))}
-					</RadioGroup>
-				</FormControl>
-				{props.allowedCreateTypes[value.contentTypeId]?.createPaths?.length > 1 && (
-					<FormControl sx={{ mt: 1 }}>
-						<FormLabel>
-							<FormattedMessage defaultMessage="Creation Path" />
-						</FormLabel>
-						<RadioGroup aria-labelledby="creationPathLabel" name="creationPath" value={value.path} sx={{}}>
-							{props.allowedCreateTypes[value.contentTypeId].createPaths.map((path) => (
-								<FormControlLabel
-									key={path}
-									value={path}
-									control={<Radio />}
-									onChange={handlePathChange}
-									label={<Typography noWrap maxWidth="100%" component="div" title={path} children={path} />}
-									disableTypography
-								/>
-							))}
-						</RadioGroup>
-					</FormControl>
-				)}
-			</Grid>
-			<Grid>
-				<FormControl sx={{ mb: 1, shrink: 0 }}>
-					<Box alignItems="center" display="flex">
-						<FormLabel id="creationStrategyLabel">
-							<FormattedMessage defaultMessage="Creation Strategy" />
-						</FormLabel>
-						<IconButton size="small" sx={{ ml: 1 }} color="primary" component="a" href="/studio" target="_blank">
-							<HelpOutline fontSize="inherit" />
-						</IconButton>
-					</Box>
-					<RadioGroup aria-labelledby="creationStrategyLabel" name="creationStrategy" value={value.strategy}>
-						<FormControlLabel
-							value="embedded"
-							disabled={!allowedStrategies.embedded}
-							control={<Radio onChange={handleStrategyChange} />}
-							label={<FormattedMessage defaultMessage="Embedded" />}
-						/>
-						<FormControlLabel
-							disabled={!allowedStrategies.shared}
-							value="shared"
-							control={<Radio onChange={handleStrategyChange} />}
-							label={<FormattedMessage defaultMessage="Shared" />}
-						/>
-					</RadioGroup>
-				</FormControl>
-			</Grid>
-		</Grid>
-	);
-}
-
-// Internal/private component
-function DataSourcePicker(props: { allowedPaths: AllowedPathsData[]; onChange(e, choice: AllowedPathsData): void }) {
-	const { allowedPaths, onChange } = props;
-	const handleChange = (event: SyntheticEvent) =>
-		onChange?.(event, allowedPaths[(event.target as HTMLInputElement).value]);
-	return (
-		<FormControl>
-			<FormLabel id="dataSourcePickerLabel">
-				<FormattedMessage defaultMessage="Available Settings" />
-			</FormLabel>
-			<RadioGroup aria-labelledby="dataSourcePickerLabel" name="dataSourceConfig">
-				{allowedPaths?.map((data, index) => (
-					<FormControlLabel
-						disableTypography
-						key={index}
-						value={index}
-						control={<Radio />}
-						label={
-							<Box display="flex" flexDirection="column">
-								<Typography component="span" children={data.title} />
-								<Typography variant="body2" color="textSecondary" component="span" children={data.path} />
-							</Box>
-						}
-						onChange={handleChange}
-					/>
-				))}
-			</RadioGroup>
-		</FormControl>
-	);
-}
-
-const createAddMenuOptions = ({
-	refs,
-	readonly,
-	itemPickerDataSourceData
-}: {
-	refs: RefObject<{
-		handleDataSourceOptionClick(event: ReactMouseEvent<HTMLLIElement, MouseEvent>, option: DataSourcePickerType): void;
-	}>;
-	itemPickerDataSourceData: ConsolidatedItemPickerData;
-	readonly: boolean;
-}): ReactNode[] => {
-	const { allowedCreateTypes, allowedBrowsePaths, allowedSearchPaths, allowedUploadPaths } = itemPickerDataSourceData;
-	const createAllowed = Object.keys(allowedCreateTypes).length > 0;
-	const menuOptions = [];
-
-	if (allowedSearchPaths.length > 0) {
-		menuOptions.push(
-			<MenuItem
-				key="search"
-				disabled={readonly}
-				onClick={(event) => refs.current.handleDataSourceOptionClick(event, 'search')}
-			>
-				<ListItemIcon sx={{ mr: 0 }}>
-					<SearchRounded fontSize="small" />
-				</ListItemIcon>
-				<ListItemText children={<FormattedMessage defaultMessage="Search" />} />
-			</MenuItem>
-		);
-	}
-	if (allowedBrowsePaths.length > 0) {
-		menuOptions.push(
-			<MenuItem
-				key="browse"
-				disabled={readonly}
-				onClick={(event) => refs.current.handleDataSourceOptionClick(event, 'browse')}
-			>
-				<ListItemIcon sx={{ mr: 0 }}>
-					<TravelExploreOutlined fontSize="small" />
-				</ListItemIcon>
-				<ListItemText children={<FormattedMessage defaultMessage="Browse" />} />
-			</MenuItem>
-		);
-	}
-	if (allowedUploadPaths.length > 0) {
-		menuOptions.push(
-			<MenuItem
-				key="upload"
-				disabled={readonly}
-				onClick={(event) => refs.current.handleDataSourceOptionClick(event, 'upload')}
-			>
-				<ListItemIcon sx={{ mr: 0 }}>
-					<UploadFileOutlinedIcon fontSize="small" />
-				</ListItemIcon>
-				<ListItemText children={<FormattedMessage defaultMessage="Upload" />} />
-			</MenuItem>
-		);
-	}
-	if (createAllowed) {
-		menuOptions.push(
-			<MenuItem
-				key="create"
-				disabled={readonly}
-				onClick={(event) => refs.current.handleDataSourceOptionClick(event, 'create')}
-			>
-				<ListItemIcon sx={{ mr: 0 }}>
-					<AddRounded fontSize="small" />
-				</ListItemIcon>
-				<ListItemText children={<FormattedMessage defaultMessage="Create" />} />
-			</MenuItem>
-		);
-	}
-
-	return menuOptions;
-};
-
-const showBrowseFilesDialog = ({
-	dispatch,
-	onSuccess,
-	path,
-	contentTypes
-}: {
-	path: string;
-	contentTypes: string[];
-	dispatch: ReduxDispatch;
-	onSuccess: BrowseFilesDialogProps['onSuccess'];
-}): void => {
-	const id = nanoid();
-	dispatch(
-		pushDialog({
-			id,
-			component: createComponentId('BrowseFilesDialog'),
-			props: {
-				path,
-				multiSelect: true,
-				allowUpload: false,
-				contentTypes: contentTypes ?? [],
-				onClose: () => dispatch(popDialog({ id })),
-				onSuccess(items) {
-					dispatch(popDialog({ id }));
-					onSuccess(items);
-				}
-			} as Partial<BrowseFilesDialogProps>
-		})
-	);
-};
-
-const showSearchDialog = ({
-	dispatch,
-	path,
-	contentTypes,
-	onAcceptSelection
-}: {
-	path: string;
-	contentTypes: string[];
-	dispatch: ReduxDispatch;
-	onAcceptSelection: SearchProps['onAcceptSelection'];
-}): void => {
-	const id = nanoid();
-	dispatch(
-		pushNonDialog({
-			id,
-			component: createComponentId('Search'),
-			props: {
-				mode: 'select',
-				embedded: true,
-				initialParameters: {
-					path,
-					sortBy: 'internalName',
-					filters: { 'content-type': contentTypes }
-				},
-				onClose: () => dispatch(popDialog({ id })),
-				onAcceptSelection(paths, items) {
-					dispatch(popDialog({ id }));
-					onAcceptSelection(paths, items);
-				}
-			} as Partial<SearchProps>
-		})
-	);
-};
-
-const showUploadDialog = ({
-	dispatch,
-	path,
-	siteId,
-	onUploadComplete
-}: {
-	dispatch: ReduxDispatch;
-	path: string;
-	siteId: string;
-	onUploadComplete: SingleFileUploadDialogProps['onUploadComplete'];
-}) => {
-	const id = nanoid();
-	dispatch(
-		pushDialog({
-			id,
-			component: 'craftercms.components.SingleFileUploadDialog',
-			props: {
-				site: siteId,
-				path,
-				onUploadComplete: (result: FileUploadResult) => {
-					onUploadComplete(result);
-					dispatch(popDialog({ id }));
-				}
-			} as SingleFileUploadDialogProps
-		})
-	);
-};
-
-type FileMetadata = {
-	fileType_smv?: string;
-	fileSize_smv?: number;
-	fileType_mvs?: string;
-	fileType_s?: string;
-	fileSize_s?: number;
-};
-
-/**
- * Returns an object with the appropriate file metadata fields based on the configuration.
- * @param fileType {string} - The file type (e.g., 'jpg', 'png').
- * @param fileSize {number} - The file size (e.g., 2048).
- * @param useSingleValueFilename {boolean} - Whether single value filename is used.
- * @param useMVS {boolean} - Whether multi-value support is used.
- * @returns {FileMetadata} An object containing the appropriate file metadata fields.
- * */
-const getFileMetaData = ({
-	fileType,
-	fileSize,
-	useSingleValueFilename,
-	useMVS
-}: {
-	fileType: string;
-	fileSize?: number;
-	useSingleValueFilename: boolean;
-	useMVS: boolean;
-}): FileMetadata => {
-	const metaData: FileMetadata = {};
-	if (!useSingleValueFilename && !useMVS) {
-		metaData['fileType_smv'] = fileType;
-		if (fileSize) metaData['fileSize_smv'] = fileSize;
-	} else if (useMVS) {
-		metaData['fileType_mvs'] = fileType;
-		if (fileSize) metaData['fileSize_s'] = fileSize;
-	} else if (useSingleValueFilename) {
-		metaData['fileType_s'] = fileType;
-		if (fileSize) metaData['fileSize_s'] = fileSize;
-	}
-	return metaData;
-};
-
-/**
- * Validates if a NodeSelectorItem represents a component (embedded or shared).
- *
- * @param item {NodeSelectorItem} - The NodeSelectorItem to validate.
- * @returns {boolean} True if the item is a component, false otherwise.
- */
-const isItemComponent = (item: NodeSelectorItem): boolean => {
-	return Boolean(
-		// There are 3 scenarios when an item is considered a component:
-		// 1. It has the 'component' property (embedded component).
-		// 2. It has an 'include' property that starts with '/site/' (shared component).
-		// 3. It has an 'include' property that does not point to an editable asset (shared component).
-		item.component || (item.include && (item.include.startsWith('/site/') || !isEditableAsset(item.include)))
-	);
-};
-
-/**
- * Validates and separates new items into valid and duplicate categories.
- * validItems will contain the existing items plus any new items that are not duplicates (if allowDuplicates = true).
- *
- * @param newItems {NodeSelectorItem[]} - The array of new items to validate.
- * @param items {NodeSelectorItem[]} - The existing array of items to compare against.
- * @param allowDuplicates {boolean} - A flag indicating whether duplicates are allowed.
- * @returns {Object} An object containing two arrays:
- *   - `validItems`: The combined array of valid items (existing and new non-duplicates if allowDuplicates = true).
- *   - `duplicateItems`: The array of items that were identified as duplicates.
- */
-const validateNewItems = (
-	newItems: NodeSelectorItem[],
-	items: NodeSelectorItem[],
-	allowDuplicates: boolean
-): {
-	validItems: NodeSelectorItem[];
-	duplicateItems: NodeSelectorItem[];
-} => {
-	const validItems: NodeSelectorItem[] = [...items];
-	const duplicateItems: NodeSelectorItem[] = [];
-
-	newItems.forEach((newItem) => {
-		const isDuplicate = validItems.find((item) => item.key === newItem.key);
-		if (isDuplicate) {
-			duplicateItems.push(newItem);
-			if (allowDuplicates) validItems.push(newItem);
-		} else {
-			validItems.push(newItem);
-		}
-	});
-
-	return { validItems, duplicateItems };
-};
-
-/**
- * Displays a warning message for duplicate items that were not added.
- *
- * @param dispatch {ReduxDispatch} - The Redux dispatch function used to trigger the alert.
- * @param duplicateItems {NodeSelectorItem[]} - An array of duplicate items that were not added.
- */
-const showDuplicatesWarning = (dispatch: ReduxDispatch, duplicateItems: NodeSelectorItem[]) => {
-	if (duplicateItems.length) {
-		showAlert({
-			message: 'The following items are duplicates and were not added:',
-			children: (
-				<List>
-					{duplicateItems.map((item) => (
-						<ListItemText
-							key={item.key}
-							primary={item.value}
-							secondary={item.include}
-							slotProps={{
-								primary: { noWrap: true },
-								secondary: { noWrap: true }
-							}}
-						/>
-					))}
-				</List>
-			),
-			dispatch
-		});
-	}
-};
-
 function NodeSelector(props: NodeSelectorProps) {
 	const { field, contentType, value, setValue, readonly: formReadonly, autoFocus } = props;
 
@@ -1193,6 +702,497 @@ function NodeSelector(props: NodeSelectorProps) {
 			</FormsEngineField>
 		</>
 	);
+}
+
+const oppositeStrategy: Record<ContentCreationStrategy, ContentCreationStrategy> = {
+	embedded: 'shared',
+	shared: 'embedded'
+};
+
+// Internal/private component
+function CreateDataSourcePicker(props: {
+	siteId: string;
+	contentTypesLookup: LookupTable<ContentType>;
+	allowedCreateTypes: LookupTable<AllowedContentTypesDataWithDestinations>;
+	allowedCreatePaths: string[];
+	onChange(e, choice: CreateDataSourcePickerData): void;
+}) {
+	const { siteId, allowedCreatePaths, contentTypesLookup, onChange } = props;
+	const [allowedTypes, setAllowedTypes] = useState<string[]>();
+	const [allowedCreateTypes, setAllowedCreateTypes] = useState<LookupTable<AllowedContentTypesDataWithDestinations>>(
+		props.allowedCreateTypes
+	);
+	const [value, setValue] = useState<CreateDataSourcePickerData>(() => {
+		for (const key in allowedCreateTypes) {
+			return {
+				path: allowedCreateTypes[key].createPaths?.[0] ?? '',
+				strategy: allowedCreateTypes[key].embedded ? 'embedded' : 'shared',
+				contentTypeId: key
+			};
+		}
+		return null;
+	});
+	const refs = useUpdateRefs({ value, onChange });
+	const [allowedStrategies, setAllowedStrategies] = useState({ embedded: false, shared: false });
+	const handleTypeChange = (event: SyntheticEvent) => {
+		const newValue = { ...value, contentTypeId: (event.target as HTMLInputElement).value };
+		setValue(newValue);
+		onChange?.(event, newValue);
+	};
+	const handleStrategyChange = (event: SyntheticEvent) => {
+		const newValue = { ...value, strategy: (event.target as HTMLInputElement).value as ContentCreationStrategy };
+		setValue(newValue);
+		onChange?.(event, newValue);
+	};
+	const handlePathChange = (event: SyntheticEvent) => {
+		const newValue = { ...value, path: (event.target as HTMLInputElement).value };
+		setValue(newValue);
+		onChange?.(event, newValue);
+	};
+	useEffect(() => {
+		const allowedCreateTypes = props.allowedCreateTypes;
+		if (allowedCreatePaths.length) {
+			// Find out all the types that can be created on the allowed creation paths (coming from shared-content DS).
+			const sub = forkJoin(allowedCreatePaths.map((path) => fetchLegacyContentTypes(siteId, path))).subscribe(
+				(responses) => {
+					const result = [
+						...new Set(
+							responses.flatMap((types) => types.map((type) => type.name)).concat(Object.keys(allowedCreateTypes))
+						)
+					];
+					const allowedLookup = { ...allowedCreateTypes };
+					result.forEach((contentTypeId) => {
+						allowedLookup[contentTypeId] = { ...allowedLookup[contentTypeId] };
+						allowedLookup[contentTypeId].shared = true;
+					});
+					setAllowedTypes(result);
+					setAllowedCreateTypes(allowedLookup);
+					const value: CreateDataSourcePickerData = {
+						path: allowedLookup[result[0]].createPaths?.[0] ?? '',
+						strategy: allowedLookup[result[0]].embedded ? 'embedded' : 'shared',
+						contentTypeId: result[0]
+					};
+					setValue(value);
+				}
+			);
+			return () => sub.unsubscribe();
+		} else {
+			const result = Object.keys(allowedCreateTypes);
+			setAllowedTypes(result);
+			const value: CreateDataSourcePickerData = {
+				path: allowedCreateTypes[result[0]].createPaths?.[0] ?? '',
+				strategy: allowedCreateTypes[result[0]].embedded ? 'embedded' : 'shared',
+				contentTypeId: result[0]
+			};
+			setValue(value);
+		}
+	}, [allowedCreatePaths, props.allowedCreateTypes, refs, siteId]);
+	useEffect(() => {
+		if (value.contentTypeId) {
+			const newValue: CreateDataSourcePickerData = { ...refs.current.value };
+			const strategy = refs.current.value.strategy;
+			if (!allowedCreateTypes[value.contentTypeId][strategy]) {
+				newValue.strategy = oppositeStrategy[strategy];
+			}
+			newValue.path = allowedCreateTypes[value.contentTypeId].createPaths?.[0] ?? '';
+			setValue(newValue);
+			setAllowedStrategies({
+				shared: allowedCreateTypes[value.contentTypeId].shared,
+				embedded: allowedCreateTypes[value.contentTypeId].embedded
+			});
+		}
+	}, [allowedCreateTypes, refs, value.contentTypeId]);
+	useEffect(() => {
+		refs.current.onChange?.(null, value);
+	}, [refs, value]);
+	return (
+		<Grid container spacing={2} justifyContent="center">
+			<Grid sx={{ display: 'flex', flexDirection: 'column' }}>
+				<FormControl>
+					<FormLabel id="contentTypeLabel" sx={{ minHeight: 28, display: 'flex', alignItems: 'center' }}>
+						<FormattedMessage defaultMessage="Content Type" />
+					</FormLabel>
+					<RadioGroup aria-labelledby="contentTypeLabel" name="contentType" value={value.contentTypeId}>
+						{allowedTypes?.map((contentTypeId) => (
+							<FormControlLabel
+								key={contentTypeId}
+								value={contentTypeId}
+								control={<Radio />}
+								label={contentTypesLookup[contentTypeId].name}
+								onChange={handleTypeChange}
+							/>
+						))}
+					</RadioGroup>
+				</FormControl>
+				{props.allowedCreateTypes[value.contentTypeId]?.createPaths?.length > 1 && (
+					<FormControl sx={{ mt: 1 }}>
+						<FormLabel>
+							<FormattedMessage defaultMessage="Creation Path" />
+						</FormLabel>
+						<RadioGroup aria-labelledby="creationPathLabel" name="creationPath" value={value.path} sx={{}}>
+							{props.allowedCreateTypes[value.contentTypeId].createPaths.map((path) => (
+								<FormControlLabel
+									key={path}
+									value={path}
+									control={<Radio />}
+									onChange={handlePathChange}
+									label={<Typography noWrap maxWidth="100%" component="div" title={path} children={path} />}
+									disableTypography
+								/>
+							))}
+						</RadioGroup>
+					</FormControl>
+				)}
+			</Grid>
+			<Grid>
+				<FormControl sx={{ mb: 1, shrink: 0 }}>
+					<Box alignItems="center" display="flex">
+						<FormLabel id="creationStrategyLabel">
+							<FormattedMessage defaultMessage="Creation Strategy" />
+						</FormLabel>
+						<IconButton size="small" sx={{ ml: 1 }} color="primary" component="a" href="/studio" target="_blank">
+							<HelpOutline fontSize="inherit" />
+						</IconButton>
+					</Box>
+					<RadioGroup aria-labelledby="creationStrategyLabel" name="creationStrategy" value={value.strategy}>
+						<FormControlLabel
+							value="embedded"
+							disabled={!allowedStrategies.embedded}
+							control={<Radio onChange={handleStrategyChange} />}
+							label={<FormattedMessage defaultMessage="Embedded" />}
+						/>
+						<FormControlLabel
+							disabled={!allowedStrategies.shared}
+							value="shared"
+							control={<Radio onChange={handleStrategyChange} />}
+							label={<FormattedMessage defaultMessage="Shared" />}
+						/>
+					</RadioGroup>
+				</FormControl>
+			</Grid>
+		</Grid>
+	);
+}
+
+// Internal/private component
+function DataSourcePicker(props: { allowedPaths: AllowedPathsData[]; onChange(e, choice: AllowedPathsData): void }) {
+	const { allowedPaths, onChange } = props;
+	const handleChange = (event: SyntheticEvent) =>
+		onChange?.(event, allowedPaths[(event.target as HTMLInputElement).value]);
+	return (
+		<FormControl>
+			<FormLabel id="dataSourcePickerLabel">
+				<FormattedMessage defaultMessage="Available Settings" />
+			</FormLabel>
+			<RadioGroup aria-labelledby="dataSourcePickerLabel" name="dataSourceConfig">
+				{allowedPaths?.map((data, index) => (
+					<FormControlLabel
+						disableTypography
+						key={index}
+						value={index}
+						control={<Radio />}
+						label={
+							<Box display="flex" flexDirection="column">
+								<Typography component="span" children={data.title} />
+								<Typography variant="body2" color="textSecondary" component="span" children={data.path} />
+							</Box>
+						}
+						onChange={handleChange}
+					/>
+				))}
+			</RadioGroup>
+		</FormControl>
+	);
+}
+
+function createAddMenuOptions({
+	refs,
+	readonly,
+	itemPickerDataSourceData
+}: {
+	refs: RefObject<{
+		handleDataSourceOptionClick(event: ReactMouseEvent<HTMLLIElement, MouseEvent>, option: DataSourcePickerType): void;
+	}>;
+	itemPickerDataSourceData: ConsolidatedItemPickerData;
+	readonly: boolean;
+}): ReactNode[] {
+	const { allowedCreateTypes, allowedBrowsePaths, allowedSearchPaths, allowedUploadPaths } = itemPickerDataSourceData;
+	const createAllowed = Object.keys(allowedCreateTypes).length > 0;
+	const menuOptions = [];
+
+	if (allowedSearchPaths.length > 0) {
+		menuOptions.push(
+			<MenuItem
+				key="search"
+				disabled={readonly}
+				onClick={(event) => refs.current.handleDataSourceOptionClick(event, 'search')}
+			>
+				<ListItemIcon sx={{ mr: 0 }}>
+					<SearchRounded fontSize="small" />
+				</ListItemIcon>
+				<ListItemText children={<FormattedMessage defaultMessage="Search" />} />
+			</MenuItem>
+		);
+	}
+	if (allowedBrowsePaths.length > 0) {
+		menuOptions.push(
+			<MenuItem
+				key="browse"
+				disabled={readonly}
+				onClick={(event) => refs.current.handleDataSourceOptionClick(event, 'browse')}
+			>
+				<ListItemIcon sx={{ mr: 0 }}>
+					<TravelExploreOutlined fontSize="small" />
+				</ListItemIcon>
+				<ListItemText children={<FormattedMessage defaultMessage="Browse" />} />
+			</MenuItem>
+		);
+	}
+	if (allowedUploadPaths.length > 0) {
+		menuOptions.push(
+			<MenuItem
+				key="upload"
+				disabled={readonly}
+				onClick={(event) => refs.current.handleDataSourceOptionClick(event, 'upload')}
+			>
+				<ListItemIcon sx={{ mr: 0 }}>
+					<UploadFileOutlinedIcon fontSize="small" />
+				</ListItemIcon>
+				<ListItemText children={<FormattedMessage defaultMessage="Upload" />} />
+			</MenuItem>
+		);
+	}
+	if (createAllowed) {
+		menuOptions.push(
+			<MenuItem
+				key="create"
+				disabled={readonly}
+				onClick={(event) => refs.current.handleDataSourceOptionClick(event, 'create')}
+			>
+				<ListItemIcon sx={{ mr: 0 }}>
+					<AddRounded fontSize="small" />
+				</ListItemIcon>
+				<ListItemText children={<FormattedMessage defaultMessage="Create" />} />
+			</MenuItem>
+		);
+	}
+
+	return menuOptions;
+}
+
+function showBrowseFilesDialog({
+	dispatch,
+	onSuccess,
+	path,
+	contentTypes
+}: {
+	path: string;
+	contentTypes: string[];
+	dispatch: ReduxDispatch;
+	onSuccess: BrowseFilesDialogProps['onSuccess'];
+}): void {
+	const id = nanoid();
+	dispatch(
+		pushDialog({
+			id,
+			component: createComponentId('BrowseFilesDialog'),
+			props: {
+				path,
+				multiSelect: true,
+				allowUpload: false,
+				contentTypes: contentTypes ?? [],
+				onClose: () => dispatch(popDialog({ id })),
+				onSuccess(items) {
+					dispatch(popDialog({ id }));
+					onSuccess(items);
+				}
+			} as Partial<BrowseFilesDialogProps>
+		})
+	);
+}
+
+function showSearchDialog({
+	dispatch,
+	path,
+	contentTypes,
+	onAcceptSelection
+}: {
+	path: string;
+	contentTypes: string[];
+	dispatch: ReduxDispatch;
+	onAcceptSelection: SearchProps['onAcceptSelection'];
+}): void {
+	const id = nanoid();
+	dispatch(
+		pushNonDialog({
+			id,
+			component: createComponentId('Search'),
+			props: {
+				mode: 'select',
+				embedded: true,
+				initialParameters: {
+					path,
+					sortBy: 'internalName',
+					filters: { 'content-type': contentTypes }
+				},
+				onClose: () => dispatch(popDialog({ id })),
+				onAcceptSelection(paths, items) {
+					dispatch(popDialog({ id }));
+					onAcceptSelection(paths, items);
+				}
+			} as Partial<SearchProps>
+		})
+	);
+}
+
+function showUploadDialog({
+	dispatch,
+	path,
+	siteId,
+	onUploadComplete
+}: {
+	dispatch: ReduxDispatch;
+	path: string;
+	siteId: string;
+	onUploadComplete: SingleFileUploadDialogProps['onUploadComplete'];
+}) {
+	const id = nanoid();
+	dispatch(
+		pushDialog({
+			id,
+			component: 'craftercms.components.SingleFileUploadDialog',
+			props: {
+				site: siteId,
+				path,
+				onUploadComplete: (result: FileUploadResult) => {
+					onUploadComplete(result);
+					dispatch(popDialog({ id }));
+				}
+			} as SingleFileUploadDialogProps
+		})
+	);
+}
+
+type FileMetadata = {
+	fileType_smv?: string;
+	fileSize_smv?: number;
+	fileType_mvs?: string;
+	fileType_s?: string;
+	fileSize_s?: number;
+};
+
+/**
+ * Returns an object with the appropriate file metadata fields based on the configuration.
+ * @param fileType {string} - The file type (e.g., 'jpg', 'png').
+ * @param fileSize {number} - The file size (e.g., 2048).
+ * @param useSingleValueFilename {boolean} - Whether single value filename is used.
+ * @param useMVS {boolean} - Whether multi-value support is used.
+ * @returns {FileMetadata} An object containing the appropriate file metadata fields.
+ * */
+function getFileMetaData({
+	fileType,
+	fileSize,
+	useSingleValueFilename,
+	useMVS
+}: {
+	fileType: string;
+	fileSize?: number;
+	useSingleValueFilename: boolean;
+	useMVS: boolean;
+}): FileMetadata {
+	const metaData: FileMetadata = {};
+	if (!useSingleValueFilename && !useMVS) {
+		metaData['fileType_smv'] = fileType;
+		if (fileSize) metaData['fileSize_smv'] = fileSize;
+	} else if (useMVS) {
+		metaData['fileType_mvs'] = fileType;
+		if (fileSize) metaData['fileSize_s'] = fileSize;
+	} else if (useSingleValueFilename) {
+		metaData['fileType_s'] = fileType;
+		if (fileSize) metaData['fileSize_s'] = fileSize;
+	}
+	return metaData;
+}
+
+/**
+ * Validates if a NodeSelectorItem represents a component (embedded or shared).
+ *
+ * @param item {NodeSelectorItem} - The NodeSelectorItem to validate.
+ * @returns {boolean} True if the item is a component, false otherwise.
+ */
+function isItemComponent(item: NodeSelectorItem): boolean {
+	return Boolean(
+		// There are 3 scenarios when an item is considered a component:
+		// 1. It has the 'component' property (embedded component).
+		// 2. It has an 'include' property that starts with '/site/' (shared component).
+		// 3. It has an 'include' property that does not point to an editable asset (shared component).
+		item.component || (item.include && (item.include.startsWith('/site/') || !isEditableAsset(item.include)))
+	);
+}
+
+/**
+ * Validates and separates new items into valid and duplicate categories.
+ * validItems will contain the existing items plus any new items that are not duplicates (if allowDuplicates = true).
+ *
+ * @param newItems {NodeSelectorItem[]} - The array of new items to validate.
+ * @param items {NodeSelectorItem[]} - The existing array of items to compare against.
+ * @param allowDuplicates {boolean} - A flag indicating whether duplicates are allowed.
+ * @returns {Object} An object containing two arrays:
+ *   - `validItems`: The combined array of valid items (existing and new non-duplicates if allowDuplicates = true).
+ *   - `duplicateItems`: The array of items that were identified as duplicates.
+ */
+function validateNewItems(
+	newItems: NodeSelectorItem[],
+	items: NodeSelectorItem[],
+	allowDuplicates: boolean
+): {
+	validItems: NodeSelectorItem[];
+	duplicateItems: NodeSelectorItem[];
+} {
+	const validItems: NodeSelectorItem[] = [...items];
+	const duplicateItems: NodeSelectorItem[] = [];
+
+	newItems.forEach((newItem) => {
+		const isDuplicate = validItems.find((item) => item.key === newItem.key);
+		if (isDuplicate) {
+			duplicateItems.push(newItem);
+			if (allowDuplicates) validItems.push(newItem);
+		} else {
+			validItems.push(newItem);
+		}
+	});
+
+	return { validItems, duplicateItems };
+}
+
+/**
+ * Displays a warning message for duplicate items that were not added.
+ *
+ * @param dispatch {ReduxDispatch} - The Redux dispatch function used to trigger the alert.
+ * @param duplicateItems {NodeSelectorItem[]} - An array of duplicate items that were not added.
+ */
+function showDuplicatesWarning(dispatch: ReduxDispatch, duplicateItems: NodeSelectorItem[]) {
+	if (duplicateItems.length) {
+		showAlert({
+			message: 'The following items are duplicates and were not added:',
+			children: (
+				<List>
+					{duplicateItems.map((item) => (
+						<ListItemText
+							key={item.key}
+							primary={item.value}
+							secondary={item.include}
+							slotProps={{
+								primary: { noWrap: true },
+								secondary: { noWrap: true }
+							}}
+						/>
+					))}
+				</List>
+			),
+			dispatch
+		});
+	}
 }
 
 export default NodeSelector;
