@@ -99,12 +99,15 @@ export function PageNavOrder(props: PageNavOrderProps) {
 	const handleUpdateOrder = () => {
 		orderDialogState.onClose();
 
-		const currentItemIndex = pagesOrderState.order?.findIndex((item) => item.key === currentPath);
+		if (!pagesOrderState.order || !pagesOrderState.order.length) {
+			return;
+		}
+		const currentItemIndex = pagesOrderState.order.findIndex((item) => item.key === currentPath);
 		const previewItemIndex = currentItemIndex - 1;
 		const nextItemIndex = currentItemIndex + 1;
-		const previewItemPath = previewItemIndex >= 0 ? pagesOrderState.order?.[previewItemIndex]?.key : null;
+		const previewItemPath = previewItemIndex >= 0 ? pagesOrderState.order[previewItemIndex]?.key : undefined;
 		const nextItemPath =
-			nextItemIndex < (pagesOrderState.order?.length ?? 0) ? pagesOrderState.order?.[nextItemIndex]?.key : null;
+			nextItemIndex < pagesOrderState.order.length ? pagesOrderState.order[nextItemIndex]?.key : undefined;
 		// TODO: Waiting for the new v2 API to handle reordering the full items list. Currently, this only reorders
 		//  the current item, and no other items can be re-arranged.
 		reorderNavItems(siteId, currentPath, previewItemPath, nextItemPath).subscribe({
