@@ -75,7 +75,7 @@ export function PageNavOrder(props: PageNavOrderProps) {
 	useEffect(() => {
 		if (currentPath) {
 			setPagesOrderState({ fetching: true, error: null });
-			getNavItemsOrder(siteId, currentPath).subscribe({
+			const subscription = getNavItemsOrder(siteId, currentPath).subscribe({
 				next: (order) => {
 					const newOrder = createSortableItemList(order);
 					// If the initialValue is false, then it means that we'll be adding this page to the navigation (since it won't
@@ -90,6 +90,7 @@ export function PageNavOrder(props: PageNavOrderProps) {
 				},
 				error: ({ response }) => setPagesOrderState({ fetching: false, error: response.response })
 			});
+			return () => subscription.unsubscribe();
 		}
 	}, [siteId, setPagesOrderState, currentPath, effectRefs]);
 
@@ -99,10 +100,11 @@ export function PageNavOrder(props: PageNavOrderProps) {
 	const handleUpdateOrder = () => {
 		orderDialogState.onClose();
 
-		if (!pagesOrderState.order || !pagesOrderState.order.length) {
-			return;
-		}
+		// If no current path, or no nav items order, then nothing to reorder.
+		if (!currentPath || !pagesOrderState.order || !pagesOrderState.order.length) return;
 		const currentItemIndex = pagesOrderState.order.findIndex((item) => item.key === currentPath);
+		// If the current item is not found in the order, then nothing to reorder.
+		if (currentItemIndex === -1) return;
 		const previewItemIndex = currentItemIndex - 1;
 		const nextItemIndex = currentItemIndex + 1;
 		const previewItemPath = previewItemIndex >= 0 ? pagesOrderState.order[previewItemIndex]?.key : undefined;
