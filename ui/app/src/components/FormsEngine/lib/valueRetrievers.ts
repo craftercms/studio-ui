@@ -56,16 +56,16 @@ export const valueRetrieverLookup: Record<BuiltInControlType | DescriptorControl
 	'video-picker': textFieldExtractor,
 	colorPicker: textOrNullExtractor,
 	'content-path-input': textFieldExtractor,
-	contentTypes: contentTypesExtractor,
-	'dropdown-static-values': objectArrayExtractor,
+	contentTypes: (value) => contentTypesExtractor(value as string),
+	'dropdown-static-values': (value) => objectArrayExtractor(value as string),
 	'template-selector': textFieldExtractor,
 	'type-image-selector': textFieldExtractor,
-	'datasource-selector': stringArrayExtractor,
+	'datasource-selector': (value) => stringArrayExtractor(value as string),
 	'read-only-value': textFieldExtractor,
-	range: objectExtractor,
+	range: (value) => objectExtractor(value as string),
 	'type-js-controller-selector': textFieldExtractor,
-	'key-value-map': objectArrayExtractor,
-	'type-destination-paths-selector': objectExtractor,
+	'key-value-map': (value) => objectArrayExtractor(value as string),
+	'type-destination-paths-selector': (value) => objectExtractor(value as string),
 	'path-with-macro-creator': textFieldExtractor,
 	'merge-strategy-selector': textFieldExtractor,
 	'datasource-single-selector': textFieldExtractor,
@@ -161,7 +161,7 @@ export function deserializeContentDoc(contentDom: XMLDocument | Element): Lookup
 	})[(contentDom as XMLDocument).documentElement?.tagName ?? (contentDom as Element).tagName];
 }
 
-export function stringArrayExtractor(value): string[] {
+export function stringArrayExtractor(value: string): string[] {
 	return value ? (value as string)?.split(',') : [];
 }
 
@@ -186,11 +186,11 @@ export function booleanFieldExtractor(value: unknown): boolean {
 	return value === true || value === 'true';
 }
 
-export function contentTypesExtractor(value): string[] | '*' {
+export function contentTypesExtractor(value: string): string[] | '*' {
 	return value === '*' ? '*' : stringArrayExtractor(value);
 }
 
-export function objectArrayExtractor(value): object[] {
+export function objectArrayExtractor(value: string): object[] {
 	try {
 		return value ? JSON.parse(value) : [];
 	} catch (e) {
@@ -199,7 +199,7 @@ export function objectArrayExtractor(value): object[] {
 	}
 }
 
-export function objectExtractor(value): object {
+export function objectExtractor(value: string): object {
 	try {
 		return value ? JSON.parse(value) : {};
 	} catch (e) {
