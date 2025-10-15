@@ -16,8 +16,7 @@
 
 import type { ControlProps } from '../types';
 import FormsEngineField from '../components/FormsEngineField';
-import React, { useEffect, useId, useState } from 'react';
-import { SelectChangeEvent } from '@mui/material/Select';
+import React, { type ChangeEvent, useEffect, useId, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import ChangeCircleOutlinedIcon from '@mui/icons-material/ChangeCircleOutlined';
 import Button from '@mui/material/Button';
@@ -46,12 +45,12 @@ import Radio from '@mui/material/Radio';
 import Alert from '@mui/material/Alert';
 
 export interface PageNavOrderProps extends ControlProps {
-	value: string;
+	value: boolean;
 }
 
 export function PageNavOrder(props: PageNavOrderProps) {
 	const { value, setValue, field, autoFocus, readonly } = props;
-	const [initialValue] = useState(value);
+	const [initialValue] = useState<boolean>(value);
 	const htmlId = useId();
 	const orderDialogState = useEnhancedDialogState();
 	const { formatMessage } = useIntl();
@@ -94,8 +93,8 @@ export function PageNavOrder(props: PageNavOrderProps) {
 		}
 	}, [siteId, setPagesOrderState, currentPath, effectRefs]);
 
-	const handleChange = (event: SelectChangeEvent) => {
-		setValue(event.target.value === 'true');
+	const handleChange = (_event: ChangeEvent<HTMLInputElement>, selected: string) => {
+		setValue(selected === 'true');
 	};
 	const handleUpdateOrder = () => {
 		orderDialogState.onClose();
@@ -121,7 +120,13 @@ export function PageNavOrder(props: PageNavOrderProps) {
 	return (
 		<FormsEngineField htmlFor={htmlId} field={field}>
 			<Box display="flex" flexDirection="row" gap={2}>
-				<RadioGroup row value={value} onChange={handleChange} sx={{ display: 'inline-flex' }} autoFocus={autoFocus}>
+				<RadioGroup
+					row
+					value={String(value)}
+					onChange={handleChange}
+					sx={{ display: 'inline-flex' }}
+					autoFocus={autoFocus}
+				>
 					<FormControlLabel value="false" control={<Radio />} label={<FormattedMessage defaultMessage="No" />} />
 					<FormControlLabel value="true" control={<Radio />} label={<FormattedMessage defaultMessage="Yes" />} />
 				</RadioGroup>
