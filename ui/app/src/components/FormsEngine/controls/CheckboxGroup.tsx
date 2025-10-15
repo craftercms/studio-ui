@@ -29,7 +29,6 @@ import { SearchBar } from '../../SearchBar';
 import useDebouncedInput from '../../../hooks/useDebouncedInput';
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
 import Grid from '@mui/material/Grid';
-import { nanoid } from 'nanoid';
 import { FormattedMessage } from 'react-intl';
 import { useWindowWidth } from '../../../hooks/useWindowWidth';
 
@@ -44,7 +43,7 @@ export function CheckboxGroup(props: CheckboxGroupProps) {
 	const [searchFieldValue, setSearchFieldValue] = useState('');
 	const [keyword, setKeyword] = useState('');
 	const windowWidth = useWindowWidth();
-	const numColumns = windowWidth >= 1200 ? 3 : windowWidth >= 900 ? 2 : 1;
+	const numColumns = windowWidth >= 900 ? 2 : 1;
 
 	// region field properties/validations
 	const readonly = formReadonly || Boolean(field.properties?.readonly?.value as boolean);
@@ -76,51 +75,20 @@ export function CheckboxGroup(props: CheckboxGroupProps) {
 	)?.[0].items;
 	const finalOptions = useMemo(() => {
 		let finalOptions = options ? [...options] : [];
-		// If the list direction is vertical, we need to reorder the options to be top-down instead of left-right
-		// The logic is different depending on the number of columns (2 or 3).
-		if (listDirection === 'vertical') {
-			switch (numColumns) {
-				case 2: {
-					// When there are two columns, we need to reorder the options to be top-down instead of left-right
-					// So we need to take the first half and interleave it with the second half.
-					const sortedOptions = [];
-					const numRows = Math.ceil(finalOptions.length / 2);
+		// If the list direction is vertical and there are two columns), we need to reorder the options to be top-down instead of left-right
+		if (listDirection === 'vertical' && numColumns === 2) {
+			// When there are two columns, we need to reorder the options to be top-down instead of left-right
+			// So we need to take the first half and interleave it with the second half.
+			const sortedOptions = [];
+			const numRows = Math.ceil(finalOptions.length / 2);
 
-					for (let i = 0; i < numRows; i++) {
-						sortedOptions.push(finalOptions[i]);
-						if (finalOptions[i + numRows]) {
-							sortedOptions.push(finalOptions[i + Math.ceil(finalOptions.length / 2)]);
-						}
-					}
-					finalOptions = sortedOptions;
-					break;
+			for (let i = 0; i < numRows; i++) {
+				sortedOptions.push(finalOptions[i]);
+				if (finalOptions[i + numRows]) {
+					sortedOptions.push(finalOptions[i + Math.ceil(finalOptions.length / 2)]);
 				}
-				case 3: {
-					// When there are three columns, we need to reorder the options to be top-down instead of left-right
-					// So we need to take the first third, interleave it with the second third, and then the last third.
-					const sortedOptions = [];
-					const numRows = Math.ceil(finalOptions.length / 3);
-					for (let i = 0; i < numRows; i++) {
-						sortedOptions.push(finalOptions[i]);
-						if (finalOptions[i + numRows]) {
-							sortedOptions.push(finalOptions[i + Math.ceil(finalOptions.length / 3)]);
-						}
-						if (finalOptions[i + Math.ceil((finalOptions.length * 2) / 3)]) {
-							// There's a scenario where the last column is empty, that happens when the number of items is
-							// a multiple of the number of rows, in that case, we add an empty item to keep the grid structure.
-							if (i === 0 && finalOptions.length % numRows === 0) {
-								sortedOptions.push({ key: nanoid() });
-							} else {
-								sortedOptions.push(finalOptions[i + Math.ceil((finalOptions.length * 2) / 3)]);
-							}
-						}
-					}
-					finalOptions = sortedOptions;
-					break;
-				}
-				default:
-					break; // 1 column, no need to sort
 			}
+			finalOptions = sortedOptions;
 		}
 		if (!keyword.trim()) {
 			return finalOptions;
@@ -232,13 +200,8 @@ export function CheckboxGroup(props: CheckboxGroupProps) {
 				) : (
 					<Grid container spacing={2} sx={{ width: '100%' }}>
 						{finalOptions?.map((option) => (
-							<Grid size={{ sm: 12, md: 6, lg: 4 }} key={option.key}>
-								{option.value ? (
-									buildOption(option, handleChange, checkedValuesLookup, readonly)
-								) : (
-									// to keep the grid structure
-									<></>
-								)}
+							<Grid size={{ sm: 12, md: 6 }} key={option.key}>
+								{buildOption(option, handleChange, checkedValuesLookup, readonly)}
 							</Grid>
 						))}
 					</Grid>
@@ -256,7 +219,6 @@ const buildOption = (
 ) => (
 	<FormControlLabel
 		key={option.key}
-		sx={{ width: '50%' }}
 		control={
 			<Checkbox
 				disabled={readonly}
@@ -288,13 +250,8 @@ const VirtualRow = (
 	return (
 		<Grid container className="checkbox-group-virtual-row" spacing={2} sx={{ width: '100%' }} style={style}>
 			{options.slice(adjustedIndex, adjustedIndex + numColumns).map((option) => (
-				<Grid size={{ sm: 12, md: 6, lg: 4 }} key={option.key}>
-					{option.value ? (
-						buildOption(option, onChange, checkedValuesLookup, readonly)
-					) : (
-						// to keep the grid structure
-						<></>
-					)}
+				<Grid size={{ sm: 12, md: 6 }} key={option.key}>
+					{buildOption(option, onChange, checkedValuesLookup, readonly)}
 				</Grid>
 			))}
 		</Grid>
