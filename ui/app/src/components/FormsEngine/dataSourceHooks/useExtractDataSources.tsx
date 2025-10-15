@@ -14,10 +14,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import ContentType, { type DataSource } from '../../../models/ContentType';
-import { ContentTypeField } from '../../../models';
+import type { ContentType, DataSource } from '../../../models/ContentType';
+import type { ContentTypeField } from '../../../models';
 import { useMemo } from 'react';
 
+/** Extracts the data sources list from a field using a datasourceProperty, which is the property of the field that
+ * contains the list of datasource ids for the given field.
+ *
+ * @param contentType The content type object containing the data sources.
+ * @param field The content type field from which to extract the data sources.
+ * @param dataSourceProperty The property of the field that contains the list of datasource ids.
+ * @returns An array of DataSource objects associated with the field.
+ */
 export function useExtractDataSources(
 	contentType: ContentType,
 	field: ContentTypeField,

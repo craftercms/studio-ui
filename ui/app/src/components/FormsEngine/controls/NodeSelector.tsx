@@ -45,7 +45,6 @@ import React, {
 	useRef,
 	useState
 } from 'react';
-import { BrowseFilesDialogProps } from '../../BrowseFilesDialog';
 import Menu from '@mui/material/Menu';
 import MenuItem, { menuItemClasses } from '@mui/material/MenuItem';
 import LookupTable from '../../../models/LookupTable';
@@ -74,14 +73,13 @@ import Typography from '@mui/material/Typography';
 import { useDispatch } from 'react-redux';
 import { nanoid } from 'nanoid';
 import useUpdateRefs from '../../../hooks/useUpdateRefs';
-import { SearchProps } from '../../Search';
 import useFetchContentItems from '../../../hooks/useFetchContentItems';
 import useItemsByPath from '../../../hooks/useItemsByPath';
 import ItemDisplay from '../../ItemDisplay';
 import useActiveUser from '../../../hooks/useActiveUser';
 import { getFileExtension, processPathMacros } from '../../../utils/path';
 import { ensureSingleSlash } from '../../../utils/string';
-import { popDialog, pushDialog, pushNonDialog } from '../../../state/actions/dialogStack';
+import { popDialog, pushDialog } from '../../../state/actions/dialogStack';
 import FieldBox from '../components/FieldBox';
 import { isTouchDevice, KeyDownEvent, sortableListKeyDownHandler } from '../lib/sortableListUtil';
 import SortableListSkeleton from '../components/SortableListSkeleton';
@@ -90,6 +88,7 @@ import { XmlKeys } from '../lib/formConsts';
 import useConsolidatedItemPickerData, {
 	ConsolidatedItemPickerData
 } from '../dataSourceHooks/useConsolidatedItemPickerData';
+import { showBrowseFilesDialog, showSearchDialog } from '../lib/controlHelpers';
 import { Dispatch as ReduxDispatch } from 'redux';
 import { useExtractDataSources } from '../dataSourceHooks/useExtractDataSources';
 import UploadFileOutlinedIcon from '@mui/icons-material/UploadFileOutlined';
@@ -416,71 +415,6 @@ const createAddMenuOptions = ({
 	}
 
 	return menuOptions;
-};
-
-const showBrowseFilesDialog = ({
-	dispatch,
-	onSuccess,
-	path,
-	contentTypes
-}: {
-	path: string;
-	contentTypes: string[];
-	dispatch: ReduxDispatch;
-	onSuccess: BrowseFilesDialogProps['onSuccess'];
-}): void => {
-	const id = nanoid();
-	dispatch(
-		pushDialog({
-			id,
-			component: createComponentId('BrowseFilesDialog'),
-			props: {
-				path,
-				multiSelect: true,
-				allowUpload: false,
-				contentTypes: contentTypes ?? [],
-				onClose: () => dispatch(popDialog({ id })),
-				onSuccess(items) {
-					dispatch(popDialog({ id }));
-					onSuccess(items);
-				}
-			} as Partial<BrowseFilesDialogProps>
-		})
-	);
-};
-
-const showSearchDialog = ({
-	dispatch,
-	path,
-	contentTypes,
-	onAcceptSelection
-}: {
-	path: string;
-	contentTypes: string[];
-	dispatch: ReduxDispatch;
-	onAcceptSelection: SearchProps['onAcceptSelection'];
-}): void => {
-	const id = nanoid();
-	dispatch(
-		pushNonDialog({
-			id,
-			component: createComponentId('Search'),
-			props: {
-				mode: 'select',
-				embedded: true,
-				initialParameters: {
-					path,
-					sortBy: 'internalName',
-					filters: { 'content-type': contentTypes }
-				},
-				onClose: () => dispatch(popDialog({ id })),
-				onAcceptSelection(paths, items) {
-					dispatch(popDialog({ id }));
-					onAcceptSelection(paths, items);
-				}
-			} as Partial<SearchProps>
-		})
-	);
 };
 
 const showUploadDialog = ({
