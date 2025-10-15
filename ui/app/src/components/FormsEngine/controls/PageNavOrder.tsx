@@ -56,7 +56,7 @@ export function PageNavOrder(props: PageNavOrderProps) {
 	const { formatMessage } = useIntl();
 	const [pagesOrderState, setPagesOrderState] = useSpreadState<{
 		fetching: boolean;
-		error: ApiResponse;
+		error: ApiResponse | null;
 		order: TItem<PageNavItem>[] | null;
 	}>({
 		fetching: false,
