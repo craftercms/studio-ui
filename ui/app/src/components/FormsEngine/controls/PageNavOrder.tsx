@@ -163,8 +163,7 @@ export function PageNavOrder(props: PageNavOrderProps) {
 					</Typography>
 					{/* TODO: Remove after switching to API v2. */}
 					<Alert severity="warning" sx={{ mt: 2 }}>
-						Development draft. Waiting for 'content/reorder-items' new v2 API to be implemented. The new API will handle
-						reordering the full items list.
+						Development draft. Waiting for 'content/reorder-items' new v2 API to be implemented.
 					</Alert>
 					<Paper elevation={0} sx={{ mt: 2 }}>
 						<SortableList
