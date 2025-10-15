@@ -149,18 +149,21 @@ function complementValuesWithSystemProps(
 	contentType: ContentType,
 	saveAsDraft: boolean
 ): void {
-	Object.assign(
-		values,
-		createObjectWithSystemProps(contentType, {
-			[XmlKeys.modelId]: id,
-			[XmlKeys.internalName]: values[XmlKeys.internalName] as string,
-			[XmlKeys.fileName]: (values[XmlKeys.fileName] ?? contentObject[XmlKeys.fileName]) as string,
-			[XmlKeys.folderName]: (values[XmlKeys.folderName] ?? contentObject[XmlKeys.folderName]) as string,
-			[XmlKeys.dateCreated]: contentObject[XmlKeys.dateCreated] as string,
-			[XmlKeys.dateCreatedDt]: contentObject[XmlKeys.dateCreatedDt] as string,
-			[XmlKeys.savedAsDraft]: saveAsDraft
-		})
-	);
+	const systemProps = createObjectWithSystemProps(contentType, {
+		[XmlKeys.modelId]: id,
+		[XmlKeys.internalName]: values[XmlKeys.internalName] as string,
+		[XmlKeys.fileName]: (values[XmlKeys.fileName] ?? contentObject[XmlKeys.fileName]) as string,
+		[XmlKeys.folderName]: (values[XmlKeys.folderName] ?? contentObject[XmlKeys.folderName]) as string,
+		[XmlKeys.dateCreated]: contentObject[XmlKeys.dateCreated] as string,
+		[XmlKeys.dateCreatedDt]: contentObject[XmlKeys.dateCreatedDt] as string,
+		[XmlKeys.savedAsDraft]: saveAsDraft
+	});
+	// Do not overwrite any existing value.
+	for (const key in systemProps) {
+		if (!(key in values)) {
+			values[key] = systemProps[key];
+		}
+	}
 }
 
 export default useSaveForm;
