@@ -120,10 +120,14 @@ export interface NodeSelectorItem {
 	include?: string;
 	disableFlattening?: boolean;
 	component?: Record<string, Primitive>;
+	// _smv: When using single multi-value mode (neither useSingleValueFilename nor useMVS is true).
 	fileSize_smv?: number;
 	fileType_smv?: string;
+	// _mvs: when using multi-value support mode (useMVS is true).
 	fileType_mvs?: string;
+	// _s When using single value filename mode (useSingleValueFilename is true).
 	fileType_s?: string;
+	// _s when using single value filename mode or multi-value support mode (useMVS is true).
 	fileSize_s?: number;
 }
 
@@ -191,6 +195,7 @@ function NodeSelector(props: NodeSelectorProps) {
 	const handleViewItem = (event: { stopPropagation(): void }, index: number) => {
 		event.stopPropagation();
 		const item: ContentItem = itemsByPath[value[index].key];
+		console.log('itemsByPath', itemsByPath);
 
 		if (isEditableViaFormEditor(item)) {
 			// If the item is editable via form editor (page, component or taxonomy), open the form editor in read-only mode
