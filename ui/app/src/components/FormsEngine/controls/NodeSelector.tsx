@@ -195,7 +195,6 @@ function NodeSelector(props: NodeSelectorProps) {
 	const handleViewItem = (event: { stopPropagation(): void }, index: number) => {
 		event.stopPropagation();
 		const item: ContentItem = itemsByPath[value[index].key];
-		console.log('itemsByPath', itemsByPath);
 
 		if (isEditableViaFormEditor(item)) {
 			// If the item is editable via form editor (page, component or taxonomy), open the form editor in read-only mode
