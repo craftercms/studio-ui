@@ -165,7 +165,7 @@ function prepareRepeat(
 	};
 }
 
-function prepareArray(field: ContentTypeField, value: unknown) {
+function prepareArray<T = unknown>(field: ContentTypeField, value: T): { item: T } {
 	return {
 		// TODO: Unsure if all array-likes could/should have the item list attribute. It makes sense, though.
 		//  '@:item-list': true,
@@ -173,25 +173,25 @@ function prepareArray(field: ContentTypeField, value: unknown) {
 	};
 }
 
-function prepareRTE(field: ContentTypeField, value: unknown) {
+function prepareRTE<T = unknown>(field: ContentTypeField, value: T): { [cdataPropName]: T } {
 	// TODO: CDATA wrap based on config
 	return { [cdataPropName]: value };
 }
 
-function prepareStringArray(field: ContentTypeField, value: string[]) {
+function prepareStringArray(field: ContentTypeField, value: string[]): string {
 	return value.join(',');
 }
 
-function prepareContentTypes(field: ContentTypeField, value: string[] | '*') {
+function prepareContentTypes(field: ContentTypeField, value: string[] | '*'): string {
 	if (value === '*') return '*';
 	return value?.join(',') ?? '';
 }
 
-function prepareObjectArray(field: ContentTypeField, value: object[]) {
+function prepareObjectArray(field: ContentTypeField, value: object[]): string {
 	return JSON.stringify(value);
 }
 
-function prepareObject(field: ContentTypeField, value: object) {
+function prepareObject(field: ContentTypeField, value: object): string {
 	return JSON.stringify(value);
 }
 
