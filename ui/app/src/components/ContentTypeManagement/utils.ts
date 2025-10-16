@@ -250,6 +250,7 @@ export function reverseTypeFieldValuesObject(
 		} else if (property === 'properties') {
 			fieldWithReversedValues.properties = {};
 			const properties = fieldWithReversedValues.properties;
+			// 'field.properties' is the result of mapping the content type field (parseLegacyFormDefinitionFields)
 			const mergedProperties = { ...defaults.properties, ...(field.properties ?? {}) };
 			const datasourceFields = descriptor.fields;
 
@@ -264,6 +265,8 @@ export function reverseTypeFieldValuesObject(
 				}
 				const fieldDescriptor = datasourceFields[property];
 				if (!fieldDescriptor) {
+					// TODO: remove - development purposes
+					console.log('Warning: property not found in descriptor', property, field.id);
 					// Drop unknown/obsolete property not present in descriptor
 					continue;
 				}
