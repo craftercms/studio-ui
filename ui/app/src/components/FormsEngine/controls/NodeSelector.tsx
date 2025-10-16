@@ -95,12 +95,16 @@ import UploadFileOutlinedIcon from '@mui/icons-material/UploadFileOutlined';
 import type { FileUploadResult } from '../../SingleFileUpload';
 import type { SingleFileUploadDialogProps } from '../../SingleFileUploadDialog';
 import { showCodeEditorDialog } from '../../../state/actions/dialogs';
-import { isAudio, getEditorMode, isEditableAsset, isPdfDocument, isVideo } from '../../../utils/content';
+import { getEditorMode, isAudio, isEditableAsset, isPdfDocument, isVideo } from '../../../utils/content';
 import { createComponentId, pickShowContentFormAction } from '../../../utils/system';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
-import { isEditableViaFormEditor, isImage, isMediaContent } from '../../PathNavigator/utils';
+import {
+	getEditorMode as getItemEditorMode,
+	isEditableViaFormEditor,
+	isImage,
+	isMediaContent
+} from '../../PathNavigator/utils';
 import useSelection from '../../../hooks/useSelection';
-import { getEditorMode as getItemEditorMode } from '../../PathNavigator/utils';
 import { showAlert } from '../lib/formUtils';
 
 const SortableList = lazy(() => import('../components/SortableList'));
@@ -1066,13 +1070,14 @@ function isItemComponent(item: NodeSelectorItem): boolean {
 
 /**
  * Validates and separates new items into valid and duplicate categories.
- * validItems will contain the existing items plus any new items that are not duplicates (if allowDuplicates = true).
+ * When allowDuplicates is true, validItems includes all items (existing + new, including duplicates).
+ * When allowDuplicates is false, validItems excludes duplicate new items.
  *
  * @param newItems {NodeSelectorItem[]} - The array of new items to validate.
  * @param items {NodeSelectorItem[]} - The existing array of items to compare against.
  * @param allowDuplicates {boolean} - A flag indicating whether duplicates are allowed.
  * @returns {Object} An object containing two arrays:
- *   - `validItems`: The combined array of valid items (existing and new non-duplicates if allowDuplicates = true).
+ *   - `validItems`: All existing items plus new items (includes duplicates if allowDuplicates is true).
  *   - `duplicateItems`: The array of items that were identified as duplicates.
  */
 function validateNewItems(
