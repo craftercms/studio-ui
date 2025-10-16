@@ -22,7 +22,6 @@ export type DescriptorControlType =
 	| 'dropdown-static-values'
 	| 'template-selector'
 	| 'type-image-selector'
-	| 'datasource-selector'
 	| 'read-only-value'
 	| 'range'
 	| 'type-js-controller-selector'
@@ -30,9 +29,23 @@ export type DescriptorControlType =
 	| 'type-destination-paths-selector'
 	| 'path-with-macro-creator'
 	| 'merge-strategy-selector'
-	| 'datasource-single-selector'
 	| 'variable'
-	| 'type-configuration';
+	| 'type-configuration'
+	| 'datasource:image'
+	| 'datasource:video'
+	| 'datasource:audio'
+	| 'datasource:item'
+	| 'datasource:transcoded-video'
+	| 'datasource:image:singleSelection'
+	| 'datasource:video:singleSelection'
+	| 'datasource:audio:singleSelection'
+	| 'datasource:item:singleSelection'
+	| 'boolean'
+	| 'int'
+	| 'string';
+
+const loadDataSourceMultiSelector = () => lazy(() => import('./controls/DataSourceMultiSelector'));
+const loadDataSourceSingleSelector = () => lazy(() => import('./controls/DataSourceSingleSelector'));
 
 export const controlMap: Record<DescriptorControlType, ElementType> = {
 	'content-path-input': lazy(() => import('./controls/ContentPathInput')),
@@ -40,7 +53,15 @@ export const controlMap: Record<DescriptorControlType, ElementType> = {
 	'dropdown-static-values': lazy(() => import('./controls/DropdownStaticValues')),
 	'template-selector': lazy(() => import('./controls/TemplateSelector')),
 	'type-image-selector': lazy(() => import('./controls/TypeImageSelector')),
-	'datasource-selector': lazy(() => import('./controls/DataSourceMultiSelector')),
+	'datasource:image': loadDataSourceMultiSelector(),
+	'datasource:video': loadDataSourceMultiSelector(),
+	'datasource:audio': loadDataSourceMultiSelector(),
+	'datasource:item': loadDataSourceMultiSelector(),
+	'datasource:transcoded-video': loadDataSourceMultiSelector(),
+	'datasource:image:singleSelection': loadDataSourceSingleSelector(),
+	'datasource:video:singleSelection': loadDataSourceSingleSelector(),
+	'datasource:audio:singleSelection': loadDataSourceSingleSelector(),
+	'datasource:item:singleSelection': loadDataSourceSingleSelector(),
 	'read-only-value': lazy(() => import('./controls/ReadOnlyValue')),
 	range: lazy(() => import('./controls/Range')),
 	'type-js-controller-selector': lazy(() => import('./controls/TypeJsControllerSelector')),
@@ -48,7 +69,9 @@ export const controlMap: Record<DescriptorControlType, ElementType> = {
 	'type-destination-paths-selector': lazy(() => import('./controls/TypeDestinationPathsSelector')),
 	'path-with-macro-creator': lazy(() => import('./controls/PathWithMacroCreator')),
 	'merge-strategy-selector': lazy(() => import('./controls/MergeStrategySelector')),
-	'datasource-single-selector': lazy(() => import('./controls/DataSourceSingleSelector')),
 	variable: lazy(() => import('./controls/Variable')),
-	'type-configuration': lazy(() => import('./controls/TypeConfiguration'))
+	'type-configuration': lazy(() => import('./controls/TypeConfiguration')),
+	boolean: lazy(() => import('../FormsEngine/controls/Checkbox')),
+	int: lazy(() => import('../FormsEngine/controls/Numeric')),
+	string: lazy(() => import('../FormsEngine/controls/Text'))
 };

@@ -65,7 +65,7 @@ export const imagePickerDescriptor: DescriptorContentType = {
 		},
 		imageManager: {
 			id: 'imageManager',
-			type: 'datasource-selector',
+			type: 'datasource:image',
 			name: defineMessage({ defaultMessage: 'Data Source' }),
 			defaultValue: undefined,
 			validations: {

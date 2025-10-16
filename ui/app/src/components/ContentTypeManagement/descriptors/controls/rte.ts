@@ -74,7 +74,7 @@ export const rteDescriptor: DescriptorContentType = {
 		},
 		imageManager: {
 			id: 'imageManager',
-			type: 'datasource-selector',
+			type: 'datasource:image',
 			name: defineMessage({ defaultMessage: 'Image Manager' }),
 			defaultValue: undefined,
 			validations: {
@@ -83,7 +83,7 @@ export const rteDescriptor: DescriptorContentType = {
 		},
 		videoManager: {
 			id: 'videoManager',
-			type: 'datasource-selector',
+			type: 'datasource:video',
 			name: defineMessage({ defaultMessage: 'Video Manager' }),
 			defaultValue: undefined,
 			validations: {
@@ -92,7 +92,7 @@ export const rteDescriptor: DescriptorContentType = {
 		},
 		audioManager: {
 			id: 'audioManager',
-			type: 'datasource-selector',
+			type: 'datasource:audio',
 			name: defineMessage({ defaultMessage: 'Audio Manager' }),
 			defaultValue: undefined,
 			validations: {
@@ -101,7 +101,7 @@ export const rteDescriptor: DescriptorContentType = {
 		},
 		fileManager: {
 			id: 'fileManager',
-			type: 'datasource-selector',
+			type: 'datasource:item',
 			name: defineMessage({ defaultMessage: 'File Manager' }),
 			defaultValue: undefined,
 			validations: {

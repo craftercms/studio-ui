@@ -40,6 +40,7 @@ export const valueSerializersLookup: Record<BuiltInControlType | DescriptorContr
 	'aws-file-upload': undefined,
 	'checkbox-group': prepareArray,
 	checkbox: undefined,
+	boolean: undefined,
 	'date-time': undefined,
 	disabled: undefined,
 	dropdown: undefined,
@@ -47,6 +48,7 @@ export const valueSerializersLookup: Record<BuiltInControlType | DescriptorContr
 	forcehttps: undefined,
 	'image-picker': undefined,
 	input: undefined,
+	string: undefined,
 	'internal-name': undefined,
 	label: undefined,
 	'link-input': undefined,
@@ -57,6 +59,7 @@ export const valueSerializersLookup: Record<BuiltInControlType | DescriptorContr
 	'node-selector': (field, value, contentTypesLookup) =>
 		prepareNodeSelector(field, value as NodeSelectorItem[], contentTypesLookup),
 	'numeric-input': undefined,
+	int: undefined,
 	'page-nav-order': undefined,
 	rte: prepareRTE,
 	textarea: undefined,
@@ -70,7 +73,6 @@ export const valueSerializersLookup: Record<BuiltInControlType | DescriptorContr
 	'dropdown-static-values': (field, value) => prepareObjectArray(field, value as object[]),
 	'template-selector': undefined,
 	'type-image-selector': undefined,
-	'datasource-selector': (field, value) => prepareStringArray(field, value as string[]),
 	'read-only-value': undefined,
 	range: (field, value) => prepareObject(field, value as object),
 	'type-js-controller-selector': undefined,
@@ -78,7 +80,15 @@ export const valueSerializersLookup: Record<BuiltInControlType | DescriptorContr
 	'type-destination-paths-selector': (field, value) => prepareObject(field, value as object),
 	'path-with-macro-creator': undefined,
 	'merge-strategy-selector': undefined,
-	'datasource-single-selector': undefined,
+	'datasource:image': (field, value) => prepareStringArray(field, value as string[]),
+	'datasource:video': (field, value) => prepareStringArray(field, value as string[]),
+	'datasource:audio': (field, value) => prepareStringArray(field, value as string[]),
+	'datasource:item': (field, value) => prepareStringArray(field, value as string[]),
+	'datasource:transcoded-video': (field, value) => prepareStringArray(field, value as string[]),
+	'datasource:image:singleSelection': undefined,
+	'datasource:video:singleSelection': undefined,
+	'datasource:audio:singleSelection': undefined,
+	'datasource:item:singleSelection': undefined,
 	variable: undefined,
 	'type-configuration': undefined
 };
@@ -114,7 +124,7 @@ function prepareValuesForXmlSerialising(
 				nnou(current) && typeof current === 'object'
 					? { ...fieldAttributes, ...current }
 					: // The serializer may have made changes to 'value', so we need to use that instead of the original 'value'
-						{ ...fieldAttributes, [textNodeName]: jObj[id] ?? value };
+						{ ...fieldAttributes, [textNodeName]: jObj[id] };
 		}
 	});
 	return jObj;

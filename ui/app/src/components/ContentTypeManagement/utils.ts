@@ -868,31 +868,10 @@ export function getPropertiesAndValidationsFromDescriptor(descriptor: Descriptor
 	propertiesFieldIds.forEach((field) => {
 		const fieldDescriptor = descriptor.fields?.[field];
 		if (!fieldDescriptor) return;
-		let type = fieldDescriptor.type;
-		switch (type) {
-			case 'datasource-selector': {
-				type = `datasource:${descriptor.fields[field]?.validations?.type?.value ?? 'item'}`;
-				break;
-			}
-			case 'datasource-single-selector': {
-				type = `datasource:${descriptor.fields[field]?.validations?.type?.value ?? 'item'}:singleSelection`;
-				break;
-			}
-			case 'checkbox':
-				type = 'boolean';
-				break;
-			case 'numeric-input':
-				type = 'int';
-				break;
-			case 'input':
-				type = 'string';
-				break;
-		}
-
 		properties[field] = {
 			name: field,
 			value: descriptor.fields[field]?.defaultValue,
-			type
+			type: fieldDescriptor.type
 		};
 	});
 
