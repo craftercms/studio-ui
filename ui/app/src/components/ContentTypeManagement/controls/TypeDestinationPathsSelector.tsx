@@ -36,6 +36,7 @@ interface DestinationPaths {
 	excludes: string[];
 }
 
+// TODO: This control should handle xml instead of json.
 /**
  * Allows users to specify "includes" and "excludes" destination paths for content types.
  */

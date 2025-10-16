@@ -315,6 +315,9 @@ export const typeBasicDetailsDescriptor: DescriptorContentType = {
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}
+		/* This field is for the destination paths of the content type. It won't be available until 'config.xml' is removed
+		from the content type. Currently, `config.xml` can't be removed yet, since the back end still uses properties like
+		`form`, `thumbnail`, even `paths`. */
 		/* paths: {
 			id: 'paths',
 			type: 'type-destination-paths-selector',
