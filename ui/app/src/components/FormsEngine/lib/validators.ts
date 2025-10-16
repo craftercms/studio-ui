@@ -61,6 +61,7 @@ export const validatorsMap: Partial<Record<BuiltInControlType, ValidatorFunction
 // TODO: Fix FormatXMLElementFn generics
 export type FieldValidityMessage =
 	| string
+	| MessageDescriptor
 	| [MessageDescriptor, values?: Record<string, PrimitiveType | FormatXMLElementFn<any, any>>];
 
 export interface FieldValidityState {
@@ -75,7 +76,7 @@ export function validateFieldValue(field: ContentTypeField, currentValue: unknow
 
 	// If it's required, and the value is empty, then it's invalid.
 	if (isRequired && isEmpty) {
-		messages.push([defineMessage({ defaultMessage: 'This field is required.' })]);
+		messages.push(defineMessage({ defaultMessage: 'This field is required.' }));
 		return { isValid: false, messages };
 	}
 	const validator = validatorsMap[field.type as BuiltInControlType];
