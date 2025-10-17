@@ -169,6 +169,29 @@ export function renderFieldControl(
 }
 
 /**
+ * Checks if the populate time expression is valid.
+ *
+ * @param expr {string} The populate time expression to validate.
+ * @returns true if the expression is valid, false otherwise.
+ */
+export function validateTimePopulateExpression(expr: string): boolean {
+	const trimmed = (expr ?? '').replace(/ /g, '').toLowerCase();
+	if (trimmed === 'now') return true;
+	return /(now)?(\+|\-)\d+((hours)|(minutes))$/i.test(trimmed);
+}
+
+/**
+ * Checks if the populate date expression is valid.
+ *
+ * @param expr {string} The populate date expression to validate.
+ * @returns true if the expression is valid, false otherwise.
+ */
+export function validateDatePopulateExpression(expr: string): boolean {
+	const normalized = expr.replace(/ /g, '');
+	return /^(now|((now)?[+-]\d+(days|weeks|years|hours|minutes)))$/i.test(normalized);
+}
+
+/**
  * Takes an expression like "now", "now+5days", "now-3weeks", "now+2years", "now-4hours", "now+30minutes"
  * and returns a Date object representing the calculated date. If the expression is invalid, it returns the
  * current date.

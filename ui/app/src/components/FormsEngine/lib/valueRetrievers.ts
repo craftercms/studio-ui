@@ -82,7 +82,8 @@ export const valueRetrieverLookup: Record<BuiltInControlType | DescriptorControl
 	'merge-strategy-selector': textFieldExtractor,
 	'datasource-single-selector': textFieldExtractor,
 	variable: textFieldExtractor,
-	'type-configuration': textFieldExtractor
+	'type-configuration': textFieldExtractor,
+	'date-time-expression-input': textFieldExtractor
 };
 
 /**

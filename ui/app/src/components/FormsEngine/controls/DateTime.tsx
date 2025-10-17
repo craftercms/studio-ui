@@ -22,7 +22,7 @@ import SecondaryButton from '../../SecondaryButton';
 import { FormattedMessage } from 'react-intl';
 import Box from '@mui/material/Box';
 import { StableFormContext } from '../lib/formsEngineContext';
-import { processPopulateExpression } from '../lib/controlHelpers';
+import { processPopulateExpression, validateDatePopulateExpression } from '../lib/controlHelpers';
 
 export interface DateTimeProps extends ControlProps {
 	value: string;
@@ -57,7 +57,7 @@ export function DateTime(props: DateTimeProps) {
 			return processPopulateExpression({
 				expression: populateDateExp,
 				allowPastDate,
-				validatePopulateExpression
+				validatePopulateExpression: validateDatePopulateExpression
 			}).toISOString();
 		}
 		return valueProp;
@@ -69,7 +69,7 @@ export function DateTime(props: DateTimeProps) {
 			const populatedDate = processPopulateExpression({
 				expression: populateDateExp,
 				allowPastDate,
-				validatePopulateExpression
+				validatePopulateExpression: validateDatePopulateExpression
 			});
 			setValue(populatedDate.toISOString());
 		}
@@ -124,17 +124,6 @@ export function DateTime(props: DateTimeProps) {
 			</FormsEngineField>
 		</>
 	);
-}
-
-/**
- * Checks if the populate date expression is valid.
- *
- * @param expr {string} The populate date expression to validate.
- * @returns true if the expression is valid, false otherwise.
- */
-function validatePopulateExpression(expr: string): boolean {
-	const normalized = expr.replace(/ /g, '');
-	return /^(now|((now)?[+-]\d+(days|weeks|years|hours|minutes)))$/i.test(normalized);
 }
 
 export default DateTime;

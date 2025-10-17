@@ -90,7 +90,7 @@ export const dateTimeDescriptor: DescriptorContentType = {
 		},
 		populateDateExp: {
 			id: 'populateDateExp',
-			type: 'input',
+			type: 'date-time-expression-input',
 			name: defineMessage({ defaultMessage: 'Populate Expression' }),
 			defaultValue: 'now',
 			validations: immutableEmptyObject

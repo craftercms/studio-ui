@@ -22,7 +22,7 @@ import SecondaryButton from '../../SecondaryButton';
 import { FormattedMessage } from 'react-intl';
 import Box from '@mui/material/Box';
 import { StableFormContext } from '../lib/formsEngineContext';
-import { processPopulateExpression } from '../lib/controlHelpers';
+import { processPopulateExpression, validateTimePopulateExpression } from '../lib/controlHelpers';
 
 export interface TimeProps extends ControlProps {
 	value: string | null;
@@ -54,7 +54,12 @@ export function Time(props: TimeProps) {
 	// If populate is true and there is no value, set it to the current time
 	const value = useMemo(() => {
 		if (populate && populateDateExp && !valueProp) {
-			return parseDateToTime(processPopulateExpression({ expression: populateDateExp, validatePopulateExpression }));
+			return parseDateToTime(
+				processPopulateExpression({
+					expression: populateDateExp,
+					validatePopulateExpression: validateTimePopulateExpression
+				})
+			);
 		}
 		return valueProp;
 	}, [valueProp, populate, populateDateExp]);
@@ -64,7 +69,10 @@ export function Time(props: TimeProps) {
 		// If populate is true, and populateDateExp is valid, and valueProp is empty, set the value to the result of the populate expression.
 		if (!readonly && populate && populateDateExp && !valueProp) {
 			const computed = parseDateToTime(
-				processPopulateExpression({ expression: populateDateExp, validatePopulateExpression })
+				processPopulateExpression({
+					expression: populateDateExp,
+					validatePopulateExpression: validateTimePopulateExpression
+				})
 			);
 			if (computed != null) setValue(computed);
 		}
@@ -160,24 +168,5 @@ function parseDateToTime(date: Date | null): string | null {
 	if (!date || Number.isNaN(date.valueOf())) return null;
 	return date.toLocaleTimeString('en-US', { hour12: false });
 }
-
-/**
- * Checks if the populate date expression is valid.
- *
- * @param expr {string} The populate date expression to validate.
- * @returns true if the expression is valid, false otherwise.
- */
-function validatePopulateExpression(expr: string): boolean {
-	const trimmed = (expr ?? '').replace(/ /g, '').toLowerCase();
-	if (trimmed === 'now') return true;
-	return /(now)?(\+|\-)\d+((hours)|(minutes))$/i.test(trimmed);
-}
-
-/**
- * Takes an expression like "now", "now+5hours", "now-30minutes" and returns a Date object representing the calculated
- * time. If the expression is invalid, it returns the current time.
- *
- * @param expr {string} The populate time expression.
- */
 
 export default Time;
