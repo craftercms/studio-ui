@@ -22,6 +22,7 @@ import SecondaryButton from '../../SecondaryButton';
 import { FormattedMessage } from 'react-intl';
 import Box from '@mui/material/Box';
 import { StableFormContext } from '../lib/formsEngineContext';
+import { processPopulateExpression } from '../lib/controlHelpers';
 
 export interface TimeProps extends ControlProps {
 	value: string | null;
@@ -53,7 +54,7 @@ export function Time(props: TimeProps) {
 	// If populate is true and there is no value, set it to the current time
 	const value = useMemo(() => {
 		if (populate && populateDateExp && !valueProp) {
-			return parseDateToTime(processPopulateExpression(populateDateExp));
+			return parseDateToTime(processPopulateExpression({ expression: populateDateExp, validatePopulateExpression }));
 		}
 		return valueProp;
 	}, [valueProp, populate, populateDateExp]);
@@ -62,7 +63,9 @@ export function Time(props: TimeProps) {
 	useEffect(() => {
 		// If populate is true, and populateDateExp is valid, and valueProp is empty, set the value to the result of the populate expression.
 		if (!readonly && populate && populateDateExp && !valueProp) {
-			const computed = parseDateToTime(processPopulateExpression(populateDateExp));
+			const computed = parseDateToTime(
+				processPopulateExpression({ expression: populateDateExp, validatePopulateExpression })
+			);
 			if (computed != null) setValue(computed);
 		}
 	}, [readonly, populate, populateDateExp, valueProp, setValue]);
@@ -164,7 +167,7 @@ function parseDateToTime(date: Date | null): string | null {
  * @param expr {string} The populate date expression to validate.
  * @returns true if the expression is valid, false otherwise.
  */
-function validatePopulateDateExp(expr: string): boolean {
+function validatePopulateExpression(expr: string): boolean {
 	const trimmed = (expr ?? '').replace(/ /g, '').toLowerCase();
 	if (trimmed === 'now') return true;
 	return /(now)?(\+|\-)\d+((hours)|(minutes))$/i.test(trimmed);
@@ -176,35 +179,5 @@ function validatePopulateDateExp(expr: string): boolean {
  *
  * @param expr {string} The populate time expression.
  */
-function processPopulateExpression(expr: string): Date {
-	const date = new Date();
-	if (validatePopulateDateExp(expr)) {
-		if (expr === 'now') {
-			// This is to allow setting the time to the end of the current minute to avoid the time being in the past
-			// when seconds are > 0 and allowPastDate is false
-			date.setSeconds(59, 0);
-			return date;
-		} else {
-			let modifier = 1;
-			const dateExp = expr.replace(/ /g, '');
-			const action = dateExp.match(/[+-]/)![0];
-			const expValue = parseInt(dateExp.match(/\d+/)![0], 10);
-			const type = dateExp.match(/(hours|minutes)/)![0];
-			if (action === '-') {
-				modifier = modifier * -1;
-			}
-
-			if (type === 'hours') {
-				date.setTime(date.getTime() + modifier * (expValue * 60 * 60 * 1000));
-			} else if (type === 'minutes') {
-				date.setTime(date.getTime() + modifier * expValue * 60000);
-			}
-			return date;
-		}
-	} else {
-		date.setSeconds(59, 0);
-		return date;
-	}
-}
 
 export default Time;

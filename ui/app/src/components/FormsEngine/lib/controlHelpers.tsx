@@ -167,3 +167,61 @@ export function renderFieldControl(
 		/>
 	);
 }
+
+/**
+ * Takes an expression like "now", "now+5days", "now-3weeks", "now+2years", "now-4hours", "now+30minutes"
+ * and returns a Date object representing the calculated date. If the expression is invalid, it returns the
+ * current date.
+ *
+ * @param params {Object} - The parameters for processing the date expression.
+ * @param params.expression {string}  - The date expression to process ('now[+ or -][number][days or weeks or years or hours or minutes]'
+ * 																			e.g. 'now', 'now+5hours', 'now-30minutes', 'now+10days', 'now-2weeks', 'now+1years').
+ * @param params.validatePopulateExpression {Function} - A function to validate the expression. If the expression is invalid, the current date is returned.
+ * @param [params.allowPastDate=false] {boolean} - If `false`, ensures the resulting date is not in the past.
+ *
+ * @returns {Date} The calculated date based on the expression.
+ */
+
+export function processPopulateExpression({
+	expression,
+	validatePopulateExpression,
+	allowPastDate = false
+}: {
+	expression: string;
+	validatePopulateExpression(expr: string): boolean;
+	allowPastDate?: boolean;
+}): Date {
+	const date = new Date();
+	const daysInWeek = 7;
+	let modifier = 1;
+
+	const populateDateExp = expression.replace(/ /g, '');
+	const normalized = populateDateExp.toLowerCase();
+
+	if (validatePopulateExpression(expression)) {
+		if (normalized === 'now') {
+			if (!allowPastDate) date.setSeconds(59, 0);
+		} else {
+			const action = normalized.match(/[+-]/)![0];
+			const expValue = parseInt(normalized.match(/\d+/)![0], 10);
+			const type = normalized.match(/(days|weeks|years|hours|minutes)/)![0];
+			if (action === '-') {
+				modifier = modifier * -1;
+			}
+			if (type === 'years') {
+				date.setFullYear(date.getFullYear() + modifier * expValue);
+			} else if (type === 'weeks') {
+				date.setDate(date.getDate() + modifier * expValue * daysInWeek);
+			} else if (type === 'days') {
+				date.setDate(date.getDate() + modifier * expValue);
+			} else if (type === 'hours') {
+				date.setTime(date.getTime() + modifier * (expValue * 3600000));
+			} else if (type === 'minutes') {
+				date.setTime(date.getTime() + modifier * expValue * 60000);
+			}
+		}
+	} else {
+		if (!allowPastDate) date.setSeconds(59, 0);
+	}
+	return date;
+}

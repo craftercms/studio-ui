@@ -22,6 +22,7 @@ import SecondaryButton from '../../SecondaryButton';
 import { FormattedMessage } from 'react-intl';
 import Box from '@mui/material/Box';
 import { StableFormContext } from '../lib/formsEngineContext';
+import { processPopulateExpression } from '../lib/controlHelpers';
 
 export interface DateTimeProps extends ControlProps {
 	value: string;
@@ -53,7 +54,11 @@ export function DateTime(props: DateTimeProps) {
 
 	const value = useMemo(() => {
 		if (populate && populateDateExp && !valueProp) {
-			return processPopulateExpression(populateDateExp, allowPastDate).toISOString();
+			return processPopulateExpression({
+				expression: populateDateExp,
+				allowPastDate,
+				validatePopulateExpression
+			}).toISOString();
 		}
 		return valueProp;
 	}, [valueProp, populate, populateDateExp, allowPastDate]);
@@ -61,7 +66,11 @@ export function DateTime(props: DateTimeProps) {
 	useEffect(() => {
 		// If populate is true, and populateDateExp is valid, and valueProp is empty, set the value to the result of the populate expression.
 		if (!readonly && populate && populateDateExp && !valueProp) {
-			const populatedDate = processPopulateExpression(populateDateExp, allowPastDate);
+			const populatedDate = processPopulateExpression({
+				expression: populateDateExp,
+				allowPastDate,
+				validatePopulateExpression
+			});
 			setValue(populatedDate.toISOString());
 		}
 	}, [readonly, populate, populateDateExp, valueProp, allowPastDate, setValue]);
@@ -123,54 +132,9 @@ export function DateTime(props: DateTimeProps) {
  * @param expr {string} The populate date expression to validate.
  * @returns true if the expression is valid, false otherwise.
  */
-function validatePopulateDateExp(expr: string): boolean {
+function validatePopulateExpression(expr: string): boolean {
 	const normalized = expr.replace(/ /g, '');
 	return /^(now|((now)?[+-]\d+(days|weeks|years|hours|minutes)))$/i.test(normalized);
-}
-
-/**
- * Takes an expression like "now", "now+5days", "now-3weeks", "now+2years", "now-4hours", "now+30minutes"
- * and returns a Date object representing the calculated date. If the expression is invalid, it returns the
- * current date.
- *
- * @param expr {string} The populate date expression.
- * @param allowPastDate {boolean} If false, the time will be set to the end of the current minute to avoid past dates.
- * @return {Date} The calculated date.
- */
-function processPopulateExpression(expr: string, allowPastDate: boolean): Date {
-	const date = new Date();
-	const daysInWeek = 7;
-	let modifier = 1;
-
-	const populateDateExp = expr.replace(/ /g, '');
-	const normalized = populateDateExp.toLowerCase();
-
-	if (validatePopulateDateExp(expr)) {
-		if (normalized === 'now') {
-			if (!allowPastDate) date.setSeconds(59, 0);
-		} else {
-			const action = normalized.match(/[+-]/)![0];
-			const expValue = parseInt(normalized.match(/\d+/)![0], 10);
-			const type = normalized.match(/(days|weeks|years|hours|minutes)/)![0];
-			if (action === '-') {
-				modifier = modifier * -1;
-			}
-			if (type === 'years') {
-				date.setFullYear(date.getFullYear() + modifier * expValue);
-			} else if (type === 'weeks') {
-				date.setDate(date.getDate() + modifier * expValue * daysInWeek);
-			} else if (type === 'days') {
-				date.setDate(date.getDate() + modifier * expValue);
-			} else if (type === 'hours') {
-				date.setTime(date.getTime() + modifier * (expValue * 3600000));
-			} else if (type === 'minutes') {
-				date.setTime(date.getTime() + modifier * expValue * 60000);
-			}
-		}
-	} else {
-		if (!allowPastDate) date.setSeconds(59, 0);
-	}
-	return date;
 }
 
 export default DateTime;
