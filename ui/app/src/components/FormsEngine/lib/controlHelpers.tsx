@@ -17,7 +17,15 @@
 import { ControlProps } from '../types';
 import Alert from '@mui/material/Alert';
 import { FormattedMessage } from 'react-intl';
-import React, { ComponentType, ElementType, lazy, LazyExoticComponent, memo, Suspense } from 'react';
+import React, {
+	ComponentType,
+	ElementType,
+	lazy,
+	LazyExoticComponent,
+	memo,
+	MouseEvent as ReactMouseEvent,
+	Suspense
+} from 'react';
 import useActiveSiteId from '../../../hooks/useActiveSiteId';
 import { Atom, useAtom } from 'jotai/index';
 import { buildFileUrl } from '../../../services/plugin';
@@ -29,6 +37,24 @@ import { ContentTypeField } from '../../../models';
 import ContentType from '../../../models/ContentType';
 import FormsEngineField from '../components/FormsEngineField';
 import { FormsEngineAtoms } from './formsEngineContext';
+import type { ConsolidatedMediaPickerData } from '../dataSourceHooks/useConsolidatedImagePickerData';
+import MenuItem from '@mui/material/MenuItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import TravelExploreOutlined from '@mui/icons-material/TravelExploreOutlined';
+import SearchRounded from '@mui/icons-material/SearchRounded';
+import UploadFileOutlinedIcon from '@mui/icons-material/UploadFileOutlined';
+import { getFileNameFromPath } from '../../../utils/path';
+import { ensureSingleSlash } from '../../../utils/string';
+import { Dispatch as ReduxDispatch } from 'redux';
+import { BrowseFilesDialogProps } from '../../BrowseFilesDialog';
+import { nanoid } from 'nanoid';
+import { popDialog, pushDialog, pushNonDialog } from '../../../state/actions/dialogStack';
+import { createComponentId } from '../../../utils/system';
+import { SearchProps } from '../../Search';
+import type { ImageRestrictions } from '../../ImageEditorDialog/types';
+import type { SingleFileUploadDialogProps } from '../../SingleFileUploadDialog';
+import type { FileUploadResult } from '../../SingleFileUpload';
 
 // Note: These persist past the closing of the form.
 const lazyControlMap = new Map<string, LazyExoticComponent<ComponentType>>();
@@ -167,6 +193,241 @@ export function renderFieldControl(
 		/>
 	);
 }
+
+/** Returns menu options for media controls based on allowed paths. The options are categorized into "Browse", "Search",
+ * and "Upload".
+ *
+ * @param dataSourceSummary - Summary of allowed paths for browsing, searching, and uploading media.
+ * @param handleDataSourceOptionClick - Callback function to handle clicks on the menu options.
+ * @param readonly - If true, the menu options will be disabled.
+ * @returns An array of JSX elements representing the menu options.
+ * */
+export function createMediaMenuOptions(
+	dataSourceSummary: ConsolidatedMediaPickerData,
+	handleDataSourceOptionClick: (
+		event: ReactMouseEvent<HTMLLIElement, MouseEvent>,
+		option: 'browse' | 'search' | 'upload'
+	) => void,
+	readonly: boolean = false
+) {
+	const { allowedBrowsePaths, allowedUploadPaths, allowedSearchPaths } = dataSourceSummary;
+	const menuOptions = [];
+
+	if (allowedBrowsePaths.length > 0) {
+		menuOptions.push(
+			<MenuItem key="browse" onClick={(event) => handleDataSourceOptionClick(event, 'browse')} disabled={readonly}>
+				<ListItemIcon sx={{ mr: 0 }}>
+					<TravelExploreOutlined fontSize="small" />
+				</ListItemIcon>
+				<ListItemText>
+					<FormattedMessage defaultMessage="Browse" />
+				</ListItemText>
+			</MenuItem>
+		);
+	}
+	if (allowedSearchPaths.length > 0) {
+		menuOptions.push(
+			<MenuItem key="search" onClick={(event) => handleDataSourceOptionClick(event, 'search')} disabled={readonly}>
+				<ListItemIcon sx={{ mr: 0 }}>
+					<SearchRounded fontSize="small" />
+				</ListItemIcon>
+				<ListItemText>
+					<FormattedMessage defaultMessage="Search" />
+				</ListItemText>
+			</MenuItem>
+		);
+	}
+	if (allowedUploadPaths.length > 0) {
+		menuOptions.push(
+			<MenuItem key="upload" onClick={(event) => handleDataSourceOptionClick(event, 'upload')} disabled={readonly}>
+				<ListItemIcon sx={{ mr: 0 }}>
+					<UploadFileOutlinedIcon fontSize="small" />
+				</ListItemIcon>
+				<ListItemText>
+					<FormattedMessage defaultMessage="Upload" />
+				</ListItemText>
+			</MenuItem>
+		);
+	}
+	return menuOptions;
+}
+
+export function downloadMedia(base: string, url: string) {
+	const link = document.createElement('a');
+	link.href = ensureSingleSlash(`${base}${url}`);
+	link.download = getFileNameFromPath(url); // Extracts the file name from the URL
+	document.body.appendChild(link);
+	link.click();
+	document.body.removeChild(link);
+}
+
+export const showBrowseFilesDialog = ({
+	dispatch,
+	onSuccess,
+	path,
+	contentTypes,
+	multiSelect = true
+}: {
+	path: string;
+	dispatch: ReduxDispatch;
+	onSuccess: BrowseFilesDialogProps['onSuccess'];
+	contentTypes?: string[];
+	multiSelect?: boolean;
+}): void => {
+	const id = nanoid();
+	dispatch(
+		pushDialog({
+			id,
+			component: createComponentId('BrowseFilesDialog'),
+			props: {
+				path,
+				multiSelect,
+				allowUpload: false,
+				contentTypes: contentTypes ?? [],
+				onClose: () => dispatch(popDialog({ id })),
+				onSuccess(items) {
+					dispatch(popDialog({ id }));
+					onSuccess(items);
+				}
+			} as Partial<BrowseFilesDialogProps>
+		})
+	);
+};
+
+export const showSearchDialog = ({
+	dispatch,
+	path,
+	contentTypes,
+	onAcceptSelection
+}: {
+	path: string;
+	contentTypes?: string[];
+	dispatch: ReduxDispatch;
+	onAcceptSelection: SearchProps['onAcceptSelection'];
+}): void => {
+	const id = nanoid();
+	dispatch(
+		pushNonDialog({
+			id,
+			component: createComponentId('Search'),
+			props: {
+				mode: 'select',
+				embedded: true,
+				initialParameters: {
+					path,
+					sortBy: 'internalName',
+					...(contentTypes && { filters: { 'content-type': contentTypes } })
+				},
+				onClose: () => dispatch(popDialog({ id })),
+				onAcceptSelection(paths, items) {
+					dispatch(popDialog({ id }));
+					onAcceptSelection(paths, items);
+				}
+			} as Partial<SearchProps>
+		})
+	);
+};
+
+export const showSingleFileUploadDialog = ({
+	dispatch,
+	siteId,
+	path,
+	fileTypes,
+	onFileAdded,
+	onUploadComplete
+}: {
+	dispatch: ReduxDispatch;
+	siteId: string;
+	path: string;
+	fileTypes?: string[];
+	onFileAdded?: SingleFileUploadDialogProps['onFileAdded'];
+	onUploadComplete?: SingleFileUploadDialogProps['onUploadComplete'];
+}): void => {
+	const id = nanoid();
+	dispatch(
+		pushDialog({
+			id,
+			component: createComponentId('SingleFileUploadDialog'),
+			props: {
+				site: siteId,
+				path,
+				fileTypes,
+				onFileAdded,
+				onUploadComplete: (result: FileUploadResult) => {
+					dispatch(popDialog({ id }));
+					onUploadComplete?.(result);
+				}
+			} as SingleFileUploadDialogProps
+		})
+	);
+};
+
+export const showImageCropDialog = ({
+	dispatch,
+	path,
+	mimeType,
+	restrictions,
+	writeContent,
+	onCrop
+}: {
+	dispatch: ReduxDispatch;
+	path: string;
+	mimeType?: string;
+	restrictions?: ImageRestrictions;
+	writeContent?: boolean;
+	onCrop: (blob: Blob, newPath?: string) => void;
+}): void => {
+	const dialogId = nanoid();
+	const imageRestrictionMessages = getImageRestrictionMessages(restrictions);
+	dispatch(
+		pushDialog({
+			id: dialogId,
+			component: createComponentId('ImageEditorDialog'),
+			props: {
+				path,
+				mimeType,
+				subtitle: (
+					<FormattedMessage
+						defaultMessage="The image does not meet the width & height constraints (Width: {width}. Height: {height})."
+						values={{
+							width: imageRestrictionMessages.width,
+							height: imageRestrictionMessages.height
+						}}
+					/>
+				),
+				restrictions,
+				writeContent,
+				onCrop: (blob: Blob, newPath: string) => {
+					dispatch(popDialog({ id: dialogId }));
+					onCrop?.(blob, newPath);
+				}
+			}
+		})
+	);
+};
+
+/** Generates user-friendly messages for image width and height restrictions.
+ *
+ * @param restrictions - An object containing image dimension restrictions.
+ * @returns An object with formatted width and height restriction messages.
+ */
+export const getImageRestrictionMessages = (restrictions: ImageRestrictions) => {
+	const width = [
+		restrictions.width ? ` equal to ${restrictions.width}px` : null,
+		restrictions.minWidth ? ` minimum ${restrictions.minWidth}px` : null,
+		restrictions.maxWidth ? ` maximum ${restrictions.maxWidth}px` : null
+	]
+		.filter(Boolean)
+		.join(',');
+	const height = [
+		restrictions.height ? ` equal to ${restrictions.height}px` : null,
+		restrictions.minHeight ? ` minimum ${restrictions.minHeight}px` : null,
+		restrictions.maxHeight ? ` maximum ${restrictions.maxHeight}px` : null
+	]
+		.filter(Boolean)
+		.join(',');
+	return { width, height };
+};
 
 /**
  * Checks if the populate time expression is valid.

@@ -32,10 +32,12 @@ export interface RangeProps extends TypeBuilderControl {
  * Enables selection of a range of values through two text fields.
  * It allows switching between a range and an exact value using a button.
  */
+// TODO: Rename or rethink control as it does more than only range. It may also be very specific to ImagePicker. We might want to do a show/hide of controls based on the value of another.
 export function Range(props: RangeProps) {
 	const { field, setValue } = props;
 	const htmlId = useId();
 	const maxLength = field.validations.maxLength?.value;
+	// TODO: Component should be controlled
 	const value = props.value ? JSON.parse(props.value) : { exact: '', min: '', max: '' };
 	const minValue = value?.min ? (isNaN(parseInt(value.min)) ? 0 : parseInt(value.min)) : null;
 	const maxValue = value?.max ? (isNaN(parseInt(value.max)) ? 0 : parseInt(value.max)) : null;
@@ -58,12 +60,16 @@ export function Range(props: RangeProps) {
 			setValue(JSON.stringify({ exact: event.currentTarget.value, min: '', max: '' }));
 		}
 	};
+	const switchRange = () => {
+		setValue(JSON.stringify({ ...value, min: '', max: '', exact: '' }));
+		setIsRange((prev) => !prev);
+	};
 	return (
 		<FormsEngineField htmlFor={htmlId} field={field}>
 			<Box sx={{ display: 'flex', mt: 1, gap: 2 }}>
 				<Box display="flex" alignItems="center">
 					<Tooltip title={<FormattedMessage defaultMessage="Switch mode" />}>
-						<IconButton onClick={() => setIsRange(!isRange)}>
+						<IconButton onClick={switchRange}>
 							<CompareArrowsOutlinedIcon />
 						</IconButton>
 					</Tooltip>
