@@ -22,14 +22,14 @@ export function Label(props: ControlProps) {
 	const { field } = props;
 
 	// region properties/validations
-	const labelText = field.properties?.text?.value;
+	const labelText = field.properties?.text?.value as string;
 	const renderAsHTML = field.properties?.renderAsHTML?.value === true;
 	// endregion
 
 	return renderAsHTML ? (
-		<span dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(labelText || field.defaultValue || '') }} />
+		<span dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(labelText || '') }} />
 	) : (
-		<Typography variant="body2">{labelText || field.defaultValue || ''}</Typography>
+		<Typography variant="body2">{labelText || ''}</Typography>
 	);
 }
 
