@@ -177,7 +177,7 @@ export function renderFieldControl(
 export function validateTimePopulateExpression(expr: string): boolean {
 	const trimmed = (expr ?? '').replace(/ /g, '').toLowerCase();
 	if (trimmed === 'now') return true;
-	return /(now)?(\+|\-)\d+((hours)|(minutes))$/i.test(trimmed);
+	return /^(now)?[+-]\d+(hours|minutes)$/i.test(trimmed);
 }
 
 /**
