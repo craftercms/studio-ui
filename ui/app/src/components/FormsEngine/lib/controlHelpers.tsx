@@ -461,7 +461,7 @@ export function validateDatePopulateExpression(expr: string): boolean {
  * @param params.expression {string}  - The date expression to process ('now[+ or -][number][days or weeks or years or hours or minutes]'
  * 																			e.g. 'now', 'now+5hours', 'now-30minutes', 'now+10days', 'now-2weeks', 'now+1years').
  * @param params.validatePopulateExpression {Function} - A function to validate the expression. If the expression is invalid, the current date is returned.
- * @param [params.allowPastDate=false] {boolean} - If `false`, ensures the resulting date is not in the past.
+ * @param [params.allowPastDate=false] {boolean} - If `false`, sets "now" expression to the end of the current minute. Note: This does not prevent past dates for other expressions (e.g., "now-5days"); the calling control is responsible for that validation.
  *
  * @returns {Date} The calculated date based on the expression.
  */
