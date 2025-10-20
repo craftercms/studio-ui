@@ -27,10 +27,16 @@ export interface TextProps extends TypeBuilderControl {
 	value: string;
 }
 
+const DATE_TIME_FORMAT = 'now[+ or -][number][days | weeks | years | hours | minutes]';
+const DATE_TIME_EXAMPLE = "'now', 'now+5hours', 'now-30minutes', 'now+10days', 'now-2weeks', 'now+1years'";
+const TIME_FORMAT = 'now[+ or -][number][hours | minutes]';
+const TIME_EXAMPLE = "'now', 'now+5hours', 'now-30minutes'";
+
 export function DateTimeExpressionInput(props: TextProps) {
 	const { field, value, setValue, readonly, autoFocus } = props;
 	const htmlId = useId();
 	const maxLength = field.validations.maxLength?.value;
+	const type: 'dateTime' | 'time' = field.validations?.type?.value ?? 'dateTime';
 
 	const handleChange: OutlinedInputProps['onChange'] = (e) => setValue(e.currentTarget.value);
 	return (
@@ -50,10 +56,9 @@ export function DateTimeExpressionInput(props: TextProps) {
 								<Box>
 									<FormattedMessage defaultMessage="Date expression to process:" />
 								</Box>
-								<Box>now[+ or -][number][days | weeks | years | hours | minutes]</Box>
+								<Box>{type === 'dateTime' ? DATE_TIME_FORMAT : TIME_FORMAT}</Box>
 								<Box>
-									<FormattedMessage defaultMessage="e.g" />: 'now', 'now+5hours', 'now-30minutes', 'now+10days',
-									'now-2weeks', 'now+1years'
+									<FormattedMessage defaultMessage="e.g." />: {type === 'dateTime' ? DATE_TIME_EXAMPLE : TIME_EXAMPLE}
 								</Box>
 							</Box>
 						}
