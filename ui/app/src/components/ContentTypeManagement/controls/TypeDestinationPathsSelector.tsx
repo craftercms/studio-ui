@@ -36,7 +36,8 @@ interface DestinationPaths {
 	excludes: string[];
 }
 
-// TODO: This control should handle xml instead of json.
+/* TODO: Update this control to handle memory data structures (objects) and its retriever/serializer to handle/generate
+     xml instead of escaped/encoded JSON. */
 /**
  * Allows users to specify "includes" and "excludes" destination paths for content types.
  */
