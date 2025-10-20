@@ -44,8 +44,8 @@ export type DescriptorControlType =
 	| 'int'
 	| 'string';
 
-const loadDataSourceMultiSelector = () => lazy(() => import('./controls/DataSourceMultiSelector'));
-const loadDataSourceSingleSelector = () => lazy(() => import('./controls/DataSourceSingleSelector'));
+const DataSourceMultiSelector = lazy(() => import('./controls/DataSourceMultiSelector'));
+const DataSourceSingleSelector = lazy(() => import('./controls/DataSourceSingleSelector'));
 
 export const controlMap: Record<DescriptorControlType, ElementType> = {
 	'content-path-input': lazy(() => import('./controls/ContentPathInput')),
@@ -53,15 +53,15 @@ export const controlMap: Record<DescriptorControlType, ElementType> = {
 	'dropdown-static-values': lazy(() => import('./controls/DropdownStaticValues')),
 	'template-selector': lazy(() => import('./controls/TemplateSelector')),
 	'type-image-selector': lazy(() => import('./controls/TypeImageSelector')),
-	'datasource:image': loadDataSourceMultiSelector(),
-	'datasource:video': loadDataSourceMultiSelector(),
-	'datasource:audio': loadDataSourceMultiSelector(),
-	'datasource:item': loadDataSourceMultiSelector(),
-	'datasource:transcoded-video': loadDataSourceMultiSelector(),
-	'datasource:image:singleSelection': loadDataSourceSingleSelector(),
-	'datasource:video:singleSelection': loadDataSourceSingleSelector(),
-	'datasource:audio:singleSelection': loadDataSourceSingleSelector(),
-	'datasource:item:singleSelection': loadDataSourceSingleSelector(),
+	'datasource:image': DataSourceMultiSelector,
+	'datasource:video': DataSourceMultiSelector,
+	'datasource:audio': DataSourceMultiSelector,
+	'datasource:item': DataSourceMultiSelector,
+	'datasource:transcoded-video': DataSourceMultiSelector,
+	'datasource:image:singleSelection': DataSourceSingleSelector,
+	'datasource:video:singleSelection': DataSourceSingleSelector,
+	'datasource:audio:singleSelection': DataSourceSingleSelector,
+	'datasource:item:singleSelection': DataSourceSingleSelector,
 	'read-only-value': lazy(() => import('./controls/ReadOnlyValue')),
 	range: lazy(() => import('./controls/Range')),
 	'type-js-controller-selector': lazy(() => import('./controls/TypeJsControllerSelector')),
