@@ -1815,8 +1815,8 @@ __metadata:
     graphql-ws: "npm:^6.0.6"
     highlight.js: "npm:^11.11.1"
     jabber: "npm:^1.5.3"
-    jotai: "npm:^2.14.0"
-    jotai-effect: "npm:^2.1.1"
+    jotai: "npm:^2.15.0"
+    jotai-effect: "npm:^2.1.3"
     js-cookie: "npm:^3.0.5"
     marked: "npm:^16.3.0"
     marked-highlight: "npm:^2.2.2"
@@ -9754,18 +9754,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jotai-effect@npm:^2.1.1":
-  version: 2.1.1
-  resolution: "jotai-effect@npm:2.1.1"
+"jotai-effect@npm:^2.1.3":
+  version: 2.1.3
+  resolution: "jotai-effect@npm:2.1.3"
   peerDependencies:
     jotai: ">=2.14.0"
-  checksum: 10/f552182d78be1446dbb34b2fa6d363274cb043c84ab960a6377a52607babaa8882a1c06cde9a9e2bc35c3f3ff6ffd7e95721f035d9d4e05ffd9e0e65c79e5e4f
+  checksum: 10/8c6bdae633c81bd169bc5f170a9025b9faf0fee48712d0216ed4df28e3701daa10fc780b75286df67fe0155330171b389dc48e20b8b53a49fff14e7a8bf18c63
   languageName: node
   linkType: hard
 
-"jotai@npm:^2.14.0":
-  version: 2.14.0
-  resolution: "jotai@npm:2.14.0"
+"jotai@npm:^2.15.0":
+  version: 2.15.0
+  resolution: "jotai@npm:2.15.0"
   peerDependencies:
     "@babel/core": ">=7.0.0"
     "@babel/template": ">=7.0.0"
@@ -9780,7 +9780,7 @@ __metadata:
       optional: true
     react:
       optional: true
-  checksum: 10/d9b614cf28ad8ab0c799bc97527440d22a40dcf5d6c12eeaa4dcf4a65d98896f402837a1a06eb5358004c0a4e3c7089bb114e4716bc38c158762919b05f98845
+  checksum: 10/d05469caf6b8e67110c835c1a4cade2e5b36c3b2baa7cbcbbff1fbdb6949c1a819d1d8bd77d47cf3d806ef3576324dc979bbd2589eee70a9f0d7c01145dcd0a1
   languageName: node
   linkType: hard
 
