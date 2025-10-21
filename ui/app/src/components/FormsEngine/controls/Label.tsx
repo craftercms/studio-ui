@@ -17,13 +17,14 @@
 import type { ControlProps } from '../types';
 import Typography from '@mui/material/Typography';
 import DOMPurify from 'dompurify';
+import { getPropertyValue } from '../lib/formUtils';
 
 export function Label(props: ControlProps) {
 	const { field } = props;
 
 	// region properties/validations
-	const labelText = field.properties?.text?.value as string;
-	const renderAsHTML = field.properties?.renderAsHTML?.value === true;
+	const labelText: string = getPropertyValue(field.properties, 'text') as string;
+	const renderAsHTML: boolean = getPropertyValue(field.properties, 'renderAsHTML') === true;
 	// endregion
 
 	return renderAsHTML ? (
