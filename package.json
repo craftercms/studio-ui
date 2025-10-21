@@ -59,8 +59,7 @@
 		}
 	},
 	"resolutions": {
-		"clsx": "^2.0.0",
-		"react-is": "^18.2.0"
+		"clsx": "^2.0.0"
 	},
 	"packageManager": "yarn@4.2.2",
 	"scripts": {
