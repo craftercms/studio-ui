@@ -20,7 +20,7 @@
 	},
 	"dependencies": {
 		"@popperjs/core": "^2.11.8",
-		"ace-builds": "^1.43.3",
+		"ace-builds": "^1.43.4",
 		"bootstrap": "^5.3.7",
 		"css-loader": "^7.1.2",
 		"file-loader": "^6.2.0",
@@ -28,7 +28,7 @@
 		"jquery-ui": "^1.14.1",
 		"jquery-ui-css": "^1.11.5",
 		"js-yaml": "^4.1.0",
-		"monaco-editor": "0.53.0",
+		"monaco-editor": "0.54.0",
 		"style-loader": "^4.0.0",
 		"tinymce": "^8.0.2"
 	},

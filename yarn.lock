@@ -1669,7 +1669,7 @@ __metadata:
     "@types/bootstrap": "npm:^5.2.10"
     "@types/jquery": "npm:^3.5.33"
     "@types/rimraf": "npm:^4.0.5"
-    ace-builds: "npm:^1.43.3"
+    ace-builds: "npm:^1.43.4"
     bootstrap: "npm:^5.3.7"
     build-if-changed: "npm:^1.5.5"
     css-loader: "npm:^7.1.2"
@@ -1679,7 +1679,7 @@ __metadata:
     jquery-ui: "npm:^1.14.1"
     jquery-ui-css: "npm:^1.11.5"
     js-yaml: "npm:^4.1.0"
-    monaco-editor: "npm:0.53.0"
+    monaco-editor: "npm:0.54.0"
     monaco-editor-webpack-plugin: "npm:^7.1.0"
     npm-run-all: "npm:^4.1.5"
     rimraf: "npm:^6.0.1"
@@ -4992,13 +4992,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/trusted-types@npm:^1.0.6":
-  version: 1.0.6
-  resolution: "@types/trusted-types@npm:1.0.6"
-  checksum: 10/22b8efcb6116ab80d07542047135618ee282f2060c481e472126604d838c09e7dad33c9462d88c130aef2c3133aece516f00d6af7ff814f0612f7d19db720e6d
-  languageName: node
-  linkType: hard
-
 "@types/use-sync-external-store@npm:^0.0.6":
   version: 0.0.6
   resolution: "@types/use-sync-external-store@npm:0.0.6"
@@ -6171,10 +6164,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ace-builds@npm:^1.43.3":
-  version: 1.43.3
-  resolution: "ace-builds@npm:1.43.3"
-  checksum: 10/6c38d5292c31ea7ee678b93584578906ce9c56e2c3c3b74236dbeb1de01a1533b3512fa0efc6094e029fd0bf8f912d85e6df7bffe29ab2f791f108e3574d0312
+"ace-builds@npm:^1.43.4":
+  version: 1.43.4
+  resolution: "ace-builds@npm:1.43.4"
+  checksum: 10/22e441ce01aacc8ea6269b46c4960716d6e586e6260ab7cf923e83fd1f38f152a1625fd01124b83a48b6c111c935de11cece23bf7fbccc40866ccd15614063f8
   languageName: node
   linkType: hard
 
@@ -7390,6 +7383,13 @@ __metadata:
   version: 0.1.2
   resolution: "dom-walk@npm:0.1.2"
   checksum: 10/19eb0ce9c6de39d5e231530685248545d9cd2bd97b2cb3486e0bfc0f2a393a9addddfd5557463a932b52fdfcf68ad2a619020cd2c74a5fe46fbecaa8e80872f3
+  languageName: node
+  linkType: hard
+
+"dompurify@npm:3.1.7":
+  version: 3.1.7
+  resolution: "dompurify@npm:3.1.7"
+  checksum: 10/dc637a064306f83cf911caa267ffe1f973552047602020e3b6723c90f67962813edf8a65a0b62e8c9bc13fcd173a2691212a3719bc116226967f46bcd6181277
   languageName: node
   linkType: hard
 
@@ -10235,6 +10235,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"marked@npm:14.0.0":
+  version: 14.0.0
+  resolution: "marked@npm:14.0.0"
+  bin:
+    marked: bin/marked.js
+  checksum: 10/5f69e58e177bde75fb6145127c939c096d05494c5dff92d73af8a550097d6631c82e919f8a375e3743379a2623418151086b925a902a2be123590b887716f2bb
+  languageName: node
+  linkType: hard
+
 "marked@npm:^16.3.0":
   version: 16.3.0
   resolution: "marked@npm:16.3.0"
@@ -10527,12 +10536,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"monaco-editor@npm:0.53.0":
-  version: 0.53.0
-  resolution: "monaco-editor@npm:0.53.0"
+"monaco-editor@npm:0.54.0":
+  version: 0.54.0
+  resolution: "monaco-editor@npm:0.54.0"
   dependencies:
-    "@types/trusted-types": "npm:^1.0.6"
-  checksum: 10/ecfaeae965ce7a4b7f7c6d6fd889984d035beb169cd3e33f55dbd04b2b33a454c9ab7551e0822c2c37e1e89bb2950999c704235c0fb70bb21602695e182f90b2
+    dompurify: "npm:3.1.7"
+    marked: "npm:14.0.0"
+  checksum: 10/654aa19e8ed859627f8c545026e41955fd015eeac4a26330a5176b955e0afbcd590bbfba06fa9f22fa1bc97d7a33100059e26c754f9541b64d753379a6396711
   languageName: node
   linkType: hard
 
