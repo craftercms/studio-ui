@@ -1782,7 +1782,7 @@ __metadata:
     "@prettier/plugin-xml": "npm:3.3.0"
     "@reduxjs/toolkit": "npm:^2.8.2"
     "@rollup/plugin-swc": "npm:^0.4.0"
-    "@stomp/stompjs": "npm:^7.2.0"
+    "@stomp/stompjs": "npm:^7.2.1"
     "@tinymce/tinymce-react": "npm:^6.3.0"
     "@types/ace": "npm:^0.0.52"
     "@types/diff": "npm:^8.0.0"
@@ -4450,10 +4450,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@stomp/stompjs@npm:^7.2.0":
-  version: 7.2.0
-  resolution: "@stomp/stompjs@npm:7.2.0"
-  checksum: 10/39c7bbe259542bc835e0bbf045e31d895769fff61c64b0b62897b98a8580390eb45fa508076b8bec60c0e4fc552cc34910e7a9389c2c7b47e76a10347ca96fe7
+"@stomp/stompjs@npm:^7.2.1":
+  version: 7.2.1
+  resolution: "@stomp/stompjs@npm:7.2.1"
+  checksum: 10/7728acf4b65aec51d5904c4623d78c6a80dc9d114bd16cf703418a7521713017888df7e67315a28deae6f8305abef5d755ce8d54687f03e06fa2c6bae6b53a9d
   languageName: node
   linkType: hard
 
