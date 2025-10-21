@@ -235,6 +235,29 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/core@npm:^7.24.4, @babel/core@npm:^7.28.4":
+  version: 7.28.4
+  resolution: "@babel/core@npm:7.28.4"
+  dependencies:
+    "@babel/code-frame": "npm:^7.27.1"
+    "@babel/generator": "npm:^7.28.3"
+    "@babel/helper-compilation-targets": "npm:^7.27.2"
+    "@babel/helper-module-transforms": "npm:^7.28.3"
+    "@babel/helpers": "npm:^7.28.4"
+    "@babel/parser": "npm:^7.28.4"
+    "@babel/template": "npm:^7.27.2"
+    "@babel/traverse": "npm:^7.28.4"
+    "@babel/types": "npm:^7.28.4"
+    "@jridgewell/remapping": "npm:^2.3.5"
+    convert-source-map: "npm:^2.0.0"
+    debug: "npm:^4.1.0"
+    gensync: "npm:^1.0.0-beta.2"
+    json5: "npm:^2.2.3"
+    semver: "npm:^6.3.1"
+  checksum: 10/0593295241fac9be567145ef16f3858d34fc91390a9438c6d47476be9823af4cc0488c851c59702dd46b968e9fd46d17ddf0105ea30195ca85f5a66b4044c519
+  languageName: node
+  linkType: hard
+
 "@babel/core@npm:^7.26.10":
   version: 7.28.3
   resolution: "@babel/core@npm:7.28.3"
@@ -255,29 +278,6 @@ __metadata:
     json5: "npm:^2.2.3"
     semver: "npm:^6.3.1"
   checksum: 10/0faded84edcfd80f9a5ccc35abd46267360bba23ac295291becc8b8f9c95220f1914491b83b15e297201b19af78bbaf2ad48c2dc9d86b92f3f16a06938de8c72
-  languageName: node
-  linkType: hard
-
-"@babel/core@npm:^7.28.4":
-  version: 7.28.4
-  resolution: "@babel/core@npm:7.28.4"
-  dependencies:
-    "@babel/code-frame": "npm:^7.27.1"
-    "@babel/generator": "npm:^7.28.3"
-    "@babel/helper-compilation-targets": "npm:^7.27.2"
-    "@babel/helper-module-transforms": "npm:^7.28.3"
-    "@babel/helpers": "npm:^7.28.4"
-    "@babel/parser": "npm:^7.28.4"
-    "@babel/template": "npm:^7.27.2"
-    "@babel/traverse": "npm:^7.28.4"
-    "@babel/types": "npm:^7.28.4"
-    "@jridgewell/remapping": "npm:^2.3.5"
-    convert-source-map: "npm:^2.0.0"
-    debug: "npm:^4.1.0"
-    gensync: "npm:^1.0.0-beta.2"
-    json5: "npm:^2.2.3"
-    semver: "npm:^6.3.1"
-  checksum: 10/0593295241fac9be567145ef16f3858d34fc91390a9438c6d47476be9823af4cc0488c851c59702dd46b968e9fd46d17ddf0105ea30195ca85f5a66b4044c519
   languageName: node
   linkType: hard
 
@@ -516,7 +516,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/parser@npm:^7.28.4":
+"@babel/parser@npm:^7.24.4, @babel/parser@npm:^7.28.4":
   version: 7.28.4
   resolution: "@babel/parser@npm:7.28.4"
   dependencies:
@@ -1806,7 +1806,7 @@ __metadata:
     diff: "npm:^8.0.2"
     eslint: "npm:^9.38.0"
     eslint-plugin-formatjs: "npm:^5.4.2"
-    eslint-plugin-react-hooks: "npm:^5.2.0"
+    eslint-plugin-react-hooks: "npm:^7.0.0"
     eslint-plugin-react-refresh: "npm:^0.4.24"
     fast-xml-parser: "npm:^5.3.0"
     globals: "npm:^16.4.0"
@@ -7848,12 +7848,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-react-hooks@npm:^5.2.0":
-  version: 5.2.0
-  resolution: "eslint-plugin-react-hooks@npm:5.2.0"
+"eslint-plugin-react-hooks@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "eslint-plugin-react-hooks@npm:7.0.0"
+  dependencies:
+    "@babel/core": "npm:^7.24.4"
+    "@babel/parser": "npm:^7.24.4"
+    hermes-parser: "npm:^0.25.1"
+    zod: "npm:^3.22.4 || ^4.0.0"
+    zod-validation-error: "npm:^3.0.3 || ^4.0.0"
   peerDependencies:
     eslint: ^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0-0 || ^9.0.0
-  checksum: 10/ebb79e9cf69ae06e3a7876536653c5e556b5fd8cd9dc49577f10a6e728360e7b6f5ce91f4339b33e93b26e3bb23805418f8b5e75db80baddd617b1dffe73bed1
+  checksum: 10/756ad90ec6390bafa8037f86ab72d98af55c25e13b69e15bdac634724c8af7a87eb6993b643665e930d67635d52c8aa55b0e7a1d47e3c4e42a3b66950b2069fb
   languageName: node
   linkType: hard
 
@@ -9130,6 +9136,22 @@ __metadata:
   dependencies:
     function-bind: "npm:^1.1.2"
   checksum: 10/7898a9c1788b2862cf0f9c345a6bec77ba4a0c0983c7f19d610c382343d4f98fa260686b225dfb1f88393a66679d2ec58ee310c1d6868c081eda7918f32cc70a
+  languageName: node
+  linkType: hard
+
+"hermes-estree@npm:0.25.1":
+  version: 0.25.1
+  resolution: "hermes-estree@npm:0.25.1"
+  checksum: 10/7b1eca98b264a25632064cffa5771360d30cf452e77db1e191f9913ee45cf78c292b2dbca707e92fb71b0870abb97e94b506a5ab80abd96ba237fee169b601fe
+  languageName: node
+  linkType: hard
+
+"hermes-parser@npm:^0.25.1":
+  version: 0.25.1
+  resolution: "hermes-parser@npm:0.25.1"
+  dependencies:
+    hermes-estree: "npm:0.25.1"
+  checksum: 10/805efc05691420f236654349872c70731121791fa54de521c7ee51059eae34f84dd19f22ee846741dcb60372f8fb5335719b96b4ecb010d2aed7d872f2eff9cc
   languageName: node
   linkType: hard
 
@@ -14188,6 +14210,22 @@ __metadata:
   version: 0.1.0
   resolution: "yocto-queue@npm:0.1.0"
   checksum: 10/f77b3d8d00310def622123df93d4ee654fc6a0096182af8bd60679ddcdfb3474c56c6c7190817c84a2785648cdee9d721c0154eb45698c62176c322fb46fc700
+  languageName: node
+  linkType: hard
+
+"zod-validation-error@npm:^3.0.3 || ^4.0.0":
+  version: 4.0.2
+  resolution: "zod-validation-error@npm:4.0.2"
+  peerDependencies:
+    zod: ^3.25.0 || ^4.0.0
+  checksum: 10/5e35ca8ebb4602dcb526e122d7e9fca695c4a479bd97535f3400a732d49160f24f7213a9ed64986fc9dc3a2e8a6c4e1241ec0c4d8a4e3e69ea91a0328ded2192
+  languageName: node
+  linkType: hard
+
+"zod@npm:^3.22.4 || ^4.0.0":
+  version: 4.1.12
+  resolution: "zod@npm:4.1.12"
+  checksum: 10/c5f04e6ac306515c4db6ef73cf7705f521c7a2107c8c8912416a0658d689f361db9bee829b0bf01ef4a22492f1065c5cbcdb523ce532606ac6792fd714f3c326
   languageName: node
   linkType: hard
 
