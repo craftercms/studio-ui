@@ -1836,7 +1836,7 @@ __metadata:
     react-hotkeys-hook: "npm:^5.2.1"
     react-intl: "npm:^7.1.14"
     react-redux: "npm:^9.2.0"
-    react-router: "npm:^7.9.1"
+    react-router: "npm:^7.9.4"
     react-swipeable-views: "npm:^0.14.1"
     react-swipeable-views-utils: "npm:^0.14.1"
     react-virtualized-auto-sizer: "npm:^1.0.25"
@@ -11794,9 +11794,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-router@npm:^7.9.1":
-  version: 7.9.1
-  resolution: "react-router@npm:7.9.1"
+"react-router@npm:^7.9.4":
+  version: 7.9.4
+  resolution: "react-router@npm:7.9.4"
   dependencies:
     cookie: "npm:^1.0.1"
     set-cookie-parser: "npm:^2.6.0"
@@ -11806,7 +11806,7 @@ __metadata:
   peerDependenciesMeta:
     react-dom:
       optional: true
-  checksum: 10/f15aa70bfe95bf05f755283c2b67d3316cd037c99aebf5cc6b4fd49db99a5a4a36ba0664661a84bf7d60a7643dd0457f1835896891dbf7b8f16e670e79e80491
+  checksum: 10/0091b79845fdfe6500ec35cbcb3fd1149288ae39e32c3c5f85eda2c9b281294e7e9807ca1b482785c92cc3809422eddade6554f5b1b5d419eee20b166b55cd4d
   languageName: node
   linkType: hard
 
