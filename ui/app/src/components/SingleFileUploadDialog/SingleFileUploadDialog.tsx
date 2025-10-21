@@ -21,7 +21,17 @@ import { FormattedMessage } from 'react-intl';
 import SingleFileUploadDialogContainer from './SingleFileUploadDialogContainer';
 
 export function SingleFileUploadDialog(props: SingleFileUploadDialogProps) {
-	const { site, path, customFileName, fileTypes, onUploadStart, onUploadComplete, onUploadError, ...rest } = props;
+	const {
+		site,
+		path,
+		customFileName,
+		fileTypes,
+		onUploadStart,
+		onUploadComplete,
+		onUploadError,
+		onFileAdded,
+		...rest
+	} = props;
 
 	return (
 		<EnhancedDialog title={<FormattedMessage id="words.upload" defaultMessage="Upload" />} maxWidth="xs" {...rest}>
@@ -33,6 +43,7 @@ export function SingleFileUploadDialog(props: SingleFileUploadDialogProps) {
 				onUploadStart={onUploadStart}
 				onUploadComplete={onUploadComplete}
 				onUploadError={onUploadError}
+				onFileAdded={onFileAdded}
 			/>
 		</EnhancedDialog>
 	);

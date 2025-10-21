@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ContentTypeField, ContentTypeSection, PublishPackage } from '../../../models';
+import { ContentTypeField, type ContentTypeFieldValidation, ContentTypeSection, PublishPackage } from '../../../models';
 import LookupTable from '../../../models/LookupTable';
 import ContentType from '../../../models/ContentType';
 import validateFieldValue, { FieldValidityState } from './validators';
@@ -720,4 +720,47 @@ export function prepareEmbeddedItemForm(props: {
 			contentObject
 		}
 	};
+}
+
+/**
+ * Retrieves the value of a specific validation property from a field's validations.
+ *
+ * @param validations {ContentTypeField['validations']} - The validations object containing various validation properties.
+ * @param property {string} - The name of the validation property to retrieve.
+ * @param [defaultValue=undefined] {ContentTypeFieldValidation['value'] | undefined} - The default value to return if the property is not found.
+ * @returns {ContentTypeFieldValidation['value']} - The value of the specified validation property, or the default value if the property is not found.
+ */
+export function getValidationValue(
+	validations: ContentTypeField['validations'],
+	property: string,
+	defaultValue: ContentTypeFieldValidation['value'] | undefined = undefined
+): ContentTypeFieldValidation['value'] {
+	return validations?.[property]?.value ?? defaultValue;
+}
+
+/**
+ * Retrieves the value of a specific property from a field's properties.
+ *
+ * @param properties {ContentTypeField['properties']} - The properties object containing various property definitions.
+ * @param property {string} - The name of the property to retrieve.
+ * @param [defaultValue=undefined] {ContentTypeField['properties'][string]['value'] | undefined} - The default value to return if the property is not found.
+ * @returns {ContentTypeField['properties'][string]['value']} - The value of the specified property, or the default value if the property is not found.
+ */
+export function getPropertyValue(
+	properties: ContentTypeField['properties'],
+	property: string,
+	defaultValue: ContentTypeField['properties'][string]['value'] | undefined = undefined
+): ContentTypeField['properties'][string]['value'] {
+	return properties?.[property]?.value ?? defaultValue;
+}
+
+/**
+ * Determines if a field is read-only based on the form's read-only state or the field's properties.
+ *
+ * @param field {ContentTypeField} - The field whose read-only status is being checked.
+ * @param formReadonly {boolean} - A flag indicating whether the entire form is in read-only mode.
+ * @returns {boolean} - `true` if the field is read-only, either due to the form's state or the field's properties; otherwise, `false`.
+ */
+export function isFieldReadOnly(field: ContentTypeField, formReadonly: boolean): boolean {
+	return formReadonly || (getPropertyValue(field.properties, 'readonly') as boolean);
 }

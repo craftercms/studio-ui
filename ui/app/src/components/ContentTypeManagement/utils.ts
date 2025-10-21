@@ -27,7 +27,7 @@ import type {
 } from '../../models';
 import type LookupTable from '../../models/LookupTable';
 import type { ContentType, SerializeToXmlContentTypeStructure } from '../../models/ContentType';
-import { createLookupTable, nnou, noOp, pluckProps } from '../../utils/object';
+import { createLookupTable, noOp, pluckProps } from '../../utils/object';
 import { commonControlFieldsDescriptors, defaultDataSourcesSection } from './descriptors/controls';
 import {
 	FormsEngineFormApiContextProps,
@@ -40,11 +40,11 @@ import { RefObject } from 'react';
 import { Subject } from 'rxjs';
 import { createParsedValueForField } from '../FormsEngine/lib/valueRetrievers';
 import { toBooleanString, toColor } from '../../utils/string';
-import { getXmlBuilder } from '../FormsEngine/lib/valueSerializers';
+import { getXmlBuilder, valueSerializersLookup } from '../FormsEngine/lib/valueSerializers';
 import { nanoid } from 'nanoid';
 import { commonDataSourceDescriptors, dataSourceDescriptors } from './descriptors/dataSources';
 import type { ControlProps } from '../FormsEngine/types';
-import { IntlShape, type MessageDescriptor } from 'react-intl';
+import { IntlShape } from 'react-intl';
 import TranslationOrText from '../../models/TranslationOrText';
 import { getFileNameFromPath } from '../../utils/path';
 import type { Dispatch } from 'redux';
@@ -55,6 +55,7 @@ import { asArray } from '../../utils/array';
 import { componentsDataSourceContentTypesPropertyNames, systemValidationsKeysMap } from '../../utils/contentType';
 import { XmlKeys } from '../FormsEngine/lib/formConsts';
 import { getPossibleTranslation } from '../../utils/i18n';
+import { FormatXMLElementFn, PrimitiveType } from 'intl-messageformat';
 
 // TODO: assess which of the utils here should go to utils/contentType.ts, or other places (serializers, etc.)
 
@@ -249,7 +250,9 @@ export function reverseTypeFieldValuesObject(
 		} else if (property === 'properties') {
 			fieldWithReversedValues.properties = {};
 			const properties = fieldWithReversedValues.properties;
+			// 'field.properties' is the result of mapping the content type field (parseLegacyFormDefinitionFields)
 			const mergedProperties = { ...defaults.properties, ...(field.properties ?? {}) };
+			const datasourceFields = descriptor.fields;
 
 			for (const property in mergedProperties) {
 				// A stored property that's no longer in the descriptor would get cleaned/dropped up by this check.
@@ -260,8 +263,17 @@ export function reverseTypeFieldValuesObject(
 					properties[property] = mergedProperties[property];
 					continue;
 				}
+				const fieldDescriptor = datasourceFields[property];
+				if (!fieldDescriptor) {
+					// TODO: remove - development purposes
+					console.log('Warning: property not found in descriptor', property, field.id);
+					// Drop unknown/obsolete property not present in descriptor
+					continue;
+				}
 				properties[property] = { ...mergedProperties[property] };
-				properties[property].value = values[property] as never;
+				// Serialize field properties
+				const serializer = valueSerializersLookup[fieldDescriptor.type];
+				properties[property].value = serializer ? serializer(null, values[property]) : (values[property] as never);
 			}
 		} else if (property === 'validations') {
 			fieldWithReversedValues.validations = { ...field.validations };
@@ -756,9 +768,11 @@ export function applyTranslations(
 
 export function translateIfMessageDescriptor(
 	titleOrDescriptor: TranslationOrText,
-	formatMessage: IntlShape['formatMessage']
+	formatMessage: IntlShape['formatMessage'],
+	// TODO: Fix FormatXMLElementFn generics
+	values?: Record<string, PrimitiveType | FormatXMLElementFn<any, any>>
 ): string {
-	const value = getPossibleTranslation(titleOrDescriptor, formatMessage);
+	const value = getPossibleTranslation(titleOrDescriptor, formatMessage, values);
 	// TODO: Ignoring non string values. Must adjust to not ignore and actually handle either here or at the consumer level.
 	return typeof value === 'string' ? value : '';
 }
@@ -857,31 +871,10 @@ export function getPropertiesAndValidationsFromDescriptor(descriptor: Descriptor
 	propertiesFieldIds.forEach((field) => {
 		const fieldDescriptor = descriptor.fields?.[field];
 		if (!fieldDescriptor) return;
-		let type = fieldDescriptor.type;
-		switch (type) {
-			case 'datasource-selector': {
-				type = `datasource:${descriptor.fields[field]?.validations?.type?.value ?? 'item'}`;
-				break;
-			}
-			case 'datasource-single-selector': {
-				type = `datasource:${descriptor.fields[field]?.validations?.type?.value ?? 'item'}:singleSelection`;
-				break;
-			}
-			case 'checkbox':
-				type = 'boolean';
-				break;
-			case 'numeric-input':
-				type = 'int';
-				break;
-			case 'input':
-				type = 'string';
-				break;
-		}
-
 		properties[field] = {
 			name: field,
 			value: descriptor.fields[field]?.defaultValue,
-			type
+			type: fieldDescriptor.type
 		};
 	});
 

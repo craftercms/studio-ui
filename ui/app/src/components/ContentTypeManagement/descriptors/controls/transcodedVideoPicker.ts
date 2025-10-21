@@ -37,7 +37,7 @@ export const transcodedVideoPickerDescriptor: DescriptorContentType = {
 	fields: {
 		videoManager: {
 			id: 'videoManager',
-			type: 'datasource-selector',
+			type: 'datasource:transcoded-video',
 			name: defineMessage({ defaultMessage: 'Data Source' }),
 			defaultValue: undefined,
 			validations: {
