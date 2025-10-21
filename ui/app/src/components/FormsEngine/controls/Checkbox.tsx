@@ -14,32 +14,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ChangeEvent, useEffect, useId } from 'react';
+import React, { ChangeEvent, useId } from 'react';
 import { FormsEngineField } from '../components/FormsEngineField';
 import { ControlProps } from '../types';
 import Switch from '@mui/material/Switch';
-import { nnou, nou } from '../../../utils/object';
 
 export interface CheckboxProps extends ControlProps {
 	value: boolean;
 }
 
 export function Checkbox(props: CheckboxProps) {
-	const { field, value: valueProp, setValue, readonly: formReadonly, autoFocus } = props;
+	const { field, value, setValue, readonly: formReadonly, autoFocus } = props;
 
 	//  region field properties/validations
 	const fieldReadonly = field.properties?.readonly?.value as boolean;
 	const readonly = formReadonly || fieldReadonly;
-	const defaultValue = field.defaultValue === 'true';
 	// endregion
-	const value = nnou(valueProp) ? valueProp : defaultValue;
-
-	useEffect(() => {
-		// If there's a default value and no value has been set yet, set it as the value.
-		if (nou(valueProp) && defaultValue != null) {
-			setValue(defaultValue);
-		}
-	}, [defaultValue, setValue, valueProp]);
 
 	const htmlId = useId();
 	const handleChange = (e: ChangeEvent<HTMLInputElement>) => setValue(e.target.checked);
