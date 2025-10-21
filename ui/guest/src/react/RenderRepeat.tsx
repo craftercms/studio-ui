@@ -15,7 +15,6 @@
  */
 
 import * as React from 'react';
-import PropTypes from 'prop-types';
 import { ElementType, forwardRef, ReactElement } from 'react';
 import Field from './Field';
 import RenderField from './RenderField';
