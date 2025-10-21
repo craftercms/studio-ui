@@ -1680,11 +1680,11 @@ __metadata:
     jquery-ui-css: "npm:^1.11.5"
     js-yaml: "npm:^4.1.0"
     monaco-editor: "npm:0.54.0"
-    monaco-editor-webpack-plugin: "npm:^7.1.0"
+    monaco-editor-webpack-plugin: "npm:^7.1.1"
     npm-run-all: "npm:^4.1.5"
     rimraf: "npm:^6.0.1"
     style-loader: "npm:^4.0.0"
-    tinymce: "npm:^8.0.2"
+    tinymce: "npm:^8.1.2"
     webpack: "npm:^5.101.3"
     webpack-cli: "npm:^6.0.1"
   languageName: unknown
@@ -10524,15 +10524,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"monaco-editor-webpack-plugin@npm:^7.1.0":
-  version: 7.1.0
-  resolution: "monaco-editor-webpack-plugin@npm:7.1.0"
+"monaco-editor-webpack-plugin@npm:^7.1.1":
+  version: 7.1.1
+  resolution: "monaco-editor-webpack-plugin@npm:7.1.1"
   dependencies:
     loader-utils: "npm:^2.0.2"
   peerDependencies:
     monaco-editor: ">= 0.31.0"
     webpack: ^4.5.0 || 5.x
-  checksum: 10/d73ebac884d130bcff1bf9503f061c085aeee1121277994ec20f63166f228dd44224a220be6bf1c39a98d49277a38dbc9cc6a45623578b18f80ec21a22a79847
+  checksum: 10/633ce250ac28008eb8fa0ce617655793fa014547f5b26f18210b5385365d96a967e799c3c16cf90ea01325fd8fd26d68d0b7995e6b1e5062984e72ee1bd3abd2
   languageName: node
   linkType: hard
 
@@ -13185,10 +13185,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tinymce@npm:^8.0.2":
-  version: 8.0.2
-  resolution: "tinymce@npm:8.0.2"
-  checksum: 10/f29730693e0f098ea8f7421f0586546b866004681d865684a00eeedb02c4279b0cd244ec0f85069023558ead6e968e57e6d3a833d94932381cdc73682026c416
+"tinymce@npm:^8.1.2":
+  version: 8.1.2
+  resolution: "tinymce@npm:8.1.2"
+  checksum: 10/f93443405501d9e423b60bcbc17313c3c3652f2b6a88e3f24e78857a6a434a0832db9a90809d5e096a35e95e36c65ecf451673f03fb4e7972057417a431cd3db
   languageName: node
   linkType: hard
 
