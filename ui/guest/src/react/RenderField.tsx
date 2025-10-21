@@ -76,10 +76,4 @@ export const RenderField = forwardRef<any, RenderFieldProps<{}>>(function <P = {
 	return <Component {...passDownProps} />;
 });
 
-RenderField.propTypes = {
-	...Field.propTypes,
-	render: PropTypes.func,
-	renderTarget: PropTypes.string
-};
-
 export default RenderField;

@@ -91,19 +91,4 @@ export const RenderRepeat = forwardRef<any, RenderRepeatProps>((props: RenderRep
 	);
 });
 
-RenderRepeat.propTypes = {
-	// @ts-ignore
-	model: PropTypes.object.isRequired,
-	index: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-	fieldId: PropTypes.string.isRequired,
-	// @ts-ignore
-	component: PropTypes.elementType,
-	componentProps: PropTypes.object,
-	// @ts-ignore
-	itemComponent: PropTypes.elementType,
-	itemProps: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
-	itemKeyGenerator: PropTypes.func,
-	renderItem: PropTypes.func.isRequired
-};
-
 export default RenderRepeat;
