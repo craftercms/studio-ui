@@ -21,34 +21,29 @@ import FormsEngineField from '../../FormsEngine/components/FormsEngineField';
 import { TypeBuilderControl } from '../utils';
 
 export interface DropdownStaticValuesProps extends TypeBuilderControl {
-	value: string;
+	value: {
+		value: string;
+		label: string;
+		selected: boolean;
+	}[];
 }
 
 /**
  * Enables the selection of a key/value pair from a predefined list of options.
  */
 export function DropdownStaticValues(props: DropdownStaticValuesProps) {
-	const { field, value: content, setValue, readonly, autoFocus } = props;
+	const { field, value: options, setValue, readonly, autoFocus } = props;
 	const htmlId = useId();
-	const defaultValue = field.defaultValue;
-	const options = content
-		? (() => {
-				try {
-					return JSON.parse(content);
-				} catch (e) {
-					console.error('Invalid JSON in dropdown static values', e);
-					return JSON.parse(defaultValue) ?? [];
-				}
-			})()
-		: (JSON.parse(defaultValue) ?? []);
 	const selectedOption = options.find((option) => option.selected);
 
 	const handleChange = (event: SelectChangeEvent) => {
-		const newOptions = options.map((option) => {
-			option.selected = option.value === event.target.value;
-			return option;
-		});
-		setValue(JSON.stringify(newOptions));
+		const selectedValue = event.target.value;
+		const newOptions = options.map((option) => ({
+			...option,
+			selected: option.value === selectedValue
+		}));
+
+		setValue(newOptions);
 	};
 	return (
 		<FormsEngineField field={field} labelId={htmlId}>

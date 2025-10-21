@@ -19,7 +19,7 @@ import { createVirtualSection, DescriptorContentType } from '../../utils';
 import { defineMessage } from 'react-intl';
 
 export const videoS3TranscodingDataSourceDescriptor: DescriptorContentType = {
-	id: 'video-s3-transcoding',
+	id: 'video-S3-transcoding',
 	name: defineMessage({ defaultMessage: 'Video Transcoding From S3 Repository' }),
 	description: '',
 	type: 'transcoded-video',

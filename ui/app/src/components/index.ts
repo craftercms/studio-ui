@@ -119,6 +119,7 @@ export * from './I18nProvider';
 export * from './ICEToolsPanel';
 export * from './IFrame';
 export * from './IconGuideDashlet';
+export * from './ImageEditorDialog';
 export * from './ItemActionsMenu';
 export * from './ItemActionsSnackbar';
 export * from './ItemDisplay';

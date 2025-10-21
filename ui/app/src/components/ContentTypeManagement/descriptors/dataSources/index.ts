@@ -78,24 +78,24 @@ export type BuiltInDataSourceType =
 	| 'flash-desktop-upload'
 	| 'img-desktop-upload'
 	| 'img-repository-upload'
-	| 'img-s3-repo'
-	| 'img-s3-upload'
-	| 'img-webdav-repo'
-	| 'img-webdav-upload'
+	| 'img-S3-repo'
+	| 'img-S3-upload'
+	| 'img-WebDAV-repo'
+	| 'img-WebDAV-upload'
 	| 'key-value-list'
-	| 's3-repo'
-	| 's3-upload'
+	| 'S3-repo'
+	| 'S3-upload'
 	| 'shared-content'
 	| 'simpleTaxonomy'
 	| 'video-browse-repo'
 	| 'video-desktop-upload'
-	| 'video-s3-repo'
-	| 'video-s3-transcoding'
-	| 'video-s3-upload'
-	| 'video-webdav-repo'
-	| 'video-webdav-upload'
-	| 'webdav-repo'
-	| 'webdav-upload';
+	| 'video-S3-repo'
+	| 'video-S3-transcoding'
+	| 'video-S3-upload'
+	| 'video-WebDAV-repo'
+	| 'video-WebDAV-upload'
+	| 'WebDAV-repo'
+	| 'WebDAV-upload';
 
 export const dataSourceDescriptors: Record<BuiltInDataSourceType, DescriptorContentType> = {
 	components: componentsDescriptor,
@@ -108,24 +108,24 @@ export const dataSourceDescriptors: Record<BuiltInDataSourceType, DescriptorCont
 	'flash-desktop-upload': flashDesktopUploadDescriptor,
 	'img-desktop-upload': imgDesktopUploadDescriptor,
 	'img-repository-upload': imgRepositoryUploadDescriptor,
-	'img-s3-repo': imgS3RepoDescriptor,
-	'img-s3-upload': imgS3UploadDescriptor,
-	'img-webdav-repo': imgWebDavRepoDescriptor,
-	'img-webdav-upload': imgWebdavUploadDescriptor,
+	'img-S3-repo': imgS3RepoDescriptor,
+	'img-S3-upload': imgS3UploadDescriptor,
+	'img-WebDAV-repo': imgWebDavRepoDescriptor,
+	'img-WebDAV-upload': imgWebdavUploadDescriptor,
 	'key-value-list': keyValueListDescriptor,
-	's3-repo': s3RepoDescriptor,
-	's3-upload': s3UploadDescriptor,
+	'S3-repo': s3RepoDescriptor,
+	'S3-upload': s3UploadDescriptor,
 	'shared-content': sharedContentDescriptor,
 	simpleTaxonomy: simpleTaxonomyDescriptor,
 	'video-browse-repo': videoBrowseRepoDescriptor,
 	'video-desktop-upload': videoDesktopUploadDescriptor,
-	'video-s3-repo': videoS3RepoDescriptor,
-	'video-s3-transcoding': videoS3TranscodingDescriptor,
-	'video-s3-upload': videoS3UploadDescriptor,
-	'video-webdav-repo': videoWebDavRepoDescriptor,
-	'video-webdav-upload': videoWebDavUploadDescriptor,
-	'webdav-repo': webDavRepoDescriptor,
-	'webdav-upload': webDavUploadDescriptor
+	'video-S3-repo': videoS3RepoDescriptor,
+	'video-S3-transcoding': videoS3TranscodingDescriptor,
+	'video-S3-upload': videoS3UploadDescriptor,
+	'video-WebDAV-repo': videoWebDavRepoDescriptor,
+	'video-WebDAV-upload': videoWebDavUploadDescriptor,
+	'WebDAV-repo': webDavRepoDescriptor,
+	'WebDAV-upload': webDavUploadDescriptor
 };
 
 export default dataSourceDescriptors;

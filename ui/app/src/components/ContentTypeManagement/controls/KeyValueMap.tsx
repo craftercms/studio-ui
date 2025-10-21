@@ -26,18 +26,18 @@ import Tooltip from '@mui/material/Tooltip';
 import { TypeBuilderControl } from '../utils';
 
 export interface KeyValueMapProps extends TypeBuilderControl {
-	value: string;
+	value: {
+		key: string;
+		value: string;
+	}[];
 }
 /**
  * Displays a list of key/value pairs, allowing the user to add, remove, and edit them.
  */
 export function KeyValueMap(props: KeyValueMapProps) {
-	const { field, setValue } = props;
+	const { value: options, field, setValue } = props;
 	const htmlId = useId();
 	const maxLength = field.validations.maxLength?.value;
-	// When props.value is empty (no key/value pairs), it is stored as an empty string (''). In case `option` is initialized
-	// as an empty array.
-	const options = props.value ? JSON.parse(props.value) : [];
 
 	const handleChange = (
 		e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -47,17 +47,17 @@ export function KeyValueMap(props: KeyValueMapProps) {
 		const newOptions = options.map((option, i) =>
 			i === index ? { ...option, [prop]: e.currentTarget.value } : option
 		);
-		setValue(JSON.stringify(newOptions));
+		setValue(newOptions);
 	};
 
 	const addOption = (index: number) => {
 		const newOptions = [...options.slice(0, index + 1), { key: '', value: '' }, ...options.slice(index + 1)];
-		setValue(JSON.stringify(newOptions));
+		setValue(newOptions);
 	};
 
 	const removeOption = (index: number) => {
 		const newOptions = options.filter((option, i) => i !== index);
-		setValue(JSON.stringify(newOptions));
+		setValue(newOptions);
 	};
 
 	return (
