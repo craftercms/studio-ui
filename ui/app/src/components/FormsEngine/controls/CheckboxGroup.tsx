@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ChangeEvent, useId, useMemo, useState } from 'react';
+import React, { ChangeEvent, useMemo, useState } from 'react';
 import { FormsEngineField } from '../components/FormsEngineField';
 import { ControlProps } from '../types';
 import Checkbox, { CheckboxProps } from '@mui/material/Checkbox';
@@ -106,6 +106,15 @@ export function CheckboxGroup(props: CheckboxGroupProps) {
 			return acc;
 		}, {});
 	}, [value]);
+	const allInViewSelected = useMemo(() => {
+		if (!finalOptions) return false;
+		return finalOptions.every((option) => checkedValuesLookup[option.key]);
+	}, [finalOptions, checkedValuesLookup]);
+	const someInViewSelected = useMemo(() => {
+		if (!finalOptions) return false;
+		return finalOptions.some((option) => checkedValuesLookup[option.key]);
+	}, [finalOptions, checkedValuesLookup]);
+
 	if (!finalOptions) {
 		return (
 			<FormGroup>
@@ -162,8 +171,8 @@ export function CheckboxGroup(props: CheckboxGroupProps) {
 						<Checkbox
 							disabled={readonly}
 							color="info"
-							indeterminate={value.length > 0 && value.length < finalOptions.length}
-							checked={value.length === finalOptions.length}
+							indeterminate={someInViewSelected}
+							checked={allInViewSelected}
 							onChange={checkAll}
 						/>
 					}
