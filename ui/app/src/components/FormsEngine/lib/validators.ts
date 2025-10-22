@@ -20,6 +20,7 @@ import LookupTable from '../../../models/LookupTable';
 import { XmlKeys } from './formConsts';
 import { defineMessage, type MessageDescriptor } from 'react-intl';
 import type { FormatXMLElementFn, PrimitiveType } from 'intl-messageformat';
+import { getPropertyValue } from './formUtils';
 
 type ValidatorFunctionDef = (
 	field: ContentTypeField,
@@ -32,17 +33,7 @@ export const validatorsMap: Partial<Record<BuiltInControlType, ValidatorFunction
 	'aws-file-upload': undefined,
 	'checkbox-group': undefined,
 	checkbox: undefined,
-	'date-time': (field, currentValue, messages) => {
-		let isValid = true;
-		const allowPastDate = Boolean(field.properties?.allowPastDate?.value);
-		const fieldDate = new Date(currentValue as string);
-		const currentDate = new Date();
-		if (!allowPastDate && !isNaN(fieldDate.valueOf()) && fieldDate < currentDate) {
-			messages.push(defineMessage({ defaultMessage: 'The date cannot be in the past.' }));
-			isValid = false;
-		}
-		return isValid;
-	},
+	'date-time': (field, currentValue, messages) => dateTimeValidator(field, currentValue as string, messages),
 	disabled: undefined,
 	dropdown: undefined,
 	'file-name': undefined,
@@ -111,6 +102,22 @@ export function checkMinimumSaveRequirementsFulfilled(values: LookupTable<unknow
 		[values[XmlKeys.fileName], values[XmlKeys.folderName]].join('').trim() !== '' &&
 		values[XmlKeys.internalName].toString().trim() !== ''
 	);
+}
+
+export function dateTimeValidator(
+	field: ContentTypeField,
+	currentValue: string,
+	messages: FieldValidityMessage[]
+): boolean {
+	let isValid = true;
+	const allowPastDate: boolean = getPropertyValue(field.properties, 'allowPastDate') as boolean;
+	const fieldDate = new Date(currentValue as string);
+	const currentDate = new Date();
+	if (!allowPastDate && !isNaN(fieldDate.valueOf()) && fieldDate < currentDate) {
+		messages.push(defineMessage({ defaultMessage: 'The date cannot be in the past.' }));
+		isValid = false;
+	}
+	return isValid;
 }
 
 export default validateFieldValue;

@@ -23,12 +23,13 @@ import { FormattedMessage } from 'react-intl';
 import Box from '@mui/material/Box';
 import { StableFormContext } from '../lib/formsEngineContext';
 import { processPopulateExpression, validateTimePopulateExpression } from '../lib/controlHelpers';
+import { getPropertyValue, isFieldReadOnly } from '../lib/formUtils';
 
 export interface TimeProps extends ControlProps {
 	value: string | null;
 }
 
-// TODO: How are we going to handle the timezone selector?. FE1 uses an extra `_tz` field to store the timezone value.
+// TODO: Timezone selector handling is pending. FE1 uses an extra `_tz` field to store the timezone value.
 export function Time(props: TimeProps) {
 	const { field, value: valueProp, setValue, readonly: formReadonly, autoFocus } = props;
 	const htmlId = useId();
@@ -36,19 +37,21 @@ export function Time(props: TimeProps) {
 	const isCreateMode = Boolean(stableFormContext?.props?.create);
 
 	// region field properties/validations
-	const allowPastDate = Boolean(field.properties?.allowPastDate?.value);
-	const useCustomTimezone = Boolean(field.properties?.useCustomTimezone?.value);
-	const showClear = Boolean(field.properties?.showClear?.value);
-	const showSetNow = Boolean(field.properties?.showNowLink?.value);
-	const populate = Boolean(field.properties?.populate?.value);
-	const populateDateExp = (field.properties?.populateDateExp?.value as string) ?? '';
-	const readonlyEdit = Boolean(field.properties?.readonlyEdit?.value);
-	// There are 3 scenarios for the field to be readonly:
-	// 1. The form is in readonly mode (formReadonly is true)
-	// 2. The field is set to readonly in TB (field.properties.readonly.value is true)
-	// 3. The field is set to readonly for edit mode only, and the form is not in create mode (readonlyEdit is true and isCreateMode is false)
-	const readonly =
-		formReadonly || Boolean(field.properties?.readonly?.value as boolean) || (readonlyEdit && !isCreateMode);
+	const allowPastDate: boolean = getPropertyValue(field.properties, 'allowPastDate') as boolean;
+	const useCustomTimezone: boolean = getPropertyValue(field.properties, 'useCustomTimezone') as boolean;
+	const showClear: boolean = getPropertyValue(field.properties, 'showClear') as boolean;
+	const showSetNow: boolean = getPropertyValue(field.properties, 'showNowLink') as boolean;
+	const populate: boolean = getPropertyValue(field.properties, 'populate') as boolean;
+	const populateDateExp: string = getPropertyValue(field.properties, 'populateDateExp', '') as string;
+	const readonlyEdit: boolean = Boolean(field.properties?.readonlyEdit?.value);
+	/*
+		There are 3 scenarios for the field to be readonly:
+			1. The form is in readonly mode (formReadonly is true)
+			2. The field is set to readonly in TB (field.properties.readonly.value is true)
+			3. The field is set to readonly for edit mode only, and the form is not in create mode (readonlyEdit is true and isCreateMode is false)
+			* 1 and 2 are handled in isFieldReadOnly util
+	*/
+	const readonly = isFieldReadOnly(field, formReadonly) || (readonlyEdit && !isCreateMode);
 	// endregion
 
 	// If populate is true and there is no value, set it to the current time
