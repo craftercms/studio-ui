@@ -32,7 +32,7 @@ export const validatorsMap: Partial<Record<BuiltInControlType, ValidatorFunction
 	'auto-filename': undefined,
 	'aws-file-upload': undefined,
 	'checkbox-group': undefined,
-	checkbox: undefined,
+	checkbox: (field, currentValue, messages) => checkboxValidator(field, currentValue as boolean, messages),
 	'date-time': undefined,
 	disabled: undefined,
 	dropdown: undefined,
@@ -102,6 +102,17 @@ export function checkMinimumSaveRequirementsFulfilled(values: LookupTable<unknow
 		[values[XmlKeys.fileName], values[XmlKeys.folderName]].join('').trim() !== '' &&
 		values[XmlKeys.internalName].toString().trim() !== ''
 	);
+}
+
+export function checkboxValidator(field: ContentTypeField, currentValue: boolean, messages: FieldValidityMessage[]) {
+	const isRequired = isFieldRequired(field);
+	let isValid = true;
+	// For checkboxes, being required means it must be checked (true)
+	if (isRequired && !currentValue) {
+		isValid = false;
+		messages.push(defineMessage({ defaultMessage: 'This checkbox must be checked.' }));
+	}
+	return isValid;
 }
 
 export default validateFieldValue;

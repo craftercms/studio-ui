@@ -151,7 +151,7 @@ export function retrieveFieldValue<T = unknown>(field: ContentTypeField, value: 
 	const retriever: ValueRetriever<T> | undefined = valueRetrieverLookup[field.type];
 	const defaultValue = field.defaultValue as string;
 	// Value considering the defaultValue
-	const fieldValue = (value ?? (nnou(defaultValue) && defaultValue !== '')) ? defaultValue : undefined;
+	const fieldValue = value ?? (nnou(defaultValue) && defaultValue !== '' ? defaultValue : undefined);
 	if (!retriever) {
 		console.warn(`No value retriever for field ${field.id} of type ${field.type}`);
 		return fieldValue as T;
