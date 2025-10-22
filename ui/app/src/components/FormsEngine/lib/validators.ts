@@ -31,14 +31,7 @@ export const validatorsMap: Partial<Record<BuiltInControlType, ValidatorFunction
 	repeat: undefined,
 	'auto-filename': undefined,
 	'aws-file-upload': undefined,
-	'checkbox-group': (field, currentValue, messages) => {
-		const minSelected = Number(field.validations?.minSize?.value ?? 0);
-		const selectedCount = Array.isArray(currentValue) ? currentValue.length : 0;
-		const isValid = selectedCount >= minSelected;
-		if (!isValid)
-			messages.push(defineMessage({ defaultMessage: 'Please select at least the minimum required items.' }));
-		return isValid;
-	},
+	'checkbox-group': checkboxGroupValidator,
 	checkbox: undefined,
 	'date-time': undefined,
 	disabled: undefined,
@@ -109,6 +102,22 @@ export function checkMinimumSaveRequirementsFulfilled(values: LookupTable<unknow
 		[values[XmlKeys.fileName], values[XmlKeys.folderName]].join('').trim() !== '' &&
 		values[XmlKeys.internalName].toString().trim() !== ''
 	);
+}
+
+export function checkboxGroupValidator(
+	field: ContentTypeField,
+	currentValue, // TODO: type
+	messages: FieldValidityMessage[]
+) {
+	const minSelected = Number(field.validations?.minSize?.value ?? 0);
+	const selectedCount = Array.isArray(currentValue) ? currentValue.length : 0;
+	const isValid = selectedCount >= minSelected;
+	if (!isValid)
+		messages.push([
+			defineMessage({ defaultMessage: 'Please select at least the minimum required items ({minSelected}).' }),
+			{ minSelected }
+		]);
+	return isValid;
 }
 
 export default validateFieldValue;
