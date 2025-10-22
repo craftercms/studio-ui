@@ -180,9 +180,8 @@ export function arrayFieldExtractor(value: unknown): unknown[] {
 	return Array.isArray(value) ? value : ((value as Record<'item', unknown[]>)?.item ?? []);
 }
 
-// TODO: field type
-export function textFieldExtractor(value: unknown, field): string {
-	const escapeContent = (field.properties?.escapeContent?.value as boolean) ?? false;
+export function textFieldExtractor(value: unknown, field?: ContentTypeField): string {
+	const escapeContent = (field?.properties?.escapeContent?.value as boolean) ?? false;
 	const rawValue: string = nnou(value) ? (value as string) : '';
 	return escapeContent ? unescapeXml(rawValue) : rawValue;
 }
