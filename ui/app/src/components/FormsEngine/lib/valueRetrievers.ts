@@ -194,7 +194,7 @@ export function numberFieldExtractor(value: unknown): number | null {
 
 /** Handles boolean values that may come as actual booleans or as strings. An empty string or null/undefined becomes (no value set). */
 export function booleanFieldExtractor(value: unknown): boolean {
-	return nnou(value) && value !== '' ? value === true || value === 'true' : null;
+	return value === true || value === 'true';
 }
 
 export function contentTypesExtractor(value: string): string[] | '*' {
