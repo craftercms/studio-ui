@@ -25,45 +25,56 @@ import Tooltip from '@mui/material/Tooltip';
 import { TypeBuilderControl } from '../utils';
 
 export interface RangeProps extends TypeBuilderControl {
-	value: string;
+	value: {
+		exact: string;
+		min: string;
+		max: string;
+	};
 }
 
 /**
  * Enables selection of a range of values through two text fields.
  * It allows switching between a range and an exact value using a button.
  */
+/* TODO: Rename or rethink control as it does more than only range. It may also be very specific to ImagePicker.
+    We might want to do a show/hide of controls based on the value of another.
+    When updating the control(s), also consider the retriever/serializer updates.
+ */
 export function Range(props: RangeProps) {
-	const { field, setValue } = props;
+	const { value, field, setValue } = props;
 	const htmlId = useId();
 	const maxLength = field.validations.maxLength?.value;
-	const value = props.value ? JSON.parse(props.value) : { exact: '', min: '', max: '' };
 	const minValue = value?.min ? (isNaN(parseInt(value.min)) ? 0 : parseInt(value.min)) : null;
 	const maxValue = value?.max ? (isNaN(parseInt(value.max)) ? 0 : parseInt(value.max)) : null;
 	const exactValue = value?.exact ? (isNaN(parseInt(value.exact)) ? 0 : parseInt(value.exact)) : null;
 	// Parsed value is an object like `{ exact: '', min: '50', max: '100' }` or `{ exact: '50', min: '', max: '' }`.
 	// So to determine if it's a range or exact value, we check if any of the values are set.
-	const [isRange, setIsRange] = useState<boolean>(Boolean(minValue) || Boolean(maxValue));
+	const [isRange, setIsRange] = useState<boolean>((value?.min ?? '') !== '' || (value?.max ?? '') !== '');
 
 	const handleChange: TextFieldProps['onChange'] = (event) => {
 		if (isRange) {
 			switch (event.currentTarget.name) {
 				case 'min':
-					setValue(JSON.stringify({ ...value, min: event.currentTarget.value, exact: '' }));
+					setValue({ ...value, min: event.currentTarget.value, exact: '' });
 					break;
 				case 'max':
-					setValue(JSON.stringify({ ...value, max: event.currentTarget.value, exact: '' }));
+					setValue({ ...value, max: event.currentTarget.value, exact: '' });
 					break;
 			}
 		} else {
-			setValue(JSON.stringify({ exact: event.currentTarget.value, min: '', max: '' }));
+			setValue({ exact: event.currentTarget.value, min: '', max: '' });
 		}
+	};
+	const switchRange = () => {
+		setValue({ ...value, min: '', max: '', exact: '' });
+		setIsRange((prev) => !prev);
 	};
 	return (
 		<FormsEngineField htmlFor={htmlId} field={field}>
 			<Box sx={{ display: 'flex', mt: 1, gap: 2 }}>
 				<Box display="flex" alignItems="center">
 					<Tooltip title={<FormattedMessage defaultMessage="Switch mode" />}>
-						<IconButton onClick={() => setIsRange(!isRange)}>
+						<IconButton onClick={switchRange}>
 							<CompareArrowsOutlinedIcon />
 						</IconButton>
 					</Tooltip>

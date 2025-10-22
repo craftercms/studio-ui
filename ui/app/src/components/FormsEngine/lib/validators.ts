@@ -20,6 +20,7 @@ import type { BuiltInControlType } from './controlMap';
 import LookupTable from '../../../models/LookupTable';
 import { XmlKeys } from './formConsts';
 import { defineMessage, type MessageDescriptor } from 'react-intl';
+import type { FormatXMLElementFn, PrimitiveType } from 'intl-messageformat';
 
 type ValidatorFunctionDef = (
 	field: ContentTypeField,
@@ -64,9 +65,15 @@ export const validatorsMap: Partial<Record<BuiltInControlType, ValidatorFunction
 	colorPicker: undefined
 };
 
+// TODO: Fix FormatXMLElementFn generics
+export type FieldValidityMessage =
+	| string
+	| MessageDescriptor
+	| [MessageDescriptor, values?: Record<string, PrimitiveType | FormatXMLElementFn<any, any>>];
+
 export interface FieldValidityState {
 	isValid: boolean;
-	messages: (string | MessageDescriptor)[];
+	messages: FieldValidityMessage[];
 }
 
 export function validateFieldValue(field: ContentTypeField, currentValue: unknown): FieldValidityState {
