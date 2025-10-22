@@ -31,13 +31,14 @@ import { FixedSizeList, ListChildComponentProps } from 'react-window';
 import Grid from '@mui/material/Grid';
 import { FormattedMessage } from 'react-intl';
 import { useWindowWidth } from '../../../hooks/useWindowWidth';
+import { getPropertyValue, isFieldReadOnly } from '../lib/formUtils';
+import Skeleton from '@mui/material/Skeleton';
 
 export interface CheckboxGroupProps extends ControlProps {
 	value: Array<{ key: string; value_smv: string }>;
 }
 
 export function CheckboxGroup(props: CheckboxGroupProps) {
-	const htmlId = useId();
 	const theme = useTheme();
 	const { contentType, field, value, setValue, autoFocus, readonly: formReadonly } = props;
 	const [searchFieldValue, setSearchFieldValue] = useState('');
@@ -46,13 +47,13 @@ export function CheckboxGroup(props: CheckboxGroupProps) {
 	const numColumns = windowWidth >= 900 ? 2 : 1;
 
 	// region field properties/validations
-	const readonly = formReadonly || Boolean(field.properties?.readonly?.value as boolean);
-	const selectAll = Boolean(field.properties?.selectAll?.value as boolean);
+	const readonly: boolean = isFieldReadOnly(field, formReadonly);
+	const selectAll: boolean = getPropertyValue(field.properties, 'value') as boolean;
 	const listDirection: 'horizontal' | 'vertical' = useMemo(() => {
 		let listDirection: 'horizontal' | 'vertical' = 'horizontal';
 		let directionArray: Array<{ value: string; selected?: boolean }> = [];
 		try {
-			const raw = field.properties?.listDirection?.value as string;
+			const raw = getPropertyValue(field.properties, 'listDirection') as string;
 			const parsed = raw ? JSON.parse(raw) : [];
 			directionArray = Array.isArray(parsed) ? parsed : [];
 		} catch {
@@ -61,7 +62,7 @@ export function CheckboxGroup(props: CheckboxGroupProps) {
 		const verticalValue = Boolean(directionArray.find((item) => item.value === 'vertical')?.selected);
 		if (verticalValue) listDirection = 'vertical';
 		return listDirection;
-	}, [field.properties?.listDirection]);
+	}, [field.properties]);
 	// endregion
 
 	const onKeyword$ = useDebouncedInput(() => {
@@ -106,7 +107,17 @@ export function CheckboxGroup(props: CheckboxGroupProps) {
 		}, {});
 	}, [value]);
 	if (!finalOptions) {
-		return <div>Loading...</div>;
+		return (
+			<FormGroup>
+				<Grid container spacing={2} sx={{ width: '100%' }}>
+					{Array.from({ length: 2 }).map((_, i) => (
+						<Grid size={{ sm: 12, md: 6 }} key={i}>
+							<FormControlLabel control={<Checkbox disabled />} label={<Skeleton variant="text" width={120} />} />
+						</Grid>
+					))}
+				</Grid>
+			</FormGroup>
+		);
 	}
 	const showFilter = options?.length > 20;
 	const isVirtualized = finalOptions.length > 100;
