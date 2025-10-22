@@ -21,6 +21,7 @@ import LookupTable from '../../../models/LookupTable';
 import { XmlKeys } from './formConsts';
 import { defineMessage, type MessageDescriptor } from 'react-intl';
 import type { FormatXMLElementFn, PrimitiveType } from 'intl-messageformat';
+import type { CheckboxGroupProps } from '../controls/CheckboxGroup';
 
 type ValidatorFunctionDef = (
 	field: ContentTypeField,
@@ -31,7 +32,8 @@ export const validatorsMap: Partial<Record<BuiltInControlType, ValidatorFunction
 	repeat: undefined,
 	'auto-filename': undefined,
 	'aws-file-upload': undefined,
-	'checkbox-group': checkboxGroupValidator,
+	'checkbox-group': (field, currentValue, messages) =>
+		checkboxGroupValidator(field, currentValue as CheckboxGroupProps['value'], messages),
 	checkbox: undefined,
 	'date-time': undefined,
 	disabled: undefined,
@@ -106,7 +108,7 @@ export function checkMinimumSaveRequirementsFulfilled(values: LookupTable<unknow
 
 export function checkboxGroupValidator(
 	field: ContentTypeField,
-	currentValue, // TODO: type
+	currentValue: CheckboxGroupProps['value'],
 	messages: FieldValidityMessage[]
 ) {
 	const minSelected = Number(field.validations?.minSize?.value ?? 0);
