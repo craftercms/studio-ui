@@ -40,20 +40,7 @@ export const validatorsMap: Partial<Record<BuiltInControlType, ValidatorFunction
 	'file-name': undefined,
 	forcehttps: undefined,
 	'image-picker': undefined,
-	input: (field, currentValue, messages) => {
-		let isValid = true;
-		// Skip validation if value is empty and field is not required
-		if (currentValue == null || (typeof currentValue === 'string' && currentValue.trim() === '')) {
-			return isValid;
-		}
-		const pattern = field.validations.pattern?.value as string;
-		// If there's a pattern and it doesn't match, it's invalid.
-		if (pattern && !String(currentValue).match(pattern)) {
-			messages.push([defineMessage({ defaultMessage: 'The value does not match the required pattern.' })]);
-			isValid = false;
-		}
-		return isValid;
-	},
+	input: (field, currentValue, messages) => inputValidator(field, currentValue as string, messages),
 	'internal-name': undefined,
 	label: undefined,
 	'link-input': undefined,
@@ -61,38 +48,7 @@ export const validatorsMap: Partial<Record<BuiltInControlType, ValidatorFunction
 	'linked-dropdown': undefined,
 	'locale-selector': undefined,
 	'node-selector': undefined,
-	'numeric-input': (field, currentValue, messages) => {
-		let isValid = true;
-		const pattern = field.validations.pattern?.value as string;
-		const maxValue = field.validations.maxValue?.value;
-		const minValue = field.validations.minValue?.value;
-
-		if (nnou(currentValue)) {
-			// If there's a pattern and it doesn't match
-			if (pattern && !String(currentValue).match(pattern)) {
-				messages.push([defineMessage({ defaultMessage: 'The value does not match the required pattern.' })]);
-				isValid = false;
-			}
-			// If there's a max and the value is greater than the max
-			if (maxValue != null && Number(currentValue) > Number(maxValue)) {
-				messages.push([
-					defineMessage({ defaultMessage: `The value is greater than the allowed maximum ({maxValue}).` }),
-					{ maxValue }
-				]);
-				isValid = false;
-			}
-			// If there's a min and the value is less than the min
-			if (minValue != null && Number(currentValue) < Number(minValue)) {
-				messages.push([
-					defineMessage({ defaultMessage: 'The value is less than the minimum ({minValue}).' }),
-					{ minValue }
-				]);
-				isValid = false;
-			}
-		}
-
-		return isValid;
-	},
+	'numeric-input': (field, currentValue, messages) => numericInputValidator(field, currentValue as number, messages),
 	'page-nav-order': undefined,
 	rte: undefined,
 	textarea: undefined,
@@ -147,6 +103,62 @@ export function checkMinimumSaveRequirementsFulfilled(values: LookupTable<unknow
 		[values[XmlKeys.fileName], values[XmlKeys.folderName]].join('').trim() !== '' &&
 		values[XmlKeys.internalName].toString().trim() !== ''
 	);
+}
+
+export function inputValidator(
+	field: ContentTypeField,
+	currentValue: string,
+	messages: FieldValidityMessage[]
+): boolean {
+	let isValid = true;
+	// Skip validation if value is empty and field is not required
+	if (currentValue == null || (typeof currentValue === 'string' && currentValue.trim() === '')) {
+		return isValid;
+	}
+	const pattern = field.validations.pattern?.value as string;
+	// If there's a pattern and it doesn't match, it's invalid.
+	if (pattern && !String(currentValue).match(pattern)) {
+		messages.push([defineMessage({ defaultMessage: 'The value does not match the required pattern.' })]);
+		isValid = false;
+	}
+	return isValid;
+}
+
+export function numericInputValidator(
+	field: ContentTypeField,
+	currentValue: number,
+	messages: FieldValidityMessage[]
+): boolean {
+	let isValid = true;
+	const pattern = field.validations.pattern?.value as string;
+	const maxValue = field.validations.maxValue?.value;
+	const minValue = field.validations.minValue?.value;
+
+	if (nnou(currentValue)) {
+		// If there's a pattern and it doesn't match
+		if (pattern && !String(currentValue).match(pattern)) {
+			messages.push([defineMessage({ defaultMessage: 'The value does not match the required pattern.' })]);
+			isValid = false;
+		}
+		// If there's a max and the value is greater than the max
+		if (maxValue != null && Number(currentValue) > Number(maxValue)) {
+			messages.push([
+				defineMessage({ defaultMessage: `The value is greater than the allowed maximum ({maxValue}).` }),
+				{ maxValue }
+			]);
+			isValid = false;
+		}
+		// If there's a min and the value is less than the min
+		if (minValue != null && Number(currentValue) < Number(minValue)) {
+			messages.push([
+				defineMessage({ defaultMessage: 'The value is less than the minimum ({minValue}).' }),
+				{ minValue }
+			]);
+			isValid = false;
+		}
+	}
+
+	return isValid;
 }
 
 export default validateFieldValue;

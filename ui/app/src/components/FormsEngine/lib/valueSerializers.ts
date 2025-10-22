@@ -139,7 +139,7 @@ type XmlNuancedArrayFormat<T = unknown> = {
 
 function prepareString(field: ContentTypeField, value: string): string {
 	const escapeContent = (field.properties?.escapeContent?.value as boolean) ?? false;
-	return escapeContent ? escapeXml(value as string) : value;
+	return nnou(value) && escapeContent ? escapeXml(value as string) : value;
 }
 
 function prepareNodeSelector(
