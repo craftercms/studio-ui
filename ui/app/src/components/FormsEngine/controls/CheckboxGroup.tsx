@@ -20,7 +20,7 @@ import { ControlProps } from '../types';
 import Checkbox, { CheckboxProps } from '@mui/material/Checkbox';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel, { formControlLabelClasses } from '@mui/material/FormControlLabel';
-import LookupTable from '../../../models/LookupTable';
+import { LookupTable } from '../../../models/LookupTable';
 import { KVPLoaderItem, useKVPLoader } from '../dataSourceHooks/useKVPLoader';
 import useActiveSiteId from '../../../hooks/useActiveSiteId';
 import { useTheme } from '@mui/material/styles';
@@ -73,9 +73,10 @@ export function CheckboxGroup(props: CheckboxGroupProps) {
 		// Checkbox Group supports only 1 datasource.
 		useMemo(() => [field.properties.datasource?.value as string], [field.properties.datasource?.value]),
 		contentType.dataSources
-	)?.[0].items;
+	)?.[0]?.items;
 	const finalOptions = useMemo(() => {
-		let finalOptions = options ? [...options] : [];
+		if (!options) return undefined;
+		let finalOptions = [...options];
 		// If the list direction is vertical and there are two columns), we need to reorder the options to be top-down instead of left-right
 		if (listDirection === 'vertical' && numColumns === 2) {
 			// When there are two columns, we need to reorder the options to be top-down instead of left-right
@@ -128,7 +129,7 @@ export function CheckboxGroup(props: CheckboxGroupProps) {
 			</FormGroup>
 		);
 	}
-	const showFilter = options?.length > 20;
+	const showFilter = options?.length > 2;
 	const isVirtualized = finalOptions.length > 100;
 	const virtualRows = Math.ceil(finalOptions.length / numColumns);
 	const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
