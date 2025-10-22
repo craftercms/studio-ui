@@ -33,7 +33,7 @@ export const internalNameDescriptor: DescriptorContentType = {
 		createVirtualSection({
 			id: 'properties',
 			title: defineMessage({ defaultMessage: 'Options' }),
-			fields: ['maxlength', 'readonly', 'tokenize', 'escapeContent']
+			fields: ['maxlength', 'readonly', 'tokenized', 'escapeContent']
 		}),
 		createVirtualSection({
 			id: 'constraints',
@@ -56,8 +56,8 @@ export const internalNameDescriptor: DescriptorContentType = {
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
-		tokenize: {
-			id: 'tokenize',
+		tokenized: {
+			id: 'tokenized',
 			type: 'checkbox',
 			name: defineMessage({ defaultMessage: 'Tokenize for Indexing' }),
 			defaultValue: undefined,

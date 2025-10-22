@@ -21,28 +21,17 @@ import type { RepeatItem } from '../controls/Repeat';
 import type { NodeSelectorItem } from '../controls/NodeSelector';
 import { systemFieldsNotInType, XmlKeys } from './formConsts';
 import { deserialize } from '../../../utils/xml';
-import { DescriptorControlType } from '../../ContentTypeManagement/controlMap';
+import type { DescriptorControlType } from '../../ContentTypeManagement/controlMap';
 import { nnou } from '../../../utils/object';
 
 export type ValueRetriever<T = unknown> = (value: unknown, field: ContentTypeField) => T;
 
-export const arrayFieldExtractor: ValueRetriever<unknown[]> = (value) =>
-	// Controls needn't worry about packaging as `items: { item: [] }`, but when it first gets deserialised, it will have that format.
-	Array.isArray(value) ? value : ((value as Record<'item', unknown[]>)?.item ?? []);
-
-export const textFieldExtractor: ValueRetriever<string> = (value) => (value && String(value)) ?? '';
-
-export const textOrNullExtractor: ValueRetriever<string> = (value) => (value && String(value)) || null;
-
-export const numberFieldExtractor: ValueRetriever<number> = (value) => (nnou(value) ? Number(value) : null);
-
-export const booleanFieldExtractor: ValueRetriever<boolean> = (value) => (value === true || value === 'true') ?? false;
-
-export const valueRetrieverLookup: Record<BuiltInControlType | DescriptorControlType, ValueRetriever> = {
+export const valueRetrieverLookup: Record<BuiltInControlType | DescriptorControlType, ValueRetriever | null> = {
 	'auto-filename': textFieldExtractor,
 	'aws-file-upload': null,
 	'checkbox-group': arrayFieldExtractor,
 	checkbox: booleanFieldExtractor,
+	boolean: booleanFieldExtractor,
 	'date-time': null,
 	disabled: booleanFieldExtractor,
 	dropdown: textFieldExtractor,
@@ -50,6 +39,7 @@ export const valueRetrieverLookup: Record<BuiltInControlType | DescriptorControl
 	forcehttps: null,
 	'image-picker': textFieldExtractor,
 	input: textFieldExtractor,
+	string: textFieldExtractor,
 	'internal-name': textFieldExtractor,
 	label: textFieldExtractor,
 	'link-input': textFieldExtractor,
@@ -59,6 +49,7 @@ export const valueRetrieverLookup: Record<BuiltInControlType | DescriptorControl
 	repeat: arrayFieldExtractor,
 	'node-selector': arrayFieldExtractor,
 	'numeric-input': numberFieldExtractor,
+	int: numberFieldExtractor,
 	'page-nav-order': booleanFieldExtractor,
 	rte: textFieldExtractor,
 	textarea: textFieldExtractor,
@@ -68,19 +59,26 @@ export const valueRetrieverLookup: Record<BuiltInControlType | DescriptorControl
 	'video-picker': textFieldExtractor,
 	colorPicker: textOrNullExtractor,
 	'content-path-input': textFieldExtractor,
-	contentTypes: textFieldExtractor,
-	'dropdown-static-values': textFieldExtractor,
+	contentTypes: (value) => contentTypesExtractor(value as string),
+	'dropdown-static-values': (value) => objectArrayExtractor(value as string),
 	'template-selector': textFieldExtractor,
 	'type-image-selector': textFieldExtractor,
-	'datasource-selector': textFieldExtractor,
 	'read-only-value': textFieldExtractor,
-	range: textFieldExtractor,
+	range: (value) => objectExtractor(value as string),
 	'type-js-controller-selector': textFieldExtractor,
-	'key-value-map': textFieldExtractor,
-	'type-destination-paths-selector': textFieldExtractor,
+	'key-value-map': (value) => objectArrayExtractor(value as string),
+	'type-destination-paths-selector': (value) => objectExtractor(value as string),
 	'path-with-macro-creator': textFieldExtractor,
 	'merge-strategy-selector': textFieldExtractor,
-	'datasource-single-selector': textFieldExtractor,
+	'datasource:image': (value) => stringArrayExtractor(value as string),
+	'datasource:video': (value) => stringArrayExtractor(value as string),
+	'datasource:audio': (value) => stringArrayExtractor(value as string),
+	'datasource:item': (value) => stringArrayExtractor(value as string),
+	'datasource:transcoded-video': (value) => stringArrayExtractor(value as string),
+	'datasource:image:singleSelection': textFieldExtractor,
+	'datasource:video:singleSelection': textFieldExtractor,
+	'datasource:audio:singleSelection': textFieldExtractor,
+	'datasource:item:singleSelection': textFieldExtractor,
 	variable: textFieldExtractor,
 	'type-configuration': textFieldExtractor,
 	'date-time-expression-input': textFieldExtractor
@@ -124,7 +122,7 @@ export function createParsedValueForField<T = unknown>(
 	switch (controlType) {
 		case 'repeat': {
 			return (value as Array<RepeatItem>).map((item) =>
-				createParsedValuesObject(field.fields, item, contentTypesLookup)
+				createParsedValuesObject(field.fields ?? ({} as LookupTable<ContentTypeField>), item, contentTypesLookup)
 			) as T;
 		}
 		case 'node-selector': {
@@ -152,11 +150,14 @@ export function createParsedValueForField<T = unknown>(
 
 export function retrieveFieldValue<T = unknown>(field: ContentTypeField, value: unknown): T {
 	const retriever: ValueRetriever<T> | undefined = valueRetrieverLookup[field.type];
+	const defaultValue = field.defaultValue as string;
+	// Value considering the defaultValue
+	const fieldValue = value ?? defaultValue;
 	if (!retriever) {
 		console.warn(`No value retriever for field ${field.id} of type ${field.type}`);
-		return value as T;
+		return fieldValue as T;
 	}
-	return retriever(value, field);
+	return retriever(fieldValue, field);
 }
 
 /** Takes in the CrafterCMS content XML and returns a JS object with the values */
@@ -169,4 +170,51 @@ export function deserializeContentDoc(contentDom: XMLDocument | Element): Lookup
 		// e.g.collectionFieldIds.map((fieldId) => `${rootTagName}.${fieldId}.item`).includes(jPath);
 		isArray: (tagName: string, jPath: string) => jPath.endsWith('.item')
 	})[(contentDom as XMLDocument).documentElement?.tagName ?? (contentDom as Element).tagName];
+}
+
+export function stringArrayExtractor(value: string): string[] {
+	return value ? (value as string)?.split(',') : [];
+}
+
+export function arrayFieldExtractor(value: unknown): unknown[] {
+	// Controls needn't worry about packaging as `items: { item: [] }`, but when it first gets deserialised, it will have that format.
+	return Array.isArray(value) ? value : ((value as Record<'item', unknown[]>)?.item ?? []);
+}
+
+export function textFieldExtractor(value: unknown): string {
+	return (value && String(value)) ?? '';
+}
+
+export function textOrNullExtractor(value: unknown): string | null {
+	return (value && String(value)) || null;
+}
+
+export function numberFieldExtractor(value: unknown): number | null {
+	return nnou(value) ? Number(value) : null;
+}
+
+export function booleanFieldExtractor(value: unknown): boolean {
+	return value === true || value === 'true';
+}
+
+export function contentTypesExtractor(value: string): string[] | '*' {
+	return value === '*' ? '*' : stringArrayExtractor(value);
+}
+
+export function objectArrayExtractor(value: string): object[] {
+	try {
+		return value ? JSON.parse(value) : [];
+	} catch (e) {
+		console.error('Invalid JSON', e);
+		return [];
+	}
+}
+
+export function objectExtractor(value: string): object {
+	try {
+		return value ? JSON.parse(value) : {};
+	} catch (e) {
+		console.error('Invalid JSON', e);
+		return {};
+	}
 }

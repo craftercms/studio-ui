@@ -106,7 +106,7 @@ export const ControlWrapper = memo(function (props: ControlWrapperProps) {
 		if (!lazyControlMap.has(url)) addLazyControl(url);
 		Control = lazyControlMap.get(url);
 	} else {
-		Control = controlMap[field.type] ?? customControlMap?.[field.type] ?? UnknownControl;
+		Control = customControlMap?.[field.type] ?? controlMap[field.type] ?? UnknownControl;
 	}
 	return (
 		<ErrorBoundary key={fieldId}>
