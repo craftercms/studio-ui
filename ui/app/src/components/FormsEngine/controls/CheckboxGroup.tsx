@@ -48,7 +48,7 @@ export function CheckboxGroup(props: CheckboxGroupProps) {
 
 	// region field properties/validations
 	const readonly: boolean = isFieldReadOnly(field, formReadonly);
-	const selectAll: boolean = getPropertyValue(field.properties, 'value') as boolean;
+	const selectAll: boolean = getPropertyValue(field.properties, 'selectAll') as boolean;
 	const listDirection: 'horizontal' | 'vertical' = useMemo(() => {
 		let listDirection: 'horizontal' | 'vertical' = 'horizontal';
 		let directionArray: Array<{ value: string; selected?: boolean }> = [];
