@@ -29,7 +29,7 @@ import { type FieldValidityMessage, isEmptyValue, isFieldRequired } from '../lib
 import FormLabel from '@mui/material/FormLabel';
 import Button from '@mui/material/Button';
 import useItemsByPath from '../../../hooks/useItemsByPath';
-import { FormattedMessage, IntlFormatters, useIntl } from 'react-intl';
+import { FormattedMessage, type IntlFormatters, useIntl } from 'react-intl';
 import { HelpOutlineRounded } from '@mui/icons-material';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
