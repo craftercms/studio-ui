@@ -105,7 +105,7 @@ import {
 	isMediaContent
 } from '../../PathNavigator/utils';
 import useSelection from '../../../hooks/useSelection';
-import { showAlert } from '../lib/formUtils';
+import { getValidationValue, isFieldReadOnly, showAlert } from '../lib/formUtils';
 
 const SortableList = lazy(() => import('../components/SortableList'));
 const TouchSortableList = lazy(() => import('../components/TouchSortableList'));
@@ -158,11 +158,11 @@ function NodeSelector(props: NodeSelectorProps) {
 	const { field, contentType, value, setValue, readonly: formReadonly, autoFocus } = props;
 
 	// region field properties/validations
-	const readonly = formReadonly || (field.properties?.readonly?.value as boolean);
-	const disableFlattening = (field.properties?.disableFlattening?.value as boolean) ?? false;
-	const useSingleValueFilename = (field.properties?.useSingleValueFilename?.value as boolean) ?? false;
-	const useMVS = (field.properties?.useMVS?.value as boolean) ?? false;
-	const allowDuplicates = (field.validations?.allowDuplicates?.value as boolean) ?? false;
+	const readonly: boolean = isFieldReadOnly(field, formReadonly);
+	const disableFlattening: boolean = getValidationValue(field.validations, 'disableFlattening', false);
+	const useSingleValueFilename: boolean = getValidationValue(field.validations, 'useSingleValueFilename', false);
+	const useMVS: boolean = getValidationValue(field.validations, 'useMVS', false);
+	const allowDuplicates: boolean = getValidationValue(field.validations, 'allowDuplicates', false);
 	// endregion
 
 	useFetchContentItems(value.flatMap((item) => item.include ?? []));

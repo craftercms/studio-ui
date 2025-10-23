@@ -21,6 +21,7 @@ import LookupTable from '../../../models/LookupTable';
 import { XmlKeys } from './formConsts';
 import { defineMessage, type MessageDescriptor } from 'react-intl';
 import type { FormatXMLElementFn, PrimitiveType } from 'intl-messageformat';
+import type { NodeSelectorItem } from '../controls/NodeSelector';
 
 type ValidatorFunctionDef = (
 	field: ContentTypeField,
@@ -46,29 +47,8 @@ export const validatorsMap: Partial<Record<BuiltInControlType, ValidatorFunction
 	'link-textarea': undefined,
 	'linked-dropdown': undefined,
 	'locale-selector': undefined,
-	'node-selector': (field, currentValue, messages) => {
-		let isValid = true;
-		const minCount = field.validations?.minCount?.value ?? 0;
-		const maxCount = field.validations?.maxCount?.value ?? Infinity;
-		const selectedCount = Array.isArray(currentValue) ? currentValue.length : 0;
-		if (selectedCount < minCount) {
-			isValid = false;
-			messages.push(
-				defineMessage({
-					defaultMessage: `Please select at least the minimum required items.`
-				})
-			);
-		}
-		if (selectedCount > maxCount) {
-			isValid = false;
-			messages.push(
-				defineMessage({
-					defaultMessage: `Please select no more than the maximum allowed items.`
-				})
-			);
-		}
-		return isValid;
-	},
+	'node-selector': (field, currentValue, messages) =>
+		nodeSelectorValidator(field, currentValue as NodeSelectorItem[], messages),
 	'numeric-input': undefined,
 	'page-nav-order': undefined,
 	rte: undefined,
@@ -124,6 +104,36 @@ export function checkMinimumSaveRequirementsFulfilled(values: LookupTable<unknow
 		[values[XmlKeys.fileName], values[XmlKeys.folderName]].join('').trim() !== '' &&
 		values[XmlKeys.internalName].toString().trim() !== ''
 	);
+}
+
+export function nodeSelectorValidator(
+	field: ContentTypeField,
+	currentValue: NodeSelectorItem[],
+	messages: FieldValidityState['messages']
+): boolean {
+	let isValid = true;
+	const minCount = field.validations?.minCount?.value ?? 0;
+	const maxCount = field.validations?.maxCount?.value ?? Infinity;
+	const selectedCount = Array.isArray(currentValue) ? currentValue.length : 0;
+	if (selectedCount < minCount) {
+		isValid = false;
+		messages.push([
+			defineMessage({
+				defaultMessage: `Please select at least the minimum required items ({minCount}).`
+			}),
+			{ minCount }
+		]);
+	}
+	if (selectedCount > maxCount) {
+		isValid = false;
+		messages.push([
+			defineMessage({
+				defaultMessage: `Please select no more than the maximum allowed items ({maxCount}).`
+			}),
+			{ maxCount }
+		]);
+	}
+	return isValid;
 }
 
 export default validateFieldValue;
