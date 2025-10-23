@@ -37,7 +37,7 @@ export const checkboxGroupDescriptor: DescriptorContentType = {
 	fields: {
 		datasource: {
 			id: 'datasource',
-			type: 'datasource-single-selector',
+			type: 'datasource:item:singleSelection',
 			name: defineMessage({ defaultMessage: 'Data Source' }),
 			defaultValue: undefined,
 			validations: {
