@@ -22,6 +22,7 @@ import { XmlKeys } from './formConsts';
 import { defineMessage, type MessageDescriptor } from 'react-intl';
 import type { FormatXMLElementFn, PrimitiveType } from 'intl-messageformat';
 import { nnou } from '../../../utils/object';
+import { getValidationValue } from './formUtils';
 
 type ValidatorFunctionDef = (
 	field: ContentTypeField,
@@ -51,7 +52,7 @@ export const validatorsMap: Partial<Record<BuiltInControlType, ValidatorFunction
 	'numeric-input': (field, currentValue, messages) => numericInputValidator(field, currentValue as number, messages),
 	'page-nav-order': undefined,
 	rte: undefined,
-	textarea: undefined,
+	textarea: (field, currentValue, messages) => inputValidator(field, currentValue as string, messages),
 	time: undefined,
 	'transcoded-video-picker': undefined,
 	uuid: undefined,
@@ -108,7 +109,7 @@ export function checkMinimumSaveRequirementsFulfilled(values: LookupTable<unknow
 export function inputValidator(
 	field: ContentTypeField,
 	currentValue: string,
-	messages: FieldValidityMessage[]
+	messages?: FieldValidityMessage[]
 ): boolean {
 	let isValid = true;
 	// Skip validation if value is empty and field is not required
@@ -116,9 +117,18 @@ export function inputValidator(
 		return isValid;
 	}
 	const pattern = field.validations.pattern?.value as string;
+	const maxLength: number | undefined = getValidationValue(field.validations, 'maxLength');
 	// If there's a pattern and it doesn't match, it's invalid.
 	if (pattern && !String(currentValue).match(pattern)) {
-		messages.push([defineMessage({ defaultMessage: 'The value does not match the required pattern.' })]);
+		messages?.push([defineMessage({ defaultMessage: 'The value does not match the required pattern.' })]);
+		isValid = false;
+	}
+
+	if (nnou(maxLength) && currentValue.length > maxLength) {
+		messages?.push([
+			defineMessage({ defaultMessage: `The value is greater than the allowed maximum ({maxLength}).` }),
+			{ maxLength }
+		]);
 		isValid = false;
 	}
 	return isValid;
@@ -157,7 +167,6 @@ export function numericInputValidator(
 			isValid = false;
 		}
 	}
-
 	return isValid;
 }
 

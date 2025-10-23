@@ -15,10 +15,9 @@
  */
 
 import OutlinedInput, { OutlinedInputProps } from '@mui/material/OutlinedInput';
-import React, { useEffect, useId, useState } from 'react';
+import React, { useId } from 'react';
 import { FormsEngineField } from '../components/FormsEngineField';
 import { ControlProps } from '../types';
-import { isFieldRequired } from '../lib/validators';
 import { getValidationValue, isFieldReadOnly } from '../lib/formUtils';
 
 export interface TextProps extends ControlProps {
@@ -33,19 +32,7 @@ export function Text(props: TextProps) {
 	const maxLength: number | undefined = getValidationValue(field.validations, 'maxLength');
 	const readonly: boolean = isFieldReadOnly(field, formReadonly);
 	const pattern: string | undefined = getValidationValue(field.validations, 'pattern');
-	const isRequired = isFieldRequired(field);
 	// endregion
-	const [patternError, setPatternError] = useState(false);
-
-	useEffect(() => {
-		let isInError = false;
-		if (isRequired && !value) {
-			isInError = true;
-		} else if (pattern) {
-			isInError = !String(value).match(pattern);
-		}
-		setPatternError(isInError);
-	}, [value, pattern, isRequired]);
 
 	const handleChange: OutlinedInputProps['onChange'] = (e) => setValue(e.currentTarget.value);
 	return (
@@ -54,7 +41,6 @@ export function Text(props: TextProps) {
 				autoFocus={autoFocus}
 				id={htmlId}
 				fullWidth
-				error={patternError}
 				inputProps={{
 					maxLength,
 					pattern
