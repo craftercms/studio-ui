@@ -76,7 +76,7 @@ export interface ContentTypeField {
 			| 'maxlength'
 			| 'readonly'
 			| 'allowEditWithoutWarning'
-			| 'tokenize'
+			| 'tokenized'
 			| 'escapeContent'
 			| 'minSize'
 			| 'maxSize'

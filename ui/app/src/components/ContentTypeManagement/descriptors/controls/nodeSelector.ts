@@ -51,7 +51,7 @@ export const nodeSelectorDescriptor: DescriptorContentType = {
 		},
 		itemManager: {
 			id: 'itemManager',
-			type: 'datasource-selector',
+			type: 'datasource:item',
 			name: defineMessage({ defaultMessage: 'Item Manager' }),
 			defaultValue: undefined,
 			validations: {

@@ -25,14 +25,14 @@ import ListItemButton from '@mui/material/ListItemButton';
 import CheckBoxRoundedIcon from '@mui/icons-material/CheckBoxRounded';
 import CheckBoxOutlineBlankRoundedIcon from '@mui/icons-material/CheckBoxOutlineBlankRounded';
 import { TypeBuilderControl } from '../utils';
-import { createPresenceTable } from '../../../utils/array';
+import { asArray, createPresenceTable } from '../../../utils/array';
 import { EmptyState } from '../../EmptyState';
 import { FormattedMessage } from 'react-intl';
 import { reversePluckProps } from '../../../utils/object';
 import { SearchBar, type SearchBarProps } from '../../SearchBar';
 
 export interface ContentTypesSelectorProps extends TypeBuilderControl {
-	value: string;
+	value: string[] | '*';
 }
 
 /**
@@ -42,9 +42,7 @@ export function ContentTypesSelector(props: ContentTypesSelectorProps) {
 	const { field, value, setValue } = props;
 	const maxLength = field.validations?.maxLength?.value;
 	const contentTypes = useContentTypes();
-	const [selectedLookup, setSelectedLookup] = useState<Record<string, boolean>>(
-		createPresenceTable(value ? value.split(',') : [])
-	);
+	const [selectedLookup, setSelectedLookup] = useState<Record<string, boolean>>(createPresenceTable(asArray(value)));
 	const [searchTerm, setSearchTerm] = useState('');
 	const components = useMemo(
 		() =>
@@ -75,7 +73,7 @@ export function ContentTypesSelector(props: ContentTypesSelectorProps) {
 		const selectedArray = Object.entries(newSelectedLookup)
 			.filter(([, value]) => value)
 			.map(([key]) => key);
-		setValue(selectedArray.join(','));
+		setValue(selectedArray);
 	};
 
 	const handleSearchChange: SearchBarProps['onChange'] = (value) => {
