@@ -14,14 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { ElementType } from 'react';
 import type { ContentTypeField } from '../../../models/ContentType';
 import type { BuiltInControlType } from './controlMap';
 import LookupTable from '../../../models/LookupTable';
 import { XmlKeys } from './formConsts';
 import { defineMessage, type MessageDescriptor } from 'react-intl';
 import type { FormatXMLElementFn, PrimitiveType } from 'intl-messageformat';
-import { nnou } from '../../../utils/object';
+import { nnou, nou } from '../../../utils/object';
 import { getValidationValue } from './formUtils';
 
 type ValidatorFunctionDef = (
@@ -140,32 +139,34 @@ export function numericInputValidator(
 	messages: FieldValidityMessage[]
 ): boolean {
 	let isValid = true;
-	const pattern = field.validations.pattern?.value as string;
-	const maxValue = field.validations.maxValue?.value;
-	const minValue = field.validations.minValue?.value;
+	const pattern: string = getValidationValue(field.validations, 'pattern');
+	const maxValue: number = getValidationValue(field.validations, 'maxValue');
+	const minValue: number = getValidationValue(field.validations, 'minValue');
 
-	if (nnou(currentValue)) {
-		// If there's a pattern and it doesn't match
-		if (pattern && !String(currentValue).match(pattern)) {
-			messages.push([defineMessage({ defaultMessage: 'The value does not match the required pattern.' })]);
-			isValid = false;
-		}
-		// If there's a max and the value is greater than the max
-		if (maxValue != null && Number(currentValue) > Number(maxValue)) {
-			messages.push([
-				defineMessage({ defaultMessage: `The value is greater than the allowed maximum ({maxValue}).` }),
-				{ maxValue }
-			]);
-			isValid = false;
-		}
-		// If there's a min and the value is less than the min
-		if (minValue != null && Number(currentValue) < Number(minValue)) {
-			messages.push([
-				defineMessage({ defaultMessage: 'The value is less than the minimum ({minValue}).' }),
-				{ minValue }
-			]);
-			isValid = false;
-		}
+	if (nou(currentValue) || Number.isNaN(Number(currentValue))) {
+		return isValid;
+	}
+
+	// If there's a pattern and it doesn't match
+	if (pattern && !String(currentValue).match(pattern)) {
+		messages.push([defineMessage({ defaultMessage: 'The value does not match the required pattern.' })]);
+		isValid = false;
+	}
+	// If there's a max and the value is greater than the max
+	if (maxValue != null && Number(currentValue) > Number(maxValue)) {
+		messages.push([
+			defineMessage({ defaultMessage: `The value is greater than the allowed maximum ({maxValue}).` }),
+			{ maxValue }
+		]);
+		isValid = false;
+	}
+	// If there's a min and the value is less than the min
+	if (minValue != null && Number(currentValue) < Number(minValue)) {
+		messages.push([
+			defineMessage({ defaultMessage: 'The value is less than the minimum ({minValue}).' }),
+			{ minValue }
+		]);
+		isValid = false;
 	}
 	return isValid;
 }
