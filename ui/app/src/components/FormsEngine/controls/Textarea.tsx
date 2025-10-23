@@ -18,6 +18,7 @@ import OutlinedInput, { OutlinedInputProps } from '@mui/material/OutlinedInput';
 import React, { useId } from 'react';
 import { FormsEngineField } from '../components/FormsEngineField';
 import { ControlProps } from '../types';
+import { getPropertyValue, getValidationValue, isFieldReadOnly } from '../lib/formUtils';
 
 export interface TextareaProps extends ControlProps {
 	value: string;
@@ -28,9 +29,9 @@ export function Textarea(props: TextareaProps) {
 	const htmlId = useId();
 
 	// region field properties/validations
-	const maxLength = field.validations?.maxLength?.value;
-	const readonly = formReadonly || (field.properties?.readonly?.value as boolean);
-	const rows = (field.properties?.rows?.value as number) ?? 1;
+	const maxLength: number | undefined = getValidationValue(field.validations, 'maxLength');
+	const readonly: boolean = isFieldReadOnly(field, formReadonly);
+	const rows: number = getPropertyValue(field.properties, 'rows', 1) as number;
 	// endregion
 
 	const handleChange: OutlinedInputProps['onChange'] = (e) => setValue(e.currentTarget.value);

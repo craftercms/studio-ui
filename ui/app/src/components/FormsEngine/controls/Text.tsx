@@ -31,10 +31,10 @@ export function Text(props: TextProps) {
 
 	// region field properties/validations
 	const maxLength: number | undefined = getValidationValue(field.validations, 'maxLength');
-	const readonly: boolean | undefined = isFieldReadOnly(field, formReadonly);
+	const readonly: boolean = isFieldReadOnly(field, formReadonly);
 	const pattern: string | undefined = getValidationValue(field.validations, 'pattern');
-	// endregion
 	const isRequired = isFieldRequired(field);
+	// endregion
 	const [patternError, setPatternError] = useState(false);
 
 	useEffect(() => {

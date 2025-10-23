@@ -23,6 +23,7 @@ import Box, { BoxProps } from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import MinusRounded from '@mui/icons-material/RemoveRounded';
 import { NumberField } from '@base-ui-components/react/number-field';
+import { getValidationValue, isFieldReadOnly } from '../lib/formUtils';
 
 type NumberFieldRootProps = ComponentProps<typeof NumberField.Root>;
 
@@ -62,10 +63,10 @@ export function Numeric(props: NumberProps) {
 	const htmlId = useId();
 
 	// region field properties/validations
-	const maxLength = field.validations?.maxLength?.value;
-	const maxValue = field.validations?.maxValue?.value;
-	const minValue = field.validations?.minValue?.value;
-	const readonly = formReadonly || (field.properties?.readonly?.value as boolean);
+	const maxLength: number | undefined = getValidationValue(field.validations, 'maxLength');
+	const maxValue: number | undefined = getValidationValue(field.validations, 'maxValue');
+	const minValue: number | undefined = getValidationValue(field.validations, 'minValue');
+	const readonly: boolean = isFieldReadOnly(field, formReadonly);
 	// endregion
 
 	const handleChange: NumberFieldRootProps['onValueChange'] = (newValue) => setValue(newValue);
