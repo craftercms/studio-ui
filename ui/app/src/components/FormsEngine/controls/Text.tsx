@@ -31,7 +31,6 @@ export function Text(props: TextProps) {
 	// region field properties/validations
 	const maxLength: number | undefined = getValidationValue(field.validations, 'maxLength');
 	const readonly: boolean = isFieldReadOnly(field, formReadonly);
-	const pattern: string | undefined = getValidationValue(field.validations, 'pattern');
 	// endregion
 
 	const handleChange: OutlinedInputProps['onChange'] = (e) => setValue(e.currentTarget.value);
@@ -42,8 +41,7 @@ export function Text(props: TextProps) {
 				id={htmlId}
 				fullWidth
 				inputProps={{
-					maxLength,
-					pattern
+					maxLength
 				}}
 				value={value}
 				onChange={handleChange}
