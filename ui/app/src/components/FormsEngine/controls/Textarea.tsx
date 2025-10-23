@@ -32,6 +32,7 @@ export function Textarea(props: TextareaProps) {
 	const maxLength: number | undefined = getValidationValue(field.validations, 'maxLength');
 	const readonly: boolean = isFieldReadOnly(field, formReadonly);
 	const rows: number = getPropertyValue(field.properties, 'rows', 1) as number;
+	const allowResize: boolean = getPropertyValue(field.properties, 'allowResize') as boolean;
 	// endregion
 
 	const handleChange: OutlinedInputProps['onChange'] = (e) => setValue(e.currentTarget.value);
@@ -48,6 +49,11 @@ export function Textarea(props: TextareaProps) {
 				value={value}
 				onChange={handleChange}
 				disabled={readonly}
+				slotProps={{
+					input: {
+						style: { resize: allowResize ? 'vertical' : 'none' }
+					}
+				}}
 			/>
 		</FormsEngineField>
 	);
