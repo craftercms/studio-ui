@@ -40,6 +40,7 @@ export function DateTime(props: DateTimeProps) {
 
 	const allowPastDate: boolean = getPropertyValue(field.properties, 'allowPastDate') as boolean;
 	const useCustomTimezone: boolean = getPropertyValue(field.properties, 'useCustomTimezone') as boolean;
+	const showDate = getPropertyValue(field.properties, 'showDate') as boolean;
 	const showTime = getPropertyValue(field.properties, 'showTime') as boolean;
 	const showClear: boolean = getPropertyValue(field.properties, 'showClear') as boolean;
 	const showSetNow: boolean = getPropertyValue(field.properties, 'showNowLink') as boolean;
@@ -88,16 +89,16 @@ export function DateTime(props: DateTimeProps) {
 	};
 	const clearValue = () => setValue(null);
 	const pickers: DateTimeTimezonePickerProps['pickers'] = useMemo(() => {
-		const pickers: DateTimeTimezonePickerProps['pickers'] = ['date'];
-		if (showTime) {
-			pickers.push('time');
-		}
-		return pickers;
-	}, [showTime]);
+		const p: DateTimeTimezonePickerProps['pickers'] = [];
+		if (showDate) p.push('date');
+		if (showTime) p.push('time');
+		// Fallback to 'date' if both toggles are false.
+		return p.length ? p : (['date'] as DateTimeTimezonePickerProps['pickers']);
+	}, [showDate, showTime]);
 
 	return (
 		<>
-			<FormsEngineField htmlFor={htmlId} field={field} length={valueProp?.length}>
+			<FormsEngineField htmlFor={htmlId} field={field}>
 				<DateTimeTimezonePicker
 					value={value}
 					disablePast={!allowPastDate}

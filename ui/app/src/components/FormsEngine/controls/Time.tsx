@@ -96,7 +96,7 @@ export function Time(props: TimeProps) {
 	const clearValue = () => setValue(null);
 
 	return (
-		<FormsEngineField htmlFor={htmlId} field={field} length={value?.length}>
+		<FormsEngineField htmlFor={htmlId} field={field}>
 			<DateTimeTimezonePicker
 				value={dateValue}
 				disablePast={!allowPastDate}
