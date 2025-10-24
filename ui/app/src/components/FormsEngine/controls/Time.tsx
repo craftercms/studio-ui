@@ -37,7 +37,6 @@ export function Time(props: TimeProps) {
 	const isCreateMode = Boolean(stableFormContext?.props?.create);
 
 	// region field properties/validations
-	const allowPastDate: boolean = getPropertyValue(field.properties, 'allowPastDate') as boolean;
 	const useCustomTimezone: boolean = getPropertyValue(field.properties, 'useCustomTimezone') as boolean;
 	const showClear: boolean = getPropertyValue(field.properties, 'showClear') as boolean;
 	const showSetNow: boolean = getPropertyValue(field.properties, 'showNowLink') as boolean;
@@ -86,11 +85,7 @@ export function Time(props: TimeProps) {
 	};
 	const setNow = () => {
 		// get only the time part from the current date (as a string)
-		const now = new Date();
-		// This is to allow setting the time to the end of the current minute to avoid the time being in the past
-		// when seconds are > 0 and allowPastDate is false
-		now.setSeconds(59, 0);
-		const timeString = parseDateToTime(now);
+		const timeString = parseDateToTime(new Date());
 		setValue(timeString);
 	};
 	const clearValue = () => setValue(null);
@@ -98,8 +93,8 @@ export function Time(props: TimeProps) {
 	return (
 		<FormsEngineField htmlFor={htmlId} field={field}>
 			<DateTimeTimezonePicker
+				id={htmlId}
 				value={dateValue}
-				disablePast={!allowPastDate}
 				disabled={readonly}
 				autoFocus={autoFocus}
 				onChange={handleChange}

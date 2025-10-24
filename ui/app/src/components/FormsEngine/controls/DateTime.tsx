@@ -100,6 +100,7 @@ export function DateTime(props: DateTimeProps) {
 		<>
 			<FormsEngineField htmlFor={htmlId} field={field}>
 				<DateTimeTimezonePicker
+					id={htmlId}
 					value={value}
 					disablePast={!allowPastDate}
 					disabled={readonly}
