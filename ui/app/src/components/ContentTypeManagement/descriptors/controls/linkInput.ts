@@ -26,7 +26,7 @@ export const linkInputDescriptor: DescriptorContentType = {
 		createVirtualSection({
 			id: 'properties',
 			title: defineMessage({ defaultMessage: 'Options' }),
-			fields: ['maxlength', 'readonly', 'tokenized']
+			fields: ['maxlength', 'readonly', 'tokenize']
 		}),
 		createVirtualSection({
 			id: 'constraints',
@@ -49,8 +49,8 @@ export const linkInputDescriptor: DescriptorContentType = {
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
-		tokenized: {
-			id: 'tokenized',
+		tokenize: {
+			id: 'tokenize',
 			type: 'checkbox',
 			name: defineMessage({ defaultMessage: 'Tokenize for Indexing' }),
 			defaultValue: undefined,
