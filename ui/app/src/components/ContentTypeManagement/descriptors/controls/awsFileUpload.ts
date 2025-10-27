@@ -44,7 +44,7 @@ export const awsFileUploadDescriptor: DescriptorContentType = {
 		},
 		required: {
 			id: 'required',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Required' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject

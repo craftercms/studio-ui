@@ -44,21 +44,21 @@ export const linkInputDescriptor: DescriptorContentType = {
 		},
 		readonly: {
 			id: 'readonly',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'readonly' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		tokenized: {
 			id: 'tokenized',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Tokenize for Indexing' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		required: {
 			id: 'required',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Required' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject

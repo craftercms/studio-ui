@@ -39,14 +39,14 @@ export const fileNameDescriptor: DescriptorContentType = {
 		},
 		readonly: {
 			id: 'readonly',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Read Only' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		allowEditWithoutWarning: {
 			id: 'allowEditWithoutWarning',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Allow Edit Without Warning' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject

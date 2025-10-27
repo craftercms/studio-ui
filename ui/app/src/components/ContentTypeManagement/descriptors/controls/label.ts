@@ -39,7 +39,7 @@ export const labelDescriptor: DescriptorContentType = {
 		},
 		renderAsHTML: {
 			id: 'renderAsHTML',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Render as HTML' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject

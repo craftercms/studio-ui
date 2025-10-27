@@ -28,7 +28,7 @@ export const uuidDescriptor: DescriptorContentType = {
 	fields: {
 		hidden: {
 			id: 'hidden',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Hidden' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject

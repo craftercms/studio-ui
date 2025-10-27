@@ -33,21 +33,21 @@ export const sharedContentDataSourceDescriptor: DescriptorContentType = {
 	fields: {
 		enableCreateNew: {
 			id: 'enableCreateNew',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Enable Create New' }),
 			defaultValue: true,
 			validations: immutableEmptyObject
 		},
 		enableBrowseExisting: {
 			id: 'enableBrowseExisting',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Enable Browse Existing' }),
 			defaultValue: true,
 			validations: immutableEmptyObject
 		},
 		enableSearchExisting: {
 			id: 'enableSearchExisting',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Enable Search Existing' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject

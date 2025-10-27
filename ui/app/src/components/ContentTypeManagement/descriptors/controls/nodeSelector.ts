@@ -60,35 +60,35 @@ export const nodeSelectorDescriptor: DescriptorContentType = {
 		},
 		readonly: {
 			id: 'readonly',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Read Only' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		disableFlattening: {
 			id: 'disableFlattening',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Disable Flattening for Search' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		useSingleValueFilename: {
 			id: 'useSingleValueFilename',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Use single value filename (backward compat)' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		useMVS: {
 			id: 'useMVS',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Use _mvs postfix (backward compat)' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		allowDuplicates: {
 			id: 'allowDuplicates',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Allow Duplicates' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject

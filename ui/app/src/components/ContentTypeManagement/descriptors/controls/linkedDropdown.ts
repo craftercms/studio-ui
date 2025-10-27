@@ -46,14 +46,14 @@ export const linkedDropdownDescriptor: DescriptorContentType = {
 		},
 		emptyvalue: {
 			id: 'emptyvalue',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Allow Empty Value' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		readonly: {
 			id: 'readonly',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Read Only' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
@@ -67,7 +67,7 @@ export const linkedDropdownDescriptor: DescriptorContentType = {
 		},
 		required: {
 			id: 'required',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Required' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject

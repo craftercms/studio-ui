@@ -45,7 +45,7 @@ export const flashDesktopUploadDataSourceDescriptor: DescriptorContentType = {
 		},
 		required: {
 			id: 'required',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Required' }),
 			defaultValue: true,
 			validations: { required: { id: 'required', value: true, level: 'required' } }

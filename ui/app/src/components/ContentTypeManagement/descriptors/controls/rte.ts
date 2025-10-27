@@ -53,14 +53,14 @@ export const rteDescriptor: DescriptorContentType = {
 		},
 		autoGrow: {
 			id: 'autoGrow',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Auto Grow' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		enableSpellCheck: {
 			id: 'enableSpellCheck',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Enable Spell Check' }),
 			defaultValue: true,
 			validations: immutableEmptyObject
@@ -110,7 +110,7 @@ export const rteDescriptor: DescriptorContentType = {
 		},
 		required: {
 			id: 'required',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Required' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject

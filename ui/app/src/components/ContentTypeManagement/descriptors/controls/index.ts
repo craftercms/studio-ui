@@ -81,7 +81,7 @@ export const systemFieldsDescriptors: LookupTable<ContentTypeField> = {
 	},
 	[XmlKeys.disabled]: {
 		id: XmlKeys.disabled,
-		type: 'checkbox',
+		type: 'boolean',
 		name: 'Disabled',
 		defaultValue: undefined,
 		validations: immutableEmptyObject
@@ -242,7 +242,7 @@ export const typeBasicDetailsDescriptor: DescriptorContentType = {
 		},
 		quickCreate: {
 			id: 'quickCreate',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Enable Quick Create' }),
 			description: '',
 			helpText: '',
@@ -296,7 +296,7 @@ export const typeBasicDetailsDescriptor: DescriptorContentType = {
 		},
 		isHeadless: {
 			id: 'isHeadless',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Is Headless Type' }),
 			description: defineMessage({
 				defaultMessage:
@@ -386,7 +386,7 @@ export const sectionDescriptor: DescriptorContentType = {
 		},
 		expandByDefault: {
 			id: 'expandByDefault',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Expand by default' }),
 			description: defineMessage({
 				defaultMessage: 'Check this to show the section expanded when the content type is displayed in the content form'

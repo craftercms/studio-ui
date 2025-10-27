@@ -106,7 +106,7 @@ export const configuredListDataSourceDescriptor: DescriptorContentType = {
 		},
 		required: {
 			id: 'required',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'required' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject

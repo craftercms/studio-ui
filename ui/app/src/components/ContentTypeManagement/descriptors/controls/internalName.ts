@@ -51,28 +51,28 @@ export const internalNameDescriptor: DescriptorContentType = {
 		},
 		readonly: {
 			id: 'readonly',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Read Only' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		tokenized: {
 			id: 'tokenized',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Tokenize for Indexing' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		escapeContent: {
 			id: 'escapeContent',
-			type: 'checkbox',
+			type: 'boolean',
 			name: 'escapeContent',
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		required: {
 			id: 'required',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Required' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
