@@ -37,14 +37,14 @@ export const textareaDescriptor: DescriptorContentType = {
 	fields: {
 		rows: {
 			id: 'rows',
-			type: 'numeric-input',
+			type: 'int',
 			name: defineMessage({ defaultMessage: 'Rows' }),
 			defaultValue: 5,
 			validations: immutableEmptyObject
 		},
 		maxlength: {
 			id: 'maxlength',
-			type: 'numeric-input',
+			type: 'int',
 			name: defineMessage({ defaultMessage: 'Maximum Length' }),
 			defaultValue: 100000,
 			validations: immutableEmptyObject

@@ -37,14 +37,14 @@ export const numericInputDescriptor: DescriptorContentType = {
 	fields: {
 		maxValue: {
 			id: 'maxValue',
-			type: 'numeric-input',
+			type: 'int',
 			name: defineMessage({ defaultMessage: 'Maximum Value' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		minValue: {
 			id: 'minValue',
-			type: 'numeric-input',
+			type: 'int',
 			name: defineMessage({ defaultMessage: 'Minimum Value' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
@@ -72,7 +72,7 @@ export const numericInputDescriptor: DescriptorContentType = {
 		},
 		pattern: {
 			id: 'pattern',
-			type: 'input',
+			type: 'string',
 			name: defineMessage({ defaultMessage: 'Match Pattern' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject

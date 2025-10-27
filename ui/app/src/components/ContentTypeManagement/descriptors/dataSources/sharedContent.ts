@@ -74,7 +74,7 @@ export const sharedContentDataSourceDescriptor: DescriptorContentType = {
 		},
 		type: {
 			id: 'type',
-			type: 'input',
+			type: 'string',
 			name: defineMessage({ defaultMessage: 'Default Type' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject

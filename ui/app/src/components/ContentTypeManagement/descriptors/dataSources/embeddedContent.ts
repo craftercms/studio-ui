@@ -33,7 +33,7 @@ export const embeddedContentDataSourceDescriptor: DescriptorContentType = {
 	fields: {
 		contentType: {
 			id: 'contentType',
-			type: 'input',
+			type: 'string',
 			name: defineMessage({ defaultMessage: 'Content Type' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject

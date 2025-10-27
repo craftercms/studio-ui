@@ -76,7 +76,7 @@ export const configuredListDataSourceDescriptor: DescriptorContentType = {
 		},
 		listName: {
 			id: 'listName',
-			type: 'input',
+			type: 'string',
 			name: defineMessage({ defaultMessage: 'List Name' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject

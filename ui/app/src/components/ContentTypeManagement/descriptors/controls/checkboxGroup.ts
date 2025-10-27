@@ -78,7 +78,7 @@ export const checkboxGroupDescriptor: DescriptorContentType = {
 		},
 		minSize: {
 			id: 'minSize',
-			type: 'numeric-input',
+			type: 'int',
 			name: defineMessage({ defaultMessage: 'Minimum Selected' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject

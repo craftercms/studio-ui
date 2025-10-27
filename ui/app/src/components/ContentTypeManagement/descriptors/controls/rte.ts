@@ -46,7 +46,7 @@ export const rteDescriptor: DescriptorContentType = {
 	fields: {
 		height: {
 			id: 'height',
-			type: 'numeric-input',
+			type: 'int',
 			name: defineMessage({ defaultMessage: 'Height' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
@@ -67,7 +67,7 @@ export const rteDescriptor: DescriptorContentType = {
 		},
 		rteConfiguration: {
 			id: 'rteConfiguration',
-			type: 'input',
+			type: 'string',
 			name: defineMessage({ defaultMessage: 'RTE Configuration' }),
 			defaultValue: 'generic',
 			validations: immutableEmptyObject

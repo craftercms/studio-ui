@@ -32,7 +32,7 @@ export const labelDescriptor: DescriptorContentType = {
 	fields: {
 		text: {
 			id: 'text',
-			type: 'input',
+			type: 'string',
 			name: defineMessage({ defaultMessage: 'Text' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject

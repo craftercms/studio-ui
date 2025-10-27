@@ -60,7 +60,7 @@ export const linkedDropdownDescriptor: DescriptorContentType = {
 		},
 		dependsOn: {
 			id: 'dependsOn',
-			type: 'input',
+			type: 'string',
 			name: defineMessage({ defaultMessage: 'Depends On' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject

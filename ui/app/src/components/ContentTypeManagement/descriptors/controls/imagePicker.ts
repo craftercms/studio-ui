@@ -51,14 +51,14 @@ export const imagePickerDescriptor: DescriptorContentType = {
 		},
 		thumbnailWidth: {
 			id: 'thumbnailWidth',
-			type: 'numeric-input',
+			type: 'int',
 			name: defineMessage({ defaultMessage: 'Thumbnail Width' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		thumbnailHeight: {
 			id: 'thumbnailHeight',
-			type: 'numeric-input',
+			type: 'int',
 			name: defineMessage({ defaultMessage: 'Thumbnail Height' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject

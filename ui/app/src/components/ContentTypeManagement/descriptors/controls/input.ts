@@ -37,7 +37,7 @@ export const inputDescriptor: DescriptorContentType = {
 	fields: {
 		maxlength: {
 			id: 'maxlength',
-			type: 'numeric-input',
+			type: 'int',
 			name: defineMessage({ defaultMessage: 'Max Length' }),
 			defaultValue: 50,
 			validations: immutableEmptyObject
@@ -72,7 +72,7 @@ export const inputDescriptor: DescriptorContentType = {
 		},
 		pattern: {
 			id: 'pattern',
-			type: 'input',
+			type: 'string',
 			name: defineMessage({ defaultMessage: 'Match Pattern' }),
 			defaultValue: '',
 			validations: immutableEmptyObject

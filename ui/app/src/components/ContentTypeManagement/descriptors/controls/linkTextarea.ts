@@ -37,14 +37,14 @@ export const linkTextareaDescriptor: DescriptorContentType = {
 	fields: {
 		rows: {
 			id: 'rows',
-			type: 'numeric-input',
+			type: 'int',
 			name: defineMessage({ defaultMessage: 'Rows' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		maxlength: {
 			id: 'maxlength',
-			type: 'numeric-input',
+			type: 'int',
 			name: defineMessage({ defaultMessage: 'Maximum Length' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject

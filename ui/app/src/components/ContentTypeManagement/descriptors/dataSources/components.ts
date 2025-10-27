@@ -91,7 +91,7 @@ export const componentsDataSourceDescriptor: DescriptorContentType = {
 		},
 		tags: {
 			id: 'tags',
-			type: 'input',
+			type: 'string',
 			name: defineMessage({ defaultMessage: 'Tags' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject

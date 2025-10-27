@@ -32,7 +32,7 @@ export const fileNameDescriptor: DescriptorContentType = {
 	fields: {
 		maxlength: {
 			id: 'maxlength',
-			type: 'numeric-input',
+			type: 'int',
 			name: defineMessage({ defaultMessage: 'Max Length' }),
 			defaultValue: 50,
 			validations: immutableEmptyObject

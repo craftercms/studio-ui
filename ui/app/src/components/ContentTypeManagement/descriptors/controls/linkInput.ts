@@ -37,7 +37,7 @@ export const linkInputDescriptor: DescriptorContentType = {
 	fields: {
 		maxlength: {
 			id: 'maxlength',
-			type: 'numeric-input',
+			type: 'int',
 			name: defineMessage({ defaultMessage: 'maxLength' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
@@ -65,7 +65,7 @@ export const linkInputDescriptor: DescriptorContentType = {
 		},
 		pattern: {
 			id: 'pattern',
-			type: 'input',
+			type: 'string',
 			name: defineMessage({ defaultMessage: 'Match Pattern' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject

@@ -66,7 +66,7 @@ export const timeDescriptor: DescriptorContentType = {
 		},
 		populateDateExp: {
 			id: 'populateDateExp',
-			type: 'input',
+			type: 'string',
 			name: defineMessage({ defaultMessage: 'Populate Expression' }),
 			defaultValue: 'now',
 			validations: immutableEmptyObject

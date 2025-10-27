@@ -37,14 +37,14 @@ export const nodeSelectorDescriptor: DescriptorContentType = {
 	fields: {
 		minSize: {
 			id: 'minSize',
-			type: 'numeric-input',
+			type: 'int',
 			name: defineMessage({ defaultMessage: 'Minimum Size' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		maxSize: {
 			id: 'maxSize',
-			type: 'numeric-input',
+			type: 'int',
 			name: defineMessage({ defaultMessage: 'Maximum Size' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
