@@ -212,17 +212,6 @@ export function PluginDetailsView(props: PluginDetailsViewProps) {
 			>
 				{renderMedias()}
 			</Slider>
-
-			{/* <AutoPlaySwipeableViews
-				index={index}
-				autoplay={!play}
-				interval={changeImageSlideInterval}
-				onChangeIndex={handleChangeIndex}
-				enableMouseEvents
-				slideStyle={{ height: '340px' }}
-			>
-				{renderMedias()}
-			</AutoPlaySwipeableViews>*/}
 			{steps > 1 && (
 				<MobileStepper
 					variant="dots"
