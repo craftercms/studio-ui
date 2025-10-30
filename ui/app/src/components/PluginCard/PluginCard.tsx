@@ -14,16 +14,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import Card from '@mui/material/Card';
 import CardActionArea from '@mui/material/CardActionArea';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
 import CardActions from '@mui/material/CardActions';
-import SwipeableViews from 'react-swipeable-views';
-// @ts-ignore
-import { autoPlay } from 'react-swipeable-views-utils';
+import Slider from 'react-slick';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
 import { MarketplacePlugin } from '../../models/MarketplacePlugin';
 import { defineMessages, useIntl } from 'react-intl';
 import MobileStepper from '../MobileStepper/MobileStepper';
@@ -46,8 +46,6 @@ interface PluginCardProps {
 	onPluginSelected(plugin: MarketplacePlugin, view: number): any;
 	onDetails(plugin: MarketplacePlugin, index?: number): any;
 }
-
-const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 
 const messages = defineMessages({
 	version: {
@@ -104,6 +102,9 @@ function PluginCard(props: PluginCardProps) {
 	const isGitCard = id === 'GIT';
 	const isDuplicateCard = id === 'DUPLICATE';
 	const isGitOrDuplicateCard = isGitCard || isDuplicateCard;
+	const sliderRef = useRef(null);
+	const startX = useRef(0);
+	const isSwiping = useRef(false);
 
 	function handleChangeIndex(value: number) {
 		setIndex(value);
@@ -111,7 +112,7 @@ function PluginCard(props: PluginCardProps) {
 
 	function onDotClick(e: any, step: number) {
 		e.stopPropagation();
-		setIndex(step);
+		sliderRef.current.slickGoTo(step);
 	}
 
 	function handlePlay() {
@@ -122,8 +123,22 @@ function PluginCard(props: PluginCardProps) {
 		setPlay(false);
 	}
 
+	const handleMouseDown = (e) => {
+		startX.current = e.clientX;
+		isSwiping.current = false;
+	};
+
+	const handleMouseMove = (e) => {
+		if (Math.abs(e.clientX - startX.current) > 10) {
+			// Threshold for swipe
+			isSwiping.current = true;
+		}
+	};
+
 	function onImageClick(e: any, index: number = 0) {
 		if (isGitOrDuplicateCard) return false;
+		if (isSwiping.current) return false;
+
 		e.stopPropagation();
 		e.preventDefault();
 		onDetails(plugin, index);
@@ -302,15 +317,22 @@ function PluginCard(props: PluginCardProps) {
 				}}
 				sx={isGitOrDuplicateCard ? { display: 'flex', justifyContent: 'start' } : null}
 			>
-				<AutoPlaySwipeableViews
-					index={index}
-					interval={changeImageSlideInterval}
-					autoplay={false}
-					onChangeIndex={handleChangeIndex}
-					enableMouseEvents
-				>
-					{renderMedias(id)}
-				</AutoPlaySwipeableViews>
+				{/* When swiping an image, there's a possibility that the onClick action of the inner items get triggered.
+				 To avoid that, we track the swiping action and avoid the inner onClick action if it's currently swiping */}
+				<Box onMouseDown={handleMouseDown} onMouseMove={handleMouseMove}>
+					<Slider
+						ref={sliderRef}
+						dots={false}
+						arrows={false}
+						infinite={true}
+						speed={500}
+						slidesToShow={1}
+						slidesToScroll={1}
+						afterChange={handleChangeIndex}
+					>
+						{renderMedias(id)}
+					</Slider>
+				</Box>
 				{isGitOrDuplicateCard && (
 					<CardContent sx={isGitOrDuplicateCard ? { height: 'unset !important' } : null} className="cardContent">
 						<Typography gutterBottom variant="subtitle2" component="h2" className="cardTitle">
