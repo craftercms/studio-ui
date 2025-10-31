@@ -14,11 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useRef, useState } from 'react';
+import React, { forwardRef, type ReactNode, useImperativeHandle, useRef, useState } from 'react';
 import Typography from '@mui/material/Typography';
-import Slider from 'react-slick';
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
 import MobileStepper from '../MobileStepper/MobileStepper';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { MarketplacePlugin } from '../../models/MarketplacePlugin';
@@ -33,6 +30,10 @@ import { fadeIn } from 'react-animations';
 import PrimaryButton from '../PrimaryButton';
 import PluginDocumentation from '../PluginDocumentation';
 import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import NavigateNextRoundedIcon from '@mui/icons-material/NavigateNextRounded';
+import NavigateBeforeRoundedIcon from '@mui/icons-material/NavigateBeforeRounded';
+import PluginMediaCarousel from './PluginMediaCarousel';
 
 const messages = defineMessages({
 	use: {
@@ -80,7 +81,6 @@ export function PluginDetailsView(props: PluginDetailsViewProps) {
 	const [play, setPlay] = useState(false);
 	const {
 		plugin,
-		changeImageSlideInterval = 5000,
 		onBlueprintSelected,
 		onCloseDetails,
 		selectedImageSlideIndex = 0,
@@ -104,7 +104,7 @@ export function PluginDetailsView(props: PluginDetailsViewProps) {
 	function onDotClick(e: any, step: number) {
 		e.stopPropagation();
 		setIndex(step);
-		sliderRef.current.slickGoTo(step);
+		sliderRef.current.moveToItem(step);
 	}
 
 	function handlePlay() {
@@ -198,20 +198,14 @@ export function PluginDetailsView(props: PluginDetailsViewProps) {
 					</PrimaryButton>
 				)}
 			</Box>
-			<Slider
+
+			<PluginMediaCarousel
 				ref={sliderRef}
-				dots={false}
-				arrows={false}
-				infinite={true}
-				autoplay={!play}
-				autoplaySpeed={changeImageSlideInterval}
-				speed={500}
-				slidesToShow={1}
-				slidesToScroll={1}
-				afterChange={handleChangeIndex}
-			>
-				{renderMedias()}
-			</Slider>
+				items={renderMedias()}
+				initialIndex={selectedImageSlideIndex}
+				onChangeItem={handleChangeIndex}
+			/>
+
 			{steps > 1 && (
 				<MobileStepper
 					variant="dots"
