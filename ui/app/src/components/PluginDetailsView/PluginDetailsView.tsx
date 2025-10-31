@@ -104,7 +104,7 @@ export function PluginDetailsView(props: PluginDetailsViewProps) {
 	function onDotClick(e: any, step: number) {
 		e.stopPropagation();
 		setIndex(step);
-		sliderRef.current.moveToItem(step);
+		sliderRef.current?.moveToItem(step);
 	}
 
 	function handlePlay() {

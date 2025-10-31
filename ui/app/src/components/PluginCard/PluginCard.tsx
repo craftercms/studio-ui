@@ -107,7 +107,7 @@ function PluginCard(props: PluginCardProps) {
 
 	function onDotClick(e: any, step: number) {
 		e.stopPropagation();
-		sliderRef.current.moveToItem(step);
+		sliderRef.current?.moveToItem(step);
 	}
 
 	function handlePlay() {
