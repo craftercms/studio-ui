@@ -98,7 +98,7 @@ function PluginCard(props: PluginCardProps) {
 	const isGitCard = id === 'GIT';
 	const isDuplicateCard = id === 'DUPLICATE';
 	const isGitOrDuplicateCard = isGitCard || isDuplicateCard;
-	const sliderRef = useRef<{ moveToItem: (itemIndex: number) => void }>(null);
+	const sliderRef = useRef<{ moveToItem: (itemIndex: number) => void } | null>(null);
 
 	function handleChangeIndex(value: number) {
 		setIndex(value);

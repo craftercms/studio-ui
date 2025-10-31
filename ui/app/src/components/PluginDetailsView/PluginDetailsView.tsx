@@ -93,7 +93,7 @@ export function PluginDetailsView(props: PluginDetailsViewProps) {
 	const [index, setIndex] = useState(selectedImageSlideIndex);
 	const { media, name, description, version, license, developer, website, compatible } = plugin;
 	const fullVersion = version ? `${version.major}.${version.minor}.${version.patch}` : null;
-	const sliderRef = useRef<{ moveToItem: (itemIndex: number) => void }>(null);
+	const sliderRef = useRef<{ moveToItem: (itemIndex: number) => void } | null>(null);
 
 	const { formatMessage } = useIntl();
 
