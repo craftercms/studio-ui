@@ -68,7 +68,8 @@ export const PluginMediaCarousel = forwardRef((props: PluginMediaCarouselProps, 
 				width: '100%',
 				overflow: 'hidden',
 				'& .navigate-button': { visibility: 'hidden' },
-				'&:hover .navigate-button': { visibility: 'visible' }
+				'&:hover .navigate-button': { visibility: 'visible' },
+				'& .navigate-button:focus-within': { visibility: 'visible' }
 			}}
 		>
 			<Box
