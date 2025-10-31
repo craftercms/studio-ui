@@ -34,7 +34,6 @@ import PluginMediaCarousel from '../PluginDetailsView/PluginMediaCarousel';
 
 interface PluginCardProps {
 	plugin: MarketplacePlugin;
-	changeImageSlideInterval?: number;
 	isMarketplacePlugin?: boolean;
 	inUse?: boolean;
 	usePermission?: boolean;
