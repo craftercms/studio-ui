@@ -72,46 +72,50 @@ export const PluginMediaCarousel = forwardRef((props: PluginMediaCarouselProps, 
 				'& .navigate-button:focus-within': { visibility: 'visible' }
 			}}
 		>
-			<Box
-				sx={{
-					display: 'flex',
-					transition: 'transform 0.5s',
-					width: `${items.length * 100}%`,
-					transform: `translateX(-${index * (100 / items.length)}%)`
-				}}
-			>
-				{items.map((item, i) => (
-					<Box key={i} sx={{ width: `${100 / items.length}%`, flexShrink: 0 }}>
-						{item}
-					</Box>
-				))}
-			</Box>
-			{items.length > 1 && (
+			{items?.length > 0 && (
 				<>
 					<Box
-						className="navigate-button"
-						sx={{ position: 'absolute', left: 5, top: '50%', transform: 'translateY(-50%)' }}
+						sx={{
+							display: 'flex',
+							transition: 'transform 0.5s',
+							width: `${items.length * 100}%`,
+							transform: `translateX(-${index * (100 / items.length)}%)`
+						}}
 					>
-						<IconButton
-							onClick={handlePrev}
-							sx={{ backgroundColor: (theme) => `${theme.palette.divider} !important` }}
-							aria-label={formatMessage({ defaultMessage: 'Previous Item' })}
-						>
-							<NavigateBeforeRoundedIcon />
-						</IconButton>
+						{items.map((item, i) => (
+							<Box key={i} sx={{ width: `${100 / items.length}%`, flexShrink: 0 }}>
+								{item}
+							</Box>
+						))}
 					</Box>
-					<Box
-						className="navigate-button"
-						sx={{ position: 'absolute', right: 5, top: '50%', transform: 'translateY(-50%)' }}
-					>
-						<IconButton
-							onClick={handleNext}
-							sx={{ backgroundColor: (theme) => `${theme.palette.divider} !important` }}
-							aria-label={formatMessage({ defaultMessage: 'Next Item' })}
-						>
-							<NavigateNextRoundedIcon />
-						</IconButton>
-					</Box>
+					{items.length > 1 && (
+						<>
+							<Box
+								className="navigate-button"
+								sx={{ position: 'absolute', left: 5, top: '50%', transform: 'translateY(-50%)' }}
+							>
+								<IconButton
+									onClick={handlePrev}
+									sx={{ backgroundColor: (theme) => `${theme.palette.divider} !important` }}
+									aria-label={formatMessage({ defaultMessage: 'Previous Item' })}
+								>
+									<NavigateBeforeRoundedIcon />
+								</IconButton>
+							</Box>
+							<Box
+								className="navigate-button"
+								sx={{ position: 'absolute', right: 5, top: '50%', transform: 'translateY(-50%)' }}
+							>
+								<IconButton
+									onClick={handleNext}
+									sx={{ backgroundColor: (theme) => `${theme.palette.divider} !important` }}
+									aria-label={formatMessage({ defaultMessage: 'Next Item' })}
+								>
+									<NavigateNextRoundedIcon />
+								</IconButton>
+							</Box>
+						</>
+					)}
 				</>
 			)}
 		</Box>
