@@ -166,6 +166,15 @@ export function uploadFile(siteId: string, formData: FormData) {
 	return put(`/studio/api/2/content/${siteId}`, formData);
 }
 
+// TODO: add link to API docs when available
+export function moveAndUpdateContent(siteId: string, sourcePath: string, targetPath: string, content: string) {
+	return post(`/studio/api/2/content/${siteId}/move_and_update`, {
+		sourcePath,
+		targetPath,
+		content
+	});
+}
+
 export function fetchContentInstanceDescriptor(
 	site: string,
 	path: string,

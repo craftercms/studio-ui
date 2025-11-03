@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2024 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2025 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -59,6 +59,8 @@ export function Slug(props: SlugProps) {
 	const isFolder = field.id === 'file-name' && isPage && isContentAsFolder;
 	const fieldId = isFolder ? 'folder-name' : field.id;
 	const [value, setValue] = useAtom(atoms.valueByFieldId[fieldId] as PrimitiveAtom<string>);
+	// WithInitialValue is not exported
+	const initialValue = (atoms.valueByFieldId[fieldId] as PrimitiveAtom<string> & { init: string }).init;
 	const validityState = useAtomValue(atoms.validationByFieldId[fieldId]);
 	const [pathExists, setPathExists] = useState<boolean>(false);
 	const webUrlRoot = ensureSingleSlash(`${pathInSite.replace('/site/website', '/')}/`);
@@ -107,10 +109,12 @@ export function Slug(props: SlugProps) {
 
 	const handleEdit = () => {
 		const itemValue = isFolder ? `${value}/index.xml` : value;
-		const itemPath = path.replace(`${itemValue}`, '');
+		const itemInitialValue = isFolder ? `${initialValue}/index.xml` : initialValue;
+		const itemPath = path.replace(`${itemInitialValue}`, '');
 		const id = nanoid();
 
 		showRenameDialog(
+			id,
 			itemPath,
 			itemValue,
 			(newName: string) => {
@@ -128,7 +132,7 @@ export function Slug(props: SlugProps) {
 
 	return (
 		<FormsEngineField
-			isValid={validityState.isValid && !(isNewForm && pathExists)} // TODO: this should not go in here, but validator is not async
+			isValid={validityState.isValid && !(isNewForm && pathExists)}
 			htmlFor={htmlId}
 			field={field}
 			min={field.validations.minValue?.value}
@@ -161,8 +165,13 @@ export function Slug(props: SlugProps) {
 	);
 }
 
-function showRenameDialog(path: string, value: string, onRenamed: (newName: string) => void, dispatch: Dispatch) {
-	const id = nanoid();
+function showRenameDialog(
+	id: string,
+	path: string,
+	value: string,
+	onRenamed: (newName: string) => void,
+	dispatch: Dispatch
+) {
 	dispatch(
 		pushDialog({
 			id,

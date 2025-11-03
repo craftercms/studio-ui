@@ -19,14 +19,14 @@ import { useDispatch, useStore as useReduxStore } from 'react-redux';
 import GlobalState from '../../../models/GlobalState';
 import { FormattedMessage, useIntl } from 'react-intl';
 import useActiveSiteId from '../../../hooks/useActiveSiteId';
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { FormsEngineFormContextApi, ItemMetaContext, StableFormContext } from './formsEngineContext';
 import { createObjectWithSystemProps, extractAtomValues, showAlert } from './formUtils';
 import { FormSavePromiseResult, FormsEngineProps } from '../FormsEngine';
 import { XmlKeys } from './formConsts';
 import { fromString } from '../../../utils/xml';
 import { ensureSingleSlash } from '../../../utils/string';
-import { writeContent } from '../../../services/content';
+import { moveAndUpdateContent, writeContent } from '../../../services/content';
 import { AjaxError } from 'rxjs/ajax';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -35,6 +35,7 @@ import { flushSync } from 'react-dom';
 import LookupTable from '../../../models/LookupTable';
 import { checkMinimumSaveRequirementsFulfilled } from './validators';
 import ContentType from '../../../models/ContentType';
+import { fetchLegacyContentType } from '../../../services/contentTypes';
 
 export interface UseSaveFormProps {
 	createPath?: string;
@@ -58,12 +59,29 @@ export function useSaveForm(props: UseSaveFormProps) {
 	const { isEmbedded, isRepeatMode, isCreateMode, onClose, createPath } = props;
 	const { id, contentType, contentObject, path: itemPath } = useContext(ItemMetaContext);
 	const stableFormContext = useContext(StableFormContext);
+	const changedFieldIds = stableFormContext.changedFieldIds;
 	const formContextApi = useContext(FormsEngineFormContextApi);
 	const setIsSubmitting = useSetAtom(stableFormContext.atoms.isSubmitting);
 	const closeAfterSave = useAtomValue(stableFormContext.atoms.closeAfterSave);
 	const versionComment = useAtomValue(stableFormContext.atoms.versionComment);
 	const setHasPendingChanges = useSetAtom(stableFormContext.atoms.hasPendingChanges);
 	const onSave = wrapOnSaveProp(props.onSave);
+	const [isContentAsFolder, setIsContentAsFolder] = useState<boolean>(Boolean(contentType?.type === 'page'));
+
+	useEffect(() => {
+		if (contentType?.id && siteId) {
+			// Set isFetching and add a loader
+			fetchLegacyContentType(siteId, contentType.id).subscribe({
+				next: ({ contentAsFolder }) => {
+					setIsContentAsFolder(contentAsFolder);
+				},
+				error: (err) => {
+					console.error('Error fetching content type for FileName control:', err);
+				}
+			});
+		}
+	}, [contentType?.id, siteId]);
+
 	return () => {
 		const values = extractAtomValues(jotai, stableFormContext.atoms.valueByFieldId);
 		const onSavePromiseHandler = ({ close }: FormSavePromiseResult) => {
@@ -112,12 +130,8 @@ export function useSaveForm(props: UseSaveFormProps) {
 		} /* is a plain update (page or component) */ else {
 			path = itemPath;
 		}
-		// TODO: Temporary playground save path. Remove.
-		// path = '/site/website/fe2-save-result.xml';
-		// TODO: validateActionPolicy. See FE1 saveFn.
-		// TODO: write-content url on FE1 sends phase, path, fileName, contentType QSAs. Important?
-		// TODO: Cancel packages when needed.
-		writeContent(siteId, path, xml).subscribe({
+
+		const saveActionCallbacks = {
 			next() {
 				const dom = fromString(xml);
 				(onSave?.({ dom, xml, values, versionComment }) as Promise<FormSavePromiseResult>)?.then(onSavePromiseHandler);
@@ -138,7 +152,32 @@ export function useSaveForm(props: UseSaveFormProps) {
 					)
 				});
 			}
-		});
+		};
+
+		// TODO: validateActionPolicy. See FE1 saveFn.
+		// TODO: write-content url on FE1 sends phase, path, fileName, contentType QSAs. Important?
+		// TODO: Cancel packages when needed.
+		// If not create mode and file-name or folder-name changed, need to moveAndUpdateContent
+		// Use xmlKeys
+		if (!isCreateMode && (changedFieldIds.has(XmlKeys['fileName']) || changedFieldIds.has(XmlKeys['folderName']))) {
+			const newRelativePath = isContentAsFolder
+				? ensureSingleSlash(`${values[XmlKeys.folderName]}/index.xml`)
+				: (values[XmlKeys.fileName] as string);
+
+			// Having a path like `/site/website/tests/index.xml`, I need to update folder-name and file-name, so I need to
+			// replace `tests/index.xml` with `${folderName}/${fileName}` (e.g. `my-new-folder/my-new-file.xml`)
+			const pathParts = itemPath.split('/');
+			// Remove the last two parts (folder-name and file-name)
+			const partsToRemove = isContentAsFolder ? 2 : 1;
+			pathParts.splice(-partsToRemove, partsToRemove, newRelativePath);
+			const targetPath = pathParts.join('/'); // TODO: maybe an ensureSingleSlash is needed here?
+
+			moveAndUpdateContent(siteId, itemPath, targetPath, xml).subscribe(saveActionCallbacks);
+		} else {
+			// TODO: Temporary playground save path. Remove.
+			// path = '/site/website/fe2-save-result.xml';
+			writeContent(siteId, path, xml).subscribe(saveActionCallbacks);
+		}
 	};
 }
 
