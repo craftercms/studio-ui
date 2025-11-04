@@ -15,7 +15,7 @@
  */
 
 import OutlinedInput, { OutlinedInputProps } from '@mui/material/OutlinedInput';
-import React, { useEffect, useId, useMemo, useState } from 'react';
+import React, { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { applyContentNameRules } from '../../../utils/content';
 import { FormsEngineField } from '../components/FormsEngineField';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -23,7 +23,6 @@ import { ControlProps } from '../types';
 import { useItemMetaContext, useStableFormContext } from '../lib/formsEngineContext';
 import { useAtom, useAtomValue } from 'jotai';
 import { PrimitiveAtom } from 'jotai/index';
-import { fetchLegacyContentType } from '../../../services/contentTypes';
 import useActiveSiteId from '../../../hooks/useActiveSiteId';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import IconButton from '@mui/material/IconButton';
@@ -38,6 +37,8 @@ import { isFieldReadOnly } from '../lib/formUtils';
 import { checkPathExistence } from '../../../services/content';
 import { ensureSingleSlash } from '../../../utils/string';
 import type { Dispatch } from 'redux';
+import useDebouncedInput from '../../../hooks/useDebouncedInput';
+import type { Subscription } from 'rxjs';
 
 export interface SlugProps extends ControlProps {
 	value: string;
@@ -47,7 +48,7 @@ export interface SlugProps extends ControlProps {
 export function Slug(props: SlugProps) {
 	const { field, readonly: formReadonly, contentType, autoFocus } = props;
 	const { atoms } = useStableFormContext();
-	const { path, pathInSite } = useItemMetaContext();
+	const { path, pathInSite, contentAsFolder } = useItemMetaContext();
 	const formContext = useStableFormContext();
 	const isNewForm = nnou(formContext.props?.create);
 	const htmlId = useId();
@@ -63,9 +64,28 @@ export function Slug(props: SlugProps) {
 	const initialValue = (atoms.valueByFieldId[fieldId] as PrimitiveAtom<string> & { init: string }).init;
 	const validityState = useAtomValue(atoms.validationByFieldId[fieldId]);
 	const [pathExists, setPathExists] = useState<boolean>(false);
+	const pathCheckSubscriptionRef = useRef<Subscription | null>(null);
 	const webUrlRoot = ensureSingleSlash(`${pathInSite.replace('/site/website', '/')}/`);
 	const siteId = useActiveSiteId();
 	const dispatch = useDispatch();
+
+	useEffect(() => {
+		return () => {
+			pathCheckSubscriptionRef.current?.unsubscribe();
+		};
+	}, []);
+
+	const onKeyword$ = useDebouncedInput((newPath) => {
+		pathCheckSubscriptionRef.current?.unsubscribe();
+		pathCheckSubscriptionRef.current = checkPathExistence(siteId, newPath).subscribe({
+			next: (exists) => {
+				setPathExists(exists);
+			},
+			error: (err) => {
+				console.error('Error checking path existence.', err);
+			}
+		});
+	}, 500);
 
 	// region field properties/validations
 	const readonly: boolean = isFieldReadOnly(field, formReadonly);
@@ -76,20 +96,6 @@ export function Slug(props: SlugProps) {
 		return value.replace('.xml', '');
 	}, [value]);
 
-	useEffect(() => {
-		if (contentType?.id && siteId) {
-			// Set isFetching and add a loader
-			fetchLegacyContentType(siteId, contentType.id).subscribe({
-				next: ({ contentAsFolder }) => {
-					setIsContentAsFolder(contentAsFolder);
-				},
-				error: (err) => {
-					console.error('Error fetching content type for FileName control:', err);
-				}
-			});
-		}
-	}, [contentType?.id, siteId]);
-
 	const handleChange: OutlinedInputProps['onChange'] = (e) => {
 		let newValue = applyContentNameRules(e.currentTarget.value);
 		// Add back the `.xml` suffix if applicable.
@@ -97,14 +103,7 @@ export function Slug(props: SlugProps) {
 		setValue(newValue);
 
 		const newPath = ensureSingleSlash(`${pathInSite}/${newValue}${isFolder ? '/index.xml' : ''}`);
-		checkPathExistence(siteId, newPath).subscribe({
-			next: (exists) => {
-				setPathExists(exists);
-			},
-			error: (err) => {
-				console.error('Error checking path existence for FileName control:', err);
-			}
-		});
+		onKeyword$.next(newPath);
 	};
 
 	const handleEdit = () => {
@@ -184,3 +183,12 @@ function showRenameDialog(
 }
 
 export default Slug;
+
+/*
+	TODO:
+	 - Retrieval of content-as-folder (comes from config.xml, used to be in API1 response)
+	 - Check embedded behavior
+	 - UM to put config.xml values in form-definition
+	 - Validate if new
+	 - Check showWarnOnEdit property from control descriptor.
+*/

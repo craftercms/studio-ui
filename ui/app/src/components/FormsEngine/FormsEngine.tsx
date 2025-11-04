@@ -118,6 +118,7 @@ import { displayWithPendingChangesConfirm } from '../../utils/ui';
 import useActiveUser from '../../hooks/useActiveUser';
 import FormBackToTop from './components/FormBackToTop';
 import { createComponentId } from '../../utils/system';
+import { fetchLegacyContentType } from '../../services/contentTypes';
 
 export interface FormSavePromiseResult {
 	close: boolean;
@@ -311,8 +312,20 @@ function FormBootstrap(props: FormsEngineProps) {
 			stableFormContextRef.current.atoms = atoms;
 			stableFormContextRef.current.originalValues = values;
 			stableFormContextRef.current.itemMeta = itemMeta;
-			setItemMeta(stableFormContextRef.current.itemMeta);
-			setReady(true);
+
+			fetchLegacyContentType(siteId, itemMeta.contentType.id).subscribe({
+				next: ({ contentAsFolder }) => {
+					stableFormContextRef.current.itemMeta.contentAsFolder = contentAsFolder;
+					setItemMeta(stableFormContextRef.current.itemMeta);
+					setReady(true);
+				},
+				error: (err) => {
+					console.error('Error fetching content type', err);
+					stableFormContextRef.current.itemMeta.contentAsFolder = itemMeta.contentType.type === 'page';
+					setItemMeta(stableFormContextRef.current.itemMeta);
+					setReady(true);
+				}
+			});
 		};
 		if (
 			// A repeat group is being opened as a stacked form.

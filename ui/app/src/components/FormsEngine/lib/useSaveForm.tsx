@@ -35,7 +35,6 @@ import { flushSync } from 'react-dom';
 import LookupTable from '../../../models/LookupTable';
 import { checkMinimumSaveRequirementsFulfilled } from './validators';
 import ContentType from '../../../models/ContentType';
-import { fetchLegacyContentType } from '../../../services/contentTypes';
 
 export interface UseSaveFormProps {
 	createPath?: string;
@@ -57,7 +56,7 @@ export function useSaveForm(props: UseSaveFormProps) {
 	const { formatMessage } = useIntl();
 	const siteId = useActiveSiteId();
 	const { isEmbedded, isRepeatMode, isCreateMode, onClose, createPath } = props;
-	const { id, contentType, contentObject, path: itemPath } = useContext(ItemMetaContext);
+	const { id, contentType, contentObject, path: itemPath, contentAsFolder } = useContext(ItemMetaContext);
 	const stableFormContext = useContext(StableFormContext);
 	const changedFieldIds = stableFormContext.changedFieldIds;
 	const formContextApi = useContext(FormsEngineFormContextApi);
@@ -66,21 +65,6 @@ export function useSaveForm(props: UseSaveFormProps) {
 	const versionComment = useAtomValue(stableFormContext.atoms.versionComment);
 	const setHasPendingChanges = useSetAtom(stableFormContext.atoms.hasPendingChanges);
 	const onSave = wrapOnSaveProp(props.onSave);
-	const [isContentAsFolder, setIsContentAsFolder] = useState<boolean>(Boolean(contentType?.type === 'page'));
-
-	useEffect(() => {
-		if (contentType?.id && siteId) {
-			// Set isFetching and add a loader
-			fetchLegacyContentType(siteId, contentType.id).subscribe({
-				next: ({ contentAsFolder }) => {
-					setIsContentAsFolder(contentAsFolder);
-				},
-				error: (err) => {
-					console.error('Error fetching content type for FileName control:', err);
-				}
-			});
-		}
-	}, [contentType?.id, siteId]);
 
 	return () => {
 		const values = extractAtomValues(jotai, stableFormContext.atoms.valueByFieldId);
@@ -160,7 +144,7 @@ export function useSaveForm(props: UseSaveFormProps) {
 		// If not create mode and file-name or folder-name changed, need to moveAndUpdateContent
 		// Use xmlKeys
 		if (!isCreateMode && (changedFieldIds.has(XmlKeys['fileName']) || changedFieldIds.has(XmlKeys['folderName']))) {
-			const newRelativePath = isContentAsFolder
+			const newRelativePath = contentAsFolder
 				? ensureSingleSlash(`${values[XmlKeys.folderName]}/index.xml`)
 				: (values[XmlKeys.fileName] as string);
 
@@ -168,7 +152,7 @@ export function useSaveForm(props: UseSaveFormProps) {
 			// replace `tests/index.xml` with `${folderName}/${fileName}` (e.g. `my-new-folder/my-new-file.xml`)
 			const pathParts = itemPath.split('/');
 			// Remove the last two parts (folder-name and file-name)
-			const partsToRemove = isContentAsFolder ? 2 : 1;
+			const partsToRemove = contentAsFolder ? 2 : 1;
 			pathParts.splice(-partsToRemove, partsToRemove, newRelativePath);
 			const targetPath = pathParts.join('/'); // TODO: maybe an ensureSingleSlash is needed here?
 
