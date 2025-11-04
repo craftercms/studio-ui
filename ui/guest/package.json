@@ -61,12 +61,12 @@
 		"@mui/icons-material": "^7.3.2",
 		"@mui/material": "^7.3.2",
 		"@reduxjs/toolkit": "^2.8.2",
-		"@rollup/plugin-alias": "^5.1.1",
+		"@rollup/plugin-alias": "^6.0.0",
 		"@types/react-dom": "^19.1.7",
 		"js-cookie": "^3.0.5",
 		"prop-types": "^15.8.1",
-		"react": "19.1.1",
-		"react-dom": "19.1.1",
+		"react": "19.2.0",
+		"react-dom": "19.2.0",
 		"react-hotkeys-hook": "^5.1.0",
 		"react-is": "^19.1.0",
 		"react-redux": "^9.2.0",
@@ -88,6 +88,6 @@
 		"replace-in-file": "^8.3.0",
 		"rollup": "^4.50.2",
 		"rollup-plugin-swc3": "^0.12.1",
-		"yargs": "^17.7.2"
+		"yargs": "^18.0.0"
 	}
 }
