@@ -58,6 +58,7 @@ export function Slug(props: SlugProps) {
 	const isPage = contentType?.type === 'page';
 	const [isContentAsFolder, setIsContentAsFolder] = useState<boolean>(isPage);
 	const isFolder = field.id === 'file-name' && isPage && isContentAsFolder;
+	const isFolder = field.id === 'file-name' && isPage && contentAsFolder;
 	const fieldId = isFolder ? 'folder-name' : field.id;
 	const [value, setValue] = useAtom(atoms.valueByFieldId[fieldId] as PrimitiveAtom<string>);
 	// WithInitialValue is not exported
@@ -109,9 +110,11 @@ export function Slug(props: SlugProps) {
 	const handleEdit = () => {
 		const itemValue = isFolder ? `${value}/index.xml` : value;
 		const itemInitialValue = isFolder ? `${initialValue}/index.xml` : initialValue;
+		// TODO: error, if value has changed, then replace value won't match, it should be original value.
 		const itemPath = path.replace(`${itemInitialValue}`, '');
 		const id = nanoid();
 
+		// TODO: when there has been already a rename, opening again ends up in an error.
 		showRenameDialog(
 			id,
 			itemPath,
@@ -131,7 +134,7 @@ export function Slug(props: SlugProps) {
 
 	return (
 		<FormsEngineField
-			isValid={validityState.isValid && !(isNewForm && pathExists)}
+			isValid={validityState.isValid && !(isNewForm && pathExists)} // TODO: this should not go in here, but validator is not async
 			htmlFor={htmlId}
 			field={field}
 			min={field.validations.minValue?.value}
