@@ -144,9 +144,10 @@ export function useSaveForm(props: UseSaveFormProps) {
 		// If not create mode and file-name or folder-name changed, need to moveAndUpdateContent
 		// Use xmlKeys
 		if (!isCreateMode && (changedFieldIds.has(XmlKeys['fileName']) || changedFieldIds.has(XmlKeys['folderName']))) {
-			const newRelativePath = contentAsFolder
-				? ensureSingleSlash(`${values[XmlKeys.folderName]}/index.xml`)
-				: (values[XmlKeys.fileName] as string);
+			const newRelativePath =
+				contentAsFolder === true
+					? ensureSingleSlash(`${values[XmlKeys.folderName]}/index.xml`)
+					: (values[XmlKeys.fileName] as string);
 
 			// Having a path like `/site/website/tests/index.xml`, I need to update folder-name and file-name, so I need to
 			// replace `tests/index.xml` with `${folderName}/${fileName}` (e.g. `my-new-folder/my-new-file.xml`)
@@ -154,7 +155,7 @@ export function useSaveForm(props: UseSaveFormProps) {
 			// Remove the last two parts (folder-name and file-name)
 			const partsToRemove = contentAsFolder ? 2 : 1;
 			pathParts.splice(-partsToRemove, partsToRemove, newRelativePath);
-			const targetPath = pathParts.join('/'); // TODO: maybe an ensureSingleSlash is needed here?
+			const targetPath = pathParts.join('/');
 
 			moveAndUpdateContent(siteId, itemPath, targetPath, xml).subscribe(saveActionCallbacks);
 		} else {
