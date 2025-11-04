@@ -56,8 +56,7 @@ export function Slug(props: SlugProps) {
 		throw new Error('Detected field ID "fileName" instead "file-name" at the "Slug" Control.');
 	}
 	const isPage = contentType?.type === 'page';
-	const [isContentAsFolder, setIsContentAsFolder] = useState<boolean>(isPage);
-	const isFolder = field.id === 'file-name' && isPage && isContentAsFolder;
+	const isFolder = field.id === 'file-name' && isPage && contentAsFolder;
 	const fieldId = isFolder ? 'folder-name' : field.id;
 	const [value, setValue] = useAtom(atoms.valueByFieldId[fieldId] as PrimitiveAtom<string>);
 	// WithInitialValue is not exported
