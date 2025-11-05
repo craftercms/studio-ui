@@ -62,7 +62,6 @@ export interface FormsEngineItemMetaContextProps {
 	contentType: ContentType;
 	contentObject: LookupTable<unknown>; // The raw deserialised XML content document.
 	contentXml: string; // The raw XML content document.
-	contentAsFolder?: boolean;
 }
 
 // Contains information related to lock status and whether packages are affected by editing the content item

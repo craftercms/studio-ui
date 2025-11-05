@@ -19,7 +19,7 @@ import { useDispatch, useStore as useReduxStore } from 'react-redux';
 import GlobalState from '../../../models/GlobalState';
 import { FormattedMessage, useIntl } from 'react-intl';
 import useActiveSiteId from '../../../hooks/useActiveSiteId';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import { FormsEngineFormContextApi, ItemMetaContext, StableFormContext } from './formsEngineContext';
 import { createObjectWithSystemProps, extractAtomValues, showAlert } from './formUtils';
 import { FormSavePromiseResult, FormsEngineProps } from '../FormsEngine';
@@ -56,7 +56,8 @@ export function useSaveForm(props: UseSaveFormProps) {
 	const { formatMessage } = useIntl();
 	const siteId = useActiveSiteId();
 	const { isEmbedded, isRepeatMode, isCreateMode, onClose, createPath } = props;
-	const { id, contentType, contentObject, path: itemPath, contentAsFolder } = useContext(ItemMetaContext);
+	const { id, contentType, contentObject, path: itemPath } = useContext(ItemMetaContext);
+	const contentAsFolder = contentType.contentAsFolder === true;
 	const stableFormContext = useContext(StableFormContext);
 	const changedFieldIds = stableFormContext.changedFieldIds;
 	const formContextApi = useContext(FormsEngineFormContextApi);

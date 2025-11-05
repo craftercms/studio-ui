@@ -71,6 +71,7 @@ import ApiResponse from '../../../models/ApiResponse';
 import { getFormsEngineCloseAfterSave, getFormsEngineCollapseToCKey } from '../../../utils/state';
 import { createComponentId } from '../../../utils/system';
 import { showErrorDialog } from '../../../state/actions/dialogs';
+import { fetchLegacyContentType } from '../../../services/contentTypes';
 
 /**
  * Returns the scroll container for the form's container.
@@ -778,4 +779,11 @@ export function getPropertyValue(
  */
 export function isFieldReadOnly(field: ContentTypeField, formReadonly: boolean): boolean {
 	return formReadonly || (getPropertyValue(field.properties, 'readonly') as boolean);
+}
+
+export function getContentTypeContentAsFolderSetting(siteId: string, contentTypeId: string): Observable<boolean> {
+	return fetchLegacyContentType(siteId, contentTypeId).pipe(
+		map((contentType) => contentType.contentAsFolder === true),
+		catchError(() => of(false))
+	);
 }

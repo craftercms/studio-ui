@@ -85,6 +85,7 @@ import {
 	displayFormBeingSavedSnack,
 	fetchUpdateRequirements,
 	generateDefaultChangesComment,
+	getContentTypeContentAsFolderSetting,
 	getCurrentChildFormStateSummary,
 	getScrollContainer,
 	getTargetHeight,
@@ -312,20 +313,8 @@ function FormBootstrap(props: FormsEngineProps) {
 			stableFormContextRef.current.atoms = atoms;
 			stableFormContextRef.current.originalValues = values;
 			stableFormContextRef.current.itemMeta = itemMeta;
-
-			fetchLegacyContentType(siteId, itemMeta.contentType.id).subscribe({
-				next: ({ contentAsFolder }) => {
-					stableFormContextRef.current.itemMeta.contentAsFolder = contentAsFolder;
-					setItemMeta(stableFormContextRef.current.itemMeta);
-					setReady(true);
-				},
-				error: (err) => {
-					console.error('Error fetching content type', err);
-					stableFormContextRef.current.itemMeta.contentAsFolder = itemMeta.contentType.type === 'page';
-					setItemMeta(stableFormContextRef.current.itemMeta);
-					setReady(true);
-				}
-			});
+			setItemMeta(stableFormContextRef.current.itemMeta);
+			setReady(true);
 		};
 		if (
 			// A repeat group is being opened as a stacked form.
@@ -370,14 +359,18 @@ function FormBootstrap(props: FormsEngineProps) {
 			const contentObject = (parentStackData.itemMeta.contentObject[fieldId] as { item: Array<LookupTable<unknown>> })
 				.item[index];
 
-			initializeState(atoms, values, {
-				id: parentId,
-				path: parentPath,
-				sourceMap: null,
-				pathInSite: parentPathInSite,
-				contentType: parentContentType,
-				contentObject,
-				contentXml: element.outerHTML
+			getContentTypeContentAsFolderSetting(siteId, parentContentType.id).subscribe({
+				next: (contentAsFolder) => {
+					initializeState(atoms, values, {
+						id: parentId,
+						path: parentPath,
+						sourceMap: null,
+						pathInSite: parentPathInSite,
+						contentType: { ...parentContentType, contentAsFolder },
+						contentObject,
+						contentXml: element.outerHTML
+					});
+				}
 			});
 		} else if (
 			// An embedded component is being opened as a stacked form.
@@ -391,18 +384,22 @@ function FormBootstrap(props: FormsEngineProps) {
 			const parentLockResult = store.get(parentAtoms.lockResult);
 			const isParentLocked = parentLockResult.locked;
 			const invokePrepareFn = (locked: boolean, lockError: ApiResponse, affectedPackages: PublishPackage[]) => {
-				const requirements = prepareEmbeddedItemForm({
-					username,
-					contentType,
-					locked,
-					lockError,
-					affectedPackages,
-					update,
-					parentStackData,
-					stableFormContextRef,
-					parentPathInSite
+				getContentTypeContentAsFolderSetting(siteId, contentType.id).subscribe({
+					next: (contentAsFolder) => {
+						const requirements = prepareEmbeddedItemForm({
+							username,
+							contentType: { ...contentType, contentAsFolder },
+							locked,
+							lockError,
+							affectedPackages,
+							update,
+							parentStackData,
+							stableFormContextRef,
+							parentPathInSite
+						});
+						initializeState(requirements.atoms, requirements.values, requirements.itemMeta);
+					}
 				});
-				initializeState(requirements.atoms, requirements.values, requirements.itemMeta);
 			};
 			if (readonly === isParentReadonly) {
 				invokePrepareFn(isParentLocked, parentLockResult.lockError, parentLockResult.affectedPackages);
@@ -434,16 +431,21 @@ function FormBootstrap(props: FormsEngineProps) {
 			const values = createParsedValuesObject(contentType.fields, contentObject, contentTypesById, (fieldId, value) => {
 				setFieldAtoms(stableFormContextRef, contentType, contentType.fields, fieldId, atoms, value);
 			});
-			initializeState(atoms, values, {
-				id: contentObject[XmlKeys.modelId] as string,
-				// TODO: Should/could we somehow deduce the target path?
-				path: null,
-				// TODO: Sourcemap? How can we determine what would be inherited by this content? New API?
-				sourceMap: null,
-				pathInSite: create.path,
-				contentType,
-				contentObject,
-				contentXml: null
+
+			getContentTypeContentAsFolderSetting(siteId, contentType.id).subscribe({
+				next: (contentAsFolder) => {
+					initializeState(atoms, values, {
+						id: contentObject[XmlKeys.modelId] as string,
+						// TODO: Should/could we somehow deduce the target path?
+						path: null,
+						// TODO: Sourcemap? How can we determine what would be inherited by this content? New API?
+						sourceMap: null,
+						pathInSite: create.path,
+						contentType: { ...contentType, contentAsFolder },
+						contentObject,
+						contentXml: null
+					});
+				}
 			});
 		} /* if (isUpdateMode) */ else {
 			const subscription = fetchUpdateRequirements({
@@ -497,15 +499,20 @@ function FormBootstrap(props: FormsEngineProps) {
 							);
 						}
 					);
-					initializeState(atoms, values, {
-						id: values[XmlKeys.modelId] as string,
-						path: requirements.item.path,
-						// TODO: Sourcemap? How can we determine what would be inherited by this content? New API?
-						sourceMap: requirements.sourceMap,
-						pathInSite: requirements.pathInSite,
-						contentType: requirements.contentType,
-						contentXml: requirements.contentXml,
-						contentObject: requirements.contentObject
+
+					getContentTypeContentAsFolderSetting(siteId, requirements.contentType.id).subscribe({
+						next: (contentAsFolder) => {
+							initializeState(atoms, values, {
+								id: values[XmlKeys.modelId] as string,
+								path: requirements.item.path,
+								// TODO: Sourcemap? How can we determine what would be inherited by this content? New API?
+								sourceMap: requirements.sourceMap,
+								pathInSite: requirements.pathInSite,
+								contentType: { ...requirements.contentType, contentAsFolder },
+								contentXml: requirements.contentXml,
+								contentObject: requirements.contentObject
+							});
+						}
 					});
 				});
 			return () => subscription.unsubscribe();

@@ -188,6 +188,7 @@ export interface ContentType {
 	sections: ContentTypeSection[];
 	fields: LookupTable<ContentTypeField>;
 	dataSources: DataSource[];
+	contentAsFolder?: boolean;
 }
 
 /**

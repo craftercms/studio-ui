@@ -48,8 +48,9 @@ export interface SlugProps extends ControlProps {
 export function FileName(props: SlugProps) {
 	const { field, readonly: formReadonly, contentType, autoFocus } = props;
 	const { atoms } = useStableFormContext();
-	const { path, pathInSite, contentAsFolder } = useItemMetaContext();
+	const { path, pathInSite } = useItemMetaContext();
 	const formContext = useStableFormContext();
+	const contentAsFolder = Boolean(contentType.contentAsFolder);
 	const isNewForm = nnou(formContext.props?.create);
 	const htmlId = useId();
 	if (field.id === 'fileName') {
