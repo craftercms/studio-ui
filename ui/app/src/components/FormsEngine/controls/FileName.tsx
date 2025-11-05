@@ -45,7 +45,7 @@ export interface SlugProps extends ControlProps {
 }
 
 // TODO: Check behaviour for embedded components. Seems to be hidden on current engine.
-export function Slug(props: SlugProps) {
+export function FileName(props: SlugProps) {
 	const { field, readonly: formReadonly, contentType, autoFocus } = props;
 	const { atoms } = useStableFormContext();
 	const { path, pathInSite, contentAsFolder } = useItemMetaContext();
@@ -53,7 +53,7 @@ export function Slug(props: SlugProps) {
 	const isNewForm = nnou(formContext.props?.create);
 	const htmlId = useId();
 	if (field.id === 'fileName') {
-		throw new Error('Detected field ID "fileName" instead "file-name" at the "Slug" Control.');
+		throw new Error('Detected field ID "fileName" instead "file-name" at the "FileName" Control.');
 	}
 	const isPage = contentType?.type === 'page';
 	const isFolder = field.id === 'file-name' && isPage && contentAsFolder;
@@ -181,7 +181,7 @@ function showRenameDialog(
 	return null;
 }
 
-export default Slug;
+export default FileName;
 
 /*
 	TODO:
