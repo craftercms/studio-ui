@@ -1433,7 +1433,7 @@ export function unlock(siteId: string, path: string): Observable<boolean> {
 			if (error.status === 409) {
 				return of(false);
 			} else {
-				throw new Error(error);
+				throw error;
 			}
 		})
 	);

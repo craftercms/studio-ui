@@ -31,14 +31,14 @@ import {
 	StableGlobalContext,
 	StableGlobalContextProps
 } from './formsEngineContext';
-import { fetchContentXML, fetchDescriptorXML, fetchContentItem, lock, unlock } from '../../../services/content';
+import { fetchContentItem, fetchContentXML, fetchDescriptorXML, lock, unlock } from '../../../services/content';
 import { AjaxError } from 'rxjs/ajax';
 import { fetchAffectedPackages } from '../../../services/workflow';
 import { Dispatch as ReduxDispatch } from 'redux';
 import { IntlShape } from 'react-intl/src/types';
-import { showSystemNotification } from '../../../state/actions/system';
+import { showSystemNotification, showUnlockItemSuccessNotification } from '../../../state/actions/system';
 import { atom, Atom, PrimitiveAtom, useAtomValue, useStore as useJotaiStore } from 'jotai/index';
-import React, { ReactNode, RefObject, useContext, useEffect, useRef, useState } from 'react';
+import React, { ReactNode, RefObject, useContext, useEffect, useRef } from 'react';
 import { fromString, getInnerHtml } from '../../../utils/xml';
 import { nanoid } from 'nanoid';
 import { popDialog, pushDialog } from '../../../state/actions/dialogStack';
@@ -67,10 +67,10 @@ import useActiveSiteId from '../../../hooks/useActiveSiteId';
 import { areAllPairsEqual } from '../../../utils/array';
 import { deserializeContentDoc } from './valueRetrievers';
 import useUpdateRefs from '../../../hooks/useUpdateRefs';
-import { unlockItem } from '../../../state/actions/content';
 import ApiResponse from '../../../models/ApiResponse';
 import { getFormsEngineCloseAfterSave, getFormsEngineCollapseToCKey } from '../../../utils/state';
 import { createComponentId } from '../../../utils/system';
+import { showErrorDialog } from '../../../state/actions/dialogs';
 
 /**
  * Returns the scroll container for the form's container.
@@ -527,19 +527,18 @@ export interface ShouldUnlockArguments {
 	isEmbedded: boolean;
 	isStackedForm: boolean;
 	isParentReadonly: boolean;
-	hasPathChanged: boolean;
+	siteId: string;
 }
 
 /**
  * Determines if an item should be unlocked when its form is being unmounted.
  **/
 export function shouldUnlockItem(props: ShouldUnlockArguments): boolean {
-	const { isRepeatMode, isCreateMode, readonly, isEmbedded, isStackedForm, isParentReadonly, hasPathChanged } = props;
+	const { isRepeatMode, isCreateMode, readonly, isEmbedded, isStackedForm, isParentReadonly } = props;
 	return (
 		!isRepeatMode &&
 		!isCreateMode &&
 		!readonly &&
-		!hasPathChanged &&
 		// Note these "Or" statements below build on top of the previous one (i.e. it only gets to the next if the previous is false).
 		// If it's not embedded, unlock the item.
 		(!isEmbedded ||
@@ -557,7 +556,7 @@ export function shouldUnlockItem(props: ShouldUnlockArguments): boolean {
 export function useUnlockOnClose(props: FormsEngineProps) {
 	const { create, update, repeat, stackIndex = 0 } = props;
 	const itemPath = useContext(ItemContext)?.path;
-	const { atoms, changedFieldIds } = useContext(StableFormContext);
+	const { atoms } = useContext(StableFormContext);
 	const { formsStackData } = useContext(StableGlobalContext);
 	const store = useJotaiStore();
 	const isEmbedded = Boolean(update?.modelId);
@@ -566,14 +565,7 @@ export function useUnlockOnClose(props: FormsEngineProps) {
 	const isStackedForm = stackIndex > 0;
 	const dispatch = useDispatch();
 	const readonly = useAtomValue(atoms.readonly);
-	const [hasPathChanged, setHasPathChanged] = useState<boolean>(false);
-
-	useEffect(() => {
-		if (changedFieldIds.has(XmlKeys['fileName']) || changedFieldIds.has(XmlKeys['folderName'])) {
-			setHasPathChanged(true);
-		}
-	}, [[...changedFieldIds]]);
-
+	const siteId = useActiveSiteId();
 	const unlockEffectRefs = useUpdateRefs<ShouldUnlockArguments & { dispatch: ReduxDispatch }>({
 		dispatch,
 		isRepeatMode,
@@ -582,11 +574,23 @@ export function useUnlockOnClose(props: FormsEngineProps) {
 		isEmbedded,
 		isStackedForm,
 		isParentReadonly: formsStackData[stackIndex - 1] ? store.get(formsStackData[stackIndex - 1].atoms.readonly) : false,
-		hasPathChanged
+		siteId
 	});
 	useEffect(
 		() => () => {
-			if (shouldUnlockItem(unlockEffectRefs.current)) unlockEffectRefs.current.dispatch(unlockItem({ path: itemPath }));
+			if (shouldUnlockItem(unlockEffectRefs.current)) {
+				unlock(unlockEffectRefs.current.siteId, itemPath).subscribe({
+					next: () => {
+						unlockEffectRefs.current.dispatch(showUnlockItemSuccessNotification());
+					},
+					error: (e) => {
+						// If error is 404, assume rename (itemPath changed, and the renamed item is not locked) and do not show error dialog.
+						if (e.status !== 404) {
+							unlockEffectRefs.current.dispatch(showErrorDialog({ error: e.response?.reponse }));
+						}
+					}
+				});
+			}
 		},
 		[itemPath, unlockEffectRefs]
 	);
