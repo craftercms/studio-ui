@@ -22,7 +22,6 @@ import { fetchDependant as fetchDependantService } from '../../services/dependen
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { parseLegacyItemToContentItem } from '../../utils/content';
 import useWithPendingChangesCloseRequest from '../../hooks/useWithPendingChangesCloseRequest';
-import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 import { ensureSingleSlash, isBlank } from '../../utils/string';
 import { ContentItem } from '../../models';
 
@@ -31,11 +30,10 @@ export interface RenameContentDialogProps extends EnhancedDialogProps {
 	value?: string;
 	allowedValue?: string;
 	onRenamed(name: string): void;
-	onSubmittingAndOrPendingChange(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
 export function RenameContentDialog(props: RenameContentDialogProps) {
-	const { path, value, allowedValue, onRenamed, onSubmittingAndOrPendingChange, ...dialogProps } = props;
+	const { path, value, allowedValue, onRenamed, ...dialogProps } = props;
 	const [dependantItems, setDependantItems] = useState<ContentItem[]>(null);
 	const [fetchingDependantItems, setFetchingDependantItems] = useState(false);
 	const [error, setError] = useState(null);
@@ -81,7 +79,6 @@ export function RenameContentDialog(props: RenameContentDialogProps) {
 				fetchDependant={fetchDependant}
 				dependantItems={dependantItems}
 				fetchingDependantItems={fetchingDependantItems}
-				onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
 				onRenamed={onRenamed}
 				error={error}
 			/>

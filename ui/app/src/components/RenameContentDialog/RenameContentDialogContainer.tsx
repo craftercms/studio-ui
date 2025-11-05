@@ -32,10 +32,7 @@ import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { applyContentNameRules } from '../../utils/content';
 
 export interface RenameContentDialogContainerProps
-	extends Pick<
-		RenameContentDialogProps,
-		'path' | 'value' | 'onRenamed' | 'onClose' | 'onSubmittingAndOrPendingChange' | 'allowedValue'
-	> {
+	extends Pick<RenameContentDialogProps, 'path' | 'value' | 'onRenamed' | 'onClose' | 'allowedValue'> {
 	dependantItems: ContentItem[];
 	fetchingDependantItems: boolean;
 	error: AjaxError;
@@ -52,8 +49,7 @@ export function RenameContentDialogContainer(props: RenameContentDialogContainer
 		fetchDependant,
 		dependantItems,
 		fetchingDependantItems,
-		error,
-		onSubmittingAndOrPendingChange
+		error
 	} = props;
 	const isPage = value.includes('/index.xml');
 	const { isSubmitting } = useEnhancedDialogContext();
@@ -65,6 +61,7 @@ export function RenameContentDialogContainer(props: RenameContentDialogContainer
 	const renameDisabled =
 		isSubmitting || !isValid || fetchingDependantItems || (dependantItems?.length > 0 && !confirmBrokenReferences);
 	const siteId = useActiveSiteId();
+	const { updateSubmittingOrHasPendingChanges } = useEnhancedDialogContext();
 
 	const onNameUpdate$ = useDebouncedInput((name: string) => {
 		if (name !== strippedValue && name !== getStrippedValue(allowedValue)) {
@@ -78,7 +75,7 @@ export function RenameContentDialogContainer(props: RenameContentDialogContainer
 		setName(newValue);
 		onNameUpdate$.next(newValue);
 		const newHasPendingChanges = newValue !== strippedValue;
-		onSubmittingAndOrPendingChange({ hasPendingChanges: newHasPendingChanges });
+		updateSubmittingOrHasPendingChanges({ hasPendingChanges: newHasPendingChanges });
 	};
 
 	const onRename = () => {
