@@ -34,7 +34,7 @@ import { applyContentNameRules } from '../../utils/content';
 export interface RenameContentDialogContainerProps
 	extends Pick<
 		RenameContentDialogProps,
-		'path' | 'value' | 'onRenamed' | 'onClose' | 'onSubmittingAndOrPendingChange'
+		'path' | 'value' | 'onRenamed' | 'onClose' | 'onSubmittingAndOrPendingChange' | 'allowedValue'
 	> {
 	dependantItems: ContentItem[];
 	fetchingDependantItems: boolean;
@@ -46,6 +46,7 @@ export function RenameContentDialogContainer(props: RenameContentDialogContainer
 	const {
 		path,
 		value,
+		allowedValue = '',
 		onRenamed,
 		onClose,
 		fetchDependant,
@@ -56,7 +57,7 @@ export function RenameContentDialogContainer(props: RenameContentDialogContainer
 	} = props;
 	const isPage = value.includes('/index.xml');
 	const { isSubmitting } = useEnhancedDialogContext();
-	const strippedValue = isPage ? value.replace('/index.xml', '') : value.replace('.xml', '');
+	const strippedValue = getStrippedValue(value);
 	const [name, setName] = useState(strippedValue);
 	const [itemExists, setItemExists] = useState(false);
 	const isValid = !isBlank(name) && !itemExists && name !== strippedValue;
@@ -66,11 +67,11 @@ export function RenameContentDialogContainer(props: RenameContentDialogContainer
 	const siteId = useActiveSiteId();
 
 	const onNameUpdate$ = useDebouncedInput((name: string) => {
-		checkPathExistence(siteId, `${ensureSingleSlash(`${path}/${name}`)}${isPage ? '/index.xml' : '.xml'}`).subscribe(
-			(exists) => {
-				setItemExists(name !== strippedValue && exists);
-			}
-		);
+		if (name !== strippedValue && name !== getStrippedValue(allowedValue)) {
+			checkPathExistence(siteId, `${ensureSingleSlash(`${path}/${name}`)}${isPage ? '/index.xml' : '.xml'}`).subscribe(
+				(exists) => setItemExists(exists)
+			);
+		}
 	}, 400);
 
 	const onInputChanges = (newValue: string) => {
@@ -119,6 +120,11 @@ export function RenameContentDialogContainer(props: RenameContentDialogContainer
 			</DialogFooter>
 		</>
 	);
+}
+
+function getStrippedValue(value: string): string {
+	const isPage = value.includes('/index.xml');
+	return isPage ? value.replace('/index.xml', '') : value.replace('.xml', '');
 }
 
 export default RenameContentDialogContainer;

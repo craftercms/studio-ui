@@ -40,16 +40,15 @@ import type { Dispatch } from 'redux';
 import useDebouncedInput from '../../../hooks/useDebouncedInput';
 import type { Subscription } from 'rxjs';
 
-export interface SlugProps extends ControlProps {
+export interface FileNameProps extends ControlProps {
 	value: string;
 }
 
-// TODO: Check behaviour for embedded components. Seems to be hidden on current engine.
-export function FileName(props: SlugProps) {
+export function FileName(props: FileNameProps) {
 	const { field, readonly: formReadonly, contentType, autoFocus } = props;
-	const { atoms } = useStableFormContext();
 	const { path, pathInSite } = useItemMetaContext();
 	const formContext = useStableFormContext();
+	const atoms = formContext.atoms;
 	const contentAsFolder = Boolean(contentType.contentAsFolder);
 	const isNewForm = nnou(formContext.props?.create);
 	const htmlId = useId();
@@ -116,6 +115,7 @@ export function FileName(props: SlugProps) {
 			id,
 			itemPath,
 			itemValue,
+			itemInitialValue,
 			(newName: string) => {
 				let updatedName = newName;
 				// if folder, remove `/index.xml`
@@ -168,6 +168,7 @@ function showRenameDialog(
 	id: string,
 	path: string,
 	value: string,
+	allowedValue: string,
 	onRenamed: (newName: string) => void,
 	dispatch: Dispatch
 ) {
@@ -175,7 +176,7 @@ function showRenameDialog(
 		pushDialog({
 			id,
 			component: createComponentId('RenameContentDialog'),
-			props: { path, value, onRenamed }
+			props: { path, value, allowedValue, onRenamed }
 		})
 	);
 
@@ -186,7 +187,6 @@ export default FileName;
 
 /*
 	TODO:
-	 - Retrieval of content-as-folder (comes from config.xml, used to be in API1 response)
 	 - Check embedded behavior
 	 - UM to put config.xml values in form-definition
 	 - Validate if new

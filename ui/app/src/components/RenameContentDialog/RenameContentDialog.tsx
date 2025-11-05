@@ -29,12 +29,13 @@ import { ContentItem } from '../../models';
 export interface RenameContentDialogProps extends EnhancedDialogProps {
 	path: string;
 	value?: string;
+	allowedValue?: string;
 	onRenamed(name: string): void;
 	onSubmittingAndOrPendingChange(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
 export function RenameContentDialog(props: RenameContentDialogProps) {
-	const { path, value, onRenamed, onSubmittingAndOrPendingChange, ...dialogProps } = props;
+	const { path, value, allowedValue, onRenamed, onSubmittingAndOrPendingChange, ...dialogProps } = props;
 	const [dependantItems, setDependantItems] = useState<ContentItem[]>(null);
 	const [fetchingDependantItems, setFetchingDependantItems] = useState(false);
 	const [error, setError] = useState(null);
@@ -49,8 +50,12 @@ export function RenameContentDialog(props: RenameContentDialogProps) {
 				setDependantItems(dependants);
 				setFetchingDependantItems(false);
 			},
-			error: ({ response }) => {
-				setError(response);
+			error: (response) => {
+				if (response.status === 404) {
+					setDependantItems([]);
+				} else {
+					setError(response.response);
+				}
 				setFetchingDependantItems(false);
 			}
 		});
@@ -72,6 +77,7 @@ export function RenameContentDialog(props: RenameContentDialogProps) {
 			<RenameContentDialogContainer
 				path={path}
 				value={value}
+				allowedValue={allowedValue}
 				fetchDependant={fetchDependant}
 				dependantItems={dependantItems}
 				fetchingDependantItems={fetchingDependantItems}
