@@ -587,7 +587,7 @@ export function useUnlockOnClose(props: FormsEngineProps) {
 					error: (e) => {
 						// If error is 404, assume rename (itemPath changed, and the renamed item is not locked) and do not show error dialog.
 						if (e.status !== 404) {
-							unlockEffectRefs.current.dispatch(showErrorDialog({ error: e.response?.reponse }));
+							unlockEffectRefs.current.dispatch(showErrorDialog({ error: e.response?.response }));
 						}
 					}
 				});
