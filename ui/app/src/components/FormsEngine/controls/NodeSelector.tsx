@@ -428,11 +428,19 @@ function NodeSelector(props: NodeSelectorProps) {
 					modelId: item.component?.objectId as string | undefined,
 					values: item.component
 				},
-				onSave({ values }) {
-					const key = isEmbedded
+				onSave({ values, path }) {
+					let key = isEmbedded
 						? ((values[XmlKeys.fileName] || values.objectId) as string).replace(/\.xml$/, '')
-						: // TODO: What if it was moved? i.e. changed its file-name/folder-name
-							item.include;
+						: item.include;
+
+					if (!isEmbedded) {
+						// Check if the path has changed (moved/renamed) and update key accordingly.
+						const currentPath = item.key;
+						if (currentPath !== path) {
+							key = path;
+						}
+					}
+
 					const newItem: NodeSelectorItem = {
 						key,
 						value: values[XmlKeys.internalName] as string,

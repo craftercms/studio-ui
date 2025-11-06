@@ -110,10 +110,26 @@ export function useSaveForm(props: UseSaveFormProps) {
 		}
 		setIsSubmitting(true);
 		let path: string;
+		const isRename =
+			!isCreateMode && (changedFieldIds.has(XmlKeys['fileName']) || changedFieldIds.has(XmlKeys['folderName']));
 		if (isCreateMode) {
 			path = ensureSingleSlash(`${createPath}/${values[XmlKeys.folderName]}/${values[XmlKeys.fileName]}`);
 		} /* is a plain update (page or component) */ else {
-			path = itemPath;
+			if (isRename) {
+				const newRelativePath = isPage
+					? ensureSingleSlash(`${values[XmlKeys.folderName]}/index.xml`)
+					: (values[XmlKeys.fileName] as string);
+
+				// Having a path like `/site/website/tests/index.xml`, I need to update folder-name and file-name, so I need to
+				// replace `tests/index.xml` with `${folderName}/${fileName}` (e.g. `my-new-folder/my-new-file.xml`)
+				const pathParts = itemPath.split('/');
+				// Remove the last two parts (folder-name and file-name) if page, otherwise just the file-name
+				const partsToRemove = isPage ? 2 : 1;
+				pathParts.splice(-partsToRemove, partsToRemove, newRelativePath);
+				path = pathParts.join('/');
+			} else {
+				path = itemPath;
+			}
 		}
 
 		const saveActionCallbacks = {
@@ -145,19 +161,7 @@ export function useSaveForm(props: UseSaveFormProps) {
 		// If not create mode and file-name or folder-name changed, need to moveAndUpdateContent
 		// Use xmlKeys
 		if (!isCreateMode && (changedFieldIds.has(XmlKeys['fileName']) || changedFieldIds.has(XmlKeys['folderName']))) {
-			const newRelativePath = isPage
-				? ensureSingleSlash(`${values[XmlKeys.folderName]}/index.xml`)
-				: (values[XmlKeys.fileName] as string);
-
-			// Having a path like `/site/website/tests/index.xml`, I need to update folder-name and file-name, so I need to
-			// replace `tests/index.xml` with `${folderName}/${fileName}` (e.g. `my-new-folder/my-new-file.xml`)
-			const pathParts = itemPath.split('/');
-			// Remove the last two parts (folder-name and file-name) if page, otherwise just the file-name
-			const partsToRemove = isPage ? 2 : 1;
-			pathParts.splice(-partsToRemove, partsToRemove, newRelativePath);
-			const targetPath = pathParts.join('/');
-
-			moveAndUpdateContent(siteId, itemPath, targetPath, xml).subscribe(saveActionCallbacks);
+			moveAndUpdateContent(siteId, itemPath, path, xml).subscribe(saveActionCallbacks);
 		} else {
 			// TODO: Temporary playground save path. Remove.
 			// path = '/site/website/fe2-save-result.xml';

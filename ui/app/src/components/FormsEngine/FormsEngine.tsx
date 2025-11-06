@@ -144,6 +144,7 @@ export interface BaseProps extends Partial<UpdateModeProps & RepeatModeProps & C
 		xml?: string;
 		values: LookupTable<unknown>;
 		versionComment: string;
+		path?: string;
 	}): Promise<FormSavePromiseResult> | void;
 }
 
