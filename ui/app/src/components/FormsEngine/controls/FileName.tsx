@@ -49,7 +49,6 @@ export function FileName(props: FileNameProps) {
 	const { path, pathInSite } = useItemMetaContext();
 	const formContext = useStableFormContext();
 	const atoms = formContext.atoms;
-	const contentAsFolder = Boolean(contentType.contentAsFolder);
 	const isNewForm = nnou(formContext.props?.create);
 	const htmlId = useId();
 	if (field.id === 'fileName') {

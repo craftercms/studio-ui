@@ -57,7 +57,7 @@ export function useSaveForm(props: UseSaveFormProps) {
 	const siteId = useActiveSiteId();
 	const { isEmbedded, isRepeatMode, isCreateMode, onClose, createPath } = props;
 	const { id, contentType, contentObject, path: itemPath } = useContext(ItemMetaContext);
-	const contentAsFolder = contentType.contentAsFolder === true;
+	const isPage = contentType.type === 'page';
 	const stableFormContext = useContext(StableFormContext);
 	const changedFieldIds = stableFormContext.changedFieldIds;
 	const formContextApi = useContext(FormsEngineFormContextApi);
@@ -145,16 +145,15 @@ export function useSaveForm(props: UseSaveFormProps) {
 		// If not create mode and file-name or folder-name changed, need to moveAndUpdateContent
 		// Use xmlKeys
 		if (!isCreateMode && (changedFieldIds.has(XmlKeys['fileName']) || changedFieldIds.has(XmlKeys['folderName']))) {
-			const newRelativePath =
-				contentAsFolder === true
-					? ensureSingleSlash(`${values[XmlKeys.folderName]}/index.xml`)
-					: (values[XmlKeys.fileName] as string);
+			const newRelativePath = isPage
+				? ensureSingleSlash(`${values[XmlKeys.folderName]}/index.xml`)
+				: (values[XmlKeys.fileName] as string);
 
 			// Having a path like `/site/website/tests/index.xml`, I need to update folder-name and file-name, so I need to
 			// replace `tests/index.xml` with `${folderName}/${fileName}` (e.g. `my-new-folder/my-new-file.xml`)
 			const pathParts = itemPath.split('/');
-			// Remove the last two parts (folder-name and file-name)
-			const partsToRemove = contentAsFolder ? 2 : 1;
+			// Remove the last two parts (folder-name and file-name) if page, otherwise just the file-name
+			const partsToRemove = isPage ? 2 : 1;
 			pathParts.splice(-partsToRemove, partsToRemove, newRelativePath);
 			const targetPath = pathParts.join('/');
 

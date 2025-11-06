@@ -780,23 +780,3 @@ export function getPropertyValue(
 export function isFieldReadOnly(field: ContentTypeField, formReadonly: boolean): boolean {
 	return formReadonly || (getPropertyValue(field.properties, 'readonly') as boolean);
 }
-
-/**
- * Retrieves the "content as folder" setting for a specific content type in a given site.
- *
- * Currently, the `form-definition.xml` does not include this property, so we rely on fetching the legacy content type
- * to collect this information.
- *
- * @param {string} siteId - The ID of the site where the content type resides.
- * @param {string} contentTypeId - The ID of the content type to fetch.
- * @returns {Observable<boolean>} - An RxJS Observable that emits `true` if the `contentAsFolder` property
- *                                   is `true`, or `false` otherwise. If an error occurs during the fetch,
- *                                   the Observable emits `false`.
- */
-// TODO: Once the `form-definition.xml` is updated to include this property, remove the reliance on the legacy content type.
-export function getContentTypeContentAsFolderSetting(siteId: string, contentTypeId: string): Observable<boolean> {
-	return fetchLegacyContentType(siteId, contentTypeId).pipe(
-		map((contentType) => contentType.contentAsFolder === true),
-		catchError(() => of(false))
-	);
-}

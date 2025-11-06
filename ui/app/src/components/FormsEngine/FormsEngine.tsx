@@ -85,7 +85,6 @@ import {
 	displayFormBeingSavedSnack,
 	fetchUpdateRequirements,
 	generateDefaultChangesComment,
-	getContentTypeContentAsFolderSetting,
 	getCurrentChildFormStateSummary,
 	getScrollContainer,
 	getTargetHeight,
@@ -358,18 +357,14 @@ function FormBootstrap(props: FormsEngineProps) {
 			const contentObject = (parentStackData.itemMeta.contentObject[fieldId] as { item: Array<LookupTable<unknown>> })
 				.item[index];
 
-			getContentTypeContentAsFolderSetting(siteId, parentContentType.id).subscribe({
-				next: (contentAsFolder) => {
-					initializeState(atoms, values, {
-						id: parentId,
-						path: parentPath,
-						sourceMap: null,
-						pathInSite: parentPathInSite,
-						contentType: { ...parentContentType, contentAsFolder },
-						contentObject,
-						contentXml: element.outerHTML
-					});
-				}
+			initializeState(atoms, values, {
+				id: parentId,
+				path: parentPath,
+				sourceMap: null,
+				pathInSite: parentPathInSite,
+				contentType: parentContentType,
+				contentObject,
+				contentXml: element.outerHTML
 			});
 		} else if (
 			// An embedded component is being opened as a stacked form.
@@ -383,22 +378,18 @@ function FormBootstrap(props: FormsEngineProps) {
 			const parentLockResult = store.get(parentAtoms.lockResult);
 			const isParentLocked = parentLockResult.locked;
 			const invokePrepareFn = (locked: boolean, lockError: ApiResponse, affectedPackages: PublishPackage[]) => {
-				getContentTypeContentAsFolderSetting(siteId, contentType.id).subscribe({
-					next: (contentAsFolder) => {
-						const requirements = prepareEmbeddedItemForm({
-							username,
-							contentType: { ...contentType, contentAsFolder },
-							locked,
-							lockError,
-							affectedPackages,
-							update,
-							parentStackData,
-							stableFormContextRef,
-							parentPathInSite
-						});
-						initializeState(requirements.atoms, requirements.values, requirements.itemMeta);
-					}
+				const requirements = prepareEmbeddedItemForm({
+					username,
+					contentType,
+					locked,
+					lockError,
+					affectedPackages,
+					update,
+					parentStackData,
+					stableFormContextRef,
+					parentPathInSite
 				});
+				initializeState(requirements.atoms, requirements.values, requirements.itemMeta);
 			};
 			if (readonly === isParentReadonly) {
 				invokePrepareFn(isParentLocked, parentLockResult.lockError, parentLockResult.affectedPackages);
@@ -431,20 +422,16 @@ function FormBootstrap(props: FormsEngineProps) {
 				setFieldAtoms(stableFormContextRef, contentType, contentType.fields, fieldId, atoms, value);
 			});
 
-			getContentTypeContentAsFolderSetting(siteId, contentType.id).subscribe({
-				next: (contentAsFolder) => {
-					initializeState(atoms, values, {
-						id: contentObject[XmlKeys.modelId] as string,
-						// TODO: Should/could we somehow deduce the target path?
-						path: null,
-						// TODO: Sourcemap? How can we determine what would be inherited by this content? New API?
-						sourceMap: null,
-						pathInSite: create.path,
-						contentType: { ...contentType, contentAsFolder },
-						contentObject,
-						contentXml: null
-					});
-				}
+			initializeState(atoms, values, {
+				id: contentObject[XmlKeys.modelId] as string,
+				// TODO: Should/could we somehow deduce the target path?
+				path: null,
+				// TODO: Sourcemap? How can we determine what would be inherited by this content? New API?
+				sourceMap: null,
+				pathInSite: create.path,
+				contentType,
+				contentObject,
+				contentXml: null
 			});
 		} /* if (isUpdateMode) */ else {
 			const subscription = fetchUpdateRequirements({
@@ -499,19 +486,15 @@ function FormBootstrap(props: FormsEngineProps) {
 						}
 					);
 
-					getContentTypeContentAsFolderSetting(siteId, requirements.contentType.id).subscribe({
-						next: (contentAsFolder) => {
-							initializeState(atoms, values, {
-								id: values[XmlKeys.modelId] as string,
-								path: requirements.item.path,
-								// TODO: Sourcemap? How can we determine what would be inherited by this content? New API?
-								sourceMap: requirements.sourceMap,
-								pathInSite: requirements.pathInSite,
-								contentType: { ...requirements.contentType, contentAsFolder },
-								contentXml: requirements.contentXml,
-								contentObject: requirements.contentObject
-							});
-						}
+					initializeState(atoms, values, {
+						id: values[XmlKeys.modelId] as string,
+						path: requirements.item.path,
+						// TODO: Sourcemap? How can we determine what would be inherited by this content? New API?
+						sourceMap: requirements.sourceMap,
+						pathInSite: requirements.pathInSite,
+						contentType: requirements.contentType,
+						contentXml: requirements.contentXml,
+						contentObject: requirements.contentObject
 					});
 				});
 			return () => subscription.unsubscribe();
