@@ -119,7 +119,6 @@ import { displayWithPendingChangesConfirm } from '../../utils/ui';
 import useActiveUser from '../../hooks/useActiveUser';
 import FormBackToTop from './components/FormBackToTop';
 import { createComponentId } from '../../utils/system';
-import { fetchLegacyContentType } from '../../services/contentTypes';
 
 export interface FormSavePromiseResult {
 	close: boolean;
