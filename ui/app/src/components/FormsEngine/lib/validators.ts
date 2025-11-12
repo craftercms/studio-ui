@@ -80,7 +80,6 @@ export interface FieldValidityState {
 	messages: FieldValidityMessage[];
 }
 
-export function validateFieldValue(field: ContentTypeField, currentValue: unknown): FieldValidityState {
 export async function validateFieldValue(field: ContentTypeField, currentValue: unknown): Promise<FieldValidityState> {
 	const messages: FieldValidityState['messages'] = [];
 	const isRequired = isFieldRequired(field);
