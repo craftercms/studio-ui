@@ -36,18 +36,7 @@ export const validatorsMap: Partial<Record<BuiltInControlType, ValidatorFunction
 	'date-time': undefined,
 	disabled: undefined,
 	dropdown: undefined,
-	'file-name': (field, currentValue, messages) => {
-		return new Promise<boolean>((resolve) => {
-			// firstValueFrom(checkPathExistence('7418-fe2-copy', `/site/website/health/${currentValue}`)).then( ....
-			checkPathExistence('7418-fe2-copy', '/site/website/health/index.xml').subscribe({
-				next: (exists) => {
-					messages?.push([defineMessage({ defaultMessage: 'This is a test - invalid file-name.' })]);
-					resolve(!exists);
-				},
-				error: () => resolve(false)
-			});
-		});
-	},
+	'file-name': undefined,
 	forcehttps: undefined,
 	'image-picker': undefined,
 	input: undefined,
