@@ -436,7 +436,7 @@ function NodeSelector(props: NodeSelectorProps) {
 					if (!isEmbedded) {
 						// Check if the path has changed (moved/renamed) and update key accordingly.
 						const currentPath = item.key;
-						if (currentPath !== path) {
+						if (path && currentPath !== path) {
 							key = path;
 						}
 					}
