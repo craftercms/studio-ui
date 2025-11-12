@@ -15,7 +15,7 @@
  */
 
 import OutlinedInput, { OutlinedInputProps } from '@mui/material/OutlinedInput';
-import React, { useEffect, useId, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useId, useMemo, useRef } from 'react';
 import { applyContentNameRules } from '../../../utils/content';
 import { FormsEngineField } from '../components/FormsEngineField';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -23,7 +23,6 @@ import { ControlProps } from '../types';
 import { useItemMetaContext, useStableFormContext } from '../lib/formsEngineContext';
 import { useAtom, useAtomValue } from 'jotai';
 import { PrimitiveAtom } from 'jotai/index';
-import useActiveSiteId from '../../../hooks/useActiveSiteId';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
@@ -34,7 +33,6 @@ import { createComponentId } from '../../../utils/system';
 import { nanoid } from 'nanoid';
 import { nnou } from '../../../utils/object';
 import { isFieldReadOnly } from '../lib/formUtils';
-import { checkPathExistence } from '../../../services/content';
 import { ensureSingleSlash } from '../../../utils/string';
 import type { Dispatch } from 'redux';
 import useDebouncedInput from '../../../hooks/useDebouncedInput';
@@ -63,7 +61,6 @@ export function FileName(props: FileNameProps) {
 	const validityState = useAtomValue(atoms.validationByFieldId['file-name']);
 	const pathCheckSubscriptionRef = useRef<Subscription | null>(null);
 	const webUrlRoot = ensureSingleSlash(`${pathInSite.replace('/site/website', '/')}/`);
-	const siteId = useActiveSiteId();
 	const dispatch = useDispatch();
 
 	useEffect(() => {
