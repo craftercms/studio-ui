@@ -190,10 +190,7 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 	const [openDataSourceInserter, setOpenDataSourceInserter] = useState<boolean>(false);
 
 	const [activeFormHasErrors, setActiveFormHasErrors] = useState<boolean>(false);
-	validityAtomsHaveErrors(jotai, stateRef.current?.activeFormContext?.atoms?.validationByFieldId).then((hasErrors) => {
-		setActiveFormHasErrors(hasErrors);
-	});
-
+	const [validatingForm, setValidatingForm] = useState<boolean>(false);
 	const configDescriptors = useMemo(() => {
 		const controlDescriptors = Object.values(config?.controls ?? {}).map(({ descriptor }) => descriptor);
 		const dataSourceDescriptors = Object.values(config?.dataSources ?? {}).map(({ descriptor }) => descriptor);
@@ -728,12 +725,19 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 			onUpdateHasPendingChanges(true);
 			stateRef.current.formFieldsChanged = true;
 			const nextFieldPathsWithErrors = { ...fieldPathsWithErrors };
-
 			// Check validation atoms of the form to see if there are any unfulfilled validations.
-			nextFieldPathsWithErrors[selectedFieldIdPath] = effectRefs.current.activeFormHasErrors;
-			if (!nextFieldPathsWithErrors[selectedFieldIdPath]) delete nextFieldPathsWithErrors[selectedFieldIdPath];
+			setValidatingForm(true);
+			validityAtomsHaveErrors(
+				effectRefs.current.jotai,
+				stateRef.current?.activeFormContext?.atoms?.validationByFieldId
+			).then((hasErrors) => {
+				setActiveFormHasErrors(hasErrors);
+				nextFieldPathsWithErrors[selectedFieldIdPath] = hasErrors;
+				if (!nextFieldPathsWithErrors[selectedFieldIdPath]) delete nextFieldPathsWithErrors[selectedFieldIdPath];
 
-			setFieldPathsWithErrors(nextFieldPathsWithErrors);
+				setFieldPathsWithErrors(nextFieldPathsWithErrors);
+				setValidatingForm(false);
+			});
 		});
 		return () => {
 			sub.unsubscribe();
@@ -771,7 +775,8 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 		return () => sub.unsubscribe();
 	}, [site, activeEnvironment, setConfig, dispatch]);
 
-	const disableSave = (!type.NEW && !hasPendingChanges) || Object.keys(fieldPathsWithErrors).length !== 0;
+	const disableSave =
+		(!type.NEW && !hasPendingChanges) || Object.keys(fieldPathsWithErrors).length !== 0 || validatingForm;
 	return (
 		<Provider store={jotai}>
 			<EditTypeViewLayout
