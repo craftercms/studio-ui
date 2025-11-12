@@ -189,6 +189,11 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 	});
 	const [openDataSourceInserter, setOpenDataSourceInserter] = useState<boolean>(false);
 
+	const [activeFormHasErrors, setActiveFormHasErrors] = useState<boolean>(false);
+	validityAtomsHaveErrors(jotai, stateRef.current?.activeFormContext?.atoms?.validationByFieldId).then((hasErrors) => {
+		setActiveFormHasErrors(hasErrors);
+	});
+
 	const configDescriptors = useMemo(() => {
 		const controlDescriptors = Object.values(config?.controls ?? {}).map(({ descriptor }) => descriptor);
 		const dataSourceDescriptors = Object.values(config?.dataSources ?? {}).map(({ descriptor }) => descriptor);
@@ -247,7 +252,7 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 	};
 	/** Returns true if no form is opened or if the active form it's all valid and can be committed and closed. Returns false otherwise. */
 	const performCurrentFormErrorCheckAndWarning = () => {
-		if (open && validityAtomsHaveErrors(jotai, stateRef.current.activeFormContext.atoms.validationByFieldId)) {
+		if (open && activeFormHasErrors) {
 			showAlert(formatMessage({ defaultMessage: `Please fix errors before moving on` }));
 			return false;
 		}
@@ -388,6 +393,7 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 		jotai,
 		selectedFieldIdPath,
 		fieldPathsWithErrors,
+		activeFormHasErrors,
 		closeAndCleanup,
 		handleEditTypeProperties,
 		onUpdateHasPendingChanges
@@ -718,16 +724,13 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 	// `fieldUpdates$` subscription
 	useEffect(() => {
 		const sub = stateRef.current.fieldUpdates$.pipe(debounceTime(500)).subscribe(() => {
-			const { jotai, fieldPathsWithErrors, selectedFieldIdPath, onUpdateHasPendingChanges } = effectRefs.current;
+			const { fieldPathsWithErrors, selectedFieldIdPath, onUpdateHasPendingChanges } = effectRefs.current;
 			onUpdateHasPendingChanges(true);
 			stateRef.current.formFieldsChanged = true;
-
-			const { activeFormContext } = stateRef.current;
-			const { atoms } = activeFormContext;
 			const nextFieldPathsWithErrors = { ...fieldPathsWithErrors };
 
-			// Check validations atoms of the form to see if there are any unfulfilled validations.
-			nextFieldPathsWithErrors[selectedFieldIdPath] = validityAtomsHaveErrors(jotai, atoms.validationByFieldId);
+			// Check validation atoms of the form to see if there are any unfulfilled validations.
+			nextFieldPathsWithErrors[selectedFieldIdPath] = effectRefs.current.activeFormHasErrors;
 			if (!nextFieldPathsWithErrors[selectedFieldIdPath]) delete nextFieldPathsWithErrors[selectedFieldIdPath];
 
 			setFieldPathsWithErrors(nextFieldPathsWithErrors);
@@ -1189,9 +1192,20 @@ function save(
 	return forkJoin(requests).pipe(map(() => xml));
 }
 
-function validityAtomsHaveErrors(jotai: JotaiStore, atoms: FormsEngineAtoms['validationByFieldId']) {
-	// Check validations atoms of the form to see if there are any unfulfilled validations.
-	return Object.values(atoms).some((atom) => !jotai.get(atom).isValid);
+function validityAtomsHaveErrors(
+	jotai: JotaiStore,
+	atoms: FormsEngineAtoms['validationByFieldId'] = {}
+): Promise<boolean> {
+	// Check validation atoms of the form to see if there are any unfulfilled validations.
+	const promises = Object.values(atoms).map((atom) => jotai.get(atom));
+	return Promise.all(promises)
+		.then((results) => {
+			return results.some((validity) => !validity.isValid);
+		})
+		.catch((error) => {
+			console.error('Error checking field validity:', error);
+			return true;
+		});
 }
 
 function parseConfigPlugins(
