@@ -37,6 +37,7 @@ import { ensureSingleSlash } from '../../../utils/string';
 import type { Dispatch } from 'redux';
 import useDebouncedInput from '../../../hooks/useDebouncedInput';
 import type { Subscription } from 'rxjs';
+import useLoadableAtom from '../lib/useLoadableAtom';
 
 export interface FileNameProps extends ControlProps {
 	value: string;
@@ -58,7 +59,8 @@ export function FileName(props: FileNameProps) {
 	const [value, setValue] = useAtom(atoms.valueByFieldId[fieldId] as PrimitiveAtom<string>);
 	// WithInitialValue is not exported
 	const initialValue = (atoms.valueByFieldId[fieldId] as PrimitiveAtom<string> & { init: string }).init;
-	const validityState = useAtomValue(atoms.validationByFieldId['file-name']);
+	const validityData = useLoadableAtom(atoms.validationByFieldId['file-name']);
+	const isValid = validityData.state === 'hasData' ? validityData.data.isValid : true;
 	const pathCheckSubscriptionRef = useRef<Subscription | null>(null);
 	const webUrlRoot = ensureSingleSlash(`${pathInSite.replace('/site/website', '/')}/`);
 	const dispatch = useDispatch();
@@ -118,7 +120,7 @@ export function FileName(props: FileNameProps) {
 
 	return (
 		<FormsEngineField
-			isValid={validityState.isValid && !isNewForm}
+			isValid={isValid && !isNewForm}
 			htmlFor={htmlId}
 			field={field}
 			min={field.validations.minValue?.value}
