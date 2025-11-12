@@ -20,6 +20,7 @@ import LookupTable from '../../../models/LookupTable';
 import { XmlKeys } from './formConsts';
 import { defineMessage, type MessageDescriptor } from 'react-intl';
 import type { FormatXMLElementFn, PrimitiveType } from 'intl-messageformat';
+import { nnou } from '../../../utils/object';
 
 type ValidatorFunctionDef = (
 	field: ContentTypeField,
@@ -35,7 +36,18 @@ export const validatorsMap: Partial<Record<BuiltInControlType, ValidatorFunction
 	'date-time': undefined,
 	disabled: undefined,
 	dropdown: undefined,
-	'file-name': undefined,
+	'file-name': (field, currentValue, messages) => {
+		return new Promise<boolean>((resolve) => {
+			// firstValueFrom(checkPathExistence('7418-fe2-copy', `/site/website/health/${currentValue}`)).then( ....
+			checkPathExistence('7418-fe2-copy', '/site/website/health/index.xml').subscribe({
+				next: (exists) => {
+					messages?.push([defineMessage({ defaultMessage: 'This is a test - invalid file-name.' })]);
+					resolve(!exists);
+				},
+				error: () => resolve(false)
+			});
+		});
+	},
 	forcehttps: undefined,
 	'image-picker': undefined,
 	input: undefined,
@@ -69,6 +81,7 @@ export interface FieldValidityState {
 }
 
 export function validateFieldValue(field: ContentTypeField, currentValue: unknown): FieldValidityState {
+export async function validateFieldValue(field: ContentTypeField, currentValue: unknown): Promise<FieldValidityState> {
 	const messages: FieldValidityState['messages'] = [];
 	const isRequired = isFieldRequired(field);
 	const isEmpty = isEmptyValue(field, currentValue);
