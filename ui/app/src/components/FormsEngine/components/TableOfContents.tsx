@@ -29,6 +29,8 @@ import FieldEmptyStateIndicator from './FieldEmptyStateIndicator';
 import FieldRequiredStateIndicator from './FieldRequiredStateIndicator';
 import { atom } from 'jotai';
 import { immutableEmptyArray } from '../../../utils/array';
+import useLoadableAtom from '../lib/useLoadableAtom';
+import Skeleton from '@mui/material/Skeleton';
 
 export interface TableOfContentsProps {
 	containerRef: RefObject<HTMLDivElement>;
@@ -145,13 +147,18 @@ function TreeItemLabel({
 	atoms: Pick<FormsEngineAtoms, 'valueByFieldId' | 'validationByFieldId'>;
 }) {
 	const value = useAtomValue(atoms.valueByFieldId[field.id]);
-	const validity = useAtomValue(atoms.validationByFieldId[field.id]);
+	const validityData = useLoadableAtom(atoms.validationByFieldId[field.id]);
+	const isValid = validityData.state === 'hasData' ? validityData?.data.isValid : true;
 	const isRequired = isFieldRequired(field);
 	return (
 		<Box display="flex" justifyContent="space-between" alignItems="center">
 			<span>{field.name}</span>
 			{isRequired ? (
-				<FieldRequiredStateIndicator isValid={validity.isValid} />
+				validityData.state === 'loading' ? (
+					<Skeleton variant="circular" width={15} height={15} />
+				) : (
+					<FieldRequiredStateIndicator isValid={isValid} />
+				)
 			) : (
 				<FieldEmptyStateIndicator isEmpty={isEmptyValue(field, value)} />
 			)}

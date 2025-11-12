@@ -702,6 +702,7 @@ function FormOrchestrator(props: FormsEngineProps) {
 		isCreateMode,
 		isRepeatMode,
 		createPath: create?.path,
+		stackIndex,
 		onClose: () => onCloseHandler(null, null)
 	});
 

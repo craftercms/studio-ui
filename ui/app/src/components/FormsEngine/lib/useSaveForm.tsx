@@ -43,6 +43,7 @@ export interface UseSaveFormProps {
 	isEmbedded: boolean;
 	onBeforeSave?: FormsEngineProps['onSave'];
 	onSave?: FormsEngineProps['onSave'];
+	stackIndex: number;
 	onClose?(): void;
 }
 
@@ -83,90 +84,98 @@ export function useSaveForm(props: UseSaveFormProps) {
 			(onSave?.({ values, versionComment }) as Promise<FormSavePromiseResult>)?.then(onSavePromiseHandler);
 			return;
 		}
-		// Put system properties in before creating the XML
-		const saveAsDraft = Object.values(stableFormContext.atoms.validationByFieldId).some(
-			(validityDataAtom) => !jotai.get(validityDataAtom).isValid
-		);
-		complementValuesWithSystemProps(id, values, contentObject, contentType, saveAsDraft);
-		// Validate minimum requirements to save as draft. Execution stops if minimum reqs aren't fulfilled.
-		if (!checkMinimumSaveRequirementsFulfilled(values)) {
-			return showAlert({
-				dispatch,
-				message: formatMessage(
-					{ defaultMessage: 'You need a {fileName} and {internalName} at a minimum to save content.' },
-					{
-						fileName: contentType.fields[XmlKeys.fileName].name,
-						internalName: contentType.fields[XmlKeys.internalName].name
-					}
-				)
-			});
-		}
-		const xml = buildContentXml(values, store.getState().contentTypes.byId);
-		// Embedded handled here. If true, execution ends inside if statement.
-		if (isEmbedded) {
-			const dom = fromString(xml);
-			(onSave?.({ dom, xml, values, versionComment }) as Promise<FormSavePromiseResult>)?.then(onSavePromiseHandler);
-			return;
-		}
-		setIsSubmitting(true);
-		let path: string;
-		const isRename =
-			!isCreateMode && (changedFieldIds.has(XmlKeys['fileName']) || changedFieldIds.has(XmlKeys['folderName']));
-		if (isCreateMode) {
-			path = ensureSingleSlash(`${createPath}/${values[XmlKeys.folderName]}/${values[XmlKeys.fileName]}`);
-		} /* is a plain update (page or component) */ else {
-			if (isRename) {
-				const newRelativePath = isPage
-					? ensureSingleSlash(`${values[XmlKeys.folderName]}/index.xml`)
-					: (values[XmlKeys.fileName] as string);
 
-				// Having a path like `/site/website/tests/index.xml`, I need to update folder-name and file-name, so I need to
-				// replace `tests/index.xml` with `${folderName}/${fileName}` (e.g. `my-new-folder/my-new-file.xml`)
-				const pathParts = itemPath.split('/');
-				// Remove the last two parts (folder-name and file-name) if page, otherwise just the file-name
-				const partsToRemove = isPage ? 2 : 1;
-				pathParts.splice(-partsToRemove, partsToRemove, newRelativePath);
-				path = pathParts.join('/');
-			} else {
-				path = itemPath;
-			}
-		}
+		Promise.all(
+			Object.values(stableFormContext.atoms.validationByFieldId).map((validityDataAtom) => jotai.get(validityDataAtom))
+		).then((validityStates) => {
+			// Put system properties in before creating the XML
+			const saveAsDraft = validityStates.some((state) => !state.isValid);
 
-		const saveActionCallbacks = {
-			next() {
-				const dom = fromString(xml);
-				(onSave?.({ dom, xml, values, versionComment }) as Promise<FormSavePromiseResult>)?.then(onSavePromiseHandler);
-			},
-			error(error: AjaxError) {
-				setIsSubmitting(false);
-				showAlert({
+			complementValuesWithSystemProps(id, values, contentObject, contentType, saveAsDraft);
+			// Validate minimum requirements to save as draft. Execution stops if minimum reqs aren't fulfilled.
+			if (!checkMinimumSaveRequirementsFulfilled(values)) {
+				return showAlert({
 					dispatch,
-					children: (
-						<Box>
-							<Typography marginBottom={1}>
-								<FormattedMessage defaultMessage="An error occurred trying to save the form" />
-							</Typography>
-							<Typography variant="body2" color="textSecondary">
-								{error.response.response?.message ?? error.response.message}
-							</Typography>
-						</Box>
+					message: formatMessage(
+						{ defaultMessage: 'You need a {fileName} and {internalName} at a minimum to save content.' },
+						{
+							fileName: contentType.fields[XmlKeys.fileName].name,
+							internalName: contentType.fields[XmlKeys.internalName].name
+						}
 					)
 				});
 			}
-		};
+			const xml = buildContentXml(values, store.getState().contentTypes.byId);
+			// Embedded handled here. If true, execution ends inside if statement.
+			if (isEmbedded) {
+				const dom = fromString(xml);
+				(onSave?.({ dom, xml, values, versionComment }) as Promise<FormSavePromiseResult>)?.then(onSavePromiseHandler);
+				return;
+			}
+			setIsSubmitting(true);
+			let path: string;
+			const isRename =
+				!isCreateMode && (changedFieldIds.has(XmlKeys['fileName']) || changedFieldIds.has(XmlKeys['folderName']));
+			if (isCreateMode) {
+				path = ensureSingleSlash(`${createPath}/${values[XmlKeys.folderName]}/${values[XmlKeys.fileName]}`);
+			} /* is a plain update (page or component) */ else {
+				if (isRename) {
+					const newRelativePath = isPage
+						? ensureSingleSlash(`${values[XmlKeys.folderName]}/index.xml`)
+						: (values[XmlKeys.fileName] as string);
 
-		// TODO: validateActionPolicy. See FE1 saveFn.
-		// TODO: write-content url on FE1 sends phase, path, fileName, contentType QSAs. Important?
-		// TODO: Cancel packages when needed.
-		// If not create mode and file-name or folder-name changed, need to moveAndUpdateContent
-		// Use xmlKeys
-		if (!isCreateMode && (changedFieldIds.has(XmlKeys['fileName']) || changedFieldIds.has(XmlKeys['folderName']))) {
-			moveAndUpdateContent(siteId, itemPath, path, xml).subscribe(saveActionCallbacks);
-		} else {
-			// TODO: Temporary playground save path. Remove.
-			// path = '/site/website/fe2-save-result.xml';
-			writeContent(siteId, path, xml).subscribe(saveActionCallbacks);
-		}
+					// Having a path like `/site/website/tests/index.xml`, I need to update folder-name and file-name, so I need to
+					// replace `tests/index.xml` with `${folderName}/${fileName}` (e.g. `my-new-folder/my-new-file.xml`)
+					const pathParts = itemPath.split('/');
+					// Remove the last two parts (folder-name and file-name) if page, otherwise just the file-name
+					const partsToRemove = isPage ? 2 : 1;
+					pathParts.splice(-partsToRemove, partsToRemove, newRelativePath);
+					path = pathParts.join('/');
+				} else {
+					path = itemPath;
+				}
+			}
+
+			const saveActionCallbacks = {
+				next() {
+					const dom = fromString(xml);
+					// TODO: when renaming, if form it not set to be closed, then the form will have the old path and values,
+					//  causing it to break. Should we trigger a re-fetch of state/etc?
+					(onSave?.({ dom, xml, values, versionComment, path }) as Promise<FormSavePromiseResult>)?.then(
+						onSavePromiseHandler
+					);
+				},
+				error(error: AjaxError) {
+					setIsSubmitting(false);
+					showAlert({
+						dispatch,
+						children: (
+							<Box>
+								<Typography marginBottom={1}>
+									<FormattedMessage defaultMessage="An error occurred trying to save the form" />
+								</Typography>
+								<Typography variant="body2" color="textSecondary">
+									{error.response.response?.message ?? error.response.message}
+								</Typography>
+							</Box>
+						)
+					});
+				}
+			};
+
+			// TODO: validateActionPolicy. See FE1 saveFn.
+			// TODO: write-content url on FE1 sends phase, path, fileName, contentType QSAs. Important?
+			// TODO: Cancel packages when needed.
+			// If not create mode and file-name or folder-name changed, need to moveAndUpdateContent
+			// Use xmlKeys
+			if (!isCreateMode && (changedFieldIds.has(XmlKeys['fileName']) || changedFieldIds.has(XmlKeys['folderName']))) {
+				moveAndUpdateContent(siteId, itemPath, path, xml).subscribe(saveActionCallbacks);
+			} else {
+				// TODO: Temporary playground save path. Remove.
+				// path = '/site/website/fe2-save-result.xml';
+				writeContent(siteId, path, xml).subscribe(saveActionCallbacks);
+			}
+		});
 	};
 }
 

@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { ElementType } from 'react';
 import type { ContentTypeField } from '../../../models/ContentType';
 import type { BuiltInControlType } from './controlMap';
 import LookupTable from '../../../models/LookupTable';
@@ -26,7 +25,7 @@ type ValidatorFunctionDef = (
 	field: ContentTypeField,
 	currentValue: unknown,
 	messages: FieldValidityState['messages']
-) => boolean;
+) => Promise<boolean> | boolean;
 export const validatorsMap: Partial<Record<BuiltInControlType, ValidatorFunctionDef>> = {
 	repeat: undefined,
 	'auto-filename': undefined,
@@ -77,12 +76,12 @@ export function validateFieldValue(field: ContentTypeField, currentValue: unknow
 	// If it's required, and the value is empty, then it's invalid.
 	if (isRequired && isEmpty) {
 		messages.push(defineMessage({ defaultMessage: 'This field is required.' }));
-		return { isValid: false, messages };
+		return Promise.resolve({ isValid: false, messages });
 	}
 	const validator = validatorsMap[field.type as BuiltInControlType];
 	// If there's a validator, run it. If not, it's valid.
-	const isValid = typeof validator === 'function' ? validator(field, currentValue, messages) : true;
-	return { isValid, messages };
+	const isValid = nnou(validator) ? await validator(field, currentValue, messages) : true;
+	return Promise.resolve({ isValid, messages });
 }
 
 export function isEmptyValue(field: ContentTypeField, currentValue: unknown): boolean {

@@ -71,7 +71,6 @@ import ApiResponse from '../../../models/ApiResponse';
 import { getFormsEngineCloseAfterSave, getFormsEngineCollapseToCKey } from '../../../utils/state';
 import { createComponentId } from '../../../utils/system';
 import { showErrorDialog } from '../../../state/actions/dialogs';
-import { fetchLegacyContentType } from '../../../services/contentTypes';
 
 /**
  * Returns the scroll container for the form's container.
@@ -176,28 +175,28 @@ export const getTargetHeight = (isDialog: boolean, isFullScreen: boolean, theme:
 export function createFieldAtoms(
 	field: ContentTypeField,
 	initialValue: unknown,
-	formContextRef: RefObject<Pick<StableFormContextProps, 'fieldUpdates$' | 'changedFieldIds' | 'originalValues'>>
-): [PrimitiveAtom<unknown>, Atom<FieldValidityState>] {
+	formContextRef: RefObject<
+		Pick<StableFormContextProps, 'fieldUpdates$' | 'changedFieldIds' | 'originalValues' | 'atoms'>
+	>
+): [PrimitiveAtom<unknown>, Atom<Promise<FieldValidityState>>] {
 	let isInitialization = true;
 	const valueAtom = atom(initialValue);
-	return [
-		valueAtom,
-		atom((get) => {
-			// TODO: It would be best for this to be in a different place and be a sort of effect.
-			const value = get(valueAtom);
-			if (isInitialization) {
-				isInitialization = false;
+	const validationAtom = atom(async (get) => {
+		// TODO: It would be best for this to be in a different place and be a sort of effect.
+		const value = get(valueAtom);
+		if (isInitialization) {
+			isInitialization = false;
+		} else {
+			if (value !== formContextRef.current.originalValues[field.id]) {
+				formContextRef.current.changedFieldIds.add(field.id);
 			} else {
-				if (value !== formContextRef.current.originalValues[field.id]) {
-					formContextRef.current.changedFieldIds.add(field.id);
-				} else {
-					formContextRef.current.changedFieldIds.delete(field.id);
-				}
-				formContextRef.current.fieldUpdates$.next(field.id);
+				formContextRef.current.changedFieldIds.delete(field.id);
 			}
-			return validateFieldValue(field, value);
-		})
-	];
+			formContextRef.current.fieldUpdates$.next(field.id);
+		}
+		return validateFieldValue(field, value);
+	});
+	return [valueAtom, validationAtom];
 }
 
 /** Creates the readonly flag property atom based on the lock result atom */

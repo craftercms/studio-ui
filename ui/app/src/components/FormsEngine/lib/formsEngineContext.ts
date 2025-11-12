@@ -78,7 +78,7 @@ export interface FormsEngineAtoms {
 	readonly: Atom<boolean>;
 	lockResult: PrimitiveAtom<FormsEngineEditContextProps>;
 	valueByFieldId: LookupTable<PrimitiveAtom<unknown>>;
-	validationByFieldId: LookupTable<Atom<FieldValidityState>>;
+	validationByFieldId: LookupTable<Atom<Promise<FieldValidityState>>>;
 	versionComment: PrimitiveAtom<string>;
 	collapseToC: AtomWithStorage; // Note: `collapseToC` is an atomWithStorage
 	useCollapsedToC: Atom<boolean>;

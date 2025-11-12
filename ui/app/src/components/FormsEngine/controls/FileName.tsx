@@ -60,8 +60,7 @@ export function FileName(props: FileNameProps) {
 	const [value, setValue] = useAtom(atoms.valueByFieldId[fieldId] as PrimitiveAtom<string>);
 	// WithInitialValue is not exported
 	const initialValue = (atoms.valueByFieldId[fieldId] as PrimitiveAtom<string> & { init: string }).init;
-	const validityState = useAtomValue(atoms.validationByFieldId[fieldId]);
-	const [pathExists, setPathExists] = useState<boolean>(false);
+	const validityState = useAtomValue(atoms.validationByFieldId['file-name']);
 	const pathCheckSubscriptionRef = useRef<Subscription | null>(null);
 	const webUrlRoot = ensureSingleSlash(`${pathInSite.replace('/site/website', '/')}/`);
 	const siteId = useActiveSiteId();
@@ -75,14 +74,6 @@ export function FileName(props: FileNameProps) {
 
 	const onKeyword$ = useDebouncedInput((newPath) => {
 		pathCheckSubscriptionRef.current?.unsubscribe();
-		pathCheckSubscriptionRef.current = checkPathExistence(siteId, newPath).subscribe({
-			next: (exists) => {
-				setPathExists(exists);
-			},
-			error: (err) => {
-				console.error('Error checking path existence.', err);
-			}
-		});
 	}, 500);
 
 	// region field properties/validations
@@ -130,7 +121,7 @@ export function FileName(props: FileNameProps) {
 
 	return (
 		<FormsEngineField
-			isValid={validityState.isValid && !(isNewForm && pathExists)}
+			isValid={validityState.isValid && !isNewForm}
 			htmlFor={htmlId}
 			field={field}
 			min={field.validations.minValue?.value}
@@ -186,8 +177,6 @@ export default FileName;
 
 /*
 	TODO:
-	 - Check embedded behavior
 	 - UM to put config.xml values in form-definition
-	 - Validate if new
 	 - Check showWarnOnEdit property from control descriptor.
 */
