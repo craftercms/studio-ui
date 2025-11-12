@@ -15,13 +15,13 @@
  */
 
 import OutlinedInput, { OutlinedInputProps } from '@mui/material/OutlinedInput';
-import React, { useEffect, useId, useMemo, useRef } from 'react';
+import React, { useId, useMemo } from 'react';
 import { applyContentNameRules } from '../../../utils/content';
 import { FormsEngineField } from '../components/FormsEngineField';
 import InputAdornment from '@mui/material/InputAdornment';
 import { ControlProps } from '../types';
 import { useItemMetaContext, useStableFormContext } from '../lib/formsEngineContext';
-import { useAtom, useAtomValue } from 'jotai';
+import { useAtom } from 'jotai';
 import { PrimitiveAtom } from 'jotai/index';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import IconButton from '@mui/material/IconButton';
@@ -35,8 +35,6 @@ import { nnou } from '../../../utils/object';
 import { isFieldReadOnly } from '../lib/formUtils';
 import { ensureSingleSlash } from '../../../utils/string';
 import type { Dispatch } from 'redux';
-import useDebouncedInput from '../../../hooks/useDebouncedInput';
-import type { Subscription } from 'rxjs';
 import useLoadableAtom from '../lib/useLoadableAtom';
 
 export interface FileNameProps extends ControlProps {
@@ -61,19 +59,8 @@ export function FileName(props: FileNameProps) {
 	const initialValue = (atoms.valueByFieldId[fieldId] as PrimitiveAtom<string> & { init: string }).init;
 	const validityData = useLoadableAtom(atoms.validationByFieldId['file-name']);
 	const isValid = validityData.state === 'hasData' ? validityData.data.isValid : true;
-	const pathCheckSubscriptionRef = useRef<Subscription | null>(null);
 	const webUrlRoot = ensureSingleSlash(`${pathInSite.replace('/site/website', '/')}/`);
 	const dispatch = useDispatch();
-
-	useEffect(() => {
-		return () => {
-			pathCheckSubscriptionRef.current?.unsubscribe();
-		};
-	}, []);
-
-	const onKeyword$ = useDebouncedInput((newPath) => {
-		pathCheckSubscriptionRef.current?.unsubscribe();
-	}, 500);
 
 	// region field properties/validations
 	const readonly: boolean = isFieldReadOnly(field, formReadonly);
@@ -89,9 +76,6 @@ export function FileName(props: FileNameProps) {
 		// Add back the `.xml` suffix if applicable.
 		newValue = !isFolder ? `${newValue}.xml` : newValue;
 		setValue(newValue);
-
-		const newPath = ensureSingleSlash(`${pathInSite}/${newValue}${isFolder ? '/index.xml' : ''}`);
-		onKeyword$.next(newPath);
 	};
 
 	const handleEdit = () => {
