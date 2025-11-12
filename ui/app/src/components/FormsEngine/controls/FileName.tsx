@@ -53,7 +53,7 @@ export function FileName(props: FileNameProps) {
 		throw new Error('Detected field ID "fileName" instead "file-name" at the "FileName" Control.');
 	}
 	const isPage = contentType?.type === 'page';
-	const isFolder = field.id === 'file-name' && isPage && contentAsFolder;
+	const isFolder = field.id === 'file-name' && isPage;
 	const fieldId = isFolder ? 'folder-name' : field.id;
 	const [value, setValue] = useAtom(atoms.valueByFieldId[fieldId] as PrimitiveAtom<string>);
 	// WithInitialValue is not exported
