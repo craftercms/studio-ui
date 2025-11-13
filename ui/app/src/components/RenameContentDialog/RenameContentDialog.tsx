@@ -30,11 +30,10 @@ export interface RenameContentDialogProps extends EnhancedDialogProps {
 	path: string;
 	value?: string;
 	onRenamed(name: string): void;
-	onSubmittingAndOrPendingChange(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
 export function RenameContentDialog(props: RenameContentDialogProps) {
-	const { path, value, onRenamed, onSubmittingAndOrPendingChange, ...dialogProps } = props;
+	const { path, value, onRenamed, ...dialogProps } = props;
 	const [dependantItems, setDependantItems] = useState<ContentItem[]>(null);
 	const [fetchingDependantItems, setFetchingDependantItems] = useState(false);
 	const [error, setError] = useState(null);
@@ -75,7 +74,6 @@ export function RenameContentDialog(props: RenameContentDialogProps) {
 				fetchDependant={fetchDependant}
 				dependantItems={dependantItems}
 				fetchingDependantItems={fetchingDependantItems}
-				onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
 				onRenamed={onRenamed}
 				error={error}
 			/>

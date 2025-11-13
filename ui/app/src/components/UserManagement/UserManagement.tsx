@@ -187,7 +187,7 @@ export function UserManagement(props: UserManagementProps) {
 				isMinimized={createUserDialogState.isMinimized}
 				hasPendingChanges={createUserDialogState.hasPendingChanges}
 				onWithPendingChangesCloseRequest={createUserDialogPendingChangesCloseRequest}
-				onSubmittingAndOrPendingChange={createUserDialogState.onSubmittingAndOrPendingChange}
+				updateSubmittingOrHasPendingChanges={createUserDialogState.onSubmittingAndOrPendingChange}
 			/>
 			<EditUserDialog
 				open={editUserDialogState.open}
@@ -200,7 +200,7 @@ export function UserManagement(props: UserManagementProps) {
 				hasPendingChanges={editUserDialogState.hasPendingChanges}
 				passwordRequirementsMinComplexity={passwordRequirementsMinComplexity}
 				onWithPendingChangesCloseRequest={editUserDialogPendingChangesCloseRequest}
-				onSubmittingAndOrPendingChange={editUserDialogState.onSubmittingAndOrPendingChange}
+				updateSubmittingOrHasPendingChanges={editUserDialogState.onSubmittingAndOrPendingChange}
 			/>
 		</Paper>
 	);

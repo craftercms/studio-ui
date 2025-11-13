@@ -300,7 +300,7 @@ export function GitManagement(props: GitManagementProps) {
 					isMinimized={newRemoteRepositoryDialogState.isMinimized}
 					isSubmitting={newRemoteRepositoryDialogState.isSubmitting}
 					hasPendingChanges={newRemoteRepositoryDialogState.hasPendingChanges}
-					onSubmittingAndOrPendingChange={newRemoteRepositoryDialogState.onSubmittingAndOrPendingChange}
+					updateSubmittingOrHasPendingChanges={newRemoteRepositoryDialogState.onSubmittingAndOrPendingChange}
 					onWithPendingChangesCloseRequest={newRemoteRepositoryDialogStatePendingChangesCloseRequest}
 					onClose={newRemoteRepositoryDialogState.onClose}
 					onCreateSuccess={onRepoCreatedSuccess}

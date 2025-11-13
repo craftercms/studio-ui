@@ -15,7 +15,6 @@
  */
 
 import { EnhancedDialogProps } from '../EnhancedDialog';
-import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 import { ContentItem } from '../../models/Item';
 import { FullSxRecord, PartialSxRecord } from '../../models/CustomRecord';
 
@@ -24,13 +23,12 @@ export interface UninstallPluginDialogBaseProps {
 }
 
 export interface UninstallPluginDialogProps extends UninstallPluginDialogBaseProps, EnhancedDialogProps {
-	onSubmittingAndOrPendingChange(value: onSubmittingAndOrPendingChangeProps): void;
 	onComplete?();
 }
 
 export interface UninstallPluginDialogContainerProps
 	extends UninstallPluginDialogBaseProps,
-		Pick<UninstallPluginDialogProps, 'onComplete' | 'onClose' | 'isSubmitting' | 'onSubmittingAndOrPendingChange'> {}
+		Pick<UninstallPluginDialogProps, 'onComplete' | 'onClose' | 'isSubmitting'> {}
 
 export interface UninstallPluginDialogBodyProps {
 	isSubmitting: boolean;
