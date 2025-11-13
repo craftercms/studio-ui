@@ -97,7 +97,7 @@
 		"rimraf": "^6.1.0",
 		"rollup": "^4.53.2",
 		"rollup-plugin-copy": "^3.5.0",
-		"yargs": "^17.7.2"
+		"yargs": "^18.0.0"
 	},
 	"dependencies": {
 		"@prettier/plugin-xml": "3.4.1",
