@@ -42,28 +42,28 @@ export const componentsDataSourceDescriptor: DescriptorContentType = {
 	fields: {
 		allowEmbedded: {
 			id: 'allowEmbedded',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Allow Embedded' }),
 			defaultValue: true,
 			validations: immutableEmptyObject
 		},
 		allowShared: {
 			id: 'allowShared',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Allow New Shared' }),
 			defaultValue: true,
 			validations: immutableEmptyObject
 		},
 		enableBrowse: {
 			id: 'enableBrowse',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Enable Browsing Shared' }),
 			defaultValue: true,
 			validations: immutableEmptyObject
 		},
 		enableSearch: {
 			id: 'enableSearch',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Enable Search' }),
 			defaultValue: false,
 			validations: immutableEmptyObject
@@ -91,7 +91,7 @@ export const componentsDataSourceDescriptor: DescriptorContentType = {
 		},
 		tags: {
 			id: 'tags',
-			type: 'input',
+			type: 'string',
 			name: defineMessage({ defaultMessage: 'Tags' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
