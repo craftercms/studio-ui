@@ -1694,7 +1694,7 @@ __metadata:
     "@emotion/css": "npm:^11.13.5"
     "@emotion/react": "npm:^11.14.0"
     "@emotion/styled": "npm:^11.14.1"
-    "@mui/icons-material": "npm:^7.3.4"
+    "@mui/icons-material": "npm:^7.3.5"
     "@mui/material": "npm:^7.3.5"
     "@reduxjs/toolkit": "npm:^2.8.2"
     "@rollup/plugin-alias": "npm:^6.0.0"
@@ -1753,7 +1753,7 @@ __metadata:
     "@types/jquery": "npm:^3.5.33"
     "@types/rimraf": "npm:^4.0.5"
     ace-builds: "npm:^1.43.4"
-    bootstrap: "npm:^5.3.7"
+    bootstrap: "npm:^5.3.8"
     build-if-changed: "npm:^1.5.5"
     css-loader: "npm:^7.1.2"
     file-loader: "npm:^6.2.0"
@@ -1825,7 +1825,7 @@ __metadata:
     "@formatjs/cli": "npm:^6.7.4"
     "@graphiql/plugin-explorer": "npm:^3.2.5"
     "@monaco-editor/react": "npm:^4.7.0"
-    "@mui/icons-material": "npm:^7.3.4"
+    "@mui/icons-material": "npm:^7.3.5"
     "@mui/lab": "npm:7.0.1-beta.19"
     "@mui/material": "npm:^7.3.5"
     "@mui/x-data-grid": "npm:^8.18.0"
@@ -2905,7 +2905,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/icons-material@npm:^7.3.4":
+"@mui/icons-material@npm:^7.3.5":
   version: 7.3.5
   resolution: "@mui/icons-material@npm:7.3.5"
   dependencies:
@@ -6856,7 +6856,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bootstrap@npm:^5.3.7":
+"bootstrap@npm:^5.3.8":
   version: 5.3.8
   resolution: "bootstrap@npm:5.3.8"
   peerDependencies:
