@@ -1703,7 +1703,7 @@ __metadata:
     "@types/jquery": "npm:^3.5.33"
     "@types/js-cookie": "npm:^3.0.6"
     "@types/prop-types": "npm:^15.7.15"
-    "@types/react-dom": "npm:^19.2.2"
+    "@types/react-dom": "npm:^19.2.3"
     "@types/react-is": "npm:^19.2.0"
     build-if-changed: "npm:^1.5.5"
     js-cookie: "npm:^3.0.5"
@@ -1839,8 +1839,8 @@ __metadata:
     "@types/ace": "npm:^0.0.52"
     "@types/diff": "npm:^8.0.0"
     "@types/js-cookie": "npm:^3.0.6"
-    "@types/react": "npm:^19.2.2"
-    "@types/react-dom": "npm:^19.2.2"
+    "@types/react": "npm:^19.2.4"
+    "@types/react-dom": "npm:^19.2.3"
     "@types/react-window": "npm:^1.8.8"
     "@types/react-window-infinite-loader": "npm:^1.0.9"
     "@types/uuid": "npm:^11.0.0"
@@ -1859,18 +1859,18 @@ __metadata:
     eslint-plugin-formatjs: "npm:^5.4.2"
     eslint-plugin-react-hooks: "npm:^7.0.0"
     eslint-plugin-react-refresh: "npm:^0.4.24"
-    fast-xml-parser: "npm:^5.3.0"
+    fast-xml-parser: "npm:^5.3.1"
     globals: "npm:^16.5.0"
     graphiql: "npm:^3.8.3"
-    graphql: "npm:^16.10.0"
+    graphql: "npm:^16.12.0"
     graphql-ws: "npm:^6.0.6"
     highlight.js: "npm:^11.11.1"
     jabber: "npm:^1.5.3"
-    jotai: "npm:^2.15.0"
+    jotai: "npm:^2.15.1"
     jotai-effect: "npm:^2.1.3"
     js-cookie: "npm:^3.0.5"
     marked: "npm:^16.4.1"
-    marked-highlight: "npm:^2.2.2"
+    marked-highlight: "npm:^2.2.3"
     moment-timezone: "npm:^0.6.0"
     nanoid: "npm:^5.1.6"
     ncp: "npm:^2.0.0"
@@ -1887,7 +1887,7 @@ __metadata:
     react-hotkeys-hook: "npm:^5.2.1"
     react-intl: "npm:^7.1.14"
     react-redux: "npm:^9.2.0"
-    react-router: "npm:^7.9.4"
+    react-router: "npm:^7.9.6"
     react-virtualized-auto-sizer: "npm:^1.0.25"
     react-window: "npm:^1.8.11"
     react-window-infinite-loader: "npm:^1.0.10"
@@ -4977,7 +4977,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:^19.2.2":
+"@types/react-dom@npm:^19.2.3":
   version: 19.2.3
   resolution: "@types/react-dom@npm:19.2.3"
   peerDependencies:
@@ -5032,7 +5032,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:^19.2.2":
+"@types/react@npm:^19.2.4":
   version: 19.2.4
   resolution: "@types/react@npm:19.2.4"
   dependencies:
@@ -8227,7 +8227,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-xml-parser@npm:^5.3.0":
+"fast-xml-parser@npm:^5.3.1":
   version: 5.3.1
   resolution: "fast-xml-parser@npm:5.3.1"
   dependencies:
@@ -9054,10 +9054,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql@npm:^16.10.0":
-  version: 16.11.0
-  resolution: "graphql@npm:16.11.0"
-  checksum: 10/e3e1633d0b464bbb3fa41283fae938bd3bac801c350555b3f1a129d99fb3cfe157fa69c1389229dba902731942eb08bdea4b29f1271965feee8779576b26ef01
+"graphql@npm:^16.12.0":
+  version: 16.12.0
+  resolution: "graphql@npm:16.12.0"
+  checksum: 10/e299bc97cca178e549c8c1ed4cb164f631f07be987d3657f76cdf18c0250040cc0d456d4b6d41c87b855cac97b15a62ed345557527efcb0546492895a893bb87
   languageName: node
   linkType: hard
 
@@ -9929,7 +9929,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jotai@npm:^2.15.0":
+"jotai@npm:^2.15.1":
   version: 2.15.1
   resolution: "jotai@npm:2.15.1"
   peerDependencies:
@@ -10465,12 +10465,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"marked-highlight@npm:^2.2.2":
-  version: 2.2.2
-  resolution: "marked-highlight@npm:2.2.2"
+"marked-highlight@npm:^2.2.3":
+  version: 2.2.3
+  resolution: "marked-highlight@npm:2.2.3"
   peerDependencies:
-    marked: ">=4 <17"
-  checksum: 10/61a32078dce8b763b6518a1cc843ae937ad880c9fa4c1cd93490593d8bafb213bf77509da63624a854332678774e0844f40737fdee3a78a3bd148cdebf41875a
+    marked: ">=4 <18"
+  checksum: 10/ae66c9141700ae168d000155baa9a3fc304eba36edd960e04d0c6bdcfd0408fada6ad4f2645e08a60662d68f72cef9500bd93ad80f5dce19e6b5cbaf14c9350b
   languageName: node
   linkType: hard
 
@@ -11921,9 +11921,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-router@npm:^7.9.4":
-  version: 7.9.5
-  resolution: "react-router@npm:7.9.5"
+"react-router@npm:^7.9.6":
+  version: 7.9.6
+  resolution: "react-router@npm:7.9.6"
   dependencies:
     cookie: "npm:^1.0.1"
     set-cookie-parser: "npm:^2.6.0"
@@ -11933,7 +11933,7 @@ __metadata:
   peerDependenciesMeta:
     react-dom:
       optional: true
-  checksum: 10/cfef53455c5ead14450283218c73aa08d95dfeb6dd85e52c10d2534c2ee1ba55c6dab81df8655f8fcc5ae858f1796448d9895a225ffd8a2b2865a0a03a117073
+  checksum: 10/f34714b3701caf689c306631f5326a9fdab585799021c234aa3eee75bed6bfcea9250f0867e984e4e3c43c77d947c41bd47b70c0601d76c4290e03247fb7ac23
   languageName: node
   linkType: hard
 

@@ -62,7 +62,7 @@
 		"@mui/material": "^7.3.5",
 		"@reduxjs/toolkit": "^2.8.2",
 		"@rollup/plugin-alias": "^5.1.1",
-		"@types/react-dom": "^19.2.2",
+		"@types/react-dom": "^19.2.3",
 		"js-cookie": "^3.0.5",
 		"prop-types": "^15.8.1",
 		"react": "19.2.0",
