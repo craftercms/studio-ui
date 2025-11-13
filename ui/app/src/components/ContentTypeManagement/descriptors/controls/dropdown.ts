@@ -37,7 +37,7 @@ export const dropdownDescriptor: DescriptorContentType = {
 	fields: {
 		datasource: {
 			id: 'datasource',
-			type: 'datasource-selector',
+			type: 'datasource:item',
 			name: defineMessage({ defaultMessage: 'Data Source' }),
 			defaultValue: undefined,
 			validations: {

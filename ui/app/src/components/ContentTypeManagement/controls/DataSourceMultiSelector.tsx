@@ -23,15 +23,14 @@ import { TypeBuilderControl } from '../utils';
 import { EmptyState } from '../../EmptyState';
 
 export interface DataSourceMultiSelectorProps extends TypeBuilderControl {
-	value: string;
+	value: string[];
 }
 
 /**
  * Allows the selection of multiple data sources that are compatible with the field type, using a checkbox group layout.
  */
 export function DataSourceMultiSelector(props: DataSourceMultiSelectorProps) {
-	const { field, value, setValue, contentType } = props;
-	const selectedDataSources = value ? value?.split(',') : [];
+	const { field, value: selectedDataSources, setValue, contentType } = props;
 	const type = field.validations?.type?.value ?? '';
 	const filteredDataSources = useMemo(() => {
 		return (contentType.dataSources ?? []).filter((ds) => ds.interface === type);
@@ -52,7 +51,7 @@ export function DataSourceMultiSelector(props: DataSourceMultiSelectorProps) {
 			}
 		}
 
-		setValue(newSelected.join(','));
+		setValue(newSelected);
 	};
 	return (
 		<FormsEngineField field={field}>

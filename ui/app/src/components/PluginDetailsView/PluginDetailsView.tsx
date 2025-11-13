@@ -14,11 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from 'react';
+import React, { forwardRef, type ReactNode, useImperativeHandle, useRef, useState } from 'react';
 import Typography from '@mui/material/Typography';
-import SwipeableViews from 'react-swipeable-views';
-// @ts-ignore
-import { autoPlay } from 'react-swipeable-views-utils';
 import MobileStepper from '../MobileStepper/MobileStepper';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { MarketplacePlugin } from '../../models/MarketplacePlugin';
@@ -33,6 +30,10 @@ import { fadeIn } from 'react-animations';
 import PrimaryButton from '../PrimaryButton';
 import PluginDocumentation from '../PluginDocumentation';
 import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import NavigateNextRoundedIcon from '@mui/icons-material/NavigateNextRounded';
+import NavigateBeforeRoundedIcon from '@mui/icons-material/NavigateBeforeRounded';
+import PluginMediaCarousel from './PluginMediaCarousel';
 
 const messages = defineMessages({
 	use: {
@@ -76,13 +77,10 @@ interface PluginDetailsViewProps {
 	onBlueprintSelected(blueprint: MarketplacePlugin, view: number): any;
 }
 
-const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
-
 export function PluginDetailsView(props: PluginDetailsViewProps) {
 	const [play, setPlay] = useState(false);
 	const {
 		plugin,
-		changeImageSlideInterval = 5000,
 		onBlueprintSelected,
 		onCloseDetails,
 		selectedImageSlideIndex = 0,
@@ -95,6 +93,7 @@ export function PluginDetailsView(props: PluginDetailsViewProps) {
 	const [index, setIndex] = useState(selectedImageSlideIndex);
 	const { media, name, description, version, license, developer, website, compatible } = plugin;
 	const fullVersion = version ? `${version.major}.${version.minor}.${version.patch}` : null;
+	const sliderRef = useRef<{ moveToItem: (itemIndex: number) => void } | null>(null);
 
 	const { formatMessage } = useIntl();
 
@@ -105,6 +104,7 @@ export function PluginDetailsView(props: PluginDetailsViewProps) {
 	function onDotClick(e: any, step: number) {
 		e.stopPropagation();
 		setIndex(step);
+		sliderRef.current?.moveToItem(step);
 	}
 
 	function handlePlay() {
@@ -198,16 +198,14 @@ export function PluginDetailsView(props: PluginDetailsViewProps) {
 					</PrimaryButton>
 				)}
 			</Box>
-			<AutoPlaySwipeableViews
-				index={index}
-				autoplay={!play}
-				interval={changeImageSlideInterval}
-				onChangeIndex={handleChangeIndex}
-				enableMouseEvents
-				slideStyle={{ height: '340px' }}
-			>
-				{renderMedias()}
-			</AutoPlaySwipeableViews>
+
+			<PluginMediaCarousel
+				ref={sliderRef}
+				items={renderMedias()}
+				initialIndex={selectedImageSlideIndex}
+				onChangeItem={handleChangeIndex}
+			/>
+
 			{steps > 1 && (
 				<MobileStepper
 					variant="dots"

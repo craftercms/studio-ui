@@ -21,7 +21,7 @@ export const videoPickerDescriptor: DescriptorContentType = {
 	fields: {
 		videoManager: {
 			id: 'videoManager',
-			type: 'datasource-selector',
+			type: 'datasource:video',
 			name: defineMessage({ defaultMessage: 'Data Source' }),
 			defaultValue: undefined,
 			validations: {
