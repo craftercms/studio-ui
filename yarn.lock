@@ -1846,10 +1846,10 @@ __metadata:
     "@types/uuid": "npm:^11.0.0"
     "@types/video.js": "npm:^7.3.58"
     "@types/zxcvbn": "npm:^4.4.5"
-    "@typescript-eslint/eslint-plugin": "npm:^8.46.2"
-    "@typescript-eslint/parser": "npm:^8.46.2"
-    "@vitejs/plugin-react": "npm:^5.0.4"
-    "@vitejs/plugin-react-swc": "npm:^4.1.0"
+    "@typescript-eslint/eslint-plugin": "npm:^8.46.4"
+    "@typescript-eslint/parser": "npm:^8.46.4"
+    "@vitejs/plugin-react": "npm:^5.1.1"
+    "@vitejs/plugin-react-swc": "npm:^4.2.2"
     autosuggest-highlight: "npm:^3.3.4"
     babel-plugin-formatjs: "npm:^10.5.41"
     build-if-changed: "npm:^1.5.5"
@@ -1857,7 +1857,7 @@ __metadata:
     diff: "npm:^8.0.2"
     eslint: "npm:^9.39.1"
     eslint-plugin-formatjs: "npm:^5.4.2"
-    eslint-plugin-react-hooks: "npm:^7.0.0"
+    eslint-plugin-react-hooks: "npm:^7.0.1"
     eslint-plugin-react-refresh: "npm:^0.4.24"
     fast-xml-parser: "npm:^5.3.1"
     globals: "npm:^16.5.0"
@@ -1903,7 +1903,7 @@ __metadata:
     uppy: "npm:^4.13.4"
     uuid: "npm:^13.0.0"
     video.js: "npm:^8.23.4"
-    vite: "npm:^7.1.11"
+    vite: "npm:^7.2.2"
     zxcvbn: "npm:^4.4.2"
   languageName: unknown
   linkType: soft
@@ -4074,13 +4074,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rolldown/pluginutils@npm:1.0.0-beta.35":
-  version: 1.0.0-beta.35
-  resolution: "@rolldown/pluginutils@npm:1.0.0-beta.35"
-  checksum: 10/f6e28e437df02d1a184ce49726ffb53dfc24e3c3c67602c41352ddcbbeb51b292f7f973b62b0abd807af38b9913fa4d48f6892c698e1c6210642d0a33ec1a102
-  languageName: node
-  linkType: hard
-
 "@rolldown/pluginutils@npm:1.0.0-beta.47":
   version: 1.0.0-beta.47
   resolution: "@rolldown/pluginutils@npm:1.0.0-beta.47"
@@ -5110,7 +5103,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/eslint-plugin@npm:^8.46.2":
+"@typescript-eslint/eslint-plugin@npm:^8.46.4":
   version: 8.46.4
   resolution: "@typescript-eslint/eslint-plugin@npm:8.46.4"
   dependencies:
@@ -5131,7 +5124,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/parser@npm:^8.46.2":
+"@typescript-eslint/parser@npm:^8.46.4":
   version: 8.46.4
   resolution: "@typescript-eslint/parser@npm:8.46.4"
   dependencies:
@@ -5885,19 +5878,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vitejs/plugin-react-swc@npm:^4.1.0":
-  version: 4.1.0
-  resolution: "@vitejs/plugin-react-swc@npm:4.1.0"
+"@vitejs/plugin-react-swc@npm:^4.2.2":
+  version: 4.2.2
+  resolution: "@vitejs/plugin-react-swc@npm:4.2.2"
   dependencies:
-    "@rolldown/pluginutils": "npm:1.0.0-beta.35"
+    "@rolldown/pluginutils": "npm:1.0.0-beta.47"
     "@swc/core": "npm:^1.13.5"
   peerDependencies:
     vite: ^4 || ^5 || ^6 || ^7
-  checksum: 10/c911795d65507fd74c129f88064d946562c209a73ea6eece5a4d0c03437d4e3d33cdf2ec5c0c026b6e8f68db977ad609c16d0a72f3798fd4714e750f84cf9f13
+  checksum: 10/2db234169f7dc177560ea0f5bfd02ab690e374e3f24459847643bb4f804994b6060610a3f5de7dbc83ed43131c7340b215e67978557ddd69e0be9a2024776f70
   languageName: node
   linkType: hard
 
-"@vitejs/plugin-react@npm:^5.0.4":
+"@vitejs/plugin-react@npm:^5.1.1":
   version: 5.1.1
   resolution: "@vitejs/plugin-react@npm:5.1.1"
   dependencies:
@@ -7904,7 +7897,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-react-hooks@npm:^7.0.0":
+"eslint-plugin-react-hooks@npm:^7.0.1":
   version: 7.0.1
   resolution: "eslint-plugin-react-hooks@npm:7.0.1"
   dependencies:
@@ -13945,7 +13938,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite@npm:^7.1.11":
+"vite@npm:^7.2.2":
   version: 7.2.2
   resolution: "vite@npm:7.2.2"
   dependencies:

@@ -133,15 +133,15 @@
 		"@types/react-window-infinite-loader": "^1.0.9",
 		"@types/uuid": "^11.0.0",
 		"@types/zxcvbn": "^4.4.5",
-		"@typescript-eslint/eslint-plugin": "^8.46.2",
-		"@typescript-eslint/parser": "^8.46.2",
-		"@vitejs/plugin-react": "^5.0.4",
-		"@vitejs/plugin-react-swc": "^4.1.0",
+		"@typescript-eslint/eslint-plugin": "^8.46.4",
+		"@typescript-eslint/parser": "^8.46.4",
+		"@vitejs/plugin-react": "^5.1.1",
+		"@vitejs/plugin-react-swc": "^4.2.2",
 		"babel-plugin-formatjs": "^10.5.41",
 		"build-if-changed": "^1.5.5",
 		"eslint": "^9.39.1",
 		"eslint-plugin-formatjs": "^5.4.2",
-		"eslint-plugin-react-hooks": "^7.0.0",
+		"eslint-plugin-react-hooks": "^7.0.1",
 		"eslint-plugin-react-refresh": "^0.4.24",
 		"globals": "^16.5.0",
 		"ncp": "^2.0.0",
@@ -149,6 +149,6 @@
 		"prop-types": "^15.8.1",
 		"rimraf": "^6.1.0",
 		"rollup": "^4.53.2",
-		"vite": "^7.1.11"
+		"vite": "^7.2.2"
 	}
 }
