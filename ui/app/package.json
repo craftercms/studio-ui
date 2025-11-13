@@ -55,7 +55,7 @@
 	},
 	"dependencies": {
 		"@atlaskit/pragmatic-drag-and-drop": "^1.7.7",
-		"@atlaskit/pragmatic-drag-and-drop-flourish": "^2.0.8",
+		"@atlaskit/pragmatic-drag-and-drop-flourish": "^2.0.9",
 		"@atlaskit/pragmatic-drag-and-drop-hitbox": "^1.1.0",
 		"@base-ui-components/react": "^1.0.0-beta.4",
 		"@craftercms/uppy": "workspace:^",
@@ -147,8 +147,8 @@
 		"ncp": "^2.0.0",
 		"npm-run-all": "^4.1.5",
 		"prop-types": "^15.8.1",
-		"rimraf": "^6.0.1",
-		"rollup": "^4.52.5",
+		"rimraf": "^6.1.0",
+		"rollup": "^4.53.2",
 		"vite": "^7.1.11"
 	}
 }
