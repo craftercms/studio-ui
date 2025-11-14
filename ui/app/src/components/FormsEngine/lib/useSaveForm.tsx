@@ -35,6 +35,7 @@ import { flushSync } from 'react-dom';
 import LookupTable from '../../../models/LookupTable';
 import { checkMinimumSaveRequirementsFulfilled } from './validators';
 import ContentType from '../../../models/ContentType';
+import { showSystemNotification } from '../../../state/actions/system';
 
 export interface UseSaveFormProps {
 	createPath?: string;
@@ -77,7 +78,19 @@ export function useSaveForm(props: UseSaveFormProps) {
 		};
 		// Repeat handled here. If true, execution ends inside if statement.
 		if (isRepeatMode) {
-			(onSave?.({ values, versionComment }) as Promise<FormSavePromiseResult>)?.then(onSavePromiseHandler);
+			(onSave?.({ values, versionComment }) as Promise<FormSavePromiseResult>)?.then(({ close }) => {
+				if (saveAsDraft) {
+					dispatch(
+						showSystemNotification({
+							options: { variant: 'warning' },
+							message: formatMessage({
+								defaultMessage: 'Draft saved. Required fields left blank may cause errors when previewed or deployed.\n'
+							})
+						})
+					);
+				}
+				onSavePromiseHandler({ close });
+			});
 			return;
 		}
 		// Put system properties in before creating the XML
