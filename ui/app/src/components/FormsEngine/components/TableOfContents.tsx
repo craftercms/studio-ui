@@ -24,11 +24,13 @@ import SearchBar from '../../SearchBar';
 import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
 import Box from '@mui/material/Box';
 import { useAtomValue, useSetAtom, useStore as useJotaiStore } from 'jotai/index';
-import { isEmptyValue, isFieldRequired } from '../lib/validators';
+import { isEmptyValue, isFieldRequired, validatorsMap } from '../lib/validators';
 import FieldEmptyStateIndicator from './FieldEmptyStateIndicator';
 import FieldRequiredStateIndicator from './FieldRequiredStateIndicator';
 import { atom } from 'jotai';
 import { immutableEmptyArray } from '../../../utils/array';
+import { nnou } from '../../../utils/object';
+import FieldStateIndicator from './FieldStateIndicator';
 
 export interface TableOfContentsProps {
 	containerRef: RefObject<HTMLDivElement>;
@@ -147,14 +149,16 @@ function TreeItemLabel({
 	const value = useAtomValue(atoms.valueByFieldId[field.id]);
 	const validity = useAtomValue(atoms.validationByFieldId[field.id]);
 	const isRequired = isFieldRequired(field);
+	const hasValidator = nnou(validatorsMap[field.type]);
 	return (
 		<Box display="flex" justifyContent="space-between" alignItems="center">
 			<span>{field.name}</span>
-			{isRequired ? (
-				<FieldRequiredStateIndicator isValid={validity.isValid} />
-			) : (
-				<FieldEmptyStateIndicator isEmpty={isEmptyValue(field, value)} />
-			)}
+			<FieldStateIndicator
+				isRequired={isRequired}
+				hasValidator={hasValidator}
+				isValid={validity.isValid}
+				isEmpty={isEmptyValue(field, value)}
+			/>
 		</Box>
 	);
 }
