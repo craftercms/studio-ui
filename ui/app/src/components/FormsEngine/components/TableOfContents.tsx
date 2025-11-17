@@ -25,8 +25,6 @@ import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
 import Box from '@mui/material/Box';
 import { useAtomValue, useSetAtom, useStore as useJotaiStore } from 'jotai/index';
 import { isEmptyValue, isFieldRequired, validatorsMap } from '../lib/validators';
-import FieldEmptyStateIndicator from './FieldEmptyStateIndicator';
-import FieldRequiredStateIndicator from './FieldRequiredStateIndicator';
 import { atom } from 'jotai';
 import { immutableEmptyArray } from '../../../utils/array';
 import { nnou } from '../../../utils/object';
