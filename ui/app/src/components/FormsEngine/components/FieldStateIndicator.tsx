@@ -36,7 +36,7 @@ export function FieldStateIndicator({ isRequired, hasValidator, isValid, isEmpty
 	if (!isRequired && !hasValidator && isEmpty) return undefined;
 
 	if (isRequired || (!isRequired && hasValidator && !isValid)) {
-		// If required, or if not required but has a validator and is invalid, show asterisk (color depdends on isValid)
+		// If required, or if not required but has a validator and is invalid, show asterisk (color depends on isValid)
 		IndicatorComponent = Asterisk;
 		if (isValid) {
 			MessageComponent = CompleteMessage;
