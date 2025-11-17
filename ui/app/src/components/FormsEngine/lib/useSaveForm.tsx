@@ -76,6 +76,10 @@ export function useSaveForm(props: UseSaveFormProps) {
 			});
 			(close || closeAfterSave) && onClose?.();
 		};
+		// Put system properties in before creating the XML
+		const saveAsDraft = Object.values(stableFormContext.atoms.validationByFieldId).some(
+			(validityDataAtom) => !jotai.get(validityDataAtom).isValid
+		);
 		// Repeat handled here. If true, execution ends inside if statement.
 		if (isRepeatMode) {
 			(onSave?.({ values, versionComment }) as Promise<FormSavePromiseResult>)?.then(({ close }) => {
@@ -84,7 +88,7 @@ export function useSaveForm(props: UseSaveFormProps) {
 						showSystemNotification({
 							options: { variant: 'warning' },
 							message: formatMessage({
-								defaultMessage: 'Draft saved. Required fields left blank may cause errors when previewed or deployed.\n'
+								defaultMessage: 'Draft saved. Required fields left blank may cause errors when previewed or deployed.'
 							})
 						})
 					);
@@ -93,10 +97,6 @@ export function useSaveForm(props: UseSaveFormProps) {
 			});
 			return;
 		}
-		// Put system properties in before creating the XML
-		const saveAsDraft = Object.values(stableFormContext.atoms.validationByFieldId).some(
-			(validityDataAtom) => !jotai.get(validityDataAtom).isValid
-		);
 		complementValuesWithSystemProps(id, values, contentObject, contentType, saveAsDraft);
 		// Validate minimum requirements to save as draft. Execution stops if minimum reqs aren't fulfilled.
 		if (!checkMinimumSaveRequirementsFulfilled(values)) {
