@@ -62,6 +62,8 @@ import { createComponentId, pickShowContentFormAction } from '../../utils/system
 import { pushDialog } from '../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
 import { showItemMegaMenu } from '../../state/actions/dialogs';
+import usePossibleTranslation from '../../hooks/usePossibleTranslation';
+import TranslationOrText from '../../models/TranslationOrText';
 
 export interface PathNavigatorTreeProps
 	extends Pick<
@@ -69,7 +71,7 @@ export interface PathNavigatorTreeProps
 		'showNavigableAsLinks' | 'showPublishingTarget' | 'showWorkflowState' | 'showItemMenu'
 	> {
 	id: string;
-	label: string;
+	label: TranslationOrText;
 	rootPath: string;
 	sortStrategy?: GetChildrenOptions['sortStrategy'];
 	order?: GetChildrenOptions['order'];
@@ -131,10 +133,10 @@ interface Menu {
 // };
 
 export function PathNavigatorTree(props: PathNavigatorTreeProps) {
+	const title = usePossibleTranslation(props.label);
 	// region const { ... } = props;
 	const {
-		label,
-		id = props.label.replace(/\s/g, ''),
+		id = title.replace(/\s/g, ''),
 		excludes,
 		limit = 10,
 		icon,
@@ -350,7 +352,7 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
 			<PathNavigatorTreeUI
 				classes={{ header: classes?.header }}
 				sxs={{ header: sxs?.header }}
-				title={label}
+				title={title}
 				active={active}
 				icon={expandedIcon && collapsedIcon ? (state.collapsed ? collapsedIcon : expandedIcon) : icon}
 				container={container}
