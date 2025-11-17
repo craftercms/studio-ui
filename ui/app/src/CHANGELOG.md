@@ -3,6 +3,7 @@
 ## 5.0.1 (CrafterCMS 4.5.0)
 * [components]
   * `SearchBar`: Update the default DecoratorIcon to select the search input on click.
+  * `PathNavigator/PathNavigatorTree`: Updated `label` prop to be of type `TranslationOrText`.
 
 ## 5.0.0 (CrafterCMS 4.4.3)
 * Version 5.0.0 should be paired with CrafterCMS 4.4.3 or later.
