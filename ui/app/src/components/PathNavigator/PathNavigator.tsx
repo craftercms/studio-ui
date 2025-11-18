@@ -128,7 +128,8 @@ export interface PathNavigatorStateProps {
 // };
 
 export function PathNavigator(props: PathNavigatorProps) {
-	const title = usePossibleTranslation(props.label) ?? '(No name)';
+	const translatedLabel = usePossibleTranslation(props.label);
+	const title = (typeof translatedLabel === 'string' ? translatedLabel : '') || '(No name)';
 	// region const { ... } = props;
 	const {
 		icon,
@@ -136,8 +137,7 @@ export function PathNavigator(props: PathNavigatorProps) {
 		collapsedIcon,
 		container,
 		rootPath: path,
-		// getPossibleTranslation may return ReactNode[]. If so, use a generated id.
-		id = typeof title === 'string' ? title.replace(/\s/g, '') : nanoid(),
+		id = title.replace(/\s/g, '') || nanoid(),
 		limit = 10,
 		locale,
 		excludes,
