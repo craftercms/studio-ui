@@ -48,5 +48,25 @@ defineMessages({
 	site: {
 		id: 'launcher.siteSectionTitle',
 		defaultMessage: 'Project <muted>• {siteName}</muted>'
+	},
+	contentTypes: {
+		id: 'dropTargetsMessages.contentTypes',
+		defaultMessage: 'Content Types'
+	},
+	encryptionTools: {
+		id: 'GlobalMenu.EncryptionToolEntryLabel',
+		defaultMessage: 'Encryption Tool'
+	},
+	audit: {
+		id: 'GlobalMenu.AuditEntryLabel',
+		defaultMessage: 'Audit'
+	},
+	logConsole: {
+		id: 'GlobalMenu.LogConsoleEntryLabel',
+		defaultMessage: 'Log Console'
+	},
+	pluginManager: {
+		id: 'PluginManagement.title',
+		defaultMessage: 'Plugin Management'
 	}
 });

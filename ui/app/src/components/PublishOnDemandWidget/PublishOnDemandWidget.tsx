@@ -462,7 +462,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 															defaultMessage="Publish changes made in Studio via the UI"
 														/>
 													}
-													secondary="By path"
+													secondary={<FormattedMessage defaultMessage="By path" />}
 												/>
 											}
 											sx={{ marginBottom: '10px' }}
@@ -481,7 +481,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 															defaultMessage="Publish changes made via direct git actions against the repository or pulled from a remote repository"
 														/>
 													}
-													secondary="By tags or commit ids"
+													secondary={<FormattedMessage defaultMessage="By tags or commit ids" />}
 												/>
 											}
 										/>
@@ -499,7 +499,9 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 															defaultMessage="Publish everything"
 														/>
 													}
-													secondary="Publish all changes on the repo to the publishing target you choose"
+													secondary={
+														<FormattedMessage defaultMessage="Publish all changes on the repo to the publishing target you choose" />
+													}
 												/>
 											}
 										/>

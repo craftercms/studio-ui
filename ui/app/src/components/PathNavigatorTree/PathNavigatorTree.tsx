@@ -133,10 +133,11 @@ interface Menu {
 // };
 
 export function PathNavigatorTree(props: PathNavigatorTreeProps) {
-	const title = usePossibleTranslation(props.label);
+	const title = usePossibleTranslation(props.label) ?? '(No name)';
 	// region const { ... } = props;
 	const {
-		id = title.replace(/\s/g, ''),
+		// getPossibleTranslation may return ReactNode[]. If so, use a generated id.
+		id = typeof title === 'string' ? title.replace(/\s/g, '') : nanoid(),
 		excludes,
 		limit = 10,
 		icon,

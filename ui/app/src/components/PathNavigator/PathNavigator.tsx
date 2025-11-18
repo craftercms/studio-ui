@@ -56,8 +56,8 @@ import { GetChildrenOptions, PartialSxRecord } from '../../models';
 import { pushDialog } from '../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
 import { showItemMegaMenu } from '../../state/actions/dialogs';
-import usePossibleTranslation from '../../hooks/usePossibleTranslation';
 import TranslationOrText from '../../models/TranslationOrText';
+import usePossibleTranslation from '../../hooks/usePossibleTranslation';
 
 interface Menu {
 	path?: string;
@@ -128,7 +128,7 @@ export interface PathNavigatorStateProps {
 // };
 
 export function PathNavigator(props: PathNavigatorProps) {
-	const title = usePossibleTranslation(props.label ?? '(No name)');
+	const title = usePossibleTranslation(props.label) ?? '(No name)';
 	// region const { ... } = props;
 	const {
 		icon,
@@ -136,7 +136,8 @@ export function PathNavigator(props: PathNavigatorProps) {
 		collapsedIcon,
 		container,
 		rootPath: path,
-		id = title.replace(/\s/g, ''),
+		// getPossibleTranslation may return ReactNode[]. If so, use a generated id.
+		id = typeof title === 'string' ? title.replace(/\s/g, '') : nanoid(),
 		limit = 10,
 		locale,
 		excludes,
