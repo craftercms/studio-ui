@@ -63,6 +63,7 @@ import { UNDEFINED } from '../../utils/constants';
 import SimpleAjaxError from '../../models/SimpleAjaxError';
 import usePossibleTranslation from '../../hooks/usePossibleTranslation';
 import TranslationOrText from '../../models/TranslationOrText';
+import { nanoid } from 'nanoid';
 
 export interface PathNavigatorTreeProps
   extends Pick<
@@ -134,7 +135,8 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
   const title = usePossibleTranslation(props.label);
   // region const { ... } = props;
   const {
-    id = title.replace(/\s/g, ''),
+    // getPossibleTranslation may return ReactNode[]. If so, use a generated id.
+    id = typeof title === 'string' ? title.replace(/\s/g, '') : nanoid(),
     excludes,
     limit = 10,
     icon,

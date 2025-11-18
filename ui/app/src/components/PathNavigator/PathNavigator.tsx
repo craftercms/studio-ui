@@ -56,6 +56,7 @@ import { useActiveUser } from '../../hooks/useActiveUser';
 import { GetChildrenOptions } from '../../models';
 import TranslationOrText from '../../models/TranslationOrText';
 import usePossibleTranslation from '../../hooks/usePossibleTranslation';
+import { nanoid } from 'nanoid';
 
 interface Menu {
   path?: string;
@@ -131,7 +132,8 @@ export function PathNavigator(props: PathNavigatorProps) {
     collapsedIcon,
     container,
     rootPath: path,
-    id = title.replace(/\s/g, ''),
+    // getPossibleTranslation may return ReactNode[]. If so, use a generated id.
+    id = typeof title === 'string' ? title.replace(/\s/g, '') : nanoid(),
     limit = 10,
     locale,
     excludes,
