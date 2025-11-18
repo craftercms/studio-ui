@@ -191,7 +191,7 @@ export function DependenciesDialogUI(props: DependenciesDialogUIProps) {
               color="primary"
             />
           }
-          label="Compact"
+          label={<FormattedMessage defaultMessage="Compact" />}
         />
         <FormControl className={classes.formControl}>
           <Select
