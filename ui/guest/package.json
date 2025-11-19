@@ -61,7 +61,7 @@
     "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^7.3.5",
     "@mui/material": "^7.3.5",
-    "@reduxjs/toolkit": "^2.2.5",
+    "@reduxjs/toolkit": "^2.10.1",
     "@rollup/plugin-alias": "^6.0.0",
     "@types/react-dom": "^19.2.3",
     "js-cookie": "^3.0.5",
