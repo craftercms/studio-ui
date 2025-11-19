@@ -1571,7 +1571,7 @@ __metadata:
     "@prettier/plugin-xml": "npm:3.3.0"
     "@reduxjs/toolkit": "npm:^2.2.5"
     "@rollup/plugin-swc": "npm:^0.4.0"
-    "@stomp/stompjs": "npm:^7.1.1"
+    "@stomp/stompjs": "npm:^7.2.1"
     "@types/ace": "npm:^0.0.52"
     "@types/js-cookie": "npm:^3.0.6"
     "@types/react": "npm:^19.1.13"
@@ -1592,23 +1592,23 @@ __metadata:
     eslint-plugin-formatjs: "npm:^5.4.0"
     eslint-plugin-react-hooks: "npm:^5.2.0"
     eslint-plugin-react-refresh: "npm:^0.4.20"
-    fast-xml-parser: "npm:^5.2.5"
+    fast-xml-parser: "npm:^5.3.2"
     graphiql: "npm:^3.2.2"
-    graphql: "npm:^16.11.0"
+    graphql: "npm:^16.12.0"
     graphql-ws: "npm:^6.0.6"
     highlight.js: "npm:^11.11.1"
     jabber: "npm:^1.5.3"
     js-cookie: "npm:^3.0.5"
     marked: "npm:^16.3.0"
-    marked-highlight: "npm:^2.2.2"
+    marked-highlight: "npm:^2.2.3"
     moment-timezone: "npm:^0.6.0"
-    nanoid: "npm:^5.1.5"
+    nanoid: "npm:^5.1.6"
     ncp: "npm:^2.0.0"
     notistack: "npm:3.0.2"
     npm-run-all: "npm:^4.1.5"
     prettier: "npm:^3.6.2"
     prop-types: "npm:^15.8.1"
-    query-string: "npm:^9.3.0"
+    query-string: "npm:^9.3.1"
     react: "npm:19.1.1"
     react-animations: "npm:^1.0.0"
     react-dom: "npm:19.1.1"
@@ -4169,10 +4169,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@stomp/stompjs@npm:^7.1.1":
-  version: 7.1.1
-  resolution: "@stomp/stompjs@npm:7.1.1"
-  checksum: 10/e1c3aa5b4c2d01cb4950fce8b19fcd1aa89a26deeb99c338f23ffd69ee294e99783366ec7ca26fc1162032085354d5929d98071ba9f0ebf73f7db338dcdbfd2e
+"@stomp/stompjs@npm:^7.2.1":
+  version: 7.2.1
+  resolution: "@stomp/stompjs@npm:7.2.1"
+  checksum: 10/7728acf4b65aec51d5904c4623d78c6a80dc9d114bd16cf703418a7521713017888df7e67315a28deae6f8305abef5d755ce8d54687f03e06fa2c6bae6b53a9d
   languageName: node
   linkType: hard
 
@@ -7678,14 +7678,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-xml-parser@npm:^5.2.5":
-  version: 5.2.5
-  resolution: "fast-xml-parser@npm:5.2.5"
+"fast-xml-parser@npm:^5.3.2":
+  version: 5.3.2
+  resolution: "fast-xml-parser@npm:5.3.2"
   dependencies:
     strnum: "npm:^2.1.0"
   bin:
     fxparser: src/cli/cli.js
-  checksum: 10/305017cff6968a34cbac597317be1516e85c44f650f30d982c84f8c30043e81fd38d39a8810d570136c921399dd43b9ac4775bdfbbbcfee96456f3c086b48bdd
+  checksum: 10/8157045ebb1709696729f75c5a1d31e1224df73d51300dadd2468224b9ffdc3197615712affee4578889534ed47d6344545765a0d63b3151749dd427b68b70da
   languageName: node
   linkType: hard
 
@@ -8447,10 +8447,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql@npm:^16.11.0":
-  version: 16.11.0
-  resolution: "graphql@npm:16.11.0"
-  checksum: 10/e3e1633d0b464bbb3fa41283fae938bd3bac801c350555b3f1a129d99fb3cfe157fa69c1389229dba902731942eb08bdea4b29f1271965feee8779576b26ef01
+"graphql@npm:^16.12.0":
+  version: 16.12.0
+  resolution: "graphql@npm:16.12.0"
+  checksum: 10/e299bc97cca178e549c8c1ed4cb164f631f07be987d3657f76cdf18c0250040cc0d456d4b6d41c87b855cac97b15a62ed345557527efcb0546492895a893bb87
   languageName: node
   linkType: hard
 
@@ -9790,12 +9790,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"marked-highlight@npm:^2.2.2":
-  version: 2.2.2
-  resolution: "marked-highlight@npm:2.2.2"
+"marked-highlight@npm:^2.2.3":
+  version: 2.2.3
+  resolution: "marked-highlight@npm:2.2.3"
   peerDependencies:
-    marked: ">=4 <17"
-  checksum: 10/61a32078dce8b763b6518a1cc843ae937ad880c9fa4c1cd93490593d8bafb213bf77509da63624a854332678774e0844f40737fdee3a78a3bd148cdebf41875a
+    marked: ">=4 <18"
+  checksum: 10/ae66c9141700ae168d000155baa9a3fc304eba36edd960e04d0c6bdcfd0408fada6ad4f2645e08a60662d68f72cef9500bd93ad80f5dce19e6b5cbaf14c9350b
   languageName: node
   linkType: hard
 
@@ -10179,12 +10179,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nanoid@npm:^5.1.5":
-  version: 5.1.5
-  resolution: "nanoid@npm:5.1.5"
+"nanoid@npm:^5.1.6":
+  version: 5.1.6
+  resolution: "nanoid@npm:5.1.6"
   bin:
     nanoid: bin/nanoid.js
-  checksum: 10/6de2d006b51c983be385ef7ee285f7f2a57bd96f8c0ca881c4111461644bd81fafc2544f8e07cb834ca0f3e0f3f676c1fe78052183f008b0809efe6e273119f5
+  checksum: 10/4109dbcf596d7f297a9b42f459b8f01694a03ebbdd2f41408d963ad54e5ec7234cbe7b4acad137751f31add11bb4fb3415a3e688082516745812811f05570014
   languageName: node
   linkType: hard
 
@@ -11008,7 +11008,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"query-string@npm:^9.1.0, query-string@npm:^9.3.0":
+"query-string@npm:^9.1.0":
   version: 9.3.0
   resolution: "query-string@npm:9.3.0"
   dependencies:
@@ -11016,6 +11016,17 @@ __metadata:
     filter-obj: "npm:^5.1.0"
     split-on-first: "npm:^3.0.0"
   checksum: 10/4e10d20f32f605444e8e3474f6705d1c717b6b0392499a73bd2f17cb710cf10dbdade50d9047945346b57243b7f4f6b53ff0292fac3d37c5aec8fa4827ffb925
+  languageName: node
+  linkType: hard
+
+"query-string@npm:^9.3.1":
+  version: 9.3.1
+  resolution: "query-string@npm:9.3.1"
+  dependencies:
+    decode-uri-component: "npm:^0.4.1"
+    filter-obj: "npm:^5.1.0"
+    split-on-first: "npm:^3.0.0"
+  checksum: 10/c56a2242ba749b14413998f620fa52dafaf6fe4fbc4572e46c3d7f5ad1ef2811d4ed4d256f53ed8b9d5e073d2dd672c20cc05ae363b65c8745120e81a5d520a6
   languageName: node
   linkType: hard
 
