@@ -16,8 +16,8 @@
   },
   "devDependencies": {
     "@babel/cli": "^7.28.3",
-    "@swc/cli": "^0.7.8",
-    "@swc/core": "^1.13.5",
+    "@swc/cli": "^0.7.9",
+    "@swc/core": "^1.15.2",
     "build-if-changed": "^1.5.5"
   }
 }
