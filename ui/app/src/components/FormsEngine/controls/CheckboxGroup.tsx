@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ChangeEvent, useMemo, useState } from 'react';
+import React, { ChangeEvent, type DetailedHTMLProps, type HTMLAttributes, useMemo, useState } from 'react';
 import { FormsEngineField } from '../components/FormsEngineField';
 import { ControlProps } from '../types';
 import Checkbox, { CheckboxProps } from '@mui/material/Checkbox';
@@ -66,7 +66,10 @@ const VirtualRow = (
 	} = props;
 	const adjustedIndex = index * 3;
 	return (
-		<div className="checkbox-group-virtual-row" style={style}>
+		<div
+			className="checkbox-group-virtual-row"
+			style={style as DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>}
+		>
 			{options
 				.slice(adjustedIndex, adjustedIndex + 3)
 				.map((option) => buildOption(option, onChange, checkedValuesLookup))}

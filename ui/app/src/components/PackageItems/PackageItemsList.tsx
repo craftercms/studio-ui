@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from 'react';
+import React, { type DetailedHTMLProps, type HTMLAttributes, useState } from 'react';
 import { ContentItem, LightItem } from '../../models';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
@@ -112,7 +112,11 @@ export function PackageItemsList(props: PackageItemsListProps) {
 											</ListItemButton>
 										);
 									}
-									return <div style={style}>{content}</div>;
+									return (
+										<div style={style as DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>}>
+											{content}
+										</div>
+									);
 								}}
 							</List>
 						)}

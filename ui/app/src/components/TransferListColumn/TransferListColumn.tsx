@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ReactNode, useRef } from 'react';
+import React, { type DetailedHTMLProps, type HTMLAttributes, ReactNode, useRef } from 'react';
 import LookupTable from '../../models/LookupTable';
 import Paper from '@mui/material/Paper';
 import Checkbox from '@mui/material/Checkbox';
@@ -182,7 +182,11 @@ export function TransferListColumn(props: TransferListColumnProps) {
 														</ListItemButton>
 													);
 												}
-												return <div style={style}>{content}</div>;
+												return (
+													<div style={style as DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>}>
+														{content}
+													</div>
+												);
 											}}
 										</FixedSizeList>
 									)}

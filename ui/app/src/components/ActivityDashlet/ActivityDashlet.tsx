@@ -15,7 +15,15 @@
  */
 
 import { Activity } from '../../models/Activity';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+	type DetailedHTMLProps,
+	type HTMLAttributes,
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState
+} from 'react';
 import RefreshRounded from '@mui/icons-material/RefreshRounded';
 import MoreVertRounded from '@mui/icons-material/MoreVertRounded';
 import { PREVIEW_URL_PATH, UNDEFINED } from '../../utils/constants';
@@ -632,7 +640,11 @@ export function ActivityDashlet(props: ActivityDashletProps) {
 														</CustomTimelineItem>
 													);
 												}
-												return <div style={style}>{content}</div>;
+												return (
+													<div style={style as DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>}>
+														{content}
+													</div>
+												);
 											}}
 										</List>
 									)}

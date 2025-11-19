@@ -26,7 +26,7 @@ import MoreVertRounded from '@mui/icons-material/MoreVertRounded';
 import Checkbox from '@mui/material/Checkbox';
 import ListItemText from '@mui/material/ListItemText';
 import ItemDisplay from '../ItemDisplay';
-import React, { useCallback, useState } from 'react';
+import React, { type DetailedHTMLProps, type HTMLAttributes, useCallback, useState } from 'react';
 import { DependencyChip, DependencyDataState } from './PublishDialogContainer';
 import { AllItemActions, ContentItem, LightItem } from '../../models';
 import { PathTreeNode } from './buildPathTrees';
@@ -182,7 +182,7 @@ export function PublishPackageItemsView(props: PublishItemsProps) {
 									const path = itemsAndDependenciesPaths[index];
 									return (
 										<Box
-											style={style}
+											style={style as DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>}
 											sx={{
 												[`.${listItemSecondaryActionClasses.root}`]: { right: (theme) => theme.spacing(1) },
 												[`.${listItemClasses.root} .item-menu-button`]: { display: 'none' },
