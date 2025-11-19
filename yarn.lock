@@ -64,6 +64,29 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/core@npm:^7.24.4, @babel/core@npm:^7.28.5":
+  version: 7.28.5
+  resolution: "@babel/core@npm:7.28.5"
+  dependencies:
+    "@babel/code-frame": "npm:^7.27.1"
+    "@babel/generator": "npm:^7.28.5"
+    "@babel/helper-compilation-targets": "npm:^7.27.2"
+    "@babel/helper-module-transforms": "npm:^7.28.3"
+    "@babel/helpers": "npm:^7.28.4"
+    "@babel/parser": "npm:^7.28.5"
+    "@babel/template": "npm:^7.27.2"
+    "@babel/traverse": "npm:^7.28.5"
+    "@babel/types": "npm:^7.28.5"
+    "@jridgewell/remapping": "npm:^2.3.5"
+    convert-source-map: "npm:^2.0.0"
+    debug: "npm:^4.1.0"
+    gensync: "npm:^1.0.0-beta.2"
+    json5: "npm:^2.2.3"
+    semver: "npm:^6.3.1"
+  checksum: 10/2f1e224125179f423f4300d605a0c5a3ef315003281a63b1744405b2605ee2a2ffc5b1a8349aa4f262c72eca31c7e1802377ee04ad2b852a2c88f8ace6cac324
+  languageName: node
+  linkType: hard
+
 "@babel/core@npm:^7.26.10":
   version: 7.28.4
   resolution: "@babel/core@npm:7.28.4"
@@ -84,29 +107,6 @@ __metadata:
     json5: "npm:^2.2.3"
     semver: "npm:^6.3.1"
   checksum: 10/0593295241fac9be567145ef16f3858d34fc91390a9438c6d47476be9823af4cc0488c851c59702dd46b968e9fd46d17ddf0105ea30195ca85f5a66b4044c519
-  languageName: node
-  linkType: hard
-
-"@babel/core@npm:^7.28.5":
-  version: 7.28.5
-  resolution: "@babel/core@npm:7.28.5"
-  dependencies:
-    "@babel/code-frame": "npm:^7.27.1"
-    "@babel/generator": "npm:^7.28.5"
-    "@babel/helper-compilation-targets": "npm:^7.27.2"
-    "@babel/helper-module-transforms": "npm:^7.28.3"
-    "@babel/helpers": "npm:^7.28.4"
-    "@babel/parser": "npm:^7.28.5"
-    "@babel/template": "npm:^7.27.2"
-    "@babel/traverse": "npm:^7.28.5"
-    "@babel/types": "npm:^7.28.5"
-    "@jridgewell/remapping": "npm:^2.3.5"
-    convert-source-map: "npm:^2.0.0"
-    debug: "npm:^4.1.0"
-    gensync: "npm:^1.0.0-beta.2"
-    json5: "npm:^2.2.3"
-    semver: "npm:^6.3.1"
-  checksum: 10/2f1e224125179f423f4300d605a0c5a3ef315003281a63b1744405b2605ee2a2ffc5b1a8349aa4f262c72eca31c7e1802377ee04ad2b852a2c88f8ace6cac324
   languageName: node
   linkType: hard
 
@@ -355,7 +355,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/parser@npm:^7.28.5":
+"@babel/parser@npm:^7.24.4, @babel/parser@npm:^7.28.5":
   version: 7.28.5
   resolution: "@babel/parser@npm:7.28.5"
   dependencies:
@@ -1464,7 +1464,7 @@ __metadata:
     "@mui/icons-material": "npm:^7.3.5"
     "@mui/material": "npm:^7.3.5"
     "@reduxjs/toolkit": "npm:^2.2.5"
-    "@rollup/plugin-alias": "npm:^5.1.1"
+    "@rollup/plugin-alias": "npm:^6.0.0"
     "@rollup/plugin-swc": "npm:^0.4.0"
     "@swc/core": "npm:^1.15.2"
     "@types/jquery": "npm:^3.5.33"
@@ -1613,7 +1613,7 @@ __metadata:
     clsx: "npm:^2.1.1"
     eslint: "npm:^9.39.1"
     eslint-plugin-formatjs: "npm:^5.4.2"
-    eslint-plugin-react-hooks: "npm:^5.2.0"
+    eslint-plugin-react-hooks: "npm:^7.0.1"
     eslint-plugin-react-refresh: "npm:^0.4.24"
     fast-xml-parser: "npm:^5.3.2"
     graphiql: "npm:^3.2.2"
@@ -1622,7 +1622,7 @@ __metadata:
     highlight.js: "npm:^11.11.1"
     jabber: "npm:^1.5.3"
     js-cookie: "npm:^3.0.5"
-    marked: "npm:^16.3.0"
+    marked: "npm:^17.0.0"
     marked-highlight: "npm:^2.2.3"
     moment-timezone: "npm:^0.6.0"
     nanoid: "npm:^5.1.6"
@@ -1663,7 +1663,7 @@ __metadata:
   resolution: "@craftercms/studio@workspace:."
   dependencies:
     "@eslint/compat": "npm:^1.4.1"
-    "@rollup/plugin-commonjs": "npm:^28.0.6"
+    "@rollup/plugin-commonjs": "npm:^29.0.0"
     "@rollup/plugin-node-resolve": "npm:^16.0.3"
     "@rollup/plugin-replace": "npm:^6.0.3"
     "@types/node": "npm:^24.10.1"
@@ -3779,21 +3779,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rollup/plugin-alias@npm:^5.1.1":
-  version: 5.1.1
-  resolution: "@rollup/plugin-alias@npm:5.1.1"
+"@rollup/plugin-alias@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "@rollup/plugin-alias@npm:6.0.0"
   peerDependencies:
-    rollup: ^1.20.0||^2.0.0||^3.0.0||^4.0.0
+    rollup: ">=4.0.0"
   peerDependenciesMeta:
     rollup:
       optional: true
-  checksum: 10/1f1ab178aa2726c81e2ae1709f73b3688491f14655b97c54d43bea35ac3f783f8855d701d1e5eac234e3ffe89fef56ce975726b036a97049fefa9b514686e55c
+  checksum: 10/9c968a85c229c8b28783c9b0ee47534d510b3b40d38f95adbedc375f71c737d3c9ddc08bfe0c35ffdd9f2cb51a70f0441166844b278f55e62299148ca76a4bf5
   languageName: node
   linkType: hard
 
-"@rollup/plugin-commonjs@npm:^28.0.6":
-  version: 28.0.6
-  resolution: "@rollup/plugin-commonjs@npm:28.0.6"
+"@rollup/plugin-commonjs@npm:^29.0.0":
+  version: 29.0.0
+  resolution: "@rollup/plugin-commonjs@npm:29.0.0"
   dependencies:
     "@rollup/pluginutils": "npm:^5.0.1"
     commondir: "npm:^1.0.1"
@@ -3807,7 +3807,7 @@ __metadata:
   peerDependenciesMeta:
     rollup:
       optional: true
-  checksum: 10/0c46acc1d2efe107555c32c36c67965669bded206b4d4d940e0f30b374f03952c16fa5198d890da967d0c7301d863a95f0f00321fc0a9ccfc147ca5d09109073
+  checksum: 10/9abffe07ebdd0aa5d412e7894c370b2c9d2f52e23d415c3e421ff2e05dc662d86f5b681b878463f468020360c477d74cc1476612facba0c5c987cc0b1ec6c06b
   languageName: node
   linkType: hard
 
@@ -7592,12 +7592,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-react-hooks@npm:^5.2.0":
-  version: 5.2.0
-  resolution: "eslint-plugin-react-hooks@npm:5.2.0"
+"eslint-plugin-react-hooks@npm:^7.0.1":
+  version: 7.0.1
+  resolution: "eslint-plugin-react-hooks@npm:7.0.1"
+  dependencies:
+    "@babel/core": "npm:^7.24.4"
+    "@babel/parser": "npm:^7.24.4"
+    hermes-parser: "npm:^0.25.1"
+    zod: "npm:^3.25.0 || ^4.0.0"
+    zod-validation-error: "npm:^3.5.0 || ^4.0.0"
   peerDependencies:
     eslint: ^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0-0 || ^9.0.0
-  checksum: 10/ebb79e9cf69ae06e3a7876536653c5e556b5fd8cd9dc49577f10a6e728360e7b6f5ce91f4339b33e93b26e3bb23805418f8b5e75db80baddd617b1dffe73bed1
+  checksum: 10/12e96c68d58c6588305fd17d660524a1ef1e872650ec591d5b138f059431290831c373d4b1c9ae8991fb25f96c43935497d2149678c027e65d0417d3d99ecc85
   languageName: node
   linkType: hard
 
@@ -8838,6 +8844,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"hermes-estree@npm:0.25.1":
+  version: 0.25.1
+  resolution: "hermes-estree@npm:0.25.1"
+  checksum: 10/7b1eca98b264a25632064cffa5771360d30cf452e77db1e191f9913ee45cf78c292b2dbca707e92fb71b0870abb97e94b506a5ab80abd96ba237fee169b601fe
+  languageName: node
+  linkType: hard
+
+"hermes-parser@npm:^0.25.1":
+  version: 0.25.1
+  resolution: "hermes-parser@npm:0.25.1"
+  dependencies:
+    hermes-estree: "npm:0.25.1"
+  checksum: 10/805efc05691420f236654349872c70731121791fa54de521c7ee51059eae34f84dd19f22ee846741dcb60372f8fb5335719b96b4ecb010d2aed7d872f2eff9cc
+  languageName: node
+  linkType: hard
+
 "hey-listen@npm:^1.0.8":
   version: 1.0.8
   resolution: "hey-listen@npm:1.0.8"
@@ -10032,12 +10054,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"marked@npm:^16.3.0":
-  version: 16.3.0
-  resolution: "marked@npm:16.3.0"
+"marked@npm:^17.0.0":
+  version: 17.0.0
+  resolution: "marked@npm:17.0.0"
   bin:
     marked: bin/marked.js
-  checksum: 10/60497834b9acfb3b3994222509d359ecb9a197c885dfeb77e2050a287cd2f4ab19f00d5597172b47f9e0c54d9e1e13d8b2dd73322b7838599e1f16d1d6283f5b
+  checksum: 10/5544d27547851986c4e994a3f5739ea30bfe2616a9e1d5d5c8ced0fd561b5e971b3c7ee62b4fea1ea530e9886b89102d5c3b3bf962756494ced021f1accd6854
   languageName: node
   linkType: hard
 
@@ -13771,6 +13793,22 @@ __metadata:
   version: 0.1.0
   resolution: "yocto-queue@npm:0.1.0"
   checksum: 10/f77b3d8d00310def622123df93d4ee654fc6a0096182af8bd60679ddcdfb3474c56c6c7190817c84a2785648cdee9d721c0154eb45698c62176c322fb46fc700
+  languageName: node
+  linkType: hard
+
+"zod-validation-error@npm:^3.5.0 || ^4.0.0":
+  version: 4.0.2
+  resolution: "zod-validation-error@npm:4.0.2"
+  peerDependencies:
+    zod: ^3.25.0 || ^4.0.0
+  checksum: 10/5e35ca8ebb4602dcb526e122d7e9fca695c4a479bd97535f3400a732d49160f24f7213a9ed64986fc9dc3a2e8a6c4e1241ec0c4d8a4e3e69ea91a0328ded2192
+  languageName: node
+  linkType: hard
+
+"zod@npm:^3.25.0 || ^4.0.0":
+  version: 4.1.12
+  resolution: "zod@npm:4.1.12"
+  checksum: 10/c5f04e6ac306515c4db6ef73cf7705f521c7a2107c8c8912416a0658d689f361db9bee829b0bf01ef4a22492f1065c5cbcdb523ce532606ac6792fd714f3c326
   languageName: node
   linkType: hard
 
