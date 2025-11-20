@@ -15,8 +15,8 @@
  */
 
 import React, { useEffect, useMemo, useState } from 'react';
-import GraphiQLComponent from 'graphiql';
-import 'graphiql/graphiql.min.css';
+import { GraphiQL as GraphiQLComponent } from 'graphiql';
+import 'graphiql/style.css';
 import { explorerPlugin } from '@graphiql/plugin-explorer';
 import { buildClientSchema, getIntrospectionQuery, GraphQLSchema } from 'graphql';
 import GlobalAppToolbar from '../GlobalAppToolbar';
@@ -178,7 +178,7 @@ function GraphiQL(props: GraphiQLProps) {
 					<GraphiQLComponent
 						fetcher={graphQLFetcher}
 						schema={schema}
-						query={query}
+						query={initialQuery}
 						storage={storage}
 						onEditQuery={onEditQuery}
 						plugins={[explorer]}
