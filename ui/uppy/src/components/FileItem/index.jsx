@@ -1,17 +1,27 @@
-import { h, Component } from 'preact';
 import classNames from 'classnames';
+// biome-ignore lint/style/useImportType: h is not a type
+import { Component } from 'preact';
 import { shallowEqualObjects } from 'shallow-equal';
-import FilePreviewAndLink from '@uppy/dashboard/lib/components/FileItem/FilePreviewAndLink';
-import FileProgress from './FileProgress/index';
-import FileInfo from './FileInfo/index';
-import Buttons from './Buttons/index';
+import Buttons from './Buttons/index.js';
+import FileInfo from './FileInfo/index.js';
+import FilePreviewAndLink from './FilePreviewAndLink/index.js';
+import FileProgress from './FileProgress/index.js';
 
 export default class FileItem extends Component {
+	componentDidMount() {
+		const { file } = this.props;
+		if (!file.preview) {
+			this.props.handleRequestThumbnail(file);
+		}
+	}
+
 	shouldComponentUpdate(nextProps) {
 		return !shallowEqualObjects(this.props, nextProps);
 	}
 
-	componentDidMount() {
+	// VirtualList mounts FileItems again and they emit `thumbnail:request`
+	// Otherwise thumbnails are broken or missing after Golden Retriever restores files
+	componentDidUpdate() {
 		const { file } = this.props;
 		if (!file.preview) {
 			this.props.handleRequestThumbnail(file);
@@ -29,10 +39,14 @@ export default class FileItem extends Component {
 		const { file } = this.props;
 
 		const isProcessing = file.progress.preprocess || file.progress.postprocess;
-		const isUploaded = file.progress.uploadComplete && !isProcessing && !file.error;
-		const uploadInProgressOrComplete = file.progress.uploadStarted || isProcessing;
+		const isUploaded = !!file.progress.uploadComplete && !isProcessing && !file.error;
+		const uploadInProgressOrComplete = !!file.progress.uploadStarted || !!isProcessing;
 		const uploadInProgress = (file.progress.uploadStarted && !file.progress.uploadComplete) || isProcessing;
 		const error = file.error || false;
+
+		// File that Golden Retriever was able to partly restore (only meta, not blob),
+		// users still need to re-add it, so it’s a ghost
+		const { isGhost } = file;
 
 		let showRemoveButton = this.props.individualCancellation ? !isUploaded : !uploadInProgress && !isUploaded;
 
@@ -41,46 +55,65 @@ export default class FileItem extends Component {
 		}
 
 		const dashboardItemClass = classNames({
-			'MuiPaper-root MuiCard-root MuiPaper-elevation1 MuiPaper-rounded uppy-dashboard-item-card': true,
-			'is-inprogress': uploadInProgress,
+			'uppy-Dashboard-Item': true,
+			'is-inprogress': uploadInProgress && !this.props.recoveredState,
 			'is-processing': isProcessing,
 			'is-complete': isUploaded,
 			'is-error': !!error,
 			'is-resumable': this.props.resumableUploads,
-			'is-noIndividualCancellation': !this.props.individualCancellation
+			'is-noIndividualCancellation': !this.props.individualCancellation,
+			'is-ghost': isGhost
 		});
 
 		return (
 			<div className={dashboardItemClass} id={`uppy_${file.id}`} role={this.props.role}>
-				<div className="uppy-dashboard-item-preview">
-					<FilePreviewAndLink file={file} showLinkToFileUploadResult={this.props.showLinkToFileUploadResult} />
-				</div>
-				<div class="uppy-dashboard-item-fileInfoAndButtons">
-					<FileInfo
+				<div className="uppy-Dashboard-Item-preview">
+					<FilePreviewAndLink
 						file={file}
-						id={this.props.id}
-						acquirers={this.props.acquirers}
-						containerWidth={this.props.containerWidth}
-						containerHeight={this.props.containerHeight}
+						showLinkToFileUploadResult={this.props.showLinkToFileUploadResult}
 						i18n={this.props.i18n}
-						isSingleFile={this.props.isSingleFile}
-						externalMessages={this.props.externalMessages}
+						toggleFileCard={this.props.toggleFileCard}
+						metaFields={this.props.metaFields}
 					/>
-					<Buttons
+					<FileProgress
 						uppy={this.props.uppy}
 						file={file}
 						error={error}
+						isUploaded={isUploaded}
 						hideRetryButton={this.props.hideRetryButton}
-						showRemoveButton={showRemoveButton}
-						validateAndRetry={this.props.validateAndRetry}
-						successfulUploadButton={this.props.successfulUploadButton}
-						removeFile={this.props.removeFile}
-						retryUpload={this.props.retryUpload}
+						hideCancelButton={this.props.hideCancelButton}
+						hidePauseResumeButton={this.props.hidePauseResumeButton}
+						recoveredState={this.props.recoveredState}
+						resumableUploads={this.props.resumableUploads}
+						individualCancellation={this.props.individualCancellation}
 						i18n={this.props.i18n}
-						validateFilesPolicy={this.props.validateFilesPolicy}
 					/>
 				</div>
-				<FileProgress file={file} error={error} isUploaded={isUploaded} />
+
+				<div className="uppy-Dashboard-Item-fileInfoAndButtons">
+					<FileInfo
+						file={file}
+						containerWidth={this.props.containerWidth}
+						containerHeight={this.props.containerHeight}
+						i18n={this.props.i18n}
+						toggleAddFilesPanel={this.props.toggleAddFilesPanel}
+						toggleFileCard={this.props.toggleFileCard}
+						metaFields={this.props.metaFields}
+						isSingleFile={this.props.isSingleFile}
+					/>
+					<Buttons
+						file={file}
+						metaFields={this.props.metaFields}
+						showLinkToFileUploadResult={this.props.showLinkToFileUploadResult}
+						showRemoveButton={showRemoveButton}
+						canEditFile={this.props.canEditFile}
+						uploadInProgressOrComplete={uploadInProgressOrComplete}
+						toggleFileCard={this.props.toggleFileCard}
+						openFileEditor={this.props.openFileEditor}
+						uppy={this.props.uppy}
+						i18n={this.props.i18n}
+					/>
+				</div>
 			</div>
 		);
 	}
