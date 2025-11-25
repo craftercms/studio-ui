@@ -1,3 +1,4 @@
+import { h } from 'preact';
 import copyToClipboard from '../../../utils/copyToClipboard.js';
 
 function EditButton({ file, uploadInProgressOrComplete, metaFields, canEditFile, i18n, onClick }) {
@@ -32,18 +33,15 @@ function EditButton({ file, uploadInProgressOrComplete, metaFields, canEditFile,
 function RemoveButton({ i18n, onClick, file }) {
 	return (
 		<button
-			className="uppy-u-reset uppy-Dashboard-Item-action uppy-Dashboard-Item-action--remove"
+			className="uppy-dashboard-button-base uppy-dashboard-icon-button edgeEnd"
+			tabIndex="0"
 			type="button"
-			aria-label={i18n('removeFile', { file: file.meta.name })}
-			title={i18n('removeFile', { file: file.meta.name })}
+			aria-label={i18n('removeFile')}
+			title={i18n('removeFile')}
 			onClick={() => onClick()}
 		>
-			<svg aria-hidden="true" focusable="false" className="uppy-c-icon" width="18" height="18" viewBox="0 0 18 18">
-				<path d="M9 0C4.034 0 0 4.034 0 9s4.034 9 9 9 9-4.034 9-9-4.034-9-9-9z" />
-				<path
-					fill="#FFF"
-					d="M13 12.222l-.778.778L9 9.778 5.778 13 5 12.222 8.222 9 5 5.778 5.778 5 9 8.222 12.222 5l.778.778L9.778 9z"
-				/>
+			<svg className="uppy-dashboard-svg-icon" focusable="false" viewBox="0 0 24 24" aria-hidden="true">
+				<path d="M18.3 5.71a.9959.9959 0 00-1.41 0L12 10.59 7.11 5.7a.9959.9959 0 00-1.41 0c-.39.39-.39 1.02 0 1.41L10.59 12 5.7 16.89c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0L12 13.41l4.89 4.89c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L13.41 12l4.89-4.89c.38-.38.38-1.02 0-1.4z"></path>
 			</svg>
 		</button>
 	);
@@ -76,6 +74,23 @@ function CopyLinkButton({ file, uppy, i18n }) {
 	);
 }
 
+function AcceptSuggestedNameIcon({ i18n, onClick }) {
+	return (
+		<button
+			className="uppy-dashboard-button-base uppy-dashboard-icon-button edgeEnd"
+			tabIndex="0"
+			type="button"
+			aria-label={i18n('validateAndRetry')}
+			title={i18n('validateAndRetry')}
+			onClick={() => onClick()}
+		>
+			<svg className="uppy-dashboard-svg-icon" focusable="false" viewBox="0 0 24 24" aria-hidden="true">
+				<path d="M9 16.17L5.53 12.7a.9959.9959 0 00-1.41 0c-.39.39-.39 1.02 0 1.41l4.18 4.18c.39.39 1.02.39 1.41 0L20.29 7.71c.39-.39.39-1.02 0-1.41a.9959.9959 0 00-1.41 0L9 16.17z"></path>
+			</svg>
+		</button>
+	);
+}
+
 export default function Buttons(props) {
 	const {
 		uppy,
@@ -87,7 +102,8 @@ export default function Buttons(props) {
 		showRemoveButton,
 		i18n,
 		toggleFileCard,
-		openFileEditor
+		openFileEditor,
+		validateAndRetry
 	} = props;
 	const editAction = () => {
 		if (metaFields && metaFields.length > 0) {
@@ -107,8 +123,11 @@ export default function Buttons(props) {
 				metaFields={metaFields}
 				onClick={editAction}
 			/>
-			{showLinkToFileUploadResult && file.uploadURL ? <CopyLinkButton file={file} uppy={uppy} i18n={i18n} /> : null}
 			{showRemoveButton ? <RemoveButton i18n={i18n} file={file} onClick={() => uppy.removeFile(file.id)} /> : null}
+			{file.meta.validating === false && file.meta.allowed && file.meta.suggestedName && (
+				<AcceptSuggestedNameIcon i18n={i18n} onClick={() => validateAndRetry(file.id)} />
+			)}
+			{showLinkToFileUploadResult && file.uploadURL ? <CopyLinkButton file={file} uppy={uppy} i18n={i18n} /> : null}
 		</div>
 	);
 }

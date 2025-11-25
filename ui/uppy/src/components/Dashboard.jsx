@@ -26,6 +26,10 @@ export default function Dashboard(props) {
 	const isSizeMD = props.containerWidth > WIDTH_MD;
 	const isSizeHeightMD = props.containerHeight > HEIGHT_MD;
 
+	const wrapperClassName = classNames({
+		'uppy-Root': props.isTargetDOMEl
+	});
+
 	const dashboardClassName = classNames({
 		'uppy-Dashboard': true,
 		'uppy-Dashboard--isDisabled': props.disabled,
@@ -113,8 +117,6 @@ export default function Dashboard(props) {
 				<div className="uppy-Dashboard-innerWrap">
 					<div className="uppy-Dashboard-dropFilesHereHint">{props.i18n('dropHint')}</div>
 
-					{showFileList && <PanelTopBar {...props} />}
-
 					{numberOfFilesForRecovery && (
 						<div className="uppy-Dashboard-serviceMsg">
 							<svg
@@ -164,25 +166,52 @@ export default function Dashboard(props) {
 							itemsPerRow={itemsPerRow}
 							containerWidth={props.containerWidth}
 							containerHeight={props.containerHeight}
+							externalMessages={props.externalMessages}
+							validateFilesPolicy={props.validateFilesPolicy}
+							validateAndRetry={props.validateAndRetry}
 						/>
 					) : (
-						<AddFiles
-							i18n={props.i18n}
-							i18nArray={props.i18nArray}
-							acquirers={props.acquirers}
-							handleInputChange={props.handleInputChange}
-							maxNumberOfFiles={props.maxNumberOfFiles}
-							allowedFileTypes={props.allowedFileTypes}
-							showNativePhotoCameraButton={props.showNativePhotoCameraButton}
-							showNativeVideoCameraButton={props.showNativeVideoCameraButton}
-							nativeCameraFacingMode={props.nativeCameraFacingMode}
-							showPanel={props.showPanel}
-							activePickerPanel={props.activePickerPanel}
-							disableLocalFiles={props.disableLocalFiles}
-							fileManagerSelectionType={props.fileManagerSelectionType}
-							note={props.note}
-							proudlyDisplayPoweredByUppy={props.proudlyDisplayPoweredByUppy}
-						/>
+						<div
+							style={{
+								textAlign: 'center',
+								verticalAlign: 'middle',
+								top: '50%',
+								position: 'relative',
+								transform: 'translate(0, -50%)'
+							}}
+						>
+							<div>
+								<AddFiles
+									i18n={props.i18n}
+									i18nArray={props.i18nArray}
+									acquirers={props.acquirers}
+									handleInputChange={props.handleInputChange}
+									maxNumberOfFiles={props.maxNumberOfFiles}
+									allowedFileTypes={props.allowedFileTypes}
+									showNativePhotoCameraButton={props.showNativePhotoCameraButton}
+									showNativeVideoCameraButton={props.showNativeVideoCameraButton}
+									nativeCameraFacingMode={props.nativeCameraFacingMode}
+									showPanel={props.showPanel}
+									activePickerPanel={props.activePickerPanel}
+									disableLocalFiles={props.disableLocalFiles}
+									fileManagerSelectionType={props.fileManagerSelectionType}
+									note={props.note}
+									proudlyDisplayPoweredByUppy={props.proudlyDisplayPoweredByUppy}
+								/>
+							</div>
+							<div>
+								<div
+									className="uppy-Dashboard-AddFiles"
+									style={{
+										color: '#949494',
+										fontWeight: 'bold',
+										fontSize: '20px'
+									}}
+								>
+									{props.externalMessages?.maxFiles}
+								</div>
+							</div>
+						</div>
 					)}
 
 					<Slide>
@@ -197,19 +226,7 @@ export default function Dashboard(props) {
 
 					<div className="uppy-Dashboard-progressindicators">
 						{!props.disableInformer && <Informer uppy={props.uppy} />}
-						{!props.disableStatusBar && (
-							<StatusBar
-								uppy={props.uppy}
-								i18n={props.i18n}
-								hideProgressDetails={props.hideProgressDetails}
-								hideUploadButton={props.hideUploadButton}
-								hideRetryButton={props.hideRetryButton}
-								hidePauseResumeButton={props.hidePauseResumeButton}
-								hideCancelButton={props.hideCancelButton}
-								hideAfterFinish={props.hideProgressAfterFinish}
-								doneButtonHandler={props.doneButtonHandler}
-							/>
-						)}
+						{showFileList && <PanelTopBar {...props} />}
 						{!props.disableInformer && <Informer uppy={props.uppy} />}
 						{props.progressindicators.map((target) => {
 							// TODO
@@ -223,5 +240,52 @@ export default function Dashboard(props) {
 		</div>
 	);
 
-	return dashboard;
+	return (
+		<div class={wrapperClassName} dir={props.direction}>
+			<div class="uppy-dashboard-header">
+				<h2 className="MuiTypography-root MuiTypography-h6 uppy-dashboard-header-title">
+					{props.title} {Boolean(props.totalFileCount) && `(${props.completeFiles.length}/${props.totalFileCount})`}
+				</h2>
+				<div class="uppy-dashboard-header-actions">
+					<button
+						title={props.i18n('minimize')}
+						onClick={props.onMinimized}
+						tabIndex="0"
+						type="button"
+						aria-label="minimize"
+						className="uppy-dashboard-button-base uppy-dashboard-icon-button"
+					>
+						<svg
+							className="uppy-dashboard-svg-icon"
+							focusable="false"
+							viewBox="0 0 24 24"
+							aria-hidden="true"
+							data-testid="RemoveRoundedIcon"
+						>
+							<path d="M18 13H6c-.55 0-1-.45-1-1s.45-1 1-1h12c.55 0 1 .45 1 1s-.45 1-1 1z"></path>
+						</svg>
+					</button>
+					<button
+						title={props.i18n('close')}
+						onClick={props.onClose}
+						tabIndex="0"
+						type="button"
+						aria-label="close"
+						className="uppy-dashboard-button-base uppy-dashboard-icon-button"
+					>
+						<svg
+							className="uppy-dashboard-svg-icon"
+							focusable="false"
+							viewBox="0 0 24 24"
+							aria-hidden="true"
+							data-testid="CloseRoundedIcon"
+						>
+							<path d="M18.3 5.71a.9959.9959 0 0 0-1.41 0L12 10.59 7.11 5.7a.9959.9959 0 0 0-1.41 0c-.39.39-.39 1.02 0 1.41L10.59 12 5.7 16.89c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0L12 13.41l4.89 4.89c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L13.41 12l4.89-4.89c.38-.38.38-1.02 0-1.4z"></path>
+						</svg>
+					</button>
+				</div>
+			</div>
+			{dashboard}
+		</div>
+	);
 }

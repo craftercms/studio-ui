@@ -1,3 +1,4 @@
+import { h } from 'preact';
 // @ts-ignore untyped
 import { VirtualList } from '@uppy/utils';
 import { useMemo } from 'preact/hooks';
@@ -41,7 +42,10 @@ export default function FileList({
 	canEditFile,
 	toggleAddFilesPanel,
 	containerWidth,
-	containerHeight
+	containerHeight,
+	externalMessages,
+	validateFilesPolicy,
+	validateAndRetry
 }) {
 	// It's not great that this is hardcoded!
 	// It's ESPECIALLY not great that this is checking against `itemsPerRow`!
@@ -69,15 +73,15 @@ export default function FileList({
 			role="presentation"
 			// We use the first file ID as the key — this should not change across scroll rerenders.
 			key={row[0]}
+			style={{ display: 'flex', flexDirection: 'column' }}
 		>
 			{row.map((fileID) => (
 				<FileItem
 					key={fileID}
 					uppy={uppy}
-					// FIXME This is confusing, it's actually the Dashboard's plugin ID
 					id={id}
-					// TODO move this to context
 					i18n={i18n}
+					externalMessages={externalMessages}
 					// features
 					resumableUploads={resumableUploads}
 					individualCancellation={individualCancellation}
@@ -101,6 +105,8 @@ export default function FileList({
 					canEditFile={canEditFile}
 					toggleAddFilesPanel={toggleAddFilesPanel}
 					file={files[fileID]}
+					validateFilesPolicy={validateFilesPolicy}
+					validateAndRetry={validateAndRetry}
 				/>
 			))}
 		</div>

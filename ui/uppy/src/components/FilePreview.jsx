@@ -1,3 +1,4 @@
+import { h } from 'preact';
 import getFileTypeIcon from '../utils/getFileTypeIcon.js';
 
 export default function FilePreview(props) {

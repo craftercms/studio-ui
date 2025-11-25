@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 // biome-ignore lint/style/useImportType: h is not a type
-import { Component } from 'preact';
+import { Component, h } from 'preact';
 import { shallowEqualObjects } from 'shallow-equal';
 import Buttons from './Buttons/index.js';
 import FileInfo from './FileInfo/index.js';
@@ -66,8 +66,13 @@ export default class FileItem extends Component {
 		});
 
 		return (
-			<div className={dashboardItemClass} id={`uppy_${file.id}`} role={this.props.role}>
-				<div className="uppy-Dashboard-Item-preview">
+			<div
+				className={dashboardItemClass}
+				id={`uppy_${file.id}`}
+				role={this.props.role}
+				style={{ display: 'flex', width: 'calc(100% - 30px)', height: 'unset', margin: '5px' }}
+			>
+				<div className="uppy-Dashboard-Item-preview" style={{ width: '120px', marginRight: '10px', height: '120px' }}>
 					<FilePreviewAndLink
 						file={file}
 						showLinkToFileUploadResult={this.props.showLinkToFileUploadResult}
@@ -100,6 +105,7 @@ export default class FileItem extends Component {
 						toggleFileCard={this.props.toggleFileCard}
 						metaFields={this.props.metaFields}
 						isSingleFile={this.props.isSingleFile}
+						externalMessages={this.props.externalMessages}
 					/>
 					<Buttons
 						file={file}
@@ -112,6 +118,7 @@ export default class FileItem extends Component {
 						openFileEditor={this.props.openFileEditor}
 						uppy={this.props.uppy}
 						i18n={this.props.i18n}
+						validateAndRetry={this.props.validateAndRetry}
 					/>
 				</div>
 			</div>

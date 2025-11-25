@@ -1,4 +1,4 @@
-import { Component, createRef } from 'preact';
+import { Component, createRef, h } from 'preact';
 
 const TRANSITION_MS = 300;
 

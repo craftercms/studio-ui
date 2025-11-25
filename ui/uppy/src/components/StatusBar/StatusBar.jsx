@@ -161,9 +161,8 @@ export default class StatusBar extends Component {
 		if (recoveredState) {
 			this.props.uppy.emit('restore-confirmed');
 		} else {
-			this.props.uppy.upload().catch(() => {
-				// Error logged in Core
-			});
+			const files = this.props.uppy.getFiles();
+			this.props.validateFilesPolicy(files);
 		}
 	};
 

@@ -1,3 +1,5 @@
+import { h } from 'preact';
+
 function onPauseResumeCancelRetry(props) {
 	if (props.isUploaded) return;
 

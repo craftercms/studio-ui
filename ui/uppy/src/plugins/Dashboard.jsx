@@ -15,7 +15,7 @@
  */
 
 import { h } from 'preact';
-import { Dashboard as UppyDashboard } from 'uppy';
+import { Dashboard as UppyDashboard, ThumbnailGenerator } from 'uppy';
 import { defaultPickerIcon } from '@uppy/provider-views';
 import locale from './locale';
 import DashboardUI from '../components/Dashboard';
@@ -142,6 +142,258 @@ export class Dashboard extends UppyDashboard {
 		}
 	};
 
+	handleComplete = ({ failed }) => {
+		// craftercms/uppy - custom code
+		const files = this.uppy.getFiles();
+		let completeFiles = 0;
+		let invalidFiles = 0;
+		files.forEach((file) => {
+			if (file.progress.uploadComplete) {
+				completeFiles++;
+			}
+			if (file.meta.allowed === false || file.meta.suggestedName) {
+				invalidFiles++;
+			}
+		});
+		const allFilesCompleted = files.length === completeFiles + invalidFiles;
+		// end craftercms/uppy - custom code
+
+		if (allFilesCompleted && this.opts.closeAfterFinish && !failed?.length) {
+			// All uploads are done
+			this.requestCloseModal();
+		}
+	};
+
+	// craftercms/uppy - site policy custom code
+	validateFilesPolicy = (files) => {
+		if (files.length === 0) return;
+		const fileIdLookup = {};
+		const invalidFiles = this.getPluginState().invalidFiles;
+
+		this.opts
+			.validateActionPolicy(
+				this.opts.site,
+				files.map((file) => {
+					let target = `${file.meta.path}/${file.name}`;
+					fileIdLookup[target] = file.id;
+					return {
+						type: 'CREATE',
+						target,
+						contentMetadata: {
+							fileSize: file.size
+						}
+					};
+				})
+			)
+			.subscribe((response) => {
+				let uploading = false;
+				response.forEach(({ allowed, modifiedValue, target, message }) => {
+					let fileId = fileIdLookup[target];
+					this.uppy.setFileMeta(fileId, {
+						validating: false,
+						allowed,
+						message,
+						...(modifiedValue && { suggestedName: modifiedValue.replace(/^.*[\\\/]/, '') })
+					});
+					if (allowed && modifiedValue === null) {
+						this.uppy.retryUpload(fileId);
+						uploading = true;
+					} else {
+						invalidFiles[fileId] = true;
+					}
+				});
+				this.opts.onPendingChanges(uploading);
+				this.setPluginState({
+					invalidFiles: invalidFiles
+				});
+			});
+	};
+
+	validateAndRetry = (fileID) => {
+		const invalidFiles = { ...this.getPluginState().invalidFiles };
+		const suggestedName = this.uppy.getFile(fileID).meta.suggestedName;
+		invalidFiles[fileID] = false;
+		this.setPluginState({ invalidFiles });
+		this.uppy.setFileMeta(fileID, {
+			allowed: true,
+			suggestedName: null,
+			name: suggestedName
+		});
+		this.uppy.retryUpload(fileID);
+	};
+
+	validateAndRemove = (fileID) => {
+		const invalidFiles = { ...this.getPluginState().invalidFiles };
+		if (invalidFiles[fileID]) {
+			invalidFiles[fileID] = false;
+		}
+		this.setPluginState({ invalidFiles });
+		this.uppy.removeFile(fileID);
+	};
+
+	cancelPending = () => {
+		const invalidFiles = { ...this.getPluginState().invalidFiles };
+		this.uppy.getFiles().forEach((file) => {
+			if (!file.progress.uploadComplete) {
+				if (invalidFiles[file.id]) {
+					invalidFiles[file.id] = false;
+				}
+				this.uppy.removeFile(file.id);
+			}
+		});
+		this.setPluginState({ invalidFiles });
+		this.opts.onPendingChanges(false);
+	};
+
+	clearCompleted = () => {
+		this.uppy.getFiles().forEach((file) => {
+			if (file.progress.uploadComplete) {
+				this.uppy.removeFile(file.id);
+			}
+		});
+	};
+
+	rejectAll = () => {
+		const invalidFiles = { ...this.getPluginState().invalidFiles };
+		Object.keys(invalidFiles).forEach((fileID) => {
+			if (invalidFiles[fileID]) {
+				invalidFiles[fileID] = false;
+				this.uppy.removeFile(fileID);
+			}
+		});
+		this.setPluginState({ invalidFiles });
+	};
+
+	confirmAll = () => {
+		const files = this.uppy.getFiles();
+		const invalidFiles = { ...this.getPluginState().invalidFiles };
+		Object.keys(invalidFiles).forEach((fileID) => {
+			if (invalidFiles[fileID]) {
+				invalidFiles[fileID] = false;
+				const file = this.uppy.getFile(fileID);
+				const suggestedName = this.uppy.getFile(fileID).meta.suggestedName;
+				if (file.meta.allowed) {
+					this.uppy.setFileMeta(fileID, {
+						allowed: true,
+						suggestedName: null,
+						name: suggestedName
+					});
+					this.uppy.retryUpload(fileID);
+				} else {
+					this.uppy.removeFile(fileID);
+				}
+			}
+		});
+		this.setPluginState({ invalidFiles });
+	};
+
+	#generateLargeThumbnailIfSingleFile = () => {
+		if (this.opts.disableThumbnailGenerator) {
+			return;
+		}
+
+		const LARGE_THUMBNAIL = 600;
+		const files = this.uppy.getFiles();
+
+		if (files.length === 1) {
+			const thumbnailGenerator = this.uppy.getPlugin(`${this.id}:ThumbnailGenerator`);
+			thumbnailGenerator?.setOptions({ thumbnailWidth: LARGE_THUMBNAIL });
+			const fileForThumbnail = { ...files[0], preview: undefined };
+			thumbnailGenerator?.requestThumbnail(fileForThumbnail).then(() => {
+				thumbnailGenerator?.setOptions({
+					thumbnailWidth: this.opts.thumbnailWidth
+				});
+			});
+		}
+	};
+
+	#openFileEditorWhenFilesAdded = (files) => {
+		const firstFile = files[0];
+
+		const { metaFields } = this.getPluginState();
+		const isMetaEditorEnabled = metaFields && metaFields.length > 0;
+		const isImageEditorEnabled = this.canEditFile(firstFile);
+
+		if (isMetaEditorEnabled && this.opts.autoOpen === 'metaEditor') {
+			this.toggleFileCard(true, firstFile.id);
+		} else if (isImageEditorEnabled && this.opts.autoOpen === 'imageEditor') {
+			this.openFileEditor(firstFile);
+		}
+	};
+
+	initEvents = () => {
+		// Modal open button
+		if (this.opts.trigger && !this.opts.inline) {
+			const showModalTrigger = findAllDOMElements(this.opts.trigger);
+			if (showModalTrigger) {
+				showModalTrigger.forEach((trigger) => trigger.addEventListener('click', this.openModal));
+			} else {
+				this.uppy.log(
+					'Dashboard modal trigger not found. Make sure `trigger` is set in Dashboard options, unless you are planning to call `dashboard.openModal()` method yourself',
+					'warning'
+				);
+			}
+		}
+
+		this.startListeningToResize();
+		document.addEventListener('paste', this.handlePasteOnBody);
+
+		this.uppy.on('plugin-added', this.#addSupportedPluginIfNoTarget);
+		this.uppy.on('plugin-remove', this.removeTarget);
+		this.uppy.on('file-added', this.hideAllPanels);
+		this.uppy.on('dashboard:modal-closed', this.hideAllPanels);
+		this.uppy.on('complete', this.handleComplete);
+
+		this.uppy.on('files-added', this.#generateLargeThumbnailIfSingleFile);
+		this.uppy.on('file-removed', this.#generateLargeThumbnailIfSingleFile);
+		this.uppy.on('files-added', this.validateFilesPolicy);
+
+		// ___Why fire on capture?
+		//    Because this.ifFocusedOnUppyRecently needs to change before onUpdate() fires.
+		document.addEventListener('focus', this.recordIfFocusedOnUppyRecently, true);
+		document.addEventListener('click', this.recordIfFocusedOnUppyRecently, true);
+
+		if (this.opts.inline) {
+			this.el.addEventListener('keydown', this.handleKeyDownInInline);
+		}
+
+		if (this.opts.autoOpen) {
+			this.uppy.on('files-added', this.#openFileEditorWhenFilesAdded);
+		}
+	};
+
+	removeEvents = () => {
+		const showModalTrigger = findAllDOMElements(this.opts.trigger);
+		if (!this.opts.inline && showModalTrigger) {
+			showModalTrigger.forEach((trigger) => trigger.removeEventListener('click', this.openModal));
+		}
+
+		this.stopListeningToResize();
+		document.removeEventListener('paste', this.handlePasteOnBody);
+		window.removeEventListener('popstate', this.handlePopState, false);
+
+		this.uppy.off('plugin-added', this.#addSupportedPluginIfNoTarget);
+		this.uppy.off('plugin-remove', this.removeTarget);
+		this.uppy.off('file-added', this.hideAllPanels);
+		this.uppy.off('dashboard:modal-closed', this.hideAllPanels);
+		this.uppy.off('complete', this.handleComplete);
+
+		this.uppy.off('files-added', this.#generateLargeThumbnailIfSingleFile);
+		this.uppy.off('file-removed', this.#generateLargeThumbnailIfSingleFile);
+		this.uppy.off('files-added', this.validateFilesPolicy);
+
+		document.removeEventListener('focus', this.recordIfFocusedOnUppyRecently);
+		document.removeEventListener('click', this.recordIfFocusedOnUppyRecently);
+
+		if (this.opts.inline) {
+			this.el.removeEventListener('keydown', this.handleKeyDownInInline);
+		}
+
+		if (this.opts.autoOpen) {
+			this.uppy.off('files-added', this.#openFileEditorWhenFilesAdded);
+		}
+	};
+
 	#attachRenderFunctionToTarget = (target) => {
 		const plugin = this.uppy.getPlugin(target.id);
 		return {
@@ -191,6 +443,7 @@ export class Dashboard extends UppyDashboard {
 			isAllPaused
 		} = this.uppy.getObjectOfFilesPerState();
 
+		const hasInvalidFiles = Object.values(pluginState.invalidFiles).some((value) => value);
 		const acquirers = this.#getAcquirers(pluginState.targets);
 		const progressindicators = this.#getProgressIndicators(pluginState.targets);
 		const editors = this.#getEditors(pluginState.targets);
@@ -258,6 +511,20 @@ export class Dashboard extends UppyDashboard {
 			resumableUploads: capabilities.resumableUploads || false,
 			individualCancellation: capabilities.individualCancellation,
 			isMobileDevice: capabilities.isMobileDevice,
+			// region header
+			onMinimized: this.opts.onMinimized,
+			onClose: this.opts.onClose,
+			title: this.opts.title,
+			// endregion
+			// region Site policy props - craftercms/uppy custom code
+			cancelPending: this.cancelPending,
+			clearCompleted: this.clearCompleted,
+			validateAndRetry: this.validateAndRetry,
+			rejectAll: this.rejectAll,
+			confirmAll: this.confirmAll,
+			invalidFiles: pluginState.invalidFiles ?? {},
+			hasInvalidFiles,
+			// endregion
 			fileCardFor: pluginState.fileCardFor,
 			toggleFileCard: this.toggleFileCard,
 			toggleAddFilesPanel: this.toggleAddFilesPanel,
@@ -290,6 +557,7 @@ export class Dashboard extends UppyDashboard {
 			handleDragOver: this.handleDragOver,
 			handleDragLeave: this.handleDragLeave,
 			handleDrop: this.handleDrop,
+			externalMessages: this.opts.externalMessages,
 			// informer props
 			disableInformer: this.opts.disableInformer,
 			// status-bar props
@@ -300,7 +568,121 @@ export class Dashboard extends UppyDashboard {
 			hidePauseResumeButton: this.opts.hidePauseResumeButton,
 			hideCancelButton: this.opts.hideCancelButton,
 			hideProgressAfterFinish: this.opts.hideProgressAfterFinish,
-			doneButtonHandler: this.opts.doneButtonHandler
+			doneButtonHandler: this.opts.doneButtonHandler,
+			validateFilesPolicy: this.validateFilesPolicy
 		});
+	};
+
+	#addSpecifiedPluginsFromOptions = () => {
+		const { plugins } = this.opts;
+
+		plugins.forEach((pluginID) => {
+			const plugin = this.uppy.getPlugin(pluginID);
+			if (plugin) {
+				plugin.mount(this, plugin);
+			} else {
+				this.uppy.log(
+					`[Uppy] Dashboard could not find plugin '${pluginID}', make sure to uppy.use() the plugins you are specifying`,
+					'warning'
+				);
+			}
+		});
+	};
+
+	#autoDiscoverPlugins = () => {
+		this.uppy.iteratePlugins(this.#addSupportedPluginIfNoTarget);
+	};
+
+	#addSupportedPluginIfNoTarget = (plugin) => {
+		// Only these types belong on the Dashboard,
+		// we wouldn’t want to try and mount Compressor or Tus, for example.
+		const typesAllowed = ['acquirer', 'editor'];
+		if (plugin && !plugin.opts?.target && typesAllowed.includes(plugin.type)) {
+			const pluginAlreadyAdded = this.getPluginState().targets.some(
+				(installedPlugin) => plugin.id === installedPlugin.id
+			);
+			if (!pluginAlreadyAdded) {
+				plugin.mount(this, plugin);
+			}
+		}
+	};
+
+	#getThumbnailGeneratorOpts() {
+		const { thumbnailWidth, thumbnailHeight, thumbnailType, waitForThumbnailsBeforeUpload } = this.opts;
+		return {
+			thumbnailWidth,
+			thumbnailHeight,
+			thumbnailType,
+			waitForThumbnailsBeforeUpload,
+			// If we don't block on thumbnails, we can lazily generate them
+			lazy: !waitForThumbnailsBeforeUpload
+		};
+	}
+
+	#getThumbnailGeneratorId() {
+		return `${this.id}:ThumbnailGenerator`;
+	}
+
+	install = () => {
+		// Set default state for Dashboard
+		this.setPluginState({
+			isHidden: true,
+			fileCardFor: null,
+			activeOverlayType: null,
+			showAddFilesPanel: false,
+			activePickerPanel: undefined,
+			showFileEditor: false,
+			metaFields: this.opts.metaFields,
+			targets: [],
+			// We'll make them visible once .containerWidth is determined
+			areInsidesReadyToBeVisible: false,
+			isDraggingOver: false,
+			// Site Policy Props - craftercms/uppy custom code
+			invalidFiles: {}
+		});
+
+		const { inline, closeAfterFinish } = this.opts;
+		if (inline && closeAfterFinish) {
+			throw new Error(
+				'[Dashboard] `closeAfterFinish: true` cannot be used on an inline Dashboard, because an inline Dashboard cannot be closed at all. Either set `inline: false`, or disable the `closeAfterFinish` option.'
+			);
+		}
+
+		const { allowMultipleUploads, allowMultipleUploadBatches } = this.uppy.opts;
+		if ((allowMultipleUploads || allowMultipleUploadBatches) && closeAfterFinish) {
+			this.uppy.log(
+				'[Dashboard] When using `closeAfterFinish`, we recommended setting the `allowMultipleUploadBatches` option to `false` in the Uppy constructor. See https://uppy.io/docs/uppy/#allowMultipleUploads-true',
+				'warning'
+			);
+		}
+
+		const { target } = this.opts;
+
+		if (target) {
+			this.mount(target, this);
+		}
+
+		if (!this.opts.disableThumbnailGenerator) {
+			this.uppy.use(ThumbnailGenerator, {
+				id: this.#getThumbnailGeneratorId(),
+				...this.#getThumbnailGeneratorOpts()
+			});
+		}
+
+		// Dark Mode / theme
+		this.darkModeMediaQuery =
+			typeof window !== 'undefined' && window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+
+		const isDarkModeOnFromTheStart = this.darkModeMediaQuery ? this.darkModeMediaQuery.matches : false;
+		this.uppy.log(`[Dashboard] Dark mode is ${isDarkModeOnFromTheStart ? 'on' : 'off'}`);
+		this.setDarkModeCapability(isDarkModeOnFromTheStart);
+
+		if (this.opts.theme === 'auto') {
+			this.darkModeMediaQuery?.addListener(this.handleSystemDarkModeChange);
+		}
+
+		this.#addSpecifiedPluginsFromOptions();
+		this.#autoDiscoverPlugins();
+		this.initEvents();
 	};
 }

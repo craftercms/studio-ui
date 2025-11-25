@@ -14,6 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { h } from 'preact';
+
 const uploadStates = {
 	STATE_ERROR: 'error',
 	STATE_WAITING: 'waiting',
@@ -102,33 +104,79 @@ function PanelTopBar(props) {
 	return (
 		<div className="uppy-DashboardContent-bar">
 			{!isAllComplete && !hideCancelButton ? (
-				<button className="uppy-DashboardContent-back" type="button" onClick={() => uppy.cancelAll()}>
+				<button
+					className="uppy-dashboard-button-base uppy-dashboard-text-button"
+					type="button"
+					onClick={() => uppy.cancelAll()}
+				>
 					{i18n('cancel')}
 				</button>
 			) : (
 				<div />
 			)}
 
-			<div className="uppy-DashboardContent-title">
-				<UploadStatus {...props} />
-			</div>
+			{props.hasInvalidFiles && (
+				<div className="uppy-dashboard-validation-buttons uppy-DashboardContent-title">
+					<button
+						className="uppy-dashboard-button-base uppy-dashboard-text-button"
+						type="button"
+						aria-label={props.i18n('rejectAll')}
+						title={props.i18n('rejectAll')}
+						onClick={() => props.rejectAll()}
+					>
+						{props.i18n('rejectAll')}
+					</button>
 
-			{allowNewUpload ? (
-				<button
-					className="uppy-DashboardContent-addMore"
-					type="button"
-					aria-label={i18n('addMoreFiles')}
-					title={i18n('addMoreFiles')}
-					onClick={() => toggleAddFilesPanel(true)}
-				>
-					<svg aria-hidden="true" focusable="false" className="uppy-c-icon" width="15" height="15" viewBox="0 0 15 15">
-						<path d="M8 6.5h6a.5.5 0 0 1 .5.5v.5a.5.5 0 0 1-.5.5H8v6a.5.5 0 0 1-.5.5H7a.5.5 0 0 1-.5-.5V8h-6a.5.5 0 0 1-.5-.5V7a.5.5 0 0 1 .5-.5h6v-6A.5.5 0 0 1 7 0h.5a.5.5 0 0 1 .5.5v6z" />
-					</svg>
-					<span className="uppy-DashboardContent-addMoreCaption">{i18n('addMore')}</span>
-				</button>
-			) : (
-				<div />
+					<button
+						className="uppy-dashboard-button-base uppy-dashboard-text-button"
+						type="button"
+						aria-label={props.i18n('acceptAll')}
+						title={props.i18n('acceptAll')}
+						onClick={() => props.confirmAll()}
+					>
+						{props.i18n('acceptAll')}
+					</button>
+				</div>
 			)}
+
+			<div>
+				{allowNewUpload ? (
+					<button
+						className="uppy-dashboard-button-base uppy-dashboard-text-button"
+						type="button"
+						aria-label={i18n('addMoreFiles')}
+						title={i18n('addMoreFiles')}
+						onClick={() => toggleAddFilesPanel(true)}
+					>
+						<svg
+							aria-hidden="true"
+							focusable="false"
+							className="uppy-c-icon"
+							width="15"
+							height="15"
+							viewBox="0 0 15 15"
+						>
+							<path d="M8 6.5h6a.5.5 0 0 1 .5.5v.5a.5.5 0 0 1-.5.5H8v6a.5.5 0 0 1-.5.5H7a.5.5 0 0 1-.5-.5V8h-6a.5.5 0 0 1-.5-.5V7a.5.5 0 0 1 .5-.5h6v-6A.5.5 0 0 1 7 0h.5a.5.5 0 0 1 .5.5v6z" />
+						</svg>
+						<span className="uppy-DashboardContent-addMoreCaption" style={{ marginLeft: '5px' }}>
+							{i18n('addMore')}
+						</span>
+					</button>
+				) : (
+					<div />
+				)}
+
+				<button
+					className="uppy-dashboard-button-base uppy-dashboard-text-button"
+					type="button"
+					aria-label={props.i18n('clearCompleted')}
+					title={props.i18n('clearCompleted')}
+					onClick={props.clearCompleted}
+					disabled={props.completeFiles.length === 0}
+				>
+					{props.i18n('clearCompleted')}
+				</button>
+			</div>
 		</div>
 	);
 }
