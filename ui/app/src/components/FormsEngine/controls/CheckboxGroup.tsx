@@ -27,7 +27,7 @@ import { useTheme } from '@mui/material/styles';
 import { typographyClasses } from '@mui/material/Typography';
 import { SearchBar } from '../../SearchBar';
 import useDebouncedInput from '../../../hooks/useDebouncedInput';
-import { FixedSizeList, ListChildComponentProps } from 'react-window';
+import { List, type RowComponentProps } from 'react-window';
 
 export interface CheckboxGroupProps extends ControlProps {
 	value: Array<{ key: string; value_smv: string }>;
@@ -53,17 +53,13 @@ const buildOption = (
 );
 
 const VirtualRow = (
-	props: ListChildComponentProps<{
+	props: RowComponentProps<{
 		options: KVPLoaderItem['items'];
 		onChange: CheckboxProps['onChange'];
 		checkedValuesLookup: LookupTable<boolean>;
 	}>
 ) => {
-	const {
-		index,
-		style,
-		data: { options, onChange, checkedValuesLookup }
-	} = props;
+	const { index, style, options, onChange, checkedValuesLookup } = props;
 	const adjustedIndex = index * 3;
 	return (
 		<div
@@ -167,15 +163,12 @@ export function CheckboxGroup(props: CheckboxGroupProps) {
 				}}
 			>
 				{isVirtualized ? (
-					<FixedSizeList
-						height={350}
-						itemSize={50}
-						itemCount={virtualRows}
-						layout="vertical"
-						children={VirtualRow}
-						width="100%"
+					<List
+						rowHeight={50}
+						rowCount={virtualRows}
+						rowComponent={VirtualRow}
 						className="checkbox-group-virtual-list"
-						itemData={{ options: finalOptions, onChange: handleChange, checkedValuesLookup }}
+						rowProps={{ options: finalOptions, onChange: handleChange, checkedValuesLookup }}
 					/>
 				) : (
 					finalOptions?.map((option) => buildOption(option, handleChange, checkedValuesLookup))
