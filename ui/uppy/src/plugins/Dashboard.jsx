@@ -16,6 +16,7 @@
 
 import { h } from 'preact';
 import { Dashboard as UppyDashboard, ThumbnailGenerator } from 'uppy';
+import { findAllDOMElements } from '@uppy/utils';
 import { defaultPickerIcon } from '@uppy/provider-views';
 import locale from './locale';
 import DashboardUI from '../components/Dashboard';
@@ -158,9 +159,12 @@ export class Dashboard extends UppyDashboard {
 		const allFilesCompleted = files.length === completeFiles + invalidFiles;
 		// end craftercms/uppy - custom code
 
-		if (allFilesCompleted && this.opts.closeAfterFinish && !failed?.length) {
+		if (allFilesCompleted && !failed?.length) {
 			// All uploads are done
-			this.requestCloseModal();
+			if (this.opts.closeAfterFinish) {
+				this.requestCloseModal();
+			}
+			this.opts.onPendingChanges(false);
 		}
 	};
 
@@ -443,6 +447,9 @@ export class Dashboard extends UppyDashboard {
 			isAllPaused
 		} = this.uppy.getObjectOfFilesPerState();
 
+		if (isAllComplete) {
+			this.opts.onPendingChanges(false);
+		}
 		const hasInvalidFiles = Object.values(pluginState.invalidFiles).some((value) => value);
 		const acquirers = this.#getAcquirers(pluginState.targets);
 		const progressindicators = this.#getProgressIndicators(pluginState.targets);
