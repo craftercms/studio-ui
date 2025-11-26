@@ -2377,7 +2377,6 @@ __metadata:
     "@types/zxcvbn": "npm:^4.4.5"
     "@typescript-eslint/eslint-plugin": "npm:^8.47.0"
     "@typescript-eslint/parser": "npm:^8.47.0"
-    "@uppy/dashboard": "npm:^5.0.4"
     "@uppy/progress-bar": "npm:^4.3.2"
     "@vitejs/plugin-react": "npm:^5.1.1"
     "@vitejs/plugin-react-swc": "npm:^4.2.2"
@@ -6801,7 +6800,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@uppy/dashboard@npm:5.0.4, @uppy/dashboard@npm:^5.0.2, @uppy/dashboard@npm:^5.0.4":
+"@uppy/dashboard@npm:5.0.4, @uppy/dashboard@npm:^5.0.2":
   version: 5.0.4
   resolution: "@uppy/dashboard@npm:5.0.4"
   dependencies:

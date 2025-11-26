@@ -186,7 +186,7 @@ export default function FileInfo(props) {
 			</div>
 			<div className="uppy-Dashboard-Item-status">
 				{renderAuthor({ file })}
-				{renderFileSize({ file })}
+				{renderFileType({ file })} @ {renderFileSize({ file })}
 				{ReSelectButton({ file, toggleAddFilesPanel, i18n })}
 			</div>
 			<MetaErrorMessage file={file} i18n={i18n} toggleFileCard={toggleFileCard} metaFields={metaFields} />

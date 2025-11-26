@@ -34,8 +34,7 @@ import { dataUriToBlob, isBlank, isPath, popPiece, removeLastPiece } from '../ut
 import ContentInstance, { InstanceRecord } from '../models/ContentInstance';
 import { AjaxResponse } from 'rxjs/ajax';
 import { ComponentsContentTypeParams, ContentInstancePage } from '../models/Search';
-import Core from '@uppy/core';
-import XHRUpload from '@uppy/xhr-upload';
+import { Uppy as Core, XHRUpload } from 'uppy';
 import { getRequestForgeryToken } from '../utils/auth';
 import { ContentItem, LegacyItem } from '../models/Item';
 import { ItemHistoryEntry } from '../models/Version';
@@ -1109,8 +1108,6 @@ export function uploadBlob(
 		});
 
 		uppy.on('upload-error', (file, error, response) => {
-			// @ts-expect-error - The original response has a `status: number` and `body: any` only.
-			// Looks like trying to match other responses having the error property that further down the chain, handlers inspect.
 			response.error = response;
 			subscriber.error(response);
 		});
