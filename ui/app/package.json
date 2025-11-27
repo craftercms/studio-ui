@@ -62,9 +62,9 @@
     "@mui/icons-material": "^7.3.5",
     "@mui/lab": "7.0.1-beta.19",
     "@mui/material": "^7.3.5",
-    "@mui/x-data-grid": "^8.18.0",
-    "@mui/x-date-pickers": "^8.18.0",
-    "@mui/x-tree-view": "^8.18.0",
+    "@mui/x-data-grid": "^8.20.0",
+    "@mui/x-date-pickers": "^8.19.0",
+    "@mui/x-tree-view": "^8.19.0",
     "@prettier/plugin-xml": "3.3.0",
     "@reduxjs/toolkit": "^2.10.1",
     "@stomp/stompjs": "^7.2.1",
@@ -80,7 +80,7 @@
     "highlight.js": "^11.11.1",
     "jabber": "^1.5.3",
     "js-cookie": "^3.0.5",
-    "marked": "^17.0.0",
+    "marked": "^17.0.1",
     "marked-highlight": "^2.2.3",
     "moment-timezone": "^0.6.0",
     "nanoid": "^5.1.6",
@@ -104,7 +104,7 @@
     "tss-react": "^4.9.19",
     "uppy": "^3.27.3",
     "uuid": "^13.0.0",
-    "video.js": "^8.23.4",
+    "video.js": "^8.23.6",
     "zxcvbn": "^4.4.2"
   },
   "devDependencies": {
@@ -128,9 +128,9 @@
     "ncp": "^2.0.0",
     "npm-run-all": "^4.1.5",
     "prop-types": "^15.8.1",
-    "rimraf": "^6.1.1",
+    "rimraf": "^6.1.2",
     "rollup": "^4.53.3",
     "typescript": "^5.9.3",
-    "vite": "^7.2.2"
+    "vite": "^7.2.4"
   }
 }
