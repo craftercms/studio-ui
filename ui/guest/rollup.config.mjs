@@ -20,6 +20,7 @@ import replace from '@rollup/plugin-replace';
 import pkg from './package.json' with { type: 'json' };
 import { swc } from 'rollup-plugin-swc3';
 import alias from '@rollup/plugin-alias';
+import json from '@rollup/plugin-json';
 
 /** @type {import('rollup').InputPluginOption} */
 const plugins = [
@@ -37,7 +38,8 @@ const plugins = [
     dedupe: ['react', 'react-dom', 'react-is'],
     mainFields: ['module', 'main', 'browser']
   }),
-  commonjs({ include: /node_modules|jquery/ })
+  commonjs({ include: /node_modules|jquery/ }),
+  json(),
 ];
 
 /** @type {import('rollup').OutputOptions['globals']} */
