@@ -1523,7 +1523,7 @@ __metadata:
     ace-builds: "npm:^1.43.4"
     bootstrap: "npm:^5.3.8"
     build-if-changed: "npm:^1.5.5"
-    css-loader: "npm:^7.1.1"
+    css-loader: "npm:^7.1.2"
     file-loader: "npm:^6.2.0"
     grunt: "npm:^1.6.1"
     jquery: "npm:^3.7.1"
@@ -7053,7 +7053,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"css-loader@npm:^7.1.1":
+"css-loader@npm:^7.1.2":
   version: 7.1.2
   resolution: "css-loader@npm:7.1.2"
   dependencies:
