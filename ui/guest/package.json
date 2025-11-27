@@ -90,5 +90,6 @@
 		"rollup": "^4.53.3",
 		"rollup-plugin-swc3": "^0.12.1",
 		"yargs": "^18.0.0"
-	}
+	},
+	"type": "module"
 }
