@@ -56,7 +56,6 @@ import { useActiveUser } from '../../hooks/useActiveUser';
 import { GetChildrenOptions } from '../../models';
 import TranslationOrText from '../../models/TranslationOrText';
 import usePossibleTranslation from '../../hooks/usePossibleTranslation';
-import { nanoid } from 'nanoid';
 
 interface Menu {
   path?: string;
@@ -124,8 +123,7 @@ export interface PathNavigatorStateProps {
 // };
 
 export function PathNavigator(props: PathNavigatorProps) {
-  const translatedLabel = usePossibleTranslation(props.label);
-  const title = (typeof translatedLabel === 'string' ? translatedLabel : '') || '(No name)';
+  const translatedLabel = usePossibleTranslation(props.label) || '(No name)';
   // region const { ... } = props;
   const {
     icon,
@@ -133,7 +131,7 @@ export function PathNavigator(props: PathNavigatorProps) {
     collapsedIcon,
     container,
     rootPath: path,
-    id = title.replace(/\s/g, '') || nanoid(),
+    id = typeof translatedLabel === 'string' ? translatedLabel.replace(/\s/g, '') : path, // If translatedLabel is a ReactNode, use path as id
     limit = 10,
     locale,
     excludes,
@@ -398,7 +396,7 @@ export function PathNavigator(props: PathNavigatorProps) {
         itemsByPath={itemsByPath}
         icon={expandedIcon && collapsedIcon ? (state.collapsed ? collapsedIcon : expandedIcon) : icon}
         container={container}
-        title={title}
+        title={translatedLabel}
         onChangeCollapsed={onChangeCollapsed}
         onHeaderButtonClick={state.collapsed ? void 0 : onHeaderButtonClick}
         onCurrentParentMenu={onCurrentParentMenu}

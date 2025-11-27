@@ -63,7 +63,6 @@ import { UNDEFINED } from '../../utils/constants';
 import SimpleAjaxError from '../../models/SimpleAjaxError';
 import usePossibleTranslation from '../../hooks/usePossibleTranslation';
 import TranslationOrText from '../../models/TranslationOrText';
-import { nanoid } from 'nanoid';
 
 export interface PathNavigatorTreeProps
   extends Pick<
@@ -132,18 +131,17 @@ interface Menu {
 // };
 
 export function PathNavigatorTree(props: PathNavigatorTreeProps) {
-  const translatedLabel = usePossibleTranslation(props.label);
-  const title = (typeof translatedLabel === 'string' ? translatedLabel : '') || '(No name)';
+  const translatedLabel = usePossibleTranslation(props.label) || '(No name)';
   // region const { ... } = props;
   const {
-    id = title.replace(/\s/g, '') || nanoid(),
+    rootPath,
+    id = typeof translatedLabel === 'string' ? translatedLabel.replace(/\s/g, '') : rootPath, // If translatedLabel is a ReactNode, use rootPath as id
     excludes,
     limit = 10,
     icon,
     expandedIcon,
     collapsedIcon,
     container,
-    rootPath,
     initialExpanded,
     initialCollapsed = true,
     collapsible = true,
@@ -338,7 +336,7 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
     <>
       <PathNavigatorTreeUI
         classes={{ header: classes?.header }}
-        title={title}
+        title={translatedLabel}
         active={active}
         icon={expandedIcon && collapsedIcon ? (state.collapsed ? collapsedIcon : expandedIcon) : icon}
         container={container}
