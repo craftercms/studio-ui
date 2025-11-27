@@ -220,8 +220,6 @@ export default function Dashboard(props) {
 
 					<Slide>{props.fileCardFor ? <FileCard key="FileCard" {...props} /> : null}</Slide>
 
-					<Slide>{props.activePickerPanel ? <PickerPanelContent key="Picker" {...props} /> : null}</Slide>
-
 					<Slide>{props.showFileEditor ? <EditorPanel key="Editor" {...props} /> : null}</Slide>
 
 					<div className="uppy-Dashboard-progressindicators">
