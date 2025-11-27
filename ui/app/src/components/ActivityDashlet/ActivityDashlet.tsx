@@ -639,11 +639,7 @@ export function ActivityDashlet(props: ActivityDashletProps) {
 										</CustomTimelineItem>
 									);
 								}
-								return (
-									<div style={style as DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>}>
-										{content}
-									</div>
-								);
+								return <div style={style}>{content}</div>;
 							}}
 						/>
 					</Box>
