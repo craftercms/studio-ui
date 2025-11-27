@@ -55,6 +55,9 @@
   * Added dialogs: `CancelPackageDialog`, `BulkCancelPackageDialog`, `PublishPackageReviewDialog`, `PublishingPackageResubmitDialog`, `ViewPackagesDialog`.
   * [RenameAssetDialog] Removed `path` and `value` properties. Replaced with `item` property.
   * [ItemDisplay] Updated `item` prop to be of type `LightItem | ContentItem`.
+  * [EditGroupDialogUI] Updated `onFetchMoreUsers` prop return type to `Promise`.
+  * [PackageItemsList] Updated `loadNextPage` prop return type to `Promise`.
+  * [TransferListColumn] Updated `onFetchMore` prop return type to `Promise`.
 * [hooks]
   * Removed `useLogicResource` hook.
   * Removed `useSelectorResource` hook.
@@ -71,6 +74,9 @@
   * @mui/x-data-grid
   * @mui/x-date-pickers
   * @mui/x-tree-view
+  * Uppy
+  * GraphiQL
+  * react-window
 * Moved getPersonFullName to utils/object
 * FE2 TODO: image=>image-picker, text=>input, etc services/contentType typeMap removed
 * Removed WidgetDialogContextType, WidgetDialogContext, useWidgetDialogContext. Use `useEnhancedDialogContext` instead.
