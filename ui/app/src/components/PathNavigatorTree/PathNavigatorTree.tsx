@@ -135,7 +135,7 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
   // region const { ... } = props;
   const {
     rootPath,
-    id = typeof translatedLabel === 'string' ? translatedLabel.replace(/\s/g, '') : rootPath, // If translatedLabel is a ReactNode, use rootPath as id
+    id = rootPath,
     excludes,
     limit = 10,
     icon,

@@ -131,7 +131,7 @@ export function PathNavigator(props: PathNavigatorProps) {
     collapsedIcon,
     container,
     rootPath: path,
-    id = typeof translatedLabel === 'string' ? translatedLabel.replace(/\s/g, '') : path, // If translatedLabel is a ReactNode, use path as id
+    id = path,
     limit = 10,
     locale,
     excludes,
