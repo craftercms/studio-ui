@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ChangeEvent } from 'react';
+import React, { ChangeEvent, type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { ContentItem } from '../../models/Item';
 import PathNavigatorHeader from './PathNavigatorHeader';
@@ -64,7 +64,7 @@ export interface PathNavigatorUIProps {
 	/**
 	 * Widget's top title/label
 	 **/
-	title: string;
+	title: string | ReactNode;
 	/**
 	 * Widget's search keyword
 	 **/

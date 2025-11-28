@@ -133,18 +133,17 @@ interface Menu {
 // };
 
 export function PathNavigatorTree(props: PathNavigatorTreeProps) {
-	const translatedLabel = usePossibleTranslation(props.label);
-	const title = (typeof translatedLabel === 'string' ? translatedLabel : '') || '(No name)';
+	const translatedLabel = usePossibleTranslation(props.label) || '(No name)';
 	// region const { ... } = props;
 	const {
-		id = title.replace(/\s/g, '') || nanoid(),
+		rootPath,
+		id = rootPath,
 		excludes,
 		limit = 10,
 		icon,
 		expandedIcon,
 		collapsedIcon,
 		container,
-		rootPath,
 		initialExpanded,
 		initialCollapsed = true,
 		collapsible = true,
@@ -353,7 +352,7 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
 			<PathNavigatorTreeUI
 				classes={{ header: classes?.header }}
 				sxs={{ header: sxs?.header }}
-				title={title}
+				title={translatedLabel}
 				active={active}
 				icon={expandedIcon && collapsedIcon ? (state.collapsed ? collapsedIcon : expandedIcon) : icon}
 				container={container}

@@ -128,8 +128,7 @@ export interface PathNavigatorStateProps {
 // };
 
 export function PathNavigator(props: PathNavigatorProps) {
-	const translatedLabel = usePossibleTranslation(props.label);
-	const title = (typeof translatedLabel === 'string' ? translatedLabel : '') || '(No name)';
+	const translatedLabel = usePossibleTranslation(props.label) || '(No name)';
 	// region const { ... } = props;
 	const {
 		icon,
@@ -137,7 +136,7 @@ export function PathNavigator(props: PathNavigatorProps) {
 		collapsedIcon,
 		container,
 		rootPath: path,
-		id = title.replace(/\s/g, '') || nanoid(),
+		id = path,
 		limit = 10,
 		locale,
 		excludes,
@@ -415,7 +414,7 @@ export function PathNavigator(props: PathNavigatorProps) {
 				itemsByPath={itemsByPath}
 				icon={expandedIcon && collapsedIcon ? (state.collapsed ? collapsedIcon : expandedIcon) : icon}
 				container={container}
-				title={title}
+				title={translatedLabel}
 				onChangeCollapsed={onChangeCollapsed}
 				onHeaderButtonClick={state.collapsed ? void 0 : onHeaderButtonClick}
 				onCurrentParentMenu={onCurrentParentMenu}
