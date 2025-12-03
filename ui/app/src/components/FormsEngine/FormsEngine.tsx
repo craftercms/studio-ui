@@ -77,6 +77,7 @@ import { AjaxError } from 'rxjs/ajax';
 import { ViewPackagesDialogProps } from '../ViewPackagesDialog';
 import {
 	buildSectionExpandedStateAtoms,
+	createFileNameAtom,
 	createFormsEngineAtoms,
 	createFormStackData,
 	createObjectWithSystemProps,
@@ -341,7 +342,8 @@ function FormBootstrap(props: FormsEngineProps) {
 					contentType.fields[repeat.fieldId].fields,
 					fieldId,
 					atoms,
-					value
+					value,
+					siteId
 				);
 			};
 			const values =
@@ -388,7 +390,8 @@ function FormBootstrap(props: FormsEngineProps) {
 					update,
 					parentStackData,
 					stableFormContextRef,
-					parentPathInSite
+					parentPathInSite,
+					siteId
 				});
 				initializeState(requirements.atoms, requirements.values, requirements.itemMeta);
 			};
@@ -416,11 +419,12 @@ function FormBootstrap(props: FormsEngineProps) {
 			const atoms: FormsEngineAtoms = createFormsEngineAtoms(effectRefs.current.username, {
 				lockResult: lockResultAtom,
 				readonly: atom(false),
-				expandedStateBySectionId: buildSectionExpandedStateAtoms(contentType.sections)
+				expandedStateBySectionId: buildSectionExpandedStateAtoms(contentType.sections),
+				fileName: atom('')
 			});
 			const contentObject = createObjectWithSystemProps(contentType);
 			const values = createParsedValuesObject(contentType.fields, contentObject, contentTypesById, (fieldId, value) => {
-				setFieldAtoms(stableFormContextRef, contentType, contentType.fields, fieldId, atoms, value);
+				setFieldAtoms(stableFormContextRef, contentType, contentType.fields, fieldId, atoms, value, siteId);
 			});
 
 			initializeState(atoms, values, {
@@ -469,7 +473,8 @@ function FormBootstrap(props: FormsEngineProps) {
 					const atoms = createFormsEngineAtoms(effectRefs.current.username, {
 						lockResult: lockResultAtom,
 						readonly: createReadonlyAtom(lockResultAtom),
-						expandedStateBySectionId: buildSectionExpandedStateAtoms(requirements.contentType.sections)
+						expandedStateBySectionId: buildSectionExpandedStateAtoms(requirements.contentType.sections),
+						fileName: createFileNameAtom(requirements.item.path)
 					});
 					const values = createParsedValuesObject(
 						requirements.contentType.fields,
@@ -482,7 +487,8 @@ function FormBootstrap(props: FormsEngineProps) {
 								requirements.contentType.fields,
 								fieldId,
 								atoms,
-								value
+								value,
+								siteId
 							);
 						}
 					);

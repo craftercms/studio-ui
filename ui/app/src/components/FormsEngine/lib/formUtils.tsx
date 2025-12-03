@@ -37,7 +37,7 @@ import { fetchAffectedPackages } from '../../../services/workflow';
 import { Dispatch as ReduxDispatch } from 'redux';
 import { IntlShape } from 'react-intl/src/types';
 import { showSystemNotification, showUnlockItemSuccessNotification } from '../../../state/actions/system';
-import { atom, Atom, PrimitiveAtom, useAtomValue, useStore as useJotaiStore } from 'jotai/index';
+import { atom, Atom, PrimitiveAtom, useAtomValue, useStore as useJotaiStore } from 'jotai';
 import React, { ReactNode, RefObject, useContext, useEffect, useRef } from 'react';
 import { fromString, getInnerHtml } from '../../../utils/xml';
 import { nanoid } from 'nanoid';
@@ -71,6 +71,7 @@ import ApiResponse from '../../../models/ApiResponse';
 import { getFormsEngineCloseAfterSave, getFormsEngineCollapseToCKey } from '../../../utils/state';
 import { createComponentId } from '../../../utils/system';
 import { showErrorDialog } from '../../../state/actions/dialogs';
+import { ensureSingleSlash } from '../../../utils/string';
 
 /**
  * Returns the scroll container for the form's container.
@@ -176,8 +177,9 @@ export function createFieldAtoms(
 	field: ContentTypeField,
 	initialValue: unknown,
 	formContextRef: RefObject<
-		Pick<StableFormContextProps, 'fieldUpdates$' | 'changedFieldIds' | 'originalValues' | 'atoms'>
-	>
+		Pick<StableFormContextProps, 'fieldUpdates$' | 'changedFieldIds' | 'originalValues' | 'atoms' | 'itemMeta'>
+	>,
+	siteId?: string
 ): [PrimitiveAtom<unknown>, Atom<Promise<FieldValidityState>>] {
 	let isInitialization = true;
 	const valueAtom = atom(initialValue);
@@ -194,7 +196,11 @@ export function createFieldAtoms(
 			}
 			formContextRef.current.fieldUpdates$.next(field.id);
 		}
-		return validateFieldValue(field, value);
+		return validateFieldValue(field, value, {
+			siteId,
+			itemMeta: formContextRef.current.itemMeta as FormsEngineItemMetaContextProps,
+			fileName: get(formContextRef.current.atoms.fileName)
+		});
 	});
 	return [valueAtom, validationAtom];
 }
@@ -202,6 +208,38 @@ export function createFieldAtoms(
 /** Creates the readonly flag property atom based on the lock result atom */
 export const createReadonlyAtom = (lockedResultAtom: Atom<FormsEngineEditContextProps>) =>
 	atom((get) => !get(lockedResultAtom).locked);
+
+export const isPagePath = (path: string) => {
+	return /^\/site\/website(\/.*)?\/index.*\.xml$/.test(path);
+};
+
+export const createFileNameAtom = (path: string) => {
+	const isPage = isPagePath(path);
+	return atom(getFileNameValue(path, isPage));
+};
+
+export const getBasePath = (path: string, isPage: boolean) => {
+	// If home page
+	if (path === '/site/website/index.xml' && isPage) return '/site/website/';
+
+	const pathParts = path.split('/');
+	return isPage
+		? pathParts.slice(0, pathParts.length - 2).join('/') + '/'
+		: pathParts.slice(0, pathParts.length - 1).join('/') + '/';
+};
+
+export const getFileNameValue = (path: string, isPage: boolean) => {
+	// If home page, return empty string
+	if (path === '/site/website/index.xml' && isPage) return '';
+
+	const basePath = getBasePath(path, isPage);
+	return path.replace(basePath, '').replace(isPage ? '/index.xml' : '.xml', '');
+};
+
+export const getFileNamePath = (value: string, isPage: boolean, basePath: string) => {
+	const fileName = isPage ? `${value}/index.xml` : `${value}.xml`;
+	return ensureSingleSlash(`${basePath}/${fileName}`);
+};
 
 export function createFormStackData(mixin?: Partial<StableFormContextProps>): StableFormContextProps {
 	const data: StableFormContextProps = {
@@ -354,7 +392,7 @@ export function fetchUpdateRequirements({
  **/
 export function createFormsEngineAtoms(
 	username: string,
-	mixin: Partial<FormsEngineAtoms> & Pick<FormsEngineAtoms, 'readonly' | 'lockResult'>
+	mixin: Partial<FormsEngineAtoms> & Pick<FormsEngineAtoms, 'readonly' | 'lockResult' | 'fileName'>
 ): FormsEngineAtoms {
 	const atoms: FormsEngineAtoms = {
 		isSubmitting: atom(false),
@@ -386,7 +424,8 @@ export function setFieldAtoms(
 	fieldLookup: LookupTable<ContentTypeField>,
 	fieldId: string,
 	atomsTarget: FormsEngineAtoms,
-	value: unknown
+	value: unknown,
+	siteId?: string
 ): void {
 	let field = fieldLookup[fieldId];
 	if (!field) {
@@ -411,7 +450,7 @@ export function setFieldAtoms(
 			return;
 		}
 	}
-	const [valueAtom, validityAtom] = createFieldAtoms(field, value, stableFormContextRef);
+	const [valueAtom, validityAtom] = createFieldAtoms(field, value, stableFormContextRef, siteId);
 	atomsTarget.valueByFieldId[fieldId] = valueAtom;
 	atomsTarget.validationByFieldId[fieldId] = validityAtom;
 }
@@ -685,6 +724,7 @@ export function prepareEmbeddedItemForm(props: {
 	parentStackData: StableFormContextProps;
 	stableFormContextRef: RefObject<StableFormContextProps>;
 	parentPathInSite: string;
+	siteId: string;
 }): { atoms: FormsEngineAtoms; values: LookupTable<unknown>; itemMeta: FormsEngineItemMetaContextProps } {
 	const {
 		username,
@@ -695,7 +735,8 @@ export function prepareEmbeddedItemForm(props: {
 		parentPathInSite,
 		locked,
 		lockError,
-		affectedPackages
+		affectedPackages,
+		siteId
 	} = props;
 	const lockResultAtom = atom<FormsEngineEditContextProps>({
 		locked,
@@ -705,13 +746,19 @@ export function prepareEmbeddedItemForm(props: {
 	const atoms = createFormsEngineAtoms(username, {
 		lockResult: lockResultAtom,
 		readonly: createReadonlyAtom(lockResultAtom),
-		expandedStateBySectionId: buildSectionExpandedStateAtoms(contentType.sections)
+		expandedStateBySectionId: buildSectionExpandedStateAtoms(contentType.sections),
+		fileName: atom(update.modelId) // TODO: I don't modelId necessarily matches the fileName, check
 	});
 	const values = update.values;
 	Object.entries(values).forEach(([fieldId, value]) => {
 		// System fields (e.g. content-type, display-template, etc.) are not part of the content type, but are part of the content object. We don't need atoms or validity checks for these.
 		if (!contentType.fields[fieldId]) return;
-		const [valueAtom, validityAtom] = createFieldAtoms(contentType.fields[fieldId], value, stableFormContextRef);
+		const [valueAtom, validityAtom] = createFieldAtoms(
+			contentType.fields[fieldId],
+			value,
+			stableFormContextRef,
+			siteId
+		);
 		atoms.valueByFieldId[fieldId] = valueAtom;
 		atoms.validationByFieldId[fieldId] = validityAtom;
 	});

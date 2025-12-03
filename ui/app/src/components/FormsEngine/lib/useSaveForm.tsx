@@ -21,7 +21,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import useActiveSiteId from '../../../hooks/useActiveSiteId';
 import React, { useContext } from 'react';
 import { FormsEngineFormContextApi, ItemMetaContext, StableFormContext } from './formsEngineContext';
-import { createObjectWithSystemProps, extractAtomValues, showAlert } from './formUtils';
+import { createObjectWithSystemProps, extractAtomValues, getBasePath, getFileNameValue, showAlert } from './formUtils';
 import { FormSavePromiseResult, FormsEngineProps } from '../FormsEngine';
 import { XmlKeys } from './formConsts';
 import { fromString } from '../../../utils/xml';
@@ -60,14 +60,14 @@ export function useSaveForm(props: UseSaveFormProps) {
 	const { id, contentType, contentObject, path: itemPath } = useContext(ItemMetaContext);
 	const isPage = contentType.type === 'page';
 	const stableFormContext = useContext(StableFormContext);
-	const changedFieldIds = stableFormContext.changedFieldIds;
 	const formContextApi = useContext(FormsEngineFormContextApi);
 	const setIsSubmitting = useSetAtom(stableFormContext.atoms.isSubmitting);
 	const closeAfterSave = useAtomValue(stableFormContext.atoms.closeAfterSave);
 	const versionComment = useAtomValue(stableFormContext.atoms.versionComment);
 	const setHasPendingChanges = useSetAtom(stableFormContext.atoms.hasPendingChanges);
 	const onSave = wrapOnSaveProp(props.onSave);
-
+	const fileName = useAtomValue(stableFormContext.atoms.fileName);
+	const initialFileName = itemPath ? getFileNameValue(itemPath, isPage) : '';
 	return () => {
 		const values = extractAtomValues(jotai, stableFormContext.atoms.valueByFieldId);
 		const onSavePromiseHandler = ({ close }: FormSavePromiseResult) => {
@@ -114,23 +114,17 @@ export function useSaveForm(props: UseSaveFormProps) {
 			}
 			setIsSubmitting(true);
 			let path: string;
-			const isRename =
-				!isCreateMode && (changedFieldIds.has(XmlKeys['fileName']) || changedFieldIds.has(XmlKeys['folderName']));
+			const isRename = !isCreateMode && fileName !== initialFileName;
 			if (isCreateMode) {
-				path = ensureSingleSlash(`${createPath}/${values[XmlKeys.folderName]}/${values[XmlKeys.fileName]}`);
+				if (isPage) {
+					path = ensureSingleSlash(`${createPath}/${fileName}/index.xml`);
+				} else {
+					path = ensureSingleSlash(`${createPath}/${fileName}.xml`);
+				}
 			} /* is a plain update (page or component) */ else {
 				if (isRename) {
-					const newRelativePath = isPage
-						? ensureSingleSlash(`${values[XmlKeys.folderName]}/index.xml`)
-						: (values[XmlKeys.fileName] as string);
-
-					// Having a path like `/site/website/tests/index.xml`, I need to update folder-name and file-name, so I need to
-					// replace `tests/index.xml` with `${folderName}/${fileName}` (e.g. `my-new-folder/my-new-file.xml`)
-					const pathParts = itemPath.split('/');
-					// Remove the last two parts (folder-name and file-name) if page, otherwise just the file-name
-					const partsToRemove = isPage ? 2 : 1;
-					pathParts.splice(-partsToRemove, partsToRemove, newRelativePath);
-					path = pathParts.join('/');
+					const basePath = getBasePath(itemPath, isPage);
+					path = ensureSingleSlash(`${basePath}/${isPage ? fileName + '/index.xml' : fileName + '.xml'}`);
 				} else {
 					path = itemPath;
 				}
@@ -166,9 +160,7 @@ export function useSaveForm(props: UseSaveFormProps) {
 			// TODO: validateActionPolicy. See FE1 saveFn.
 			// TODO: write-content url on FE1 sends phase, path, fileName, contentType QSAs. Important?
 			// TODO: Cancel packages when needed.
-			// If not create mode and file-name or folder-name changed, need to moveAndUpdateContent
-			// Use xmlKeys
-			if (!isCreateMode && (changedFieldIds.has(XmlKeys['fileName']) || changedFieldIds.has(XmlKeys['folderName']))) {
+			if (isRename) {
 				moveAndUpdateContent(siteId, itemPath, path, xml).subscribe(saveActionCallbacks);
 			} else {
 				// TODO: Temporary playground save path. Remove.

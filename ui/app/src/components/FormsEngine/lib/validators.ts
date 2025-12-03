@@ -20,12 +20,23 @@ import LookupTable from '../../../models/LookupTable';
 import { XmlKeys } from './formConsts';
 import { defineMessage, type MessageDescriptor } from 'react-intl';
 import type { FormatXMLElementFn, PrimitiveType } from 'intl-messageformat';
-import { nnou } from '../../../utils/object';
+import { nnou, nou } from '../../../utils/object';
+import { checkPathExistence } from '../../../services/content';
+import { getBasePath, getFileNamePath, isPagePath } from './formUtils';
+import { firstValueFrom } from 'rxjs';
+import { withIndex } from '../../../utils/path';
+import { FormsEngineItemMetaContextProps } from './formsEngineContext';
 
+interface ValidatorMetaData {
+	siteId: string;
+	fileName: string;
+	itemMeta: FormsEngineItemMetaContextProps;
+}
 type ValidatorFunctionDef = (
 	field: ContentTypeField,
 	currentValue: unknown,
-	messages: FieldValidityState['messages']
+	messages: FieldValidityState['messages'],
+	meta: ValidatorMetaData
 ) => Promise<boolean> | boolean;
 export const validatorsMap: Partial<Record<BuiltInControlType, ValidatorFunctionDef>> = {
 	repeat: undefined,
@@ -69,19 +80,24 @@ export interface FieldValidityState {
 	messages: FieldValidityMessage[];
 }
 
-export async function validateFieldValue(field: ContentTypeField, currentValue: unknown): Promise<FieldValidityState> {
+export async function validateFieldValue(
+	field: ContentTypeField,
+	currentValue: unknown,
+	meta: ValidatorMetaData
+): Promise<FieldValidityState> {
+	const validateValue = field.id === 'file-name' ? meta.fileName : currentValue;
 	const messages: FieldValidityState['messages'] = [];
 	const isRequired = isFieldRequired(field);
-	const isEmpty = isEmptyValue(field, currentValue);
+	const isEmpty = isEmptyValue(field, validateValue);
 
 	// If it's required, and the value is empty, then it's invalid.
-	if (isRequired && isEmpty) {
+	if ((isRequired || field.id === 'file-name') && isEmpty) {
 		messages.push(defineMessage({ defaultMessage: 'This field is required.' }));
 		return Promise.resolve({ isValid: false, messages });
 	}
 	const validator = validatorsMap[field.type as BuiltInControlType];
 	// If there's a validator, run it. If not, it's valid.
-	const isValid = nnou(validator) ? await validator(field, currentValue, messages) : true;
+	const isValid = nnou(validator) ? await validator(field, validateValue, messages, meta) : true;
 	return Promise.resolve({ isValid, messages });
 }
 

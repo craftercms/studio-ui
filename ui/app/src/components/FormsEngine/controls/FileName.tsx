@@ -15,7 +15,7 @@
  */
 
 import OutlinedInput, { OutlinedInputProps } from '@mui/material/OutlinedInput';
-import React, { useId, useMemo } from 'react';
+import React, { useId } from 'react';
 import { applyContentNameRules } from '../../../utils/content';
 import { FormsEngineField } from '../components/FormsEngineField';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -32,7 +32,7 @@ import { popDialog, pushDialog } from '../../../state/actions/dialogStack';
 import { createComponentId } from '../../../utils/system';
 import { nanoid } from 'nanoid';
 import { nnou } from '../../../utils/object';
-import { isFieldReadOnly } from '../lib/formUtils';
+import { getBasePath, getFileNameValue, isFieldReadOnly, isPagePath } from '../lib/formUtils';
 import { ensureSingleSlash } from '../../../utils/string';
 import type { Dispatch } from 'redux';
 import useLoadableAtom from '../lib/useLoadableAtom';
@@ -42,8 +42,8 @@ export interface FileNameProps extends ControlProps {
 }
 
 export function FileName(props: FileNameProps) {
-	const { field, readonly: formReadonly, contentType, autoFocus } = props;
-	const { path, pathInSite } = useItemMetaContext();
+	const { field, readonly: formReadonly, autoFocus } = props;
+	const { path: initialPath, pathInSite } = useItemMetaContext();
 	const formContext = useStableFormContext();
 	const atoms = formContext.atoms;
 	const isNewForm = nnou(formContext.props?.create);
@@ -51,12 +51,8 @@ export function FileName(props: FileNameProps) {
 	if (field.id === 'fileName') {
 		throw new Error('Detected field ID "fileName" instead "file-name" at the "FileName" Control.');
 	}
-	const isPage = contentType?.type === 'page';
-	const isFolder = field.id === 'file-name' && isPage;
-	const fieldId = isFolder ? 'folder-name' : field.id;
-	const [value, setValue] = useAtom(atoms.valueByFieldId[fieldId] as PrimitiveAtom<string>);
-	// WithInitialValue is not exported
-	const initialValue = (atoms.valueByFieldId[fieldId] as PrimitiveAtom<string> & { init: string }).init;
+	const isPage = isPagePath(initialPath);
+	const [value, setValue] = useAtom(atoms.fileName as PrimitiveAtom<string>);
 	const validityData = useLoadableAtom(atoms.validationByFieldId['file-name']);
 	const isValid = validityData.state === 'hasData' ? validityData.data.isValid : true;
 	const webUrlRoot = ensureSingleSlash(`${pathInSite.replace('/site/website', '/')}/`);
@@ -66,22 +62,15 @@ export function FileName(props: FileNameProps) {
 	const readonly: boolean = isFieldReadOnly(field, formReadonly);
 	// endregion
 
-	// This is the value without `.xml` suffix (if applicable).
-	const presentationalValue = useMemo(() => {
-		return value.replace('.xml', '');
-	}, [value]);
-
 	const handleChange: OutlinedInputProps['onChange'] = (e) => {
-		let newValue = applyContentNameRules(e.currentTarget.value);
-		// Add back the `.xml` suffix if applicable.
-		newValue = !isFolder ? `${newValue}.xml` : newValue;
+		const newValue = applyContentNameRules(e.currentTarget.value);
 		setValue(newValue);
 	};
 
 	const handleEdit = () => {
-		const itemValue = isFolder ? `${value}/index.xml` : value;
-		const itemInitialValue = isFolder ? `${initialValue}/index.xml` : initialValue;
-		const itemPath = path.replace(`${itemInitialValue}`, '');
+		const itemValue = isPage ? `${value}/index.xml` : `${value}.xml`;
+		const itemInitialValue = getFileNameValue(initialPath, isPage);
+		const itemPath = getBasePath(initialPath, isPage);
 		const id = nanoid();
 
 		showRenameDialog(
@@ -90,11 +79,7 @@ export function FileName(props: FileNameProps) {
 			itemValue,
 			itemInitialValue,
 			(newName: string) => {
-				let updatedName = newName;
-				// if folder, remove `/index.xml`
-				if (isFolder && newName.endsWith('/index.xml')) {
-					updatedName = newName.replace('/index.xml', '');
-				}
+				const updatedName = newName.replace(isPage ? '/index.xml' : '.xml', '');
 				setValue(updatedName);
 				dispatch(popDialog({ id }));
 			},
@@ -104,18 +89,18 @@ export function FileName(props: FileNameProps) {
 
 	return (
 		<FormsEngineField
-			isValid={isValid && !isNewForm}
+			isValid={isValid}
 			htmlFor={htmlId}
 			field={field}
 			min={field.validations.minValue?.value}
 			max={field.validations.maxLength?.value}
-			length={presentationalValue.length}
+			length={value.length}
 		>
 			<OutlinedInput
 				autoFocus={autoFocus}
 				fullWidth
 				id={htmlId}
-				value={presentationalValue}
+				value={value}
 				onChange={handleChange}
 				disabled={!isNewForm || readonly}
 				startAdornment={
