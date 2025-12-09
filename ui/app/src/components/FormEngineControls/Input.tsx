@@ -19,10 +19,12 @@ import React from 'react';
 import FormControl from '@mui/material/FormControl';
 import { Control } from '../../models/FormsEngine';
 import useStyles from './styles';
+import usePossibleTranslation from '../../hooks/usePossibleTranslation';
 
 export function Input(props: Control) {
   const { field, value = '', onChange, disabled } = props;
   const { classes } = useStyles();
+  const label = usePossibleTranslation(field.name);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange(e.target.value);
@@ -35,7 +37,7 @@ export function Input(props: Control) {
         type="text"
         placeholder="auto"
         fullWidth
-        label={field.name}
+        label={label}
         value={value}
         onChange={handleInputChange}
         disabled={disabled}

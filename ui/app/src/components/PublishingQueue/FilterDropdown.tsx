@@ -179,7 +179,7 @@ export function FilterDropdown(props: FilterDropdownProps) {
                 inputLabel: { shrink: true }
               }}
               fullWidth
-              placeholder="e.g. /SOME/PATH/*"
+              placeholder={formatMessage({ defaultMessage: 'e.g. /SOME/PATH/*' })}
               onChange={(event) => setPath(event.target.value)}
               onKeyPress={(event) => onKeyPress(event, path)}
               value={path}
