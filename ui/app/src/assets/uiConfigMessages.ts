@@ -68,5 +68,9 @@ defineMessages({
   pluginManager: {
     id: 'PluginManagement.title',
     defaultMessage: 'Plugin Management'
+  },
+  settings: {
+    id: 'words.settings',
+    defaultMessage: 'Settings :)'
   }
 });
