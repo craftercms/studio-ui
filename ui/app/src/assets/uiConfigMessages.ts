@@ -71,6 +71,6 @@ defineMessages({
   },
   settings: {
     id: 'words.settings',
-    defaultMessage: 'Settings :)'
+    defaultMessage: 'Settings'
   }
 });
