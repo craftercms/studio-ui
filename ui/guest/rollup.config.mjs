@@ -20,16 +20,34 @@ import replace from '@rollup/plugin-replace';
 import pkg from './package.json' with { type: 'json' };
 import { swc } from 'rollup-plugin-swc3';
 import alias from '@rollup/plugin-alias';
+import json from "@rollup/plugin-json";
 
 /** @type {import('rollup').InputPluginOption} */
 const plugins = [
+  json(),
   replace({
     preventAssignment: true,
     'process.env.NODE_ENV': JSON.stringify('production'),
     'process.env.VERSION': JSON.stringify(pkg.version),
     'process.env.MIN_STUDIO_VERSION': JSON.stringify(pkg.craftercms.minStudioVersion),
   }),
-  swc({ sourceMaps: true }),
+  swc({
+    sourceMaps: true,
+    jsc: {
+      experimental: {
+        plugins: [
+          [
+            '@swc/plugin-formatjs',
+            {
+              removeDefaultMessage: false,
+              idInterpolationPattern: '[sha512:contenthash:base64:6]',
+              ast: true
+            }
+          ]
+        ]
+      }
+    }
+  }),
   alias({
     entries: [{ find: '@craftercms/studio-ui', replacement: '@craftercms/studio-ui/build_tsc' }]
   }),
@@ -77,7 +95,8 @@ export default [
       file: '../../static-assets/scripts/craftercms-xb.umd.js',
       format: 'umd',
       amd: { id: pkg.craftercms.id },
-      globals
+      globals,
+      inlineDynamicImports: true,
     }
   },
 
