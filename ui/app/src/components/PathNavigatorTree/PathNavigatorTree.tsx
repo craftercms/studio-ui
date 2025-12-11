@@ -63,6 +63,7 @@ import { UNDEFINED } from '../../utils/constants';
 import SimpleAjaxError from '../../models/SimpleAjaxError';
 import usePossibleTranslation from '../../hooks/usePossibleTranslation';
 import TranslationOrText from '../../models/TranslationOrText';
+import { useIntl } from 'react-intl';
 
 export interface PathNavigatorTreeProps
   extends Pick<
@@ -131,7 +132,8 @@ interface Menu {
 // };
 
 export function PathNavigatorTree(props: PathNavigatorTreeProps) {
-  const translatedLabel = usePossibleTranslation(props.label) || '(No name)';
+  const { formatMessage } = useIntl();
+  const translatedLabel = usePossibleTranslation(props.label) || formatMessage({ defaultMessage: '(No name)' });
   // region const { ... } = props;
   const {
     rootPath,

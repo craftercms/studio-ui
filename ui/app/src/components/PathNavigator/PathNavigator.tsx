@@ -56,6 +56,7 @@ import { useActiveUser } from '../../hooks/useActiveUser';
 import { GetChildrenOptions } from '../../models';
 import TranslationOrText from '../../models/TranslationOrText';
 import usePossibleTranslation from '../../hooks/usePossibleTranslation';
+import { useIntl } from 'react-intl';
 
 interface Menu {
   path?: string;
@@ -123,7 +124,8 @@ export interface PathNavigatorStateProps {
 // };
 
 export function PathNavigator(props: PathNavigatorProps) {
-  const translatedLabel = usePossibleTranslation(props.label) || '(No name)';
+  const { formatMessage } = useIntl();
+  const translatedLabel = usePossibleTranslation(props.label) || formatMessage({ defaultMessage: '(No name)' });
   // region const { ... } = props;
   const {
     icon,
