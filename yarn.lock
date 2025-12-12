@@ -1350,7 +1350,7 @@ __metadata:
     "@rollup/plugin-json": "npm:^6.1.0"
     "@rollup/plugin-swc": "npm:^0.4.0"
     "@swc/core": "npm:^1.13.3"
-    "@swc/plugin-formatjs": "npm:^2.4.0"
+    "@swc/plugin-formatjs": "npm:^6.5.0"
     "@types/jquery": "npm:^3.5.32"
     "@types/js-cookie": "npm:^3.0.6"
     "@types/prop-types": "npm:^15.7.15"
@@ -4097,12 +4097,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@swc/plugin-formatjs@npm:^2.4.0":
-  version: 2.4.0
-  resolution: "@swc/plugin-formatjs@npm:2.4.0"
+"@swc/plugin-formatjs@npm:^6.5.0":
+  version: 6.5.0
+  resolution: "@swc/plugin-formatjs@npm:6.5.0"
   dependencies:
     "@swc/counter": "npm:^0.1.3"
-  checksum: 10/a8c04f679c96f8eae3333afdf8fa1753e139d0b701f36548ec3e274578ec11def04a68e3d66885967c0217d247877bd535168443fe80d8ffa54eb9202a76b416
+  checksum: 10/6819c8d465dee4132863af6cdc01d8096a19d1b01eb7309c537aab43408911ab8ab484e336843a53eb4b1ab2a25298130da60f7f90c672e160b61423146905a3
   languageName: node
   linkType: hard
 
