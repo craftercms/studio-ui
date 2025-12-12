@@ -31,23 +31,7 @@ const plugins = [
     'process.env.VERSION': JSON.stringify(pkg.version),
     'process.env.MIN_STUDIO_VERSION': JSON.stringify(pkg.craftercms.minStudioVersion),
   }),
-  swc({
-    sourceMaps: true,
-    jsc: {
-      experimental: {
-        plugins: [
-          [
-            '@swc/plugin-formatjs',
-            {
-              removeDefaultMessage: false,
-              idInterpolationPattern: '[sha512:contenthash:base64:6]',
-              ast: true
-            }
-          ]
-        ]
-      }
-    }
-  }),
+  swc({ sourceMaps: true }),
   alias({
     entries: [{ find: '@craftercms/studio-ui', replacement: '@craftercms/studio-ui/build_tsc' }]
   }),

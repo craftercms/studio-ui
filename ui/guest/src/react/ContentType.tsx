@@ -32,7 +32,7 @@ export function NotFoundDefault() {
   return (
     <section>
       <p>
-        <FormattedMessage defaultMessage="Content not found." />
+        <FormattedMessage id="contentType.contentNotFound" defaultMessage="Content not found." />
       </p>
     </section>
   );

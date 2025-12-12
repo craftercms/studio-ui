@@ -184,7 +184,7 @@ export function ZoneMarker(props: ZoneMarkerProps) {
                     // 'id' can be '*' (meaning all content types), so we need to handle that scenario
                     const type =
                       id === '*'
-                        ? { id: 'all', name: formatMessage({ defaultMessage: 'All types' }) }
+                        ? { id: 'all', name: formatMessage({ id: 'zoneMarker.allTypes', defaultMessage: 'All types' }) }
                         : contentTypes[id];
                     const { backgroundColor, textColor } = getAvatarWithIconColors(
                       type?.id ?? type?.name,
@@ -197,13 +197,17 @@ export function ZoneMarker(props: ZoneMarkerProps) {
                         arrow
                         title={
                           <FormattedMessage
+                            id="zoneMarker.dropTargetInfo"
                             defaultMessage="Drop target compatible with {type} as {modes}"
                             values={{
                               type: type?.name ?? '',
                               modes: Object.keys(modes)
                                 .map((mode) =>
                                   mode === 'sharedExisting'
-                                    ? formatMessage({ defaultMessage: 'existing shared' })
+                                    ? formatMessage({
+                                        id: 'zoneMarker.existingShared',
+                                        defaultMessage: 'existing shared'
+                                      })
                                     : mode
                                 )
                                 .join(', ')
@@ -228,17 +232,24 @@ export function ZoneMarker(props: ZoneMarkerProps) {
             </div>
             {isLockedItem && (
               <Typography noWrap variant="body2" component="div">
-                <FormattedMessage defaultMessage="Locked by {username}" values={{ username: lockInfo.username }} />
+                <FormattedMessage
+                  id="zoneMarker.lockedBy"
+                  defaultMessage="Locked by {username}"
+                  values={{ username: lockInfo.username }}
+                />
               </Typography>
             )}
             {!isEditable && !isLockedItem && (
               <Typography noWrap variant="body2" component="div">
-                <FormattedMessage defaultMessage="Not editable" />
+                <FormattedMessage id="zoneMarker.notEditable" defaultMessage="Not editable" />
               </Typography>
             )}
             {isStale && (
               <Typography noWrap variant="body2" component="div">
-                <FormattedMessage defaultMessage="Item was modified. Refresh to enable editing." />
+                <FormattedMessage
+                  id="zoneMarker.modifiedItem"
+                  defaultMessage="Item was modified. Refresh to enable editing."
+                />
               </Typography>
             )}
             {menuItems && <Box sx={sx.menuItemsContainer}>{menuItems}</Box>}

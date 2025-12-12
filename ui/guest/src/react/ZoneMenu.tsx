@@ -427,7 +427,7 @@ export function ZoneMenu(props: ZoneMenuProps) {
     <>
       <Box display="flex">
         {hasEditAction && !isLockedItem && (
-          <UltraStyledTooltip title={<FormattedMessage defaultMessage="Edit" />} key="edit">
+          <UltraStyledTooltip title={<FormattedMessage id="words.edit" defaultMessage="Edit" />} key="edit">
             <UltraStyledIconButton size="small" onClick={onEdit}>
               <PencilIcon />
             </UltraStyledIconButton>
@@ -436,14 +436,20 @@ export function ZoneMenu(props: ZoneMenuProps) {
         {showCodeEditOptions && (
           <>
             {itemAvailableActions.editTemplate && (
-              <UltraStyledTooltip title={<FormattedMessage defaultMessage="Edit template" />} key="editTemplate">
+              <UltraStyledTooltip
+                title={<FormattedMessage id="zoneMenu.editTemplate" defaultMessage="Edit template" />}
+                key="editTemplate"
+              >
                 <UltraStyledIconButton size="small" onClick={onEditTemplate}>
                   <FreemarkerIcon />
                 </UltraStyledIconButton>
               </UltraStyledTooltip>
             )}
             {itemAvailableActions.editController && (
-              <UltraStyledTooltip title={<FormattedMessage defaultMessage="Edit controller" />} key="editController">
+              <UltraStyledTooltip
+                title={<FormattedMessage id="zoneMenu.editController" defaultMessage="Edit controller" />}
+                key="editController"
+              >
                 <UltraStyledIconButton size="small" onClick={onEditController}>
                   <GroovyIcon />
                 </UltraStyledIconButton>
@@ -452,14 +458,20 @@ export function ZoneMenu(props: ZoneMenuProps) {
           </>
         )}
         {!isLockedItem && showAddItem && (
-          <UltraStyledTooltip title={<FormattedMessage defaultMessage="Add new item" />} key="addNewItem">
+          <UltraStyledTooltip
+            title={<FormattedMessage id="zoneMenu.addItem" defaultMessage="Add new item" />}
+            key="addNewItem"
+          >
             <UltraStyledIconButton size="small" onClick={onAddRepeatItem}>
               <AddCircleOutlineRoundedIcon />
             </UltraStyledIconButton>
           </UltraStyledTooltip>
         )}
         {showDuplicate && (
-          <UltraStyledTooltip title={<FormattedMessage defaultMessage="Duplicate item" />} key="duplicateItem">
+          <UltraStyledTooltip
+            title={<FormattedMessage id="zoneMenu.duplicateItem" defaultMessage="Duplicate item" />}
+            key="duplicateItem"
+          >
             <UltraStyledIconButton size="small" onClick={onDuplicateItem}>
               <ContentCopyRoundedIcon />
             </UltraStyledIconButton>
@@ -469,14 +481,20 @@ export function ZoneMenu(props: ZoneMenuProps) {
           (!isLockedItem || !isEmbedded) &&
           !isOnlyItem && [
             !isFirstItem && (
-              <UltraStyledTooltip title={<FormattedMessage defaultMessage="Move up/left (← or ↑)" />} key="moveUp">
+              <UltraStyledTooltip
+                title={<FormattedMessage id="zoneMenu.moveUp" defaultMessage="Move up/left (← or ↑)" />}
+                key="moveUp"
+              >
                 <UltraStyledIconButton size="small" onClick={onMoveUp}>
                   <ArrowUpwardRoundedIcon />
                 </UltraStyledIconButton>
               </UltraStyledTooltip>
             ),
             !isLastItem && (
-              <UltraStyledTooltip title={<FormattedMessage defaultMessage="Move down/right (→ or ↓)" />} key="moveDown">
+              <UltraStyledTooltip
+                title={<FormattedMessage id="zoneMenu.moveDown" defaultMessage="Move down/right (→ or ↓)" />}
+                key="moveDown"
+              >
                 <UltraStyledIconButton size="small" onClick={onMoveDown}>
                   <ArrowDownwardRoundedIcon />
                 </UltraStyledIconButton>
@@ -484,14 +502,14 @@ export function ZoneMenu(props: ZoneMenuProps) {
             )
           ]}
         {isTrashable && !isLockedItem && (
-          <UltraStyledTooltip title={<FormattedMessage defaultMessage="Trash (⌫)" />} key="trash">
+          <UltraStyledTooltip title={<FormattedMessage id="zoneMenu.trash" defaultMessage="Trash (⌫)" />} key="trash">
             <UltraStyledIconButton size="small" onClick={onTrash} ref={trashButtonRef}>
               <DeleteOutlineRoundedIcon />
             </UltraStyledIconButton>
           </UltraStyledTooltip>
         )}
         {isMovable && (!isLockedItem || !isEmbedded) && (
-          <UltraStyledTooltip title={<FormattedMessage defaultMessage="Move" />} key="move">
+          <UltraStyledTooltip title={<FormattedMessage id="words.move" defaultMessage="Move" />} key="move">
             <UltraStyledIconButton size="small" draggable sx={{ cursor: 'grab' }} onDragStart={onDragStart}>
               <DragIndicatorRounded />
             </UltraStyledIconButton>
@@ -501,13 +519,16 @@ export function ZoneMenu(props: ZoneMenuProps) {
       <Box display="flex">
         <Divider orientation="vertical" flexItem sx={{ mx: 0.5 }} />
         {showItemMenuButton && (
-          <UltraStyledTooltip title={<FormattedMessage defaultMessage="Options" />} onClick={handleRequestItemMenu}>
+          <UltraStyledTooltip
+            title={<FormattedMessage id="words.options" defaultMessage="Options" />}
+            onClick={handleRequestItemMenu}
+          >
             <UltraStyledIconButton size="small">
               <MoreRoundedIcon />
             </UltraStyledIconButton>
           </UltraStyledTooltip>
         )}
-        <UltraStyledTooltip title={<FormattedMessage defaultMessage="Cancel (Esc)" />}>
+        <UltraStyledTooltip title={<FormattedMessage id="zoneMenu.cancel" defaultMessage="Cancel (Esc)" />}>
           <UltraStyledIconButton size="small" onClick={onCancel}>
             <CloseRoundedIcon />
           </UltraStyledIconButton>
@@ -529,6 +550,7 @@ export function ZoneMenu(props: ZoneMenuProps) {
       >
         <UltraStyledTypography variant="body1" sx={{ padding: '10px 16px 10px 16px' }}>
           <FormattedMessage
+            id="zoneMenu.trashConfirmation"
             defaultMessage="{isEmbedded, select, true {Delete} other {Disassociate}} this item?"
             values={{ isEmbedded }}
           />
@@ -540,12 +562,12 @@ export function ZoneMenu(props: ZoneMenuProps) {
           }}
         >
           <UltraStyledTypography>
-            <FormattedMessage defaultMessage="No" />
+            <FormattedMessage id="words.no" defaultMessage="No" />
           </UltraStyledTypography>
         </MenuItem>
         <MenuItem onClick={(e) => refs.current.doTrash()}>
           <UltraStyledTypography>
-            <FormattedMessage defaultMessage="Yes" />{' '}
+            <FormattedMessage id="words.yes" defaultMessage="Yes" />{' '}
           </UltraStyledTypography>
         </MenuItem>
       </Menu>
