@@ -41,7 +41,7 @@ export interface PathNavigatorTreeUIProps
     | 'childrenByParentPath'
     | 'errorByPath'
   > {
-  title: string | ReactNode;
+  title: ReactNode;
   icon?: SystemIconDescriptor;
   container?: Partial<StateStylingProps>;
   rootPath: string;

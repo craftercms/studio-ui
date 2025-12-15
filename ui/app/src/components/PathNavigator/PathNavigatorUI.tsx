@@ -64,7 +64,7 @@ export interface PathNavigatorUIProps {
   /**
    * Widget's top title/label
    **/
-  title: string | ReactNode;
+  title: ReactNode;
   /**
    * Widget's search keyword
    **/
