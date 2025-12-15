@@ -1583,7 +1583,7 @@
 	"workflowCancellationDialog.noAffectedFiles": "영향을 받는 파일이 없습니다",
 	"workflowStateManagementMessages.statesUpdatedMessage": "{count} {count, plural, one {item} other {items}} 의 상태가 성공적으로 업데이트되었습니다.",
 	"workflowStates.locked": "잠김",
-	"workflowStates.setState": " {count, plural, one {상태 설정 \\\"{name}\\\"} other {항목에 대한 상태 설정 ({count})}}",
+	"workflowStates.setState": " {count, plural, one {상태 설정 \"{name}\"} other {항목에 대한 상태 설정 ({count})}}",
 	"workflowStates.title": "워크플로 상태",
 	"wSZR47": "제출하다",
 	"wtIWaL": "일괄 작업",

@@ -454,7 +454,7 @@
 	"formEngine.inProgressConfirmation": "Actualmente, hay otro formulario abierto y minimizado. Cierre el formulario actual antes de abrir otro.",
 	"formEngine.policyError": "La ruta {path} va en contra de las políticas del proyecto.",
 	"formEngine.save": "Guardar como borrador",
-	"formEngine.saveAndClose": "Guardar cerrar",
+	"formEngine.saveAndClose": "Guardar y cerrar",
 	"formEngine.saveAndMinimize": "Guardar y minimizar",
 	"formEngine.saveAndPreview": "Guardar y obtener una vista previa",
 	"formEngine.saveDraft": "Guardar Borrador",
