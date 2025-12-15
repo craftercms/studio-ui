@@ -20,7 +20,7 @@ import replace from '@rollup/plugin-replace';
 import pkg from './package.json' with { type: 'json' };
 import { swc } from 'rollup-plugin-swc3';
 import alias from '@rollup/plugin-alias';
-import json from "@rollup/plugin-json";
+import json from '@rollup/plugin-json';
 
 /** @type {import('rollup').InputPluginOption} */
 const plugins = [
