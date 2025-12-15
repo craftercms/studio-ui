@@ -1583,7 +1583,7 @@
 	"workflowCancellationDialog.noAffectedFiles": "No hay archivos afectados",
 	"workflowStateManagementMessages.statesUpdatedMessage": "Estado para {count} {count, plural, one {ítem} other {ítems}} actualizado con éxito",
 	"workflowStates.locked": "Bloqueado",
-	"workflowStates.setState": " {count, plural, one {Establecer estado para \\\"{name}\\\"} other {Establecer estado para los elementos ({count})}}",
+	"workflowStates.setState": " {count, plural, one {Establecer estado para \"{name}\"} other {Establecer estado para los elementos ({count})}}",
 	"workflowStates.title": "Estados de flujo de trabajo",
 	"wSZR47": "Enviar",
 	"wtIWaL": "Acciones masivas",
