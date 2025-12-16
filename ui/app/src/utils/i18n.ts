@@ -54,8 +54,11 @@ if (getCurrentLocale() !== 'en') {
 
 async function fetchLocale(locale: string, imports: ImportsLookup): Promise<LookupTable<string>> {
 	const importFn = imports[locale];
-	const translations = importFn ? await importFn() : {};
-	return (translations as ImportsLookup).default ?? translations;
+	if (!importFn) {
+		return {};
+	}
+	const translations = await importFn();
+	return translations.default;
 }
 
 export async function createIntlInstance(
