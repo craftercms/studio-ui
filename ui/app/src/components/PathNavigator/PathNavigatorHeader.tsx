@@ -31,7 +31,7 @@ export type PathNavigatorHeaderClassKey = 'root' | 'content';
 
 export interface PathNavigatorHeaderProps {
 	locale: string;
-	title: string | ReactNode;
+	title: ReactNode;
 	icon?: SystemIconDescriptor & Partial<{ expandedStyle: {}; collapsedStyle: {} }>;
 	collapsed: boolean;
 	onLanguageMenu?(anchor: Element): void;
