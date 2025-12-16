@@ -16,67 +16,28 @@
 
 import { createIntl, createIntlCache, IntlShape } from 'react-intl';
 import { Subject } from 'rxjs';
-import { BundledLocaleCodes, getCurrentLocale } from '@craftercms/studio-ui/utils/i18n';
-import LookupTable from '@craftercms/studio-ui/src/models/LookupTable';
+import { createIntlInstance, getCurrentLocale, ImportsLookup } from '@craftercms/studio-ui/utils/i18n';
 
 /* private */
 const currentTranslations = { en: {} };
 
-const fetchedLocales: Partial<Record<BundledLocaleCodes, boolean>> = { en: true };
+const importsLookup: ImportsLookup = {
+	de: () => import('../translations/de.json'),
+	es: () => import('../translations/es.json'),
+	ko: () => import('../translations/ko.json')
+};
 
 /* private */
 const intl$$ = new Subject<IntlShape>();
-
-/* public */
-export const intl$ = intl$$.asObservable();
 
 /* private */
 let intl = createIntl({ locale: 'en', messages: currentTranslations.en }, createIntlCache());
 
 if (getCurrentLocale() !== 'en') {
-	createIntlInstance(getCurrentLocale()).then((newIntl) => {
+	createIntlInstance(getCurrentLocale(), importsLookup).then((newIntl) => {
 		intl = newIntl;
 		intl$$.next(newIntl);
 	});
-}
-
-async function fetchLocale(locale: string): Promise<LookupTable<string>> {
-	let translations;
-	switch (locale) {
-		case 'de':
-			translations = await import('../translations/de.json');
-			break;
-		case 'es':
-			translations = await import('../translations/es.json');
-			break;
-		case 'ko':
-			translations = await import('../translations/ko.json');
-			break;
-		default:
-			translations = Promise.resolve({});
-			break;
-	}
-	return translations.default ?? translations;
-}
-
-async function createIntlInstance(localeCode: string): Promise<IntlShape> {
-	if (
-		!fetchedLocales[localeCode] &&
-		// Nothing to fetch point if we don't have the locale
-		['de', 'es', 'ko'].includes(localeCode)
-	) {
-		const fetchedTranslations = await fetchLocale(localeCode as BundledLocaleCodes);
-		// Plugins may have added translations to a locale that hasn't been fetched.
-		currentTranslations[localeCode] = { ...currentTranslations[localeCode], ...fetchedTranslations };
-		fetchedLocales[localeCode] = true;
-	}
-	return createIntl(
-		{
-			locale: localeCode,
-			messages: currentTranslations[localeCode] || currentTranslations.en
-		},
-		createIntlCache()
-	);
 }
 
 export function getCurrentIntl(): IntlShape {

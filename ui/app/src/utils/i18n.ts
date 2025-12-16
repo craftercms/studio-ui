@@ -24,6 +24,13 @@ import LookupTable from '../models/LookupTable';
 
 export type BundledLocaleCodes = 'en' | 'es' | 'de' | 'ko';
 
+export type ImportsLookup = LookupTable<() => Promise<{ default: LookupTable<string> }>>;
+const importsLookup: ImportsLookup = {
+	de: () => import('../translations/de.json'),
+	es: () => import('../translations/es.json'),
+	ko: () => import('../translations/ko.json')
+};
+
 /* private */
 let currentTranslations = { en: {} };
 
@@ -45,32 +52,22 @@ if (getCurrentLocale() !== 'en') {
 	});
 }
 
-async function fetchLocale(locale: string): Promise<LookupTable<string>> {
-	let translations;
-	switch (locale) {
-		case 'de':
-			translations = await import('../translations/de.json');
-			break;
-		case 'es':
-			translations = await import('../translations/es.json');
-			break;
-		case 'ko':
-			translations = await import('../translations/ko.json');
-			break;
-		default:
-			translations = Promise.resolve({});
-			break;
-	}
-	return translations.default ?? translations;
+async function fetchLocale(locale: string, imports: ImportsLookup): Promise<LookupTable<string>> {
+	const importFn = imports[locale];
+	const translations = importFn ? await importFn() : {};
+	return (translations as ImportsLookup).default ?? translations;
 }
 
-async function createIntlInstance(localeCode: string): Promise<IntlShape> {
+export async function createIntlInstance(
+	localeCode: string,
+	imports: ImportsLookup = importsLookup
+): Promise<IntlShape> {
 	if (
 		!fetchedLocales[localeCode] &&
 		// Nothing to fetch point if we don't have the locale
 		['de', 'es', 'ko'].includes(localeCode)
 	) {
-		let fetchedTranslations = await fetchLocale(localeCode as BundledLocaleCodes);
+		let fetchedTranslations = await fetchLocale(localeCode as BundledLocaleCodes, imports);
 		// Plugins may have added translations to a locale that hasn't been fetched.
 		currentTranslations[localeCode] = { ...currentTranslations[localeCode], ...fetchedTranslations };
 		fetchedLocales[localeCode] = true;
