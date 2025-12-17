@@ -15,7 +15,6 @@
  */
 
 import { createIntl, createIntlCache, IntlShape } from 'react-intl';
-import { Subject } from 'rxjs';
 import { createIntlInstance, getCurrentLocale, ImportsLookup } from '@craftercms/studio-ui/utils/i18n';
 
 const importsLookup: ImportsLookup = {
@@ -25,15 +24,11 @@ const importsLookup: ImportsLookup = {
 };
 
 /* private */
-const intl$$ = new Subject<IntlShape>();
-
-/* private */
 let intl = createIntl({ locale: 'en', messages: {} }, createIntlCache());
 
 if (getCurrentLocale() !== 'en') {
   createIntlInstance(getCurrentLocale(), importsLookup).then((newIntl) => {
     intl = newIntl;
-    intl$$.next(newIntl);
   });
 }
 
