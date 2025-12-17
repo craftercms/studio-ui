@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect } from 'react';
-import { defineMessages, useIntl } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
 import {
   fetchAudiencesPanelModel,
@@ -70,7 +70,7 @@ export function PreviewAudiencesPanel(props: PreviewAudiencesPanelProps) {
   };
 
   if (hasNoFields) {
-    return <EmptyState title="Audience targeting has not been configured." />;
+    return <EmptyState title={<FormattedMessage defaultMessage="Audience targeting has not been configured." />} />;
   }
 
   return (

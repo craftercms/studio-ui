@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { makeStyles } from 'tss-react/mui';
 import Accordion from '@mui/material/Accordion';
 import { PathNavigatorHeader } from '../PathNavigator/PathNavigatorHeader';
@@ -41,7 +41,7 @@ export interface PathNavigatorTreeUIProps
     | 'childrenByParentPath'
     | 'errorByPath'
   > {
-  title: string;
+  title: ReactNode;
   icon?: SystemIconDescriptor;
   container?: Partial<StateStylingProps>;
   rootPath: string;

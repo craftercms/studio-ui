@@ -17,6 +17,7 @@
 import React, { ComponentType, ElementType, forwardRef, PropsWithChildren } from 'react';
 import ContentInstance from '@craftercms/studio-ui/models/ContentInstance';
 import { isForwardRef } from 'react-is';
+import { FormattedMessage } from 'react-intl';
 
 export type PropsWithModel = PropsWithChildren<{ model: ContentInstance }>;
 
@@ -30,7 +31,9 @@ export interface ContentTypeProps<P extends PropsWithModel = PropsWithModel> {
 export function NotFoundDefault() {
   return (
     <section>
-      <p>Content not found.</p>
+      <p>
+        <FormattedMessage id="contentType.contentNotFound" defaultMessage="Content not found." />
+      </p>
     </section>
   );
 }
@@ -62,7 +65,7 @@ export const ContentType = forwardRef<any, ContentTypeProps>(function (props, re
     ...rest
   } = props;
 
-  const Component = model === null ? NotFound : contentTypeMap[model?.craftercms?.contentTypeId] ?? NotDeveloped;
+  const Component = model === null ? NotFound : (contentTypeMap[model?.craftercms?.contentTypeId] ?? NotDeveloped);
 
   const finalProps: any = rest;
   if (typeof Component !== 'string') {

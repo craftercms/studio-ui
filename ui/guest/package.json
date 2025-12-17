@@ -47,7 +47,8 @@
     "build:npm": "run-s clean:npm build:modern replace-env-version create-package-file copy-jquery-npm",
     "copy-jquery-npm": "cp -r ./src/jquery ./build_tsc/jquery",
     "bom": "mkdir -p target && yarn cyclonedx --output-file target/bom.json",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "i18n:extract": "formatjs extract './src/**/*.{ts,tsx}' --ignore='**/*.d.ts' --out-file src/translations/en-extract.json"
   },
   "dependencies": {
     "@craftercms/classes": "^4.3.0",
@@ -69,6 +70,7 @@
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-hotkeys-hook": "^5.1.0",
+    "react-intl": "^7.1.11",
     "react-is": "^19.0.0",
     "react-redux": "^9.2.0",
     "redux": "^5.0.1",
@@ -78,6 +80,8 @@
     "uuid": "^11.1.0"
   },
   "devDependencies": {
+    "@formatjs/cli": "^6.7.2",
+    "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-swc": "^0.4.0",
     "@swc/core": "^1.13.3",
     "@types/jquery": "^3.5.32",

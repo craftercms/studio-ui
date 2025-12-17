@@ -24,7 +24,7 @@
       "path": "../app/tsconfig.build.json"
     }
   ],
-  "include": ["./src"],
+  "include": ["./src", "src/**/*.json"],
   "exclude": [
     "./src/hooks.bak.ts",
     "node_modules",
