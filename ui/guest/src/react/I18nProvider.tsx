@@ -19,6 +19,6 @@ import { IntlShape, RawIntlProvider } from 'react-intl';
 import { getCurrentIntl } from '../utils/i18n';
 
 export function I18nProvider(props: PropsWithChildren<{}>) {
-  const [intl] = useState<IntlShape>(getCurrentIntl());
+  const [intl] = useState<IntlShape>(() => getCurrentIntl());
   return <RawIntlProvider children={props.children} value={intl} />;
 }
