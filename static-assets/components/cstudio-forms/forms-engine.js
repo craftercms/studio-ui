@@ -3510,7 +3510,6 @@ const initializeCStudioForms = () => {
               'rteComponents'
             ],
             output = '',
-            validFieldsStr,
             section;
 
           // Add valid fields from the ones created dynamically by controls
@@ -3572,7 +3571,6 @@ const initializeCStudioForms = () => {
           }
 
           validFields.push('$!'); // End element
-          validFieldsStr = validFields.join(',');
 
           for (var key in formModel) {
             var attributes = [' '],
