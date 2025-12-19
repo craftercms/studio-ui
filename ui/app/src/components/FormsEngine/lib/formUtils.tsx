@@ -72,6 +72,7 @@ import { getFormsEngineCloseAfterSave, getFormsEngineCollapseToCKey } from '../.
 import { createComponentId } from '../../../utils/system';
 import { showErrorDialog } from '../../../state/actions/dialogs';
 import { ensureSingleSlash } from '../../../utils/string';
+import { nou } from '../../../utils/object';
 
 /**
  * Returns the scroll container for the form's container.
@@ -189,7 +190,28 @@ export function createFieldAtoms(
 		if (isInitialization) {
 			isInitialization = false;
 		} else {
-			if (value !== formContextRef.current.originalValues[field.id]) {
+			if (field.id === XmlKeys['fileName']) {
+				const currentFileName = get(formContextRef.current.atoms.fileName);
+				const originalPath = formContextRef.current.itemMeta.path;
+
+				if (nou(originalPath)) {
+					// If no originalPath exists => creating content
+					if (currentFileName) {
+						formContextRef.current.changedFieldIds.add(field.id);
+					} else {
+						formContextRef.current.changedFieldIds.delete(field.id);
+					}
+				} else {
+					// If originalPath exists, validate if differs from original value
+					const isPage = isPagePath(originalPath);
+					const originalFileName = getFileNameValue(originalPath, isPage);
+					if (currentFileName !== originalFileName) {
+						formContextRef.current.changedFieldIds.add(field.id);
+					} else {
+						formContextRef.current.changedFieldIds.delete(field.id);
+					}
+				}
+			} else if (value !== formContextRef.current.originalValues[field.id]) {
 				formContextRef.current.changedFieldIds.add(field.id);
 			} else {
 				formContextRef.current.changedFieldIds.delete(field.id);
@@ -455,7 +477,23 @@ export function setFieldAtoms(
 	atomsTarget.validationByFieldId[fieldId] = validityAtom;
 }
 
-export type SystemPropsObject = Record<XmlKeys, string | boolean>;
+export type SystemPropsObject = Pick<
+	Record<XmlKeys, string | boolean>,
+	| XmlKeys.modelId
+	| XmlKeys.internalName
+	| XmlKeys.contentTypeId
+	| XmlKeys.displayTemplate
+	| XmlKeys.templateNotRequired
+	| XmlKeys.mergeStrategy
+	| XmlKeys.dateCreated
+	| XmlKeys.dateCreatedDt
+	| XmlKeys.dateModified
+	| XmlKeys.dateModifiedDt
+	| XmlKeys.savedAsDraft
+	| XmlKeys.disabled
+	| XmlKeys.placeInNav
+	| XmlKeys.navLabel
+>;
 
 /**
  * Creates an object with all the base content item system props (objectId, content-type, etc.)
@@ -478,9 +516,6 @@ export function createObjectWithSystemProps(
 		[XmlKeys.dateModified]: mixin?.[XmlKeys.dateModified] ?? dateIsoString,
 		[XmlKeys.dateModifiedDt]: mixin?.[XmlKeys.dateModifiedDt] ?? dateIsoString,
 		[XmlKeys.savedAsDraft]: mixin?.[XmlKeys.savedAsDraft] ?? 'false',
-		[XmlKeys.folderName]: mixin?.[XmlKeys.folderName] ?? '',
-		// TODO: folderName? fileName?
-		[XmlKeys.fileName]: mixin?.[XmlKeys.fileName] ?? 'index.xml',
 		// TODO: These are part of the type
 		[XmlKeys.disabled]: mixin?.[XmlKeys.disabled] ?? false,
 		[XmlKeys.placeInNav]: mixin?.[XmlKeys.placeInNav] ?? false,
@@ -653,7 +688,7 @@ export function generateDefaultChangesComment(
 		});
 	}
 	const fieldsChangedNames: string[] = Array.from(changedFieldIds).flatMap(
-		(fieldId) => fieldsToRender[fieldId === XmlKeys.folderName ? XmlKeys.fileName : fieldId]?.name ?? []
+		(fieldId) => fieldsToRender[fieldId]?.name ?? []
 	);
 	const newMessage = produceChangedFieldsMessage(fieldsChangedNames);
 	if (

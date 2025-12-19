@@ -47,7 +47,27 @@ export const validatorsMap: Partial<Record<BuiltInControlType, ValidatorFunction
 	'date-time': undefined,
 	disabled: undefined,
 	dropdown: undefined,
-	'file-name': undefined,
+	'file-name': (field, _, messages, meta) => {
+		const siteId: string = meta.siteId;
+		const currentValue = meta.fileName;
+
+		if (nou(currentValue)) return Promise.resolve(false);
+
+		const initialPath = meta.itemMeta.path ?? meta.itemMeta.pathInSite;
+		const isPage = isPagePath(withIndex(initialPath));
+		const basePath = nnou(meta.itemMeta.path) ? getBasePath(initialPath, isPage) : meta.itemMeta.pathInSite; // TODO: is basePath same as meta.itemMeta.pathInSite?
+		const newPath = getFileNamePath(currentValue, isPage, basePath);
+
+		if (initialPath === newPath || nou(siteId)) return true;
+		return firstValueFrom(checkPathExistence(siteId, newPath))
+			.then((exists) => {
+				if (exists) {
+					messages?.push([defineMessage({ defaultMessage: 'An item with that name already exists.' })]);
+				}
+				return !exists;
+			})
+			.catch(() => false);
+	},
 	forcehttps: undefined,
 	'image-picker': undefined,
 	input: undefined,
@@ -90,8 +110,8 @@ export async function validateFieldValue(
 	const isRequired = isFieldRequired(field);
 	const isEmpty = isEmptyValue(field, validateValue);
 
-	// If it's required, and the value is empty, then it's invalid.
-	if ((isRequired || field.id === 'file-name') && isEmpty) {
+	// If it's required, and the value is empty, then it's invalid. For file-name, if path is root it's ok to be empty.
+	if ((isRequired || (field.id === 'file-name' && meta.itemMeta.path !== '/site/website/index.xml')) && isEmpty) {
 		messages.push(defineMessage({ defaultMessage: 'This field is required.' }));
 		return Promise.resolve({ isValid: false, messages });
 	}
@@ -113,11 +133,17 @@ export function isFieldRequired(field: ContentTypeField): boolean {
 	return Boolean(field.validations?.required?.value);
 }
 
-export function checkMinimumSaveRequirementsFulfilled(values: LookupTable<unknown>): boolean {
-	return (
-		[values[XmlKeys.fileName], values[XmlKeys.folderName]].join('').trim() !== '' &&
-		values[XmlKeys.internalName].toString().trim() !== ''
-	);
+export function checkMinimumSaveRequirementsFulfilled(
+	fileNameValidation: Promise<FieldValidityState>,
+	values: LookupTable<unknown>
+): Promise<boolean> {
+	return fileNameValidation.then(({ isValid: isFileNameValid }) => {
+		return isFileNameValid && checkInternalNameRequirementsFulfilled(values);
+	});
+}
+
+export function checkInternalNameRequirementsFulfilled(values: LookupTable<unknown>): boolean {
+	return values[XmlKeys.internalName].toString().trim() !== '';
 }
 
 export default validateFieldValue;

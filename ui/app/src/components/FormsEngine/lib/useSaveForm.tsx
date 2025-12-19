@@ -33,7 +33,7 @@ import Typography from '@mui/material/Typography';
 import { buildContentXml } from './valueSerializers';
 import { flushSync } from 'react-dom';
 import LookupTable from '../../../models/LookupTable';
-import { checkMinimumSaveRequirementsFulfilled } from './validators';
+import { checkInternalNameRequirementsFulfilled, checkMinimumSaveRequirementsFulfilled } from './validators';
 import ContentType from '../../../models/ContentType';
 
 export interface UseSaveFormProps {
@@ -92,22 +92,21 @@ export function useSaveForm(props: UseSaveFormProps) {
 			const saveAsDraft = validityStates.some((state) => !state.isValid);
 
 			complementValuesWithSystemProps(id, values, contentObject, contentType, saveAsDraft);
-			// Validate minimum requirements to save as draft. Execution stops if minimum reqs aren't fulfilled.
-			if (!checkMinimumSaveRequirementsFulfilled(values)) {
-				return showAlert({
-					dispatch,
-					message: formatMessage(
-						{ defaultMessage: 'You need a {fileName} and {internalName} at a minimum to save content.' },
-						{
-							fileName: contentType.fields[XmlKeys.fileName].name,
-							internalName: contentType.fields[XmlKeys.internalName].name
-						}
-					)
-				});
-			}
-			const xml = buildContentXml(values, store.getState().contentTypes.byId);
+			const { [XmlKeys.fileName]: _, ...valuesWithoutFileName } = values;
+			const xml = buildContentXml(valuesWithoutFileName, store.getState().contentTypes.byId);
 			// Embedded handled here. If true, execution ends inside if statement.
 			if (isEmbedded) {
+				// Validate minimum embedded requirements to save as draft. Execution stops if minimum reqs aren't fulfilled.
+				if (!checkInternalNameRequirementsFulfilled(values)) {
+					return showAlert({
+						dispatch,
+						message: formatMessage(
+							{ defaultMessage: 'You need an {internalName} at a minimum to save content.' },
+							{ internalName: contentType.fields[XmlKeys.internalName].name }
+						)
+					});
+				}
+
 				const dom = fromString(xml);
 				(onSave?.({ dom, xml, values, versionComment }) as Promise<FormSavePromiseResult>)?.then(onSavePromiseHandler);
 				return;
@@ -157,16 +156,49 @@ export function useSaveForm(props: UseSaveFormProps) {
 				}
 			};
 
-			// TODO: validateActionPolicy. See FE1 saveFn.
-			// TODO: write-content url on FE1 sends phase, path, fileName, contentType QSAs. Important?
-			// TODO: Cancel packages when needed.
-			if (isRename) {
-				moveAndUpdateContent(siteId, itemPath, path, xml).subscribe(saveActionCallbacks);
-			} else {
-				// TODO: Temporary playground save path. Remove.
-				// path = '/site/website/fe2-save-result.xml';
-				writeContent(siteId, path, xml).subscribe(saveActionCallbacks);
-			}
+			// Validate minimum requirements to save as draft. Execution stops if minimum reqs aren't fulfilled.
+			checkMinimumSaveRequirementsFulfilled(
+				jotai.get(stableFormContext.atoms.validationByFieldId[XmlKeys['fileName']]),
+				values
+			).then((minimumRequirementsFullfilled) => {
+				if (minimumRequirementsFullfilled) {
+					// TODO: validateActionPolicy. See FE1 saveFn.
+					// TODO: write-content url on FE1 sends phase, path, fileName, contentType QSAs. Important?
+					// TODO: Cancel packages when needed.
+					if (isRename) {
+						moveAndUpdateContent(siteId, itemPath, path, xml).subscribe(saveActionCallbacks);
+					} else {
+						// TODO: Temporary playground save path. Remove.
+						// path = '/site/website/fe2-save-result.xml';
+						writeContent(siteId, path, xml).subscribe(saveActionCallbacks);
+					}
+				} else {
+					setIsSubmitting(false);
+					return showAlert({
+						dispatch,
+						message: formatMessage(
+							{ defaultMessage: 'You need a valid {fileName} and {internalName} at a minimum to save content.' },
+							{
+								fileName: contentType.fields[XmlKeys.fileName].name,
+								internalName: contentType.fields[XmlKeys.internalName].name
+							}
+						)
+					});
+				}
+			});
+
+			// if (!checkMinimumSaveRequirementsFulfilled(values)) {
+			// 	return showAlert({
+			// 		dispatch,
+			// 		message: formatMessage(
+			// 			{ defaultMessage: 'You need a {fileName} and {internalName} at a minimum to save content.' },
+			// 			{
+			// 				fileName: contentType.fields[XmlKeys.fileName].name,
+			// 				internalName: contentType.fields[XmlKeys.internalName].name
+			// 			}
+			// 		)
+			// 	});
+			// }
 		});
 	};
 }
@@ -183,8 +215,6 @@ function complementValuesWithSystemProps(
 		createObjectWithSystemProps(contentType, {
 			[XmlKeys.modelId]: id,
 			[XmlKeys.internalName]: values[XmlKeys.internalName] as string,
-			[XmlKeys.fileName]: (values[XmlKeys.fileName] ?? contentObject[XmlKeys.fileName]) as string,
-			[XmlKeys.folderName]: (values[XmlKeys.folderName] ?? contentObject[XmlKeys.folderName]) as string,
 			[XmlKeys.dateCreated]: contentObject[XmlKeys.dateCreated] as string,
 			[XmlKeys.dateCreatedDt]: contentObject[XmlKeys.dateCreatedDt] as string,
 			[XmlKeys.savedAsDraft]: saveAsDraft

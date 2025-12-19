@@ -16,7 +16,7 @@
 
 import React, { RefObject, SyntheticEvent, useContext, useMemo, useState } from 'react';
 import { ContentTypeField } from '../../../models';
-import { FormsEngineAtoms, ItemMetaContext, StableFormContext } from '../lib/formsEngineContext';
+import { FormsEngineAtoms, ItemMetaContext, StableFormContext, useStableFormContext } from '../lib/formsEngineContext';
 import { getScrollContainer } from '../lib/formUtils';
 import useDebouncedInput from '../../../hooks/useDebouncedInput';
 import { TreeItem } from '@mui/x-tree-view/TreeItem';
@@ -31,6 +31,8 @@ import { atom } from 'jotai';
 import { immutableEmptyArray } from '../../../utils/array';
 import useLoadableAtom from '../lib/useLoadableAtom';
 import Skeleton from '@mui/material/Skeleton';
+import ErrorBoundary from '../../ErrorBoundary';
+import { XmlKeys } from '../lib/formConsts';
 
 export interface TableOfContentsProps {
 	containerRef: RefObject<HTMLDivElement>;
@@ -114,25 +116,27 @@ export function TableOfContents({ containerRef, fieldsToRender }: TableOfContent
 					onKeyword$.next(value);
 				}}
 			/>
-			<SimpleTreeView
-				selectedItems={immutableEmptyArray}
-				expansionTrigger="iconContainer"
-				onItemExpansionToggle={handleSectionExpansionToggleClick}
-				expandedItems={expandedSectionIds}
-			>
-				{filteredFields?.map(createFieldTreeItem) ??
-					fieldsToRender?.map(createFieldTreeItem) ??
-					contentTypeSections.map((section) => (
-						<TreeItem
-							key={section.id}
-							itemId={section.id}
-							data-section-id={section.id}
-							label={section.title}
-							onClick={handleSectionClick}
-							children={section.fields.map((fieldId) => createFieldTreeItem(contentTypeFields[fieldId]))}
-						/>
-					))}
-			</SimpleTreeView>
+			<ErrorBoundary>
+				<SimpleTreeView
+					selectedItems={immutableEmptyArray}
+					expansionTrigger="iconContainer"
+					onItemExpansionToggle={handleSectionExpansionToggleClick}
+					expandedItems={expandedSectionIds}
+				>
+					{filteredFields?.map(createFieldTreeItem) ??
+						fieldsToRender?.map(createFieldTreeItem) ??
+						contentTypeSections.map((section) => (
+							<TreeItem
+								key={section.id}
+								itemId={section.id}
+								data-section-id={section.id}
+								label={section.title}
+								onClick={handleSectionClick}
+								children={section.fields.map((fieldId) => createFieldTreeItem(contentTypeFields[fieldId]))}
+							/>
+						))}
+				</SimpleTreeView>
+			</ErrorBoundary>
 			{/* Spacer: */}
 			<Box sx={{ minHeight: 50 }} />
 		</>
@@ -146,7 +150,10 @@ function TreeItemLabel({
 	field: ContentTypeField;
 	atoms: Pick<FormsEngineAtoms, 'valueByFieldId' | 'validationByFieldId'>;
 }) {
+	const formContext = useStableFormContext();
+	// If field.id is 'file-name', we'll be using `atoms.fileName` as the field value.
 	const value = useAtomValue(atoms.valueByFieldId[field.id]);
+	const fileName = useAtomValue(formContext.atoms.fileName);
 	const validityData = useLoadableAtom(atoms.validationByFieldId[field.id]);
 	const isValid = validityData.state === 'hasData' ? validityData?.data.isValid : true;
 	const isRequired = isFieldRequired(field);
@@ -160,7 +167,7 @@ function TreeItemLabel({
 					<FieldRequiredStateIndicator isValid={isValid} />
 				)
 			) : (
-				<FieldEmptyStateIndicator isEmpty={isEmptyValue(field, value)} />
+				<FieldEmptyStateIndicator isEmpty={isEmptyValue(field, field.id === XmlKeys.fileName ? fileName : value)} />
 			)}
 		</Box>
 	);

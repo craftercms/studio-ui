@@ -598,7 +598,14 @@ function FormOrchestrator(props: FormsEngineProps) {
 	const isRepeatMode = Boolean(repeat?.fieldId);
 	const affectedPackages = lockStatus.affectedPackages?.length > 0;
 	const contentTypeFields = contentType.fields;
-	const contentTypeSections = contentType.sections;
+	const contentTypeSections = useMemo(() => {
+		if (!isEmbedded) return contentType.sections;
+		// If the item is embedded, remove the 'file-name' field from the sections, since there is no path/filename
+		return contentType.sections.map((section) => ({
+			...section,
+			fields: section.fields.filter((fieldId) => fieldId !== 'file-name')
+		}));
+	}, [contentType.sections, isEmbedded]);
 	const useCollapsedToC = useAtomValue(atoms.useCollapsedToC);
 	const tableOfContents = <TableOfContents fieldsToRender={fieldsToRender} containerRef={containerRef} />;
 	const effectRefs = useUpdateRefs({ fieldsToRender, versionCommentAtom: stableFormContext.atoms.versionComment });

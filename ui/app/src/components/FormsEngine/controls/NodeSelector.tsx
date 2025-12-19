@@ -425,7 +425,7 @@ function NodeSelector(props: NodeSelectorProps) {
 					path: item.include ?? contextItem.path,
 					// In the case of shared, item.component === undefined.
 					// The form interprets as a shared when modelId and values are not supplied and fetches.
-					modelId: item.component?.objectId as string | undefined,
+					modelId: isEmbedded ? (item.key as string | undefined) : undefined,
 					values: item.component
 				},
 				onSave({ values, path }) {
