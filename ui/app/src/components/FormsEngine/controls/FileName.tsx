@@ -146,5 +146,4 @@ export default FileName;
 /*
 	TODO:
 	 - UM to put config.xml values in form-definition
-	 - Check showWarnOnEdit property from control descriptor.
 */
