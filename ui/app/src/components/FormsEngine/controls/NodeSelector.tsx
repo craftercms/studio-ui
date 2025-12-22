@@ -226,7 +226,7 @@ function NodeSelector(props: NodeSelectorProps) {
 			);
 		}
 	};
-	const handleOpenItem = (event: { stopPropagation(): void }, index: number, edit: boolean = false) => {
+	const handleEditItem = (event: { stopPropagation(): void }, index: number, edit: boolean = false) => {
 		event.stopPropagation();
 		const item: NodeSelectorItem = value[index];
 		if (isItemComponent(item)) {
@@ -246,7 +246,8 @@ function NodeSelector(props: NodeSelectorProps) {
 						: item.include;
 
 					if (!isEmbedded) {
-						// Check if the path has changed (moved/renamed) and update key accordingly.
+						// In the cases where a shared item is being edited, check if the path has changed (meaning that the item
+						// has been moved/renamed) and update key accordingly.
 						const currentPath = item.key;
 						if (path && currentPath !== path) {
 							key = path;
@@ -280,7 +281,7 @@ function NodeSelector(props: NodeSelectorProps) {
 			value,
 			index,
 			(newList) => setValue(newList),
-			(index, edit) => handleOpenItem(e, index, edit && !readonly)
+			(index, edit) => handleEditItem(e, index, edit && !readonly)
 		);
 	};
 	const executeDataSourceOption = (
@@ -626,7 +627,7 @@ function NodeSelector(props: NodeSelectorProps) {
 									<ListItemButton
 										key={index} // Using index as the key because there can be duplicate items (same item included more than once)
 										divider={index !== value.length - 1}
-										onClick={(e) => (canBeEdited ? handleOpenItem(e, index, false) : handleViewItem(e, index))}
+										onClick={(e) => (canBeEdited ? handleEditItem(e, index, false) : handleViewItem(e, index))}
 										onKeyDown={(e) => handleItemKeyDown(e, index)}
 									>
 										<ListItemText
@@ -655,7 +656,7 @@ function NodeSelector(props: NodeSelectorProps) {
 										<ListItemSecondaryAction sx={{ position: 'static', display: 'flex', transform: 'none' }}>
 											{canBeEdited ? (
 												<Tooltip title="Edit">
-													<IconButton size="small" onClick={(e) => handleOpenItem(e, index, !readonly)}>
+													<IconButton size="small" onClick={(e) => handleEditItem(e, index, !readonly)}>
 														<EditOutlined fontSize="small" />
 													</IconButton>
 												</Tooltip>
