@@ -47,27 +47,8 @@ export const validatorsMap: Partial<Record<BuiltInControlType, ValidatorFunction
 	'date-time': undefined,
 	disabled: undefined,
 	dropdown: undefined,
-	'file-name': (field, _, messages, meta) => {
-		const siteId: string = meta.siteId;
-		const currentValue = meta.fileName;
-
-		if (nou(currentValue)) return Promise.resolve(false);
-
-		const initialPath = meta.itemMeta.path ?? meta.itemMeta.pathInSite;
-		const isPage = isPagePath(withIndex(initialPath));
-		const basePath = nnou(meta.itemMeta.path) ? getBasePath(initialPath, isPage) : meta.itemMeta.pathInSite; // TODO: is basePath same as meta.itemMeta.pathInSite?
-		const newPath = getFileNamePath(currentValue, isPage, basePath);
-
-		if (initialPath === newPath || nou(siteId)) return true;
-		return firstValueFrom(checkPathExistence(siteId, newPath))
-			.then((exists) => {
-				if (exists) {
-					messages?.push([defineMessage({ defaultMessage: 'An item with that name already exists.' })]);
-				}
-				return !exists;
-			})
-			.catch(() => false);
-	},
+	'file-name': (field, currentValue, messages, meta) =>
+		fileNameValidator(field, currentValue as string, messages, meta),
 	forcehttps: undefined,
 	'image-picker': undefined,
 	input: undefined,
@@ -98,6 +79,28 @@ export type FieldValidityMessage =
 export interface FieldValidityState {
 	isValid: boolean;
 	messages: FieldValidityMessage[];
+}
+
+export function fileNameValidator(field, _, messages, meta) {
+	const siteId: string = meta.siteId;
+	const currentValue = meta.fileName;
+
+	if (nou(currentValue)) return Promise.resolve(false);
+
+	const initialPath = meta.itemMeta.path ?? meta.itemMeta.pathInSite;
+	const isPage = isPagePath(withIndex(initialPath));
+	const basePath = nnou(meta.itemMeta.path) ? getBasePath(initialPath, isPage) : meta.itemMeta.pathInSite; // TODO: is basePath same as meta.itemMeta.pathInSite?
+	const newPath = getFileNamePath(currentValue, isPage, basePath);
+
+	if (initialPath === newPath || nou(siteId)) return true;
+	return firstValueFrom(checkPathExistence(siteId, newPath))
+		.then((exists) => {
+			if (exists) {
+				messages?.push([defineMessage({ defaultMessage: 'An item with that name already exists.' })]);
+			}
+			return !exists;
+		})
+		.catch(() => false);
 }
 
 export async function validateFieldValue(
