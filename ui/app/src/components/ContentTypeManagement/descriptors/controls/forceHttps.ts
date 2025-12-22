@@ -32,7 +32,7 @@ export const forceHttpsDescriptor: DescriptorContentType = {
 	fields: {
 		readonly: {
 			id: 'readonly',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Read Only' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject

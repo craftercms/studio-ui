@@ -32,31 +32,20 @@ import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { applyContentNameRules } from '../../utils/content';
 
 export interface RenameContentDialogContainerProps
-	extends Pick<
-		RenameContentDialogProps,
-		'path' | 'value' | 'onRenamed' | 'onClose' | 'onSubmittingAndOrPendingChange'
-	> {
+	extends Pick<RenameContentDialogProps, 'path' | 'value' | 'onRenamed' | 'onClose'> {
 	dependantItems: ContentItem[];
 	fetchingDependantItems: boolean;
 	error: AjaxError;
+
 	fetchDependant(): void;
 }
 
 export function RenameContentDialogContainer(props: RenameContentDialogContainerProps) {
-	const {
-		path,
-		value,
-		onRenamed,
-		onClose,
-		fetchDependant,
-		dependantItems,
-		fetchingDependantItems,
-		error,
-		onSubmittingAndOrPendingChange
-	} = props;
-	const isPage = value.includes('/index.xml');
-	const { isSubmitting } = useEnhancedDialogContext();
-	const strippedValue = isPage ? value.replace('/index.xml', '') : value.replace('.xml', '');
+	const { path, value, onRenamed, onClose, fetchDependant, dependantItems, fetchingDependantItems, error } = props;
+	const safeValue = value ?? '';
+	const isPage = safeValue.includes('/index.xml');
+	const strippedValue = isPage ? safeValue.replace('/index.xml', '') : safeValue.replace('.xml', '');
+	const { isSubmitting, updateSubmittingOrHasPendingChanges } = useEnhancedDialogContext();
 	const [name, setName] = useState(strippedValue);
 	const [itemExists, setItemExists] = useState(false);
 	const isValid = !isBlank(name) && !itemExists && name !== strippedValue;
@@ -77,7 +66,7 @@ export function RenameContentDialogContainer(props: RenameContentDialogContainer
 		setName(newValue);
 		onNameUpdate$.next(newValue);
 		const newHasPendingChanges = newValue !== strippedValue;
-		onSubmittingAndOrPendingChange({ hasPendingChanges: newHasPendingChanges });
+		updateSubmittingOrHasPendingChanges({ hasPendingChanges: newHasPendingChanges });
 	};
 
 	const onRename = () => {
@@ -93,7 +82,7 @@ export function RenameContentDialogContainer(props: RenameContentDialogContainer
 					newNameExists={itemExists}
 					fetchDependant={fetchDependant}
 					dependantItems={dependantItems}
-					isSubmitting={false}
+					isSubmitting={isSubmitting}
 					confirmBrokenReferences={confirmBrokenReferences}
 					fetchingDependantItems={fetchingDependantItems}
 					error={error}

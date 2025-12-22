@@ -67,7 +67,10 @@ const LauncherLinkTile = (props: LauncherLinkTileProps) => {
 					);
 				}
 			}
-		: null;
+		: // If the tile is for preview link and we are already in preview mode, close the launcher instead of navigating
+			systemLinkId === 'preview' && window.location.pathname === '/studio/preview'
+			? () => dispatch(closeLauncher())
+			: null;
 
 	const link = isDialog
 		? getSystemLink({

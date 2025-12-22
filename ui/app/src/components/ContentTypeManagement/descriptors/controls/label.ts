@@ -32,14 +32,14 @@ export const labelDescriptor: DescriptorContentType = {
 	fields: {
 		text: {
 			id: 'text',
-			type: 'input',
+			type: 'string',
 			name: defineMessage({ defaultMessage: 'Text' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		renderAsHTML: {
 			id: 'renderAsHTML',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Render as HTML' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject

@@ -15,9 +15,8 @@
  */
 
 import React, { ComponentType, forwardRef } from 'react';
-import PropTypes from 'prop-types';
 import { useICE } from './hooks';
-import { FieldProps, Field } from './Field';
+import { FieldProps } from './Field';
 import { nnou, setProperty } from '@craftercms/studio-ui/utils/object';
 import { extractCollectionItem, value as getModelValue } from '@craftercms/studio-ui/utils/model';
 import { getCachedContentType } from '../contentController';
@@ -75,11 +74,5 @@ export const RenderField = forwardRef<any, RenderFieldProps<{}>>(function <P = {
 
 	return <Component {...passDownProps} />;
 });
-
-RenderField.propTypes = {
-	...Field.propTypes,
-	render: PropTypes.func,
-	renderTarget: PropTypes.string
-};
 
 export default RenderField;

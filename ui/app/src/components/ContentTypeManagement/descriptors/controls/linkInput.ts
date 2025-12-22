@@ -37,35 +37,35 @@ export const linkInputDescriptor: DescriptorContentType = {
 	fields: {
 		maxlength: {
 			id: 'maxlength',
-			type: 'numeric-input',
+			type: 'int',
 			name: defineMessage({ defaultMessage: 'maxLength' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		readonly: {
 			id: 'readonly',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'readonly' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		tokenized: {
 			id: 'tokenized',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Tokenize for Indexing' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		required: {
 			id: 'required',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Required' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		pattern: {
 			id: 'pattern',
-			type: 'input',
+			type: 'string',
 			name: defineMessage({ defaultMessage: 'Match Pattern' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
