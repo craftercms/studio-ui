@@ -53,7 +53,7 @@ export function useConsolidatedItemPickerData(dataSources: DataSource[]): Consol
 						if (allowedContentTypesData[contentTypeId].shared) {
 							allowedCreateTypes[contentTypeId] = allowedCreateTypes[contentTypeId] ?? {};
 							allowedCreateTypes[contentTypeId].shared = true;
-							const brp = ds.properties.baseRepoPath?.trim();
+							const brp = ds.properties.baseRepositoryPath?.trim();
 							if (brp) {
 								allowedCreateTypes[contentTypeId].createPaths = allowedCreateTypes[contentTypeId].createPaths ?? [];
 								allowedCreateTypes[contentTypeId].createPaths.push(brp);
