@@ -168,8 +168,6 @@ export function useSaveForm(props: UseSaveFormProps) {
 					if (isRename) {
 						moveAndUpdateContent(siteId, itemPath, path, xml).subscribe(saveActionCallbacks);
 					} else {
-						// TODO: Temporary playground save path. Remove.
-						// path = '/site/website/fe2-save-result.xml';
 						writeContent(siteId, path, xml).subscribe(saveActionCallbacks);
 					}
 				} else {
@@ -186,19 +184,6 @@ export function useSaveForm(props: UseSaveFormProps) {
 					});
 				}
 			});
-
-			// if (!checkMinimumSaveRequirementsFulfilled(values)) {
-			// 	return showAlert({
-			// 		dispatch,
-			// 		message: formatMessage(
-			// 			{ defaultMessage: 'You need a {fileName} and {internalName} at a minimum to save content.' },
-			// 			{
-			// 				fileName: contentType.fields[XmlKeys.fileName].name,
-			// 				internalName: contentType.fields[XmlKeys.internalName].name
-			// 			}
-			// 		)
-			// 	});
-			// }
 		});
 	};
 }
