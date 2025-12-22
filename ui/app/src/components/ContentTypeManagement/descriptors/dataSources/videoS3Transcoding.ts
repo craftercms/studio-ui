@@ -33,14 +33,14 @@ export const videoS3TranscodingDataSourceDescriptor: DescriptorContentType = {
 	fields: {
 		inputProfileId: {
 			id: 'inputProfileId',
-			type: 'input',
+			type: 'string',
 			name: defineMessage({ defaultMessage: 'Input Profile ID' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		outputProfileId: {
 			id: 'outputProfileId',
-			type: 'input',
+			type: 'string',
 			name: defineMessage({ defaultMessage: 'Output Profile ID' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject

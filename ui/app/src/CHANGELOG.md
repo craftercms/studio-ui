@@ -153,6 +153,7 @@
 * [ItemDisplay/utils]
   * Updated `getItemPublishingTargetText` to return a string. It now receives `formatMessage` as a parameter.
   * Updated `getItemStateText` to return a string. It now receives `formatMessage` as a parameter.
+* Removed `react-swipeable-views` packages and replaced it with a new forwardRef `PluginMediaCarousel` component.
 
 ## 4.2.0
 

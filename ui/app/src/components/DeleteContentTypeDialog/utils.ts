@@ -28,7 +28,7 @@ export interface DeleteContentTypeDialogProps extends DeleteContentTypeBaseProps
 
 export interface DeleteContentTypeDialogContainerProps
 	extends DeleteContentTypeBaseProps,
-		Pick<DeleteContentTypeDialogProps, 'onComplete' | 'onClose'> {}
+		Pick<DeleteContentTypeDialogProps, 'onComplete' | 'onClose' | 'isSubmitting'> {}
 
 export interface DeleteContentTypeDialogBodyProps {
 	submitting: boolean;

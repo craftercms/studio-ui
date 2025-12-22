@@ -37,14 +37,14 @@ export const awsFileUploadDescriptor: DescriptorContentType = {
 	fields: {
 		profile_id: {
 			id: 'profile_id',
-			type: 'input',
+			type: 'string',
 			name: defineMessage({ defaultMessage: 'Profile ID' }),
 			defaultValue: 's3-default',
 			validations: immutableEmptyObject
 		},
 		required: {
 			id: 'required',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Required' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject

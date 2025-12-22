@@ -37,42 +37,42 @@ export const inputDescriptor: DescriptorContentType = {
 	fields: {
 		maxlength: {
 			id: 'maxlength',
-			type: 'numeric-input',
+			type: 'int',
 			name: defineMessage({ defaultMessage: 'Max Length' }),
 			defaultValue: 50,
 			validations: immutableEmptyObject
 		},
 		readonly: {
 			id: 'readonly',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Read Only' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		tokenize: {
 			id: 'tokenize',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Tokenize for Indexing' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		escapeContent: {
 			id: 'escapeContent',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Escape Content' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		required: {
 			id: 'required',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Required' }),
 			defaultValue: false,
 			validations: immutableEmptyObject
 		},
 		pattern: {
 			id: 'pattern',
-			type: 'input',
+			type: 'string',
 			name: defineMessage({ defaultMessage: 'Match Pattern' }),
 			defaultValue: '',
 			validations: immutableEmptyObject

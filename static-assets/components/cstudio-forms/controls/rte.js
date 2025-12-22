@@ -531,7 +531,7 @@ CStudioAuthoring.Module.requireModule(
 						beforeSave: function () {
 							_thisControl.save();
 						},
-						...(isInRepeatGroup ? { repeatGroupId: config.repeatContainer.id } : {})
+						...(isInRepeatGroup ? { repeatGroupId: config.repeatContainer.id, rteId } : {})
 					};
 					_thisControl.form.registerBeforeSaveCallback(callback);
 

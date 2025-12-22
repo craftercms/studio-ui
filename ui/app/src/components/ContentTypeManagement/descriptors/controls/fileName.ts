@@ -32,21 +32,21 @@ export const fileNameDescriptor: DescriptorContentType = {
 	fields: {
 		maxlength: {
 			id: 'maxlength',
-			type: 'numeric-input',
+			type: 'int',
 			name: defineMessage({ defaultMessage: 'Max Length' }),
 			defaultValue: 50,
 			validations: immutableEmptyObject
 		},
 		readonly: {
 			id: 'readonly',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Read Only' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		allowEditWithoutWarning: {
 			id: 'allowEditWithoutWarning',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Allow Edit Without Warning' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject

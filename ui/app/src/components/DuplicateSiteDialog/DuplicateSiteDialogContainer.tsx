@@ -37,7 +37,6 @@ import useEnv from '../../hooks/useEnv';
 import { nnou } from '../../utils/object';
 import { Subscription } from 'rxjs';
 import useMount from '../../hooks/useMount';
-import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 import {
 	cleanupGitBranch,
 	cleanupSiteId,
@@ -57,6 +56,7 @@ import Alert from '@mui/material/Alert';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
 import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../state/actions/system';
+import { useEnhancedDialogContext } from '../EnhancedDialog';
 
 interface DuplicateSiteDialogContainerProps {
 	site: DuplicateSiteState;
@@ -64,11 +64,10 @@ interface DuplicateSiteDialogContainerProps {
 	handleClose(event?: React.MouseEvent, reason?: string): void;
 	isSubmitting: boolean;
 	onGoBack?(): void;
-	onSubmittingAndOrPendingChange(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
 export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainerProps) {
-	const { site, setSite, handleClose, onGoBack, isSubmitting, onSubmittingAndOrPendingChange } = props;
+	const { site, setSite, handleClose, onGoBack, isSubmitting } = props;
 	const [error, setError] = useState(null);
 	const { authoringBase, useBaseDomain } = useEnv();
 	const fieldsErrorsLookup: LookupTable<boolean> = useMemo(
@@ -85,7 +84,8 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
 	const primaryButtonRef = useRef(null);
 	const siteDuplicateSubscription = useRef<Subscription>(undefined);
 	const [sites, setSites] = useState(null);
-	const fnRefs = useUpdateRefs({ onSubmittingAndOrPendingChange, handleClose });
+	const { updateSubmittingOrHasPendingChanges } = useEnhancedDialogContext();
+	const fnRefs = useUpdateRefs({ updateSubmittingOrHasPendingChanges, handleClose });
 	const mountedRef = useRef(true);
 	const dispatch = useDispatch();
 	const { formatMessage } = useIntl();
@@ -102,7 +102,7 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
 	};
 
 	const duplicateSite = () => {
-		onSubmittingAndOrPendingChange({ isSubmitting: true });
+		updateSubmittingOrHasPendingChanges({ isSubmitting: true });
 		siteDuplicateSubscription.current = duplicate({
 			sourceSiteId: site.sourceSiteId,
 			siteId: site.siteId,
@@ -114,7 +114,7 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
 			next: () => {
 				siteDuplicateSubscription.current = null;
 				if (mountedRef.current) {
-					fnRefs.current.onSubmittingAndOrPendingChange({ isSubmitting: false });
+					fnRefs.current.updateSubmittingOrHasPendingChanges({ isSubmitting: false });
 					fnRefs.current.handleClose();
 					setSiteCookie(site.siteId, useBaseDomain);
 					window.location.href = getSystemLink({
@@ -129,7 +129,7 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
 				siteDuplicateSubscription.current = null;
 				if (mountedRef.current) {
 					setError(response.response);
-					fnRefs.current.onSubmittingAndOrPendingChange({ isSubmitting: false });
+					fnRefs.current.updateSubmittingOrHasPendingChanges({ isSubmitting: false });
 				} else {
 					console.error('Error duplicating site', response);
 					dispatch(
@@ -264,7 +264,7 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
 							// Avoid cancelling the request if the user sends to background.
 							siteDuplicateSubscription.current = null;
 							handleClose();
-							onSubmittingAndOrPendingChange({ hasPendingChanges: false, isSubmitting: false });
+							updateSubmittingOrHasPendingChanges({ hasPendingChanges: false, isSubmitting: false });
 						}}
 					/>
 				) : (
