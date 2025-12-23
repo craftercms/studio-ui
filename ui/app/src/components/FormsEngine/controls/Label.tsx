@@ -15,8 +15,6 @@
  */
 
 import type { ControlProps } from '../types';
-import Typography from '@mui/material/Typography';
-import DOMPurify from 'dompurify';
 import { getPropertyValue } from '../lib/formUtils';
 
 export function Label(props: ControlProps) {
@@ -24,14 +22,9 @@ export function Label(props: ControlProps) {
 
 	// region properties/validations
 	const labelText: string = getPropertyValue(field.properties, 'text') as string;
-	const renderAsHTML: boolean = getPropertyValue(field.properties, 'renderAsHTML') === true;
 	// endregion
 
-	return renderAsHTML ? (
-		<span dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(labelText || '') }} />
-	) : (
-		<Typography variant="body2">{labelText || ''}</Typography>
-	);
+	return <span dangerouslySetInnerHTML={{ __html: labelText }} />;
 }
 
 export default Label;
