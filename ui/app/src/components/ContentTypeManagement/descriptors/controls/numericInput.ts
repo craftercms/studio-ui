@@ -17,6 +17,7 @@
 import { createVirtualSection, DescriptorContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
 import { defineMessage } from 'react-intl';
+import { commonFieldPropertiesDescriptors } from './commonDescriptors';
 
 export const numericInputDescriptor: DescriptorContentType = {
 	id: 'numeric-input',
@@ -49,27 +50,9 @@ export const numericInputDescriptor: DescriptorContentType = {
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
-		readonly: {
-			id: 'readonly',
-			type: 'boolean',
-			name: defineMessage({ defaultMessage: 'Read Only' }),
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		},
-		tokenize: {
-			id: 'tokenize',
-			type: 'boolean',
-			name: defineMessage({ defaultMessage: 'Tokenize for Indexing' }),
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		},
-		required: {
-			id: 'required',
-			type: 'boolean',
-			name: defineMessage({ defaultMessage: 'Required' }),
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		},
+		readonly: commonFieldPropertiesDescriptors['readonly'],
+		tokenize: commonFieldPropertiesDescriptors['tokenize'],
+		required: commonFieldPropertiesDescriptors['required'],
 		pattern: {
 			id: 'pattern',
 			type: 'string',

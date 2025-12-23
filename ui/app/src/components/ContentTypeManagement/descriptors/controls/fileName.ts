@@ -17,6 +17,7 @@
 import { createVirtualSection, DescriptorContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
 import { defineMessage } from 'react-intl';
+import { commonFieldPropertiesDescriptors } from './commonDescriptors';
 
 export const fileNameDescriptor: DescriptorContentType = {
 	id: 'file-name',
@@ -37,13 +38,7 @@ export const fileNameDescriptor: DescriptorContentType = {
 			defaultValue: 50,
 			validations: immutableEmptyObject
 		},
-		readonly: {
-			id: 'readonly',
-			type: 'boolean',
-			name: defineMessage({ defaultMessage: 'Read Only' }),
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		},
+		readonly: commonFieldPropertiesDescriptors['readonly'],
 		allowEditWithoutWarning: {
 			id: 'allowEditWithoutWarning',
 			type: 'boolean',

@@ -17,6 +17,7 @@
 import { createVirtualSection, DescriptorContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
 import { defineMessage } from 'react-intl';
+import { commonFieldPropertiesDescriptors } from './commonDescriptors';
 
 export const textareaDescriptor: DescriptorContentType = {
 	id: 'textarea',
@@ -56,13 +57,7 @@ export const textareaDescriptor: DescriptorContentType = {
 			defaultValue: true,
 			validations: immutableEmptyObject
 		},
-		readonly: {
-			id: 'readonly',
-			type: 'boolean',
-			name: defineMessage({ defaultMessage: 'Read Only' }),
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		},
+		readonly: commonFieldPropertiesDescriptors['readonly'],
 		escapeContent: {
 			id: 'escapeContent',
 			type: 'boolean',
@@ -70,13 +65,7 @@ export const textareaDescriptor: DescriptorContentType = {
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
-		required: {
-			id: 'required',
-			type: 'boolean',
-			name: defineMessage({ defaultMessage: 'Required' }),
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		}
+		required: commonFieldPropertiesDescriptors['required']
 	},
 	supportedPostFixes: ['_t', '_s']
 };

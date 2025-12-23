@@ -38,9 +38,9 @@ import { accordionClasses } from '@mui/material/Accordion';
 import Button from '@mui/material/Button';
 import TypeDetailsViewHeader, { TypeDetailsViewHeaderProps } from './TypeDetailsViewHeader';
 import LookupTable from '../../../models/LookupTable';
-import { defaultDataSourcesSection } from '../descriptors/controls';
 import { atom } from 'jotai';
 import SectionInsertionDialog, { SectionInsertionProps } from './SectionInsertionDialog';
+import { defaultDataSourcesSection } from '../descriptors/controls/commonDescriptors';
 
 export interface TypeDetailsViewProps {
 	type: PossibleContentTypeDraft;

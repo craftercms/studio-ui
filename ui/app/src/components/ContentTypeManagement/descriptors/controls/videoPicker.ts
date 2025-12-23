@@ -1,6 +1,6 @@
-import { immutableEmptyObject } from '../../../../utils/object';
 import { createValidation, createVirtualSection, DescriptorContentType } from '../../utils';
 import { defineMessage } from 'react-intl';
+import { commonFieldPropertiesDescriptors } from './commonDescriptors';
 
 export const videoPickerDescriptor: DescriptorContentType = {
 	id: 'video-picker',
@@ -28,20 +28,8 @@ export const videoPickerDescriptor: DescriptorContentType = {
 				type: createValidation('type', 'video')
 			}
 		},
-		readonly: {
-			id: 'readonly',
-			type: 'boolean',
-			name: defineMessage({ defaultMessage: 'Read Only' }),
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		},
-		required: {
-			id: 'required',
-			type: 'boolean',
-			name: defineMessage({ defaultMessage: 'Required' }),
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		}
+		readonly: commonFieldPropertiesDescriptors['readonly'],
+		required: commonFieldPropertiesDescriptors['required']
 	},
 	supportedPostFixes: ['_o']
 };
