@@ -81,7 +81,12 @@ export interface FieldValidityState {
 	messages: FieldValidityMessage[];
 }
 
-export function fileNameValidator(field, _, messages, meta) {
+export function fileNameValidator(
+	field: ContentTypeField,
+	_: string,
+	messages: FieldValidityState['messages'],
+	meta: ValidatorMetaData
+): Promise<boolean> | boolean {
 	const siteId: string = meta.siteId;
 	const currentValue = meta.fileName;
 
@@ -89,7 +94,7 @@ export function fileNameValidator(field, _, messages, meta) {
 
 	const initialPath = meta.itemMeta.path ?? meta.itemMeta.pathInSite;
 	const isPage = isPagePath(withIndex(initialPath));
-	const basePath = nnou(meta.itemMeta.path) ? getBasePath(initialPath, isPage) : meta.itemMeta.pathInSite; // TODO: is basePath same as meta.itemMeta.pathInSite?
+	const basePath = nnou(meta.itemMeta.path) ? getBasePath(initialPath, isPage) : meta.itemMeta.pathInSite;
 	const newPath = getFileNamePath(currentValue, isPage, basePath);
 
 	if (initialPath === newPath || nou(siteId)) return true;
@@ -146,7 +151,7 @@ export function checkMinimumSaveRequirementsFulfilled(
 }
 
 export function checkInternalNameRequirementsFulfilled(values: LookupTable<unknown>): boolean {
-	return values[XmlKeys.internalName].toString().trim() !== '';
+	return (values[XmlKeys.internalName]?.toString() ?? '').trim() !== '';
 }
 
 export default validateFieldValue;

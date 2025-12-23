@@ -334,7 +334,8 @@ function FormBootstrap(props: FormsEngineProps) {
 			const atoms = createFormsEngineAtoms(effectRefs.current.username, {
 				lockResult: lockResultAtom,
 				readonly: createReadonlyAtom(lockResultAtom),
-				expandedStateBySectionId: buildSectionExpandedStateAtoms(contentType.sections)
+				expandedStateBySectionId: buildSectionExpandedStateAtoms(contentType.sections),
+				fileName: atom('')
 			});
 			const atomValueCreator: Parameters<typeof createParsedValuesObject>[3] = (fieldId, value) => {
 				setFieldAtoms(
@@ -605,7 +606,7 @@ function FormOrchestrator(props: FormsEngineProps) {
 		// If the item is embedded, remove the 'file-name' field from the sections, since there is no path/filename
 		return contentType.sections.map((section) => ({
 			...section,
-			fields: section.fields.filter((fieldId) => fieldId !== 'file-name')
+			fields: section.fields.filter((fieldId) => fieldId !== XmlKeys['fileName'])
 		}));
 	}, [contentType.sections, isEmbedded]);
 	const useCollapsedToC = useAtomValue(atoms.useCollapsedToC);
