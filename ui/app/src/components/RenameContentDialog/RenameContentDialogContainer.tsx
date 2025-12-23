@@ -51,9 +51,10 @@ export function RenameContentDialogContainer(props: RenameContentDialogContainer
 		fetchingDependantItems,
 		error
 	} = props;
-	const isPage = value.includes('/index.xml');
-	const { isSubmitting } = useEnhancedDialogContext();
-	const strippedValue = getStrippedValue(value);
+	const safeValue = value ?? '';
+	const isPage = safeValue.includes('/index.xml');
+	const strippedValue = getStrippedValue(safeValue);
+	const { isSubmitting, updateSubmittingOrHasPendingChanges } = useEnhancedDialogContext();
 	const [name, setName] = useState(strippedValue);
 	const [itemExists, setItemExists] = useState(false);
 	const isValid = !isBlank(name) && !itemExists && name !== strippedValue;
@@ -61,7 +62,6 @@ export function RenameContentDialogContainer(props: RenameContentDialogContainer
 	const renameDisabled =
 		isSubmitting || !isValid || fetchingDependantItems || (dependantItems?.length > 0 && !confirmBrokenReferences);
 	const siteId = useActiveSiteId();
-	const { updateSubmittingOrHasPendingChanges } = useEnhancedDialogContext();
 
 	const onNameUpdate$ = useDebouncedInput((name: string) => {
 		if (name !== strippedValue && name !== getStrippedValue(allowedValue)) {
@@ -91,7 +91,7 @@ export function RenameContentDialogContainer(props: RenameContentDialogContainer
 					newNameExists={itemExists}
 					fetchDependant={fetchDependant}
 					dependantItems={dependantItems}
-					isSubmitting={false}
+					isSubmitting={isSubmitting}
 					confirmBrokenReferences={confirmBrokenReferences}
 					fetchingDependantItems={fetchingDependantItems}
 					error={error}

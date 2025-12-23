@@ -15,17 +15,15 @@
  */
 
 import { EnhancedDialogProps } from '../EnhancedDialog';
-import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 
 export interface PluginConfigDialogBaseProps {
 	pluginId: string;
 }
 
 export interface PluginConfigDialogProps extends PluginConfigDialogBaseProps, EnhancedDialogProps {
-	onSubmittingAndOrPendingChange(value: onSubmittingAndOrPendingChangeProps): void;
 	onSaved(): void;
 }
 
 export interface PluginConfigDialogContainerProps
 	extends PluginConfigDialogBaseProps,
-		Pick<PluginConfigDialogProps, 'onSaved' | 'onClose' | 'isSubmitting' | 'onSubmittingAndOrPendingChange'> {}
+		Pick<PluginConfigDialogProps, 'onSaved' | 'onClose' | 'isSubmitting'> {}
