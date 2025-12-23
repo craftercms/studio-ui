@@ -14,29 +14,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import OutlinedInput from '@mui/material/OutlinedInput';
-import React, { useEffect, useId } from 'react';
-import { FormsEngineField } from '../components/FormsEngineField';
-import { ControlProps } from '../types';
-import { useItemMetaContext } from '../lib/formsEngineContext';
+import React, { useEffect } from 'react';
+import { useItemMetaContext, useStableFormContext } from '../lib/formsEngineContext';
+import { PrimitiveAtom, useAtom } from 'jotai';
 
-export interface AutoFileNameProps extends ControlProps {
-	value: string;
-}
-
-export function AutoFileName(props: AutoFileNameProps) {
-	const { field, value, setValue, autoFocus } = props;
+export function AutoFileName() {
 	const { id } = useItemMetaContext();
-	const htmlId = useId();
+	const formContext = useStableFormContext();
+	const atoms = formContext.atoms;
+	const [value, setValue] = useAtom(atoms.fileName as PrimitiveAtom<string>);
+
 	useEffect(() => {
 		if (!value) {
-			setValue(`${id}.xml`);
+			setValue(`${id}`);
 		}
 	}, [setValue, value, id]);
 	return (
-		<FormsEngineField htmlFor={htmlId} field={field}>
-			<OutlinedInput readOnly fullWidth id={htmlId} value={value.replace(/\.xml$/, '')} autoFocus={autoFocus} />
-		</FormsEngineField>
+		// This control has no visual presentation.
+		<></>
 	);
 }
 

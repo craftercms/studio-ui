@@ -169,6 +169,7 @@ export interface CreateModeProps {
 	create: {
 		path: string;
 		contentTypeId: string;
+		embedded?: boolean;
 	};
 }
 
@@ -565,6 +566,7 @@ function FormOrchestrator(props: FormsEngineProps) {
 		onClose: onCloseProp
 	} = props;
 	// endregion
+
 	const theme = useTheme();
 	const { formatMessage } = useIntl();
 	const dispatch = useDispatch();
@@ -593,7 +595,7 @@ function FormOrchestrator(props: FormsEngineProps) {
 	const stackFormCount = useAtomValue(stackFormCountAtom);
 	const isStackedForm = stackIndex > 0;
 	const hasStackedForms = !isStackedForm && stackFormCount > 0;
-	const isEmbedded = Boolean(update?.modelId);
+	const isEmbedded = Boolean(update?.modelId) || Boolean(create?.embedded);
 	const isCreateMode = Boolean(create?.path);
 	const isRepeatMode = Boolean(repeat?.fieldId);
 	const affectedPackages = lockStatus.affectedPackages?.length > 0;
