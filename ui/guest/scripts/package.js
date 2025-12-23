@@ -35,7 +35,6 @@ const peerDeps = [
 	'@mui/styles',
 	'react',
 	'react-dom',
-	'react-intl',
 	'react-redux',
 	'react-router-dom',
 	'redux',

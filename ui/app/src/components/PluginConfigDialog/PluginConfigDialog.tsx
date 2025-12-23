@@ -21,7 +21,7 @@ import { EnhancedDialog } from '../EnhancedDialog';
 import { PluginConfigDialogContainer } from './PluginConfigDialogContainer';
 
 export function PluginConfigDialog(props: PluginConfigDialogProps) {
-	const { pluginId, isSubmitting, onSubmittingAndOrPendingChange, onSaved, onClose, ...rest } = props;
+	const { pluginId, isSubmitting, onSaved, onClose, ...rest } = props;
 
 	return (
 		<EnhancedDialog
@@ -36,7 +36,6 @@ export function PluginConfigDialog(props: PluginConfigDialogProps) {
 				onSaved={onSaved}
 				onClose={onClose}
 				isSubmitting={isSubmitting}
-				onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
 			/>
 		</EnhancedDialog>
 	);

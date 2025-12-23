@@ -95,7 +95,9 @@
 <script>
   document.addEventListener("CrafterCMS.CodebaseBridgeReady", () => {
     // Main call that starts the form engine
-    CStudioForms.engine.render(null, "default", "formContainer");
+		CrafterCMSNext.system.getStore().subscribe(() => {
+			CStudioForms.engine.render(null, "default", "formContainer");
+		});
   });
 </script>
 

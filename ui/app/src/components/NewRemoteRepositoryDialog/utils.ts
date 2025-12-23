@@ -16,7 +16,6 @@
 
 import { SiteState } from '../../models/Site';
 import { EnhancedDialogProps } from '../EnhancedDialog';
-import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 import React from 'react';
 
 interface NewRemoteRepositoryBaseProps {}
@@ -24,15 +23,11 @@ interface NewRemoteRepositoryBaseProps {}
 export interface NewRemoteRepositoryDialogProps extends NewRemoteRepositoryBaseProps, EnhancedDialogProps {
 	onCreateSuccess?(): void;
 	onCreateError?(e): void;
-	onSubmittingAndOrPendingChange(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
 export interface NewRemoteRepositoryDialogContainerProps
 	extends NewRemoteRepositoryBaseProps,
-		Pick<
-			NewRemoteRepositoryDialogProps,
-			'isSubmitting' | 'onClose' | 'onSubmittingAndOrPendingChange' | 'onCreateError' | 'onCreateSuccess'
-		> {}
+		Pick<NewRemoteRepositoryDialogProps, 'isSubmitting' | 'onClose' | 'onCreateError' | 'onCreateSuccess'> {}
 
 export interface NewRemoteRepositoryDialogUIProps {
 	inputs: Partial<SiteState>;

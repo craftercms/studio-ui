@@ -90,7 +90,7 @@ export function BaseSiteForm(props: BaseSiteFormProps) {
 					id="siteName"
 					name="siteName"
 					label={formatMessage(messages.siteName)}
-					placeholder="e.g. Corporate Website"
+					placeholder={formatMessage({ defaultMessage: 'e.g. Corporate Website' })}
 					required
 					autoFocus
 					fullWidth
