@@ -37,11 +37,7 @@ import { ensureSingleSlash } from '../../../utils/string';
 import type { Dispatch } from 'redux';
 import useLoadableAtom from '../lib/useLoadableAtom';
 
-export interface FileNameProps extends ControlProps {
-	value: string;
-}
-
-export function FileName(props: FileNameProps) {
+export function FileName(props: ControlProps) {
 	const { field, readonly: formReadonly, autoFocus } = props;
 	const { path: initialPath, pathInSite } = useItemMetaContext();
 	const formContext = useStableFormContext();
@@ -92,7 +88,6 @@ export function FileName(props: FileNameProps) {
 			isValid={isValid}
 			htmlFor={htmlId}
 			field={field}
-			min={field.validations.minValue?.value}
 			max={field.validations.maxLength?.value}
 			length={value.length}
 		>
