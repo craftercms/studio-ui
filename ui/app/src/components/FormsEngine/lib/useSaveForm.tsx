@@ -43,7 +43,6 @@ export interface UseSaveFormProps {
 	isEmbedded: boolean;
 	onBeforeSave?: FormsEngineProps['onSave'];
 	onSave?: FormsEngineProps['onSave'];
-	stackIndex: number;
 	onClose?(): void;
 }
 
