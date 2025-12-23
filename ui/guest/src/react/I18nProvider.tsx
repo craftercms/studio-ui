@@ -14,11 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren, useState } from 'react';
+import React, { PropsWithChildren, useEffect, useState } from 'react';
 import { IntlShape, RawIntlProvider } from 'react-intl';
-import { getCurrentIntl } from '../utils/i18n';
+import { getCurrentIntl, intl$ } from '../utils/i18n';
 
 export function I18nProvider(props: PropsWithChildren<{}>) {
-	const [intl] = useState<IntlShape>(getCurrentIntl());
+	const [intl, setIntl] = useState<IntlShape>(() => getCurrentIntl());
+	useEffect(() => {
+		const sub = intl$.subscribe(setIntl);
+		return () => sub.unsubscribe();
+	}, []);
 	return <RawIntlProvider children={props.children} value={intl} />;
 }

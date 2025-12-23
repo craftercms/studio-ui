@@ -27,6 +27,9 @@ const importsLookup: ImportsLookup = {
 /* private */
 const intl$$ = new Subject<IntlShape>();
 
+/* public */
+export const intl$ = intl$$.asObservable();
+
 /* private */
 let intl = createIntl({ locale: 'en', messages: {} }, createIntlCache());
 
