@@ -1191,7 +1191,7 @@
   "settingsPanel.highlightAllTargets": "Markieren Sie alle Ziele (e)",
   "settingsPanel.highlightMode": "Highlight-Modus",
   "settingsPanel.highlightModeHelperText": "Wenn die Option „Verschiebbare Elemente hervorheben“ aktiviert ist, werden nur Inhalte, die Sie verschieben können, als Zielobjekte hervorgehoben.",
-  "settingsPanel.highlightMovable": "Hervorheben Beweglich",
+  "settingsPanel.highlightMovable": "Verschiebbare hervorheben",
   "setWorkflowStateDialog.clearAsPublishedLive": "Als live veröffentlicht löschen",
   "setWorkflowStateDialog.clearAsPublishedToStaging": "Klar wie für die Bereitstellung veröffentlicht",
   "setWorkflowStateDialog.clearModified": "Löschen geändert",
