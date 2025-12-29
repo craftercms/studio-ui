@@ -88,7 +88,7 @@ export function FileName(props: ControlProps) {
 			isValid={isValid}
 			htmlFor={htmlId}
 			field={field}
-			max={field.validations.maxLength?.value}
+			max={field.validations?.maxLength?.value}
 			length={value.length}
 		>
 			<OutlinedInput
