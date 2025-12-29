@@ -19,11 +19,11 @@ import { makeStyles } from 'tss-react/mui';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
-import { defineMessages, useIntl } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import PublishingPackage from './PublishingPackage';
 import { cancelPackage, fetchPackages, fetchPublishingTargets } from '../../services/publishing';
 import { CurrentFilters, Package, Selected } from '../../models/Publishing';
-import FilterDropdown from './FilterDropdown';
+import FilterDropdown, { stateMessages } from './FilterDropdown';
 import { setRequestForgeryToken } from '../../utils/auth';
 import TablePagination from '@mui/material/TablePagination';
 import EmptyState from '../EmptyState/EmptyState';
@@ -433,11 +433,16 @@ function PublishingQueue(props: PublishingQueueProps) {
         <div className={classes.secondBar}>
           <Typography variant="body2">
             {formatMessage(messages.filteredBy, {
-              state: currentFilters.state ? <strong key="state">{currentFilters.state.join(', ')}</strong> : 'all',
+              state: currentFilters.state ? (
+                <strong key="state">{translateFilters(currentFilters.state, formatMessage)}</strong>
+              ) : (
+                formatMessage({ id: 'publishingDashboard.all', defaultMessage: 'All' })
+              ),
               path: currentFilters.path ? <strong key="path">{currentFilters.path}</strong> : 'none',
               environment: currentFilters.environment ? (
                 <strong key="environment">{currentFilters.environment}</strong>
               ) : (
+                // Not translated because it is a key for the translation message. If 'all', no environment message is displayed.
                 'all'
               )
             })}
@@ -465,6 +470,10 @@ function PublishingQueue(props: PublishingQueueProps) {
         component="div"
         count={total}
         rowsPerPage={currentFilters.limit}
+        labelRowsPerPage={<FormattedMessage defaultMessage="Rows per page:" />}
+        labelDisplayedRows={({ from, to, count }) => (
+          <FormattedMessage defaultMessage="{from}-{to} fof {count}" values={{ from, to, count }} />
+        )}
         page={currentFilters.page}
         slotProps={{
           actions: {
@@ -481,6 +490,15 @@ function PublishingQueue(props: PublishingQueueProps) {
       />
     </div>
   );
+}
+
+function translateFilters(filters: string[], formatMessage): string {
+  const translatedFilters = [];
+  filters.forEach((filter: string) => {
+    const translation = stateMessages[filter] ? formatMessage(stateMessages[filter]) : filter;
+    translatedFilters.push(translation);
+  });
+  return translatedFilters.join(', ');
 }
 
 export default PublishingQueue;

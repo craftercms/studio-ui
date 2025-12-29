@@ -31,6 +31,7 @@ import { READY_FOR_LIVE } from './constants';
 import { alpha } from '@mui/material/styles';
 import palette from '../../styles/palette';
 import PrimaryButton from '../PrimaryButton';
+import { stateMessages } from './FilterDropdown';
 
 const useStyles = makeStyles()((theme) => ({
   package: {
@@ -346,7 +347,7 @@ export function PublishingPackage(props: PublishingPackageProps) {
         </Typography>
         <Typography variant="body2">
           {formatMessage(translations.status, {
-            state: <strong key={state}>{state}</strong>,
+            state: <strong key={state}>{formatMessage(stateMessages[state])}</strong>,
             environment: <strong key={environment}>{environment}</strong>
           })}
         </Typography>
