@@ -436,7 +436,7 @@ function PublishingQueue(props: PublishingQueueProps) {
               state: currentFilters.state ? (
                 <strong key="state">{translateFilters(currentFilters.state, formatMessage)}</strong>
               ) : (
-                // On the `messages.filteredBy` descriptor, `state` is used in an ICU select expression on which `all` is a select option; hence, it must be the literal string (i.e. "all".)
+                // On the `messages.filteredBy` descriptor, `state` is used in an ICU select expression on which `all` is a select option; hence, it must be the literal string "all" to match.
                 'all'
               ),
               path: currentFilters.path ? <strong key="path">{currentFilters.path}</strong> : 'none',
