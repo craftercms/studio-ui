@@ -436,14 +436,14 @@ function PublishingQueue(props: PublishingQueueProps) {
               state: currentFilters.state ? (
                 <strong key="state">{translateFilters(currentFilters.state, formatMessage)}</strong>
               ) : (
-                // Not translated because it is a key for the translation message. If 'all', no environment message is displayed.
+                // 'all' is the select option of the select expression in formatjs for the message descriptor
                 'all'
               ),
               path: currentFilters.path ? <strong key="path">{currentFilters.path}</strong> : 'none',
               environment: currentFilters.environment ? (
                 <strong key="environment">{currentFilters.environment}</strong>
               ) : (
-                // Not translated because it is a key for the translation message. If 'all', no environment message is displayed.
+                // 'all' is the select option of the select expression in formatjs for the message descriptor
                 'all'
               )
             })}
