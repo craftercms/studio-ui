@@ -472,7 +472,7 @@ function PublishingQueue(props: PublishingQueueProps) {
         rowsPerPage={currentFilters.limit}
         labelRowsPerPage={<FormattedMessage defaultMessage="Rows per page:" />}
         labelDisplayedRows={({ from, to, count }) => (
-          <FormattedMessage defaultMessage="{from}-{to} fof {count}" values={{ from, to, count }} />
+          <FormattedMessage defaultMessage="{from}-{to} of {count}" values={{ from, to, count }} />
         )}
         page={currentFilters.page}
         slotProps={{
