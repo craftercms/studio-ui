@@ -443,7 +443,7 @@ function PublishingQueue(props: PublishingQueueProps) {
               environment: currentFilters.environment ? (
                 <strong key="environment">{currentFilters.environment}</strong>
               ) : (
-                // On the `messages.filteredBy` descriptor, `environment` is used in an ICU select expression on which `all` is a select option; hence, it must be the literal string (i.e. "all".)
+                // On the `messages.filteredBy` descriptor, `environment` is used in an ICU select expression on which `all` is a select option; hence, it must be the literal string "all" to match.
                 'all'
               )
             })}
