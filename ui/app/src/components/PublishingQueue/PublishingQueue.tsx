@@ -436,7 +436,8 @@ function PublishingQueue(props: PublishingQueueProps) {
               state: currentFilters.state ? (
                 <strong key="state">{translateFilters(currentFilters.state, formatMessage)}</strong>
               ) : (
-                formatMessage({ id: 'publishingDashboard.all', defaultMessage: 'All' })
+                // Not translated because it is a key for the translation message. If 'all', no environment message is displayed.
+                'all'
               ),
               path: currentFilters.path ? <strong key="path">{currentFilters.path}</strong> : 'none',
               environment: currentFilters.environment ? (
