@@ -39,7 +39,7 @@ export const labelDescriptor: DescriptorContentType = {
 			properties: {
 				rteConfiguration: {
 					name: 'rteConfiguration',
-					value: 'minimal',
+					value: 'craftercms-label-control',
 					type: 'string'
 				}
 			}
