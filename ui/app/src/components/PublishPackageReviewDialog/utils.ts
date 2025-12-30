@@ -76,7 +76,7 @@ export function getPackageStateLabel(state: number): string {
 	const states = [];
 	for (const key in packageStatesMap) {
 		if (packageStatesMap[key].validation(state)) {
-			states.push(packageStatesMap[key].state);
+			states.push(key);
 		}
 	}
 	return states.join(', ');
