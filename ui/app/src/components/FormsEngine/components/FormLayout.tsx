@@ -43,6 +43,7 @@ export type FormLayoutProps = PropsWithChildren<{
 	mainContentGrid: ReactNode;
 	headerFragment: ReactNode;
 	containerRef: RefObject<HTMLDivElement>;
+	mainContentRef: RefObject<HTMLDivElement>;
 	hasStackedForms: boolean;
 	stackIndex: number;
 	style?: BoxProps['style'];
@@ -59,8 +60,17 @@ function collectSectionExpandedState(
 }
 
 export const FormLayout = forwardRef<HTMLDivElement, FormLayoutProps>(function (props, ref) {
-	const { children, mainContentGrid, targetHeight, containerRef, headerFragment, hasStackedForms, stackIndex, style } =
-		props;
+	const {
+		children,
+		mainContentGrid,
+		targetHeight,
+		containerRef,
+		mainContentRef,
+		headerFragment,
+		hasStackedForms,
+		stackIndex,
+		style
+	} = props;
 	const theme = useTheme();
 	const store = useJotaiStore();
 	const { api: contextApi } = useContext(StableGlobalContext);
@@ -155,12 +165,15 @@ export const FormLayout = forwardRef<HTMLDivElement, FormLayoutProps>(function (
 				<Divider />
 			</Paper>
 			<Box
+				ref={mainContentRef}
 				sx={{
 					// TODO: Tabs will be done at a later phase.
 					// display: activeTab === 0 ? 'inherit' : 'none',
+					height: '100%',
 					px: 0,
-					py: 2,
-					backgroundColor: theme.palette.background.default
+					pt: 2,
+					backgroundColor: theme.palette.background.default,
+					overflow: 'auto'
 				}}
 			>
 				<Container maxWidth={isLargeContainer ? 'xl' : undefined}>

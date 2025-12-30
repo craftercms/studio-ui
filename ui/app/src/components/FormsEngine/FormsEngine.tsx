@@ -562,6 +562,7 @@ function FormOrchestrator(props: FormsEngineProps) {
 	const activeSite = useActiveSite();
 	const siteId = activeSite.id;
 	const containerRef = useRef<HTMLDivElement>(undefined);
+	const mainContentRef = useRef<HTMLDivElement>(undefined);
 	const {
 		isFullScreen = false,
 		updateSubmittingOrHasPendingChanges,
@@ -593,6 +594,8 @@ function FormOrchestrator(props: FormsEngineProps) {
 	const useCollapsedToC = useAtomValue(atoms.useCollapsedToC);
 	const tableOfContents = <TableOfContents fieldsToRender={fieldsToRender} containerRef={containerRef} />;
 	const effectRefs = useUpdateRefs({ fieldsToRender, versionCommentAtom: stableFormContext.atoms.versionComment });
+	const [collapseHeader, setCollapseHeader] = useState(false);
+	const scrollTimeout = useRef(null);
 
 	// Changes comment generation & change detection/tracking
 	useEffect(() => {
@@ -712,16 +715,39 @@ function FormOrchestrator(props: FormsEngineProps) {
 		}
 	};
 
+	// This hook sets up a scroll event listener on the `mainContent` element to monitor its scroll position and
+	// adjust the header's collapse state based on the scroll position.
+	useEffect(() => {
+		const mainContent = mainContentRef.current;
+		if (!mainContent) return;
+
+		const handleScroll = () => {
+			const scrollTop = mainContent.scrollTop;
+			// Only trigger resize when scroll stops for 50ms
+			if (scrollTimeout.current) clearTimeout(scrollTimeout.current);
+			scrollTimeout.current = setTimeout(() => {
+				setCollapseHeader(scrollTop > 60);
+			}, 50);
+		};
+
+		mainContent.addEventListener('scroll', handleScroll);
+		return () => {
+			mainContent.removeEventListener('scroll', handleScroll);
+			if (scrollTimeout.current) clearTimeout(scrollTimeout.current);
+		};
+	}, []);
+
 	const bodyFragment = (
 		<FormLayout
 			stackIndex={stackIndex}
 			containerRef={containerRef}
+			mainContentRef={mainContentRef}
 			hasStackedForms={hasStackedForms}
 			// If the form is rendered in/as a dialog, take up the whole screen minus
 			// top/bottom margins (2 top, 2 bottom). If not a dialog, take up the whole screen.
 			targetHeight={getTargetHeight(isDialog, isFullScreen, theme)}
 			headerFragment={
-				<>
+				<Box id="header" sx={{ minHeight: 50 }}>
 					<Box component={Container} display="flex" alignItems="center" justifyContent="space-between" pt={2}>
 						<Typography variant="body2" color="textSecondary">
 							<span title={siteId}>{activeSite.name}</span> / <span title={contentType.id}>{contentType.name}</span>
@@ -751,18 +777,18 @@ function FormOrchestrator(props: FormsEngineProps) {
 						</Box>
 					</Box>
 					{isRepeatMode ? (
-						<RepeatModeHeader repeat={repeat} />
+						<RepeatModeHeader repeat={repeat} collapse={collapseHeader} />
 					) : isCreateMode ? (
-						<CreateModeHeader path={create?.path} />
+						<CreateModeHeader path={create?.path} collapse={collapseHeader} />
 					) : (
-						<EditModeHeader isEmbedded={isEmbedded} />
+						<EditModeHeader isEmbedded={isEmbedded} collapse={collapseHeader} />
 					)}
-				</>
+				</Box>
 			}
 			mainContentGrid={
 				<>
 					<Grid size={useCollapsedToC ? 'auto' : 'grow'}>
-						<StickyBox data-area-id="stickySidebar">
+						<StickyBox data-area-id="stickySidebar" sx={{ height: 'auto' }}>
 							{useCollapsedToC ? (
 								<IconButton size="small" onClick={handleOpenDrawerSidebar}>
 									<MenuRounded />
@@ -834,7 +860,7 @@ function FormOrchestrator(props: FormsEngineProps) {
 						<FormBackToTop containerRef={containerRef} />
 					</Grid>
 					<Grid size="grow">
-						<StickyBox className="space-y">
+						<StickyBox className="space-y" sx={{ height: 'auto' }}>
 							{readonly ? (
 								<>
 									<Alert severity="info" variant="outlined" icon={<EditOffOutlined />}>

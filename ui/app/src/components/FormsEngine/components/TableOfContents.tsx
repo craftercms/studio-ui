@@ -104,7 +104,7 @@ export function TableOfContents({ containerRef, fieldsToRender }: TableOfContent
 		<>
 			<SearchBar
 				dense
-				sx={{ mb: 1 }}
+				sx={{ mb: 1, mt: 1 }}
 				showActionButton={searchFieldValue !== ''}
 				keyword={searchFieldValue}
 				onChange={(value) => {
