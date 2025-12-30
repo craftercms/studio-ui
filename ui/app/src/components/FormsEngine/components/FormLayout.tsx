@@ -18,6 +18,7 @@ import React, {
 	forwardRef,
 	PropsWithChildren,
 	ReactNode,
+	type RefCallback,
 	RefObject,
 	useContext,
 	useImperativeHandle,
@@ -43,7 +44,7 @@ export type FormLayoutProps = PropsWithChildren<{
 	mainContentGrid: ReactNode;
 	headerFragment: ReactNode;
 	containerRef: RefObject<HTMLDivElement>;
-	mainContentRef: RefObject<HTMLDivElement>;
+	mainContentRefCallback: RefCallback<HTMLDivElement>;
 	hasStackedForms: boolean;
 	stackIndex: number;
 	style?: BoxProps['style'];
@@ -65,7 +66,7 @@ export const FormLayout = forwardRef<HTMLDivElement, FormLayoutProps>(function (
 		mainContentGrid,
 		targetHeight,
 		containerRef,
-		mainContentRef,
+		mainContentRefCallback,
 		headerFragment,
 		hasStackedForms,
 		stackIndex,
@@ -165,7 +166,7 @@ export const FormLayout = forwardRef<HTMLDivElement, FormLayoutProps>(function (
 				<Divider />
 			</Paper>
 			<Box
-				ref={mainContentRef}
+				ref={mainContentRefCallback}
 				sx={{
 					// TODO: Tabs will be done at a later phase.
 					// display: activeTab === 0 ? 'inherit' : 'none',

@@ -20,7 +20,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
 import useActiveSite from '../../hooks/useActiveSite';
 import useContentTypes from '../../hooks/useContentTypes';
-import React, { createElement, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, { createElement, type RefCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { ContentTypeField, PublishPackage } from '../../models';
 import {
 	FormsEngineAtoms,
@@ -562,7 +562,6 @@ function FormOrchestrator(props: FormsEngineProps) {
 	const activeSite = useActiveSite();
 	const siteId = activeSite.id;
 	const containerRef = useRef<HTMLDivElement>(undefined);
-	const mainContentRef = useRef<HTMLDivElement>(undefined);
 	const {
 		isFullScreen = false,
 		updateSubmittingOrHasPendingChanges,
@@ -715,10 +714,10 @@ function FormOrchestrator(props: FormsEngineProps) {
 		}
 	};
 
+	const [mainContent, setMainContent] = useState(null);
 	// This hook sets up a scroll event listener on the `mainContent` element to monitor its scroll position and
 	// adjust the header's collapse state based on the scroll position.
 	useEffect(() => {
-		const mainContent = mainContentRef.current;
 		if (!mainContent) return;
 
 		const handleScroll = () => {
@@ -735,13 +734,17 @@ function FormOrchestrator(props: FormsEngineProps) {
 			mainContent.removeEventListener('scroll', handleScroll);
 			if (scrollTimeout.current) clearTimeout(scrollTimeout.current);
 		};
-	}, []);
+	}, [mainContent]);
+
+	const mainContentRefCallback: RefCallback<HTMLDivElement> = (element) => {
+		setMainContent(element);
+	};
 
 	const bodyFragment = (
 		<FormLayout
 			stackIndex={stackIndex}
 			containerRef={containerRef}
-			mainContentRef={mainContentRef}
+			mainContentRefCallback={mainContentRefCallback}
 			hasStackedForms={hasStackedForms}
 			// If the form is rendered in/as a dialog, take up the whole screen minus
 			// top/bottom margins (2 top, 2 bottom). If not a dialog, take up the whole screen.
