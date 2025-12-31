@@ -64,7 +64,7 @@ export function TypeCard(props: TypeCardProps) {
 	const cardBody = (
 		<>
 			<CardHeader
-				sx={{ flexGrow: 1 }}
+				sx={{ flexGrow: 1, flex: 1, overflow: 'hidden' }}
 				title={heading}
 				subheader={subheading}
 				slotProps={{

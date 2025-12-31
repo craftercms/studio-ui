@@ -24,9 +24,16 @@ import { filterTypesByKeywordsAndObjectType } from '../../../utils/contentType';
 import useUpdateRefs from '../../../hooks/useUpdateRefs';
 import ContentType from '../../../models/ContentType';
 import { consolidateSx } from '../../../utils/system';
-import { getTypeViewCompactMode, setTypeViewCompactMode } from '../../../utils/state';
+import {
+	getTypeViewCompactMode,
+	getViewGroupedTypes,
+	setTypeViewCompactMode,
+	setViewGroupedTypes
+} from '../../../utils/state';
 import useActiveUser from '../../../hooks/useActiveUser';
 import { nnou } from '../../../utils/object';
+import type { LookupTable } from '../../../models';
+import Typography from '@mui/material/Typography';
 
 export interface SelectContentTypeProps {
 	sx?: BoxProps['sx'];
@@ -48,16 +55,23 @@ export function SelectTypeView(props: SelectContentTypeProps) {
 	const [keywords, setKeywords] = useState('');
 	const [filteredTypes, setFilteredTypes] = useState<ContentType[]>();
 	const [objectTypeFilter, setObjectTypeFilter] = useState<ObjectTypeOption>(initialObjectTypeFilter);
+	const [sortOrder, setSortOrder] = useState<'ascending' | 'descending'>('ascending');
 	const onKeyword$ = useDebouncedInput((keywords) => {
 		setFilteredTypes(filterTypesByKeywordsAndObjectType(contentTypesList, keywords, objectTypeFilter));
 	});
+	const storedViewGrouped = getViewGroupedTypes(username);
+	const [groupTypes, setGroupTypes] = useState<boolean>(nnou(storedViewGrouped) ? storedViewGrouped : true);
+	// TODO: List archetypes from config
+	const archeTypes = {
+		page: { label: 'Page', value: 'page' },
+		component: { label: 'Component', value: 'component' }
+	};
 
 	const effectRefs = useUpdateRefs({ keywords, filterTypes: filterTypesByKeywordsAndObjectType });
 	useEffect(() => {
-		setFilteredTypes(
-			filterTypesByKeywordsAndObjectType(contentTypesList, effectRefs.current.keywords, objectTypeFilter)
-		);
-	}, [contentTypesList, objectTypeFilter, effectRefs]);
+		const types = filterTypesByKeywordsAndObjectType(contentTypesList, effectRefs.current.keywords, objectTypeFilter);
+		setFilteredTypes(sortContentTypes(types, sortOrder));
+	}, [contentTypesList, objectTypeFilter, effectRefs, sortOrder]);
 
 	const handleKeywordsChange: TypeListControlBarProps['onKeywordsChange'] = (value) => {
 		setKeywords(value);
@@ -69,20 +83,71 @@ export function SelectTypeView(props: SelectContentTypeProps) {
 		setTypeViewCompactMode(username, value);
 	};
 
+	const handleSetGrouped = (value: boolean) => {
+		setGroupTypes(value);
+		setViewGroupedTypes(username, value);
+	};
+
+	const handleToggleSortOrder = (contentTypes: ContentType[]) => {
+		const newOrder = sortOrder === 'ascending' ? 'descending' : 'ascending';
+		setSortOrder(newOrder);
+		if (contentTypes) {
+			setFilteredTypes(sortContentTypes(contentTypes, newOrder));
+		}
+	};
+
+	const getGroupedTypes = () => {
+		// Group types by archetype, keeping the sorting for each group
+		const grouped: LookupTable<ContentType[]> = {};
+		if (filteredTypes) {
+			Object.values(archeTypes).forEach((archetype) => {
+				const typesForArchetype = filteredTypes.filter((contentType) => contentType.type === archetype.value);
+				if (typesForArchetype.length > 0) {
+					grouped[archetype.value] = sortContentTypes(typesForArchetype, sortOrder);
+				}
+			});
+		}
+		return grouped;
+	};
+
 	return (
 		<Box {...slotProps.box} sx={consolidateSx(sx, slotProps?.box?.sx)}>
 			<TypeListControlBar
 				{...slotProps.bar}
 				compact={compact}
 				onCompactChange={handleSetCompact}
+				groupTypes={groupTypes}
+				onGroupTypesChange={handleSetGrouped}
 				keywords={keywords}
 				onKeywordsChange={handleKeywordsChange}
+				sortOrder={sortOrder}
+				onToggleSortOrder={() => handleToggleSortOrder(filteredTypes)}
 				objectTypeFilter={objectTypeFilter}
 				onObjectTypeFilterChange={setObjectTypeFilter}
 			/>
-			<TypeList {...slotProps.listing} showTypeId compact={compact} contentTypes={filteredTypes} />
+			{groupTypes ? (
+				Object.entries(getGroupedTypes()).map(([archetype, types]) => (
+					<Box key={archetype} sx={{ mb: 4 }}>
+						<Typography variant="h6">{archeTypes[archetype].label}</Typography>
+						<Box sx={{ mb: 2, fontSize: '1.25rem', fontWeight: 'bold' }}></Box>
+						<TypeList {...slotProps.listing} showTypeId compact={compact} contentTypes={types} />
+					</Box>
+				))
+			) : (
+				<TypeList {...slotProps.listing} showTypeId compact={compact} contentTypes={filteredTypes} />
+			)}
 		</Box>
 	);
 }
+
+const sortContentTypes = (types: ContentType[], order: 'ascending' | 'descending') => {
+	return [...types].sort((a, b) => {
+		const aValue = a.name.toLowerCase();
+		const bValue = b.name.toLowerCase();
+		if (aValue < bValue) return order === 'ascending' ? -1 : 1;
+		if (aValue > bValue) return order === 'ascending' ? 1 : -1;
+		return 0;
+	});
+};
 
 export default SelectTypeView;
