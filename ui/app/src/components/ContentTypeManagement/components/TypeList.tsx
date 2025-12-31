@@ -67,10 +67,7 @@ export function TypeList(props: TypeListProps) {
 								showTypeId={showTypeId}
 								compact={compact}
 								onClick={isSelected ? undefined : (e) => onCardClick?.(e, type)}
-								sx={[
-									isSelected && { border: `2px solid ${palette.blue.tint}`, opacity: 0.7, boxShadow: 0 },
-									{ flexBasis: 0 }
-								]}
+								sx={[isSelected && { border: `2px solid ${palette.blue.tint}`, opacity: 0.7, boxShadow: 0 }]}
 							/>
 						);
 					})}
