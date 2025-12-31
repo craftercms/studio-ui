@@ -128,7 +128,9 @@ export function SelectTypeView(props: SelectContentTypeProps) {
 			{groupTypes ? (
 				Object.entries(getGroupedTypes()).map(([archetype, types]) => (
 					<Box key={archetype} sx={{ mb: 4 }}>
-						<Typography variant="h6">{archeTypes[archetype].label}</Typography>
+						<Typography variant="h6" sx={{ mb: 1 }}>
+							{archeTypes[archetype].label}
+						</Typography>
 						<TypeList {...slotProps.listing} showTypeId compact={compact} contentTypes={types} />
 					</Box>
 				))
