@@ -221,7 +221,7 @@ export function createFieldAtoms(
 		return validateFieldValue(field, value, {
 			siteId,
 			itemMeta: formContextRef.current.itemMeta as FormsEngineItemMetaContextProps,
-			fileName: get(formContextRef.current.atoms.fileName)
+			fileName: formContextRef.current.atoms.fileName ? get(formContextRef.current.atoms.fileName) : ''
 		});
 	});
 	return [valueAtom, validationAtom];
@@ -798,7 +798,6 @@ export function prepareEmbeddedItemForm(props: {
 	parentStackData: StableFormContextProps;
 	stableFormContextRef: RefObject<StableFormContextProps>;
 	parentPathInSite: string;
-	siteId: string;
 }): { atoms: FormsEngineAtoms; values: LookupTable<unknown>; itemMeta: FormsEngineItemMetaContextProps } {
 	const {
 		username,
@@ -809,8 +808,7 @@ export function prepareEmbeddedItemForm(props: {
 		parentPathInSite,
 		locked,
 		lockError,
-		affectedPackages,
-		siteId
+		affectedPackages
 	} = props;
 	const lockResultAtom = atom<FormsEngineEditContextProps>({
 		locked,
@@ -827,12 +825,7 @@ export function prepareEmbeddedItemForm(props: {
 	Object.entries(values).forEach(([fieldId, value]) => {
 		// System fields (e.g. content-type, display-template, etc.) are not part of the content type, but are part of the content object. We don't need atoms or validity checks for these.
 		if (!contentType.fields[fieldId]) return;
-		const [valueAtom, validityAtom] = createFieldAtoms(
-			contentType.fields[fieldId],
-			value,
-			stableFormContextRef,
-			siteId
-		);
+		const [valueAtom, validityAtom] = createFieldAtoms(contentType.fields[fieldId], value, stableFormContextRef);
 		atoms.valueByFieldId[fieldId] = valueAtom;
 		atoms.validationByFieldId[fieldId] = validityAtom;
 	});

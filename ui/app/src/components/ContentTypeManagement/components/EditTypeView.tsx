@@ -720,24 +720,23 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 
 	// `fieldUpdates$` subscription
 	useEffect(() => {
-		const sub = stateRef.current.fieldUpdates$.pipe(debounceTime(500)).subscribe(() => {
+		const sub = stateRef.current.fieldUpdates$.pipe(debounceTime(500)).subscribe(async () => {
 			const { fieldPathsWithErrors, selectedFieldIdPath, onUpdateHasPendingChanges } = effectRefs.current;
 			onUpdateHasPendingChanges(true);
 			stateRef.current.formFieldsChanged = true;
 			const nextFieldPathsWithErrors = { ...fieldPathsWithErrors };
 			// Check validation atoms of the form to see if there are any unfulfilled validations.
 			setValidatingForm(true);
-			validityAtomsHaveErrors(
+			const hasErrors = await validityAtomsHaveErrors(
 				effectRefs.current.jotai,
 				stateRef.current?.activeFormContext?.atoms?.validationByFieldId
-			).then((hasErrors) => {
-				setActiveFormHasErrors(hasErrors);
-				nextFieldPathsWithErrors[selectedFieldIdPath] = hasErrors;
-				if (!nextFieldPathsWithErrors[selectedFieldIdPath]) delete nextFieldPathsWithErrors[selectedFieldIdPath];
+			);
+			setActiveFormHasErrors(hasErrors);
+			nextFieldPathsWithErrors[selectedFieldIdPath] = hasErrors;
+			if (!nextFieldPathsWithErrors[selectedFieldIdPath]) delete nextFieldPathsWithErrors[selectedFieldIdPath];
 
-				setFieldPathsWithErrors(nextFieldPathsWithErrors);
-				setValidatingForm(false);
-			});
+			setFieldPathsWithErrors(nextFieldPathsWithErrors);
+			setValidatingForm(false);
 		});
 		return () => {
 			sub.unsubscribe();
@@ -1197,20 +1196,31 @@ function save(
 	return forkJoin(requests).pipe(map(() => xml));
 }
 
-function validityAtomsHaveErrors(
+/**
+ * Checks if any of the validity atoms in the provided `atoms` object have errors.
+ *
+ * This function asynchronously evaluates the validity of all atoms by retrieving their values
+ * using the `jotai.get` method. It then determines if any of the atoms are invalid based on their
+ * `isValid` property.
+ *
+ * @async
+ * @function
+ * @param {JotaiStore} jotai - The Jotai store instance used to retrieve atom values.
+ * @param {FormsEngineAtoms['validationByFieldId']} [atoms={}] - A lookup table of validation atoms by field ID.
+ * @returns {Promise<boolean>} - Resolves to `true` if any atom is invalid, otherwise `false`.
+ *
+ */
+async function validityAtomsHaveErrors(
 	jotai: JotaiStore,
 	atoms: FormsEngineAtoms['validationByFieldId'] = {}
 ): Promise<boolean> {
-	// Check validation atoms of the form to see if there are any unfulfilled validations.
-	const promises = Object.values(atoms).map((atom) => jotai.get(atom));
-	return Promise.all(promises)
-		.then((results) => {
-			return results.some((validity) => !validity.isValid);
-		})
-		.catch((error) => {
-			console.error('Error checking field validity:', error);
-			return true;
-		});
+	try {
+		const results = await Promise.all(Object.values(atoms).map((atom) => jotai.get(atom)));
+		return results.some((validity) => !validity.isValid);
+	} catch (error) {
+		console.error('Error checking field validity:', error);
+		return true;
+	}
 }
 
 function parseConfigPlugins(

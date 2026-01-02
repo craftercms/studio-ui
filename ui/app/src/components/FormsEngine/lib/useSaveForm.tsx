@@ -73,7 +73,7 @@ export function useSaveForm(props: UseSaveFormProps) {
 	const onSave = wrapOnSaveProp(props.onSave);
 	const fileName = useAtomValue(stableFormContext.atoms.fileName);
 	const initialFileName = itemPath ? getFileNameValueFromPath(itemPath, isPage) : '';
-	return () => {
+	return async () => {
 		const values = extractAtomValues(jotai, stableFormContext.atoms.valueByFieldId);
 		const onSavePromiseHandler = ({ close }: FormSavePromiseResult) => {
 			flushSync(() => {
@@ -90,105 +90,104 @@ export function useSaveForm(props: UseSaveFormProps) {
 			return;
 		}
 
-		Promise.all(
+		const validityStates = await Promise.all(
 			Object.values(stableFormContext.atoms.validationByFieldId).map((validityDataAtom) => jotai.get(validityDataAtom))
-		).then((validityStates) => {
-			// Put system properties in before creating the XML
-			const saveAsDraft = validityStates.some((state) => !state.isValid);
+		);
+		// Put system properties in before creating the XML
+		const saveAsDraft = validityStates.some((state) => !state.isValid);
 
-			complementValuesWithSystemProps(id, values, contentObject, contentType, saveAsDraft);
-			const { [XmlKeys.fileName]: _, ...valuesWithoutFileName } = values;
-			const xml = buildContentXml(valuesWithoutFileName, store.getState().contentTypes.byId);
-			// Embedded handled here. If true, execution ends inside if statement.
-			if (isEmbedded) {
-				// Validate minimum embedded requirements to save as draft. Execution stops if minimum reqs aren't fulfilled.
-				if (!checkInternalNameRequirementsFulfilled(values)) {
-					return showAlert({
-						dispatch,
-						message: formatMessage(
-							{ defaultMessage: 'You need an {internalName} at a minimum to save content.' },
-							{ internalName: contentType.fields[XmlKeys.internalName].name }
-						)
-					});
-				}
+		complementValuesWithSystemProps(id, values, contentObject, contentType, saveAsDraft);
+		const { [XmlKeys.fileName]: _, ...valuesWithoutFileName } = values;
+		const xml = buildContentXml(valuesWithoutFileName, store.getState().contentTypes.byId);
+		// Embedded handled here. If true, execution ends inside if statement.
+		if (isEmbedded) {
+			// Validate minimum embedded requirements to save as draft. Execution stops if minimum reqs aren't fulfilled.
+			if (!checkInternalNameRequirementsFulfilled(values)) {
+				return showAlert({
+					dispatch,
+					message: formatMessage(
+						{ defaultMessage: 'You need an {internalName} at a minimum to save content.' },
+						{ internalName: contentType.fields[XmlKeys.internalName].name }
+					)
+				});
+			}
 
+			const dom = fromString(xml);
+			(onSave?.({ dom, xml, values, versionComment }) as Promise<FormSavePromiseResult>)?.then(onSavePromiseHandler);
+			return;
+		}
+		setIsSubmitting(true);
+		let path: string;
+		const isRename = !isCreateMode && fileName !== initialFileName;
+		if (isCreateMode) {
+			if (isPage) {
+				path = ensureSingleSlash(`${createPath}/${fileName}/index.xml`);
+			} else {
+				path = ensureSingleSlash(`${createPath}/${fileName}.xml`);
+			}
+		} /* is a plain update (page or component) */ else {
+			if (isRename) {
+				const basePath = getBasePath(itemPath, isPage);
+				path = ensureSingleSlash(`${basePath}/${isPage ? fileName + '/index.xml' : fileName + '.xml'}`);
+			} else {
+				path = itemPath;
+			}
+		}
+
+		const saveActionCallbacks = {
+			next() {
 				const dom = fromString(xml);
-				(onSave?.({ dom, xml, values, versionComment }) as Promise<FormSavePromiseResult>)?.then(onSavePromiseHandler);
-				return;
+				// TODO: when renaming, if form it not set to be closed, then the form will have the old path and values,
+				//  causing it to break. Should we trigger a re-fetch of state/etc?
+				(onSave?.({ dom, xml, values, versionComment, path }) as Promise<FormSavePromiseResult>)?.then(
+					onSavePromiseHandler
+				);
+			},
+			error(error: AjaxError) {
+				setIsSubmitting(false);
+				showAlert({
+					dispatch,
+					children: (
+						<Box>
+							<Typography marginBottom={1}>
+								<FormattedMessage defaultMessage="An error occurred trying to save the form" />
+							</Typography>
+							<Typography variant="body2" color="textSecondary">
+								{error.response.response?.message ?? error.response.message}
+							</Typography>
+						</Box>
+					)
+				});
 			}
-			setIsSubmitting(true);
-			let path: string;
-			const isRename = !isCreateMode && fileName !== initialFileName;
-			if (isCreateMode) {
-				if (isPage) {
-					path = ensureSingleSlash(`${createPath}/${fileName}/index.xml`);
-				} else {
-					path = ensureSingleSlash(`${createPath}/${fileName}.xml`);
-				}
-			} /* is a plain update (page or component) */ else {
+		};
+
+		// Validate minimum requirements to save as draft. Execution stops if minimum reqs aren't fulfilled.
+		checkMinimumSaveRequirementsFulfilled(
+			jotai.get(stableFormContext.atoms.validationByFieldId[XmlKeys['fileName']]),
+			values
+		).then((minimumRequirementsFullfilled) => {
+			if (minimumRequirementsFullfilled) {
+				// TODO: validateActionPolicy. See FE1 saveFn.
+				// TODO: write-content url on FE1 sends phase, path, fileName, contentType QSAs. Important?
+				// TODO: Cancel packages when needed.
 				if (isRename) {
-					const basePath = getBasePath(itemPath, isPage);
-					path = ensureSingleSlash(`${basePath}/${isPage ? fileName + '/index.xml' : fileName + '.xml'}`);
+					moveAndUpdateContent(siteId, itemPath, path, xml).subscribe(saveActionCallbacks);
 				} else {
-					path = itemPath;
+					writeContent(siteId, path, xml).subscribe(saveActionCallbacks);
 				}
+			} else {
+				setIsSubmitting(false);
+				return showAlert({
+					dispatch,
+					message: formatMessage(
+						{ defaultMessage: 'You need a valid {fileName} and {internalName} at a minimum to save content.' },
+						{
+							fileName: contentType.fields[XmlKeys.fileName].name,
+							internalName: contentType.fields[XmlKeys.internalName].name
+						}
+					)
+				});
 			}
-
-			const saveActionCallbacks = {
-				next() {
-					const dom = fromString(xml);
-					// TODO: when renaming, if form it not set to be closed, then the form will have the old path and values,
-					//  causing it to break. Should we trigger a re-fetch of state/etc?
-					(onSave?.({ dom, xml, values, versionComment, path }) as Promise<FormSavePromiseResult>)?.then(
-						onSavePromiseHandler
-					);
-				},
-				error(error: AjaxError) {
-					setIsSubmitting(false);
-					showAlert({
-						dispatch,
-						children: (
-							<Box>
-								<Typography marginBottom={1}>
-									<FormattedMessage defaultMessage="An error occurred trying to save the form" />
-								</Typography>
-								<Typography variant="body2" color="textSecondary">
-									{error.response.response?.message ?? error.response.message}
-								</Typography>
-							</Box>
-						)
-					});
-				}
-			};
-
-			// Validate minimum requirements to save as draft. Execution stops if minimum reqs aren't fulfilled.
-			checkMinimumSaveRequirementsFulfilled(
-				jotai.get(stableFormContext.atoms.validationByFieldId[XmlKeys['fileName']]),
-				values
-			).then((minimumRequirementsFullfilled) => {
-				if (minimumRequirementsFullfilled) {
-					// TODO: validateActionPolicy. See FE1 saveFn.
-					// TODO: write-content url on FE1 sends phase, path, fileName, contentType QSAs. Important?
-					// TODO: Cancel packages when needed.
-					if (isRename) {
-						moveAndUpdateContent(siteId, itemPath, path, xml).subscribe(saveActionCallbacks);
-					} else {
-						writeContent(siteId, path, xml).subscribe(saveActionCallbacks);
-					}
-				} else {
-					setIsSubmitting(false);
-					return showAlert({
-						dispatch,
-						message: formatMessage(
-							{ defaultMessage: 'You need a valid {fileName} and {internalName} at a minimum to save content.' },
-							{
-								fileName: contentType.fields[XmlKeys.fileName].name,
-								internalName: contentType.fields[XmlKeys.internalName].name
-							}
-						)
-					});
-				}
-			});
 		});
 	};
 }

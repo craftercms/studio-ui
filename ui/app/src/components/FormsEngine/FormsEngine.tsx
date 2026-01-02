@@ -392,8 +392,7 @@ function FormBootstrap(props: FormsEngineProps) {
 					update,
 					parentStackData,
 					stableFormContextRef,
-					parentPathInSite,
-					siteId
+					parentPathInSite
 				});
 				initializeState(requirements.atoms, requirements.values, requirements.itemMeta);
 			};
