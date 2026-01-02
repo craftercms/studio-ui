@@ -53,18 +53,18 @@ export function RenameContentDialogContainer(props: RenameContentDialogContainer
 	} = props;
 	const safeValue = value ?? '';
 	const isPage = safeValue.includes('/index.xml');
-	const strippedValue = getStrippedValue(safeValue);
+	const itemName = getItemName(safeValue);
 	const { isSubmitting, updateSubmittingOrHasPendingChanges } = useEnhancedDialogContext();
-	const [name, setName] = useState(strippedValue);
+	const [name, setName] = useState(itemName);
 	const [itemExists, setItemExists] = useState(false);
-	const isValid = !isBlank(name) && !itemExists && name !== strippedValue;
+	const isValid = !isBlank(name) && !itemExists && name !== itemName;
 	const [confirmBrokenReferences, setConfirmBrokenReferences] = useState(false);
 	const renameDisabled =
 		isSubmitting || !isValid || fetchingDependantItems || (dependantItems?.length > 0 && !confirmBrokenReferences);
 	const siteId = useActiveSiteId();
 
 	const onNameUpdate$ = useDebouncedInput((name: string) => {
-		if (name !== strippedValue && name !== getStrippedValue(allowedValue)) {
+		if (name !== itemName && name !== getItemName(allowedValue)) {
 			checkPathExistence(siteId, `${ensureSingleSlash(`${path}/${name}`)}${isPage ? '/index.xml' : '.xml'}`).subscribe(
 				(exists) => setItemExists(exists)
 			);
@@ -74,7 +74,7 @@ export function RenameContentDialogContainer(props: RenameContentDialogContainer
 	const onInputChanges = (newValue: string) => {
 		setName(newValue);
 		onNameUpdate$.next(newValue);
-		const newHasPendingChanges = newValue !== strippedValue;
+		const newHasPendingChanges = newValue !== itemName;
 		updateSubmittingOrHasPendingChanges({ hasPendingChanges: newHasPendingChanges });
 	};
 
@@ -119,7 +119,16 @@ export function RenameContentDialogContainer(props: RenameContentDialogContainer
 	);
 }
 
-function getStrippedValue(value: string): string {
+/**
+ * Gets the name of the content item by removing the file extension (`.xml` if the item is a component or `index.xml` if page).
+ * The function checks if the input string represents a page (contains '/index.xml').
+ * - If it is a page, it removes '/index.xml' from the string.
+ * - Otherwise, it removes '.xml' from the string.
+ *
+ * @param {string} value - The file path or name to process.
+ * @returns {string} - The stripped value without the file extension.
+ */
+function getItemName(value: string): string {
 	const isPage = value.includes('/index.xml');
 	return isPage ? value.replace('/index.xml', '') : value.replace('.xml', '');
 }
