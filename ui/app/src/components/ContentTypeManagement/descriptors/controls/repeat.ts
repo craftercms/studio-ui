@@ -45,7 +45,9 @@ export const repeatDescriptor: DescriptorContentType = {
 			validations: immutableEmptyObject
 		}
 	},
-	supportedPostFixes: ['_o']
+	metadata: {
+		suffixes: ['_o']
+	}
 };
 
 export default repeatDescriptor;

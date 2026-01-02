@@ -16,7 +16,7 @@
 
 import { defineMessage, MessageDescriptor } from 'react-intl';
 
-export type PostFixesType =
+export type SuffixesType =
 	| '_s'
 	| '_t'
 	| '_i'
@@ -31,7 +31,7 @@ export type PostFixesType =
 	| '_en'
 	| '_txt';
 
-export const postFixesMap: Record<PostFixesType, MessageDescriptor> = {
+export const suffixesMap: Record<SuffixesType, MessageDescriptor> = {
 	_s: defineMessage({ defaultMessage: 'For string.' }),
 	_t: defineMessage({ defaultMessage: 'For multiple words or tokens.' }),
 	_i: defineMessage({ defaultMessage: 'For integer number.' }),

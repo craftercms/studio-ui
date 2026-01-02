@@ -78,7 +78,9 @@ export const textareaDescriptor: DescriptorContentType = {
 			validations: immutableEmptyObject
 		}
 	},
-	supportedPostFixes: ['_t', '_s']
+	metadata: {
+		suffixes: ['_t', '_s']
+	}
 };
 
 export default textareaDescriptor;

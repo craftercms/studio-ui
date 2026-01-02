@@ -23,7 +23,7 @@ import Tooltip from '@mui/material/Tooltip';
 import { FormattedMessage, useIntl } from 'react-intl';
 import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
 import { DropDownMenu } from '../../DropDownMenuButton';
-import { postFixesMap, PostFixesType } from '../postFixesMap';
+import { suffixesMap, SuffixesType } from '../suffixesMap';
 import { useStableFormContext } from '../../FormsEngine/lib/formsEngineContext';
 import { useAtomValue } from 'jotai';
 import useUpdateRefs from '../../../hooks/useUpdateRefs';
@@ -33,7 +33,7 @@ export interface VariableProps extends ControlProps {
 }
 
 const disabledFields = ['internal-name', 'file-name'];
-const disablePostFixes = ['internal-name', 'file-name', 'disabled'];
+const disableSuffixes = ['internal-name', 'file-name', 'disabled'];
 
 export function Variable(props: VariableProps) {
 	const { field, value, setValue, readonly, autoFocus, contentType } = props;
@@ -41,14 +41,14 @@ export function Variable(props: VariableProps) {
 	const htmlId = useId();
 	const maxLength = field.validations.maxLength?.value;
 	const controlDescriptor = contentType?.id && controlDescriptors[contentType?.id];
-	const supportedPostFixes: PostFixesType[] = controlDescriptor?.supportedPostFixes;
+	const supportedSuffixes: SuffixesType[] = controlDescriptor?.metadata?.suffixes;
 	const { formatMessage } = useIntl();
 	const disabled = readonly || disabledFields.includes(value);
-	const showPostFixes = supportedPostFixes && !disablePostFixes.includes(value);
+	const showSuffixes = supportedSuffixes && !disableSuffixes.includes(value);
 	const effectRefs = useUpdateRefs({
 		value,
 		setValue,
-		supportedPostFixes,
+		supportedSuffixes,
 		allowAutoValue,
 		disabled
 	});
@@ -59,10 +59,10 @@ export function Variable(props: VariableProps) {
 	const inputRef = useRef<HTMLInputElement>(null); // ref for the input
 
 	useEffect(() => {
-		const { setValue, supportedPostFixes, allowAutoValue, disabled } = effectRefs.current;
+		const { setValue, supportedSuffixes, allowAutoValue, disabled } = effectRefs.current;
 		// If allowAutoValue is true and the field is not disabled, set the value from the title.
 		if (allowAutoValue && !disabled && title) {
-			setValue(getValueFromTitle(title, supportedPostFixes));
+			setValue(getValueFromTitle(title, supportedSuffixes));
 		}
 	}, [title, effectRefs]);
 
@@ -73,8 +73,8 @@ export function Variable(props: VariableProps) {
 		setValue(newValue);
 	};
 
-	const onAddPostFix = (postFix: string) => {
-		setValue(getValueWithPostFix(value, postFix, supportedPostFixes));
+	const onAddSuffix = (suffix: string) => {
+		setValue(getValueWithSuffix(value, suffix, supportedSuffixes));
 		setTimeout(() => {
 			inputRef.current?.focus(); // Focus the input after updating the value
 			const length = inputRef.current.value.length; // Get the length of the input value
@@ -94,15 +94,15 @@ export function Variable(props: VariableProps) {
 				disabled={disabled}
 				inputRef={inputRef}
 				endAdornment={
-					showPostFixes && (
-						<Tooltip title={<FormattedMessage defaultMessage="Add/update postfix" />}>
+					showSuffixes && (
+						<Tooltip title={<FormattedMessage defaultMessage="Add/update suffix" />}>
 							<DropDownMenu
-								onMenuItemClick={(event, optionId) => onAddPostFix(optionId)}
-								options={supportedPostFixes.map((postFix) => {
-									const translation = formatMessage(postFixesMap[postFix]);
+								onMenuItemClick={(event, optionId) => onAddSuffix(optionId)}
+								options={supportedSuffixes.map((suffix) => {
+									const translation = formatMessage(suffixesMap[suffix]);
 									return {
-										id: postFix,
-										primaryText: postFix,
+										id: suffix,
+										primaryText: suffix,
 										secondaryText: translation
 									};
 								})}
@@ -142,19 +142,19 @@ const cleanVariable = (value) => {
 	return value.replace(/-/g, '_').replace(/[^A-Za-z0-9-_]/g, '');
 };
 
-const getValueWithPostFix = (value: string, postFix: string, supportedPostFixes: PostFixesType[]): string => {
-	const currentPostFix = value.match(/_[a-z]+$/)?.[0];
-	const isPostfix = currentPostFix && supportedPostFixes?.includes(currentPostFix as PostFixesType);
-	return isPostfix ? value.replace(/_[a-z]+$/, `${postFix}`) : `${value}${postFix}`;
+const getValueWithSuffix = (value: string, suffix: string, supportedSuffixes: SuffixesType[]): string => {
+	const currentSuffix = value.match(/_[a-z]+$/)?.[0];
+	const isSuffix = currentSuffix && supportedSuffixes?.includes(currentSuffix as SuffixesType);
+	return isSuffix ? value.replace(/_[a-z]+$/, `${suffix}`) : `${value}${suffix}`;
 };
 
-const getValueFromTitle = (title: string, supportedPostFixes: PostFixesType[]): string => {
+const getValueFromTitle = (title: string, supportedSuffixes: SuffixesType[]): string => {
 	let newValue = cleanVariable(title);
 	// Lowercase the first letter
 	newValue = newValue.charAt(0).toLowerCase() + newValue.slice(1);
-	// If there are supported post fixes and the value is not in the disablePostFixes list, add the first one.
-	if (supportedPostFixes?.length && !disablePostFixes.includes(newValue)) {
-		newValue = getValueWithPostFix(newValue, supportedPostFixes[0], supportedPostFixes);
+	// If there are supported post fixes and the value is not in the disableSuffixes list, add the first one.
+	if (supportedSuffixes?.length && !disableSuffixes.includes(newValue)) {
+		newValue = getValueWithSuffix(newValue, supportedSuffixes[0], supportedSuffixes);
 	}
 	return newValue;
 };
