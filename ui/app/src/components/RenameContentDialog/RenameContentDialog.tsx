@@ -28,12 +28,12 @@ import { ContentItem } from '../../models';
 export interface RenameContentDialogProps extends EnhancedDialogProps {
 	path: string;
 	value?: string;
-	allowedValue?: string;
+	validRenameValue?: string; // Specifies a value  that is permitted for renaming content.
 	onRenamed(name: string): void;
 }
 
 export function RenameContentDialog(props: RenameContentDialogProps) {
-	const { path, value, allowedValue, onRenamed, ...dialogProps } = props;
+	const { path, value, validRenameValue, onRenamed, ...dialogProps } = props;
 	const [dependantItems, setDependantItems] = useState<ContentItem[]>(null);
 	const [fetchingDependantItems, setFetchingDependantItems] = useState(false);
 	const [error, setError] = useState(null);
@@ -75,7 +75,7 @@ export function RenameContentDialog(props: RenameContentDialogProps) {
 			<RenameContentDialogContainer
 				path={path}
 				value={value}
-				allowedValue={allowedValue}
+				validRenameValue={validRenameValue}
 				fetchDependant={fetchDependant}
 				dependantItems={dependantItems}
 				fetchingDependantItems={fetchingDependantItems}

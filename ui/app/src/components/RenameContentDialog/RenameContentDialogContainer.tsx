@@ -32,7 +32,7 @@ import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { applyContentNameRules } from '../../utils/content';
 
 export interface RenameContentDialogContainerProps
-	extends Pick<RenameContentDialogProps, 'path' | 'value' | 'onRenamed' | 'onClose' | 'allowedValue'> {
+	extends Pick<RenameContentDialogProps, 'path' | 'value' | 'onRenamed' | 'onClose' | 'validRenameValue'> {
 	dependantItems: ContentItem[];
 	fetchingDependantItems: boolean;
 	error: AjaxError;
@@ -43,7 +43,7 @@ export function RenameContentDialogContainer(props: RenameContentDialogContainer
 	const {
 		path,
 		value,
-		allowedValue = '',
+		validRenameValue = '',
 		onRenamed,
 		onClose,
 		fetchDependant,
@@ -64,7 +64,7 @@ export function RenameContentDialogContainer(props: RenameContentDialogContainer
 	const siteId = useActiveSiteId();
 
 	const onNameUpdate$ = useDebouncedInput((name: string) => {
-		if (name !== itemName && name !== getItemName(allowedValue)) {
+		if (name !== itemName && name !== getItemName(validRenameValue)) {
 			checkPathExistence(siteId, `${ensureSingleSlash(`${path}/${name}`)}${isPage ? '/index.xml' : '.xml'}`).subscribe(
 				(exists) => setItemExists(exists)
 			);

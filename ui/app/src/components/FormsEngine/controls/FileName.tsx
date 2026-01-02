@@ -121,7 +121,7 @@ function showRenameDialog(
 	id: string,
 	path: string,
 	value: string,
-	allowedValue: string,
+	validRenameValue: string,
 	onRenamed: (newName: string) => void,
 	dispatch: Dispatch
 ) {
@@ -129,7 +129,7 @@ function showRenameDialog(
 		pushDialog({
 			id,
 			component: createComponentId('RenameContentDialog'),
-			props: { path, value, allowedValue, onRenamed }
+			props: { path, value, validRenameValue, onRenamed }
 		})
 	);
 
