@@ -208,7 +208,15 @@ export function UppyDashboard(props: UppyDashboardProps) {
 			maxActiveUploads,
 			externalMessages: {
 				maxFiles: formatMessage(translations.maxFiles, { maxFiles: maxActiveUploads }),
-				projectPoliciesChangeRequired: (fileName, detail) => detail,
+				projectPoliciesChangeRequired: (fileName, suggestedFileName) => {
+					return formatMessage(
+						{
+							defaultMessage:
+								'Path `{fileName}` was transformed to `{suggestedFileName}` per the project file name policy'
+						},
+						{ fileName, suggestedFileName }
+					);
+				},
 				projectPoliciesNoComply: (fileName, detail) => {
 					return formatMessage(translations.projectPoliciesNoComply, { fileName, detail });
 				}

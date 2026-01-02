@@ -22,7 +22,7 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import PublishingPackage from './PublishingPackage';
 import { fetchPackages, fetchPublishingTargets } from '../../services/publishing';
 import { CurrentFilters, PublishPackage, Selected } from '../../models/Publishing';
-import FilterDropdown from './FilterDropdown';
+import FilterDropdown, { stateMessages } from './FilterDropdown';
 import { setRequestForgeryToken } from '../../utils/auth';
 import TablePagination from '@mui/material/TablePagination';
 import EmptyState from '../EmptyState/EmptyState';
@@ -413,10 +413,14 @@ function PublishingQueue(props: PublishingQueueProps) {
 					<Typography variant="body2">
 						{formatMessage(messages.filteredBy, {
 							state: currentFilters.states ? (
-								<strong key="state">{getPackageStateLabel(currentFilters.states)}</strong>
+								<strong key="state">
+									{translateFilters(getPackageStateLabel(currentFilters.states), formatMessage)}
+								</strong>
 							) : (
+								// On the `messages.filteredBy` descriptor, `state` is used in an ICU select expression on which `all` is a select option; hence, it must be the literal string "all" to match.
 								'all'
 							),
+							// On the `messages.filteredBy` descriptor, `environment` is used in an ICU select expression on which `all` is a select option; hence, it must be the literal string "all" to match.
 							environment: currentFilters.target ? <strong key="environment">{currentFilters.target}</strong> : 'all'
 						})}
 					</Typography>
@@ -457,6 +461,10 @@ function PublishingQueue(props: PublishingQueueProps) {
 				component="div"
 				count={total}
 				rowsPerPage={currentFilters.limit}
+				labelRowsPerPage={<FormattedMessage defaultMessage="Rows per page:" />}
+				labelDisplayedRows={({ from, to, count }) => (
+					<FormattedMessage defaultMessage="{from}-{to} of {count}" values={{ from, to, count }} />
+				)}
 				page={page}
 				backIconButtonProps={{
 					'aria-label': formatMessage(messages.previous)
@@ -477,6 +485,18 @@ function PublishingQueue(props: PublishingQueueProps) {
 			/>
 		</div>
 	);
+}
+
+function translateFilters(filters: string, formatMessage): string {
+	const translatedFilters = [];
+	filters
+		.replaceAll(' ', '')
+		.split(',')
+		.forEach((filter: string) => {
+			const translation = stateMessages[filter] ? formatMessage(stateMessages[filter]) : filter;
+			translatedFilters.push(translation);
+		});
+	return translatedFilters.join(', ');
 }
 
 export default PublishingQueue;
