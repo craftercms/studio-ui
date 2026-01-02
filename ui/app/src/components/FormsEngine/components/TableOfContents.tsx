@@ -150,10 +150,8 @@ function TreeItemLabel({
 	field: ContentTypeField;
 	atoms: Pick<FormsEngineAtoms, 'valueByFieldId' | 'validationByFieldId'>;
 }) {
-	const formContext = useStableFormContext();
 	// If field.id is 'file-name', we'll be using `atoms.fileName` as the field value.
 	const value = useAtomValue(atoms.valueByFieldId[field.id]);
-	const fileName = useAtomValue(formContext.atoms.fileName);
 	const validityData = useLoadableAtom(atoms.validationByFieldId[field.id]);
 	const isValid = validityData.state === 'hasData' ? validityData?.data.isValid : true;
 	const isRequired = isFieldRequired(field);
@@ -166,11 +164,19 @@ function TreeItemLabel({
 				) : (
 					<FieldRequiredStateIndicator isValid={isValid} />
 				)
+			) : field.id === XmlKeys.fileName ? (
+				<FieldEmptyStateIndicator isEmpty={isEmptyValue(field, value)} />
 			) : (
-				<FieldEmptyStateIndicator isEmpty={isEmptyValue(field, field.id === XmlKeys.fileName ? fileName : value)} />
+				<FileNameEmptyStateIndicator field={field} />
 			)}
 		</Box>
 	);
+}
+
+function FileNameEmptyStateIndicator({ field }: { field: ContentTypeField }) {
+	const formContext = useStableFormContext();
+	const fileName = useAtomValue(formContext.atoms.fileName);
+	return <FieldEmptyStateIndicator isEmpty={isEmptyValue(field, fileName)} />;
 }
 
 export default TableOfContents;
