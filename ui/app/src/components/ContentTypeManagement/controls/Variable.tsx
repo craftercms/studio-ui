@@ -152,7 +152,7 @@ const getValueFromTitle = (title: string, supportedSuffixes: SuffixesType[]): st
 	let newValue = cleanVariable(title);
 	// Lowercase the first letter
 	newValue = newValue.charAt(0).toLowerCase() + newValue.slice(1);
-	// If there are supported post fixes and the value is not in the disableSuffixes list, add the first one.
+	// If there are supported suffixes and the value is not in the disableSuffixes list, add the first one.
 	if (supportedSuffixes?.length && !disableSuffixes.includes(newValue)) {
 		newValue = getValueWithSuffix(newValue, supportedSuffixes[0], supportedSuffixes);
 	}
