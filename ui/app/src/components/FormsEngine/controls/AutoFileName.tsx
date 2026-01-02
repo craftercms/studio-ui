@@ -26,7 +26,7 @@ export function AutoFileName() {
 
 	useEffect(() => {
 		if (!value) {
-			setValue(`${id}`);
+			setValue(id);
 		}
 	}, [setValue, value, id]);
 	return (
