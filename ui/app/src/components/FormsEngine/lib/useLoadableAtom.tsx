@@ -19,7 +19,16 @@ import { useMemo } from 'react';
 import { loadable } from 'jotai/utils';
 import type { Loadable } from 'jotai/vanilla/utils/loadable';
 
-// Hook to wrap an async atom using loadable API https://jotai.org/docs/utilities/async#loadable, and retrieve its value.
+/**
+ * A custom hook that wraps an async atom using the `loadable` API and retrieves its value.
+ * https://jotai.org/docs/utilities/async#loadable
+ *
+ * @template Value - The type of the value stored in the atom.
+ * @param {Atom<Value>} atom - The Jotai atom to be wrapped and accessed.
+ * @returns {Loadable<Value>} - The loadable state of the atom, which can be in one of the following states:
+ * `loading`, `hasData`, or `hasError`.
+ *
+ */
 export function useLoadableAtom<Value>(atom: Atom<Value>): Loadable<Value> {
 	const loadableAtom = useMemo(() => loadable(atom), [atom]);
 	return useAtomValue(loadableAtom);

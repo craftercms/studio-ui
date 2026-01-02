@@ -22,7 +22,7 @@ import { defineMessage, type MessageDescriptor } from 'react-intl';
 import type { FormatXMLElementFn, PrimitiveType } from 'intl-messageformat';
 import { nnou, nou } from '../../../utils/object';
 import { checkPathExistence } from '../../../services/content';
-import { getBasePath, getFileNamePath, isPagePath } from './formUtils';
+import { getBasePath, computePathFromFileName, isPagePath } from './formUtils';
 import { firstValueFrom } from 'rxjs';
 import { withIndex } from '../../../utils/path';
 import { FormsEngineItemMetaContextProps } from './formsEngineContext';
@@ -81,6 +81,17 @@ export interface FieldValidityState {
 	messages: FieldValidityMessage[];
 }
 
+/**
+ * Validates the uniqueness of a file name within a specific site and path.
+ *
+ * @param {ContentTypeField} field - The field metadata for the file name being validated.
+ * @param {string} _ - Unused parameter, representing the current value of the field.
+ * @param {FieldValidityState['messages']} messages - An array to store validation messages.
+ * @param {ValidatorMetaData} meta - Metadata containing site ID, file name, and item context.
+ * @returns {Promise<boolean> | boolean} - A promise resolving to `true` if the file name is valid,
+ * or `false` if it is invalid.
+ *
+ */
 export function fileNameValidator(
 	field: ContentTypeField,
 	_: string,
@@ -95,7 +106,7 @@ export function fileNameValidator(
 	const initialPath = meta.itemMeta.path ?? meta.itemMeta.pathInSite;
 	const isPage = isPagePath(withIndex(initialPath));
 	const basePath = nnou(meta.itemMeta.path) ? getBasePath(initialPath, isPage) : meta.itemMeta.pathInSite;
-	const newPath = getFileNamePath(currentValue, isPage, basePath);
+	const newPath = computePathFromFileName(currentValue, isPage, basePath);
 
 	if (initialPath === newPath || nou(siteId)) return true;
 	return firstValueFrom(checkPathExistence(siteId, newPath))
@@ -108,6 +119,16 @@ export function fileNameValidator(
 		.catch(() => false);
 }
 
+/**
+ * Validates the value of a field based on its type, requirements, and metadata.
+ *
+ * @param {ContentTypeField} field - The field metadata, including its type and validation rules.
+ * @param {unknown} currentValue - The current value of the field to be validated.
+ * @param {ValidatorMetaData} meta - Metadata containing additional context such as site ID and file name.
+ * @returns {Promise<FieldValidityState>} - A promise resolving to the validity state of the field,
+ * including whether it is valid and any associated validation messages.
+ *
+ */
 export async function validateFieldValue(
 	field: ContentTypeField,
 	currentValue: unknown,
@@ -129,6 +150,15 @@ export async function validateFieldValue(
 	return Promise.resolve({ isValid, messages });
 }
 
+/**
+ * Checks if the given value for a field is considered empty.
+ *
+ * @param {ContentTypeField} field - The metadata of the field being validated.
+ * @param {unknown} currentValue - The current value of the field to check.
+ * @returns {boolean} - Returns `true` if the value is null, undefined, an empty string,
+ * or an empty array; otherwise, returns `false`.
+ *
+ */
 export function isEmptyValue(field: ContentTypeField, currentValue: unknown): boolean {
 	return (
 		currentValue == null ||
@@ -137,10 +167,25 @@ export function isEmptyValue(field: ContentTypeField, currentValue: unknown): bo
 	);
 }
 
+/**
+ * Determines if a field is required based on its validation metadata.
+ *
+ * @param {ContentTypeField} field - The metadata of the field, including validation rules.
+ * @returns {boolean} - Returns `true` if the field is marked as required; otherwise, `false`.
+ *
+ */
 export function isFieldRequired(field: ContentTypeField): boolean {
 	return Boolean(field.validations?.required?.value);
 }
 
+/**
+ * Checks if the minimum save requirements are fulfilled.
+ *
+ * @param {Promise<FieldValidityState>} fileNameValidation - A promise resolving to the validity state of the file name.
+ * @param {LookupTable<unknown>} values - A lookup table containing field values, including the internal name.
+ * @returns {Promise<boolean>} - A promise resolving to `true` if the file name is valid and the internal name requirements are fulfilled; otherwise, `false`.
+ *
+ */
 export function checkMinimumSaveRequirementsFulfilled(
 	fileNameValidation: Promise<FieldValidityState>,
 	values: LookupTable<unknown>
@@ -150,6 +195,13 @@ export function checkMinimumSaveRequirementsFulfilled(
 	});
 }
 
+/**
+ * Checks if the internal name requirements are fulfilled.
+ *
+ * @param {LookupTable<unknown>} values - A lookup table containing field values, including the internal name.
+ * @returns {boolean} - Returns `true` if the internal name is not empty or consists only of whitespace; otherwise, `false`.
+ *
+ */
 export function checkInternalNameRequirementsFulfilled(values: LookupTable<unknown>): boolean {
 	return (values[XmlKeys.internalName]?.toString() ?? '').trim() !== '';
 }

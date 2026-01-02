@@ -204,7 +204,7 @@ export function createFieldAtoms(
 				} else {
 					// If originalPath exists, validate if differs from original value
 					const isPage = isPagePath(originalPath);
-					const originalFileName = getFileNameValue(originalPath, isPage);
+					const originalFileName = getFileNameValueFromPath(originalPath, isPage);
 					if (currentFileName !== originalFileName) {
 						formContextRef.current.changedFieldIds.add(field.id);
 					} else {
@@ -231,16 +231,38 @@ export function createFieldAtoms(
 export const createReadonlyAtom = (lockedResultAtom: Atom<FormsEngineEditContextProps>) =>
 	atom((get) => !get(lockedResultAtom).locked);
 
-export const isPagePath = (path: string) => {
+/**
+ * Determines if the given path corresponds to a page path.
+ *
+ * @param {string} path - The path to check.
+ * @returns {boolean} - Returns `true` if the path matches the pattern for a page path; otherwise, `false`.
+ *
+ */
+export const isPagePath = (path: string): boolean => {
 	return /^\/site\/website(\/.*)?\/index.*\.xml$/.test(path);
 };
 
-export const createFileNameAtom = (path: string) => {
+/**
+ * Creates a Jotai atom for the file name based on the given path.
+ *
+ * @param {string} path - The full path of the file.
+ * @returns {PrimitiveAtom<string>} - A Jotai atom containing the file name extracted from the path.
+ *
+ */
+export const createFileNameAtom = (path: string): PrimitiveAtom<string> => {
 	const isPage = isPagePath(path);
-	return atom(getFileNameValue(path, isPage));
+	return atom(getFileNameValueFromPath(path, isPage));
 };
 
-export const getBasePath = (path: string, isPage: boolean) => {
+/**
+ * Retrieves the base path from a given file path.
+ *
+ * @param {string} path - The full file path to process.
+ * @param {boolean} isPage - A flag indicating whether the path corresponds to a page.
+ * @returns {string} - The base path extracted from the input path.
+ *
+ */
+export const getBasePath = (path: string, isPage: boolean): string => {
 	// If home page
 	if (path === '/site/website/index.xml' && isPage) return '/site/website/';
 
@@ -250,7 +272,15 @@ export const getBasePath = (path: string, isPage: boolean) => {
 		: pathParts.slice(0, pathParts.length - 1).join('/') + '/';
 };
 
-export const getFileNameValue = (path: string, isPage: boolean) => {
+/**
+ * Extracts the file name from a given file path.
+ *
+ * @param {string} path - The full file path to process.
+ * @param {boolean} isPage - A flag indicating whether the path corresponds to a page.
+ * @returns {string} - The file name extracted from the path. Returns an empty string if the path corresponds to the home page.
+ *
+ */
+export const getFileNameValueFromPath = (path: string, isPage: boolean): string => {
 	// If home page, return empty string
 	if (path === '/site/website/index.xml' && isPage) return '';
 
@@ -258,9 +288,18 @@ export const getFileNameValue = (path: string, isPage: boolean) => {
 	return path.replace(basePath, '').replace(isPage ? '/index.xml' : '.xml', '');
 };
 
-export const getFileNamePath = (value: string, isPage: boolean, basePath: string) => {
-	const fileName = isPage ? `${value}/index.xml` : `${value}.xml`;
-	return ensureSingleSlash(`${basePath}/${fileName}`);
+/**
+ * Computes the full path for a file based on its name, type, and base path.
+ *
+ * @param {string} fileName - The name of the file (without extension or directory).
+ * @param {boolean} isPage - A flag indicating whether the file represents a page.
+ * @param {string} basePath - The base path of the file.
+ * @returns {string} - The computed full path for the file.
+ *
+ */
+export const computePathFromFileName = (fileName: string, isPage: boolean, basePath: string): string => {
+	const fullFileName = isPage ? `${fileName}/index.xml` : `${fileName}.xml`;
+	return ensureSingleSlash(`${basePath}/${fullFileName}`);
 };
 
 export function createFormStackData(mixin?: Partial<StableFormContextProps>): StableFormContextProps {
@@ -782,7 +821,7 @@ export function prepareEmbeddedItemForm(props: {
 		lockResult: lockResultAtom,
 		readonly: createReadonlyAtom(lockResultAtom),
 		expandedStateBySectionId: buildSectionExpandedStateAtoms(contentType.sections),
-		fileName: atom(update.modelId) // TODO: I don't modelId necessarily matches the fileName, check
+		fileName: atom(update.modelId)
 	});
 	const values = update.values;
 	Object.entries(values).forEach(([fieldId, value]) => {

@@ -21,7 +21,13 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import useActiveSiteId from '../../../hooks/useActiveSiteId';
 import React, { useContext } from 'react';
 import { FormsEngineFormContextApi, ItemMetaContext, StableFormContext } from './formsEngineContext';
-import { createObjectWithSystemProps, extractAtomValues, getBasePath, getFileNameValue, showAlert } from './formUtils';
+import {
+	createObjectWithSystemProps,
+	extractAtomValues,
+	getBasePath,
+	getFileNameValueFromPath,
+	showAlert
+} from './formUtils';
 import { FormSavePromiseResult, FormsEngineProps } from '../FormsEngine';
 import { XmlKeys } from './formConsts';
 import { fromString } from '../../../utils/xml';
@@ -66,7 +72,7 @@ export function useSaveForm(props: UseSaveFormProps) {
 	const setHasPendingChanges = useSetAtom(stableFormContext.atoms.hasPendingChanges);
 	const onSave = wrapOnSaveProp(props.onSave);
 	const fileName = useAtomValue(stableFormContext.atoms.fileName);
-	const initialFileName = itemPath ? getFileNameValue(itemPath, isPage) : '';
+	const initialFileName = itemPath ? getFileNameValueFromPath(itemPath, isPage) : '';
 	return () => {
 		const values = extractAtomValues(jotai, stableFormContext.atoms.valueByFieldId);
 		const onSavePromiseHandler = ({ close }: FormSavePromiseResult) => {

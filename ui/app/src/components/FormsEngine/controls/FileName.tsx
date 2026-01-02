@@ -32,7 +32,7 @@ import { popDialog, pushDialog } from '../../../state/actions/dialogStack';
 import { createComponentId } from '../../../utils/system';
 import { nanoid } from 'nanoid';
 import { nnou } from '../../../utils/object';
-import { getBasePath, getFileNameValue, isFieldReadOnly, isPagePath } from '../lib/formUtils';
+import { getBasePath, getFileNameValueFromPath, isFieldReadOnly, isPagePath } from '../lib/formUtils';
 import { ensureSingleSlash } from '../../../utils/string';
 import type { Dispatch } from 'redux';
 import useLoadableAtom from '../lib/useLoadableAtom';
@@ -65,7 +65,7 @@ export function FileName(props: ControlProps) {
 
 	const handleEdit = () => {
 		const itemValue = isPage ? `${value}/index.xml` : `${value}.xml`;
-		const itemInitialValue = getFileNameValue(initialPath, isPage);
+		const itemInitialValue = getFileNameValueFromPath(initialPath, isPage);
 		const itemPath = getBasePath(initialPath, isPage);
 		const id = nanoid();
 
