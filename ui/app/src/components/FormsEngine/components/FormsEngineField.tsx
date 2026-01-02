@@ -275,8 +275,7 @@ export const FormsEngineField = forwardRef<HTMLDivElement, FormsEngineFieldProps
 			{hasDescription && <FormHelperText>{field.description}</FormHelperText>}
 			{!isValid &&
 				validityData.state === 'hasData' &&
-				!!validityData?.data?.messages?.length &&
-				validityData.data?.messages.map((messageData, key) => (
+				validityData.data?.messages?.map((messageData, key) => (
 					<FormHelperText key={key}>{translateValidityMessage(messageData, formatMessage)}</FormHelperText>
 				))}
 		</FormControl>
