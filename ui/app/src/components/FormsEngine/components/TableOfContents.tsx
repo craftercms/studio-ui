@@ -165,9 +165,9 @@ function TreeItemLabel({
 					<FieldRequiredStateIndicator isValid={isValid} />
 				)
 			) : field.id === XmlKeys.fileName ? (
-				<FieldEmptyStateIndicator isEmpty={isEmptyValue(field, value)} />
-			) : (
 				<FileNameEmptyStateIndicator field={field} />
+			) : (
+				<FieldEmptyStateIndicator isEmpty={isEmptyValue(field, value)} />
 			)}
 		</Box>
 	);
