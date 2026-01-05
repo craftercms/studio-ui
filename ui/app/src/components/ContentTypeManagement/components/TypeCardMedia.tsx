@@ -21,6 +21,7 @@ import { fetchPreviewImage } from '../../../services/contentTypes';
 import CardMedia, { CardMediaProps } from '@mui/material/CardMedia';
 import { consolidateSx } from '../../../utils/system';
 import Skeleton from '@mui/material/Skeleton';
+import { toColor } from '../../../utils/string';
 
 export interface ContentTypeCardMediaProps extends CardMediaProps {
 	typeId: string;
@@ -54,7 +55,9 @@ export function TypeCardMedia(props: ContentTypeCardMediaProps) {
 					height: '200px',
 					display: 'block',
 					bgcolor: theme.palette.mode === 'light' ? 'grey.100' : 'grey.900',
-					objectFit: 'contain'
+					objectFit: 'cover',
+					borderLeft: (theme) => `${theme.spacing(1)} solid`,
+					borderLeftColor: toColor(typeId)
 				},
 				skeleton ? { transform: 'none' } : { '&:not([src])': { opacity: 0 } },
 				sx
