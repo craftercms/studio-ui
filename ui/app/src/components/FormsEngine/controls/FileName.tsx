@@ -53,10 +53,7 @@ export function FileName(props: ControlProps) {
 	const isValid = validityData.state === 'hasData' ? validityData.data.isValid : true;
 	const webUrlRoot = ensureSingleSlash(`${pathInSite.replace('/site/website', '/')}/`);
 	const dispatch = useDispatch();
-
-	// region field properties/validations
 	const readonly: boolean = isFieldReadOnly(field, formReadonly);
-	// endregion
 
 	const handleChange: OutlinedInputProps['onChange'] = (e) => {
 		const newValue = applyContentNameRules(e.currentTarget.value);
