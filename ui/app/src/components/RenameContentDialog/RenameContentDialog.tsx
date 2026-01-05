@@ -28,7 +28,8 @@ import { ContentItem } from '../../models';
 export interface RenameContentDialogProps extends EnhancedDialogProps {
 	path: string;
 	value?: string;
-	validRenameValue?: string; // Specifies a value  that is permitted for renaming content.
+	validRenameValue?: string; // Specifies a literal item name value (e.g. 'new-article') that is permitted for renaming content. If the user enters this value, it will be accepted even if it doesn't meet the usual validation criteria.
+	// e.g.: If validRenameValue is 'new-article', the user can enter 'new-article' even if it already exists. This allows renaming back to the original item name.
 	onRenamed(name: string): void;
 }
 
