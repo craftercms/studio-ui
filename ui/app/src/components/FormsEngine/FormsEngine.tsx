@@ -602,7 +602,9 @@ function FormOrchestrator(props: FormsEngineProps) {
 	const contentTypeFields = contentType.fields;
 	const contentTypeSections = useMemo(() => {
 		if (!isEmbedded) return contentType.sections;
-		// If the item is embedded, remove the 'file-name' field from the sections, since there is no path/filename
+		// If the item is embedded, exclude the 'file-name' field from the sections.
+		// Embedded components don't have any path/file-name, so excluding the field from the sections will prevent it from
+		// being rendered in the ToC and the form.
 		return contentType.sections.map((section) => ({
 			...section,
 			fields: section.fields.filter((fieldId) => fieldId !== XmlKeys['fileName'])
