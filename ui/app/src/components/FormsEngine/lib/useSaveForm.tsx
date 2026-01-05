@@ -22,6 +22,7 @@ import useActiveSiteId from '../../../hooks/useActiveSiteId';
 import React, { useContext } from 'react';
 import { FormsEngineFormContextApi, ItemMetaContext, StableFormContext } from './formsEngineContext';
 import {
+	composePathForType,
 	createObjectWithSystemProps,
 	extractAtomValues,
 	getBasePath,
@@ -120,15 +121,11 @@ export function useSaveForm(props: UseSaveFormProps) {
 		let path: string;
 		const isRename = !isCreateMode && fileName !== initialFileName;
 		if (isCreateMode) {
-			if (isPage) {
-				path = ensureSingleSlash(`${createPath}/${fileName}/index.xml`);
-			} else {
-				path = ensureSingleSlash(`${createPath}/${fileName}.xml`);
-			}
+			path = composePathForType(createPath, fileName, contentType);
 		} /* is a plain update (page or component) */ else {
 			if (isRename) {
 				const basePath = getBasePath(itemPath, isPage);
-				path = ensureSingleSlash(`${basePath}/${isPage ? fileName + '/index.xml' : fileName + '.xml'}`);
+				path = composePathForType(basePath, fileName, contentType);
 			} else {
 				path = itemPath;
 			}

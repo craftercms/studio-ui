@@ -893,3 +893,24 @@ export function getPropertyValue(
 export function isFieldReadOnly(field: ContentTypeField, formReadonly: boolean): boolean {
 	return formReadonly || (getPropertyValue(field.properties, 'readonly') as boolean);
 }
+
+/**
+ * Constructs the full path for a content item based on its type, base path, and file name.
+ *
+ * This function determines the appropriate path format based on the content type.
+ * If the content type is a "page", the path will include an `index.xml` file within a folder.
+ * Otherwise, the path will include the file name with a `.xml` extension directly.
+ *
+ * @param {string} basePath - The base path where the content item resides.
+ * @param {string} fileName - The name of the file (without extension or directory).
+ * @param {ContentType} contentType - The content type object, which determines the path format.
+ * @returns {string} - The constructed full path for the content item.
+ *
+ */
+export function composePathForType(basePath: string, fileName: string, contentType: ContentType): string {
+	if (contentType.type === 'page') {
+		return ensureSingleSlash(`${basePath}/${fileName}/index.xml`);
+	} else {
+		return ensureSingleSlash(`${basePath}/${fileName}.xml`);
+	}
+}
