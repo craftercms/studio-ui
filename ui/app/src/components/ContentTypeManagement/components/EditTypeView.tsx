@@ -250,7 +250,7 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 	/** Returns true if no form is opened or if the active form it's all valid and can be committed and closed. Returns false otherwise. */
 	const performCurrentFormErrorCheckAndWarning = () => {
 		if (open && activeFormHasErrors) {
-			showAlert(formatMessage({ defaultMessage: `Please fix errors before moving on` }));
+			showAlert(formatMessage({ defaultMessage: 'Please resolve any issues prior to closing the form' }));
 			return false;
 		}
 		return true;
