@@ -180,6 +180,7 @@ export function createFieldAtoms(
 	formContextRef: RefObject<
 		Pick<StableFormContextProps, 'fieldUpdates$' | 'changedFieldIds' | 'originalValues' | 'atoms' | 'itemMeta'>
 	>,
+	// TODO: Consider a more comprehensive context for validators
 	siteId?: string
 ): [PrimitiveAtom<unknown>, Atom<Promise<FieldValidityState>>] {
 	let isInitialization = true;
