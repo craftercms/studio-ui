@@ -39,7 +39,7 @@ import Typography from '@mui/material/Typography';
 import { buildContentXml } from './valueSerializers';
 import { flushSync } from 'react-dom';
 import LookupTable from '../../../models/LookupTable';
-import { checkInternalNameRequirementsFulfilled, checkMinimumSaveRequirementsFulfilled } from './validators';
+import { isInternalNameValid, checkMinimumSaveRequirementsFulfilled } from './validators';
 import ContentType from '../../../models/ContentType';
 
 export interface UseSaveFormProps {
@@ -102,7 +102,7 @@ export function useSaveForm(props: UseSaveFormProps) {
 		// Embedded handled here. If true, execution ends inside if statement.
 		if (isEmbedded) {
 			// Validate minimum embedded requirements to save as draft. Execution stops if minimum reqs aren't fulfilled.
-			if (!checkInternalNameRequirementsFulfilled(values)) {
+			if (!isInternalNameValid(values)) {
 				return showAlert({
 					dispatch,
 					message: formatMessage(
@@ -162,33 +162,32 @@ export function useSaveForm(props: UseSaveFormProps) {
 		};
 
 		// Validate minimum requirements to save as draft. Execution stops if minimum reqs aren't fulfilled.
-		checkMinimumSaveRequirementsFulfilled(
+		const minimumRequirementsFullfilled = await checkMinimumSaveRequirementsFulfilled(
 			jotai.get(stableFormContext.atoms.validationByFieldId[XmlKeys['fileName']]),
 			values
-		).then((minimumRequirementsFullfilled) => {
-			if (minimumRequirementsFullfilled) {
-				// TODO: validateActionPolicy. See FE1 saveFn.
-				// TODO: write-content url on FE1 sends phase, path, fileName, contentType QSAs. Important?
-				// TODO: Cancel packages when needed.
-				if (isRename) {
-					moveAndUpdateContent(siteId, itemPath, path, xml).subscribe(saveActionCallbacks);
-				} else {
-					writeContent(siteId, path, xml).subscribe(saveActionCallbacks);
-				}
-			} else {
-				setIsSubmitting(false);
-				return showAlert({
-					dispatch,
-					message: formatMessage(
-						{ defaultMessage: 'You need a valid {fileName} and {internalName} at a minimum to save content.' },
-						{
-							fileName: contentType.fields[XmlKeys.fileName].name,
-							internalName: contentType.fields[XmlKeys.internalName].name
-						}
-					)
-				});
-			}
-		});
+		);
+		if (!minimumRequirementsFullfilled) {
+			setIsSubmitting(false);
+			return showAlert({
+				dispatch,
+				message: formatMessage(
+					{ defaultMessage: 'You need a valid {fileName} and {internalName} at a minimum to save content.' },
+					{
+						fileName: contentType.fields[XmlKeys.fileName].name,
+						internalName: contentType.fields[XmlKeys.internalName].name
+					}
+				)
+			});
+		}
+
+		// TODO: validateActionPolicy. See FE1 saveFn.
+		// TODO: write-content url on FE1 sends phase, path, fileName, contentType QSAs. Important?
+		// TODO: Cancel packages when needed.
+		if (isRename) {
+			moveAndUpdateContent(siteId, itemPath, path, xml).subscribe(saveActionCallbacks);
+		} else {
+			writeContent(siteId, path, xml).subscribe(saveActionCallbacks);
+		}
 	};
 }
 

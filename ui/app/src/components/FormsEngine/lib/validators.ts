@@ -92,16 +92,16 @@ export interface FieldValidityState {
  * or `false` if it is invalid.
  *
  */
-export function fileNameValidator(
+export async function fileNameValidator(
 	field: ContentTypeField,
 	_: string,
 	messages: FieldValidityState['messages'],
 	meta: ValidatorMetaData
-): Promise<boolean> | boolean {
+): Promise<boolean> {
 	const siteId: string = meta.siteId;
 	const currentValue = meta.fileName;
 
-	if (nou(currentValue)) return Promise.resolve(false);
+	if (nou(currentValue)) return false;
 
 	const initialPath = meta.itemMeta.path ?? meta.itemMeta.pathInSite;
 	const isPage = isPagePath(withIndex(initialPath));
@@ -109,14 +109,16 @@ export function fileNameValidator(
 	const newPath = computePathFromFileName(currentValue, isPage, basePath);
 
 	if (initialPath === newPath || nou(siteId)) return true;
-	return firstValueFrom(checkPathExistence(siteId, newPath))
-		.then((exists) => {
-			if (exists) {
-				messages?.push([defineMessage({ defaultMessage: 'An item with that name already exists.' })]);
-			}
-			return !exists;
-		})
-		.catch(() => false);
+
+	try {
+		const exists = await firstValueFrom(checkPathExistence(siteId, newPath));
+		if (exists) {
+			messages?.push([defineMessage({ defaultMessage: 'An item with that name already exists.' })]);
+		}
+		return !exists;
+	} catch {
+		return false;
+	}
 }
 
 /**
@@ -186,23 +188,22 @@ export function isFieldRequired(field: ContentTypeField): boolean {
  * @returns {Promise<boolean>} - A promise resolving to `true` if the file name is valid and the internal name requirements are fulfilled; otherwise, `false`.
  *
  */
-export function checkMinimumSaveRequirementsFulfilled(
+export async function checkMinimumSaveRequirementsFulfilled(
 	fileNameValidation: Promise<FieldValidityState>,
 	values: LookupTable<unknown>
 ): Promise<boolean> {
-	return fileNameValidation.then(({ isValid: isFileNameValid }) => {
-		return isFileNameValid && checkInternalNameRequirementsFulfilled(values);
-	});
+	const { isValid: isFileNameValid } = await fileNameValidation;
+	return isFileNameValid && isInternalNameValid(values);
 }
 
 /**
- * Checks if the internal name requirements are fulfilled.
+ * Checks if the internal name is valid.
  *
  * @param {LookupTable<unknown>} values - A lookup table containing field values, including the internal name.
  * @returns {boolean} - Returns `true` if the internal name is not empty or consists only of whitespace; otherwise, `false`.
  *
  */
-export function checkInternalNameRequirementsFulfilled(values: LookupTable<unknown>): boolean {
+export function isInternalNameValid(values: LookupTable<unknown>): boolean {
 	return (values[XmlKeys.internalName]?.toString() ?? '').trim() !== '';
 }
 
