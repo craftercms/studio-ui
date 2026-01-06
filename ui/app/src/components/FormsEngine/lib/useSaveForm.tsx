@@ -32,7 +32,6 @@ import {
 import { FormSavePromiseResult, FormsEngineProps } from '../FormsEngine';
 import { XmlKeys } from './formConsts';
 import { fromString } from '../../../utils/xml';
-import { ensureSingleSlash } from '../../../utils/string';
 import { moveAndUpdateContent, writeContent } from '../../../services/content';
 import { AjaxError } from 'rxjs/ajax';
 import Box from '@mui/material/Box';
@@ -42,6 +41,7 @@ import { flushSync } from 'react-dom';
 import LookupTable from '../../../models/LookupTable';
 import { isInternalNameValid, checkMinimumSaveRequirementsFulfilled } from './validators';
 import ContentType from '../../../models/ContentType';
+import { showSystemNotification } from '../../../state/actions/system';
 
 export interface UseSaveFormProps {
 	createPath?: string;
@@ -76,7 +76,24 @@ export function useSaveForm(props: UseSaveFormProps) {
 	const initialFileName = itemPath ? getFileNameValueFromPath(itemPath, isPage) : '';
 	return async () => {
 		const values = extractAtomValues(jotai, stableFormContext.atoms.valueByFieldId);
+		const validityStates = await Promise.all(
+			Object.values(stableFormContext.atoms.validationByFieldId).map((validityDataAtom) => jotai.get(validityDataAtom))
+		);
+		// Put system properties in before creating the XML
+		const saveAsDraft = validityStates.some((state) => !state.isValid);
+
 		const onSavePromiseHandler = ({ close }: FormSavePromiseResult) => {
+			if (saveAsDraft) {
+				dispatch(
+					showSystemNotification({
+						options: { variant: 'warning' },
+						message: formatMessage({
+							defaultMessage: 'Draft saved. Required fields left blank may cause errors when previewed or deployed.'
+						})
+					})
+				);
+			}
+
 			flushSync(() => {
 				setIsSubmitting(false);
 				setHasPendingChanges(false);
@@ -90,12 +107,6 @@ export function useSaveForm(props: UseSaveFormProps) {
 			(onSave?.({ values, versionComment }) as Promise<FormSavePromiseResult>)?.then(onSavePromiseHandler);
 			return;
 		}
-
-		const validityStates = await Promise.all(
-			Object.values(stableFormContext.atoms.validationByFieldId).map((validityDataAtom) => jotai.get(validityDataAtom))
-		);
-		// Put system properties in before creating the XML
-		const saveAsDraft = validityStates.some((state) => !state.isValid);
 
 		complementValuesWithSystemProps(id, values, contentObject, contentType, saveAsDraft);
 		const { [XmlKeys.fileName]: _, ...valuesWithoutFileName } = values;

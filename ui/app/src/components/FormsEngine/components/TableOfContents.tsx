@@ -16,7 +16,7 @@
 
 import React, { RefObject, SyntheticEvent, useContext, useMemo, useState } from 'react';
 import { ContentTypeField } from '../../../models';
-import { FormsEngineAtoms, ItemMetaContext, StableFormContext, useStableFormContext } from '../lib/formsEngineContext';
+import { FormsEngineAtoms, ItemMetaContext, StableFormContext } from '../lib/formsEngineContext';
 import { getScrollContainer } from '../lib/formUtils';
 import useDebouncedInput from '../../../hooks/useDebouncedInput';
 import { TreeItem } from '@mui/x-tree-view/TreeItem';
@@ -24,15 +24,14 @@ import SearchBar from '../../SearchBar';
 import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
 import Box from '@mui/material/Box';
 import { useAtomValue, useSetAtom, useStore as useJotaiStore } from 'jotai/index';
-import { isEmptyValue, isFieldRequired } from '../lib/validators';
-import FieldEmptyStateIndicator from './FieldEmptyStateIndicator';
-import FieldRequiredStateIndicator from './FieldRequiredStateIndicator';
+import { isEmptyValue, isFieldRequired, validatorsMap } from '../lib/validators';
 import { atom } from 'jotai';
 import { immutableEmptyArray } from '../../../utils/array';
 import useLoadableAtom from '../lib/useLoadableAtom';
 import Skeleton from '@mui/material/Skeleton';
 import ErrorBoundary from '../../ErrorBoundary';
-import { XmlKeys } from '../lib/formConsts';
+import FieldStateIndicator from './FieldStateIndicator';
+import { nnou } from '../../../utils/object';
 
 export interface TableOfContentsProps {
 	containerRef: RefObject<HTMLDivElement>;
@@ -155,28 +154,23 @@ function TreeItemLabel({
 	const validityData = useLoadableAtom(atoms.validationByFieldId[field.id]);
 	const isValid = validityData.state === 'hasData' ? validityData?.data.isValid : true;
 	const isRequired = isFieldRequired(field);
+	const hasValidator = nnou(validatorsMap[field.type]);
 	return (
 		<Box display="flex" justifyContent="space-between" alignItems="center">
 			<span>{field.name}</span>
-			{isRequired ? (
-				validityData.state === 'loading' ? (
-					<Skeleton variant="circular" width={15} height={15} />
-				) : (
-					<FieldRequiredStateIndicator isValid={isValid} />
-				)
-			) : field.id === XmlKeys.fileName ? (
-				<FileNameEmptyStateIndicator field={field} />
+
+			{validityData.state === 'loading' ? (
+				<Skeleton variant="circular" width={15} height={15} />
 			) : (
-				<FieldEmptyStateIndicator isEmpty={isEmptyValue(field, value)} />
+				<FieldStateIndicator
+					isRequired={isRequired}
+					hasValidator={hasValidator}
+					isValid={isValid}
+					isEmpty={isEmptyValue(field, value)}
+				/>
 			)}
 		</Box>
 	);
-}
-
-function FileNameEmptyStateIndicator({ field }: { field: ContentTypeField }) {
-	const formContext = useStableFormContext();
-	const fileName = useAtomValue(formContext.atoms.fileName);
-	return <FieldEmptyStateIndicator isEmpty={isEmptyValue(field, fileName)} />;
 }
 
 export default TableOfContents;
