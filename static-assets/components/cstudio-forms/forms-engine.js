@@ -3845,7 +3845,9 @@ const initializeCStudioForms = () => {
 if (typeof CrafterCMSNext === 'undefined') {
 	// CrafterCMSNext is not defined, wait for CrafterCMS.CodebaseBridgeReady event to initialize CStudioForms.
 	document.addEventListener('CrafterCMS.CodebaseBridgeReady', () => {
-		initializeCStudioForms();
+		CrafterCMSNext.system.getStore().subscribe(() => {
+			initializeCStudioForms();
+		});
 	});
 } else {
 	// CrafterCMSNext is defined, initialize CStudioForms

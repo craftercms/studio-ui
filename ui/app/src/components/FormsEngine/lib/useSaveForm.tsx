@@ -21,21 +21,27 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import useActiveSiteId from '../../../hooks/useActiveSiteId';
 import React, { useContext } from 'react';
 import { FormsEngineFormContextApi, ItemMetaContext, StableFormContext } from './formsEngineContext';
-import { createObjectWithSystemProps, extractAtomValues, showAlert } from './formUtils';
+import {
+	composePathForType,
+	createObjectWithSystemProps,
+	extractAtomValues,
+	getBasePath,
+	getFileNameValueFromPath,
+	showAlert
+} from './formUtils';
 import { FormSavePromiseResult, FormsEngineProps } from '../FormsEngine';
 import { XmlKeys } from './formConsts';
 import { fromString } from '../../../utils/xml';
 import { ensureSingleSlash } from '../../../utils/string';
-import { writeContent } from '../../../services/content';
+import { moveAndUpdateContent, writeContent } from '../../../services/content';
 import { AjaxError } from 'rxjs/ajax';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { buildContentXml } from './valueSerializers';
 import { flushSync } from 'react-dom';
 import LookupTable from '../../../models/LookupTable';
-import { checkMinimumSaveRequirementsFulfilled } from './validators';
+import { isInternalNameValid, checkMinimumSaveRequirementsFulfilled } from './validators';
 import ContentType from '../../../models/ContentType';
-import { showSystemNotification } from '../../../state/actions/system';
 
 export interface UseSaveFormProps {
 	createPath?: string;
@@ -58,6 +64,7 @@ export function useSaveForm(props: UseSaveFormProps) {
 	const siteId = useActiveSiteId();
 	const { isEmbedded, isRepeatMode, isCreateMode, onClose, createPath } = props;
 	const { id, contentType, contentObject, path: itemPath } = useContext(ItemMetaContext);
+	const isPage = contentType.type === 'page';
 	const stableFormContext = useContext(StableFormContext);
 	const formContextApi = useContext(FormsEngineFormContextApi);
 	const setIsSubmitting = useSetAtom(stableFormContext.atoms.isSubmitting);
@@ -65,7 +72,9 @@ export function useSaveForm(props: UseSaveFormProps) {
 	const versionComment = useAtomValue(stableFormContext.atoms.versionComment);
 	const setHasPendingChanges = useSetAtom(stableFormContext.atoms.hasPendingChanges);
 	const onSave = wrapOnSaveProp(props.onSave);
-	return () => {
+	const fileName = useAtomValue(stableFormContext.atoms.fileName);
+	const initialFileName = itemPath ? getFileNameValueFromPath(itemPath, isPage) : '';
+	return async () => {
 		const values = extractAtomValues(jotai, stableFormContext.atoms.valueByFieldId);
 		const onSavePromiseHandler = ({ close }: FormSavePromiseResult) => {
 			flushSync(() => {
@@ -76,64 +85,60 @@ export function useSaveForm(props: UseSaveFormProps) {
 			});
 			(close || closeAfterSave) && onClose?.();
 		};
-		// Put system properties in before creating the XML
-		const saveAsDraft = Object.values(stableFormContext.atoms.validationByFieldId).some(
-			(validityDataAtom) => !jotai.get(validityDataAtom).isValid
-		);
 		// Repeat handled here. If true, execution ends inside if statement.
 		if (isRepeatMode) {
-			(onSave?.({ values, versionComment }) as Promise<FormSavePromiseResult>)?.then(({ close }) => {
-				if (saveAsDraft) {
-					dispatch(
-						showSystemNotification({
-							options: { variant: 'warning' },
-							message: formatMessage({
-								defaultMessage: 'Draft saved. Required fields left blank may cause errors when previewed or deployed.'
-							})
-						})
-					);
-				}
-				onSavePromiseHandler({ close });
-			});
+			(onSave?.({ values, versionComment }) as Promise<FormSavePromiseResult>)?.then(onSavePromiseHandler);
 			return;
 		}
+
+		const validityStates = await Promise.all(
+			Object.values(stableFormContext.atoms.validationByFieldId).map((validityDataAtom) => jotai.get(validityDataAtom))
+		);
+		// Put system properties in before creating the XML
+		const saveAsDraft = validityStates.some((state) => !state.isValid);
+
 		complementValuesWithSystemProps(id, values, contentObject, contentType, saveAsDraft);
-		// Validate minimum requirements to save as draft. Execution stops if minimum reqs aren't fulfilled.
-		if (!checkMinimumSaveRequirementsFulfilled(values)) {
-			return showAlert({
-				dispatch,
-				message: formatMessage(
-					{ defaultMessage: 'You need a {fileName} and {internalName} at a minimum to save content.' },
-					{
-						fileName: contentType.fields[XmlKeys.fileName].name,
-						internalName: contentType.fields[XmlKeys.internalName].name
-					}
-				)
-			});
-		}
-		const xml = buildContentXml(values, store.getState().contentTypes.byId);
+		const { [XmlKeys.fileName]: _, ...valuesWithoutFileName } = values;
+		const xml = buildContentXml(valuesWithoutFileName, store.getState().contentTypes.byId);
 		// Embedded handled here. If true, execution ends inside if statement.
 		if (isEmbedded) {
+			// Validate minimum embedded requirements to save as draft. Execution stops if minimum reqs aren't fulfilled.
+			if (!isInternalNameValid(values)) {
+				return showAlert({
+					dispatch,
+					message: formatMessage(
+						{ defaultMessage: 'You need an {internalName} at a minimum to save content.' },
+						{ internalName: contentType.fields[XmlKeys.internalName].name }
+					)
+				});
+			}
+
 			const dom = fromString(xml);
 			(onSave?.({ dom, xml, values, versionComment }) as Promise<FormSavePromiseResult>)?.then(onSavePromiseHandler);
 			return;
 		}
 		setIsSubmitting(true);
 		let path: string;
+		const isRename = !isCreateMode && fileName !== initialFileName;
 		if (isCreateMode) {
-			path = ensureSingleSlash(`${createPath}/${values[XmlKeys.folderName]}/${values[XmlKeys.fileName]}`);
+			path = composePathForType(createPath, fileName, contentType);
 		} /* is a plain update (page or component) */ else {
-			path = itemPath;
+			if (isRename) {
+				const basePath = getBasePath(itemPath, isPage);
+				path = composePathForType(basePath, fileName, contentType);
+			} else {
+				path = itemPath;
+			}
 		}
-		// TODO: Temporary playground save path. Remove.
-		// path = '/site/website/fe2-save-result.xml';
-		// TODO: validateActionPolicy. See FE1 saveFn.
-		// TODO: write-content url on FE1 sends phase, path, fileName, contentType QSAs. Important?
-		// TODO: Cancel packages when needed.
-		writeContent(siteId, path, xml).subscribe({
+
+		const saveActionCallbacks = {
 			next() {
 				const dom = fromString(xml);
-				(onSave?.({ dom, xml, values, versionComment }) as Promise<FormSavePromiseResult>)?.then(onSavePromiseHandler);
+				// TODO: when renaming, if form it not set to be closed, then the form will have the old path and values,
+				//  causing it to break. Should we trigger a re-fetch of state/etc?
+				(onSave?.({ dom, xml, values, versionComment, path }) as Promise<FormSavePromiseResult>)?.then(
+					onSavePromiseHandler
+				);
 			},
 			error(error: AjaxError) {
 				setIsSubmitting(false);
@@ -151,7 +156,35 @@ export function useSaveForm(props: UseSaveFormProps) {
 					)
 				});
 			}
-		});
+		};
+
+		// Validate minimum requirements to save as draft. Execution stops if minimum reqs aren't fulfilled.
+		const minimumRequirementsFullfilled = await checkMinimumSaveRequirementsFulfilled(
+			jotai.get(stableFormContext.atoms.validationByFieldId[XmlKeys['fileName']]),
+			values
+		);
+		if (!minimumRequirementsFullfilled) {
+			setIsSubmitting(false);
+			return showAlert({
+				dispatch,
+				message: formatMessage(
+					{ defaultMessage: 'You need a valid {fileName} and {internalName} at a minimum to save content.' },
+					{
+						fileName: contentType.fields[XmlKeys.fileName].name,
+						internalName: contentType.fields[XmlKeys.internalName].name
+					}
+				)
+			});
+		}
+
+		// TODO: validateActionPolicy. See FE1 saveFn.
+		// TODO: write-content url on FE1 sends phase, path, fileName, contentType QSAs. Important?
+		// TODO: Cancel packages when needed.
+		if (isRename) {
+			moveAndUpdateContent(siteId, itemPath, path, xml).subscribe(saveActionCallbacks);
+		} else {
+			writeContent(siteId, path, xml).subscribe(saveActionCallbacks);
+		}
 	};
 }
 
@@ -165,8 +198,6 @@ function complementValuesWithSystemProps(
 	const systemProps = createObjectWithSystemProps(contentType, {
 		[XmlKeys.modelId]: id,
 		[XmlKeys.internalName]: values[XmlKeys.internalName] as string,
-		[XmlKeys.fileName]: (values[XmlKeys.fileName] ?? contentObject[XmlKeys.fileName]) as string,
-		[XmlKeys.folderName]: (values[XmlKeys.folderName] ?? contentObject[XmlKeys.folderName]) as string,
 		[XmlKeys.dateCreated]: contentObject[XmlKeys.dateCreated] as string,
 		[XmlKeys.dateCreatedDt]: contentObject[XmlKeys.dateCreatedDt] as string,
 		[XmlKeys.savedAsDraft]: saveAsDraft
