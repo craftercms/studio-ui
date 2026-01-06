@@ -32,11 +32,11 @@ export function FieldStateIndicator({ isRequired, hasValidator, isValid, isEmpty
 	let IndicatorComponent: SvgIconComponent | null = null;
 	let MessageComponent: ReactNode = null;
 
-	// If there is no requirement and no validator and the field is empty, do not show any indicator
+	// If there is no requirement and no validator, and the field is empty, do not show any indicator
 	if (!isRequired && !hasValidator && isEmpty) return undefined;
 
+	// If required, or if not required but has a validator and is invalid, show asterisk (color depends on isValid)
 	if (isRequired || (!isRequired && hasValidator && !isValid)) {
-		// If required, or if not required but has a validator and is invalid, show asterisk (color depends on isValid)
 		IndicatorComponent = Asterisk;
 		if (isValid) {
 			MessageComponent = CompleteMessage;

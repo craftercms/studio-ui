@@ -84,6 +84,7 @@ export function useSaveForm(props: UseSaveFormProps) {
 
 		const onSavePromiseHandler = ({ close }: FormSavePromiseResult) => {
 			if (saveAsDraft) {
+				// Show a snack indicating that the item was saved as draft.
 				dispatch(
 					showSystemNotification({
 						options: { variant: 'warning' },
