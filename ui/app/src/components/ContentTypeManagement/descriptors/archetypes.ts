@@ -149,7 +149,6 @@ export function initializeTypeForCreate(
 			return createEmptyTypeStructure({
 				mergeStrategy: 'inherit-levels',
 				...descriptor,
-				// type: archetypeMap?.[archetype]?.id,
 				...mixin,
 				fields: {
 					...(descriptor?.fields ?? {}),
