@@ -211,7 +211,7 @@ function validate({
 	setIdExists: (exists: boolean) => void;
 }): boolean {
 	if (!id || !name || !type) return false;
-	const idExists = Boolean(contentTypes[`/${type}/${id}`]);
+	const idExists = Boolean(contentTypes[`${getPrefixForType(type)}${id}`]);
 	const nameExists = Object.values(contentTypes).some((contentType) => contentType.name === name);
 	setIdExists(idExists);
 	setNameExists(nameExists);
