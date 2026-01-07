@@ -43,7 +43,9 @@ export const videoPickerDescriptor: DescriptorContentType = {
 			validations: immutableEmptyObject
 		}
 	},
-	supportedPostFixes: ['_o']
+	metadata: {
+		suffixes: ['_o']
+	}
 };
 
 export default videoPickerDescriptor;
