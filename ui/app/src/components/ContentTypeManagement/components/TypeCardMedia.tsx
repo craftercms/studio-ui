@@ -21,7 +21,6 @@ import { fetchPreviewImage } from '../../../services/contentTypes';
 import CardMedia, { CardMediaProps } from '@mui/material/CardMedia';
 import { consolidateSx } from '../../../utils/system';
 import Skeleton from '@mui/material/Skeleton';
-import { toColor } from '../../../utils/string';
 
 export interface ContentTypeCardMediaProps extends CardMediaProps {
 	typeId: string;
