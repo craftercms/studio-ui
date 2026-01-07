@@ -34,6 +34,7 @@ import useActiveUser from '../../../hooks/useActiveUser';
 import { nnou } from '../../../utils/object';
 import type { LookupTable } from '../../../models';
 import Typography from '@mui/material/Typography';
+import useArcheTypes from '../../../hooks/ useArcheTypes';
 
 export interface SelectContentTypeProps {
 	sx?: BoxProps['sx'];
@@ -61,11 +62,7 @@ export function SelectTypeView(props: SelectContentTypeProps) {
 	});
 	const storedViewGrouped = getViewGroupedTypes(username);
 	const [groupTypes, setGroupTypes] = useState<boolean>(nnou(storedViewGrouped) ? storedViewGrouped : true);
-	// TODO: List archetypes from config
-	const archeTypes = {
-		page: { label: 'Page', value: 'page' },
-		component: { label: 'Component', value: 'component' }
-	};
+	const archeTypes = useArcheTypes();
 
 	const effectRefs = useUpdateRefs({ keywords, filterTypes: filterTypesByKeywordsAndObjectType });
 	useEffect(() => {
@@ -104,11 +101,13 @@ export function SelectTypeView(props: SelectContentTypeProps) {
 	 */
 	const getGroupedTypes = (): LookupTable<ContentType[]> => {
 		const grouped: LookupTable<ContentType[]> = {};
-		if (filteredTypes) {
+		if (filteredTypes && archeTypes) {
 			Object.values(archeTypes).forEach((archetype) => {
-				const typesForArchetype = filteredTypes.filter((contentType) => contentType.type === archetype.value);
+				const typesForArchetype = filteredTypes.filter((contentType) => {
+					return contentType.type === archetype.id;
+				});
 				if (typesForArchetype.length > 0) {
-					grouped[archetype.value] = sortContentTypes(typesForArchetype, sortOrder);
+					grouped[archetype.id] = sortContentTypes(typesForArchetype, sortOrder);
 				}
 			});
 		}
@@ -135,6 +134,7 @@ export function SelectTypeView(props: SelectContentTypeProps) {
 					<Box key={archetype} sx={{ mb: 4 }}>
 						<Typography variant="h6" sx={{ mb: 1 }}>
 							{archeTypes[archetype].label}
+							{archeTypes[archetype].name}
 						</Typography>
 						<TypeList {...slotProps.listing} showTypeId compact={compact} contentTypes={types} />
 					</Box>

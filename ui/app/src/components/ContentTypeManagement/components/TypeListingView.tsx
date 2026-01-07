@@ -28,6 +28,7 @@ import { PossibleContentTypeDraft } from '../../../models';
 import { initializeTypeForCreate } from '../descriptors/archetypes';
 import useEnhancedDialogState from '../../../hooks/useEnhancedDialogState';
 import useWithPendingChangesCloseRequest from '../../../hooks/useWithPendingChangesCloseRequest';
+import useArcheTypes from '../../../hooks/ useArcheTypes';
 
 interface TypeListingViewProps {
 	sx?: BoxProps['sx'];
@@ -40,14 +41,10 @@ interface TypeListingViewProps {
 export const TypeListingView = forwardRef<HTMLDivElement, TypeListingViewProps>(function (props, ref) {
 	const { renderAppBar = true, showOpenLauncherButton = true, onTypeSelected, sx, style } = props;
 	const openCreateDialogState = useEnhancedDialogState();
+	const archeTypesMap = useArcheTypes();
 	const createDialogPendingChangesCloseRequest = useWithPendingChangesCloseRequest(openCreateDialogState.onClose);
 	const handleCreateTypeDialogAccept: CreateTypeDialogProps['onAccept'] = (typeData) => {
-		const type = initializeTypeForCreate(
-			typeData,
-			typeData.type,
-			// TODO: Add config based archetypes...
-			undefined
-		);
+		const type = initializeTypeForCreate(typeData, typeData.type, archeTypesMap);
 		onTypeSelected?.(null, { ...type, NEW: true });
 	};
 	const contentTypesList = useContentTypeList();

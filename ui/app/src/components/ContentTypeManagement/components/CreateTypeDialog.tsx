@@ -38,6 +38,7 @@ import { createLookupTable } from '../../../utils/object';
 import { useDispatch } from 'react-redux';
 import { fetchContentTypesComplete } from '../../../state/actions/preview';
 import { pushErrorDialog } from '../../../utils/system';
+import useArcheTypesList from '../../../hooks/useArcheTypesList';
 
 export interface CreateTypeDialogBaseProps {
 	onAccept(typeData: Pick<ContentType, 'id' | 'name' | 'type'>): void;
@@ -72,7 +73,7 @@ function CreateTypeDialogBody(props: CreateTypeDialogBaseProps) {
 	const [name, setName] = useState<string>('');
 	const [id, setId] = useState<string>('');
 	const prefix = useRef<string>(undefined);
-	prefix.current = prefixes[type];
+	prefix.current = getPrefixForType(type);
 	const { onClose, updateSubmittingOrHasPendingChanges } = useEnhancedDialogContext();
 	const contentTypes = useContentTypes();
 	const [nameExists, setNameExists] = useState<boolean>(false);
@@ -84,6 +85,7 @@ function CreateTypeDialogBody(props: CreateTypeDialogBaseProps) {
 	const [fetchingContentTypes, setFetchingContentTypes] = useState(false);
 	const dispatch = useDispatch();
 	const [idManuallyChanged, setIdManuallyChanged] = useState(false);
+	const archeTypes = useArcheTypesList();
 
 	const validateAndSubmit = () => {
 		setFetchingContentTypes(true);
@@ -103,7 +105,7 @@ function CreateTypeDialogBody(props: CreateTypeDialogBaseProps) {
 					setIdExists
 				});
 				if (!valid) return;
-				onAccept?.({ type, name, id: `${prefixes[type] ?? ''}${id}` });
+				onAccept?.({ type, name, id: `${getPrefixForType(type) ?? ''}${id}` });
 			},
 			error: ({ response }) => {
 				dispatch(pushErrorDialog({ props: { error: response.response } }));
@@ -148,13 +150,11 @@ function CreateTypeDialogBody(props: CreateTypeDialogBaseProps) {
 						onChange={handleChange}
 						autoFocus
 					>
-						<MenuItem value="page">
-							<FormattedMessage defaultMessage="Page" />
-						</MenuItem>
-						<MenuItem value="component">
-							<FormattedMessage defaultMessage="Component" />
-						</MenuItem>
-						{/* Post v5 TODO: List archetypes from config */}
+						{archeTypes?.map((archetype) => (
+							<MenuItem key={archetype.id} value={archetype.id}>
+								{archetype.name}
+							</MenuItem>
+						))}
 					</Select>
 				</FormControl>
 				<TextField
@@ -227,6 +227,10 @@ function suggestTypeId(label: string): string {
 	let camelized = camelize(label.replace(/\s/g, '-'));
 	camelized = camelized.charAt(0).toLowerCase() + camelized.substring(1);
 	return transformId(camelized);
+}
+
+function getPrefixForType(type: string): string {
+	return prefixes[type] ?? `/${type}/`;
 }
 
 export default CreateTypeDialog;

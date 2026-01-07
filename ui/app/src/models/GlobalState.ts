@@ -74,6 +74,7 @@ import { PackageDetailsDialogStateProps } from '../components';
 import { ViewPackagesDialogStateProps } from '../components/ViewPackagesDialog';
 import type { FolderMoveAlertDialogStateProps } from '../components/FolderMoveAlertDialog/FolderMoveAlertDialog';
 import type { PublishingStatus } from './Publishing';
+import type { ArcheType } from '../components/ContentTypeManagement/descriptors/archetypes';
 
 export type HighlightMode = 'all' | 'move';
 
@@ -272,6 +273,7 @@ export interface GlobalState {
 			submissionCommentMaxLength: number;
 		};
 		cdataEscapedFieldPatterns: string[];
+		archeTypes: LookupTable<ArcheType>;
 		references: LookupTable;
 		xml: string;
 		remoteGitBranch: string;

@@ -21,6 +21,12 @@ import { createEmptyTypeStructure, getPropertiesAndValidationsFromDescriptor } f
 import LookupTable from '../../../models/LookupTable';
 import controlDescriptors from './controls';
 
+export type ArcheType = {
+	id: string;
+	name: string;
+	descriptor: ContentType;
+};
+
 type OutOfTheBoxArchetype = 'page' | 'component';
 
 // TODO: In the future, we may allow extending OOTB archetypes and defining custom ones through config.
@@ -30,7 +36,7 @@ type OutOfTheBoxArchetype = 'page' | 'component';
 export function initializeTypeForCreate(
 	mixin: Partial<ContentType>,
 	archetype: OutOfTheBoxArchetype | string,
-	archetypeMap?: LookupTable<ContentType>
+	archetypeMap?: LookupTable<ArcheType>
 ): ContentType {
 	const fileNameDescriptor = controlDescriptors['auto-filename'];
 	const fileNameProps = getPropertiesAndValidationsFromDescriptor(fileNameDescriptor);
@@ -138,15 +144,19 @@ export function initializeTypeForCreate(
 				]
 			});
 		}
-		default:
+		default: {
+			const descriptor = archetypeMap?.[archetype]?.descriptor ?? { fields: null, sections: null };
 			return createEmptyTypeStructure({
 				mergeStrategy: 'inherit-levels',
-				...archetypeMap?.[archetype],
+				...descriptor,
+				// type: archetypeMap?.[archetype]?.id,
+				...mixin,
 				fields: {
-					...archetypeMap?.[archetype]?.fields,
+					...(descriptor?.fields ?? {}),
 					...mixin?.fields
 				},
-				sections: [...(archetypeMap?.[archetype]?.sections ?? []), ...(mixin?.sections ?? [])]
+				sections: [...(descriptor?.sections ?? []), ...(mixin?.sections ?? [])]
 			});
+		}
 	}
 }

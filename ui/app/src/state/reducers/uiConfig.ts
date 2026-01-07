@@ -25,8 +25,10 @@ import {
 import { changeSiteComplete } from '../actions/sites';
 import { fetchSiteLocales, fetchSiteLocalesComplete, fetchSiteLocalesFailed } from '../actions/translation';
 import { deserialize, fromString, serialize } from '../../utils/xml';
-import { applyDeserializedXMLTransforms } from '../../utils/object';
+import { applyDeserializedXMLTransforms, extendArchetypeDescriptor } from '../../utils/object';
 import { getUserLocaleCode, getUserTimeZone } from '../../utils/datetime';
+import type { ContentType } from '../../models';
+import { asArray } from '../../utils/array';
 
 const initialState: GlobalState['uiConfig'] = {
 	error: null,
@@ -55,6 +57,7 @@ const initialState: GlobalState['uiConfig'] = {
 		}
 	},
 	references: null,
+	archeTypes: null,
 	xml: null,
 	publishing: {
 		deleteCommentRequired: false,
@@ -80,6 +83,7 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, (builder) =
 		.addCase(fetchSiteUiConfigComplete, (state, { payload }) => {
 			let config = payload.config;
 			const references = {};
+			const archeTypes = {};
 			if (config) {
 				const configDOM = fromString(config);
 				const site = payload.site;
@@ -104,6 +108,39 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, (builder) =
 
 				configDOM.querySelectorAll('widget').forEach((e, index) => e.setAttribute('uiKey', String(index)));
 
+				configDOM
+					.querySelectorAll('[id="craftercms.components.ContentTypeManagement"] > configuration > objectTypes')
+					.forEach((tag) => {
+						const descriptor = tag.querySelector('descriptor');
+						const extendsFrom = tag.getAttribute('extends');
+						let parentArchetype = null;
+						if (extendsFrom) {
+							parentArchetype = archeTypes[extendsFrom] ?? {};
+						}
+						archeTypes[tag.id] = {
+							...parentArchetype,
+							id: tag.id
+						};
+						if (descriptor) {
+							let deserializedDescriptor: ContentType = deserialize(descriptor.innerHTML);
+							deserializedDescriptor = {
+								...deserializedDescriptor,
+								id: tag.id,
+								sections: asArray(deserializedDescriptor.sections).map((section) => ({
+									...section,
+									fields: asArray(section.fields)
+								})),
+								dataSources: asArray(deserializedDescriptor.dataSources)
+							};
+
+							archeTypes[tag.id] = {
+								...archeTypes[tag.id],
+								name: deserializedDescriptor.name,
+								descriptor: extendArchetypeDescriptor(parentArchetype?.descriptor, deserializedDescriptor)
+							};
+						}
+					});
+
 				config = serialize(configDOM);
 			}
 
@@ -111,7 +148,8 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, (builder) =
 				...state,
 				isFetching: false,
 				xml: config,
-				references: references
+				references,
+				archeTypes
 			};
 		})
 		.addCase(fetchSiteUiConfigFailed, (state, { payload }) => ({
