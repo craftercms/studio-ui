@@ -38,124 +38,15 @@ export function initializeTypeForCreate(
 	archetype: OutOfTheBoxArchetype | string,
 	archetypeMap?: LookupTable<ArcheType>
 ): ContentType {
-	const fileNameDescriptor = controlDescriptors['auto-filename'];
-	const fileNameProps = getPropertiesAndValidationsFromDescriptor(fileNameDescriptor);
-	const inputDescriptor = controlDescriptors['input'];
-	const inputProps = getPropertiesAndValidationsFromDescriptor(inputDescriptor);
-	switch (archetype) {
-		case 'component':
-			return createEmptyTypeStructure({
-				mergeStrategy: 'inherit-levels',
-				type: 'component',
-				...mixin,
-				fields: {
-					// - Component ID (file-name) - auto-filename
-					// - Internal Name (internal-name) - input
-					[XmlKeys.fileName]: {
-						id: XmlKeys.fileName,
-						type: 'auto-filename',
-						name: 'Component ID',
-						description: '',
-						helpText: '',
-						defaultValue: '',
-						...fileNameProps
-					},
-					[XmlKeys.internalName]: {
-						id: XmlKeys.internalName,
-						type: 'input',
-						name: 'Internal Name',
-						description: '',
-						helpText: '',
-						defaultValue: '',
-						...inputProps
-					},
-					...mixin?.fields
-				},
-				sections: [
-					{
-						id: 'defaultSection',
-						color: 'rgba(255,0,0,.7)',
-						title: 'System Properties',
-						fields: [XmlKeys.fileName, XmlKeys.internalName],
-						description: '',
-						expandByDefault: true
-					},
-					...(mixin?.sections ?? [])
-				]
-			});
-		case 'page': {
-			const pageNavOrderDescriptor = controlDescriptors['page-nav-order'];
-			const pageNavOrderProps = getPropertiesAndValidationsFromDescriptor(pageNavOrderDescriptor);
-			return createEmptyTypeStructure({
-				mergeStrategy: 'inherit-levels',
-				type: 'page',
-				...mixin,
-				fields: {
-					[XmlKeys.fileName]: {
-						id: XmlKeys.fileName,
-						type: 'auto-filename',
-						name: 'Component ID',
-						description: '',
-						helpText: '',
-						defaultValue: '',
-						...fileNameProps
-					},
-					[XmlKeys.internalName]: {
-						id: XmlKeys.internalName,
-						type: 'input',
-						name: 'Internal Name',
-						description: '',
-						helpText: '',
-						defaultValue: '',
-						...inputProps
-					},
-					[XmlKeys.placeInNav]: {
-						id: XmlKeys.placeInNav,
-						type: 'page-nav-order',
-						name: 'Place in Nav',
-						description: '',
-						helpText: '',
-						defaultValue: '',
-						validations: immutableEmptyObject,
-						...pageNavOrderProps
-					},
-					navLabel: {
-						id: 'navLabel',
-						type: 'input',
-						name: 'Nav Label',
-						description: '',
-						helpText: '',
-						defaultValue: '',
-						validations: immutableEmptyObject,
-						...inputProps
-					},
-					...mixin?.fields
-				},
-				sections: [
-					{
-						id: 'defaultSection',
-						color: 'rgba(255,0,0,.7)',
-						title: 'System Properties',
-						fields: [XmlKeys.fileName, XmlKeys.internalName, XmlKeys.placeInNav, 'navLabel'],
-						description: '',
-						expandByDefault: true
-					},
-					...(mixin?.sections ?? [])
-				]
-			});
-		}
-		default: {
-			const descriptor = archetypeMap?.[archetype]?.descriptor ?? { fields: null, sections: null };
-			return createEmptyTypeStructure({
-				mergeStrategy: 'inherit-levels',
-				...descriptor,
-				...mixin,
-				fields: {
-					...(descriptor?.fields ?? {}),
-					...mixin?.fields
-				},
-				sections: [...(descriptor?.sections ?? []), ...(mixin?.sections ?? [])]
-			});
-		}
-	}
+	const descriptor = archetypeMap?.[archetype]?.descriptor ?? { fields: null, sections: null };
+	return createEmptyTypeStructure({
+		mergeStrategy: 'inherit-levels',
+		...descriptor,
+		...mixin,
+		fields: {
+			...(descriptor?.fields ?? {}),
+			...mixin?.fields
+		},
+		sections: [...(descriptor?.sections ?? []), ...(mixin?.sections ?? [])]
+	});
 }
