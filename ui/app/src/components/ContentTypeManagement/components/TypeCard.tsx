@@ -87,7 +87,10 @@ export function TypeCard(props: TypeCardProps) {
 			{...cardProps}
 			sx={consolidateSx(
 				baseCardSx,
-				{ borderLeft: (theme) => `${theme.spacing(1)} solid`, borderLeftColor: toColor(type.id) },
+				{
+					borderLeft: (theme) => `${theme.spacing(1)} solid`,
+					borderLeftColor: type ? toColor(type.id) : null
+				},
 				!hasActionArea && styleOverrides?.actionArea,
 				sx
 			)}
