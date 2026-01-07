@@ -26,7 +26,7 @@ import ContentType from '../../../models/ContentType';
 import { consolidateSx } from '../../../utils/system';
 import { getTypeViewCompactMode, setTypeViewCompactMode } from '../../../utils/state';
 import useActiveUser from '../../../hooks/useActiveUser';
-import { nnou } from '../../../utils/object';
+import { nnou, nou } from '../../../utils/object';
 
 export interface SelectContentTypeProps {
 	sx?: BoxProps['sx'];
@@ -80,7 +80,12 @@ export function SelectTypeView(props: SelectContentTypeProps) {
 				objectTypeFilter={objectTypeFilter}
 				onObjectTypeFilterChange={setObjectTypeFilter}
 			/>
-			<TypeList {...slotProps.listing} showTypeId compact={compact} contentTypes={filteredTypes} />
+			<TypeList
+				{...slotProps.listing}
+				showTypeId
+				compact={compact}
+				contentTypes={nou(contentTypesList) ? contentTypesList : filteredTypes}
+			/>
 		</Box>
 	);
 }
