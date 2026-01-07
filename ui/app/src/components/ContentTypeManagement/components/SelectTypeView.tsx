@@ -96,8 +96,13 @@ export function SelectTypeView(props: SelectContentTypeProps) {
 		}
 	};
 
-	const getGroupedTypes = () => {
-		// Group types by archetype, keeping the sorting for each group
+	/**
+	 * Groups content types by their archetype while maintaining the sorting order for each group.
+	 *
+	 * @returns {LookupTable<ContentType[]>} An object where the keys are archetype values and the values
+	 * are arrays of `ContentType` objects sorted by the current sort order.
+	 */
+	const getGroupedTypes = (): LookupTable<ContentType> => {
 		const grouped: LookupTable<ContentType[]> = {};
 		if (filteredTypes) {
 			Object.values(archeTypes).forEach((archetype) => {
