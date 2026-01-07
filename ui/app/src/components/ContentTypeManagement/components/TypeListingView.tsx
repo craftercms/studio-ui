@@ -28,7 +28,7 @@ import { PossibleContentTypeDraft } from '../../../models';
 import { initializeTypeForCreate } from '../descriptors/archetypes';
 import useEnhancedDialogState from '../../../hooks/useEnhancedDialogState';
 import useWithPendingChangesCloseRequest from '../../../hooks/useWithPendingChangesCloseRequest';
-import useArcheTypes from '../../../hooks/ useArcheTypes';
+import useArcheTypes from '../../../hooks/useArcheTypes';
 
 interface TypeListingViewProps {
 	sx?: BoxProps['sx'];

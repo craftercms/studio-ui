@@ -34,7 +34,7 @@ import useActiveUser from '../../../hooks/useActiveUser';
 import { nnou } from '../../../utils/object';
 import type { LookupTable } from '../../../models';
 import Typography from '@mui/material/Typography';
-import useArcheTypes from '../../../hooks/ useArcheTypes';
+import useArcheTypes from '../../../hooks/useArcheTypes';
 
 export interface SelectContentTypeProps {
 	sx?: BoxProps['sx'];

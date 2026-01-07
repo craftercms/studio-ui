@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import useArcheTypes from './ useArcheTypes';
+import useArcheTypes from './useArcheTypes';
 
 export function useArcheTypesList() {
 	const archeTypes = useArcheTypes();
