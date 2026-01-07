@@ -55,9 +55,7 @@ export function TypeCardMedia(props: ContentTypeCardMediaProps) {
 					height: '200px',
 					display: 'block',
 					bgcolor: theme.palette.mode === 'light' ? 'grey.100' : 'grey.900',
-					objectFit: 'cover',
-					borderLeft: (theme) => `${theme.spacing(1)} solid`,
-					borderLeftColor: toColor(typeId)
+					objectFit: 'cover'
 				},
 				skeleton ? { transform: 'none' } : { '&:not([src])': { opacity: 0 } },
 				sx
