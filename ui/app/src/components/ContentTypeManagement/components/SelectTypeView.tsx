@@ -102,7 +102,7 @@ export function SelectTypeView(props: SelectContentTypeProps) {
 	 * @returns {LookupTable<ContentType[]>} An object where the keys are archetype values and the values
 	 * are arrays of `ContentType` objects sorted by the current sort order.
 	 */
-	const getGroupedTypes = (): LookupTable<ContentType> => {
+	const getGroupedTypes = (): LookupTable<ContentType[]> => {
 		const grouped: LookupTable<ContentType[]> = {};
 		if (filteredTypes) {
 			Object.values(archeTypes).forEach((archetype) => {
@@ -146,7 +146,15 @@ export function SelectTypeView(props: SelectContentTypeProps) {
 	);
 }
 
-const sortContentTypes = (types: ContentType[], order: 'ascending' | 'descending') => {
+/**
+ * Sorts an array of content types alphabetically by their name property, either in ascending or descending order.
+ *
+ * @param {ContentType[]} types - The array of content types to be sorted.
+ * @param {'ascending' | 'descending'} order - The order in which to sort the content types.
+ *        Use 'ascending' for A-Z sorting and 'descending' for Z-A sorting.
+ * @returns {ContentType[]} A new array of content types sorted by name in the specified order.
+ */
+const sortContentTypes = (types: ContentType[], order: 'ascending' | 'descending'): ContentType[] => {
 	return [...types].sort((a, b) => {
 		const aValue = a.name.toLowerCase();
 		const bValue = b.name.toLowerCase();
