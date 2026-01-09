@@ -55,6 +55,8 @@
   * Added dialogs: `CancelPackageDialog`, `BulkCancelPackageDialog`, `PublishPackageReviewDialog`, `PublishingPackageResubmitDialog`, `ViewPackagesDialog`.
   * [RenameAssetDialog] Removed `path` and `value` properties. Replaced with `item` property.
   * [ItemDisplay] Updated `item` prop to be of type `LightItem | ContentItem`.
+  * `PathNavigator/PathNavigatorTree`: Updated `label` prop to be of type `TranslationOrText`.
+  * `PathNavigatorTreeUI/PathNavigatorUI/PathNavigatorTreeHeader`: Updated `title` prop to be of type `string | ReactNode`.
 * [hooks]
   * Removed `useLogicResource` hook.
   * Removed `useSelectorResource` hook.

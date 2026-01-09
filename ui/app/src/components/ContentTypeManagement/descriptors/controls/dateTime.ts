@@ -126,7 +126,9 @@ export const dateTimeDescriptor: DescriptorContentType = {
 			validations: immutableEmptyObject
 		}
 	},
-	supportedPostFixes: ['_dt']
+	metadata: {
+		suffixes: ['_dt']
+	}
 };
 
 export default dateTimeDescriptor;

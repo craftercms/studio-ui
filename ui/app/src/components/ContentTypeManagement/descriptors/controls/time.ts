@@ -102,7 +102,9 @@ export const timeDescriptor: DescriptorContentType = {
 			validations: immutableEmptyObject
 		}
 	},
-	supportedPostFixes: ['_to']
+	metadata: {
+		suffixes: ['_to']
+	}
 };
 
 export default timeDescriptor;
