@@ -20,7 +20,6 @@ import LookupTable from '../../../models/LookupTable';
 import { XmlKeys } from './formConsts';
 import { defineMessage, type MessageDescriptor } from 'react-intl';
 import type { FormatXMLElementFn, PrimitiveType } from 'intl-messageformat';
-import { nnou, nou } from '../../../utils/object';
 import { checkPathExistence } from '../../../services/content';
 import { getBasePath, computePathFromFileName, isPagePath } from './formUtils';
 import { firstValueFrom } from 'rxjs';
@@ -209,6 +208,15 @@ export function isInternalNameValid(values: LookupTable<unknown>): boolean {
 	return (values[XmlKeys.internalName]?.toString() ?? '').trim() !== '';
 }
 
+/**
+ * Validates the input value of a field based on its pattern and maximum length.
+ *
+ * @param {ContentTypeField} field - The metadata of the field being validated, including its validation rules.
+ * @param {string} currentValue - The current value of the field to validate.
+ * @param {FieldValidityMessage[]} [messages] - An optional array to store validation messages if the value is invalid.
+ * @returns {boolean} - Returns `true` if the input value is valid; otherwise, `false`.
+ *
+ */
 export function inputValidator(
 	field: ContentTypeField,
 	currentValue: string,
@@ -237,6 +245,15 @@ export function inputValidator(
 	return isValid;
 }
 
+/**
+ * Validates a numeric input value based on its pattern, maximum value, and minimum value.
+ *
+ * @param {ContentTypeField} field - The metadata of the field being validated, including its validation rules.
+ * @param {number} currentValue - The current numeric value of the field to validate.
+ * @param {FieldValidityMessage[]} messages - An array to store validation messages if the value is invalid.
+ * @returns {boolean} - Returns `true` if the numeric value is valid; otherwise, `false`.
+ *
+ */
 export function numericInputValidator(
 	field: ContentTypeField,
 	currentValue: number,
