@@ -120,6 +120,7 @@ export interface NodeSelectorItem {
 	include?: string;
 	disableFlattening?: boolean;
 	component?: Record<string, Primitive>;
+	// @see https://craftercms.com/docs/current/by-role/developer/common/content-modeling/content-modeling.html#form-control-variable-names
 	// _smv: When using single multi-value mode (neither useSingleValueFilename nor useMVS is true).
 	fileSize_smv?: number;
 	fileType_smv?: string;
