@@ -196,6 +196,11 @@ function NodeSelector(props: NodeSelectorProps) {
 		event.stopPropagation();
 		const item: ContentItem = itemsByPath[value[index].key];
 
+		if (!item) {
+			console.error('Item not found:', value[index].key);
+			return;
+		}
+
 		if (isEditableViaFormEditor(item)) {
 			// If the item is editable via form editor (page, component or taxonomy), open the form editor in read-only mode
 			dispatch(pickShowContentFormAction({ path: item.path, authoringBase, site: siteId, readonly: true }));
