@@ -18,10 +18,11 @@ import OutlinedInput, { OutlinedInputProps } from '@mui/material/OutlinedInput';
 import React, { useId } from 'react';
 import FormsEngineField from '../../FormsEngine/components/FormsEngineField';
 import Tooltip from '@mui/material/Tooltip';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import Box from '@mui/material/Box';
 import { TypeBuilderControl } from '../utils';
+import IconButton from '@mui/material/IconButton';
 
 export interface TextProps extends TypeBuilderControl {
 	value: string;
@@ -40,6 +41,7 @@ export function DateTimeExpressionInput(props: TextProps) {
 	const htmlId = useId();
 	const maxLength = field.validations?.maxLength?.value;
 	const type: 'dateTime' | 'time' = field.validations?.type?.value ?? 'dateTime';
+	const { formatMessage } = useIntl();
 
 	const handleChange: OutlinedInputProps['onChange'] = (e) => setValue(e.currentTarget.value);
 	return (
@@ -66,7 +68,13 @@ export function DateTimeExpressionInput(props: TextProps) {
 							</Box>
 						}
 					>
-						<InfoOutlinedIcon sx={{ cursor: 'pointer' }} />
+						<IconButton
+							size="small"
+							edge="end"
+							aria-label={formatMessage({ defaultMessage: 'Date/time expression help' })}
+						>
+							<InfoOutlinedIcon sx={{ cursor: 'pointer' }} />
+						</IconButton>
 					</Tooltip>
 				}
 			/>
