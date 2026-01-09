@@ -388,7 +388,7 @@ function NodeSelector(props: NodeSelectorProps) {
 									key: value,
 									value: item.meta.name,
 									include: value,
-									disableFlattening: Boolean(field.properties?.disableFlattening?.value),
+									disableFlattening,
 									...(fileType ? getFileMetaData({ fileType, fileSize, useSingleValueFilename, useMVS }) : {})
 								});
 							});
@@ -630,7 +630,7 @@ function NodeSelector(props: NodeSelectorProps) {
 											user.username === itemsByPath[item.include]?.lockOwner?.username));
 								return (
 									<ListItemButton
-										key={index} // Using index as the key because there can be duplicate items (same item included more than once)
+										key={`${item.key}-${index}`} // Including index in the key because there can be duplicate items (same item included more than once)
 										divider={index !== value.length - 1}
 										onClick={(e) => (canBeEdited ? handleEditItem(e, index, false) : handleViewItem(e, index))}
 										onKeyDown={(e) => handleItemKeyDown(e, index)}
