@@ -208,6 +208,15 @@ export function isInternalNameValid(values: LookupTable<unknown>): boolean {
 	return (values[XmlKeys.internalName]?.toString() ?? '').trim() !== '';
 }
 
+/**
+ * Validates a date-time field value based on whether past dates are allowed.
+ *
+ * @param {ContentTypeField} field - The metadata of the field being validated, including its properties.
+ * @param {string} currentValue - The current value of the field, expected to be a date-time string.
+ * @param {FieldValidityMessage[]} messages - An array to store validation messages if the value is invalid.
+ * @returns {boolean} - Returns `true` if the date-time value is valid; otherwise, `false`.
+
+ */
 export function dateTimeValidator(
 	field: ContentTypeField,
 	currentValue: string,
