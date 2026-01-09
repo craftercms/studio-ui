@@ -115,8 +115,7 @@ function prepareValuesForXmlSerialising(
 		if (serializer) {
 			jObj[id] = serializer(field, value, contentTypesLookup);
 		}
-		// Field id in descriptor is 'tokenize' but in XML is 'tokenized'
-		if (field?.properties?.tokenize?.value) {
+		if (field?.properties?.tokenized?.value) {
 			fieldAttributes[createAttrHint('tokenized')] = true;
 		}
 		// TODO: Carry/implement attributes (no-default, remote, others?)
