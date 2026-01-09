@@ -38,7 +38,7 @@ const TIME_EXAMPLE = "'now', 'now+5hours', 'now-30minutes'";
 export function DateTimeExpressionInput(props: TextProps) {
 	const { field, value, setValue, readonly, autoFocus } = props;
 	const htmlId = useId();
-	const maxLength = field.validations.maxLength?.value;
+	const maxLength = field.validations?.maxLength?.value;
 	const type: 'dateTime' | 'time' = field.validations?.type?.value ?? 'dateTime';
 
 	const handleChange: OutlinedInputProps['onChange'] = (e) => setValue(e.currentTarget.value);
