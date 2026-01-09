@@ -37,48 +37,50 @@ export const textareaDescriptor: DescriptorContentType = {
 	fields: {
 		rows: {
 			id: 'rows',
-			type: 'numeric-input',
+			type: 'int',
 			name: defineMessage({ defaultMessage: 'Rows' }),
 			defaultValue: 5,
 			validations: immutableEmptyObject
 		},
 		maxlength: {
 			id: 'maxlength',
-			type: 'numeric-input',
+			type: 'int',
 			name: defineMessage({ defaultMessage: 'Maximum Length' }),
 			defaultValue: 100000,
 			validations: immutableEmptyObject
 		},
 		allowResize: {
 			id: 'allowResize',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Allow Resize' }),
 			defaultValue: true,
 			validations: immutableEmptyObject
 		},
 		readonly: {
 			id: 'readonly',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Read Only' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		escapeContent: {
 			id: 'escapeContent',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Escape Content' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		required: {
 			id: 'required',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Required' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}
 	},
-	supportedPostFixes: ['_t', '_s']
+	metadata: {
+		suffixes: ['_t', '_s']
+	}
 };
 
 export default textareaDescriptor;

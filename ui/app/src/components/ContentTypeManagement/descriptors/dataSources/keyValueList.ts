@@ -73,7 +73,7 @@ export const keyValueListDataSourceDescriptor: DescriptorContentType = {
 		},
 		showkeys: {
 			id: 'showkeys',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Show keys' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject

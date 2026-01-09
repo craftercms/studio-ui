@@ -48,83 +48,85 @@ export const dateTimeDescriptor: DescriptorContentType = {
 	fields: {
 		showDate: {
 			id: 'showDate',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Show Date' }),
 			defaultValue: true,
 			validations: immutableEmptyObject
 		},
 		showTime: {
 			id: 'showTime',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Show Time' }),
 			defaultValue: false,
 			validations: immutableEmptyObject
 		},
 		showClear: {
 			id: 'showClear',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Show Clear' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		showNowLink: {
 			id: 'showNowLink',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Show Now Link' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		populate: {
 			id: 'populate',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Populated' }),
 			defaultValue: true,
 			validations: immutableEmptyObject
 		},
 		allowPastDate: {
 			id: 'allowPastDate',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Allow Past Date' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		populateDateExp: {
 			id: 'populateDateExp',
-			type: 'input',
+			type: 'string',
 			name: defineMessage({ defaultMessage: 'Populate Expression' }),
 			defaultValue: 'now',
 			validations: immutableEmptyObject
 		},
 		useCustomTimezone: {
 			id: 'useCustomTimezone',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Use Custom Timezone' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		readonly: {
 			id: 'readonly',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Read Only' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		readonlyEdit: {
 			id: 'readonlyEdit',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Read Only on Edit' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		required: {
 			id: 'required',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Required' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}
 	},
-	supportedPostFixes: ['_dt']
+	metadata: {
+		suffixes: ['_dt']
+	}
 };
 
 export default dateTimeDescriptor;

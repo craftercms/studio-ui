@@ -120,6 +120,7 @@ import { DeepPartial } from '@craftercms/studio-ui/models/DeepPartial';
 import { emitSystemEvent, emitSystemEvents } from '@craftercms/studio-ui/state/actions/system';
 import { getParentModelId } from '../utils/ice';
 import { SxProps } from '@mui/system';
+import { I18nProvider } from './I18nProvider';
 
 // TODO: add themeOptions and global styles customising
 interface BaseXBProps {
@@ -738,7 +739,9 @@ export function ExperienceBuilder(props: ExperienceBuilderProps): React.JSX.Elem
 	path = path || prop(model, 'path');
 	return isAuthoring && path ? (
 		<Provider store={store} context={GuestReduxContext}>
-			<ExperienceBuilderInternal {...props} path={path} />
+			<I18nProvider>
+				<ExperienceBuilderInternal {...props} path={path} />
+			</I18nProvider>
 		</Provider>
 	) : (
 		(children as React.JSX.Element)

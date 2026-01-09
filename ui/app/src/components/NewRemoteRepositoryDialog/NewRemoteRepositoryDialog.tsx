@@ -21,7 +21,7 @@ import EnhancedDialog from '../EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
 
 export function NewRemoteRepositoryDialog(props: NewRemoteRepositoryDialogProps) {
-	const { onCreateSuccess, isSubmitting, onCreateError, onSubmittingAndOrPendingChange, ...rest } = props;
+	const { onCreateSuccess, isSubmitting, onCreateError, ...rest } = props;
 
 	return (
 		<EnhancedDialog
@@ -33,7 +33,6 @@ export function NewRemoteRepositoryDialog(props: NewRemoteRepositoryDialogProps)
 				isSubmitting={isSubmitting}
 				onCreateSuccess={onCreateSuccess}
 				onCreateError={onCreateError}
-				onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
 			/>
 		</EnhancedDialog>
 	);
