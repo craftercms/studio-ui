@@ -25,7 +25,6 @@ import Checkbox from '@mui/material/Checkbox';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import React, { ReactNode } from 'react';
 import { ContentItem } from '../../models';
-import { fetchRenameAssetDependants } from '../../state/actions/dialogs';
 import useEnv from '../../hooks/useEnv';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { useDispatch } from 'react-redux';
@@ -107,7 +106,7 @@ export function RenameItemView(props: RenameItemViewProps) {
 					autoComplete="off"
 				/>
 			</form>
-			{dependantItems.length > 0 ? (
+			{dependantItems?.length > 0 ? (
 				<>
 					<Typography variant="subtitle2" sx={{ mt: 1, mb: 1 }}>
 						<FormattedMessage id="renameAsset.dependentItems" defaultMessage="Dependent Items" />

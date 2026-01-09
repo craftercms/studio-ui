@@ -37,48 +37,50 @@ export const numericInputDescriptor: DescriptorContentType = {
 	fields: {
 		maxValue: {
 			id: 'maxValue',
-			type: 'numeric-input',
+			type: 'int',
 			name: defineMessage({ defaultMessage: 'Maximum Value' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		minValue: {
 			id: 'minValue',
-			type: 'numeric-input',
+			type: 'int',
 			name: defineMessage({ defaultMessage: 'Minimum Value' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		readonly: {
 			id: 'readonly',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Read Only' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		tokenized: {
 			id: 'tokenized',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Tokenize for Indexing' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		required: {
 			id: 'required',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Required' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		pattern: {
 			id: 'pattern',
-			type: 'input',
+			type: 'string',
 			name: defineMessage({ defaultMessage: 'Match Pattern' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}
 	},
-	supportedPostFixes: ['_i', '_l', '_f', '_d']
+	metadata: {
+		suffixes: ['_i', '_l', '_f', '_d']
+	}
 };
 
 export default numericInputDescriptor;

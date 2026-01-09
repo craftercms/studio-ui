@@ -45,62 +45,64 @@ export const timeDescriptor: DescriptorContentType = {
 	fields: {
 		showClear: {
 			id: 'showClear',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Show Clear' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		showNowLink: {
 			id: 'showNowLink',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Show Now Link' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		populate: {
 			id: 'populate',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Populated' }),
 			defaultValue: true,
 			validations: immutableEmptyObject
 		},
 		populateDateExp: {
 			id: 'populateDateExp',
-			type: 'input',
+			type: 'string',
 			name: defineMessage({ defaultMessage: 'Populate Expression' }),
 			defaultValue: 'now',
 			validations: immutableEmptyObject
 		},
 		useCustomTimezone: {
 			id: 'useCustomTimezone',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Use Custom Timezone' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		readonly: {
 			id: 'readonly',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Read Only' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		readonlyEdit: {
 			id: 'readonlyEdit',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Read Only on Edit' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		required: {
 			id: 'required',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Required' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}
 	},
-	supportedPostFixes: ['_to']
+	metadata: {
+		suffixes: ['_to']
+	}
 };
 
 export default timeDescriptor;

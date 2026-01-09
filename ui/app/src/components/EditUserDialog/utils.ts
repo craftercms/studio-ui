@@ -18,7 +18,6 @@ import User from '../../models/User';
 import { Site } from '../../models/Site';
 import LookupTable from '../../models/LookupTable';
 import { EnhancedDialogProps } from '../EnhancedDialog';
-import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 import React from 'react';
 
 export interface EditUserBaseProps {
@@ -28,15 +27,11 @@ export interface EditUserBaseProps {
 
 export interface EditUserDialogProps extends EditUserBaseProps, EnhancedDialogProps {
 	onUserEdited(): void;
-	onSubmittingAndOrPendingChange(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
 export interface EditUserDialogContainerProps
 	extends EditUserBaseProps,
-		Pick<
-			EditUserDialogProps,
-			'onClose' | 'isSubmitting' | 'onSubmittingAndOrPendingChange' | 'onUserEdited' | 'open'
-		> {}
+		Pick<EditUserDialogProps, 'onClose' | 'isSubmitting' | 'onUserEdited' | 'open'> {}
 
 export interface EditUserDialogUIProps {
 	user: User;
