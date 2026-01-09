@@ -22,19 +22,19 @@ import { fetchDependant as fetchDependantService } from '../../services/dependen
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { parseLegacyItemToContentItem } from '../../utils/content';
 import useWithPendingChangesCloseRequest from '../../hooks/useWithPendingChangesCloseRequest';
-import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 import { ensureSingleSlash, isBlank } from '../../utils/string';
 import { ContentItem } from '../../models';
 
 export interface RenameContentDialogProps extends EnhancedDialogProps {
 	path: string;
 	value?: string;
+	validRenameValue?: string; // Specifies a literal item name value (e.g. 'new-article') that is permitted for renaming content. If the user enters this value, it will be accepted even if it doesn't meet the usual validation criteria.
+	// e.g.: If validRenameValue is 'new-article', the user can enter 'new-article' even if it already exists. This allows renaming back to the original item name.
 	onRenamed(name: string): void;
-	onSubmittingAndOrPendingChange(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
 export function RenameContentDialog(props: RenameContentDialogProps) {
-	const { path, value, onRenamed, onSubmittingAndOrPendingChange, ...dialogProps } = props;
+	const { path, value, validRenameValue, onRenamed, ...dialogProps } = props;
 	const [dependantItems, setDependantItems] = useState<ContentItem[]>(null);
 	const [fetchingDependantItems, setFetchingDependantItems] = useState(false);
 	const [error, setError] = useState(null);
@@ -49,8 +49,12 @@ export function RenameContentDialog(props: RenameContentDialogProps) {
 				setDependantItems(dependants);
 				setFetchingDependantItems(false);
 			},
-			error: ({ response }) => {
-				setError(response);
+			error: (response) => {
+				if (response.status === 404) {
+					setDependantItems([]);
+				} else {
+					setError(response.response);
+				}
 				setFetchingDependantItems(false);
 			}
 		});
@@ -72,10 +76,10 @@ export function RenameContentDialog(props: RenameContentDialogProps) {
 			<RenameContentDialogContainer
 				path={path}
 				value={value}
+				validRenameValue={validRenameValue}
 				fetchDependant={fetchDependant}
 				dependantItems={dependantItems}
 				fetchingDependantItems={fetchingDependantItems}
-				onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
 				onRenamed={onRenamed}
 				error={error}
 			/>

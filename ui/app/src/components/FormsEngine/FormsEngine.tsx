@@ -77,6 +77,7 @@ import { AjaxError } from 'rxjs/ajax';
 import { ViewPackagesDialogProps } from '../ViewPackagesDialog';
 import {
 	buildSectionExpandedStateAtoms,
+	createFileNameAtom,
 	createFormsEngineAtoms,
 	createFormStackData,
 	createObjectWithSystemProps,
@@ -333,7 +334,8 @@ function FormBootstrap(props: FormsEngineProps) {
 			const atoms = createFormsEngineAtoms(effectRefs.current.username, {
 				lockResult: lockResultAtom,
 				readonly: createReadonlyAtom(lockResultAtom),
-				expandedStateBySectionId: buildSectionExpandedStateAtoms(contentType.sections)
+				expandedStateBySectionId: buildSectionExpandedStateAtoms(contentType.sections),
+				fileName: atom('')
 			});
 			const atomValueCreator: Parameters<typeof createParsedValuesObject>[3] = (fieldId, value) => {
 				setFieldAtoms(
@@ -342,7 +344,8 @@ function FormBootstrap(props: FormsEngineProps) {
 					contentType.fields[repeat.fieldId].fields,
 					fieldId,
 					atoms,
-					value
+					value,
+					siteId
 				);
 			};
 			const values =
@@ -417,12 +420,14 @@ function FormBootstrap(props: FormsEngineProps) {
 			const atoms: FormsEngineAtoms = createFormsEngineAtoms(effectRefs.current.username, {
 				lockResult: lockResultAtom,
 				readonly: atom(false),
-				expandedStateBySectionId: buildSectionExpandedStateAtoms(contentType.sections)
+				expandedStateBySectionId: buildSectionExpandedStateAtoms(contentType.sections),
+				fileName: atom('')
 			});
 			const contentObject = createObjectWithSystemProps(contentType);
 			const values = createParsedValuesObject(contentType.fields, contentObject, contentTypesById, (fieldId, value) => {
-				setFieldAtoms(stableFormContextRef, contentType, contentType.fields, fieldId, atoms, value);
+				setFieldAtoms(stableFormContextRef, contentType, contentType.fields, fieldId, atoms, value, siteId);
 			});
+
 			initializeState(atoms, values, {
 				id: contentObject[XmlKeys.modelId] as string,
 				// TODO: Should/could we somehow deduce the target path?
@@ -469,7 +474,8 @@ function FormBootstrap(props: FormsEngineProps) {
 					const atoms = createFormsEngineAtoms(effectRefs.current.username, {
 						lockResult: lockResultAtom,
 						readonly: createReadonlyAtom(lockResultAtom),
-						expandedStateBySectionId: buildSectionExpandedStateAtoms(requirements.contentType.sections)
+						expandedStateBySectionId: buildSectionExpandedStateAtoms(requirements.contentType.sections),
+						fileName: createFileNameAtom(requirements.item.path)
 					});
 					const values = createParsedValuesObject(
 						requirements.contentType.fields,
@@ -482,10 +488,12 @@ function FormBootstrap(props: FormsEngineProps) {
 								requirements.contentType.fields,
 								fieldId,
 								atoms,
-								value
+								value,
+								siteId
 							);
 						}
 					);
+
 					initializeState(atoms, values, {
 						id: values[XmlKeys.modelId] as string,
 						path: requirements.item.path,
@@ -558,6 +566,7 @@ function FormOrchestrator(props: FormsEngineProps) {
 		onClose: onCloseProp
 	} = props;
 	// endregion
+
 	const theme = useTheme();
 	const { formatMessage } = useIntl();
 	const dispatch = useDispatch();
@@ -586,12 +595,21 @@ function FormOrchestrator(props: FormsEngineProps) {
 	const stackFormCount = useAtomValue(stackFormCountAtom);
 	const isStackedForm = stackIndex > 0;
 	const hasStackedForms = !isStackedForm && stackFormCount > 0;
-	const isEmbedded = Boolean(update?.modelId);
+	const isEmbedded = Boolean(update?.modelId) || Boolean(create?.embedded);
 	const isCreateMode = Boolean(create?.path);
 	const isRepeatMode = Boolean(repeat?.fieldId);
 	const affectedPackages = lockStatus.affectedPackages?.length > 0;
 	const contentTypeFields = contentType.fields;
-	const contentTypeSections = contentType.sections;
+	const contentTypeSections = useMemo(() => {
+		if (!isEmbedded) return contentType.sections;
+		// If the item is embedded, exclude the 'file-name' field from the sections.
+		// Embedded components don't have any path/file-name, so excluding the field from the sections will prevent it from
+		// being rendered in the ToC and the form.
+		return contentType.sections.map((section) => ({
+			...section,
+			fields: section.fields.filter((fieldId) => fieldId !== XmlKeys['fileName'])
+		}));
+	}, [contentType.sections, isEmbedded]);
 	const useCollapsedToC = useAtomValue(atoms.useCollapsedToC);
 	const tableOfContents = <TableOfContents fieldsToRender={fieldsToRender} containerRef={containerRef} />;
 	const effectRefs = useUpdateRefs({ fieldsToRender, versionCommentAtom: stableFormContext.atoms.versionComment });

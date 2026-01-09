@@ -57,7 +57,7 @@ export const controlMap: Record<BuiltInControlType, ElementType> = {
 	'date-time': null,
 	disabled: null,
 	dropdown: lazy(() => import('../controls/Dropdown')),
-	'file-name': lazy(() => import('../controls/Slug')),
+	'file-name': lazy(() => import('../controls/./FileName')),
 	forcehttps: null, // TODO: probably not needed, getname returns `disabled`
 	'image-picker': lazy(() => import('../controls/ImagePicker')),
 	input: lazy(() => import('../controls/Text')),

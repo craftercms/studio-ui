@@ -32,10 +32,7 @@ import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { applyContentNameRules } from '../../utils/content';
 
 export interface RenameContentDialogContainerProps
-	extends Pick<
-		RenameContentDialogProps,
-		'path' | 'value' | 'onRenamed' | 'onClose' | 'onSubmittingAndOrPendingChange'
-	> {
+	extends Pick<RenameContentDialogProps, 'path' | 'value' | 'onRenamed' | 'onClose' | 'validRenameValue'> {
 	dependantItems: ContentItem[];
 	fetchingDependantItems: boolean;
 	error: AjaxError;
@@ -46,38 +43,39 @@ export function RenameContentDialogContainer(props: RenameContentDialogContainer
 	const {
 		path,
 		value,
+		validRenameValue = '',
 		onRenamed,
 		onClose,
 		fetchDependant,
 		dependantItems,
 		fetchingDependantItems,
-		error,
-		onSubmittingAndOrPendingChange
+		error
 	} = props;
-	const isPage = value.includes('/index.xml');
-	const { isSubmitting } = useEnhancedDialogContext();
-	const strippedValue = isPage ? value.replace('/index.xml', '') : value.replace('.xml', '');
-	const [name, setName] = useState(strippedValue);
+	const safeValue = value ?? '';
+	const isPage = safeValue.includes('/index.xml');
+	const itemName = getItemName(safeValue);
+	const { isSubmitting, updateSubmittingOrHasPendingChanges } = useEnhancedDialogContext();
+	const [name, setName] = useState(itemName);
 	const [itemExists, setItemExists] = useState(false);
-	const isValid = !isBlank(name) && !itemExists && name !== strippedValue;
+	const isValid = !isBlank(name) && !itemExists && name !== itemName;
 	const [confirmBrokenReferences, setConfirmBrokenReferences] = useState(false);
 	const renameDisabled =
 		isSubmitting || !isValid || fetchingDependantItems || (dependantItems?.length > 0 && !confirmBrokenReferences);
 	const siteId = useActiveSiteId();
 
 	const onNameUpdate$ = useDebouncedInput((name: string) => {
-		checkPathExistence(siteId, `${ensureSingleSlash(`${path}/${name}`)}${isPage ? '/index.xml' : '.xml'}`).subscribe(
-			(exists) => {
-				setItemExists(name !== strippedValue && exists);
-			}
-		);
+		if (name !== itemName && name !== getItemName(validRenameValue)) {
+			checkPathExistence(siteId, `${ensureSingleSlash(`${path}/${name}`)}${isPage ? '/index.xml' : '.xml'}`).subscribe(
+				(exists) => setItemExists(exists)
+			);
+		}
 	}, 400);
 
 	const onInputChanges = (newValue: string) => {
 		setName(newValue);
 		onNameUpdate$.next(newValue);
-		const newHasPendingChanges = newValue !== strippedValue;
-		onSubmittingAndOrPendingChange({ hasPendingChanges: newHasPendingChanges });
+		const newHasPendingChanges = newValue !== itemName;
+		updateSubmittingOrHasPendingChanges({ hasPendingChanges: newHasPendingChanges });
 	};
 
 	const onRename = () => {
@@ -93,7 +91,7 @@ export function RenameContentDialogContainer(props: RenameContentDialogContainer
 					newNameExists={itemExists}
 					fetchDependant={fetchDependant}
 					dependantItems={dependantItems}
-					isSubmitting={false}
+					isSubmitting={isSubmitting}
 					confirmBrokenReferences={confirmBrokenReferences}
 					fetchingDependantItems={fetchingDependantItems}
 					error={error}
@@ -119,6 +117,20 @@ export function RenameContentDialogContainer(props: RenameContentDialogContainer
 			</DialogFooter>
 		</>
 	);
+}
+
+/**
+ * Gets the name of the content item by removing the file extension (`.xml` if the item is a component or `index.xml` if page).
+ * The function checks if the input string represents a page (contains '/index.xml').
+ * - If it is a page, it removes '/index.xml' from the string.
+ * - Otherwise, it removes '.xml' from the string.
+ *
+ * @param {string} value - The file path or name to process.
+ * @returns {string} - The stripped value without the file extension.
+ */
+function getItemName(value: string): string {
+	const isPage = value.includes('/index.xml');
+	return isPage ? value.replace('/index.xml', '') : value.replace('.xml', '');
 }
 
 export default RenameContentDialogContainer;

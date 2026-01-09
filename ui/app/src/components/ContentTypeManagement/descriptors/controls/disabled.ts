@@ -33,7 +33,7 @@ export const disabledDescriptor: DescriptorContentType = {
 	fields: {
 		readonly: {
 			id: 'readonly',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'readonly' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject

@@ -246,8 +246,7 @@ function NodeSelector(props: NodeSelectorProps) {
 						: item.include;
 
 					if (!isEmbedded) {
-						// In the cases where a shared item is being edited, check if the path has changed (meaning that the item
-						// has been moved/renamed) and update key accordingly.
+						// Check if the path has changed (moved/renamed) and update key accordingly.
 						const currentPath = item.key;
 						if (path && currentPath !== path) {
 							key = path;
