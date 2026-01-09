@@ -32,6 +32,9 @@ const DATE_TIME_EXAMPLE = "'now', 'now+5hours', 'now-30minutes', 'now+10days', '
 const TIME_FORMAT = 'now[+ or -][number][hours | minutes]';
 const TIME_EXAMPLE = "'now', 'now+5hours', 'now-30minutes'";
 
+/**
+ * Component for rendering an input field that accepts date-time or time expressions.
+ */
 export function DateTimeExpressionInput(props: TextProps) {
 	const { field, value, setValue, readonly, autoFocus } = props;
 	const htmlId = useId();
