@@ -891,6 +891,7 @@ export function getPropertiesAndValidationsFromDescriptor(descriptor: Descriptor
 export function initializeConfigFromType(type: ContentType) {
 	return {
 		'content-type': {
+			'@:name': type.id, // The legacy API1 get-content-type service requires the config.xml to include the attribute 'name' for correct type resolution.
 			label: type.name,
 			form: type.id,
 			'form-path': 'simple',
