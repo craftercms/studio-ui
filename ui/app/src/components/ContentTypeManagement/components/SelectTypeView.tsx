@@ -35,6 +35,7 @@ import { nnou } from '../../../utils/object';
 import type { LookupTable } from '../../../models';
 import Typography from '@mui/material/Typography';
 import useArcheTypes from '../../../hooks/useArcheTypes';
+import { FormattedMessage } from 'react-intl';
 
 export interface SelectContentTypeProps {
 	sx?: BoxProps['sx'];
@@ -110,6 +111,13 @@ export function SelectTypeView(props: SelectContentTypeProps) {
 					grouped[archetype.id] = sortContentTypes(typesForArchetype, sortOrder);
 				}
 			});
+			// go through the filtered types and add any that don't match an archetype
+			const uncategorizedTypes = filteredTypes.filter((contentType) => {
+				return !archeTypes[contentType.type];
+			});
+			if (uncategorizedTypes.length > 0) {
+				grouped['other'] = sortContentTypes(uncategorizedTypes, sortOrder);
+			}
 		}
 		return grouped;
 	};
@@ -133,7 +141,13 @@ export function SelectTypeView(props: SelectContentTypeProps) {
 				Object.entries(getGroupedTypes()).map(([archetype, types]) => (
 					<Box key={archetype} sx={{ mb: 4 }}>
 						<Typography variant="h6" sx={{ mb: 1 }}>
-							{archeTypes[archetype].name}
+							{archeTypes[archetype] ? (
+								archeTypes[archetype].name
+							) : archetype === 'other' ? (
+								<FormattedMessage defaultMessage="Other" />
+							) : (
+								archetype
+							)}
 						</Typography>
 						<TypeList {...slotProps.listing} showTypeId compact={compact} contentTypes={types} />
 					</Box>
