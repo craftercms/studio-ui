@@ -223,7 +223,14 @@ export const entityEncodingTagValueProcessor = (tag, value) =>
 		.replace(/&apos;/g, "'")
 		.replace(/&amp;/g, '&');
 
-export const escapeXml = (str: string) =>
+/**
+ * Escapes special characters in a string to their corresponding XML entities.
+ *
+ * @param {string} str - The input string to be escaped.
+ * @returns {string} - The escaped string with special characters replaced by XML entities.
+ *
+ */
+export const escapeXml = (str: string): string =>
 	str
 		.replace(/&/g, '&amp;')
 		.replace(/</g, '&lt;')
@@ -231,4 +238,11 @@ export const escapeXml = (str: string) =>
 		.replace(/"/g, '&quot;')
 		.replace(/'/g, '&apos;');
 
-export const unescapeXml = (str: string) => entityEncodingTagValueProcessor(null, str);
+/**
+ * Unescapes XML entities in a string back to their corresponding special characters.
+ *
+ * @param {string} str - The input string containing XML entities to be unescaped.
+ * @returns {string} - The unescaped string with XML entities replaced by their original characters.
+ *
+ */
+export const unescapeXml = (str: string): string => entityEncodingTagValueProcessor(null, str);
