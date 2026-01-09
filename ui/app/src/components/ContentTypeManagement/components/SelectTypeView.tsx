@@ -35,7 +35,8 @@ import { nnou } from '../../../utils/object';
 import type { LookupTable } from '../../../models';
 import Typography from '@mui/material/Typography';
 import useArcheTypes from '../../../hooks/useArcheTypes';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { getPossibleTranslation } from '../../../utils/i18n';
 
 export interface SelectContentTypeProps {
 	sx?: BoxProps['sx'];
@@ -64,6 +65,7 @@ export function SelectTypeView(props: SelectContentTypeProps) {
 	const storedViewGrouped = getViewGroupedTypes(username);
 	const [groupTypes, setGroupTypes] = useState<boolean>(nnou(storedViewGrouped) ? storedViewGrouped : true);
 	const archeTypes = useArcheTypes();
+	const { formatMessage } = useIntl();
 
 	const effectRefs = useUpdateRefs({ keywords, filterTypes: filterTypesByKeywordsAndObjectType });
 	useEffect(() => {
@@ -142,7 +144,7 @@ export function SelectTypeView(props: SelectContentTypeProps) {
 					<Box key={archetype} sx={{ mb: 4 }}>
 						<Typography variant="h6" sx={{ mb: 1 }}>
 							{archeTypes[archetype] ? (
-								archeTypes[archetype].name
+								getPossibleTranslation(archeTypes[archetype].name, formatMessage)
 							) : archetype === 'other' ? (
 								<FormattedMessage defaultMessage="Other" />
 							) : (
