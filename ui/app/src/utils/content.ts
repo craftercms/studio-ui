@@ -361,10 +361,9 @@ export function parseContentXML(
 		unflattenedPaths[path] = current;
 	}
 	if (nnou(doc)) {
-		current.craftercms.label = getInnerHtml(
-			doc.querySelector(':scope > internal-name') ?? doc.querySelector(`:scope > ${XmlKeys.fileName}`),
-			{ applyLegacyUnescaping: true }
-		);
+		const internalName = doc.querySelector(':scope > internal-name');
+		const labelFromInternalName = internalName ? getInnerHtml(internalName, { applyLegacyUnescaping: true }) : null;
+		current.craftercms.label = labelFromInternalName || (path ? fileNameFromPath(path) : '');
 		current.craftercms.dateCreated = getInnerHtml(doc.querySelector(`:scope > ${XmlKeys.dateCreatedDt}`));
 		current.craftercms.dateModified = getInnerHtml(doc.querySelector(`:scope > ${XmlKeys.dateModifiedDt}`));
 		current.craftercms.disabled = getInnerHtml(doc.querySelector(':scope > disabled'), { trim: true }) === 'true';
