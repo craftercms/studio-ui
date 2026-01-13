@@ -97,6 +97,10 @@ defineMessages({
     id: 'pathNavigatorTree.scripts',
     defaultMessage: 'Scripts'
   },
+  items: {
+    id: 'pathNavigatorTree.items',
+    defaultMessage: 'Items'
+  },
   audiencesPanelSegmentLabel: {
     id: 'audiencesPanel.segmentLabel',
     defaultMessage: 'Segment'
