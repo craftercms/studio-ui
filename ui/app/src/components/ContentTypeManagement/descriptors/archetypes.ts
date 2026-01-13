@@ -21,7 +21,7 @@ import { createEmptyTypeStructure, getPropertiesAndValidationsFromDescriptor } f
 import LookupTable from '../../../models/LookupTable';
 import controlDescriptors from './controls';
 
-export type ArcheType = {
+export type Archetype = {
 	id: string;
 	name: string;
 	descriptor: ContentType;
@@ -36,7 +36,7 @@ type OutOfTheBoxArchetype = 'page' | 'component';
 export function initializeTypeForCreate(
 	mixin: Partial<ContentType>,
 	archetype: OutOfTheBoxArchetype | string,
-	archetypeMap?: LookupTable<ArcheType>
+	archetypeMap?: LookupTable<Archetype>
 ): ContentType {
 	const descriptor = archetypeMap?.[archetype]?.descriptor ?? { fields: null, sections: null };
 	return createEmptyTypeStructure({
