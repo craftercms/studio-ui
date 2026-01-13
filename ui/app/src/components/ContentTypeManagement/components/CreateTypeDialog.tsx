@@ -21,7 +21,7 @@ import TextField from '@mui/material/TextField';
 import { DialogBody } from '../../DialogBody';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import MenuItem from '@mui/material/MenuItem';
 import InputAdornment from '@mui/material/InputAdornment';
 import { DialogFooter } from '../../DialogFooter';
@@ -39,6 +39,7 @@ import { useDispatch } from 'react-redux';
 import { fetchContentTypesComplete } from '../../../state/actions/preview';
 import { pushErrorDialog } from '../../../utils/system';
 import useArchetypesList from '../../../hooks/useArchetypesList';
+import { getPossibleTranslation } from '../../../utils/i18n';
 
 export interface CreateTypeDialogBaseProps {
 	onAccept(typeData: Pick<ContentType, 'id' | 'name' | 'type'>): void;
@@ -86,6 +87,7 @@ function CreateTypeDialogBody(props: CreateTypeDialogBaseProps) {
 	const dispatch = useDispatch();
 	const [idManuallyChanged, setIdManuallyChanged] = useState(false);
 	const archetypes = useArchetypesList();
+	const { formatMessage } = useIntl();
 
 	const validateAndSubmit = () => {
 		setFetchingContentTypes(true);
@@ -152,7 +154,7 @@ function CreateTypeDialogBody(props: CreateTypeDialogBaseProps) {
 					>
 						{archetypes?.map((archetype) => (
 							<MenuItem key={archetype.id} value={archetype.id}>
-								{archetype.name}
+								{getPossibleTranslation(archetype.name, formatMessage)}
 							</MenuItem>
 						))}
 					</Select>
