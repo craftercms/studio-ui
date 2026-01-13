@@ -60,7 +60,8 @@ export function SelectTypeView(props: SelectContentTypeProps) {
 	const [objectTypeFilter, setObjectTypeFilter] = useState<ObjectTypeOption>(initialObjectTypeFilter);
 	const [sortOrder, setSortOrder] = useState<'ascending' | 'descending'>('ascending');
 	const onKeyword$ = useDebouncedInput((keywords) => {
-		setFilteredTypes(filterTypesByKeywordsAndObjectType(contentTypesList, keywords, objectTypeFilter));
+		const types = filterTypesByKeywordsAndObjectType(contentTypesList, keywords, objectTypeFilter);
+		setFilteredTypes(sortContentTypes(types, sortOrder));
 	});
 	const storedViewGrouped = getViewGroupedTypes(username);
 	const [groupTypes, setGroupTypes] = useState<boolean>(nnou(storedViewGrouped) ? storedViewGrouped : true);
