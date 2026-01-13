@@ -73,6 +73,7 @@ import { createComponentId } from '../../../utils/system';
 import { showErrorDialog } from '../../../state/actions/dialogs';
 import { ensureSingleSlash } from '../../../utils/string';
 import { nou } from '../../../utils/object';
+import type { DescriptorContentType } from '../../ContentTypeManagement/utils';
 
 /**
  * Returns the scroll container for the form's container.
@@ -487,7 +488,8 @@ export function setFieldAtoms(
 	fieldId: string,
 	atomsTarget: FormsEngineAtoms,
 	value: unknown,
-	siteId?: string
+	siteId?: string,
+	isAdditional?: boolean
 ): void {
 	let field = fieldLookup[fieldId];
 	if (!field) {
@@ -505,6 +507,20 @@ export function setFieldAtoms(
 				values: undefined,
 				id: 'folder-name',
 				name: 'Folder Name'
+			};
+		} else if (isAdditional) {
+			field = {
+				defaultValue: undefined,
+				description: '',
+				fields: undefined,
+				helpText: '',
+				properties: undefined,
+				sortable: false,
+				type: '',
+				validations: undefined,
+				values: undefined,
+				id: fieldId,
+				name: fieldId
 			};
 		} else {
 			!systemFieldsNotInType.includes(fieldId) &&
@@ -914,4 +930,16 @@ export function composePathForType(basePath: string, fileName: string, contentTy
 	} else {
 		return ensureSingleSlash(`${basePath}/${fileName}.xml`);
 	}
+}
+
+export function getAdditionalFieldsIdsFromDescriptor(
+	field: ContentTypeField,
+	descriptor: DescriptorContentType
+): string[] {
+	// console.log('field', field);
+	// console.log(`descriptor for ${field.id}/${field.type}`, descriptor);
+	const additionalFields = descriptor.metadata?.additionalFields ?? [];
+
+	// TODO: are there going to be other placeholders besides {id}?
+	return additionalFields.map((additionalField) => additionalField.replaceAll('{id}', field.id));
 }
