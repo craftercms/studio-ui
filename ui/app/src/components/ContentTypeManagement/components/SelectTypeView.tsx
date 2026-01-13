@@ -17,7 +17,7 @@
 import { TypeListControlBar, TypeListControlBarProps } from './TypeListControlBar';
 import TypeList, { TypeListProps } from './TypeList';
 import Box, { BoxProps } from '@mui/material/Box';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import type { ObjectTypeOption } from '../../ContentTypeFilter';
 import useDebouncedInput from '../../../hooks/useDebouncedInput';
 import { filterTypesByKeywordsAndObjectType } from '../../../utils/contentType';
@@ -102,7 +102,7 @@ export function SelectTypeView(props: SelectContentTypeProps) {
 	 * @returns {LookupTable<ContentType[]>} An object where the keys are archetype values and the values
 	 * are arrays of `ContentType` objects sorted by the current sort order.
 	 */
-	const getGroupedTypes = (): LookupTable<ContentType[]> => {
+	const getGroupedTypes = useCallback((): LookupTable<ContentType[]> => {
 		const grouped: LookupTable<ContentType[]> = {};
 		if (filteredTypes && archetypes) {
 			Object.values(archetypes).forEach((archetype) => {
@@ -122,7 +122,7 @@ export function SelectTypeView(props: SelectContentTypeProps) {
 			}
 		}
 		return grouped;
-	};
+	}, [filteredTypes, archetypes, sortOrder]);
 
 	return (
 		<Box {...slotProps.box} sx={consolidateSx(sx, slotProps?.box?.sx)}>
