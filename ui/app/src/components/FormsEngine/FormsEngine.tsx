@@ -715,35 +715,40 @@ function FormOrchestrator(props: FormsEngineProps) {
 	};
 
 	const [mainContent, setMainContent] = useState(null);
-	// This hook sets up a scroll event listener on the `mainContent` element to monitor its scroll position and
-	// adjust the header's collapse state based on the scroll position.
-	useEffect(() => {
-		if (!mainContent) return;
-
-		const handleScroll = () => {
-			const scrollTop = mainContent.scrollTop;
-			// Only trigger resize when scroll stops for 50ms
-			if (scrollTimeout.current) clearTimeout(scrollTimeout.current);
-			scrollTimeout.current = setTimeout(() => {
-				setCollapseHeader(scrollTop > 60);
-			}, 50);
-		};
-
-		mainContent.addEventListener('scroll', handleScroll);
-		return () => {
-			mainContent.removeEventListener('scroll', handleScroll);
-			if (scrollTimeout.current) clearTimeout(scrollTimeout.current);
-		};
-	}, [mainContent]);
+	const sentinelRef = useRef<HTMLDivElement>(null);
 
 	const mainContentRefCallback: RefCallback<HTMLDivElement> = (element) => {
 		setMainContent(element);
 	};
 
+	// Monitor when sentinel element crosses the threshold
+	useEffect(() => {
+		if (!mainContent || !sentinelRef.current) return;
+
+		const observer = new IntersectionObserver(
+			([entry]) => {
+				// When sentinel is NOT intersecting (scrolled past 60px, sentinel's top position), collapse header
+				setCollapseHeader(!entry.isIntersecting);
+			},
+			{
+				root: mainContent,
+				threshold: 0,
+				rootMargin: '0px'
+			}
+		);
+
+		observer.observe(sentinelRef.current);
+
+		return () => {
+			observer.disconnect();
+		};
+	}, [mainContent]);
+
 	const bodyFragment = (
 		<FormLayout
 			stackIndex={stackIndex}
 			containerRef={containerRef}
+			sentinelRef={sentinelRef}
 			mainContentRefCallback={mainContentRefCallback}
 			hasStackedForms={hasStackedForms}
 			// If the form is rendered in/as a dialog, take up the whole screen minus
