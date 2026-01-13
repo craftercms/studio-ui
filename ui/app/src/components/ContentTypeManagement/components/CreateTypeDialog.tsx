@@ -69,7 +69,7 @@ const prefixes = {
 function CreateTypeDialogBody(props: CreateTypeDialogBaseProps) {
 	const { onAccept } = props;
 	const siteId = useActiveSiteId();
-	const [type, setType] = useState<'page' | 'component'>('page');
+	const [type, setType] = useState<string>('page');
 	const [name, setName] = useState<string>('');
 	const [id, setId] = useState<string>('');
 	const prefix = useRef<string>(undefined);
