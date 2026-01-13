@@ -31,7 +31,7 @@ import {
 	setViewGroupedTypes
 } from '../../../utils/state';
 import useActiveUser from '../../../hooks/useActiveUser';
-import { nnou } from '../../../utils/object';
+import { nnou, nou } from '../../../utils/object';
 import type { LookupTable } from '../../../models';
 import Typography from '@mui/material/Typography';
 import useArchetypes from '../../../hooks/useArchetypes';
@@ -141,20 +141,31 @@ export function SelectTypeView(props: SelectContentTypeProps) {
 				onObjectTypeFilterChange={setObjectTypeFilter}
 			/>
 			{groupTypes ? (
-				Object.entries(getGroupedTypes()).map(([archetype, types]) => (
-					<Box key={archetype} sx={{ mb: 4 }}>
-						<Typography variant="h6" sx={{ mb: 1 }}>
-							{archetypes[archetype] ? (
-								getPossibleTranslation(archetypes[archetype].name, formatMessage)
-							) : archetype === 'other' ? (
-								<FormattedMessage defaultMessage="Other" />
-							) : (
-								archetype
-							)}
-						</Typography>
-						<TypeList {...slotProps.listing} showTypeId compact={compact} contentTypes={types} />
-					</Box>
-				))
+				nou(archetypes) ? (
+					<TypeList
+						{...slotProps.listing}
+						skeleton={true}
+						skeletonItemCount={6}
+						showTypeId
+						compact={compact}
+						contentTypes={filteredTypes}
+					/>
+				) : (
+					Object.entries(getGroupedTypes()).map(([archetype, types]) => (
+						<Box key={archetype} sx={{ mb: 4 }}>
+							<Typography variant="h6" sx={{ mb: 1 }}>
+								{archetypes[archetype] ? (
+									getPossibleTranslation(archetypes[archetype].name, formatMessage)
+								) : archetype === 'other' ? (
+									<FormattedMessage defaultMessage="Other" />
+								) : (
+									archetype
+								)}
+							</Typography>
+							<TypeList {...slotProps.listing} showTypeId compact={compact} contentTypes={types} />
+						</Box>
+					))
+				)
 			) : (
 				<TypeList {...slotProps.listing} showTypeId compact={compact} contentTypes={filteredTypes} />
 			)}
