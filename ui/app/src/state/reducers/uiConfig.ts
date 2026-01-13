@@ -112,6 +112,7 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, (builder) =
 					.querySelectorAll('[id="craftercms.components.ContentTypeManagement"] > configuration > objectTypes')
 					.forEach((tag) => {
 						const descriptor = tag.querySelector('descriptor');
+						// Parent archetypes must be defined before children so that they can be extended properly
 						const extendsFrom = tag.getAttribute('extends');
 						let parentArchetype = null;
 						if (extendsFrom) {
