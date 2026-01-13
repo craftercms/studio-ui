@@ -273,7 +273,7 @@ export interface GlobalState {
 			submissionCommentMaxLength: number;
 		};
 		cdataEscapedFieldPatterns: string[];
-		archeTypes: LookupTable<Archetype>;
+		archetypes: LookupTable<Archetype>;
 		references: LookupTable;
 		xml: string;
 		remoteGitBranch: string;

@@ -14,11 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import useArcheTypes from './useArcheTypes';
+import useSelection from './useSelection';
 
-export function useArcheTypesList() {
-	const archeTypes = useArcheTypes();
-	return archeTypes ? Object.values(archeTypes) : null;
+export function useArchetypes() {
+	return useSelection((state) => state.uiConfig.archetypes);
 }
 
-export default useArcheTypesList;
+export default useArchetypes;

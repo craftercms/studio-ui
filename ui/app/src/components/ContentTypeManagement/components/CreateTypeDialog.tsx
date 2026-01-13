@@ -38,7 +38,7 @@ import { createLookupTable } from '../../../utils/object';
 import { useDispatch } from 'react-redux';
 import { fetchContentTypesComplete } from '../../../state/actions/preview';
 import { pushErrorDialog } from '../../../utils/system';
-import useArcheTypesList from '../../../hooks/useArcheTypesList';
+import useArchetypesList from '../../../hooks/useArchetypesList';
 
 export interface CreateTypeDialogBaseProps {
 	onAccept(typeData: Pick<ContentType, 'id' | 'name' | 'type'>): void;
@@ -73,7 +73,7 @@ function CreateTypeDialogBody(props: CreateTypeDialogBaseProps) {
 	const [name, setName] = useState<string>('');
 	const [id, setId] = useState<string>('');
 	const prefix = useRef<string>(undefined);
-	prefix.current = getPrefixForType(type);
+	prefix.current = getTypeIdPathPrefixForType(type);
 	const { onClose, updateSubmittingOrHasPendingChanges } = useEnhancedDialogContext();
 	const contentTypes = useContentTypes();
 	const [nameExists, setNameExists] = useState<boolean>(false);
@@ -85,7 +85,7 @@ function CreateTypeDialogBody(props: CreateTypeDialogBaseProps) {
 	const [fetchingContentTypes, setFetchingContentTypes] = useState(false);
 	const dispatch = useDispatch();
 	const [idManuallyChanged, setIdManuallyChanged] = useState(false);
-	const archeTypes = useArcheTypesList();
+	const archetypes = useArchetypesList();
 
 	const validateAndSubmit = () => {
 		setFetchingContentTypes(true);
@@ -105,7 +105,7 @@ function CreateTypeDialogBody(props: CreateTypeDialogBaseProps) {
 					setIdExists
 				});
 				if (!valid) return;
-				onAccept?.({ type, name, id: `${getPrefixForType(type) ?? ''}${id}` });
+				onAccept?.({ type, name, id: `${getTypeIdPathPrefixForType(type) ?? ''}${id}` });
 			},
 			error: ({ response }) => {
 				dispatch(pushErrorDialog({ props: { error: response.response } }));
@@ -150,7 +150,7 @@ function CreateTypeDialogBody(props: CreateTypeDialogBaseProps) {
 						onChange={handleChange}
 						autoFocus
 					>
-						{archeTypes?.map((archetype) => (
+						{archetypes?.map((archetype) => (
 							<MenuItem key={archetype.id} value={archetype.id}>
 								{archetype.name}
 							</MenuItem>
@@ -211,7 +211,7 @@ function validate({
 	setIdExists: (exists: boolean) => void;
 }): boolean {
 	if (!id || !name || !type) return false;
-	const idExists = Boolean(contentTypes[`${getPrefixForType(type)}${id}`]);
+	const idExists = Boolean(contentTypes[`${getTypeIdPathPrefixForType(type)}${id}`]);
 	const nameExists = Object.values(contentTypes).some((contentType) => contentType.name === name);
 	setIdExists(idExists);
 	setNameExists(nameExists);
@@ -229,7 +229,7 @@ function suggestTypeId(label: string): string {
 	return transformId(camelized);
 }
 
-function getPrefixForType(type: string): string {
+function getTypeIdPathPrefixForType(type: string): string {
 	return prefixes[type] ?? `/${type}/`;
 }
 

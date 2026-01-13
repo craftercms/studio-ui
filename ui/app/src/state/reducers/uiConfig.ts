@@ -57,7 +57,7 @@ const initialState: GlobalState['uiConfig'] = {
 		}
 	},
 	references: null,
-	archeTypes: null,
+	archetypes: null,
 	xml: null,
 	publishing: {
 		deleteCommentRequired: false,
@@ -83,7 +83,7 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, (builder) =
 		.addCase(fetchSiteUiConfigComplete, (state, { payload }) => {
 			let config = payload.config;
 			const references = {};
-			const archeTypes = {};
+			const archetypes = {};
 			if (config) {
 				const configDOM = fromString(config);
 				const site = payload.site;
@@ -115,9 +115,9 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, (builder) =
 						const extendsFrom = tag.getAttribute('extends');
 						let parentArchetype = null;
 						if (extendsFrom) {
-							parentArchetype = archeTypes[extendsFrom] ?? {};
+							parentArchetype = archetypes[extendsFrom] ?? {};
 						}
-						archeTypes[tag.id] = {
+						archetypes[tag.id] = {
 							...parentArchetype,
 							id: tag.id
 						};
@@ -133,8 +133,8 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, (builder) =
 								dataSources: asArray(deserializedDescriptor.dataSources)
 							};
 
-							archeTypes[tag.id] = {
-								...archeTypes[tag.id],
+							archetypes[tag.id] = {
+								...archetypes[tag.id],
 								name: deserializedDescriptor.name,
 								descriptor: extendArchetypeDescriptor(parentArchetype?.descriptor, deserializedDescriptor)
 							};
@@ -149,7 +149,7 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, (builder) =
 				isFetching: false,
 				xml: config,
 				references,
-				archeTypes
+				archetypes
 			};
 		})
 		.addCase(fetchSiteUiConfigFailed, (state, { payload }) => ({

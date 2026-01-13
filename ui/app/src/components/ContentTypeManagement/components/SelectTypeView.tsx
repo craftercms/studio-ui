@@ -34,7 +34,7 @@ import useActiveUser from '../../../hooks/useActiveUser';
 import { nnou } from '../../../utils/object';
 import type { LookupTable } from '../../../models';
 import Typography from '@mui/material/Typography';
-import useArcheTypes from '../../../hooks/useArcheTypes';
+import useArchetypes from '../../../hooks/useArchetypes';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { getPossibleTranslation } from '../../../utils/i18n';
 
@@ -64,7 +64,7 @@ export function SelectTypeView(props: SelectContentTypeProps) {
 	});
 	const storedViewGrouped = getViewGroupedTypes(username);
 	const [groupTypes, setGroupTypes] = useState<boolean>(nnou(storedViewGrouped) ? storedViewGrouped : true);
-	const archeTypes = useArcheTypes();
+	const archetypes = useArchetypes();
 	const { formatMessage } = useIntl();
 
 	const effectRefs = useUpdateRefs({ keywords, filterTypes: filterTypesByKeywordsAndObjectType });
@@ -104,8 +104,8 @@ export function SelectTypeView(props: SelectContentTypeProps) {
 	 */
 	const getGroupedTypes = (): LookupTable<ContentType[]> => {
 		const grouped: LookupTable<ContentType[]> = {};
-		if (filteredTypes && archeTypes) {
-			Object.values(archeTypes).forEach((archetype) => {
+		if (filteredTypes && archetypes) {
+			Object.values(archetypes).forEach((archetype) => {
 				const typesForArchetype = filteredTypes.filter((contentType) => {
 					return contentType.type === archetype.id;
 				});
@@ -115,7 +115,7 @@ export function SelectTypeView(props: SelectContentTypeProps) {
 			});
 			// go through the filtered types and add any that don't match an archetype
 			const uncategorizedTypes = filteredTypes.filter((contentType) => {
-				return !archeTypes[contentType.type];
+				return !archetypes[contentType.type];
 			});
 			if (uncategorizedTypes.length > 0) {
 				grouped['other'] = sortContentTypes(uncategorizedTypes, sortOrder);
@@ -143,8 +143,8 @@ export function SelectTypeView(props: SelectContentTypeProps) {
 				Object.entries(getGroupedTypes()).map(([archetype, types]) => (
 					<Box key={archetype} sx={{ mb: 4 }}>
 						<Typography variant="h6" sx={{ mb: 1 }}>
-							{archeTypes[archetype] ? (
-								getPossibleTranslation(archeTypes[archetype].name, formatMessage)
+							{archetypes[archetype] ? (
+								getPossibleTranslation(archetypes[archetype].name, formatMessage)
 							) : archetype === 'other' ? (
 								<FormattedMessage defaultMessage="Other" />
 							) : (
