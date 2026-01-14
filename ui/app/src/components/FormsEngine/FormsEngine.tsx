@@ -419,7 +419,8 @@ function FormBootstrap(props: FormsEngineProps) {
 					update,
 					parentStackData,
 					stableFormContextRef,
-					parentPathInSite
+					parentPathInSite,
+					customControls
 				});
 				initializeState(requirements.atoms, requirements.values, requirements.itemMeta);
 			};

@@ -74,6 +74,8 @@ import { showErrorDialog } from '../../../state/actions/dialogs';
 import { ensureSingleSlash } from '../../../utils/string';
 import { nou } from '../../../utils/object';
 import type { DescriptorContentType } from '../../ContentTypeManagement/utils';
+import type { DescriptorControlType } from '../../ContentTypeManagement/controlMap';
+import controlDescriptors from '../../ContentTypeManagement/descriptors/controls';
 
 /**
  * Returns the scroll container for the form's container.
@@ -815,6 +817,7 @@ export function prepareEmbeddedItemForm(props: {
 	parentStackData: StableFormContextProps;
 	stableFormContextRef: RefObject<StableFormContextProps>;
 	parentPathInSite: string;
+	customControls?: LookupTable<DescriptorControlType>;
 }): { atoms: FormsEngineAtoms; values: LookupTable<unknown>; itemMeta: FormsEngineItemMetaContextProps } {
 	const {
 		username,
@@ -825,7 +828,8 @@ export function prepareEmbeddedItemForm(props: {
 		parentPathInSite,
 		locked,
 		lockError,
-		affectedPackages
+		affectedPackages,
+		customControls
 	} = props;
 	const lockResultAtom = atom<FormsEngineEditContextProps>({
 		locked,
@@ -839,12 +843,25 @@ export function prepareEmbeddedItemForm(props: {
 		fileName: atom(update.modelId)
 	});
 	const values = update.values;
+
+	const descriptors = { ...customControls, ...controlDescriptors };
+	let additionalFieldsIds = [];
+	// Retrieve all additional fields ids from the contentType fields.
+	Object.values(contentType.fields).forEach((field) => {
+		const type = field.type;
+		additionalFieldsIds = [
+			...additionalFieldsIds,
+			...getAdditionalFieldsIdsFromDescriptor(field.id, descriptors[type])
+		];
+	});
+
 	Object.entries(values).forEach(([fieldId, value]) => {
+		const isAdditionalField = additionalFieldsIds.includes(fieldId);
 		// System fields (e.g. content-type, display-template, etc.) are not part of the content type, but are part of the content object. We don't need atoms or validity checks for these.
-		if (!contentType.fields[fieldId]) return;
+		if (!contentType.fields[fieldId] && !isAdditionalField) return;
 		const [valueAtom, validityAtom] = createFieldAtoms(contentType.fields[fieldId], value, stableFormContextRef);
 		atoms.valueByFieldId[fieldId] = valueAtom;
-		atoms.validationByFieldId[fieldId] = validityAtom;
+		if (!isAdditionalField) atoms.validationByFieldId[fieldId] = validityAtom;
 	});
 	const xmlDoc = fromString(parentStackData.itemMeta.contentXml);
 	const element = xmlDoc.querySelector(`[id="${update.modelId}"]`);
