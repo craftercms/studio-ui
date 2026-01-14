@@ -932,14 +932,9 @@ export function composePathForType(basePath: string, fileName: string, contentTy
 	}
 }
 
-export function getAdditionalFieldsIdsFromDescriptor(
-	field: ContentTypeField,
-	descriptor: DescriptorContentType
-): string[] {
-	// console.log('field', field);
-	// console.log(`descriptor for ${field.id}/${field.type}`, descriptor);
+export function getAdditionalFieldsIdsFromDescriptor(fieldId: string, descriptor: DescriptorContentType): string[] {
 	const additionalFields = descriptor.metadata?.additionalFields ?? [];
 
 	// TODO: are there going to be other placeholders besides {id}?
-	return additionalFields.map((additionalField) => additionalField.replaceAll('{id}', field.id));
+	return additionalFields.map((additionalField) => additionalField.replaceAll('{id}', fieldId));
 }

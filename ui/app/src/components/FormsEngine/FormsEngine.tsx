@@ -86,6 +86,7 @@ import {
 	displayFormBeingSavedSnack,
 	fetchUpdateRequirements,
 	generateDefaultChangesComment,
+	getAdditionalFieldsIdsFromDescriptor,
 	getCurrentChildFormStateSummary,
 	getScrollContainer,
 	getTargetHeight,
@@ -120,6 +121,7 @@ import useActiveUser from '../../hooks/useActiveUser';
 import FormBackToTop from './components/FormBackToTop';
 import { createComponentId } from '../../utils/system';
 import { useCustomControlsDescriptorsById } from '../../hooks/useCustomControlsDescriptorsById';
+import controlDescriptors from '../ContentTypeManagement/descriptors/controls';
 
 export interface FormSavePromiseResult {
 	close: boolean;
@@ -353,10 +355,32 @@ function FormBootstrap(props: FormsEngineProps) {
 			};
 			const values =
 				repeat.values ??
-				createParsedValuesObject(fieldsToRender, {}, effectRefs.current.contentTypesById, atomValueCreator);
+				createParsedValuesObject(
+					fieldsToRender,
+					{},
+					effectRefs.current.contentTypesById,
+					atomValueCreator,
+					customControls
+				);
 
+			const descriptors = { ...customControls, ...controlDescriptors };
+			let additionalFieldsIds = [];
 			// If repeat.values was provided, `createCleanValuesObject` didn't run; hence, atomValueCreator needs to be run manually.
-			repeat.values && Object.keys(values).forEach((fieldId) => atomValueCreator(fieldId, values[fieldId]));
+			if (repeat.values) {
+				// First gather all additional fields ids from the provided values
+				fieldsToRender.forEach((field) => {
+					const type = field.type;
+					additionalFieldsIds = [
+						...additionalFieldsIds,
+						...getAdditionalFieldsIdsFromDescriptor(field.id, descriptors[type])
+					];
+				});
+				// Run atomValueCreator for each field considering the additional fields
+				Object.keys(values).forEach((fieldId) => {
+					const isAdditional = additionalFieldsIds.includes(fieldId);
+					atomValueCreator(fieldId, values[fieldId], isAdditional);
+				});
+			}
 
 			const xmlDoc = fromString(parentStackData.itemMeta.contentXml);
 			const fieldId = repeat.fieldId;
@@ -442,7 +466,8 @@ function FormBootstrap(props: FormsEngineProps) {
 						siteId,
 						isAdditional
 					);
-				}
+				},
+				customControls
 			);
 
 			initializeState(atoms, values, {
