@@ -166,7 +166,7 @@ export function FieldChip(props: FieldChipProps) {
 				)}
 			</Root>
 			{additionalFields?.map((additionalFieldId) => (
-				<AdditionalFieldChip fieldId={additionalFieldId} />
+				<AdditionalFieldChip key={additionalFieldId} fieldId={additionalFieldId} />
 			))}
 		</>
 	);
