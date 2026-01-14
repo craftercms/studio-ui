@@ -951,7 +951,10 @@ export function composePathForType(basePath: string, fileName: string, contentTy
 
 export function getAdditionalFieldsIdsFromDescriptor(fieldId: string, descriptor: DescriptorContentType): string[] {
 	const additionalFields = descriptor.metadata?.additionalFields ?? [];
+	return additionalFields.map((additionalField) => processAdditionalFieldMacro(fieldId, additionalField));
+}
 
-	// TODO: are there going to be other placeholders besides {id}?
-	return additionalFields.map((additionalField) => additionalField.replaceAll('{id}', fieldId));
+// TODO: are there going to be other placeholders besides {id}?
+export function processAdditionalFieldMacro(parentFieldId: string, fieldId: string): string {
+	return fieldId.replaceAll('{id}', parentFieldId);
 }

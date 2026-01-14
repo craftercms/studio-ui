@@ -22,10 +22,13 @@ import useIsDarkModeTheme from '../../../hooks/useIsDarkModeTheme';
 import { FormattedMessage } from 'react-intl';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import Tooltip from '@mui/material/Tooltip';
+import { processAdditionalFieldMacro } from '../../FormsEngine/lib/formUtils';
 
-export function AdditionalFieldChip(props) {
-	const fieldId = props.fieldId ?? 'test';
+export function AdditionalFieldChip(props: { parentFieldId: string; fieldId: string }) {
+	const { fieldId, parentFieldId } = props;
 	const isDark = useIsDarkModeTheme();
+
+	const additionalFieldId = processAdditionalFieldMacro(parentFieldId, fieldId);
 
 	return (
 		<Box display="flex" alignItems="center" sx={{ mb: 1 }}>
@@ -46,7 +49,7 @@ export function AdditionalFieldChip(props) {
 				]}
 			>
 				<Typography component="span" variant="body2">
-					{fieldId}
+					{additionalFieldId}
 				</Typography>
 				<Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
 					<Typography variant="body2" component="span">
