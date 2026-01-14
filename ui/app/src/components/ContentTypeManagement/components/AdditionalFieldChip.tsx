@@ -53,7 +53,9 @@ export function AdditionalFieldChip(props) {
 						<FormattedMessage defaultMessage="Additional Field" />
 					</Typography>
 					<Tooltip
-						title="And additional field is a field that this control has permission to edit, beyond its main value. "
+						title={
+							<FormattedMessage defaultMessage="An additional field is a field that this control has permission to edit, beyond its main value. " />
+						}
 						placement="top"
 					>
 						<InfoOutlinedIcon fontSize="small" />
