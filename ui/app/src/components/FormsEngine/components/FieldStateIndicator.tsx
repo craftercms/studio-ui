@@ -30,7 +30,7 @@ export type FieldStateIndicatorProps = {
 
 export function FieldStateIndicator({ isRequired, hasValidator, isValid, isEmpty }: FieldStateIndicatorProps) {
 	let IndicatorComponent: SvgIconComponent | null = null;
-	let MessageComponent: ReactNode = null;
+	let message: ReactNode = null;
 
 	// If there is no requirement and no validator, and the field is empty, do not show any indicator
 	if (!isRequired && !hasValidator && isEmpty) return undefined;
@@ -39,20 +39,20 @@ export function FieldStateIndicator({ isRequired, hasValidator, isValid, isEmpty
 	if (isRequired || (!isRequired && hasValidator && !isValid)) {
 		IndicatorComponent = Asterisk;
 		if (isValid) {
-			MessageComponent = CompleteMessage;
+			message = CompleteMessage;
 		} else if (isRequired && isEmpty) {
-			MessageComponent = RequiredMessage;
+			message = RequiredMessage;
 		} else {
-			MessageComponent = InvalidMessage;
+			message = InvalidMessage;
 		}
 	} else {
 		// Otherwise, show check mark
 		IndicatorComponent = CheckRounded;
-		MessageComponent = CompleteMessage;
+		message = CompleteMessage;
 	}
 
 	return (
-		<Tooltip title={MessageComponent}>
+		<Tooltip title={message}>
 			<IndicatorComponent fontSize="small" color={isValid ? 'success' : 'error'} />
 		</Tooltip>
 	);
