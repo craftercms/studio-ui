@@ -39,16 +39,16 @@ export function FieldStateIndicator({ isRequired, hasValidator, isValid, isEmpty
 	if (isRequired || (!isRequired && hasValidator && !isValid)) {
 		IndicatorComponent = Asterisk;
 		if (isValid) {
-			message = CompleteMessage;
+			message = <FormattedMessage defaultMessage="Complete" />;
 		} else if (isRequired && isEmpty) {
-			message = RequiredMessage;
+			message = <FormattedMessage defaultMessage="Required" />;
 		} else {
-			message = InvalidMessage;
+			message = <FormattedMessage defaultMessage="Invalid" />;
 		}
 	} else {
 		// Otherwise, show check mark
 		IndicatorComponent = CheckRounded;
-		message = CompleteMessage;
+		message = <FormattedMessage defaultMessage="Complete" />;
 	}
 
 	return (
@@ -57,9 +57,5 @@ export function FieldStateIndicator({ isRequired, hasValidator, isValid, isEmpty
 		</Tooltip>
 	);
 }
-
-const CompleteMessage = <FormattedMessage defaultMessage="Complete" />;
-const RequiredMessage = <FormattedMessage defaultMessage="Required" />;
-const InvalidMessage = <FormattedMessage defaultMessage="Invalid" />;
 
 export default FieldStateIndicator;
