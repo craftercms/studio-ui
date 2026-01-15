@@ -381,13 +381,15 @@ export function fetchUpdateRequirements({
 	path,
 	modelId,
 	readonly,
-	contentTypesById
+	contentTypesById,
+	changeTypeId
 }: {
 	siteId: string;
 	path: string;
 	modelId: string;
 	readonly: boolean;
 	contentTypesById: LookupTable<ContentType>;
+	changeTypeId: string;
 }): Observable<FormRequirementsResponse> {
 	// Good to start with the lock so that posterior fetch of the item comes with the lock status. If we need
 	// to fetch the content type, will need the item first to determine its content type id, but currently relying
@@ -419,7 +421,7 @@ export function fetchUpdateRequirements({
 			])
 		),
 		map(([item, lockResult, contentXml, descriptorXml]) => {
-			let contentType = contentTypesById[item.contentTypeId];
+			let contentType = contentTypesById[changeTypeId ?? item.contentTypeId];
 			if (!contentType) {
 				throw ContentTypeNotFoundError;
 			}

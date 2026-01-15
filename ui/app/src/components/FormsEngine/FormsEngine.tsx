@@ -119,6 +119,7 @@ import { displayWithPendingChangesConfirm } from '../../utils/ui';
 import useActiveUser from '../../hooks/useActiveUser';
 import FormBackToTop from './components/FormBackToTop';
 import { createComponentId } from '../../utils/system';
+import useMount from '../../hooks/useMount';
 
 export interface FormSavePromiseResult {
 	close: boolean;
@@ -154,6 +155,7 @@ export interface UpdateModeProps {
 		path: string;
 		modelId?: string;
 		values?: LookupTable<unknown>;
+		changeTypeId?: string;
 	};
 }
 
@@ -445,7 +447,8 @@ function FormBootstrap(props: FormsEngineProps) {
 				path: update.path,
 				modelId: update.modelId,
 				readonly: readonlyProp,
-				contentTypesById: effectRefs.current.contentTypesById
+				contentTypesById: effectRefs.current.contentTypesById,
+				changeTypeId: update.changeTypeId
 			})
 				.pipe(
 					catchError((error: AjaxError | symbol) => {
@@ -613,6 +616,12 @@ function FormOrchestrator(props: FormsEngineProps) {
 	const useCollapsedToC = useAtomValue(atoms.useCollapsedToC);
 	const tableOfContents = <TableOfContents fieldsToRender={fieldsToRender} containerRef={containerRef} />;
 	const effectRefs = useUpdateRefs({ fieldsToRender, versionCommentAtom: stableFormContext.atoms.versionComment });
+
+	useMount(() => {
+		if (update?.changeTypeId) {
+			setHasPendingChanges(true);
+		}
+	});
 
 	// Changes comment generation & change detection/tracking
 	useEffect(() => {
