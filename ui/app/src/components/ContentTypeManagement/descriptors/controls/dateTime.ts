@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createVirtualSection, DescriptorContentType } from '../../utils';
+import { createValidation, createVirtualSection, DescriptorContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
 import { defineMessage } from 'react-intl';
 
@@ -90,10 +90,12 @@ export const dateTimeDescriptor: DescriptorContentType = {
 		},
 		populateDateExp: {
 			id: 'populateDateExp',
-			type: 'string',
+			type: 'date-time-expression-input',
 			name: defineMessage({ defaultMessage: 'Populate Expression' }),
 			defaultValue: 'now',
-			validations: immutableEmptyObject
+			validations: {
+				type: createValidation('type', 'dateTime')
+			}
 		},
 		useCustomTimezone: {
 			id: 'useCustomTimezone',

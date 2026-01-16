@@ -18,6 +18,7 @@ import React, {
 	forwardRef,
 	PropsWithChildren,
 	ReactNode,
+	type RefCallback,
 	RefObject,
 	useContext,
 	useImperativeHandle,
@@ -43,6 +44,8 @@ export type FormLayoutProps = PropsWithChildren<{
 	mainContentGrid: ReactNode;
 	headerFragment: ReactNode;
 	containerRef: RefObject<HTMLDivElement>;
+	sentinelRef: RefObject<HTMLDivElement>;
+	mainContentRefCallback: RefCallback<HTMLDivElement>;
 	hasStackedForms: boolean;
 	stackIndex: number;
 	style?: BoxProps['style'];
@@ -59,8 +62,18 @@ function collectSectionExpandedState(
 }
 
 export const FormLayout = forwardRef<HTMLDivElement, FormLayoutProps>(function (props, ref) {
-	const { children, mainContentGrid, targetHeight, containerRef, headerFragment, hasStackedForms, stackIndex, style } =
-		props;
+	const {
+		children,
+		mainContentGrid,
+		targetHeight,
+		containerRef,
+		mainContentRefCallback,
+		sentinelRef,
+		headerFragment,
+		hasStackedForms,
+		stackIndex,
+		style
+	} = props;
 	const theme = useTheme();
 	const store = useJotaiStore();
 	const { api: contextApi } = useContext(StableGlobalContext);
@@ -155,14 +168,29 @@ export const FormLayout = forwardRef<HTMLDivElement, FormLayoutProps>(function (
 				<Divider />
 			</Paper>
 			<Box
+				ref={mainContentRefCallback}
 				sx={{
 					// TODO: Tabs will be done at a later phase.
 					// display: activeTab === 0 ? 'inherit' : 'none',
+					position: 'relative',
+					height: '100%',
 					px: 0,
-					py: 2,
-					backgroundColor: theme.palette.background.default
+					pt: 2,
+					backgroundColor: theme.palette.background.default,
+					overflow: 'auto'
 				}}
 			>
+				<div
+					ref={sentinelRef}
+					style={{
+						position: 'absolute',
+						top: '60px',
+						height: '1px',
+						width: '1px',
+						pointerEvents: 'none',
+						visibility: 'hidden'
+					}}
+				/>
 				<Container maxWidth={isLargeContainer ? 'xl' : undefined}>
 					<Grid container spacing={2}>
 						{mainContentGrid}

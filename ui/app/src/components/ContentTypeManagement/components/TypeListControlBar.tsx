@@ -25,7 +25,10 @@ import Switch from '@mui/material/Switch';
 import { FormattedMessage } from 'react-intl';
 import { BoxProps } from '@mui/material/Box';
 import { consolidateSx } from '../../../utils/system';
-import type { SelectProps } from '@mui/material/Select';
+import { type SelectProps } from '@mui/material/Select';
+import Button from '@mui/material/Button';
+import ArrowUpwardRoundedIcon from '@mui/icons-material/ArrowUpwardRounded';
+import ArrowDownwardRoundedIcon from '@mui/icons-material/ArrowDownwardRounded';
 
 export interface TypeListControlBarProps {
 	compact: boolean;
@@ -34,6 +37,10 @@ export interface TypeListControlBarProps {
 	onKeywordsChange(value: string): void;
 	objectTypeFilter: ObjectTypeOption;
 	onObjectTypeFilterChange(value: ObjectTypeOption): void;
+	sortOrder?: 'descending' | 'ascending';
+	onToggleSortOrder?(): void;
+	groupTypes: boolean;
+	onGroupTypesChange(value: boolean): void;
 	searchInputRef?: Ref<HTMLInputElement>;
 	leftChildren?: ReactNode;
 	slotProps?: Partial<{
@@ -52,11 +59,16 @@ export function TypeListControlBar(props: TypeListControlBarProps) {
 		objectTypeFilter,
 		onKeywordsChange,
 		onObjectTypeFilterChange,
+		sortOrder,
+		onToggleSortOrder,
 		onCompactChange,
 		searchInputRef,
 		leftChildren,
-		slotProps
+		slotProps,
+		groupTypes,
+		onGroupTypesChange
 	} = props;
+
 	return (
 		<Paper {...slotProps} sx={consolidateSx({ p: 1, mb: 2, display: 'flex' }, slotProps?.paper?.sx)}>
 			{leftChildren && (
@@ -98,10 +110,35 @@ export function TypeListControlBar(props: TypeListControlBarProps) {
 				)}
 			/>
 			<FormControlLabel
+				control={<Switch checked={groupTypes} onChange={(e, checked) => onGroupTypesChange(checked)} />}
+				label={<FormattedMessage defaultMessage="Group Types" />}
+				slotProps={{ typography: { variant: 'body2' } }}
+			/>
+			<FormControlLabel
 				control={<Switch checked={compact} onChange={(e, checked) => onCompactChange(checked)} />}
 				label={<FormattedMessage defaultMessage="Compact" />}
 				slotProps={{ typography: { variant: 'body2' } }}
 			/>
+			{onToggleSortOrder && (
+				<Button
+					variant="text"
+					endIcon={
+						sortOrder === 'ascending' ? (
+							<ArrowUpwardRoundedIcon color="primary" />
+						) : (
+							<ArrowDownwardRoundedIcon color="primary" />
+						)
+					}
+					onClick={onToggleSortOrder}
+					sx={{
+						color: 'text.primary',
+						fontWeight: 'normal',
+						fontSize: (theme) => theme.typography.fontSize
+					}}
+				>
+					<FormattedMessage defaultMessage="Sort" />
+				</Button>
+			)}
 		</Paper>
 	);
 }
