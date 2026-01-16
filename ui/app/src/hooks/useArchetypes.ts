@@ -15,9 +15,60 @@
  */
 
 import useSelection from './useSelection';
+import { deserialize, fromString } from '../utils/xml';
+import { ContentType, LookupTable } from '../models';
+import { asArray } from '../utils/array';
+import { extendArchetypeDescriptor } from '../utils/object';
+import { useEffect, useState } from 'react';
+import { Archetype } from '../components/ContentTypeManagement/descriptors/archetypes';
 
 export function useArchetypes() {
-	return useSelection((state) => state.uiConfig.archetypes);
+	const [archetypes, setArchetypes] = useState<LookupTable<Archetype>>({});
+	const uiConfigXml = useSelection((state) => state.uiConfig.xml);
+
+	useEffect(() => {
+		if (uiConfigXml) {
+			const configDOM = fromString(uiConfigXml);
+			const archetypes = {};
+
+			configDOM
+				.querySelectorAll('[id="craftercms.components.ContentTypeManagement"] > configuration > objectTypes')
+				.forEach((tag) => {
+					const descriptor = tag.querySelector('descriptor');
+					// Parent archetypes must be defined before children so that they can be extended properly
+					const extendsFrom = tag.getAttribute('extends');
+					let parentArchetype = null;
+					if (extendsFrom) {
+						parentArchetype = archetypes[extendsFrom] ?? {};
+					}
+					archetypes[tag.id] = {
+						...parentArchetype,
+						id: tag.id
+					};
+					if (descriptor) {
+						let deserializedDescriptor: ContentType = deserialize(descriptor.innerHTML);
+						deserializedDescriptor = {
+							...deserializedDescriptor,
+							id: tag.id,
+							sections: asArray(deserializedDescriptor.sections).map((section) => ({
+								...section,
+								fields: asArray(section.fields)
+							})),
+							dataSources: asArray(deserializedDescriptor.dataSources)
+						};
+
+						archetypes[tag.id] = {
+							...archetypes[tag.id],
+							name: deserializedDescriptor.name,
+							descriptor: extendArchetypeDescriptor(parentArchetype?.descriptor, deserializedDescriptor)
+						};
+					}
+					setArchetypes(archetypes);
+				});
+		}
+	}, [uiConfigXml]);
+
+	return archetypes;
 }
 
 export default useArchetypes;
