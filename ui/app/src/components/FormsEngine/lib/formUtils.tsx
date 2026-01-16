@@ -389,7 +389,7 @@ export function fetchUpdateRequirements({
 	modelId: string;
 	readonly: boolean;
 	contentTypesById: LookupTable<ContentType>;
-	changeTypeId: string;
+	changeTypeId?: string;
 }): Observable<FormRequirementsResponse> {
 	// Good to start with the lock so that posterior fetch of the item comes with the lock status. If we need
 	// to fetch the content type, will need the item first to determine its content type id, but currently relying
