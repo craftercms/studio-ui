@@ -31,7 +31,7 @@ import {
 	setViewGroupedTypes
 } from '../../../utils/state';
 import useActiveUser from '../../../hooks/useActiveUser';
-import { nnou, nou } from '../../../utils/object';
+import { nnou } from '../../../utils/object';
 import type { LookupTable } from '../../../models';
 import Typography from '@mui/material/Typography';
 
