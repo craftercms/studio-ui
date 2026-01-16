@@ -20,7 +20,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
 import useActiveSite from '../../hooks/useActiveSite';
 import useContentTypes from '../../hooks/useContentTypes';
-import React, { createElement, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, { createElement, type RefCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { ContentTypeField, PublishPackage } from '../../models';
 import {
 	FormsEngineAtoms,
@@ -613,6 +613,8 @@ function FormOrchestrator(props: FormsEngineProps) {
 	const useCollapsedToC = useAtomValue(atoms.useCollapsedToC);
 	const tableOfContents = <TableOfContents fieldsToRender={fieldsToRender} containerRef={containerRef} />;
 	const effectRefs = useUpdateRefs({ fieldsToRender, versionCommentAtom: stableFormContext.atoms.versionComment });
+	const [collapseHeader, setCollapseHeader] = useState(false);
+	const scrollTimeout = useRef(null);
 
 	// Changes comment generation & change detection/tracking
 	useEffect(() => {
@@ -732,16 +734,48 @@ function FormOrchestrator(props: FormsEngineProps) {
 		}
 	};
 
+	const [mainContent, setMainContent] = useState(null);
+	const sentinelRef = useRef<HTMLDivElement>(null);
+
+	const mainContentRefCallback: RefCallback<HTMLDivElement> = (element) => {
+		setMainContent(element);
+	};
+
+	// Monitor when sentinel element crosses the threshold
+	useEffect(() => {
+		if (!mainContent || !sentinelRef.current) return;
+
+		const observer = new IntersectionObserver(
+			([entry]) => {
+				// When sentinel is NOT intersecting (scrolled past 60px, sentinel's top position), collapse header
+				setCollapseHeader(!entry.isIntersecting);
+			},
+			{
+				root: mainContent,
+				threshold: 0,
+				rootMargin: '0px'
+			}
+		);
+
+		observer.observe(sentinelRef.current);
+
+		return () => {
+			observer.disconnect();
+		};
+	}, [mainContent]);
+
 	const bodyFragment = (
 		<FormLayout
 			stackIndex={stackIndex}
 			containerRef={containerRef}
+			sentinelRef={sentinelRef}
+			mainContentRefCallback={mainContentRefCallback}
 			hasStackedForms={hasStackedForms}
 			// If the form is rendered in/as a dialog, take up the whole screen minus
 			// top/bottom margins (2 top, 2 bottom). If not a dialog, take up the whole screen.
 			targetHeight={getTargetHeight(isDialog, isFullScreen, theme)}
 			headerFragment={
-				<>
+				<Box id="header" sx={{ minHeight: 50 }}>
 					<Box component={Container} display="flex" alignItems="center" justifyContent="space-between" pt={2}>
 						<Typography variant="body2" color="textSecondary">
 							<span title={siteId}>{activeSite.name}</span> / <span title={contentType.id}>{contentType.name}</span>
@@ -771,18 +805,18 @@ function FormOrchestrator(props: FormsEngineProps) {
 						</Box>
 					</Box>
 					{isRepeatMode ? (
-						<RepeatModeHeader repeat={repeat} />
+						<RepeatModeHeader repeat={repeat} collapse={collapseHeader} />
 					) : isCreateMode ? (
-						<CreateModeHeader path={create?.path} />
+						<CreateModeHeader path={create?.path} collapse={collapseHeader} />
 					) : (
-						<EditModeHeader isEmbedded={isEmbedded} />
+						<EditModeHeader isEmbedded={isEmbedded} collapse={collapseHeader} />
 					)}
-				</>
+				</Box>
 			}
 			mainContentGrid={
 				<>
 					<Grid size={useCollapsedToC ? 'auto' : 'grow'}>
-						<StickyBox data-area-id="stickySidebar">
+						<StickyBox data-area-id="stickySidebar" sx={{ height: 'auto' }}>
 							{useCollapsedToC ? (
 								<IconButton size="small" onClick={handleOpenDrawerSidebar}>
 									<MenuRounded />
@@ -854,7 +888,7 @@ function FormOrchestrator(props: FormsEngineProps) {
 						<FormBackToTop containerRef={containerRef} />
 					</Grid>
 					<Grid size="grow">
-						<StickyBox className="space-y">
+						<StickyBox className="space-y" sx={{ height: 'auto' }}>
 							{readonly ? (
 								<>
 									<Alert severity="info" variant="outlined" icon={<EditOffOutlined />}>

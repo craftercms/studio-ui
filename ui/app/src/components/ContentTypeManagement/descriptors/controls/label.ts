@@ -45,7 +45,9 @@ export const labelDescriptor: DescriptorContentType = {
 			validations: immutableEmptyObject
 		}
 	},
-	supportedPostFixes: ['_s']
+	metadata: {
+		suffixes: ['_s']
+	}
 };
 
 export default labelDescriptor;
