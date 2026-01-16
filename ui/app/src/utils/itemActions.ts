@@ -582,6 +582,7 @@ export const itemActionDispatcher = ({
 			case 'createContent': {
 				const id = nanoid();
 
+				// TODO: Right now we're fetching legacy content types to check if there's only one type. Pending API v2 support
 				fetchLegacyContentTypes(site, getNormalizedFolderPathForApi1GetTypes(item))
 					.pipe(map((legacyTypes) => legacyTypes.map(parseLegacyContentType)))
 					.subscribe({
@@ -621,6 +622,9 @@ export const itemActionDispatcher = ({
 									})
 								);
 							}
+						},
+						error({ response }) {
+							dispatch(pushErrorDialog({ props: { error: response } }));
 						}
 					});
 				break;
