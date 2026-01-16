@@ -127,7 +127,8 @@ export const dateTimeDescriptor: DescriptorContentType = {
 		}
 	},
 	metadata: {
-		suffixes: ['_dt']
+		suffixes: ['_dt'],
+		additionalFields: ['{id}_tz']
 	}
 };
 
