@@ -855,6 +855,7 @@
   "pathNavigator.pathFilterInputPlaceholder": " {name}의 하위 항목 필터링 ...",
   "pathNavigator.viewChildren": "어린이 보기",
   "pathNavigatorTree.components": "구성요소",
+  "pathNavigatorTree.items": "아이템",
   "pathNavigatorTree.missingRootPath": "경로 \"{path}\"이(가) 존재하지 않습니다.",
   "pathNavigatorTree.moreLinkLabel": " {count, plural, one {...{count} 개 항목 더} other {...{count} 개 항목 더}}",
   "pathNavigatorTree.pages": "페이지",

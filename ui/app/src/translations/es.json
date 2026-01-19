@@ -855,6 +855,7 @@
   "pathNavigator.pathFilterInputPlaceholder": "Filtrar hijos de {name}...",
   "pathNavigator.viewChildren": "Ver niños",
   "pathNavigatorTree.components": "Componentes",
+  "pathNavigatorTree.items": "Artículos",
   "pathNavigatorTree.missingRootPath": "La ruta \"{path}\" no existe",
   "pathNavigatorTree.moreLinkLabel": " {count, plural, one {...{count} artículo más} other {...{count} artículos más}}",
   "pathNavigatorTree.pages": "Paginas",
