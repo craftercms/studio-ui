@@ -765,7 +765,12 @@ function NodeSelector(props: NodeSelectorProps) {
 											primary={
 												isEmbedded ? (
 													<ItemDisplay
-														item={{ ...contextItem, label: item.value, systemType: 'component' }}
+														item={{
+															...contextItem,
+															label: item.value,
+															systemType: 'component'
+														}}
+														showWorkflowState={!isEmbedded}
 														showNavigableAsLinks={false}
 													/>
 												) : itemsByPath[item.include] ? (
