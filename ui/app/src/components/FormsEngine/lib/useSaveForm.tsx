@@ -15,8 +15,8 @@
  */
 
 import { useAtomValue, useSetAtom, useStore as useJotaiStore } from 'jotai/index';
-import { useDispatch, useStore as useReduxStore } from 'react-redux';
-import GlobalState from '../../../models/GlobalState';
+import { useDispatch, useSelector, useStore as useReduxStore } from 'react-redux';
+import GlobalState, { DialogStackItem } from '../../../models/GlobalState';
 import { FormattedMessage, useIntl } from 'react-intl';
 import useActiveSiteId from '../../../hooks/useActiveSiteId';
 import React, { useContext } from 'react';
@@ -32,7 +32,6 @@ import {
 import { FormSavePromiseResult, FormsEngineProps } from '../FormsEngine';
 import { XmlKeys } from './formConsts';
 import { fromString } from '../../../utils/xml';
-import { ensureSingleSlash } from '../../../utils/string';
 import { moveAndUpdateContent, writeContent } from '../../../services/content';
 import { AjaxError } from 'rxjs/ajax';
 import Box from '@mui/material/Box';
@@ -40,8 +39,10 @@ import Typography from '@mui/material/Typography';
 import { buildContentXml } from './valueSerializers';
 import { flushSync } from 'react-dom';
 import LookupTable from '../../../models/LookupTable';
-import { isInternalNameValid, checkMinimumSaveRequirementsFulfilled } from './validators';
+import { checkMinimumSaveRequirementsFulfilled, isInternalNameValid } from './validators';
 import ContentType from '../../../models/ContentType';
+import { updateDialogState } from '../../../state/actions/dialogStack';
+import { FormsEngineDialogProps } from '../FormsEngineDialog';
 
 export interface UseSaveFormProps {
 	createPath?: string;
@@ -50,6 +51,7 @@ export interface UseSaveFormProps {
 	isEmbedded: boolean;
 	onBeforeSave?: FormsEngineProps['onSave'];
 	onSave?: FormsEngineProps['onSave'];
+	dialogId?: string;
 	onClose?(): void;
 }
 
@@ -74,6 +76,10 @@ export function useSaveForm(props: UseSaveFormProps) {
 	const onSave = wrapOnSaveProp(props.onSave);
 	const fileName = useAtomValue(stableFormContext.atoms.fileName);
 	const initialFileName = itemPath ? getFileNameValueFromPath(itemPath, isPage) : '';
+	const dialogState = useSelector(
+		(state: GlobalState) => state.dialogStack.byId[props.dialogId] as DialogStackItem<FormsEngineDialogProps>
+	);
+
 	return async () => {
 		const values = extractAtomValues(jotai, stableFormContext.atoms.valueByFieldId);
 		const onSavePromiseHandler = ({ close }: FormSavePromiseResult) => {
@@ -119,6 +125,7 @@ export function useSaveForm(props: UseSaveFormProps) {
 		}
 		setIsSubmitting(true);
 		let path: string;
+		let renamePath: string;
 		const isRename = !isCreateMode && fileName !== initialFileName;
 		if (isCreateMode) {
 			path = composePathForType(createPath, fileName, contentType);
@@ -126,6 +133,7 @@ export function useSaveForm(props: UseSaveFormProps) {
 			if (isRename) {
 				const basePath = getBasePath(itemPath, isPage);
 				path = composePathForType(basePath, fileName, contentType);
+				renamePath = path;
 			} else {
 				path = itemPath;
 			}
@@ -134,11 +142,22 @@ export function useSaveForm(props: UseSaveFormProps) {
 		const saveActionCallbacks = {
 			next() {
 				const dom = fromString(xml);
-				// TODO: when renaming, if form it not set to be closed, then the form will have the old path and values,
-				//  causing it to break. Should we trigger a re-fetch of state/etc?
-				(onSave?.({ dom, xml, values, versionComment, path }) as Promise<FormSavePromiseResult>)?.then(
-					onSavePromiseHandler
-				);
+				(onSave?.({ dom, xml, values, versionComment, path }) as Promise<FormSavePromiseResult>)?.then((result) => {
+					onSavePromiseHandler(result);
+					if (isRename && dialogState && !closeAfterSave) {
+						dispatch(
+							updateDialogState({
+								id: props.dialogId,
+								props: {
+									formProps: {
+										...dialogState.props.formProps,
+										update: { path: renamePath, dialogId: props.dialogId }
+									}
+								}
+							})
+						);
+					}
+				});
 			},
 			error(error: AjaxError) {
 				setIsSubmitting(false);

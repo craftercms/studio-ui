@@ -154,6 +154,7 @@ export interface UpdateModeProps {
 		path: string;
 		modelId?: string;
 		values?: LookupTable<unknown>;
+		dialogId?: string;
 	};
 }
 
@@ -721,6 +722,7 @@ function FormOrchestrator(props: FormsEngineProps) {
 		isCreateMode,
 		isRepeatMode,
 		createPath: create?.path,
+		dialogId: update?.dialogId,
 		onClose: () => onCloseHandler(null, null)
 	});
 

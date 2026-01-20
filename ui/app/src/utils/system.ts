@@ -115,6 +115,7 @@ export function pickShowContentFormAction(oldProps: LegacyFormDialogProps) {
 				props: { ...oldProps, dialogId }
 			})
 		: pushDialog({
+				id: dialogId,
 				component: createComponentId('FormsEngineDialog'),
 				allowFullScreen: true,
 				allowMinimize: true,
@@ -122,7 +123,7 @@ export function pickShowContentFormAction(oldProps: LegacyFormDialogProps) {
 					formProps: {
 						...(oldProps.isNewContent
 							? { create: { path: oldProps.path, contentTypeId: oldProps.contentTypeId } }
-							: { update: { path: oldProps.path } }),
+							: { update: { path: oldProps.path, dialogId } }),
 						readonly: oldProps.readonly ?? false,
 						onSave() {
 							if (isPreviewAppUrl()) getHostToGuestBus().next(reloadRequest());
