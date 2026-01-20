@@ -90,6 +90,13 @@ export function EditModeHeader({ isEmbedded, collapse = false }: { isEmbedded: b
 							}
 						/>
 					)}
+					{collapse && (
+						<Tooltip title={<FormattedMessage defaultMessage="Copy path to clipboard" />}>
+							<IconButton size="small" onClick={() => copyToClipboard(item.path)} sx={{ padding: '1px', ml: 1 }}>
+								<ContentCopyRounded fontSize="inherit" sx={{ color: 'text.secondary' }} />
+							</IconButton>
+						</Tooltip>
+					)}
 				</Box>
 				<Collapse in={!collapse}>
 					<Box display="flex" alignItems="end" justifyContent="space-between">
