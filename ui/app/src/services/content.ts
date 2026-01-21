@@ -128,6 +128,17 @@ export function fetchContentInstance(
 	return fetchContentDOM(site, path).pipe(map((doc) => parseContentXML(doc, path, contentTypesLookup, {})));
 }
 
+export function writeContentV2(siteId: string, path: string, content: string, options?: { unlock: boolean }) {
+	const request$ = post(`/studio/api/2/content/${siteId}`, {
+		path,
+		content
+	});
+	if (options?.unlock) {
+		return request$.pipe(switchMap((response) => unlock(siteId, path).pipe(map(() => response))));
+	}
+	return request$;
+}
+
 export function writeContent(
 	site: string,
 	path: string,
@@ -259,7 +270,7 @@ export function writeInstance(
 	const transferObj = createComponentObject(instance, contentType, shouldSerializeValueFn);
 	createElements(doc.documentElement, transferObj);
 	return fromPromise(beautify(serialize(doc))).pipe(
-		switchMap((xml) => writeContent(site, instance.craftercms.path, xml))
+		switchMap((xml) => writeContentV2(site, instance.craftercms.path, xml))
 	);
 }
 // endregion
@@ -327,15 +338,7 @@ function performMutation(
 
 			return fromPromise(beautify(serialize(doc))).pipe(
 				switchMap((xml) =>
-					post(
-						writeContentUrl({
-							site,
-							path,
-							unlock: 'true',
-							fileName: getInnerHtml(doc.querySelector(':scope > file-name'))
-						}),
-						xml
-					).pipe(map(() => ({ updatedDocument: doc })))
+					writeContentV2(site, path, xml, { unlock: true }).pipe(map(() => ({ updatedDocument: doc })))
 				)
 			);
 		})
@@ -523,17 +526,7 @@ export function duplicateItem(
 					updateCreatedDateElement(component);
 				}
 				return fromPromise(beautify(serialize(doc))).pipe(
-					switchMap((xml) =>
-						post(
-							writeContentUrl({
-								site,
-								path: path,
-								unlock: 'true',
-								fileName: getInnerHtml(doc.querySelector(':scope > file-name'))
-							}),
-							xml
-						).pipe(map(() => returnValue))
-					)
+					switchMap((xml) => writeContentV2(site, path, xml, { unlock: true }).pipe(map(() => returnValue)))
 				);
 			} else {
 				return fetchContentDOM(site, itemPath).pipe(
@@ -545,30 +538,14 @@ export function duplicateItem(
 						return forkJoin([
 							// Write the main document.
 							fromPromise(beautify(serialize(doc))).pipe(
-								switchMap((xml) =>
-									post(
-										writeContentUrl({
-											site,
-											path,
-											unlock: 'true',
-											fileName: getInnerHtml(doc.querySelector(':scope > file-name'))
-										}),
-										xml
-									)
-								)
+								switchMap((xml) => writeContentV2(site, path, xml, { unlock: true }))
 							),
 							// Write the new/duplicated shared component.
 							fromPromise(beautify(serialize(componentDoc))).pipe(
 								switchMap((xml) =>
-									post(
-										writeContentUrl({
-											site,
-											path: newItemData.path,
-											unlock: 'true',
-											fileName: getInnerHtml(componentDoc.querySelector(':scope > file-name'))
-										}),
-										xml
-									)
+									writeContentV2(site, (returnValue.newItem.path += `/${returnValue.newItem.modelId}.xml`), xml, {
+										unlock: true
+									})
 								)
 							)
 						]).pipe(
@@ -834,19 +811,7 @@ export function fetchItemsByContentType(
 export function formatXML(site: string, path: string): Observable<boolean> {
 	return fetchContentDOM(site, path).pipe(
 		switchMap((doc) =>
-			fromPromise(beautify(serialize(doc))).pipe(
-				switchMap((xml) =>
-					post(
-						writeContentUrl({
-							site,
-							path: path,
-							unlock: 'true',
-							fileName: getInnerHtml(doc.querySelector(':scope > file-name'))
-						}),
-						xml
-					)
-				)
-			)
+			fromPromise(beautify(serialize(doc))).pipe(switchMap((xml) => writeContentV2(site, path, xml, { unlock: true })))
 		),
 		map(() => true)
 	);

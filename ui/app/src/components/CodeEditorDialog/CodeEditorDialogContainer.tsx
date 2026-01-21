@@ -17,7 +17,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import DialogHeader from '../DialogHeader/DialogHeader';
 import DialogBody from '../DialogBody/DialogBody';
-import { fetchContentXML, lock, writeContent } from '../../services/content';
+import { fetchContentXML, lock, writeContentV2 } from '../../services/content';
 import { ConditionalLoadingState } from '../LoadingState/LoadingState';
 import AceEditor from '../AceEditor/AceEditor';
 import { useDispatch } from 'react-redux';
@@ -96,7 +96,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 			const module = isConfig ? (path.split('/')[2] as 'studio') : null;
 			const service$ = isConfig
 				? writeConfiguration(site, path.replace(`/config/${module}`, ''), module, value)
-				: writeContent(site, path, value, { unlock: false });
+				: writeContentV2(site, path, value, { unlock: false });
 			// If item is in packages in active workflow, before saving we need to cancel the packages.
 			const preWriteAction$ = affectedPackages?.length
 				? cancelPackages(site, {

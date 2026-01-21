@@ -33,7 +33,7 @@ import { FormSavePromiseResult, FormsEngineProps } from '../FormsEngine';
 import { XmlKeys } from './formConsts';
 import { fromString } from '../../../utils/xml';
 import { ensureSingleSlash } from '../../../utils/string';
-import { moveAndUpdateContent, writeContent } from '../../../services/content';
+import { moveAndUpdateContent, writeContentV2 } from '../../../services/content';
 import { AjaxError } from 'rxjs/ajax';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -183,7 +183,7 @@ export function useSaveForm(props: UseSaveFormProps) {
 		if (isRename) {
 			moveAndUpdateContent(siteId, itemPath, path, xml).subscribe(saveActionCallbacks);
 		} else {
-			writeContent(siteId, path, xml).subscribe(saveActionCallbacks);
+			writeContentV2(siteId, path, xml).subscribe(saveActionCallbacks);
 		}
 	};
 }
