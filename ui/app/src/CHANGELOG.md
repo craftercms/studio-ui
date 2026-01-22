@@ -57,6 +57,7 @@
   * [ItemDisplay] Updated `item` prop to be of type `LightItem | ContentItem`.
   * `PathNavigator/PathNavigatorTree`: Updated `label` prop to be of type `TranslationOrText`.
   * `PathNavigatorTreeUI/PathNavigatorUI/PathNavigatorTreeHeader`: Updated `title` prop to be of type `string | ReactNode`.
+  * Removed `LegacyComponentsPanel` component.
 * [hooks]
   * Removed `useLogicResource` hook.
   * Removed `useSelectorResource` hook.
