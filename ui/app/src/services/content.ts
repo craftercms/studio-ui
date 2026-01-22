@@ -30,7 +30,7 @@ import {
 import { ContentType } from '../models/ContentType';
 import { createLookupTable, nnou, nou, toQueryString } from '../utils/object';
 import { LookupTable } from '../models/LookupTable';
-import { dataUriToBlob, isBlank, isPath, popPiece, removeLastPiece } from '../utils/string';
+import { dataUriToBlob, ensureSingleSlash, isBlank, isPath, popPiece, removeLastPiece } from '../utils/string';
 import ContentInstance, { InstanceRecord } from '../models/ContentInstance';
 import { AjaxResponse } from 'rxjs/ajax';
 import { ComponentsContentTypeParams, ContentInstancePage } from '../models/Search';
@@ -128,7 +128,7 @@ export function fetchContentInstance(
 	return fetchContentDOM(site, path).pipe(map((doc) => parseContentXML(doc, path, contentTypesLookup, {})));
 }
 
-export function writeContentV2(siteId: string, path: string, content: string, options?: { unlock: boolean }) {
+export function writeContent(siteId: string, path: string, content: string, options?: { unlock: boolean }) {
 	const request$ = post(`/studio/api/2/content/${siteId}`, {
 		path,
 		content
@@ -137,39 +137,6 @@ export function writeContentV2(siteId: string, path: string, content: string, op
 		return request$.pipe(switchMap((response) => unlock(siteId, path).pipe(map(() => response))));
 	}
 	return request$;
-}
-
-export function writeContent(
-	site: string,
-	path: string,
-	content: string,
-	options?: { unlock: boolean }
-): Observable<boolean> {
-	options = Object.assign({ unlock: true }, options);
-	const fileName = getFileNameFromPath(path);
-	const pathToWrite = path.replace(`/${fileName}`, '');
-	return post(
-		writeContentUrl({
-			site,
-			path: pathToWrite,
-			unlock: options.unlock ? 'true' : 'false',
-			fileName
-		}),
-		content
-	).pipe(
-		map((ajaxResponse) => {
-			if (ajaxResponse.response.result?.error) {
-				// eslint-disable-next-line no-throw-literal
-				throw {
-					...ajaxResponse,
-					status: 500,
-					response: {
-						message: ajaxResponse.response.result.error.message
-					}
-				};
-			} else return true;
-		})
-	);
 }
 
 // TODO: add link to API docs when available
@@ -216,11 +183,6 @@ export function fetchContentInstanceDescriptor(
 			)
 		)
 	);
-}
-
-function writeContentUrl(qs: object): string {
-	qs = new URLSearchParams(qs as URLSearchParams);
-	return `/studio/api/1/services/api/1/content/write-content.json?${qs.toString()}`;
 }
 
 function createComponentObject(
@@ -270,7 +232,7 @@ export function writeInstance(
 	const transferObj = createComponentObject(instance, contentType, shouldSerializeValueFn);
 	createElements(doc.documentElement, transferObj);
 	return fromPromise(beautify(serialize(doc))).pipe(
-		switchMap((xml) => writeContentV2(site, instance.craftercms.path, xml))
+		switchMap((xml) => writeContent(site, instance.craftercms.path, xml))
 	);
 }
 // endregion
@@ -337,9 +299,7 @@ function performMutation(
 			updateModifiedDateElement(doc.documentElement);
 
 			return fromPromise(beautify(serialize(doc))).pipe(
-				switchMap((xml) =>
-					writeContentV2(site, path, xml, { unlock: true }).pipe(map(() => ({ updatedDocument: doc })))
-				)
+				switchMap((xml) => writeContent(site, path, xml, { unlock: true }).pipe(map(() => ({ updatedDocument: doc }))))
 			);
 		})
 	);
@@ -526,7 +486,7 @@ export function duplicateItem(
 					updateCreatedDateElement(component);
 				}
 				return fromPromise(beautify(serialize(doc))).pipe(
-					switchMap((xml) => writeContentV2(site, path, xml, { unlock: true }).pipe(map(() => returnValue)))
+					switchMap((xml) => writeContent(site, path, xml, { unlock: true }).pipe(map(() => returnValue)))
 				);
 			} else {
 				return fetchContentDOM(site, itemPath).pipe(
@@ -538,12 +498,12 @@ export function duplicateItem(
 						return forkJoin([
 							// Write the main document.
 							fromPromise(beautify(serialize(doc))).pipe(
-								switchMap((xml) => writeContentV2(site, path, xml, { unlock: true }))
+								switchMap((xml) => writeContent(site, path, xml, { unlock: true }))
 							),
 							// Write the new/duplicated shared component.
 							fromPromise(beautify(serialize(componentDoc))).pipe(
 								switchMap((xml) =>
-									writeContentV2(site, (returnValue.newItem.path += `/${returnValue.newItem.modelId}.xml`), xml, {
+									writeContent(site, (returnValue.newItem.path += `/${returnValue.newItem.modelId}.xml`), xml, {
 										unlock: true
 									})
 								)
@@ -811,7 +771,7 @@ export function fetchItemsByContentType(
 export function formatXML(site: string, path: string): Observable<boolean> {
 	return fetchContentDOM(site, path).pipe(
 		switchMap((doc) =>
-			fromPromise(beautify(serialize(doc))).pipe(switchMap((xml) => writeContentV2(site, path, xml, { unlock: true })))
+			fromPromise(beautify(serialize(doc))).pipe(switchMap((xml) => writeContent(site, path, xml, { unlock: true })))
 		),
 		map(() => true)
 	);
