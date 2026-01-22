@@ -63,6 +63,10 @@ export class Dashboard extends UppyDashboard {
 			// When uploading via drag and drop, uppy uses `relativePath` as the prop for the actual relative path, for
 			// browse uploads, it uses `webkitRelativePath`.
 			const relativePath = file.relativePath ?? file.webkitRelativePath ?? null;
+			const path = relativePath
+				? this.opts.path + relativePath.substring(0, relativePath.lastIndexOf('/'))
+				: this.opts.path;
+			const fullPath = `${path.endsWith('/') ? path : path + '/'}${file.name}`;
 			return {
 				source: this.id,
 				name: file.name,
@@ -74,9 +78,7 @@ export class Dashboard extends UppyDashboard {
 					relativePath,
 					// sitePolicy custom value
 					validating: true,
-					path: relativePath
-						? this.opts.path + relativePath.substring(0, relativePath.lastIndexOf('/'))
-						: this.opts.path
+					path: fullPath
 				}
 			};
 		});

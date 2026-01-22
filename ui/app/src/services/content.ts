@@ -1022,16 +1022,17 @@ export function uploadBlob(
 		blob: Blob;
 	},
 	uploadMeta: Record<string, unknown> = {},
-	uploadUrl: string = '/studio/api/1/services/api/1/content/write-content.json',
+	uploadUrl: string = `/studio/api/2/content/${site}`,
 	xsrfArgumentName: string = '_csrf'
 ): Observable<StandardAction> {
-	const qs = toQueryString({ path, site, [xsrfArgumentName]: getRequestForgeryToken() });
+	const qs = toQueryString({ [xsrfArgumentName]: getRequestForgeryToken() });
 	return new Observable((subscriber) => {
 		const uppy = new Core({ autoProceed: true });
 
-		uppy.use(XHRUpload, { endpoint: `${uploadUrl}${qs}`, headers: getGlobalHeaders() });
+		uppy.use(XHRUpload, { endpoint: `${uploadUrl}${qs}`, method: 'PUT', headers: getGlobalHeaders() });
 
-		uppy.setMeta({ ...uploadMeta, path, site });
+		const fullPath = ensureSingleSlash(`${path}/${fileData.name}`);
+		uppy.setMeta({ ...uploadMeta, path: fullPath });
 
 		uppy.on('upload-success', (file, response) => {
 			subscriber.next({ type: 'complete', payload: response });
@@ -1065,7 +1066,7 @@ export function uploadDataUrl(
 	xsrfArgumentName: string
 ): Observable<StandardAction> {
 	return createFileUpload(
-		'/studio/api/1/services/api/1/content/write-content.json',
+		`/studio/api/2/content/${site}`,
 		file,
 		path,
 		{
@@ -1123,17 +1124,8 @@ export function uploadToWebDAV(
 }
 
 export function getBulkUploadUrl(site: string, path: string): string {
-	const qs = toQueryString({
-		site,
-		path,
-		contentType: 'folder',
-		createFolders: true,
-		draft: false,
-		duplicate: false,
-		unlock: true,
-		_csrf: getRequestForgeryToken()
-	});
-	return `/studio/api/1/services/api/1/content/write-content.json${qs}`;
+	const qs = toQueryString({ _csrf: getRequestForgeryToken() });
+	return `/studio/api/2/content/${site}${qs}`;
 }
 
 export function fetchQuickCreateList(site: string): Observable<QuickCreateItem[]> {
