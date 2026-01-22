@@ -44,6 +44,7 @@ import Typography from '@mui/material/Typography';
 import { cancelPackages, fetchAffectedPackages } from '../../services/workflow';
 import { map, switchMap } from 'rxjs/operators';
 import { pushErrorDialog } from '../../utils/system';
+import { ApiResponse } from '../../models';
 
 export function CreateFolderContainer(props: CreateFolderContainerProps) {
 	const { onClose, onCreated, onRenamed, rename = false, value = '', allowBraces = false } = props;
@@ -111,9 +112,9 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
 
 	const onCancelPackagesAckChange = (e: React.ChangeEvent<HTMLInputElement>) => setCancelPackagesAck(e.target.checked);
 
-	const onError = ({ response }) => {
+	const onError = ({ response: { response } }: { response: { response: ApiResponse } }) => {
 		updateSubmittingOrHasPendingChanges({ isSubmitting: false });
-		dispatch(pushErrorDialog({ props: { error: response.response } }));
+		dispatch(pushErrorDialog({ props: { error: response } }));
 	};
 
 	const onRenameFolder = (site: string, path: string, name: string) => {
