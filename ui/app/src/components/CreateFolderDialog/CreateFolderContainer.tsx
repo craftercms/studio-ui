@@ -36,7 +36,6 @@ import { isBlank } from '../../utils/string';
 import { useEnhancedDialogContext } from '../EnhancedDialog';
 import { applyFolderNameRules, lookupItemByPath } from '../../utils/content';
 import { useFetchItem } from '../../hooks/useFetchItem';
-import ApiResponse from '../../models/ApiResponse';
 import FolderMoveAlert from '../FolderMoveAlert/FolderMoveAlert';
 import Alert from '@mui/material/Alert';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -112,9 +111,9 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
 
 	const onCancelPackagesAckChange = (e: React.ChangeEvent<HTMLInputElement>) => setCancelPackagesAck(e.target.checked);
 
-	const onError = (error: ApiResponse) => {
+	const onError = ({ response }) => {
 		updateSubmittingOrHasPendingChanges({ isSubmitting: false });
-		dispatch(pushErrorDialog({ props: { error: error } }));
+		dispatch(pushErrorDialog({ props: { error: response.response } }));
 	};
 
 	const onRenameFolder = (site: string, path: string, name: string) => {
