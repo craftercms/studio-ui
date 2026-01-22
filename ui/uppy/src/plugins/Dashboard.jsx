@@ -169,13 +169,17 @@ export class Dashboard extends UppyDashboard {
 
 	validateAndRetry = (fileID) => {
 		const invalidFiles = { ...this.getPluginState().invalidFiles };
-		const suggestedName = this.uppy.getFile(fileID).meta.suggestedName;
+		const file = this.uppy.getFile(fileID);
+		const suggestedName = file.meta.suggestedName;
+		const initialPath = file.meta.path;
+		const path = initialPath.substring(0, initialPath.lastIndexOf('/')) + '/' + suggestedName;
 		invalidFiles[fileID] = false;
 		this.setPluginState({ invalidFiles });
 		this.uppy.setFileMeta(fileID, {
 			allowed: true,
 			suggestedName: null,
-			name: suggestedName
+			name: suggestedName,
+			path
 		});
 		this.uppy.retryUpload(fileID);
 	};
