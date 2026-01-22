@@ -1148,22 +1148,11 @@ export function fetchItemHistory(site: string, path: string): Observable<ItemHis
 	);
 }
 
-export function revertTo(site: string, path: string, versionNumber: string): Observable<Boolean> {
-	return get(
-		`/studio/api/1/services/api/1/content/revert-content.json${toQueryString({ site, path, version: versionNumber })}`
-	).pipe(
-		pluck('response'),
-		catchError((ajaxError) => {
-			ajaxError.response = {
-				response: {
-					code: 1000,
-					message: 'Unable to revert content at this time.',
-					remedialAction: 'Content may be locked. Try again later.'
-				}
-			};
-			throw ajaxError;
-		})
-	);
+export function revertTo(site: string, path: string, commitId: string): Observable<AjaxResponse<ApiResponse>> {
+	return postJSON(`/studio/api/2/content/${site}/revert`, {
+		path,
+		commitId
+	});
 }
 
 interface VersionDescriptor {
@@ -1365,39 +1354,27 @@ export function unlock(siteId: string, path: string): Observable<boolean> {
 }
 
 export function createFolder(site: string, path: string, name: string): Observable<unknown> {
-	return post(`/studio/api/1/services/api/1/content/create-folder.json${toQueryString({ site, path, name })}`).pipe(
-		pluck('response'),
-		catchError(errorSelectorApi1)
-	);
+	return post(`/studio/api/2/content/${site}/folder`, {
+		path: ensureSingleSlash(`${path}/${name}`)
+	});
 }
 
 export function createFile(site: string, path: string, fileName: string): Observable<unknown> {
-	return post(
-		`/studio/api/1/services/api/1/content/write-content.json${toQueryString({
-			site,
-			path,
-			phase: 'onSave',
-			fileName,
-			unlock: true
-		})}`
-	).pipe(pluck('response'), catchError(errorSelectorApi1));
+	const fullPath = ensureSingleSlash(`${path}/${fileName}`);
+	return writeContent(site, fullPath, '', { unlock: true });
 }
 
 export function renameFolder(site: string, path: string, name: string) {
-	return post(`/studio/api/1/services/api/1/content/rename-folder.json${toQueryString({ site, path, name })}`).pipe(
-		pluck('response'),
-		catchError(errorSelectorApi1)
-	);
+	return renameContent(site, path, name);
 }
 
 export function renameContent(siteId: string, path: string, name: string) {
 	return postJSON(`/studio/api/2/content/rename`, { siteId, path, name }).pipe(pluck('response'));
 }
 
-export function checkPathExistence(site: string, path: string): Observable<boolean> {
-	return get(`/studio/api/1/services/api/1/content/content-exists.json${toQueryString({ site_id: site, path })}`).pipe(
-		pluck('response', 'content'),
-		catchError(errorSelectorApi1)
+export function checkPathExistence(siteId: string, path: string): Observable<boolean> {
+	return get(`/studio/api/2/content/exists${toQueryString({ siteId, path })}`).pipe(
+		map(({ response }) => response.exists)
 	);
 }
 
