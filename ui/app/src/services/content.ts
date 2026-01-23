@@ -129,7 +129,7 @@ export function fetchContentInstance(
 }
 
 export function writeContent(siteId: string, path: string, content: string, options?: { unlock: boolean }) {
-	const request$ = post(`/studio/api/2/content/${siteId}`, {
+	const request$ = postJSON(`/studio/api/2/content/${siteId}`, {
 		path,
 		content
 	});
