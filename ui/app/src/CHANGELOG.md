@@ -101,6 +101,7 @@
   * Updated `dependencies/fetchDependencies` `items` parameter to be of type `string[]`, renamed variable to `paths`
   * Updated `publishing/fetchPackage` `packageId` parameter to be of type `number`, and added the parameter `data`.
   * Updated `publishing/fetchPackages` `filters` parameter to be required, and removed the filters object props `environment` and `path`. Added filters object props `target`, `approvalStates`, `submitter`, `reviewer`, `isScheduled` and `sort`.
+  * Removed `sites/fetchLegacySite`. Replaced by `sites/fetchSite`.
 * `PublishingItem` interface changes:
   * `approver` is now `reviewer`, of type Person.
   * `comment` is removed, and now there's `reviewerComment` and `submitterComment`.
@@ -150,6 +151,8 @@
   * `PublishFormData`: Added `title` property.
   * `PublishingTarget`: updated `name` property to be of type `'live' | 'staging'`.
   * `PublishingParams`: Removed `optionalDependencies` and `sendEmailNotifications` properties. Added `paths`, `commitIds`, `requestApproval`, `publishAll` and `title` properties.
+* [models/Site]
+  * Removed `LegacySite` model. Use `BackendSite` model instead.
 * [common-api.js]
   * Removed `CStudioAuthoring.Operations.uploadCMISAsset` and `CStudioAuthoring.Operations.openCMISUploadDialog`.
 * Removed LegacyVersionDialog and the entire associated `/studio/diff` route

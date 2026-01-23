@@ -1370,13 +1370,6 @@ export function checkPathExistence(siteId: string, path: string): Observable<boo
 	);
 }
 
-export function fetchLegacyItem(site: string, path: string): Observable<LegacyItem> {
-	return get(`/studio/api/1/services/api/1/content/get-item.json${toQueryString({ site_id: site, path })}`).pipe(
-		pluck('response', 'item'),
-		catchError(errorSelectorApi1)
-	);
-}
-
 export function fetchLegacyItemsTree(
 	site: string,
 	path: string,

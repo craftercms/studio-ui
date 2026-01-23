@@ -132,36 +132,24 @@ export interface BackendSite {
 	state: 'INITIALIZING' | 'READY' | 'DELETING' | 'DELETED';
 }
 
-export interface LegacySite {
-	deleted: number;
-	description: string;
-	id: number;
-	lastCommitId: string;
-	lastSyncedGitlogCommitId: string;
-	lastVerifiedGitlogCommitId: string;
-	liveUrl: string;
+export interface DetailedSite {
+	siteId: string;
+	siteUuid: string;
 	name: string;
-	publishedRepoCreated: number;
-	publishingEnabled: number;
-	publishingLockHeartbeat: string;
-	publishingLockOwner: string;
+	description: string;
+	liveUrl: string;
+	lastCommitId: string;
+	publishingEnabled: boolean;
 	publishingStatus: string;
 	sandboxBranch: string;
-	siteDeleted: boolean;
-	siteId: string;
-	sitePublishedRepoCreated: boolean;
-	siteUuid: string;
-	state: string;
-	blobStores: Array<{
-		id: string;
-		type: string;
-		pattern: string;
-		mappings: Array<{
-			publishingTarget: string;
-			storeTarget: string;
-			prefix: string;
-		}>;
-	}>;
+	publishedRepoCreated: boolean;
+	state: 'INITIALIZING' | 'READY' | 'DELETING' | 'DELETED';
+	blobStores: [
+		{
+			id: string;
+			readOnly: boolean;
+		}
+	];
 }
 
 export interface Action {
