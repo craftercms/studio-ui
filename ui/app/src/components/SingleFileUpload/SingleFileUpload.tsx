@@ -176,10 +176,8 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 							...files,
 							[fileRef.current.id]: {
 								...files[fileRef.current.id],
-								name: suggestedNameRef.current,
 								meta: {
 									...files[fileRef.current.id].meta,
-									name: suggestedNameRef.current,
 									path: ensureSingleSlash(`${path}/${files[fileRef.current.id].meta.name}`)
 								}
 							}
