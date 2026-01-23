@@ -234,10 +234,14 @@ export class Dashboard extends UppyDashboard {
 				const file = this.uppy.getFile(fileID);
 				const suggestedName = this.uppy.getFile(fileID).meta.suggestedName;
 				if (file.meta.allowed) {
+					const initialPath = file.meta.path;
+					const basePath = initialPath.substring(0, initialPath.lastIndexOf('/'));
+					const path = `${basePath}/${suggestedName}`;
 					this.uppy.setFileMeta(fileID, {
 						allowed: true,
 						suggestedName: null,
-						name: suggestedName
+						name: suggestedName,
+						path
 					});
 					this.uppy.retryUpload(fileID);
 				} else {
