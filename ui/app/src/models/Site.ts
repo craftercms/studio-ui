@@ -144,12 +144,10 @@ export interface DetailedSite {
 	sandboxBranch: string;
 	publishedRepoCreated: boolean;
 	state: 'INITIALIZING' | 'READY' | 'DELETING' | 'DELETED';
-	blobStores: [
-		{
-			id: string;
-			readOnly: boolean;
-		}
-	];
+	blobStores: {
+		id: string;
+		readOnly: boolean;
+	}[];
 }
 
 export interface Action {
