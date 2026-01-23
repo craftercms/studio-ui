@@ -155,7 +155,7 @@ export interface UpdateModeProps {
 		path: string;
 		modelId?: string;
 		values?: LookupTable<unknown>;
-		changeTypeId?: string;
+		changeTypeId?: string; // Allows specifying a different content type for the item being updated, overriding the current item's content type.
 	};
 }
 
