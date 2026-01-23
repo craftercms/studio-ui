@@ -63,10 +63,8 @@ interface GetContentOptions {
 	lock: boolean;
 }
 
-export function fetchContentXML(site: string, path: string, options?: Partial<GetContentOptions>): Observable<string> {
-	options = Object.assign({ lock: false }, options);
-	const qs = toQueryString({ site_id: site, path, edit: options.lock });
-	return get(`/studio/api/1/services/api/1/content/get-content.json${qs}`).pipe(pluck('response', 'content'));
+export function fetchContentXML(site: string, path: string): Observable<string> {
+	return fetchContentByCommitId(site, path, 'HEAD') as Observable<string>;
 }
 
 export function fetchContentDOM(site: string, path: string): Observable<XMLDocument> {
