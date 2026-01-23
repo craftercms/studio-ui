@@ -1346,7 +1346,7 @@ export function unlock(siteId: string, path: string): Observable<boolean> {
 }
 
 export function createFolder(site: string, path: string, name: string): Observable<unknown> {
-	return post(`/studio/api/2/content/${site}/folder`, {
+	return postJSON(`/studio/api/2/content/${site}/folder`, {
 		path: ensureSingleSlash(`${path}/${name}`)
 	});
 }
