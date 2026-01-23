@@ -582,6 +582,7 @@ export const itemActionDispatcher = ({
 			case 'createContent': {
 				const id = nanoid();
 
+				dispatch(blockUI({ progress: 'indeterminate' }));
 				// TODO: Right now we're fetching legacy content types to check if there's only one type. Pending API v2 support
 				fetchLegacyContentTypes(site, getNormalizedFolderPathForApi1GetTypes(item))
 					.pipe(map((legacyTypes) => legacyTypes.map(parseLegacyContentType)))
@@ -591,40 +592,46 @@ export const itemActionDispatcher = ({
 							if (contentTypes?.length === 1) {
 								const contentType = contentTypes[0];
 								dispatch(
-									pickShowContentFormAction({
-										authoringBase,
-										site,
-										path: withoutIndex(item.path),
-										contentTypeId: contentType.id,
-										isNewContent: true
-									})
+									batchActions([
+										unblockUI(),
+										pickShowContentFormAction({
+											authoringBase,
+											site,
+											path: withoutIndex(item.path),
+											contentTypeId: contentType.id,
+											isNewContent: true
+										})
+									])
 								);
 							} else {
 								dispatch(
-									pushDialog({
-										id,
-										component: createComponentId('NewContentDialog'),
-										props: {
-											item,
-											onContentTypeSelected(response) {
-												dispatch(updateDialogState({ id, props: { open: false } }));
-												dispatch(
-													pickShowContentFormAction({
-														authoringBase,
-														site,
-														path: response.path,
-														contentTypeId: response.contentType.id,
-														isNewContent: true
-													})
-												);
-											}
-										} as Partial<NewContentDialogProps>
-									})
+									batchActions([
+										unblockUI(),
+										pushDialog({
+											id,
+											component: createComponentId('NewContentDialog'),
+											props: {
+												item,
+												onContentTypeSelected(response) {
+													dispatch(updateDialogState({ id, props: { open: false } }));
+													dispatch(
+														pickShowContentFormAction({
+															authoringBase,
+															site,
+															path: response.path,
+															contentTypeId: response.contentType.id,
+															isNewContent: true
+														})
+													);
+												}
+											} as Partial<NewContentDialogProps>
+										})
+									])
 								);
 							}
 						},
 						error({ response }) {
-							dispatch(pushErrorDialog({ props: { error: response } }));
+							dispatch(batchActions([unblockUI(), pushErrorDialog({ props: { error: response } })]));
 						}
 					});
 				break;
