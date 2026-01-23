@@ -293,7 +293,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
       this.datasource = datasource;
       if (!this.$addBtn.attr('disabled')) {
         datasources.forEach((datasource) => {
-          datasource.add(_self, true);
+          datasource.add?.(_self, true);
         });
 
         // adding options to $dropdownMenu;
