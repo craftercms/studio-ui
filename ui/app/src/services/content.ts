@@ -497,14 +497,14 @@ export function duplicateItem(
 							// Write the new/duplicated shared component.
 							fromPromise(beautify(serialize(componentDoc))).pipe(
 								switchMap((xml) =>
-									writeContent(site, (returnValue.newItem.path += `/${returnValue.newItem.modelId}.xml`), xml, {
+									writeContent(site, `${returnValue.newItem.path}/${returnValue.newItem.modelId}.xml`, xml, {
 										unlock: true
 									})
 								)
 							)
 						]).pipe(
 							map(() => {
-								returnValue.newItem.path += `/${returnValue.newItem.modelId}.xml`;
+								returnValue.newItem.path = `${returnValue.newItem.path}/${returnValue.newItem.modelId}.xml`;
 								return returnValue;
 							})
 						);
