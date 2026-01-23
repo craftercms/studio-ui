@@ -132,7 +132,7 @@ export class Dashboard extends UppyDashboard {
 			.validateActionPolicy(
 				this.opts.site,
 				files.map((file) => {
-					let target = `${file.meta.path}/${file.name}`;
+					let target = file.meta.path;
 					fileIdLookup[target] = file.id;
 					return {
 						type: 'CREATE',
