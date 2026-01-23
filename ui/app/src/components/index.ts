@@ -137,7 +137,6 @@ export * from './LauncherPublishingStatusTile';
 export * from './LauncherSection';
 export * from './LauncherSiteCard';
 export * from './LauncherTile';
-export * from './LegacyComponentsPanel';
 export * from './LegacyConcierge';
 export * from './LegacyDashboardFrame';
 export * from './LegacyFormDialog';

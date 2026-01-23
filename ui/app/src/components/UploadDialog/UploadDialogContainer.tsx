@@ -55,7 +55,7 @@ export function UploadDialogContainer(props: UploadDialogContainerProps) {
 		hasPendingChanges,
 		setPendingChanges,
 		headers,
-		method = 'post',
+		method = 'put',
 		meta,
 		allowedMetaFields,
 		endpoint,
