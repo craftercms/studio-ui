@@ -59,10 +59,6 @@ export function fetchComponentInstanceHTML(path: string): Observable<string> {
 	return getText(`/crafter-controller/component.html${toQueryString({ path })}`).pipe(pluck('response'));
 }
 
-interface GetContentOptions {
-	lock: boolean;
-}
-
 export function fetchContentXML(site: string, path: string): Observable<string> {
 	return fetchContentByCommitId(site, path, 'HEAD') as Observable<string>;
 }
