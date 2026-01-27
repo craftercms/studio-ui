@@ -119,6 +119,7 @@ import { displayWithPendingChangesConfirm } from '../../utils/ui';
 import useActiveUser from '../../hooks/useActiveUser';
 import FormBackToTop from './components/FormBackToTop';
 import { createComponentId } from '../../utils/system';
+import { nnou } from '../../utils/object';
 
 export interface FormSavePromiseResult {
 	close: boolean;
@@ -735,20 +736,30 @@ function FormOrchestrator(props: FormsEngineProps) {
 	};
 
 	const [mainContent, setMainContent] = useState(null);
+	const [collapseHeaderAllowed, setCollapseHeaderAllowed] = useState(false);
 	const sentinelRef = useRef<HTMLDivElement>(null);
 
 	const mainContentRefCallback: RefCallback<HTMLDivElement> = (element) => {
 		setMainContent(element);
+		if (!mainContent && nnou(element)) {
+			// First time the main content is set, if the scrollHeight is not 100px larger than clientHeight, we don't allow collapsing the header.
+			const canCollapse = element.scrollHeight - element.clientHeight > 100;
+			setCollapseHeaderAllowed(canCollapse);
+		}
 	};
 
 	// Monitor when sentinel element crosses the threshold
 	useEffect(() => {
 		if (!mainContent || !sentinelRef.current) return;
+		let observer: IntersectionObserver | null = null;
 
-		const observer = new IntersectionObserver(
+		observer?.disconnect();
+		observer = new IntersectionObserver(
 			([entry]) => {
 				// When sentinel is NOT intersecting (scrolled past 60px, sentinel's top position), collapse header
-				setCollapseHeader(!entry.isIntersecting);
+				if (collapseHeaderAllowed) {
+					setCollapseHeader(!entry.isIntersecting);
+				}
 			},
 			{
 				root: mainContent,
@@ -760,9 +771,9 @@ function FormOrchestrator(props: FormsEngineProps) {
 		observer.observe(sentinelRef.current);
 
 		return () => {
-			observer.disconnect();
+			observer?.disconnect();
 		};
-	}, [mainContent]);
+	}, [mainContent, collapseHeaderAllowed]);
 
 	const bodyFragment = (
 		<FormLayout
