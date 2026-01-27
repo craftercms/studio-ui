@@ -42,7 +42,7 @@ import Paper from '@mui/material/Paper';
 import Divider from '@mui/material/Divider';
 import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
-import { createLookupTable } from '../../utils/object';
+import { createLookupTable, nnou } from '../../utils/object';
 import PublishPackageItemsView from './PublishPackageItemsView';
 import PublishReferencesLegend from './PublishReferencesLegend';
 import { PublishDialogForm } from './PublishDialogForm';
@@ -91,7 +91,7 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 		fetchingItems: false
 	});
 	const [mainItems, setMainItems] = useState<LightItem[]>(initialItems);
-	const [previousItems, setPreviousItems] = useState<LightItem[]>();
+	const [previousItems, setPreviousItems] = useState<LightItem[] | null>(null);
 	const [published, setPublished] = useState<boolean>(null);
 	const [publishingTargets, setPublishingTargets] = useState<PublishingTarget[]>(null);
 	const {
@@ -295,9 +295,10 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 	 * `previousItems` state to an empty array.
 	 */
 	const onRevertDependenciesChanges = () => {
+		if (!previousItems) return;
 		setMainItems(previousItems);
 		setSelectedDependenciesMap({});
-		setPreviousItems([]);
+		setPreviousItems(null);
 	};
 
 	const handleDateTimePickerChange: DateTimeTimezonePickerProps['onChange'] = (date) => {
@@ -375,8 +376,8 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 												</Alert>
 											</Fade>
 										)}
-										{Boolean(previousItems?.length) && !selectedDependenciesPaths.length && (
-											<Fade in={Boolean(previousItems?.length)}>
+										{nnou(previousItems) && !selectedDependenciesPaths.length && (
+											<Fade in={nnou(previousItems)}>
 												<Alert
 													severity="info"
 													action={
