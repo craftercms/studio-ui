@@ -30,6 +30,7 @@ import {
 	DashletItemOptions,
 	getItemSkeleton,
 	ListItemIcon,
+	PackageOptions,
 	Pager,
 	PersonAvatar
 } from '../DashletCard/dashletCommons';
@@ -349,7 +350,11 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
 									})}
 									secondary={renderActivityTimestamp(activity.actionTimestamp, locale)}
 								/>
-								{isItemActivity && <DashletItemOptions path={activity.item.path} />}
+								{isItemActivity ? (
+									<DashletItemOptions path={activity.item.path} />
+								) : activity.package ? (
+									<PackageOptions pkg={activity.package} />
+								) : null}
 							</ListItemComponent>
 						);
 					})}
