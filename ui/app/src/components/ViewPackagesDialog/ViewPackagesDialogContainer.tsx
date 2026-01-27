@@ -66,13 +66,14 @@ export function ViewPackagesDialogContainer(props: ViewPackagesDialogContainerPr
 					}
 				})
 			);
+		} else {
+			dispatch(
+				pushDialog({
+					component: createComponentId('PackageDetailsDialog'),
+					props: { packageId: pkg.id }
+				})
+			);
 		}
-		dispatch(
-			pushDialog({
-				component: createComponentId('PackageDetailsDialog'),
-				props: { packageId: pkg.id }
-			})
-		);
 	};
 
 	const onContinueClick = (e: React.MouseEvent) => {
