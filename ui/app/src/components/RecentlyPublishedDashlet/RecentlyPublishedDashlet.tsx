@@ -257,7 +257,7 @@ export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
 							<ListItemText
 								primary={
 									<FormattedMessage
-										defaultMessage="<bold>{title}</bold>  ({initialPublish, select, 1 {Initial publish} other {{total} {total, plural, one {item} other {items}}}})"
+										defaultMessage="<bold>{title}</bold> ({initialPublish, select, 1 {Initial publish} other {{total} {total, plural, one {item} other {items}}}})"
 										values={{
 											title: pkg.title,
 											total: pkg.itemCount,
