@@ -124,8 +124,13 @@ export function ViewPackagesDialogContainer(props: ViewPackagesDialogContainerPr
 								<ListItemButton key={pkg.id} onClick={() => onShowPackageDetails?.(pkg)}>
 									<ListItemText
 										primary={`${pkg.id} - ${pkg.title}`}
-										secondary={pkg.submitterComment}
-										secondaryTypographyProps={{ noWrap: true, title: pkg.title }}
+										secondary={
+											<>
+												{pkg.submitterComment} <br />
+												<SubmittedPackageDetail pkg={pkg} />
+											</>
+										}
+										slotProps={{ secondary: { noWrap: true, title: pkg.title } }}
 									/>
 									<Tooltip title={<FormattedMessage defaultMessage="View package details" />}>
 										<IconButton>

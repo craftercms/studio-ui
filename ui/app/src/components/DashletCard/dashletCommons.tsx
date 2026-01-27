@@ -22,7 +22,7 @@ import MuiCheckbox from '@mui/material/Checkbox';
 import ListItemText from '@mui/material/ListItemText';
 import Skeleton from '@mui/material/Skeleton';
 import Typography from '@mui/material/Typography';
-import React, { PropsWithChildren } from 'react';
+import React, { PropsWithChildren, ReactNode, useState } from 'react';
 import MuiListItem from '@mui/material/ListItem';
 import MuiListItemIcon from '@mui/material/ListItemIcon';
 import MuiListSubheader from '@mui/material/ListSubheader';
@@ -34,17 +34,25 @@ import Person from '../../models/Person';
 import Avatar from '@mui/material/Avatar';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { defineMessages, FormattedMessage, MessageDescriptor, useIntl } from 'react-intl';
 import { Pagination } from '../Pagination';
-import { AllItemActions } from '../../models';
+import { Activity, AllItemActions, PackageActions, PublishPackage } from '../../models';
 import { SxProps } from '@mui/system';
 import { useDispatch } from 'react-redux';
 import { getOffsetLeft, getOffsetTop } from '@mui/material/Popover';
 import IconButton, { IconButtonProps } from '@mui/material/IconButton';
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
 import Tooltip from '@mui/material/Tooltip';
-import { getPersonFullName } from '../../utils/object';
+import { getPersonFullName, nnou, reversePluckProps } from '../../utils/object';
 import { showItemMegaMenu } from '../../state/actions/dialogs';
+import useSpreadState from '../../hooks/useSpreadState';
+import { ContextMenu, ContextMenuOption } from '../ContextMenu';
+import { FetchPackagesResponse } from '../../services/publishing';
+import { generatePackageOptions, packageActionDispatcher } from '../../utils/packageActions';
+import { PackageDetailsDialog } from '../PackageDetailsDialog';
+import { LIVE_COLOUR, STAGING_COLOUR } from '../ItemPublishingTargetIcon/styles';
+import { asLocalizedDateTime } from '../../utils/datetime';
+import useLocale from '../../hooks/useLocale';
 
 export const actionsToBeShown: AllItemActions[] = [
 	'edit',
@@ -211,5 +219,118 @@ export function DashletItemOptions(props: { path: string; iconButtonProps?: Icon
 				<MoreVertRoundedIcon />
 			</IconButton>
 		</Tooltip>
+	);
+}
+
+export function PackageOptions(props: { pkg: Activity['package']; iconButtonProps?: IconButtonProps }) {
+	const { pkg, iconButtonProps } = props;
+	const [contextMenu, setContextMenu] = useSpreadState<{
+		el: HTMLButtonElement;
+		package: PublishPackage;
+		options: ContextMenuOption[];
+	}>({
+		el: null,
+		package: null,
+		options: []
+	});
+	const { formatMessage } = useIntl();
+	const dispatch = useDispatch();
+	const [packageDetailsDialogId, setPackageDetailsDialogId] = useState<number | null>(null);
+
+	const handleContextMenuClick = (e: React.MouseEvent<HTMLButtonElement>, pkg: FetchPackagesResponse) => {
+		const contextMenuOptions = [
+			{
+				id: 'view',
+				label: <FormattedMessage defaultMessage="View Package" />
+			},
+			...generatePackageOptions([pkg], { includeOnly: ['resubmit'] }).map((option) => ({
+				id: option.id,
+				label: formatMessage(option.label as MessageDescriptor)
+			}))
+		];
+		setContextMenu({ el: e.currentTarget, package: pkg, options: contextMenuOptions });
+	};
+
+	const handleContextMenuClose = () => {
+		setContextMenu({
+			el: null,
+			package: null,
+			options: []
+		});
+	};
+
+	const onOptionClicked = (option: string | 'view', pkg: PublishPackage) => {
+		handleContextMenuClose();
+		if (option === 'view') {
+			setPackageDetailsDialogId(pkg.id);
+		} else {
+			packageActionDispatcher({
+				pkg,
+				option: option as PackageActions,
+				dispatch
+			});
+		}
+	};
+
+	return (
+		<>
+			<IconButton
+				{...iconButtonProps}
+				onClick={(e) => {
+					e.stopPropagation();
+					handleContextMenuClick(e, pkg);
+				}}
+			>
+				<MoreVertRoundedIcon />
+			</IconButton>
+			{Boolean(contextMenu.el) && (
+				<ContextMenu
+					open
+					anchorEl={contextMenu.el}
+					onClose={handleContextMenuClose}
+					options={[contextMenu.options]}
+					onMenuItemClicked={(option) => onOptionClicked(option, contextMenu.package)}
+				/>
+			)}
+			<PackageDetailsDialog
+				open={nnou(packageDetailsDialogId)}
+				onClose={() => setPackageDetailsDialogId(null)}
+				packageId={packageDetailsDialogId}
+			/>
+		</>
+	);
+}
+
+const submittedPackageDetailMessages = defineMessages({
+	staging: { id: 'words.staging', defaultMessage: 'Staging' },
+	live: { id: 'words.live', defaultMessage: 'Live' }
+});
+
+export function SubmittedPackageDetail({ pkg }: { pkg: PublishPackage }) {
+	const { formatMessage } = useIntl();
+	const locale = useLocale();
+
+	return (
+		<FormattedMessage
+			defaultMessage="Submitted by {name} to go {publishingTarget, select, live { <render_target>live</render_target>} other {<render_target>staging</render_target>}} on {submittedDate}"
+			values={{
+				name: pkg.submitter?.username,
+				publishingTarget: pkg.target,
+				render_target(target: ReactNode[]) {
+					return (
+						<Box component="span" color={target[0] === 'live' ? LIVE_COLOUR : STAGING_COLOUR}>
+							{submittedPackageDetailMessages[target[0] as string]
+								? formatMessage(submittedPackageDetailMessages[target[0] as string]).toLowerCase()
+								: target[0]}
+						</Box>
+					);
+				},
+				submittedDate: asLocalizedDateTime(
+					pkg.schedule ?? pkg.submittedOn,
+					locale.localeCode,
+					reversePluckProps(locale.dateTimeFormatOptions, 'hour', 'minute', 'second')
+				)
+			}}
+		/>
 	);
 }
