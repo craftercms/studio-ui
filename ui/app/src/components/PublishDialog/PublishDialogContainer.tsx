@@ -384,13 +384,8 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 															cancelText={<FormattedMessage id="words.no" defaultMessage="No" />}
 															confirmText={<FormattedMessage id="words.yes" defaultMessage="Yes" />}
 															text={'Revert'}
-															confirmHelperText={
-																<FormattedMessage
-																	id="repositories.deleteConfirmation"
-																	defaultMessage="Revert changes?"
-																/>
-															}
-															iconTooltip={<FormattedMessage id="words.delete" defaultMessage="Delete" />}
+															confirmHelperText={<FormattedMessage defaultMessage="Revert changes?" />}
+															iconTooltip={<FormattedMessage defaultMessage="Revert changes?" />}
 															onConfirm={() => onRevertDependenciesChanges()}
 															buttonProps={{
 																variant: 'text',
