@@ -283,6 +283,7 @@ export function PackageOptionsContextMenu(props: { pkg: Activity['package']; ico
 		<>
 			<IconButton
 				{...iconButtonProps}
+				aria-label={iconButtonProps?.['aria-label'] ?? formatMessage({ defaultMessage: 'Options' })}
 				onClick={(e) => {
 					e.stopPropagation();
 					handleContextMenuClick(e, pkg);
