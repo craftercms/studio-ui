@@ -37,7 +37,7 @@ import Box from '@mui/material/Box';
 import { asLocalizedDateTime } from '../../utils/datetime';
 import { nnou, reversePluckProps } from '../../utils/object';
 import IconButton from '@mui/material/IconButton';
-import { COMPLETED_MASK } from '../../utils/constants';
+import { COMPLETED_MASK, PACKAGE_TYPE_INITIAL_PUBLISH } from '../../utils/constants';
 import ListItemButton from '@mui/material/ListItemButton';
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
 import { ContextMenu, ContextMenuOption } from '../ContextMenu';
@@ -127,15 +127,19 @@ export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
 	};
 
 	const handleContextMenuClick = (e: React.MouseEvent<HTMLButtonElement>, pkg: FetchPackagesResponse) => {
+		const includeResubmit = pkg.packageType !== PACKAGE_TYPE_INITIAL_PUBLISH;
+
 		const contextMenuOptions = [
 			{
 				id: 'view',
 				label: <FormattedMessage defaultMessage="View Package" />
 			},
-			...generatePackageOptions([pkg], { includeOnly: ['resubmit'] }).map((option) => ({
-				id: option.id,
-				label: formatMessage(option.label as MessageDescriptor)
-			}))
+			...(includeResubmit
+				? generatePackageOptions([pkg], { includeOnly: ['resubmit'] }).map((option) => ({
+						id: option.id,
+						label: formatMessage(option.label as MessageDescriptor)
+					}))
+				: [])
 		];
 		setContextMenu({ el: e.currentTarget, package: pkg, options: contextMenuOptions });
 	};
@@ -253,10 +257,11 @@ export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
 							<ListItemText
 								primary={
 									<FormattedMessage
-										defaultMessage="<bold>{title}</bold> ({total} items)"
+										defaultMessage="<bold>{title}</bold>  ({initialPublish, select, 1 {Initial publish} other {{total} items}})"
 										values={{
 											title: pkg.title,
 											total: pkg.itemCount,
+											initialPublish: pkg.packageType === PACKAGE_TYPE_INITIAL_PUBLISH ? 1 : 0,
 											bold: (chunks: React.ReactNode) => <strong>{chunks}</strong>
 										}}
 									/>
