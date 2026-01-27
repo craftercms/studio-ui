@@ -23,7 +23,7 @@ import {
 	DashletEmptyMessage,
 	getItemSkeleton,
 	List,
-	PackageOptions,
+	PackageOptionsContextMenu,
 	Pager,
 	PersonAvatar
 } from '../DashletCard/dashletCommons';
@@ -242,7 +242,7 @@ export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
 									/>
 								}
 							/>
-							<PackageOptions
+							<PackageOptionsContextMenu
 								pkg={pkg}
 								iconButtonProps={{
 									sx: { visibility: hoveredPackage === pkg.id ? 'visible' : 'hidden' }

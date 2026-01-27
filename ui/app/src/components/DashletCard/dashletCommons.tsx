@@ -222,7 +222,14 @@ export function DashletItemOptions(props: { path: string; iconButtonProps?: Icon
 	);
 }
 
-export function PackageOptions(props: { pkg: Activity['package']; iconButtonProps?: IconButtonProps }) {
+/**
+ * Renders a context menu for package options.
+ *
+ * @param {Object} props - The component props.
+ * @param {Activity['package']} props.pkg - The package data to display options for.
+ * @param {IconButtonProps} [props.iconButtonProps] - Additional props for the `IconButton` component.
+ */
+export function PackageOptionsContextMenu(props: { pkg: Activity['package']; iconButtonProps?: IconButtonProps }) {
 	const { pkg, iconButtonProps } = props;
 	const [contextMenu, setContextMenu] = useSpreadState<{
 		el: HTMLButtonElement;
@@ -306,6 +313,13 @@ const submittedPackageDetailMessages = defineMessages({
 	live: { id: 'words.live', defaultMessage: 'Live' }
 });
 
+/**
+ * Displays details about a submitted package, including the submitter's name,
+ * the publishing target (live or staging), and the submission date.
+ *
+ * @param {Object} props - The component props.
+ * @param {PublishPackage} props.pkg - The package data containing submission details.
+ */
 export function SubmittedPackageDetail({ pkg }: { pkg: PublishPackage }) {
 	const { formatMessage } = useIntl();
 	const locale = useLocale();
