@@ -49,6 +49,7 @@ import { PublishDialogForm } from './PublishDialogForm';
 import useActiveUser from '../../hooks/useActiveUser';
 import { pushErrorDialog } from '../../utils/system';
 import { useEnhancedDialogContext } from '../EnhancedDialog';
+import { ConfirmDropdown } from '../ConfirmDropdown';
 
 export type DependencyType = 'soft' | 'hard';
 export type DependencyMap = Record<string, DependencyType>;
@@ -90,6 +91,7 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 		fetchingItems: false
 	});
 	const [mainItems, setMainItems] = useState<LightItem[]>(initialItems);
+	const [previousItems, setPreviousItems] = useState<LightItem[]>();
 	const [published, setPublished] = useState<boolean>(null);
 	const [publishingTargets, setPublishingTargets] = useState<PublishingTarget[]>(null);
 	const {
@@ -280,10 +282,22 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 	};
 
 	const onApplyDependenciesChanges = () => {
+		setPreviousItems(mainItems);
 		// Update the list of mainItems for the dependencies to be re-calculated. Also clear the current set of selected
 		// dependencies.
 		setMainItems([...mainItems, ...selectedDependenciesPaths.map((path) => dependencyData.itemsByPath[path])]);
 		setSelectedDependenciesMap({});
+	};
+
+	/**
+	 * This function restores the `mainItems` state to the previously saved state (`previousItems`),
+	 * clears the `selectedDependenciesMap` to remove any selected dependencies (they get recalculated), and resets the
+	 * `previousItems` state to an empty array.
+	 */
+	const onRevertDependenciesChanges = () => {
+		setMainItems(previousItems);
+		setSelectedDependenciesMap({});
+		setPreviousItems([]);
 	};
 
 	const handleDateTimePickerChange: DateTimeTimezonePickerProps['onChange'] = (date) => {
@@ -358,6 +372,36 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 													sx={{ borderTopRightRadius: 0, borderTopLeftRadius: 0 }}
 												>
 													<FormattedMessage defaultMessage="Changes in the item selection must be applied" />
+												</Alert>
+											</Fade>
+										)}
+										{Boolean(previousItems?.length) && !selectedDependenciesPaths.length && (
+											<Fade in={Boolean(previousItems?.length)}>
+												<Alert
+													severity="info"
+													action={
+														<ConfirmDropdown
+															cancelText={<FormattedMessage id="words.no" defaultMessage="No" />}
+															confirmText={<FormattedMessage id="words.yes" defaultMessage="Yes" />}
+															text={'Revert'}
+															confirmHelperText={
+																<FormattedMessage
+																	id="repositories.deleteConfirmation"
+																	defaultMessage="Revert changes?"
+																/>
+															}
+															iconTooltip={<FormattedMessage id="words.delete" defaultMessage="Delete" />}
+															onConfirm={() => onRevertDependenciesChanges()}
+															buttonProps={{
+																variant: 'text',
+																size: 'small',
+																color: 'inherit'
+															}}
+														/>
+													}
+													sx={{ borderTopRightRadius: 0, borderTopLeftRadius: 0 }}
+												>
+													<FormattedMessage defaultMessage="Last applied changes can be reverted" />
 												</Alert>
 											</Fade>
 										)}
