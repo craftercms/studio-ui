@@ -57,7 +57,10 @@ export function ViewPackagesDialogContainer(props: ViewPackagesDialogContainerPr
 	});
 
 	const onShowPackageDetails = (pkg: PublishPackage) => {
-		if (hasApproveAction(pkg.availableActions) || hasRejectAction(pkg.availableActions)) {
+		if (
+			pkg.approvalState === 'SUBMITTED' &&
+			(hasApproveAction(pkg.availableActions) || hasRejectAction(pkg.availableActions))
+		) {
 			dispatch(
 				pushDialog({
 					component: createComponentId('PublishPackageReviewDialog'),
