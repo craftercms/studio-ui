@@ -383,7 +383,7 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 														<ConfirmDropdown
 															cancelText={<FormattedMessage id="words.no" defaultMessage="No" />}
 															confirmText={<FormattedMessage id="words.yes" defaultMessage="Yes" />}
-															text={'Revert'}
+															text={<FormattedMessage defaultMessage="Revert" />}
 															confirmHelperText={<FormattedMessage defaultMessage="Revert changes?" />}
 															iconTooltip={<FormattedMessage defaultMessage="Revert changes?" />}
 															onConfirm={() => onRevertDependenciesChanges()}
