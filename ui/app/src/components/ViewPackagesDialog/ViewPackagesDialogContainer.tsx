@@ -39,6 +39,9 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ItemDisplay from '../ItemDisplay';
 import { pushDialog } from '../../state/actions/dialogStack';
 import { createComponentId } from '../../utils/system';
+import { hasApproveAction, hasRejectAction } from '../../utils/content';
+import { PublishPackage } from '../../models';
+import { SubmittedPackageDetail } from '../DashletCard/dashletCommons';
 
 export interface ViewPackagesDialogContainerProps
 	extends Pick<ViewPackagesDialogProps, 'item' | 'onContinue' | 'onClose'> {}
@@ -53,11 +56,21 @@ export function ViewPackagesDialogContainer(props: ViewPackagesDialogContainerPr
 		error: null
 	});
 
-	const onShowPackageDetails = (packageId: number) => {
+	const onShowPackageDetails = (pkg: PublishPackage) => {
+		if (hasApproveAction(pkg.availableActions) || hasRejectAction(pkg.availableActions)) {
+			dispatch(
+				pushDialog({
+					component: createComponentId('PublishPackageReviewDialog'),
+					props: {
+						packageId: pkg.id
+					}
+				})
+			);
+		}
 		dispatch(
 			pushDialog({
 				component: createComponentId('PackageDetailsDialog'),
-				props: { packageId }
+				props: { packageId: pkg.id }
 			})
 		);
 	};
@@ -108,7 +121,7 @@ export function ViewPackagesDialogContainer(props: ViewPackagesDialogContainerPr
 							})}
 						>
 							{state.packages?.map((pkg) => (
-								<ListItemButton key={pkg.id} onClick={() => onShowPackageDetails?.(pkg.id)}>
+								<ListItemButton key={pkg.id} onClick={() => onShowPackageDetails?.(pkg)}>
 									<ListItemText
 										primary={`${pkg.id} - ${pkg.title}`}
 										secondary={pkg.submitterComment}
