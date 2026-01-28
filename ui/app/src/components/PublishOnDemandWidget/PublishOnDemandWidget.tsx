@@ -280,12 +280,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 			},
 			error({ response }) {
 				setIsSubmitting(false);
-				dispatch(
-					showSystemNotification({
-						message: response.message,
-						options: { variant: 'error' }
-					})
-				);
+				dispatch(pushErrorDialog({ props: { error: response.response } }));
 			}
 		});
 	};
@@ -327,10 +322,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 							},
 							error({ response }) {
 								setIsSubmitting(false);
-								showSystemNotification({
-									message: response.message,
-									options: { variant: 'error' }
-								});
+								dispatch(pushErrorDialog({ props: { error: response.response } }));
 							}
 						});
 					}
@@ -364,12 +356,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 			},
 			error({ response }) {
 				setIsSubmitting(false);
-				dispatch(
-					showSystemNotification({
-						message: response.message,
-						options: { variant: 'error' }
-					})
-				);
+				dispatch(pushErrorDialog({ props: { error: response.response } }));
 			}
 		});
 	};
