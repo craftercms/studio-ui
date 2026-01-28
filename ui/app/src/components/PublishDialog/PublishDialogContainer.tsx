@@ -18,7 +18,7 @@ import { useSpreadState } from '../../hooks/useSpreadState';
 import React, { SyntheticEvent, useEffect, useMemo, useState } from 'react';
 import { PublishingTarget, PublishParams } from '../../models/Publishing';
 import LookupTable from '../../models/LookupTable';
-import { InternalDialogState, PublishDialogContainerProps, usePublishState } from './utils';
+import { InternalDialogState, itemsArrayChanged, PublishDialogContainerProps, usePublishState } from './utils';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useDispatch } from 'react-redux';
 import { calculatePackage, publish } from '../../services/publishing';
@@ -90,6 +90,7 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 		fetchingItems: false
 	});
 	const [mainItems, setMainItems] = useState<LightItem[]>(initialItems);
+	const [childrenItems, setChildrenItems] = useState<LightItem[]>([]);
 	const [published, setPublished] = useState<boolean>(null);
 	const [publishingTargets, setPublishingTargets] = useState<PublishingTarget[]>(null);
 	const {
@@ -103,9 +104,9 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 		parentTreeNodePaths,
 		itemsAndDependenciesPaths,
 		itemsAndDependenciesMap
-	} = usePublishState({ mainItems });
+	} = usePublishState({ mainItems, childrenItems });
 	const { updateSubmittingOrHasPendingChanges } = useEnhancedDialogContext();
-	const effectRefs = useUpdateRefs({ initialItems, state });
+	const effectRefs = useUpdateRefs({ initialItems, state, mainItems, childrenItems });
 	const hasPublishPermission = permissionsBySite[siteId].includes('publish_approve');
 	const publishingTarget = useMemo(() => {
 		let target: InternalDialogState['publishingTarget'] = '';
@@ -134,6 +135,10 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 			<FormattedMessage id="words.publish" defaultMessage="Publish" />
 		);
 	const disabled = isSubmitting;
+	const [includeChildren, setIncludeChildren] = useState(false);
+	const arePublishingItemsFolders = useMemo(() => {
+		return [...mainItems, ...childrenItems].every((item) => item.systemType === 'folder');
+	}, [mainItems, childrenItems]);
 
 	// Submit button should be disabled when:
 	const submitDisabled =
@@ -155,14 +160,20 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 		// When there's an error
 		Boolean(state.error) ||
 		// The scheduled date is in the past
-		state.scheduledDateTime < new Date();
+		state.scheduledDateTime < new Date() ||
+		// All items to publish are empty folders.
+		arePublishingItemsFolders;
 
 	useEffect(() => {
 		setState({ fetchingItems: true });
 		if (state.publishingTarget) {
 			calculatePackage(siteId, {
 				publishingTarget: state.publishingTarget,
-				paths: itemsDataSummary.itemPaths.map((path) => ({ path, includeChildren: false, includeSoftDeps: false }))
+				paths: itemsDataSummary.itemPaths.map((path) => ({
+					path,
+					includeChildren,
+					includeSoftDeps: false
+				}))
 			}).subscribe({
 				next(dependenciesByType) {
 					const itemsList = [...dependenciesByType.hardDependencies, ...dependenciesByType.softDependencies];
@@ -175,6 +186,15 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 						depMap[path] = 'soft';
 					});
 					setState({ fetchingItems: false });
+					if (includeChildren && dependenciesByType.items) {
+						if (itemsArrayChanged(effectRefs.current.childrenItems, dependenciesByType.items)) {
+							setChildrenItems(dependenciesByType.items);
+						}
+					} else {
+						if (effectRefs.current.childrenItems.length !== 0) {
+							setChildrenItems([]);
+						}
+					}
 					setDependencyData({
 						typeByPath: depMap,
 						paths: Object.keys(depMap),
@@ -194,7 +214,9 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 		siteId,
 		setSelectedDependenciesMap,
 		state.publishingTarget,
-		setDependencyData
+		setDependencyData,
+		includeChildren,
+		effectRefs
 	]);
 
 	useEffect(() => {
@@ -345,7 +367,16 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 											selectedDependenciesMap={selectedDependenciesMap}
 											trees={trees}
 											onCheckboxChange={onDependencyCheckboxChange}
+											includeChildren={includeChildren}
+											setIncludeChildren={setIncludeChildren}
 										/>
+										{arePublishingItemsFolders && (
+											<Fade in={arePublishingItemsFolders}>
+												<Alert severity="warning" sx={{ borderTopRightRadius: 0, borderTopLeftRadius: 0 }}>
+													<FormattedMessage defaultMessage="Publishing only folders is not allowed" />
+												</Alert>
+											</Fade>
+										)}
 										{Boolean(selectedDependenciesPaths.length) && (
 											<Fade in={Boolean(selectedDependenciesPaths?.length)}>
 												<Alert
