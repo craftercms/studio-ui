@@ -97,8 +97,10 @@ export const usePublishState = ({ mainItems, childrenItems }: usePublishStatePro
 		const itemPaths = [];
 		const itemMap: Record<string, LightItem> = {};
 		[...mainItems, ...(childrenItems ?? [])].forEach((item) => {
-			itemMap[item.path] = item;
-			itemPaths.push(item.path);
+			if (!itemMap[item.path]) {
+				itemMap[item.path] = item;
+				itemPaths.push(item.path);
+			}
 		});
 		return {
 			itemMap,
