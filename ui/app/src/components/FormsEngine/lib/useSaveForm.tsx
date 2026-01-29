@@ -144,7 +144,8 @@ export function useSaveForm(props: UseSaveFormProps) {
 				const dom = fromString(xml);
 				(onSave?.({ dom, xml, values, versionComment, path }) as Promise<FormSavePromiseResult>)?.then((result) => {
 					onSavePromiseHandler(result);
-					if (isRename && dialogState && !closeAfterSave) {
+					const shouldClose = result.close || closeAfterSave;
+					if (isRename && dialogState && !shouldClose) {
 						dispatch(
 							updateDialogState({
 								id: props.dialogId,
