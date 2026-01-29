@@ -355,7 +355,7 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
 											submittedDate: asLocalizedDateTime(
 												pkg.schedule ?? pkg.submittedOn,
 												locale.localeCode,
-												reversePluckProps(locale.dateTimeFormatOptions, 'hour', 'minute', 'second')
+												locale.dateTimeFormatOptions
 											)
 										}}
 									/>
