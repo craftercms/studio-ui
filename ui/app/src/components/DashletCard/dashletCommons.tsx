@@ -22,7 +22,7 @@ import MuiCheckbox from '@mui/material/Checkbox';
 import ListItemText from '@mui/material/ListItemText';
 import Skeleton from '@mui/material/Skeleton';
 import Typography from '@mui/material/Typography';
-import React, { PropsWithChildren, ReactNode, useState } from 'react';
+import React, { PropsWithChildren, ReactNode } from 'react';
 import MuiListItem from '@mui/material/ListItem';
 import MuiListItemIcon from '@mui/material/ListItemIcon';
 import MuiListSubheader from '@mui/material/ListSubheader';
@@ -43,13 +43,12 @@ import { getOffsetLeft, getOffsetTop } from '@mui/material/Popover';
 import IconButton, { IconButtonProps } from '@mui/material/IconButton';
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
 import Tooltip from '@mui/material/Tooltip';
-import { getPersonFullName, nnou, reversePluckProps } from '../../utils/object';
+import { getPersonFullName, reversePluckProps } from '../../utils/object';
 import { showItemMegaMenu } from '../../state/actions/dialogs';
 import useSpreadState from '../../hooks/useSpreadState';
 import { ContextMenu, ContextMenuOption } from '../ContextMenu';
 import { FetchPackagesResponse } from '../../services/publishing';
 import { generatePackageOptions, packageActionDispatcher } from '../../utils/packageActions';
-import { PackageDetailsDialog } from '../PackageDetailsDialog';
 import { LIVE_COLOUR, STAGING_COLOUR } from '../ItemPublishingTargetIcon/styles';
 import { asLocalizedDateTime } from '../../utils/datetime';
 import useLocale from '../../hooks/useLocale';
@@ -242,7 +241,6 @@ export function PackageOptionsContextMenu(props: { pkg: Activity['package']; ico
 	});
 	const { formatMessage } = useIntl();
 	const dispatch = useDispatch();
-	const [packageDetailsDialogId, setPackageDetailsDialogId] = useState<number | null>(null);
 
 	const handleContextMenuClick = (e: React.MouseEvent<HTMLButtonElement>, pkg: FetchPackagesResponse) => {
 		const contextMenuOptions = [
@@ -266,17 +264,13 @@ export function PackageOptionsContextMenu(props: { pkg: Activity['package']; ico
 		});
 	};
 
-	const onOptionClicked = (option: string | 'view', pkg: PublishPackage) => {
+	const onOptionClicked = (option: PackageActions, pkg: PublishPackage) => {
 		handleContextMenuClose();
-		if (option === 'view') {
-			setPackageDetailsDialogId(pkg.id);
-		} else {
-			packageActionDispatcher({
-				pkg,
-				option: option as PackageActions,
-				dispatch
-			});
-		}
+		packageActionDispatcher({
+			pkg,
+			option,
+			dispatch
+		});
 	};
 
 	return (
@@ -297,14 +291,9 @@ export function PackageOptionsContextMenu(props: { pkg: Activity['package']; ico
 					anchorEl={contextMenu.el}
 					onClose={handleContextMenuClose}
 					options={[contextMenu.options]}
-					onMenuItemClicked={(option) => onOptionClicked(option, contextMenu.package)}
+					onMenuItemClicked={(option) => onOptionClicked(option as PackageActions, contextMenu.package)}
 				/>
 			)}
-			<PackageDetailsDialog
-				open={nnou(packageDetailsDialogId)}
-				onClose={() => setPackageDetailsDialogId(null)}
-				packageId={packageDetailsDialogId}
-			/>
 		</>
 	);
 }

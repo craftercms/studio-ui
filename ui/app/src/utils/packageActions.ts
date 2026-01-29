@@ -27,6 +27,9 @@ import { nanoid } from 'nanoid';
 import { createComponentId } from './system';
 
 const translations = defineMessages({
+	view: {
+		defaultMessage: 'View'
+	},
 	review: {
 		defaultMessage: 'Review'
 	},
@@ -42,6 +45,10 @@ const translations = defineMessages({
 });
 
 const unparsedOptions: Record<PackageActions, ContextMenuOptionDescriptor<PackageActions>> = {
+	view: {
+		id: 'view',
+		label: translations.view
+	},
 	review: {
 		id: 'review',
 		label: translations.review
@@ -112,6 +119,17 @@ export const packageActionDispatcher = ({
 	onActionSuccess?: Action;
 }) => {
 	switch (option) {
+		case 'view': {
+			dispatch(
+				pushDialog({
+					component: createComponentId('PackageDetailsDialog'),
+					props: {
+						packageId: (pkg as PublishPackage).id
+					}
+				})
+			);
+			break;
+		}
 		case 'review': {
 			const dialogId = nanoid();
 			dispatch(
