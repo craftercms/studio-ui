@@ -130,11 +130,23 @@ export function ViewPackagesDialogContainer(props: ViewPackagesDialogContainerPr
 										primary={`${pkg.id} - ${pkg.title}`}
 										secondary={
 											<>
-												{pkg.submitterComment} <br />
 												<SubmittedPackageDetail pkg={pkg} />
+												<Box
+													sx={{
+														mt: 0.5,
+														display: '-webkit-box',
+														overflow: 'hidden',
+														width: '100%',
+														textOverflow: 'ellipsis',
+														WebkitLineClamp: 2,
+														WebkitBoxOrient: 'vertical'
+													}}
+												>
+													{pkg.submitterComment}
+												</Box>
 											</>
 										}
-										slotProps={{ secondary: { noWrap: true, title: pkg.title } }}
+										slotProps={{ secondary: { title: pkg.title } }}
 									/>
 									<Tooltip title={<FormattedMessage defaultMessage="View package details" />}>
 										<IconButton>
