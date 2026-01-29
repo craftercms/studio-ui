@@ -120,6 +120,7 @@ export const packageActionDispatcher = ({
 }) => {
 	switch (option) {
 		case 'view': {
+			if (Array.isArray(pkg)) break;
 			dispatch(
 				pushDialog({
 					component: createComponentId('PackageDetailsDialog'),
