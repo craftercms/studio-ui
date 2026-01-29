@@ -84,6 +84,9 @@ export const generatePackageOptions = (
 		const packagesHaveCancelAction = packages.every((pkg) => hasCancelAction(pkg.availableActions));
 		if (packages?.length === 1) {
 			const pkg = packages[0];
+			if (actionsToInclude.view) {
+				packageOptions.push(unparsedOptions.view);
+			}
 			if (
 				(hasApproveAction(pkg.availableActions) || hasRejectAction(pkg.availableActions)) &&
 				pkg.approvalState === 'SUBMITTED' &&
