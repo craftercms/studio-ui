@@ -674,7 +674,7 @@ function FormOrchestrator(props: FormsEngineProps) {
 
 		const hostToHost$ = getHostToHostBus();
 		const subscription = hostToHost$.subscribe(({ type }) => {
-			if (!item && !events.includes(type)) return;
+			if (!item || !events.includes(type)) return;
 			fetchAffectedPackages(siteId, item.path).subscribe({
 				next(packages) {
 					setLockStatus({
