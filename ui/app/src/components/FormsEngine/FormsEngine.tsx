@@ -618,6 +618,8 @@ function FormOrchestrator(props: FormsEngineProps) {
 	const effectRefs = useUpdateRefs({ fieldsToRender, versionCommentAtom: stableFormContext.atoms.versionComment });
 
 	useMount(() => {
+		// If 'update.changeTypeId' has content, it means the content type has changed, so we set pending changes to true
+		// to be able to save the content (enable save button).
 		if (update?.changeTypeId) {
 			setHasPendingChanges(true);
 		}
