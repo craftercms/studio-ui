@@ -21,6 +21,7 @@ import { Observable, ObservableInput, of } from 'rxjs';
 import { sessionTimeout } from '../state/actions/user';
 import StandardAction from '../models/StandardAction';
 import { UNDEFINED } from './constants';
+import { ApiResponse } from '../models';
 
 type Headers = Record<string, any>;
 
@@ -182,4 +183,8 @@ export const errorSelectorApi1: <T, O extends ObservableInput<any>>(err: any, ca
 	}
 	error.response = { response };
 	throw error;
+};
+
+export const extractErrorPayload = (error: AjaxError): ApiResponse | AjaxError => {
+	return error?.response?.response ?? error?.response ?? error;
 };

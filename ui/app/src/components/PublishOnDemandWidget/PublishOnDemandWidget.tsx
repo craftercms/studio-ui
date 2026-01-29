@@ -50,6 +50,7 @@ import Alert, { alertClasses } from '@mui/material/Alert';
 import { popDialog, pushDialog } from '../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
 import { createComponentId, pushConfirmDialog, pushErrorDialog } from '../../utils/system';
+import { extractErrorPayload } from '../../utils/ajax';
 
 const messages = defineMessages({
 	publishStudioWarning: {
@@ -278,9 +279,9 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 					dispatch(onSuccessProp);
 				}
 			},
-			error({ response }) {
+			error(error) {
 				setIsSubmitting(false);
-				dispatch(pushErrorDialog({ props: { error: response.response } }));
+				dispatch(pushErrorDialog({ props: { error: extractErrorPayload(error) } }));
 			}
 		});
 	};
@@ -320,9 +321,9 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 									dispatch(onSuccessProp);
 								}
 							},
-							error({ response }) {
+							error(error) {
 								setIsSubmitting(false);
-								dispatch(pushErrorDialog({ props: { error: response.response } }));
+								dispatch(pushErrorDialog({ props: { error: extractErrorPayload(error) } }));
 							}
 						});
 					}
@@ -354,9 +355,9 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 					dispatch(onSuccessProp);
 				}
 			},
-			error({ response }) {
+			error(error) {
 				setIsSubmitting(false);
-				dispatch(pushErrorDialog({ props: { error: response.response } }));
+				dispatch(pushErrorDialog({ props: { error: extractErrorPayload(error) } }));
 			}
 		});
 	};
