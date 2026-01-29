@@ -30,7 +30,7 @@ import { keyframes } from '@emotion/react';
 import { fadeIn } from 'react-animations';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { CreateSiteDialogLoader } from '../CreateSiteDialog';
-import { duplicate, fetchAll, fetchLegacySite } from '../../services/sites';
+import { duplicate, fetchAll, fetchSite } from '../../services/sites';
 import { setSiteCookie } from '../../utils/auth';
 import { getSystemLink } from '../../utils/system';
 import useEnv from '../../hooks/useEnv';
@@ -233,7 +233,7 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
 
 	useEffect(() => {
 		if (site.sourceSiteId) {
-			fetchLegacySite(site.sourceSiteId).subscribe({
+			fetchSite(site.sourceSiteId).subscribe({
 				next: ({ blobStores }) => {
 					setSourceSiteHasBlobStores(nnou(blobStores) && blobStores.length > 0);
 				},
