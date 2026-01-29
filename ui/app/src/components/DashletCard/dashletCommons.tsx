@@ -243,16 +243,10 @@ export function PackageOptionsContextMenu(props: { pkg: Activity['package']; ico
 	const dispatch = useDispatch();
 
 	const handleContextMenuClick = (e: React.MouseEvent<HTMLButtonElement>, pkg: FetchPackagesResponse) => {
-		const contextMenuOptions = [
-			{
-				id: 'view',
-				label: <FormattedMessage defaultMessage="View Package" />
-			},
-			...generatePackageOptions([pkg], { includeOnly: ['resubmit'] }).map((option) => ({
-				id: option.id,
-				label: formatMessage(option.label as MessageDescriptor)
-			}))
-		];
+		const contextMenuOptions = generatePackageOptions([pkg], { includeOnly: ['view', 'resubmit'] }).map((option) => ({
+			id: option.id,
+			label: formatMessage(option.label as MessageDescriptor)
+		}));
 		setContextMenu({ el: e.currentTarget, package: pkg, options: contextMenuOptions });
 	};
 
