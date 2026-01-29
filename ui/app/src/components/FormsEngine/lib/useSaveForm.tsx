@@ -76,8 +76,8 @@ export function useSaveForm(props: UseSaveFormProps) {
 	const onSave = wrapOnSaveProp(props.onSave);
 	const fileName = useAtomValue(stableFormContext.atoms.fileName);
 	const initialFileName = itemPath ? getFileNameValueFromPath(itemPath, isPage) : '';
-	const dialogState = useSelector(
-		(state: GlobalState) => state.dialogStack.byId[props.dialogId] as DialogStackItem<FormsEngineDialogProps>
+	const dialogState = useSelector((state: GlobalState) =>
+		props.dialogId ? (state.dialogStack.byId[props.dialogId] as DialogStackItem<FormsEngineDialogProps>) : undefined
 	);
 
 	return async () => {
