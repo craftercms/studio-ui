@@ -163,7 +163,9 @@ export function PublishPackageReview(props: PublishPackageReviewProps) {
 											<FormattedMessage defaultMessage="Comment" />
 										</Typography>
 										<Typography variant="body1" sx={{ mb: 2 }}>
-											{publishPackage.reviewerComment || <FormattedMessage defaultMessage="No reason provided" />}
+											{publishPackage.reviewerComment || (
+												<FormattedMessage defaultMessage="No approval comment provided" />
+											)}
 										</Typography>
 									</>
 								) : (
@@ -172,9 +174,7 @@ export function PublishPackageReview(props: PublishPackageReviewProps) {
 											<FormattedMessage defaultMessage="Reason" />
 										</Typography>
 										<Typography variant="body1" sx={{ mb: 2 }}>
-											{publishPackage.reviewerComment || (
-												<FormattedMessage defaultMessage="No approval comment provided" />
-											)}
+											{publishPackage.reviewerComment || <FormattedMessage defaultMessage="No reason provided" />}
 										</Typography>
 									</>
 								)}
