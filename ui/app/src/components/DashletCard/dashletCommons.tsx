@@ -22,7 +22,7 @@ import MuiCheckbox from '@mui/material/Checkbox';
 import ListItemText from '@mui/material/ListItemText';
 import Skeleton from '@mui/material/Skeleton';
 import Typography from '@mui/material/Typography';
-import React, { PropsWithChildren, ReactNode } from 'react';
+import React, { PropsWithChildren, ReactNode, useCallback } from 'react';
 import MuiListItem from '@mui/material/ListItem';
 import MuiListItemIcon from '@mui/material/ListItemIcon';
 import MuiListSubheader from '@mui/material/ListSubheader';
@@ -221,18 +221,10 @@ export function DashletItemOptions(props: { path: string; iconButtonProps?: Icon
 	);
 }
 
-/**
- * Renders a context menu for package options.
- *
- * @param {Object} props - The component props.
- * @param {Activity['package']} props.pkg - The package data to display options for.
- * @param {IconButtonProps} [props.iconButtonProps] - Additional props for the `IconButton` component.
- */
-export function PackageOptionsContextMenu(props: { pkg: Activity['package']; iconButtonProps?: IconButtonProps }) {
-	const { pkg, iconButtonProps } = props;
+export function usePackageContextMenu() {
 	const [contextMenu, setContextMenu] = useSpreadState<{
-		el: HTMLButtonElement;
-		package: PublishPackage;
+		el: HTMLButtonElement | null;
+		package: PublishPackage | null;
 		options: ContextMenuOption[];
 	}>({
 		el: null,
@@ -241,55 +233,59 @@ export function PackageOptionsContextMenu(props: { pkg: Activity['package']; ico
 	});
 	const { formatMessage } = useIntl();
 	const dispatch = useDispatch();
+	const position = contextMenu.el?.getBoundingClientRect();
 
-	const handleContextMenuClick = (e: React.MouseEvent<HTMLButtonElement>, pkg: FetchPackagesResponse) => {
-		const contextMenuOptions = generatePackageOptions([pkg], { includeOnly: ['view', 'resubmit'] }).map((option) => ({
-			id: option.id,
-			label: formatMessage(option.label as MessageDescriptor)
-		}));
-		setContextMenu({ el: e.currentTarget, package: pkg, options: contextMenuOptions });
-	};
+	const handleContextMenuClick = useCallback(
+		(e: React.MouseEvent<HTMLButtonElement>, pkg: PublishPackage) => {
+			const contextMenuOptions = generatePackageOptions([pkg], {
+				includeOnly: ['view', 'resubmit']
+			}).map((option) => ({
+				id: option.id,
+				label: formatMessage(option.label as MessageDescriptor)
+			}));
+			setContextMenu({ el: e.currentTarget, package: pkg, options: contextMenuOptions });
+		},
+		[formatMessage, setContextMenu]
+	);
 
-	const handleContextMenuClose = () => {
+	const handleContextMenuClose = useCallback(() => {
 		setContextMenu({
 			el: null,
 			package: null,
 			options: []
 		});
-	};
+	}, [setContextMenu]);
 
-	const onOptionClicked = (option: PackageActions, pkg: PublishPackage) => {
-		handleContextMenuClose();
-		packageActionDispatcher({
-			pkg,
-			option,
-			dispatch
-		});
-	};
-
-	return (
-		<>
-			<IconButton
-				{...iconButtonProps}
-				aria-label={iconButtonProps?.['aria-label'] ?? formatMessage({ defaultMessage: 'Options' })}
-				onClick={(e) => {
-					e.stopPropagation();
-					handleContextMenuClick(e, pkg);
-				}}
-			>
-				<MoreVertRoundedIcon />
-			</IconButton>
-			{Boolean(contextMenu.el) && (
-				<ContextMenu
-					open
-					anchorEl={contextMenu.el}
-					onClose={handleContextMenuClose}
-					options={[contextMenu.options]}
-					onMenuItemClicked={(option) => onOptionClicked(option as PackageActions, contextMenu.package)}
-				/>
-			)}
-		</>
+	const handleOptionClicked = useCallback(
+		(option: PackageActions, pkg: PublishPackage) => {
+			handleContextMenuClose();
+			packageActionDispatcher({
+				pkg,
+				option,
+				dispatch
+			});
+		},
+		[dispatch, handleContextMenuClose]
 	);
+
+	const ContextMenuElement = contextMenu.el ? (
+		<ContextMenu
+			open
+			anchorReference={'anchorPosition'}
+			anchorPosition={{ top: position?.bottom ?? 0, left: position?.left ?? 0 }}
+			onClose={handleContextMenuClose}
+			options={[contextMenu.options]}
+			onMenuItemClicked={(option) => handleOptionClicked(option as PackageActions, contextMenu.package!)}
+		/>
+	) : null;
+
+	return {
+		contextMenu,
+		openContextMenu: handleContextMenuClick,
+		closeContextMenu: handleContextMenuClose,
+		setContextMenu,
+		ContextMenuElement
+	};
 }
 
 const submittedPackageDetailMessages = defineMessages({

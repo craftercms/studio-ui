@@ -51,9 +51,9 @@ import {
 	DashletAvatar,
 	DashletEmptyMessage,
 	DashletItemOptions,
-	PackageOptionsContextMenu,
 	PersonAvatar,
-	PersonFullName
+	PersonFullName,
+	usePackageContextMenu
 } from '../DashletCard/dashletCommons';
 import { getSystemLink } from '../../utils/system';
 import { useDispatch } from 'react-redux';
@@ -86,6 +86,7 @@ import InfiniteLoader from 'react-window-infinite-loader';
 import { FixedSizeList as List } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import Box from '@mui/material/Box';
+import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
 
 export interface ActivityDashletProps extends Partial<DashletCardProps> {}
 
@@ -325,7 +326,8 @@ export function ActivityDashlet(props: ActivityDashletProps) {
 	const onPackageClick = (pkg) => {
 		setState({ openPackageDetailsDialog: true, selectedPackageId: pkg.id });
 	};
-	const [hoveredActivity, setHoveredActivity] = useState<number>(null);
+	const [hoveredActivity, setHoveredActivity] = useState<Activity | null>(null);
+	const packageContextMenu = usePackageContextMenu();
 
 	const currentPage = offset / limit;
 	const totalPages = total ? Math.ceil(total / limit) : 0;
@@ -338,8 +340,9 @@ export function ActivityDashlet(props: ActivityDashletProps) {
 	// Every row is loaded except for our loading indicator row.
 	const isItemLoaded = (index) => !hasNextPage || index < feed?.length;
 
-	const onActivityMouseOver = (activityId: number) => {
-		setHoveredActivity(activityId);
+	const onActivityMouseOver = (activity: Activity) => {
+		setHoveredActivity(activity);
+		packageContextMenu.setContextMenu({ package: activity.package });
 	};
 
 	const onActivityMouseLeave = () => {
@@ -631,7 +634,7 @@ export function ActivityDashlet(props: ActivityDashletProps) {
 															</SizedTimelineSeparator>
 															<TimelineContent
 																sx={{ py: '12px', px: 2 }}
-																onMouseEnter={() => onActivityMouseOver(activity.id)}
+																onMouseEnter={() => onActivityMouseOver(activity)}
 																onMouseLeave={() => onActivityMouseLeave()}
 															>
 																<Box
@@ -662,11 +665,18 @@ export function ActivityDashlet(props: ActivityDashletProps) {
 																	<Box
 																		sx={{
 																			alignSelf: 'center',
-																			visibility: hoveredActivity === activity.id ? 'visible' : 'hidden'
+																			visibility: hoveredActivity?.id === activity.id ? 'visible' : 'hidden'
 																		}}
 																	>
 																		{activity.package ? (
-																			<PackageOptionsContextMenu pkg={activity.package} />
+																			<IconButton
+																				onClick={(e) => {
+																					e.stopPropagation();
+																					packageContextMenu?.openContextMenu(e, activity.package);
+																				}}
+																			>
+																				<MoreVertRoundedIcon />
+																			</IconButton>
 																		) : (
 																			<DashletItemOptions path={activity.item.path} />
 																		)}
@@ -718,6 +728,7 @@ export function ActivityDashlet(props: ActivityDashletProps) {
 				onClosed={() => setState({ selectedPackageId: null })}
 				packageId={selectedPackageId}
 			/>
+			{packageContextMenu?.ContextMenuElement}
 		</DashletCard>
 	);
 }

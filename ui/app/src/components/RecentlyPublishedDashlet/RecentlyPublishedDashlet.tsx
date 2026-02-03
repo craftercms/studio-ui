@@ -23,9 +23,9 @@ import {
 	DashletEmptyMessage,
 	getItemSkeleton,
 	List,
-	PackageOptionsContextMenu,
 	Pager,
-	PersonAvatar
+	PersonAvatar,
+	usePackageContextMenu
 } from '../DashletCard/dashletCommons';
 import ListItemText from '@mui/material/ListItemText';
 import { LIVE_COLOUR, STAGING_COLOUR } from '../ItemPublishingTargetIcon/styles';
@@ -43,8 +43,10 @@ import { fetchPackages, FetchPackagesResponse } from '../../services/publishing'
 import Box from '@mui/material/Box';
 import { asLocalizedDateTime } from '../../utils/datetime';
 import { nnou, reversePluckProps } from '../../utils/object';
+import IconButton from '@mui/material/IconButton';
 import { COMPLETED_MASK } from '../../utils/constants';
 import ListItemButton from '@mui/material/ListItemButton';
+import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
 
 interface RecentlyPublishedDashletProps extends CommonDashletProps {}
 
@@ -81,6 +83,7 @@ export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
 	const site = useActiveSiteId();
 	const { formatMessage } = useIntl();
 	const [hoveredPackage, setHoveredPackage] = useState<number>(null);
+	const contextMenu = usePackageContextMenu();
 
 	const loadPage = useCallback(
 		(pageNumber: number, backgroundRefresh?: boolean) => {
@@ -242,12 +245,15 @@ export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
 									/>
 								}
 							/>
-							<PackageOptionsContextMenu
-								pkg={pkg}
-								iconButtonProps={{
-									sx: { visibility: hoveredPackage === pkg.id ? 'visible' : 'hidden' }
+							<IconButton
+								onClick={(e) => {
+									e.stopPropagation();
+									contextMenu?.openContextMenu(e, pkg);
 								}}
-							/>
+								sx={{ visibility: hoveredPackage === pkg.id ? 'visible' : 'hidden' }}
+							>
+								<MoreVertRoundedIcon />
+							</IconButton>
 						</ListItemButton>
 					))}
 				</List>
@@ -265,6 +271,7 @@ export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
 				onClose={() => setState({ packageDetailsDialogId: null })}
 				packageId={packageDetailsDialogId}
 			/>
+			{contextMenu?.ContextMenuElement}
 		</DashletCard>
 	);
 }
