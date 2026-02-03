@@ -670,6 +670,7 @@ export function ActivityDashlet(props: ActivityDashletProps) {
 																	>
 																		{activity.package ? (
 																			<IconButton
+																				aria-label={formatMessage({ defaultMessage: 'Package options' })}
 																				onClick={(e) => {
 																					e.stopPropagation();
 																					packageContextMenu?.openContextMenu(e, activity.package);
