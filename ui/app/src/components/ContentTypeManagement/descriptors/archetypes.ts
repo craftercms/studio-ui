@@ -87,7 +87,7 @@ export function initializeTypeForCreate(
 				fields: {
 					[XmlKeys.fileName]: {
 						id: XmlKeys.fileName,
-						type: 'auto-filename',
+						type: 'file-name',
 						name: 'Component ID',
 						description: '',
 						helpText: '',
