@@ -678,7 +678,8 @@ export function ActivityDashlet(props: ActivityDashletProps) {
 																				<MoreVertRoundedIcon />
 																			</IconButton>
 																		) : (
-																			<DashletItemOptions path={activity.item.path} />
+																			activity.actionType !== 'DELETE' &&
+																			activity.item && <DashletItemOptions path={activity.item.path} />
 																		)}
 																	</Box>
 																</Box>
