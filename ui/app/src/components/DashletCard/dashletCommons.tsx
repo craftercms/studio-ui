@@ -47,7 +47,6 @@ import { getPersonFullName, reversePluckProps } from '../../utils/object';
 import { showItemMegaMenu } from '../../state/actions/dialogs';
 import useSpreadState from '../../hooks/useSpreadState';
 import { ContextMenu, ContextMenuOption } from '../ContextMenu';
-import { FetchPackagesResponse } from '../../services/publishing';
 import { generatePackageOptions, packageActionDispatcher } from '../../utils/packageActions';
 import { LIVE_COLOUR, STAGING_COLOUR } from '../ItemPublishingTargetIcon/styles';
 import { asLocalizedDateTime } from '../../utils/datetime';
