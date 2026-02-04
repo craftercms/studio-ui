@@ -41,8 +41,7 @@ import { flushSync } from 'react-dom';
 import LookupTable from '../../../models/LookupTable';
 import { checkMinimumSaveRequirementsFulfilled, isInternalNameValid } from './validators';
 import ContentType from '../../../models/ContentType';
-import { updateDialogState } from '../../../state/actions/dialogStack';
-import { FormsEngineDialogProps } from '../FormsEngineDialog';
+import { PrimitiveAtom, useAtom } from 'jotai';
 
 export interface UseSaveFormProps {
 	createPath?: string;
@@ -51,7 +50,6 @@ export interface UseSaveFormProps {
 	isEmbedded: boolean;
 	onBeforeSave?: FormsEngineProps['onSave'];
 	onSave?: FormsEngineProps['onSave'];
-	dialogId?: string;
 	onClose?(): void;
 }
 
@@ -75,10 +73,8 @@ export function useSaveForm(props: UseSaveFormProps) {
 	const setHasPendingChanges = useSetAtom(stableFormContext.atoms.hasPendingChanges);
 	const onSave = wrapOnSaveProp(props.onSave);
 	const fileName = useAtomValue(stableFormContext.atoms.fileName);
+	const [, setRenamedValue] = useAtom(stableFormContext.atoms.renamedPath as PrimitiveAtom<string>);
 	const initialFileName = itemPath ? getFileNameValueFromPath(itemPath, isPage) : '';
-	const dialogState = useSelector((state: GlobalState) =>
-		props.dialogId ? (state.dialogStack.byId[props.dialogId] as DialogStackItem<FormsEngineDialogProps>) : undefined
-	);
 
 	return async () => {
 		const values = extractAtomValues(jotai, stableFormContext.atoms.valueByFieldId);
@@ -143,21 +139,11 @@ export function useSaveForm(props: UseSaveFormProps) {
 			next() {
 				const dom = fromString(xml);
 				(onSave?.({ dom, xml, values, versionComment, path }) as Promise<FormSavePromiseResult>)?.then((result) => {
-					onSavePromiseHandler(result);
 					const shouldClose = result.close || closeAfterSave;
-					if (isRename && dialogState && !shouldClose) {
-						dispatch(
-							updateDialogState({
-								id: props.dialogId,
-								props: {
-									formProps: {
-										...dialogState.props.formProps,
-										update: { path: renamePath, dialogId: props.dialogId }
-									}
-								}
-							})
-						);
+					if (isRename && !shouldClose) {
+						setRenamedValue(renamePath);
 					}
+					onSavePromiseHandler(result);
 				});
 			},
 			error(error: AjaxError) {

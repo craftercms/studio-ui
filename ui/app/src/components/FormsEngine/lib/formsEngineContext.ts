@@ -87,6 +87,7 @@ export interface FormsEngineAtoms {
 	tableOfContentsDrawerOpen: PrimitiveAtom<boolean>;
 	closeAfterSave: AtomWithStorage;
 	fileName?: Atom<string>;
+	renamedPath?: Atom<string>;
 }
 
 // Contains information to restore the state of a form when it comes back to being the active form on the stack

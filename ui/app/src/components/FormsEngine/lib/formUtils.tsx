@@ -603,6 +603,7 @@ export function useValidateFormProps(props: Partial<FormsEngineProps>): void {
 				[repeat?.fieldId, previousProps.repeat?.fieldId],
 				[repeat?.values, previousProps.repeat?.values],
 				[update?.modelId, previousProps.update?.modelId],
+				[update?.path, previousProps.update?.path],
 				[update?.values, previousProps.update?.values]
 			]))
 	) {
@@ -641,6 +642,7 @@ export interface ShouldUnlockArguments {
 	isStackedForm: boolean;
 	isParentReadonly: boolean;
 	siteId: string;
+	isRenamed: boolean;
 }
 
 /**

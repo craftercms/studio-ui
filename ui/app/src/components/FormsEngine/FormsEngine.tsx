@@ -154,7 +154,6 @@ export interface UpdateModeProps {
 		path: string;
 		modelId?: string;
 		values?: LookupTable<unknown>;
-		dialogId?: string;
 	};
 }
 
@@ -248,6 +247,8 @@ function FormBootstrap(props: FormsEngineProps) {
 	const username = useActiveUser()?.username;
 	const effectRefs = useUpdateRefs({ contentTypesById, username });
 	const stableFormContextRef = useRef<StableFormContextProps>(formsStackData[stackIndex]);
+	const [renamedPath, setRenamedPath] = useState<string | null>(null);
+	const effectiveUpdatePath = renamedPath ?? update?.path;
 
 	const contextApi = useMemo<FormsEngineFormApiContextProps>(() => {
 		const getInitialValues = () => stableFormContextRef.current.originalValues;
@@ -279,7 +280,7 @@ function FormBootstrap(props: FormsEngineProps) {
 		// If we're in create mode, there's no item yet. If updating, we can get the path from props or parent props in the case of repeat mode.
 		create
 			? null
-			: state.content.itemsByPath[props?.update?.path ?? formsStackData[stackIndex - 1]?.props?.update?.path]
+			: state.content.itemsByPath[effectiveUpdatePath ?? formsStackData[stackIndex - 1]?.props?.update?.path]
 	);
 
 	api.updateProps(stackIndex, props);
@@ -443,7 +444,7 @@ function FormBootstrap(props: FormsEngineProps) {
 		} /* if (isUpdateMode) */ else {
 			const subscription = fetchUpdateRequirements({
 				siteId,
-				path: update.path,
+				path: renamedPath ?? update?.path,
 				modelId: update.modelId,
 				readonly: readonlyProp,
 				contentTypesById: effectRefs.current.contentTypesById
@@ -476,7 +477,10 @@ function FormBootstrap(props: FormsEngineProps) {
 						lockResult: lockResultAtom,
 						readonly: createReadonlyAtom(lockResultAtom),
 						expandedStateBySectionId: buildSectionExpandedStateAtoms(requirements.contentType.sections),
-						fileName: createFileNameAtom(requirements.item.path)
+						fileName: createFileNameAtom(requirements.item.path),
+						renamedPath: atom(renamedPath, (get, set, newValue: string | null) => {
+							setRenamedPath(newValue);
+						})
 					});
 					const values = createParsedValuesObject(
 						requirements.contentType.fields,
@@ -520,7 +524,9 @@ function FormBootstrap(props: FormsEngineProps) {
 		siteId,
 		stackIndex,
 		store,
-		update
+		update,
+		username,
+		renamedPath
 	]);
 
 	if (prepError) {
@@ -722,7 +728,6 @@ function FormOrchestrator(props: FormsEngineProps) {
 		isCreateMode,
 		isRepeatMode,
 		createPath: create?.path,
-		dialogId: update?.dialogId,
 		onClose: () => onCloseHandler(null, null)
 	});
 
