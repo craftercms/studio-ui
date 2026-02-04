@@ -1957,7 +1957,7 @@ __metadata:
     eslint: "npm:^9.39.2"
     eslint-plugin-formatjs: "npm:^5.4.2"
     eslint-plugin-react-hooks: "npm:^7.0.1"
-    eslint-plugin-react-refresh: "npm:^0.4.24"
+    eslint-plugin-react-refresh: "npm:^0.5.0"
     fast-xml-parser: "npm:^5.3.4"
     globals: "npm:^17.3.0"
     graphiql: "npm:^5.2.2"
@@ -2002,7 +2002,7 @@ __metadata:
     uppy: "npm:^5.1.11"
     uuid: "npm:^13.0.0"
     video.js: "npm:8.23.6"
-    vite: "npm:^7.2.4"
+    vite: "npm:^7.3.1"
     vite-plugin-monaco-editor: "npm:^1.1.0"
     zxcvbn: "npm:^4.4.2"
   languageName: unknown
@@ -8350,12 +8350,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-react-refresh@npm:^0.4.24":
-  version: 0.4.24
-  resolution: "eslint-plugin-react-refresh@npm:0.4.24"
+"eslint-plugin-react-refresh@npm:^0.5.0":
+  version: 0.5.0
+  resolution: "eslint-plugin-react-refresh@npm:0.5.0"
   peerDependencies:
-    eslint: ">=8.40"
-  checksum: 10/5e7f0e9e854f1fcf56dcfca5f9e068ba0e1e3f7b47428991d5d5f9549dfc94261d6200fb7a1a1a76861cd787f17f2366dfd4f27a082d7f7815a0201a0b434dd3
+    eslint: ">=9"
+  checksum: 10/4808dee9ac4e34eff8e28cc314e132f19cd479ac47067ebbd5cabe820848f16abadf759fc7360938e2f3fc851eb85357def1d139a8bcc1eec64ac2d9e2b4d499
   languageName: node
   linkType: hard
 
@@ -14363,7 +14363,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite@npm:^7.2.4":
+"vite@npm:^7.3.1":
   version: 7.3.1
   resolution: "vite@npm:7.3.1"
   dependencies:
