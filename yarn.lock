@@ -1759,7 +1759,7 @@ __metadata:
     "@formatjs/cli": "npm:^6.7.2"
     "@mui/icons-material": "npm:^7.3.7"
     "@mui/material": "npm:^7.3.7"
-    "@reduxjs/toolkit": "npm:^2.11.0"
+    "@reduxjs/toolkit": "npm:^2.11.2"
     "@rollup/plugin-alias": "npm:^6.0.0"
     "@rollup/plugin-json": "npm:^6.1.0"
     "@rollup/plugin-swc": "npm:^0.4.0"
@@ -1897,7 +1897,7 @@ __metadata:
     "@mui/x-date-pickers": "npm:^8.27.0"
     "@mui/x-tree-view": "npm:^8.27.0"
     "@prettier/plugin-xml": "npm:3.3.0"
-    "@reduxjs/toolkit": "npm:^2.11.0"
+    "@reduxjs/toolkit": "npm:^2.11.2"
     "@rollup/plugin-swc": "npm:^0.4.0"
     "@stomp/stompjs": "npm:^7.2.1"
     "@tinymce/tinymce-react": "npm:^6.3.0"
@@ -4360,7 +4360,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reduxjs/toolkit@npm:^2.11.0":
+"@reduxjs/toolkit@npm:^2.11.2":
   version: 2.11.2
   resolution: "@reduxjs/toolkit@npm:2.11.2"
   dependencies:
