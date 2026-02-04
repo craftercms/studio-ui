@@ -1976,7 +1976,7 @@ __metadata:
     ncp: "npm:^2.0.0"
     notistack: "npm:3.0.2"
     npm-run-all: "npm:^4.1.5"
-    prettier: "npm:^3.7.1"
+    prettier: "npm:^3.8.1"
     prop-types: "npm:^15.8.1"
     query-string: "npm:^9.3.1"
     react: "npm:19.2.4"
@@ -2018,7 +2018,7 @@ __metadata:
     "@rollup/plugin-commonjs": "npm:^29.0.0"
     "@rollup/plugin-node-resolve": "npm:^16.0.3"
     "@rollup/plugin-replace": "npm:^6.0.3"
-    "@types/node": "npm:^24.10.1"
+    "@types/node": "npm:^25.2.0"
     "@types/rimraf": "npm:^4.0.5"
     build-if-changed: "npm:^1.5.5"
     eslint: "npm:^9.39.2"
@@ -2027,7 +2027,7 @@ __metadata:
     glob-gitignore: "npm:^1.0.15"
     globals: "npm:^17.3.0"
     npm-run-all: "npm:^4.1.5"
-    prettier: "npm:^3.7.1"
+    prettier: "npm:^3.8.1"
     rimraf: "npm:^6.1.2"
     rollup: "npm:^4.57.1"
     rollup-plugin-copy: "npm:^3.5.0"
@@ -5320,7 +5320,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:^24.10.1":
+"@types/node@npm:*":
   version: 24.10.1
   resolution: "@types/node@npm:24.10.1"
   dependencies:
@@ -5335,6 +5335,15 @@ __metadata:
   dependencies:
     undici-types: "npm:~6.21.0"
   checksum: 10/a61c68d434871d4a13496e3607502b2ff8e2ff69dca7e09228de5bea3bc95eb627d09243a8cff8e0bf9ff1fa13baaf0178531748f59ae81f0569c7a2f053bfa5
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^25.2.0":
+  version: 25.2.0
+  resolution: "@types/node@npm:25.2.0"
+  dependencies:
+    undici-types: "npm:~7.16.0"
+  checksum: 10/18a7245e20556bc92486161872c54bef7601e1e7970028e8a18d1f57d88aa3035efef42c144a2100f9e9bf6fba7a15b4ae8ee044cd98a8b06d6f754232611f70
   languageName: node
   linkType: hard
 
@@ -11798,7 +11807,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:^3.5.3, prettier@npm:^3.7.1":
+"prettier@npm:^3.5.3, prettier@npm:^3.8.1":
   version: 3.8.1
   resolution: "prettier@npm:3.8.1"
   bin:

@@ -86,7 +86,7 @@
 		"@rollup/plugin-commonjs": "^29.0.0",
 		"@rollup/plugin-node-resolve": "^16.0.3",
 		"@rollup/plugin-replace": "^6.0.3",
-		"@types/node": "^24.10.1",
+		"@types/node": "^25.2.0",
 		"@types/rimraf": "^4.0.5",
 		"build-if-changed": "^1.5.5",
 		"eslint": "^9.39.2",
@@ -102,6 +102,6 @@
 	},
 	"dependencies": {
 		"@prettier/plugin-xml": "3.4.1",
-		"prettier": "^3.7.1"
+		"prettier": "^3.8.1"
 	}
 }
