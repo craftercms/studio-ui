@@ -1899,7 +1899,7 @@ __metadata:
     "@prettier/plugin-xml": "npm:3.3.0"
     "@reduxjs/toolkit": "npm:^2.11.2"
     "@rollup/plugin-swc": "npm:^0.4.0"
-    "@stomp/stompjs": "npm:^7.2.1"
+    "@stomp/stompjs": "npm:^7.3.0"
     "@tinymce/tinymce-react": "npm:^6.3.0"
     "@types/ace": "npm:^0.0.52"
     "@types/diff": "npm:^8.0.0"
@@ -1920,20 +1920,20 @@ __metadata:
     babel-plugin-formatjs: "npm:^10.5.41"
     build-if-changed: "npm:^1.5.5"
     clsx: "npm:^2.1.1"
-    diff: "npm:^8.0.2"
+    diff: "npm:^8.0.3"
     eslint: "npm:^9.39.2"
     eslint-plugin-formatjs: "npm:^5.4.2"
     eslint-plugin-react-hooks: "npm:^7.0.1"
     eslint-plugin-react-refresh: "npm:^0.4.24"
-    fast-xml-parser: "npm:^5.3.2"
+    fast-xml-parser: "npm:^5.3.4"
     globals: "npm:^17.3.0"
     graphiql: "npm:^5.2.2"
     graphql: "npm:^16.12.0"
     graphql-ws: "npm:^6.0.7"
     highlight.js: "npm:^11.11.1"
     jabber: "npm:^1.5.3"
-    jotai: "npm:^2.15.1"
-    jotai-effect: "npm:^2.1.3"
+    jotai: "npm:^2.17.1"
+    jotai-effect: "npm:^2.2.3"
     js-cookie: "npm:^3.0.5"
     marked: "npm:^17.0.1"
     marked-highlight: "npm:^2.2.3"
@@ -4889,10 +4889,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@stomp/stompjs@npm:^7.2.1":
-  version: 7.2.1
-  resolution: "@stomp/stompjs@npm:7.2.1"
-  checksum: 10/7728acf4b65aec51d5904c4623d78c6a80dc9d114bd16cf703418a7521713017888df7e67315a28deae6f8305abef5d755ce8d54687f03e06fa2c6bae6b53a9d
+"@stomp/stompjs@npm:^7.3.0":
+  version: 7.3.0
+  resolution: "@stomp/stompjs@npm:7.3.0"
+  checksum: 10/18cd605e3c6d9905976d5f31249fbb2e673c1d4b214a100eb6b8b021c16f79e2739837536c1dcaa60c33f89b56f07410195d7f7625474611e45fd6e7304730d1
   languageName: node
   linkType: hard
 
@@ -7976,7 +7976,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"diff@npm:^8.0.2":
+"diff@npm:^8.0.3":
   version: 8.0.3
   resolution: "diff@npm:8.0.3"
   checksum: 10/52f957e1fa53db4616ff5f4811b92b22b97a160c12a2f86f22debd4181227b0f6751aa8fd711d6a8fcf4618acb13b86bc702e6d9d6d6ed82acfd00c9cb26ace2
@@ -8717,7 +8717,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-xml-parser@npm:^5.3.2":
+"fast-xml-parser@npm:^5.3.4":
   version: 5.3.4
   resolution: "fast-xml-parser@npm:5.3.4"
   dependencies:
@@ -10344,18 +10344,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jotai-effect@npm:^2.1.3":
-  version: 2.1.3
-  resolution: "jotai-effect@npm:2.1.3"
+"jotai-effect@npm:^2.2.3":
+  version: 2.2.3
+  resolution: "jotai-effect@npm:2.2.3"
   peerDependencies:
-    jotai: ">=2.14.0"
-  checksum: 10/8c6bdae633c81bd169bc5f170a9025b9faf0fee48712d0216ed4df28e3701daa10fc780b75286df67fe0155330171b389dc48e20b8b53a49fff14e7a8bf18c63
+    jotai: ">=2.16.0"
+  checksum: 10/4be1474bd168ce023967aef0688babf0d1b600f922f55feaa000f51c6f7c91233101832cff0c24f2da90a90d34e0673aa005d2cd6f2a275fe84a906c69b6ab43
   languageName: node
   linkType: hard
 
-"jotai@npm:^2.15.1":
-  version: 2.15.1
-  resolution: "jotai@npm:2.15.1"
+"jotai@npm:^2.17.1":
+  version: 2.17.1
+  resolution: "jotai@npm:2.17.1"
   peerDependencies:
     "@babel/core": ">=7.0.0"
     "@babel/template": ">=7.0.0"
@@ -10370,7 +10370,7 @@ __metadata:
       optional: true
     react:
       optional: true
-  checksum: 10/d346ded947768ba36ca70e8a55262281802bdb7ef2b14bc783a14c6a80c5a7e1bfcda6bf3ba4a747953c73dad8a8d205b2e0f57fa73e436a6188ecade5c6191b
+  checksum: 10/66bdc674a910941d051ef2d21f103419cf6d7483fbdf33792acde926d45cac3d68d7a8d2e950837cc2aee4e95eb55eaef0dc8d19a046944961befe6bef5e151a
   languageName: node
   linkType: hard
 
