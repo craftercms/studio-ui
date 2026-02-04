@@ -145,6 +145,7 @@ export function PublishingPackage(props: PublishingPackageProps) {
 	}
 
 	const onCancelDialogSuccess = () => {
+		cancelPackageDialogState.onClose();
 		getPackages(siteId);
 	};
 

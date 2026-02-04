@@ -189,6 +189,8 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 	});
 	const [openDataSourceInserter, setOpenDataSourceInserter] = useState<boolean>(false);
 
+	const [activeFormHasErrors, setActiveFormHasErrors] = useState<boolean>(false);
+	const [validatingForm, setValidatingForm] = useState<boolean>(false);
 	const configDescriptors = useMemo(() => {
 		const controlDescriptors = Object.values(config?.controls ?? {}).map(({ descriptor }) => descriptor);
 		const dataSourceDescriptors = Object.values(config?.dataSources ?? {}).map(({ descriptor }) => descriptor);
@@ -247,8 +249,8 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 	};
 	/** Returns true if no form is opened or if the active form it's all valid and can be committed and closed. Returns false otherwise. */
 	const performCurrentFormErrorCheckAndWarning = () => {
-		if (open && validityAtomsHaveErrors(jotai, stateRef.current.activeFormContext.atoms.validationByFieldId)) {
-			showAlert(formatMessage({ defaultMessage: `Please fix errors before moving on` }));
+		if (open && activeFormHasErrors) {
+			showAlert(formatMessage({ defaultMessage: 'Please resolve any issues prior to closing the form' }));
 			return false;
 		}
 		return true;
@@ -388,6 +390,7 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 		jotai,
 		selectedFieldIdPath,
 		fieldPathsWithErrors,
+		activeFormHasErrors,
 		closeAndCleanup,
 		handleEditTypeProperties,
 		onUpdateHasPendingChanges
@@ -717,20 +720,23 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 
 	// `fieldUpdates$` subscription
 	useEffect(() => {
-		const sub = stateRef.current.fieldUpdates$.pipe(debounceTime(500)).subscribe(() => {
-			const { jotai, fieldPathsWithErrors, selectedFieldIdPath, onUpdateHasPendingChanges } = effectRefs.current;
+		const sub = stateRef.current.fieldUpdates$.pipe(debounceTime(500)).subscribe(async () => {
+			const { fieldPathsWithErrors, selectedFieldIdPath, onUpdateHasPendingChanges } = effectRefs.current;
 			onUpdateHasPendingChanges(true);
 			stateRef.current.formFieldsChanged = true;
-
-			const { activeFormContext } = stateRef.current;
-			const { atoms } = activeFormContext;
 			const nextFieldPathsWithErrors = { ...fieldPathsWithErrors };
-
-			// Check validations atoms of the form to see if there are any unfulfilled validations.
-			nextFieldPathsWithErrors[selectedFieldIdPath] = validityAtomsHaveErrors(jotai, atoms.validationByFieldId);
+			// Check validation atoms of the form to see if there are any unfulfilled validations.
+			setValidatingForm(true);
+			const hasErrors = await validityAtomsHaveErrors(
+				effectRefs.current.jotai,
+				stateRef.current?.activeFormContext?.atoms?.validationByFieldId
+			);
+			setActiveFormHasErrors(hasErrors);
+			nextFieldPathsWithErrors[selectedFieldIdPath] = hasErrors;
 			if (!nextFieldPathsWithErrors[selectedFieldIdPath]) delete nextFieldPathsWithErrors[selectedFieldIdPath];
 
 			setFieldPathsWithErrors(nextFieldPathsWithErrors);
+			setValidatingForm(false);
 		});
 		return () => {
 			sub.unsubscribe();
@@ -768,7 +774,8 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 		return () => sub.unsubscribe();
 	}, [site, activeEnvironment, setConfig, dispatch]);
 
-	const disableSave = (!type.NEW && !hasPendingChanges) || Object.keys(fieldPathsWithErrors).length !== 0;
+	const disableSave =
+		(!type.NEW && !hasPendingChanges) || Object.keys(fieldPathsWithErrors).length !== 0 || validatingForm;
 	return (
 		<Provider store={jotai}>
 			<EditTypeViewLayout
@@ -1189,9 +1196,31 @@ function save(
 	return forkJoin(requests).pipe(map(() => xml));
 }
 
-function validityAtomsHaveErrors(jotai: JotaiStore, atoms: FormsEngineAtoms['validationByFieldId']) {
-	// Check validations atoms of the form to see if there are any unfulfilled validations.
-	return Object.values(atoms).some((atom) => !jotai.get(atom).isValid);
+/**
+ * Checks if any of the validity atoms in the provided `atoms` object have errors.
+ *
+ * This function asynchronously evaluates the validity of all atoms by retrieving their values
+ * using the `jotai.get` method. It then determines if any of the atoms are invalid based on their
+ * `isValid` property.
+ *
+ * @async
+ * @function
+ * @param {JotaiStore} jotai - The Jotai store instance used to retrieve atom values.
+ * @param {FormsEngineAtoms['validationByFieldId']} [atoms={}] - A lookup table of validation atoms by field ID.
+ * @returns {Promise<boolean>} - Resolves to `true` if any atom is invalid, otherwise `false`.
+ *
+ */
+async function validityAtomsHaveErrors(
+	jotai: JotaiStore,
+	atoms: FormsEngineAtoms['validationByFieldId'] = {}
+): Promise<boolean> {
+	try {
+		const results = await Promise.all(Object.values(atoms).map((atom) => jotai.get(atom)));
+		return results.some((validity) => !validity.isValid);
+	} catch (error) {
+		console.error('Error checking field validity:', error);
+		return true;
+	}
 }
 
 function parseConfigPlugins(

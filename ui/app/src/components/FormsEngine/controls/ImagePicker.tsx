@@ -285,7 +285,7 @@ export function ImagePicker(props: ImagePickerProps) {
 					},
 					onUploadComplete(result: FileUploadResult) {
 						if (result.successful.length) {
-							const newValue = ensureSingleSlash(`${result.successful[0].meta.path}/${result.successful[0].meta.name}`);
+							const newValue = ensureSingleSlash(`${result.successful[0].meta.path}`);
 							setValue(newValue);
 						}
 					}

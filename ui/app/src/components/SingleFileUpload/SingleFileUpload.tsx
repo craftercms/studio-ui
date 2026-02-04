@@ -103,7 +103,8 @@ export interface SingleFileUploadProps {
 
 export function SingleFileUpload(props: SingleFileUploadProps) {
 	const {
-		url = '/studio/api/1/services/api/1/content/write-content.json',
+		site,
+		url = `/studio/api/2/content/${site}`,
 		formTarget = '#asset_upload_form',
 		onUploadStart,
 		onComplete,
@@ -111,7 +112,6 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 		customFileName,
 		fileTypes,
 		path,
-		site,
 		onFileAdded: onFileAddedProp
 	} = props;
 	const { formatMessage } = useIntl();
@@ -145,7 +145,8 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 									name: customFileName,
 									meta: {
 										...currentFile.meta,
-										name: customFileName
+										name: customFileName,
+										path: ensureSingleSlash(`${path}/${customFileName}`)
 									}
 								};
 							}
@@ -160,18 +161,28 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 								name: suggestedNameRef.current,
 								meta: {
 									...files[fileRef.current.id].meta,
-									name: suggestedNameRef.current
+									name: suggestedNameRef.current,
+									path: ensureSingleSlash(`${path}/${suggestedNameRef.current}`)
 								}
 							}
 						};
 						setSuggestedName(null);
 						return updatedFiles;
 					} else {
-						return files;
+						return {
+							...files,
+							[fileRef.current.id]: {
+								...files[fileRef.current.id],
+								meta: {
+									...files[fileRef.current.id].meta,
+									path: ensureSingleSlash(`${path}/${files[fileRef.current.id].meta.name}`)
+								}
+							}
+						};
 					}
 				}
 			}),
-		[fileTypes, customFileName]
+		[fileTypes, customFileName, path]
 	);
 
 	const retryUpload = () => {
@@ -194,7 +205,8 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 				hideAfterFinish: false
 			})
 			.use(XHRUpload, {
-				endpoint: `${url}${toQueryString({ path, site })}`,
+				endpoint: url,
+				method: 'PUT',
 				formData: true,
 				fieldName: 'file',
 				timeout: upload.timeout,
@@ -357,7 +369,6 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 	return (
 		<>
 			<form id="asset_upload_form">
-				<input type="hidden" name="path" value={path} />
 				<input type="hidden" name="site" value={site} />
 			</form>
 			<Box className="uppy-progress-bar" sx={{ display: error ? 'none' : null }} />

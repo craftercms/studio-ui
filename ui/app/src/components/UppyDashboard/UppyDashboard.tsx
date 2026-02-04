@@ -105,6 +105,15 @@ const translations = defineMessages({
 	},
 	proceedSingle: {
 		defaultMessage: 'Start Upload'
+	},
+	browseFiles: {
+		defaultMessage: 'browse files'
+	},
+	browseFolders: {
+		defaultMessage: 'browse folders'
+	},
+	dropPasteBoth: {
+		defaultMessage: 'Drop files here, {browseFiles} or {browseFolders}'
 	}
 });
 
@@ -184,14 +193,29 @@ export function UppyDashboard(props: UppyDashboardProps) {
 					minimize: formatMessage(translations.minimize),
 					close: formatMessage(translations.close),
 					proceed: formatMessage(translations.proceed),
-					proceedSingle: formatMessage(translations.proceedSingle)
+					proceedSingle: formatMessage(translations.proceedSingle),
+					browseFiles: formatMessage(translations.browseFiles),
+					browseFolders: formatMessage(translations.browseFolders),
+					dropPasteBoth: formatMessage(translations.dropPasteBoth, {
+						// These values are for uppy's mechanism to replace the placeholders with links
+						browseFiles: '%{browseFiles}',
+						browseFolders: '%{browseFolders}'
+					})
 				},
 				pluralize: (n: number) => (n === 1 ? 0 : 1)
 			},
 			maxActiveUploads,
 			externalMessages: {
 				maxFiles: formatMessage(translations.maxFiles, { maxFiles: maxActiveUploads }),
-				projectPoliciesChangeRequired: (fileName, detail) => detail,
+				projectPoliciesChangeRequired: (fileName, suggestedFileName) => {
+					return formatMessage(
+						{
+							defaultMessage:
+								'Path `{fileName}` was transformed to `{suggestedFileName}` per the project file name policy'
+						},
+						{ fileName, suggestedFileName }
+					);
+				},
 				projectPoliciesNoComply: (fileName, detail) => {
 					return formatMessage(translations.projectPoliciesNoComply, { fileName, detail });
 				}

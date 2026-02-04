@@ -87,7 +87,9 @@ export const imagePickerDescriptor: DescriptorContentType = {
 			validations: immutableEmptyObject
 		}
 	},
-	supportedPostFixes: ['_s']
+	metadata: {
+		suffixes: ['_s']
+	}
 };
 
 export default imagePickerDescriptor;

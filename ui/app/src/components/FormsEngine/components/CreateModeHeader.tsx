@@ -20,6 +20,7 @@ import { ItemMetaContext } from '../lib/formsEngineContext';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import ItemTypeIcon from '../../ItemTypeIcon';
+import Collapse from '@mui/material/Collapse';
 
 const itemTypeTranslations = defineMessages({
 	component: { defaultMessage: 'Component' },
@@ -27,7 +28,7 @@ const itemTypeTranslations = defineMessages({
 	taxonomy: { defaultMessage: 'Taxonomy' }
 });
 
-export function CreateModeHeader({ path }: { path: string }) {
+export function CreateModeHeader({ path, collapse = false }: { path: string; collapse?: boolean }) {
 	const { formatMessage } = useIntl();
 	const { contentType } = useContext(ItemMetaContext);
 	const itemType = contentType.type;
@@ -44,7 +45,9 @@ export function CreateModeHeader({ path }: { path: string }) {
 					}}
 				/>
 			</Typography>
-			<Typography color="textSecondary" variant="body2" children={path} />
+			<Collapse in={!collapse}>
+				<Typography color="textSecondary" variant="body2" children={path} />
+			</Collapse>
 		</Container>
 	);
 }

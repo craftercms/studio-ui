@@ -59,7 +59,9 @@ export const transcodedVideoPickerDescriptor: DescriptorContentType = {
 			validations: immutableEmptyObject
 		}
 	},
-	supportedPostFixes: ['_o']
+	metadata: {
+		suffixes: ['_o']
+	}
 };
 
 export default transcodedVideoPickerDescriptor;

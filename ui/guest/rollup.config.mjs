@@ -24,6 +24,7 @@ import json from '@rollup/plugin-json';
 
 /** @type {import('rollup').InputPluginOption} */
 const plugins = [
+  json(),
   replace({
     preventAssignment: true,
     'process.env.NODE_ENV': JSON.stringify('production'),
@@ -78,7 +79,8 @@ export default [
       file: '../../static-assets/scripts/craftercms-xb.umd.js',
       format: 'umd',
       amd: { id: pkg.craftercms.id },
-      globals
+      globals,
+      inlineDynamicImports: true,
     }
   },
 
