@@ -1773,9 +1773,9 @@ __metadata:
     js-cookie: "npm:^3.0.5"
     npm-run-all: "npm:^4.1.5"
     prop-types: "npm:^15.8.1"
-    react: "npm:19.2.0"
-    react-dom: "npm:19.2.0"
-    react-hotkeys-hook: "npm:^5.2.1"
+    react: "npm:19.2.4"
+    react-dom: "npm:19.2.4"
+    react-hotkeys-hook: "npm:^5.2.4"
     react-intl: "npm:^7.1.11"
     react-is: "npm:^19.2.0"
     react-redux: "npm:^9.2.0"
@@ -1904,7 +1904,7 @@ __metadata:
     "@types/ace": "npm:^0.0.52"
     "@types/diff": "npm:^8.0.0"
     "@types/js-cookie": "npm:^3.0.6"
-    "@types/react": "npm:^19.2.7"
+    "@types/react": "npm:^19.2.11"
     "@types/react-dom": "npm:^19.2.3"
     "@types/react-window": "npm:^2.0.0"
     "@types/react-window-infinite-loader": "npm:^2.0.0"
@@ -1946,12 +1946,12 @@ __metadata:
     prettier: "npm:^3.7.1"
     prop-types: "npm:^15.8.1"
     query-string: "npm:^9.3.1"
-    react: "npm:19.2.0"
+    react: "npm:19.2.4"
     react-advanced-cropper: "npm:^0.20.1"
     react-animations: "npm:^1.0.0"
     react-colorful: "npm:^5.6.1"
-    react-dom: "npm:19.2.0"
-    react-hotkeys-hook: "npm:^5.2.1"
+    react-dom: "npm:19.2.4"
+    react-hotkeys-hook: "npm:^5.2.4"
     react-intl: "npm:^7.1.14"
     react-redux: "npm:^9.2.0"
     react-router: "npm:^7.13.0"
@@ -5528,7 +5528,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:^19.2.7":
+"@types/react@npm:^19.2.11":
   version: 19.2.11
   resolution: "@types/react@npm:19.2.11"
   dependencies:
@@ -12232,24 +12232,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dom@npm:19.2.0":
-  version: 19.2.0
-  resolution: "react-dom@npm:19.2.0"
+"react-dom@npm:19.2.4":
+  version: 19.2.4
+  resolution: "react-dom@npm:19.2.4"
   dependencies:
     scheduler: "npm:^0.27.0"
   peerDependencies:
-    react: ^19.2.0
-  checksum: 10/3dbba071b9b1e7a19eae55f05c100f6b44f88c0aee72397d719ae338248ca66ed5028e6964c1c14870cc3e1abcecc91b22baba6dc2072f819dea81a9fd72f2fd
+    react: ^19.2.4
+  checksum: 10/ec17721a8cb131bc33480a9f738bc5bbfe4bd11b11cf69f3f473605346578a329ad26ceef6ef0761ea67a4b455803407dd7ed4ba3d8a5abd2cee8c32d221e498
   languageName: node
   linkType: hard
 
-"react-hotkeys-hook@npm:^5.2.1":
-  version: 5.2.1
-  resolution: "react-hotkeys-hook@npm:5.2.1"
+"react-hotkeys-hook@npm:^5.2.4":
+  version: 5.2.4
+  resolution: "react-hotkeys-hook@npm:5.2.4"
   peerDependencies:
     react: ">=16.8.0"
     react-dom: ">=16.8.0"
-  checksum: 10/4581b6bc2496954b5bd3c41924aba28f0d2e4a996476f38cce80e777b6a63f51e024992a11c2d7d4b4abe4815e0bba04fa692a0ed28aeb5f58df7852a77aab70
+  checksum: 10/118ffdc15e8932e0c67d2f0479d088ba50d759b4f5974e2394bc720286918530291bbde317b39cbde7ee1239813038ae7b90f6eb24794783036944b3fa2a1ba2
   languageName: node
   linkType: hard
 
@@ -12439,10 +12439,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:19.2.0":
-  version: 19.2.0
-  resolution: "react@npm:19.2.0"
-  checksum: 10/e13bcdb8e994c3cfa922743cb75ca8deb60531bf02f584d2d8dab940a8132ce8a2e6ef16f8ed7f372b4072e7a7eeff589b2812dabbedfa73e6e46201dac8a9d0
+"react@npm:19.2.4":
+  version: 19.2.4
+  resolution: "react@npm:19.2.4"
+  checksum: 10/18179fe217f67eb2d0bc61cd04e7ad3c282ea09a1dface7eacd71816f62609f4bbf566c447c704335284deb8397b00bca084e0cd60e6f437279a7498e2d0bfe0
   languageName: node
   linkType: hard
 
