@@ -649,8 +649,9 @@ export interface ShouldUnlockArguments {
  * Determines if an item should be unlocked when its form is being unmounted.
  **/
 export function shouldUnlockItem(props: ShouldUnlockArguments): boolean {
-	const { isRepeatMode, isCreateMode, readonly, isEmbedded, isStackedForm, isParentReadonly } = props;
+	const { isRepeatMode, isCreateMode, readonly, isEmbedded, isStackedForm, isParentReadonly, isRenamed } = props;
 	return (
+		!isRenamed &&
 		!isRepeatMode &&
 		!isCreateMode &&
 		!readonly &&
@@ -681,6 +682,10 @@ export function useUnlockOnClose(props: FormsEngineProps) {
 	const dispatch = useDispatch();
 	const readonly = useAtomValue(atoms.readonly);
 	const siteId = useActiveSiteId();
+	const isItemPage = itemPath.endsWith('index.xml');
+	const currentFileName = useAtomValue(atoms.fileName);
+	const isRenamed = currentFileName !== getFileNameValueFromPath(itemPath, isItemPage);
+
 	const unlockEffectRefs = useUpdateRefs<ShouldUnlockArguments & { dispatch: ReduxDispatch }>({
 		dispatch,
 		isRepeatMode,
@@ -689,7 +694,8 @@ export function useUnlockOnClose(props: FormsEngineProps) {
 		isEmbedded,
 		isStackedForm,
 		isParentReadonly: formsStackData[stackIndex - 1] ? store.get(formsStackData[stackIndex - 1].atoms.readonly) : false,
-		siteId
+		siteId,
+		isRenamed
 	});
 	useEffect(
 		() => () => {
