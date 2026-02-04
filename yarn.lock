@@ -1967,8 +1967,8 @@ __metadata:
     react-intl: "npm:^7.1.14"
     react-redux: "npm:^9.2.0"
     react-router: "npm:^7.13.0"
-    react-window: "npm:^2.2.3"
-    react-window-infinite-loader: "npm:^2.0.0"
+    react-window: "npm:^2.2.6"
+    react-window-infinite-loader: "npm:^2.0.1"
     redux: "npm:^5.0.1"
     redux-observable: "npm:^3.0.0-rc.2"
     rimraf: "npm:^6.1.2"
@@ -12424,7 +12424,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-window-infinite-loader@npm:*, react-window-infinite-loader@npm:^2.0.0":
+"react-window-infinite-loader@npm:*, react-window-infinite-loader@npm:^2.0.1":
   version: 2.0.1
   resolution: "react-window-infinite-loader@npm:2.0.1"
   peerDependencies:
@@ -12434,7 +12434,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-window@npm:*, react-window@npm:^2.2.3":
+"react-window@npm:*, react-window@npm:^2.2.6":
   version: 2.2.6
   resolution: "react-window@npm:2.2.6"
   peerDependencies:
