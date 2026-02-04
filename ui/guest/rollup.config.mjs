@@ -39,8 +39,7 @@ const plugins = [
     dedupe: ['react', 'react-dom', 'react-is'],
     mainFields: ['module', 'main', 'browser']
   }),
-  commonjs({ include: /node_modules|jquery/ }),
-  json(),
+  commonjs({ include: /node_modules|jquery/ })
 ];
 
 /** @type {import('rollup').OutputOptions['globals']} */
