@@ -107,7 +107,7 @@
 		"react-hotkeys-hook": "^5.2.1",
 		"react-intl": "^7.1.14",
 		"react-redux": "^9.2.0",
-		"react-router": "^7.9.6",
+		"react-router": "^7.13.0",
 		"react-window": "^2.2.3",
 		"react-window-infinite-loader": "^2.0.0",
 		"redux": "^5.0.1",
