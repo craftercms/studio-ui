@@ -52,7 +52,7 @@
 		"preact": "^10.28.3"
 	},
 	"peerDependencies": {
-		"uppy": "^4.13.4"
+		"uppy": "^5.2.3"
 	},
 	"files": [
 		"lib/*",
