@@ -2055,7 +2055,7 @@ __metadata:
     eslint: "npm:^9.39.2"
     preact: "npm:^10.28.3"
   peerDependencies:
-    uppy: ^4.13.4
+    uppy: ^5.2.3
   languageName: unknown
   linkType: soft
 
