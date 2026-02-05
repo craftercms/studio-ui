@@ -22,7 +22,7 @@ import MuiCheckbox from '@mui/material/Checkbox';
 import ListItemText from '@mui/material/ListItemText';
 import Skeleton from '@mui/material/Skeleton';
 import Typography from '@mui/material/Typography';
-import React, { PropsWithChildren, ReactNode, useCallback } from 'react';
+import React, { PropsWithChildren, ReactNode, useCallback, useEffect } from 'react';
 import MuiListItem from '@mui/material/ListItem';
 import MuiListItemIcon from '@mui/material/ListItemIcon';
 import MuiListSubheader from '@mui/material/ListSubheader';
@@ -51,6 +51,7 @@ import { generatePackageOptions, packageActionDispatcher } from '../../utils/pac
 import { LIVE_COLOUR, STAGING_COLOUR } from '../ItemPublishingTargetIcon/styles';
 import { asLocalizedDateTime } from '../../utils/datetime';
 import useLocale from '../../hooks/useLocale';
+import { useTheme } from '@mui/material/styles';
 
 export const actionsToBeShown: AllItemActions[] = [
 	'edit',
@@ -233,6 +234,8 @@ export function usePackageContextMenu() {
 	const { formatMessage } = useIntl();
 	const dispatch = useDispatch();
 	const position = contextMenu.el?.getBoundingClientRect();
+	const theme = useTheme();
+	const transitionDuration = theme.transitions.duration.standard;
 
 	const handleContextMenuClick = useCallback(
 		(e: React.MouseEvent<HTMLButtonElement>, pkg: PublishPackage) => {
@@ -250,8 +253,7 @@ export function usePackageContextMenu() {
 	const handleContextMenuClose = useCallback(() => {
 		setContextMenu({
 			el: null,
-			package: null,
-			options: []
+			package: null
 		});
 	}, [setContextMenu]);
 
@@ -267,23 +269,35 @@ export function usePackageContextMenu() {
 		[dispatch, handleContextMenuClose]
 	);
 
-	const ContextMenuElement = contextMenu.el ? (
+	useEffect(() => {
+		if (!contextMenu.el) {
+			// If contextMenu.el is null (meaning the menu is closed), clear the options after the transition has ended.
+			// This is done to prevent the 'No options available' to show while closing the menu (if options is cleared at the same time as el).
+			setTimeout(() => {
+				setContextMenu({
+					options: []
+				});
+			}, transitionDuration);
+		}
+	}, [contextMenu.el, setContextMenu, transitionDuration]);
+
+	const contextMenuElement = (
 		<ContextMenu
-			open
+			open={Boolean(contextMenu.el)}
 			anchorReference={'anchorPosition'}
 			anchorPosition={{ top: position?.bottom ?? 0, left: position?.left ?? 0 }}
 			onClose={handleContextMenuClose}
 			options={[contextMenu.options]}
 			onMenuItemClicked={(option) => handleOptionClicked(option as PackageActions, contextMenu.package!)}
+			transitionDuration={transitionDuration}
 		/>
-	) : null;
-
+	);
 	return {
 		contextMenu,
 		openContextMenu: handleContextMenuClick,
 		closeContextMenu: handleContextMenuClose,
 		setContextMenu,
-		ContextMenuElement
+		contextMenuElement
 	};
 }
 

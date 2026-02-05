@@ -730,7 +730,7 @@ export function ActivityDashlet(props: ActivityDashletProps) {
 				onClosed={() => setState({ selectedPackageId: null })}
 				packageId={selectedPackageId}
 			/>
-			{packageContextMenu?.ContextMenuElement}
+			{packageContextMenu?.contextMenuElement}
 		</DashletCard>
 	);
 }

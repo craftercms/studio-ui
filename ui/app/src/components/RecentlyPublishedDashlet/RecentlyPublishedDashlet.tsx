@@ -271,7 +271,7 @@ export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
 				onClose={() => setState({ packageDetailsDialogId: null })}
 				packageId={packageDetailsDialogId}
 			/>
-			{contextMenu?.ContextMenuElement}
+			{contextMenu?.contextMenuElement}
 		</DashletCard>
 	);
 }
