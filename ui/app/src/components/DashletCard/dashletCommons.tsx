@@ -273,11 +273,12 @@ export function usePackageContextMenu() {
 		if (!contextMenu.el) {
 			// If contextMenu.el is null (meaning the menu is closed), clear the options after the transition has ended.
 			// This is done to prevent the 'No options available' to show while closing the menu (if options is cleared at the same time as el).
-			setTimeout(() => {
+			const timeout = setTimeout(() => {
 				setContextMenu({
 					options: []
 				});
 			}, transitionDuration);
+			return () => clearTimeout(timeout);
 		}
 	}, [contextMenu.el, setContextMenu, transitionDuration]);
 
