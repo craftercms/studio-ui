@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Uppy, DashboardOptions } from 'uppy';
+import { Uppy, type DashboardOptions } from 'uppy';
 import React from 'react';
 import type { UppyFile, Meta, Body } from '@uppy/utils/lib/UppyFile';
 
