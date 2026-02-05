@@ -633,7 +633,7 @@ function FormOrchestrator(props: FormsEngineProps) {
 
 	useMount(() => {
 		// If 'update.changeTypeId' has content, it means the content type has changed, so we set pending changes to true
-		// to be able to save the content (enable save button).
+		// to be able to enable the save button and allow users to save immediately if that's all they want to do.
 		if (update?.changeTypeId) {
 			setHasPendingChanges(true);
 		}
