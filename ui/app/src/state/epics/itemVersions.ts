@@ -110,7 +110,7 @@ export default [
 					}
 				}
 
-				if (payload.path === state.preview.guest?.path || isPreviewTemplateOrController) {
+				if (payload.path === currentPreviewPath || isPreviewTemplateOrController) {
 					getHostToGuestBus().next({ type: reloadRequest.type });
 				}
 				return of(
