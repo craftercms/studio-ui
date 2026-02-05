@@ -1235,7 +1235,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-transform-private-methods@npm:^7.27.1, @babel/plugin-transform-private-methods@npm:^7.28.6":
+"@babel/plugin-transform-private-methods@npm:^7.28.6":
   version: 7.28.6
   resolution: "@babel/plugin-transform-private-methods@npm:7.28.6"
   dependencies:
@@ -1937,7 +1937,7 @@ __metadata:
     "@types/ace": "npm:^0.0.52"
     "@types/diff": "npm:^8.0.0"
     "@types/js-cookie": "npm:^3.0.6"
-    "@types/react": "npm:^19.2.11"
+    "@types/react": "npm:^19.2.13"
     "@types/react-dom": "npm:^19.2.3"
     "@types/react-window": "npm:^2.0.0"
     "@types/react-window-infinite-loader": "npm:^2.0.0"
@@ -2001,7 +2001,7 @@ __metadata:
     unique-names-generator: "npm:^4.7.1"
     uppy: "npm:^5.2.3"
     uuid: "npm:^13.0.0"
-    video.js: "npm:8.23.6"
+    video.js: "npm:8.23.7"
     vite: "npm:^7.3.1"
     vite-plugin-monaco-editor: "npm:^1.1.0"
     zxcvbn: "npm:^4.4.2"
@@ -2042,7 +2042,7 @@ __metadata:
     "@babel/cli": "npm:^7.28.6"
     "@babel/plugin-proposal-class-properties": "npm:^7.18.6"
     "@babel/plugin-proposal-object-rest-spread": "npm:^7.20.7"
-    "@babel/plugin-transform-private-methods": "npm:^7.27.1"
+    "@babel/plugin-transform-private-methods": "npm:^7.28.6"
     "@babel/plugin-transform-react-jsx": "npm:^7.28.6"
     "@babel/preset-env": "npm:^7.29.0"
     "@babel/preset-react": "npm:^7.28.5"
@@ -2053,7 +2053,7 @@ __metadata:
     build-if-changed: "npm:^1.5.5"
     classnames: "npm:^2.5.1"
     eslint: "npm:^9.39.2"
-    preact: "npm:^10.27.2"
+    preact: "npm:^10.28.3"
   peerDependencies:
     uppy: ^4.13.4
   languageName: unknown
@@ -5422,12 +5422,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:^19.2.11":
-  version: 19.2.11
-  resolution: "@types/react@npm:19.2.11"
+"@types/react@npm:^19.2.13":
+  version: 19.2.13
+  resolution: "@types/react@npm:19.2.13"
   dependencies:
     csstype: "npm:^3.2.2"
-  checksum: 10/c31f7770d547bdbd5936bb621727340e41baed4e617e5b2203209024edfc52af4f1ef286851cc5e89d4c62c6a28da3ad0e7d4d62796087c71f63779552ec27fa
+  checksum: 10/a3bb8d09c79f5f29dfbc7e47c5b39c687f4329b76041713993c025781f32c26e4881fbeead65ff44d728945f222b781c6053263bc1819ef90596b4fbfd83f718
   languageName: node
   linkType: hard
 
@@ -6151,6 +6151,24 @@ __metadata:
   peerDependencies:
     video.js: ^8.19.0
   checksum: 10/870255fd90e30fb73ffea48e5a63fa51ad5116a48ef0019d9093e1eaf6a74faab6023960c58c5ec621ff9f383bcef6cd73bbbec7c5322a336323cdc1e857fbb3
+  languageName: node
+  linkType: hard
+
+"@videojs/http-streaming@npm:^3.17.3":
+  version: 3.17.4
+  resolution: "@videojs/http-streaming@npm:3.17.4"
+  dependencies:
+    "@babel/runtime": "npm:^7.12.5"
+    "@videojs/vhs-utils": "npm:^4.1.1"
+    aes-decrypter: "npm:^4.0.2"
+    global: "npm:^4.4.0"
+    m3u8-parser: "npm:^7.2.0"
+    mpd-parser: "npm:^1.3.1"
+    mux.js: "npm:7.1.0"
+    video.js: "npm:^7 || ^8"
+  peerDependencies:
+    video.js: ^8.19.0
+  checksum: 10/9ee755ebecd204085b8e1bb302a68faafbadac2f888e28c61bf7b96f91ebdc0d2614668e274d958fc80549ed29c2540bdf6ebee3c890c596bec41c943899be2f
   languageName: node
   linkType: hard
 
@@ -14073,12 +14091,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"video.js@npm:8.23.6":
-  version: 8.23.6
-  resolution: "video.js@npm:8.23.6"
+"video.js@npm:8.23.7":
+  version: 8.23.7
+  resolution: "video.js@npm:8.23.7"
   dependencies:
-    "@babel/runtime": "npm:^7.12.5"
-    "@videojs/http-streaming": "npm:^3.17.2"
+    "@babel/runtime": "npm:^7.28.4"
+    "@videojs/http-streaming": "npm:^3.17.3"
     "@videojs/vhs-utils": "npm:^4.1.1"
     "@videojs/xhr": "npm:2.7.0"
     aes-decrypter: "npm:^4.0.2"
@@ -14089,7 +14107,7 @@ __metadata:
     videojs-contrib-quality-levels: "npm:4.1.0"
     videojs-font: "npm:4.2.0"
     videojs-vtt.js: "npm:0.15.5"
-  checksum: 10/29486feeb8821f8203f47665d2013737d20d1fb0773017c9f579098cc271cb1e3f28bd65917b7b0d3019f7e09273e2e328b37a3b3b5f82e654f5eaa93cd8144a
+  checksum: 10/62859ac85ab5bf186cbaf3c0538d9c62aed7bc900150ba88f0a466f3414d73b01ca57895723773ad7f43a666e9b676336c1af90e4d9786ca45e4d7ccff181049
   languageName: node
   linkType: hard
 
