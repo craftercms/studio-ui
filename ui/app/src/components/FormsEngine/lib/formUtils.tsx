@@ -685,7 +685,7 @@ export function useUnlockOnClose(props: FormsEngineProps) {
 	const siteId = useActiveSiteId();
 	// Check fileName atom to determine if renamed (renamedPath context is not updated until saving, so if we use that here
 	// it will have an outdated value).
-	const isItemPage = itemPath.endsWith('index.xml');
+	const isItemPage = isPagePath(itemPath);
 	const currentFileName = useAtomValue(atoms.fileName);
 	const isRenamed = currentFileName !== getFileNameValueFromPath(itemPath, isItemPage);
 
