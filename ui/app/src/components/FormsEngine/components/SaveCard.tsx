@@ -15,8 +15,8 @@
  */
 
 import { useAtom, useAtomValue } from 'jotai';
-import { FormattedMessage, useIntl } from 'react-intl';
-import React, { ChangeEvent, useContext, useState } from 'react';
+import { FormattedMessage } from 'react-intl';
+import React, { useContext } from 'react';
 import { StableFormContext } from '../lib/formsEngineContext';
 import { ButtonProps } from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
@@ -36,17 +36,13 @@ export interface SaveCardProps {
 }
 
 export function SaveCard(props: SaveCardProps) {
-	const { formatMessage } = useIntl();
 	const { isEmbedded, isStackedForm, isRepeatMode, onSave } = props;
 	const stableFormContext = useContext(StableFormContext);
-	const { affectedPackages } = useAtomValue(stableFormContext.atoms.lockResult);
 	const isSubmitting = useAtomValue(stableFormContext.atoms.isSubmitting);
 	const [versionComment, setVersionComment] = useAtom(stableFormContext.atoms.versionComment);
 	const hasPendingChanges = useAtomValue(stableFormContext.atoms.hasPendingChanges);
 	const [closeAfterSave, setCloseAfterSave] = useAtom(stableFormContext.atoms.closeAfterSave);
-	const [acceptedWorkflowCancellation, setAcceptedWorkflowCancellation] = useState(false);
-	const hasAffectedPackages = Boolean(affectedPackages?.length > 0);
-	const disableSave = isSubmitting || !hasPendingChanges || (hasAffectedPackages && !acceptedWorkflowCancellation);
+	const disableSave = isSubmitting || !hasPendingChanges;
 	return (
 		<Paper sx={{ p: 1 }}>
 			{(!isEmbedded || !isStackedForm) && !isRepeatMode && (
@@ -59,23 +55,6 @@ export function SaveCard(props: SaveCardProps) {
 					value={versionComment}
 					onChange={(e) => setVersionComment(e.target.value)}
 					onFocus={(e) => e.target.select()}
-				/>
-			)}
-			{hasAffectedPackages && (
-				<FormControlLabel
-					title={formatMessage({
-						defaultMessage: 'The item is part of a publishing package. Editing it will cancel the entire package.'
-					})}
-					label={<FormattedMessage defaultMessage="Cancel affected packages" />}
-					control={
-						<Checkbox
-							size="small"
-							checked={acceptedWorkflowCancellation}
-							onChange={(e: ChangeEvent<HTMLInputElement>) => {
-								setAcceptedWorkflowCancellation(e.target.checked);
-							}}
-						/>
-					}
 				/>
 			)}
 			<FormControlLabel

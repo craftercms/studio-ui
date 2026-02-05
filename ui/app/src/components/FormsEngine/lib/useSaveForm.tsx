@@ -20,7 +20,7 @@ import GlobalState from '../../../models/GlobalState';
 import { FormattedMessage, useIntl } from 'react-intl';
 import useActiveSiteId from '../../../hooks/useActiveSiteId';
 import React, { useContext } from 'react';
-import { FormsEngineFormContextApi, ItemMetaContext, StableFormContext } from './formsEngineContext';
+import { FormsEngineFormContextApi, ItemContext, ItemMetaContext, StableFormContext } from './formsEngineContext';
 import {
 	composePathForType,
 	createObjectWithSystemProps,
@@ -39,8 +39,14 @@ import Typography from '@mui/material/Typography';
 import { buildContentXml } from './valueSerializers';
 import { flushSync } from 'react-dom';
 import LookupTable from '../../../models/LookupTable';
-import { isInternalNameValid, checkMinimumSaveRequirementsFulfilled } from './validators';
+import { checkMinimumSaveRequirementsFulfilled, isInternalNameValid } from './validators';
 import ContentType from '../../../models/ContentType';
+import { cancelPackages } from '../../../services/workflow';
+import { switchMap } from 'rxjs';
+import { validateActionPolicy } from '../../../services/sites';
+import { createComponentId, pushConfirmDialog } from '../../../utils/system';
+import { nanoid } from 'nanoid';
+import { popDialog, pushDialog } from '../../../state/actions/dialogStack';
 import { showSystemNotification } from '../../../state/actions/system';
 
 export interface UseSaveFormProps {
@@ -66,6 +72,7 @@ export function useSaveForm(props: UseSaveFormProps) {
 	const { id, contentType, contentObject, path: itemPath } = useContext(ItemMetaContext);
 	const isPage = contentType.type === 'page';
 	const stableFormContext = useContext(StableFormContext);
+	const { affectedPackages } = useAtomValue(stableFormContext.atoms.lockResult);
 	const formContextApi = useContext(FormsEngineFormContextApi);
 	const setIsSubmitting = useSetAtom(stableFormContext.atoms.isSubmitting);
 	const closeAfterSave = useAtomValue(stableFormContext.atoms.closeAfterSave);
@@ -74,6 +81,7 @@ export function useSaveForm(props: UseSaveFormProps) {
 	const onSave = wrapOnSaveProp(props.onSave);
 	const fileName = useAtomValue(stableFormContext.atoms.fileName);
 	const initialFileName = itemPath ? getFileNameValueFromPath(itemPath, isPage) : '';
+	const item = useContext(ItemContext);
 	return async () => {
 		const values = extractAtomValues(jotai, stableFormContext.atoms.valueByFieldId);
 		const validityStates = await Promise.all(
@@ -189,14 +197,102 @@ export function useSaveForm(props: UseSaveFormProps) {
 			});
 		}
 
-		// TODO: validateActionPolicy. See FE1 saveFn.
 		// TODO: write-content url on FE1 sends phase, path, fileName, contentType QSAs. Important?
-		// TODO: Cancel packages when needed.
-		if (isRename) {
-			moveAndUpdateContent(siteId, itemPath, path, xml).subscribe(saveActionCallbacks);
-		} else {
-			writeContent(siteId, path, xml).subscribe(saveActionCallbacks);
-		}
+		const saveContent = () => {
+			const saveOrMoveService$ = isRename
+				? moveAndUpdateContent(siteId, itemPath, path, xml)
+				: writeContent(siteId, path, xml);
+			const saveOrCancel$ = affectedPackages?.length
+				? cancelPackages(siteId, {
+						packageIds: affectedPackages.map((pkg) => pkg.id),
+						// TODO: Correct comment generation
+						comment: `Cancel packages to write on "${path}`
+					}).pipe(
+						switchMap(() => {
+							return saveOrMoveService$;
+						})
+					)
+				: saveOrMoveService$;
+
+			saveOrCancel$.subscribe(saveActionCallbacks);
+		};
+
+		// If there are affected packages, show ViewPackagesDialog dialog first, to let user know that packages will be cancelled
+		const checkWorkflow = () => {
+			if (affectedPackages?.length) {
+				const dialogId = nanoid();
+				dispatch(
+					pushDialog({
+						id: dialogId,
+						component: createComponentId('ViewPackagesDialog'),
+						props: {
+							item,
+							onContinue: () => {
+								saveContent();
+								dispatch(popDialog({ id: dialogId }));
+							},
+							onClose: () => {
+								setIsSubmitting(false);
+								dispatch(popDialog({ id: dialogId }));
+							}
+						}
+					})
+				);
+			} else {
+				saveContent();
+			}
+		};
+
+		// Validate site policy, if allowed, proceed to check workflow
+		const dialogId = nanoid();
+		validateActionPolicy(siteId, {
+			type: 'CREATE',
+			target: path,
+			contentMetadata: { contentType: contentType.id }
+		}).subscribe(({ allowed, modifiedValue }) => {
+			if (allowed) {
+				if (modifiedValue) {
+					dispatch(
+						pushConfirmDialog({
+							id: dialogId,
+							props: {
+								body: formatMessage(
+									{
+										defaultMessage:
+											'The {originalPath} path goes against project policies. Suggested modified path is: "{path}". Would you like to use the suggested path?'
+									},
+									{
+										originalPath: path,
+										path: modifiedValue
+									}
+								),
+								onOk: () => {
+									dispatch(popDialog({ id: dialogId }));
+									checkWorkflow();
+								},
+								onCancel: () => {
+									setIsSubmitting(false);
+									dispatch(popDialog({ id: dialogId }));
+								}
+							}
+						})
+					);
+				} else {
+					checkWorkflow();
+				}
+			} else {
+				setIsSubmitting(false);
+				dispatch(
+					pushConfirmDialog({
+						id: dialogId,
+						props: {
+							body: formatMessage({ defaultMessage: 'This content goes against project policies.' }),
+							onOk: () => dispatch(popDialog({ id: dialogId }))
+						}
+					})
+				);
+			}
+		});
 	};
 }
 

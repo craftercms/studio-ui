@@ -63,6 +63,10 @@ export class Dashboard extends UppyDashboard {
 			// When uploading via drag and drop, uppy uses `relativePath` as the prop for the actual relative path, for
 			// browse uploads, it uses `webkitRelativePath`.
 			const relativePath = file.relativePath ?? file.webkitRelativePath ?? null;
+			const path = relativePath
+				? this.opts.path + relativePath.substring(0, relativePath.lastIndexOf('/'))
+				: this.opts.path;
+			const fullPath = `${path.endsWith('/') ? path : path + '/'}${file.name}`;
 			return {
 				source: this.id,
 				name: file.name,
@@ -74,9 +78,7 @@ export class Dashboard extends UppyDashboard {
 					relativePath,
 					// sitePolicy custom value
 					validating: true,
-					path: relativePath
-						? this.opts.path + relativePath.substring(0, relativePath.lastIndexOf('/'))
-						: this.opts.path
+					path: fullPath
 				}
 			};
 		});
@@ -130,7 +132,7 @@ export class Dashboard extends UppyDashboard {
 			.validateActionPolicy(
 				this.opts.site,
 				files.map((file) => {
-					let target = `${file.meta.path}/${file.name}`;
+					let target = file.meta.path;
 					fileIdLookup[target] = file.id;
 					return {
 						type: 'CREATE',
@@ -167,13 +169,17 @@ export class Dashboard extends UppyDashboard {
 
 	validateAndRetry = (fileID) => {
 		const invalidFiles = { ...this.getPluginState().invalidFiles };
-		const suggestedName = this.uppy.getFile(fileID).meta.suggestedName;
+		const file = this.uppy.getFile(fileID);
+		const suggestedName = file.meta.suggestedName;
+		const initialPath = file.meta.path;
+		const path = initialPath.substring(0, initialPath.lastIndexOf('/')) + '/' + suggestedName;
 		invalidFiles[fileID] = false;
 		this.setPluginState({ invalidFiles });
 		this.uppy.setFileMeta(fileID, {
 			allowed: true,
 			suggestedName: null,
-			name: suggestedName
+			name: suggestedName,
+			path
 		});
 		this.uppy.retryUpload(fileID);
 	};
@@ -228,10 +234,14 @@ export class Dashboard extends UppyDashboard {
 				const file = this.uppy.getFile(fileID);
 				const suggestedName = this.uppy.getFile(fileID).meta.suggestedName;
 				if (file.meta.allowed) {
+					const initialPath = file.meta.path;
+					const basePath = initialPath.substring(0, initialPath.lastIndexOf('/'));
+					const path = `${basePath}/${suggestedName}`;
 					this.uppy.setFileMeta(fileID, {
 						allowed: true,
 						suggestedName: null,
-						name: suggestedName
+						name: suggestedName,
+						path
 					});
 					this.uppy.retryUpload(fileID);
 				} else {

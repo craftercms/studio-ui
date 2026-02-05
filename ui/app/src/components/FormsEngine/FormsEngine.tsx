@@ -20,7 +20,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
 import useActiveSite from '../../hooks/useActiveSite';
 import useContentTypes from '../../hooks/useContentTypes';
-import React, { createElement, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, { createElement, type RefCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { ContentTypeField, PublishPackage } from '../../models';
 import {
 	FormsEngineAtoms,
@@ -67,7 +67,7 @@ import AlertTitle from '@mui/material/AlertTitle';
 import { pushDialog } from '../../state/actions/dialogStack';
 import useFetchContentItems from '../../hooks/useFetchContentItems';
 import ErrorBoundary from '../ErrorBoundary';
-import { debounceTime } from 'rxjs/operators';
+import { debounceTime, filter } from 'rxjs/operators';
 import { atom, createStore, Provider, useAtom, useAtomValue, useStore as useJotaiStore } from 'jotai';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import useSelection from '../../hooks/useSelection';
@@ -119,6 +119,15 @@ import { displayWithPendingChangesConfirm } from '../../utils/ui';
 import useActiveUser from '../../hooks/useActiveUser';
 import FormBackToTop from './components/FormBackToTop';
 import { createComponentId } from '../../utils/system';
+import {
+	workflowEventApprove,
+	workflowEventCancel,
+	workflowEventDirectPublish,
+	workflowEventReject,
+	workflowEventSubmit
+} from '../../state/actions/system';
+import { getHostToHostBus } from '../../utils/subjects';
+import { fetchAffectedPackages } from '../../services/workflow';
 
 export interface FormSavePromiseResult {
 	close: boolean;
@@ -612,7 +621,12 @@ function FormOrchestrator(props: FormsEngineProps) {
 	}, [contentType.sections, isEmbedded]);
 	const useCollapsedToC = useAtomValue(atoms.useCollapsedToC);
 	const tableOfContents = <TableOfContents fieldsToRender={fieldsToRender} containerRef={containerRef} />;
-	const effectRefs = useUpdateRefs({ fieldsToRender, versionCommentAtom: stableFormContext.atoms.versionComment });
+	const effectRefs = useUpdateRefs({
+		fieldsToRender,
+		versionCommentAtom: stableFormContext.atoms.versionComment,
+		lockStatus
+	});
+	const [collapseHeader, setCollapseHeader] = useState(false);
 
 	// Changes comment generation & change detection/tracking
 	useEffect(() => {
@@ -647,6 +661,37 @@ function FormOrchestrator(props: FormsEngineProps) {
 
 	// Unlock content when the form is closed.
 	useUnlockOnClose(props);
+
+	// region Workflow item updates
+	useEffect(() => {
+		const events = [
+			workflowEventSubmit.type,
+			workflowEventDirectPublish.type,
+			workflowEventApprove.type,
+			workflowEventReject.type,
+			workflowEventCancel.type
+		];
+
+		const hostToHost$ = getHostToHostBus();
+		const subscription = hostToHost$.subscribe(({ type }) => {
+			if (!item || !events.includes(type)) return;
+			fetchAffectedPackages(siteId, item.path).subscribe({
+				next(packages) {
+					setLockStatus({
+						...effectRefs.current.lockStatus,
+						affectedPackages: packages
+					});
+				},
+				error({ response }) {
+					console.error(response);
+				}
+			});
+		});
+
+		return () => {
+			subscription.unsubscribe();
+		};
+	}, [effectRefs, item, setLockStatus, siteId]);
 
 	const handleOpenDrawerSidebar = () => {
 		const scroller = getScrollContainer(containerRef.current);
@@ -732,16 +777,48 @@ function FormOrchestrator(props: FormsEngineProps) {
 		}
 	};
 
+	const [mainContent, setMainContent] = useState(null);
+	const sentinelRef = useRef<HTMLDivElement>(null);
+
+	const mainContentRefCallback: RefCallback<HTMLDivElement> = (element) => {
+		setMainContent(element);
+	};
+
+	// Monitor when sentinel element crosses the threshold
+	useEffect(() => {
+		if (!mainContent || !sentinelRef.current) return;
+
+		const observer = new IntersectionObserver(
+			([entry]) => {
+				// When sentinel is NOT intersecting (scrolled past 60px, sentinel's top position), collapse header
+				setCollapseHeader(!entry.isIntersecting);
+			},
+			{
+				root: mainContent,
+				threshold: 0,
+				rootMargin: '0px'
+			}
+		);
+
+		observer.observe(sentinelRef.current);
+
+		return () => {
+			observer.disconnect();
+		};
+	}, [mainContent]);
+
 	const bodyFragment = (
 		<FormLayout
 			stackIndex={stackIndex}
 			containerRef={containerRef}
+			sentinelRef={sentinelRef}
+			mainContentRefCallback={mainContentRefCallback}
 			hasStackedForms={hasStackedForms}
 			// If the form is rendered in/as a dialog, take up the whole screen minus
 			// top/bottom margins (2 top, 2 bottom). If not a dialog, take up the whole screen.
 			targetHeight={getTargetHeight(isDialog, isFullScreen, theme)}
 			headerFragment={
-				<>
+				<Box id="header" sx={{ minHeight: 50 }}>
 					<Box component={Container} display="flex" alignItems="center" justifyContent="space-between" pt={2}>
 						<Typography variant="body2" color="textSecondary">
 							<span title={siteId}>{activeSite.name}</span> / <span title={contentType.id}>{contentType.name}</span>
@@ -771,18 +848,18 @@ function FormOrchestrator(props: FormsEngineProps) {
 						</Box>
 					</Box>
 					{isRepeatMode ? (
-						<RepeatModeHeader repeat={repeat} />
+						<RepeatModeHeader repeat={repeat} collapse={collapseHeader} />
 					) : isCreateMode ? (
-						<CreateModeHeader path={create?.path} />
+						<CreateModeHeader path={create?.path} collapse={collapseHeader} />
 					) : (
-						<EditModeHeader isEmbedded={isEmbedded} />
+						<EditModeHeader isEmbedded={isEmbedded} collapse={collapseHeader} />
 					)}
-				</>
+				</Box>
 			}
 			mainContentGrid={
 				<>
 					<Grid size={useCollapsedToC ? 'auto' : 'grow'}>
-						<StickyBox data-area-id="stickySidebar">
+						<StickyBox data-area-id="stickySidebar" sx={{ height: 'auto' }}>
 							{useCollapsedToC ? (
 								<IconButton size="small" onClick={handleOpenDrawerSidebar}>
 									<MenuRounded />
@@ -854,7 +931,7 @@ function FormOrchestrator(props: FormsEngineProps) {
 						<FormBackToTop containerRef={containerRef} />
 					</Grid>
 					<Grid size="grow">
-						<StickyBox className="space-y">
+						<StickyBox className="space-y" sx={{ height: 'auto' }}>
 							{readonly ? (
 								<>
 									<Alert severity="info" variant="outlined" icon={<EditOffOutlined />}>

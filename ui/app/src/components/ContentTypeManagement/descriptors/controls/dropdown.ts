@@ -66,7 +66,9 @@ export const dropdownDescriptor: DescriptorContentType = {
 			validations: immutableEmptyObject
 		}
 	},
-	supportedPostFixes: ['_s', '_i', '_f']
+	metadata: {
+		suffixes: ['_s', '_i', '_f']
+	}
 };
 
 export default dropdownDescriptor;
