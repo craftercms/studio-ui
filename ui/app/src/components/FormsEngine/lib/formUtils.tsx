@@ -260,13 +260,13 @@ export const createFileNameAtom = (path: string): PrimitiveAtom<string> => {
  * Creates a Jotai atom to manage the renamed path state.
  *
  * @param {string} path - The initial path value to set in the atom.
- * @param {(newPath: string) => void} setRenamedPath - A callback function to handle updates to the renamed path.
- * @returns {PrimitiveAtom<string | null>} - A Jotai atom that manages the renamed path state.
+ * @param {(newPath: string | null) => void} setRenamedPath - A callback function to handle updates to the renamed path.
+ * @returns {WritableAtom<string, [newValue: string | null], void>} - A Jotai atom that manages the renamed path state.
  */
 export const createRenamedPathAtom = (
 	path: string,
-	setRenamedPath: (newPath: string) => void
-): WritableAtom<string, [newValue: string], void> => {
+	setRenamedPath: (newPath: string | null) => void
+): WritableAtom<string, [newValue: string | null], void> => {
 	const renamedPathAtom = atom(path, (get, set, newValue: string | null) => {
 		set(renamedPathAtom, newValue);
 		setRenamedPath(newValue);
