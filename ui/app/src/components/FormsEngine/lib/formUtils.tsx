@@ -73,6 +73,7 @@ import { createComponentId } from '../../../utils/system';
 import { showErrorDialog } from '../../../state/actions/dialogs';
 import { ensureSingleSlash } from '../../../utils/string';
 import { nou } from '../../../utils/object';
+import { WritableAtom } from 'jotai/vanilla';
 
 /**
  * Returns the scroll container for the form's container.
@@ -253,6 +254,24 @@ export const isPagePath = (path: string): boolean => {
 export const createFileNameAtom = (path: string): PrimitiveAtom<string> => {
 	const isPage = isPagePath(path);
 	return atom(getFileNameValueFromPath(path, isPage));
+};
+
+/**
+ * Creates a Jotai atom to manage the renamed path state.
+ *
+ * @param {string} path - The initial path value to set in the atom.
+ * @param {(newPath: string) => void} setRenamedPath - A callback function to handle updates to the renamed path.
+ * @returns {PrimitiveAtom<string | null>} - A Jotai atom that manages the renamed path state.
+ */
+export const createRenamedPathAtom = (
+	path: string,
+	setRenamedPath: (newPath: string) => void
+): WritableAtom<string, [newValue: string], void> => {
+	const renamedPathAtom = atom(path, (get, set, newValue: string | null) => {
+		set(renamedPathAtom, newValue);
+		setRenamedPath(newValue);
+	});
+	return renamedPathAtom;
 };
 
 /**
@@ -682,9 +701,9 @@ export function useUnlockOnClose(props: FormsEngineProps) {
 	const dispatch = useDispatch();
 	const readonly = useAtomValue(atoms.readonly);
 	const siteId = useActiveSiteId();
-	const isItemPage = itemPath.endsWith('index.xml');
-	const currentFileName = useAtomValue(atoms.fileName);
-	const isRenamed = currentFileName !== getFileNameValueFromPath(itemPath, isItemPage);
+	const renamedPathAtom = atoms.renamedPath ?? atom(null);
+	const renamedPath = useAtomValue(renamedPathAtom);
+	const isRenamed = itemPath !== renamedPath;
 
 	const unlockEffectRefs = useUpdateRefs<ShouldUnlockArguments & { dispatch: ReduxDispatch }>({
 		dispatch,

@@ -82,6 +82,7 @@ import {
 	createFormStackData,
 	createObjectWithSystemProps,
 	createReadonlyAtom,
+	createRenamedPathAtom,
 	createStackedFormKey,
 	displayFormBeingSavedSnack,
 	fetchUpdateRequirements,
@@ -478,9 +479,7 @@ function FormBootstrap(props: FormsEngineProps) {
 						readonly: createReadonlyAtom(lockResultAtom),
 						expandedStateBySectionId: buildSectionExpandedStateAtoms(requirements.contentType.sections),
 						fileName: createFileNameAtom(requirements.item.path),
-						renamedPath: atom(renamedPath, (get, set, newValue: string | null) => {
-							setRenamedPath(newValue);
-						})
+						renamedPath: createRenamedPathAtom(renamedPath, setRenamedPath)
 					});
 					const values = createParsedValuesObject(
 						requirements.contentType.fields,

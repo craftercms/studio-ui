@@ -41,7 +41,7 @@ import { flushSync } from 'react-dom';
 import LookupTable from '../../../models/LookupTable';
 import { checkMinimumSaveRequirementsFulfilled, isInternalNameValid } from './validators';
 import ContentType from '../../../models/ContentType';
-import { PrimitiveAtom, useAtom } from 'jotai';
+import { atom, PrimitiveAtom, useAtom } from 'jotai';
 
 export interface UseSaveFormProps {
 	createPath?: string;
@@ -73,7 +73,8 @@ export function useSaveForm(props: UseSaveFormProps) {
 	const setHasPendingChanges = useSetAtom(stableFormContext.atoms.hasPendingChanges);
 	const onSave = wrapOnSaveProp(props.onSave);
 	const fileName = useAtomValue(stableFormContext.atoms.fileName);
-	const [, setRenamedValue] = useAtom(stableFormContext.atoms.renamedPath as PrimitiveAtom<string>);
+	const renamedPathAtom = stableFormContext.atoms.renamedPath ?? atom(null);
+	const [, setRenamedValue] = useAtom(renamedPathAtom as PrimitiveAtom<string>);
 	const initialFileName = itemPath ? getFileNameValueFromPath(itemPath, isPage) : '';
 
 	return async () => {
