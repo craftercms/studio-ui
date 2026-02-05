@@ -358,6 +358,7 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
 									<DashletItemOptions path={activity.item.path} />
 								) : activity.package ? (
 									<IconButton
+										aria-label={formatMessage({ defaultMessage: 'Package options' })}
 										onClick={(e) => {
 											e.stopPropagation();
 											packageContextMenu?.openContextMenu(e, activity.package);
