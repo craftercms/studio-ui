@@ -14,6 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import React from 'react';
 import { keyframes } from '@mui/material/styles';
 import type { TItem } from './SortableList';
 import List from '@mui/material/List';

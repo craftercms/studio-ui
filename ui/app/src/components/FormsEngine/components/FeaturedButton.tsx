@@ -15,7 +15,7 @@
  */
 
 import Button, { ButtonProps } from '@mui/material/Button';
-import { ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import Avatar, { avatarClasses } from '@mui/material/Avatar';
 import UploadFileOutlinedIcon from '@mui/icons-material/UploadFileOutlined';
 import { styled } from '@mui/material/styles';

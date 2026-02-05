@@ -14,6 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import React from 'react';
 import type { Dispatch as ReduxDispatch } from 'redux';
 import { FormattedMessage } from 'react-intl';
 import { nanoid } from 'nanoid';
