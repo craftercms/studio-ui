@@ -548,9 +548,9 @@ function FormBootstrap(props: FormsEngineProps) {
 				<StableFormContext.Provider value={stableFormContextRef.current}>
 					<ItemContext.Provider value={liveUpdatedItem}>
 						<ItemMetaContext.Provider value={itemMeta}>
-							<RenamedPathContext value={{ renamedPath, setRenamedPath }}>
+							<RenamedPathContext.Provider value={{ renamedPath, setRenamedPath }}>
 								{createElement(FormOrchestrator, props)}
-							</RenamedPathContext>
+							</RenamedPathContext.Provider>
 						</ItemMetaContext.Provider>
 					</ItemContext.Provider>
 				</StableFormContext.Provider>
