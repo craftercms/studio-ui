@@ -72,7 +72,7 @@ import { getFormsEngineCloseAfterSave, getFormsEngineCollapseToCKey } from '../.
 import { createComponentId } from '../../../utils/system';
 import { showErrorDialog } from '../../../state/actions/dialogs';
 import { ensureSingleSlash } from '../../../utils/string';
-import { nou } from '../../../utils/object';
+import { nnou, nou } from '../../../utils/object';
 import { WritableAtom } from 'jotai/vanilla';
 
 /**
@@ -703,7 +703,7 @@ export function useUnlockOnClose(props: FormsEngineProps) {
 	const siteId = useActiveSiteId();
 	const renamedPathAtom = atoms.renamedPath ?? atom(null);
 	const renamedPath = useAtomValue(renamedPathAtom);
-	const isRenamed = itemPath !== renamedPath;
+	const isRenamed = nnou(renamedPath) && itemPath !== renamedPath;
 
 	const unlockEffectRefs = useUpdateRefs<ShouldUnlockArguments & { dispatch: ReduxDispatch }>({
 		dispatch,

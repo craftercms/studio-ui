@@ -16,7 +16,7 @@
 
 import { useAtom, useAtomValue, useStore as useJotaiStore } from 'jotai';
 import { FormattedMessage } from 'react-intl';
-import React, { ChangeEvent, useContext, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { StableFormContext } from '../lib/formsEngineContext';
 import { ButtonProps } from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
