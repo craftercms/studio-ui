@@ -257,24 +257,6 @@ export const createFileNameAtom = (path: string): PrimitiveAtom<string> => {
 };
 
 /**
- * Creates a Jotai atom to manage the renamed path state.
- *
- * @param {string} path - The initial path value to set in the atom.
- * @param {(newPath: string | null) => void} setRenamedPath - A callback function to handle updates to the renamed path.
- * @returns {WritableAtom<string, [newValue: string | null], void>} - A Jotai atom that manages the renamed path state.
- */
-export const createRenamedPathAtom = (
-	path: string,
-	setRenamedPath: (newPath: string | null) => void
-): WritableAtom<string, [newValue: string | null], void> => {
-	const renamedPathAtom = atom(path, (get, set, newValue: string | null) => {
-		set(renamedPathAtom, newValue);
-		setRenamedPath(newValue);
-	});
-	return renamedPathAtom;
-};
-
-/**
  * Retrieves the base path from a given file path.
  *
  * @param {string} path - The full file path to process.
@@ -701,9 +683,11 @@ export function useUnlockOnClose(props: FormsEngineProps) {
 	const dispatch = useDispatch();
 	const readonly = useAtomValue(atoms.readonly);
 	const siteId = useActiveSiteId();
-	const renamedPathAtom = atoms.renamedPath ?? atom(null);
-	const renamedPath = useAtomValue(renamedPathAtom);
-	const isRenamed = nnou(renamedPath) && itemPath !== renamedPath;
+	// Check fileName atom to determine if renamed (renamedPath context is not updated until saving, so if we use that here
+	// it will have an outdated value).
+	const isItemPage = itemPath.endsWith('index.xml');
+	const currentFileName = useAtomValue(atoms.fileName);
+	const isRenamed = currentFileName !== getFileNameValueFromPath(itemPath, isItemPage);
 
 	const unlockEffectRefs = useUpdateRefs<ShouldUnlockArguments & { dispatch: ReduxDispatch }>({
 		dispatch,

@@ -20,7 +20,13 @@ import GlobalState from '../../../models/GlobalState';
 import { FormattedMessage, useIntl } from 'react-intl';
 import useActiveSiteId from '../../../hooks/useActiveSiteId';
 import React, { useContext } from 'react';
-import { FormsEngineFormContextApi, ItemContext, ItemMetaContext, StableFormContext } from './formsEngineContext';
+import {
+	FormsEngineFormContextApi,
+	ItemContext,
+	ItemMetaContext,
+	RenamedPathContext,
+	StableFormContext
+} from './formsEngineContext';
 import {
 	composePathForType,
 	createObjectWithSystemProps,
@@ -80,8 +86,7 @@ export function useSaveForm(props: UseSaveFormProps) {
 	const setHasPendingChanges = useSetAtom(stableFormContext.atoms.hasPendingChanges);
 	const onSave = wrapOnSaveProp(props.onSave);
 	const fileName = useAtomValue(stableFormContext.atoms.fileName);
-	const renamedPathAtom = stableFormContext.atoms.renamedPath ?? atom(null);
-	const [, setRenamedValue] = useAtom(renamedPathAtom as PrimitiveAtom<string>);
+	const { setRenamedPath } = useContext(RenamedPathContext);
 	const initialFileName = itemPath ? getFileNameValueFromPath(itemPath, isPage) : '';
 	const item = useContext(ItemContext);
 	return async () => {
@@ -149,7 +154,7 @@ export function useSaveForm(props: UseSaveFormProps) {
 				const result = (await onSave?.({ dom, xml, values, versionComment, path })) as FormSavePromiseResult;
 				const shouldClose = result.close || closeAfterSave;
 				if (isRename && !shouldClose) {
-					setRenamedValue(renamePath);
+					setRenamedPath(renamePath);
 				}
 				onSavePromiseHandler(result);
 			},

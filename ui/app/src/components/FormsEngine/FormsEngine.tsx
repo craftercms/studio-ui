@@ -31,6 +31,7 @@ import {
 	FormsEngineItemMetaContextProps,
 	ItemContext,
 	ItemMetaContext,
+	RenamedPathContext,
 	StableFormContext,
 	StableFormContextProps,
 	StableGlobalContext,
@@ -82,7 +83,6 @@ import {
 	createFormStackData,
 	createObjectWithSystemProps,
 	createReadonlyAtom,
-	createRenamedPathAtom,
 	createStackedFormKey,
 	displayFormBeingSavedSnack,
 	fetchUpdateRequirements,
@@ -487,8 +487,7 @@ function FormBootstrap(props: FormsEngineProps) {
 						lockResult: lockResultAtom,
 						readonly: createReadonlyAtom(lockResultAtom),
 						expandedStateBySectionId: buildSectionExpandedStateAtoms(requirements.contentType.sections),
-						fileName: createFileNameAtom(requirements.item.path),
-						renamedPath: createRenamedPathAtom(renamedPath, setRenamedPath)
+						fileName: createFileNameAtom(requirements.item.path)
 					});
 					const values = createParsedValuesObject(
 						requirements.contentType.fields,
@@ -549,7 +548,9 @@ function FormBootstrap(props: FormsEngineProps) {
 				<StableFormContext.Provider value={stableFormContextRef.current}>
 					<ItemContext.Provider value={liveUpdatedItem}>
 						<ItemMetaContext.Provider value={itemMeta}>
-							{createElement(FormOrchestrator, props)}
+							<RenamedPathContext value={{ renamedPath, setRenamedPath }}>
+								{createElement(FormOrchestrator, props)}
+							</RenamedPathContext>
 						</ItemMetaContext.Provider>
 					</ItemContext.Provider>
 				</StableFormContext.Provider>

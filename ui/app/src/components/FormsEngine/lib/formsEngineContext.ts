@@ -87,7 +87,6 @@ export interface FormsEngineAtoms {
 	tableOfContentsDrawerOpen: PrimitiveAtom<boolean>;
 	closeAfterSave: AtomWithStorage;
 	fileName?: Atom<string>;
-	renamedPath?: Atom<string>;
 }
 
 // Contains information to restore the state of a form when it comes back to being the active form on the stack
@@ -148,3 +147,8 @@ export const useStableFormContext = /*#__PURE__*/ createUseContextHook('useStabl
 export const useItemContext = /*#__PURE__*/ createUseContextHook('useItemContext', ItemContext);
 
 export const useItemMetaContext = /*#__PURE__*/ createUseContextHook('useItemMetaContext', ItemMetaContext);
+
+export const RenamedPathContext = createContext<{
+	renamedPath: string | null;
+	setRenamedPath(path: string | null): void;
+}>({ renamedPath: null, setRenamedPath: () => {} });
