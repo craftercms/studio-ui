@@ -144,15 +144,14 @@ export function useSaveForm(props: UseSaveFormProps) {
 		}
 
 		const saveActionCallbacks = {
-			next() {
+			async next() {
 				const dom = fromString(xml);
-				(onSave?.({ dom, xml, values, versionComment, path }) as Promise<FormSavePromiseResult>)?.then((result) => {
-					const shouldClose = result.close || closeAfterSave;
-					if (isRename && !shouldClose) {
-						setRenamedValue(renamePath);
-					}
-					onSavePromiseHandler(result);
-				});
+				const result = (await onSave?.({ dom, xml, values, versionComment, path })) as FormSavePromiseResult;
+				const shouldClose = result.close || closeAfterSave;
+				if (isRename && !shouldClose) {
+					setRenamedValue(renamePath);
+				}
+				onSavePromiseHandler(result);
 			},
 			error(error: AjaxError) {
 				setIsSubmitting(false);
