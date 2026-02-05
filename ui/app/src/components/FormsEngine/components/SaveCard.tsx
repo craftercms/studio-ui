@@ -48,14 +48,13 @@ export function SaveCard(props: SaveCardProps) {
 	const [saveAsDraft, setSaveAsDraft] = useState<boolean | null>(null);
 
 	useMount(() => {
-		const checkValidationState = () => {
-			Promise.all(
+		const checkValidationState = async () => {
+			const validityStates = await Promise.all(
 				Object.values(stableFormContext.atoms.validationByFieldId).map((validityDataAtom) =>
 					jotai.get(validityDataAtom)
 				)
-			).then((validityStates) => {
-				setSaveAsDraft(validityStates.some((state) => !state.isValid));
-			});
+			);
+			setSaveAsDraft(validityStates.some((state) => !state.isValid));
 		};
 		checkValidationState();
 		const subscription = stableFormContext.fieldUpdates$
