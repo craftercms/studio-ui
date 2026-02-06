@@ -685,9 +685,8 @@ export function useUnlockOnClose(props: FormsEngineProps) {
 	const siteId = useActiveSiteId();
 	// Check fileName atom to determine if renamed (renamedPath context is not updated until saving, so if we use that here
 	// it will have an outdated value).
-	const isItemPage = isPagePath(itemPath);
 	const currentFileName = useAtomValue(atoms.fileName);
-	const isRenamed = currentFileName !== getFileNameValueFromPath(itemPath, isItemPage);
+	const isRenamed = itemPath ? currentFileName !== getFileNameValueFromPath(itemPath, isPagePath(itemPath)) : false;
 
 	const unlockEffectRefs = useUpdateRefs<ShouldUnlockArguments & { dispatch: ReduxDispatch }>({
 		dispatch,
