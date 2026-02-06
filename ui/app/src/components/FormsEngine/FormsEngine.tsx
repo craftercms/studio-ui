@@ -67,7 +67,7 @@ import AlertTitle from '@mui/material/AlertTitle';
 import { pushDialog } from '../../state/actions/dialogStack';
 import useFetchContentItems from '../../hooks/useFetchContentItems';
 import ErrorBoundary from '../ErrorBoundary';
-import { debounceTime } from 'rxjs/operators';
+import { debounceTime, filter } from 'rxjs/operators';
 import { atom, createStore, Provider, useAtom, useAtomValue, useStore as useJotaiStore } from 'jotai';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import useSelection from '../../hooks/useSelection';
@@ -119,6 +119,16 @@ import { displayWithPendingChangesConfirm } from '../../utils/ui';
 import useActiveUser from '../../hooks/useActiveUser';
 import FormBackToTop from './components/FormBackToTop';
 import { createComponentId } from '../../utils/system';
+import {
+	workflowEventApprove,
+	workflowEventCancel,
+	workflowEventDirectPublish,
+	workflowEventReject,
+	workflowEventSubmit
+} from '../../state/actions/system';
+import { getHostToHostBus } from '../../utils/subjects';
+import { fetchAffectedPackages } from '../../services/workflow';
+import useMount from '../../hooks/useMount';
 
 export interface FormSavePromiseResult {
 	close: boolean;
@@ -154,6 +164,7 @@ export interface UpdateModeProps {
 		path: string;
 		modelId?: string;
 		values?: LookupTable<unknown>;
+		changeTypeId?: string; // Allows specifying a different content type for the item being updated, overriding the current item's content type.
 	};
 }
 
@@ -445,7 +456,8 @@ function FormBootstrap(props: FormsEngineProps) {
 				path: update.path,
 				modelId: update.modelId,
 				readonly: readonlyProp,
-				contentTypesById: effectRefs.current.contentTypesById
+				contentTypesById: effectRefs.current.contentTypesById,
+				changeTypeId: update.changeTypeId
 			})
 				.pipe(
 					catchError((error: AjaxError | symbol) => {
@@ -612,9 +624,20 @@ function FormOrchestrator(props: FormsEngineProps) {
 	}, [contentType.sections, isEmbedded]);
 	const useCollapsedToC = useAtomValue(atoms.useCollapsedToC);
 	const tableOfContents = <TableOfContents fieldsToRender={fieldsToRender} containerRef={containerRef} />;
-	const effectRefs = useUpdateRefs({ fieldsToRender, versionCommentAtom: stableFormContext.atoms.versionComment });
+	const effectRefs = useUpdateRefs({
+		fieldsToRender,
+		versionCommentAtom: stableFormContext.atoms.versionComment,
+		lockStatus
+	});
 	const [collapseHeader, setCollapseHeader] = useState(false);
-	const scrollTimeout = useRef(null);
+
+	useMount(() => {
+		// If 'update.changeTypeId' has content, it means the content type has changed, so we set pending changes to true
+		// to be able to enable the save button and allow users to save immediately if that's all they want to do.
+		if (update?.changeTypeId) {
+			setHasPendingChanges(true);
+		}
+	});
 
 	// Changes comment generation & change detection/tracking
 	useEffect(() => {
@@ -649,6 +672,37 @@ function FormOrchestrator(props: FormsEngineProps) {
 
 	// Unlock content when the form is closed.
 	useUnlockOnClose(props);
+
+	// region Workflow item updates
+	useEffect(() => {
+		const events = [
+			workflowEventSubmit.type,
+			workflowEventDirectPublish.type,
+			workflowEventApprove.type,
+			workflowEventReject.type,
+			workflowEventCancel.type
+		];
+
+		const hostToHost$ = getHostToHostBus();
+		const subscription = hostToHost$.subscribe(({ type }) => {
+			if (!item || !events.includes(type)) return;
+			fetchAffectedPackages(siteId, item.path).subscribe({
+				next(packages) {
+					setLockStatus({
+						...effectRefs.current.lockStatus,
+						affectedPackages: packages
+					});
+				},
+				error({ response }) {
+					console.error(response);
+				}
+			});
+		});
+
+		return () => {
+			subscription.unsubscribe();
+		};
+	}, [effectRefs, item, setLockStatus, siteId]);
 
 	const handleOpenDrawerSidebar = () => {
 		const scroller = getScrollContainer(containerRef.current);

@@ -16,8 +16,7 @@
 
 import StandardAction from '../../models/StandardAction';
 import { PropsWithChildren } from 'react';
-import { XHRUploadOptions } from '@uppy/xhr-upload';
-import { Uppy } from '@uppy/core';
+import { Uppy, type XHRUploadOptions } from 'uppy';
 import { UppyFile, Meta, Body } from '@uppy/utils/lib/UppyFile';
 import UppyDashboardProps from '../UppyDashboard/UppyDashboardProps';
 import ApiResponse from '../../models/ApiResponse';
