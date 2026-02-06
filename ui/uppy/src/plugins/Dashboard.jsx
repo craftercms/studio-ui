@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2025 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -14,46 +14,88 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { h } from 'preact';
+import { Dashboard as UppyDashboard, ThumbnailGenerator } from 'uppy';
+import { findAllDOMElements } from '@uppy/utils';
+import { defaultPickerIcon } from '@uppy/provider-views';
+import locale from './locale';
 import DashboardUI from '../components/Dashboard';
-import StatusBar from '@uppy/status-bar/lib/StatusBar';
-import Informer from '@uppy/informer/lib/Informer';
-import ThumbnailGenerator from '@uppy/thumbnail-generator/lib/index';
-import findAllDOMElements from '@uppy/utils/lib/findAllDOMElements';
-import memoize from 'memoize-one';
-import locale from '@uppy/dashboard/lib/locale';
-import UppyDashboard from '@uppy/dashboard';
-import { nanoid } from 'nanoid';
+
+const defaultOptions = {
+	target: 'body',
+	metaFields: [],
+	thumbnailWidth: 280,
+	thumbnailType: 'image/jpeg',
+	waitForThumbnailsBeforeUpload: false,
+	defaultPickerIcon,
+	showLinkToFileUploadResult: false,
+	hideProgressDetails: false,
+	hideUploadButton: false,
+	hideCancelButton: false,
+	hideRetryButton: false,
+	hidePauseResumeButton: false,
+	hideProgressAfterFinish: false,
+	note: null,
+	singleFileFullScreen: true,
+	disableStatusBar: false,
+	disableInformer: false,
+	disableThumbnailGenerator: false,
+	fileManagerSelectionType: 'files',
+	proudlyDisplayPoweredByUppy: true,
+	showSelectedFiles: true,
+	showRemoveButtonAfterComplete: false,
+	showNativePhotoCameraButton: false,
+	showNativeVideoCameraButton: false,
+	theme: 'light',
+	autoOpen: null,
+	disabled: false,
+	disableLocalFiles: false,
+	nativeCameraFacingMode: '',
+	onDragLeave: () => {},
+	onDragOver: () => {},
+	onDrop: () => {},
+	plugins: [],
+
+	// Dynamic default options, they have to be defined in the constructor (because
+	// they require access to the `this` keyword), but we still want them to
+	// appear in the default options so TS knows they'll be defined.
+	doneButtonHandler: undefined,
+	onRequestCloseModal: null,
+
+	// defaultModalOptions
+	inline: false,
+	animateOpenClose: true,
+	browserBackButtonClose: false,
+	closeAfterFinish: false,
+	closeModalOnClickOutside: false,
+	disablePageScrollWhenModalOpen: true,
+	trigger: null,
+
+	// defaultInlineOptions
+	width: 750,
+	height: 550
+};
 
 export class Dashboard extends UppyDashboard {
 	constructor(uppy, opts) {
-		super(uppy, opts);
+		const autoOpen = opts?.autoOpen ?? null;
+		super(uppy, { ...defaultOptions, ...opts, autoOpen });
 		this.id = this.opts.id || 'Dashboard';
 		this.title = 'Dashboard';
 		this.type = 'orchestrator';
-		this.modalName = `uppy-Dashboard-${nanoid()}`;
 
-		this.defaultLocale = {
-			...locale,
-			strings: {
-				...locale.strings,
-				validating: 'Validating',
-				validateAndRetry: 'Accept changes',
-				rejectAll: 'Reject all changes',
-				acceptAll: 'Accept all changes',
-				clear: 'Clear',
-				cancelPending: 'Cancel pending',
-				clearCompleted: 'Clear completed',
-				renamingFromTo: 'Renaming from %{from} to %{to}',
-				minimize: 'Minimize',
-				close: 'Close'
-			}
-		};
-		this.opts = {
-			...this.opts,
-			thumbnailWidth: 120,
-			proudlyDisplayPoweredByUppy: false,
-			disableStatusBar: true
-		};
+		this.defaultLocale = locale;
+
+		// Dynamic default options:
+		if (this.opts.doneButtonHandler === undefined) {
+			// `null` means "do not display a Done button", while `undefined` means
+			// "I want the default behavior". For this reason, we need to differentiate `null` and `undefined`.
+			this.opts.doneButtonHandler = () => {
+				this.uppy.clear();
+				this.requestCloseModal();
+			};
+		}
+		this.opts.onRequestCloseModal ??= () => this.closeModal();
 
 		this.i18nInit();
 	}
@@ -75,17 +117,17 @@ export class Dashboard extends UppyDashboard {
 				meta: {
 					// path of the file relative to the ancestor directory the user selected.
 					// e.g. 'docs/Old Prague/airbnb.pdf'
-					relativePath,
-					// sitePolicy custom value
+					relativePath: file.relativePath || file.webkitRelativePath || null,
+					// craftercms/uppy - sitePolicy custom value
 					validating: true,
 					path: fullPath
 				}
 			};
 		});
+
 		const maxActiveUploads = this.opts.maxActiveUploads;
 		const uppyFiles = this.uppy.getFiles();
-		// TODO: There's a TODO in uppy code to move the code to Core so it can be used as an util,
-		// check when updating to v.2 if this can be replaced with the util.
+
 		const inProgressFiles = Object.keys(uppyFiles).filter((file) => {
 			return !uppyFiles[file].progress.uploadComplete && uppyFiles[file].progress.uploadStarted;
 		});
@@ -103,7 +145,8 @@ export class Dashboard extends UppyDashboard {
 		}
 	};
 
-	handleComplete = () => {
+	handleComplete = ({ failed }) => {
+		// craftercms/uppy - custom code
 		const files = this.uppy.getFiles();
 		let completeFiles = 0;
 		let invalidFiles = 0;
@@ -115,14 +158,19 @@ export class Dashboard extends UppyDashboard {
 				invalidFiles++;
 			}
 		});
-
 		const allFilesCompleted = files.length === completeFiles + invalidFiles;
+		// end craftercms/uppy - custom code
 
-		if (allFilesCompleted) {
+		if (allFilesCompleted && !failed?.length) {
+			// All uploads are done
+			if (this.opts.closeAfterFinish) {
+				this.requestCloseModal();
+			}
 			this.opts.onPendingChanges(false);
 		}
 	};
 
+	// craftercms/uppy - site policy custom code
 	validateFilesPolicy = (files) => {
 		if (files.length === 0) return;
 		const fileIdLookup = {};
@@ -227,6 +275,7 @@ export class Dashboard extends UppyDashboard {
 	};
 
 	confirmAll = () => {
+		const files = this.uppy.getFiles();
 		const invalidFiles = { ...this.getPluginState().invalidFiles };
 		Object.keys(invalidFiles).forEach((fileID) => {
 			if (invalidFiles[fileID]) {
@@ -252,17 +301,37 @@ export class Dashboard extends UppyDashboard {
 		this.setPluginState({ invalidFiles });
 	};
 
-	#openFileEditorWhenFilesAdded = (files) => {
-		const firstFile = files[0];
-		if (this.canEditFile(firstFile)) {
-			this.openFileEditor(firstFile);
+	#generateLargeThumbnailIfSingleFile = () => {
+		if (this.opts.disableThumbnailGenerator) {
+			return;
+		}
+
+		const LARGE_THUMBNAIL = 600;
+		const files = this.uppy.getFiles();
+
+		if (files.length === 1) {
+			const thumbnailGenerator = this.uppy.getPlugin(`${this.id}:ThumbnailGenerator`);
+			thumbnailGenerator?.setOptions({ thumbnailWidth: LARGE_THUMBNAIL });
+			const fileForThumbnail = { ...files[0], preview: undefined };
+			thumbnailGenerator?.requestThumbnail(fileForThumbnail).then(() => {
+				thumbnailGenerator?.setOptions({
+					thumbnailWidth: this.opts.thumbnailWidth
+				});
+			});
 		}
 	};
 
-	checkInProgressFiles = () => {
-		const { inProgressFiles } = this.uppy.getObjectOfFilesPerState();
-		if (!inProgressFiles?.length) {
-			this.opts.onPendingChanges(false);
+	#openFileEditorWhenFilesAdded = (files) => {
+		const firstFile = files[0];
+
+		const { metaFields } = this.getPluginState();
+		const isMetaEditorEnabled = metaFields && metaFields.length > 0;
+		const isImageEditorEnabled = this.canEditFile(firstFile);
+
+		if (isMetaEditorEnabled && this.opts.autoOpen === 'metaEditor') {
+			this.toggleFileCard(true, firstFile.id);
+		} else if (isImageEditorEnabled && this.opts.autoOpen === 'imageEditor') {
+			this.openFileEditor(firstFile);
 		}
 	};
 
@@ -283,13 +352,15 @@ export class Dashboard extends UppyDashboard {
 		this.startListeningToResize();
 		document.addEventListener('paste', this.handlePasteOnBody);
 
+		this.uppy.on('plugin-added', this.#addSupportedPluginIfNoTarget);
 		this.uppy.on('plugin-remove', this.removeTarget);
 		this.uppy.on('file-added', this.hideAllPanels);
 		this.uppy.on('dashboard:modal-closed', this.hideAllPanels);
-		this.uppy.on('file-editor:complete', this.hideAllPanels);
 		this.uppy.on('complete', this.handleComplete);
-		this.uppy.on('upload-success', this.checkInProgressFiles);
-		this.uppy.on('upload-error', this.checkInProgressFiles);
+
+		this.uppy.on('files-added', this.#generateLargeThumbnailIfSingleFile);
+		this.uppy.on('file-removed', this.#generateLargeThumbnailIfSingleFile);
+		this.uppy.on('files-added', this.validateFilesPolicy);
 
 		// ___Why fire on capture?
 		//    Because this.ifFocusedOnUppyRecently needs to change before onUpdate() fires.
@@ -300,12 +371,8 @@ export class Dashboard extends UppyDashboard {
 			this.el.addEventListener('keydown', this.handleKeyDownInInline);
 		}
 
-		if (this.opts.autoOpenFileEditor) {
+		if (this.opts.autoOpen) {
 			this.uppy.on('files-added', this.#openFileEditorWhenFilesAdded);
-		} else {
-			if (this.opts.autoProceed) {
-				this.uppy.on('files-added', this.validateFilesPolicy);
-			}
 		}
 	};
 
@@ -317,14 +384,17 @@ export class Dashboard extends UppyDashboard {
 
 		this.stopListeningToResize();
 		document.removeEventListener('paste', this.handlePasteOnBody);
-
 		window.removeEventListener('popstate', this.handlePopState, false);
+
+		this.uppy.off('plugin-added', this.#addSupportedPluginIfNoTarget);
 		this.uppy.off('plugin-remove', this.removeTarget);
 		this.uppy.off('file-added', this.hideAllPanels);
 		this.uppy.off('dashboard:modal-closed', this.hideAllPanels);
 		this.uppy.off('complete', this.handleComplete);
-		this.uppy.off('upload-success', this.checkInProgressFiles);
-		this.uppy.off('upload-error', this.checkInProgressFiles);
+
+		this.uppy.off('files-added', this.#generateLargeThumbnailIfSingleFile);
+		this.uppy.off('file-removed', this.#generateLargeThumbnailIfSingleFile);
+		this.uppy.off('files-added', this.validateFilesPolicy);
 
 		document.removeEventListener('focus', this.recordIfFocusedOnUppyRecently);
 		document.removeEventListener('click', this.recordIfFocusedOnUppyRecently);
@@ -333,10 +403,8 @@ export class Dashboard extends UppyDashboard {
 			this.el.removeEventListener('keydown', this.handleKeyDownInInline);
 		}
 
-		if (this.opts.autoOpenFileEditor) {
+		if (this.opts.autoOpen) {
 			this.uppy.off('files-added', this.#openFileEditorWhenFilesAdded);
-		} else {
-			this.uppy.off('files-added', this.validateFilesPolicy);
 		}
 	};
 
@@ -358,19 +426,19 @@ export class Dashboard extends UppyDashboard {
 		return plugin.isSupported();
 	};
 
-	#getAcquirers = memoize((targets) => {
+	#getAcquirers = (targets) => {
 		return targets
 			.filter((target) => target.type === 'acquirer' && this.#isTargetSupported(target))
 			.map(this.#attachRenderFunctionToTarget);
-	});
+	};
 
-	#getProgressIndicators = memoize((targets) => {
+	#getProgressIndicators = (targets) => {
 		return targets.filter((target) => target.type === 'progressindicator').map(this.#attachRenderFunctionToTarget);
-	});
+	};
 
-	#getEditors = memoize((targets) => {
+	#getEditors = (targets) => {
 		return targets.filter((target) => target.type === 'editor').map(this.#attachRenderFunctionToTarget);
-	});
+	};
 
 	render = (state) => {
 		const pluginState = this.getPluginState();
@@ -383,14 +451,16 @@ export class Dashboard extends UppyDashboard {
 			inProgressFiles,
 			inProgressNotPausedFiles,
 			processingFiles,
+
 			isUploadStarted,
 			isAllComplete,
-			isAllErrored,
 			isAllPaused
 		} = this.uppy.getObjectOfFilesPerState();
 
+		if (isAllComplete) {
+			this.opts.onPendingChanges(false);
+		}
 		const hasInvalidFiles = Object.values(pluginState.invalidFiles).some((value) => value);
-
 		const acquirers = this.#getAcquirers(pluginState.targets);
 		const progressindicators = this.#getProgressIndicators(pluginState.targets);
 		const editors = this.#getEditors(pluginState.targets);
@@ -404,12 +474,10 @@ export class Dashboard extends UppyDashboard {
 
 		if (['files', 'folders', 'both'].indexOf(this.opts.fileManagerSelectionType) < 0) {
 			this.opts.fileManagerSelectionType = 'files';
-			console.error(
+			console.warn(
 				`Unsupported option for "fileManagerSelectionType". Using default of "${this.opts.fileManagerSelectionType}".`
 			);
 		}
-
-		// console.log('inProgressFiles', inProgressFiles);
 
 		return DashboardUI({
 			state,
@@ -424,25 +492,25 @@ export class Dashboard extends UppyDashboard {
 			processingFiles,
 			isUploadStarted,
 			isAllComplete,
-			isAllErrored,
 			isAllPaused,
-			hasInvalidFiles,
 			totalFileCount: Object.keys(files).length,
 			totalProgress: state.totalProgress,
 			allowNewUpload,
 			acquirers,
 			theme,
+			disabled: this.opts.disabled,
+			disableLocalFiles: this.opts.disableLocalFiles,
 			direction: this.opts.direction,
 			activePickerPanel: pluginState.activePickerPanel,
 			showFileEditor: pluginState.showFileEditor,
 			saveFileEditor: this.saveFileEditor,
-			disableAllFocusableElements: this.disableAllFocusableElements,
+			closeFileEditor: this.closeFileEditor,
+			disableInteractiveElements: this.disableInteractiveElements,
 			animateOpenClose: this.opts.animateOpenClose,
 			isClosing: pluginState.isClosing,
-			// getPlugin: this.uppy.getPlugin,
-			progressindicators: progressindicators,
-			editors: editors,
-			autoProceed: this.opts.autoProceed,
+			progressindicators,
+			editors,
+			autoProceed: this.uppy.opts.autoProceed,
 			id: this.id,
 			closeModal: this.requestCloseModal,
 			handleClickOutside: this.handleClickOutside,
@@ -451,34 +519,29 @@ export class Dashboard extends UppyDashboard {
 			inline: this.opts.inline,
 			showPanel: this.showPanel,
 			hideAllPanels: this.hideAllPanels,
-			// log: this.uppy.log,
 			i18n: this.i18n,
 			i18nArray: this.i18nArray,
-			removeFile: this.validateAndRemove,
 			uppy: this.uppy,
-			info: this.uppy.info,
 			note: this.opts.note,
 			recoveredState: state.recoveredState,
 			metaFields: pluginState.metaFields,
 			resumableUploads: capabilities.resumableUploads || false,
 			individualCancellation: capabilities.individualCancellation,
 			isMobileDevice: capabilities.isMobileDevice,
-			// pauseUpload: this.uppy.pauseResume,
-			// retryUpload: this.uppy.retryUpload,
 			// region header
 			onMinimized: this.opts.onMinimized,
 			onClose: this.opts.onClose,
 			title: this.opts.title,
 			// endregion
-			// region Site policy functions
+			// region Site policy props - craftercms/uppy custom code
 			cancelPending: this.cancelPending,
 			clearCompleted: this.clearCompleted,
 			validateAndRetry: this.validateAndRetry,
 			rejectAll: this.rejectAll,
 			confirmAll: this.confirmAll,
+			invalidFiles: pluginState.invalidFiles ?? {},
+			hasInvalidFiles,
 			// endregion
-			// cancelUpload: this.cancelUpload,
-			// cancelAll: this.uppy.cancelAll,
 			fileCardFor: pluginState.fileCardFor,
 			toggleFileCard: this.toggleFileCard,
 			toggleAddFilesPanel: this.toggleAddFilesPanel,
@@ -491,42 +554,91 @@ export class Dashboard extends UppyDashboard {
 			showLinkToFileUploadResult: this.opts.showLinkToFileUploadResult,
 			fileManagerSelectionType: this.opts.fileManagerSelectionType,
 			proudlyDisplayPoweredByUppy: this.opts.proudlyDisplayPoweredByUppy,
-			hideCancelButton: this.opts.hideCancelButton,
-			hideRetryButton: this.opts.hideRetryButton,
-			hidePauseResumeButton: this.opts.hidePauseResumeButton,
 			showRemoveButtonAfterComplete: this.opts.showRemoveButtonAfterComplete,
 			containerWidth: pluginState.containerWidth,
 			containerHeight: pluginState.containerHeight,
 			areInsidesReadyToBeVisible: pluginState.areInsidesReadyToBeVisible,
-			isTargetDOMEl: this.isTargetDOMEl,
 			parentElement: this.el,
 			allowedFileTypes: this.uppy.opts.restrictions.allowedFileTypes,
 			maxNumberOfFiles: this.uppy.opts.restrictions.maxNumberOfFiles,
 			requiredMetaFields: this.uppy.opts.restrictions.requiredMetaFields,
 			showSelectedFiles: this.opts.showSelectedFiles,
+			showNativePhotoCameraButton: this.opts.showNativePhotoCameraButton,
+			showNativeVideoCameraButton: this.opts.showNativeVideoCameraButton,
+			nativeCameraFacingMode: this.opts.nativeCameraFacingMode,
+			singleFileFullScreen: this.opts.singleFileFullScreen,
 			handleRequestThumbnail: this.handleRequestThumbnail,
 			handleCancelThumbnail: this.handleCancelThumbnail,
-			// doneButtonHandler: this.opts.doneButtonHandler,
-			// site policy props
-			invalidFiles: pluginState.invalidFiles ?? {},
 			// drag props
 			isDraggingOver: pluginState.isDraggingOver,
 			handleDragOver: this.handleDragOver,
 			handleDragLeave: this.handleDragLeave,
 			handleDrop: this.handleDrop,
 			externalMessages: this.opts.externalMessages,
-			successfulUploadButton: this.opts.successfulUploadButton,
+			// informer props
+			disableInformer: this.opts.disableInformer,
+			// status-bar props
+			disableStatusBar: this.opts.disableStatusBar,
+			hideProgressDetails: this.opts.hideProgressDetails,
+			hideUploadButton: this.opts.hideUploadButton,
+			hideRetryButton: this.opts.hideRetryButton,
+			hidePauseResumeButton: this.opts.hidePauseResumeButton,
+			hideCancelButton: this.opts.hideCancelButton,
+			hideProgressAfterFinish: this.opts.hideProgressAfterFinish,
+			doneButtonHandler: this.opts.doneButtonHandler,
 			validateFilesPolicy: this.validateFilesPolicy
 		});
 	};
 
-	discoverProviderPlugins = () => {
-		this.uppy.iteratePlugins((plugin) => {
-			if (plugin && !plugin.target && plugin.opts && plugin.opts.target === this.constructor) {
-				this.addTarget(plugin);
+	#addSpecifiedPluginsFromOptions = () => {
+		const { plugins } = this.opts;
+
+		plugins.forEach((pluginID) => {
+			const plugin = this.uppy.getPlugin(pluginID);
+			if (plugin) {
+				plugin.mount(this, plugin);
+			} else {
+				this.uppy.log(
+					`[Uppy] Dashboard could not find plugin '${pluginID}', make sure to uppy.use() the plugins you are specifying`,
+					'warning'
+				);
 			}
 		});
 	};
+
+	#autoDiscoverPlugins = () => {
+		this.uppy.iteratePlugins(this.#addSupportedPluginIfNoTarget);
+	};
+
+	#addSupportedPluginIfNoTarget = (plugin) => {
+		// Only these types belong on the Dashboard,
+		// we wouldn’t want to try and mount Compressor or Tus, for example.
+		const typesAllowed = ['acquirer', 'editor'];
+		if (plugin && !plugin.opts?.target && typesAllowed.includes(plugin.type)) {
+			const pluginAlreadyAdded = this.getPluginState().targets.some(
+				(installedPlugin) => plugin.id === installedPlugin.id
+			);
+			if (!pluginAlreadyAdded) {
+				plugin.mount(this, plugin);
+			}
+		}
+	};
+
+	#getThumbnailGeneratorOpts() {
+		const { thumbnailWidth, thumbnailHeight, thumbnailType, waitForThumbnailsBeforeUpload } = this.opts;
+		return {
+			thumbnailWidth,
+			thumbnailHeight,
+			thumbnailType,
+			waitForThumbnailsBeforeUpload,
+			// If we don't block on thumbnails, we can lazily generate them
+			lazy: !waitForThumbnailsBeforeUpload
+		};
+	}
+
+	#getThumbnailGeneratorId() {
+		return `${this.id}:ThumbnailGenerator`;
+	}
 
 	install = () => {
 		// Set default state for Dashboard
@@ -535,14 +647,14 @@ export class Dashboard extends UppyDashboard {
 			fileCardFor: null,
 			activeOverlayType: null,
 			showAddFilesPanel: false,
-			activePickerPanel: false,
+			activePickerPanel: undefined,
 			showFileEditor: false,
 			metaFields: this.opts.metaFields,
 			targets: [],
 			// We'll make them visible once .containerWidth is determined
 			areInsidesReadyToBeVisible: false,
 			isDraggingOver: false,
-			// Site Policy Props
+			// Site Policy Props - craftercms/uppy custom code
 			invalidFiles: {}
 		});
 
@@ -562,48 +674,15 @@ export class Dashboard extends UppyDashboard {
 		}
 
 		const { target } = this.opts;
+
 		if (target) {
 			this.mount(target, this);
 		}
 
-		const plugins = this.opts.plugins || [];
-		plugins.forEach((pluginID) => {
-			const plugin = this.uppy.getPlugin(pluginID);
-			if (plugin) {
-				plugin.mount(this, plugin);
-			}
-		});
-
-		if (!this.opts.disableStatusBar) {
-			this.uppy.use(StatusBar, {
-				id: `${this.id}:StatusBar`,
-				target: this,
-				hideUploadButton: this.opts.hideUploadButton,
-				hideRetryButton: this.opts.hideRetryButton,
-				hidePauseResumeButton: this.opts.hidePauseResumeButton,
-				hideCancelButton: this.opts.hideCancelButton,
-				showProgressDetails: this.opts.showProgressDetails,
-				hideAfterFinish: this.opts.hideProgressAfterFinish,
-				locale: this.opts.locale,
-				doneButtonHandler: this.opts.doneButtonHandler
-			});
-		}
-
-		if (!this.opts.disableInformer) {
-			this.uppy.use(Informer, {
-				id: `${this.id}:Informer`,
-				target: this
-			});
-		}
-
 		if (!this.opts.disableThumbnailGenerator) {
 			this.uppy.use(ThumbnailGenerator, {
-				id: `${this.id}:ThumbnailGenerator`,
-				thumbnailWidth: this.opts.thumbnailWidth,
-				thumbnailType: this.opts.thumbnailType,
-				waitForThumbnailsBeforeUpload: this.opts.waitForThumbnailsBeforeUpload,
-				// If we don't block on thumbnails, we can lazily generate them
-				lazy: !this.opts.waitForThumbnailsBeforeUpload
+				id: this.#getThumbnailGeneratorId(),
+				...this.#getThumbnailGeneratorOpts()
 			});
 		}
 
@@ -616,12 +695,11 @@ export class Dashboard extends UppyDashboard {
 		this.setDarkModeCapability(isDarkModeOnFromTheStart);
 
 		if (this.opts.theme === 'auto') {
-			this.darkModeMediaQuery.addListener(this.handleSystemDarkModeChange);
+			this.darkModeMediaQuery?.addListener(this.handleSystemDarkModeChange);
 		}
 
-		this.discoverProviderPlugins();
+		this.#addSpecifiedPluginsFromOptions();
+		this.#autoDiscoverPlugins();
 		this.initEvents();
 	};
 }
-
-export default Dashboard;
