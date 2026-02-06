@@ -26,7 +26,7 @@ import MoreVertRounded from '@mui/icons-material/MoreVertRounded';
 import Checkbox from '@mui/material/Checkbox';
 import ListItemText from '@mui/material/ListItemText';
 import ItemDisplay from '../ItemDisplay';
-import React, { useCallback, useState } from 'react';
+import React, { type DetailedHTMLProps, type HTMLAttributes, useCallback, useState } from 'react';
 import { DependencyChip, DependencyDataState } from './PublishDialogContainer';
 import { AllItemActions, ContentItem, LightItem } from '../../models';
 import { PathTreeNode } from './buildPathTrees';
@@ -39,12 +39,11 @@ import useEnv from '../../hooks/useEnv';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { useDispatch } from 'react-redux';
 import { renderTreeNode } from '../PackageItems/utils';
-import { FixedSizeList as List } from 'react-window';
 import Popover, { getOffsetLeft, getOffsetTop } from '@mui/material/Popover';
-import AutoSizer from 'react-virtualized-auto-sizer';
 import PackageItemsActions from '../PackageItems/PackageItemsActions';
 import useItemsByPath from '../../hooks/useItemsByPath';
 import { fetchContentItem } from '../../services/content';
+import { List, type RowComponentProps } from 'react-window';
 
 export interface PublishItemsProps {
 	itemMap: Record<string, LightItem>;
@@ -175,68 +174,68 @@ export function PublishPackageItemsView(props: PublishItemsProps) {
 						)}
 					</SimpleTreeView>
 				) : (
-					<AutoSizer>
-						{({ height, width }) => (
-							<List height={height} itemCount={totalItems} itemSize={59} width={width}>
-								{({ index, style }) => {
-									const path = itemsAndDependenciesPaths[index];
-									return (
-										<Box
-											style={style}
-											sx={{
-												[`.${listItemSecondaryActionClasses.root}`]: { right: (theme) => theme.spacing(1) },
-												[`.${listItemClasses.root} .item-menu-button`]: { display: 'none' },
-												[`.${listItemClasses.root}:hover`]: { bgcolor: 'action.hover' },
-												[`.${listItemClasses.root}:hover .item-menu-button`]: { display: 'flex' }
-											}}
-										>
-											<ListItem
-												key={path}
-												secondaryAction={
-													<Box display="flex" alignItems="center">
-														<IconButton
-															className="item-menu-button"
-															size="small"
-															onClick={(e) => {
-																e.stopPropagation();
-																onContextMenuOpen?.(e, path);
-															}}
-															aria-label={formatMessage({ defaultMessage: 'Options' })}
-														>
-															<MoreVertRounded />
-														</IconButton>
-														{dependencyTypeMap?.[path] === 'soft' && (
-															<Checkbox
-																size="small"
-																checked={selectedDependenciesMap[path]}
-																onChange={(e, checked) => onCheckboxChange?.(e, checked, path)}
-															/>
-														)}
-													</Box>
-												}
-											>
-												<ListItemText
-													primary={
-														<Box display="flex">
-															<ItemDisplay
-																item={itemMap[path]}
-																showNavigableAsLinks={false}
-																showWorkflowState={false}
-																sx={{ mr: 1 }}
-																showPublishingTarget={false}
-															/>
-															<DependencyChip type={dependencyTypeMap?.[path]} />
-														</Box>
-													}
-													secondary={path}
-												/>
-											</ListItem>
-										</Box>
-									);
-								}}
-							</List>
-						)}
-					</AutoSizer>
+					<List
+						rowCount={totalItems}
+						rowHeight={59}
+						rowProps={{}}
+						style={{ height: '100%', overflowY: 'unset' }}
+						rowComponent={({ index, style }: RowComponentProps) => {
+							const path = itemsAndDependenciesPaths[index];
+							return (
+								<Box
+									style={style as DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>}
+									sx={{
+										[`.${listItemSecondaryActionClasses.root}`]: { right: (theme) => theme.spacing(1) },
+										[`.${listItemClasses.root} .item-menu-button`]: { display: 'none' },
+										[`.${listItemClasses.root}:hover`]: { bgcolor: 'action.hover' },
+										[`.${listItemClasses.root}:hover .item-menu-button`]: { display: 'flex' }
+									}}
+								>
+									<ListItem
+										key={path}
+										secondaryAction={
+											<Box display="flex" alignItems="center">
+												<IconButton
+													className="item-menu-button"
+													size="small"
+													onClick={(e) => {
+														e.stopPropagation();
+														onContextMenuOpen?.(e, path);
+													}}
+													aria-label={formatMessage({ defaultMessage: 'Options' })}
+												>
+													<MoreVertRounded />
+												</IconButton>
+												{dependencyTypeMap?.[path] === 'soft' && (
+													<Checkbox
+														size="small"
+														checked={selectedDependenciesMap[path]}
+														onChange={(e, checked) => onCheckboxChange?.(e, checked, path)}
+													/>
+												)}
+											</Box>
+										}
+									>
+										<ListItemText
+											primary={
+												<Box display="flex">
+													<ItemDisplay
+														item={itemMap[path]}
+														showNavigableAsLinks={false}
+														showWorkflowState={false}
+														sx={{ mr: 1 }}
+														showPublishingTarget={false}
+													/>
+													<DependencyChip type={dependencyTypeMap?.[path]} />
+												</Box>
+											}
+											secondary={path}
+										/>
+									</ListItem>
+								</Box>
+							);
+						}}
+					/>
 				)}
 			</Box>
 			<Popover
