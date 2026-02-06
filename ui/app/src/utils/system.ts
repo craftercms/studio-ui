@@ -136,7 +136,7 @@ export function pickShowContentFormAction(oldProps: LegacyFormDialogProps) {
 									getPathFromPreviewURL(previewURL) === oldProps.path &&
 									oldProps.path !== result.path
 								) {
-									// oldProps.path is as page and the same as the preview page path, but the new path is different,
+									// oldProps.path is a page and the same as the preview page path, but the new path is different,
 									// which means there was a rename of the page currently being previewed. Then we need to update the
 									// preview URL to reflect the new page path.
 									window.location.href = getSystemLink({
