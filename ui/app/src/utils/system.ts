@@ -131,6 +131,7 @@ export function pickShowContentFormAction(oldProps: LegacyFormDialogProps) {
 								const params = new URLSearchParams(window.location.hash.replace(/^#\/?\?/, ''));
 								const previewURL = params.get('page');
 								if (
+									previewURL &&
 									isPagePath(oldProps.path) &&
 									getPathFromPreviewURL(previewURL) === oldProps.path &&
 									oldProps.path !== result.path
