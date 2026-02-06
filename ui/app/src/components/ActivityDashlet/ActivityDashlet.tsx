@@ -274,6 +274,7 @@ export function ActivityDashlet(props: ActivityDashletProps) {
 	// endregion
 	const listRef = useRef(undefined);
 	const loadNextPage = () => {
+		if (loadingChunk || loadingFeed) return;
 		const newOffset = offset + limit;
 		setState({ loadingChunk: true });
 
