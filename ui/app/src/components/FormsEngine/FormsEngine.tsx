@@ -31,6 +31,7 @@ import {
 	FormsEngineItemMetaContextProps,
 	ItemContext,
 	ItemMetaContext,
+	RenamedPathContext,
 	StableFormContext,
 	StableFormContextProps,
 	StableGlobalContext,
@@ -258,6 +259,8 @@ function FormBootstrap(props: FormsEngineProps) {
 	const username = useActiveUser()?.username;
 	const effectRefs = useUpdateRefs({ contentTypesById, username });
 	const stableFormContextRef = useRef<StableFormContextProps>(formsStackData[stackIndex]);
+	const [renamedPath, setRenamedPath] = useState<string | null>(null);
+	const effectiveUpdatePath = renamedPath ?? update?.path;
 
 	const contextApi = useMemo<FormsEngineFormApiContextProps>(() => {
 		const getInitialValues = () => stableFormContextRef.current.originalValues;
@@ -289,7 +292,7 @@ function FormBootstrap(props: FormsEngineProps) {
 		// If we're in create mode, there's no item yet. If updating, we can get the path from props or parent props in the case of repeat mode.
 		create
 			? null
-			: state.content.itemsByPath[props?.update?.path ?? formsStackData[stackIndex - 1]?.props?.update?.path]
+			: state.content.itemsByPath[effectiveUpdatePath ?? formsStackData[stackIndex - 1]?.props?.update?.path]
 	);
 
 	api.updateProps(stackIndex, props);
@@ -453,7 +456,7 @@ function FormBootstrap(props: FormsEngineProps) {
 		} /* if (isUpdateMode) */ else {
 			const subscription = fetchUpdateRequirements({
 				siteId,
-				path: update.path,
+				path: renamedPath ?? update?.path,
 				modelId: update.modelId,
 				readonly: readonlyProp,
 				contentTypesById: effectRefs.current.contentTypesById,
@@ -531,7 +534,9 @@ function FormBootstrap(props: FormsEngineProps) {
 		siteId,
 		stackIndex,
 		store,
-		update
+		update,
+		username,
+		renamedPath
 	]);
 
 	if (prepError) {
@@ -546,7 +551,9 @@ function FormBootstrap(props: FormsEngineProps) {
 				<StableFormContext.Provider value={stableFormContextRef.current}>
 					<ItemContext.Provider value={liveUpdatedItem}>
 						<ItemMetaContext.Provider value={itemMeta}>
-							{createElement(FormOrchestrator, props)}
+							<RenamedPathContext.Provider value={{ renamedPath, setRenamedPath }}>
+								{createElement(FormOrchestrator, props)}
+							</RenamedPathContext.Provider>
 						</ItemMetaContext.Provider>
 					</ItemContext.Provider>
 				</StableFormContext.Provider>

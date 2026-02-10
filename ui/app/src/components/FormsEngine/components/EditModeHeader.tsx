@@ -69,6 +69,10 @@ export function EditModeHeader({ isEmbedded, collapse = false }: { isEmbedded: b
 	// const [activeTab, setActiveTab] = useAtom(activeTabAtom);
 	// const handleTabChange: TabsProps['onChange'] = (e, value) => setActiveTab(value);
 
+	const handleCopyToClipboard = () => {
+		copyToClipboard(item.path);
+	};
+
 	return (
 		<>
 			<Container className="space-y" sx={{ py: 1 }}>
@@ -89,6 +93,13 @@ export function EditModeHeader({ isEmbedded, collapse = false }: { isEmbedded: b
 								</>
 							}
 						/>
+					)}
+					{collapse && (
+						<Tooltip title={<FormattedMessage defaultMessage="Copy path to clipboard" />}>
+							<IconButton size="small" onClick={handleCopyToClipboard} sx={{ padding: '1px', ml: 1 }}>
+								<ContentCopyRounded fontSize="inherit" sx={{ color: 'text.secondary' }} />
+							</IconButton>
+						</Tooltip>
 					)}
 				</Box>
 				<Collapse in={!collapse}>
@@ -172,7 +183,7 @@ export function EditModeHeader({ isEmbedded, collapse = false }: { isEmbedded: b
 									{/* Super-long test path: /Lorem/Ipsum/is/simply/dummy/text/of/the/printing/and/typesetting/industry/Lorem/Ipsum/has/been/the/industrys/standard/dummy/text/ever/since/the/1500s/when/an/unknown/printer/took/a/galley/of/type/and/scrambled/it/to/make/a/type/specimen/book.xml */}
 								</Box>
 								<Tooltip title={<FormattedMessage defaultMessage="Copy path to clipboard" />}>
-									<IconButton size="small" onClick={() => copyToClipboard(item.path)} sx={{ padding: '1px', ml: 1 }}>
+									<IconButton size="small" onClick={handleCopyToClipboard} sx={{ padding: '1px', ml: 1 }}>
 										<ContentCopyRounded fontSize="inherit" sx={{ color: 'text.secondary' }} />
 									</IconButton>
 								</Tooltip>
