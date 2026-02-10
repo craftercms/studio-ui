@@ -28,6 +28,7 @@ import type { Subscription } from 'rxjs';
 import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
 import { contentEvent } from '../../state/actions/system';
+import useUpdateRefs from '../../hooks/useUpdateRefs';
 
 export function RenameAssetDialog(props: RenameAssetDialogProps) {
 	const { item, allowBraces, onRenamed, type, error, ...rest } = props;
@@ -36,6 +37,9 @@ export function RenameAssetDialog(props: RenameAssetDialogProps) {
 	const [fetchingDependantItems, setFetchingDependantItems] = useState(false);
 	const subRef = useRef<Subscription | null>(null);
 	const dispatch = useDispatch();
+	const refs = useUpdateRefs({
+		dependantItems
+	});
 
 	const fetchDependant = useCallback(() => {
 		if (item) {
@@ -57,14 +61,22 @@ export function RenameAssetDialog(props: RenameAssetDialogProps) {
 	useEffect(() => {
 		fetchDependant();
 		const hostToHost$ = getHostToHostBus();
-		const subscription = hostToHost$.pipe(filter((e) => e.type === contentEvent.type)).subscribe(() => {
-			fetchDependant();
-		});
+		const subscription = hostToHost$
+			.pipe(
+				filter((e) => {
+					const isContentEvent = e.type === contentEvent.type;
+					if (!isContentEvent) return false;
+					return refs.current.dependantItems.some((dependant) => dependant.path === e.payload?.targetPath);
+				})
+			)
+			.subscribe(() => {
+				fetchDependant();
+			});
 		return () => {
 			subRef.current?.unsubscribe();
 			subscription.unsubscribe();
 		};
-	}, [fetchDependant]);
+	}, [fetchDependant, refs]);
 
 	return (
 		<EnhancedDialog
