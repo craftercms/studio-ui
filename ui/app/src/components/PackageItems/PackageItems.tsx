@@ -36,6 +36,7 @@ import { generateSingleItemOptions, itemActionDispatcher } from '../../utils/ite
 import MenuItem from '@mui/material/MenuItem';
 import useEnv from '../../hooks/useEnv';
 import PackageItemsActions from './PackageItemsActions';
+import { firstValueFrom } from 'rxjs';
 
 export interface PackageItemsProps {
 	packageId: number;
@@ -100,8 +101,8 @@ export function PackageItems(props: PackageItemsProps) {
 
 	const loadNextPage = () => {
 		setState({ isNextPageLoading: true, error: null });
-		fetchPackageItems(siteId, packageId, { limit: state.limit, offset: state.offset }).subscribe({
-			next(items) {
+		return firstValueFrom(fetchPackageItems(siteId, packageId, { limit: state.limit, offset: state.offset }))
+			.then((items) => {
 				const newOffset = state.offset + state.limit;
 				setState({
 					items: [...state.items, ...items.map((item) => ({ ...item.itemMetadata, path: item.path }))],
@@ -109,11 +110,10 @@ export function PackageItems(props: PackageItemsProps) {
 					offset: newOffset,
 					total: items.total
 				});
-			},
-			error({ response }) {
+			})
+			.catch(({ response }) => {
 				setState({ error: response.response, isNextPageLoading: false });
-			}
-		});
+			});
 	};
 
 	const onOpenMenu = (e: React.MouseEvent<HTMLButtonElement>, packageItem: LightItem) => {
