@@ -318,6 +318,7 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 	 */
 	const onRevertDependenciesChanges = () => {
 		if (!previousItems) return;
+		setChildrenItems([]);
 		setMainItems(previousItems);
 		setSelectedDependenciesMap({});
 		setPreviousItems(null);
