@@ -258,7 +258,7 @@ export function ImagePicker(props: ImagePickerProps) {
 					fileTypes: ['image/*'],
 					onFileAdded: (file, uppy, callback) => {
 						const data = file.data;
-						const url = URL.createObjectURL(data);
+						const url = URL.createObjectURL(data as Blob | MediaSource);
 						validateImageRestrictions(url, restrictions).then((meetsRestrictions) => {
 							if (!meetsRestrictions) {
 								showImageCropDialog({

@@ -42,6 +42,7 @@ import { pluckProps, reversePluckProps } from '../../utils/object';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
 import { pushErrorDialog } from '../../utils/system';
 import { useEnhancedDialogContext } from '../EnhancedDialog';
+import { firstValueFrom } from 'rxjs';
 
 const translations = defineMessages({
 	groupCreated: {
@@ -263,11 +264,13 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
 	};
 
 	const fetchMoreUsers = (options?: Partial<PaginationOptions & { keyword?: string }>) => {
-		fetchAll({
-			limit: usersFetchSize,
-			offset: usersOffset,
-			...options
-		}).subscribe((_users) => {
+		return firstValueFrom(
+			fetchAll({
+				limit: usersFetchSize,
+				offset: usersOffset,
+				...options
+			})
+		).then((_users) => {
 			const newUsersLength = usersRef.current.length + _users.length;
 			setUsersHaveNextPage(_users.total > newUsersLength);
 			setUsers([...usersRef.current, ..._users]);

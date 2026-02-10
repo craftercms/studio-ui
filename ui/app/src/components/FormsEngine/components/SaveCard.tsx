@@ -14,9 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useAtom, useAtomValue } from 'jotai';
+import { useAtom, useAtomValue, useStore as useJotaiStore } from 'jotai';
 import { FormattedMessage } from 'react-intl';
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { StableFormContext } from '../lib/formsEngineContext';
 import { ButtonProps } from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
@@ -27,6 +27,8 @@ import PrimaryButton from '../../PrimaryButton';
 import FormHelperText from '@mui/material/FormHelperText';
 import Grow from '@mui/material/Grow';
 import Alert from '@mui/material/Alert';
+import useMount from '../../../hooks/useMount';
+import { debounceTime } from 'rxjs/operators';
 
 export interface SaveCardProps {
 	isRepeatMode: boolean;
@@ -42,6 +44,24 @@ export function SaveCard(props: SaveCardProps) {
 	const [versionComment, setVersionComment] = useAtom(stableFormContext.atoms.versionComment);
 	const hasPendingChanges = useAtomValue(stableFormContext.atoms.hasPendingChanges);
 	const [closeAfterSave, setCloseAfterSave] = useAtom(stableFormContext.atoms.closeAfterSave);
+	const jotai = useJotaiStore();
+	const [saveAsDraft, setSaveAsDraft] = useState<boolean | null>(null);
+
+	useMount(() => {
+		const checkValidationState = async () => {
+			const validityStates = await Promise.all(
+				Object.values(stableFormContext.atoms.validationByFieldId).map((validityDataAtom) =>
+					jotai.get(validityDataAtom)
+				)
+			);
+			setSaveAsDraft(validityStates.some((state) => !state.isValid));
+		};
+		void checkValidationState();
+		const subscription = stableFormContext.fieldUpdates$
+			.pipe(debounceTime(300))
+			.subscribe(() => void checkValidationState());
+		return () => subscription.unsubscribe();
+	});
 	const disableSave = isSubmitting || !hasPendingChanges;
 	return (
 		<Paper sx={{ p: 1 }}>
@@ -71,6 +91,8 @@ export function SaveCard(props: SaveCardProps) {
 			<PrimaryButton fullWidth variant="contained" onClick={onSave} disabled={disableSave} loading={isSubmitting}>
 				{isRepeatMode || (isEmbedded && isStackedForm) ? (
 					<FormattedMessage defaultMessage="Done" />
+				) : saveAsDraft ? (
+					<FormattedMessage defaultMessage="Save Draft" />
 				) : (
 					<FormattedMessage defaultMessage="Save" />
 				)}

@@ -20,7 +20,13 @@ import GlobalState from '../../../models/GlobalState';
 import { FormattedMessage, useIntl } from 'react-intl';
 import useActiveSiteId from '../../../hooks/useActiveSiteId';
 import React, { useContext } from 'react';
-import { FormsEngineFormContextApi, ItemContext, ItemMetaContext, StableFormContext } from './formsEngineContext';
+import {
+	FormsEngineFormContextApi,
+	ItemContext,
+	ItemMetaContext,
+	RenamedPathContext,
+	StableFormContext
+} from './formsEngineContext';
 import {
 	composePathForType,
 	createObjectWithSystemProps,
@@ -47,6 +53,7 @@ import { validateActionPolicy } from '../../../services/sites';
 import { createComponentId, pushConfirmDialog } from '../../../utils/system';
 import { nanoid } from 'nanoid';
 import { popDialog, pushDialog } from '../../../state/actions/dialogStack';
+import { atom, PrimitiveAtom, useAtom } from 'jotai';
 import { showSystemNotification } from '../../../state/actions/system';
 
 export interface UseSaveFormProps {
@@ -80,6 +87,7 @@ export function useSaveForm(props: UseSaveFormProps) {
 	const setHasPendingChanges = useSetAtom(stableFormContext.atoms.hasPendingChanges);
 	const onSave = wrapOnSaveProp(props.onSave);
 	const fileName = useAtomValue(stableFormContext.atoms.fileName);
+	const { setRenamedPath } = useContext(RenamedPathContext);
 	const initialFileName = itemPath ? getFileNameValueFromPath(itemPath, isPage) : '';
 	const item = useContext(ItemContext);
 	return async () => {
@@ -139,6 +147,7 @@ export function useSaveForm(props: UseSaveFormProps) {
 		}
 		setIsSubmitting(true);
 		let path: string;
+		let renamePath: string;
 		const isRename = !isCreateMode && fileName !== initialFileName;
 		if (isCreateMode) {
 			path = composePathForType(createPath, fileName, contentType);
@@ -146,19 +155,21 @@ export function useSaveForm(props: UseSaveFormProps) {
 			if (isRename) {
 				const basePath = getBasePath(itemPath, isPage);
 				path = composePathForType(basePath, fileName, contentType);
+				renamePath = path;
 			} else {
 				path = itemPath;
 			}
 		}
 
 		const saveActionCallbacks = {
-			next() {
+			async next() {
 				const dom = fromString(xml);
-				// TODO: when renaming, if form it not set to be closed, then the form will have the old path and values,
-				//  causing it to break. Should we trigger a re-fetch of state/etc?
-				(onSave?.({ dom, xml, values, versionComment, path }) as Promise<FormSavePromiseResult>)?.then(
-					onSavePromiseHandler
-				);
+				const result = (await onSave?.({ dom, xml, values, versionComment, path })) as FormSavePromiseResult;
+				const shouldClose = result.close || closeAfterSave;
+				if (isRename && !shouldClose) {
+					setRenamedPath(renamePath);
+				}
+				onSavePromiseHandler(result);
 			},
 			error(error: AjaxError) {
 				setIsSubmitting(false);

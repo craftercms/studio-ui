@@ -122,7 +122,7 @@ export function pickShowContentFormAction(oldProps: LegacyFormDialogProps) {
 					formProps: {
 						...(oldProps.isNewContent
 							? { create: { path: oldProps.path, contentTypeId: oldProps.contentTypeId } }
-							: { update: { path: oldProps.path } }),
+							: { update: { path: oldProps.path, changeTypeId: oldProps.changeTemplate } }),
 						readonly: oldProps.readonly ?? false,
 						onSave() {
 							if (isPreviewAppUrl()) getHostToGuestBus().next(reloadRequest());

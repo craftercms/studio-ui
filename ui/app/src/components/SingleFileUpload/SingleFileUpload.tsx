@@ -15,14 +15,11 @@
  */
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import Core, { type Uppy } from '@uppy/core';
-import XHRUpload from '@uppy/xhr-upload';
+import { Uppy, XHRUpload, Form } from 'uppy';
 import ProgressBar from '@uppy/progress-bar';
-import Form from '@uppy/form';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import '@uppy/core/src/style.scss';
-import '@uppy/progress-bar/src/style.scss';
-import '@uppy/file-input/src/style.scss';
+import 'uppy/dist/uppy.css';
+import '@uppy/progress-bar/dist/style.css';
 import { getGlobalHeaders } from '../../utils/ajax';
 import { validateActionPolicy } from '../../services/sites';
 import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
@@ -137,7 +134,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 
 	const uppy = useMemo(
 		() =>
-			new Core({
+			new Uppy({
 				autoProceed: false,
 				...(fileTypes ? { restrictions: { allowedFileTypes: fileTypes } } : {}),
 				...(customFileName
