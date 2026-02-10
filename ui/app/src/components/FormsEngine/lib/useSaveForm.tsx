@@ -54,6 +54,7 @@ import { createComponentId, pushConfirmDialog } from '../../../utils/system';
 import { nanoid } from 'nanoid';
 import { popDialog, pushDialog } from '../../../state/actions/dialogStack';
 import { atom, PrimitiveAtom, useAtom } from 'jotai';
+import { showSystemNotification } from '../../../state/actions/system';
 
 export interface UseSaveFormProps {
 	createPath?: string;
@@ -91,7 +92,25 @@ export function useSaveForm(props: UseSaveFormProps) {
 	const item = useContext(ItemContext);
 	return async () => {
 		const values = extractAtomValues(jotai, stableFormContext.atoms.valueByFieldId);
+		const validityStates = await Promise.all(
+			Object.values(stableFormContext.atoms.validationByFieldId).map((validityDataAtom) => jotai.get(validityDataAtom))
+		);
+		// Put system properties in before creating the XML
+		const saveAsDraft = validityStates.some((state) => !state.isValid);
+
 		const onSavePromiseHandler = ({ close }: FormSavePromiseResult) => {
+			if (saveAsDraft) {
+				// Show a snack indicating that the item was saved as draft.
+				dispatch(
+					showSystemNotification({
+						options: { variant: 'warning' },
+						message: formatMessage({
+							defaultMessage: 'Draft saved. Required fields left blank may cause errors when previewed or deployed.'
+						})
+					})
+				);
+			}
+
 			flushSync(() => {
 				setIsSubmitting(false);
 				setHasPendingChanges(false);
@@ -105,12 +124,6 @@ export function useSaveForm(props: UseSaveFormProps) {
 			(onSave?.({ values, versionComment }) as Promise<FormSavePromiseResult>)?.then(onSavePromiseHandler);
 			return;
 		}
-
-		const validityStates = await Promise.all(
-			Object.values(stableFormContext.atoms.validationByFieldId).map((validityDataAtom) => jotai.get(validityDataAtom))
-		);
-		// Put system properties in before creating the XML
-		const saveAsDraft = validityStates.some((state) => !state.isValid);
 
 		complementValuesWithSystemProps(id, values, contentObject, contentType, saveAsDraft);
 		const { [XmlKeys.fileName]: _, ...valuesWithoutFileName } = values;
