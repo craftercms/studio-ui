@@ -218,7 +218,7 @@ export function PublishPackageItemsView(props: PublishItemsProps) {
 									>
 										<ListItemText
 											primary={
-												<Box display="flex">
+												<Box display="flex" gap={1}>
 													<ItemDisplay
 														item={itemMap[path]}
 														showNavigableAsLinks={false}

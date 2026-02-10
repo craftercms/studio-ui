@@ -55,7 +55,14 @@ import { RangePickerModal } from './RangePickerModal';
 import Tooltip from '@mui/material/Tooltip';
 import DashletCard, { DashletCardProps } from '../DashletCard/DashletCard';
 import { asLocalizedDateTime } from '../../utils/datetime';
-import { DashletAvatar, DashletEmptyMessage, PersonAvatar, PersonFullName } from '../DashletCard/dashletCommons';
+import {
+	DashletAvatar,
+	DashletEmptyMessage,
+	DashletItemOptions,
+	PersonAvatar,
+	PersonFullName,
+	usePackageContextMenu
+} from '../DashletCard/dashletCommons';
 import { getSystemLink } from '../../utils/system';
 import { useDispatch } from 'react-redux';
 import { changeCurrentUrl } from '../../state/actions/preview';
@@ -87,6 +94,7 @@ import { List, type RowComponentProps } from 'react-window';
 import Box from '@mui/material/Box';
 import { firstValueFrom } from 'rxjs';
 import { useInfiniteLoader } from 'react-window-infinite-loader';
+import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
 
 export interface ActivityDashletProps extends Partial<DashletCardProps> {}
 
@@ -266,6 +274,7 @@ export function ActivityDashlet(props: ActivityDashletProps) {
 	// endregion
 	const listRef = useRef(undefined);
 	const loadNextPage = () => {
+		if (loadingChunk || loadingFeed) return;
 		const newOffset = offset + limit;
 		setState({ loadingChunk: true });
 
@@ -328,6 +337,8 @@ export function ActivityDashlet(props: ActivityDashletProps) {
 	const onPackageClick = (pkg) => {
 		setState({ openPackageDetailsDialog: true, selectedPackageId: pkg.id });
 	};
+	const [hoveredActivity, setHoveredActivity] = useState<Activity | null>(null);
+	const packageContextMenu = usePackageContextMenu();
 
 	const currentPage = offset / limit;
 	const totalPages = total ? Math.ceil(total / limit) : 0;
@@ -336,6 +347,15 @@ export function ActivityDashlet(props: ActivityDashletProps) {
 	const currentItemsCount = feed ? (hasNextPage ? feed.length + 1 : feed.length) : 0;
 	// Every row is loaded except for our loading indicator row.
 	const isItemLoaded = (index) => !hasNextPage || index < feed?.length;
+
+	const onActivityMouseOver = (activity: Activity) => {
+		setHoveredActivity(activity);
+		packageContextMenu.setContextMenu({ package: activity.package });
+	};
+
+	const onActivityMouseLeave = () => {
+		setHoveredActivity(null);
+	};
 
 	const hasMoreItemsToLoad = total > 0 && limit + offset < total;
 	const isFetching = loadingChunk || loadingFeed;
@@ -620,21 +640,58 @@ export function ActivityDashlet(props: ActivityDashletProps) {
 												</TimelineDotWithAvatar>
 												<TimelineConnector />
 											</SizedTimelineSeparator>
-											<TimelineContent sx={{ py: '12px', px: 2 }}>
-												<PersonFullName person={activity.person} />
-												<Typography>
-													{renderActivity(activity, { formatMessage, onPackageClick, onItemClick })}
-												</Typography>
-												<Typography
-													variant="caption"
-													title={asLocalizedDateTime(
-														activity.actionTimestamp,
-														locale.localeCode,
-														locale.dateTimeFormatOptions
-													)}
+											<TimelineContent
+												sx={{ py: '12px', px: 2 }}
+												onMouseEnter={() => onActivityMouseOver(activity)}
+												onMouseLeave={() => onActivityMouseLeave()}
+											>
+												<Box
+													sx={{
+														display: 'flex',
+														flexDirection: 'row',
+														gap: 1,
+														justifyContent: 'space-between',
+														alignContent: 'center'
+													}}
 												>
-													{renderActivityTimestamp(activity.actionTimestamp, locale)}
-												</Typography>
+													<Box>
+														<PersonFullName person={activity.person} />
+														<Typography>
+															{renderActivity(activity, { formatMessage, onPackageClick, onItemClick })}
+														</Typography>
+														<Typography
+															variant="caption"
+															title={asLocalizedDateTime(
+																activity.actionTimestamp,
+																locale.localeCode,
+																locale.dateTimeFormatOptions
+															)}
+														>
+															{renderActivityTimestamp(activity.actionTimestamp, locale)}
+														</Typography>
+													</Box>
+													<Box
+														sx={{
+															alignSelf: 'center',
+															visibility: hoveredActivity?.id === activity.id ? 'visible' : 'hidden'
+														}}
+													>
+														{activity.package ? (
+															<IconButton
+																aria-label={formatMessage({ defaultMessage: 'Package options' })}
+																onClick={(e) => {
+																	e.stopPropagation();
+																	packageContextMenu?.openContextMenu(e, activity.package);
+																}}
+															>
+																<MoreVertRoundedIcon />
+															</IconButton>
+														) : (
+															activity.actionType !== 'DELETE' &&
+															activity.item && <DashletItemOptions path={activity.item.path} />
+														)}
+													</Box>
+												</Box>
 											</TimelineContent>
 										</CustomTimelineItem>
 									);
@@ -677,6 +734,7 @@ export function ActivityDashlet(props: ActivityDashletProps) {
 				onClosed={() => setState({ selectedPackageId: null })}
 				packageId={selectedPackageId}
 			/>
+			{packageContextMenu?.contextMenuElement}
 		</DashletCard>
 	);
 }

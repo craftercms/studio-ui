@@ -58,7 +58,7 @@ export function renderTreeNode(props: {
 				isItem ? (
 					<Box display="flex" justifyContent="space-between" alignItems="center">
 						<div>
-							<Box display="flex">
+							<Box display="flex" gap={1}>
 								<ItemDisplay
 									item={itemMap[node.path]}
 									showNavigableAsLinks={false}
