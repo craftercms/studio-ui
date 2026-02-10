@@ -24,6 +24,9 @@ import { parseLegacyItemToContentItem } from '../../utils/content';
 import useWithPendingChangesCloseRequest from '../../hooks/useWithPendingChangesCloseRequest';
 import { ensureSingleSlash, isBlank } from '../../utils/string';
 import { ContentItem } from '../../models';
+import { getHostToHostBus } from '../../utils/subjects';
+import { filter } from 'rxjs/operators';
+import { contentEvent } from '../../state/actions/system';
 
 export interface RenameContentDialogProps extends EnhancedDialogProps {
 	path: string;
@@ -63,6 +66,13 @@ export function RenameContentDialog(props: RenameContentDialogProps) {
 	useEffect(() => {
 		if (!isBlank(value) && !isBlank(path)) {
 			fetchDependant();
+			const hostToHost$ = getHostToHostBus();
+			const subscription = hostToHost$.pipe(filter((e) => e.type === contentEvent.type)).subscribe(() => {
+				fetchDependant();
+			});
+			return () => {
+				subscription.unsubscribe();
+			};
 		}
 	}, [fetchDependant, path, value]);
 

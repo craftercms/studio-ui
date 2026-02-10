@@ -25,6 +25,9 @@ import { parseLegacyItemToContentItem } from '../../utils/content';
 import { pushErrorDialog } from '../../utils/system';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import type { Subscription } from 'rxjs';
+import { getHostToHostBus } from '../../utils/subjects';
+import { filter } from 'rxjs/operators';
+import { contentEvent } from '../../state/actions/system';
 
 export function RenameAssetDialog(props: RenameAssetDialogProps) {
 	const { item, allowBraces, onRenamed, type, error, ...rest } = props;
@@ -53,7 +56,14 @@ export function RenameAssetDialog(props: RenameAssetDialogProps) {
 
 	useEffect(() => {
 		fetchDependant();
-		return () => subRef.current?.unsubscribe();
+		const hostToHost$ = getHostToHostBus();
+		const subscription = hostToHost$.pipe(filter((e) => e.type === contentEvent.type)).subscribe(() => {
+			fetchDependant();
+		});
+		return () => {
+			subRef.current?.unsubscribe();
+			subscription.unsubscribe();
+		};
 	}, [fetchDependant]);
 
 	return (
