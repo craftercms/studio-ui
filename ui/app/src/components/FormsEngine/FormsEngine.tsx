@@ -811,10 +811,8 @@ function FormOrchestrator(props: FormsEngineProps) {
 	// Monitor when sentinel element crosses the threshold
 	useEffect(() => {
 		if (!mainContent || !sentinelRef.current) return;
-		let observer: IntersectionObserver | null = null;
 
-		observer?.disconnect();
-		observer = new IntersectionObserver(
+		const observer = new IntersectionObserver(
 			([entry]) => {
 				// When sentinel is NOT intersecting (scrolled past 60px, sentinel's top position), collapse header
 				if (collapseHeaderAllowed.current) {
@@ -833,7 +831,7 @@ function FormOrchestrator(props: FormsEngineProps) {
 		return () => {
 			observer?.disconnect();
 		};
-	}, [mainContent, collapseHeaderAllowed]);
+	}, [mainContent]);
 
 	const bodyFragment = (
 		<FormLayout
