@@ -39,7 +39,7 @@ export interface RenameContentDialogProps extends EnhancedDialogProps {
 
 export function RenameContentDialog(props: RenameContentDialogProps) {
 	const { path, value, validRenameValue, onRenamed, ...dialogProps } = props;
-	const [dependantItems, setDependantItems] = useState<ContentItem[]>(null);
+	const [dependantItems, setDependantItems] = useState<ContentItem[]>([]);
 	const [fetchingDependantItems, setFetchingDependantItems] = useState(false);
 	const [error, setError] = useState(null);
 	const siteId = useActiveSiteId();
