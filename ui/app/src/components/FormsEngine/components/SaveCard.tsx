@@ -56,10 +56,10 @@ export function SaveCard(props: SaveCardProps) {
 			);
 			setSaveAsDraft(validityStates.some((state) => !state.isValid));
 		};
-		checkValidationState();
+		void checkValidationState();
 		const subscription = stableFormContext.fieldUpdates$
 			.pipe(debounceTime(300))
-			.subscribe(() => checkValidationState());
+			.subscribe(() => void checkValidationState());
 		return () => subscription.unsubscribe();
 	});
 	const disableSave = isSubmitting || !hasPendingChanges;
