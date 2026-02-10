@@ -17,15 +17,22 @@
 import { CommonDashletProps, getCurrentPage } from '../SiteDashboard/utils';
 import DashletCard from '../DashletCard/DashletCard';
 import palette from '../../styles/palette';
-import { defineMessages, FormattedMessage, MessageDescriptor, useIntl } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import React, { ReactNode, useCallback, useEffect, useState } from 'react';
-import { DashletEmptyMessage, getItemSkeleton, List, Pager, PersonAvatar } from '../DashletCard/dashletCommons';
+import {
+	DashletEmptyMessage,
+	getItemSkeleton,
+	List,
+	Pager,
+	PersonAvatar,
+	usePackageContextMenu
+} from '../DashletCard/dashletCommons';
 import ListItemText from '@mui/material/ListItemText';
 import { LIVE_COLOUR, STAGING_COLOUR } from '../ItemPublishingTargetIcon/styles';
 import useSpreadState from '../../hooks/useSpreadState';
 import useLocale from '../../hooks/useLocale';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
-import { PackageActions, PagedArray, PublishPackage } from '../../models';
+import { PagedArray } from '../../models';
 import RefreshRounded from '@mui/icons-material/RefreshRounded';
 import { PackageDetailsDialog } from '../PackageDetailsDialog';
 import { publishEvent } from '../../state/actions/system';
@@ -40,9 +47,6 @@ import IconButton from '@mui/material/IconButton';
 import { COMPLETED_MASK, PACKAGE_TYPE_INITIAL_PUBLISH } from '../../utils/constants';
 import ListItemButton from '@mui/material/ListItemButton';
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
-import { ContextMenu, ContextMenuOption } from '../ContextMenu';
-import { generatePackageOptions, packageActionDispatcher } from '../../utils/packageActions';
-import { useDispatch } from 'react-redux';
 
 interface RecentlyPublishedDashletProps extends CommonDashletProps {}
 
@@ -78,17 +82,8 @@ export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
 	const locale = useLocale();
 	const site = useActiveSiteId();
 	const { formatMessage } = useIntl();
-	const dispatch = useDispatch();
 	const [hoveredPackage, setHoveredPackage] = useState<number>(null);
-	const [contextMenu, setContextMenu] = useSpreadState<{
-		el: HTMLButtonElement;
-		package: PublishPackage;
-		options: ContextMenuOption[];
-	}>({
-		el: null,
-		package: null,
-		options: []
-	});
+	const contextMenu = usePackageContextMenu();
 
 	const loadPage = useCallback(
 		(pageNumber: number, backgroundRefresh?: boolean) => {
@@ -124,45 +119,6 @@ export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
 
 	const onPackageMouseLeave = () => {
 		setHoveredPackage(null);
-	};
-
-	const handleContextMenuClick = (e: React.MouseEvent<HTMLButtonElement>, pkg: FetchPackagesResponse) => {
-		const includeResubmit = pkg.packageType !== PACKAGE_TYPE_INITIAL_PUBLISH;
-
-		const contextMenuOptions = [
-			{
-				id: 'view',
-				label: <FormattedMessage defaultMessage="View Package" />
-			},
-			...(includeResubmit
-				? generatePackageOptions([pkg], { includeOnly: ['resubmit'] }).map((option) => ({
-						id: option.id,
-						label: formatMessage(option.label as MessageDescriptor)
-					}))
-				: [])
-		];
-		setContextMenu({ el: e.currentTarget, package: pkg, options: contextMenuOptions });
-	};
-
-	const handleContextMenuClose = () => {
-		setContextMenu({
-			el: null,
-			package: null,
-			options: []
-		});
-	};
-
-	const onOptionClicked = (option: string | 'view', pkg: PublishPackage) => {
-		handleContextMenuClose();
-		if (option === 'view') {
-			setState({ packageDetailsDialogId: pkg.id });
-		} else {
-			packageActionDispatcher({
-				pkg,
-				option: option as PackageActions,
-				dispatch
-			});
-		}
 	};
 
 	useEffect(() => {
@@ -293,7 +249,7 @@ export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
 							<IconButton
 								onClick={(e) => {
 									e.stopPropagation();
-									handleContextMenuClick(e, pkg);
+									contextMenu?.openContextMenu(e, pkg);
 								}}
 								sx={{ visibility: hoveredPackage === pkg.id ? 'visible' : 'hidden' }}
 							>
@@ -316,15 +272,7 @@ export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
 				onClose={() => setState({ packageDetailsDialogId: null })}
 				packageId={packageDetailsDialogId}
 			/>
-			{Boolean(contextMenu.el) && (
-				<ContextMenu
-					open
-					anchorEl={contextMenu.el}
-					onClose={handleContextMenuClose}
-					options={[contextMenu.options]}
-					onMenuItemClicked={(option) => onOptionClicked(option, contextMenu.package)}
-				/>
-			)}
+			{contextMenu?.contextMenuElement}
 		</DashletCard>
 	);
 }
