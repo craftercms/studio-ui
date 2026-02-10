@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ReactNode, useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import {
 	CommonDashletProps,
 	getPackagesValidatedSelectionState,
@@ -28,14 +28,14 @@ import {
 	List,
 	ListItemIcon,
 	Pager,
-	PersonAvatar
+	PersonAvatar,
+	SubmittedPackageDetail
 } from '../DashletCard/dashletCommons';
-import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import palette from '../../styles/palette';
 import ListItemText from '@mui/material/ListItemText';
 import Checkbox from '@mui/material/Checkbox';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
-import { LIVE_COLOUR, STAGING_COLOUR } from '../ItemPublishingTargetIcon/styles';
 import RefreshRounded from '@mui/icons-material/RefreshRounded';
 import { ActionsBar, ActionsBarAction } from '../ActionsBar';
 import { READY_MASK, UNDEFINED } from '../../utils/constants';
@@ -53,11 +53,9 @@ import {
 import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
 import { LoadingIconButton } from '../LoadingIconButton';
-import Box from '@mui/material/Box';
-import { asLocalizedDateTime } from '../../utils/datetime';
 import useLocale from '../../hooks/useLocale';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
-import { nnou, reversePluckProps } from '../../utils/object';
+import { nnou } from '../../utils/object';
 import { fetchPackages, FetchPackagesResponse, PackageApprovalState } from '../../services/publishing';
 import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
 import IconButton from '@mui/material/IconButton';
@@ -75,11 +73,6 @@ interface PendingApprovalDashletState extends WithSelectedState<FetchPackagesRes
 	offset: number;
 	packageDetailsDialogId: number;
 }
-
-const messages = defineMessages({
-	staging: { id: 'words.staging', defaultMessage: 'Staging' },
-	live: { id: 'words.live', defaultMessage: 'Live' }
-});
 
 const pendingApprovalState: PackageApprovalState[] = ['SUBMITTED'];
 
@@ -337,29 +330,7 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
 										}}
 									/>
 								}
-								secondary={
-									<FormattedMessage
-										defaultMessage="Submitted by {name} to go {publishingTarget, select, live { <render_target>live</render_target>} other {<render_target>staging</render_target>}} on {submittedDate}"
-										values={{
-											name: pkg.submitter?.username,
-											publishingTarget: pkg.target,
-											render_target(target: ReactNode[]) {
-												return (
-													<Box component="span" color={target[0] === 'live' ? LIVE_COLOUR : STAGING_COLOUR}>
-														{messages[target[0] as string]
-															? formatMessage(messages[target[0] as string]).toLowerCase()
-															: target[0]}
-													</Box>
-												);
-											},
-											submittedDate: asLocalizedDateTime(
-												pkg.schedule ?? pkg.submittedOn,
-												locale.localeCode,
-												locale.dateTimeFormatOptions
-											)
-										}}
-									/>
-								}
+								secondary={<SubmittedPackageDetail pkg={pkg} />}
 							/>
 							<IconButton
 								onClick={(e) => {

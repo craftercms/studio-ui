@@ -14,16 +14,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-const pkg = require('../package.json');
-const path = require('path');
+import pkg from '../package.json' with { type: 'json' };
+import path from 'path';
 const packagePath = process.cwd();
 const buildPath = path.join(packagePath, './build_tsc');
 
-const replace = require('replace-in-file');
+import { replaceInFile } from 'replace-in-file';
 const options = {
 	files: `${buildPath}/**/*.js`,
 	from: 'process.env.VERSION',
 	to: `'${pkg.version}'`
 };
 
-replace(options).then(() => {});
+replaceInFile(options).then(() => {});

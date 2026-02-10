@@ -45,6 +45,7 @@ import {
 import { useAtomValue } from 'jotai';
 import { translateIfMessageDescriptor } from '../../ContentTypeManagement/utils';
 import useLoadableAtom from '../lib/useLoadableAtom';
+import { XmlKeys } from '../lib/formConsts';
 
 function createLengthBlock({ length, max, min }: { length: number; max: number; min: number }) {
 	const pieces = [];
@@ -216,7 +217,7 @@ export const FormsEngineField = forwardRef<HTMLDivElement, FormsEngineFieldProps
 					</Alert>
 				</Collapse>
 			)}
-			{sourceMap?.[fieldId] && (
+			{sourceMap?.[fieldId] && fieldId !== XmlKeys['fileName'] && (
 				<Alert
 					variant="standard"
 					severity="info"
