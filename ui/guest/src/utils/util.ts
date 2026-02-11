@@ -60,7 +60,7 @@ export function isEditActionAvailable(args: {
 	parentModelId: string | null;
 }): boolean {
 	const contentItem = getContentItemFromRecord(args);
-	return contentItem?.availableActionsMap.edit;
+	return contentItem?.availableActionsMap.edit ?? false;
 }
 
 export function getContentItemFromRecord(args: {

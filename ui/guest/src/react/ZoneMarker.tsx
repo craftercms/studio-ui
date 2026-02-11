@@ -66,7 +66,7 @@ export interface ZoneMarkerProps {
 	sx?: ZoneMarkerPartialSx;
 	classes?: PartialClassRecord<ZoneMarkerClassKey>;
 	field?: ContentTypeField;
-	stateMap: ItemStateMap;
+	stateMap?: ItemStateMap;
 }
 
 function getStyles(sx: ZoneMarkerPartialSx): ZoneMarkerFullSx {
