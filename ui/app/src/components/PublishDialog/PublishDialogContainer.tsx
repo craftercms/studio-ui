@@ -170,7 +170,7 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 	useEffect(() => {
 		setState({ fetchingItems: true });
 		if (state.publishingTarget) {
-			calculatePackage(siteId, {
+			const sub = calculatePackage(siteId, {
 				publishingTarget: state.publishingTarget,
 				paths: itemsDataSummary.itemPaths.map((path) => ({
 					path,
@@ -210,6 +210,7 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 					setDependencyData(null);
 				}
 			});
+			return () => sub.unsubscribe();
 		}
 	}, [
 		itemsDataSummary.itemPaths,
