@@ -59,11 +59,21 @@ export function isEditActionAvailable(args: {
 	contentItemsByPath: LookupTable<ContentItem>;
 	parentModelId: string | null;
 }): boolean {
+	const contentItem = getContentItemFromRecord(args);
+	return contentItem?.availableActionsMap.edit;
+}
+
+export function getContentItemFromRecord(args: {
+	record: ElementRecord | ICERecord;
+	models: LookupTable<ContentInstance>;
+	contentItemsByPath: LookupTable<ContentItem>;
+	parentModelId: string | null;
+}): ContentItem | null {
 	const { record, models, contentItemsByPath, parentModelId } = args;
 	const model = models[record.modelId];
 	let path = model?.craftercms.path;
 	if (!path) {
 		path = models[parentModelId]?.craftercms.path;
 	}
-	return contentItemsByPath[path]?.availableActionsMap.edit;
+	return contentItemsByPath[path];
 }
