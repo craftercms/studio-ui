@@ -187,7 +187,7 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
 					</Button>
 				</Box>
 			);
-	} else if (totalByPath[path] > 0 && !childrenByParentPath[path].length) {
+	} else if (totalByPath[path] > 0 && !childrenByParentPath[path]?.length) {
 		// If totalByPath at the current path is greater than 0, but there are no children in childrenByParentPath for the current path,
 		// it means that the children are still loading, so we show a loading indicator. If there is an error for the current path, we show an error message instead.
 		propsForTreeItem.children.push(
