@@ -273,7 +273,7 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
           </Button>
         </section>
       );
-  } else if (totalByPath[path] > 0 && !childrenByParentPath.length) {
+  } else if (totalByPath[path] > 0 && !childrenByParentPath[path]?.length) {
     propsForTreeItem.children.push(
       errorByPath[path] ? (
         <div key="loading" className={classes.loading}>
