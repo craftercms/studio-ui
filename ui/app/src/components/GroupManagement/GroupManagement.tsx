@@ -40,7 +40,6 @@ export function GroupManagement() {
 	const [groups, setGroups] = useState<PagedArray<Group> | null>(null);
 	const [error, setError] = useState<ApiResponse | null>(null);
 	const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
-	const [showSearchBox, setShowSearchBox] = useState(false);
 	const [keyword, setKeyword] = useState('');
 
 	const fetchGroups = useCallback(
@@ -97,7 +96,6 @@ export function GroupManagement() {
 	};
 
 	const onSearchButtonClick = (searchInput: HTMLInputElement) => {
-		setShowSearchBox(!showSearchBox);
 		searchInput.focus();
 	};
 
@@ -134,7 +132,9 @@ export function GroupManagement() {
 						sxs={{
 							root: {
 								transition: 'width 500ms',
-								width: '210px'
+								width: '210px',
+								border: 0,
+								background: 'none'
 							}
 						}}
 						keyword={keyword}

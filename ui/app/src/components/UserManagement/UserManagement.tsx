@@ -46,7 +46,6 @@ export function UserManagement(props: UserManagementProps) {
 	const [users, setUsers] = useState<PagedArray<User> | null>(null);
 	const [error, setError] = useState<ApiResponse | null>(null);
 	const [viewUser, setViewUser] = useState<User | null>(null);
-	const [showSearchBox, setShowSearchBox] = useState(false);
 	const [keyword, setKeyword] = useState('');
 
 	const fetchUsers = useCallback(
@@ -104,7 +103,6 @@ export function UserManagement(props: UserManagementProps) {
 	};
 
 	const onSearchButtonClick = (searchInput: HTMLInputElement) => {
-		setShowSearchBox(!showSearchBox);
 		searchInput.focus();
 	};
 
@@ -141,7 +139,9 @@ export function UserManagement(props: UserManagementProps) {
 						sxs={{
 							root: {
 								transition: 'width 500ms',
-								width: '210px'
+								width: '210px',
+								border: 0,
+								background: 'none'
 							}
 						}}
 						keyword={keyword}
