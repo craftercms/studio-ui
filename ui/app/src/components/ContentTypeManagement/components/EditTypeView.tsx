@@ -104,6 +104,7 @@ import { getXmlBuilder, valueSerializersLookup } from '../../FormsEngine/lib/val
 import { pushErrorDialog } from '../../../utils/system';
 import { extractErrorPayload } from '../../../utils/ajax';
 import Typography from '@mui/material/Typography';
+import { AjaxError } from 'rxjs/ajax';
 
 export interface EditTypeAppProps {
 	/**
@@ -474,7 +475,7 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 						dispatch(fetchContentTypes());
 						showAlert(`Save successful.`);
 					},
-					error(error) {
+					error(error: AjaxError) {
 						dialogContext?.updateSubmittingOrHasPendingChanges({ isSubmitting: false });
 						showAlert({
 							children: (
@@ -483,7 +484,7 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 										<FormattedMessage defaultMessage="Error saving content type" />
 									</Typography>
 									<Typography variant="body2" color="textSecondary">
-										{extractErrorPayload(error).message}
+										{extractErrorPayload(error).message ?? ''}
 									</Typography>
 								</Box>
 							)
