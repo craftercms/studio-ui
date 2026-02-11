@@ -37,21 +37,23 @@ export function GroupManagement() {
 	const [offset, setOffset] = useState(0);
 	const [limit, setLimit] = useState(10);
 	const [fetching, setFetching] = useState(false);
-	const [groups, setGroups] = useState<PagedArray<Group>>(null);
-	const [error, setError] = useState<ApiResponse>();
-	const [selectedGroup, setSelectedGroup] = useState<Group>(null);
+	const [groups, setGroups] = useState<PagedArray<Group> | null>(null);
+	const [error, setError] = useState<ApiResponse | null>(null);
+	const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
+	const [showSearchBox, setShowSearchBox] = useState(false);
 	const [keyword, setKeyword] = useState('');
 
 	const fetchGroups = useCallback(
 		(keyword = '', _offset = offset) => {
 			setFetching(true);
-			fetchAll({ limit, offset: _offset, keyword }).subscribe({
+			return fetchAll({ limit, offset: _offset, keyword }).subscribe({
 				next(users) {
 					setGroups(users);
+					setError(null);
 					setFetching(false);
 				},
 				error({ response }) {
-					setError(response);
+					setError(response?.response);
 					setFetching(false);
 				}
 			});
@@ -60,7 +62,8 @@ export function GroupManagement() {
 	);
 
 	useEffect(() => {
-		fetchGroups();
+		const sub = fetchGroups();
+		return () => sub?.unsubscribe();
 	}, [fetchGroups]);
 
 	const editGroupDialogState = useEnhancedDialogState();
@@ -94,6 +97,7 @@ export function GroupManagement() {
 	};
 
 	const onSearchButtonClick = (searchInput: HTMLInputElement) => {
+		setShowSearchBox(!showSearchBox);
 		searchInput.focus();
 	};
 
@@ -171,7 +175,7 @@ export function GroupManagement() {
 				isMinimized={editGroupDialogState.isMinimized}
 				hasPendingChanges={editGroupDialogState.hasPendingChanges}
 				onWithPendingChangesCloseRequest={editGroupDialogPendingChangesCloseRequest}
-				onSubmittingAndOrPendingChange={editGroupDialogState.onSubmittingAndOrPendingChange}
+				updateSubmittingOrHasPendingChanges={editGroupDialogState.onSubmittingAndOrPendingChange}
 			/>
 		</Paper>
 	);

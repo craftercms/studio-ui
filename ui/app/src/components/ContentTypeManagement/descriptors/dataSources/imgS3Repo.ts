@@ -19,7 +19,7 @@ import { createVirtualSection, DescriptorContentType } from '../../utils';
 import { defineMessage } from 'react-intl';
 
 export const imgS3RepoDataSourceDescriptor: DescriptorContentType = {
-	id: 'img-s3-repo',
+	id: 'img-S3-repo',
 	name: defineMessage({ defaultMessage: 'Image From S3 Repository' }),
 	description: '',
 	type: 'image',
@@ -33,14 +33,14 @@ export const imgS3RepoDataSourceDescriptor: DescriptorContentType = {
 	fields: {
 		path: {
 			id: 'path',
-			type: 'input',
+			type: 'string',
 			name: defineMessage({ defaultMessage: 'Repository Path' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		profileId: {
 			id: 'profileId',
-			type: 'input',
+			type: 'string',
 			name: defineMessage({ defaultMessage: 'Profile ID' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject

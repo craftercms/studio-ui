@@ -19,8 +19,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import Dialog from '@mui/material/Dialog';
 import { useDispatch } from 'react-redux';
 
-import '@uppy/core/dist/style.css';
-import '@uppy/dashboard/dist/style.css';
+import 'uppy/dist/uppy.css';
 import { UploadDialogProps } from './util';
 import { translations } from './translations';
 import { UploadDialogContainer } from './UploadDialogContainer';

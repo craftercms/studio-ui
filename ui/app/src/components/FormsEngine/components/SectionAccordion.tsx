@@ -70,7 +70,7 @@ export function SectionAccordion({
 				accordionProps.sx
 			)}
 		>
-			<AccordionSummary {...slotProps?.accordionSummary} data-section-id={section.title}>
+			<AccordionSummary {...slotProps?.accordionSummary} data-section-id={section.id}>
 				<Typography>{section.title}</Typography>
 				{slotProps?.accordionSummary?.children}
 			</AccordionSummary>

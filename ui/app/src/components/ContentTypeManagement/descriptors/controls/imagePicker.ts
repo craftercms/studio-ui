@@ -39,33 +39,33 @@ export const imagePickerDescriptor: DescriptorContentType = {
 			id: 'width',
 			type: 'range',
 			name: defineMessage({ defaultMessage: 'Width' }),
-			defaultValue: undefined,
+			defaultValue: '{ "exact": "", "min": "", "max": "" }',
 			validations: immutableEmptyObject
 		},
 		height: {
 			id: 'height',
 			type: 'range',
 			name: defineMessage({ defaultMessage: 'Height' }),
-			defaultValue: undefined,
+			defaultValue: '{ "exact": "", "min": "", "max": "" }',
 			validations: immutableEmptyObject
 		},
 		thumbnailWidth: {
 			id: 'thumbnailWidth',
-			type: 'numeric-input',
+			type: 'int',
 			name: defineMessage({ defaultMessage: 'Thumbnail Width' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		thumbnailHeight: {
 			id: 'thumbnailHeight',
-			type: 'numeric-input',
+			type: 'int',
 			name: defineMessage({ defaultMessage: 'Thumbnail Height' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		imageManager: {
 			id: 'imageManager',
-			type: 'datasource-selector',
+			type: 'datasource:image',
 			name: defineMessage({ defaultMessage: 'Data Source' }),
 			defaultValue: undefined,
 			validations: {
@@ -74,20 +74,22 @@ export const imagePickerDescriptor: DescriptorContentType = {
 		},
 		readonly: {
 			id: 'readonly',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Read Only' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		required: {
 			id: 'required',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Required' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}
 	},
-	supportedPostFixes: ['_s']
+	metadata: {
+		suffixes: ['_s']
+	}
 };
 
 export default imagePickerDescriptor;

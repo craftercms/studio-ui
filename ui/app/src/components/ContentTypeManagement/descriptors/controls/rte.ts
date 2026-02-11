@@ -46,35 +46,35 @@ export const rteDescriptor: DescriptorContentType = {
 	fields: {
 		height: {
 			id: 'height',
-			type: 'numeric-input',
+			type: 'int',
 			name: defineMessage({ defaultMessage: 'Height' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		autoGrow: {
 			id: 'autoGrow',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Auto Grow' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		enableSpellCheck: {
 			id: 'enableSpellCheck',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Enable Spell Check' }),
 			defaultValue: true,
 			validations: immutableEmptyObject
 		},
 		rteConfiguration: {
 			id: 'rteConfiguration',
-			type: 'input',
+			type: 'string',
 			name: defineMessage({ defaultMessage: 'RTE Configuration' }),
 			defaultValue: 'generic',
 			validations: immutableEmptyObject
 		},
 		imageManager: {
 			id: 'imageManager',
-			type: 'datasource-selector',
+			type: 'datasource:image',
 			name: defineMessage({ defaultMessage: 'Image Manager' }),
 			defaultValue: undefined,
 			validations: {
@@ -83,7 +83,7 @@ export const rteDescriptor: DescriptorContentType = {
 		},
 		videoManager: {
 			id: 'videoManager',
-			type: 'datasource-selector',
+			type: 'datasource:video',
 			name: defineMessage({ defaultMessage: 'Video Manager' }),
 			defaultValue: undefined,
 			validations: {
@@ -92,7 +92,7 @@ export const rteDescriptor: DescriptorContentType = {
 		},
 		audioManager: {
 			id: 'audioManager',
-			type: 'datasource-selector',
+			type: 'datasource:audio',
 			name: defineMessage({ defaultMessage: 'Audio Manager' }),
 			defaultValue: undefined,
 			validations: {
@@ -101,7 +101,7 @@ export const rteDescriptor: DescriptorContentType = {
 		},
 		fileManager: {
 			id: 'fileManager',
-			type: 'datasource-selector',
+			type: 'datasource:item',
 			name: defineMessage({ defaultMessage: 'File Manager' }),
 			defaultValue: undefined,
 			validations: {
@@ -110,13 +110,15 @@ export const rteDescriptor: DescriptorContentType = {
 		},
 		required: {
 			id: 'required',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Required' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}
 	},
-	supportedPostFixes: ['_html']
+	metadata: {
+		suffixes: ['_html']
+	}
 };
 
 export default rteDescriptor;

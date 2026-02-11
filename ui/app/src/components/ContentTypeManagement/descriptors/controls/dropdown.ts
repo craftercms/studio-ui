@@ -37,7 +37,7 @@ export const dropdownDescriptor: DescriptorContentType = {
 	fields: {
 		datasource: {
 			id: 'datasource',
-			type: 'datasource-selector',
+			type: 'datasource:item',
 			name: defineMessage({ defaultMessage: 'Data Source' }),
 			defaultValue: undefined,
 			validations: {
@@ -46,27 +46,29 @@ export const dropdownDescriptor: DescriptorContentType = {
 		},
 		emptyvalue: {
 			id: 'emptyvalue',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Allow Empty Value' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		readonly: {
 			id: 'readonly',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Read Only' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		required: {
 			id: 'required',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Required' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}
 	},
-	supportedPostFixes: ['_s', '_i', '_f']
+	metadata: {
+		suffixes: ['_s', '_i', '_f']
+	}
 };
 
 export default dropdownDescriptor;

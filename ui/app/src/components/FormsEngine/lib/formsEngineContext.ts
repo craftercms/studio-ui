@@ -78,7 +78,7 @@ export interface FormsEngineAtoms {
 	readonly: Atom<boolean>;
 	lockResult: PrimitiveAtom<FormsEngineEditContextProps>;
 	valueByFieldId: LookupTable<PrimitiveAtom<unknown>>;
-	validationByFieldId: LookupTable<Atom<FieldValidityState>>;
+	validationByFieldId: LookupTable<Atom<Promise<FieldValidityState>>>;
 	versionComment: PrimitiveAtom<string>;
 	collapseToC: AtomWithStorage; // Note: `collapseToC` is an atomWithStorage
 	useCollapsedToC: Atom<boolean>;
@@ -86,6 +86,7 @@ export interface FormsEngineAtoms {
 	expandedStateBySectionId: LookupTable<PrimitiveAtom<boolean>>;
 	tableOfContentsDrawerOpen: PrimitiveAtom<boolean>;
 	closeAfterSave: AtomWithStorage;
+	fileName?: Atom<string>;
 }
 
 // Contains information to restore the state of a form when it comes back to being the active form on the stack
@@ -146,3 +147,8 @@ export const useStableFormContext = /*#__PURE__*/ createUseContextHook('useStabl
 export const useItemContext = /*#__PURE__*/ createUseContextHook('useItemContext', ItemContext);
 
 export const useItemMetaContext = /*#__PURE__*/ createUseContextHook('useItemMetaContext', ItemMetaContext);
+
+export const RenamedPathContext = createContext<{
+	renamedPath: string | null;
+	setRenamedPath(path: string | null): void;
+}>({ renamedPath: null, setRenamedPath: () => {} });

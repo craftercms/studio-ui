@@ -24,11 +24,14 @@ import SearchBar from '../../SearchBar';
 import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
 import Box from '@mui/material/Box';
 import { useAtomValue, useSetAtom, useStore as useJotaiStore } from 'jotai/index';
-import { isEmptyValue, isFieldRequired } from '../lib/validators';
-import FieldEmptyStateIndicator from './FieldEmptyStateIndicator';
-import FieldRequiredStateIndicator from './FieldRequiredStateIndicator';
+import { isEmptyValue, isFieldRequired, validatorsMap } from '../lib/validators';
 import { atom } from 'jotai';
 import { immutableEmptyArray } from '../../../utils/array';
+import useLoadableAtom from '../lib/useLoadableAtom';
+import Skeleton from '@mui/material/Skeleton';
+import ErrorBoundary from '../../ErrorBoundary';
+import FieldStateIndicator from './FieldStateIndicator';
+import { nnou } from '../../../utils/object';
 
 export interface TableOfContentsProps {
 	containerRef: RefObject<HTMLDivElement>;
@@ -59,17 +62,18 @@ export function TableOfContents({ containerRef, fieldsToRender }: TableOfContent
 	};
 	const handleSectionClick = (event: SyntheticEvent) => {
 		setOpenDrawerSidebar(false);
-		const sectionId = event.currentTarget.parentElement.getAttribute('data-section-id');
+		const sectionId = event.currentTarget.getAttribute('data-section-id');
 		if (!store.get(expandedStateAtoms[sectionId])) {
 			store.set(expandedStateAtoms[sectionId], true);
 		}
 		scrollToTarget(containerRef.current.querySelector(`[data-area-id="formBody"] [data-section-id="${sectionId}"]`));
 	};
 	const handleFieldClick = (event: SyntheticEvent) => {
+		event.stopPropagation();
 		// TODO: When filtering and clicked, the section may be collapsed. Through DOM, we can't
 		//  get the section id since sections aren't rendered when filtering. How do we get to the section to expand it?
 		setOpenDrawerSidebar(false);
-		const fieldId = event.currentTarget.parentElement.getAttribute('data-field-id');
+		const fieldId = event.currentTarget.getAttribute('data-field-id');
 		scrollToTarget(containerRef.current.querySelector(`[data-area-id="formBody"] [data-field-id="${fieldId}"]`));
 	};
 	const handleSectionExpansionToggleClick = (event: SyntheticEvent, itemId: string, expanded: boolean) => {
@@ -103,7 +107,7 @@ export function TableOfContents({ containerRef, fieldsToRender }: TableOfContent
 		<>
 			<SearchBar
 				dense
-				sx={{ mb: 1 }}
+				sx={{ mb: 1, mt: 1 }}
 				showActionButton={searchFieldValue !== ''}
 				keyword={searchFieldValue}
 				onChange={(value) => {
@@ -111,25 +115,27 @@ export function TableOfContents({ containerRef, fieldsToRender }: TableOfContent
 					onKeyword$.next(value);
 				}}
 			/>
-			<SimpleTreeView
-				selectedItems={immutableEmptyArray}
-				expansionTrigger="iconContainer"
-				onItemExpansionToggle={handleSectionExpansionToggleClick}
-				expandedItems={expandedSectionIds}
-			>
-				{filteredFields?.map(createFieldTreeItem) ??
-					fieldsToRender?.map(createFieldTreeItem) ??
-					contentTypeSections.map((section) => (
-						<TreeItem
-							key={section.id}
-							itemId={section.id}
-							data-section-id={section.id}
-							label={section.title}
-							onClick={handleSectionClick}
-							children={section.fields.map((fieldId) => createFieldTreeItem(contentTypeFields[fieldId]))}
-						/>
-					))}
-			</SimpleTreeView>
+			<ErrorBoundary>
+				<SimpleTreeView
+					selectedItems={immutableEmptyArray}
+					expansionTrigger="iconContainer"
+					onItemExpansionToggle={handleSectionExpansionToggleClick}
+					expandedItems={expandedSectionIds}
+				>
+					{filteredFields?.map(createFieldTreeItem) ??
+						fieldsToRender?.map(createFieldTreeItem) ??
+						contentTypeSections.map((section) => (
+							<TreeItem
+								key={section.id}
+								itemId={section.id}
+								data-section-id={section.id}
+								label={section.title}
+								onClick={handleSectionClick}
+								children={section.fields.map((fieldId) => createFieldTreeItem(contentTypeFields[fieldId]))}
+							/>
+						))}
+				</SimpleTreeView>
+			</ErrorBoundary>
 			{/* Spacer: */}
 			<Box sx={{ minHeight: 50 }} />
 		</>
@@ -143,16 +149,25 @@ function TreeItemLabel({
 	field: ContentTypeField;
 	atoms: Pick<FormsEngineAtoms, 'valueByFieldId' | 'validationByFieldId'>;
 }) {
+	// If field.id is 'file-name', we'll be using `atoms.fileName` as the field value.
 	const value = useAtomValue(atoms.valueByFieldId[field.id]);
-	const validity = useAtomValue(atoms.validationByFieldId[field.id]);
+	const validityData = useLoadableAtom(atoms.validationByFieldId[field.id]);
+	const isValid = validityData.state === 'hasData' ? validityData?.data.isValid : true;
 	const isRequired = isFieldRequired(field);
+	const hasValidator = nnou(validatorsMap[field.type]);
 	return (
 		<Box display="flex" justifyContent="space-between" alignItems="center">
 			<span>{field.name}</span>
-			{isRequired ? (
-				<FieldRequiredStateIndicator isValid={validity.isValid} />
+
+			{validityData.state === 'loading' ? (
+				<Skeleton variant="circular" width={15} height={15} />
 			) : (
-				<FieldEmptyStateIndicator isEmpty={isEmptyValue(field, value)} />
+				<FieldStateIndicator
+					isRequired={isRequired}
+					hasValidator={hasValidator}
+					isValid={isValid}
+					isEmpty={isEmptyValue(field, value)}
+				/>
 			)}
 		</Box>
 	);

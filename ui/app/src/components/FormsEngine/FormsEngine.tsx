@@ -20,7 +20,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
 import useActiveSite from '../../hooks/useActiveSite';
 import useContentTypes from '../../hooks/useContentTypes';
-import React, { createElement, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, { createElement, type RefCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { ContentTypeField, PublishPackage } from '../../models';
 import {
 	FormsEngineAtoms,
@@ -31,6 +31,7 @@ import {
 	FormsEngineItemMetaContextProps,
 	ItemContext,
 	ItemMetaContext,
+	RenamedPathContext,
 	StableFormContext,
 	StableFormContextProps,
 	StableGlobalContext,
@@ -67,7 +68,7 @@ import AlertTitle from '@mui/material/AlertTitle';
 import { pushDialog } from '../../state/actions/dialogStack';
 import useFetchContentItems from '../../hooks/useFetchContentItems';
 import ErrorBoundary from '../ErrorBoundary';
-import { debounceTime } from 'rxjs/operators';
+import { debounceTime, filter } from 'rxjs/operators';
 import { atom, createStore, Provider, useAtom, useAtomValue, useStore as useJotaiStore } from 'jotai';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import useSelection from '../../hooks/useSelection';
@@ -77,6 +78,7 @@ import { AjaxError } from 'rxjs/ajax';
 import { ViewPackagesDialogProps } from '../ViewPackagesDialog';
 import {
 	buildSectionExpandedStateAtoms,
+	createFileNameAtom,
 	createFormsEngineAtoms,
 	createFormStackData,
 	createObjectWithSystemProps,
@@ -118,6 +120,16 @@ import { displayWithPendingChangesConfirm } from '../../utils/ui';
 import useActiveUser from '../../hooks/useActiveUser';
 import FormBackToTop from './components/FormBackToTop';
 import { createComponentId } from '../../utils/system';
+import {
+	workflowEventApprove,
+	workflowEventCancel,
+	workflowEventDirectPublish,
+	workflowEventReject,
+	workflowEventSubmit
+} from '../../state/actions/system';
+import { getHostToHostBus } from '../../utils/subjects';
+import { fetchAffectedPackages } from '../../services/workflow';
+import useMount from '../../hooks/useMount';
 
 export interface FormSavePromiseResult {
 	close: boolean;
@@ -144,6 +156,7 @@ export interface BaseProps extends Partial<UpdateModeProps & RepeatModeProps & C
 		xml?: string;
 		values: LookupTable<unknown>;
 		versionComment: string;
+		path?: string;
 	}): Promise<FormSavePromiseResult> | void;
 }
 
@@ -152,6 +165,7 @@ export interface UpdateModeProps {
 		path: string;
 		modelId?: string;
 		values?: LookupTable<unknown>;
+		changeTypeId?: string; // Allows specifying a different content type for the item being updated, overriding the current item's content type.
 	};
 }
 
@@ -167,6 +181,7 @@ export interface CreateModeProps {
 	create: {
 		path: string;
 		contentTypeId: string;
+		embedded?: boolean;
 	};
 }
 
@@ -244,6 +259,8 @@ function FormBootstrap(props: FormsEngineProps) {
 	const username = useActiveUser()?.username;
 	const effectRefs = useUpdateRefs({ contentTypesById, username });
 	const stableFormContextRef = useRef<StableFormContextProps>(formsStackData[stackIndex]);
+	const [renamedPath, setRenamedPath] = useState<string | null>(null);
+	const effectiveUpdatePath = renamedPath ?? update?.path;
 
 	const contextApi = useMemo<FormsEngineFormApiContextProps>(() => {
 		const getInitialValues = () => stableFormContextRef.current.originalValues;
@@ -275,7 +292,7 @@ function FormBootstrap(props: FormsEngineProps) {
 		// If we're in create mode, there's no item yet. If updating, we can get the path from props or parent props in the case of repeat mode.
 		create
 			? null
-			: state.content.itemsByPath[props?.update?.path ?? formsStackData[stackIndex - 1]?.props?.update?.path]
+			: state.content.itemsByPath[effectiveUpdatePath ?? formsStackData[stackIndex - 1]?.props?.update?.path]
 	);
 
 	api.updateProps(stackIndex, props);
@@ -331,7 +348,8 @@ function FormBootstrap(props: FormsEngineProps) {
 			const atoms = createFormsEngineAtoms(effectRefs.current.username, {
 				lockResult: lockResultAtom,
 				readonly: createReadonlyAtom(lockResultAtom),
-				expandedStateBySectionId: buildSectionExpandedStateAtoms(contentType.sections)
+				expandedStateBySectionId: buildSectionExpandedStateAtoms(contentType.sections),
+				fileName: atom('')
 			});
 			const atomValueCreator: Parameters<typeof createParsedValuesObject>[3] = (fieldId, value) => {
 				setFieldAtoms(
@@ -340,7 +358,8 @@ function FormBootstrap(props: FormsEngineProps) {
 					contentType.fields[repeat.fieldId].fields,
 					fieldId,
 					atoms,
-					value
+					value,
+					siteId
 				);
 			};
 			const values =
@@ -415,12 +434,14 @@ function FormBootstrap(props: FormsEngineProps) {
 			const atoms: FormsEngineAtoms = createFormsEngineAtoms(effectRefs.current.username, {
 				lockResult: lockResultAtom,
 				readonly: atom(false),
-				expandedStateBySectionId: buildSectionExpandedStateAtoms(contentType.sections)
+				expandedStateBySectionId: buildSectionExpandedStateAtoms(contentType.sections),
+				fileName: atom('')
 			});
 			const contentObject = createObjectWithSystemProps(contentType);
 			const values = createParsedValuesObject(contentType.fields, contentObject, contentTypesById, (fieldId, value) => {
-				setFieldAtoms(stableFormContextRef, contentType, contentType.fields, fieldId, atoms, value);
+				setFieldAtoms(stableFormContextRef, contentType, contentType.fields, fieldId, atoms, value, siteId);
 			});
+
 			initializeState(atoms, values, {
 				id: contentObject[XmlKeys.modelId] as string,
 				// TODO: Should/could we somehow deduce the target path?
@@ -435,10 +456,11 @@ function FormBootstrap(props: FormsEngineProps) {
 		} /* if (isUpdateMode) */ else {
 			const subscription = fetchUpdateRequirements({
 				siteId,
-				path: update.path,
+				path: renamedPath ?? update?.path,
 				modelId: update.modelId,
 				readonly: readonlyProp,
-				contentTypesById: effectRefs.current.contentTypesById
+				contentTypesById: effectRefs.current.contentTypesById,
+				changeTypeId: update.changeTypeId
 			})
 				.pipe(
 					catchError((error: AjaxError | symbol) => {
@@ -467,7 +489,8 @@ function FormBootstrap(props: FormsEngineProps) {
 					const atoms = createFormsEngineAtoms(effectRefs.current.username, {
 						lockResult: lockResultAtom,
 						readonly: createReadonlyAtom(lockResultAtom),
-						expandedStateBySectionId: buildSectionExpandedStateAtoms(requirements.contentType.sections)
+						expandedStateBySectionId: buildSectionExpandedStateAtoms(requirements.contentType.sections),
+						fileName: createFileNameAtom(requirements.item.path)
 					});
 					const values = createParsedValuesObject(
 						requirements.contentType.fields,
@@ -480,10 +503,12 @@ function FormBootstrap(props: FormsEngineProps) {
 								requirements.contentType.fields,
 								fieldId,
 								atoms,
-								value
+								value,
+								siteId
 							);
 						}
 					);
+
 					initializeState(atoms, values, {
 						id: values[XmlKeys.modelId] as string,
 						path: requirements.item.path,
@@ -509,7 +534,9 @@ function FormBootstrap(props: FormsEngineProps) {
 		siteId,
 		stackIndex,
 		store,
-		update
+		update,
+		username,
+		renamedPath
 	]);
 
 	if (prepError) {
@@ -524,7 +551,9 @@ function FormBootstrap(props: FormsEngineProps) {
 				<StableFormContext.Provider value={stableFormContextRef.current}>
 					<ItemContext.Provider value={liveUpdatedItem}>
 						<ItemMetaContext.Provider value={itemMeta}>
-							{createElement(FormOrchestrator, props)}
+							<RenamedPathContext.Provider value={{ renamedPath, setRenamedPath }}>
+								{createElement(FormOrchestrator, props)}
+							</RenamedPathContext.Provider>
 						</ItemMetaContext.Provider>
 					</ItemContext.Provider>
 				</StableFormContext.Provider>
@@ -556,6 +585,7 @@ function FormOrchestrator(props: FormsEngineProps) {
 		onClose: onCloseProp
 	} = props;
 	// endregion
+
 	const theme = useTheme();
 	const { formatMessage } = useIntl();
 	const dispatch = useDispatch();
@@ -584,15 +614,37 @@ function FormOrchestrator(props: FormsEngineProps) {
 	const stackFormCount = useAtomValue(stackFormCountAtom);
 	const isStackedForm = stackIndex > 0;
 	const hasStackedForms = !isStackedForm && stackFormCount > 0;
-	const isEmbedded = Boolean(update?.modelId);
+	const isEmbedded = Boolean(update?.modelId) || Boolean(create?.embedded);
 	const isCreateMode = Boolean(create?.path);
 	const isRepeatMode = Boolean(repeat?.fieldId);
 	const affectedPackages = lockStatus.affectedPackages?.length > 0;
 	const contentTypeFields = contentType.fields;
-	const contentTypeSections = contentType.sections;
+	const contentTypeSections = useMemo(() => {
+		if (!isEmbedded) return contentType.sections;
+		// If the item is embedded, exclude the 'file-name' field from the sections.
+		// Embedded components don't have any path/file-name, so excluding the field from the sections will prevent it from
+		// being rendered in the ToC and the form.
+		return contentType.sections.map((section) => ({
+			...section,
+			fields: section.fields.filter((fieldId) => fieldId !== XmlKeys['fileName'])
+		}));
+	}, [contentType.sections, isEmbedded]);
 	const useCollapsedToC = useAtomValue(atoms.useCollapsedToC);
 	const tableOfContents = <TableOfContents fieldsToRender={fieldsToRender} containerRef={containerRef} />;
-	const effectRefs = useUpdateRefs({ fieldsToRender, versionCommentAtom: stableFormContext.atoms.versionComment });
+	const effectRefs = useUpdateRefs({
+		fieldsToRender,
+		versionCommentAtom: stableFormContext.atoms.versionComment,
+		lockStatus
+	});
+	const [collapseHeader, setCollapseHeader] = useState(false);
+
+	useMount(() => {
+		// If 'update.changeTypeId' has content, it means the content type has changed, so we set pending changes to true
+		// to be able to enable the save button and allow users to save immediately if that's all they want to do.
+		if (update?.changeTypeId) {
+			setHasPendingChanges(true);
+		}
+	});
 
 	// Changes comment generation & change detection/tracking
 	useEffect(() => {
@@ -627,6 +679,37 @@ function FormOrchestrator(props: FormsEngineProps) {
 
 	// Unlock content when the form is closed.
 	useUnlockOnClose(props);
+
+	// region Workflow item updates
+	useEffect(() => {
+		const events = [
+			workflowEventSubmit.type,
+			workflowEventDirectPublish.type,
+			workflowEventApprove.type,
+			workflowEventReject.type,
+			workflowEventCancel.type
+		];
+
+		const hostToHost$ = getHostToHostBus();
+		const subscription = hostToHost$.subscribe(({ type }) => {
+			if (!item || !events.includes(type)) return;
+			fetchAffectedPackages(siteId, item.path).subscribe({
+				next(packages) {
+					setLockStatus({
+						...effectRefs.current.lockStatus,
+						affectedPackages: packages
+					});
+				},
+				error({ response }) {
+					console.error(response);
+				}
+			});
+		});
+
+		return () => {
+			subscription.unsubscribe();
+		};
+	}, [effectRefs, item, setLockStatus, siteId]);
 
 	const handleOpenDrawerSidebar = () => {
 		const scroller = getScrollContainer(containerRef.current);
@@ -712,16 +795,48 @@ function FormOrchestrator(props: FormsEngineProps) {
 		}
 	};
 
+	const [mainContent, setMainContent] = useState(null);
+	const sentinelRef = useRef<HTMLDivElement>(null);
+
+	const mainContentRefCallback: RefCallback<HTMLDivElement> = (element) => {
+		setMainContent(element);
+	};
+
+	// Monitor when sentinel element crosses the threshold
+	useEffect(() => {
+		if (!mainContent || !sentinelRef.current) return;
+
+		const observer = new IntersectionObserver(
+			([entry]) => {
+				// When sentinel is NOT intersecting (scrolled past 60px, sentinel's top position), collapse header
+				setCollapseHeader(!entry.isIntersecting);
+			},
+			{
+				root: mainContent,
+				threshold: 0,
+				rootMargin: '0px'
+			}
+		);
+
+		observer.observe(sentinelRef.current);
+
+		return () => {
+			observer.disconnect();
+		};
+	}, [mainContent]);
+
 	const bodyFragment = (
 		<FormLayout
 			stackIndex={stackIndex}
 			containerRef={containerRef}
+			sentinelRef={sentinelRef}
+			mainContentRefCallback={mainContentRefCallback}
 			hasStackedForms={hasStackedForms}
 			// If the form is rendered in/as a dialog, take up the whole screen minus
 			// top/bottom margins (2 top, 2 bottom). If not a dialog, take up the whole screen.
 			targetHeight={getTargetHeight(isDialog, isFullScreen, theme)}
 			headerFragment={
-				<>
+				<Box id="header" sx={{ minHeight: 50 }}>
 					<Box component={Container} display="flex" alignItems="center" justifyContent="space-between" pt={2}>
 						<Typography variant="body2" color="textSecondary">
 							<span title={siteId}>{activeSite.name}</span> / <span title={contentType.id}>{contentType.name}</span>
@@ -751,18 +866,18 @@ function FormOrchestrator(props: FormsEngineProps) {
 						</Box>
 					</Box>
 					{isRepeatMode ? (
-						<RepeatModeHeader repeat={repeat} />
+						<RepeatModeHeader repeat={repeat} collapse={collapseHeader} />
 					) : isCreateMode ? (
-						<CreateModeHeader path={create?.path} />
+						<CreateModeHeader path={create?.path} collapse={collapseHeader} />
 					) : (
-						<EditModeHeader isEmbedded={isEmbedded} />
+						<EditModeHeader isEmbedded={isEmbedded} collapse={collapseHeader} />
 					)}
-				</>
+				</Box>
 			}
 			mainContentGrid={
 				<>
 					<Grid size={useCollapsedToC ? 'auto' : 'grow'}>
-						<StickyBox data-area-id="stickySidebar">
+						<StickyBox data-area-id="stickySidebar" sx={{ height: 'auto' }}>
 							{useCollapsedToC ? (
 								<IconButton size="small" onClick={handleOpenDrawerSidebar}>
 									<MenuRounded />
@@ -834,7 +949,7 @@ function FormOrchestrator(props: FormsEngineProps) {
 						<FormBackToTop containerRef={containerRef} />
 					</Grid>
 					<Grid size="grow">
-						<StickyBox className="space-y">
+						<StickyBox className="space-y" sx={{ height: 'auto' }}>
 							{readonly ? (
 								<>
 									<Alert severity="info" variant="outlined" icon={<EditOffOutlined />}>
@@ -999,6 +1114,7 @@ export default FormGuard;
 //    - Should test controls in a root form and in a nested form
 //  - Use the "cdata config" to apply cdata
 //  - Where do we put the "config" to determine whether to use new or old form engine?
+//  - Form controller loading and execution
 //  - FOR LATER...
 //    - Allow overriding/extending validators, retrievers, [and maybe] controlMap through plugins
 //    - Inherited non overridable if not in the model

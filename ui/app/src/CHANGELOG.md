@@ -55,6 +55,12 @@
   * Added dialogs: `CancelPackageDialog`, `BulkCancelPackageDialog`, `PublishPackageReviewDialog`, `PublishingPackageResubmitDialog`, `ViewPackagesDialog`.
   * [RenameAssetDialog] Removed `path` and `value` properties. Replaced with `item` property.
   * [ItemDisplay] Updated `item` prop to be of type `LightItem | ContentItem`.
+  * `PathNavigator/PathNavigatorTree`: Updated `label` prop to be of type `TranslationOrText`.
+  * `PathNavigatorTreeUI/PathNavigatorUI/PathNavigatorTreeHeader`: Updated `title` prop to be of type `string | ReactNode`.
+  * Removed `LegacyComponentsPanel` component.
+  * [EditGroupDialogUI] Updated `onFetchMoreUsers` prop return type to `Promise`.
+  * [PackageItemsList] Updated `loadNextPage` prop return type to `Promise`.
+  * [TransferListColumn] Updated `onFetchMore` prop return type to `Promise`.
 * [hooks]
   * Removed `useLogicResource` hook.
   * Removed `useSelectorResource` hook.
@@ -71,6 +77,9 @@
   * @mui/x-data-grid
   * @mui/x-date-pickers
   * @mui/x-tree-view
+  * Uppy
+  * GraphiQL
+  * react-window
 * Moved getPersonFullName to utils/object
 * FE2 TODO: image=>image-picker, text=>input, etc services/contentType typeMap removed
 * Removed WidgetDialogContextType, WidgetDialogContext, useWidgetDialogContext. Use `useEnhancedDialogContext` instead.
@@ -98,6 +107,7 @@
   * Updated `dependencies/fetchDependencies` `items` parameter to be of type `string[]`, renamed variable to `paths`
   * Updated `publishing/fetchPackage` `packageId` parameter to be of type `number`, and added the parameter `data`.
   * Updated `publishing/fetchPackages` `filters` parameter to be required, and removed the filters object props `environment` and `path`. Added filters object props `target`, `approvalStates`, `submitter`, `reviewer`, `isScheduled` and `sort`.
+  * Removed `sites/fetchLegacySite`. Replaced by `sites/fetchSite`.
 * `PublishingItem` interface changes:
   * `approver` is now `reviewer`, of type Person.
   * `comment` is removed, and now there's `reviewerComment` and `submitterComment`.
@@ -147,12 +157,15 @@
   * `PublishFormData`: Added `title` property.
   * `PublishingTarget`: updated `name` property to be of type `'live' | 'staging'`.
   * `PublishingParams`: Removed `optionalDependencies` and `sendEmailNotifications` properties. Added `paths`, `commitIds`, `requestApproval`, `publishAll` and `title` properties.
+* [models/Site]
+  * Removed `LegacySite` model. Use `BackendSite` model instead.
 * [common-api.js]
   * Removed `CStudioAuthoring.Operations.uploadCMISAsset` and `CStudioAuthoring.Operations.openCMISUploadDialog`.
 * Removed LegacyVersionDialog and the entire associated `/studio/diff` route
 * [ItemDisplay/utils]
   * Updated `getItemPublishingTargetText` to return a string. It now receives `formatMessage` as a parameter.
   * Updated `getItemStateText` to return a string. It now receives `formatMessage` as a parameter.
+* Removed `react-swipeable-views` packages and replaced it with a new forwardRef `PluginMediaCarousel` component.
 
 ## 4.2.0
 

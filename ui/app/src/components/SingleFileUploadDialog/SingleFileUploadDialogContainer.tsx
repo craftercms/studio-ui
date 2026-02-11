@@ -21,7 +21,7 @@ import SingleFileUploadDialogUI from './SingleFileUploadDialogUI';
 import { useEnhancedDialogContext } from '../EnhancedDialog';
 
 export function SingleFileUploadDialogContainer(props: SingleFileUploadDialogContainerProps) {
-	const { onUploadComplete, onUploadStart, onUploadError, ...rest } = props;
+	const { onUploadComplete, onUploadStart, onUploadError, onFileAdded, ...rest } = props;
 	const { updateSubmittingOrHasPendingChanges } = useEnhancedDialogContext();
 	const onStart = useCallback(() => {
 		onUploadStart?.();
@@ -51,6 +51,7 @@ export function SingleFileUploadDialogContainer(props: SingleFileUploadDialogCon
 				onUploadComplete={onComplete}
 				onUploadStart={onStart}
 				onUploadError={onError}
+				onFileAdded={onFileAdded}
 				{...rest}
 			/>
 		</DialogBody>

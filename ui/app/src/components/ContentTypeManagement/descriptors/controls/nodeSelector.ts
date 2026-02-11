@@ -37,21 +37,21 @@ export const nodeSelectorDescriptor: DescriptorContentType = {
 	fields: {
 		minSize: {
 			id: 'minSize',
-			type: 'numeric-input',
+			type: 'int',
 			name: defineMessage({ defaultMessage: 'Minimum Size' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		maxSize: {
 			id: 'maxSize',
-			type: 'numeric-input',
+			type: 'int',
 			name: defineMessage({ defaultMessage: 'Maximum Size' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		itemManager: {
 			id: 'itemManager',
-			type: 'datasource-selector',
+			type: 'datasource:item',
 			name: defineMessage({ defaultMessage: 'Item Manager' }),
 			defaultValue: undefined,
 			validations: {
@@ -60,41 +60,43 @@ export const nodeSelectorDescriptor: DescriptorContentType = {
 		},
 		readonly: {
 			id: 'readonly',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Read Only' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		disableFlattening: {
 			id: 'disableFlattening',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Disable Flattening for Search' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		useSingleValueFilename: {
 			id: 'useSingleValueFilename',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Use single value filename (backward compat)' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		useMVS: {
 			id: 'useMVS',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Use _mvs postfix (backward compat)' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		allowDuplicates: {
 			id: 'allowDuplicates',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Allow Duplicates' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}
 	},
-	supportedPostFixes: ['_o']
+	metadata: {
+		suffixes: ['_o']
+	}
 };
 
 export default nodeSelectorDescriptor;

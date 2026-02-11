@@ -19,7 +19,7 @@ import { createVirtualSection, DescriptorContentType } from '../../utils';
 import { defineMessage } from 'react-intl';
 
 export const videoWebDavRepoDataSourceDescriptor: DescriptorContentType = {
-	id: 'video-webdav-repo',
+	id: 'video-WebDAV-repo',
 	name: defineMessage({ defaultMessage: 'Video From WebDav Repository' }),
 	description: '',
 	type: 'video',
@@ -33,14 +33,14 @@ export const videoWebDavRepoDataSourceDescriptor: DescriptorContentType = {
 	fields: {
 		repoPath: {
 			id: 'repoPath',
-			type: 'input',
+			type: 'string',
 			name: defineMessage({ defaultMessage: 'Repository Path' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		profileId: {
 			id: 'profileId',
-			type: 'input',
+			type: 'string',
 			name: defineMessage({ defaultMessage: 'Profile ID' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject

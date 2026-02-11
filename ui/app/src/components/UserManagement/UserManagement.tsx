@@ -43,21 +43,23 @@ export function UserManagement(props: UserManagementProps) {
 	const [offset, setOffset] = useState(0);
 	const [limit, setLimit] = useState(10);
 	const [fetching, setFetching] = useState(false);
-	const [users, setUsers] = useState<PagedArray<User>>(null);
-	const [error, setError] = useState<ApiResponse>();
-	const [viewUser, setViewUser] = useState(null);
+	const [users, setUsers] = useState<PagedArray<User> | null>(null);
+	const [error, setError] = useState<ApiResponse | null>(null);
+	const [viewUser, setViewUser] = useState<User | null>(null);
+	const [showSearchBox, setShowSearchBox] = useState(false);
 	const [keyword, setKeyword] = useState('');
 
 	const fetchUsers = useCallback(
 		(keyword = '', _offset = offset) => {
 			setFetching(true);
-			fetchAll({ limit, offset: _offset, keyword }).subscribe({
+			return fetchAll({ limit, offset: _offset, keyword }).subscribe({
 				next(users) {
 					setUsers(users);
+					setError(null);
 					setFetching(false);
 				},
 				error({ response }) {
-					setError(response);
+					setError(response?.response);
 					setFetching(false);
 				}
 			});
@@ -66,7 +68,8 @@ export function UserManagement(props: UserManagementProps) {
 	);
 
 	useEffect(() => {
-		fetchUsers();
+		const sub = fetchUsers();
+		return () => sub?.unsubscribe();
 	}, [fetchUsers]);
 
 	const createUserDialogState = useEnhancedDialogState();
@@ -101,6 +104,7 @@ export function UserManagement(props: UserManagementProps) {
 	};
 
 	const onSearchButtonClick = (searchInput: HTMLInputElement) => {
+		setShowSearchBox(!showSearchBox);
 		searchInput.focus();
 	};
 
@@ -176,7 +180,7 @@ export function UserManagement(props: UserManagementProps) {
 				isMinimized={createUserDialogState.isMinimized}
 				hasPendingChanges={createUserDialogState.hasPendingChanges}
 				onWithPendingChangesCloseRequest={createUserDialogPendingChangesCloseRequest}
-				onSubmittingAndOrPendingChange={createUserDialogState.onSubmittingAndOrPendingChange}
+				updateSubmittingOrHasPendingChanges={createUserDialogState.onSubmittingAndOrPendingChange}
 			/>
 			<EditUserDialog
 				open={editUserDialogState.open}
@@ -189,7 +193,7 @@ export function UserManagement(props: UserManagementProps) {
 				hasPendingChanges={editUserDialogState.hasPendingChanges}
 				passwordRequirementsMinComplexity={passwordRequirementsMinComplexity}
 				onWithPendingChangesCloseRequest={editUserDialogPendingChangesCloseRequest}
-				onSubmittingAndOrPendingChange={editUserDialogState.onSubmittingAndOrPendingChange}
+				updateSubmittingOrHasPendingChanges={editUserDialogState.onSubmittingAndOrPendingChange}
 			/>
 		</Paper>
 	);
