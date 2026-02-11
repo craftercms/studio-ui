@@ -139,7 +139,8 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 	const disabled = isSubmitting;
 	const [includeChildren, setIncludeChildren] = useState(false);
 	const arePublishingItemsFolders = useMemo(() => {
-		return [...mainItems, ...childrenItems].every((item) => item.systemType === 'folder');
+		const allItems = [...mainItems, ...childrenItems];
+		return allItems.length > 0 && allItems.every((item) => item.systemType === 'folder');
 	}, [mainItems, childrenItems]);
 
 	// Submit button should be disabled when:
