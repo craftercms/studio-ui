@@ -46,6 +46,10 @@ import { useAtomValue } from 'jotai';
 import { translateIfMessageDescriptor } from '../../ContentTypeManagement/utils';
 import useLoadableAtom from '../lib/useLoadableAtom';
 import { XmlKeys } from '../lib/formConsts';
+import { FieldInformationDialog } from './FieldInformationDialog';
+import useEnhancedDialogState from '../../../hooks/useEnhancedDialogState';
+import EditOutlined from '@mui/icons-material/EditOutlined';
+import InfoOutlineIcon from '@mui/icons-material/InfoOutline';
 
 function createLengthBlock({ length, max, min }: { length: number; max: number; min: number }) {
 	const pieces = [];
@@ -127,6 +131,7 @@ export const FormsEngineField = forwardRef<HTMLDivElement, FormsEngineFieldProps
 	const isValid = props.isValid ?? (validityData.state === 'hasData' ? validityData?.data.isValid : true);
 	const handleCloseMenu = () => setOpenMenu(false);
 	const handleRollback = () => formApi.rollbackField(field.id);
+	const fieldInformationDialogState = useEnhancedDialogState();
 	useEffect(() => {
 		// Offer controls the option to focus on the label when the field is rendered.
 		if (autoFocus) {
@@ -134,109 +139,96 @@ export const FormsEngineField = forwardRef<HTMLDivElement, FormsEngineFieldProps
 		}
 	}, [autoFocus]);
 	return (
-		<FormControl
-			ref={ref}
-			fullWidth
-			error={!isValid}
-			variant="standard"
-			data-field-id={fieldId}
-			required={isRequired}
-			sx={{ '.MuiFormLabel-asterisk': { display: 'none' }, ...props.sx }}
-		>
-			<Box display="flex" justifyContent="space-between" alignItems="center">
-				<Box display="flex" alignItems="center">
-					<FormLabel
-						htmlFor={htmlFor}
-						id={labelId}
-						component="label"
-						ref={labelRef}
-						tabIndex={autoFocus ? 0 : undefined}
-					>
-						{field.name}
-					</FormLabel>
-					{isRequired && <FieldRequiredStateIndicator isValid={isValid} />}
-					{hasHelpText && (
-						<IconButton size="small" onClick={() => setShowHelp(!showHelp)}>
-							<HelpOutlineRounded fontSize="small" />
-						</IconButton>
-					)}
-				</Box>
-				<Box display="flex" alignItems="center">
-					{lengthBlock}
-					{action}
-					{menu && (
-						<>
-							{/* TODO: Should the menu button be tabbable? Perhaps it could be a preference whether it should be tabbable or not. */}
-							<IconButton size="small" tabIndex={-1} ref={menuButtonRef} onClick={() => setOpenMenu(true)}>
-								<MoreVertRounded fontSize="small" />
+		<>
+			<FormControl
+				ref={ref}
+				fullWidth
+				error={!isValid}
+				variant="standard"
+				data-field-id={fieldId}
+				required={isRequired}
+				sx={{ '.MuiFormLabel-asterisk': { display: 'none' }, ...props.sx }}
+			>
+				<Box display="flex" justifyContent="space-between" alignItems="center">
+					<Box display="flex" alignItems="center">
+						<FormLabel
+							htmlFor={htmlFor}
+							id={labelId}
+							component="label"
+							ref={labelRef}
+							tabIndex={autoFocus ? 0 : undefined}
+						>
+							{field.name}
+						</FormLabel>
+						{isRequired && <FieldRequiredStateIndicator isValid={isValid} />}
+						{hasHelpText && (
+							<IconButton size="small" onClick={() => setShowHelp(!showHelp)}>
+								<HelpOutlineRounded fontSize="small" />
 							</IconButton>
-							<Menu
-								open={openMenu}
-								anchorEl={menuButtonRef.current}
-								onClose={handleCloseMenu}
-								onClick={handleCloseMenu}
-							>
-								<MenuItem>
-									<ListItemText>
-										<FormattedMessage defaultMessage="Field Information" />
-									</ListItemText>
-								</MenuItem>
-								{hasChanges && [
-									<Divider key="rollback-divider" />,
-									<MenuItem key="rollback-action" onClick={handleRollback}>
+						)}
+					</Box>
+					<Box display="flex" alignItems="center">
+						{lengthBlock}
+						{action}
+						{menu && (
+							<>
+								{/* TODO: Should the menu button be tabbable? Perhaps it could be a preference whether it should be tabbable or not. */}
+								<IconButton size="small" tabIndex={-1} ref={menuButtonRef} onClick={() => setOpenMenu(true)}>
+									<MoreVertRounded fontSize="small" />
+								</IconButton>
+								<Menu
+									open={openMenu}
+									anchorEl={menuButtonRef.current}
+									onClose={handleCloseMenu}
+									onClick={handleCloseMenu}
+								>
+									<MenuItem onClick={() => fieldInformationDialogState.onOpen()}>
 										<ListItemText>
-											<FormattedMessage defaultMessage="Rollback changes" />
+											<FormattedMessage defaultMessage="Field Information" />
 										</ListItemText>
 									</MenuItem>
-								]}
-								{menuOptions && <Divider />}
-								{menuOptions?.map((option, index) =>
-									option === 'divider' ? (
-										<Divider key={`divider_${index}`} />
-									) : (
-										<MenuItem key={option.id} onClick={(e) => onMenuOptionClick?.(e, option.id, handleCloseMenu)}>
-											<ListItemText children={option.text} />
+									{hasChanges && [
+										<Divider key="rollback-divider" />,
+										<MenuItem key="rollback-action" onClick={handleRollback}>
+											<ListItemText>
+												<FormattedMessage defaultMessage="Rollback changes" />
+											</ListItemText>
 										</MenuItem>
-									)
-								)}
-							</Menu>
-						</>
-					)}
+									]}
+									{menuOptions && <Divider />}
+									{menuOptions?.map((option, index) =>
+										option === 'divider' ? (
+											<Divider key={`divider_${index}`} />
+										) : (
+											<MenuItem key={option.id} onClick={(e) => onMenuOptionClick?.(e, option.id, handleCloseMenu)}>
+												<ListItemText children={option.text} />
+											</MenuItem>
+										)
+									)}
+								</Menu>
+							</>
+						)}
+					</Box>
 				</Box>
-			</Box>
-			{hasHelpText && (
-				<Collapse in={showHelp}>
-					<Alert severity="info" variant="outlined" sx={{ border: 'none' }}>
-						<Typography
-							variant="body2"
-							component="section"
-							color="textSecondary"
-							dangerouslySetInnerHTML={{ __html: field.helpText }}
-							sx={{ 'p:first-of-type:last-of-type': { margin: 0 } }}
-						/>
-					</Alert>
-				</Collapse>
-			)}
-			{sourceMap?.[fieldId] && fieldId !== XmlKeys['fileName'] && (
-				<Alert
-					variant="standard"
-					severity="info"
-					action={
-						<>
-							<Button
-								color="inherit"
-								size="small"
-								sx={{ px: 0.5, minWidth: 0 }}
-								onClick={() => {
-									globalApi.pushForm({
-										readonly: true,
-										update: { path: sourceMap[fieldId] }
-									});
-								}}
-							>
-								View
-							</Button>
-							{/* TODO: Create or link to content inheritance article */}
+				{hasHelpText && (
+					<Collapse in={showHelp}>
+						<Alert severity="info" variant="outlined" sx={{ border: 'none' }}>
+							<Typography
+								variant="body2"
+								component="section"
+								color="textSecondary"
+								dangerouslySetInnerHTML={{ __html: field.helpText }}
+								sx={{ 'p:first-of-type:last-of-type': { margin: 0 } }}
+							/>
+						</Alert>
+					</Collapse>
+				)}
+				{sourceMap?.[fieldId] && fieldId !== XmlKeys['fileName'] && (
+					<Alert
+						variant="standard"
+						severity="info"
+						// TODO: Create or link to content inheritance article
+						icon={
 							<IconButton
 								href="/"
 								size="small"
@@ -244,42 +236,65 @@ export const FormsEngineField = forwardRef<HTMLDivElement, FormsEngineFieldProps
 								target="_blank"
 								component="a"
 								title={formatMessage({ defaultMessage: 'Learn more about content inheritance' })}
+								sx={{ p: 0 }}
 							>
-								<HelpOutlineRounded fontSize="small" />
+								<InfoOutlineIcon />
 							</IconButton>
-						</>
-					}
-					sx={{
-						px: 1,
-						mb: 0.625,
-						borderRadius: 5,
-						alignItems: 'center',
-						[`.${alertClasses.message}`]: { display: 'flex', alignItems: 'center' },
-						[`.${alertClasses.action}`]: { mr: 0 },
-						[`.${alertClasses.icon}`]: { mr: 1 }
-					}}
-				>
-					{isEmptyValue(field, value) ? (
-						<FormattedMessage
-							defaultMessage="Value is inherited from {label}"
-							values={{ label: itemsByPath[sourceMap[fieldId]]?.label ?? sourceMap[fieldId] }}
-						/>
-					) : (
-						<FormattedMessage
-							defaultMessage="Inherited value from {label} is overriden"
-							values={{ label: itemsByPath[sourceMap[fieldId]]?.label ?? sourceMap[fieldId] }}
-						/>
-					)}
-				</Alert>
-			)}
-			{children}
-			{hasDescription && <FormHelperText>{field.description}</FormHelperText>}
-			{!isValid &&
-				validityData.state === 'hasData' &&
-				validityData.data?.messages?.map((messageData, key) => (
-					<FormHelperText key={key}>{translateValidityMessage(messageData, formatMessage)}</FormHelperText>
-				))}
-		</FormControl>
+						}
+						action={
+							<>
+								<IconButton
+									color="inherit"
+									size="small"
+									sx={{ px: 0.5, minWidth: 0 }}
+									onClick={() => {
+										globalApi.pushForm({
+											update: { path: sourceMap[fieldId] }
+										});
+									}}
+									title={formatMessage({ defaultMessage: 'Edit' })}
+								>
+									<EditOutlined fontSize="small" />
+								</IconButton>
+							</>
+						}
+						sx={{
+							px: 1,
+							mb: 0.625,
+							borderRadius: 5,
+							alignItems: 'center',
+							[`.${alertClasses.message}`]: { display: 'flex', alignItems: 'center' },
+							[`.${alertClasses.action}`]: { mr: 0 },
+							[`.${alertClasses.icon}`]: { mr: 1 }
+						}}
+					>
+						{isEmptyValue(field, value) ? (
+							<FormattedMessage
+								defaultMessage="Value is inherited from {label}"
+								values={{ label: itemsByPath[sourceMap[fieldId]]?.label ?? sourceMap[fieldId] }}
+							/>
+						) : (
+							<FormattedMessage
+								defaultMessage="Inherited value from {label} is overriden"
+								values={{ label: itemsByPath[sourceMap[fieldId]]?.label ?? sourceMap[fieldId] }}
+							/>
+						)}
+					</Alert>
+				)}
+				{children}
+				{hasDescription && <FormHelperText>{field.description}</FormHelperText>}
+				{!isValid &&
+					validityData.state === 'hasData' &&
+					validityData.data?.messages?.map((messageData, key) => (
+						<FormHelperText key={key}>{translateValidityMessage(messageData, formatMessage)}</FormHelperText>
+					))}
+			</FormControl>
+			<FieldInformationDialog
+				open={fieldInformationDialogState.open}
+				onClose={fieldInformationDialogState.onClose}
+				field={field}
+			/>
+		</>
 	);
 });
 
