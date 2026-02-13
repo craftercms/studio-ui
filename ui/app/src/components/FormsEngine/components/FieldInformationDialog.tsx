@@ -104,7 +104,9 @@ function Body(props) {
 							return (
 								<Grid container spacing={2} key={fieldName} sx={{ mt: 0.5 }}>
 									<Grid size={{ xs: 4 }}>
-										<Typography color="text.secondary">{getPossibleTranslation(fieldName, formatMessage)}</Typography>
+										<Typography color="text.secondary">
+											{getPossibleTranslation(descriptor.fields?.[fieldName]?.name ?? fieldName, formatMessage)}
+										</Typography>
 									</Grid>
 									<Grid size={{ xs: 8 }}>
 										<Typography>{nnou(value) && value !== '' ? value : '-'}</Typography>
