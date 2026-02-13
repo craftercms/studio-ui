@@ -48,7 +48,7 @@ import { XmlKeys } from '../lib/formConsts';
 import { FieldInformationDialog } from './FieldInformationDialog';
 import useEnhancedDialogState from '../../../hooks/useEnhancedDialogState';
 import EditOutlined from '@mui/icons-material/EditOutlined';
-import InfoOutlineIcon from '@mui/icons-material/InfoOutline';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 
 function createLengthBlock({ length, max, min }: { length: number; max: number; min: number }) {
 	const pieces = [];
@@ -237,7 +237,7 @@ export const FormsEngineField = forwardRef<HTMLDivElement, FormsEngineFieldProps
 								title={formatMessage({ defaultMessage: 'Learn more about content inheritance' })}
 								sx={{ p: 0 }}
 							>
-								<InfoOutlineIcon />
+								<InfoOutlinedIcon />
 							</IconButton>
 						}
 						action={
