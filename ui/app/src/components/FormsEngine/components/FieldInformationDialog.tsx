@@ -85,8 +85,8 @@ function Body(props) {
 				</CardContent>
 			</Card>
 
-			{descriptor.sections?.map((section) => (
-				<Card>
+			{descriptor.sections?.map((section, index) => (
+				<Card key={index}>
 					<CardContent>
 						<Typography variant="subtitle1" fontWeight="bold">
 							{getPossibleTranslation(section.title, formatMessage)}
