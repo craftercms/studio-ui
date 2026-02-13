@@ -27,6 +27,7 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import { Chip } from '@mui/material';
 import inputDescriptor from '../../ContentTypeManagement/descriptors/controls/input';
+import { nnou } from '../../../utils/object';
 
 export interface FieldInformationDialogProps extends EnhancedDialogProps {
 	field: ContentTypeField;
@@ -76,7 +77,7 @@ function Body(props) {
 									{renderHtml ? (
 										<Typography dangerouslySetInnerHTML={{ __html: value ?? '-' }} />
 									) : (
-										<Typography>{value ? value : '-'}</Typography>
+										<Typography>{nnou(value) && value !== '' ? value : '-'}</Typography>
 									)}
 								</Grid>
 							</Grid>
@@ -106,7 +107,7 @@ function Body(props) {
 										<Typography color="text.secondary">{getPossibleTranslation(fieldName, formatMessage)}</Typography>
 									</Grid>
 									<Grid size={{ xs: 8 }}>
-										<Typography>{value ? value : '-'}</Typography>
+										<Typography>{nnou(value) && value !== '' ? value : '-'}</Typography>
 									</Grid>
 								</Grid>
 							);
