@@ -27,7 +27,6 @@ import FormHelperText from '@mui/material/FormHelperText';
 import React, { forwardRef, PropsWithChildren, ReactNode, SyntheticEvent, useEffect, useRef, useState } from 'react';
 import { type FieldValidityMessage, isEmptyValue, isFieldRequired } from '../lib/validators';
 import FormLabel from '@mui/material/FormLabel';
-import Button from '@mui/material/Button';
 import useItemsByPath from '../../../hooks/useItemsByPath';
 import { FormattedMessage, type IntlFormatters, useIntl } from 'react-intl';
 import { HelpOutlineRounded } from '@mui/icons-material';
