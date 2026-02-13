@@ -275,7 +275,7 @@ export const FormsEngineField = forwardRef<HTMLDivElement, FormsEngineFieldProps
 							/>
 						) : (
 							<FormattedMessage
-								defaultMessage="Inherited value from {label} is overriden"
+								defaultMessage="Inherited value from {label} is overridden"
 								values={{ label: itemsByPath[sourceMap[fieldId]]?.label ?? sourceMap[fieldId] }}
 							/>
 						)}
