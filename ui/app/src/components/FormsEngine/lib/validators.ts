@@ -248,14 +248,14 @@ export async function repeatGroupValidator(
 	const maxOccurs: number = getPropertyValue(field.properties, 'maxOccurs') as number;
 
 	// Validate repeat group restrictions (min/max occurrences)
-	if (minOccurs && currentValue.length < minOccurs) {
+	if (nnou(minOccurs) && currentValue.length < minOccurs) {
 		messages?.push([
 			defineMessage({ defaultMessage: 'At least {minOccurs} occurrence(s) are required.' }),
 			{ minOccurs }
 		]);
 		return false;
 	}
-	if (maxOccurs && currentValue.length > maxOccurs) {
+	if (nnou(maxOccurs) && currentValue.length > maxOccurs) {
 		messages?.push([
 			defineMessage({ defaultMessage: 'No more than {maxOccurs} occurrence(s) are allowed.' }),
 			{ maxOccurs }
