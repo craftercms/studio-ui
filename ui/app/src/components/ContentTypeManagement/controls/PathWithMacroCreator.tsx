@@ -156,7 +156,10 @@ export function PathWithMacroCreator(props: PathWithMacroCreatorProps) {
 					endAdornment={
 						<>
 							<Tooltip title={<FormattedMessage defaultMessage="Select path" />}>
-								<IconButton aria-label="Maximize" onClick={() => onOpenPathSelectionDialog()}>
+								<IconButton
+									aria-label={formatMessage({ defaultMessage: 'Select path' })}
+									onClick={() => onOpenPathSelectionDialog()}
+								>
 									<SearchRoundedIcon />
 								</IconButton>
 							</Tooltip>
