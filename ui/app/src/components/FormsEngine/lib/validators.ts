@@ -244,7 +244,6 @@ export async function repeatGroupValidator(
 	messages: FieldValidityState['messages'],
 	meta: ValidatorMetaData
 ): Promise<boolean> {
-	const fields = field.fields;
 	const minOccurs: number = getPropertyValue(field.properties, 'minOccurs') as number;
 	const maxOccurs: number = getPropertyValue(field.properties, 'maxOccurs') as number;
 
@@ -265,6 +264,9 @@ export async function repeatGroupValidator(
 	}
 
 	if (currentValue.length === 0) return true;
+
+	const fields = field.fields;
+	if (!fields) return true;
 
 	const validationPromises: Promise<FieldValidityState>[] = [];
 
