@@ -21,9 +21,9 @@ import * as contentController from '../contentController';
 import { ContentTypeFieldValidations } from '@craftercms/studio-ui/models/ContentType';
 import { message$, post } from '../utils/communicator';
 import { GuestStandardAction } from '../store/models/GuestStandardAction';
-import { Observable, Subject } from 'rxjs';
+import { NEVER, Observable, Subject } from 'rxjs';
 import { filter, startWith, take } from 'rxjs/operators';
-import { reversePluckProps } from '@craftercms/studio-ui/utils/object';
+import { nou, reversePluckProps } from '@craftercms/studio-ui/utils/object';
 import { showEditDialog, snackGuestMessage } from '@craftercms/studio-ui/state/actions/preview';
 import { RteSetup } from '../models/Rte';
 import { editComponentInline, exitComponentInlineEdit } from '../store/actions';
@@ -114,6 +114,19 @@ export function initTinyMCE(
 	record.element.classList.remove(emptyFieldClass);
 
 	const maxLength = validations?.maxLength ? parseInt(validations.maxLength.value) : null;
+
+	if (nou(document.doctype)) {
+		console.error('Unable to initialize Rich Text Editor. Please contact your administrator for assistance.');
+		post(
+			snackGuestMessage({
+				id: 'noDocTypeError',
+				level: 'required'
+			})
+		);
+		post(unlockItem({ path }));
+		return NEVER;
+	}
+
 	window.tinymce.init({
 		license_key: 'gpl',
 		target: rteEl,
