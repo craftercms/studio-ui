@@ -204,7 +204,7 @@ export function ImagePicker(props: ImagePickerProps) {
 					dispatch,
 					path: processPath(choice.path),
 					multiSelect: false,
-					preselectedPaths: [value],
+					preselectedPaths: value ? [value] : [],
 					onSuccess(imageData: MediaItem) {
 						// Check if the image meets restrictions
 						validateImageRestrictions(imageData.path, restrictions).then((meetsRestrictions) => {
@@ -231,7 +231,7 @@ export function ImagePicker(props: ImagePickerProps) {
 				showSearchDialog({
 					dispatch,
 					path: ensureSingleSlash(`${processPath(choice.path)}/.+`),
-					preselectedPaths: [value],
+					preselectedPaths: value ? [value] : [],
 					onAcceptSelection(images) {
 						validateImageRestrictions(images[0], restrictions).then((meetsRestrictions) => {
 							if (!meetsRestrictions) {
