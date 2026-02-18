@@ -51,7 +51,9 @@ export function useConsolidatedItemPickerData(dataSources: DataSource[]): Consol
 						if (allowedContentTypesData[contentTypeId].shared) {
 							allowedCreateTypes[contentTypeId] = allowedCreateTypes[contentTypeId] ?? {};
 							allowedCreateTypes[contentTypeId].shared = true;
-							const brp = ds.properties.baseRepoPath?.trim();
+							// Some already saved content has 'baseRepositoryPath' instead of 'baseRepoPath', so we need to check both.
+							// Current descriptors and old FE1 controls have 'baseRepoPath'.
+							const brp = ds.properties.baseRepositoryPath?.trim() ?? ds.properties.baseRepoPath?.trim();
 							if (brp) {
 								allowedCreateTypes[contentTypeId].createPaths = allowedCreateTypes[contentTypeId].createPaths ?? [];
 								allowedCreateTypes[contentTypeId].createPaths.push(brp);
