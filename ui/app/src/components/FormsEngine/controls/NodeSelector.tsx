@@ -522,17 +522,15 @@ function NodeSelector(props: NodeSelectorProps) {
 			case 'create': {
 				const pickerChoice = choice as CreateDataSourcePickerData;
 				const isEmbedded = pickerChoice.strategy === 'embedded';
-				const destinationPath = processPath(pickerChoice.path);
 				// Push to form stack a new form in create mode with the selected content type
 				api.pushForm({
 					create: {
 						contentTypeId: pickerChoice.contentTypeId,
-						path: pickerChoice.strategy === 'embedded' ? contextItem.path : processPath(pickerChoice.path)
+						path: pickerChoice.strategy === 'embedded' ? contextItem.path : processPath(pickerChoice.path),
+						embedded: pickerChoice.strategy === 'embedded'
 					},
 					onSave(result) {
-						const key = isEmbedded
-							? ((result.values[XmlKeys.fileName] || result.values.objectId) as string)
-							: ensureSingleSlash(`${destinationPath}/${result.values[XmlKeys.fileName]}`);
+						const key = isEmbedded ? (result.values.objectId as string) : result.path;
 						const newItem: NodeSelectorItem = {
 							key,
 							value: result.values[XmlKeys.internalName] as string,
