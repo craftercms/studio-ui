@@ -130,7 +130,7 @@
     * Renamed `fetchSandboxItems` to `fetchContentItems`. Action string changed from `FETCH_SANDBOX_ITEMS` to `FETCH_CONTENT_ITEMS`.
     * Renamed `fetchSandboxItemsComplete` to `fetchContentItemsComplete`. Action string changed from `FETCH_SANDBOX_ITEMS_COMPLETE` to `FETCH_CONTENT_ITEMS_COMPLETE`.
     * Removed `fetchSandboxItem` action. Replaced by `fetchContentItem`.
-    * Removed `fetchContentItemComplete` action. Replaced by `fetchContentItemComplete`.
+    * Removed `fetchDetailedItemComplete` action. Replaced by `fetchContentItemComplete`.
     * Removed `fetchDetailedItems` action. Replaced by `fetchContentItems`.
     * Removed `fetchDetailedItemsComplete` action. Replaced by `fetchContentItemsComplete`.
     * Removed `completeDetailedItem` action.
