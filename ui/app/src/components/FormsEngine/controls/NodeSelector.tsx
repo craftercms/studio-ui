@@ -482,6 +482,7 @@ function NodeSelector(props: NodeSelectorProps) {
 					dispatch,
 					path: processPath(pickerChoice.path),
 					contentTypes: pickerChoice.allowedContentTypes,
+					preselectedPaths: value.map((item) => item.key).filter(Boolean),
 					onSuccess(items: MediaItem | MediaItem[]) {
 						const nextValue = value.concat();
 						asArray(items).forEach((item) => {
@@ -504,6 +505,7 @@ function NodeSelector(props: NodeSelectorProps) {
 					dispatch,
 					path: ensureSingleSlash(`${processPath(pickerChoice.path)}/.+`),
 					contentTypes: pickerChoice.allowedContentTypes,
+					preselectedPaths: value.map((item) => item.key).filter(Boolean),
 					onAcceptSelection(paths, items) {
 						const nextValue = value.concat();
 						items?.forEach((item) => {
