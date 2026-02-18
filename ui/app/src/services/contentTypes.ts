@@ -172,11 +172,7 @@ function getFieldValidations(
 					Object.entries(dropTargetsLookup[itemManagerId]?.properties ?? {}).forEach(([name, value]) => {
 						const mappedPropName = systemValidationsKeysMap[name];
 						if (mappedPropName === 'allowedContentTypes') {
-							parseComponentsDataSourceContentTypesProperty(
-								dropTargetsLookup[itemManagerId] as ComponentsDatasource,
-								value,
-								validations
-							);
+							parseComponentsDataSourceContentTypesProperty(dropTargetsLookup[itemManagerId], value, validations);
 						} else if (mappedPropName) {
 							validations[mappedPropName] = {
 								id: mappedPropName,
