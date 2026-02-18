@@ -539,6 +539,7 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
 					/>
 				}
 				open={openSetStateDialog}
+				hasStaging={hasStaging}
 				onClose={onSetItemStateDialogClose}
 				onConfirm={onSetItemStateDialogConfirm}
 			/>
