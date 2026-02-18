@@ -38,6 +38,20 @@ export function initTinyMCE(
 	validations: Partial<ContentTypeFieldValidations>,
 	rteSetup?: RteSetup
 ): Observable<GuestStandardAction> {
+	// Tinymce needs the document to be in standards mode to work, if it's not the case, we can't initialize it and we
+	// show an error message instead.
+	if (nou(document.doctype)) {
+		console.error('Unable to initialize Rich Text Editor. Please contact your administrator for assistance.');
+		post(
+			snackGuestMessage({
+				id: 'noDocTypeError',
+				level: 'required'
+			})
+		);
+		post(unlockItem({ path }));
+		return NEVER;
+	}
+
 	const dispatch$ = new Subject<GuestStandardAction>();
 	const { field, model } = iceRegistry.getReferentialEntries(record.iceIds[0]);
 	const type = field?.type;
@@ -114,18 +128,6 @@ export function initTinyMCE(
 	record.element.classList.remove(emptyFieldClass);
 
 	const maxLength = validations?.maxLength ? parseInt(validations.maxLength.value) : null;
-
-	if (nou(document.doctype)) {
-		console.error('Unable to initialize Rich Text Editor. Please contact your administrator for assistance.');
-		post(
-			snackGuestMessage({
-				id: 'noDocTypeError',
-				level: 'required'
-			})
-		);
-		post(unlockItem({ path }));
-		return NEVER;
-	}
 
 	window.tinymce.init({
 		license_key: 'gpl',
