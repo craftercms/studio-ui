@@ -114,6 +114,7 @@ export function initTinyMCE(
 	record.element.classList.remove(emptyFieldClass);
 
 	const maxLength = validations?.maxLength ? parseInt(validations.maxLength.value) : null;
+	const allowAddMedia = validations?.addMedia ? validations.addMedia.value : false;
 	window.tinymce.init({
 		license_key: 'gpl',
 		target: rteEl,
@@ -160,50 +161,52 @@ export function initTinyMCE(
 		media_live_embeds: true,
 		file_picker_types: 'image media',
 		craftercms_paste_cleanup: rteSetup?.tinymceOptions?.craftercms_paste_cleanup ?? true, // If doesn't exist or if true => true
-		file_picker_callback: function (cb, value, meta) {
-			// meta contains info about type (image, media, etc). Used to properly add DS to dialogs.
-			// meta.filetype === 'file | image | media'
-			const datasources = {};
-			Object.values(field.validations).forEach((validation) => {
-				if (
-					[
-						'allowImageUpload',
-						'allowImagesFromRepo',
-						'allowVideoUpload',
-						'allowVideosFromRepo',
-						'allowAudioUpload',
-						'allowAudioFromRepo',
-						'allowFilesFromRepo'
-					].includes(validation.id)
-				) {
-					datasources[validation.id] = validation;
+		file_picker_callback: allowAddMedia
+			? function (cb, value, meta) {
+					// meta contains info about type (image, media, etc). Used to properly add DS to dialogs.
+					// meta.filetype === 'file | image | media'
+					const datasources = {};
+					Object.values(field.validations).forEach((validation) => {
+						if (
+							[
+								'allowImageUpload',
+								'allowImagesFromRepo',
+								'allowVideoUpload',
+								'allowVideosFromRepo',
+								'allowAudioUpload',
+								'allowAudioFromRepo',
+								'allowFilesFromRepo'
+							].includes(validation.id)
+						) {
+							datasources[validation.id] = validation;
+						}
+					});
+					const browseBtn = document.querySelector('.tox-dialog .tox-browse-url');
+
+					post(
+						showRtePickerActions({
+							datasources,
+							model,
+							type: meta.filetype,
+							rect: browseBtn.getBoundingClientRect()
+						})
+					);
+
+					message$
+						.pipe(
+							filter((e) => e.type === rtePickerActionResult.type),
+							take(1)
+						)
+						.subscribe(({ payload }) => {
+							if (payload) {
+								// For selections of pages or components from the 'Insert link' dialog, use the preview URL (the actual page or component link)
+								// instead of the repoURL returned by the browse dialog.
+								const path = meta.filetype === 'file' ? getPreviewURLFromPath(payload.path) : payload.path;
+								cb(path, { alt: payload.name });
+							}
+						});
 				}
-			});
-			const browseBtn = document.querySelector('.tox-dialog .tox-browse-url');
-
-			post(
-				showRtePickerActions({
-					datasources,
-					model,
-					type: meta.filetype,
-					rect: browseBtn.getBoundingClientRect()
-				})
-			);
-
-			message$
-				.pipe(
-					filter((e) => e.type === rtePickerActionResult.type),
-					take(1)
-				)
-				.subscribe(({ payload }) => {
-					if (payload) {
-						// For selections of pages or components from the 'Insert link' dialog, use the preview URL (the actual page or component link)
-						// instead of the repoURL returned by the browse dialog.
-						const path = meta.filetype === 'file' ? getPreviewURLFromPath(payload.path) : payload.path;
-						cb(path, { alt: payload.name });
-					}
-				});
-		},
+			: null,
 		setup(editor: Editor) {
 			let changed = false;
 			const pluginManager = window.tinymce.util.Tools.resolve('tinymce.PluginManager');
