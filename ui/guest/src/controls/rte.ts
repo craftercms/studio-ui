@@ -161,6 +161,7 @@ export function initTinyMCE(
 		media_live_embeds: true,
 		file_picker_types: 'image media',
 		craftercms_paste_cleanup: rteSetup?.tinymceOptions?.craftercms_paste_cleanup ?? true, // If doesn't exist or if true => true
+		// If the allowAddMedia validation is set to false, then the callback is not set, so the add media/file options won't be shown in the editor.
 		file_picker_callback: allowAddMedia
 			? function (cb, value, meta) {
 					// meta contains info about type (image, media, etc). Used to properly add DS to dialogs.
