@@ -164,7 +164,10 @@ export function PathWithMacroCreator(props: PathWithMacroCreatorProps) {
 								</IconButton>
 							</Tooltip>
 							<Tooltip title={<FormattedMessage defaultMessage="Add macro" />}>
-								<IconButton onClick={() => dialogState.onOpen()}>
+								<IconButton
+									aria-label={formatMessage({ defaultMessage: 'Add macro' })}
+									onClick={() => dialogState.onOpen()}
+								>
 									<AddCircleOutlineOutlinedIcon />
 								</IconButton>
 							</Tooltip>
