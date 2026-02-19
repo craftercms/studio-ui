@@ -182,7 +182,7 @@ export function PublishPackageItemsView(props: PublishItemsProps) {
 				) : (
 					<List
 						rowCount={totalItems}
-						rowHeight={59}
+						rowHeight={72}
 						rowProps={{}}
 						rowComponent={({ index, style }: RowComponentProps) => {
 							const path = itemsAndDependenciesPaths[index];
