@@ -244,6 +244,7 @@ export async function repeatGroupValidator(
 	messages: FieldValidityState['messages'],
 	meta: ValidatorMetaData
 ): Promise<boolean> {
+	let isValid = true;
 	const minOccurs: number = getPropertyValue(field.properties, 'minOccurs') as number;
 	const maxOccurs: number = getPropertyValue(field.properties, 'maxOccurs') as number;
 
@@ -253,20 +254,21 @@ export async function repeatGroupValidator(
 			defineMessage({ defaultMessage: 'At least {minOccurs} occurrence(s) are required.' }),
 			{ minOccurs }
 		]);
-		return false;
+		isValid = false;
 	}
 	if (nnou(maxOccurs) && currentValue.length > maxOccurs) {
 		messages?.push([
 			defineMessage({ defaultMessage: 'No more than {maxOccurs} occurrence(s) are allowed.' }),
 			{ maxOccurs }
 		]);
-		return false;
+		isValid = false;
 	}
 
-	if (currentValue.length === 0) return true;
+	// If there are no items, return validation result (items validation is not needed if there are no items)
+	if (currentValue.length === 0) return isValid;
 
 	const fields = field.fields;
-	if (!fields) return true;
+	if (!fields) return isValid;
 
 	const validationPromises: Promise<FieldValidityState>[] = [];
 
@@ -281,7 +283,7 @@ export async function repeatGroupValidator(
 	});
 
 	const results = await Promise.all(validationPromises);
-	let isValid = true;
+	// let isValid = true;
 	results.forEach((result) => {
 		if (!result.isValid) {
 			isValid = false;
