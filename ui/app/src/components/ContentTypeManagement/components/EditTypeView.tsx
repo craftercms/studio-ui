@@ -1249,7 +1249,7 @@ function parseConfigPlugins(
 function getNewFieldFromDescriptor(fieldType: string, descriptor: DescriptorContentType): NewContentTypeField {
 	const newField: NewContentTypeField = {
 		NEW: true,
-		id: systemFieldsIdsMap[fieldType] ?? '',
+		id: systemFieldsIdsMap[fieldType] ?? null,
 		name: '',
 		helpText: '',
 		description: '',

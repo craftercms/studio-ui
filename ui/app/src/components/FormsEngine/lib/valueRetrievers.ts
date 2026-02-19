@@ -33,6 +33,7 @@ export const valueRetrieverLookup: Record<BuiltInControlType | DescriptorControl
 	checkbox: booleanFieldExtractor,
 	boolean: booleanFieldExtractor,
 	'date-time': null,
+	'expired-date': null,
 	disabled: booleanFieldExtractor,
 	dropdown: textFieldExtractor,
 	'file-name': textFieldExtractor,
