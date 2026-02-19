@@ -114,7 +114,8 @@ export function initTinyMCE(
 	record.element.classList.remove(emptyFieldClass);
 
 	const maxLength = validations?.maxLength ? parseInt(validations.maxLength.value) : null;
-	const allowAddMedia = validations?.addMedia ? validations.addMedia.value : false;
+	// If the validation is not set, we set allowAddMedia to true for backwards compatibility.
+	const allowAddMedia = validations?.addMedia ? validations.addMedia.value : true;
 	window.tinymce.init({
 		license_key: 'gpl',
 		target: rteEl,
