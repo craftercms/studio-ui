@@ -151,7 +151,7 @@ export function PublishPackageItemsView(props: PublishItemsProps) {
 				setIncludeChildren={setIncludeChildren}
 			/>
 			<Divider />
-			<Box sx={{ p: 1, flexGrow: 1, overflowY: 'auto' }}>
+			<Box sx={{ p: 1, flexGrow: 1, overflowY: 'auto', maxHeight: '70vh' }}>
 				{!disableTreeView && isTreeView ? (
 					<SimpleTreeView
 						expandedItems={expandedPaths ?? defaultExpandedPaths}
@@ -184,7 +184,6 @@ export function PublishPackageItemsView(props: PublishItemsProps) {
 						rowCount={totalItems}
 						rowHeight={59}
 						rowProps={{}}
-						style={{ height: '100%', overflowY: 'unset' }}
 						rowComponent={({ index, style }: RowComponentProps) => {
 							const path = itemsAndDependenciesPaths[index];
 							return (
