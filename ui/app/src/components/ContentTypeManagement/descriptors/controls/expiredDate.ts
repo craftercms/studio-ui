@@ -53,6 +53,9 @@ export const expiredDateDescriptor: DescriptorContentType = {
 			defaultValue: 'expired_dt',
 			validations: {
 				required: { id: 'required', level: 'required', value: true }
+			},
+			properties: {
+				readonly: { name: 'readonly', type: 'boolean', value: true }
 			}
 		},
 		showDate: {
