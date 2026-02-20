@@ -106,15 +106,7 @@ const initialSearchParameters: Partial<ElasticParams> = {
 	orOperator: true
 };
 
-const mimeTypes = [
-	'image/png',
-	'image/jpeg',
-	'image/gif',
-	'video/mp4',
-	'image/svg+xml',
-	'image/webp',
-	'video/quicktime'
-];
+const mimeTypes = ['image/png', 'image/jpeg', 'image/gif', 'video/mp4', 'image/svg+xml', 'image/webp'];
 
 export function PreviewSearchPanel() {
 	const { formatMessage } = useIntl();
