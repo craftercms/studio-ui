@@ -359,7 +359,7 @@ function FormBootstrap(props: FormsEngineProps) {
 					fieldId,
 					atoms,
 					value,
-					siteId
+					{ siteId, contentTypesById }
 				);
 			};
 			const values =
@@ -439,7 +439,10 @@ function FormBootstrap(props: FormsEngineProps) {
 			});
 			const contentObject = createObjectWithSystemProps(contentType);
 			const values = createParsedValuesObject(contentType.fields, contentObject, contentTypesById, (fieldId, value) => {
-				setFieldAtoms(stableFormContextRef, contentType, contentType.fields, fieldId, atoms, value, siteId);
+				setFieldAtoms(stableFormContextRef, contentType, contentType.fields, fieldId, atoms, value, {
+					siteId,
+					contentTypesById
+				});
 			});
 
 			initializeState(atoms, values, {
@@ -504,7 +507,7 @@ function FormBootstrap(props: FormsEngineProps) {
 								fieldId,
 								atoms,
 								value,
-								siteId
+								{ siteId, contentTypesById }
 							);
 						}
 					);

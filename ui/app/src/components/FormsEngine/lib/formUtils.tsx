@@ -72,8 +72,7 @@ import { getFormsEngineCloseAfterSave, getFormsEngineCollapseToCKey } from '../.
 import { createComponentId } from '../../../utils/system';
 import { showErrorDialog } from '../../../state/actions/dialogs';
 import { ensureSingleSlash } from '../../../utils/string';
-import { nnou, nou } from '../../../utils/object';
-import { WritableAtom } from 'jotai/vanilla';
+import { nou } from '../../../utils/object';
 
 /**
  * Returns the scroll container for the form's container.
@@ -182,7 +181,10 @@ export function createFieldAtoms(
 		Pick<StableFormContextProps, 'fieldUpdates$' | 'changedFieldIds' | 'originalValues' | 'atoms' | 'itemMeta'>
 	>,
 	// TODO: Consider a more comprehensive context for validators
-	siteId?: string
+	validatorsData?: {
+		siteId: string;
+		contentTypesById: LookupTable<ContentType>;
+	}
 ): [PrimitiveAtom<unknown>, Atom<Promise<FieldValidityState>>] {
 	let isInitialization = true;
 	const valueAtom = atom(initialValue);
@@ -221,7 +223,8 @@ export function createFieldAtoms(
 			formContextRef.current.fieldUpdates$.next(field.id);
 		}
 		return validateFieldValue(field, value, {
-			siteId,
+			siteId: validatorsData?.siteId,
+			contentTypesById: validatorsData?.contentTypesById,
 			itemMeta: formContextRef.current.itemMeta as FormsEngineItemMetaContextProps,
 			fileName: formContextRef.current.atoms.fileName ? get(formContextRef.current.atoms.fileName) : ''
 		});
@@ -490,7 +493,10 @@ export function setFieldAtoms(
 	fieldId: string,
 	atomsTarget: FormsEngineAtoms,
 	value: unknown,
-	siteId?: string
+	validatorsData: {
+		siteId: string;
+		contentTypesById: LookupTable<ContentType>;
+	}
 ): void {
 	let field = fieldLookup[fieldId];
 	if (!field) {
@@ -515,7 +521,7 @@ export function setFieldAtoms(
 			return;
 		}
 	}
-	const [valueAtom, validityAtom] = createFieldAtoms(field, value, stableFormContextRef, siteId);
+	const [valueAtom, validityAtom] = createFieldAtoms(field, value, stableFormContextRef, validatorsData);
 	atomsTarget.valueByFieldId[fieldId] = valueAtom;
 	atomsTarget.validationByFieldId[fieldId] = validityAtom;
 }

@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { ContentTypeField } from '../../../models/ContentType';
+import ContentType, { ContentTypeField } from '../../../models/ContentType';
 import type { BuiltInControlType } from './controlMap';
 import LookupTable from '../../../models/LookupTable';
 import { XmlKeys } from './formConsts';
@@ -22,18 +22,19 @@ import { defineMessage, type MessageDescriptor } from 'react-intl';
 import type { FormatXMLElementFn, PrimitiveType } from 'intl-messageformat';
 import { nnou, nou } from '../../../utils/object';
 import { checkPathExistence } from '../../../services/content';
-import { getBasePath, computePathFromFileName, isPagePath } from './formUtils';
+import { computePathFromFileName, getBasePath, getPropertyValue, isPagePath } from './formUtils';
 import { firstValueFrom } from 'rxjs';
 import { withIndex } from '../../../utils/path';
 import { FormsEngineItemMetaContextProps } from './formsEngineContext';
-import { getPropertyValue } from './formUtils';
 import { validateDatePopulateExpression } from './controlHelpers';
 import type { DescriptorControlType } from '../../ContentTypeManagement/controlMap';
+import { NodeSelectorItem } from '../controls/NodeSelector';
 
 interface ValidatorMetaData {
 	siteId: string;
 	fileName: string;
 	itemMeta: FormsEngineItemMetaContextProps;
+	contentTypesById: LookupTable<ContentType>;
 }
 type ValidatorFunctionDef = (
 	field: ContentTypeField,
@@ -61,7 +62,8 @@ export const validatorsMap: Partial<Record<BuiltInControlType | DescriptorContro
 	'link-textarea': undefined,
 	'linked-dropdown': undefined,
 	'locale-selector': undefined,
-	'node-selector': undefined,
+	'node-selector': (field, currentValue, messages, meta) =>
+		nodeSelectorValidator(field, currentValue as Array<NodeSelectorItem>, messages, meta),
 	'numeric-input': undefined,
 	'page-nav-order': undefined,
 	rte: undefined,
@@ -232,6 +234,46 @@ export function dateTimeExpressionInputValidator(field, currentValue: string, me
 	const isValid = validateDatePopulateExpression(currentValue);
 	if (!isValid) {
 		messages.push(defineMessage({ defaultMessage: 'The expression is not valid.' }));
+	}
+	return isValid;
+}
+
+export async function nodeSelectorValidator(
+	field: ContentTypeField,
+	currentValue: Array<NodeSelectorItem>,
+	messages: FieldValidityState['messages'],
+	meta: ValidatorMetaData
+): Promise<boolean> {
+	let isValid = true;
+	const embeddedContent = currentValue.filter((item) => nnou(item.component));
+
+	if (embeddedContent.length === 0) return isValid;
+
+	const validationPromises: Promise<FieldValidityState>[] = [];
+
+	embeddedContent.forEach(({ component }) => {
+		const contentTypeId = component['content-type'] as string;
+		const contentType = meta.contentTypesById[contentTypeId];
+		if (!contentType) return;
+		const fields = contentType.fields;
+		if (!fields) return;
+		Object.values(fields).forEach((field) => {
+			const value = component[field.id];
+			const validationPromise = validateFieldValue(field, value, meta);
+			validationPromises.push(validationPromise);
+		});
+	});
+
+	const results = await Promise.all(validationPromises);
+	let invalidEmbedded = false;
+	results.forEach((result) => {
+		if (!result.isValid) {
+			invalidEmbedded = true;
+			isValid = false;
+		}
+	});
+	if (invalidEmbedded) {
+		messages.push(defineMessage({ defaultMessage: 'One or more embedded content items are invalid.' }));
 	}
 	return isValid;
 }
