@@ -264,6 +264,7 @@ export async function nodeSelectorValidator(
 
 	// If there are no embedded items, return validation result (items validation is not needed if there are no items)
 	if (embeddedContent.length === 0) return isValid;
+	if (!meta.contentTypesById) return isValid;
 
 	const validationPromises: Promise<FieldValidityState>[] = [];
 
