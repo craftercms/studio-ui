@@ -493,7 +493,7 @@ export function setFieldAtoms(
 	fieldId: string,
 	atomsTarget: FormsEngineAtoms,
 	value: unknown,
-	validatorsData: {
+	validatorsData?: {
 		siteId: string;
 		contentTypesById: LookupTable<ContentType>;
 	}

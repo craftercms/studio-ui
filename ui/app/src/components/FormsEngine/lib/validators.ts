@@ -245,12 +245,29 @@ export async function nodeSelectorValidator(
 	meta: ValidatorMetaData
 ): Promise<boolean> {
 	let isValid = true;
+	const minSize: number = getPropertyValue(field.properties, 'minSize') as number;
+	const maxSize: number = getPropertyValue(field.properties, 'maxSize') as number;
 	const embeddedContent = currentValue.filter((item) => nnou(item.component));
 
+	// Validate node selector restrictions (min/max occurrences)
+	if (nnou(minSize) && currentValue.length < minSize) {
+		messages?.push([defineMessage({ defaultMessage: 'At least {minSize} occurrence(s) are required.' }), { minSize }]);
+		isValid = false;
+	}
+	if (nnou(maxSize) && currentValue.length > maxSize) {
+		messages?.push([
+			defineMessage({ defaultMessage: 'No more than {maxSize} occurrence(s) are allowed.' }),
+			{ maxSize }
+		]);
+		isValid = false;
+	}
+
+	// If there are no embedded items, return validation result (items validation is not needed if there are no items)
 	if (embeddedContent.length === 0) return isValid;
 
 	const validationPromises: Promise<FieldValidityState>[] = [];
 
+	// Validate fields of each embedded item
 	embeddedContent.forEach(({ component }) => {
 		const contentTypeId = component['content-type'] as string;
 		const contentType = meta.contentTypesById[contentTypeId];
