@@ -245,6 +245,8 @@ export async function nodeSelectorValidator(
 	meta: ValidatorMetaData
 ): Promise<boolean> {
 	let isValid = true;
+	// This set is used to keep track of visited content items during validation to prevent infinite loops in case of circular references.
+	const visited = new Set<string>();
 	const minSize: number = getPropertyValue(field.properties, 'minSize') as number;
 	const maxSize: number = getPropertyValue(field.properties, 'maxSize') as number;
 	const embeddedContent = currentValue.filter((item) => nnou(item.component));
@@ -271,6 +273,8 @@ export async function nodeSelectorValidator(
 	// Validate fields of each embedded item
 	embeddedContent.forEach(({ component }) => {
 		const contentTypeId = component['content-type'] as string;
+		if (visited.has(contentTypeId)) return; // prevent circular validation
+		visited.add(contentTypeId);
 		const contentType = meta.contentTypesById[contentTypeId];
 		if (!contentType) return;
 		const fields = contentType.fields;
