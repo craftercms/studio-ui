@@ -245,6 +245,7 @@ export async function nodeSelectorValidator(
 	meta: ValidatorMetaData
 ): Promise<boolean> {
 	let isValid = true;
+	if (!Array.isArray(currentValue)) return isValid;
 	// This set is used to keep track of visited content items during validation to prevent infinite loops in case of circular references.
 	const visited = new Set<string>();
 	const minSize: number = getPropertyValue(field.properties, 'minSize') as number;
