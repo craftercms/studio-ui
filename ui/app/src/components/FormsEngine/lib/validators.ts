@@ -254,14 +254,11 @@ export async function nodeSelectorValidator(
 
 	// Validate node selector restrictions (min/max occurrences)
 	if (nnou(minSize) && currentValue.length < minSize) {
-		messages?.push([defineMessage({ defaultMessage: 'At least {minSize} occurrence(s) are required.' }), { minSize }]);
+		messages?.push([defineMessage({ defaultMessage: 'At least {minSize} items(s) are required.' }), { minSize }]);
 		isValid = false;
 	}
 	if (nnou(maxSize) && currentValue.length > maxSize) {
-		messages?.push([
-			defineMessage({ defaultMessage: 'No more than {maxSize} occurrence(s) are allowed.' }),
-			{ maxSize }
-		]);
+		messages?.push([defineMessage({ defaultMessage: 'No more than {maxSize} items(s) are allowed.' }), { maxSize }]);
 		isValid = false;
 	}
 
