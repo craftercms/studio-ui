@@ -52,11 +52,16 @@ export function useVideoInfo(url: string): {
 
 	useEffect(() => {
 		if (url) {
+			// Reset previous info
+			setVideoInfo(videoInfoInitialState);
 			setIsFetchingDimensions(true);
 			setErrorDimensions(null);
+
+			let dimensionsCancelled = false;
 			const video = document.createElement('video');
 			video.preload = 'metadata';
 			video.onloadedmetadata = () => {
+				if (dimensionsCancelled) return;
 				setVideoInfo({
 					width: video.videoWidth,
 					height: video.videoHeight,
@@ -65,6 +70,7 @@ export function useVideoInfo(url: string): {
 				setIsFetchingDimensions(false);
 			};
 			video.onerror = () => {
+				if (dimensionsCancelled) return;
 				setErrorDimensions(new Error('Video failed to load'));
 				setIsFetchingDimensions(false);
 			};
@@ -72,19 +78,29 @@ export function useVideoInfo(url: string): {
 
 			setIsFetchingMetadata(true);
 			setErrorMetadata(null);
+			const abortController = new AbortController();
 			(async () => {
 				try {
-					const response = await fetch(url, { method: 'HEAD' });
+					const response = await fetch(url, { method: 'HEAD', signal: abortController.signal });
 					const contentType = response.headers.get('Content-Type');
 					const contentLength = response.headers.get('Content-Length');
 					const sizeKb = contentLength ? Math.round(Number(contentLength) / 1024) : null;
 					setVideoInfo({ contentType, size: sizeKb });
 					setIsFetchingMetadata(false);
 				} catch (error) {
+					if (abortController.signal.aborted) return;
 					setErrorMetadata(error as Error);
 					setIsFetchingMetadata(false);
 				}
 			})();
+
+			return () => {
+				dimensionsCancelled = true;
+				video.onloadedmetadata = null;
+				video.onerror = null;
+				video.src = '';
+				abortController.abort();
+			};
 		} else {
 			setVideoInfo(videoInfoInitialState);
 			setIsFetchingDimensions(false);
