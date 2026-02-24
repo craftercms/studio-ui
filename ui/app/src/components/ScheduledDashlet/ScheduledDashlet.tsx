@@ -352,7 +352,7 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
 											submittedDate: asLocalizedDateTime(
 												pkg.schedule,
 												locale.localeCode,
-												reversePluckProps(locale.dateTimeFormatOptions, 'hour', 'minute', 'second')
+												locale.dateTimeFormatOptions
 											)
 										}}
 									/>
