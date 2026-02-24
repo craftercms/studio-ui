@@ -240,7 +240,7 @@ export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
 											submittedDate: asLocalizedDateTime(
 												pkg.submittedOn,
 												locale.localeCode,
-												reversePluckProps(locale.dateTimeFormatOptions, 'hour', 'minute', 'second')
+												locale.dateTimeFormatOptions
 											)
 										}}
 									/>
