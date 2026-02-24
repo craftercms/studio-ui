@@ -159,13 +159,13 @@ export function VideoPicker(props: VideoPickerProps) {
 										</>
 									) : errorMetadata ? (
 										<Typography color="error" variant="body2">
-											<FormattedMessage defaultMessage="Error loading image metadata" />
+											<FormattedMessage defaultMessage="Error loading video metadata" />
 										</Typography>
 									) : (
 										<>
 											{videoInfo?.contentType}
 											<br />
-											{videoInfo?.size ? `${videoInfo.size} Kb` : ''}
+											{videoInfo?.size ? `${videoInfo.size} KB` : ''}
 											<br />
 										</>
 									)}
