@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ComponentProps, forwardRef, useId } from 'react';
+import { ComponentProps, forwardRef, useId } from 'react';
 import OutlinedInput, { OutlinedInputProps } from '@mui/material/OutlinedInput';
 import { FormsEngineField } from '../components/FormsEngineField';
 import type { ControlProps } from '../types';

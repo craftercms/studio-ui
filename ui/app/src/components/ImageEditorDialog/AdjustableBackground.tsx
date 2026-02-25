@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { forwardRef } from 'react';
+import { forwardRef } from 'react';
 import { CropperRef } from 'react-advanced-cropper';
 import { getBackgroundStyle } from 'advanced-cropper';
 import { AdjustableImage } from './AdjustableImage';
