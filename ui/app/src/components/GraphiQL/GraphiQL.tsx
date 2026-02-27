@@ -15,17 +15,16 @@
  */
 
 import React, { useEffect, useMemo, useState } from 'react';
-import GraphiQLComponent from 'graphiql';
-import 'graphiql/graphiql.min.css';
+import { GraphiQL as GraphiQLComponent } from 'graphiql';
+import 'graphiql/style.css';
 import { explorerPlugin } from '@graphiql/plugin-explorer';
+import '@graphiql/plugin-explorer/style.css';
 import { buildClientSchema, getIntrospectionQuery, GraphQLSchema } from 'graphql';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import { FormattedMessage } from 'react-intl';
 import Box from '@mui/material/Box';
 import { toQueryString } from '../../utils/object';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
-import useUpdateRefs from '../../hooks/useUpdateRefs';
-import { isBlank } from '../../utils/string';
 import { defaultQuery } from './utils';
 import useEnv from '../../hooks/useEnv';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
@@ -48,13 +47,11 @@ function GraphiQL(props: GraphiQLProps) {
 		showAppsButton,
 		embedded = false,
 		method = 'post',
-		url = `${guestBase}/api/1/site/graphql${site ? `?crafterSite=${site}` : ''}`,
-		onSubmittingAndOrPendingChange
+		url = `${guestBase}/api/1/site/graphql${site ? `?crafterSite=${site}` : ''}`
 	} = props;
 	// We don't want to update the initialQuery.
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	const initialQuery = useMemo(() => window.localStorage.getItem(`${storageKey}graphiql:query`) ?? defaultQuery, []);
-	const [query, setQuery] = useState(initialQuery);
 	const [schema, setSchema] = useState<GraphQLSchema>(null);
 	const storage = useMemo(
 		() =>
@@ -97,19 +94,13 @@ function GraphiQL(props: GraphiQLProps) {
 			};
 		}
 	}, [url, method]);
-	const refs = useUpdateRefs({ onSubmittingAndOrPendingChange, graphiql: null });
-	const hasChanges = isBlank(query) ? false : initialQuery !== query;
 	const onEditQuery = (newQuery: string) => {
-		setQuery(newQuery);
 		window.localStorage.setItem(`${storageKey}graphiql:query`, newQuery);
 	};
 	const explorer = explorerPlugin({
-		showAttribution: false
+		showAttribution: false,
+		initialIsOpen: false
 	});
-
-	useEffect(() => {
-		refs.current.onSubmittingAndOrPendingChange?.({ hasPendingChanges: hasChanges });
-	}, [hasChanges, refs]);
 
 	useEffect(() => {
 		graphQLFetcher({
@@ -178,7 +169,7 @@ function GraphiQL(props: GraphiQLProps) {
 					<GraphiQLComponent
 						fetcher={graphQLFetcher}
 						schema={schema}
-						query={query}
+						initialQuery={initialQuery}
 						storage={storage}
 						onEditQuery={onEditQuery}
 						plugins={[explorer]}

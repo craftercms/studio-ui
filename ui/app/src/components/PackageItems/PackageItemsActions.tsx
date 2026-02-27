@@ -26,6 +26,9 @@ import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import UnfoldMoreRoundedIcon from '@mui/icons-material/UnfoldMoreRounded';
 import UnfoldLessRoundedIcon from '@mui/icons-material/UnfoldLessRounded';
+import { nnou } from '../../utils/object';
+import CheckBoxOutlineBlankRoundedIcon from '@mui/icons-material/CheckBoxOutlineBlankRounded';
+import CheckBoxRoundedIcon from '@mui/icons-material/CheckBoxRounded';
 
 export interface PackageItemsActionsProps {
 	isTreeView: boolean;
@@ -33,10 +36,20 @@ export interface PackageItemsActionsProps {
 	setExpandedPaths(value: string[] | undefined): void;
 	disableTreeView: boolean;
 	maxTreeItems: number;
+	includeChildren?: boolean;
+	setIncludeChildren?(value: boolean): void;
 }
 
 export function PackageItemsActions(props: PackageItemsActionsProps) {
-	const { isTreeView, onSetIsTreeView, disableTreeView, maxTreeItems, setExpandedPaths } = props;
+	const {
+		isTreeView,
+		onSetIsTreeView,
+		disableTreeView,
+		maxTreeItems,
+		setExpandedPaths,
+		includeChildren,
+		setIncludeChildren
+	} = props;
 	const { formatMessage } = useIntl();
 	return (
 		<Box display="flex" justifyContent="space-between" alignItems="center" mr={1} ml={1}>
@@ -93,6 +106,18 @@ export function PackageItemsActions(props: PackageItemsActionsProps) {
 					</>
 				)}
 			</Box>
+			{nnou(includeChildren) && (
+				<Box>
+					<Button
+						size="small"
+						startIcon={includeChildren ? <CheckBoxRoundedIcon /> : <CheckBoxOutlineBlankRoundedIcon />}
+						sx={{ [`.${buttonClasses.startIcon}`]: { mr: 0.5 } }}
+						onClick={() => setIncludeChildren(!includeChildren)}
+					>
+						<FormattedMessage defaultMessage="Include children" />
+					</Button>
+				</Box>
+			)}
 		</Box>
 	);
 }

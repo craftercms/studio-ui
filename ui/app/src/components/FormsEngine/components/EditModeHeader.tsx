@@ -40,9 +40,9 @@ import ContentCopyRounded from '@mui/icons-material/ContentCopyRounded';
 import MenuOpenIcon from '@mui/icons-material/MenuOpenRounded';
 import { XmlKeys } from '../lib/formConsts';
 import { useAtom } from 'jotai';
+import Collapse from '@mui/material/Collapse';
 
-export function EditModeHeader({ isEmbedded }: { isEmbedded: boolean }) {
-	const theme = useTheme();
+export function EditModeHeader({ isEmbedded, collapse = false }: { isEmbedded: boolean; collapse?: boolean }) {
 	const { atoms } = useContext(StableFormContext);
 	const { id: objectId } = useContext(ItemMetaContext);
 	const item = useContext(ItemContext);
@@ -50,8 +50,6 @@ export function EditModeHeader({ isEmbedded }: { isEmbedded: boolean }) {
 	const readonly = useAtomValue(atoms.readonly);
 	const localeConf = useLocale();
 	const isLargeContainer = useAtomValue(atoms.isLargeContainer);
-	const [collapseToC, setCollapseToC] = useAtom(atoms.collapseToC);
-	const useCollapsedToC = useAtomValue(atoms.useCollapsedToC);
 	const { formatMessage } = useIntl();
 	const itemLabel = isEmbedded
 		? (getFieldAtomValue(atoms.valueByFieldId[XmlKeys.internalName], store) as string)
@@ -71,181 +69,206 @@ export function EditModeHeader({ isEmbedded }: { isEmbedded: boolean }) {
 	// const [activeTab, setActiveTab] = useAtom(activeTabAtom);
 	// const handleTabChange: TabsProps['onChange'] = (e, value) => setActiveTab(value);
 
+	const handleCopyToClipboard = () => {
+		copyToClipboard(item.path);
+	};
+
 	return (
 		<>
 			<Container className="space-y" sx={{ py: 1 }}>
-				<Box display="flex" alignItems="end" justifyContent="space-between">
-					<Box className="space-y" sx={{ flexBasis: '50%' }}>
-						{/* Item display */}
-						<Box display="flex" alignItems="center" className="space-x">
-							<ItemTypeIcon item={typeIconItem} sx={{ color: 'info.main' }} />
-							<Typography>{itemLabel}</Typography>
-							{readonly && (
-								<Chip
-									sx={{ [`.${chipClasses.label}`]: { display: 'flex', alignItems: 'center' } }}
-									color="warning"
-									variant="outlined"
-									label={
-										<>
-											<FormattedMessage defaultMessage="Readonly" />
-											<EditOffOutlined fontSize="small" sx={{ ml: 1 }} />
-										</>
-									}
-								/>
-							)}
-						</Box>
-						{/* Item metadata */}
-						<div>
-							<Typography
-								variant="body2"
-								color="textSecondary"
-								display="flex"
-								alignItems="center"
-								sx={{ flexWrap: 'wrap', em: { fontWeight: 600 } }}
-							>
-								<Box component="span" display="flex" alignItems="center" marginRight={1}>
-									<CalendarTodayRounded sx={{ mr: 0.25 }} fontSize="inherit" />
-									<span>
-										<FormattedMessage
-											defaultMessage="Created {when} by <who>who</who>"
-											values={{
-												who: () => (
-													<em key="0" title={formattedCreator.tooltip}>
-														{formattedCreator.display}
-													</em>
-												),
-												when: formattedCreationDate
-											}}
-										/>
-									</span>
-								</Box>
-								<Box component="span" display="flex" alignItems="center">
-									<EditOutlined sx={{ mr: 0.25 }} fontSize="inherit" />
-									<span>
-										<FormattedMessage
-											defaultMessage="Updated {when} by <who>who</who>"
-											values={{
-												who: () => (
-													<em key="0" title={formattedModifier.tooltip}>
-														{formattedModifier.display}
-													</em>
-												),
-												when: formattedModifiedDate
-											}}
-										/>
-									</span>
-								</Box>
-							</Typography>
-							<Typography
-								variant="body2"
-								color="textSecondary"
-								display="flex"
-								alignItems="center"
-								sx={{ flexWrap: 'wrap' }}
-							>
-								<Box component="span" display="flex" alignItems="center" marginRight={1}>
-									<ItemPublishingTargetIcon fontSize="inherit" sxs={{ root: { marginRight: 0.25 } }} item={item} />{' '}
-									{getItemPublishingTargetText(item.stateMap, formatMessage)}
-								</Box>
-								<Box component="span" display="flex" alignItems="center">
-									<ItemStateIcon fontSize="inherit" sxs={{ root: { mr: 0.25 } }} item={item} />{' '}
-									{getItemStateText(item.stateMap, formatMessage, { user: item.lockOwner?.username })}
-								</Box>
-							</Typography>
-						</div>
-					</Box>
-					<Box className="space-y" display="flex" flexDirection="column" alignItems="end" sx={{ maxWidth: '50%' }}>
-						<Typography
-							component="span"
-							variant="body2"
-							color="textSecondary"
-							display="flex"
-							alignItems="center"
-							sx={{ overflow: 'hidden', maxWidth: '100%' }}
-						>
-							<Box
-								component="span"
-								title={item.path}
-								sx={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}
-							>
-								{item.path}
-								{/* Super-long test path: /Lorem/Ipsum/is/simply/dummy/text/of/the/printing/and/typesetting/industry/Lorem/Ipsum/has/been/the/industrys/standard/dummy/text/ever/since/the/1500s/when/an/unknown/printer/took/a/galley/of/type/and/scrambled/it/to/make/a/type/specimen/book.xml */}
-							</Box>
-							<Tooltip title={<FormattedMessage defaultMessage="Copy path to clipboard" />}>
-								<IconButton size="small" onClick={() => copyToClipboard(item.path)} sx={{ padding: '1px', ml: 1 }}>
-									<ContentCopyRounded fontSize="inherit" sx={{ color: 'text.secondary' }} />
-								</IconButton>
-							</Tooltip>
-						</Typography>
-						<Typography
-							component="span"
-							variant="body2"
-							color="textSecondary"
-							display="flex"
-							alignItems="center"
-							sx={{ overflow: 'hidden', maxWidth: '100%' }}
-						>
-							<Box
-								component="span"
-								title={objectId}
-								sx={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}
-							>
-								{objectId}
-							</Box>
-							<Tooltip title={<FormattedMessage defaultMessage="Copy ID to clipboard" />}>
-								<IconButton
-									size="small"
-									sx={{ padding: '1px', ml: 1 }}
-									onClick={() =>
-										copyToClipboard(getFieldAtomValue(atoms.valueByFieldId[XmlKeys.modelId], store) as string)
-									}
-								>
-									<ContentCopyRounded fontSize="inherit" sx={{ color: 'text.secondary' }} />
-								</IconButton>
-							</Tooltip>
-						</Typography>
-					</Box>
+				{/* Item display */}
+				<Box display="flex" alignItems="center" className="space-x">
+					{isLargeContainer && collapse && <CollapseToCButton />}
+					<ItemTypeIcon item={typeIconItem} sx={{ color: 'info.main' }} />
+					<Typography>{itemLabel}</Typography>
+					{readonly && (
+						<Chip
+							sx={{ [`.${chipClasses.label}`]: { display: 'flex', alignItems: 'center' } }}
+							color="warning"
+							variant="outlined"
+							label={
+								<>
+									<FormattedMessage defaultMessage="Readonly" />
+									<EditOffOutlined fontSize="small" sx={{ ml: 1 }} />
+								</>
+							}
+						/>
+					)}
+					{collapse && (
+						<Tooltip title={<FormattedMessage defaultMessage="Copy path to clipboard" />}>
+							<IconButton size="small" onClick={handleCopyToClipboard} sx={{ padding: '1px', ml: 1 }}>
+								<ContentCopyRounded fontSize="inherit" sx={{ color: 'text.secondary' }} />
+							</IconButton>
+						</Tooltip>
+					)}
 				</Box>
+				<Collapse in={!collapse}>
+					<Box display="flex" alignItems="end" justifyContent="space-between">
+						<Box className="space-y" sx={{ flexBasis: '50%' }}>
+							{/* Item metadata */}
+							<div>
+								<Typography
+									variant="body2"
+									color="textSecondary"
+									display="flex"
+									alignItems="center"
+									sx={{ flexWrap: 'wrap', em: { fontWeight: 600 } }}
+								>
+									<Box component="span" display="flex" alignItems="center" marginRight={1}>
+										<CalendarTodayRounded sx={{ mr: 0.25 }} fontSize="inherit" />
+										<span>
+											<FormattedMessage
+												defaultMessage="Created {when} by <who>who</who>"
+												values={{
+													who: () => (
+														<em key="0" title={formattedCreator.tooltip}>
+															{formattedCreator.display}
+														</em>
+													),
+													when: formattedCreationDate
+												}}
+											/>
+										</span>
+									</Box>
+									<Box component="span" display="flex" alignItems="center">
+										<EditOutlined sx={{ mr: 0.25 }} fontSize="inherit" />
+										<span>
+											<FormattedMessage
+												defaultMessage="Updated {when} by <who>who</who>"
+												values={{
+													who: () => (
+														<em key="0" title={formattedModifier.tooltip}>
+															{formattedModifier.display}
+														</em>
+													),
+													when: formattedModifiedDate
+												}}
+											/>
+										</span>
+									</Box>
+								</Typography>
+								<Typography
+									variant="body2"
+									color="textSecondary"
+									display="flex"
+									alignItems="center"
+									sx={{ flexWrap: 'wrap' }}
+								>
+									<Box component="span" display="flex" alignItems="center" marginRight={1}>
+										<ItemPublishingTargetIcon fontSize="inherit" sxs={{ root: { marginRight: 0.25 } }} item={item} />{' '}
+										{getItemPublishingTargetText(item.stateMap, formatMessage)}
+									</Box>
+									<Box component="span" display="flex" alignItems="center">
+										<ItemStateIcon fontSize="inherit" sxs={{ root: { mr: 0.25 } }} item={item} />{' '}
+										{getItemStateText(item.stateMap, formatMessage, { user: item.lockOwner?.username })}
+									</Box>
+								</Typography>
+							</div>
+						</Box>
+						<Box className="space-y" display="flex" flexDirection="column" alignItems="end" sx={{ maxWidth: '50%' }}>
+							<Typography
+								component="span"
+								variant="body2"
+								color="textSecondary"
+								display="flex"
+								alignItems="center"
+								sx={{ overflow: 'hidden', maxWidth: '100%' }}
+							>
+								<Box
+									component="span"
+									title={item.path}
+									sx={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}
+								>
+									{item.path}
+									{/* Super-long test path: /Lorem/Ipsum/is/simply/dummy/text/of/the/printing/and/typesetting/industry/Lorem/Ipsum/has/been/the/industrys/standard/dummy/text/ever/since/the/1500s/when/an/unknown/printer/took/a/galley/of/type/and/scrambled/it/to/make/a/type/specimen/book.xml */}
+								</Box>
+								<Tooltip title={<FormattedMessage defaultMessage="Copy path to clipboard" />}>
+									<IconButton size="small" onClick={handleCopyToClipboard} sx={{ padding: '1px', ml: 1 }}>
+										<ContentCopyRounded fontSize="inherit" sx={{ color: 'text.secondary' }} />
+									</IconButton>
+								</Tooltip>
+							</Typography>
+							<Typography
+								component="span"
+								variant="body2"
+								color="textSecondary"
+								display="flex"
+								alignItems="center"
+								sx={{ overflow: 'hidden', maxWidth: '100%' }}
+							>
+								<Box
+									component="span"
+									title={objectId}
+									sx={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}
+								>
+									{objectId}
+								</Box>
+								<Tooltip title={<FormattedMessage defaultMessage="Copy ID to clipboard" />}>
+									<IconButton
+										size="small"
+										sx={{ padding: '1px', ml: 1 }}
+										onClick={() =>
+											copyToClipboard(getFieldAtomValue(atoms.valueByFieldId[XmlKeys.modelId], store) as string)
+										}
+									>
+										<ContentCopyRounded fontSize="inherit" sx={{ color: 'text.secondary' }} />
+									</IconButton>
+								</Tooltip>
+							</Typography>
+						</Box>
+					</Box>
+				</Collapse>
 			</Container>
-			<Container maxWidth="xl" sx={{ display: 'flex' }}>
-				{isLargeContainer && (
-					<Tooltip title={<FormattedMessage defaultMessage="Collapse table of contents" />}>
-						<IconButton
-							size="small"
-							onClick={() => setCollapseToC(!collapseToC)}
-							sx={{
-								// TODO: Tabs will be done at a later phase.
-								// visibility: activeTab === 0 ? undefined : 'hidden',
-								mr: 0.5
-							}}
-						>
-							<MenuOpenIcon
-								sx={{
-									// Add transform to rotate 180deg when collapsed
-									transform: useCollapsedToC ? 'rotate(180deg)' : 'none',
-									// Animate the rotation
-									transition: theme.transitions.create('transform', {
-										duration: theme.transitions.duration.shortest
-									})
-								}}
-							/>
-						</IconButton>
-					</Tooltip>
-				)}
-				{/*
-        TODO: Disabling Tabs. Differed feature.
-        <Tabs value={activeTab} onChange={handleTabChange} sx={{ minHeight: 0 }}>
-          <DenseTab label={<FormattedMessage defaultMessage="Form" />} />
-          <DenseTab label={<FormattedMessage defaultMessage="Preview" />} />
-          <DenseTab label={<FormattedMessage defaultMessage="History" />} />
-          <DenseTab label={<FormattedMessage defaultMessage="References" />} />
-          <DenseTab label={<FormattedMessage defaultMessage="Template" />} />
-          <DenseTab label={<FormattedMessage defaultMessage="Controller" />} />
-          <DenseTab label={<FormattedMessage defaultMessage="Settings" />} />
-        </Tabs>
-        */}
-			</Container>
+			<Collapse in={!collapse}>
+				<Container maxWidth="xl" sx={{ display: 'flex' }}>
+					{isLargeContainer && <CollapseToCButton />}
+					{/*
+					TODO: Disabling Tabs. Differed feature.
+					<Tabs value={activeTab} onChange={handleTabChange} sx={{ minHeight: 0 }}>
+						<DenseTab label={<FormattedMessage defaultMessage="Form" />} />
+						<DenseTab label={<FormattedMessage defaultMessage="Preview" />} />
+						<DenseTab label={<FormattedMessage defaultMessage="History" />} />
+						<DenseTab label={<FormattedMessage defaultMessage="References" />} />
+						<DenseTab label={<FormattedMessage defaultMessage="Template" />} />
+						<DenseTab label={<FormattedMessage defaultMessage="Controller" />} />
+						<DenseTab label={<FormattedMessage defaultMessage="Settings" />} />
+					</Tabs>
+					*/}
+				</Container>
+			</Collapse>
 		</>
+	);
+}
+
+function CollapseToCButton() {
+	const theme = useTheme();
+	const { atoms } = useContext(StableFormContext);
+	const [collapseToC, setCollapseToC] = useAtom(atoms.collapseToC);
+	const useCollapsedToC = useAtomValue(atoms.useCollapsedToC);
+
+	return (
+		<Tooltip title={<FormattedMessage defaultMessage="Collapse table of contents" />}>
+			<IconButton
+				size="small"
+				onClick={() => setCollapseToC(!collapseToC)}
+				sx={{
+					// TODO: Tabs will be done at a later phase.
+					// visibility: activeTab === 0 ? undefined : 'hidden',
+					mr: 0.5
+				}}
+			>
+				<MenuOpenIcon
+					sx={{
+						// Add transform to rotate 180deg when collapsed
+						transform: useCollapsedToC ? 'rotate(180deg)' : 'none',
+						// Animate the rotation
+						transition: theme.transitions.create('transform', {
+							duration: theme.transitions.duration.shortest
+						})
+					}}
+				/>
+			</IconButton>
+		</Tooltip>
 	);
 }
 

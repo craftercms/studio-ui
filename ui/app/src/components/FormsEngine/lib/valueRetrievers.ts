@@ -80,7 +80,8 @@ export const valueRetrieverLookup: Record<BuiltInControlType | DescriptorControl
 	'datasource:audio:singleSelection': textFieldExtractor,
 	'datasource:item:singleSelection': textFieldExtractor,
 	variable: textFieldExtractor,
-	'type-configuration': textFieldExtractor
+	'type-configuration': textFieldExtractor,
+	'date-time-expression-input': textFieldExtractor
 };
 
 /**

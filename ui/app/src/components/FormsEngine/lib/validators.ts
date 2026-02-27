@@ -20,12 +20,16 @@ import LookupTable from '../../../models/LookupTable';
 import { XmlKeys } from './formConsts';
 import { defineMessage, type MessageDescriptor } from 'react-intl';
 import type { FormatXMLElementFn, PrimitiveType } from 'intl-messageformat';
+import { nnou, nou } from '../../../utils/object';
 import { checkPathExistence } from '../../../services/content';
 import { getBasePath, computePathFromFileName, isPagePath } from './formUtils';
 import { firstValueFrom } from 'rxjs';
 import { withIndex } from '../../../utils/path';
 import { FormsEngineItemMetaContextProps } from './formsEngineContext';
-import { nnou, nou } from '../../../utils/object';
+import { getPropertyValue } from './formUtils';
+import { validateDatePopulateExpression } from './controlHelpers';
+import type { DescriptorControlType } from '../../ContentTypeManagement/controlMap';
+import type { RepeatItem } from '../controls/Repeat';
 import { getValidationValue } from './formUtils';
 
 interface ValidatorMetaData {
@@ -39,13 +43,14 @@ type ValidatorFunctionDef = (
 	messages: FieldValidityState['messages'],
 	meta: ValidatorMetaData
 ) => Promise<boolean> | boolean;
-export const validatorsMap: Partial<Record<BuiltInControlType, ValidatorFunctionDef>> = {
-	repeat: undefined,
+export const validatorsMap: Partial<Record<BuiltInControlType | DescriptorControlType, ValidatorFunctionDef>> = {
+	repeat: (field, currentValue, messages, meta) =>
+		repeatGroupValidator(field, currentValue as Array<RepeatItem>, messages, meta),
 	'auto-filename': undefined,
 	'aws-file-upload': undefined,
 	'checkbox-group': undefined,
 	checkbox: undefined,
-	'date-time': undefined,
+	'date-time': (field, currentValue, messages) => dateTimeValidator(field, currentValue as string, messages),
 	disabled: undefined,
 	dropdown: undefined,
 	'file-name': (field, currentValue, messages, meta) =>
@@ -68,7 +73,9 @@ export const validatorsMap: Partial<Record<BuiltInControlType, ValidatorFunction
 	'transcoded-video-picker': undefined,
 	uuid: undefined,
 	'video-picker': undefined,
-	colorPicker: undefined
+	colorPicker: undefined,
+	'date-time-expression-input': (field, currentValue, messages) =>
+		dateTimeExpressionInputValidator(field, currentValue as string, messages)
 };
 
 // TODO: Fix FormatXMLElementFn generics
@@ -147,7 +154,7 @@ export async function validateFieldValue(
 		messages.push(defineMessage({ defaultMessage: 'This field is required.' }));
 		return Promise.resolve({ isValid: false, messages });
 	}
-	const validator = validatorsMap[field.type as BuiltInControlType];
+	const validator = validatorsMap[field.type as BuiltInControlType | DescriptorControlType];
 	// If there's a validator, run it. If not, it's valid.
 	const isValid = nnou(validator) ? await validator(field, validateValue, messages, meta) : true;
 	return Promise.resolve({ isValid, messages });
@@ -206,6 +213,84 @@ export async function checkMinimumSaveRequirementsFulfilled(
  */
 export function isInternalNameValid(values: LookupTable<unknown>): boolean {
 	return (values[XmlKeys.internalName]?.toString() ?? '').trim() !== '';
+}
+
+export function dateTimeValidator(
+	field: ContentTypeField,
+	currentValue: string,
+	messages: FieldValidityMessage[]
+): boolean {
+	let isValid = true;
+	const allowPastDate: boolean = getPropertyValue(field.properties, 'allowPastDate') as boolean;
+	const fieldDate = new Date(currentValue as string);
+	const currentDate = new Date();
+	if (!allowPastDate && !isNaN(fieldDate.valueOf()) && fieldDate < currentDate) {
+		messages.push(defineMessage({ defaultMessage: 'The date cannot be in the past.' }));
+		isValid = false;
+	}
+	return isValid;
+}
+
+export function dateTimeExpressionInputValidator(field, currentValue: string, messages) {
+	const isValid = validateDatePopulateExpression(currentValue);
+	if (!isValid) {
+		messages.push(defineMessage({ defaultMessage: 'The expression is not valid.' }));
+	}
+	return isValid;
+}
+
+export async function repeatGroupValidator(
+	field: ContentTypeField,
+	currentValue: Array<RepeatItem>,
+	messages: FieldValidityState['messages'],
+	meta: ValidatorMetaData
+): Promise<boolean> {
+	let isValid = true;
+	const minOccurs: number = getPropertyValue(field.properties, 'minOccurs') as number;
+	const maxOccurs: number = getPropertyValue(field.properties, 'maxOccurs') as number;
+
+	// Validate repeat group restrictions (min/max occurrences)
+	if (nnou(minOccurs) && currentValue.length < minOccurs) {
+		messages?.push([
+			defineMessage({ defaultMessage: 'At least {minOccurs} occurrence(s) are required.' }),
+			{ minOccurs }
+		]);
+		isValid = false;
+	}
+	if (nnou(maxOccurs) && currentValue.length > maxOccurs) {
+		messages?.push([
+			defineMessage({ defaultMessage: 'No more than {maxOccurs} occurrence(s) are allowed.' }),
+			{ maxOccurs }
+		]);
+		isValid = false;
+	}
+
+	// If there are no items, return validation result (items validation is not needed if there are no items)
+	if (currentValue.length === 0) return isValid;
+
+	const fields = field.fields;
+	if (!fields) return isValid;
+
+	const validationPromises: Promise<FieldValidityState>[] = [];
+
+	// Validate fields of each repeat group item
+	currentValue?.forEach((item) => {
+		Object.values(fields).forEach((subField) => {
+			const id = subField.id;
+			const value = item[id];
+			const validationPromise = validateFieldValue(subField, value, meta);
+			validationPromises.push(validationPromise);
+		});
+	});
+
+	const results = await Promise.all(validationPromises);
+	// let isValid = true;
+	results.forEach((result) => {
+		if (!result.isValid) {
+			isValid = false;
+		}
+	});
+	return isValid;
 }
 
 /**
