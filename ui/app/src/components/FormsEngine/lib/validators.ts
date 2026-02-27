@@ -258,7 +258,7 @@ export async function nodeSelectorValidator(
 		isValid = false;
 	}
 	if (nnou(maxSize) && currentValue.length > maxSize) {
-		messages?.push([defineMessage({ defaultMessage: 'No more than {maxSize} items(s) are allowed.' }), { maxSize }]);
+		messages?.push([defineMessage({ defaultMessage: 'No more than {maxSize} item(s) are allowed.' }), { maxSize }]);
 		isValid = false;
 	}
 
