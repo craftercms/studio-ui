@@ -28,7 +28,7 @@ import { getValidationValue, isFieldReadOnly } from '../lib/formUtils';
 type NumberFieldRootProps = ComponentProps<typeof NumberField.Root>;
 
 export interface NumberProps extends ControlProps {
-	value: number | null | undefined;
+	value: number | null;
 }
 
 const decrementButtonSx: BoxProps['sx'] = {
