@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2024 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2026 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -14,17 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Tooltip from '@mui/material/Tooltip';
-import { FormattedMessage } from 'react-intl';
-import CheckRounded from '@mui/icons-material/CheckRounded';
-import React from 'react';
+import useArchetypes from './useArchetypes';
 
-export function FieldEmptyStateIndicator({ isEmpty }: { isEmpty: boolean }) {
-	return isEmpty ? undefined : (
-		<Tooltip title={<FormattedMessage defaultMessage="Complete" />}>
-			<CheckRounded fontSize="small" color="success" />
-		</Tooltip>
-	);
+export function useArchetypesList() {
+	const archetypes = useArchetypes();
+	return archetypes ? Object.values(archetypes) : null;
 }
 
-export default FieldEmptyStateIndicator;
+export default useArchetypesList;
