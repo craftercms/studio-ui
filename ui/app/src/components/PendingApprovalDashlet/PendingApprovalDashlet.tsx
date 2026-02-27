@@ -322,7 +322,7 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
 							<ListItemText
 								primary={
 									<FormattedMessage
-										defaultMessage="<bold>{title}</bold> awaiting approval ({total} items)"
+										defaultMessage="<bold>{title}</bold> awaiting approval ({total} {total, plural, one {item} other {items}})"
 										values={{
 											title: pkg.title,
 											total: pkg.itemCount,
