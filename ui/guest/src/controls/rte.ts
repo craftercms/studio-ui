@@ -128,7 +128,6 @@ export function initTinyMCE(
 	record.element.classList.remove(emptyFieldClass);
 
 	const maxLength = validations?.maxLength ? parseInt(validations.maxLength.value) : null;
-
 	window.tinymce.init({
 		license_key: 'gpl',
 		target: rteEl,
