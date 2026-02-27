@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import ContentType, { ContentTypeField } from '../../../models/ContentType';
+import ContentType, { type ContentTypeField } from '../../../models/ContentType';
 import type { BuiltInControlType } from './controlMap';
 import LookupTable from '../../../models/LookupTable';
 import { XmlKeys } from './formConsts';
@@ -28,6 +28,7 @@ import { withIndex } from '../../../utils/path';
 import { FormsEngineItemMetaContextProps } from './formsEngineContext';
 import { validateDatePopulateExpression } from './controlHelpers';
 import type { DescriptorControlType } from '../../ContentTypeManagement/controlMap';
+import type { RepeatItem } from '../controls/Repeat';
 import { NodeSelectorItem } from '../controls/NodeSelector';
 
 interface ValidatorMetaData {
@@ -43,7 +44,8 @@ type ValidatorFunctionDef = (
 	meta: ValidatorMetaData
 ) => Promise<boolean> | boolean;
 export const validatorsMap: Partial<Record<BuiltInControlType | DescriptorControlType, ValidatorFunctionDef>> = {
-	repeat: undefined,
+	repeat: (field, currentValue, messages, meta) =>
+		repeatGroupValidator(field, currentValue as Array<RepeatItem>, messages, meta),
 	'auto-filename': undefined,
 	'aws-file-upload': undefined,
 	'checkbox-group': undefined,
@@ -235,6 +237,60 @@ export function dateTimeExpressionInputValidator(field, currentValue: string, me
 	if (!isValid) {
 		messages.push(defineMessage({ defaultMessage: 'The expression is not valid.' }));
 	}
+	return isValid;
+}
+
+export async function repeatGroupValidator(
+	field: ContentTypeField,
+	currentValue: Array<RepeatItem>,
+	messages: FieldValidityState['messages'],
+	meta: ValidatorMetaData
+): Promise<boolean> {
+	let isValid = true;
+	const minOccurs: number = getPropertyValue(field.properties, 'minOccurs') as number;
+	const maxOccurs: number = getPropertyValue(field.properties, 'maxOccurs') as number;
+
+	// Validate repeat group restrictions (min/max occurrences)
+	if (nnou(minOccurs) && currentValue.length < minOccurs) {
+		messages?.push([
+			defineMessage({ defaultMessage: 'At least {minOccurs} occurrence(s) are required.' }),
+			{ minOccurs }
+		]);
+		isValid = false;
+	}
+	if (nnou(maxOccurs) && currentValue.length > maxOccurs) {
+		messages?.push([
+			defineMessage({ defaultMessage: 'No more than {maxOccurs} occurrence(s) are allowed.' }),
+			{ maxOccurs }
+		]);
+		isValid = false;
+	}
+
+	// If there are no items, return validation result (items validation is not needed if there are no items)
+	if (currentValue.length === 0) return isValid;
+
+	const fields = field.fields;
+	if (!fields) return isValid;
+
+	const validationPromises: Promise<FieldValidityState>[] = [];
+
+	// Validate fields of each repeat group item
+	currentValue?.forEach((item) => {
+		Object.values(fields).forEach((subField) => {
+			const id = subField.id;
+			const value = item[id];
+			const validationPromise = validateFieldValue(subField, value, meta);
+			validationPromises.push(validationPromise);
+		});
+	});
+
+	const results = await Promise.all(validationPromises);
+	// let isValid = true;
+	results.forEach((result) => {
+		if (!result.isValid) {
+			isValid = false;
+		}
+	});
 	return isValid;
 }
 

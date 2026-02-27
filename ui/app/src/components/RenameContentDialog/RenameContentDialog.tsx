@@ -24,6 +24,10 @@ import { parseLegacyItemToContentItem } from '../../utils/content';
 import useWithPendingChangesCloseRequest from '../../hooks/useWithPendingChangesCloseRequest';
 import { ensureSingleSlash, isBlank } from '../../utils/string';
 import { ContentItem } from '../../models';
+import { getHostToHostBus } from '../../utils/subjects';
+import { filter } from 'rxjs/operators';
+import { contentEvent } from '../../state/actions/system';
+import useUpdateRefs from '../../hooks/useUpdateRefs';
 
 export interface RenameContentDialogProps extends EnhancedDialogProps {
 	path: string;
@@ -35,11 +39,14 @@ export interface RenameContentDialogProps extends EnhancedDialogProps {
 
 export function RenameContentDialog(props: RenameContentDialogProps) {
 	const { path, value, validRenameValue, onRenamed, ...dialogProps } = props;
-	const [dependantItems, setDependantItems] = useState<ContentItem[]>(null);
+	const [dependantItems, setDependantItems] = useState<ContentItem[]>([]);
 	const [fetchingDependantItems, setFetchingDependantItems] = useState(false);
 	const [error, setError] = useState(null);
 	const siteId = useActiveSiteId();
 	const pendingChangesCloseRequest = useWithPendingChangesCloseRequest(dialogProps.onClose);
+	const refs = useUpdateRefs({
+		dependantItems
+	});
 
 	const fetchDependant = useCallback(() => {
 		setFetchingDependantItems(true);
@@ -63,8 +70,23 @@ export function RenameContentDialog(props: RenameContentDialogProps) {
 	useEffect(() => {
 		if (!isBlank(value) && !isBlank(path)) {
 			fetchDependant();
+			const hostToHost$ = getHostToHostBus();
+			const subscription = hostToHost$
+				.pipe(
+					filter((e) => {
+						const isContentEvent = e.type === contentEvent.type;
+						if (!isContentEvent) return false;
+						return refs.current.dependantItems.some((dependant) => dependant.path === e.payload?.targetPath);
+					})
+				)
+				.subscribe(() => {
+					fetchDependant();
+				});
+			return () => {
+				subscription.unsubscribe();
+			};
 		}
-	}, [fetchDependant, path, value]);
+	}, [fetchDependant, path, value, refs]);
 
 	return (
 		<EnhancedDialog
