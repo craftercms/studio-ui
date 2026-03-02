@@ -75,7 +75,7 @@ export const controlMap: Record<BuiltInControlType, ElementType> = {
 	textarea: lazy(() => import('../controls/Textarea')),
 	time: lazy(() => import('../controls/Time')),
 	'transcoded-video-picker': null,
-	uuid: null,
+	uuid: lazy(() => import('../controls/Uuid')),
 	'video-picker': null,
 	colorPicker: lazy(() => import('../controls/ColorPicker'))
 };
