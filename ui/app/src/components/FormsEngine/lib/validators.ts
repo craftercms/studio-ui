@@ -30,6 +30,7 @@ import { getPropertyValue } from './formUtils';
 import { validateDatePopulateExpression } from './controlHelpers';
 import type { DescriptorControlType } from '../../ContentTypeManagement/controlMap';
 import type { RepeatItem } from '../controls/Repeat';
+import { getValidationValue } from './formUtils';
 
 interface ValidatorMetaData {
 	siteId: string;
@@ -56,7 +57,7 @@ export const validatorsMap: Partial<Record<BuiltInControlType | DescriptorContro
 		fileNameValidator(field, currentValue as string, messages, meta),
 	forcehttps: undefined,
 	'image-picker': undefined,
-	input: undefined,
+	input: (field, currentValue, messages) => inputValidator(field, currentValue as string, messages),
 	'internal-name': undefined,
 	label: undefined,
 	'link-input': undefined,
@@ -64,10 +65,10 @@ export const validatorsMap: Partial<Record<BuiltInControlType | DescriptorContro
 	'linked-dropdown': undefined,
 	'locale-selector': undefined,
 	'node-selector': undefined,
-	'numeric-input': undefined,
+	'numeric-input': (field, currentValue, messages) => numericInputValidator(field, currentValue as number, messages),
 	'page-nav-order': undefined,
 	rte: undefined,
-	textarea: undefined,
+	textarea: (field, currentValue, messages) => inputValidator(field, currentValue as string, messages),
 	time: undefined,
 	'transcoded-video-picker': undefined,
 	uuid: undefined,
@@ -292,6 +293,90 @@ export async function repeatGroupValidator(
 			isValid = false;
 		}
 	});
+	return isValid;
+}
+
+/**
+ * Validates the input value of a field based on its pattern and maximum length.
+ *
+ * @param {ContentTypeField} field - The metadata of the field being validated, including its validation rules.
+ * @param {string} currentValue - The current value of the field to validate.
+ * @param {FieldValidityMessage[]} [messages] - An optional array to store validation messages if the value is invalid.
+ * @returns {boolean} - Returns `true` if the input value is valid; otherwise, `false`.
+ *
+ */
+export function inputValidator(
+	field: ContentTypeField,
+	currentValue: string,
+	messages?: FieldValidityMessage[]
+): boolean {
+	let isValid = true;
+	// Skip validation if value is empty and field is not required
+	if (currentValue == null || (typeof currentValue === 'string' && currentValue.trim() === '')) {
+		return isValid;
+	}
+	const pattern = field.validations.pattern?.value as string;
+	const maxLength: number | undefined = getValidationValue(field.validations, 'maxLength');
+	// If there's a pattern and it doesn't match, it's invalid.
+	if (pattern && !String(currentValue).match(pattern)) {
+		messages?.push([defineMessage({ defaultMessage: 'The value does not match the required pattern.' })]);
+		isValid = false;
+	}
+
+	if (nnou(maxLength) && currentValue.length > maxLength) {
+		messages?.push([
+			defineMessage({ defaultMessage: `The value is greater than the allowed maximum ({maxLength}).` }),
+			{ maxLength }
+		]);
+		isValid = false;
+	}
+	return isValid;
+}
+
+/**
+ * Validates a numeric input value based on its pattern, maximum value, and minimum value.
+ *
+ * @param {ContentTypeField} field - The metadata of the field being validated, including its validation rules.
+ * @param {number} currentValue - The current numeric value of the field to validate.
+ * @param {FieldValidityMessage[]} messages - An array to store validation messages if the value is invalid.
+ * @returns {boolean} - Returns `true` if the numeric value is valid; otherwise, `false`.
+ *
+ */
+export function numericInputValidator(
+	field: ContentTypeField,
+	currentValue: number,
+	messages: FieldValidityMessage[]
+): boolean {
+	let isValid = true;
+	const pattern: string = getValidationValue(field.validations, 'pattern');
+	const maxValue: number = getValidationValue(field.validations, 'maxValue');
+	const minValue: number = getValidationValue(field.validations, 'minValue');
+
+	if (nou(currentValue) || Number.isNaN(Number(currentValue))) {
+		return isValid;
+	}
+
+	// If there's a pattern and it doesn't match
+	if (pattern && !String(currentValue).match(pattern)) {
+		messages.push([defineMessage({ defaultMessage: 'The value does not match the required pattern.' })]);
+		isValid = false;
+	}
+	// If there's a max and the value is greater than the max
+	if (maxValue != null && Number(currentValue) > Number(maxValue)) {
+		messages.push([
+			defineMessage({ defaultMessage: `The value is greater than the allowed maximum ({maxValue}).` }),
+			{ maxValue }
+		]);
+		isValid = false;
+	}
+	// If there's a min and the value is less than the min
+	if (minValue != null && Number(currentValue) < Number(minValue)) {
+		messages.push([
+			defineMessage({ defaultMessage: 'The value is less than the minimum ({minValue}).' }),
+			{ minValue }
+		]);
+		isValid = false;
+	}
 	return isValid;
 }
 
