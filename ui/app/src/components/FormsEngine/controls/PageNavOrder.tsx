@@ -58,10 +58,12 @@ export function PageNavOrder(props: PageNavOrderProps) {
 		fetching: boolean;
 		error: ApiResponse | null;
 		order: TItem<PageNavItem>[] | null;
+		changedOrder: boolean;
 	}>({
 		fetching: false,
 		error: null,
-		order: null
+		order: null,
+		changedOrder: false
 	});
 	const contextItem = useItemContext();
 	const currentPath = contextItem?.path;
@@ -114,6 +116,7 @@ export function PageNavOrder(props: PageNavOrderProps) {
 		//  the current item, and no other items can be re-arranged.
 		reorderNavItems(siteId, currentPath, previewItemPath, nextItemPath).subscribe({
 			next: () => {
+				// TODO: After implementing additional fields support, this needs to set the order value for the current item.
 				dispatch(showSystemNotification({ message: formatMessage({ defaultMessage: 'Navigation items reordered.' }) }));
 			},
 			error: ({ response }) => {
@@ -171,9 +174,11 @@ export function PageNavOrder(props: PageNavOrderProps) {
 						<SortableList
 							items={pagesOrderState.order ?? []}
 							selectedItemId={currentPath}
+							onlySelectedSortable={true}
 							onChange={(fields: TItem<PageNavItem>[]) =>
 								setPagesOrderState({
-									order: fields
+									order: fields,
+									changedOrder: true
 								})
 							}
 						/>
@@ -184,7 +189,11 @@ export function PageNavOrder(props: PageNavOrderProps) {
 						<FormattedMessage defaultMessage="Cancel" />
 					</SecondaryButton>
 					<PrimaryButton autoFocus onClick={handleUpdateOrder}>
-						<FormattedMessage defaultMessage="Save" />
+						{pagesOrderState.changedOrder ? (
+							<FormattedMessage defaultMessage="Save" />
+						) : (
+							<FormattedMessage defaultMessage="Close" />
+						)}
 					</PrimaryButton>
 				</DialogFooter>
 			</EnhancedDialog>
