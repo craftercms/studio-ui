@@ -40,9 +40,7 @@ export function Text(props: TextProps) {
 				autoFocus={autoFocus}
 				id={htmlId}
 				fullWidth
-				inputProps={{
-					maxLength
-				}}
+				inputProps={{ maxLength }}
 				value={value}
 				onChange={handleChange}
 				disabled={readonly}
