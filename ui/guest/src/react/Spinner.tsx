@@ -26,19 +26,21 @@ export interface SpinnerProps {
 }
 
 export function Spinner(props: SpinnerProps) {
+	const {
+		width = 50,
+		height = 50,
+		strokeWidth = 6,
+		className = 'spinner',
+		strokeLineCap = 'round',
+		circleClassName = 'path'
+	} = props;
 	return (
-		<svg
-			className={props.className}
-			width={props.width}
-			height={props.height}
-			viewBox="0 0 66 66"
-			xmlns="http://www.w3.org/2000/svg"
-		>
+		<svg className={className} width={width} height={height} viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">
 			<circle
-				className={props.circleClassName}
+				className={circleClassName}
 				fill="none"
-				strokeWidth={props.strokeWidth}
-				strokeLinecap={props.strokeLineCap}
+				strokeWidth={strokeWidth}
+				strokeLinecap={strokeLineCap}
 				cx="33"
 				cy="33"
 				r="30"
@@ -46,14 +48,5 @@ export function Spinner(props: SpinnerProps) {
 		</svg>
 	);
 }
-
-Spinner.defaultProps = {
-	width: 50,
-	height: 50,
-	strokeWidth: 6,
-	className: 'spinner',
-	strokeLineCap: 'round',
-	circleClassName: 'path'
-};
 
 export default Spinner;

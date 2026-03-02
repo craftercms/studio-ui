@@ -49,7 +49,7 @@ import { defineMessage } from 'react-intl';
 export const commonDataSourceDescriptors: LookupTable<DescriptorField> = {
 	title: {
 		id: 'title',
-		type: 'input',
+		type: 'string',
 		name: defineMessage({ defaultMessage: 'Title' }),
 		defaultValue: undefined,
 		validations: {

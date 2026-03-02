@@ -51,14 +51,14 @@ export const imagePickerDescriptor: DescriptorContentType = {
 		},
 		thumbnailWidth: {
 			id: 'thumbnailWidth',
-			type: 'numeric-input',
+			type: 'int',
 			name: defineMessage({ defaultMessage: 'Thumbnail Width' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		thumbnailHeight: {
 			id: 'thumbnailHeight',
-			type: 'numeric-input',
+			type: 'int',
 			name: defineMessage({ defaultMessage: 'Thumbnail Height' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
@@ -74,20 +74,22 @@ export const imagePickerDescriptor: DescriptorContentType = {
 		},
 		readonly: {
 			id: 'readonly',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Read Only' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		required: {
 			id: 'required',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Required' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}
 	},
-	supportedPostFixes: ['_s']
+	metadata: {
+		suffixes: ['_s']
+	}
 };
 
 export default imagePickerDescriptor;

@@ -30,7 +30,7 @@ import { ensureSingleSlash } from '../../utils/string';
 import { UppyDashboardProps } from './UppyDashboardProps';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Box from '@mui/material/Box';
-import type { DashboardOptions } from '@uppy/dashboard';
+import type { DashboardOptions } from 'uppy';
 
 const translations = defineMessages({
 	cancelPending: {
@@ -105,6 +105,15 @@ const translations = defineMessages({
 	},
 	proceedSingle: {
 		defaultMessage: 'Start Upload'
+	},
+	browseFiles: {
+		defaultMessage: 'browse files'
+	},
+	browseFolders: {
+		defaultMessage: 'browse folders'
+	},
+	dropPasteBoth: {
+		defaultMessage: 'Drop files here, {browseFiles} or {browseFolders}'
 	}
 });
 
@@ -151,8 +160,8 @@ export function UppyDashboard(props: UppyDashboardProps) {
 			...options,
 			inline: true,
 			target: ref.current,
-			// TODO: Check our Dashboard component typings
-			// @ts-expect-error validateActionPolicy is a prop of @craftercms/uppy/plugins/Dashboard, and not in the type definition of uppy's dashboard.
+			singleFileFullScreen: false,
+			proudlyDisplayPoweredByUppy: false,
 			validateActionPolicy,
 			onPendingChanges: function () {
 				functionsRef.current.onPendingChanges.apply(null, arguments);
@@ -169,7 +178,6 @@ export function UppyDashboard(props: UppyDashboardProps) {
 			path: ensureSingleSlash(`${path}/`),
 			locale: {
 				strings: {
-					// @ts-ignore - TODO: find substitution(s)
 					cancelPending: formatMessage(translations.cancelPending),
 					clearCompleted: formatMessage(translations.clearCompleted),
 					clear: formatMessage(translations.clear),
@@ -185,14 +193,29 @@ export function UppyDashboard(props: UppyDashboardProps) {
 					minimize: formatMessage(translations.minimize),
 					close: formatMessage(translations.close),
 					proceed: formatMessage(translations.proceed),
-					proceedSingle: formatMessage(translations.proceedSingle)
+					proceedSingle: formatMessage(translations.proceedSingle),
+					browseFiles: formatMessage(translations.browseFiles),
+					browseFolders: formatMessage(translations.browseFolders),
+					dropPasteBoth: formatMessage(translations.dropPasteBoth, {
+						// These values are for uppy's mechanism to replace the placeholders with links
+						browseFiles: '%{browseFiles}',
+						browseFolders: '%{browseFolders}'
+					})
 				},
 				pluralize: (n: number) => (n === 1 ? 0 : 1)
 			},
 			maxActiveUploads,
 			externalMessages: {
 				maxFiles: formatMessage(translations.maxFiles, { maxFiles: maxActiveUploads }),
-				projectPoliciesChangeRequired: (fileName, detail) => detail,
+				projectPoliciesChangeRequired: (fileName, suggestedFileName) => {
+					return formatMessage(
+						{
+							defaultMessage:
+								'Path `{fileName}` was transformed to `{suggestedFileName}` per the project file name policy'
+						},
+						{ fileName, suggestedFileName }
+					);
+				},
 				projectPoliciesNoComply: (fileName, detail) => {
 					return formatMessage(translations.projectPoliciesNoComply, { fileName, detail });
 				}

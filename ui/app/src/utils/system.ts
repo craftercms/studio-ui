@@ -74,7 +74,7 @@ export function withMonaco(onReady: (api: Monaco) => void): void {
 	if (!monaco$) {
 		monaco$ = new ReplaySubject(1);
 		const script = document.createElement('script');
-		script.src = '/studio/static-assets/libs/monaco/monaco.0.53.0.js';
+		script.src = '/studio/static-assets/libs/monaco/monaco.0.54.0.js';
 		script.onload = () => {
 			// @ts-ignore
 			monaco$.next(window.monaco);
@@ -122,7 +122,7 @@ export function pickShowContentFormAction(oldProps: LegacyFormDialogProps) {
 					formProps: {
 						...(oldProps.isNewContent
 							? { create: { path: oldProps.path, contentTypeId: oldProps.contentTypeId } }
-							: { update: { path: oldProps.path } }),
+							: { update: { path: oldProps.path, changeTypeId: oldProps.changeTemplate } }),
 						readonly: oldProps.readonly ?? false,
 						onSave() {
 							if (isPreviewAppUrl()) getHostToGuestBus().next(reloadRequest());

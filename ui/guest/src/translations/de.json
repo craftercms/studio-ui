@@ -1,0 +1,23 @@
+{
+  "contentType.contentNotFound": "Inhalt nicht gefunden.",
+  "words.edit": "Bearbeiten",
+  "words.move": "Bewegen ",
+  "words.no": "Nein",
+  "words.options": "Optionen",
+  "words.yes": "Ja",
+  "zoneMarker.allTypes": "Alle Arten",
+  "zoneMarker.dropTargetInfo": "Ziel mit {type} als {modes}ablegen",
+  "zoneMarker.existingShared": "bestehende gemeinsame",
+  "zoneMarker.lockedBy": "Gesperrt von {username}",
+  "zoneMarker.modifiedItem": "Der Artikel wurde geändert. Aktualisieren Sie die Seite, um die Bearbeitung zu aktivieren.",
+  "zoneMarker.notEditable": "Nicht bearbeitbar",
+  "zoneMenu.addItem": "Neues Element hinzufügen",
+  "zoneMenu.cancel": "Abbrechen (Esc)",
+  "zoneMenu.duplicateItem": "Doppelter Artikel",
+  "zoneMenu.editController": "Bearbeiten Sie den Controller",
+  "zoneMenu.editTemplate": "Vorlage bearbeiten",
+  "zoneMenu.moveDown": "Nach unten/rechts bewegen (→ oder ↓)",
+  "zoneMenu.moveUp": "Nach oben/links bewegen (← oder ↑)",
+  "zoneMenu.trash": "Müll (⌫)",
+  "zoneMenu.trashConfirmation": "{isEmbedded, select, true {Löschen} other {Dissoziieren}} Dieser Artikel?"
+}

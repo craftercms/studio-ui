@@ -516,7 +516,6 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
 					<PluginCard
 						plugin={item}
 						onPluginSelected={handleBlueprintSelected}
-						changeImageSlideInterval={5000}
 						isMarketplacePlugin={isMarketplace}
 						onDetails={onDetails}
 						disableCardActionClick={disableCard}

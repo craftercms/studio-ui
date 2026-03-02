@@ -20,21 +20,41 @@ import GlobalState from '../../../models/GlobalState';
 import { FormattedMessage, useIntl } from 'react-intl';
 import useActiveSiteId from '../../../hooks/useActiveSiteId';
 import React, { useContext } from 'react';
-import { FormsEngineFormContextApi, ItemMetaContext, StableFormContext } from './formsEngineContext';
-import { createObjectWithSystemProps, extractAtomValues, showAlert } from './formUtils';
+import {
+	FormsEngineFormContextApi,
+	ItemContext,
+	ItemMetaContext,
+	RenamedPathContext,
+	StableFormContext
+} from './formsEngineContext';
+import {
+	composePathForType,
+	createObjectWithSystemProps,
+	extractAtomValues,
+	getBasePath,
+	getFileNameValueFromPath,
+	showAlert
+} from './formUtils';
 import { FormSavePromiseResult, FormsEngineProps } from '../FormsEngine';
 import { XmlKeys } from './formConsts';
 import { fromString } from '../../../utils/xml';
-import { ensureSingleSlash } from '../../../utils/string';
-import { writeContent } from '../../../services/content';
+import { moveAndUpdateContent, writeContent } from '../../../services/content';
 import { AjaxError } from 'rxjs/ajax';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { buildContentXml } from './valueSerializers';
 import { flushSync } from 'react-dom';
 import LookupTable from '../../../models/LookupTable';
-import { checkMinimumSaveRequirementsFulfilled } from './validators';
+import { checkMinimumSaveRequirementsFulfilled, isInternalNameValid } from './validators';
 import ContentType from '../../../models/ContentType';
+import { cancelPackages } from '../../../services/workflow';
+import { switchMap } from 'rxjs';
+import { validateActionPolicy } from '../../../services/sites';
+import { createComponentId, pushConfirmDialog } from '../../../utils/system';
+import { nanoid } from 'nanoid';
+import { popDialog, pushDialog } from '../../../state/actions/dialogStack';
+import { atom, PrimitiveAtom, useAtom } from 'jotai';
+import { showSystemNotification } from '../../../state/actions/system';
 
 export interface UseSaveFormProps {
 	createPath?: string;
@@ -57,16 +77,40 @@ export function useSaveForm(props: UseSaveFormProps) {
 	const siteId = useActiveSiteId();
 	const { isEmbedded, isRepeatMode, isCreateMode, onClose, createPath } = props;
 	const { id, contentType, contentObject, path: itemPath } = useContext(ItemMetaContext);
+	const isPage = contentType.type === 'page';
 	const stableFormContext = useContext(StableFormContext);
+	const { affectedPackages } = useAtomValue(stableFormContext.atoms.lockResult);
 	const formContextApi = useContext(FormsEngineFormContextApi);
 	const setIsSubmitting = useSetAtom(stableFormContext.atoms.isSubmitting);
 	const closeAfterSave = useAtomValue(stableFormContext.atoms.closeAfterSave);
 	const versionComment = useAtomValue(stableFormContext.atoms.versionComment);
 	const setHasPendingChanges = useSetAtom(stableFormContext.atoms.hasPendingChanges);
 	const onSave = wrapOnSaveProp(props.onSave);
-	return () => {
+	const fileName = useAtomValue(stableFormContext.atoms.fileName);
+	const { setRenamedPath } = useContext(RenamedPathContext);
+	const initialFileName = itemPath ? getFileNameValueFromPath(itemPath, isPage) : '';
+	const item = useContext(ItemContext);
+	return async () => {
 		const values = extractAtomValues(jotai, stableFormContext.atoms.valueByFieldId);
+		const validityStates = await Promise.all(
+			Object.values(stableFormContext.atoms.validationByFieldId).map((validityDataAtom) => jotai.get(validityDataAtom))
+		);
+		// Put system properties in before creating the XML
+		const saveAsDraft = validityStates.some((state) => !state.isValid);
+
 		const onSavePromiseHandler = ({ close }: FormSavePromiseResult) => {
+			if (saveAsDraft) {
+				// Show a snack indicating that the item was saved as draft.
+				dispatch(
+					showSystemNotification({
+						options: { variant: 'warning' },
+						message: formatMessage({
+							defaultMessage: 'Draft saved. Required fields left blank may cause errors when previewed or deployed.'
+						})
+					})
+				);
+			}
+
 			flushSync(() => {
 				setIsSubmitting(false);
 				setHasPendingChanges(false);
@@ -80,47 +124,52 @@ export function useSaveForm(props: UseSaveFormProps) {
 			(onSave?.({ values, versionComment }) as Promise<FormSavePromiseResult>)?.then(onSavePromiseHandler);
 			return;
 		}
-		// Put system properties in before creating the XML
-		const saveAsDraft = Object.values(stableFormContext.atoms.validationByFieldId).some(
-			(validityDataAtom) => !jotai.get(validityDataAtom).isValid
-		);
+
 		complementValuesWithSystemProps(id, values, contentObject, contentType, saveAsDraft);
-		// Validate minimum requirements to save as draft. Execution stops if minimum reqs aren't fulfilled.
-		if (!checkMinimumSaveRequirementsFulfilled(values)) {
-			return showAlert({
-				dispatch,
-				message: formatMessage(
-					{ defaultMessage: 'You need a {fileName} and {internalName} at a minimum to save content.' },
-					{
-						fileName: contentType.fields[XmlKeys.fileName].name,
-						internalName: contentType.fields[XmlKeys.internalName].name
-					}
-				)
-			});
-		}
-		const xml = buildContentXml(values, store.getState().contentTypes.byId);
+		const { [XmlKeys.fileName]: _, ...valuesWithoutFileName } = values;
+		const xml = buildContentXml(valuesWithoutFileName, store.getState().contentTypes.byId);
 		// Embedded handled here. If true, execution ends inside if statement.
 		if (isEmbedded) {
+			// Validate minimum embedded requirements to save as draft. Execution stops if minimum reqs aren't fulfilled.
+			if (!isInternalNameValid(values)) {
+				return showAlert({
+					dispatch,
+					message: formatMessage(
+						{ defaultMessage: 'You need an {internalName} at a minimum to save content.' },
+						{ internalName: contentType.fields[XmlKeys.internalName].name }
+					)
+				});
+			}
+
 			const dom = fromString(xml);
 			(onSave?.({ dom, xml, values, versionComment }) as Promise<FormSavePromiseResult>)?.then(onSavePromiseHandler);
 			return;
 		}
 		setIsSubmitting(true);
 		let path: string;
+		let renamePath: string;
+		const isRename = !isCreateMode && fileName !== initialFileName;
 		if (isCreateMode) {
-			path = ensureSingleSlash(`${createPath}/${values[XmlKeys.folderName]}/${values[XmlKeys.fileName]}`);
+			path = composePathForType(createPath, fileName, contentType);
 		} /* is a plain update (page or component) */ else {
-			path = itemPath;
+			if (isRename) {
+				const basePath = getBasePath(itemPath, isPage);
+				path = composePathForType(basePath, fileName, contentType);
+				renamePath = path;
+			} else {
+				path = itemPath;
+			}
 		}
-		// TODO: Temporary playground save path. Remove.
-		// path = '/site/website/fe2-save-result.xml';
-		// TODO: validateActionPolicy. See FE1 saveFn.
-		// TODO: write-content url on FE1 sends phase, path, fileName, contentType QSAs. Important?
-		// TODO: Cancel packages when needed.
-		writeContent(siteId, path, xml).subscribe({
-			next() {
+
+		const saveActionCallbacks = {
+			async next() {
 				const dom = fromString(xml);
-				(onSave?.({ dom, xml, values, versionComment }) as Promise<FormSavePromiseResult>)?.then(onSavePromiseHandler);
+				const result = (await onSave?.({ dom, xml, values, versionComment, path })) as FormSavePromiseResult;
+				const shouldClose = result.close || closeAfterSave;
+				if (isRename && !shouldClose) {
+					setRenamedPath(renamePath);
+				}
+				onSavePromiseHandler(result);
 			},
 			error(error: AjaxError) {
 				setIsSubmitting(false);
@@ -138,6 +187,122 @@ export function useSaveForm(props: UseSaveFormProps) {
 					)
 				});
 			}
+		};
+
+		// Validate minimum requirements to save as draft. Execution stops if minimum reqs aren't fulfilled.
+		const minimumRequirementsFullfilled = await checkMinimumSaveRequirementsFulfilled(
+			jotai.get(stableFormContext.atoms.validationByFieldId[XmlKeys['fileName']]),
+			values
+		);
+		if (!minimumRequirementsFullfilled) {
+			setIsSubmitting(false);
+			return showAlert({
+				dispatch,
+				message: formatMessage(
+					{ defaultMessage: 'You need a valid {fileName} and {internalName} at a minimum to save content.' },
+					{
+						fileName: contentType.fields[XmlKeys.fileName].name,
+						internalName: contentType.fields[XmlKeys.internalName].name
+					}
+				)
+			});
+		}
+
+		// TODO: write-content url on FE1 sends phase, path, fileName, contentType QSAs. Important?
+		const saveContent = () => {
+			const saveOrMoveService$ = isRename
+				? moveAndUpdateContent(siteId, itemPath, path, xml)
+				: writeContent(siteId, path, xml);
+			const saveOrCancel$ = affectedPackages?.length
+				? cancelPackages(siteId, {
+						packageIds: affectedPackages.map((pkg) => pkg.id),
+						// TODO: Correct comment generation
+						comment: `Cancel packages to write on "${path}`
+					}).pipe(
+						switchMap(() => {
+							return saveOrMoveService$;
+						})
+					)
+				: saveOrMoveService$;
+
+			saveOrCancel$.subscribe(saveActionCallbacks);
+		};
+
+		// If there are affected packages, show ViewPackagesDialog dialog first, to let user know that packages will be cancelled
+		const checkWorkflow = () => {
+			if (affectedPackages?.length) {
+				const dialogId = nanoid();
+				dispatch(
+					pushDialog({
+						id: dialogId,
+						component: createComponentId('ViewPackagesDialog'),
+						props: {
+							item,
+							onContinue: () => {
+								saveContent();
+								dispatch(popDialog({ id: dialogId }));
+							},
+							onClose: () => {
+								setIsSubmitting(false);
+								dispatch(popDialog({ id: dialogId }));
+							}
+						}
+					})
+				);
+			} else {
+				saveContent();
+			}
+		};
+
+		// Validate site policy, if allowed, proceed to check workflow
+		const dialogId = nanoid();
+		validateActionPolicy(siteId, {
+			type: 'CREATE',
+			target: path,
+			contentMetadata: { contentType: contentType.id }
+		}).subscribe(({ allowed, modifiedValue }) => {
+			if (allowed) {
+				if (modifiedValue) {
+					dispatch(
+						pushConfirmDialog({
+							id: dialogId,
+							props: {
+								body: formatMessage(
+									{
+										defaultMessage:
+											'The {originalPath} path goes against project policies. Suggested modified path is: "{path}". Would you like to use the suggested path?'
+									},
+									{
+										originalPath: path,
+										path: modifiedValue
+									}
+								),
+								onOk: () => {
+									dispatch(popDialog({ id: dialogId }));
+									checkWorkflow();
+								},
+								onCancel: () => {
+									setIsSubmitting(false);
+									dispatch(popDialog({ id: dialogId }));
+								}
+							}
+						})
+					);
+				} else {
+					checkWorkflow();
+				}
+			} else {
+				setIsSubmitting(false);
+				dispatch(
+					pushConfirmDialog({
+						id: dialogId,
+						props: {
+							body: formatMessage({ defaultMessage: 'This content goes against project policies.' }),
+							onOk: () => dispatch(popDialog({ id: dialogId }))
+						}
+					})
+				);
+			}
 		});
 	};
 }
@@ -152,12 +317,11 @@ function complementValuesWithSystemProps(
 	const systemProps = createObjectWithSystemProps(contentType, {
 		[XmlKeys.modelId]: id,
 		[XmlKeys.internalName]: values[XmlKeys.internalName] as string,
-		[XmlKeys.fileName]: (values[XmlKeys.fileName] ?? contentObject[XmlKeys.fileName]) as string,
-		[XmlKeys.folderName]: (values[XmlKeys.folderName] ?? contentObject[XmlKeys.folderName]) as string,
 		[XmlKeys.dateCreated]: contentObject[XmlKeys.dateCreated] as string,
 		[XmlKeys.dateCreatedDt]: contentObject[XmlKeys.dateCreatedDt] as string,
 		[XmlKeys.savedAsDraft]: saveAsDraft
 	});
+
 	// Do not overwrite any existing value.
 	for (const key in systemProps) {
 		if (!(key in values)) {

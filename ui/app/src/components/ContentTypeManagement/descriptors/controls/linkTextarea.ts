@@ -37,35 +37,35 @@ export const linkTextareaDescriptor: DescriptorContentType = {
 	fields: {
 		rows: {
 			id: 'rows',
-			type: 'numeric-input',
+			type: 'int',
 			name: defineMessage({ defaultMessage: 'Rows' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		maxlength: {
 			id: 'maxlength',
-			type: 'numeric-input',
+			type: 'int',
 			name: defineMessage({ defaultMessage: 'Maximum Length' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		allowResize: {
 			id: 'allowResize',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Allow Resize' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		readonly: {
 			id: 'readonly',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Read Only' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		required: {
 			id: 'required',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Required' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject

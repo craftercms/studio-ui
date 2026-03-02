@@ -32,20 +32,22 @@ export const repeatDescriptor: DescriptorContentType = {
 	fields: {
 		minOccurs: {
 			id: 'minOccurs',
-			type: 'numeric-input',
+			type: 'int',
 			name: defineMessage({ defaultMessage: 'Minimum Occurrences' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		maxOccurs: {
 			id: 'maxOccurs',
-			type: 'numeric-input',
+			type: 'int',
 			name: defineMessage({ defaultMessage: 'Maximum Occurrences' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}
 	},
-	supportedPostFixes: ['_o']
+	metadata: {
+		suffixes: ['_o']
+	}
 };
 
 export default repeatDescriptor;

@@ -46,7 +46,7 @@ export const checkboxGroupDescriptor: DescriptorContentType = {
 		},
 		selectAll: {
 			id: 'selectAll',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Show select all' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
@@ -71,20 +71,22 @@ export const checkboxGroupDescriptor: DescriptorContentType = {
 		},
 		readonly: {
 			id: 'readonly',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Read Only' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		minSize: {
 			id: 'minSize',
-			type: 'numeric-input',
+			type: 'int',
 			name: defineMessage({ defaultMessage: 'Minimum Selected' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		}
 	},
-	supportedPostFixes: ['_o']
+	metadata: {
+		suffixes: ['_o']
+	}
 };
 
 export default checkboxGroupDescriptor;

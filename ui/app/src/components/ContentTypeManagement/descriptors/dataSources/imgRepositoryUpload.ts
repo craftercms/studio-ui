@@ -43,7 +43,7 @@ export const imgRepositoryUploadDataSourceDescriptor: DescriptorContentType = {
 		},
 		useSearch: {
 			id: 'useSearch',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Use Search' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
