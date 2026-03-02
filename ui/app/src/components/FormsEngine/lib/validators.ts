@@ -308,7 +308,8 @@ export async function repeatGroupValidator(
 export function inputValidator(
 	field: ContentTypeField,
 	currentValue: string,
-	messages?: FieldValidityMessage[]
+	messages?: FieldValidityMessage[],
+	customValidationMessages?: LookupTable<MessageDescriptor>
 ): boolean {
 	let isValid = true;
 	// Skip validation if value is empty and field is not required
@@ -319,7 +320,10 @@ export function inputValidator(
 	const maxLength: number | undefined = getValidationValue(field.validations, 'maxLength');
 	// If there's a pattern and it doesn't match, it's invalid.
 	if (pattern && !String(currentValue).match(pattern)) {
-		messages?.push([defineMessage({ defaultMessage: 'The value does not match the required pattern.' })]);
+		messages?.push([
+			customValidationMessages?.['pattern'] ??
+				defineMessage({ defaultMessage: 'The value does not match the required pattern.' })
+		]);
 		isValid = false;
 	}
 
@@ -340,6 +344,7 @@ export function inputValidator(
  * @param {number} currentValue - The current numeric value of the field to validate.
  * @param {FieldValidityMessage[]} messages - An array to store validation messages if the value is invalid.
  * @returns {boolean} - Returns `true` if the numeric value is valid; otherwise, `false`.
+ * @param customValidationMessages - An optional lookup table of custom validation messages for specific validation rules.
  *
  */
 export function numericInputValidator(
