@@ -24,6 +24,7 @@ import { RepeatItem } from '../controls/Repeat';
 import { XMLBuilder, XmlBuilderOptions } from 'fast-xml-parser';
 import type { DescriptorControlType } from '../../ContentTypeManagement/controlMap';
 import { nnou } from '../../../utils/object';
+import { escapeXml } from '../../../utils/xml';
 
 const attributeNamePrefix = '@:';
 const cdataPropName = '__cdata__';
@@ -47,8 +48,8 @@ export const valueSerializersLookup: Record<BuiltInControlType | DescriptorContr
 	'file-name': undefined,
 	forcehttps: undefined,
 	'image-picker': undefined,
-	input: undefined,
-	string: undefined,
+	input: (field, value) => prepareString(field, value as string),
+	string: (field, value) => prepareString(field, value as string),
 	'internal-name': undefined,
 	label: undefined,
 	'link-input': undefined,
@@ -62,7 +63,7 @@ export const valueSerializersLookup: Record<BuiltInControlType | DescriptorContr
 	int: undefined,
 	'page-nav-order': undefined,
 	rte: prepareRTE,
-	textarea: undefined,
+	textarea: (field, value) => prepareString(field, value as string),
 	time: undefined,
 	'transcoded-video-picker': undefined,
 	uuid: undefined,
@@ -136,6 +137,11 @@ type XmlNuancedArrayFormat<T = unknown> = {
 } & {
 	item: T[];
 };
+
+function prepareString(field: ContentTypeField, value: string): string {
+	const escapeContent = (field.properties?.escapeContent?.value as boolean) ?? false;
+	return nnou(value) && escapeContent ? escapeXml(value as string) : value;
+}
 
 function prepareNodeSelector(
 	field: ContentTypeField,

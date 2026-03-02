@@ -20,7 +20,7 @@ import type { BuiltInControlType } from './controlMap';
 import type { RepeatItem } from '../controls/Repeat';
 import type { NodeSelectorItem } from '../controls/NodeSelector';
 import { systemFieldsNotInType, XmlKeys } from './formConsts';
-import { deserialize } from '../../../utils/xml';
+import { deserialize, unescapeXml } from '../../../utils/xml';
 import type { DescriptorControlType } from '../../ContentTypeManagement/controlMap';
 import { nnou } from '../../../utils/object';
 
@@ -181,8 +181,10 @@ export function arrayFieldExtractor(value: unknown): unknown[] {
 	return Array.isArray(value) ? value : ((value as Record<'item', unknown[]>)?.item ?? []);
 }
 
-export function textFieldExtractor(value: unknown): string {
-	return (value && String(value)) ?? '';
+export function textFieldExtractor(value: unknown, field?: ContentTypeField): string {
+	const escapeContent = (field?.properties?.escapeContent?.value as boolean) ?? false;
+	const rawValue: string = nnou(value) ? (value as string) : '';
+	return escapeContent ? unescapeXml(rawValue) : rawValue;
 }
 
 export function textOrNullExtractor(value: unknown): string | null {
