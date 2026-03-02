@@ -303,6 +303,7 @@ export async function repeatGroupValidator(
  * @param {string} currentValue - The current value of the field to validate.
  * @param {FieldValidityMessage[]} [messages] - An optional array to store validation messages if the value is invalid.
  * @returns {boolean} - Returns `true` if the input value is valid; otherwise, `false`.
+ * @param customValidationMessages - An optional lookup table of custom validation messages for specific validation rules.
  *
  */
 export function inputValidator(
@@ -344,7 +345,6 @@ export function inputValidator(
  * @param {number} currentValue - The current numeric value of the field to validate.
  * @param {FieldValidityMessage[]} messages - An array to store validation messages if the value is invalid.
  * @returns {boolean} - Returns `true` if the numeric value is valid; otherwise, `false`.
- * @param customValidationMessages - An optional lookup table of custom validation messages for specific validation rules.
  *
  */
 export function numericInputValidator(
