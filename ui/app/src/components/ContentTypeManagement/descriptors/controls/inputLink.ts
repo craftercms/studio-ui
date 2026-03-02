@@ -74,7 +74,7 @@ export const inputLinkDescriptor: DescriptorContentType = {
 			id: 'pattern',
 			type: 'string',
 			name: defineMessage({ defaultMessage: 'Match Pattern' }),
-			defaultValue: '^(https?://)?[a-zA-Z0-9.-]+.[a-zA-Z]{2,}(.[a-zA-Z]{2,})?(/[^s]*)?$',
+			defaultValue: '^(https?://)?([a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,}(/\\S*)?$',
 			validations: immutableEmptyObject
 		}
 	},
