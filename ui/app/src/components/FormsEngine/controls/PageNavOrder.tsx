@@ -177,7 +177,7 @@ export function PageNavOrder(props: PageNavOrderProps) {
 						<FormattedMessage
 							defaultMessage={'Drag and Drop "{page}" to the desired location in the navigation structure.'}
 							values={{
-								page: contextItem.label
+								page: contextItem?.label ?? ''
 							}}
 						/>
 					</Typography>
