@@ -101,6 +101,7 @@ export function PageNavOrder(props: PageNavOrderProps) {
 	};
 	const handleUpdateOrder = () => {
 		orderDialogState.onClose();
+		if (!pagesOrderState.changedOrder) return;
 
 		// If no current path, or no nav items order, then nothing to reorder.
 		if (!currentPath || !pagesOrderState.order || !pagesOrderState.order.length) return;
@@ -116,6 +117,7 @@ export function PageNavOrder(props: PageNavOrderProps) {
 		//  the current item, and no other items can be re-arranged.
 		reorderNavItems(siteId, currentPath, previewItemPath, nextItemPath).subscribe({
 			next: () => {
+				setPagesOrderState({ changedOrder: false });
 				// TODO: After implementing additional fields support, this needs to set the order value for the current item.
 				dispatch(showSystemNotification({ message: formatMessage({ defaultMessage: 'Navigation items reordered.' }) }));
 			},
