@@ -95,10 +95,12 @@ export function LocaleSelector(props: LocaleSelectorProps) {
 }
 
 function getLocaleLabel(localeCode: string) {
-	const parts = localeCode.split('_');
-	const lang = parts[0];
-	const region = parts[1];
-	const locale: string = region ? `${lang}-${region.toUpperCase()}` : lang;
+	const normalized = localeCode.replace(/_/g, '-');
+	const parsed = new Intl.Locale(normalized);
+	const lang = parsed.language;
+	const region = parsed.region;
+	const locale = parsed.toString();
+
 	let languageLabel: string;
 	let regionLabel: string | undefined;
 	try {
