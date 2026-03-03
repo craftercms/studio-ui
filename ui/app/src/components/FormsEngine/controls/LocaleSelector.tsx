@@ -96,14 +96,16 @@ export function LocaleSelector(props: LocaleSelectorProps) {
 
 function getLocaleLabel(localeCode: string) {
 	const normalized = localeCode.replace(/_/g, '-');
-	const parsed = new Intl.Locale(normalized);
-	const lang = parsed.language;
-	const region = parsed.region;
-	const locale = parsed.toString();
-
 	let languageLabel: string;
 	let regionLabel: string | undefined;
+	let lang: string;
+	let region: string | undefined;
+	let locale: string;
 	try {
+		const parsed = new Intl.Locale(normalized);
+		lang = parsed.language;
+		region = parsed.region;
+		locale = parsed.toString();
 		const languageNames = new Intl.DisplayNames([locale], { type: 'language' });
 		languageLabel = languageNames.of(lang) || lang;
 		if (region) {
@@ -111,10 +113,7 @@ function getLocaleLabel(localeCode: string) {
 			regionLabel = regionNames.of(region.toUpperCase()) || region.toUpperCase();
 		}
 	} catch {
-		languageLabel = lang;
-		if (region) {
-			regionLabel = region.toUpperCase();
-		}
+		return normalized || localeCode;
 	}
 	return regionLabel ? `${languageLabel} (${regionLabel})` : languageLabel;
 }
