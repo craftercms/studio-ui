@@ -43,13 +43,14 @@ import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Radio from '@mui/material/Radio';
 import Alert from '@mui/material/Alert';
+import { isFieldReadOnly } from '../lib/formUtils';
 
 export interface PageNavOrderProps extends ControlProps {
 	value: boolean;
 }
 
 export function PageNavOrder(props: PageNavOrderProps) {
-	const { value, setValue, field, autoFocus, readonly } = props;
+	const { value, setValue, field, autoFocus, readonly: formReadonly } = props;
 	const [initialValue] = useState<boolean>(value);
 	const htmlId = useId();
 	const orderDialogState = useEnhancedDialogState();
@@ -73,6 +74,7 @@ export function PageNavOrder(props: PageNavOrderProps) {
 		initialValue,
 		contextItem
 	});
+	const readonly: boolean = isFieldReadOnly(field, formReadonly);
 
 	useEffect(() => {
 		if (currentPath) {
@@ -97,6 +99,7 @@ export function PageNavOrder(props: PageNavOrderProps) {
 	}, [siteId, setPagesOrderState, currentPath, effectRefs]);
 
 	const handleChange = (_event: ChangeEvent<HTMLInputElement>, selected: string) => {
+		if (readonly) return;
 		setValue(selected === 'true');
 	};
 	const handleUpdateOrder = () => {
@@ -137,8 +140,18 @@ export function PageNavOrder(props: PageNavOrderProps) {
 					sx={{ display: 'inline-flex' }}
 					autoFocus={autoFocus}
 				>
-					<FormControlLabel value="false" control={<Radio />} label={<FormattedMessage defaultMessage="No" />} />
-					<FormControlLabel value="true" control={<Radio />} label={<FormattedMessage defaultMessage="Yes" />} />
+					<FormControlLabel
+						value="false"
+						control={<Radio />}
+						label={<FormattedMessage defaultMessage="No" />}
+						disabled={readonly}
+					/>
+					<FormControlLabel
+						value="true"
+						control={<Radio />}
+						label={<FormattedMessage defaultMessage="Yes" />}
+						disabled={readonly}
+					/>
 				</RadioGroup>
 
 				{value && (
