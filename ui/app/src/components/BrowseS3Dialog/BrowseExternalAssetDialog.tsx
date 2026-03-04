@@ -15,15 +15,15 @@
  */
 
 import React, { useCallback, useState } from 'react';
-import { EnhancedDialog } from '../EnhancedDialog';
+import { EnhancedDialog, EnhancedDialogProps } from '../EnhancedDialog';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { BrowseS3DialogContainerProps, BrowseS3DialogProps } from './types';
 import ApiResponse from '../../models/ApiResponse';
 import { MediaItem } from '../../models';
 import LookupTable from '../../models/LookupTable';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
-import { list } from '../../services/aws';
-import { parseAwsItemToMediaItem } from './utils';
+import { list as listAws } from '../../services/aws';
+import { list as listWebdav } from '../../services/webdav';
+import { parseExternalItemToMediaItem } from './utils';
 import { DialogBody } from '../DialogBody';
 import Box from '@mui/material/Box';
 import MediaCard, { MediaCardViewModes } from '../MediaCard';
@@ -50,9 +50,25 @@ import BrowseFilesDialogContainerSkeleton from '../BrowseFilesDialog/BrowseFiles
 import useUpdateRefs from '../../hooks/useUpdateRefs';
 import { nou } from '../../utils/object';
 import Checkbox from '@mui/material/Checkbox';
+import useEnv from '../../hooks/useEnv';
 
-function BrowseS3DialogBody(props: BrowseS3DialogContainerProps) {
-	const { path, profileId, multiSelect, preselectedPaths = [], onClose, onSuccess } = props;
+export interface BrowseExternalAssetDialogProps extends EnhancedDialogProps {
+	path: string;
+	profileId: string;
+	fetchType?: 'aws' | 'webdav';
+	multiSelect?: boolean;
+	type?: string;
+	preselectedPaths?: string[];
+	onSuccess?(items: MediaItem | MediaItem[]): void;
+}
+
+export interface BrowseExternalAssetDialogContainerProps extends Pick<
+	BrowseExternalAssetDialogProps,
+	'path' | 'profileId' | 'multiSelect' | 'type' | 'preselectedPaths' | 'onClose' | 'onSuccess' | 'fetchType'
+> {}
+
+function BrowseExternalAssetDialogBody(props: BrowseExternalAssetDialogContainerProps) {
+	const { path, profileId, multiSelect, preselectedPaths = [], fetchType = 'aws', onClose, onSuccess } = props;
 	const [isFetchingItems, setIsFetchingItems] = useState(false);
 	const [error, setError] = useState<ApiResponse>(null);
 	const [items, setItems] = useState<MediaItem[]>();
@@ -71,11 +87,14 @@ function BrowseS3DialogBody(props: BrowseS3DialogContainerProps) {
 	const [prevProfileId, setPrevProfileId] = useState(undefined);
 	const refs = useUpdateRefs({ foldersByPath });
 	const disableSubmit = isFetchingItems || (!selectedArray.length && !selectedCard);
+	const { guestBase } = useEnv();
 
 	const fetchItems = useCallback(
 		(path) => {
+			const fetchService = fetchType === 'aws' ? listAws : listWebdav;
+
 			setIsFetchingItems(true);
-			list(siteId, profileId, {
+			fetchService(siteId, profileId, {
 				path
 			}).subscribe({
 				next: (items) => {
@@ -85,9 +104,9 @@ function BrowseS3DialogBody(props: BrowseS3DialogContainerProps) {
 					const files = [];
 					items.forEach((item) => {
 						if (item.folder) {
-							folders.push(parseAwsItemToMediaItem(item));
+							folders.push(parseExternalItemToMediaItem(item));
 						} else {
-							files.push(parseAwsItemToMediaItem(item));
+							files.push(parseExternalItemToMediaItem(item));
 						}
 					});
 					setItems(files);
@@ -115,7 +134,7 @@ function BrowseS3DialogBody(props: BrowseS3DialogContainerProps) {
 				}
 			});
 		},
-		[profileId, siteId, refs, setSelectedLookup, setSelectedCard, multiSelect, preselectedPaths]
+		[profileId, siteId, refs, setSelectedLookup, setSelectedCard, multiSelect, preselectedPaths, fetchType]
 	);
 
 	if (profileId !== prevProfileId) {
@@ -178,7 +197,7 @@ function BrowseS3DialogBody(props: BrowseS3DialogContainerProps) {
 	return (
 		<>
 			<DialogBody sx={{ padding: 0 }}>
-				<Box sx={{ display: 'flex', overflow: 'hidden', minHeight: '55vh' }}>
+				<Box sx={{ display: 'flex', overflow: 'hidden', minHeight: '60vh' }}>
 					<Box
 						sx={{
 							width: '270px',
@@ -189,37 +208,23 @@ function BrowseS3DialogBody(props: BrowseS3DialogContainerProps) {
 						}}
 					>
 						<SimpleTreeView disableSelection>
-							<TreeItem
-								itemId="grid"
-								label={
-									<Box
-										onClick={(e) => {
-											e.stopPropagation();
-											fetchItems(path ?? '/');
-										}}
-									>
-										{path ?? '/'}
-									</Box>
-								}
-							>
-								<S3FoldersTreeView
-									foldersByPath={foldersByPath}
-									path={path}
-									onFolderClick={(e, folder) => {
-										e.stopPropagation();
-										fetchItems(folder.path);
-									}}
-								/>
-							</TreeItem>
+							<ExternalAssetFoldersTreeView
+								foldersByPath={foldersByPath}
+								path={path}
+								onFolderClick={(e, folderPath) => {
+									e.stopPropagation();
+									fetchItems(folderPath);
+								}}
+							/>
 						</SimpleTreeView>
 					</Box>
-					<Box
-						component="section"
-						sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, padding: '16px', overflow: 'auto' }}
-					>
-						{isFetchingItems ? (
-							<BrowseFilesDialogContainerSkeleton />
-						) : (
+					{isFetchingItems ? (
+						<BrowseFilesDialogContainerSkeleton />
+					) : (
+						<Box
+							component="section"
+							sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, padding: '16px', overflow: 'auto' }}
+						>
 							<>
 								<Paper
 									sx={{
@@ -302,8 +307,7 @@ function BrowseS3DialogBody(props: BrowseS3DialogContainerProps) {
 												key={item.previewUrl}
 												viewMode={viewMode}
 												item={{ ...item, path: item.previewUrl }}
-												// TODO: do not commit this
-												previewAppBaseUri="http://localhost:8080"
+												previewAppBaseUri={guestBase}
 												onClick={!multiSelect ? () => onCardSelected(item) : null}
 												selected={multiSelect ? [...selectedArray] : []}
 												onSelect={multiSelect ? () => onCardSelected(item) : null}
@@ -328,8 +332,8 @@ function BrowseS3DialogBody(props: BrowseS3DialogContainerProps) {
 									/>
 								)}
 							</>
-						)}
-					</Box>
+						</Box>
+					)}
 				</Box>
 			</DialogBody>
 			<DialogFooter>
@@ -344,8 +348,8 @@ function BrowseS3DialogBody(props: BrowseS3DialogContainerProps) {
 	);
 }
 
-export function BrowseS3Dialog(props: BrowseS3DialogProps) {
-	const { path, profileId, onClose, onSuccess, multiSelect, preselectedPaths, ...rest } = props;
+export function BrowseExternalAssetDialog(props: BrowseExternalAssetDialogProps) {
+	const { path, profileId, onClose, onSuccess, multiSelect, preselectedPaths, fetchType, ...rest } = props;
 
 	return (
 		<EnhancedDialog
@@ -354,11 +358,12 @@ export function BrowseS3Dialog(props: BrowseS3DialogProps) {
 			maxWidth="lg"
 			{...rest}
 		>
-			<BrowseS3DialogBody
+			<BrowseExternalAssetDialogBody
 				path={path}
 				profileId={profileId}
 				multiSelect={multiSelect}
 				preselectedPaths={preselectedPaths}
+				fetchType={fetchType}
 				onClose={onClose}
 				onSuccess={onSuccess}
 			/>
@@ -366,26 +371,32 @@ export function BrowseS3Dialog(props: BrowseS3DialogProps) {
 	);
 }
 
-function S3FoldersTreeView({
+function ExternalAssetFoldersTreeView({
 	foldersByPath,
 	path,
+	folder,
 	onFolderClick
 }: {
 	foldersByPath: LookupTable<MediaItem[]>;
-	path: string;
-	onFolderClick(e, folder: MediaItem): void;
+	path?: string;
+	folder?: MediaItem;
+	onFolderClick(e, folderPath: string): void;
 }) {
-	return foldersByPath[path]?.map((folder) => (
-		<TreeItem
-			key={folder.path}
-			itemId={folder.path}
-			label={<Box onClick={(e) => onFolderClick(e, folder)}>{folder.name}</Box>}
-		>
-			{foldersByPath[folder.path] && (
-				<S3FoldersTreeView foldersByPath={foldersByPath} path={folder.path} onFolderClick={onFolderClick} />
-			)}
-		</TreeItem>
-	));
+	const label = folder?.name ?? path ?? '/';
+	return (
+		<>
+			<TreeItem itemId={path} label={<Box onClick={(e) => onFolderClick(e, path)}>{label}</Box>}>
+				{foldersByPath[path]?.map((folder) => (
+					<ExternalAssetFoldersTreeView
+						foldersByPath={foldersByPath}
+						path={folder.path}
+						folder={folder}
+						onFolderClick={onFolderClick}
+					/>
+				))}
+			</TreeItem>
+		</>
+	);
 }
 
-export default BrowseS3Dialog;
+export default BrowseExternalAssetDialog;

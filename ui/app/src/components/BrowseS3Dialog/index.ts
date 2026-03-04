@@ -14,10 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './BrowseS3Dialog';
+export { default } from './BrowseExternalAssetDialog';
 
-export * from './BrowseS3Dialog';
+export * from './BrowseExternalAssetDialog';
 
 export * from './utils';
-
-export * from './types';

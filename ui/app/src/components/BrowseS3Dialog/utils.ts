@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { AwsItem, MediaItem } from '../../models';
+import { AwsItem, MediaItem, WebDAVItem } from '../../models';
 import { getFileExtension } from '../../utils/path';
 import { isImage } from '../PathNavigator/utils';
 import { isPdfDocument, isVideo } from '../../utils/content';
@@ -92,7 +92,7 @@ export function getMimeType(item: AwsItem): string {
 	return mimeTypes[fileExtension.toLowerCase()] || 'application/octet-stream';
 }
 
-export function parseAwsItemToMediaItem(item: AwsItem): MediaItem {
+export function parseExternalItemToMediaItem(item: AwsItem | WebDAVItem): MediaItem {
 	const mimeType = getMimeType(item);
 	const mediaItem: MediaItem = {
 		lastModified: null,
@@ -105,12 +105,11 @@ export function parseAwsItemToMediaItem(item: AwsItem): MediaItem {
 		snippets: null,
 		type: null
 	};
-	mediaItem.type = getAwsItemType(mediaItem, mimeType);
+	mediaItem.type = getExternalItemType(mediaItem, mimeType);
 	return mediaItem;
 }
 
-// TODO: check what's ContentItem type
-export function getAwsItemType(item: MediaItem, mimeType: string): string {
+export function getExternalItemType(item: MediaItem, mimeType: string): string {
 	const image = isImage(item);
 	const video = isVideo(item);
 	const pdf = isPdfDocument(mimeType);
