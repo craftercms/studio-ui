@@ -55,7 +55,7 @@ import useEnv from '../../hooks/useEnv';
 export interface BrowseExternalAssetDialogProps extends EnhancedDialogProps {
 	path: string;
 	profileId: string;
-	fetchType?: 'aws' | 'webdav';
+	profileType?: 'aws' | 'webdav';
 	multiSelect?: boolean;
 	type?: string;
 	preselectedPaths?: string[];
@@ -64,11 +64,11 @@ export interface BrowseExternalAssetDialogProps extends EnhancedDialogProps {
 
 export interface BrowseExternalAssetDialogContainerProps extends Pick<
 	BrowseExternalAssetDialogProps,
-	'path' | 'profileId' | 'multiSelect' | 'type' | 'preselectedPaths' | 'onClose' | 'onSuccess' | 'fetchType'
+	'path' | 'profileId' | 'multiSelect' | 'type' | 'preselectedPaths' | 'onClose' | 'onSuccess' | 'profileType'
 > {}
 
 function BrowseExternalAssetDialogBody(props: BrowseExternalAssetDialogContainerProps) {
-	const { path, profileId, multiSelect, preselectedPaths = [], fetchType = 'aws', onClose, onSuccess } = props;
+	const { path, profileId, multiSelect, preselectedPaths = [], profileType = 'aws', onClose, onSuccess } = props;
 	const [isFetchingItems, setIsFetchingItems] = useState(false);
 	const [error, setError] = useState<ApiResponse>(null);
 	const [items, setItems] = useState<MediaItem[]>();
@@ -91,7 +91,7 @@ function BrowseExternalAssetDialogBody(props: BrowseExternalAssetDialogContainer
 
 	const fetchItems = useCallback(
 		(path) => {
-			const fetchService = fetchType === 'aws' ? listAws : listWebdav;
+			const fetchService = profileType === 'aws' ? listAws : listWebdav;
 
 			setIsFetchingItems(true);
 			fetchService(siteId, profileId, {
@@ -134,7 +134,7 @@ function BrowseExternalAssetDialogBody(props: BrowseExternalAssetDialogContainer
 				}
 			});
 		},
-		[profileId, siteId, refs, setSelectedLookup, setSelectedCard, multiSelect, preselectedPaths, fetchType]
+		[profileId, siteId, refs, setSelectedLookup, setSelectedCard, multiSelect, preselectedPaths, profileType]
 	);
 
 	if (profileId !== prevProfileId) {
@@ -349,7 +349,7 @@ function BrowseExternalAssetDialogBody(props: BrowseExternalAssetDialogContainer
 }
 
 export function BrowseExternalAssetDialog(props: BrowseExternalAssetDialogProps) {
-	const { path, profileId, onClose, onSuccess, multiSelect, preselectedPaths, fetchType, ...rest } = props;
+	const { path, profileId, onClose, onSuccess, multiSelect, preselectedPaths, profileType, ...rest } = props;
 
 	return (
 		<EnhancedDialog
@@ -363,7 +363,7 @@ export function BrowseExternalAssetDialog(props: BrowseExternalAssetDialogProps)
 				profileId={profileId}
 				multiSelect={multiSelect}
 				preselectedPaths={preselectedPaths}
-				fetchType={fetchType}
+				profileType={profileType}
 				onClose={onClose}
 				onSuccess={onSuccess}
 			/>
