@@ -129,3 +129,6 @@ export const PACKAGE_RESUBMIT_MASK /*  */ = 0b0000000000000000000000000000000000
 export const PACKAGE_SUBMITTED = 'SUBMITTED';
 export const PACKAGE_APPROVED = 'APPROVED';
 export const PACKAGE_REJECTED = 'REJECTED';
+
+export const webDAVUploadUri = '/api/2/webdav/upload';
+export const s3UploadUri = '/api/2/aws/s3/upload.json';

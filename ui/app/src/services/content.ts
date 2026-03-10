@@ -1070,9 +1070,6 @@ export function uploadDataUrl(
 	);
 }
 
-export const s3UploadUri = '/api/2/aws/s3/upload.json';
-export const webDAVUploadUri = '/api/2/webdav/upload';
-
 export function uploadToS3(
 	site: string,
 	file: any,

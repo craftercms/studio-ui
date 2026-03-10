@@ -21,9 +21,9 @@ import { DialogBody } from '../DialogBody';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { SingleFileUpload } from '../SingleFileUpload';
 import useEnv from '../../hooks/useEnv';
-import { s3UploadUri, webDAVUploadUri } from '../../services/content';
 import type { Uppy } from 'uppy';
 import type { UppyFile, Meta, Body } from '@uppy/utils/lib/UppyFile';
+import { s3UploadUri, webDAVUploadUri } from '../../utils/constants';
 
 export interface ExternalAssetUploadDialogBaseProps {
 	path: string;
