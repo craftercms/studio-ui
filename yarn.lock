@@ -1547,7 +1547,7 @@ __metadata:
     "@emotion/css": "npm:^11.13.5"
     "@emotion/react": "npm:^11.14.0"
     "@emotion/styled": "npm:^11.14.1"
-    "@formatjs/cli": "npm:^6.12.2"
+    "@formatjs/cli": "npm:^6.13.1"
     "@mui/icons-material": "npm:^7.3.9"
     "@mui/material": "npm:^7.3.9"
     "@reduxjs/toolkit": "npm:^2.11.2"
@@ -1678,7 +1678,7 @@ __metadata:
     "@eslint/compat": "npm:^2.0.3"
     "@eslint/eslintrc": "npm:^3.3.5"
     "@eslint/js": "npm:^10.0.1"
-    "@formatjs/cli": "npm:^6.12.2"
+    "@formatjs/cli": "npm:^6.13.1"
     "@graphiql/plugin-explorer": "npm:^5.1.1"
     "@monaco-editor/react": "npm:^4.7.0"
     "@mui/icons-material": "npm:^7.3.9"
@@ -2352,14 +2352,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/cli@npm:^6.12.2":
-  version: 6.12.2
-  resolution: "@formatjs/cli@npm:6.12.2"
+"@formatjs/cli@npm:^6.13.1":
+  version: 6.13.1
+  resolution: "@formatjs/cli@npm:6.13.1"
   peerDependencies:
     "@glimmer/syntax": ^0.84.3 || ^0.95.0
-    "@vue/compiler-core": 3.5.27
+    "@vue/compiler-core": ^3.5.0
     content-tag: ^4.1.0
-    vue: 3.5.27
+    vue: ^3.5.0
   peerDependenciesMeta:
     "@glimmer/env":
       optional: true
@@ -2377,7 +2377,7 @@ __metadata:
       optional: true
   bin:
     formatjs: bin/formatjs
-  checksum: 10/b88a650574a006a44323d231dc7994e3c8beb69a20cabe6f4853a18b9c31205193337bf1a66cfac7566ab89399b3a9b32d9db1fa7457149054778c03945270f0
+  checksum: 10/741c5bc03820dab5d81fcd9b29249a71117d8e3c34fe8715f4f4107ef53670173c5a68c52a2b02f012e652b213fc2c47166c31bed3daca4c6aa79289079b304f
   languageName: node
   linkType: hard
 
