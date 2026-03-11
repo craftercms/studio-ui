@@ -1556,6 +1556,7 @@ __metadata:
     redux-observable: "npm:^3.0.0-rc.3"
     replace-in-file: "npm:^8.4.0"
     rollup: "npm:^4.57.1"
+    rollup-plugin-svg: "npm:^2.0.0"
     rollup-plugin-swc3: "npm:^0.12.1"
     rxjs: "npm:^7.8.2"
     typescript: "npm:^5.9.3"
@@ -7673,6 +7674,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"estree-walker@npm:^0.2.1":
+  version: 0.2.1
+  resolution: "estree-walker@npm:0.2.1"
+  checksum: 10/5fa6c21ef2c95cda4093adea514f9324ecd4edab9d5714dbff56806a9b013ad5c198a51f7c1cfc272f1590b23e42d869b25346ab72795a926c893a58c5592ba5
+  languageName: node
+  linkType: hard
+
 "estree-walker@npm:^2.0.2":
   version: 2.0.2
   resolution: "estree-walker@npm:2.0.2"
@@ -10074,6 +10082,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"minimatch@npm:^3.0.2":
+  version: 3.1.5
+  resolution: "minimatch@npm:3.1.5"
+  dependencies:
+    brace-expansion: "npm:^1.1.7"
+  checksum: 10/b11a7ee5773cd34c1a0c8436cdbe910901018fb4b6cb47aa508a18d567f6efd2148507959e35fba798389b161b8604a2d704ccef751ea36bd4582f9852b7d63f
+  languageName: node
+  linkType: hard
+
 "minimatch@npm:^3.0.4, minimatch@npm:^3.1.1, minimatch@npm:^3.1.2":
   version: 3.1.2
   resolution: "minimatch@npm:3.1.2"
@@ -11772,6 +11789,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"rollup-plugin-svg@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "rollup-plugin-svg@npm:2.0.0"
+  dependencies:
+    rollup-pluginutils: "npm:^1.3.1"
+  checksum: 10/60a0d9c42c94cada15a81d7dad7c24f52fed4b1fb5edbe2fadcec71f9b1e6c24f511a8ee7292d94c4463d7a0fdfb15e25b42f4e968d6fde36ce55acf610a8757
+  languageName: node
+  linkType: hard
+
 "rollup-plugin-swc3@npm:^0.12.1":
   version: 0.12.1
   resolution: "rollup-plugin-swc3@npm:0.12.1"
@@ -11785,6 +11811,16 @@ __metadata:
     "@swc/core": ">=1.2.165"
     rollup: ^2.0.0 || ^3.0.0 || ^4.0.0
   checksum: 10/dcf741cc0ecb476c2342d6c61cc0a6156fdcb142d90e89eefbf62df3fc07e87039c926b8348e7b7cc9baceb6aab69d29fd796740a19675d6ff0593cba86d19d7
+  languageName: node
+  linkType: hard
+
+"rollup-pluginutils@npm:^1.3.1":
+  version: 1.5.2
+  resolution: "rollup-pluginutils@npm:1.5.2"
+  dependencies:
+    estree-walker: "npm:^0.2.1"
+    minimatch: "npm:^3.0.2"
+  checksum: 10/2c13cf01c2096975156d394b946bb7c870b8295827bb6a808bb90eddf415a42e092c9d3dfd68c42f3b4f05be487b4036c833406adec6d8892f36512db46e9283
   languageName: node
   linkType: hard
 

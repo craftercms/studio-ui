@@ -14,7 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ContentTypeField, type ContentTypeFieldValidation, ContentTypeSection, PublishPackage } from '../../../models';
+import {
+	ContentTypeField,
+	type ContentTypeFieldValidation,
+	ContentTypeSection,
+	GlobalState,
+	PublishPackage
+} from '../../../models';
 import LookupTable from '../../../models/LookupTable';
 import ContentType from '../../../models/ContentType';
 import validateFieldValue, { FieldValidityState } from './validators';
@@ -72,8 +78,8 @@ import { getFormsEngineCloseAfterSave, getFormsEngineCollapseToCKey } from '../.
 import { createComponentId } from '../../../utils/system';
 import { showErrorDialog } from '../../../state/actions/dialogs';
 import { ensureSingleSlash } from '../../../utils/string';
-import { nnou, nou } from '../../../utils/object';
-import { WritableAtom } from 'jotai/vanilla';
+import { nou, reversePluckProps } from '../../../utils/object';
+import { Editor } from '@tinymce/tinymce-react';
 
 /**
  * Returns the scroll container for the form's container.
@@ -925,4 +931,362 @@ export function composePathForType(basePath: string, fileName: string, contentTy
 	} else {
 		return ensureSingleSlash(`${basePath}/${fileName}.xml`);
 	}
+}
+
+export function getTinyMceInitOptions(
+	field: ContentTypeField,
+	rteConfig: GlobalState['preview']['richTextEditor'], // GlobalState['preview']['richTextEditor']['']['']
+	setup?: Editor['props']['init']['setup']
+): Editor['props']['init'] {
+	const setupId: string = getPropertyValue(field.properties, 'rteConfiguration', 'generic') as string;
+	const height = getPropertyValue(field.properties, 'height', 300) as number;
+	const autoGrow = getPropertyValue(field.properties, 'autoGrow', false) as boolean;
+
+	const tinymceOptions: Editor['props']['init'] = (
+		rteConfig[setupId] ??
+		Object.values(rteConfig)[0] ?? { id: '', tinymceOptions: {} }
+	)?.tinymceOptions;
+	const controlProps: Partial<Editor['props']['init']> = {};
+	if (field.properties?.enableSpellCheck?.value === false) {
+		controlProps.browser_spellcheck = true;
+	}
+	const external: LookupTable<string> = {
+		...tinymceOptions.external_plugins,
+		acecode: '/studio/static-assets/js/tinymce-plugins/ace/plugin.min.js',
+		editform: '/studio/static-assets/js/tinymce-plugins/editform/plugin.js',
+		craftercms_paste_extension: '/studio/static-assets/js/tinymce-plugins/craftercms_paste_extension/plugin.js',
+		template: '/studio/static-assets/js/tinymce-plugins/template/plugin.js',
+		craftercms_paste: '/studio/static-assets/js/tinymce-plugins/craftercms_paste/plugin.js'
+	};
+	// TODO: Tiny: must remove `autoresize_on_init`, `templates` from all configs
+	const init: Editor['props']['init'] = {
+		// @ts-expect-error: Typings state the prop is wrong for the React integration, but the prop is correct.
+		license_key: 'gpl',
+		// Needs to be set to split when the editor is rendered in a scrollable container.
+		// The `height` and `overflow` of the FormsEngine root breaks some of Tiny's internal rendering mechanics.
+		ui_mode: 'split',
+		target: tinymceOptions.target,
+		promotion: false,
+		branding: false,
+		// Templates plugin is deprecated but still available on v6, since it may be used, we'll keep it. Please
+		// note that it will become premium on version 7.
+		deprecation_warnings: true,
+		height: height + 78,
+		min_height: height + 78,
+		plugins: ['craftercms_paste', tinymceOptions.plugins, autoGrow ? 'autoresize' : false].filter(Boolean).join(' '), // 'editform' plugin will always be loaded
+		encoding: 'xml',
+		paste_as_text: tinymceOptions?.paste_as_text ?? false,
+		paste_data_images: true,
+		paste_preprocess(plugin, args) {
+			tinymceOptions.paste_preprocess?.(plugin, args);
+			window.tinymce.activeEditor.plugins.craftercms_paste_extension?.paste_preprocess(plugin, args);
+		},
+		paste_postprocess(plugin, args) {
+			// TODO: handle dragged datasources
+			// if (args.node.outerText === '' && !args.internal && !_thisControl.editorImageDatasources.length) {
+			// 	args.preventDefault();
+			// 	_thisControl.editor.notificationManager.open({
+			// 		text: _thisControl.formatMessage(_thisControl.messages.noDatasourcesConfigured),
+			// 		timeout: 3000,
+			// 		type: 'error'
+			// 	});
+			// } else {
+			tinymceOptions.paste_postprocess?.(plugin, args);
+			window.tinymce.activeEditor.plugins.craftercms_paste_extension?.paste_postprocess(plugin, args);
+		},
+		toolbar: tinymceOptions.toolbar,
+		menubar: tinymceOptions.menubar ?? false,
+		inline: tinymceOptions.inline,
+		base_url: '/studio/static-assets/libs/tinymce',
+		suffix: '.min',
+		external_plugins: external,
+		code_editor_inline: false,
+		skin: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'oxide-dark' : 'oxide',
+		// skin_url: '/studio/static-assets/libs/tinymce',
+		content_css: (tinymceOptions?.content_css as string | string[])?.length
+			? tinymceOptions.content_css
+			: window.matchMedia('(prefers-color-scheme: dark)').matches
+				? 'dark'
+				: 'default',
+		media_live_embeds: true,
+		file_picker_types: 'image media',
+		craftercms_paste_cleanup: tinymceOptions.craftercms_paste_cleanup ?? true, // If doesn't exist or if true => true
+		file_picker_callback: function (cb, value, meta) {
+			//   // meta contains info about type (image, media, etc). Used to properly add DS to dialogs.
+			//   // meta.filetype === 'file | image | media'
+			//   const datasources = {};
+			//   Object.values(field.validations).forEach((validation) => {
+			//     if (
+			//       [
+			//         'allowImageUpload',
+			//         'allowImagesFromRepo',
+			//         'allowVideoUpload',
+			//         'allowVideosFromRepo',
+			//         'allowAudioUpload',
+			//         'allowAudioFromRepo'
+			//       ].includes(validation.id)
+			//     ) {
+			//       datasources[validation.id] = validation;
+			//     }
+			//   });
+			//   const browseBtn = document.querySelector('.tox-dialog .tox-browse-url');
+			//
+			//   // post(
+			//   //   showRtePickerActions({
+			//   //     datasources,
+			//   //     model,
+			//   //     type: meta.filetype,
+			//   //     rect: browseBtn.getBoundingClientRect()
+			//   //   })
+			//   // );
+			//
+			//   // message$
+			//   //   .pipe(
+			//   //     filter((e) => e.type === rtePickerActionResult.type),
+			//   //     take(1)
+			//   //   )
+			//   //   .subscribe(({ payload }) => {
+			//   //     if (payload) {
+			//   //       cb(payload.path, { alt: payload.name });
+			//   //     }
+			//   //   });
+		},
+		setup(editor) {
+			const pluginManager = window.tinymce.util.Tools.resolve('tinymce.PluginManager');
+
+			function getContent() {
+				return editor.getContent({ format: 'html' });
+			}
+
+			function getSelectionContent() {
+				return editor.selection.getContent({ format: 'html' });
+			}
+
+			function destroyEditor() {
+				editor.destroy(false);
+			}
+
+			editor.on('init', function () {
+				//   const initialTinyContent = getContent();
+				//
+				//   replaceLineBreaksIfApplicable(originalRawContent);
+				//
+				//   editor.focus(false);
+				//   editor.selection.select(editor.getBody(), true);
+				//   editor.selection.collapse(false);
+				//
+				//   // In some cases the 'blur' event is getting caught somewhere along
+				//   // the way. Focusout seems to be more reliable.
+				//   editor.on('focusout', (e: EditorEvent<FocusEvent & { forced?: boolean }>) => {
+				//     // Only consider 'focusout' events that are trusted and not at the bubbling phase.
+				//     if (e.forced || (e.isTrusted && e.eventPhase !== 3)) {
+				//       let relatedTarget = e.relatedTarget as HTMLElement;
+				//       let saved = false;
+				//       // The 'change' event is not triggering until focusing out in v6. Reported in here https://github.com/tinymce/tinymce/issues/9132
+				//       changed = changed || getContent() !== initialTinyContent;
+				//       if (
+				//         !relatedTarget?.closest('.tox-tinymce') &&
+				//         !relatedTarget?.closest('.tox') &&
+				//         !relatedTarget?.classList.contains('tox-dialog__body-nav-item')
+				//       ) {
+				//         if (validations?.required && !getContent().trim()) {
+				//           post(
+				//             snackGuestMessage({
+				//               id: 'required',
+				//               level: 'required',
+				//               values: { field: record.label }
+				//             })
+				//           );
+				//         } else if (changed) {
+				//           saved = true;
+				//           save();
+				//         }
+				//         e.stopImmediatePropagation();
+				//         cancel({ saved });
+				//       }
+				//     }
+				//   });
+				//
+				//   editor.once('change', () => {
+				//     changed = true;
+				//   });
+				//
+				//   editor.once('external_change', () => {
+				//     changed = true;
+				//   });
+				//
+				//   if (type !== 'html') {
+				//     // For plain text fields, remove keyboard shortcuts for formatting text
+				//     // meta is used in tinymce for Ctrl (PC) and Command (macOS)
+				//     // https://www.tiny.cloud/docs/advanced/keyboard-shortcuts/#editorkeyboardshortcuts
+				//     editor.addShortcut('meta+b', '', '');
+				//     editor.addShortcut('meta+i', '', '');
+				//     editor.addShortcut('meta+u', '', '');
+				//   }
+				// });
+				// editor.on('paste', (e) => {
+				//   const maxLength = validations?.maxLength ? parseInt(validations.maxLength.value) : null;
+				//   const text = (
+				//     e.clipboardData ||
+				//     // @ts-ignore
+				//     window.clipboardData
+				//   ).getData('text');
+				//   if (maxLength && text.length > maxLength) {
+				//     post(
+				//       snackGuestMessage({
+				//         id: 'maxLength',
+				//         level: 'required',
+				//         values: { maxLength: text.length === maxLength ? text.length : `${text.length}/${maxLength}` }
+				//       })
+				//     );
+				//   }
+				//   if (type === 'textarea') {
+				//     // Doing this immediately (without the timeout) causes the content to be duplicated.
+				//     // TinyMCE seems to be doing something internally that causes this.
+				//     setTimeout(() => {
+				//       replaceLineBreaksIfApplicable(text);
+				//       editor.selection.select(editor.getBody(), true);
+				//       editor.selection.collapse(false);
+				//     }, 10);
+				//   }
+				//   // TODO: It'd be great to be able to select the piece of the pasted content that falls out of the max-length.
+				// });
+				// const nonChars = [
+				//   'Meta',
+				//   'Alt',
+				//   'Control',
+				//   'Shift',
+				//   'CapsLock',
+				//   'Tab',
+				//   'Escape',
+				//   'ArrowLeft',
+				//   'ArrowRight',
+				//   'ArrowUp',
+				//   'ArrowDown',
+				//   'Dead',
+				//   'Delete'
+				//   // Added as needed when using this array...
+				//   // 'Backspace',
+				//   // 'Enter'
+				// ].filter(Boolean);
+				// editor.on('keyup', (e) => {
+				//   let content = getContent();
+				//   if (validations?.required && content.trim() === '' && !nonChars.concat('Enter').includes(e.key)) {
+				//     post(
+				//       snackGuestMessage({
+				//         id: 'required',
+				//         level: 'suggestion',
+				//         values: { field: record.label }
+				//       })
+				//     );
+				//   }
+				// });
+				// editor.on('keydown', (e) => {
+				//   let content: string, selection: string, numMaxLength: number;
+				//   if (e.key === 'Escape') {
+				//     e.stopImmediatePropagation();
+				//     cancel({ saved: false });
+				//   } else if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+				//     e.preventDefault();
+				//     // Timeout to avoid "Uncaught TypeError: Cannot read properties of null (reading 'getStart')"
+				//     // Hypothesis is the focusout destroys the editor before some internal tiny thing runs.
+				//     // @ts-ignore - Add "forced" property to be able to recognise this manually-triggered focusout on our handler.
+				//     setTimeout(() => editor.fire('focusout', { forced: true }));
+				//   } else if (e.key === 'Enter' && type !== 'html' && type !== 'textarea') {
+				//     // Avoid new line in plain text fields
+				//     e.preventDefault();
+				//   } else if (
+				//     validations?.maxLength &&
+				//     !nonChars.concat('Backspace').includes(e.key) &&
+				//     (content = getContent()).length + 1 > (numMaxLength = parseInt(validations.maxLength.value)) &&
+				//     // If everything is selected and a key is pressed, essentially, it will
+				//     // delete everything so no max-length problem
+				//     ((selection = getSelectionContent()) === '' || content.length - (selection.length + 1) > numMaxLength)
+				//   ) {
+				//     post(
+				//       snackGuestMessage({
+				//         id: 'maxLength',
+				//         level: 'required',
+				//         values: { maxLength: `${content.length}/${validations.maxLength.value}` }
+				//       })
+				//     );
+				//     e.stopPropagation();
+				//     return false;
+				//   }
+			});
+
+			editor.on('DblClick', (e) => {
+				e.preventDefault();
+				e.stopPropagation();
+				if (e.target.nodeName === 'IMG') {
+					window.tinymce.activeEditor.execCommand('mceImage');
+				}
+			});
+
+			// editor.on('click', (e) => {
+			//   e.preventDefault();
+			//   e.stopPropagation();
+			// });
+
+			editor.on('paste', (e) => {
+				// console.log('content', getContent());
+			});
+
+			// Register 'templates_css' for a set of custom css styles (files) that will apply to the templates content
+			editor.options.register('templates_css', { processor: 'string[]' });
+			editor.options.set('templates_css', [
+				window.matchMedia('(prefers-color-scheme: dark)').matches
+					? '/studio/static-assets/libs/tinymce/skins/content/dark/content.min.css'
+					: '/studio/static-assets/libs/tinymce/skins/content/default/content.min.css'
+			]);
+
+			// No point in waiting for `craftercms_tinymce_hooks` if the hook won't be loaded at all.
+			external.craftercms_tinymce_hooks &&
+				pluginManager.waitFor(
+					'craftercms_tinymce_hooks',
+					() => {
+						const hooks = pluginManager.get('craftercms_tinymce_hooks');
+						if (hooks) {
+							pluginManager.get('craftercms_tinymce_hooks').setup?.(editor);
+						} else {
+							console.error(
+								"The `craftercms_tinymce_hooks` was configured to be loaded but didn't load. Check the path is correct in the rte configuration file."
+							);
+						}
+					},
+					'loaded'
+				);
+			setup?.(editor);
+		},
+		...(tinymceOptions && {
+			...reversePluckProps(
+				// Tiny seems to somehow mutate the options object which would cause crashes when attempting
+				// to mutate immutable object (possibly from redux). Also, we don't want the state to get mutated.
+				JSON.parse(JSON.stringify(tinymceOptions)),
+				'target', // Target can't be changed
+				'inline', // Not using inline view doesn't behave well on XB, this setting shouldn't be changed.
+				'setup',
+				'base_url',
+				'encoding',
+				'autosave_ask_before_unload', // Auto-save options are removed since it is not supported in control.
+				'autosave_interval',
+				'autosave_prefix',
+				'autosave_restore_when_empty',
+				'autosave_retention',
+				'file_picker_callback', // No file picker is set by default, and functions are not supported in config file.
+				'height', // Height is set to the size of content
+				'file_picker_callback', // Files/images handlers currently not supported
+				'paste_postprocess',
+				'paste_preprocess',
+				'paste_as_text', // Considered above,
+				'images_upload_handler',
+				'code_editor_inline',
+				'plugins', // Considered/used above, mixed with our options
+				'external_plugins', // Considered/used above, mixed with our options,
+				'content_css' // Handled above, if no content_css is found it will use dark/default styles.
+			)
+		}),
+		...controlProps
+	};
+	return init;
 }

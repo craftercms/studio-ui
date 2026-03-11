@@ -25,13 +25,10 @@ import Divider from '@mui/material/Divider';
 import useSiteUIConfig from '../../../hooks/useSiteUIConfig';
 import { useDispatch } from 'react-redux';
 import useActiveSiteId from '../../../hooks/useActiveSiteId';
-import { reversePluckProps } from '../../../utils/object';
 import { Editor } from '@tinymce/tinymce-react';
 import { TinyMCE } from 'tinymce';
 import { getTinymce } from '@tinymce/tinymce-react/lib/es2015/main/ts/TinyMCE';
-import { ContentTypeField } from '../../../models';
-import GlobalState from '../../../models/GlobalState';
-import LookupTable from '../../../models/LookupTable';
+import { getPropertyValue, getTinyMceInitOptions, getValidationValue } from '../lib/formUtils';
 
 export interface RichTextEditorProps extends ControlProps {
 	value: string;
@@ -45,353 +42,149 @@ declare global {
 	}
 }
 
-// FE2 TODO: Reuse this on XB
-function getTinyMceInitOptions(
-	field: ContentTypeField,
-	rteConfig: GlobalState['preview']['richTextEditor'], // GlobalState['preview']['richTextEditor']['']['']
-	setup?: Editor['props']['init']['setup']
-): Editor['props']['init'] {
-	const setupId: string = (field.properties?.rteConfiguration?.value as string) ?? 'generic';
-	const tinymceOptions: Editor['props']['init'] = (
-		rteConfig[setupId] ??
-		Object.values(rteConfig)[0] ?? { id: '', tinymceOptions: {} }
-	)?.tinymceOptions;
-	const controlProps: Partial<Editor['props']['init']> = {};
-	if (field.properties?.enableSpellCheck?.value === false) {
-		controlProps.browser_spellcheck = true;
-	}
-	const external: LookupTable<string> = {
-		...tinymceOptions.external_plugins,
-		acecode: '/studio/static-assets/js/tinymce-plugins/ace/plugin.min.js',
-		editform: '/studio/static-assets/js/tinymce-plugins/editform/plugin.js',
-		craftercms_paste_extension: '/studio/static-assets/js/tinymce-plugins/craftercms_paste_extension/plugin.js',
-		template: '/studio/static-assets/js/tinymce-plugins/template/plugin.js',
-		craftercms_paste: '/studio/static-assets/js/tinymce-plugins/craftercms_paste/plugin.js'
-	};
-	// Tiny: must remove `autoresize_on_init`, `templates` from all configs
-	const init: Editor['props']['init'] = {
-		// @ts-expect-error: Typings state the prop is wrong for the React integration, but the prop is correct.
-		license_key: 'gpl',
-		// Needs to be set to split when the editor is rendered in a scrollable container.
-		// The `height` and `overflow` of the FormsEngine root breaks some of Tiny's internal rendering mechanics.
-		ui_mode: 'split',
-		// target: rteEl,
-		promotion: false,
-		branding: false,
-		// Templates plugin is deprecated but still available on v6, since it may be used, we'll keep it. Please
-		// note that it will become premium on version 7.
-		deprecation_warnings: true,
-		// For some reason this is not working.
-		// body_class: 'craftercms-rich-text-editor',
-		plugins: ['craftercms_paste', tinymceOptions.plugins].filter(Boolean).join(' '), // 'editform' plugin will always be loaded
-		paste_as_text: true,
-		paste_data_images: true,
-		paste_preprocess(plugin, args) {
-			window.tinymce.activeEditor.plugins.craftercms_paste_extension?.paste_preprocess(plugin, args);
+import { SxProps, Theme } from '@mui/material';
+
+const tinymceCustomStyles: SxProps<Theme> = {
+	// --- GROUPED BACKGROUND-ONLY STYLES ---
+	[`& .tox.tox-tinymce-inline .tox-editor-header,
+    & .tox:not(.tox-tinymce-inline) .tox-editor-header,
+    & .tox:not(.tox-tinymce-inline).tox-tinymce--toolbar-sticky-on .tox-editor-header,
+    & .tox .tox-image-selector-menu .tox-image-selector__row .tox-collection__item-image-selector.tox-collection__item--active:not(.tox-collection__item--state-disabled),
+    & .tox .tox-image-selector-menu .tox-image-selector__row .tox-collection__item-image-selector.tox-collection__item--enabled:not(.tox-collection__item--state-disabled),
+    & .tox .tox-comment__busy-spinner,
+    & .tox .tox-dialog-wrap__backdrop--opaque,
+    & .tox .tox-insert-table-picker,
+    & .tox .tox-menubar,
+    & .tox .tox-promotion,
+    & .tox .tox-mbtn[disabled],
+    & .tox .tox-notification--warn,
+    & .tox .tox-notification--warning,
+    & .tox .tox-onboarding-dialog,
+    & .tox .tox-pop__dialog,
+    & .tox .tox-statusbar,
+    & .tox .tox-toolbar-overlord,
+    & .tox .tox-toolbar,
+    & .tox .tox-toolbar__overflow,
+    & .tox .tox-toolbar__primary,
+    & .tox.tox-tinymce-aux .tox-toolbar__overflow,
+    & .tox .tox-view-wrap,
+    & .tox .tox-view-wrap__slot-container,
+    & .tox .tox-view,
+    & .tox .tox-revisionhistory,
+    & .tox .tox-revisionhistory__sidebar .tox-revisionhistory__sidebar-title,
+    & .tox .tox-revisionhistory__sidebar .tox-revisionhistory__revisions .tox-revisionhistory__card,
+    & .tox .tox-suggestededits__container .tox-suggestededits,
+    & .tox .tox-suggestededits__container .tox-suggestededits .tox-suggestededits__sidebar-content .tox-suggestededits__card,
+    & .tox .tox-suggestededits__container .tox-suggestededits .tox-suggestededits__sidebar-content .tox-suggestededits__card.tox-suggestededits__card--resolved`]:
+		{
+			backgroundColor: '#1C1C1E'
 		},
-		paste_postprocess(plugin, args) {
-			window.tinymce.activeEditor.plugins.craftercms_paste_extension?.paste_postprocess(plugin, args);
-		},
-		// toolbar: true,
-		// forced_root_block: true,
-		// menubar: false,
-		// inline: true,
-		base_url: '/studio/static-assets/libs/tinymce',
-		suffix: '.min',
-		external_plugins: external,
-		code_editor_inline: false,
-		skin: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'oxide-dark' : 'oxide',
-		// skin_url: '/studio/static-assets/libs/tinymce',
-		media_live_embeds: true,
-		file_picker_types: 'image media',
-		craftercms_paste_cleanup: tinymceOptions.craftercms_paste_cleanup ?? true, // If doesn't exist or if true => true
-		file_picker_callback: function (cb, value, meta) {
-			//   // meta contains info about type (image, media, etc). Used to properly add DS to dialogs.
-			//   // meta.filetype === 'file | image | media'
-			//   const datasources = {};
-			//   Object.values(field.validations).forEach((validation) => {
-			//     if (
-			//       [
-			//         'allowImageUpload',
-			//         'allowImagesFromRepo',
-			//         'allowVideoUpload',
-			//         'allowVideosFromRepo',
-			//         'allowAudioUpload',
-			//         'allowAudioFromRepo'
-			//       ].includes(validation.id)
-			//     ) {
-			//       datasources[validation.id] = validation;
-			//     }
-			//   });
-			//   const browseBtn = document.querySelector('.tox-dialog .tox-browse-url');
-			//
-			//   // post(
-			//   //   showRtePickerActions({
-			//   //     datasources,
-			//   //     model,
-			//   //     type: meta.filetype,
-			//   //     rect: browseBtn.getBoundingClientRect()
-			//   //   })
-			//   // );
-			//
-			//   // message$
-			//   //   .pipe(
-			//   //     filter((e) => e.type === rtePickerActionResult.type),
-			//   //     take(1)
-			//   //   )
-			//   //   .subscribe(({ payload }) => {
-			//   //     if (payload) {
-			//   //       cb(payload.path, { alt: payload.name });
-			//   //     }
-			//   //   });
-		},
-		setup(editor) {
-			const pluginManager = window.tinymce.util.Tools.resolve('tinymce.PluginManager');
 
-			function getContent() {
-				return editor.getContent({ format: 'html' });
-			}
+	// --- BACKGROUNDS USING VARIABLES ---
+	[`& .tox .tox-floating-sidebar,
+    & .tox-ai .tox-ai__scroll,
+    & .tox-ai .tox-ai__footer,
+    & .tox .tox-toggle`]: {
+		backgroundColor: 'var(--tox-private-background-color, #1C1C1E)'
+	},
 
-			function getSelectionContent() {
-				return editor.selection.getContent({ format: 'html' });
-			}
+	'& .tox .tox-toggle__slider': {
+		backgroundColor: 'var(--tox-private-slider-background-color, #1C1C1E)'
+	},
 
-			function destroyEditor() {
-				editor.destroy(false);
-			}
+	// --- BACKGROUND SHORTHAND ---
+	[`& .tox .tox-comment-thread,
+    & .tox .tox-comment-thread__overlay::after,
+    & .tox .tox-comment__overlay,
+    & .tox.tox-mentions__card,
+    & .tox .tox-mbtn,
+    & .tox .tox-mbtn:focus:not(:disabled),
+    & .tox .tox-tbtn:focus,
+    & .tox .tox-tbtn--disabled,
+    & .tox .tox-tbtn--disabled:hover,
+    & .tox .tox-tbtn:disabled,
+    & .tox .tox-tbtn:disabled:hover,
+    & .tox .tox-number-input input:disabled,
+    & .tox .tox-split-button__main:focus,
+    & .tox .tox-split-button__chevron:focus,
+    & .tox .tox-split-button__chevron.tox-tbtn--disabled,
+    & .tox .tox-split-button__main.tox-tbtn--disabled,
+    & .tox .tox-split-button__chevron.tox-tbtn--disabled:hover,
+    & .tox .tox-split-button__main.tox-tbtn--disabled:hover,
+    & .tox .tox-split-button__chevron.tox-tbtn--disabled:focus,
+    & .tox .tox-split-button__main.tox-tbtn--disabled:focus`]: {
+		background: '#1C1C1E'
+	},
 
-			// editor.on('init', function () {
-			//   const initialTinyContent = getContent();
-			//
-			//   replaceLineBreaksIfApplicable(originalRawContent);
-			//
-			//   editor.focus(false);
-			//   editor.selection.select(editor.getBody(), true);
-			//   editor.selection.collapse(false);
-			//
-			//   // In some cases the 'blur' event is getting caught somewhere along
-			//   // the way. Focusout seems to be more reliable.
-			//   editor.on('focusout', (e: EditorEvent<FocusEvent & { forced?: boolean }>) => {
-			//     // Only consider 'focusout' events that are trusted and not at the bubbling phase.
-			//     if (e.forced || (e.isTrusted && e.eventPhase !== 3)) {
-			//       let relatedTarget = e.relatedTarget as HTMLElement;
-			//       let saved = false;
-			//       // The 'change' event is not triggering until focusing out in v6. Reported in here https://github.com/tinymce/tinymce/issues/9132
-			//       changed = changed || getContent() !== initialTinyContent;
-			//       if (
-			//         !relatedTarget?.closest('.tox-tinymce') &&
-			//         !relatedTarget?.closest('.tox') &&
-			//         !relatedTarget?.classList.contains('tox-dialog__body-nav-item')
-			//       ) {
-			//         if (validations?.required && !getContent().trim()) {
-			//           post(
-			//             snackGuestMessage({
-			//               id: 'required',
-			//               level: 'required',
-			//               values: { field: record.label }
-			//             })
-			//           );
-			//         } else if (changed) {
-			//           saved = true;
-			//           save();
-			//         }
-			//         e.stopImmediatePropagation();
-			//         cancel({ saved });
-			//       }
-			//     }
-			//   });
-			//
-			//   editor.once('change', () => {
-			//     changed = true;
-			//   });
-			//
-			//   editor.once('external_change', () => {
-			//     changed = true;
-			//   });
-			//
-			//   if (type !== 'html') {
-			//     // For plain text fields, remove keyboard shortcuts for formatting text
-			//     // meta is used in tinymce for Ctrl (PC) and Command (macOS)
-			//     // https://www.tiny.cloud/docs/advanced/keyboard-shortcuts/#editorkeyboardshortcuts
-			//     editor.addShortcut('meta+b', '', '');
-			//     editor.addShortcut('meta+i', '', '');
-			//     editor.addShortcut('meta+u', '', '');
-			//   }
-			// });
+	// --- TEXT AND ICON COLORS ---
+	'& .tox': {
+		color: 'var(--tox-private-color-black, #1C1C1E)'
+	},
 
-			// editor.on('paste', (e) => {
-			//   const maxLength = validations?.maxLength ? parseInt(validations.maxLength.value) : null;
-			//   const text = (
-			//     e.clipboardData ||
-			//     // @ts-ignore
-			//     window.clipboardData
-			//   ).getData('text');
-			//   if (maxLength && text.length > maxLength) {
-			//     post(
-			//       snackGuestMessage({
-			//         id: 'maxLength',
-			//         level: 'required',
-			//         values: { maxLength: text.length === maxLength ? text.length : `${text.length}/${maxLength}` }
-			//       })
-			//     );
-			//   }
-			//   if (type === 'textarea') {
-			//     // Doing this immediately (without the timeout) causes the content to be duplicated.
-			//     // TinyMCE seems to be doing something internally that causes this.
-			//     setTimeout(() => {
-			//       replaceLineBreaksIfApplicable(text);
-			//       editor.selection.select(editor.getBody(), true);
-			//       editor.selection.collapse(false);
-			//     }, 10);
-			//   }
-			//   // TODO: It'd be great to be able to select the piece of the pasted content that falls out of the max-length.
-			// });
+	[`& .tox .tox-dialog__body-content .accessibility-issue--warn a.tox-button--naked.tox-button--icon,
+    & .tox .tox-dialog__body-content .accessibility-issue--warn a.tox-button--naked.tox-button--icon:focus,
+    & .tox .tox-dialog__body-content .accessibility-issue--warn a.tox-button--naked.tox-button--icon:hover,
+    & .tox .tox-dialog__body-content .accessibility-issue--warn a.tox-button--naked.tox-button--icon:active,
+    & .tox .tox-dialog__body-content .accessibility-issue--error a.tox-button--naked.tox-button--icon,
+    & .tox .tox-dialog__body-content .accessibility-issue--error a.tox-button--naked.tox-button--icon:focus,
+    & .tox .tox-dialog__body-content .accessibility-issue--error a.tox-button--naked.tox-button--icon:hover,
+    & .tox .tox-dialog__body-content .accessibility-issue--error a.tox-button--naked.tox-button--icon:active`]: {
+		color: '#1C1C1E'
+	},
 
-			// const nonChars = [
-			//   'Meta',
-			//   'Alt',
-			//   'Control',
-			//   'Shift',
-			//   'CapsLock',
-			//   'Tab',
-			//   'Escape',
-			//   'ArrowLeft',
-			//   'ArrowRight',
-			//   'ArrowUp',
-			//   'ArrowDown',
-			//   'Dead',
-			//   'Delete'
-			//   // Added as needed when using this array...
-			//   // 'Backspace',
-			//   // 'Enter'
-			// ].filter(Boolean);
+	// --- STYLES WITH MULTIPLE PROPERTIES ---
+	'& .tox .tox-comment': {
+		background: '#1C1C1E',
+		border: '1px solid #1C1C1E'
+	},
 
-			// editor.on('keyup', (e) => {
-			//   let content = getContent();
-			//   if (validations?.required && content.trim() === '' && !nonChars.concat('Enter').includes(e.key)) {
-			//     post(
-			//       snackGuestMessage({
-			//         id: 'required',
-			//         level: 'suggestion',
-			//         values: { field: record.label }
-			//       })
-			//     );
-			//   }
-			// });
+	'& .tox .tox-comment__overlaytext p': {
+		backgroundColor: '#1C1C1E',
+		boxShadow: '0 0 8px 8px #1C1C1E'
+	},
 
-			// editor.on('keydown', (e) => {
-			//   let content: string, selection: string, numMaxLength: number;
-			//   if (e.key === 'Escape') {
-			//     e.stopImmediatePropagation();
-			//     cancel({ saved: false });
-			//   } else if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-			//     e.preventDefault();
-			//     // Timeout to avoid "Uncaught TypeError: Cannot read properties of null (reading 'getStart')"
-			//     // Hypothesis is the focusout destroys the editor before some internal tiny thing runs.
-			//     // @ts-ignore - Add "forced" property to be able to recognise this manually-triggered focusout on our handler.
-			//     setTimeout(() => editor.fire('focusout', { forced: true }));
-			//   } else if (e.key === 'Enter' && type !== 'html' && type !== 'textarea') {
-			//     // Avoid new line in plain text fields
-			//     e.preventDefault();
-			//   } else if (
-			//     validations?.maxLength &&
-			//     !nonChars.concat('Backspace').includes(e.key) &&
-			//     (content = getContent()).length + 1 > (numMaxLength = parseInt(validations.maxLength.value)) &&
-			//     // If everything is selected and a key is pressed, essentially, it will
-			//     // delete everything so no max-length problem
-			//     ((selection = getSelectionContent()) === '' || content.length - (selection.length + 1) > numMaxLength)
-			//   ) {
-			//     post(
-			//       snackGuestMessage({
-			//         id: 'maxLength',
-			//         level: 'required',
-			//         values: { maxLength: `${content.length}/${validations.maxLength.value}` }
-			//       })
-			//     );
-			//     e.stopPropagation();
-			//     return false;
-			//   }
-			// });
+	'& .tox .tox-sidebar-content__header': {
+		background: 'var(--tox-private-background-color, #1C1C1E)',
+		zIndex: 1
+	},
 
-			editor.on('DblClick', (e) => {
-				e.preventDefault();
-				e.stopPropagation();
-				if (e.target.nodeName === 'IMG') {
-					window.tinymce.activeEditor.execCommand('mceImage');
-				}
-			});
+	// --- BORDERS, GRADIENTS, AND SHADOWS ---
+	'& .tox div.tox-swatch:not(.tox-swatch--remove) svg path': {
+		stroke: '#1C1C1E'
+	},
 
-			// editor.on('click', (e) => {
-			//   e.preventDefault();
-			//   e.stopPropagation();
-			// });
+	'& .tox .tox-pop.tox-pop--bottom::after': { borderColor: '#1C1C1E transparent transparent transparent' },
+	'& .tox .tox-pop.tox-pop--top::after': { borderColor: 'transparent transparent #1C1C1E transparent' },
+	'& .tox .tox-pop.tox-pop--left::after': { borderColor: 'transparent #1C1C1E transparent transparent' },
+	'& .tox .tox-pop.tox-pop--right::after': { borderColor: 'transparent transparent transparent #1C1C1E' },
 
-			// Register 'templates_css' for a set of custom css styles (files) that will apply to the templates content
-			editor.options.register('templates_css', { processor: 'string[]' });
-			editor.options.set('templates_css', [
-				window.matchMedia('(prefers-color-scheme: dark)').matches
-					? '/studio/static-assets/libs/tinymce/skins/content/dark/content.min.css'
-					: '/studio/static-assets/libs/tinymce/skins/content/default/content.min.css'
-			]);
+	'& .tox .tox-comment__gradient::after': {
+		background: 'linear-gradient(rgba(34,47,62,0), #1C1C1E)'
+	},
 
-			// No point in waiting for `craftercms_tinymce_hooks` if the hook won't be loaded at all.
-			external.craftercms_tinymce_hooks &&
-				pluginManager.waitFor(
-					'craftercms_tinymce_hooks',
-					() => {
-						const hooks = pluginManager.get('craftercms_tinymce_hooks');
-						if (hooks) {
-							pluginManager.get('craftercms_tinymce_hooks').setup?.(editor);
-						} else {
-							console.error(
-								"The `craftercms_tinymce_hooks` was configured to be loaded but didn't load. Check the path is correct in the rte configuration file."
-							);
-						}
-					},
-					'loaded'
-				);
+	'& .tox-ai .tox-ai__response.tox-ai__response-streaming': {
+		background: 'linear-gradient(180deg, var(--tox-private-color-black, #1C1C1E) 0, transparent 100%)'
+	},
 
-			setup?.(editor);
-		},
-		...(tinymceOptions && {
-			...reversePluckProps(
-				// Tiny seems to somehow mutate the options object which would cause crashes when attempting
-				// to mutate immutable object (possibly from redux). Also, we don't want the state to get mutated.
-				JSON.parse(JSON.stringify(tinymceOptions)),
-				'target', // Target can't be changed
-				'inline', // Not using inline view doesn't behave well on XB, this setting shouldn't be changed.
-				'setup',
-				'base_url',
-				'encoding',
-				'autosave_ask_before_unload', // Auto-save options are removed since it is not supported in control.
-				'autosave_interval',
-				'autosave_prefix',
-				'autosave_restore_when_empty',
-				'autosave_retention',
-				'file_picker_callback', // No file picker is set by default, and functions are not supported in config file.
-				'height', // Height is set to the size of content
-				'file_picker_callback', // Files/images handlers currently not supported
-				'paste_postprocess',
-				'images_upload_handler',
-				'code_editor_inline',
-				'plugins', // Considered/used above, mixed with our options
-				'external_plugins' // Considered/used above, mixed with our options
-			)
-		}),
-		...controlProps,
-		toolbar_sticky: false, // TODO: remove. this should/will come from config.
-		openEditForm() {
-			console.log('openEditForm');
+	'& .tox .tox-promotion-dialog .tox-promotion-dialog-plugin--icon': {
+		boxShadow: '0 1px 1px 0 #1C1C1E12, 0 3px 6px 0 #1C1C1E06'
+	},
+
+	'& .tox .tox-suggestededits__container .tox-suggestededits .tox-suggestededits__sidebar-content .tox-suggestededits__card:hover':
+		{
+			boxShadow: '0 4px 8px 0 #1C1C1E'
 		}
-	};
-	return init;
-}
+};
 
 export function RichTextEditor(props: RichTextEditorProps) {
 	const { field, value, setValue, readonly } = props;
 	const rteConfig = useRTEConfig();
 	const editorRef = useRef<Editor>(undefined);
 	const hasReceivedFocusRef = useRef(false);
+	const maxLength = getPropertyValue(field.properties, 'maxLength') as number;
+
+	// TODO: !!
+	const required = getValidationValue(field.validations, 'required', false) as boolean;
 
 	// region Initialize RTE config FE2 TODO: Move elsewhere
 	const uiConfig = useSiteUIConfig();
@@ -415,11 +208,21 @@ export function RichTextEditor(props: RichTextEditorProps) {
 			};
 			document.head.appendChild(script);
 		}
+		// TODO: create util
+		if (!window.ace) {
+			const script = document.createElement('script');
+			script.src = '/studio/static-assets/libs/ace/ace.js';
+			document.head.appendChild(script);
+
+			const styleSheet = document.createElement('link');
+			styleSheet.rel = 'stylesheet';
+			styleSheet.href = '/studio/static-assets/styles/tinymce-ace.css';
+			document.head.appendChild(styleSheet);
+		}
 	}, []);
 	// endregion
 
 	const [currentLength, setCurrentLength] = useState(0);
-	const maxLength = field.validations.maxLength?.value;
 	const handleChange: Editor['props']['onEditorChange'] = (newValue, editor) => {
 		if (!hasReceivedFocusRef.current) {
 			// When the editor initializes, it may trigger a change event with virtually the
@@ -459,7 +262,17 @@ export function RichTextEditor(props: RichTextEditorProps) {
 				},
 				'.tox .tox-statusbar': {
 					borderTopColor: 'divider'
-				}
+				},
+				'.tox.tox-tinymce-inline .tox-editor-header': {
+					backgroundColor: '#1C1C1E'
+				},
+				'.tox:not(.tox-tinymce-inline) .tox-editor-header': {
+					backgroundColor: '#1C1C1E'
+				},
+				'.tox:not(.tox-tinymce-inline).tox-tinymce--toolbar-sticky-on .tox-editor-header': {
+					backgroundColor: '#1C1C1E'
+				},
+				...tinymceCustomStyles
 			}}
 		>
 			<Editor
