@@ -1716,7 +1716,7 @@ __metadata:
     eslint-plugin-formatjs: "npm:^6.3.0"
     eslint-plugin-react-hooks: "npm:^7.0.1"
     eslint-plugin-react-refresh: "npm:^0.5.2"
-    fast-xml-parser: "npm:^5.3.4"
+    fast-xml-parser: "npm:^5.5.3"
     globals: "npm:^17.4.0"
     graphiql: "npm:^5.2.2"
     graphql: "npm:^16.13.1"
@@ -8247,14 +8247,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-xml-parser@npm:^5.3.4":
-  version: 5.3.4
-  resolution: "fast-xml-parser@npm:5.3.4"
+"fast-xml-builder@npm:^1.1.2":
+  version: 1.1.2
+  resolution: "fast-xml-builder@npm:1.1.2"
   dependencies:
-    strnum: "npm:^2.1.0"
+    path-expression-matcher: "npm:^1.1.3"
+  checksum: 10/477a2dedd476b1a3fb6f9c8a80fca586726f3eb117c6e0aa4b02c3d80e9d31ac28770c853d9570cc2aa0145e73797935b0f0bb8c4592b22b975d4607e4a0a8d1
+  languageName: node
+  linkType: hard
+
+"fast-xml-parser@npm:^5.5.3":
+  version: 5.5.3
+  resolution: "fast-xml-parser@npm:5.5.3"
+  dependencies:
+    fast-xml-builder: "npm:^1.1.2"
+    path-expression-matcher: "npm:^1.1.3"
+    strnum: "npm:^2.1.2"
   bin:
     fxparser: src/cli/cli.js
-  checksum: 10/0d7e6872fed7c3065641400d43cdf24c03177f05c343bfb31df53b79f0900b085c103f647852d0b00693125aa3f0e9d8b8cfc4273b168d4da0308f857dafe830
+  checksum: 10/fe14534c4e198fe12177dd5e281d80aa36c82c5f7ef0a21607b83f9d098d4792e6907b6f65feb94cba16a61315c028c383b6cd4481ebb62281c7946a02309fde
   languageName: node
   linkType: hard
 
@@ -11230,6 +11241,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"path-expression-matcher@npm:^1.1.3":
+  version: 1.1.3
+  resolution: "path-expression-matcher@npm:1.1.3"
+  checksum: 10/9a607d0bf9807cf86b0a29fb4263f0c00285c13bedafb6ad3efc8bc87ae878da2faf657a9138ac918726cb19f147235a0ca695aec3e4ea1ee04641b6520e6c9e
+  languageName: node
+  linkType: hard
+
 "path-is-absolute@npm:^1.0.0":
   version: 1.0.1
   resolution: "path-is-absolute@npm:1.0.1"
@@ -13040,10 +13058,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"strnum@npm:^2.1.0":
-  version: 2.1.1
-  resolution: "strnum@npm:2.1.1"
-  checksum: 10/d5fe6e4333cddc17569331048e403e876ffcf629989815f0359b0caf05dae9441b7eef3d7dd07427313ac8b3f05a8f60abc1f61efc15f97245dbc24028362bc9
+"strnum@npm:^2.1.2":
+  version: 2.2.0
+  resolution: "strnum@npm:2.2.0"
+  checksum: 10/2969dbc8441f5af1b55db1d2fcea64a8f912de18515b57f85574e66bdb8f30ae76c419cf1390b343d72d687e2aea5aca82390f18b9e0de45d6bcc6d605eb9385
   languageName: node
   linkType: hard
 
