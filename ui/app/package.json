@@ -75,7 +75,7 @@
 		"@stomp/stompjs": "^7.3.0",
 		"@tinymce/tinymce-react": "^6.3.0",
 		"@types/ace": "^0.0.52",
-		"@types/react": "^19.2.13",
+		"@types/react": "^19.2.14",
 		"@types/react-dom": "^19.2.3",
 		"@types/video.js": "^7.3.58",
 		"@uppy/progress-bar": "^4.3.2",
