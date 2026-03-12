@@ -1634,7 +1634,7 @@ __metadata:
     "@formatjs/cli": "npm:^6.7.2"
     "@mui/icons-material": "npm:^7.3.5"
     "@mui/material": "npm:^7.3.9"
-    "@reduxjs/toolkit": "npm:^2.10.1"
+    "@reduxjs/toolkit": "npm:^2.11.2"
     "@rollup/plugin-alias": "npm:^6.0.0"
     "@rollup/plugin-json": "npm:^6.1.0"
     "@rollup/plugin-swc": "npm:^0.4.0"
@@ -1764,9 +1764,9 @@ __metadata:
     "@mui/x-date-pickers": "npm:^8.27.2"
     "@mui/x-tree-view": "npm:^8.27.2"
     "@prettier/plugin-xml": "npm:3.3.0"
-    "@reduxjs/toolkit": "npm:^2.10.1"
+    "@reduxjs/toolkit": "npm:^2.11.2"
     "@rollup/plugin-swc": "npm:^0.4.0"
-    "@stomp/stompjs": "npm:^7.2.1"
+    "@stomp/stompjs": "npm:^7.3.0"
     "@types/ace": "npm:^0.0.52"
     "@types/js-cookie": "npm:^3.0.6"
     "@types/react": "npm:^19.2.14"
@@ -1790,7 +1790,7 @@ __metadata:
     fast-xml-parser: "npm:^5.3.2"
     graphiql: "npm:^3.2.2"
     graphql: "npm:^16.12.0"
-    graphql-ws: "npm:^6.0.6"
+    graphql-ws: "npm:^6.0.7"
     highlight.js: "npm:^11.11.1"
     jabber: "npm:^1.5.3"
     js-cookie: "npm:^3.0.5"
@@ -3947,7 +3947,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reduxjs/toolkit@npm:^2.10.1":
+"@reduxjs/toolkit@npm:^2.11.2":
   version: 2.11.2
   resolution: "@reduxjs/toolkit@npm:2.11.2"
   dependencies:
@@ -4446,7 +4446,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@stomp/stompjs@npm:^7.2.1":
+"@stomp/stompjs@npm:^7.3.0":
   version: 7.3.0
   resolution: "@stomp/stompjs@npm:7.3.0"
   checksum: 10/18cd605e3c6d9905976d5f31249fbb2e673c1d4b214a100eb6b8b021c16f79e2739837536c1dcaa60c33f89b56f07410195d7f7625474611e45fd6e7304730d1
@@ -8915,25 +8915,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-ws@npm:^6.0.6":
-  version: 6.0.6
-  resolution: "graphql-ws@npm:6.0.6"
+"graphql-ws@npm:^6.0.7":
+  version: 6.0.7
+  resolution: "graphql-ws@npm:6.0.7"
   peerDependencies:
     "@fastify/websocket": ^10 || ^11
     crossws: ~0.3
     graphql: ^15.10.1 || ^16
-    uWebSockets.js: ^20
     ws: ^8
   peerDependenciesMeta:
     "@fastify/websocket":
       optional: true
     crossws:
       optional: true
-    uWebSockets.js:
-      optional: true
     ws:
       optional: true
-  checksum: 10/81d334800af4b38bdfc56971308b39184b5a696e794eed6315fc7c20d488fdc5f68a10a382e47f95b8ca9365fdd15fba098ba897ff7424d5ae39f3316af078ce
+  checksum: 10/633b142a7a8683f900f1f3590a30ff696076d94d17cc8c0a42d069288cd8ca77b4967e87a9f7ac884c026106be42055b9e2bda5e7de28579bd2fc8e65d0b0424
   languageName: node
   linkType: hard
 
