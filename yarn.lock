@@ -1589,7 +1589,7 @@ __metadata:
     "@emotion/react": "npm:^11.14.0"
     "@emotion/styled": "npm:^11.14.1"
     "@formatjs/cli": "npm:^6.13.1"
-    "@mui/icons-material": "npm:^7.3.5"
+    "@mui/icons-material": "npm:^7.3.9"
     "@mui/material": "npm:^7.3.9"
     "@reduxjs/toolkit": "npm:^2.11.2"
     "@rollup/plugin-alias": "npm:^6.0.0"
@@ -1714,13 +1714,13 @@ __metadata:
     "@emotion/styled": "npm:^11.14.1"
     "@formatjs/cli": "npm:^6.13.1"
     "@graphiql/plugin-explorer": "npm:^3.0.1"
-    "@mui/icons-material": "npm:^7.3.5"
+    "@mui/icons-material": "npm:^7.3.9"
     "@mui/lab": "npm:7.0.1-beta.23"
     "@mui/material": "npm:^7.3.9"
     "@mui/x-data-grid": "npm:^8.27.5"
     "@mui/x-date-pickers": "npm:^8.27.2"
     "@mui/x-tree-view": "npm:^8.27.2"
-    "@prettier/plugin-xml": "npm:3.3.0"
+    "@prettier/plugin-xml": "npm:3.4.2"
     "@reduxjs/toolkit": "npm:^2.11.2"
     "@rollup/plugin-swc": "npm:^0.4.0"
     "@stomp/stompjs": "npm:^7.3.0"
@@ -1792,7 +1792,7 @@ __metadata:
   resolution: "@craftercms/studio@workspace:."
   dependencies:
     "@eslint/compat": "npm:^2.0.3"
-    "@rollup/plugin-commonjs": "npm:^29.0.0"
+    "@rollup/plugin-commonjs": "npm:^29.0.2"
     "@rollup/plugin-node-resolve": "npm:^16.0.3"
     "@rollup/plugin-replace": "npm:^6.0.3"
     "@types/node": "npm:^25.5.0"
@@ -2732,7 +2732,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/icons-material@npm:^7.3.5":
+"@mui/icons-material@npm:^7.3.9":
   version: 7.3.9
   resolution: "@mui/icons-material@npm:7.3.9"
   dependencies:
@@ -3292,14 +3292,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@prettier/plugin-xml@npm:3.3.0":
-  version: 3.3.0
-  resolution: "@prettier/plugin-xml@npm:3.3.0"
+"@prettier/plugin-xml@npm:3.4.2":
+  version: 3.4.2
+  resolution: "@prettier/plugin-xml@npm:3.4.2"
   dependencies:
     "@xml-tools/parser": "npm:^1.0.11"
   peerDependencies:
     prettier: ^3.0.0
-  checksum: 10/0f33b044af7d7a79fdf73a4754aed56f73efbf200be24efa40ef5f52b849243ddfe5a27ec3f1ad7ffdc21b6b0015319509a37cd365f6f52466df41c0eeec3b4d
+  checksum: 10/038dcbc865b6d4154a213e52122035a5ed1f7df99a887394e92141efb656babbb5a96322e0e4e56d21175968ccf93b74d18ae4377badd4594d8cd76e9a496eac
   languageName: node
   linkType: hard
 
@@ -3909,7 +3909,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rollup/plugin-commonjs@npm:^29.0.0":
+"@rollup/plugin-commonjs@npm:^29.0.2":
   version: 29.0.2
   resolution: "@rollup/plugin-commonjs@npm:29.0.2"
   dependencies:
