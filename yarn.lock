@@ -1633,7 +1633,7 @@ __metadata:
     "@emotion/styled": "npm:^11.14.1"
     "@formatjs/cli": "npm:^6.7.2"
     "@mui/icons-material": "npm:^7.3.5"
-    "@mui/material": "npm:^7.3.5"
+    "@mui/material": "npm:^7.3.9"
     "@reduxjs/toolkit": "npm:^2.10.1"
     "@rollup/plugin-alias": "npm:^6.0.0"
     "@rollup/plugin-json": "npm:^6.1.0"
@@ -1758,11 +1758,11 @@ __metadata:
     "@formatjs/cli": "npm:^6.7.4"
     "@graphiql/plugin-explorer": "npm:^3.0.1"
     "@mui/icons-material": "npm:^7.3.5"
-    "@mui/lab": "npm:7.0.1-beta.19"
-    "@mui/material": "npm:^7.3.5"
-    "@mui/x-data-grid": "npm:^8.20.0"
-    "@mui/x-date-pickers": "npm:^8.19.0"
-    "@mui/x-tree-view": "npm:^8.19.0"
+    "@mui/lab": "npm:7.0.1-beta.23"
+    "@mui/material": "npm:^7.3.9"
+    "@mui/x-data-grid": "npm:^8.27.5"
+    "@mui/x-date-pickers": "npm:^8.27.2"
+    "@mui/x-tree-view": "npm:^8.27.2"
     "@prettier/plugin-xml": "npm:3.3.0"
     "@reduxjs/toolkit": "npm:^2.10.1"
     "@rollup/plugin-swc": "npm:^0.4.0"
@@ -2834,21 +2834,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/lab@npm:7.0.1-beta.19":
-  version: 7.0.1-beta.19
-  resolution: "@mui/lab@npm:7.0.1-beta.19"
+"@mui/lab@npm:7.0.1-beta.23":
+  version: 7.0.1-beta.23
+  resolution: "@mui/lab@npm:7.0.1-beta.23"
   dependencies:
-    "@babel/runtime": "npm:^7.28.4"
-    "@mui/system": "npm:^7.3.5"
-    "@mui/types": "npm:^7.4.8"
-    "@mui/utils": "npm:^7.3.5"
+    "@babel/runtime": "npm:^7.28.6"
+    "@mui/system": "npm:^7.3.9"
+    "@mui/types": "npm:^7.4.12"
+    "@mui/utils": "npm:^7.3.9"
     clsx: "npm:^2.1.1"
     prop-types: "npm:^15.8.1"
   peerDependencies:
     "@emotion/react": ^11.5.0
     "@emotion/styled": ^11.3.0
-    "@mui/material": ^7.3.5
-    "@mui/material-pigment-css": ^7.3.5
+    "@mui/material": ^7.3.9
+    "@mui/material-pigment-css": ^7.3.9
     "@types/react": ^17.0.0 || ^18.0.0 || ^19.0.0
     react: ^17.0.0 || ^18.0.0 || ^19.0.0
     react-dom: ^17.0.0 || ^18.0.0 || ^19.0.0
@@ -2861,11 +2861,11 @@ __metadata:
       optional: true
     "@types/react":
       optional: true
-  checksum: 10/13e60a64dc515270983a833aa480e39eb8412bb4ec3bacb13a46d99767995c2b513986ebceeec358a21ae60a1457ffb82db1775f104e5f03f45deb6368655959
+  checksum: 10/1618779f8e18bc266d350bd4899ba36b97c4f30a3a6b73a63b1e6c95ec89f0e4cd0da30854dbebd9a270079f172f48156e867e1e232fa80984c5a823f1ea3e54
   languageName: node
   linkType: hard
 
-"@mui/material@npm:^7.3.5":
+"@mui/material@npm:^7.3.9":
   version: 7.3.9
   resolution: "@mui/material@npm:7.3.9"
   dependencies:
@@ -2941,7 +2941,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/system@npm:^7.3.5, @mui/system@npm:^7.3.9":
+"@mui/system@npm:^7.3.9":
   version: 7.3.9
   resolution: "@mui/system@npm:7.3.9"
   dependencies:
@@ -2969,7 +2969,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/types@npm:^7.4.12, @mui/types@npm:^7.4.8":
+"@mui/types@npm:^7.4.12":
   version: 7.4.12
   resolution: "@mui/types@npm:7.4.12"
   dependencies:
@@ -3003,7 +3003,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/x-data-grid@npm:^8.20.0":
+"@mui/x-data-grid@npm:^8.27.5":
   version: 8.27.5
   resolution: "@mui/x-data-grid@npm:8.27.5"
   dependencies:
@@ -3030,7 +3030,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/x-date-pickers@npm:^8.19.0":
+"@mui/x-date-pickers@npm:^8.27.2":
   version: 8.27.2
   resolution: "@mui/x-date-pickers@npm:8.27.2"
   dependencies:
@@ -3092,7 +3092,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/x-tree-view@npm:^8.19.0":
+"@mui/x-tree-view@npm:^8.27.2":
   version: 8.27.2
   resolution: "@mui/x-tree-view@npm:8.27.2"
   dependencies:
