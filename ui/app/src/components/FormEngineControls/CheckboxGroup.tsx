@@ -22,10 +22,12 @@ import { Control } from '../../models/FormsEngine';
 import useStyles from './styles';
 import FormGroup from '@mui/material/FormGroup';
 import FormLabel from '@mui/material/FormLabel';
+import usePossibleTranslation from '../../hooks/usePossibleTranslation';
 
 export function CheckboxGroup(props: Control) {
   const { field, value = [], onChange, disabled } = props;
   const { classes } = useStyles();
+  const label = usePossibleTranslation(field.name);
 
   const handleChange = (e) =>
     onChange(e.target.checked ? value.concat(e.target.value) : value.filter((val) => val !== e.target.value));
@@ -33,7 +35,7 @@ export function CheckboxGroup(props: Control) {
   return (
     <>
       <FormLabel className={classes.inputLabel} htmlFor={field.id}>
-        {field.name}
+        {label}
       </FormLabel>
       <FormControl variant="outlined" className={classes.formControl} fullWidth>
         <FormGroup>

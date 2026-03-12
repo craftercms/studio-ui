@@ -85,7 +85,10 @@ const messages: any = defineMessages({
   all: {
     id: 'publishingDashboard.all',
     defaultMessage: 'All'
-  },
+  }
+});
+
+export const stateMessages = defineMessages({
   READY_FOR_LIVE: {
     id: 'publishingDashboard.READY_FOR_LIVE',
     defaultMessage: 'Ready for Live'
@@ -179,7 +182,7 @@ export function FilterDropdown(props: FilterDropdownProps) {
                 inputLabel: { shrink: true }
               }}
               fullWidth
-              placeholder="e.g. /SOME/PATH/*"
+              placeholder={formatMessage({ defaultMessage: 'e.g. /SOME/PATH/*' })}
               onChange={(event) => setPath(event.target.value)}
               onKeyPress={(event) => onKeyPress(event, path)}
               value={path}
@@ -241,7 +244,7 @@ export function FilterDropdown(props: FilterDropdownProps) {
                       onChange={handleFilterChange}
                     />
                   }
-                  label={formatMessage(messages[filter])}
+                  label={formatMessage(stateMessages[filter])}
                 />
               ))}
             </FormGroup>

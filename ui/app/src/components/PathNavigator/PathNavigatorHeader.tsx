@@ -25,7 +25,7 @@ import SystemIcon, { SystemIconDescriptor } from '../SystemIcon';
 
 export interface PathNavigatorHeaderProps {
   locale: string;
-  title: string;
+  title: ReactNode;
   icon?: SystemIconDescriptor & Partial<{ expandedStyle: {}; collapsedStyle: {} }>;
   collapsed: boolean;
   onLanguageMenu?(anchor: Element): void;

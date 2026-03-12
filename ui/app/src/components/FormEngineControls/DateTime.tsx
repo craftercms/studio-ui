@@ -22,16 +22,18 @@ import { DateTimeControl } from '../../models/FormsEngine';
 import GlobalState from '../../models/GlobalState';
 import useStyles from './styles';
 import { useSelection } from '../../hooks/useSelection';
+import usePossibleTranslation from '../../hooks/usePossibleTranslation';
 
 export function DateTime(props: DateTimeControl) {
   const { field, value, onChange, disabled } = props;
   const { classes } = useStyles();
   const locale = useSelection<GlobalState['uiConfig']['locale']>((state) => state.uiConfig.locale);
+  const label = usePossibleTranslation(field.name);
 
   return (
     <FormControl variant="outlined" className={classes.formControl} fullWidth>
       <InputLabel className={classes.inputLabel} sx={{ position: 'relative', transform: 'none' }} htmlFor={field.id}>
-        {field.name}
+        {label}
       </InputLabel>
       <DateTimeTimezonePicker
         id={field.id}

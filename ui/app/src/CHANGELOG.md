@@ -3,6 +3,8 @@
 ## 5.0.1 (CrafterCMS 4.5.0)
 * [components]
   * `SearchBar`: Update the default DecoratorIcon to select the search input on click.
+  * `PathNavigator/PathNavigatorTree`: Updated `label` prop to be of type `TranslationOrText`.
+  * `PathNavigatorTreeUI/PathNavigatorUI/PathNavigatorTreeHeader`: Updated `title` prop to be of type `string | ReactNode`.
 * Upgraded:
   * react to 19.1.1
   * react-dom to 19.1.1

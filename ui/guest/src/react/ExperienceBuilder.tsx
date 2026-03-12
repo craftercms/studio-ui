@@ -121,6 +121,7 @@ import StandardAction from '@craftercms/studio-ui/models/StandardAction';
 import { getById, getReferentialEntries, subscribeToAllowedContentTypes } from '../iceRegistry';
 import { getParentModelId } from '../utils/ice';
 import { SxProps } from '@mui/system';
+import { I18nProvider } from './I18nProvider';
 
 // TODO: add themeOptions and global styles customising
 interface BaseXBProps {
@@ -737,13 +738,15 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
 
 export function ExperienceBuilder(props: GenericXBProps<{ model: ContentInstance }>): ReactJSXElement;
 export function ExperienceBuilder(props: GenericXBProps<{ path: string }>): ReactJSXElement;
-export function ExperienceBuilder(props: ExperienceBuilderProps): ReactJSXElement{
+export function ExperienceBuilder(props: ExperienceBuilderProps): ReactJSXElement {
   let { children, isAuthoring = false, path, model } = props as CompleteGuestProps;
   let store = useMemo(() => isAuthoring && createGuestStore(), [isAuthoring]);
   path = path || prop(model, 'path');
   return isAuthoring && path ? (
     <Provider store={store} context={GuestReduxContext}>
-      <ExperienceBuilderInternal {...props} path={path} />
+      <I18nProvider>
+        <ExperienceBuilderInternal {...props} path={path} />
+      </I18nProvider>
     </Provider>
   ) : (
     (children as ReactJSXElement)

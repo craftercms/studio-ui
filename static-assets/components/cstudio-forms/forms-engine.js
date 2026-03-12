@@ -3505,14 +3505,11 @@ const initializeCStudioForms = () => {
               'createdDate_dt',
               'lastModifiedDate',
               'lastModifiedDate_dt',
-              'components',
               'orderDefault_f',
               'placeInNav',
               'rteComponents'
             ],
             output = '',
-            validFieldsStr,
-            fieldRe,
             section;
 
           // Add valid fields from the ones created dynamically by controls
@@ -3574,7 +3571,6 @@ const initializeCStudioForms = () => {
           }
 
           validFields.push('$!'); // End element
-          validFieldsStr = validFields.join(',');
 
           for (var key in formModel) {
             var attributes = [' '],
@@ -3615,11 +3611,8 @@ const initializeCStudioForms = () => {
               attributes.pop();
             }
 
-            // Because we added start and end elements, we can be sure that any field names will
-            // be delimited by the delimiter token (ie. comma)
-            fieldRe = new RegExp(',' + key + '(?:,||d+|)', 'g');
-
-            if (fieldRe.test(validFieldsStr)) {
+            // Check if the current form field key (id) is in the validFields array
+            if (validFields.includes(key)) {
               if (isModelItemArray) {
                 output += '\t<' + key + attributes.join(' ') + '>';
                 output = this.recursiveRetrieveItemValues(modelItem, output, key, fieldInstructions);
@@ -3733,7 +3726,9 @@ const initializeCStudioForms = () => {
 if (typeof CrafterCMSNext === 'undefined') {
   // CrafterCMSNext is not defined, wait for CrafterCMS.CodebaseBridgeReady event to initialize CStudioForms.
   document.addEventListener('CrafterCMS.CodebaseBridgeReady', () => {
-    initializeCStudioForms();
+    CrafterCMSNext.system.getStore().subscribe(() => {
+      initializeCStudioForms();
+    });
   });
 } else {
   // CrafterCMSNext is defined, initialize CStudioForms
