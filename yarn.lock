@@ -1652,7 +1652,7 @@ __metadata:
     ace-builds: "npm:^1.43.6"
     bootstrap: "npm:^5.3.8"
     build-if-changed: "npm:^1.5.5"
-    css-loader: "npm:^7.1.2"
+    css-loader: "npm:^7.1.4"
     file-loader: "npm:^6.2.0"
     grunt: "npm:^1.6.1"
     jquery: "npm:^3.7.1"
@@ -1688,7 +1688,7 @@ __metadata:
   resolution: "@craftercms/studio-ui-legacy@workspace:ui/legacy"
   dependencies:
     "@babel/cli": "npm:^7.28.6"
-    "@swc/cli": "npm:^0.7.10"
+    "@swc/cli": "npm:^0.8.0"
     "@swc/core": "npm:^1.15.18"
     build-if-changed: "npm:^1.5.5"
   languageName: unknown
@@ -4367,9 +4367,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@swc/cli@npm:^0.7.10":
-  version: 0.7.10
-  resolution: "@swc/cli@npm:0.7.10"
+"@swc/cli@npm:^0.8.0":
+  version: 0.8.0
+  resolution: "@swc/cli@npm:0.8.0"
   dependencies:
     "@swc/counter": "npm:^0.1.3"
     "@xhmikosr/bin-wrapper": "npm:^13.0.5"
@@ -4382,7 +4382,7 @@ __metadata:
     tinyglobby: "npm:^0.2.13"
   peerDependencies:
     "@swc/core": ^1.2.66
-    chokidar: ^4.0.1
+    chokidar: ^5.0.0
   peerDependenciesMeta:
     chokidar:
       optional: true
@@ -4390,7 +4390,7 @@ __metadata:
     spack: bin/spack.js
     swc: bin/swc.js
     swcx: bin/swcx.js
-  checksum: 10/bb5ae65b6766bcdb645e2ccbe28d97ec899eae2e39f7eb0bb51159c5675aac06a0552ca77d5c97efb57432a9e71efdd36b6a63439ae71919edd24b9967bed663
+  checksum: 10/cbaa81df940c9229fe5ac8e5fe65bc81dd882aad621dd51119288b2998d7a95cae6d179aab596308674a3de05ffe12c53f54012409b3665790b31c33beba40e9
   languageName: node
   linkType: hard
 
@@ -7090,7 +7090,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"css-loader@npm:^7.1.2":
+"css-loader@npm:^7.1.4":
   version: 7.1.4
   resolution: "css-loader@npm:7.1.4"
   dependencies:
