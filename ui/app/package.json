@@ -121,7 +121,7 @@
     "@vitejs/plugin-react-swc": "^4.2.2",
     "babel-plugin-formatjs": "^10.5.41",
     "build-if-changed": "^1.5.5",
-    "eslint": "^9.39.1",
+    "eslint": "^10.0.3",
     "eslint-plugin-formatjs": "^5.4.2",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
