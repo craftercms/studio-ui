@@ -34,7 +34,7 @@
   },
   "devDependencies": {
     "@types/bootstrap": "^5.2.10",
-    "@types/jquery": "^3.5.33",
+    "@types/jquery": "^3.5.34",
     "@types/rimraf": "^4.0.5",
     "build-if-changed": "^1.5.5",
     "grunt": "^1.6.1",

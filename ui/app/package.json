@@ -111,7 +111,7 @@
     "@formatjs/cli": "^6.7.4",
     "@rollup/plugin-swc": "^0.4.0",
     "@types/js-cookie": "^3.0.6",
-    "@types/react": "^19.2.7",
+    "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@types/react-infinite-scroller": "^1.2.5",
     "@types/zxcvbn": "^4.4.5",
