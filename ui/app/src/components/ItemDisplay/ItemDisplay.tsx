@@ -104,7 +104,7 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
 			}}
 		>
 			{/* @see https://github.com/craftercms/craftercms/issues/5442 */}
-			{/* When new or modified */}
+			{/* When new or modified, staging has priority. So if item is staged and new/modified show PublishingTargetIcon */}
 			{inWorkflow && !isStagedNewOrModified
 				? showWorkflowState && (
 						<ItemStateIcon
