@@ -32,8 +32,9 @@ import { DisabledItemIcon } from '../DisabledItemIcon';
 
 export type ItemDisplayClassKey = 'root' | 'label' | 'labelPreviewable' | 'icon' | 'typeIcon';
 
-export interface ItemDisplayProps<LabelTypographyComponent extends React.ElementType = 'span'>
-	extends React.HTMLAttributes<HTMLSpanElement> {
+export interface ItemDisplayProps<
+	LabelTypographyComponent extends React.ElementType = 'span'
+> extends React.HTMLAttributes<HTMLSpanElement> {
 	showPublishingTarget?: boolean;
 	showWorkflowState?: boolean;
 	showItemType?: boolean;
@@ -85,6 +86,9 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
 	// inWorkflow will only be true for type ContentItem (if they met the workflow criteria). Casting to ContentItem
 	// is only done on scenarios where `isWorkflow` is true.
 	const inWorkflow = isInWorkflow((item as ContentItem).stateMap) || item.systemType === 'folder';
+	const isStagedNewOrModified =
+		(item as ContentItem).stateMap?.staged &&
+		((item as ContentItem).stateMap?.new || (item as ContentItem).stateMap?.modified);
 	return (
 		<Box
 			component={component}
@@ -100,7 +104,8 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
 			}}
 		>
 			{/* @see https://github.com/craftercms/craftercms/issues/5442 */}
-			{inWorkflow
+			{/* When new or modified */}
+			{inWorkflow && !isStagedNewOrModified
 				? showWorkflowState && (
 						<ItemStateIcon
 							{...stateIconProps}
