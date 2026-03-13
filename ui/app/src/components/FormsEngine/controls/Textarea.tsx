@@ -14,30 +14,46 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import OutlinedInput from '@mui/material/OutlinedInput';
+import OutlinedInput, { type OutlinedInputProps } from '@mui/material/OutlinedInput';
 import React, { useId } from 'react';
 import { FormsEngineField } from '../components/FormsEngineField';
 import { ControlProps } from '../types';
+import { getPropertyValue, getValidationValue, isFieldReadOnly } from '../lib/formUtils';
 
 export interface TextareaProps extends ControlProps {
 	value: string;
 }
 
 export function Textarea(props: TextareaProps) {
-	const { field, value, setValue, readonly, autoFocus } = props;
+	const { field, value, setValue, readonly: formReadonly, autoFocus } = props;
 	const htmlId = useId();
-	const maxLength = field.validations.maxLength?.value;
+
+	// region field properties/validations
+	const maxLength: number | undefined = getValidationValue(field.validations, 'maxLength');
+	const readonly: boolean = isFieldReadOnly(field, formReadonly);
+	const rows: number = getPropertyValue(field.properties, 'rows', 1) as number;
+	const allowResize: boolean = getPropertyValue(field.properties, 'allowResize') as boolean;
+	// endregion
+
+	const handleChange: OutlinedInputProps['onChange'] = (e) => setValue(e.currentTarget.value);
+
 	return (
 		<FormsEngineField htmlFor={htmlId} field={field} max={maxLength} length={value.length}>
 			<OutlinedInput
 				autoFocus={autoFocus}
 				fullWidth
 				multiline
+				rows={rows}
 				inputProps={{ maxLength }}
 				id={htmlId}
 				value={value}
-				onChange={(e) => setValue(e.currentTarget.value)}
+				onChange={handleChange}
 				disabled={readonly}
+				slotProps={{
+					input: {
+						style: { resize: allowResize ? 'vertical' : 'none' }
+					}
+				}}
 			/>
 		</FormsEngineField>
 	);

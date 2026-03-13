@@ -29,6 +29,8 @@ import { styled } from '@mui/material/styles';
 import AccordionSummary, { accordionSummaryClasses } from '@mui/material/AccordionSummary';
 import Box from '@mui/material/Box';
 import { typographyClasses } from '@mui/material';
+import { DisabledItemIcon } from '../DisabledItemIcon';
+import { LightItem } from '../../models';
 
 export interface IconGuideDashletProps {
 	contentHeight?: number | string;
@@ -159,6 +161,16 @@ export function IconGuideDashlet(props: IconGuideDashletProps) {
 									</Typography>
 								</Grid>
 							))}
+							<Grid size={{ xs: 6, sm: 4, md: 3, lg: 2 }} sx={{ display: 'flex', alignItems: 'center' }}>
+								<DisabledItemIcon
+									item={types['component'] as LightItem}
+									itemTypeIconProps={{}}
+									sxs={{ icon: { mr: 1 } }}
+								/>
+								<Typography variant="body2" component="span">
+									<FormattedMessage defaultMessage="Disabled" />
+								</Typography>
+							</Grid>
 						</Grid>
 
 						<Typography variant="subtitle2">

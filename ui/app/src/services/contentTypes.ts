@@ -27,7 +27,8 @@ import {
 	LegacyFormDefinition,
 	LegacyFormDefinitionField,
 	LegacyFormDefinitionProperty,
-	LegacyFormDefinitionSection
+	LegacyFormDefinitionSection,
+	ValidationKeys
 } from '../models/ContentType';
 import { LookupTable } from '../models/LookupTable';
 import { camelize, capitalize, isBlank, toColor } from '../utils/string';
@@ -227,6 +228,13 @@ function getFieldDataSourceValidations(
 							};
 						}
 					});
+				}
+				if (prop.name === 'addMedia') {
+					table[systemValidationsKeysMap['addMedia']] = {
+						id: systemValidationsKeysMap['addMedia'] as ValidationKeys,
+						value: prop.value.trim() === 'true',
+						level: 'required'
+					};
 				}
 				return table;
 			},

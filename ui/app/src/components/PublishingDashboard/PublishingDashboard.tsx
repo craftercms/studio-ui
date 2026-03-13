@@ -40,11 +40,9 @@ export function PublishingDashboard(props: PublishingDashboardProps) {
 	const site = useActiveSiteId();
 	const userPermissions = user?.permissionsBySite[site] ?? [];
 	// TODO: These permission checks should be on the PublishOnDemand widget itself. Dashboard should only check for `publish` permission to render the widget or not.
-	const hasPublishPermission = userPermissions?.includes('publish');
-	const hasPublishByCommitPermission = userPermissions?.includes('publish_by_commits');
+	const hasPublishPermission = userPermissions?.includes('publish_approve');
 	const allowedPublishOnDemandModes: PublishOnDemandMode[] = [];
-	if (hasPublishPermission) allowedPublishOnDemandModes.push('everything', 'studio');
-	if (hasPublishByCommitPermission) allowedPublishOnDemandModes.push('git');
+	if (hasPublishPermission) allowedPublishOnDemandModes.push('everything', 'studio', 'git');
 	const {
 		spacing,
 		palette: { mode }
@@ -74,7 +72,7 @@ export function PublishingDashboard(props: PublishingDashboardProps) {
 				<Grid size={12}>
 					<PublishingStatusWidget siteId={site} />
 				</Grid>
-				{userPermissions.includes('get_publishing_queue') && (
+				{userPermissions.includes('publish_get_queue') && (
 					<Grid size={12}>
 						<PublishingQueueWidget siteId={site} readOnly={!hasPublishPermission} />
 					</Grid>

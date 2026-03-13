@@ -21,7 +21,7 @@ import TextField from '@mui/material/TextField';
 import { DialogBody } from '../../DialogBody';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import MenuItem from '@mui/material/MenuItem';
 import InputAdornment from '@mui/material/InputAdornment';
 import { DialogFooter } from '../../DialogFooter';
@@ -38,6 +38,8 @@ import { createLookupTable } from '../../../utils/object';
 import { useDispatch } from 'react-redux';
 import { fetchContentTypesComplete } from '../../../state/actions/preview';
 import { pushErrorDialog } from '../../../utils/system';
+import useArchetypesList from '../../../hooks/useArchetypesList';
+import { getPossibleTranslation } from '../../../utils/i18n';
 
 export interface CreateTypeDialogBaseProps {
 	onAccept(typeData: Pick<ContentType, 'id' | 'name' | 'type'>): void;
@@ -72,7 +74,7 @@ function CreateTypeDialogBody(props: CreateTypeDialogBaseProps) {
 	const [name, setName] = useState<string>('');
 	const [id, setId] = useState<string>('');
 	const prefix = useRef<string>(undefined);
-	prefix.current = prefixes[type];
+	prefix.current = getTypeIdPathPrefixForType(type);
 	const { onClose, updateSubmittingOrHasPendingChanges } = useEnhancedDialogContext();
 	const contentTypes = useContentTypes();
 	const [nameExists, setNameExists] = useState<boolean>(false);
@@ -84,6 +86,8 @@ function CreateTypeDialogBody(props: CreateTypeDialogBaseProps) {
 	const [fetchingContentTypes, setFetchingContentTypes] = useState(false);
 	const dispatch = useDispatch();
 	const [idManuallyChanged, setIdManuallyChanged] = useState(false);
+	const archetypes = useArchetypesList();
+	const { formatMessage } = useIntl();
 
 	const validateAndSubmit = () => {
 		setFetchingContentTypes(true);
@@ -103,7 +107,7 @@ function CreateTypeDialogBody(props: CreateTypeDialogBaseProps) {
 					setIdExists
 				});
 				if (!valid) return;
-				onAccept?.({ type, name, id: `${prefixes[type] ?? ''}${id}` });
+				onAccept?.({ type, name, id: `${getTypeIdPathPrefixForType(type) ?? ''}${id}` });
 			},
 			error: ({ response }) => {
 				dispatch(pushErrorDialog({ props: { error: response.response } }));
@@ -148,13 +152,11 @@ function CreateTypeDialogBody(props: CreateTypeDialogBaseProps) {
 						onChange={handleChange}
 						autoFocus
 					>
-						<MenuItem value="page">
-							<FormattedMessage defaultMessage="Page" />
-						</MenuItem>
-						<MenuItem value="component">
-							<FormattedMessage defaultMessage="Component" />
-						</MenuItem>
-						{/* Post v5 TODO: List archetypes from config */}
+						{archetypes?.map((archetype) => (
+							<MenuItem key={archetype.id} value={archetype.id}>
+								{getPossibleTranslation(archetype.name, formatMessage)}
+							</MenuItem>
+						))}
 					</Select>
 				</FormControl>
 				<TextField
@@ -211,7 +213,7 @@ function validate({
 	setIdExists: (exists: boolean) => void;
 }): boolean {
 	if (!id || !name || !type) return false;
-	const idExists = Boolean(contentTypes[`/${type}/${id}`]);
+	const idExists = Boolean(contentTypes[`${getTypeIdPathPrefixForType(type)}${id}`]);
 	const nameExists = Object.values(contentTypes).some((contentType) => contentType.name === name);
 	setIdExists(idExists);
 	setNameExists(nameExists);
@@ -227,6 +229,10 @@ function suggestTypeId(label: string): string {
 	let camelized = camelize(label.replace(/\s/g, '-'));
 	camelized = camelized.charAt(0).toLowerCase() + camelized.substring(1);
 	return transformId(camelized);
+}
+
+function getTypeIdPathPrefixForType(type: string): string {
+	return prefixes[type] ?? `/${type}/`;
 }
 
 export default CreateTypeDialog;

@@ -40,6 +40,7 @@ import {
 import { defineMessages } from 'react-intl';
 import { Observable } from 'rxjs';
 import StandardAction from '../../models/StandardAction';
+import { fetchQuickCreateList } from '../actions/content';
 
 const configurationMessages = defineMessages({
 	localeError: {
@@ -58,7 +59,7 @@ function handleSystemEvent(action: StandardAction): StandardAction[] {
 	} else if (targetPath === '/config/studio/site-config.xml') {
 		return [fetchSiteConfig()];
 	} else if (/^\/config\/studio\/content-types\/.*\/form-definition\.xml$/.test(targetPath)) {
-		return [contentTypeUpdated()];
+		return [contentTypeUpdated(), fetchQuickCreateList()];
 	}
 	return [];
 }

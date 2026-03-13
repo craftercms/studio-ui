@@ -38,7 +38,8 @@ import {
 	removeStoredShowToolsPanel,
 	removeCompareVersionDialogViewModes,
 	removeViewVersionDialogViewModes,
-	removeTypeViewCompactMode
+	removeTypeViewCompactMode,
+	removeViewGroupedTypes
 } from '../../utils/state';
 
 export const preferencesGroups: Array<{
@@ -138,6 +139,7 @@ export const preferencesGroups: Array<{
 			removeCompareVersionDialogViewModes(props.username);
 			removeViewVersionDialogViewModes(props.username);
 			removeTypeViewCompactMode(props.username);
+			removeViewGroupedTypes(props.username);
 		}
 	}
 ];

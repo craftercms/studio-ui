@@ -24,7 +24,7 @@ import HelpOutline from '@mui/icons-material/HelpOutline';
 import SearchRounded from '@mui/icons-material/SearchRounded';
 import { FormsEngineField } from '../components/FormsEngineField';
 import { ControlProps } from '../types';
-import { type ContentItem, MediaItem, Primitive } from '../../../models';
+import type { ContentItem, MediaItem, Primitive } from '../../../models';
 import List from '@mui/material/List';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
@@ -33,7 +33,7 @@ import { FormattedMessage } from 'react-intl';
 import LinkOffRoundedIcon from '@mui/icons-material/LinkOffRounded';
 import Tooltip from '@mui/material/Tooltip';
 import useContentTypes from '../../../hooks/useContentTypes';
-import React, {
+import {
 	lazy,
 	MouseEvent as ReactMouseEvent,
 	ReactNode,
@@ -303,6 +303,7 @@ function NodeSelector(props: NodeSelectorProps) {
 					dispatch,
 					path: processPath(pickerChoice.path),
 					contentTypes: pickerChoice.allowedContentTypes,
+					preselectedPaths: value.map((item) => item.key).filter(Boolean),
 					onSuccess(items: MediaItem | MediaItem[]) {
 						const newNodeSelectorItems = [];
 						asArray(items).forEach((item) => {
@@ -329,6 +330,7 @@ function NodeSelector(props: NodeSelectorProps) {
 					dispatch,
 					path: ensureSingleSlash(`${processPath(pickerChoice.path)}/.+`),
 					contentTypes: pickerChoice.allowedContentTypes,
+					preselectedPaths: value.map((item) => item.key).filter(Boolean),
 					onAcceptSelection(paths, items) {
 						const newNodeSelectorItems = [];
 						items?.forEach((item) => {
@@ -639,7 +641,12 @@ function NodeSelector(props: NodeSelectorProps) {
 											primary={
 												isEmbedded ? (
 													<ItemDisplay
-														item={{ ...contextItem, label: item.value, systemType: 'component' }}
+														item={{
+															...contextItem,
+															label: item.value,
+															systemType: 'component'
+														}}
+														showWorkflowState={!isEmbedded}
 														showNavigableAsLinks={false}
 													/>
 												) : itemsByPath[item.include] ? (
