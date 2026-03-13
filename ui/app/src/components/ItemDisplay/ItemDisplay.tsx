@@ -86,9 +86,6 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
 	// inWorkflow will only be true for type ContentItem (if they met the workflow criteria). Casting to ContentItem
 	// is only done on scenarios where `isWorkflow` is true.
 	const inWorkflow = isInWorkflow((item as ContentItem).stateMap) || item.systemType === 'folder';
-	const isStagedNewOrModified =
-		(item as ContentItem).stateMap?.staged &&
-		((item as ContentItem).stateMap?.new || (item as ContentItem).stateMap?.modified);
 	return (
 		<Box
 			component={component}
@@ -104,8 +101,7 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
 			}}
 		>
 			{/* @see https://github.com/craftercms/craftercms/issues/5442 */}
-			{/* When new or modified, staging has priority. So if item is staged and new/modified show PublishingTargetIcon */}
-			{inWorkflow && !isStagedNewOrModified
+			{inWorkflow && !shouldItemShowAsStaged(item as ContentItem)
 				? showWorkflowState && (
 						<ItemStateIcon
 							{...stateIconProps}
@@ -163,5 +159,24 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
 		</Box>
 	);
 });
+
+/**
+ * Determines if the item's icon should be displayed as staged.
+ *
+ * @param item - The content item to check.
+ * @returns True if the item should be displayed as staged, false otherwise.
+ *
+ * Staging has priority over modified and null. Additionally, if an item is submitted to live, submitted to staging, or
+ * scheduled, it should not be shown as staged.
+ */
+function shouldItemShowAsStaged(item: ContentItem): boolean {
+	return (
+		item.stateMap?.staged &&
+		(item.stateMap?.new || (item as ContentItem).stateMap?.modified) &&
+		!item.stateMap?.submittedToLive &&
+		!item.stateMap?.submittedToStaging &&
+		!item.stateMap?.scheduled
+	);
+}
 
 export default ItemDisplay;
