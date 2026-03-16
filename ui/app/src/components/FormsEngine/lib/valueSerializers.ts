@@ -43,6 +43,7 @@ export const valueSerializersLookup: Record<BuiltInControlType | DescriptorContr
 	checkbox: undefined,
 	boolean: undefined,
 	'date-time': undefined,
+	'expired-date': undefined,
 	disabled: undefined,
 	dropdown: undefined,
 	'file-name': undefined,

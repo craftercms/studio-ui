@@ -197,7 +197,7 @@ export function fetchExpiring(siteId: string, options: FetchExpiringOptions): Ob
 		map((response) =>
 			response?.response?.items.map((item) => ({
 				...item,
-				sandboxItem: prepareVirtualItemProps(item.sandboxItem)
+				contentItem: prepareVirtualItemProps(item.sandboxItem)
 			}))
 		)
 	);
