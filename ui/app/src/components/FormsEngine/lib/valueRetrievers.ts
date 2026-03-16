@@ -54,7 +54,7 @@ export const valueRetrieverLookup: Record<BuiltInControlType | DescriptorControl
 	rte: textFieldExtractor,
 	textarea: textFieldExtractor,
 	time: null,
-	'transcoded-video-picker': textFieldExtractor,
+	'transcoded-video-picker': arrayFieldExtractor,
 	uuid: textFieldExtractor,
 	'video-picker': textFieldExtractor,
 	colorPicker: textOrNullExtractor,
