@@ -27,6 +27,7 @@ import { suffixesMap, SuffixesType } from '../suffixesMap';
 import { useStableFormContext } from '../../FormsEngine/lib/formsEngineContext';
 import { useAtomValue } from 'jotai';
 import useUpdateRefs from '../../../hooks/useUpdateRefs';
+import { isFieldReadOnly } from '../../FormsEngine/lib/formUtils';
 
 export interface VariableProps extends ControlProps {
 	value: string;
@@ -43,7 +44,7 @@ export function Variable(props: VariableProps) {
 	const controlDescriptor = contentType?.id && controlDescriptors[contentType?.id];
 	const supportedSuffixes: SuffixesType[] = controlDescriptor?.metadata?.suffixes;
 	const { formatMessage } = useIntl();
-	const disabled = readonly || disabledFields.includes(value);
+	const disabled = isFieldReadOnly(field, readonly) || disabledFields.includes(value);
 	const showSuffixes = supportedSuffixes && !disableSuffixes.includes(value);
 	const effectRefs = useUpdateRefs({
 		value,

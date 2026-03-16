@@ -26,6 +26,16 @@ export const uuidDescriptor: DescriptorContentType = {
 		createVirtualSection({ id: 'properties', title: defineMessage({ defaultMessage: 'Options' }), fields: ['hidden'] })
 	],
 	fields: {
+		defaultValue: {
+			id: 'defaultValue',
+			type: 'textarea',
+			name: defineMessage({ defaultMessage: 'Default Value' }),
+			defaultValue: undefined,
+			validations: immutableEmptyObject,
+			properties: {
+				readonly: { name: 'readonly', type: 'boolean', value: true }
+			}
+		},
 		hidden: {
 			id: 'hidden',
 			type: 'boolean',
