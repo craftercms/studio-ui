@@ -425,14 +425,22 @@ function NodeSelector(props: NodeSelectorProps) {
 					path: item.include ?? contextItem.path,
 					// In the case of shared, item.component === undefined.
 					// The form interprets as a shared when modelId and values are not supplied and fetches.
-					modelId: item.component?.objectId as string | undefined,
+					modelId: isEmbedded ? (item.key as string | undefined) : undefined,
 					values: item.component
 				},
-				onSave({ values }) {
-					const key = isEmbedded
+				onSave({ values, path }) {
+					let key = isEmbedded
 						? ((values[XmlKeys.fileName] || values.objectId) as string).replace(/\.xml$/, '')
-						: // TODO: What if it was moved? i.e. changed its file-name/folder-name
-							item.include;
+						: item.include;
+
+					if (!isEmbedded) {
+						// Check if the path has changed (moved/renamed) and update key accordingly.
+						const currentPath = item.key;
+						if (path && currentPath !== path) {
+							key = path;
+						}
+					}
+
 					const newItem: NodeSelectorItem = {
 						key,
 						value: values[XmlKeys.internalName] as string,
@@ -474,6 +482,7 @@ function NodeSelector(props: NodeSelectorProps) {
 					dispatch,
 					path: processPath(pickerChoice.path),
 					contentTypes: pickerChoice.allowedContentTypes,
+					preselectedPaths: value.map((item) => item.key).filter(Boolean),
 					onSuccess(items: MediaItem | MediaItem[]) {
 						const nextValue = value.concat();
 						asArray(items).forEach((item) => {
@@ -496,6 +505,7 @@ function NodeSelector(props: NodeSelectorProps) {
 					dispatch,
 					path: ensureSingleSlash(`${processPath(pickerChoice.path)}/.+`),
 					contentTypes: pickerChoice.allowedContentTypes,
+					preselectedPaths: value.map((item) => item.key).filter(Boolean),
 					onAcceptSelection(paths, items) {
 						const nextValue = value.concat();
 						items?.forEach((item) => {
@@ -757,7 +767,12 @@ function NodeSelector(props: NodeSelectorProps) {
 											primary={
 												isEmbedded ? (
 													<ItemDisplay
-														item={{ ...contextItem, label: item.value, systemType: 'component' }}
+														item={{
+															...contextItem,
+															label: item.value,
+															systemType: 'component'
+														}}
+														showWorkflowState={!isEmbedded}
 														showNavigableAsLinks={false}
 													/>
 												) : itemsByPath[item.include] ? (

@@ -17,7 +17,6 @@
 import Group from '../../models/Group';
 import React from 'react';
 import User from '../../models/User';
-import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 import { LookupTable, PaginationOptions } from '../../models';
 import { useTransferListStateReturn } from '../TransferList/utils';
@@ -29,15 +28,11 @@ export interface EditGroupBaseProps {
 export interface EditGroupDialogProps extends EditGroupBaseProps, EnhancedDialogProps {
 	onGroupSaved(group: Group): void;
 	onGroupDeleted(group: Group): void;
-	onSubmittingAndOrPendingChange(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
 export interface EditGroupDialogContainerProps
 	extends EditGroupBaseProps,
-		Pick<
-			EditGroupDialogProps,
-			'onClose' | 'onGroupSaved' | 'onGroupDeleted' | 'isSubmitting' | 'onSubmittingAndOrPendingChange'
-		> {}
+		Pick<EditGroupDialogProps, 'onClose' | 'onGroupSaved' | 'onGroupDeleted' | 'isSubmitting'> {}
 
 export interface GroupEditDialogUIProps {
 	group?: Group;
@@ -60,7 +55,7 @@ export interface GroupEditDialogUIProps {
 	transferListState: useTransferListStateReturn;
 	sourceItemsAllChecked: boolean;
 	onFilterUsers(keyword: string): void;
-	onFetchMoreUsers(options?: Partial<PaginationOptions & { keyword?: string }>): void;
+	onFetchMoreUsers(options?: Partial<PaginationOptions & { keyword?: string }>): Promise<void>;
 	hasMoreUsers: boolean;
 	disableAddMembers: boolean;
 	isSubmitting: boolean;

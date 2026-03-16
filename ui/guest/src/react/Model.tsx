@@ -23,6 +23,4 @@ export const Model = forwardRef<any, ModelProps>((props, ref) => {
 	return <Field {...(props as FieldProps)} ref={ref} fieldId="__CRAFTERCMS_FAKE_FIELD__" />;
 });
 
-Model.propTypes = (({ fieldId, index, ...propTypes }) => propTypes)(Field.propTypes);
-
 export default Model;

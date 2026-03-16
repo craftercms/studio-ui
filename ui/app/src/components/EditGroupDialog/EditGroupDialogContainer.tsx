@@ -41,6 +41,8 @@ import { createPresenceTable } from '../../utils/array';
 import { pluckProps, reversePluckProps } from '../../utils/object';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
 import { pushErrorDialog } from '../../utils/system';
+import { useEnhancedDialogContext } from '../EnhancedDialog';
+import { firstValueFrom } from 'rxjs';
 
 const translations = defineMessages({
 	groupCreated: {
@@ -66,7 +68,7 @@ const translations = defineMessages({
 });
 
 export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
-	const { onClose, onGroupSaved, onGroupDeleted, isSubmitting, onSubmittingAndOrPendingChange } = props;
+	const { onClose, onGroupSaved, onGroupDeleted, isSubmitting } = props;
 	const dispatch = useDispatch();
 	const { formatMessage } = useIntl();
 	const [group, setGroup] = useSpreadState(props.group ?? { id: null, name: '', desc: '', externallyManaged: false });
@@ -101,7 +103,8 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
 		[isAllChecked, sourceItems, targetItems]
 	);
 	const disableAddMembers = getChecked(excludeCommonItems(sourceItems, targetItems)).length === 0;
-	const fnRefs = useUpdateRefs({ onSubmittingAndOrPendingChange });
+	const { updateSubmittingOrHasPendingChanges } = useEnhancedDialogContext();
+	const fnRefs = useUpdateRefs({ updateSubmittingOrHasPendingChanges });
 
 	const onDeleteGroup = (group: Group) => {
 		trash(group.id).subscribe({
@@ -191,7 +194,7 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
 	};
 
 	const onSave = () => {
-		onSubmittingAndOrPendingChange({
+		updateSubmittingOrHasPendingChanges({
 			isSubmitting: true
 		});
 		if (props.group) {
@@ -204,13 +207,13 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
 					);
 					setIsDirty(false);
 					onGroupSaved(group);
-					fnRefs.current.onSubmittingAndOrPendingChange({
+					fnRefs.current.updateSubmittingOrHasPendingChanges({
 						isSubmitting: false
 					});
 				},
 				error({ response: { response } }) {
 					dispatch(pushErrorDialog({ props: { error: response } }));
-					fnRefs.current.onSubmittingAndOrPendingChange({
+					fnRefs.current.updateSubmittingOrHasPendingChanges({
 						isSubmitting: false
 					});
 				}
@@ -225,7 +228,7 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
 					);
 					setIsDirty(false);
 					onGroupSaved(group);
-					fnRefs.current.onSubmittingAndOrPendingChange({
+					fnRefs.current.updateSubmittingOrHasPendingChanges({
 						isSubmitting: false
 					});
 					// Fetch users and members for created group
@@ -234,7 +237,7 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
 				},
 				error({ response: { response } }) {
 					dispatch(pushErrorDialog({ props: { error: response } }));
-					fnRefs.current.onSubmittingAndOrPendingChange({
+					fnRefs.current.updateSubmittingOrHasPendingChanges({
 						isSubmitting: false
 					});
 				}
@@ -261,11 +264,13 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
 	};
 
 	const fetchMoreUsers = (options?: Partial<PaginationOptions & { keyword?: string }>) => {
-		fetchAll({
-			limit: usersFetchSize,
-			offset: usersOffset,
-			...options
-		}).subscribe((_users) => {
+		return firstValueFrom(
+			fetchAll({
+				limit: usersFetchSize,
+				offset: usersOffset,
+				...options
+			})
+		).then((_users) => {
 			const newUsersLength = usersRef.current.length + _users.length;
 			setUsersHaveNextPage(_users.total > newUsersLength);
 			setUsers([...usersRef.current, ..._users]);
@@ -310,8 +315,8 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
 	}, [group?.id, props.group, setGroup]);
 
 	useEffect(() => {
-		onSubmittingAndOrPendingChange({ hasPendingChanges: isDirty });
-	}, [isDirty, onSubmittingAndOrPendingChange]);
+		updateSubmittingOrHasPendingChanges({ hasPendingChanges: isDirty });
+	}, [isDirty, updateSubmittingOrHasPendingChanges]);
 	// endregion
 
 	return (

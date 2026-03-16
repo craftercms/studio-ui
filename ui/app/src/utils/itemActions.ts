@@ -98,6 +98,9 @@ import { nanoid } from 'nanoid';
 import { popDialog, pushDialog, updateDialogState } from '../state/actions/dialogStack';
 import { createComponentId, pickShowContentFormAction, pushConfirmDialog, pushErrorDialog } from './system';
 import { checkAndCancelAffectedPackages } from '../components/ViewPackagesDialog/utils';
+import { getNormalizedFolderPathForApi1GetTypes } from './contentType';
+import { fetchLegacyContentTypes, parseLegacyContentType } from '../services/contentTypes';
+import { map } from 'rxjs/operators';
 
 export type ContextMenuOptionDescriptor<ID extends string = string> = {
 	id: ID;
@@ -578,27 +581,59 @@ export const itemActionDispatcher = ({
 			}
 			case 'createContent': {
 				const id = nanoid();
-				dispatch(
-					pushDialog({
-						id,
-						component: createComponentId('NewContentDialog'),
-						props: {
-							item,
-							onContentTypeSelected(response) {
-								dispatch(updateDialogState({ id, props: { open: false } }));
+
+				dispatch(blockUI({ progress: 'indeterminate' }));
+				// TODO: Right now we're fetching legacy content types to check if there's only one type. Pending API v2 support
+				fetchLegacyContentTypes(site, getNormalizedFolderPathForApi1GetTypes(item))
+					.pipe(map((legacyTypes) => legacyTypes.map(parseLegacyContentType)))
+					.subscribe({
+						next(response) {
+							const contentTypes = response;
+							if (contentTypes?.length === 1) {
+								const contentType = contentTypes[0];
 								dispatch(
-									pickShowContentFormAction({
-										authoringBase,
-										site,
-										path: response.path,
-										contentTypeId: response.contentType.id,
-										isNewContent: true
-									})
+									batchActions([
+										unblockUI(),
+										pickShowContentFormAction({
+											authoringBase,
+											site,
+											path: withoutIndex(item.path),
+											contentTypeId: contentType.id,
+											isNewContent: true
+										})
+									])
+								);
+							} else {
+								dispatch(
+									batchActions([
+										unblockUI(),
+										pushDialog({
+											id,
+											component: createComponentId('NewContentDialog'),
+											props: {
+												item,
+												onContentTypeSelected(response) {
+													dispatch(updateDialogState({ id, props: { open: false } }));
+													dispatch(
+														pickShowContentFormAction({
+															authoringBase,
+															site,
+															path: response.path,
+															contentTypeId: response.contentType.id,
+															isNewContent: true
+														})
+													);
+												}
+											} as Partial<NewContentDialogProps>
+										})
+									])
 								);
 							}
-						} as Partial<NewContentDialogProps>
-					})
-				);
+						},
+						error({ response }) {
+							dispatch(batchActions([unblockUI(), pushErrorDialog({ props: { error: response } })]));
+						}
+					});
 				break;
 			}
 			case 'changeContentType': {

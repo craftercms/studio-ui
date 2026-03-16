@@ -183,7 +183,6 @@ export const components = {
 	LauncherSection: lazy(() => import('../components/LauncherSection')),
 	LauncherSiteCard: lazy(() => import('../components/LauncherSiteCard')),
 	LauncherTile: lazy(() => import('../components/LauncherTile')),
-	LegacyComponentsPanel: lazy(() => import('../components/LegacyComponentsPanel')),
 	LegacyConcierge: lazy(() => import('../components/LegacyConcierge')),
 	LegacyDashboardFrame: lazy(() => import('../components/LegacyDashboardFrame')),
 	LegacyFormDialog: lazy(() => import('../components/LegacyFormDialog')),

@@ -34,7 +34,8 @@ export const rteDescriptor: DescriptorContentType = {
 				'imageManager',
 				'videoManager',
 				'audioManager',
-				'fileManager'
+				'fileManager',
+				'addMedia'
 			]
 		}),
 		createVirtualSection({
@@ -46,28 +47,28 @@ export const rteDescriptor: DescriptorContentType = {
 	fields: {
 		height: {
 			id: 'height',
-			type: 'numeric-input',
+			type: 'int',
 			name: defineMessage({ defaultMessage: 'Height' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		autoGrow: {
 			id: 'autoGrow',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Auto Grow' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
 		enableSpellCheck: {
 			id: 'enableSpellCheck',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Enable Spell Check' }),
 			defaultValue: true,
 			validations: immutableEmptyObject
 		},
 		rteConfiguration: {
 			id: 'rteConfiguration',
-			type: 'input',
+			type: 'string',
 			name: defineMessage({ defaultMessage: 'RTE Configuration' }),
 			defaultValue: 'generic',
 			validations: immutableEmptyObject
@@ -110,13 +111,22 @@ export const rteDescriptor: DescriptorContentType = {
 		},
 		required: {
 			id: 'required',
-			type: 'checkbox',
+			type: 'boolean',
 			name: defineMessage({ defaultMessage: 'Required' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
+		},
+		addMedia: {
+			id: 'addMedia',
+			type: 'boolean',
+			name: defineMessage({ defaultMessage: 'Add Media' }),
+			defaultValue: true,
+			validations: immutableEmptyObject
 		}
 	},
-	supportedPostFixes: ['_html']
+	metadata: {
+		suffixes: ['_html']
+	}
 };
 
 export default rteDescriptor;

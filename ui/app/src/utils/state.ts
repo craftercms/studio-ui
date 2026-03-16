@@ -500,3 +500,16 @@ export function getTypeViewCompactMode(user: string): boolean {
 export function removeTypeViewCompactMode(user: string) {
 	window.localStorage.removeItem(`craftercms.${user}.typeViewCompactMode`);
 }
+
+export function setViewGroupedTypes(user: string, value: boolean) {
+	window.localStorage.setItem(`craftercms.${user}.viewGroupedTypes`, JSON.stringify(value));
+}
+
+export function getViewGroupedTypes(user: string): boolean {
+	const value = window.localStorage.getItem(`craftercms.${user}.viewGroupedTypes`);
+	return value ? value === 'true' : null;
+}
+
+export function removeViewGroupedTypes(user: string) {
+	window.localStorage.removeItem(`craftercms.${user}.viewGroupedTypes`);
+}

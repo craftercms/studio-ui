@@ -19,7 +19,6 @@ import { ElementType, forwardRef } from 'react';
 import ContentType, { defaultContentTypeMap } from './ContentType';
 import RenderRepeat, { RenderRepeatProps } from './RenderRepeat';
 import { ContentInstance } from '@craftercms/studio-ui/models';
-import PropTypes from 'prop-types';
 
 export type RenderComponentsProps<
 	RootProps = {},
@@ -63,7 +62,5 @@ export const RenderComponents = forwardRef<any, RenderComponentsProps>((props, r
 		/>
 	);
 });
-
-RenderComponents.propTypes = { ...RenderRepeat.propTypes, renderItem: PropTypes.func };
 
 export default RenderComponents;

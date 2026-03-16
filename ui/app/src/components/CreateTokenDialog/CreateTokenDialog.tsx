@@ -21,7 +21,7 @@ import EnhancedDialog from '../EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
 
 export function CreateTokenDialog(props: CreateTokenDialogProps) {
-	const { onCreated, isSubmitting, onSubmittingAndOrPendingChange, ...rest } = props;
+	const { onCreated, isSubmitting, ...rest } = props;
 
 	return (
 		<EnhancedDialog
@@ -31,11 +31,7 @@ export function CreateTokenDialog(props: CreateTokenDialogProps) {
 			isSubmitting={isSubmitting}
 			{...rest}
 		>
-			<CreateTokenDialogContainer
-				onCreated={onCreated}
-				isSubmitting={isSubmitting}
-				onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
-			/>
+			<CreateTokenDialogContainer onCreated={onCreated} isSubmitting={isSubmitting} />
 		</EnhancedDialog>
 	);
 }
