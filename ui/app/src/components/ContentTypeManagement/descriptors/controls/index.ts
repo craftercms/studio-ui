@@ -49,6 +49,7 @@ import { ContentTypeField } from '../../../../models/ContentType';
 import LookupTable from '../../../../models/LookupTable';
 import colorPickerDescriptor from './colorPicker';
 import { defineMessage } from 'react-intl';
+import expiredDateDescriptor from './expiredDate';
 
 const dataSourceRootProperties = ['id', 'type', 'title', 'interface'];
 
@@ -173,7 +174,8 @@ export const controlDescriptors: Record<BuiltInControlType, DescriptorContentTyp
 	'transcoded-video-picker': transcodedVideoPickerDescriptor,
 	uuid: uuidDescriptor,
 	'video-picker': videoPickerDescriptor,
-	colorPicker: colorPickerDescriptor
+	colorPicker: colorPickerDescriptor,
+	'expired-date': expiredDateDescriptor
 };
 
 export const typeBasicDetailsDescriptor: DescriptorContentType = {

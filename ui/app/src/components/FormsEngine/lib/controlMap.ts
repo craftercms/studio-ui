@@ -47,7 +47,8 @@ export type BuiltInControlType =
 	| 'transcoded-video-picker'
 	| 'uuid' // TODO: Not in BPs, seems not to be in use
 	| 'video-picker'
-	| 'colorPicker';
+	| 'colorPicker'
+	| 'expired-date';
 
 export const controlMap: Record<BuiltInControlType, ElementType> = {
 	'auto-filename': lazy(() => import('../controls/AutoFileName')),
@@ -75,7 +76,8 @@ export const controlMap: Record<BuiltInControlType, ElementType> = {
 	textarea: lazy(() => import('../controls/Textarea')),
 	time: lazy(() => import('../controls/Time')),
 	'transcoded-video-picker': null,
-	uuid: null,
+	uuid: lazy(() => import('../controls/Uuid')),
 	'video-picker': null,
-	colorPicker: lazy(() => import('../controls/ColorPicker'))
+	colorPicker: lazy(() => import('../controls/ColorPicker')),
+	'expired-date': lazy(() => import('../controls/DateTime'))
 };

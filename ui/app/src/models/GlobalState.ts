@@ -74,6 +74,7 @@ import { PackageDetailsDialogStateProps } from '../components';
 import { ViewPackagesDialogStateProps } from '../components/ViewPackagesDialog';
 import type { FolderMoveAlertDialogStateProps } from '../components/FolderMoveAlertDialog/FolderMoveAlertDialog';
 import type { PublishingStatus } from './Publishing';
+import type { Archetype } from '../components/ContentTypeManagement/descriptors/archetypes';
 
 export type HighlightMode = 'all' | 'move';
 

@@ -102,6 +102,7 @@ import PickDataSourceDialog from './PickDataSourceDialog';
 import { fetchContentTypes } from '../../../state/actions/preview';
 import { getXmlBuilder, valueSerializersLookup } from '../../FormsEngine/lib/valueSerializers';
 import { pushErrorDialog } from '../../../utils/system';
+import { showSystemNotification } from '../../../state/actions/system';
 import { extractErrorPayload } from '../../../utils/ajax';
 import Typography from '@mui/material/Typography';
 import { AjaxError } from 'rxjs/ajax';
@@ -467,13 +468,19 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 				save(site, typeToSave, configDescriptors).subscribe({
 					next() {
 						onUpdateHasPendingChanges(false);
-						dialogContext?.updateSubmittingOrHasPendingChanges({ isSubmitting: false });
+						dialogContext?.updateSubmittingOrHasPendingChanges({ isSubmitting: false, hasPendingChanges: false });
 						// If the type being saved is new, update the type state to remove the NEW property.
 						if ((typeToSave as PossibleContentTypeDraft).NEW) {
 							setType(reversePluckProps(typeToSave as PossibleContentTypeDraft, 'NEW'));
 						}
-						dispatch(fetchContentTypes());
-						showAlert(`Save successful.`);
+						dispatch(
+							batchActions([
+								fetchContentTypes(),
+								showSystemNotification({
+									message: formatMessage({ defaultMessage: 'Save successful.' })
+								})
+							])
+						);
 					},
 					error(error: AjaxError) {
 						dialogContext?.updateSubmittingOrHasPendingChanges({ isSubmitting: false });
@@ -1263,7 +1270,7 @@ function parseConfigPlugins(
 function getNewFieldFromDescriptor(fieldType: string, descriptor: DescriptorContentType): NewContentTypeField {
 	const newField: NewContentTypeField = {
 		NEW: true,
-		id: systemFieldsIdsMap[fieldType] ?? '',
+		id: systemFieldsIdsMap[fieldType] ?? null,
 		name: '',
 		helpText: '',
 		description: '',

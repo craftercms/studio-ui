@@ -20,6 +20,7 @@ import { MutableRefObject } from 'react';
 import { EntityState } from '../models/EntityState';
 import queryString, { StringifyOptions } from 'query-string';
 import Person from '../models/Person';
+import type { ContentType } from '../models';
 
 export function pluckProps<T extends object, K extends keyof T>(
 	source: T,
@@ -325,4 +326,41 @@ export function prettyPrintPerson(
 
 export function getPersonFullName(person: Person): string {
 	return `${person.firstName} ${person.lastName}`;
+}
+
+/**
+ * Merges two archetype descriptors into a single descriptor by combining their properties.
+ *
+ * @param {ContentType} parentDescriptor - The parent archetype descriptor to extend.
+ * @param {ContentType} childDescriptor - The child archetype descriptor to merge with the parent.
+ * @returns {ContentType} A new archetype descriptor that combines the fields, sections, and data sources
+ *                        of both the parent and child descriptors.
+ *
+ * - Fields: Combines the fields from both descriptors, with the child's fields taking precedence.
+ * - Sections: Merges sections from both descriptors, ensuring no duplicate sections by `id`. The child's sections take precedence.
+ * - Data Sources: Concatenates the data sources from both descriptors.
+ */
+export function extendArchetypeDescriptor(parentDescriptor: ContentType, childDescriptor: ContentType): ContentType {
+	return {
+		...(parentDescriptor ?? {}),
+		...childDescriptor,
+		fields: {
+			...(parentDescriptor?.fields ?? {}),
+			...(childDescriptor.fields ?? {})
+		},
+		// Merge parentDescriptor and childDescriptor into a single array, ensuring there are no duplicate sections by id.
+		// Child sections take precedence over parent sections.
+		sections: [...(parentDescriptor?.sections ?? []), ...(childDescriptor.sections ?? [])].reduceRight(
+			(acc, section) => {
+				// If the section id is not already in the accumulator, add it.
+				if (!acc.some((s) => s.id === section.id)) {
+					// Add to the beginning to maintain order.
+					acc.unshift(section);
+				}
+				return acc;
+			},
+			[]
+		),
+		dataSources: [...(parentDescriptor?.dataSources ?? []), ...(childDescriptor.dataSources ?? [])]
+	};
 }

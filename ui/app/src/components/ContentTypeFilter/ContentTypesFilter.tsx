@@ -15,39 +15,33 @@
  */
 
 import React, { forwardRef } from 'react';
-import { defineMessages, MessageDescriptor, useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import Select, { SelectProps } from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import SystemType from '../../models/SystemType';
+import useArchetypesList from '../../hooks/useArchetypesList';
+import { getPossibleTranslation } from '../../utils/i18n';
 
 export type ContentTypesFilterProps = SelectProps;
 
 export type ObjectTypeOption = 'all' | Extract<SystemType, 'page' | 'component'>;
 
-const options: Record<ObjectTypeOption, MessageDescriptor> = defineMessages({
-	all: {
-		id: 'newContentDialog.contentTypeAllLabel',
-		defaultMessage: 'Show all types'
-	},
-	page: {
-		id: 'newContentDialog.contentTypePageLabel',
-		defaultMessage: 'Pages only'
-	},
-	component: {
-		id: 'newContentDialog.contentTypeComponentLabel',
-		defaultMessage: 'Components only'
-	}
-});
-
-const translationsArray = Object.entries(options);
-
 export const ContentTypesFilter = forwardRef<HTMLDivElement, ContentTypesFilterProps>((props, ref) => {
 	const { formatMessage } = useIntl();
+	const archetypes = useArchetypesList();
 	return (
 		<Select {...props} ref={ref}>
-			{translationsArray.map((option) => (
-				<MenuItem key={option[0]} value={option[0]}>
-					{formatMessage(option[1])}
+			<MenuItem value="all">
+				<FormattedMessage defaultMessage="Show all types" />
+			</MenuItem>
+			{archetypes.map((option) => (
+				<MenuItem key={option.id} value={option.id}>
+					<FormattedMessage
+						defaultMessage="{label} only"
+						values={{
+							label: getPossibleTranslation(option.name, formatMessage)
+						}}
+					/>
 				</MenuItem>
 			))}
 		</Select>

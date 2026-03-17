@@ -54,6 +54,8 @@ export interface PublishItemsProps {
 	selectedDependenciesMap?: Record<string, boolean>;
 	trees: PathTreeNode[];
 	onCheckboxChange?: (event: React.ChangeEvent<HTMLInputElement>, checked: boolean, path: string) => void;
+	includeChildren?: boolean;
+	setIncludeChildren?: (value: boolean) => void;
 }
 
 const maxTreeItems = 100;
@@ -67,7 +69,9 @@ export function PublishPackageItemsView(props: PublishItemsProps) {
 		selectedDependenciesPaths = [],
 		selectedDependenciesMap = {},
 		trees,
-		onCheckboxChange
+		onCheckboxChange,
+		includeChildren,
+		setIncludeChildren
 	} = props;
 	const { username } = useActiveUser();
 	const storedPreferredView = getPublishingPackagePreferredView(username);
@@ -143,9 +147,11 @@ export function PublishPackageItemsView(props: PublishItemsProps) {
 				setExpandedPaths={setExpandedPaths}
 				disableTreeView={disableTreeView}
 				maxTreeItems={maxTreeItems}
+				includeChildren={includeChildren}
+				setIncludeChildren={setIncludeChildren}
 			/>
 			<Divider />
-			<Box sx={{ p: 1, flexGrow: 1, overflowY: 'auto' }}>
+			<Box sx={{ p: 1, flexGrow: 1, overflowY: 'auto', maxHeight: '70vh' }}>
 				{!disableTreeView && isTreeView ? (
 					<SimpleTreeView
 						expandedItems={expandedPaths ?? defaultExpandedPaths}
@@ -176,9 +182,8 @@ export function PublishPackageItemsView(props: PublishItemsProps) {
 				) : (
 					<List
 						rowCount={totalItems}
-						rowHeight={59}
+						rowHeight={72}
 						rowProps={{}}
-						style={{ height: '100%', overflowY: 'unset' }}
 						rowComponent={({ index, style }: RowComponentProps) => {
 							const path = itemsAndDependenciesPaths[index];
 							return (
