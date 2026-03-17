@@ -16,6 +16,7 @@
 
 import type { ControlProps } from '../types';
 import { getPropertyValue } from '../lib/formUtils';
+import DOMPurify from 'dompurify';
 
 export function Label(props: ControlProps) {
 	const { field } = props;
@@ -24,7 +25,7 @@ export function Label(props: ControlProps) {
 	const labelText: string = getPropertyValue(field.properties, 'text') as string;
 	// endregion
 
-	return <span dangerouslySetInnerHTML={{ __html: labelText }} />;
+	return <span dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(labelText) }} />;
 }
 
 export default Label;
