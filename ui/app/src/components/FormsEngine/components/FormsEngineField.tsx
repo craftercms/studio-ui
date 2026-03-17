@@ -44,6 +44,8 @@ import {
 } from '../lib/formsEngineContext';
 import { useAtomValue } from 'jotai';
 import { translateIfMessageDescriptor } from '../../ContentTypeManagement/utils';
+import useLoadableAtom from '../lib/useLoadableAtom';
+import { XmlKeys } from '../lib/formConsts';
 
 function createLengthBlock({ length, max, min }: { length: number; max: number; min: number }) {
 	const pieces = [];
@@ -120,9 +122,9 @@ export const FormsEngineField = forwardRef<HTMLDivElement, FormsEngineFieldProps
 	const hasDescription = Boolean(field.description);
 	const lengthBlock = createLengthBlock({ length, max, min });
 	const isRequired = isFieldRequired(field);
-	const validityData = useAtomValue(atoms.validationByFieldId[fieldId]);
+	const validityData = useLoadableAtom(atoms.validationByFieldId[fieldId]);
 	const value = useAtomValue(atoms.valueByFieldId[fieldId]);
-	const isValid = props.isValid ?? validityData?.isValid;
+	const isValid = props.isValid ?? (validityData.state === 'hasData' ? validityData?.data.isValid : true);
 	const handleCloseMenu = () => setOpenMenu(false);
 	const handleRollback = () => formApi.rollbackField(field.id);
 	useEffect(() => {
@@ -215,7 +217,7 @@ export const FormsEngineField = forwardRef<HTMLDivElement, FormsEngineFieldProps
 					</Alert>
 				</Collapse>
 			)}
-			{sourceMap?.[fieldId] && (
+			{sourceMap?.[fieldId] && fieldId !== XmlKeys['fileName'] && (
 				<Alert
 					variant="standard"
 					severity="info"
@@ -273,8 +275,8 @@ export const FormsEngineField = forwardRef<HTMLDivElement, FormsEngineFieldProps
 			{children}
 			{hasDescription && <FormHelperText>{field.description}</FormHelperText>}
 			{!isValid &&
-				!!validityData?.messages?.length &&
-				validityData.messages.map((messageData, key) => (
+				validityData.state === 'hasData' &&
+				validityData.data?.messages?.map((messageData, key) => (
 					<FormHelperText key={key}>{translateValidityMessage(messageData, formatMessage)}</FormHelperText>
 				))}
 		</FormControl>

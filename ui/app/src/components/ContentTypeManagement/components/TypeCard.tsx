@@ -23,6 +23,7 @@ import CardActionArea from '@mui/material/CardActionArea';
 import type { BoxProps } from '@mui/material/Box';
 import Skeleton from '@mui/material/Skeleton';
 import { TypeCardMedia } from './TypeCardMedia';
+import { toColor } from '../../../utils/string';
 
 export interface TypeCardProps extends Omit<CardProps, 'onClick'> {
 	type: ContentType;
@@ -64,7 +65,7 @@ export function TypeCard(props: TypeCardProps) {
 	const cardBody = (
 		<>
 			<CardHeader
-				sx={{ flexGrow: 1 }}
+				sx={{ flexGrow: 1, flex: 1, overflow: 'hidden' }}
 				title={heading}
 				subheader={subheading}
 				slotProps={{
@@ -82,7 +83,18 @@ export function TypeCard(props: TypeCardProps) {
 		</>
 	);
 	return (
-		<Card {...cardProps} sx={consolidateSx(baseCardSx, !hasActionArea && styleOverrides?.actionArea, sx)}>
+		<Card
+			{...cardProps}
+			sx={consolidateSx(
+				baseCardSx,
+				{
+					borderLeft: (theme) => `${theme.spacing(1)} solid`,
+					borderLeftColor: type ? toColor(type.id) : null
+				},
+				!hasActionArea && styleOverrides?.actionArea,
+				sx
+			)}
+		>
 			{hasActionArea ? (
 				<CardActionArea sx={styleOverrides?.actionArea} onClick={(e) => onClick(e, type)}>
 					{cardBody}

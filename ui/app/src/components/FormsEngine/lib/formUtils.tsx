@@ -31,13 +31,13 @@ import {
 	StableGlobalContext,
 	StableGlobalContextProps
 } from './formsEngineContext';
-import { fetchContentXML, fetchDescriptorXML, fetchContentItem, lock, unlock } from '../../../services/content';
+import { fetchContentItem, fetchContentXML, fetchDescriptorXML, lock, unlock } from '../../../services/content';
 import { AjaxError } from 'rxjs/ajax';
 import { fetchAffectedPackages } from '../../../services/workflow';
 import { Dispatch as ReduxDispatch } from 'redux';
 import { IntlShape } from 'react-intl/src/types';
-import { showSystemNotification } from '../../../state/actions/system';
-import { atom, Atom, PrimitiveAtom, useAtomValue, useStore as useJotaiStore } from 'jotai/index';
+import { showSystemNotification, showUnlockItemSuccessNotification } from '../../../state/actions/system';
+import { atom, Atom, PrimitiveAtom, useAtomValue, useStore as useJotaiStore } from 'jotai';
 import React, { ReactNode, RefObject, useContext, useEffect, useRef } from 'react';
 import { fromString, getInnerHtml } from '../../../utils/xml';
 import { nanoid } from 'nanoid';
@@ -67,10 +67,13 @@ import useActiveSiteId from '../../../hooks/useActiveSiteId';
 import { areAllPairsEqual } from '../../../utils/array';
 import { deserializeContentDoc } from './valueRetrievers';
 import useUpdateRefs from '../../../hooks/useUpdateRefs';
-import { unlockItem } from '../../../state/actions/content';
 import ApiResponse from '../../../models/ApiResponse';
 import { getFormsEngineCloseAfterSave, getFormsEngineCollapseToCKey } from '../../../utils/state';
 import { createComponentId } from '../../../utils/system';
+import { showErrorDialog } from '../../../state/actions/dialogs';
+import { ensureSingleSlash } from '../../../utils/string';
+import { nnou, nou } from '../../../utils/object';
+import { WritableAtom } from 'jotai/vanilla';
 
 /**
  * Returns the scroll container for the form's container.
@@ -175,33 +178,131 @@ export const getTargetHeight = (isDialog: boolean, isFullScreen: boolean, theme:
 export function createFieldAtoms(
 	field: ContentTypeField,
 	initialValue: unknown,
-	formContextRef: RefObject<Pick<StableFormContextProps, 'fieldUpdates$' | 'changedFieldIds' | 'originalValues'>>
-): [PrimitiveAtom<unknown>, Atom<FieldValidityState>] {
+	formContextRef: RefObject<
+		Pick<StableFormContextProps, 'fieldUpdates$' | 'changedFieldIds' | 'originalValues' | 'atoms' | 'itemMeta'>
+	>,
+	// TODO: Consider a more comprehensive context for validators
+	siteId?: string
+): [PrimitiveAtom<unknown>, Atom<Promise<FieldValidityState>>] {
 	let isInitialization = true;
 	const valueAtom = atom(initialValue);
-	return [
-		valueAtom,
-		atom((get) => {
-			// TODO: It would be best for this to be in a different place and be a sort of effect.
-			const value = get(valueAtom);
-			if (isInitialization) {
-				isInitialization = false;
-			} else {
-				if (value !== formContextRef.current.originalValues[field.id]) {
-					formContextRef.current.changedFieldIds.add(field.id);
+	const validationAtom = atom(async (get) => {
+		// TODO: It would be best for this to be in a different place and be a sort of effect.
+		const value = get(valueAtom);
+		if (isInitialization) {
+			isInitialization = false;
+		} else {
+			if (field.id === XmlKeys['fileName']) {
+				const currentFileName = get(formContextRef.current.atoms.fileName);
+				const originalPath = formContextRef.current.itemMeta.path;
+
+				if (nou(originalPath)) {
+					// If no originalPath exists => creating content
+					if (currentFileName) {
+						formContextRef.current.changedFieldIds.add(field.id);
+					} else {
+						formContextRef.current.changedFieldIds.delete(field.id);
+					}
 				} else {
-					formContextRef.current.changedFieldIds.delete(field.id);
+					// If originalPath exists, validate if differs from original value
+					const isPage = isPagePath(originalPath);
+					const originalFileName = getFileNameValueFromPath(originalPath, isPage);
+					if (currentFileName !== originalFileName) {
+						formContextRef.current.changedFieldIds.add(field.id);
+					} else {
+						formContextRef.current.changedFieldIds.delete(field.id);
+					}
 				}
-				formContextRef.current.fieldUpdates$.next(field.id);
+			} else if (value !== formContextRef.current.originalValues[field.id]) {
+				formContextRef.current.changedFieldIds.add(field.id);
+			} else {
+				formContextRef.current.changedFieldIds.delete(field.id);
 			}
-			return validateFieldValue(field, value);
-		})
-	];
+			formContextRef.current.fieldUpdates$.next(field.id);
+		}
+		return validateFieldValue(field, value, {
+			siteId,
+			itemMeta: formContextRef.current.itemMeta as FormsEngineItemMetaContextProps,
+			fileName: formContextRef.current.atoms.fileName ? get(formContextRef.current.atoms.fileName) : ''
+		});
+	});
+	return [valueAtom, validationAtom];
 }
 
 /** Creates the readonly flag property atom based on the lock result atom */
 export const createReadonlyAtom = (lockedResultAtom: Atom<FormsEngineEditContextProps>) =>
 	atom((get) => !get(lockedResultAtom).locked);
+
+/**
+ * Determines if the given path corresponds to a page path.
+ *
+ * @param {string} path - The path to check.
+ * @returns {boolean} - Returns `true` if the path matches the pattern for a page path; otherwise, `false`.
+ *
+ */
+export const isPagePath = (path: string): boolean => {
+	return /^\/site\/website(\/.*)?\/index.*\.xml$/.test(path);
+};
+
+/**
+ * Creates a Jotai atom for the file name based on the given path.
+ *
+ * @param {string} path - The full path of the file.
+ * @returns {PrimitiveAtom<string>} - A Jotai atom containing the file name extracted from the path.
+ *
+ */
+export const createFileNameAtom = (path: string): PrimitiveAtom<string> => {
+	const isPage = isPagePath(path);
+	return atom(getFileNameValueFromPath(path, isPage));
+};
+
+/**
+ * Retrieves the base path from a given file path.
+ *
+ * @param {string} path - The full file path to process.
+ * @param {boolean} isPage - A flag indicating whether the path corresponds to a page.
+ * @returns {string} - The base path extracted from the input path.
+ *
+ */
+export const getBasePath = (path: string, isPage: boolean): string => {
+	// If home page
+	if (path === '/site/website/index.xml' && isPage) return '/site/website/';
+
+	const pathParts = path.split('/');
+	return isPage
+		? pathParts.slice(0, pathParts.length - 2).join('/') + '/'
+		: pathParts.slice(0, pathParts.length - 1).join('/') + '/';
+};
+
+/**
+ * Extracts the file name from a given file path.
+ *
+ * @param {string} path - The full file path to process.
+ * @param {boolean} isPage - A flag indicating whether the path corresponds to a page.
+ * @returns {string} - The file name extracted from the path. Returns an empty string if the path corresponds to the home page.
+ *
+ */
+export const getFileNameValueFromPath = (path: string, isPage: boolean): string => {
+	// If home page, return empty string
+	if (path === '/site/website/index.xml' && isPage) return '';
+
+	const basePath = getBasePath(path, isPage);
+	return path.replace(basePath, '').replace(isPage ? '/index.xml' : '.xml', '');
+};
+
+/**
+ * Computes the full path for a file based on its name, type, and base path.
+ *
+ * @param {string} fileName - The name of the file (without extension or directory).
+ * @param {boolean} isPage - A flag indicating whether the file represents a page.
+ * @param {string} basePath - The base path of the file.
+ * @returns {string} - The computed full path for the file.
+ *
+ */
+export const computePathFromFileName = (fileName: string, isPage: boolean, basePath: string): string => {
+	const fullFileName = isPage ? `${fileName}/index.xml` : `${fileName}.xml`;
+	return ensureSingleSlash(`${basePath}/${fullFileName}`);
+};
 
 export function createFormStackData(mixin?: Partial<StableFormContextProps>): StableFormContextProps {
 	const data: StableFormContextProps = {
@@ -281,13 +382,15 @@ export function fetchUpdateRequirements({
 	path,
 	modelId,
 	readonly,
-	contentTypesById
+	contentTypesById,
+	changeTypeId
 }: {
 	siteId: string;
 	path: string;
 	modelId: string;
 	readonly: boolean;
 	contentTypesById: LookupTable<ContentType>;
+	changeTypeId?: string;
 }): Observable<FormRequirementsResponse> {
 	// Good to start with the lock so that posterior fetch of the item comes with the lock status. If we need
 	// to fetch the content type, will need the item first to determine its content type id, but currently relying
@@ -319,7 +422,7 @@ export function fetchUpdateRequirements({
 			])
 		),
 		map(([item, lockResult, contentXml, descriptorXml]) => {
-			let contentType = contentTypesById[item.contentTypeId];
+			let contentType = contentTypesById[changeTypeId ?? item.contentTypeId];
 			if (!contentType) {
 				throw ContentTypeNotFoundError;
 			}
@@ -354,7 +457,7 @@ export function fetchUpdateRequirements({
  **/
 export function createFormsEngineAtoms(
 	username: string,
-	mixin: Partial<FormsEngineAtoms> & Pick<FormsEngineAtoms, 'readonly' | 'lockResult'>
+	mixin: Partial<FormsEngineAtoms> & Pick<FormsEngineAtoms, 'readonly' | 'lockResult' | 'fileName'>
 ): FormsEngineAtoms {
 	const atoms: FormsEngineAtoms = {
 		isSubmitting: atom(false),
@@ -386,7 +489,8 @@ export function setFieldAtoms(
 	fieldLookup: LookupTable<ContentTypeField>,
 	fieldId: string,
 	atomsTarget: FormsEngineAtoms,
-	value: unknown
+	value: unknown,
+	siteId?: string
 ): void {
 	let field = fieldLookup[fieldId];
 	if (!field) {
@@ -411,12 +515,28 @@ export function setFieldAtoms(
 			return;
 		}
 	}
-	const [valueAtom, validityAtom] = createFieldAtoms(field, value, stableFormContextRef);
+	const [valueAtom, validityAtom] = createFieldAtoms(field, value, stableFormContextRef, siteId);
 	atomsTarget.valueByFieldId[fieldId] = valueAtom;
 	atomsTarget.validationByFieldId[fieldId] = validityAtom;
 }
 
-export type SystemPropsObject = Record<XmlKeys, string | boolean>;
+export type SystemPropsObject = Pick<
+	Record<XmlKeys, string | boolean>,
+	| XmlKeys.modelId
+	| XmlKeys.internalName
+	| XmlKeys.contentTypeId
+	| XmlKeys.displayTemplate
+	| XmlKeys.templateNotRequired
+	| XmlKeys.mergeStrategy
+	| XmlKeys.dateCreated
+	| XmlKeys.dateCreatedDt
+	| XmlKeys.dateModified
+	| XmlKeys.dateModifiedDt
+	| XmlKeys.savedAsDraft
+	| XmlKeys.disabled
+	| XmlKeys.placeInNav
+	| XmlKeys.navLabel
+>;
 
 /**
  * Creates an object with all the base content item system props (objectId, content-type, etc.)
@@ -439,9 +559,6 @@ export function createObjectWithSystemProps(
 		[XmlKeys.dateModified]: mixin?.[XmlKeys.dateModified] ?? dateIsoString,
 		[XmlKeys.dateModifiedDt]: mixin?.[XmlKeys.dateModifiedDt] ?? dateIsoString,
 		[XmlKeys.savedAsDraft]: mixin?.[XmlKeys.savedAsDraft] ?? 'false',
-		[XmlKeys.folderName]: mixin?.[XmlKeys.folderName] ?? '',
-		// TODO: folderName? fileName?
-		[XmlKeys.fileName]: mixin?.[XmlKeys.fileName] ?? 'index.xml',
 		// TODO: These are part of the type
 		[XmlKeys.disabled]: mixin?.[XmlKeys.disabled] ?? false,
 		[XmlKeys.placeInNav]: mixin?.[XmlKeys.placeInNav] ?? false,
@@ -527,14 +644,17 @@ export interface ShouldUnlockArguments {
 	isEmbedded: boolean;
 	isStackedForm: boolean;
 	isParentReadonly: boolean;
+	siteId: string;
+	isRenamed: boolean;
 }
 
 /**
  * Determines if an item should be unlocked when its form is being unmounted.
  **/
 export function shouldUnlockItem(props: ShouldUnlockArguments): boolean {
-	const { isRepeatMode, isCreateMode, readonly, isEmbedded, isStackedForm, isParentReadonly } = props;
+	const { isRepeatMode, isCreateMode, readonly, isEmbedded, isStackedForm, isParentReadonly, isRenamed } = props;
 	return (
+		!isRenamed &&
 		!isRepeatMode &&
 		!isCreateMode &&
 		!readonly &&
@@ -564,6 +684,12 @@ export function useUnlockOnClose(props: FormsEngineProps) {
 	const isStackedForm = stackIndex > 0;
 	const dispatch = useDispatch();
 	const readonly = useAtomValue(atoms.readonly);
+	const siteId = useActiveSiteId();
+	// Check fileName atom to determine if renamed (renamedPath context is not updated until saving, so if we use that here
+	// it will have an outdated value).
+	const currentFileName = useAtomValue(atoms.fileName);
+	const isRenamed = itemPath ? currentFileName !== getFileNameValueFromPath(itemPath, isPagePath(itemPath)) : false;
+
 	const unlockEffectRefs = useUpdateRefs<ShouldUnlockArguments & { dispatch: ReduxDispatch }>({
 		dispatch,
 		isRepeatMode,
@@ -571,11 +697,25 @@ export function useUnlockOnClose(props: FormsEngineProps) {
 		readonly,
 		isEmbedded,
 		isStackedForm,
-		isParentReadonly: formsStackData[stackIndex - 1] ? store.get(formsStackData[stackIndex - 1].atoms.readonly) : false
+		isParentReadonly: formsStackData[stackIndex - 1] ? store.get(formsStackData[stackIndex - 1].atoms.readonly) : false,
+		siteId,
+		isRenamed
 	});
 	useEffect(
 		() => () => {
-			if (shouldUnlockItem(unlockEffectRefs.current)) unlockEffectRefs.current.dispatch(unlockItem({ path: itemPath }));
+			if (shouldUnlockItem(unlockEffectRefs.current)) {
+				unlock(unlockEffectRefs.current.siteId, itemPath).subscribe({
+					next: () => {
+						unlockEffectRefs.current.dispatch(showUnlockItemSuccessNotification());
+					},
+					error: (e) => {
+						// If error is 404, assume rename (itemPath changed, and the renamed item is not locked) and do not show error dialog.
+						if (e.status !== 404) {
+							unlockEffectRefs.current.dispatch(showErrorDialog({ error: e.response?.response }));
+						}
+					}
+				});
+			}
 		},
 		[itemPath, unlockEffectRefs]
 	);
@@ -599,7 +739,7 @@ export function generateDefaultChangesComment(
 		});
 	}
 	const fieldsChangedNames: string[] = Array.from(changedFieldIds).flatMap(
-		(fieldId) => fieldsToRender[fieldId === XmlKeys.folderName ? XmlKeys.fileName : fieldId]?.name ?? []
+		(fieldId) => fieldsToRender[fieldId]?.name ?? []
 	);
 	const newMessage = produceChangedFieldsMessage(fieldsChangedNames);
 	if (
@@ -690,7 +830,8 @@ export function prepareEmbeddedItemForm(props: {
 	const atoms = createFormsEngineAtoms(username, {
 		lockResult: lockResultAtom,
 		readonly: createReadonlyAtom(lockResultAtom),
-		expandedStateBySectionId: buildSectionExpandedStateAtoms(contentType.sections)
+		expandedStateBySectionId: buildSectionExpandedStateAtoms(contentType.sections),
+		fileName: atom(update.modelId)
 	});
 	const values = update.values;
 	Object.entries(values).forEach(([fieldId, value]) => {
@@ -763,4 +904,25 @@ export function getPropertyValue(
  */
 export function isFieldReadOnly(field: ContentTypeField, formReadonly: boolean): boolean {
 	return formReadonly || (getPropertyValue(field.properties, 'readonly') as boolean);
+}
+
+/**
+ * Constructs the full path for a content item based on its type, base path, and file name.
+ *
+ * This function determines the appropriate path format based on the content type.
+ * If the content type is a "page", the path will include an `index.xml` file within a folder.
+ * Otherwise, the path will include the file name with a `.xml` extension directly.
+ *
+ * @param {string} basePath - The base path where the content item resides.
+ * @param {string} fileName - The name of the file (without extension or directory).
+ * @param {ContentType} contentType - The content type object, which determines the path format.
+ * @returns {string} - The constructed full path for the content item.
+ *
+ */
+export function composePathForType(basePath: string, fileName: string, contentType: ContentType): string {
+	if (contentType.type === 'page') {
+		return ensureSingleSlash(`${basePath}/${fileName}/index.xml`);
+	} else {
+		return ensureSingleSlash(`${basePath}/${fileName}.xml`);
+	}
 }

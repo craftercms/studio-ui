@@ -46,7 +46,10 @@ const messages: any = defineMessages({
 	all: {
 		id: 'publishingDashboard.all',
 		defaultMessage: 'All'
-	},
+	}
+});
+
+export const stateMessages = defineMessages({
 	ready: {
 		id: 'publishingDashboard.ready',
 		defaultMessage: 'Ready for Live'
@@ -202,7 +205,7 @@ export function FilterDropdown(props: FilterDropdownProps) {
 												onChange={handleFilterChange}
 											/>
 										}
-										label={formatMessage(messages[key])}
+										label={formatMessage(stateMessages[key])}
 									/>
 								);
 							})}

@@ -50,7 +50,9 @@ export const checkboxDescriptor: DescriptorContentType = {
 			validations: immutableEmptyObject
 		}
 	},
-	supportedPostFixes: ['_b']
+	metadata: {
+		suffixes: ['_b']
+	}
 };
 
 export default checkboxDescriptor;
