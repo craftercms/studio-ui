@@ -98,6 +98,7 @@ export function ExternalAssetUploadDialog(props: ExternalAssetUploadDialogProps)
 		path,
 		profileId,
 		profileType,
+		fileTypes,
 		onClose,
 		onUploadStart,
 		onUploadComplete,
@@ -116,6 +117,7 @@ export function ExternalAssetUploadDialog(props: ExternalAssetUploadDialogProps)
 				path={path}
 				profileId={profileId}
 				profileType={profileType}
+				fileTypes={fileTypes}
 				onClose={onClose}
 				onUploadStart={onUploadStart}
 				onUploadComplete={onUploadComplete}
