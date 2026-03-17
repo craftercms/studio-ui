@@ -42,7 +42,16 @@ export interface ExternalAssetUploadDialogBodyProps
 	extends ExternalAssetUploadDialogBaseProps, Pick<ExternalAssetUploadDialogProps, 'onClose'> {}
 
 function ExternalAssetUploadDialogBody(props: ExternalAssetUploadDialogBodyProps) {
-	const { path, profileId, profileType = 'aws', onUploadStart, onUploadComplete, onUploadError, onFileAdded } = props;
+	const {
+		path,
+		profileId,
+		profileType = 'aws',
+		fileTypes,
+		onUploadStart,
+		onUploadComplete,
+		onUploadError,
+		onFileAdded
+	} = props;
 	const { updateSubmittingOrHasPendingChanges } = useEnhancedDialogContext();
 	const siteId = useActiveSiteId();
 	const { authoringBase } = useEnv();
@@ -82,6 +91,7 @@ function ExternalAssetUploadDialogBody(props: ExternalAssetUploadDialogBodyProps
 						path={path}
 						url={url}
 						method="POST"
+						fileTypes={fileTypes}
 						onUploadStart={onStart}
 						onComplete={onComplete}
 						onError={onError}
