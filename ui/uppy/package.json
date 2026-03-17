@@ -59,10 +59,5 @@
 	"files": [
 		"lib/*",
 		"types/*"
-	],
-	"eslintConfig": {
-		"parserOptions": {
-			"sourceType": "module"
-		}
-	}
+	]
 }

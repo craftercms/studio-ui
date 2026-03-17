@@ -73,7 +73,7 @@
 		"format:sass": "prettier 'ui/scss/**/*.scss' --config prettier.config.js --write",
 		"format:css": "prettier 'static-assets/**/*.css' --config prettier.config.js --write",
 		"format:pom": "prettier './pom.xml' --config prettier.config.js --xml-whitespace-sensitivity 'preserve' --write --plugin=@prettier/plugin-xml",
-		"lint:ci": "eslint --flag unstable_config_lookup_from_file .",
+		"lint:ci": "eslint .",
 		"upgrade:yarn": "yarn set version latest",
 		"upgrade:caniuse": "yarn up -R caniuse-lite",
 		"bom": "mkdir -p target && yarn cyclonedx --output-file target/bom.json",
