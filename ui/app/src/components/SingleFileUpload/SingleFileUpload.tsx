@@ -225,7 +225,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 			instance.cancelAll();
 			instance.destroy();
 		};
-	}, [uppy, formTarget, url, upload.timeout, path, site, formatMessage]);
+	}, [uppy, formTarget, url, upload.timeout, path, site, formatMessage, method]);
 
 	useEffect(() => {
 		const onUploadSuccess = () => {
