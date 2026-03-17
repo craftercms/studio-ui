@@ -20,9 +20,10 @@ import type { BuiltInControlType } from './controlMap';
 import type { RepeatItem } from '../controls/Repeat';
 import type { NodeSelectorItem } from '../controls/NodeSelector';
 import { systemFieldsNotInType, XmlKeys } from './formConsts';
-import { deserialize } from '../../../utils/xml';
+import { deserialize, unescapeXml } from '../../../utils/xml';
 import type { DescriptorControlType } from '../../ContentTypeManagement/controlMap';
 import { nnou } from '../../../utils/object';
+import { v4 as uuid } from 'uuid';
 
 export type ValueRetriever<T = unknown> = (value: unknown, field: ContentTypeField) => T;
 
@@ -33,6 +34,7 @@ export const valueRetrieverLookup: Record<BuiltInControlType | DescriptorControl
 	checkbox: booleanFieldExtractor,
 	boolean: booleanFieldExtractor,
 	'date-time': null,
+	'expired-date': null,
 	disabled: booleanFieldExtractor,
 	dropdown: textFieldExtractor,
 	'file-name': textFieldExtractor,
@@ -55,7 +57,7 @@ export const valueRetrieverLookup: Record<BuiltInControlType | DescriptorControl
 	textarea: textFieldExtractor,
 	time: null,
 	'transcoded-video-picker': textFieldExtractor,
-	uuid: textFieldExtractor,
+	uuid: uuidExtractor,
 	'video-picker': textFieldExtractor,
 	colorPicker: textOrNullExtractor,
 	'content-path-input': textFieldExtractor,
@@ -80,7 +82,8 @@ export const valueRetrieverLookup: Record<BuiltInControlType | DescriptorControl
 	'datasource:audio:singleSelection': textFieldExtractor,
 	'datasource:item:singleSelection': textFieldExtractor,
 	variable: textFieldExtractor,
-	'type-configuration': textFieldExtractor
+	'type-configuration': textFieldExtractor,
+	'date-time-expression-input': textFieldExtractor
 };
 
 /**
@@ -180,8 +183,10 @@ export function arrayFieldExtractor(value: unknown): unknown[] {
 	return Array.isArray(value) ? value : ((value as Record<'item', unknown[]>)?.item ?? []);
 }
 
-export function textFieldExtractor(value: unknown): string {
-	return (value && String(value)) ?? '';
+export function textFieldExtractor(value: unknown, field?: ContentTypeField): string {
+	const escapeContent = (field?.properties?.escapeContent?.value as boolean) ?? false;
+	const rawValue: string = nnou(value) ? (value as string) : '';
+	return escapeContent ? unescapeXml(rawValue) : rawValue;
 }
 
 export function textOrNullExtractor(value: unknown): string | null {
@@ -216,4 +221,8 @@ export function objectExtractor(value: string): object {
 		console.error('Invalid JSON', e);
 		return {};
 	}
+}
+
+export function uuidExtractor(value: unknown): string {
+	return textOrNullExtractor(value) ?? uuid();
 }

@@ -50,6 +50,7 @@ import Alert, { alertClasses } from '@mui/material/Alert';
 import { popDialog, pushDialog } from '../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
 import { createComponentId, pushConfirmDialog, pushErrorDialog } from '../../utils/system';
+import { extractErrorPayload } from '../../utils/ajax';
 
 const messages = defineMessages({
 	publishStudioWarning: {
@@ -134,7 +135,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 	const [selectedMode, setSelectedMode] = useState<PublishOnDemandMode>(() => pickMode(mode));
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const permissionsBySite = usePermissionsBySite();
-	const hasPublishPermission = permissionsBySite[siteId]?.includes('publish');
+	const hasPublishPermission = permissionsBySite[siteId]?.includes('publish_approve');
 	const [hasInitialPublish, setHasInitialPublish] = useState(false);
 	const initialPublishItem = useContentItem('/site/website/index.xml');
 	const [initialPublishingTarget, setInitialPublishingTarget] = useState(null);
@@ -278,14 +279,9 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 					dispatch(onSuccessProp);
 				}
 			},
-			error({ response }) {
+			error(error) {
 				setIsSubmitting(false);
-				dispatch(
-					showSystemNotification({
-						message: response.message,
-						options: { variant: 'error' }
-					})
-				);
+				dispatch(pushErrorDialog({ props: { error: extractErrorPayload(error) } }));
 			}
 		});
 	};
@@ -325,12 +321,9 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 									dispatch(onSuccessProp);
 								}
 							},
-							error({ response }) {
+							error(error) {
 								setIsSubmitting(false);
-								showSystemNotification({
-									message: response.message,
-									options: { variant: 'error' }
-								});
+								dispatch(pushErrorDialog({ props: { error: extractErrorPayload(error) } }));
 							}
 						});
 					}
@@ -362,14 +355,9 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 					dispatch(onSuccessProp);
 				}
 			},
-			error({ response }) {
+			error(error) {
 				setIsSubmitting(false);
-				dispatch(
-					showSystemNotification({
-						message: response.message,
-						options: { variant: 'error' }
-					})
-				);
+				dispatch(pushErrorDialog({ props: { error: extractErrorPayload(error) } }));
 			}
 		});
 	};

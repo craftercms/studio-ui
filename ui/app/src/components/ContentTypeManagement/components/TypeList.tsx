@@ -47,7 +47,13 @@ export function TypeList(props: TypeListProps) {
 		return <EmptyState title={<FormattedMessage defaultMessage="No content types available for display." />} />;
 	}
 	return (
-		<Box display="flex" gap={2} flexWrap="wrap">
+		<Box
+			gap={2}
+			sx={{
+				display: 'grid',
+				gridTemplateColumns: 'repeat(auto-fill, minmax(270px, 1fr))'
+			}}
+		>
 			{skeleton
 				? new Array(skeletonItemCount)
 						.fill(null)

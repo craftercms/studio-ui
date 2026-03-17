@@ -266,13 +266,15 @@ export const showBrowseFilesDialog = ({
 	onSuccess,
 	path,
 	contentTypes,
-	multiSelect = true
+	multiSelect = true,
+	preselectedPaths = []
 }: {
 	path: string;
 	dispatch: ReduxDispatch;
 	onSuccess: BrowseFilesDialogProps['onSuccess'];
 	contentTypes?: string[];
 	multiSelect?: boolean;
+	preselectedPaths?: string[];
 }): void => {
 	const id = nanoid();
 	dispatch(
@@ -284,6 +286,7 @@ export const showBrowseFilesDialog = ({
 				multiSelect,
 				allowUpload: false,
 				contentTypes: contentTypes ?? [],
+				preselectedPaths,
 				onClose: () => dispatch(popDialog({ id })),
 				onSuccess(items) {
 					dispatch(popDialog({ id }));
@@ -297,11 +300,13 @@ export const showBrowseFilesDialog = ({
 export const showSearchDialog = ({
 	dispatch,
 	path,
+	preselectedPaths = [],
 	contentTypes,
 	onAcceptSelection
 }: {
 	path: string;
 	contentTypes?: string[];
+	preselectedPaths?: string[];
 	dispatch: ReduxDispatch;
 	onAcceptSelection: SearchProps['onAcceptSelection'];
 }): void => {
@@ -318,6 +323,7 @@ export const showSearchDialog = ({
 					sortBy: 'internalName',
 					...(contentTypes && { filters: { 'content-type': contentTypes } })
 				},
+				preselectedPaths,
 				onClose: () => dispatch(popDialog({ id })),
 				onAcceptSelection(paths, items) {
 					dispatch(popDialog({ id }));
@@ -428,3 +434,84 @@ export const getImageRestrictionMessages = (restrictions: ImageRestrictions) => 
 		.join(',');
 	return { width, height };
 };
+
+/**
+ * Checks if the populate time expression is valid.
+ *
+ * @param expr {string} The populate time expression to validate.
+ * @returns true if the expression is valid, false otherwise.
+ */
+export function validateTimePopulateExpression(expr: string): boolean {
+	const trimmed = (expr ?? '').replace(/ /g, '').toLowerCase();
+	if (trimmed === 'now') return true;
+	return /^(now)?[+-]\d+(hours|minutes)$/i.test(trimmed);
+}
+
+/**
+ * Checks if the populate date expression is valid.
+ *
+ * @param expr {string} The populate date expression to validate.
+ * @returns true if the expression is valid, false otherwise.
+ */
+export function validateDatePopulateExpression(expr: string): boolean {
+	const normalized = expr.replace(/ /g, '');
+	return /^(now|((now)?[+-]\d+(days|weeks|years|hours|minutes)))$/i.test(normalized);
+}
+
+/**
+ * Takes an expression like "now", "now+5days", "now-3weeks", "now+2years", "now-4hours", "now+30minutes"
+ * and returns a Date object representing the calculated date. If the expression is invalid, it returns the
+ * current date.
+ *
+ * @param params {Object} - The parameters for processing the date expression.
+ * @param params.expression {string}  - The date expression to process ('now[+ or -][number][days or weeks or years or hours or minutes]'
+ * 																			e.g. 'now', 'now+5hours', 'now-30minutes', 'now+10days', 'now-2weeks', 'now+1years').
+ * @param params.validatePopulateExpression {Function} - A function to validate the expression. If the expression is invalid, the current date is returned.
+ * @param [params.allowPastDate=false] {boolean} - If `false`, sets "now" expression to the end of the current minute. Note: This does not prevent past dates for other expressions (e.g., "now-5days"); the calling control is responsible for that validation.
+ *
+ * @returns {Date} The calculated date based on the expression.
+ */
+
+export function processPopulateExpression({
+	expression,
+	validatePopulateExpression,
+	allowPastDate = false
+}: {
+	expression: string;
+	validatePopulateExpression(expr: string): boolean;
+	allowPastDate?: boolean;
+}): Date {
+	const date = new Date();
+	const daysInWeek = 7;
+	let modifier = 1;
+
+	const populateDateExp = expression.replace(/ /g, '');
+	const normalized = populateDateExp.toLowerCase();
+
+	if (validatePopulateExpression(expression)) {
+		if (normalized === 'now') {
+			if (!allowPastDate) date.setSeconds(59, 0);
+		} else {
+			const action = normalized.match(/[+-]/)![0];
+			const expValue = parseInt(normalized.match(/\d+/)![0], 10);
+			const type = normalized.match(/(days|weeks|years|hours|minutes)/)![0];
+			if (action === '-') {
+				modifier = modifier * -1;
+			}
+			if (type === 'years') {
+				date.setFullYear(date.getFullYear() + modifier * expValue);
+			} else if (type === 'weeks') {
+				date.setDate(date.getDate() + modifier * expValue * daysInWeek);
+			} else if (type === 'days') {
+				date.setDate(date.getDate() + modifier * expValue);
+			} else if (type === 'hours') {
+				date.setTime(date.getTime() + modifier * (expValue * 3600000));
+			} else if (type === 'minutes') {
+				date.setTime(date.getTime() + modifier * expValue * 60000);
+			}
+		}
+	} else {
+		if (!allowPastDate) date.setSeconds(59, 0);
+	}
+	return date;
+}

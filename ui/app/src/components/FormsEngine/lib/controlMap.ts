@@ -47,14 +47,15 @@ export type BuiltInControlType =
 	| 'transcoded-video-picker'
 	| 'uuid' // TODO: Not in BPs, seems not to be in use
 	| 'video-picker'
-	| 'colorPicker';
+	| 'colorPicker'
+	| 'expired-date';
 
 export const controlMap: Record<BuiltInControlType, ElementType> = {
 	'auto-filename': lazy(() => import('../controls/AutoFileName')),
 	'aws-file-upload': null,
 	checkbox: lazy(() => import('../controls/Checkbox')),
 	'checkbox-group': lazy(() => import('../controls/CheckboxGroup')),
-	'date-time': null,
+	'date-time': lazy(() => import('../controls/DateTime')),
 	disabled: null,
 	dropdown: lazy(() => import('../controls/Dropdown')),
 	'file-name': lazy(() => import('../controls/./FileName')),
@@ -73,9 +74,10 @@ export const controlMap: Record<BuiltInControlType, ElementType> = {
 	repeat: lazy(() => import('../controls/Repeat')),
 	rte: lazy(() => import('../controls/RichTextEditor')),
 	textarea: lazy(() => import('../controls/Textarea')),
-	time: null,
+	time: lazy(() => import('../controls/Time')),
 	'transcoded-video-picker': null,
-	uuid: null,
+	uuid: lazy(() => import('../controls/Uuid')),
 	'video-picker': null,
-	colorPicker: lazy(() => import('../controls/ColorPicker'))
+	colorPicker: lazy(() => import('../controls/ColorPicker')),
+	'expired-date': lazy(() => import('../controls/DateTime'))
 };

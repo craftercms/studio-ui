@@ -30,6 +30,8 @@ import type { LegacyFormDialogProps } from '../components/LegacyFormDialog/utils
 import { nanoid } from 'nanoid';
 import { DialogStackItem } from '../models';
 import type { ConfirmDialogProps, ErrorDialogProps } from '../components';
+import { getPathFromPreviewURL, getPreviewURLFromPath } from './path';
+import { isPagePath } from '../components/FormsEngine/lib/formUtils';
 
 export type SystemLinkId =
 	| 'preview'
@@ -122,10 +124,32 @@ export function pickShowContentFormAction(oldProps: LegacyFormDialogProps) {
 					formProps: {
 						...(oldProps.isNewContent
 							? { create: { path: oldProps.path, contentTypeId: oldProps.contentTypeId } }
-							: { update: { path: oldProps.path } }),
+							: { update: { path: oldProps.path, changeTypeId: oldProps.changeTemplate } }),
 						readonly: oldProps.readonly ?? false,
-						onSave() {
-							if (isPreviewAppUrl()) getHostToGuestBus().next(reloadRequest());
+						onSave(result) {
+							if (isPreviewAppUrl()) {
+								const params = new URLSearchParams(window.location.hash.replace(/^#\/?\?/, ''));
+								const previewURL = params.get('page');
+								if (
+									previewURL &&
+									result.path &&
+									isPagePath(oldProps.path) &&
+									getPathFromPreviewURL(previewURL) === oldProps.path &&
+									oldProps.path !== result.path
+								) {
+									// oldProps.path is a page and the same as the preview page path, but the new path is different,
+									// which means there was a rename of the page currently being previewed. Then we need to update the
+									// preview URL to reflect the new page path.
+									window.location.href = getSystemLink({
+										page: getPreviewURLFromPath(result.path),
+										systemLinkId: 'preview',
+										site: oldProps.site,
+										authoringBase: oldProps.authoringBase
+									});
+								} else {
+									getHostToGuestBus().next(reloadRequest());
+								}
+							}
 							// FE2 TODO: handling oldProps.onSaveSuccess required?
 						}
 					} as FormsEngineProps

@@ -20,14 +20,14 @@ import { ControlProps } from '../types';
 import Checkbox, { CheckboxProps } from '@mui/material/Checkbox';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel, { formControlLabelClasses } from '@mui/material/FormControlLabel';
-import { LookupTable } from '../../../models/LookupTable';
+import LookupTable from '../../../models/LookupTable';
 import { KVPLoaderItem, useKVPLoader } from '../dataSourceHooks/useKVPLoader';
 import useActiveSiteId from '../../../hooks/useActiveSiteId';
 import { useTheme } from '@mui/material/styles';
 import { typographyClasses } from '@mui/material/Typography';
 import { SearchBar } from '../../SearchBar';
 import useDebouncedInput from '../../../hooks/useDebouncedInput';
-import { FixedSizeList, ListChildComponentProps } from 'react-window';
+import { List, type RowComponentProps } from 'react-window';
 import Grid from '@mui/material/Grid';
 import { FormattedMessage } from 'react-intl';
 import { useWindowWidth } from '../../../hooks/useWindowWidth';
@@ -208,15 +208,12 @@ export function CheckboxGroup(props: CheckboxGroupProps) {
 				}}
 			>
 				{isVirtualized ? (
-					<FixedSizeList
-						height={350}
-						itemSize={50}
-						itemCount={virtualRows}
-						layout="vertical"
-						children={VirtualRow}
-						width="100%"
+					<List
+						rowHeight={50}
+						rowCount={virtualRows}
+						rowComponent={VirtualRow}
 						className="checkbox-group-virtual-list"
-						itemData={{ options: finalOptions, onChange: handleChange, checkedValuesLookup, numColumns, readonly }}
+						rowProps={{ options: finalOptions, onChange: handleChange, checkedValuesLookup, numColumns, readonly }}
 					/>
 				) : (
 					<Grid container spacing={2} sx={{ width: '100%' }}>
@@ -254,7 +251,7 @@ const buildOption = (
 );
 
 const VirtualRow = (
-	props: ListChildComponentProps<{
+	props: RowComponentProps<{
 		options: KVPLoaderItem['items'];
 		onChange: CheckboxProps['onChange'];
 		checkedValuesLookup: LookupTable<boolean>;
@@ -262,11 +259,7 @@ const VirtualRow = (
 		readonly: boolean;
 	}>
 ) => {
-	const {
-		index,
-		style,
-		data: { options, onChange, checkedValuesLookup, numColumns, readonly }
-	} = props;
+	const { index, style, options, onChange, checkedValuesLookup, numColumns, readonly } = props;
 	const adjustedIndex = index * numColumns;
 	return (
 		<Grid container className="checkbox-group-virtual-row" spacing={2} sx={{ width: '100%' }} style={style}>

@@ -1,6 +1,10 @@
 import { defineConfig } from 'vite';
 // import reactSwc from '@vitejs/plugin-react-swc';
 import react from '@vitejs/plugin-react';
+import $monacoEditorPlugin from 'vite-plugin-monaco-editor'
+
+// @ts-expect-error - TS2339: Property default does not exist on type (options: IMonacoEditorOpts) => Plugin<any>
+const monacoEditorPlugin = $monacoEditorPlugin.default ?? $monacoEditorPlugin
 
 const proxyConfig = {
   target: 'http://localhost:8080/',
@@ -27,7 +31,16 @@ export default defineConfig(({ mode }) => ({
           ]
         ]
       }
-    })
+    }),
+    monacoEditorPlugin({
+       languageWorkers: ['editorWorkerService', 'json'],
+       customWorkers: [
+         {
+           label: 'graphql',
+           entry: 'monaco-graphql/esm/graphql.worker.js'
+       }
+     ]
+   })
   ],
   server: {
     port: 3000,
@@ -57,5 +70,8 @@ export default defineConfig(({ mode }) => ({
         'project-tools': 'pages/project-tools.html'
       }
     }
-  }
+  },
+	worker: {
+		format: 'es'
+	}
 }));
