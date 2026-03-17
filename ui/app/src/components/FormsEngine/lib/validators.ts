@@ -31,6 +31,7 @@ import { validateDatePopulateExpression } from './controlHelpers';
 import type { DescriptorControlType } from '../../ContentTypeManagement/controlMap';
 import type { RepeatItem } from '../controls/Repeat';
 import { getValidationValue } from './formUtils';
+import type { NodeSelectorItem } from '../controls/NodeSelector';
 
 interface ValidatorMetaData {
 	siteId: string;
@@ -64,7 +65,8 @@ export const validatorsMap: Partial<Record<BuiltInControlType | DescriptorContro
 	'link-textarea': undefined,
 	'linked-dropdown': undefined,
 	'locale-selector': undefined,
-	'node-selector': undefined,
+	'node-selector': (field, currentValue, messages) =>
+		nodeSelectorValidator(field, currentValue as NodeSelectorItem[], messages),
 	'numeric-input': (field, currentValue, messages) => numericInputValidator(field, currentValue as number, messages),
 	'page-nav-order': undefined,
 	rte: undefined,
@@ -381,6 +383,36 @@ export function numericInputValidator(
 			{ minValue }
 		]);
 		isValid = false;
+	}
+	return isValid;
+}
+
+export function nodeSelectorValidator(
+	field: ContentTypeField,
+	currentValue: NodeSelectorItem[],
+	messages: FieldValidityState['messages']
+): boolean {
+	let isValid = true;
+	const minCount = field.validations?.minCount?.value ?? 0;
+	const maxCount = field.validations?.maxCount?.value ?? Infinity;
+	const selectedCount = Array.isArray(currentValue) ? currentValue.length : 0;
+	if (selectedCount < minCount) {
+		isValid = false;
+		messages.push([
+			defineMessage({
+				defaultMessage: `Please select at least the minimum required items ({minCount}).`
+			}),
+			{ minCount }
+		]);
+	}
+	if (selectedCount > maxCount) {
+		isValid = false;
+		messages.push([
+			defineMessage({
+				defaultMessage: `Please select no more than the maximum allowed items ({maxCount}).`
+			}),
+			{ maxCount }
+		]);
 	}
 	return isValid;
 }

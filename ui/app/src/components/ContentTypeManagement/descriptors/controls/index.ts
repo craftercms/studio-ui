@@ -49,6 +49,7 @@ import { ContentTypeField } from '../../../../models/ContentType';
 import LookupTable from '../../../../models/LookupTable';
 import colorPickerDescriptor from './colorPicker';
 import { defineMessage } from 'react-intl';
+import expiredDateDescriptor from './expiredDate';
 import inputEmailDescriptor from './inputEmail';
 import inputLinkDescriptor from './inputLink';
 import inputPhoneDescriptor from './linkPhone';
@@ -177,6 +178,7 @@ export const controlDescriptors: Record<BuiltInControlType, DescriptorContentTyp
 	uuid: uuidDescriptor,
 	'video-picker': videoPickerDescriptor,
 	colorPicker: colorPickerDescriptor,
+	'expired-date': expiredDateDescriptor,
 	'input-email': inputEmailDescriptor,
 	'input-link': inputLinkDescriptor,
 	'input-phone': inputPhoneDescriptor

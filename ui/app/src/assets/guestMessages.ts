@@ -150,7 +150,8 @@ export const guestMessages = defineMessages({
 	},
 	noDataSourcesSet: {
 		id: 'validations.noDataSourcesSet',
-		defaultMessage: 'There are no data sources set for this field'
+		defaultMessage:
+			'No data sources are configured for this editor. Please contact your administrator to complete this configuration.'
 	},
 	noPathSetInDataSource: {
 		id: 'validations.noPathSetInDataSource',
