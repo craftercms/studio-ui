@@ -395,6 +395,7 @@ function ExternalAssetFoldersTreeView({
 			<TreeItem itemId={path} label={<Box onClick={(e) => onFolderClick(e, path)}>{label}</Box>}>
 				{foldersByPath[path]?.map((folder) => (
 					<ExternalAssetFoldersTreeView
+						key={folder.path}
 						foldersByPath={foldersByPath}
 						path={folder.path}
 						folder={folder}
