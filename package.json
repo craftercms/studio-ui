@@ -101,6 +101,7 @@
 	},
 	"dependencies": {
 		"@prettier/plugin-xml": "3.4.1",
+		"dompurify": "^3.3.3",
 		"prettier": "^3.6.2"
 	}
 }
