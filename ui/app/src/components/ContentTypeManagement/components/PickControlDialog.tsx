@@ -43,7 +43,8 @@ export const systemFieldsIds: BuiltInControlType[] = [
 	'internal-name',
 	'disabled',
 	'page-nav-order',
-	'locale-selector'
+	'locale-selector',
+	'expired-date'
 ];
 
 export function PickControlDialog(props: PickControlDialogProps) {
