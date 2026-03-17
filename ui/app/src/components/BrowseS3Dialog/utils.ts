@@ -109,7 +109,7 @@ export function parseExternalItemToMediaItem(item: AwsItem | WebDAVItem): MediaI
 	return mediaItem;
 }
 
-export function getExternalItemType(item: MediaItem, mimeType: string): string {
+export function getExternalItemType(item: MediaItem, mimeType: string): string | null {
 	const image = isImage(item);
 	const video = isVideo(item);
 	const pdf = isPdfDocument(mimeType);
