@@ -150,7 +150,8 @@ export const guestMessages = defineMessages({
 	},
 	noDataSourcesSet: {
 		id: 'validations.noDataSourcesSet',
-		defaultMessage: 'There are no data sources set for this field'
+		defaultMessage:
+			'No data sources are configured for this editor. Please contact your administrator to complete this configuration.'
 	},
 	noPathSetInDataSource: {
 		id: 'validations.noPathSetInDataSource',
@@ -168,5 +169,10 @@ export const guestMessages = defineMessages({
 		id: 'validations.outdatedExpBuilderVersion',
 		defaultMessage:
 			"Your application's Experience Builder package version is out of date. Please notify the development team to perform the necessary updates to avoid any possible issues."
+	},
+	noDocTypeError: {
+		id: 'validations.noDocTypeError',
+		defaultMessage:
+			'Unable to initialize Rich Text Editor (No document type was found for the current content). Please contact your administrator for assistance.'
 	}
 });

@@ -68,7 +68,7 @@ import AlertTitle from '@mui/material/AlertTitle';
 import { pushDialog } from '../../state/actions/dialogStack';
 import useFetchContentItems from '../../hooks/useFetchContentItems';
 import ErrorBoundary from '../ErrorBoundary';
-import { debounceTime, filter } from 'rxjs/operators';
+import { debounceTime } from 'rxjs/operators';
 import { atom, createStore, Provider, useAtom, useAtomValue, useStore as useJotaiStore } from 'jotai';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import useSelection from '../../hooks/useSelection';
@@ -130,6 +130,7 @@ import {
 import { getHostToHostBus } from '../../utils/subjects';
 import { fetchAffectedPackages } from '../../services/workflow';
 import useMount from '../../hooks/useMount';
+import { nnou } from '../../utils/object';
 
 export interface FormSavePromiseResult {
 	close: boolean;
@@ -799,10 +800,15 @@ function FormOrchestrator(props: FormsEngineProps) {
 	};
 
 	const [mainContent, setMainContent] = useState(null);
+	const collapseHeaderAllowed = useRef(false);
 	const sentinelRef = useRef<HTMLDivElement>(null);
 
 	const mainContentRefCallback: RefCallback<HTMLDivElement> = (element) => {
 		setMainContent(element);
+		if (!mainContent && nnou(element)) {
+			// First time the main content is set, if the scrollHeight is not 100px larger than clientHeight, we don't allow collapsing the header.
+			collapseHeaderAllowed.current = element.scrollHeight - element.clientHeight > 100;
+		}
 	};
 
 	// Monitor when sentinel element crosses the threshold
@@ -812,7 +818,9 @@ function FormOrchestrator(props: FormsEngineProps) {
 		const observer = new IntersectionObserver(
 			([entry]) => {
 				// When sentinel is NOT intersecting (scrolled past 60px, sentinel's top position), collapse header
-				setCollapseHeader(!entry.isIntersecting);
+				if (collapseHeaderAllowed.current) {
+					setCollapseHeader(!entry.isIntersecting);
+				}
 			},
 			{
 				root: mainContent,
@@ -824,7 +832,7 @@ function FormOrchestrator(props: FormsEngineProps) {
 		observer.observe(sentinelRef.current);
 
 		return () => {
-			observer.disconnect();
+			observer?.disconnect();
 		};
 	}, [mainContent]);
 
