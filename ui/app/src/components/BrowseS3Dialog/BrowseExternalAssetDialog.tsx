@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { EnhancedDialog, EnhancedDialogProps } from '../EnhancedDialog';
 import { FormattedMessage, useIntl } from 'react-intl';
 import ApiResponse from '../../models/ApiResponse';
@@ -89,15 +89,21 @@ function BrowseExternalAssetDialogBody(props: BrowseExternalAssetDialogContainer
 	const disableSubmit = isFetchingItems || (!selectedArray.length && !selectedCard);
 	const { guestBase } = useEnv();
 
+	const requestSeq = useRef(0);
+	const currentSub = useRef<{ unsubscribe?: () => void } | null>(null);
 	const fetchItems = useCallback(
 		(path) => {
 			const fetchService = profileType === 'aws' ? listAws : listWebdav;
+			requestSeq.current += 1;
+			const seq = requestSeq.current;
+			currentSub.current?.unsubscribe?.();
 
 			setIsFetchingItems(true);
-			fetchService(siteId, profileId, {
+			currentSub.current = fetchService(siteId, profileId, {
 				path
 			}).subscribe({
 				next: (items) => {
+					if (seq !== requestSeq.current) return;
 					setIsFetchingItems(false);
 
 					const folders = [];
@@ -129,6 +135,7 @@ function BrowseExternalAssetDialogBody(props: BrowseExternalAssetDialogContainer
 					}
 				},
 				error: (error) => {
+					if (seq !== requestSeq.current) return;
 					setIsFetchingItems(false);
 					setError(error);
 				}
