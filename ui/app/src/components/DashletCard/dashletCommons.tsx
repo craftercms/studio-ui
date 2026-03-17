@@ -336,7 +336,7 @@ export function SubmittedPackageDetail({ pkg }: { pkg: PublishPackage }) {
 				submittedDate: asLocalizedDateTime(
 					pkg.schedule ?? pkg.submittedOn,
 					locale.localeCode,
-					reversePluckProps(locale.dateTimeFormatOptions, 'hour', 'minute', 'second')
+					locale.dateTimeFormatOptions
 				)
 			}}
 		/>

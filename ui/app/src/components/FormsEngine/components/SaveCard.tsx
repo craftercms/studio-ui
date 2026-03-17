@@ -90,7 +90,11 @@ export function SaveCard(props: SaveCardProps) {
       */}
 			<PrimaryButton fullWidth variant="contained" onClick={onSave} disabled={disableSave} loading={isSubmitting}>
 				{isRepeatMode || (isEmbedded && isStackedForm) ? (
-					<FormattedMessage defaultMessage="Done" />
+					saveAsDraft ? (
+						<FormattedMessage defaultMessage="Done (Draft)" />
+					) : (
+						<FormattedMessage defaultMessage="Done" />
+					)
 				) : saveAsDraft ? (
 					<FormattedMessage defaultMessage="Save Draft" />
 				) : (

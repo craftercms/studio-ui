@@ -25,6 +25,7 @@ export interface ConsolidatedItemPickerData {
 	allowedCreatePaths: string[];
 	allowedBrowsePaths: AllowedPathsData[];
 	allowedSearchPaths: AllowedPathsData[];
+	allowedUploadPaths: AllowedPathsData[];
 }
 
 export function useConsolidatedItemPickerData(dataSources: DataSource[]): ConsolidatedItemPickerData {
@@ -33,6 +34,7 @@ export function useConsolidatedItemPickerData(dataSources: DataSource[]): Consol
 		const allowedCreatePaths = new Set<string>();
 		const allowedBrowsePaths: AllowedPathsData[] = [];
 		const allowedSearchPaths: AllowedPathsData[] = [];
+		const allowedUploadPaths: AllowedPathsData[] = [];
 
 		dataSources.forEach((ds) => {
 			switch (ds.type) {
@@ -128,6 +130,20 @@ export function useConsolidatedItemPickerData(dataSources: DataSource[]): Consol
 					allowedCreateTypes[contentTypeId].embedded = true;
 					break;
 				}
+				case 'file-desktop-upload': {
+					allowedUploadPaths.push({
+						title: ds.title,
+						path: ds.properties.repoPath
+					});
+					break;
+				}
+				case 'file-browse-repo': {
+					allowedBrowsePaths.push({
+						title: ds.title,
+						path: ds.properties.repoPath
+					});
+					break;
+				}
 				default:
 					console.warn(`Unknown item picker data source type "${ds.type}"`, ds);
 					return;
@@ -138,7 +154,8 @@ export function useConsolidatedItemPickerData(dataSources: DataSource[]): Consol
 			allowedCreateTypes,
 			allowedCreatePaths: Array.from(allowedCreatePaths),
 			allowedBrowsePaths,
-			allowedSearchPaths
+			allowedSearchPaths,
+			allowedUploadPaths
 		};
 	}, [dataSources]);
 }
