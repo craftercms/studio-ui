@@ -23,6 +23,7 @@ import { systemFieldsNotInType, XmlKeys } from './formConsts';
 import { deserialize, unescapeXml } from '../../../utils/xml';
 import type { DescriptorControlType } from '../../ContentTypeManagement/controlMap';
 import { nnou } from '../../../utils/object';
+import { v4 as uuid } from 'uuid';
 import { Matcher } from 'path-expression-matcher';
 
 export type ValueRetriever<T = unknown> = (value: unknown, field: ContentTypeField) => T;
@@ -34,6 +35,7 @@ export const valueRetrieverLookup: Record<BuiltInControlType | DescriptorControl
 	checkbox: booleanFieldExtractor,
 	boolean: booleanFieldExtractor,
 	'date-time': null,
+	'expired-date': null,
 	disabled: booleanFieldExtractor,
 	dropdown: textFieldExtractor,
 	'file-name': textFieldExtractor,
@@ -56,7 +58,7 @@ export const valueRetrieverLookup: Record<BuiltInControlType | DescriptorControl
 	textarea: textFieldExtractor,
 	time: null,
 	'transcoded-video-picker': textFieldExtractor,
-	uuid: textFieldExtractor,
+	uuid: uuidExtractor,
 	'video-picker': textFieldExtractor,
 	colorPicker: textOrNullExtractor,
 	'content-path-input': textFieldExtractor,
@@ -82,7 +84,10 @@ export const valueRetrieverLookup: Record<BuiltInControlType | DescriptorControl
 	'datasource:item:singleSelection': textFieldExtractor,
 	variable: textFieldExtractor,
 	'type-configuration': textFieldExtractor,
-	'date-time-expression-input': textFieldExtractor
+	'date-time-expression-input': textFieldExtractor,
+	'input-email': textFieldExtractor,
+	'input-link': textFieldExtractor,
+	'input-phone': textFieldExtractor
 };
 
 /**
@@ -222,4 +227,8 @@ export function objectExtractor(value: string): object {
 		console.error('Invalid JSON', e);
 		return {};
 	}
+}
+
+export function uuidExtractor(value: unknown): string {
+	return textOrNullExtractor(value) ?? uuid();
 }

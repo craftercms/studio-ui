@@ -31,6 +31,7 @@ import { validateDatePopulateExpression } from './controlHelpers';
 import type { DescriptorControlType } from '../../ContentTypeManagement/controlMap';
 import type { RepeatItem } from '../controls/Repeat';
 import { getValidationValue } from './formUtils';
+import type { NodeSelectorItem } from '../controls/NodeSelector';
 
 interface ValidatorMetaData {
 	siteId: string;
@@ -64,7 +65,8 @@ export const validatorsMap: Partial<Record<BuiltInControlType | DescriptorContro
 	'link-textarea': undefined,
 	'linked-dropdown': undefined,
 	'locale-selector': undefined,
-	'node-selector': undefined,
+	'node-selector': (field, currentValue, messages) =>
+		nodeSelectorValidator(field, currentValue as NodeSelectorItem[], messages),
 	'numeric-input': (field, currentValue, messages) => numericInputValidator(field, currentValue as number, messages),
 	'page-nav-order': undefined,
 	rte: undefined,
@@ -75,7 +77,10 @@ export const validatorsMap: Partial<Record<BuiltInControlType | DescriptorContro
 	'video-picker': undefined,
 	colorPicker: undefined,
 	'date-time-expression-input': (field, currentValue, messages) =>
-		dateTimeExpressionInputValidator(field, currentValue as string, messages)
+		dateTimeExpressionInputValidator(field, currentValue as string, messages),
+	'input-email': (field, currentValue, messages) => inputEmailValidator(field, currentValue as string, messages),
+	'input-link': (field, currentValue, messages) => inputLinkValidator(field, currentValue as string, messages),
+	'input-phone': (field, currentValue, messages) => inputPhoneValidator(field, currentValue as string, messages)
 };
 
 // TODO: Fix FormatXMLElementFn generics
@@ -300,12 +305,14 @@ export async function repeatGroupValidator(
  * @param {string} currentValue - The current value of the field to validate.
  * @param {FieldValidityMessage[]} [messages] - An optional array to store validation messages if the value is invalid.
  * @returns {boolean} - Returns `true` if the input value is valid; otherwise, `false`.
+ * @param customValidationMessages - An optional lookup table of custom validation messages for specific validation rules.
  *
  */
 export function inputValidator(
 	field: ContentTypeField,
 	currentValue: string,
-	messages?: FieldValidityMessage[]
+	messages?: FieldValidityMessage[],
+	customValidationMessages?: LookupTable<MessageDescriptor>
 ): boolean {
 	let isValid = true;
 	// Skip validation if value is empty and field is not required
@@ -316,7 +323,10 @@ export function inputValidator(
 	const maxLength: number | undefined = getValidationValue(field.validations, 'maxLength');
 	// If there's a pattern and it doesn't match, it's invalid.
 	if (pattern && !String(currentValue).match(pattern)) {
-		messages?.push([defineMessage({ defaultMessage: 'The value does not match the required pattern.' })]);
+		messages?.push([
+			customValidationMessages?.['pattern'] ??
+				defineMessage({ defaultMessage: 'The value does not match the required pattern.' })
+		]);
 		isValid = false;
 	}
 
@@ -376,5 +386,89 @@ export function numericInputValidator(
 	}
 	return isValid;
 }
+
+export function nodeSelectorValidator(
+	field: ContentTypeField,
+	currentValue: NodeSelectorItem[],
+	messages: FieldValidityState['messages']
+): boolean {
+	let isValid = true;
+	const minCount = field.validations?.minCount?.value ?? 0;
+	const maxCount = field.validations?.maxCount?.value ?? Infinity;
+	const selectedCount = Array.isArray(currentValue) ? currentValue.length : 0;
+	if (selectedCount < minCount) {
+		isValid = false;
+		messages.push([
+			defineMessage({
+				defaultMessage: `Please select at least the minimum required items ({minCount}).`
+			}),
+			{ minCount }
+		]);
+	}
+	if (selectedCount > maxCount) {
+		isValid = false;
+		messages.push([
+			defineMessage({
+				defaultMessage: `Please select no more than the maximum allowed items ({maxCount}).`
+			}),
+			{ maxCount }
+		]);
+	}
+	return isValid;
+}
+
+/**
+ * Validates an email input field using a predefined email pattern message.
+ *
+ * @param {ContentTypeField} field - The metadata of the field being validated.
+ * @param {string} currentValue - The current value of the field to validate.
+ * @param {FieldValidityMessage[]} [messages] - Optional array to store validation messages if the value is invalid.
+ * @returns {boolean} - Returns true if the input value is a valid email address or empty (when not required), otherwise false.
+ */
+const inputEmailValidator = (
+	field: ContentTypeField,
+	currentValue: string,
+	messages?: FieldValidityMessage[]
+): boolean => {
+	return inputValidator(field, currentValue, messages, {
+		pattern: defineMessage({ defaultMessage: 'Please enter a valid email address.' })
+	});
+};
+
+/**
+ * Validates a link (URL) input field using a predefined URL pattern message.
+ *
+ * @param {ContentTypeField} field - The metadata of the field being validated.
+ * @param {string} currentValue - The current value of the field to validate.
+ * @param {FieldValidityMessage[]} [messages] - Optional array to store validation messages if the value is invalid.
+ * @returns {boolean} - Returns true if the input value is a valid URL or empty (when not required), otherwise false.
+ */
+const inputLinkValidator = (
+	field: ContentTypeField,
+	currentValue: string,
+	messages?: FieldValidityMessage[]
+): boolean => {
+	return inputValidator(field, currentValue, messages, {
+		pattern: defineMessage({ defaultMessage: 'Please enter a valid URL.' })
+	});
+};
+
+/**
+ * Validates a phone number input field using a predefined phone number pattern message.
+ *
+ * @param {ContentTypeField} field - The metadata of the field being validated.
+ * @param {string} currentValue - The current value of the field to validate.
+ * @param {FieldValidityMessage[]} [messages] - Optional array to store validation messages if the value is invalid.
+ * @returns {boolean} - Returns true if the input value is a valid phone number or empty (when not required), otherwise false.
+ */
+const inputPhoneValidator = (
+	field: ContentTypeField,
+	currentValue: string,
+	messages?: FieldValidityMessage[]
+): boolean => {
+	return inputValidator(field, currentValue, messages, {
+		pattern: defineMessage({ defaultMessage: 'Please enter a valid phone number.' })
+	});
+};
 
 export default validateFieldValue;
