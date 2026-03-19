@@ -62,7 +62,7 @@ export function AwsFileUpload(props: AwsFileUploadProps) {
 			const item = result.successful[0].response.body.item;
 			const awsFile: AwsFile = {
 				key: item.name,
-				bucket: item.bucketName ? `${item.bucketName}/${item.prefix}` : (item.bucket ?? ''),
+				bucket: item.bucketName ? `${item.bucketName}${item.prefix ? `/${item.prefix}` : ''}` : (item.bucket ?? ''),
 				url: item.url ?? ''
 			};
 			setValue(awsFile);
