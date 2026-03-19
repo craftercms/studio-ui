@@ -55,7 +55,7 @@ export type BuiltInControlType =
 
 export const controlMap: Record<BuiltInControlType, ElementType> = {
 	'auto-filename': lazy(() => import('../controls/AutoFileName')),
-	'aws-file-upload': null,
+	'aws-file-upload': lazy(() => import('../controls/AWSFileUpload')),
 	checkbox: lazy(() => import('../controls/Checkbox')),
 	'checkbox-group': lazy(() => import('../controls/CheckboxGroup')),
 	'date-time': lazy(() => import('../controls/DateTime')),

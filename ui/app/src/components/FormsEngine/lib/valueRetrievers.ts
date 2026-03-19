@@ -29,7 +29,7 @@ export type ValueRetriever<T = unknown> = (value: unknown, field: ContentTypeFie
 
 export const valueRetrieverLookup: Record<BuiltInControlType | DescriptorControlType, ValueRetriever | null> = {
 	'auto-filename': textFieldExtractor,
-	'aws-file-upload': null,
+	'aws-file-upload': awsFileExtractor,
 	'checkbox-group': arrayFieldExtractor,
 	checkbox: booleanFieldExtractor,
 	boolean: booleanFieldExtractor,
@@ -228,4 +228,8 @@ export function objectExtractor(value: string): object {
 
 export function uuidExtractor(value: unknown): string {
 	return textOrNullExtractor(value) ?? uuid();
+}
+
+export function awsFileExtractor(value) {
+	return arrayFieldExtractor(value)[0];
 }
