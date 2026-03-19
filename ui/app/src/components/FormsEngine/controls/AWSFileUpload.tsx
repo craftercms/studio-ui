@@ -119,7 +119,7 @@ export function AwsFileUpload(props: AwsFileUploadProps) {
 									maxHeight: 220
 								}}
 							>
-								<source src={value.url} type={`video/${value.url.match(/\.(.+)$/)?.[1]}`} />
+								<source src={value.url} type={`video/${value.url.match(/\.(.+)$/)?.[1] ?? 'mp4'}`} />
 							</Box>
 						) : fileType === 'asset' ? (
 							<Box
