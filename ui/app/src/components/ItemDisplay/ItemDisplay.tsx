@@ -101,7 +101,7 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
 			}}
 		>
 			{/* @see https://github.com/craftercms/craftercms/issues/5442 */}
-			{inWorkflow && !shouldItemShowAsStaged(item as ContentItem)
+			{inWorkflow && !shouldItemShowAsStaged(item)
 				? showWorkflowState && (
 						<ItemStateIcon
 							{...stateIconProps}
@@ -169,10 +169,11 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
  * Staging has priority over modified and null. Additionally, if an item is submitted to live, submitted to staging, or
  * scheduled, it should not be shown as staged.
  */
-function shouldItemShowAsStaged(item: ContentItem): boolean {
+function shouldItemShowAsStaged(item: ContentItem | LightItem): boolean {
+	if (!('stateMap' in item) || !item.stateMap) return false;
 	return (
 		item.stateMap?.staged &&
-		(item.stateMap?.new || (item as ContentItem).stateMap?.modified) &&
+		(item.stateMap?.new || item.stateMap?.modified) &&
 		!item.stateMap?.submittedToLive &&
 		!item.stateMap?.submittedToStaging &&
 		!item.stateMap?.scheduled
