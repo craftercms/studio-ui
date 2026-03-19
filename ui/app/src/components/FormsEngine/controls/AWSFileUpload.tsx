@@ -16,7 +16,7 @@
 
 import type { ControlProps } from '../types';
 import FormsEngineField from '../components/FormsEngineField';
-import { getPropertyValue } from '../lib/formUtils';
+import { getPropertyValue, isFieldReadOnly } from '../lib/formUtils';
 import useActiveSiteId from '../../../hooks/useActiveSiteId';
 import { FileUploadResult, SingleFileUpload } from '../../SingleFileUpload';
 import useEnv from '../../../hooks/useEnv';
@@ -24,8 +24,10 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import FieldBox from '../components/FieldBox';
 import { nou } from '../../../utils/object';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import Card from '@mui/material/Card';
+import { useDispatch } from 'react-redux';
+import { showSystemNotification } from '../../../state/actions/system';
 
 export interface AwsFile {
 	key: string;
@@ -38,16 +40,24 @@ export interface AwsFileUploadProps extends ControlProps {
 }
 
 export function AwsFileUpload(props: AwsFileUploadProps) {
-	const { field, value, setValue, readonly, autoFocus } = props;
+	const { field, value, setValue, readonly: formReadonly } = props;
 	const siteId = useActiveSiteId();
 	const { authoringBase } = useEnv();
 	const url = `${authoringBase}/api/2/aws/s3/upload.json`;
-	const profileId = getPropertyValue(field.properties, 'profile_id') as string;
 	const fileType = getAwsFileType(value?.url);
+	const dispatch = useDispatch();
+	const { formatMessage } = useIntl();
+
+	const profileId = getPropertyValue(field.properties, 'profile_id') as string;
+	const readonly = isFieldReadOnly(field, formReadonly);
 
 	const handleFileUploaded = (result: FileUploadResult) => {
 		if (result.failed.length) {
-			// 	TODO: show error dialog
+			dispatch(
+				showSystemNotification({
+					message: formatMessage({ defaultMessage: 'An error occurred while uploading the file.' })
+				})
+			);
 		} else {
 			const item = result.successful[0].response.body.item;
 			const awsFile: AwsFile = {
@@ -73,7 +83,6 @@ export function AwsFileUpload(props: AwsFileUploadProps) {
 				<form id="asset_upload_form">
 					<input type="hidden" name="siteId" value={siteId} />
 					<input type="hidden" name="profileId" value={profileId} />
-					{/* TODO: dynamic path (from field props?) */}
 					<input type="hidden" name="path" value={'/'} />
 					<SingleFileUpload
 						site={siteId}
@@ -83,6 +92,7 @@ export function AwsFileUpload(props: AwsFileUploadProps) {
 						showFileDetails={nou(value)}
 						showProgressBar={nou(value)}
 						onComplete={handleFileUploaded}
+						disabled={readonly}
 					/>
 				</form>
 			</FieldBox>

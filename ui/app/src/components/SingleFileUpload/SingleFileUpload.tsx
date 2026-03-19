@@ -29,7 +29,6 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import useSiteUIConfig from '../../hooks/useSiteUIConfig';
 import { ensureSingleSlash } from '../../utils/string';
-import { toQueryString } from '../../utils/object';
 import Alert from '@mui/material/Alert';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
@@ -99,6 +98,7 @@ export interface SingleFileUploadProps {
 	method?: 'PUT' | 'POST';
 	showFileDetails?: boolean;
 	showProgressBar?: boolean;
+	disabled?: boolean;
 	onUploadStart?(): void;
 	onComplete?(result: FileUploadResult): void;
 	onError?({ file, error, response }): void;
@@ -118,7 +118,8 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 		onFileAdded: onFileAddedProp,
 		method = 'PUT',
 		showFileDetails = true,
-		showProgressBar = true
+		showProgressBar = true,
+		disabled = false
 	} = props;
 	const { formatMessage } = useIntl();
 	const dispatch = useDispatch();
@@ -434,10 +435,10 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 						type="file"
 						onChange={onChange}
 						onClick={onInputClick}
-						disabled={disableInput}
+						disabled={disabled || disableInput}
 					/>
 					<label htmlFor="contained-button-file">
-						<Button variant="outlined" component="span" disabled={disableInput}>
+						<Button variant="outlined" component="span" disabled={disabled || disableInput}>
 							{formatMessage(messages.chooseFile)}
 						</Button>
 					</label>
