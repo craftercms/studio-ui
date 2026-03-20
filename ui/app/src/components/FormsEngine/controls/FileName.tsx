@@ -32,10 +32,11 @@ import { popDialog, pushDialog } from '../../../state/actions/dialogStack';
 import { createComponentId } from '../../../utils/system';
 import { nanoid } from 'nanoid';
 import { nnou } from '../../../utils/object';
-import { getBasePath, getFileNameValueFromPath, isFieldReadOnly, isPagePath } from '../lib/formUtils';
+import { getBasePath, getFileNameValueFromPath, isFieldReadOnly } from '../lib/formUtils';
 import { ensureSingleSlash } from '../../../utils/string';
 import type { Dispatch } from 'redux';
 import useLoadableAtom from '../lib/useLoadableAtom';
+import { isPagePath } from '../../../utils/path';
 
 export function FileName(props: ControlProps) {
 	const { field, readonly: formReadonly, autoFocus } = props;
