@@ -145,9 +145,9 @@ interface EditAppContextProps {
 }
 
 export interface ContentTypeManagementConfig {
-	controls: LookupTable<{ descriptor: DescriptorContentType; icon: { id: string }; id: string }>;
+	controls: LookupTable<{ descriptor?: DescriptorContentType; icon: { id: string }; id: string }>;
 	controlExclusions: string[];
-	dataSources: LookupTable<{ descriptor: DescriptorContentType; icon: { id: string }; id: string }>;
+	dataSources: LookupTable<{ descriptor?: DescriptorContentType; icon: { id: string }; id: string }>;
 	dataSourceExclusions: string[];
 }
 
@@ -768,7 +768,7 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 					setConfig({
 						controls: parseConfigPlugins(contentTypesConfig.controls),
 						controlExclusions: asArray(contentTypesConfig.controlExclusions),
-						dataSources: parseConfigPlugins(contentTypesConfig.dataSources),
+						dataSources: parseConfigPlugins(contentTypesConfig.datasources),
 						dataSourceExclusions: asArray(contentTypesConfig.dataSourceExclusions)
 					});
 				}
@@ -841,6 +841,7 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 				fieldIdPath={insertFieldData.fieldPath}
 				onClose={() => setInsertFieldData({ sectionId: null })}
 				onInsertField={handleInsertField}
+				configControls={config?.controls}
 				configDescriptors={configControlDescriptors}
 				controlExclusions={config.controlExclusions}
 			/>
@@ -849,6 +850,7 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 				onInsert={handleInsertDataSource}
 				open={openDataSourceInserter}
 				onClose={() => setOpenDataSourceInserter(false)}
+				configDataSources={config?.dataSources}
 				configDescriptors={configDataSourceDescriptors}
 				dataSourceExclusions={config.dataSourceExclusions}
 			/>
@@ -1231,26 +1233,30 @@ async function validityAtomsHaveErrors(
 }
 
 function parseConfigPlugins(
-	plugins: { descriptor: DescriptorContentType; icon: { id: string }; id: string }[]
-): ContentTypeManagementConfig['controls'] {
+	plugins: { descriptor?: DescriptorContentType; icon: { id: string }; id: string }[]
+): LookupTable<{ descriptor?: DescriptorContentType; icon: { id: string }; id: string }> {
 	if (!plugins) return;
-	const parsedControls = asArray(plugins).map((plugin) => {
-		const fields = Object.values(plugin.descriptor.fields ?? {})?.map((field) => {
+	const parsedPlugins = asArray(plugins).map((plugin) => {
+		if (plugin.descriptor) {
+			const fields = Object.values(plugin.descriptor.fields ?? {})?.map((field) => {
+				return {
+					...field,
+					validations: field.validations ?? {}
+				};
+			});
 			return {
-				...field,
-				validations: field.validations ?? {}
+				...plugin,
+				descriptor: {
+					...plugin.descriptor,
+					fields: createLookupTable(fields),
+					sections: asArray(plugin.descriptor?.sections) ?? []
+				}
 			};
-		});
-		return {
-			...plugin,
-			descriptor: {
-				...plugin.descriptor,
-				fields: createLookupTable(fields),
-				sections: asArray(plugin.descriptor?.sections) ?? []
-			}
-		};
+		} else {
+			return plugin;
+		}
 	});
-	return createLookupTable(parsedControls);
+	return createLookupTable(parsedPlugins);
 }
 
 function getNewFieldFromDescriptor(fieldType: string, descriptor: DescriptorContentType): NewContentTypeField {

@@ -39,9 +39,12 @@ import RadioGroup from '@mui/material/RadioGroup';
 import Radio from '@mui/material/Radio';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Divider from '@mui/material/Divider';
+import LookupTable from '../../../models/LookupTable';
+import { SystemIcon } from '../../SystemIcon';
 
 export interface PickFieldDialogProps extends EnhancedDialogProps {
 	type: ContentType;
+	configLookup?: LookupTable<{ descriptor?: DescriptorContentType; icon: { id: string }; id: string }>; // TODO: not a li
 	typesFullList: DescriptorContentType[];
 	typesCurrentList: DescriptorField[] | DataSource[];
 	title: ReactNode;
@@ -53,7 +56,8 @@ export interface PickFieldDialogProps extends EnhancedDialogProps {
 export interface PickFieldDialogBodyProps extends Omit<PickFieldDialogProps, 'title'> {}
 
 export function PickFieldDialogBody(props: PickFieldDialogBodyProps) {
-	const { type, typesFullList, typesCurrentList, onInsert, onClose, systemFieldsTitle, systemFieldsIds } = props;
+	const { configLookup, typesFullList, typesCurrentList, onInsert, onClose, systemFieldsTitle, systemFieldsIds } =
+		props;
 	const [selectedField, setSelectedField] = useState<PartialContentType>(undefined);
 	const [selectedView, setSelectedView] = useState<number>(0);
 	const [position, setPosition] = useState<number>(typesCurrentList?.length ?? 0);
@@ -89,6 +93,7 @@ export function PickFieldDialogBody(props: PickFieldDialogBodyProps) {
 			<DialogBody sx={{ transition: 'height 0.3s ease-in-out', minHeight: '40vh' }}>
 				{selectedView === 0 ? (
 					<SelectField
+						configLookup={configLookup}
 						typesFullList={typesFullList}
 						selectedField={selectedField}
 						setSelectedField={onSelectField}
@@ -205,11 +210,13 @@ export function PickFieldDialog({
 export function SelectField(props: {
 	typesFullList: DescriptorContentType[];
 	selectedField: PartialContentType;
+	configLookup?: PickFieldDialogProps['configLookup'];
 	setSelectedField: (field: PartialContentType) => void;
 	systemFieldsIds?: PickFieldDialogProps['systemFieldsIds'];
 	systemFieldsTitle?: PickFieldDialogProps['systemFieldsTitle'];
 }) {
 	const {
+		configLookup,
 		typesFullList,
 		selectedField,
 		setSelectedField,
@@ -256,7 +263,11 @@ export function SelectField(props: {
 								selected={selectedField?.id === field.id}
 							>
 								<ListItemIcon>
-									<StarBorderIcon />
+									{configLookup?.[field.id]?.icon?.id ? (
+										<SystemIcon icon={configLookup[field.id].icon} />
+									) : (
+										<StarBorderIcon />
+									)}
 								</ListItemIcon>
 								<ListItemText primary={field.name} secondary={field.description} />
 							</ListItemButton>
@@ -269,7 +280,11 @@ export function SelectField(props: {
 				{filteredFields.map((field, index) => (
 					<ListItemButton key={index} onClick={() => setSelectedField(field)} selected={selectedField?.id === field.id}>
 						<ListItemIcon>
-							<StarBorderIcon />
+							{configLookup?.[field.id]?.icon?.id ? (
+								<SystemIcon icon={configLookup[field.id].icon} />
+							) : (
+								<StarBorderIcon />
+							)}
 						</ListItemIcon>
 						<ListItemText primary={field.name} secondary={field.description} />
 					</ListItemButton>
