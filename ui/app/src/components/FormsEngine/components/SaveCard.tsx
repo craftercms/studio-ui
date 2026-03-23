@@ -14,9 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useAtom, useAtomValue } from 'jotai';
-import { FormattedMessage, useIntl } from 'react-intl';
-import React, { ChangeEvent, useContext, useState } from 'react';
+import { useAtom, useAtomValue, useStore as useJotaiStore } from 'jotai';
+import { FormattedMessage } from 'react-intl';
+import React, { useContext, useState } from 'react';
 import { StableFormContext } from '../lib/formsEngineContext';
 import { ButtonProps } from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
@@ -27,6 +27,8 @@ import PrimaryButton from '../../PrimaryButton';
 import FormHelperText from '@mui/material/FormHelperText';
 import Grow from '@mui/material/Grow';
 import Alert from '@mui/material/Alert';
+import useMount from '../../../hooks/useMount';
+import { debounceTime } from 'rxjs/operators';
 
 export interface SaveCardProps {
 	isRepeatMode: boolean;
@@ -36,17 +38,31 @@ export interface SaveCardProps {
 }
 
 export function SaveCard(props: SaveCardProps) {
-	const { formatMessage } = useIntl();
 	const { isEmbedded, isStackedForm, isRepeatMode, onSave } = props;
 	const stableFormContext = useContext(StableFormContext);
-	const { affectedPackages } = useAtomValue(stableFormContext.atoms.lockResult);
 	const isSubmitting = useAtomValue(stableFormContext.atoms.isSubmitting);
 	const [versionComment, setVersionComment] = useAtom(stableFormContext.atoms.versionComment);
 	const hasPendingChanges = useAtomValue(stableFormContext.atoms.hasPendingChanges);
 	const [closeAfterSave, setCloseAfterSave] = useAtom(stableFormContext.atoms.closeAfterSave);
-	const [acceptedWorkflowCancellation, setAcceptedWorkflowCancellation] = useState(false);
-	const hasAffectedPackages = Boolean(affectedPackages?.length > 0);
-	const disableSave = isSubmitting || !hasPendingChanges || (hasAffectedPackages && !acceptedWorkflowCancellation);
+	const jotai = useJotaiStore();
+	const [saveAsDraft, setSaveAsDraft] = useState<boolean | null>(null);
+
+	useMount(() => {
+		const checkValidationState = async () => {
+			const validityStates = await Promise.all(
+				Object.values(stableFormContext.atoms.validationByFieldId).map((validityDataAtom) =>
+					jotai.get(validityDataAtom)
+				)
+			);
+			setSaveAsDraft(validityStates.some((state) => !state.isValid));
+		};
+		void checkValidationState();
+		const subscription = stableFormContext.fieldUpdates$
+			.pipe(debounceTime(300))
+			.subscribe(() => void checkValidationState());
+		return () => subscription.unsubscribe();
+	});
+	const disableSave = isSubmitting || !hasPendingChanges;
 	return (
 		<Paper sx={{ p: 1 }}>
 			{(!isEmbedded || !isStackedForm) && !isRepeatMode && (
@@ -59,23 +75,6 @@ export function SaveCard(props: SaveCardProps) {
 					value={versionComment}
 					onChange={(e) => setVersionComment(e.target.value)}
 					onFocus={(e) => e.target.select()}
-				/>
-			)}
-			{hasAffectedPackages && (
-				<FormControlLabel
-					title={formatMessage({
-						defaultMessage: 'The item is part of a publishing package. Editing it will cancel the entire package.'
-					})}
-					label={<FormattedMessage defaultMessage="Cancel affected packages" />}
-					control={
-						<Checkbox
-							size="small"
-							checked={acceptedWorkflowCancellation}
-							onChange={(e: ChangeEvent<HTMLInputElement>) => {
-								setAcceptedWorkflowCancellation(e.target.checked);
-							}}
-						/>
-					}
 				/>
 			)}
 			<FormControlLabel
@@ -91,7 +90,13 @@ export function SaveCard(props: SaveCardProps) {
       */}
 			<PrimaryButton fullWidth variant="contained" onClick={onSave} disabled={disableSave} loading={isSubmitting}>
 				{isRepeatMode || (isEmbedded && isStackedForm) ? (
-					<FormattedMessage defaultMessage="Done" />
+					saveAsDraft ? (
+						<FormattedMessage defaultMessage="Done (Draft)" />
+					) : (
+						<FormattedMessage defaultMessage="Done" />
+					)
+				) : saveAsDraft ? (
+					<FormattedMessage defaultMessage="Save Draft" />
 				) : (
 					<FormattedMessage defaultMessage="Save" />
 				)}

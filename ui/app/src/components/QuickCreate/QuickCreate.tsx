@@ -14,15 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { forwardRef, useEffect, useState } from 'react';
-import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
+import React, { forwardRef, useEffect, useMemo, useState } from 'react';
+import { defineMessages, FormattedMessage, IntlShape, useIntl } from 'react-intl';
 import IconButton from '@mui/material/IconButton';
 import AddCircleIcon from '@mui/icons-material/AddRounded';
 import Menu, { menuClasses } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import { useDispatch } from 'react-redux';
-import { newContentCreationComplete, showEditDialog } from '../../state/actions/dialogs';
+import { newContentCreationComplete } from '../../state/actions/dialogs';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
@@ -48,6 +48,11 @@ import { createComponentId, pickShowContentFormAction } from '../../utils/system
 import useEnv from '../../hooks/useEnv';
 import { nanoid } from 'nanoid';
 import { batchActions } from '../../state/actions/misc';
+import useContentTypes from '../../hooks/useContentTypes';
+import useArchetypes from '../../hooks/useArchetypes';
+import type { ContentType, LookupTable } from '../../models';
+import type { Archetype } from '../ContentTypeManagement/descriptors/archetypes';
+import Box from '@mui/material/Box';
 
 const translations = defineMessages({
 	quickCreateBtnLabel: {
@@ -101,11 +106,15 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
 	const itemNewContentButton = item?.availableActionsMap.createContent;
 	const { error, isFetching, items: quickCreateItems } = useQuickCreateState();
 	const systemVersion = useSystemVersion();
+	const contentTypes = useContentTypes();
 
 	const onFormDisplay = (item: QuickCreateItem) => {
 		const { contentTypeId, path } = item;
+		const contentType = contentTypes?.[contentTypeId];
+		const type = contentType?.type ?? 'component';
+		const defaultPath = type === 'page' ? '/site/website/' : '/site/components/';
 		const formatPath = processPathMacros({
-			path,
+			path: path ? path : defaultPath,
 			// Since we can't support these at this stage of creation, at least this will avoid the form opening with an error
 			objectId: '(objectId)',
 			objectGroupId: '(objectGroupId)',
@@ -134,21 +143,10 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
 				onClose={onClose}
 			>
 				{itemNewContentButton && (
-					<MenuItem onClick={onNewContentSelected} sx={{ fontSize: 14, borderBottom: 1, borderBottomColor: 'divider' }}>
+					<MenuItem onClick={onNewContentSelected} sx={{ fontSize: 14 }}>
 						<FormattedMessage id="quickCreateMenu.title" defaultMessage="New Content" />
 					</MenuItem>
 				)}
-				<Typography
-					component="h4"
-					sx={(theme) => ({
-						fontSize: 12,
-						backgroundColor: theme.palette.background.default,
-						color: theme.palette.text.secondary,
-						padding: '5px 16px'
-					})}
-				>
-					<FormattedMessage id="quickCreateMenu.sectionTitle" defaultMessage="Quick Create" />
-				</Typography>
 				{error ? (
 					<ApiResponseErrorState error={error} />
 				) : isFetching ? (
@@ -167,18 +165,40 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
 
 function QuickCreateSection(props: QuickCreateSectionProps) {
 	const { version, quickCreateItems, classes, onItemSelected } = props;
+	const archetypes = useArchetypes();
+	const contentTypes = useContentTypes();
+	const { formatMessage } = useIntl();
+
+	const groupedItems = useMemo(() => {
+		return getGroupedQuickCreateItems(quickCreateItems, archetypes, contentTypes, formatMessage);
+	}, [quickCreateItems, archetypes, contentTypes, formatMessage]);
 
 	return (
 		<>
-			{quickCreateItems.map((item) => (
-				<MenuItem
-					key={item.path}
-					onClick={() => onItemSelected(item)}
-					className={classes?.menuItem}
-					sx={{ fontSize: 14 }}
-				>
-					{item.label}
-				</MenuItem>
+			{Object.keys(groupedItems).map((archetype, index) => (
+				<Box key={index}>
+					<Typography
+						component="h4"
+						sx={(theme) => ({
+							fontSize: 12,
+							backgroundColor: theme.palette.background.default,
+							color: theme.palette.text.secondary,
+							padding: '5px 16px'
+						})}
+					>
+						{archetype}
+					</Typography>
+					{groupedItems[archetype].map((item, index) => (
+						<MenuItem
+							key={index}
+							onClick={() => onItemSelected(item)}
+							className={classes?.menuItem}
+							sx={{ fontSize: 14 }}
+						>
+							{item.label}
+						</MenuItem>
+					))}
+				</Box>
 			))}
 			{quickCreateItems.length === 0 && (
 				<Card
@@ -330,5 +350,28 @@ const QuickCreate = forwardRef<HTMLButtonElement, { item?: ContentItem }>((props
 		</>
 	);
 });
+
+function getGroupedQuickCreateItems(
+	quickCreateItems: QuickCreateItem[],
+	archetypes: LookupTable<Archetype>,
+	contentTypes: LookupTable<ContentType>,
+	formatMessage: IntlShape['formatMessage']
+) {
+	const grouped: Record<string, QuickCreateItem[]> = {};
+	quickCreateItems
+		.slice()
+		.sort((a, b) => a.label.localeCompare(b.label))
+		.forEach((item) => {
+			const contentType = contentTypes?.[item.contentTypeId];
+			const archetype = archetypes?.[contentType?.type];
+			const archetypeLabel = archetype?.name || formatMessage({ defaultMessage: 'Other' });
+			if (!grouped[archetypeLabel]) {
+				grouped[archetypeLabel] = [];
+			}
+			grouped[archetypeLabel].push(item);
+		});
+
+	return grouped;
+}
 
 export default QuickCreate;

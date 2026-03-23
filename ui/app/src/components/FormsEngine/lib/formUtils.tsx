@@ -73,6 +73,7 @@ import { createComponentId } from '../../../utils/system';
 import { showErrorDialog } from '../../../state/actions/dialogs';
 import { ensureSingleSlash } from '../../../utils/string';
 import { nou } from '../../../utils/object';
+import { isPagePath } from '../../../utils/path';
 
 /**
  * Returns the scroll container for the form's container.
@@ -233,17 +234,6 @@ export const createReadonlyAtom = (lockedResultAtom: Atom<FormsEngineEditContext
 	atom((get) => !get(lockedResultAtom).locked);
 
 /**
- * Determines if the given path corresponds to a page path.
- *
- * @param {string} path - The path to check.
- * @returns {boolean} - Returns `true` if the path matches the pattern for a page path; otherwise, `false`.
- *
- */
-export const isPagePath = (path: string): boolean => {
-	return /^\/site\/website(\/.*)?\/index.*\.xml$/.test(path);
-};
-
-/**
  * Creates a Jotai atom for the file name based on the given path.
  *
  * @param {string} path - The full path of the file.
@@ -381,13 +371,15 @@ export function fetchUpdateRequirements({
 	path,
 	modelId,
 	readonly,
-	contentTypesById
+	contentTypesById,
+	changeTypeId
 }: {
 	siteId: string;
 	path: string;
 	modelId: string;
 	readonly: boolean;
 	contentTypesById: LookupTable<ContentType>;
+	changeTypeId?: string;
 }): Observable<FormRequirementsResponse> {
 	// Good to start with the lock so that posterior fetch of the item comes with the lock status. If we need
 	// to fetch the content type, will need the item first to determine its content type id, but currently relying
@@ -419,7 +411,7 @@ export function fetchUpdateRequirements({
 			])
 		),
 		map(([item, lockResult, contentXml, descriptorXml]) => {
-			let contentType = contentTypesById[item.contentTypeId];
+			let contentType = contentTypesById[changeTypeId ?? item.contentTypeId];
 			if (!contentType) {
 				throw ContentTypeNotFoundError;
 			}
@@ -642,14 +634,16 @@ export interface ShouldUnlockArguments {
 	isStackedForm: boolean;
 	isParentReadonly: boolean;
 	siteId: string;
+	isRenamed: boolean;
 }
 
 /**
  * Determines if an item should be unlocked when its form is being unmounted.
  **/
 export function shouldUnlockItem(props: ShouldUnlockArguments): boolean {
-	const { isRepeatMode, isCreateMode, readonly, isEmbedded, isStackedForm, isParentReadonly } = props;
+	const { isRepeatMode, isCreateMode, readonly, isEmbedded, isStackedForm, isParentReadonly, isRenamed } = props;
 	return (
+		!isRenamed &&
 		!isRepeatMode &&
 		!isCreateMode &&
 		!readonly &&
@@ -680,6 +674,11 @@ export function useUnlockOnClose(props: FormsEngineProps) {
 	const dispatch = useDispatch();
 	const readonly = useAtomValue(atoms.readonly);
 	const siteId = useActiveSiteId();
+	// Check fileName atom to determine if renamed (renamedPath context is not updated until saving, so if we use that here
+	// it will have an outdated value).
+	const currentFileName = useAtomValue(atoms.fileName);
+	const isRenamed = itemPath ? currentFileName !== getFileNameValueFromPath(itemPath, isPagePath(itemPath)) : false;
+
 	const unlockEffectRefs = useUpdateRefs<ShouldUnlockArguments & { dispatch: ReduxDispatch }>({
 		dispatch,
 		isRepeatMode,
@@ -688,7 +687,8 @@ export function useUnlockOnClose(props: FormsEngineProps) {
 		isEmbedded,
 		isStackedForm,
 		isParentReadonly: formsStackData[stackIndex - 1] ? store.get(formsStackData[stackIndex - 1].atoms.readonly) : false,
-		siteId
+		siteId,
+		isRenamed
 	});
 	useEffect(
 		() => () => {

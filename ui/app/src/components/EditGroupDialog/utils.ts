@@ -55,7 +55,7 @@ export interface GroupEditDialogUIProps {
 	transferListState: useTransferListStateReturn;
 	sourceItemsAllChecked: boolean;
 	onFilterUsers(keyword: string): void;
-	onFetchMoreUsers(options?: Partial<PaginationOptions & { keyword?: string }>): void;
+	onFetchMoreUsers(options?: Partial<PaginationOptions & { keyword?: string }>): Promise<void>;
 	hasMoreUsers: boolean;
 	disableAddMembers: boolean;
 	isSubmitting: boolean;

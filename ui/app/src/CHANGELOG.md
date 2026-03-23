@@ -58,6 +58,9 @@
   * `PathNavigator/PathNavigatorTree`: Updated `label` prop to be of type `TranslationOrText`.
   * `PathNavigatorTreeUI/PathNavigatorUI/PathNavigatorTreeHeader`: Updated `title` prop to be of type `string | ReactNode`.
   * Removed `LegacyComponentsPanel` component.
+  * [EditGroupDialogUI] Updated `onFetchMoreUsers` prop return type to `Promise`.
+  * [PackageItemsList] Updated `loadNextPage` prop return type to `Promise`.
+  * [TransferListColumn] Updated `onFetchMore` prop return type to `Promise`.
 * [hooks]
   * Removed `useLogicResource` hook.
   * Removed `useSelectorResource` hook.
@@ -74,6 +77,9 @@
   * @mui/x-data-grid
   * @mui/x-date-pickers
   * @mui/x-tree-view
+  * Uppy
+  * GraphiQL
+  * react-window
 * Moved getPersonFullName to utils/object
 * FE2 TODO: image=>image-picker, text=>input, etc services/contentType typeMap removed
 * Removed WidgetDialogContextType, WidgetDialogContext, useWidgetDialogContext. Use `useEnhancedDialogContext` instead.
@@ -124,7 +130,7 @@
     * Renamed `fetchSandboxItems` to `fetchContentItems`. Action string changed from `FETCH_SANDBOX_ITEMS` to `FETCH_CONTENT_ITEMS`.
     * Renamed `fetchSandboxItemsComplete` to `fetchContentItemsComplete`. Action string changed from `FETCH_SANDBOX_ITEMS_COMPLETE` to `FETCH_CONTENT_ITEMS_COMPLETE`.
     * Removed `fetchSandboxItem` action. Replaced by `fetchContentItem`.
-    * Removed `fetchContentItemComplete` action. Replaced by `fetchContentItemComplete`.
+    * Removed `fetchDetailedItemComplete` action. Replaced by `fetchContentItemComplete`.
     * Removed `fetchDetailedItems` action. Replaced by `fetchContentItems`.
     * Removed `fetchDetailedItemsComplete` action. Replaced by `fetchContentItemsComplete`.
     * Removed `completeDetailedItem` action.

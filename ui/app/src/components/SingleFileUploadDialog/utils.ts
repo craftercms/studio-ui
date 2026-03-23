@@ -18,7 +18,7 @@ import StandardAction from '../../models/StandardAction';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 import type { UppyFile, Meta, Body } from '@uppy/utils/lib/UppyFile';
-import type { Uppy } from '@uppy/core';
+import type { Uppy } from 'uppy';
 
 export interface SingleFileUploadDialogBaseProps {
 	site: string;

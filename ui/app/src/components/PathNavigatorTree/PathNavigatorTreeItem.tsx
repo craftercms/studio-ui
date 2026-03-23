@@ -38,8 +38,10 @@ import { PathNavigatorTreeStateProps } from './PathNavigatorTree';
 import { PartialSxRecord } from '../../models';
 import Box from '@mui/material/Box';
 
-export interface PathNavigatorTreeItemProps
-	extends Pick<PathNavigatorTreeStateProps, 'keywordByPath' | 'totalByPath' | 'childrenByParentPath' | 'errorByPath'> {
+export interface PathNavigatorTreeItemProps extends Pick<
+	PathNavigatorTreeStateProps,
+	'keywordByPath' | 'totalByPath' | 'childrenByParentPath' | 'errorByPath'
+> {
 	path: string;
 	itemsByPath: LookupTable<ContentItem>;
 	active?: Record<string, boolean>;
@@ -185,7 +187,9 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
 					</Button>
 				</Box>
 			);
-	} else if (totalByPath[path] > 0 && !childrenByParentPath.length) {
+	} else if (totalByPath[path] > 0 && !childrenByParentPath[path]?.length) {
+		// If totalByPath at the current path is greater than 0, but there are no children in childrenByParentPath for the current path,
+		// it means that the children are still loading, so we show a loading indicator. If there is an error for the current path, we show an error message instead.
 		propsForTreeItem.children.push(
 			errorByPath[path] ? (
 				<Box

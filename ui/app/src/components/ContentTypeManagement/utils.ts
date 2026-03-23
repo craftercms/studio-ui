@@ -894,6 +894,9 @@ export function getPropertiesAndValidationsFromDescriptor(descriptor: Descriptor
 export function initializeConfigFromType(type: ContentType) {
 	return {
 		'content-type': {
+			'@:name': type.id, // The legacy API1 get-content-type service requires the config.xml to include the attribute
+			// 'name' in `content-type` tag for correct type resolution. The service is used when creating new content items
+			// to retrieve the list of content types that are allowed for a specific path.
 			label: type.name,
 			form: type.id,
 			'form-path': 'simple',
@@ -907,7 +910,9 @@ export function initializeConfigFromType(type: ContentType) {
 			noThumbnail: !type.thumbnailFileName,
 			'image-thumbnail': type.thumbnailFileName ?? '',
 			paths: {
-				includes: {},
+				includes: {
+					...(type.type === 'page' ? { pattern: '^/site/.*' } : {})
+				},
 				excludes: {}
 			}
 		}

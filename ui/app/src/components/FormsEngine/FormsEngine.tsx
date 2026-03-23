@@ -31,6 +31,7 @@ import {
 	FormsEngineItemMetaContextProps,
 	ItemContext,
 	ItemMetaContext,
+	RenamedPathContext,
 	StableFormContext,
 	StableFormContextProps,
 	StableGlobalContext,
@@ -119,6 +120,17 @@ import { displayWithPendingChangesConfirm } from '../../utils/ui';
 import useActiveUser from '../../hooks/useActiveUser';
 import FormBackToTop from './components/FormBackToTop';
 import { createComponentId } from '../../utils/system';
+import {
+	workflowEventApprove,
+	workflowEventCancel,
+	workflowEventDirectPublish,
+	workflowEventReject,
+	workflowEventSubmit
+} from '../../state/actions/system';
+import { getHostToHostBus } from '../../utils/subjects';
+import { fetchAffectedPackages } from '../../services/workflow';
+import useMount from '../../hooks/useMount';
+import { nnou } from '../../utils/object';
 
 export interface FormSavePromiseResult {
 	close: boolean;
@@ -154,6 +166,7 @@ export interface UpdateModeProps {
 		path: string;
 		modelId?: string;
 		values?: LookupTable<unknown>;
+		changeTypeId?: string; // Allows specifying a different content type for the item being updated, overriding the current item's content type.
 	};
 }
 
@@ -247,6 +260,8 @@ function FormBootstrap(props: FormsEngineProps) {
 	const username = useActiveUser()?.username;
 	const effectRefs = useUpdateRefs({ contentTypesById, username });
 	const stableFormContextRef = useRef<StableFormContextProps>(formsStackData[stackIndex]);
+	const [renamedPath, setRenamedPath] = useState<string | null>(null);
+	const effectiveUpdatePath = renamedPath ?? update?.path;
 
 	const contextApi = useMemo<FormsEngineFormApiContextProps>(() => {
 		const getInitialValues = () => stableFormContextRef.current.originalValues;
@@ -278,7 +293,7 @@ function FormBootstrap(props: FormsEngineProps) {
 		// If we're in create mode, there's no item yet. If updating, we can get the path from props or parent props in the case of repeat mode.
 		create
 			? null
-			: state.content.itemsByPath[props?.update?.path ?? formsStackData[stackIndex - 1]?.props?.update?.path]
+			: state.content.itemsByPath[effectiveUpdatePath ?? formsStackData[stackIndex - 1]?.props?.update?.path]
 	);
 
 	api.updateProps(stackIndex, props);
@@ -442,10 +457,11 @@ function FormBootstrap(props: FormsEngineProps) {
 		} /* if (isUpdateMode) */ else {
 			const subscription = fetchUpdateRequirements({
 				siteId,
-				path: update.path,
+				path: renamedPath ?? update?.path,
 				modelId: update.modelId,
 				readonly: readonlyProp,
-				contentTypesById: effectRefs.current.contentTypesById
+				contentTypesById: effectRefs.current.contentTypesById,
+				changeTypeId: update.changeTypeId
 			})
 				.pipe(
 					catchError((error: AjaxError | symbol) => {
@@ -519,7 +535,9 @@ function FormBootstrap(props: FormsEngineProps) {
 		siteId,
 		stackIndex,
 		store,
-		update
+		update,
+		username,
+		renamedPath
 	]);
 
 	if (prepError) {
@@ -534,7 +552,9 @@ function FormBootstrap(props: FormsEngineProps) {
 				<StableFormContext.Provider value={stableFormContextRef.current}>
 					<ItemContext.Provider value={liveUpdatedItem}>
 						<ItemMetaContext.Provider value={itemMeta}>
-							{createElement(FormOrchestrator, props)}
+							<RenamedPathContext.Provider value={{ renamedPath, setRenamedPath }}>
+								{createElement(FormOrchestrator, props)}
+							</RenamedPathContext.Provider>
 						</ItemMetaContext.Provider>
 					</ItemContext.Provider>
 				</StableFormContext.Provider>
@@ -612,9 +632,20 @@ function FormOrchestrator(props: FormsEngineProps) {
 	}, [contentType.sections, isEmbedded]);
 	const useCollapsedToC = useAtomValue(atoms.useCollapsedToC);
 	const tableOfContents = <TableOfContents fieldsToRender={fieldsToRender} containerRef={containerRef} />;
-	const effectRefs = useUpdateRefs({ fieldsToRender, versionCommentAtom: stableFormContext.atoms.versionComment });
+	const effectRefs = useUpdateRefs({
+		fieldsToRender,
+		versionCommentAtom: stableFormContext.atoms.versionComment,
+		lockStatus
+	});
 	const [collapseHeader, setCollapseHeader] = useState(false);
-	const scrollTimeout = useRef(null);
+
+	useMount(() => {
+		// If 'update.changeTypeId' has content, it means the content type has changed, so we set pending changes to true
+		// to be able to enable the save button and allow users to save immediately if that's all they want to do.
+		if (update?.changeTypeId) {
+			setHasPendingChanges(true);
+		}
+	});
 
 	// Changes comment generation & change detection/tracking
 	useEffect(() => {
@@ -649,6 +680,37 @@ function FormOrchestrator(props: FormsEngineProps) {
 
 	// Unlock content when the form is closed.
 	useUnlockOnClose(props);
+
+	// region Workflow item updates
+	useEffect(() => {
+		const events = [
+			workflowEventSubmit.type,
+			workflowEventDirectPublish.type,
+			workflowEventApprove.type,
+			workflowEventReject.type,
+			workflowEventCancel.type
+		];
+
+		const hostToHost$ = getHostToHostBus();
+		const subscription = hostToHost$.subscribe(({ type }) => {
+			if (!item || !events.includes(type)) return;
+			fetchAffectedPackages(siteId, item.path).subscribe({
+				next(packages) {
+					setLockStatus({
+						...effectRefs.current.lockStatus,
+						affectedPackages: packages
+					});
+				},
+				error({ response }) {
+					console.error(response);
+				}
+			});
+		});
+
+		return () => {
+			subscription.unsubscribe();
+		};
+	}, [effectRefs, item, setLockStatus, siteId]);
 
 	const handleOpenDrawerSidebar = () => {
 		const scroller = getScrollContainer(containerRef.current);
@@ -735,10 +797,15 @@ function FormOrchestrator(props: FormsEngineProps) {
 	};
 
 	const [mainContent, setMainContent] = useState(null);
+	const collapseHeaderAllowed = useRef(false);
 	const sentinelRef = useRef<HTMLDivElement>(null);
 
 	const mainContentRefCallback: RefCallback<HTMLDivElement> = (element) => {
 		setMainContent(element);
+		if (!mainContent && nnou(element)) {
+			// First time the main content is set, if the scrollHeight is not 100px larger than clientHeight, we don't allow collapsing the header.
+			collapseHeaderAllowed.current = element.scrollHeight - element.clientHeight > 100;
+		}
 	};
 
 	// Monitor when sentinel element crosses the threshold
@@ -748,7 +815,9 @@ function FormOrchestrator(props: FormsEngineProps) {
 		const observer = new IntersectionObserver(
 			([entry]) => {
 				// When sentinel is NOT intersecting (scrolled past 60px, sentinel's top position), collapse header
-				setCollapseHeader(!entry.isIntersecting);
+				if (collapseHeaderAllowed.current) {
+					setCollapseHeader(!entry.isIntersecting);
+				}
 			},
 			{
 				root: mainContent,
@@ -760,7 +829,7 @@ function FormOrchestrator(props: FormsEngineProps) {
 		observer.observe(sentinelRef.current);
 
 		return () => {
-			observer.disconnect();
+			observer?.disconnect();
 		};
 	}, [mainContent]);
 

@@ -326,7 +326,7 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
 							<ListItemText
 								primary={
 									<FormattedMessage
-										defaultMessage="<bold>{title}</bold> ({total} items)"
+										defaultMessage="<bold>{title}</bold> ({total} {total, plural, one {item} other {items}})"
 										values={{
 											title: pkg.title,
 											total: pkg.itemCount,
@@ -353,7 +353,7 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
 											submittedDate: asLocalizedDateTime(
 												pkg.schedule,
 												locale.localeCode,
-												reversePluckProps(locale.dateTimeFormatOptions, 'hour', 'minute', 'second')
+												locale.dateTimeFormatOptions
 											)
 										}}
 									/>

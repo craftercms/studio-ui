@@ -12,7 +12,7 @@
 		"declaration": true,
 		"declarationMap": false,
 		"composite": true,
-		"jsx": "react"
+		"jsx": "react-jsx"
 	},
 	"include": ["src", "src/**/*.json"],
 	"exclude": [
