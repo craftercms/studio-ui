@@ -44,7 +44,7 @@ export function PickDataSourceDialog(props: PickDataSourceDialogProps) {
 		...types.filter((type) => {
 			return configDataSources?.[type.id] && !(dataSourceExclusions ?? []).includes(type.id);
 		}),
-		...configDescriptors
+		...(configDescriptors ?? [])
 	];
 
 	return (
