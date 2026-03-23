@@ -38,7 +38,7 @@ export const valueRetrieverLookup: Record<BuiltInControlType | DescriptorControl
 	disabled: booleanFieldExtractor,
 	dropdown: textFieldExtractor,
 	'file-name': textFieldExtractor,
-	forcehttps: null,
+	forcehttps: booleanFieldExtractor,
 	'image-picker': textFieldExtractor,
 	input: textFieldExtractor,
 	string: textFieldExtractor,
