@@ -50,7 +50,7 @@ export const validatorsMap: Partial<Record<BuiltInControlType | DescriptorContro
 	'auto-filename': undefined,
 	'aws-file-upload': undefined,
 	'checkbox-group': undefined,
-	checkbox: undefined,
+	checkbox: (field, currentValue, messages) => checkboxValidator(field, currentValue as boolean, messages),
 	'date-time': (field, currentValue, messages) => dateTimeValidator(field, currentValue as string, messages),
 	disabled: undefined,
 	dropdown: undefined,
@@ -413,6 +413,17 @@ export function nodeSelectorValidator(
 			}),
 			{ maxCount }
 		]);
+	}
+	return isValid;
+}
+
+export function checkboxValidator(field: ContentTypeField, currentValue: boolean, messages: FieldValidityMessage[]) {
+	const isRequired = isFieldRequired(field);
+	let isValid = true;
+	// For checkboxes, being required means it must be checked (true)
+	if (isRequired && !currentValue) {
+		isValid = false;
+		messages.push(defineMessage({ defaultMessage: 'This checkbox must be checked.' }));
 	}
 	return isValid;
 }

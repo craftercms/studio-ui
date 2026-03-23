@@ -157,7 +157,7 @@ export function retrieveFieldValue<T = unknown>(field: ContentTypeField, value: 
 	const retriever: ValueRetriever<T> | undefined = valueRetrieverLookup[field.type];
 	const defaultValue = field.defaultValue as string;
 	// Value considering the defaultValue
-	const fieldValue = value ?? defaultValue;
+	const fieldValue = value ?? (nnou(defaultValue) && defaultValue !== '' ? defaultValue : undefined);
 	if (!retriever) {
 		console.warn(`No value retriever for field ${field.id} of type ${field.type}`);
 		return fieldValue as T;
@@ -200,6 +200,7 @@ export function numberFieldExtractor(value: unknown): number | null {
 	return nnou(value) ? Number(value) : null;
 }
 
+/** Handles boolean values that may come as actual booleans or as strings. An empty string or null/undefined becomes (no value set). */
 export function booleanFieldExtractor(value: unknown): boolean {
 	return value === true || value === 'true';
 }
