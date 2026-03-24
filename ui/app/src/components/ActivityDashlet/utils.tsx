@@ -125,16 +125,10 @@ export function renderActivity(
 				/>
 			);
 		case 'REQUEST_PUBLISH':
-			return item.label === null ? (
+			return (
 				<FormattedMessage
-					id="activityDashlet.deletedItemRequestPublishActivityMessage"
-					defaultMessage="Requested publishing for an item that no longer exists"
-				/>
-			) : (
-				<FormattedMessage
-					id="activityDashlet.requestPublishActivityMessage"
-					defaultMessage="Requested publishing for <anchor>{item}</anchor> {systemType}"
-					values={{ item: [item.label, item.systemType, item.previewUrl, item.path], anchor, systemType }}
+					defaultMessage="Requested <render_package_link>a package</render_package_link> for publishing"
+					values={{ render_package_link }}
 				/>
 			);
 		case 'APPROVE':
