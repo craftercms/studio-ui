@@ -52,6 +52,10 @@ import { LIVE_COLOUR, STAGING_COLOUR } from '../ItemPublishingTargetIcon/styles'
 import { asLocalizedDateTime } from '../../utils/datetime';
 import useLocale from '../../hooks/useLocale';
 import { useTheme } from '@mui/material/styles';
+import { fetchPackage } from '../../services/publishing';
+import useActiveSiteId from '../../hooks/useActiveSiteId';
+import { pushErrorDialog } from '../../utils/system';
+import { extractErrorPayload } from '../../utils/ajax';
 
 export const actionsToBeShown: AllItemActions[] = [
 	'edit',
@@ -236,18 +240,29 @@ export function usePackageContextMenu() {
 	const position = contextMenu.el?.getBoundingClientRect();
 	const theme = useTheme();
 	const transitionDuration = theme.transitions.duration.standard;
+	const siteId = useActiveSiteId();
 
 	const handleContextMenuClick = useCallback(
 		(e: React.MouseEvent<HTMLButtonElement>, pkg: PublishPackage) => {
-			const contextMenuOptions = generatePackageOptions([pkg], {
-				includeOnly: ['view', 'resubmit']
-			}).map((option) => ({
-				id: option.id,
-				label: formatMessage(option.label as MessageDescriptor)
-			}));
-			setContextMenu({ el: e.currentTarget, package: pkg, options: contextMenuOptions });
+			// https://github.com/craftercms/craftercms/issues/8552 - Because of a limitation in the back end, the packages at
+			// this point may not have the full AA. So we need to fetch the package to generate the proper set of options.
+			const currentTarget = e.currentTarget;
+			fetchPackage(siteId, pkg.id).subscribe({
+				next(publishPackage) {
+					const contextMenuOptions = generatePackageOptions([publishPackage], {
+						includeOnly: ['view', 'resubmit']
+					}).map((option) => ({
+						id: option.id,
+						label: formatMessage(option.label as MessageDescriptor)
+					}));
+					setContextMenu({ el: currentTarget, package: publishPackage, options: contextMenuOptions });
+				},
+				error(error) {
+					dispatch(pushErrorDialog({ props: { error: extractErrorPayload(error) } }));
+				}
+			});
 		},
-		[formatMessage, setContextMenu]
+		[formatMessage, setContextMenu, siteId, dispatch]
 	);
 
 	const handleContextMenuClose = useCallback(() => {
