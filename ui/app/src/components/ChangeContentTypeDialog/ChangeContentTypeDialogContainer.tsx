@@ -64,6 +64,7 @@ export function ChangeContentTypeDialogContainer(props: ChangeContentTypeDialogC
 
 	const { contentTypes, isFetching } = useFetchAllowedTypesForPath(
 		getNormalizedFolderPathForApi1GetTypes(item),
+		// Filter only compatible types, and filter out current type.
 		(types) => types.filter((type) => type.type === item.systemType && item.contentTypeId != type.id)
 	);
 
