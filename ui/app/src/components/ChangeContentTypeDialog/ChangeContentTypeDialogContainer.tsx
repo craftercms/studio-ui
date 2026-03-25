@@ -17,7 +17,7 @@
 import { ChangeContentTypeDialogContainerProps } from './utils';
 import React from 'react';
 import DialogBody from '../DialogBody/DialogBody';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import SelectTypeView from '../ContentTypeManagement/components/SelectTypeView';
 import { getNormalizedFolderPathForApi1GetTypes } from '../../utils/contentType';
 import { TypeListProps } from '../ContentTypeManagement/components/TypeList';
@@ -26,51 +26,90 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import useFetchAllowedTypesForPath from '../../hooks/useFetchAllowedTypesForPath';
 import { ObjectTypeOption } from '../ContentTypeFilter';
+import { DialogFooter } from '../DialogFooter';
+import SecondaryButton from '../SecondaryButton';
+import { EmptyState } from '../EmptyState';
+import { useDispatch } from 'react-redux';
+import { nanoid } from 'nanoid';
+import { pushConfirmDialog } from '../../utils/system';
+import { popDialog } from '../../state/actions/dialogStack';
 
 export function ChangeContentTypeDialogContainer(props: ChangeContentTypeDialogContainerProps) {
-	const { item, onContentTypeSelected, initialCompact = false } = props;
+	const { item, onContentTypeSelected, initialCompact = false, onClose } = props;
+	const dispatch = useDispatch();
+	const { formatMessage } = useIntl();
 
 	const handleContentTypeSelected: TypeListProps['onCardClick'] = (_, contentType) => {
-		onContentTypeSelected?.({
-			path: item.path,
-			contentType: contentType
-		});
+		const dialogId = nanoid();
+		dispatch(
+			pushConfirmDialog({
+				id: dialogId,
+				props: {
+					title: formatMessage({ defaultMessage: 'Change Type' }),
+					body: formatMessage({
+						defaultMessage: 'The following operation may result in data loss. Would you like to proceed?'
+					}),
+					onCancel: () => dispatch(popDialog({ id: dialogId })),
+					onOk: () => {
+						dispatch(popDialog({ id: dialogId }));
+						onContentTypeSelected?.({
+							path: item.path,
+							contentType: contentType
+						});
+					}
+				}
+			})
+		);
 	};
 
 	const { contentTypes, isFetching } = useFetchAllowedTypesForPath(
 		getNormalizedFolderPathForApi1GetTypes(item),
-		(types) => types.filter((type) => type.type === item.systemType)
+		(types) => types.filter((type) => type.type === item.systemType && item.contentTypeId != type.id)
 	);
 
 	return (
-		<DialogBody sx={{ minHeight: 670 }}>
-			<SelectTypeView
-				initialCompact={initialCompact}
-				initialObjectTypeFilter={item.systemType as ObjectTypeOption}
-				contentTypesList={contentTypes}
-				slotProps={{
-					listing: {
-						skeleton: isFetching,
-						skeletonItemCount: 4,
-						onCardClick: handleContentTypeSelected,
-						selectedTypeId: item.contentTypeId
-					},
-					bar: {
-						slotProps: {
-							contentTypesFilter: { disabled: true }
-						},
-						leftChildren: (
-							<Box sx={{ pl: 2, mr: 2, maxWidth: 300 }}>
-								<Typography variant="body2" color="textSecondary">
-									<FormattedMessage defaultMessage="Target Item" />
-								</Typography>
-								<ItemDisplay item={item} showNavigableAsLinks={false} />
-							</Box>
-						)
-					}
-				}}
-			/>
-		</DialogBody>
+		<>
+			<DialogBody sx={{ minHeight: 670, justifyContent: contentTypes?.length ? 'start' : 'center' }}>
+				{contentTypes?.length ? (
+					<SelectTypeView
+						initialCompact={initialCompact}
+						initialObjectTypeFilter={item.systemType as ObjectTypeOption}
+						contentTypesList={contentTypes}
+						slotProps={{
+							listing: {
+								skeleton: isFetching,
+								skeletonItemCount: 4,
+								onCardClick: handleContentTypeSelected,
+								selectedTypeId: item.contentTypeId
+							},
+							bar: {
+								slotProps: {
+									contentTypesFilter: { disabled: true }
+								},
+								leftChildren: (
+									<Box sx={{ pl: 2, mr: 2, maxWidth: 300 }}>
+										<Typography variant="body2" color="textSecondary">
+											<FormattedMessage defaultMessage="Target Item" />
+										</Typography>
+										<ItemDisplay item={item} showNavigableAsLinks={false} />
+									</Box>
+								)
+							}
+						}}
+					/>
+				) : (
+					<EmptyState
+						title={<FormattedMessage defaultMessage="No types available for the item." />}
+						sxs={{ root: { height: '100%' } }}
+					/>
+				)}
+			</DialogBody>
+			<DialogFooter>
+				<SecondaryButton onClick={(e) => onClose(e, null)}>
+					<FormattedMessage defaultMessage="Cancel" />
+				</SecondaryButton>
+			</DialogFooter>
+		</>
 	);
 }
 
