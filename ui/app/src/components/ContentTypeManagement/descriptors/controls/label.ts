@@ -26,23 +26,23 @@ export const labelDescriptor: DescriptorContentType = {
 		createVirtualSection({
 			id: 'properties',
 			title: defineMessage({ defaultMessage: 'Options' }),
-			fields: ['text', 'renderAsHTML']
+			fields: ['text']
 		})
 	],
 	fields: {
 		text: {
 			id: 'text',
-			type: 'string',
+			type: 'rte',
 			name: defineMessage({ defaultMessage: 'Text' }),
 			defaultValue: undefined,
-			validations: immutableEmptyObject
-		},
-		renderAsHTML: {
-			id: 'renderAsHTML',
-			type: 'boolean',
-			name: defineMessage({ defaultMessage: 'Render as HTML' }),
-			defaultValue: undefined,
-			validations: immutableEmptyObject
+			validations: immutableEmptyObject,
+			properties: {
+				rteConfiguration: {
+					name: 'rteConfiguration',
+					value: 'craftercms-label-control',
+					type: 'string'
+				}
+			}
 		}
 	},
 	metadata: {

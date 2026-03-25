@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2024 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2025 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -14,19 +14,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Tooltip, TooltipProps } from '@mui/material';
+import type { ControlProps } from '../types';
+import { getPropertyValue } from '../lib/formUtils';
+import DOMPurify from 'dompurify';
 
-export const UltraStyledTooltip = (props: TooltipProps) => {
-	return (
-		<Tooltip
-			{...props}
-			slotProps={{
-				...props?.slotProps,
-				// @ts-expect-error - TS2339: Property sx does not exist on type (it does exist)
-				tooltip: { ...props.slotProps?.tooltip, sx: { ...props.slotProps?.tooltip?.sx, fontSize: 12 } }
-			}}
-		/>
-	);
-};
+export function Label(props: ControlProps) {
+	const { field } = props;
 
-export default UltraStyledTooltip;
+	// region properties/validations
+	const labelText: string = getPropertyValue(field.properties, 'text') as string;
+	// endregion
+
+	return <span dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(labelText) }} />;
+}
+
+export default Label;

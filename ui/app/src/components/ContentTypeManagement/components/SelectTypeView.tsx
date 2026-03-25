@@ -17,7 +17,7 @@
 import { TypeListControlBar, TypeListControlBarProps } from './TypeListControlBar';
 import TypeList, { TypeListProps } from './TypeList';
 import Box, { BoxProps } from '@mui/material/Box';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import type { ObjectTypeOption } from '../../ContentTypeFilter';
 import useDebouncedInput from '../../../hooks/useDebouncedInput';
 import { filterTypesByKeywordsAndObjectType } from '../../../utils/contentType';
@@ -31,9 +31,12 @@ import {
 	setViewGroupedTypes
 } from '../../../utils/state';
 import useActiveUser from '../../../hooks/useActiveUser';
-import { nnou } from '../../../utils/object';
+import { nnou, nou } from '../../../utils/object';
 import type { LookupTable } from '../../../models';
 import Typography from '@mui/material/Typography';
+import useArchetypes from '../../../hooks/useArchetypes';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { getPossibleTranslation } from '../../../utils/i18n';
 
 export interface SelectContentTypeProps {
 	sx?: BoxProps['sx'];
@@ -57,15 +60,13 @@ export function SelectTypeView(props: SelectContentTypeProps) {
 	const [objectTypeFilter, setObjectTypeFilter] = useState<ObjectTypeOption>(initialObjectTypeFilter);
 	const [sortOrder, setSortOrder] = useState<'ascending' | 'descending'>('ascending');
 	const onKeyword$ = useDebouncedInput((keywords) => {
-		setFilteredTypes(filterTypesByKeywordsAndObjectType(contentTypesList, keywords, objectTypeFilter));
+		const types = filterTypesByKeywordsAndObjectType(contentTypesList, keywords, objectTypeFilter);
+		setFilteredTypes(sortContentTypes(types, sortOrder));
 	});
 	const storedViewGrouped = getViewGroupedTypes(username);
 	const [groupTypes, setGroupTypes] = useState<boolean>(nnou(storedViewGrouped) ? storedViewGrouped : true);
-	// TODO: List archetypes from config
-	const archeTypes = {
-		page: { label: 'Page', value: 'page' },
-		component: { label: 'Component', value: 'component' }
-	};
+	const archetypes = useArchetypes();
+	const { formatMessage } = useIntl();
 
 	const effectRefs = useUpdateRefs({ keywords, filterTypes: filterTypesByKeywordsAndObjectType });
 	useEffect(() => {
@@ -102,18 +103,27 @@ export function SelectTypeView(props: SelectContentTypeProps) {
 	 * @returns {LookupTable<ContentType[]>} An object where the keys are archetype values and the values
 	 * are arrays of `ContentType` objects sorted by the current sort order.
 	 */
-	const getGroupedTypes = (): LookupTable<ContentType[]> => {
+	const getGroupedTypes = useCallback((): LookupTable<ContentType[]> => {
 		const grouped: LookupTable<ContentType[]> = {};
-		if (filteredTypes) {
-			Object.values(archeTypes).forEach((archetype) => {
-				const typesForArchetype = filteredTypes.filter((contentType) => contentType.type === archetype.value);
+		if (filteredTypes && archetypes) {
+			Object.values(archetypes).forEach((archetype) => {
+				const typesForArchetype = filteredTypes.filter((contentType) => {
+					return contentType.type === archetype.id;
+				});
 				if (typesForArchetype.length > 0) {
-					grouped[archetype.value] = sortContentTypes(typesForArchetype, sortOrder);
+					grouped[archetype.id] = sortContentTypes(typesForArchetype, sortOrder);
 				}
 			});
+			// go through the filtered types and add any that don't match an archetype
+			const uncategorizedTypes = filteredTypes.filter((contentType) => {
+				return !archetypes[contentType.type];
+			});
+			if (uncategorizedTypes.length > 0) {
+				grouped['other'] = sortContentTypes(uncategorizedTypes, sortOrder);
+			}
 		}
 		return grouped;
-	};
+	}, [filteredTypes, archetypes, sortOrder]);
 
 	return (
 		<Box {...slotProps.box} sx={consolidateSx(sx, slotProps?.box?.sx)}>
@@ -131,14 +141,31 @@ export function SelectTypeView(props: SelectContentTypeProps) {
 				onObjectTypeFilterChange={setObjectTypeFilter}
 			/>
 			{groupTypes ? (
-				Object.entries(getGroupedTypes()).map(([archetype, types]) => (
-					<Box key={archetype} sx={{ mb: 4 }}>
-						<Typography variant="h6" sx={{ mb: 1 }}>
-							{archeTypes[archetype].label}
-						</Typography>
-						<TypeList {...slotProps.listing} showTypeId compact={compact} contentTypes={types} />
-					</Box>
-				))
+				nou(archetypes) ? (
+					<TypeList
+						{...slotProps.listing}
+						skeleton={true}
+						skeletonItemCount={6}
+						showTypeId
+						compact={compact}
+						contentTypes={filteredTypes}
+					/>
+				) : (
+					Object.entries(getGroupedTypes()).map(([archetype, types]) => (
+						<Box key={archetype} sx={{ mb: 4 }}>
+							<Typography variant="h6" sx={{ mb: 1 }}>
+								{archetypes[archetype] ? (
+									getPossibleTranslation(archetypes[archetype].name, formatMessage)
+								) : archetype === 'other' ? (
+									<FormattedMessage defaultMessage="Other" />
+								) : (
+									archetype
+								)}
+							</Typography>
+							<TypeList {...slotProps.listing} showTypeId compact={compact} contentTypes={types} />
+						</Box>
+					))
+				)
 			) : (
 				<TypeList {...slotProps.listing} showTypeId compact={compact} contentTypes={filteredTypes} />
 			)}
