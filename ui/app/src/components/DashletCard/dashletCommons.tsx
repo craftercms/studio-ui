@@ -22,7 +22,7 @@ import MuiCheckbox from '@mui/material/Checkbox';
 import ListItemText from '@mui/material/ListItemText';
 import Skeleton from '@mui/material/Skeleton';
 import Typography from '@mui/material/Typography';
-import React, { PropsWithChildren, ReactNode, useCallback, useEffect } from 'react';
+import React, { PropsWithChildren, ReactNode, useCallback, useEffect, useRef } from 'react';
 import MuiListItem from '@mui/material/ListItem';
 import MuiListItemIcon from '@mui/material/ListItemIcon';
 import MuiListSubheader from '@mui/material/ListSubheader';
@@ -56,6 +56,7 @@ import { fetchPackage } from '../../services/publishing';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { pushErrorDialog } from '../../utils/system';
 import { extractErrorPayload } from '../../utils/ajax';
+import { Subscription } from 'rxjs';
 
 export const actionsToBeShown: AllItemActions[] = [
 	'edit',
@@ -241,13 +242,15 @@ export function usePackageContextMenu() {
 	const theme = useTheme();
 	const transitionDuration = theme.transitions.duration.standard;
 	const siteId = useActiveSiteId();
+	const subscriptionRef = useRef<Subscription | null>(null);
 
 	const handleContextMenuClick = useCallback(
 		(e: React.MouseEvent<HTMLButtonElement>, pkg: PublishPackage) => {
 			// https://github.com/craftercms/craftercms/issues/8552 - Because of a limitation in the back end, the packages at
 			// this point may not have the full AA. So we need to fetch the package to generate the proper set of options.
 			const currentTarget = e.currentTarget;
-			fetchPackage(siteId, pkg.id).subscribe({
+			subscriptionRef.current?.unsubscribe();
+			subscriptionRef.current = fetchPackage(siteId, pkg.id).subscribe({
 				next(publishPackage) {
 					const contextMenuOptions = generatePackageOptions([publishPackage], {
 						includeOnly: ['view', 'resubmit']
@@ -264,6 +267,13 @@ export function usePackageContextMenu() {
 		},
 		[formatMessage, setContextMenu, siteId, dispatch]
 	);
+
+	useEffect(() => {
+		return () => {
+			// Cleanup on unmount
+			subscriptionRef.current?.unsubscribe();
+		};
+	}, []);
 
 	const handleContextMenuClose = useCallback(() => {
 		setContextMenu({
