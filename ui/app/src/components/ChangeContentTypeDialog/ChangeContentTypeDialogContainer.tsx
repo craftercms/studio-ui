@@ -67,11 +67,13 @@ export function ChangeContentTypeDialogContainer(props: ChangeContentTypeDialogC
 		// Filter only compatible types, and filter out current type.
 		(types) => types.filter((type) => type.type === item.systemType && item.contentTypeId != type.id)
 	);
+	// Show the select type view if there are content types to show, or if it's still loading (to show the skeleton). Otherwise, show the empty state.
+	const showSelectTpeView = contentTypes?.length || isFetching;
 
 	return (
 		<>
-			<DialogBody sx={{ minHeight: 670, justifyContent: contentTypes?.length ? 'start' : 'center' }}>
-				{contentTypes?.length ? (
+			<DialogBody sx={{ minHeight: 670, justifyContent: showSelectTpeView ? 'start' : 'center' }}>
+				{showSelectTpeView ? (
 					<SelectTypeView
 						initialCompact={initialCompact}
 						initialObjectTypeFilter={item.systemType as ObjectTypeOption}
