@@ -945,7 +945,7 @@ function createAddMenuOptions({
 	}>;
 	itemPickerDataSourceData: ConsolidatedItemPickerData;
 	readonly: boolean;
-}): { menuOptions: ReactNode[]; singleOptionOnClick(): void | undefined } {
+}): { menuOptions: ReactNode[]; singleOptionOnClick: () => void | undefined } {
 	const { allowedCreateTypes, allowedBrowsePaths, allowedSearchPaths, allowedUploadPaths } = itemPickerDataSourceData;
 	const createAllowed = Object.keys(allowedCreateTypes).length > 0;
 	const menuOptions = [];
