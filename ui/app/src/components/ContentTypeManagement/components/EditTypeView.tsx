@@ -1157,9 +1157,10 @@ function updateTypeFromDataSourceUpdate(
 	// Serialize datasource values
 	const serializedValues: LookupTable<unknown> = {};
 	Object.entries(updatedValues).forEach(([key, value]) => {
-		const fieldType = descriptorFields[key]?.type;
+		const field = descriptorFields[key];
+		const fieldType = field?.type;
 		const serializer = fieldType ? valueSerializersLookup[fieldType] : undefined;
-		serializedValues[key] = serializer ? serializer(null, value) : value;
+		serializedValues[key] = serializer ? serializer(field, value) : value;
 	});
 	const nextDataSource = { ...selectedDataSource };
 	// When updating a new data source, we need to exclude NEW prop from the new datasource content
