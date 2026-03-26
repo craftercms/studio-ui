@@ -490,7 +490,7 @@ function NodeSelector(props: NodeSelectorProps) {
 		executeDataSourceOption('create', createPickerChoice);
 	};
 	const memoRefs = useUpdateRefs({ handleDataSourceOptionClick });
-	const menuOptions = useMemo(
+	const { menuOptions, singleOptionOnClick } = useMemo(
 		() => createAddMenuOptions({ refs: memoRefs, itemPickerDataSourceData: dataSourceSummary, readonly }),
 		[memoRefs, readonly, dataSourceSummary]
 	);
@@ -589,7 +589,11 @@ function NodeSelector(props: NodeSelectorProps) {
 								size="small"
 								color="primary"
 								onClick={() => {
-									setAddMenuOpen(true);
+									if (menuOptions?.length === 1) {
+										singleOptionOnClick?.();
+									} else {
+										setAddMenuOpen(true);
+									}
 								}}
 							>
 								<AddRounded fontSize="small" />
@@ -941,12 +945,24 @@ function createAddMenuOptions({
 	}>;
 	itemPickerDataSourceData: ConsolidatedItemPickerData;
 	readonly: boolean;
-}): ReactNode[] {
+}): { menuOptions: ReactNode[]; singleOptionOnClick(): void | undefined } {
 	const { allowedCreateTypes, allowedBrowsePaths, allowedSearchPaths, allowedUploadPaths } = itemPickerDataSourceData;
 	const createAllowed = Object.keys(allowedCreateTypes).length > 0;
 	const menuOptions = [];
 
-	if (allowedSearchPaths.length > 0) {
+	const availableOptions: DataSourcePickerType[] = [];
+	if (allowedSearchPaths.length > 0) availableOptions.push('search');
+	if (allowedBrowsePaths.length > 0) availableOptions.push('browse');
+	if (allowedUploadPaths.length > 0) availableOptions.push('upload');
+	if (createAllowed) availableOptions.push('create');
+
+	let singleOptionOnClick: (() => void) | undefined;
+	if (availableOptions.length === 1) {
+		const option = availableOptions[0];
+		singleOptionOnClick = () => refs.current.handleDataSourceOptionClick(null, option);
+	}
+
+	if (availableOptions.includes('search')) {
 		menuOptions.push(
 			<MenuItem
 				key="search"
@@ -960,7 +976,7 @@ function createAddMenuOptions({
 			</MenuItem>
 		);
 	}
-	if (allowedBrowsePaths.length > 0) {
+	if (availableOptions.includes('browse')) {
 		menuOptions.push(
 			<MenuItem
 				key="browse"
@@ -974,7 +990,7 @@ function createAddMenuOptions({
 			</MenuItem>
 		);
 	}
-	if (allowedUploadPaths.length > 0) {
+	if (availableOptions.includes('upload')) {
 		menuOptions.push(
 			<MenuItem
 				key="upload"
@@ -1003,7 +1019,7 @@ function createAddMenuOptions({
 		);
 	}
 
-	return menuOptions;
+	return { menuOptions, singleOptionOnClick };
 }
 
 function showUploadDialog({
