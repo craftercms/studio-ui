@@ -40,14 +40,18 @@ export const nodeSelectorDescriptor: DescriptorContentType = {
 			type: 'int',
 			name: defineMessage({ defaultMessage: 'Minimum Size' }),
 			defaultValue: undefined,
-			validations: immutableEmptyObject
+			validations: {
+				minValue: createValidation('minValue', 0)
+			}
 		},
 		maxSize: {
 			id: 'maxSize',
 			type: 'int',
 			name: defineMessage({ defaultMessage: 'Maximum Size' }),
 			defaultValue: undefined,
-			validations: immutableEmptyObject
+			validations: {
+				minValue: createValidation('minValue', 1)
+			}
 		},
 		itemManager: {
 			id: 'itemManager',

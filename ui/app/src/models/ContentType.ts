@@ -16,9 +16,10 @@
 
 import { LookupTable } from './LookupTable';
 import { XmlKeys } from '../components/FormsEngine/lib/formConsts';
+import { DescriptorFieldValidationKeys } from '../components/ContentTypeManagement/utils';
 
 export interface ContentTypeFieldValidation<T = any> {
-	id: ValidationKeys;
+	id: ValidationKeys | DescriptorFieldValidationKeys;
 	value: T;
 	level: 'required' | 'suggestion';
 }
