@@ -459,7 +459,9 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 				break;
 			case 'save': {
 				if (!performCurrentFormErrorCheckAndWarning()) break;
-				const latestUpdate = commitOpenFormChanges();
+				let latestUpdate = commitOpenFormChanges();
+				// latestUpdate = cleanupStaleDatasourceValues(latestUpdate);
+				console.log('cleanupStaleDatasourceValues', cleanupStaleDatasourceValues(latestUpdate));
 				dialogContext?.updateSubmittingOrHasPendingChanges({ isSubmitting: true });
 				const typeToSave = latestUpdate ?? type;
 				save(site, typeToSave, configDescriptors).subscribe({
@@ -1383,6 +1385,80 @@ function reorderRepGroupFields(
 			}
 		};
 	}
+}
+
+function cleanupStaleDatasourceValues(type: ContentType) {
+	// Gather all valid datasource IDs
+	const validDataSourceIds = new Set((type.dataSources || []).map((ds) => ds.id));
+
+	// Helper to recursively clean a field (including repeating group fields)
+	function cleanField(field: any): any {
+		let changed = false;
+		const newProperties = field.properties ? { ...field.properties } : undefined;
+		if (newProperties) {
+			for (const [propKey, prop] of Object.entries(newProperties)) {
+				// @ts-ignore
+				if (prop && typeof prop.type === 'string' && prop.type.startsWith('datasource:')) {
+					// @ts-ignore
+					const value = prop.value;
+					if (typeof value === 'string') {
+						const values = value
+							.split(',')
+							.map((v) => v.trim())
+							.filter(Boolean);
+						const filtered = values.filter((id) => validDataSourceIds.has(id));
+						if (filtered.length !== values.length) {
+							changed = true;
+							if (filtered.length > 0) {
+								// @ts-ignore
+								newProperties[propKey] = { ...prop, value: filtered.join(',') };
+							} else {
+								// Remove property if no valid datasources remain
+								delete newProperties[propKey];
+							}
+						}
+					}
+				}
+			}
+		}
+		// Recursively clean nested fields if this is a repeating group
+		let newFields = undefined;
+		if (field.fields) {
+			let fieldsChanged = false;
+			newFields = {};
+			for (const [subFieldId, subField] of Object.entries(field.fields)) {
+				const cleaned = cleanField(subField);
+				newFields[subFieldId] = cleaned;
+				if (cleaned !== subField) fieldsChanged = true;
+			}
+			if (!fieldsChanged) newFields = field.fields;
+			else changed = true;
+		}
+		if (changed || (newFields && newFields !== field.fields)) {
+			return {
+				...field,
+				...(newProperties ? { properties: newProperties } : {}),
+				...(newFields ? { fields: newFields } : {})
+			};
+		}
+		return field;
+	}
+
+	// Clean all top-level fields
+	let fieldsChanged = false;
+	const newFields: any = {};
+	for (const [fieldId, field] of Object.entries(type.fields)) {
+		const cleaned = cleanField(field);
+		newFields[fieldId] = cleaned;
+		if (cleaned !== field) fieldsChanged = true;
+	}
+	if (fieldsChanged) {
+		return {
+			...type,
+			fields: newFields
+		};
+	}
+	return type;
 }
 
 export default EditTypeView;
