@@ -93,7 +93,10 @@ export const valueSerializersLookup: Record<BuiltInControlType | DescriptorContr
 	'datasource:item:singleSelection': undefined,
 	variable: undefined,
 	'type-configuration': undefined,
-	'date-time-expression-input': undefined
+	'date-time-expression-input': undefined,
+	'input-email': undefined,
+	'input-link': undefined,
+	'input-phone': undefined
 };
 
 /**
