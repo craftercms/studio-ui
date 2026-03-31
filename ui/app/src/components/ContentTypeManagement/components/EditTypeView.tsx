@@ -1413,7 +1413,7 @@ function cleanupStaleDatasourceValuesFromXml(xml: string, type: ContentType): st
 					const parent = typeEl.parentElement;
 					let valueEl = null;
 					if (parent) {
-						valueEl = parent.querySelector('value');
+						valueEl = parent.querySelector(':scope > value');
 					}
 					if (valueEl && valueEl.textContent) {
 						const values = valueEl.textContent
