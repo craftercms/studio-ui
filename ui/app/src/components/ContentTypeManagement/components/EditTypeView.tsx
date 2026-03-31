@@ -1403,7 +1403,8 @@ function cleanupStaleDatasourceValuesFromXml(xml: string, type: ContentType): st
 	try {
 		const dataSourceIds = (type.dataSources ?? []).map((ds) => ds.id);
 		const dom = fromString(xml);
-		if (dom) {
+		const parseError = dom?.getElementsByTagName('parsererror')[0];
+		if (dom && !parseError) {
 			// Find all <type> elements
 			const typeElements = Array.from(dom.getElementsByTagName('type'));
 			for (const typeEl of typeElements) {
