@@ -1190,8 +1190,6 @@ function save(
 		dataSourceDescriptors: LookupTable<DescriptorContentType>;
 	}
 ): Observable<string> {
-	// TODO: clean xml, update type after cleaning up/saving
-
 	let xml = buildXmlFromType(type, configDescriptors);
 	xml = cleanupStaleDatasourceValuesFromXml(xml, type);
 	const requests = [writeConfiguration(siteId, createFormDefinitionPathFromTypeId(type.id), 'studio', xml)];
