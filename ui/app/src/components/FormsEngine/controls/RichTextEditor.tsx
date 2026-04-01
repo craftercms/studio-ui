@@ -32,6 +32,7 @@ import { getPropertyValue, getTinyMceInitOptions, getValidationValue } from '../
 
 export interface RichTextEditorProps extends ControlProps {
 	value: string;
+	defaultInitOptions?: Editor['props']['init'];
 }
 
 const tinymceScriptSrc = '/studio/static-assets/libs/tinymce/tinymce.min.js';
@@ -177,7 +178,7 @@ const tinymceCustomStyles: SxProps<Theme> = {
 };
 
 export function RichTextEditor(props: RichTextEditorProps) {
-	const { field, value, setValue, readonly } = props;
+	const { field, value, setValue, readonly, defaultInitOptions } = props;
 	const rteConfig = useRTEConfig();
 	const editorRef = useRef<Editor>(undefined);
 	const hasReceivedFocusRef = useRef(false);
@@ -277,7 +278,7 @@ export function RichTextEditor(props: RichTextEditorProps) {
 		>
 			<Editor
 				licenseKey="gpl"
-				init={getTinyMceInitOptions(field, rteConfig)}
+				init={getTinyMceInitOptions(field, rteConfig, defaultInitOptions)}
 				tinymceScriptSrc={tinymceScriptSrc}
 				onEditorChange={handleChange}
 				value={value}

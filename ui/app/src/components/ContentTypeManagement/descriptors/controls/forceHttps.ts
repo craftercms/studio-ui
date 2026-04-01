@@ -30,6 +30,18 @@ export const forceHttpsDescriptor: DescriptorContentType = {
 		})
 	],
 	fields: {
+		id: {
+			id: 'id',
+			type: 'variable',
+			name: defineMessage({ defaultMessage: 'Variable Name' }),
+			defaultValue: 'forceHttps',
+			validations: {
+				required: { id: 'required', level: 'required', value: true }
+			},
+			properties: {
+				readonly: { name: 'readonly', type: 'boolean', value: true }
+			}
+		},
 		readonly: {
 			id: 'readonly',
 			type: 'boolean',

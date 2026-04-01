@@ -910,7 +910,9 @@ export function initializeConfigFromType(type: ContentType) {
 			noThumbnail: !type.thumbnailFileName,
 			'image-thumbnail': type.thumbnailFileName ?? '',
 			paths: {
-				includes: {},
+				includes: {
+					...(type.type === 'page' ? { pattern: '^/site/.*' } : {})
+				},
 				excludes: {}
 			}
 		}

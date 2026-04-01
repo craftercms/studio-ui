@@ -77,7 +77,7 @@ import useActiveSiteId from '../../../hooks/useActiveSiteId';
 import { JotaiStore } from '../../FormsEngine/types';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { createLookupTable, nnou, pluckProps, reversePluckProps } from '../../../utils/object';
-import { BoxProps } from '@mui/material/Box';
+import Box, { BoxProps } from '@mui/material/Box';
 import useEnhancedDialogContext from '../../EnhancedDialog/useEnhancedDialogContext';
 import { fetchSiteUiConfig, writeConfiguration } from '../../../services/configuration';
 import { createConfigPathFromTypeId, createFormDefinitionPathFromTypeId } from '../../../utils/contentType';
@@ -102,6 +102,10 @@ import PickDataSourceDialog from './PickDataSourceDialog';
 import { fetchContentTypes } from '../../../state/actions/preview';
 import { getXmlBuilder, valueSerializersLookup } from '../../FormsEngine/lib/valueSerializers';
 import { pushErrorDialog } from '../../../utils/system';
+import { showSystemNotification } from '../../../state/actions/system';
+import { extractErrorPayload } from '../../../utils/ajax';
+import Typography from '@mui/material/Typography';
+import { AjaxError } from 'rxjs/ajax';
 
 export interface EditTypeAppProps {
 	/**
@@ -464,17 +468,34 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 				save(site, typeToSave, configDescriptors).subscribe({
 					next() {
 						onUpdateHasPendingChanges(false);
-						dialogContext?.updateSubmittingOrHasPendingChanges({ isSubmitting: false });
+						dialogContext?.updateSubmittingOrHasPendingChanges({ isSubmitting: false, hasPendingChanges: false });
 						// If the type being saved is new, update the type state to remove the NEW property.
 						if ((typeToSave as PossibleContentTypeDraft).NEW) {
 							setType(reversePluckProps(typeToSave as PossibleContentTypeDraft, 'NEW'));
 						}
-						dispatch(fetchContentTypes());
-						showAlert(`Save successful.`);
+						dispatch(
+							batchActions([
+								fetchContentTypes(),
+								showSystemNotification({
+									message: formatMessage({ defaultMessage: 'Save successful.' })
+								})
+							])
+						);
 					},
-					error() {
+					error(error: AjaxError) {
 						dialogContext?.updateSubmittingOrHasPendingChanges({ isSubmitting: false });
-						showAlert(formatMessage({ defaultMessage: `Error saving content type` }));
+						showAlert({
+							children: (
+								<Box>
+									<Typography marginBottom={1}>
+										<FormattedMessage defaultMessage="Error saving content type" />
+									</Typography>
+									<Typography variant="body2" color="textSecondary">
+										{extractErrorPayload(error).message ?? ''}
+									</Typography>
+								</Box>
+							)
+						});
 					}
 				});
 				break;
@@ -1150,9 +1171,10 @@ function updateTypeFromDataSourceUpdate(
 	// Serialize datasource values
 	const serializedValues: LookupTable<unknown> = {};
 	Object.entries(updatedValues).forEach(([key, value]) => {
-		const fieldType = descriptorFields[key]?.type;
+		const field = descriptorFields[key];
+		const fieldType = field?.type;
 		const serializer = fieldType ? valueSerializersLookup[fieldType] : undefined;
-		serializedValues[key] = serializer ? serializer(null, value) : value;
+		serializedValues[key] = serializer ? serializer(field, value) : value;
 	});
 	const nextDataSource = { ...selectedDataSource };
 	// When updating a new data source, we need to exclude NEW prop from the new datasource content
@@ -1249,7 +1271,7 @@ function parseConfigPlugins(
 function getNewFieldFromDescriptor(fieldType: string, descriptor: DescriptorContentType): NewContentTypeField {
 	const newField: NewContentTypeField = {
 		NEW: true,
-		id: systemFieldsIdsMap[fieldType] ?? '',
+		id: systemFieldsIdsMap[fieldType] ?? null,
 		name: '',
 		helpText: '',
 		description: '',

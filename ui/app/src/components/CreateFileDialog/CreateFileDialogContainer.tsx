@@ -34,8 +34,9 @@ import { UNDEFINED } from '../../utils/constants';
 import { isBlank } from '../../utils/string';
 import { applyAssetNameRules } from '../../utils/content';
 import { getFileNameWithExtensionForItemType, pickExtensionForItemType } from '../../utils/path';
-import ApiResponse from '../../models/ApiResponse';
 import { pushErrorDialog } from '../../utils/system';
+import { extractErrorPayload } from '../../utils/ajax';
+import { AjaxError } from 'rxjs/ajax';
 
 export function CreateFileDialogContainer(props: CreateFileContainerProps) {
 	const { onClose, onCreated, type, path, allowBraces } = props;
@@ -54,9 +55,9 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
 	const isValid = !isBlank(name) && !fileExists;
 	const { updateSubmittingOrHasPendingChanges } = useEnhancedDialogContext();
 
-	const onError = (error: ApiResponse) => {
+	const onError = (error: AjaxError) => {
 		updateSubmittingOrHasPendingChanges({ isSubmitting: false });
-		dispatch(pushErrorDialog({ props: { error } }));
+		dispatch(pushErrorDialog({ props: { error: extractErrorPayload(error) } }));
 	};
 
 	const onCreateFile = (site: string, path: string, fileName: string) => {
