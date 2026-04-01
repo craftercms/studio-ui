@@ -77,7 +77,7 @@ import useActiveSiteId from '../../../hooks/useActiveSiteId';
 import { JotaiStore } from '../../FormsEngine/types';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { createLookupTable, nnou, pluckProps, reversePluckProps } from '../../../utils/object';
-import { BoxProps } from '@mui/material/Box';
+import Box, { BoxProps } from '@mui/material/Box';
 import useEnhancedDialogContext from '../../EnhancedDialog/useEnhancedDialogContext';
 import { fetchSiteUiConfig, writeConfiguration } from '../../../services/configuration';
 import { createConfigPathFromTypeId, createFormDefinitionPathFromTypeId } from '../../../utils/contentType';
@@ -103,6 +103,9 @@ import { fetchContentTypes } from '../../../state/actions/preview';
 import { getXmlBuilder, valueSerializersLookup } from '../../FormsEngine/lib/valueSerializers';
 import { pushErrorDialog } from '../../../utils/system';
 import { showSystemNotification } from '../../../state/actions/system';
+import { extractErrorPayload } from '../../../utils/ajax';
+import Typography from '@mui/material/Typography';
+import { AjaxError } from 'rxjs/ajax';
 
 export interface EditTypeAppProps {
 	/**
@@ -479,9 +482,20 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 							])
 						);
 					},
-					error() {
+					error(error: AjaxError) {
 						dialogContext?.updateSubmittingOrHasPendingChanges({ isSubmitting: false });
-						showAlert(formatMessage({ defaultMessage: `Error saving content type` }));
+						showAlert({
+							children: (
+								<Box>
+									<Typography marginBottom={1}>
+										<FormattedMessage defaultMessage="Error saving content type" />
+									</Typography>
+									<Typography variant="body2" color="textSecondary">
+										{extractErrorPayload(error).message ?? ''}
+									</Typography>
+								</Box>
+							)
+						});
 					}
 				});
 				break;
