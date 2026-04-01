@@ -136,21 +136,15 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 			<FormattedMessage id="words.publish" defaultMessage="Publish" />
 		);
 	const disabled = isSubmitting;
-	const [includeChildren, setIncludeChildren] = useState(false);
+	const [includeChildren, setIncludeChildren] = useState(
+		// Initial state is true if all mainItems are folders, since publishing only folders is not allowed.
+		mainItems.length > 0 && mainItems.every((item) => item.systemType === 'folder')
+	);
 	const effectRefs = useUpdateRefs({ initialItems, state, mainItems, childrenItems, includeChildren });
-	const areMainItemsFolders = useMemo(() => {
-		return mainItems.length > 0 && mainItems.every((item) => item.systemType === 'folder');
-	}, [mainItems]);
 	const arePublishingItemsFolders = useMemo(() => {
 		const allItems = [...mainItems, ...childrenItems];
 		return allItems.length > 0 && allItems.every((item) => item.systemType === 'folder');
 	}, [mainItems, childrenItems]);
-
-	useEffect(() => {
-		if (areMainItemsFolders && !effectRefs.current.includeChildren) {
-			setIncludeChildren(true);
-		}
-	}, [areMainItemsFolders, effectRefs]);
 
 	// Submit button should be disabled when:
 	const submitDisabled =
