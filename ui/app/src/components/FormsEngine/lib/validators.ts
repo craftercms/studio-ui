@@ -32,6 +32,7 @@ import type { DescriptorControlType } from '../../ContentTypeManagement/controlM
 import type { RepeatItem } from '../controls/Repeat';
 import { getValidationValue } from './formUtils';
 import type { NodeSelectorItem } from '../controls/NodeSelector';
+import type { CheckboxGroupProps } from '../controls/CheckboxGroup';
 
 interface ValidatorMetaData {
 	siteId: string;
@@ -49,7 +50,8 @@ export const validatorsMap: Partial<Record<BuiltInControlType | DescriptorContro
 		repeatGroupValidator(field, currentValue as Array<RepeatItem>, messages, meta),
 	'auto-filename': undefined,
 	'aws-file-upload': undefined,
-	'checkbox-group': undefined,
+	'checkbox-group': (field, currentValue, messages) =>
+		checkboxGroupValidator(field, currentValue as CheckboxGroupProps['value'], messages),
 	checkbox: (field, currentValue, messages) => checkboxValidator(field, currentValue as boolean, messages),
 	'date-time': (field, currentValue, messages) => dateTimeValidator(field, currentValue as string, messages),
 	disabled: undefined,
@@ -414,6 +416,22 @@ export function nodeSelectorValidator(
 			{ maxCount }
 		]);
 	}
+	return isValid;
+}
+
+export function checkboxGroupValidator(
+	field: ContentTypeField,
+	currentValue: CheckboxGroupProps['value'],
+	messages: FieldValidityMessage[]
+) {
+	const minSelected = Number(field.validations?.minSize?.value ?? 0);
+	const selectedCount = Array.isArray(currentValue) ? currentValue.length : 0;
+	const isValid = selectedCount >= minSelected;
+	if (!isValid)
+		messages.push([
+			defineMessage({ defaultMessage: 'Please select at least the minimum required items ({minSelected}).' }),
+			{ minSelected }
+		]);
 	return isValid;
 }
 

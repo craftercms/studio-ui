@@ -330,6 +330,16 @@ function parseLegacyFormDefinitionFields(
 					}
 					break;
 				case 'minSize':
+					if (value) {
+						const n = Number.parseInt(value, 10);
+						if (!Number.isNaN(n)) {
+							field.validations.minSize = {
+								id: 'minSize',
+								value: Math.max(0, n),
+								level: 'required'
+							};
+						}
+					}
 					break;
 				default:
 					console.log(`[parseLegacyFormDef] Unhandled constraint "${legacyProp.name}"`, legacyProp);
