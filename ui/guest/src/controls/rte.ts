@@ -95,15 +95,6 @@ export function initTinyMCE(
 		recordEl.parentNode.insertBefore(rteEl, recordEl);
 	}
 
-	const openEditForm = () => {
-		post({
-			type: showEditDialog.type,
-			payload: {
-				selectedFields: [field.id]
-			}
-		});
-	};
-
 	const controlPropsMap = {
 		enableSpellCheck: 'browser_spellcheck'
 	};
@@ -162,6 +153,7 @@ export function initTinyMCE(
 				}
 			}
 		},
+		{},
 		(editor: Editor) => {
 			let changed = false;
 			const pluginManager = window.tinymce.util.Tools.resolve('tinymce.PluginManager');

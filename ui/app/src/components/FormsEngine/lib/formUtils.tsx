@@ -78,7 +78,6 @@ import { getFormsEngineCloseAfterSave, getFormsEngineCollapseToCKey } from '../.
 import { createComponentId } from '../../../utils/system';
 import { showErrorDialog } from '../../../state/actions/dialogs';
 import { ensureSingleSlash } from '../../../utils/string';
-import { nou } from '../../../utils/object';
 import { isPagePath } from '../../../utils/path';
 import { nou, reversePluckProps } from '../../../utils/object';
 import { Editor } from '@tinymce/tinymce-react';
@@ -927,15 +926,21 @@ export function composePathForType(basePath: string, fileName: string, contentTy
 export function getTinyMceInitOptions(
 	field: ContentTypeField,
 	rteConfig: GlobalState['preview']['richTextEditor'], // GlobalState['preview']['richTextEditor']['']['']
+	defaultOptions?: Editor['props']['init'],
 	setup?: Editor['props']['init']['setup']
 ): Editor['props']['init'] {
 	const setupId: string = getPropertyValue(field.properties, 'rteConfiguration', 'generic') as string;
 	const height = getPropertyValue(field.properties, 'height', 300) as number;
 	const autoGrow = getPropertyValue(field.properties, 'autoGrow', false) as boolean;
+	const allowAddMedia = getValidationValue(field.validations, 'addMedia', true) as boolean;
 
+	const defaultTinymceOptions = defaultOptions
+		? { id: '', tinymceOptions: defaultOptions }
+		: (Object.values(rteConfig)[0] ?? { id: '', tinymceOptions: {} });
 	const tinymceOptions: Editor['props']['init'] = (
 		rteConfig[setupId] ??
-		Object.values(rteConfig)[0] ?? { id: '', tinymceOptions: {} }
+		Object.values(rteConfig)[0] ??
+		defaultTinymceOptions ?? { id: '', tinymceOptions: {} }
 	)?.tinymceOptions;
 	const controlProps: Partial<Editor['props']['init']> = {};
 	if (field.properties?.enableSpellCheck?.value === false) {
@@ -1002,46 +1007,49 @@ export function getTinyMceInitOptions(
 		media_live_embeds: true,
 		file_picker_types: 'image media',
 		craftercms_paste_cleanup: tinymceOptions.craftercms_paste_cleanup ?? true, // If doesn't exist or if true => true
-		file_picker_callback: function (cb, value, meta) {
-			//   // meta contains info about type (image, media, etc). Used to properly add DS to dialogs.
-			//   // meta.filetype === 'file | image | media'
-			//   const datasources = {};
-			//   Object.values(field.validations).forEach((validation) => {
-			//     if (
-			//       [
-			//         'allowImageUpload',
-			//         'allowImagesFromRepo',
-			//         'allowVideoUpload',
-			//         'allowVideosFromRepo',
-			//         'allowAudioUpload',
-			//         'allowAudioFromRepo'
-			//       ].includes(validation.id)
-			//     ) {
-			//       datasources[validation.id] = validation;
-			//     }
-			//   });
-			//   const browseBtn = document.querySelector('.tox-dialog .tox-browse-url');
-			//
-			//   // post(
-			//   //   showRtePickerActions({
-			//   //     datasources,
-			//   //     model,
-			//   //     type: meta.filetype,
-			//   //     rect: browseBtn.getBoundingClientRect()
-			//   //   })
-			//   // );
-			//
-			//   // message$
-			//   //   .pipe(
-			//   //     filter((e) => e.type === rtePickerActionResult.type),
-			//   //     take(1)
-			//   //   )
-			//   //   .subscribe(({ payload }) => {
-			//   //     if (payload) {
-			//   //       cb(payload.path, { alt: payload.name });
-			//   //     }
-			//   //   });
-		},
+		// If the allowAddMedia validation is set to false, then the callback is not set, so the add media/file options won't be shown in the editor.
+		file_picker_callback: allowAddMedia
+			? function (cb, value, meta) {
+					//   // meta contains info about type (image, media, etc). Used to properly add DS to dialogs.
+					//   // meta.filetype === 'file | image | media'
+					//   const datasources = {};
+					//   Object.values(field.validations).forEach((validation) => {
+					//     if (
+					//       [
+					//         'allowImageUpload',
+					//         'allowImagesFromRepo',
+					//         'allowVideoUpload',
+					//         'allowVideosFromRepo',
+					//         'allowAudioUpload',
+					//         'allowAudioFromRepo'
+					//       ].includes(validation.id)
+					//     ) {
+					//       datasources[validation.id] = validation;
+					//     }
+					//   });
+					//   const browseBtn = document.querySelector('.tox-dialog .tox-browse-url');
+					//
+					//   // post(
+					//   //   showRtePickerActions({
+					//   //     datasources,
+					//   //     model,
+					//   //     type: meta.filetype,
+					//   //     rect: browseBtn.getBoundingClientRect()
+					//   //   })
+					//   // );
+					//
+					//   // message$
+					//   //   .pipe(
+					//   //     filter((e) => e.type === rtePickerActionResult.type),
+					//   //     take(1)
+					//   //   )
+					//   //   .subscribe(({ payload }) => {
+					//   //     if (payload) {
+					//   //       cb(payload.path, { alt: payload.name });
+					//   //     }
+					//   //   });
+				}
+			: null,
 		setup(editor) {
 			const pluginManager = window.tinymce.util.Tools.resolve('tinymce.PluginManager');
 

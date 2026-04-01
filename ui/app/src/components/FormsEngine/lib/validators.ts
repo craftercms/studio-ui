@@ -71,7 +71,7 @@ export const validatorsMap: Partial<Record<BuiltInControlType | DescriptorContro
 		nodeSelectorValidator(field, currentValue as NodeSelectorItem[], messages),
 	'numeric-input': (field, currentValue, messages) => numericInputValidator(field, currentValue as number, messages),
 	'page-nav-order': undefined,
-	rte: undefined,
+	rte: (field, currentValue, messages) => rteValidator(field, currentValue as string, messages),
 	textarea: (field, currentValue, messages) => inputValidator(field, currentValue as string, messages),
 	time: undefined,
 	'transcoded-video-picker': undefined,
@@ -498,6 +498,17 @@ const inputPhoneValidator = (
 	return inputValidator(field, currentValue, messages, {
 		pattern: defineMessage({ defaultMessage: 'Please enter a valid phone number.' })
 	});
+};
+
+const rteValidator = (field: ContentTypeField, currentValue: string, messages?: FieldValidityMessage[]): boolean => {
+	if (nou(field)) return false;
+
+	// TODO: finish validator, update messages
+	const aux = document.createElement('div');
+	aux.innerHTML = currentValue;
+	const trimmedContent = aux.innerText.trim(); // Get only the text and remove white spaces
+
+	return trimmedContent !== '';
 };
 
 export default validateFieldValue;
