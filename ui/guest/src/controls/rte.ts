@@ -117,13 +117,14 @@ export function initTinyMCE(
 
 	record.element.classList.remove(emptyFieldClass);
 
+	const setupId = rteSetup?.id ?? 'generic';
 	const rteConfig = getTinyMceInitOptions(
 		field,
 		{
-			[rteSetup.id]: {
-				id: rteSetup.id,
+			setupId: {
+				id: setupId,
 				tinymceOptions: {
-					...rteSetup.tinymceOptions,
+					...rteSetup?.tinymceOptions,
 					target: rteEl as any,
 					deprecation_warnings: false,
 					paste_as_text: !isRTE,
