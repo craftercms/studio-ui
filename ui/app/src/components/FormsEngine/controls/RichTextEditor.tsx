@@ -29,6 +29,7 @@ import { Editor } from '@tinymce/tinymce-react';
 import { TinyMCE } from 'tinymce';
 import { getTinymce } from '@tinymce/tinymce-react/lib/es2015/main/ts/TinyMCE';
 import { getPropertyValue, getTinyMceInitOptions } from '../lib/formUtils';
+import { loadAceEditorAssets } from '../../../utils/system';
 
 export interface RichTextEditorProps extends ControlProps {
 	value: string;
@@ -72,17 +73,7 @@ export function RichTextEditor(props: RichTextEditorProps) {
 			};
 			document.head.appendChild(script);
 		}
-		// TODO: create util
-		if (!window.ace) {
-			const script = document.createElement('script');
-			script.src = '/studio/static-assets/libs/ace/ace.js';
-			document.head.appendChild(script);
-
-			const styleSheet = document.createElement('link');
-			styleSheet.rel = 'stylesheet';
-			styleSheet.href = '/studio/static-assets/styles/tinymce-ace.css';
-			document.head.appendChild(styleSheet);
-		}
+		loadAceEditorAssets();
 	}, []);
 	// endregion
 

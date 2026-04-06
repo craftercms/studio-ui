@@ -196,3 +196,16 @@ export function pushErrorDialog(props: Omit<errorDialogStackItemProps, 'componen
 		...props
 	});
 }
+
+export function loadAceEditorAssets() {
+	if (!window.ace) {
+		const script = document.createElement('script');
+		script.src = '/studio/static-assets/libs/ace/ace.js';
+		document.head.appendChild(script);
+
+		const styleSheet = document.createElement('link');
+		styleSheet.rel = 'stylesheet';
+		styleSheet.href = '/studio/static-assets/styles/tinymce-ace.css';
+		document.head.appendChild(styleSheet);
+	}
+}
