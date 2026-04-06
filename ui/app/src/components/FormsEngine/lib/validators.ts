@@ -501,8 +501,9 @@ const inputPhoneValidator = (
 };
 
 const rteValidator = (field: ContentTypeField, currentValue: string, messages?: FieldValidityMessage[]): boolean => {
+	if (nou(field)) return true;
 	const isRequired = isFieldRequired(field);
-	if (nou(field) || !isRequired) return true;
+	if (!isRequired) return true;
 	let isValid = true;
 
 	if (isRequired) {
