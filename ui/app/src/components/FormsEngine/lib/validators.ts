@@ -503,12 +503,16 @@ const inputPhoneValidator = (
 const rteValidator = (field: ContentTypeField, currentValue: string, messages?: FieldValidityMessage[]): boolean => {
 	if (nou(field)) return false;
 
-	// TODO: finish validator, update messages
 	const aux = document.createElement('div');
 	aux.innerHTML = currentValue;
 	const trimmedContent = aux.innerText.trim(); // Get only the text and remove white spaces
 
-	return trimmedContent !== '';
+	const isValid = trimmedContent !== '';
+	if (!isValid) {
+		messages.push(defineMessage({ defaultMessage: 'This field is required.' }));
+	}
+
+	return isValid;
 };
 
 export default validateFieldValue;
