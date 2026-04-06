@@ -37,6 +37,7 @@ export function FormsEngineDialog(props: FormsEngineDialogProps) {
 			maxWidth="xl"
 			title="Content Form"
 			data-area-id="forms-engine-dialog-root"
+			disableEnforceFocus={true} // This allows TinyMCE popups to gain focus (e.g. code editor, needs focus to be able to type in it)
 		>
 			<FormsEngine
 				onMinimize={props.onMinimize}

@@ -129,7 +129,7 @@ export function initTinyMCE(
 					paste_as_text: !isRTE,
 					paste_data_images: isRTE,
 					toolbar: isRTE,
-					menubar: false,
+					menubar: isRTE,
 					inline: true,
 					code_editor_inline: false,
 					paste_preprocess(editor, args) {

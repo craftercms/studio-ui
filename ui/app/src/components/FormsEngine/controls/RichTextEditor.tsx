@@ -28,7 +28,7 @@ import useActiveSiteId from '../../../hooks/useActiveSiteId';
 import { Editor } from '@tinymce/tinymce-react';
 import { TinyMCE } from 'tinymce';
 import { getTinymce } from '@tinymce/tinymce-react/lib/es2015/main/ts/TinyMCE';
-import { getPropertyValue, getTinyMceInitOptions, getValidationValue } from '../lib/formUtils';
+import { getPropertyValue, getTinyMceInitOptions } from '../lib/formUtils';
 
 export interface RichTextEditorProps extends ControlProps {
 	value: string;
