@@ -85,7 +85,7 @@ import { useDispatch } from 'react-redux';
 import { popDialog, pushDialog } from '../../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
 import useEnv from '../../../hooks/useEnv';
-import { deserialize, fromString } from '../../../utils/xml';
+import { deserialize, fromString, serialize } from '../../../utils/xml';
 import useSpreadState from '../../../hooks/useSpreadState';
 import { asArray } from '../../../utils/array';
 import { fetchContentItem } from '../../../services/content';
@@ -1205,7 +1205,8 @@ function save(
 		dataSourceDescriptors: LookupTable<DescriptorContentType>;
 	}
 ): Observable<string> {
-	const xml = buildXmlFromType(type, configDescriptors);
+	let xml = buildXmlFromType(type, configDescriptors);
+	xml = cleanupStaleDatasourceValuesFromXml(xml, type);
 	const requests = [writeConfiguration(siteId, createFormDefinitionPathFromTypeId(type.id), 'studio', xml)];
 
 	if ((type as PossibleContentTypeDraft).NEW) {
@@ -1398,6 +1399,61 @@ function reorderRepGroupFields(
 			}
 		};
 	}
+}
+
+/**
+ * Cleans up stale datasource references in the provided XML string.
+ *
+ * This function parses the XML, finds all <type> elements whose text content starts with 'datasource:',
+ * and then checks their sibling <value> elements. The <value> element contains a comma-separated list
+ * of datasource IDs. Any IDs that do not exist in the current list of datasource IDs (from the type object)
+ * are removed. If all IDs are invalid, the <value> element is cleared.
+ *
+ * @param {string} xml - The XML string to clean up.
+ * @param {ContentType} type - The content type object containing the current list of datasource IDs.
+ * @returns {string} - The cleaned XML string with only valid datasource references.
+ */
+function cleanupStaleDatasourceValuesFromXml(xml: string, type: ContentType): string {
+	let cleanXml = xml;
+	try {
+		const dataSourceIds = (type.dataSources ?? []).map((ds) => ds.id);
+		const dom = fromString(xml);
+		const parseError = dom?.getElementsByTagName('parsererror')[0];
+		if (dom && !parseError) {
+			// Find all <type> elements
+			const typeElements = Array.from(dom.getElementsByTagName('type'));
+			for (const typeEl of typeElements) {
+				const typeText = typeEl.textContent?.trim() ?? '';
+				if (typeText.startsWith('datasource:')) {
+					// Find sibling <value> element
+					const parent = typeEl.parentElement;
+					let valueEl = null;
+					if (parent) {
+						valueEl = parent.querySelector(':scope > value');
+					}
+					if (valueEl && valueEl.textContent) {
+						const values = valueEl.textContent
+							.split(',')
+							.map((v) => v.trim())
+							.filter(Boolean);
+						const filtered = values.filter((id) => dataSourceIds.includes(id));
+						if (filtered.length !== values.length) {
+							if (filtered.length > 0) {
+								valueEl.textContent = filtered.join(',');
+							} else {
+								valueEl.textContent = '';
+							}
+						}
+					}
+				}
+			}
+			cleanXml = serialize(dom);
+		}
+	} catch (e) {
+		// If XML parsing fails, fallback to original xml (already set to xml at the beginning of the function)
+		console.error('Error parsing XML for cleanup, returning original XML', e);
+	}
+	return cleanXml;
 }
 
 export default EditTypeView;
