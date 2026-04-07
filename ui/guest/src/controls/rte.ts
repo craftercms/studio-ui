@@ -137,21 +137,21 @@ export function initTinyMCE(
 					code_editor_inline: false,
 					paste_preprocess(editor, args) {
 						const currentContent = editor.getContent({ format: 'text' });
-						const fullContent = currentContent + args.content;
+						const pastedText = new DOMParser().parseFromString(args.content, 'text/html').body.textContent ?? '';
 						const selectedContent = editor.selection.getContent({ format: isRTE ? 'html' : 'text' });
-						const maxLengthExceeded = maxLength && fullContent.length - selectedContent.length > maxLength;
+						const fullLength = currentContent.length + pastedText.length - selectedContent.length;
+						const maxLengthExceeded = maxLength !== null && fullLength > maxLength;
 						if (maxLengthExceeded) {
 							post(
 								snackGuestMessage({
 									id: 'maxLength',
 									level: 'required',
 									values: {
-										maxLength:
-											args.content.length === maxLength ? fullContent.length : `${fullContent.length}/${maxLength}`
+										maxLength: `${fullLength}/${maxLength}`
 									}
 								})
 							);
-							args.content = args.content.substring(0, maxLength - currentContent.length);
+							args.content = args.content.substring(0, maxLength - (currentContent.length - selectedContent.length));
 						}
 					}
 				}
