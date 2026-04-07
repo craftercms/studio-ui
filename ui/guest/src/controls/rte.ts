@@ -125,6 +125,7 @@ export function initTinyMCE(
 			setupId: {
 				id: setupId,
 				tinymceOptions: {
+					// Tinymce typings for tinymce-react are wrong (not in sync with tinymce ones).
 					...(rteSetup?.tinymceOptions as unknown as EditorReact['props']['init']),
 					target: rteEl as any,
 					deprecation_warnings: false,
