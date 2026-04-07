@@ -399,6 +399,7 @@ function parseLegacyFormDefinitionFields(
 			case 'rte':
 				field.validations = {
 					...field.validations,
+					...getFieldValidations(propertyProp),
 					...getFieldDataSourceValidations(propertyProp, dataSources)
 				};
 		}

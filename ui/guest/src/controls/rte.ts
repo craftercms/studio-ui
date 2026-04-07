@@ -24,18 +24,19 @@ import { GuestStandardAction } from '../store/models/GuestStandardAction';
 import { NEVER, Observable, Subject } from 'rxjs';
 import { startWith } from 'rxjs/operators';
 import { nou } from '@craftercms/studio-ui/utils/object';
-import { showEditDialog, snackGuestMessage } from '@craftercms/studio-ui/state/actions/preview';
+import { snackGuestMessage } from '@craftercms/studio-ui/state/actions/preview';
 import { editComponentInline, exitComponentInlineEdit } from '../store/actions';
 import { emptyFieldClass } from '../constants';
 import { unlockItem } from '@craftercms/studio-ui/state/actions/content';
 import { Editor as EditorReact } from '@tinymce/tinymce-react';
 import { getTinyMceInitOptions } from '@craftercms/studio-ui/components/FormsEngine/lib/formUtils';
+import { RteSetup } from '../models/Rte';
 
 export function initTinyMCE(
 	path: string,
 	record: ElementRecord,
 	validations: Partial<ContentTypeFieldValidations>,
-	rteSetup?: { id: string; tinymceOptions: EditorReact['props']['init'] }
+	rteSetup?: RteSetup
 ): Observable<GuestStandardAction> {
 	// Tinymce needs the document to be in standards mode to work, if it's not the case, we can't initialize it and we
 	// show an error message instead.
@@ -124,7 +125,7 @@ export function initTinyMCE(
 			setupId: {
 				id: setupId,
 				tinymceOptions: {
-					...rteSetup?.tinymceOptions,
+					...(rteSetup?.tinymceOptions as unknown as EditorReact['props']['init']),
 					target: rteEl as any,
 					deprecation_warnings: false,
 					paste_as_text: !isRTE,
@@ -136,7 +137,8 @@ export function initTinyMCE(
 					paste_preprocess(editor, args) {
 						const currentContent = editor.getContent({ format: 'text' });
 						const fullContent = currentContent + args.content;
-						const maxLengthExceeded = maxLength && fullContent.length > maxLength;
+						const selectedContent = editor.selection.getContent({ format: isRTE ? 'html' : 'text' });
+						const maxLengthExceeded = maxLength && fullContent.length - selectedContent.length > maxLength;
 						if (maxLengthExceeded) {
 							post(
 								snackGuestMessage({
