@@ -303,7 +303,7 @@ function NodeSelector(props: NodeSelectorProps) {
 					dispatch,
 					path: processPath(pickerChoice.path),
 					contentTypes: pickerChoice.allowedContentTypes,
-					preselectedPaths: value.map((item) => item.key).filter(Boolean),
+					preselectedPaths: allowDuplicates ? [] : value.map((item) => item.key).filter(Boolean),
 					onSuccess(items: MediaItem | MediaItem[]) {
 						const newNodeSelectorItems = [];
 						asArray(items).forEach((item) => {

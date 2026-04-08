@@ -260,7 +260,9 @@ function updateHierarchyMapIndexesFromCollection(collection: string[]) {
 		collection.forEach(
 			isSimpleIndex
 				? (id, index) => {
-						modelHierarchyMap[id].parentContainerFieldIndex = String(index);
+						if (modelHierarchyMap[id]) {
+							modelHierarchyMap[id].parentContainerFieldIndex = String(index);
+						}
 					}
 				: (id, index) => {
 						const current = modelHierarchyMap[id].parentContainerFieldIndex as string;

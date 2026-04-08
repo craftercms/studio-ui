@@ -90,6 +90,7 @@ import { getParentModelId } from '../../utils/ice';
 import { getCachedModels, getCachedContentItems, modelHierarchyMap } from '../../contentController';
 import { isEditActionAvailable } from '../../utils/util';
 import type { BuiltInControlType } from '@craftercms/studio-ui/components/FormsEngine/lib/controlMap';
+import { ContentTypeFieldValidations } from '@craftercms/studio-ui';
 
 type CaseReducer<S = GuestState, A extends GuestStandardAction = GuestStandardAction> = Reducer<S, A>;
 
@@ -633,13 +634,17 @@ const reducer = createReducer(initialState, {
 		const dropTargets = getContentTypeDropTargets(
 			instance.craftercms.contentTypeId,
 			(record: ICERecord, hierarchyMap: ModelHierarchyMap) => {
+				const { field: { validations = [] } = {} } = getReferentialEntries(record);
+				const allowDuplicates = (validations as ContentTypeFieldValidations)?.allowDuplicates?.value ?? false;
+
 				return (
 					!isEditActionAvailable({
 						record,
 						models: getCachedModels(),
 						contentItemsByPath: getCachedContentItems(),
 						parentModelId: getParentModelId(record.modelId, getCachedModels(), modelHierarchyMap)
-					}) || hierarchyMap[record.modelId]?.children.includes(instanceId)
+					}) ||
+					(!allowDuplicates && hierarchyMap[record.modelId]?.children.includes(instanceId))
 				);
 			},
 			// This action type ensures we're working with existing 'shared' components
