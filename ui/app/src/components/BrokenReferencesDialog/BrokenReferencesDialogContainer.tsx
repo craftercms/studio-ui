@@ -37,6 +37,7 @@ import { map, switchMap } from 'rxjs/operators';
 import { of } from 'rxjs';
 
 import { pickShowContentFormAction, pushErrorDialog } from '../../utils/system';
+import { extractErrorPayload } from '../../utils/ajax';
 
 export function BrokenReferencesDialogContainer(props: BrokenReferencesDialogContainerProps) {
 	const { path, references: initialReferences, error, onClose, onContinue } = props;
@@ -67,8 +68,8 @@ export function BrokenReferencesDialogContainer(props: BrokenReferencesDialogCon
 							next: (contentItems) => {
 								setReferences(contentItems);
 							},
-							error: ({ response }) => {
-								dispatch(pushErrorDialog({ props: { error: response.response } }));
+							error: (error) => {
+								dispatch(pushErrorDialog({ props: { error: extractErrorPayload(error) } }));
 							}
 						});
 				}
