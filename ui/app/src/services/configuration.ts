@@ -196,7 +196,7 @@ export function fetchGlobalMenuItems(): Observable<GlobalState['globalNavigation
 }
 
 export function fetchProductLanguages(): Observable<{ id: string; label: string }[]> {
-	return get('/studio/api/2/system/available_languages').pipe(map((response) => response?.response?.languages));
+	return get('/studio/api/2/system/available_languages').pipe(map((response) => response?.response?.languages ?? []));
 }
 
 export function fetchHistory(
