@@ -34,6 +34,8 @@ import IconButton from '@mui/material/IconButton';
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import { AjaxError } from 'rxjs/ajax';
 import { fetchContentItem } from '../../services/content';
+import { pushErrorDialog } from '../../utils/system';
+import { extractErrorPayload } from '../../utils/ajax';
 
 export interface RenameItemViewProps {
 	name: string;
@@ -72,8 +74,13 @@ export function RenameItemView(props: RenameItemViewProps) {
 	const dispatch = useDispatch();
 
 	const handleEditorDisplay = (item: LightItem) => {
-		fetchContentItem(siteId, item.path).subscribe((contentItem) => {
-			openItemEditor(contentItem, authoringBase, siteId, dispatch, () => fetchDependant());
+		fetchContentItem(siteId, item.path).subscribe({
+			next: (contentItem) => {
+				openItemEditor(contentItem, authoringBase, siteId, dispatch, () => fetchDependant());
+			},
+			error: (error) => {
+				dispatch(pushErrorDialog({ props: { error: extractErrorPayload(error) } }));
+			}
 		});
 	};
 
