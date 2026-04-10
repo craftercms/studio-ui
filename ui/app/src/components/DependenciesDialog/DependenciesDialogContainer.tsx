@@ -27,9 +27,12 @@ import { batchActions } from '../../state/actions/misc';
 import { fetchItemVersions } from '../../state/actions/versions';
 import { getRootPath } from '../../utils/path';
 import { fetchDependant, fetchSimpleDependencies } from '../../services/dependencies';
-import { isEditableAsset, openItemEditor, parseLegacyItemToContentItem } from '../../utils/content';
+import { isEditableAsset, openItemEditor } from '../../utils/content';
 import DependenciesDialogUI from './DependenciesDialogUI';
 import useMount from '../../hooks/useMount';
+import { map, switchMap } from 'rxjs/operators';
+import { fetchContentItems } from '../../services/content';
+import { of } from 'rxjs';
 
 export function DependenciesDialogContainer(props: DependenciesDialogContainerProps) {
 	const { item, dependenciesShown = 'depends-on-me', rootPath } = props;
@@ -68,35 +71,47 @@ export function DependenciesDialogContainer(props: DependenciesDialogContainerPr
 		(siteId: string, path: string, dependenciesShown: string, newItem?: boolean) => {
 			if (dependenciesShown === 'depends-on') {
 				if (dialog.dependantItems === null || newItem) {
-					fetchDependant(siteId, path).subscribe({
-						next: (response) => {
-							const dependantItems = parseLegacyItemToContentItem(response);
-							setDialog({
-								dependantItems,
-								...(newItem ? { dependencies: null } : {})
-							});
-							setDeps(dependantItems);
-						},
-						error: (error) => {
-							setError(error.response?.response ?? error);
-						}
-					});
+					fetchDependant(siteId, path)
+						.pipe(
+							map((lightItems) => lightItems.map((item) => item.path)),
+							// Items of type 'ContentItem' are needed in this component (fetchDependant returns LightItem[])
+							switchMap((paths) => (paths.length ? fetchContentItems(siteId, paths) : of([])))
+						)
+						.subscribe({
+							next: (response) => {
+								const dependantItems = response;
+								setDialog({
+									dependantItems,
+									...(newItem ? { dependencies: null } : {})
+								});
+								setDeps(dependantItems);
+							},
+							error: (error) => {
+								setError(error.response?.response ?? error);
+							}
+						});
 				} else {
 					setDeps(dialog.dependantItems);
 				}
 			} else {
 				if (dialog.dependencies === null || newItem) {
-					fetchSimpleDependencies(siteId, path).subscribe(
-						(response) => {
-							const dependencies = parseLegacyItemToContentItem(response);
-							setDialog({
-								dependencies,
-								...(newItem ? { dependantItems: null } : {})
-							});
-							setDeps(dependencies);
-						},
-						(error) => setError(error)
-					);
+					fetchSimpleDependencies(siteId, path)
+						.pipe(
+							map((lightItems) => lightItems.map((item) => item.path)),
+							// Items of type 'ContentItem' are needed in this component (fetchSimpleDependencies returns LightItem[])
+							switchMap((paths) => (paths.length ? fetchContentItems(siteId, paths) : of([])))
+						)
+						.subscribe(
+							(response) => {
+								const dependencies = response;
+								setDialog({
+									dependencies,
+									...(newItem ? { dependantItems: null } : {})
+								});
+								setDeps(dependencies);
+							},
+							(error) => setError(error)
+						);
 				} else {
 					setDeps(dialog.dependencies);
 				}

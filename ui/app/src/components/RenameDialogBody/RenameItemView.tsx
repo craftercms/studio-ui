@@ -24,7 +24,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import React, { ReactNode } from 'react';
-import { ContentItem } from '../../models';
+import { LightItem } from '../../models';
 import useEnv from '../../hooks/useEnv';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { useDispatch } from 'react-redux';
@@ -33,12 +33,13 @@ import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import IconButton from '@mui/material/IconButton';
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import { AjaxError } from 'rxjs/ajax';
+import { fetchContentItem } from '../../services/content';
 
 export interface RenameItemViewProps {
 	name: string;
 	disabled: boolean;
 	newNameExists: boolean;
-	dependantItems: ContentItem[];
+	dependantItems: LightItem[];
 	isSubmitting: boolean;
 	confirmBrokenReferences: boolean;
 	setConfirmBrokenReferences: (value: boolean) => void;
@@ -70,8 +71,10 @@ export function RenameItemView(props: RenameItemViewProps) {
 	const siteId = useActiveSiteId();
 	const dispatch = useDispatch();
 
-	const handleEditorDisplay = (item: ContentItem) => {
-		openItemEditor(item, authoringBase, siteId, dispatch, () => fetchDependant());
+	const handleEditorDisplay = (item: LightItem) => {
+		fetchContentItem(siteId, item.path).subscribe((contentItem) => {
+			openItemEditor(contentItem, authoringBase, siteId, dispatch, () => fetchDependant());
+		});
 	};
 
 	return fetchingDependantItems ? (
