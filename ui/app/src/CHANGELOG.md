@@ -114,7 +114,7 @@
   * Updated `configuration/fetchProductLanguages` to use API v2 (`/api/2/system/available_languages`)
   * Updated `dependencies/fetchDependencies` to use API v2 (`/studio/api/2/dependency/{siteId}/publish_dependencies`)
   * Updated `dependencies/fetchSimpleDependencies` to use API v2 (`/studio/api/2/dependency/{siteId}/dependencies`)
-  * Updated `dependencies/fetchProductLanguages` to use API v2 (`/studio/api/2/dependency/{siteId}/dependent_items`)
+  * Updated `dependencies/fetchDependant` to use API v2 (`/studio/api/2/dependency/{siteId}/dependent_items`)
 * `PublishingItem` interface changes:
   * `approver` is now `reviewer`, of type Person.
   * `comment` is removed, and now there's `reviewerComment` and `submitterComment`.
