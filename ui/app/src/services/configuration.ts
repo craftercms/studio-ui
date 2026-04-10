@@ -196,9 +196,7 @@ export function fetchGlobalMenuItems(): Observable<GlobalState['globalNavigation
 }
 
 export function fetchProductLanguages(): Observable<{ id: string; label: string }[]> {
-	return get('/studio/api/1/services/api/1/server/get-available-languages.json').pipe(
-		map((response) => response?.response)
-	);
+	return get('/studio/api/2/system/available_languages').pipe(map((response) => response?.response?.languages));
 }
 
 export function fetchHistory(
@@ -253,11 +251,10 @@ export function fetchSiteConfigurationFiles(site: string, environment?: string):
 	);
 }
 
-export interface StudioSiteConfig
-	extends Pick<
-		GlobalState['uiConfig'],
-		'cdataEscapedFieldPatterns' | 'upload' | 'locale' | 'publishing' | 'remoteGitBranch'
-	> {
+export interface StudioSiteConfig extends Pick<
+	GlobalState['uiConfig'],
+	'cdataEscapedFieldPatterns' | 'upload' | 'locale' | 'publishing' | 'remoteGitBranch'
+> {
 	site: string;
 }
 
