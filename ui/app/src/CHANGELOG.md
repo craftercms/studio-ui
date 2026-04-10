@@ -108,6 +108,7 @@
   * Updated `publishing/fetchPackage` `packageId` parameter to be of type `number`, and added the parameter `data`.
   * Updated `publishing/fetchPackages` `filters` parameter to be required, and removed the filters object props `environment` and `path`. Added filters object props `target`, `approvalStates`, `submitter`, `reviewer`, `isScheduled` and `sort`.
   * Removed `sites/fetchLegacySite`. Replaced by `sites/fetchSite`.
+  * Updated `configuration/fetchProductLanguages` to use API v2 (`/api/2/system/available_languages`)
 * `PublishingItem` interface changes:
   * `approver` is now `reviewer`, of type Person.
   * `comment` is removed, and now there's `reviewerComment` and `submitterComment`.
@@ -151,7 +152,7 @@
   * `Package`: Updated id to be of type `number`.
   * `CurrentFilters`: Removed `environment`, `path`, `state` and `page` properties. Added `target`, `states`, `approvalStates`, `submitter`, `reviewer`, `isScheduled`, `sort` and `offset` properties.
   * `PublishingStatusCodes`: Removed `processing`, `queued`, `error` and `readyWithErrors`.
-  * `PublishingStatus`: 
+  * `PublishingStatus`:
     * Removed `status`, `lockOwner`, `lockTTL`, `publishingTarget`, `submissionId`, `numberOfItems`, and `totalItems`. Added `currentTask` property.
     * Updated `state` property to be of type `'READY' | 'IN_PROGRESS' | 'COMPLETED'`.
   * `PublishFormData`: Added `title` property.
