@@ -56,6 +56,9 @@ import { GetChildrenOptions, PartialSxRecord } from '../../models';
 import { pushDialog } from '../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
 import { showItemMegaMenu } from '../../state/actions/dialogs';
+import TranslationOrText from '../../models/TranslationOrText';
+import usePossibleTranslation from '../../hooks/usePossibleTranslation';
+import { useIntl } from 'react-intl';
 
 interface Menu {
 	path?: string;
@@ -72,7 +75,7 @@ export type PathNavigatorClassKey = 'root' | 'body' | 'searchRoot';
 
 export interface PathNavigatorProps {
 	id: string;
-	label: string;
+	label: TranslationOrText;
 	rootPath: string;
 	sortStrategy?: GetChildrenOptions['sortStrategy'];
 	order?: GetChildrenOptions['order'];
@@ -126,15 +129,16 @@ export interface PathNavigatorStateProps {
 // };
 
 export function PathNavigator(props: PathNavigatorProps) {
+	const { formatMessage } = useIntl();
+	const translatedLabel = usePossibleTranslation(props.label) || formatMessage({ defaultMessage: '(No name)' });
 	// region const { ... } = props;
 	const {
-		label = '(No name)',
 		icon,
 		expandedIcon,
 		collapsedIcon,
 		container,
 		rootPath: path,
-		id = label.replace(/\s/g, ''),
+		id = path,
 		limit = 10,
 		locale,
 		excludes,
@@ -412,7 +416,7 @@ export function PathNavigator(props: PathNavigatorProps) {
 				itemsByPath={itemsByPath}
 				icon={expandedIcon && collapsedIcon ? (state.collapsed ? collapsedIcon : expandedIcon) : icon}
 				container={container}
-				title={label}
+				title={translatedLabel}
 				onChangeCollapsed={onChangeCollapsed}
 				onHeaderButtonClick={state.collapsed ? void 0 : onHeaderButtonClick}
 				onCurrentParentMenu={onCurrentParentMenu}

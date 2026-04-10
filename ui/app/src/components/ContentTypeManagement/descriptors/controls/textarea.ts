@@ -67,7 +67,9 @@ export const textareaDescriptor: DescriptorContentType = {
 		},
 		required: commonFieldPropertiesDescriptors['required']
 	},
-	supportedPostFixes: ['_t', '_s']
+	metadata: {
+		suffixes: ['_t', '_s']
+	}
 };
 
 export default textareaDescriptor;

@@ -77,7 +77,7 @@ import useActiveSiteId from '../../../hooks/useActiveSiteId';
 import { JotaiStore } from '../../FormsEngine/types';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { createLookupTable, nnou, pluckProps, reversePluckProps } from '../../../utils/object';
-import { BoxProps } from '@mui/material/Box';
+import Box, { BoxProps } from '@mui/material/Box';
 import useEnhancedDialogContext from '../../EnhancedDialog/useEnhancedDialogContext';
 import { fetchSiteUiConfig, writeConfiguration } from '../../../services/configuration';
 import { createConfigPathFromTypeId, createFormDefinitionPathFromTypeId } from '../../../utils/contentType';
@@ -85,7 +85,7 @@ import { useDispatch } from 'react-redux';
 import { popDialog, pushDialog } from '../../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
 import useEnv from '../../../hooks/useEnv';
-import { deserialize, fromString } from '../../../utils/xml';
+import { deserialize, fromString, serialize } from '../../../utils/xml';
 import useSpreadState from '../../../hooks/useSpreadState';
 import { asArray } from '../../../utils/array';
 import { fetchContentItem } from '../../../services/content';
@@ -102,6 +102,10 @@ import PickDataSourceDialog from './PickDataSourceDialog';
 import { fetchContentTypes } from '../../../state/actions/preview';
 import { getXmlBuilder, valueSerializersLookup } from '../../FormsEngine/lib/valueSerializers';
 import { pushErrorDialog } from '../../../utils/system';
+import { showSystemNotification } from '../../../state/actions/system';
+import { extractErrorPayload } from '../../../utils/ajax';
+import Typography from '@mui/material/Typography';
+import { AjaxError } from 'rxjs/ajax';
 import { sectionDescriptor, typeBasicDetailsDescriptor } from '../descriptors/controls/commonDescriptors';
 
 export interface EditTypeAppProps {
@@ -190,6 +194,8 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 	});
 	const [openDataSourceInserter, setOpenDataSourceInserter] = useState<boolean>(false);
 
+	const [activeFormHasErrors, setActiveFormHasErrors] = useState<boolean>(false);
+	const [validatingForm, setValidatingForm] = useState<boolean>(false);
 	const configDescriptors = useMemo(() => {
 		const controlDescriptors = Object.values(config?.controls ?? {}).map(({ descriptor }) => descriptor);
 		const dataSourceDescriptors = Object.values(config?.dataSources ?? {}).map(({ descriptor }) => descriptor);
@@ -248,8 +254,8 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 	};
 	/** Returns true if no form is opened or if the active form it's all valid and can be committed and closed. Returns false otherwise. */
 	const performCurrentFormErrorCheckAndWarning = () => {
-		if (open && validityAtomsHaveErrors(jotai, stateRef.current.activeFormContext.atoms.validationByFieldId)) {
-			showAlert(formatMessage({ defaultMessage: `Please fix errors before moving on` }));
+		if (open && activeFormHasErrors) {
+			showAlert(formatMessage({ defaultMessage: 'Please resolve any issues prior to closing the form' }));
 			return false;
 		}
 		return true;
@@ -389,6 +395,7 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 		jotai,
 		selectedFieldIdPath,
 		fieldPathsWithErrors,
+		activeFormHasErrors,
 		closeAndCleanup,
 		handleEditTypeProperties,
 		onUpdateHasPendingChanges
@@ -462,17 +469,34 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 				save(site, typeToSave, configDescriptors).subscribe({
 					next() {
 						onUpdateHasPendingChanges(false);
-						dialogContext?.updateSubmittingOrHasPendingChanges({ isSubmitting: false });
+						dialogContext?.updateSubmittingOrHasPendingChanges({ isSubmitting: false, hasPendingChanges: false });
 						// If the type being saved is new, update the type state to remove the NEW property.
 						if ((typeToSave as PossibleContentTypeDraft).NEW) {
 							setType(reversePluckProps(typeToSave as PossibleContentTypeDraft, 'NEW'));
 						}
-						dispatch(fetchContentTypes());
-						showAlert(`Save successful.`);
+						dispatch(
+							batchActions([
+								fetchContentTypes(),
+								showSystemNotification({
+									message: formatMessage({ defaultMessage: 'Save successful.' })
+								})
+							])
+						);
 					},
-					error() {
+					error(error: AjaxError) {
 						dialogContext?.updateSubmittingOrHasPendingChanges({ isSubmitting: false });
-						showAlert(formatMessage({ defaultMessage: `Error saving content type` }));
+						showAlert({
+							children: (
+								<Box>
+									<Typography marginBottom={1}>
+										<FormattedMessage defaultMessage="Error saving content type" />
+									</Typography>
+									<Typography variant="body2" color="textSecondary">
+										{extractErrorPayload(error).message ?? ''}
+									</Typography>
+								</Box>
+							)
+						});
 					}
 				});
 				break;
@@ -718,20 +742,23 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 
 	// `fieldUpdates$` subscription
 	useEffect(() => {
-		const sub = stateRef.current.fieldUpdates$.pipe(debounceTime(500)).subscribe(() => {
-			const { jotai, fieldPathsWithErrors, selectedFieldIdPath, onUpdateHasPendingChanges } = effectRefs.current;
+		const sub = stateRef.current.fieldUpdates$.pipe(debounceTime(500)).subscribe(async () => {
+			const { fieldPathsWithErrors, selectedFieldIdPath, onUpdateHasPendingChanges } = effectRefs.current;
 			onUpdateHasPendingChanges(true);
 			stateRef.current.formFieldsChanged = true;
-
-			const { activeFormContext } = stateRef.current;
-			const { atoms } = activeFormContext;
 			const nextFieldPathsWithErrors = { ...fieldPathsWithErrors };
-
-			// Check validations atoms of the form to see if there are any unfulfilled validations.
-			nextFieldPathsWithErrors[selectedFieldIdPath] = validityAtomsHaveErrors(jotai, atoms.validationByFieldId);
+			// Check validation atoms of the form to see if there are any unfulfilled validations.
+			setValidatingForm(true);
+			const hasErrors = await validityAtomsHaveErrors(
+				effectRefs.current.jotai,
+				stateRef.current?.activeFormContext?.atoms?.validationByFieldId
+			);
+			setActiveFormHasErrors(hasErrors);
+			nextFieldPathsWithErrors[selectedFieldIdPath] = hasErrors;
 			if (!nextFieldPathsWithErrors[selectedFieldIdPath]) delete nextFieldPathsWithErrors[selectedFieldIdPath];
 
 			setFieldPathsWithErrors(nextFieldPathsWithErrors);
+			setValidatingForm(false);
 		});
 		return () => {
 			sub.unsubscribe();
@@ -769,7 +796,8 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 		return () => sub.unsubscribe();
 	}, [site, activeEnvironment, setConfig, dispatch]);
 
-	const disableSave = (!type.NEW && !hasPendingChanges) || Object.keys(fieldPathsWithErrors).length !== 0;
+	const disableSave =
+		(!type.NEW && !hasPendingChanges) || Object.keys(fieldPathsWithErrors).length !== 0 || validatingForm;
 	return (
 		<Provider store={jotai}>
 			<EditTypeViewLayout
@@ -1144,9 +1172,10 @@ function updateTypeFromDataSourceUpdate(
 	// Serialize datasource values
 	const serializedValues: LookupTable<unknown> = {};
 	Object.entries(updatedValues).forEach(([key, value]) => {
-		const fieldType = descriptorFields[key]?.type;
+		const field = descriptorFields[key];
+		const fieldType = field?.type;
 		const serializer = fieldType ? valueSerializersLookup[fieldType] : undefined;
-		serializedValues[key] = serializer ? serializer(null, value) : value;
+		serializedValues[key] = serializer ? serializer(field, value) : value;
 	});
 	const nextDataSource = { ...selectedDataSource };
 	// When updating a new data source, we need to exclude NEW prop from the new datasource content
@@ -1177,7 +1206,8 @@ function save(
 		dataSourceDescriptors: LookupTable<DescriptorContentType>;
 	}
 ): Observable<string> {
-	const xml = buildXmlFromType(type, configDescriptors);
+	let xml = buildXmlFromType(type, configDescriptors);
+	xml = cleanupStaleDatasourceValuesFromXml(xml, type);
 	const requests = [writeConfiguration(siteId, createFormDefinitionPathFromTypeId(type.id), 'studio', xml)];
 
 	if ((type as PossibleContentTypeDraft).NEW) {
@@ -1190,9 +1220,31 @@ function save(
 	return forkJoin(requests).pipe(map(() => xml));
 }
 
-function validityAtomsHaveErrors(jotai: JotaiStore, atoms: FormsEngineAtoms['validationByFieldId']) {
-	// Check validations atoms of the form to see if there are any unfulfilled validations.
-	return Object.values(atoms).some((atom) => !jotai.get(atom).isValid);
+/**
+ * Checks if any of the validity atoms in the provided `atoms` object have errors.
+ *
+ * This function asynchronously evaluates the validity of all atoms by retrieving their values
+ * using the `jotai.get` method. It then determines if any of the atoms are invalid based on their
+ * `isValid` property.
+ *
+ * @async
+ * @function
+ * @param {JotaiStore} jotai - The Jotai store instance used to retrieve atom values.
+ * @param {FormsEngineAtoms['validationByFieldId']} [atoms={}] - A lookup table of validation atoms by field ID.
+ * @returns {Promise<boolean>} - Resolves to `true` if any atom is invalid, otherwise `false`.
+ *
+ */
+async function validityAtomsHaveErrors(
+	jotai: JotaiStore,
+	atoms: FormsEngineAtoms['validationByFieldId'] = {}
+): Promise<boolean> {
+	try {
+		const results = await Promise.all(Object.values(atoms).map((atom) => jotai.get(atom)));
+		return results.some((validity) => !validity.isValid);
+	} catch (error) {
+		console.error('Error checking field validity:', error);
+		return true;
+	}
 }
 
 function parseConfigPlugins(
@@ -1221,7 +1273,7 @@ function parseConfigPlugins(
 function getNewFieldFromDescriptor(fieldType: string, descriptor: DescriptorContentType): NewContentTypeField {
 	const newField: NewContentTypeField = {
 		NEW: true,
-		id: systemFieldsIdsMap[fieldType] ?? '',
+		id: systemFieldsIdsMap[fieldType] ?? null,
 		name: '',
 		helpText: '',
 		description: '',
@@ -1348,6 +1400,61 @@ function reorderRepGroupFields(
 			}
 		};
 	}
+}
+
+/**
+ * Cleans up stale datasource references in the provided XML string.
+ *
+ * This function parses the XML, finds all <type> elements whose text content starts with 'datasource:',
+ * and then checks their sibling <value> elements. The <value> element contains a comma-separated list
+ * of datasource IDs. Any IDs that do not exist in the current list of datasource IDs (from the type object)
+ * are removed. If all IDs are invalid, the <value> element is cleared.
+ *
+ * @param {string} xml - The XML string to clean up.
+ * @param {ContentType} type - The content type object containing the current list of datasource IDs.
+ * @returns {string} - The cleaned XML string with only valid datasource references.
+ */
+function cleanupStaleDatasourceValuesFromXml(xml: string, type: ContentType): string {
+	let cleanXml = xml;
+	try {
+		const dataSourceIds = (type.dataSources ?? []).map((ds) => ds.id);
+		const dom = fromString(xml);
+		const parseError = dom?.getElementsByTagName('parsererror')[0];
+		if (dom && !parseError) {
+			// Find all <type> elements
+			const typeElements = Array.from(dom.getElementsByTagName('type'));
+			for (const typeEl of typeElements) {
+				const typeText = typeEl.textContent?.trim() ?? '';
+				if (typeText.startsWith('datasource:')) {
+					// Find sibling <value> element
+					const parent = typeEl.parentElement;
+					let valueEl = null;
+					if (parent) {
+						valueEl = parent.querySelector(':scope > value');
+					}
+					if (valueEl && valueEl.textContent) {
+						const values = valueEl.textContent
+							.split(',')
+							.map((v) => v.trim())
+							.filter(Boolean);
+						const filtered = values.filter((id) => dataSourceIds.includes(id));
+						if (filtered.length !== values.length) {
+							if (filtered.length > 0) {
+								valueEl.textContent = filtered.join(',');
+							} else {
+								valueEl.textContent = '';
+							}
+						}
+					}
+				}
+			}
+			cleanXml = serialize(dom);
+		}
+	} catch (e) {
+		// If XML parsing fails, fallback to original xml (already set to xml at the beginning of the function)
+		console.error('Error parsing XML for cleanup, returning original XML', e);
+	}
+	return cleanXml;
 }
 
 export default EditTypeView;

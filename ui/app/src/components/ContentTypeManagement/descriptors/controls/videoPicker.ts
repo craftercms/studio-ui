@@ -31,7 +31,9 @@ export const videoPickerDescriptor: DescriptorContentType = {
 		readonly: commonFieldPropertiesDescriptors['readonly'],
 		required: commonFieldPropertiesDescriptors['required']
 	},
-	supportedPostFixes: ['_o']
+	metadata: {
+		suffixes: ['_o']
+	}
 };
 
 export default videoPickerDescriptor;

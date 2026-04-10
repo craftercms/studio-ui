@@ -89,7 +89,9 @@ export const nodeSelectorDescriptor: DescriptorContentType = {
 			validations: immutableEmptyObject
 		}
 	},
-	supportedPostFixes: ['_o']
+	metadata: {
+		suffixes: ['_o']
+	}
 };
 
 export default nodeSelectorDescriptor;

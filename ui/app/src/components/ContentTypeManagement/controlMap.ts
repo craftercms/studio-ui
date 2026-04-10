@@ -42,7 +42,9 @@ export type DescriptorControlType =
 	| 'datasource:item:singleSelection'
 	| 'boolean'
 	| 'int'
-	| 'string';
+	| 'string'
+	| 'date-time-expression-input'
+	| 'rte';
 
 const DataSourceMultiSelector = lazy(() => import('./controls/DataSourceMultiSelector'));
 const DataSourceSingleSelector = lazy(() => import('./controls/DataSourceSingleSelector'));
@@ -73,5 +75,7 @@ export const controlMap: Record<DescriptorControlType, ElementType> = {
 	'type-configuration': lazy(() => import('./controls/TypeConfiguration')),
 	boolean: lazy(() => import('../FormsEngine/controls/Checkbox')),
 	int: lazy(() => import('../FormsEngine/controls/Numeric')),
-	string: lazy(() => import('../FormsEngine/controls/Text'))
+	string: lazy(() => import('../FormsEngine/controls/Text')),
+	'date-time-expression-input': lazy(() => import('./controls/DateTimeExpressionInput')),
+	rte: lazy(() => import('./controls/RichTextEditor'))
 };

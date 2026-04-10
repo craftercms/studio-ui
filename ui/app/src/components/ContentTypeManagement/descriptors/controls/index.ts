@@ -44,6 +44,11 @@ import transcodedVideoPickerDescriptor from './transcodedVideoPicker';
 import uuidDescriptor from './uuid';
 import videoPickerDescriptor from './videoPicker';
 import colorPickerDescriptor from './colorPicker';
+import { defineMessage } from 'react-intl';
+import expiredDateDescriptor from './expiredDate';
+import inputEmailDescriptor from './inputEmail';
+import inputLinkDescriptor from './inputLink';
+import inputPhoneDescriptor from './linkPhone';
 
 export const controlDescriptors: Record<BuiltInControlType, DescriptorContentType> = {
 	'auto-filename': autoFileNameDescriptor,
@@ -73,7 +78,11 @@ export const controlDescriptors: Record<BuiltInControlType, DescriptorContentTyp
 	'transcoded-video-picker': transcodedVideoPickerDescriptor,
 	uuid: uuidDescriptor,
 	'video-picker': videoPickerDescriptor,
-	colorPicker: colorPickerDescriptor
+	colorPicker: colorPickerDescriptor,
+	'expired-date': expiredDateDescriptor,
+	'input-email': inputEmailDescriptor,
+	'input-link': inputLinkDescriptor,
+	'input-phone': inputPhoneDescriptor
 };
 
 export default controlDescriptors;

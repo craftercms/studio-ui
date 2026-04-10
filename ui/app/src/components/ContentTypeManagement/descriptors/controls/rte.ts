@@ -35,7 +35,8 @@ export const rteDescriptor: DescriptorContentType = {
 				'imageManager',
 				'videoManager',
 				'audioManager',
-				'fileManager'
+				'fileManager',
+				'addMedia'
 			]
 		}),
 		createVirtualSection({
@@ -109,9 +110,18 @@ export const rteDescriptor: DescriptorContentType = {
 				type: createValidation('type', 'item')
 			}
 		},
-		required: commonFieldPropertiesDescriptors['required']
+		required: commonFieldPropertiesDescriptors['required'],
+		addMedia: {
+			id: 'addMedia',
+			type: 'boolean',
+			name: defineMessage({ defaultMessage: 'Add Media' }),
+			defaultValue: true,
+			validations: immutableEmptyObject
+		}
 	},
-	supportedPostFixes: ['_html']
+	metadata: {
+		suffixes: ['_html']
+	}
 };
 
 export default rteDescriptor;

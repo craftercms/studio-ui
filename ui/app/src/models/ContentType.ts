@@ -51,7 +51,9 @@ export type ValidationKeys =
 	| 'allowAudioUpload'
 	| 'allowAudioFromRepo'
 	| 'pattern'
-	| 'allowDuplicates';
+	| 'allowDuplicates'
+	| 'addMedia'
+	| 'minSize';
 
 export type ContentTypeFieldValidations = Record<ValidationKeys, ContentTypeFieldValidation>;
 

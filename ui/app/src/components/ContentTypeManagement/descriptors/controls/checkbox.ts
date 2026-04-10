@@ -38,7 +38,9 @@ export const checkboxDescriptor: DescriptorContentType = {
 		readonly: commonFieldPropertiesDescriptors['readonly'],
 		required: commonFieldPropertiesDescriptors['required']
 	},
-	supportedPostFixes: ['_b']
+	metadata: {
+		suffixes: ['_b']
+	}
 };
 
 export default checkboxDescriptor;

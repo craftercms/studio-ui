@@ -55,7 +55,9 @@ export const dropdownDescriptor: DescriptorContentType = {
 		readonly: commonFieldPropertiesDescriptors['readonly'],
 		required: commonFieldPropertiesDescriptors['required']
 	},
-	supportedPostFixes: ['_s', '_i', '_f']
+	metadata: {
+		suffixes: ['_s', '_i', '_f']
+	}
 };
 
 export default dropdownDescriptor;

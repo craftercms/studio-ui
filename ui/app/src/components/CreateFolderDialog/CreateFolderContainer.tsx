@@ -36,7 +36,6 @@ import { isBlank } from '../../utils/string';
 import { useEnhancedDialogContext } from '../EnhancedDialog';
 import { applyFolderNameRules, lookupItemByPath } from '../../utils/content';
 import { useFetchItem } from '../../hooks/useFetchItem';
-import ApiResponse from '../../models/ApiResponse';
 import FolderMoveAlert from '../FolderMoveAlert/FolderMoveAlert';
 import Alert from '@mui/material/Alert';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -45,6 +44,8 @@ import Typography from '@mui/material/Typography';
 import { cancelPackages, fetchAffectedPackages } from '../../services/workflow';
 import { map, switchMap } from 'rxjs/operators';
 import { pushErrorDialog } from '../../utils/system';
+import { extractErrorPayload } from '../../utils/ajax';
+import { AjaxError } from 'rxjs/ajax';
 
 export function CreateFolderContainer(props: CreateFolderContainerProps) {
 	const { onClose, onCreated, onRenamed, rename = false, value = '', allowBraces = false } = props;
@@ -112,9 +113,9 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
 
 	const onCancelPackagesAckChange = (e: React.ChangeEvent<HTMLInputElement>) => setCancelPackagesAck(e.target.checked);
 
-	const onError = (error: ApiResponse) => {
+	const onError = (error: AjaxError) => {
 		updateSubmittingOrHasPendingChanges({ isSubmitting: false });
-		dispatch(pushErrorDialog({ props: { error: error } }));
+		dispatch(pushErrorDialog({ props: { error: extractErrorPayload(error) } }));
 	};
 
 	const onRenameFolder = (site: string, path: string, name: string) => {

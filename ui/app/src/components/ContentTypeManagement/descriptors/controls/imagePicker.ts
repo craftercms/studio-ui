@@ -76,7 +76,9 @@ export const imagePickerDescriptor: DescriptorContentType = {
 		readonly: commonFieldPropertiesDescriptors['readonly'],
 		required: commonFieldPropertiesDescriptors['required']
 	},
-	supportedPostFixes: ['_s']
+	metadata: {
+		suffixes: ['_s']
+	}
 };
 
 export default imagePickerDescriptor;

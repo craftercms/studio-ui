@@ -14,10 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-const pkg = require('../../app/package.json');
-
-const path = require('path');
-const fse = require('fs-extra');
+import pkg from '../../app/package.json' with { type: 'json' };
+import path from 'path';
+import fse from 'fs-extra';
 
 const packagePath = process.cwd();
 const appPath = path.resolve(packagePath, '../app');
@@ -35,7 +34,6 @@ const peerDeps = [
 	'@mui/styles',
 	'react',
 	'react-dom',
-	'react-intl',
 	'react-redux',
 	'react-router-dom',
 	'redux',

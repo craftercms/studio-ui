@@ -61,7 +61,9 @@ export const numericInputDescriptor: DescriptorContentType = {
 			validations: immutableEmptyObject
 		}
 	},
-	supportedPostFixes: ['_i', '_l', '_f', '_d']
+	metadata: {
+		suffixes: ['_i', '_l', '_f', '_d']
+	}
 };
 
 export default numericInputDescriptor;
