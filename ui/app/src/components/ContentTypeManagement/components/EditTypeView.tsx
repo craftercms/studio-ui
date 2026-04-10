@@ -59,7 +59,7 @@ import {
 } from '../utils';
 import { extractAtomValues, useShowAlert } from '../../FormsEngine/lib/formUtils';
 import TypeBuilderFormsEngine, { FieldFormViewProps } from './TypeBuilderFormsEngine';
-import controlDescriptors, { sectionDescriptor, typeBasicDetailsDescriptor } from '../descriptors/controls';
+import controlDescriptors from '../descriptors/controls';
 import dataSourceDescriptors from '../descriptors/dataSources';
 import type { BuiltInControlType } from '../../FormsEngine/lib/controlMap';
 import TypeDetailsView, { TypeDetailsViewProps } from './TypeDetailsView';
@@ -106,6 +106,7 @@ import { showSystemNotification } from '../../../state/actions/system';
 import { extractErrorPayload } from '../../../utils/ajax';
 import Typography from '@mui/material/Typography';
 import { AjaxError } from 'rxjs/ajax';
+import { sectionDescriptor, typeBasicDetailsDescriptor } from '../descriptors/controls/commonDescriptors';
 
 export interface EditTypeAppProps {
 	/**
