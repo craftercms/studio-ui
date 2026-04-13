@@ -74,7 +74,7 @@ export interface DuplicateSiteState extends SiteBaseState {
 
 export interface CreateSiteMeta {
 	siteId: string;
-	siteName?: string;
+	name?: string;
 	description?: string;
 	singleBranch?: boolean;
 	blueprintId?: string;
@@ -96,10 +96,8 @@ export interface CreateSiteMeta {
 	};
 }
 
-export interface DuplicateSiteMeta extends Pick<
-	CreateSiteMeta,
-	'siteId' | 'siteName' | 'description' | 'sandboxBranch'
-> {
+export interface DuplicateSiteMeta extends Pick<CreateSiteMeta, 'siteId' | 'description' | 'sandboxBranch'> {
+	siteName: string;
 	sourceSiteId: string;
 }
 

@@ -80,18 +80,10 @@ export function fetchAll(paginationOptions?: PaginationOptions): Observable<Page
 }
 
 export function create(site: CreateSiteMeta) {
-	const api2Params: any = {};
-	Object.entries(site).forEach(([key, value]) => {
-		if (key === 'siteName') {
-			api2Params.name = value;
-		} else {
-			api2Params[key] = value;
-		}
-	});
-	return postJSON('/studio/api/2/sites', api2Params).pipe(
+	return postJSON('/studio/api/2/sites', site).pipe(
 		map(() => ({
 			id: site.siteId,
-			name: site.siteName,
+			name: site.name,
 			description: site.description ?? '',
 			uuid: null,
 			imageUrl: `/.crafter/screenshots/default.png?crafterSite=${site.siteId}`
