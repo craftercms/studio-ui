@@ -195,7 +195,7 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
 			map['repoRemoteName'] = false;
 
 			const type = site.repoAuthentication;
-			if (type === 'basic' || type === 'token') {
+			if (type === 'basic') {
 				map['repoUsername'] = !site.repoUsername;
 			}
 			if (type === 'basic') {

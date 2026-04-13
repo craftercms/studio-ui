@@ -63,7 +63,7 @@ export const isFormValid = (inputs) => {
 		return true;
 	} else if (inputs.repoAuthentication === 'basic' && inputs.repoUsername !== '' && inputs.repoPassword !== '') {
 		return true;
-	} else if (inputs.repoAuthentication === 'token' && inputs.repoUsername !== '' && inputs.repoToken !== '') {
+	} else if (inputs.repoAuthentication === 'token' && inputs.repoToken !== '') {
 		return true;
 	} else return !!(inputs.repoAuthentication === 'key' && inputs.repoKey);
 };
