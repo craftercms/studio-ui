@@ -366,7 +366,7 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
 		} else if (site.pushSite || site.blueprint.id === 'GIT') {
 			if (!site.repoUrl) return false;
 			else if (site.repoAuthentication === 'basic' && (!site.repoUsername || !site.repoPassword)) return false;
-			else if (site.repoAuthentication === 'token' && (!site.repoUsername || !site.repoToken)) return false;
+			else if (site.repoAuthentication === 'token' && !site.repoToken) return false;
 			else return !(site.repoAuthentication === 'key' && !site.repoKey);
 		} else {
 			return checkAdditionalFields();
@@ -396,7 +396,7 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
 				siteId: site.siteId,
 				singleBranch: site.singleBranch,
 				createAsOrphan: site.createAsOrphan,
-				siteName: site.siteName,
+				name: site.siteName,
 				sourceType: 'blueprint',
 				authentication: { type: 'none' }
 			};
