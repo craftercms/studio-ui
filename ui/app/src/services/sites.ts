@@ -79,16 +79,16 @@ export function fetchAll(paginationOptions?: PaginationOptions): Observable<Page
 	);
 }
 
-export function create(site: CreateSiteMeta): Observable<Site> {
-	let api1Params: any = {};
+export function create(site: CreateSiteMeta) {
+	const api2Params: any = {};
 	Object.entries(site).forEach(([key, value]) => {
 		if (key === 'siteName') {
-			api1Params.name = value;
+			api2Params.name = value;
 		} else {
-			api1Params[underscore(key)] = value;
+			api2Params[key] = value;
 		}
 	});
-	return postJSON('/studio/api/1/services/api/1/site/create.json', api1Params).pipe(
+	return postJSON('/studio/api/2/sites', api2Params).pipe(
 		map(() => ({
 			id: site.siteId,
 			name: site.siteName,

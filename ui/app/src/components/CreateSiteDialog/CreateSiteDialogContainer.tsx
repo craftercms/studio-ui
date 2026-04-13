@@ -394,36 +394,44 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
 		if (site.blueprint) {
 			const params: CreateSiteMeta = {
 				siteId: site.siteId,
-				singleBranch: false,
+				singleBranch: site.singleBranch,
 				createAsOrphan: site.createAsOrphan,
-				siteName: site.siteName
+				siteName: site.siteName,
+				sourceType: 'blueprint',
+				authentication: { type: 'none' }
 			};
 			if (site.blueprint.id !== 'GIT') {
-				params.blueprint = site.blueprint.id;
+				params.blueprintId = site.blueprint.id;
 			} else {
-				params.useRemote = true;
+				params.sourceType = 'remote';
 			}
 			if (site.gitBranch) params.sandboxBranch = site.gitBranch as string;
 			if (site.description) params.description = site.description;
 			if (site.pushSite || site.blueprint.id === 'GIT') {
-				params.authenticationType = site.repoAuthentication;
 				if (site.repoRemoteName) params.remoteName = site.repoRemoteName;
 				if (site.repoUrl) params.remoteUrl = site.repoUrl;
 				if (site.gitBranch) {
 					params.remoteBranch = site.gitBranch as string;
 				}
+
+				const authentication: CreateSiteMeta['authentication'] = {
+					type: site.repoAuthentication
+				};
+
 				if (site.repoAuthentication === 'basic') {
-					params.remoteUsername = site.repoUsername;
-					params.remotePassword = site.repoPassword;
+					authentication.username = site.repoUsername;
+					authentication.password = site.repoPassword;
 				}
 				if (site.repoAuthentication === 'token') {
-					params.remoteUsername = site.repoUsername;
-					params.remoteToken = site.repoToken;
+					authentication.token = site.repoToken;
 				}
-				if (site.repoAuthentication === 'key') params.remotePrivateKey = site.repoKey;
+				if (site.repoAuthentication === 'key') {
+					authentication.privateKey = site.repoKey;
+				}
+
+				params.authentication = authentication;
 			}
 			if (Object.keys(site.blueprintFields).length) params.siteParams = site.blueprintFields;
-			params.createOption = site.pushSite ? 'push' : 'clone';
 			return params;
 		}
 	}

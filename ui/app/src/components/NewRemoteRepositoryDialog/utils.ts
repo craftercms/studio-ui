@@ -26,7 +26,8 @@ export interface NewRemoteRepositoryDialogProps extends NewRemoteRepositoryBaseP
 }
 
 export interface NewRemoteRepositoryDialogContainerProps
-	extends NewRemoteRepositoryBaseProps,
+	extends
+		NewRemoteRepositoryBaseProps,
 		Pick<NewRemoteRepositoryDialogProps, 'isSubmitting' | 'onClose' | 'onCreateError' | 'onCreateSuccess'> {}
 
 export interface NewRemoteRepositoryDialogUIProps {
@@ -38,7 +39,7 @@ export interface NewRemoteRepositoryDialogUIProps {
 	onCreate(): void;
 }
 
-export const inputsInitialState = {
+export const inputsInitialState: Partial<SiteState> & { remoteName: string; remoteUrl: string } = {
 	authenticationType: 'none',
 	expanded: {
 		basic: false,
