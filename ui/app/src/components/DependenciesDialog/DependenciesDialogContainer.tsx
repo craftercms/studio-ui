@@ -33,6 +33,7 @@ import useMount from '../../hooks/useMount';
 import { map, switchMap } from 'rxjs/operators';
 import { fetchContentItems } from '../../services/content';
 import { of } from 'rxjs';
+import { extractErrorPayload } from '../../utils/ajax';
 
 export function DependenciesDialogContainer(props: DependenciesDialogContainerProps) {
 	const { item, dependenciesShown = 'depends-on-me', rootPath } = props;
@@ -73,7 +74,7 @@ export function DependenciesDialogContainer(props: DependenciesDialogContainerPr
 				if (dialog.dependantItems === null || newItem) {
 					fetchDependant(siteId, path)
 						.pipe(
-							map((lightItems) => lightItems.map((item) => item.path)),
+							map((lightItems) => (lightItems ?? []).map((item) => item.path)),
 							// Items of type 'ContentItem' are needed in this component (fetchDependant returns LightItem[])
 							// ContentItems are needed to display the proper set of actions on each item.
 							switchMap((paths) => (paths.length ? fetchContentItems(siteId, paths) : of([])))
@@ -87,9 +88,7 @@ export function DependenciesDialogContainer(props: DependenciesDialogContainerPr
 								});
 								setDeps(dependantItems);
 							},
-							error: (error) => {
-								setError(error.response?.response ?? error);
-							}
+							error: (error) => setError(extractErrorPayload(error))
 						});
 				} else {
 					setDeps(dialog.dependantItems);
@@ -98,7 +97,7 @@ export function DependenciesDialogContainer(props: DependenciesDialogContainerPr
 				if (dialog.dependencies === null || newItem) {
 					fetchSimpleDependencies(siteId, path)
 						.pipe(
-							map((lightItems) => lightItems.map((item) => item.path)),
+							map((lightItems) => (lightItems ?? []).map((item) => item.path)),
 							// Items of type 'ContentItem' are needed in this component (fetchSimpleDependencies returns LightItem[])
 							// ContentItems are needed to display the proper set of actions on each item.
 							switchMap((paths) => (paths.length ? fetchContentItems(siteId, paths) : of([])))
@@ -112,7 +111,7 @@ export function DependenciesDialogContainer(props: DependenciesDialogContainerPr
 								});
 								setDeps(dependencies);
 							},
-							(error) => setError(error)
+							(error) => setError(extractErrorPayload(error))
 						);
 				} else {
 					setDeps(dialog.dependencies);
