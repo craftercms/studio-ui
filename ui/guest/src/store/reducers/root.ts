@@ -644,7 +644,7 @@ const reducer = createReducer(initialState, {
 						contentItemsByPath: getCachedContentItems(),
 						parentModelId: getParentModelId(record.modelId, getCachedModels(), modelHierarchyMap)
 					}) ||
-					(!allowDuplicates && hierarchyMap[record.modelId]?.children.includes(instanceId))
+					(!allowDuplicates && hierarchyMap[record.modelId]?.children?.includes(instanceId))
 				);
 			},
 			// This action type ensures we're working with existing 'shared' components

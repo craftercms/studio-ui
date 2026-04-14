@@ -255,7 +255,11 @@ function collectReferrers(modelId) {
 
 function updateHierarchyMapIndexesFromCollection(collection: string[]) {
 	if (collection.length) {
-		const isSimpleIndex = isSimple(modelHierarchyMap[collection[0]].parentContainerFieldIndex);
+		const firstEntry = modelHierarchyMap[collection[0]];
+		if (!firstEntry) {
+			return;
+		}
+		const isSimpleIndex = isSimple(firstEntry.parentContainerFieldIndex);
 		// 1. Update item being sorted and items getting displaced because of that sort
 		collection.forEach(
 			isSimpleIndex
@@ -265,8 +269,10 @@ function updateHierarchyMapIndexesFromCollection(collection: string[]) {
 						}
 					}
 				: (id, index) => {
-						const current = modelHierarchyMap[id].parentContainerFieldIndex as string;
-						modelHierarchyMap[id].parentContainerFieldIndex = `${removeLastPiece(current)}.${index}`;
+						const entry = modelHierarchyMap[id];
+						if (!entry) return;
+						const current = entry.parentContainerFieldIndex as string;
+						entry.parentContainerFieldIndex = `${removeLastPiece(current)}.${index}`;
 					}
 		);
 	}
