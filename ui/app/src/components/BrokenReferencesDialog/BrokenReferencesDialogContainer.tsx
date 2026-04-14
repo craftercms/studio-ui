@@ -62,6 +62,7 @@ export function BrokenReferencesDialogContainer(props: BrokenReferencesDialogCon
 						.pipe(
 							map((lightItems) => lightItems.map((item) => item.path)),
 							// Items of type 'ContentItem' are needed in this component (fetchDependant returns LightItem[])
+							// AvailableActionsMap of items is needed to render the edit button of each reference.
 							switchMap((paths) => (paths.length ? fetchContentItems(site, paths) : of([])))
 						)
 						.subscribe({

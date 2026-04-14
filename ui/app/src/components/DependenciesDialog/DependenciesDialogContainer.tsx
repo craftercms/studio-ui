@@ -75,6 +75,7 @@ export function DependenciesDialogContainer(props: DependenciesDialogContainerPr
 						.pipe(
 							map((lightItems) => lightItems.map((item) => item.path)),
 							// Items of type 'ContentItem' are needed in this component (fetchDependant returns LightItem[])
+							// ContentItems are needed to display the proper set of actions on each item.
 							switchMap((paths) => (paths.length ? fetchContentItems(siteId, paths) : of([])))
 						)
 						.subscribe({
@@ -99,6 +100,7 @@ export function DependenciesDialogContainer(props: DependenciesDialogContainerPr
 						.pipe(
 							map((lightItems) => lightItems.map((item) => item.path)),
 							// Items of type 'ContentItem' are needed in this component (fetchSimpleDependencies returns LightItem[])
+							// ContentItems are needed to display the proper set of actions on each item.
 							switchMap((paths) => (paths.length ? fetchContentItems(siteId, paths) : of([])))
 						)
 						.subscribe(
