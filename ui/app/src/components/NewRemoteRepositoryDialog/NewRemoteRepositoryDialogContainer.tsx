@@ -47,7 +47,7 @@ export function NewRemoteRepositoryDialogContainer(props: NewRemoteRepositoryDia
 				...(inputs.repoAuthentication === 'basic'
 					? { remoteUsername: inputs.repoUsername, remotePassword: inputs.repoPassword }
 					: inputs.repoAuthentication === 'token'
-						? { remoteUsername: inputs.repoUsername, remoteToken: inputs.repoToken }
+						? { remoteToken: inputs.repoToken }
 						: inputs.repoAuthentication === 'key'
 							? { remotePrivateKey: inputs.repoKey }
 							: {})
