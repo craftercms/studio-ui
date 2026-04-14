@@ -23,7 +23,7 @@ import Alert from '@mui/material/Alert';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useState } from 'react';
 import { LightItem } from '../../models';
 import useEnv from '../../hooks/useEnv';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
@@ -72,13 +72,17 @@ export function RenameItemView(props: RenameItemViewProps) {
 	const { authoringBase } = useEnv();
 	const siteId = useActiveSiteId();
 	const dispatch = useDispatch();
+	const [fetchingContentItem, setFetchingContentItem] = useState<boolean>(false);
 
 	const handleEditorDisplay = (item: LightItem) => {
+		setFetchingContentItem(true);
 		fetchContentItem(siteId, item.path).subscribe({
 			next: (contentItem) => {
+				setFetchingContentItem(false);
 				openItemEditor(contentItem, authoringBase, siteId, dispatch, () => fetchDependant());
 			},
 			error: (error) => {
+				setFetchingContentItem(false);
 				dispatch(pushErrorDialog({ props: { error: extractErrorPayload(error) } }));
 			}
 		});
@@ -127,7 +131,11 @@ export function RenameItemView(props: RenameItemViewProps) {
 						showTypes="all-deps"
 						renderAction={(dependency) =>
 							isEditableAsset(dependency.path) ? (
-								<IconButton onClick={() => handleEditorDisplay(dependency)}>
+								<IconButton
+									disabled={fetchingContentItem}
+									loading={fetchingContentItem}
+									onClick={() => handleEditorDisplay(dependency)}
+								>
 									<EditRoundedIcon />
 								</IconButton>
 							) : null
