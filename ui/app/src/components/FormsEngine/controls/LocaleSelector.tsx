@@ -15,17 +15,19 @@
  */
 
 import { ControlProps } from '../types';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { fetchSiteLocales } from '../../../services/translation';
 import useActiveSiteId from '../../../hooks/useActiveSiteId';
-import { pushErrorDialog } from '../../../utils/system';
-import { useDispatch } from 'react-redux';
 import { extractErrorPayload } from '../../../utils/ajax';
 import Select, { type SelectChangeEvent } from '@mui/material/Select';
 import FormsEngineField from '../components/FormsEngineField';
 import MenuItem from '@mui/material/MenuItem';
 import useUpdateRefs from '../../../hooks/useUpdateRefs';
 import Skeleton from '@mui/material/Skeleton';
+import { ApiResponse } from '../../../models';
+import Alert from '@mui/material/Alert';
+import Button from '@mui/material/Button';
+import { FormattedMessage } from 'react-intl';
 
 export interface LocaleSelectorProps extends ControlProps {
 	value: string;
@@ -42,13 +44,14 @@ export function LocaleSelector(props: LocaleSelectorProps) {
 		defaultLocaleCode: string;
 	}>();
 	const siteId = useActiveSiteId();
-	const dispatch = useDispatch();
 	const handleChange = (event: SelectChangeEvent) => setValue(event.target.value);
 	const refs = useUpdateRefs({ value });
+	const [error, setError] = useState<ApiResponse | null>(null);
 
-	useEffect(() => {
+	const fetchLocales = useCallback(() => {
 		setIsFetching(true);
-		const subscription = fetchSiteLocales(siteId).subscribe({
+		setError(null);
+		return fetchSiteLocales(siteId).subscribe({
 			next: ({ localeCodes, defaultLocaleCode }) => {
 				setIsFetching(false);
 				if (localeCodes) {
@@ -66,21 +69,37 @@ export function LocaleSelector(props: LocaleSelectorProps) {
 			},
 			error: (e) => {
 				setIsFetching(false);
-				dispatch(pushErrorDialog({ props: { error: extractErrorPayload(e) } }));
+				setError(extractErrorPayload(e));
 			}
 		});
+	}, [refs, setValue, siteId]);
 
+	useEffect(() => {
+		const subscription = fetchLocales();
 		return () => {
 			subscription.unsubscribe?.();
 		};
-	}, [siteId, dispatch, refs, setValue, setIsFetching]);
+	}, [fetchLocales]);
 
-	if (!isFetching && !localeData) return null;
+	if (!isFetching && !localeData && !error) return null;
 
 	return (
 		<FormsEngineField field={field}>
 			{isFetching ? (
 				<Skeleton variant="rounded" width="100%" height={50} />
+			) : error ? (
+				<Alert
+					variant="outlined"
+					severity="error"
+					sx={{ border: 'none' }}
+					action={
+						<Button color="inherit" size="small" onClick={fetchLocales}>
+							<FormattedMessage defaultMessage="Retry" />
+						</Button>
+					}
+				>
+					{error.message}. {error.remedialAction}
+				</Alert>
 			) : (
 				<Select value={value} onChange={handleChange} autoFocus={autoFocus}>
 					{localeData.localeCodes.map((locale) => (
