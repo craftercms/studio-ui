@@ -61,6 +61,9 @@
   * [EditGroupDialogUI] Updated `onFetchMoreUsers` prop return type to `Promise`.
   * [PackageItemsList] Updated `loadNextPage` prop return type to `Promise`.
   * [TransferListColumn] Updated `onFetchMore` prop return type to `Promise`.
+  * [DependenciesDialog] Updated `dependencies` prop to be of type `ContentItem[] | LightItem[]` and `renderAction` prop to be of type `(item: ContentItem | LightItem) => ReactNode`.
+  * [RenameContentDialogContainer] Updated `dependantItems` prop to be of type `LightItem[]`.
+  * [RenameItemView] Updated `dependantItems` prop to be of type `LightItem[]`.
 * [hooks]
   * Removed `useLogicResource` hook.
   * Removed `useSelectorResource` hook.
@@ -109,6 +112,9 @@
   * Updated `publishing/fetchPackages` `filters` parameter to be required, and removed the filters object props `environment` and `path`. Added filters object props `target`, `approvalStates`, `submitter`, `reviewer`, `isScheduled` and `sort`.
   * Removed `sites/fetchLegacySite`. Replaced by `sites/fetchSite`.
   * Updated `configuration/fetchProductLanguages` to use API v2 (`/api/2/system/available_languages`)
+  * Updated `dependencies/fetchDependencies` to use API v2 (`/studio/api/2/dependency/{siteId}/publish_dependencies`)
+  * Updated `dependencies/fetchSimpleDependencies` to use API v2 (`/studio/api/2/dependency/{siteId}/dependencies`)
+  * Updated `dependencies/fetchDependant` to use API v2 (`/studio/api/2/dependency/{siteId}/dependent_items`)
 * `PublishingItem` interface changes:
   * `approver` is now `reviewer`, of type Person.
   * `comment` is removed, and now there's `reviewerComment` and `submitterComment`.
