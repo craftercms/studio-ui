@@ -22,7 +22,7 @@ import MuiCheckbox from '@mui/material/Checkbox';
 import ListItemText from '@mui/material/ListItemText';
 import Skeleton from '@mui/material/Skeleton';
 import Typography from '@mui/material/Typography';
-import React, { PropsWithChildren, ReactNode, useCallback, useEffect, useRef } from 'react';
+import React, { PropsWithChildren, ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import MuiListItem from '@mui/material/ListItem';
 import MuiListItemIcon from '@mui/material/ListItemIcon';
 import MuiListSubheader from '@mui/material/ListSubheader';
@@ -243,6 +243,7 @@ export function usePackageContextMenu() {
 	const transitionDuration = theme.transitions.duration.standard;
 	const siteId = useActiveSiteId();
 	const subscriptionRef = useRef<Subscription | null>(null);
+	const [isFetchingPackage, setIsFetchingPackage] = useState<boolean>(false);
 
 	const handleContextMenuClick = useCallback(
 		(e: React.MouseEvent<HTMLButtonElement>, pkg: PublishPackage) => {
@@ -250,17 +251,21 @@ export function usePackageContextMenu() {
 			// this point may not have the full AA. So we need to fetch the package to generate the proper set of options.
 			const currentTarget = e.currentTarget;
 			subscriptionRef.current?.unsubscribe();
+			setContextMenu({ el: currentTarget });
+			setIsFetchingPackage(true);
 			subscriptionRef.current = fetchPackage(siteId, pkg.id).subscribe({
 				next(publishPackage) {
+					setIsFetchingPackage(false);
 					const contextMenuOptions = generatePackageOptions([publishPackage], {
 						includeOnly: ['view', 'resubmit']
 					}).map((option) => ({
 						id: option.id,
 						label: formatMessage(option.label as MessageDescriptor)
 					}));
-					setContextMenu({ el: currentTarget, package: publishPackage, options: contextMenuOptions });
+					setContextMenu({ package: publishPackage, options: contextMenuOptions });
 				},
 				error(error) {
+					setIsFetchingPackage(false);
 					dispatch(pushErrorDialog({ props: { error: extractErrorPayload(error) } }));
 				}
 			});
@@ -316,6 +321,7 @@ export function usePackageContextMenu() {
 			options={[contextMenu.options]}
 			onMenuItemClicked={(option) => handleOptionClicked(option as PackageActions, contextMenu.package!)}
 			transitionDuration={transitionDuration}
+			isLoading={isFetchingPackage}
 		/>
 	);
 	return {
