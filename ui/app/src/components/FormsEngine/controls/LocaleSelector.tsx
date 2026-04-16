@@ -28,13 +28,14 @@ import { ApiResponse } from '../../../models';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import { FormattedMessage } from 'react-intl';
+import { isFieldReadOnly } from '../lib/formUtils';
 
 export interface LocaleSelectorProps extends ControlProps {
 	value: string;
 }
 
 export function LocaleSelector(props: LocaleSelectorProps) {
-	const { field, value, setValue, autoFocus } = props;
+	const { field, value, setValue, autoFocus, readonly: formReadonly } = props;
 	const [isFetching, setIsFetching] = useState(false);
 	const [localeData, setLocaleData] = useState<{
 		localeCodes: {
@@ -47,6 +48,7 @@ export function LocaleSelector(props: LocaleSelectorProps) {
 	const handleChange = (event: SelectChangeEvent) => setValue(event.target.value);
 	const refs = useUpdateRefs({ value });
 	const [error, setError] = useState<ApiResponse | null>(null);
+	const readonly: boolean = isFieldReadOnly(field, formReadonly);
 
 	const fetchLocales = useCallback(() => {
 		setIsFetching(true);
@@ -101,7 +103,7 @@ export function LocaleSelector(props: LocaleSelectorProps) {
 					{error.message}. {error.remedialAction}
 				</Alert>
 			) : (
-				<Select value={value} onChange={handleChange} autoFocus={autoFocus}>
+				<Select value={value} onChange={handleChange} autoFocus={autoFocus} disabled={readonly}>
 					{localeData.localeCodes.map((locale) => (
 						<MenuItem key={locale.code} value={locale.code}>
 							{locale.label}
