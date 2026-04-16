@@ -16,7 +16,7 @@
 
 import { FormattedMessage } from 'react-intl';
 import AddIcon from '@mui/icons-material/Add';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import UsersGridUI, { UsersGridSkeletonTable } from '../UsersGrid';
 import CreateUserDialog from '../CreateUserDialog';
 import EditUserDialog from '../EditUserDialog';
@@ -47,6 +47,7 @@ export function UserManagement(props: UserManagementProps) {
 	const [error, setError] = useState<ApiResponse | null>(null);
 	const [viewUser, setViewUser] = useState<User | null>(null);
 	const [keyword, setKeyword] = useState('');
+	const searchInpuRef = useRef(undefined);
 
 	const fetchUsers = useCallback(
 		(keyword = '', _offset = offset) => {
@@ -102,8 +103,8 @@ export function UserManagement(props: UserManagementProps) {
 		setLimit(e.target.value);
 	};
 
-	const onSearchButtonClick = (searchInput: HTMLInputElement) => {
-		searchInput.focus();
+	const onSearchButtonClick = () => {
+		searchInpuRef.current.focus();
 	};
 
 	const onSearch = useCallback(
@@ -136,6 +137,7 @@ export function UserManagement(props: UserManagementProps) {
 				}
 				rightContent={
 					<SearchBar
+						ref={searchInpuRef}
 						sxs={{
 							root: {
 								transition: 'width 500ms',

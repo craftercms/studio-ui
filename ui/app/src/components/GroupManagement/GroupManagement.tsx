@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import AddIcon from '@mui/icons-material/Add';
 import { PagedArray } from '../../models/PagedArray';
@@ -41,6 +41,7 @@ export function GroupManagement() {
 	const [error, setError] = useState<ApiResponse | null>(null);
 	const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
 	const [keyword, setKeyword] = useState('');
+	const searchInpuRef = useRef(undefined);
 
 	const fetchGroups = useCallback(
 		(keyword = '', _offset = offset) => {
@@ -95,8 +96,8 @@ export function GroupManagement() {
 		setSelectedGroup(null);
 	};
 
-	const onSearchButtonClick = (searchInput: HTMLInputElement) => {
-		searchInput.focus();
+	const onSearchButtonClick = () => {
+		searchInpuRef.current.focus();
 	};
 
 	const onSearch = useCallback(
@@ -129,6 +130,7 @@ export function GroupManagement() {
 				}
 				rightContent={
 					<SearchBar
+						ref={searchInpuRef}
 						sxs={{
 							root: {
 								transition: 'width 500ms',

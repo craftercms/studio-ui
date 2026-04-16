@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { CSSProperties, ElementType, Ref, useRef, useState } from 'react';
+import React, { CSSProperties, ElementType, Ref, useRef, useState, forwardRef } from 'react';
 import IconButton from '@mui/material/IconButton';
 import InputBase, { inputBaseClasses, InputBaseProps } from '@mui/material/InputBase';
 import SearchIcon from '@mui/icons-material/SearchRounded';
@@ -55,10 +55,10 @@ export interface SearchBarProps {
 	onKeyPress?(key: string): void;
 	onKeyDown?: InputBaseProps['onKeyDown'];
 	onActionButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>, input: HTMLInputElement): void;
-	onDecoratorButtonClick?(input: HTMLInputElement): void;
+	onDecoratorButtonClick?(): void;
 }
 
-export function SearchBar(props: SearchBarProps) {
+export const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>((props, ref) => {
 	const {
 		onChange,
 		onKeyPress,
@@ -81,7 +81,6 @@ export function SearchBar(props: SearchBarProps) {
 	const [focus, setFocus] = useState(false);
 	const { formatMessage } = useIntl();
 	const finalPlaceholder = placeholder || formatMessage(messages.placeholder);
-	const inputRef = useRef<HTMLInputElement>(undefined);
 	return (
 		<Paper
 			onClick={onClick}
@@ -111,7 +110,7 @@ export function SearchBar(props: SearchBarProps) {
 		>
 			{showDecoratorIcon && onDecoratorButtonClick ? (
 				<IconButton
-					onClick={() => onDecoratorButtonClick(inputRef.current)}
+					onClick={() => onDecoratorButtonClick()}
 					size="large"
 					aria-label={formatMessage({ defaultMessage: 'Filter' })}
 				>
@@ -165,14 +164,7 @@ export function SearchBar(props: SearchBarProps) {
 				)}
 				inputProps={{
 					'aria-label': finalPlaceholder,
-					ref: (node) => {
-						inputRef.current = node;
-						if (typeof props.inputRef === 'function') {
-							props.inputRef(node);
-						} else if (props.inputRef) {
-							props.inputRef.current = node;
-						}
-					}
+					ref
 				}}
 			/>
 			{showActionButton && (
@@ -180,11 +172,15 @@ export function SearchBar(props: SearchBarProps) {
 					onClick={(e) => {
 						(
 							onActionButtonClick ??
-							((e, inputRef) => {
+							((e, ref) => {
 								onChange('', e);
-								inputRef?.focus();
+								ref?.focus();
 							})
-						)(e, inputRef.current);
+						)(
+							e,
+							// @ts-ignore
+							ref
+						);
 					}}
 					sx={{ padding: '6px' }}
 					size="small"
@@ -206,6 +202,6 @@ export function SearchBar(props: SearchBarProps) {
 			)}
 		</Paper>
 	);
-}
+});
 
 export default SearchBar;
