@@ -17,6 +17,7 @@
 import { createVirtualSection, DescriptorContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
 import { defineMessage } from 'react-intl';
+import { commonFieldPropertiesDescriptors } from './commonDescriptors';
 
 export const awsFileUploadDescriptor: DescriptorContentType = {
 	id: 'aws-file-upload',
@@ -42,13 +43,7 @@ export const awsFileUploadDescriptor: DescriptorContentType = {
 			defaultValue: 's3-default',
 			validations: immutableEmptyObject
 		},
-		required: {
-			id: 'required',
-			type: 'boolean',
-			name: defineMessage({ defaultMessage: 'Required' }),
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		}
+		required: commonFieldPropertiesDescriptors['required']
 	}
 };
 

@@ -93,7 +93,10 @@ export const valueSerializersLookup: Record<BuiltInControlType | DescriptorContr
 	'datasource:item:singleSelection': undefined,
 	variable: undefined,
 	'type-configuration': undefined,
-	'date-time-expression-input': undefined
+	'date-time-expression-input': undefined,
+	'input-email': undefined,
+	'input-link': undefined,
+	'input-phone': undefined
 };
 
 /**
@@ -117,7 +120,7 @@ function prepareValuesForXmlSerialising(
 		if (serializer) {
 			jObj[id] = serializer(field, value, contentTypesLookup);
 		}
-		if (field?.properties?.tokenized?.value) {
+		if (field?.properties?.tokenize?.value) {
 			fieldAttributes[createAttrHint('tokenized')] = true;
 		}
 		// TODO: Carry/implement attributes (no-default, remote, others?)

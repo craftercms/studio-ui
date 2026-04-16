@@ -17,6 +17,7 @@
 import { createValidation, createVirtualSection, DescriptorContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
 import { defineMessage } from 'react-intl';
+import { commonFieldPropertiesDescriptors } from './commonDescriptors';
 
 export const checkboxGroupDescriptor: DescriptorContentType = {
 	id: 'checkbox-group',
@@ -69,13 +70,7 @@ export const checkboxGroupDescriptor: DescriptorContentType = {
 			]`,
 			validations: immutableEmptyObject
 		},
-		readonly: {
-			id: 'readonly',
-			type: 'boolean',
-			name: defineMessage({ defaultMessage: 'Read Only' }),
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		},
+		readonly: commonFieldPropertiesDescriptors['readonly'],
 		minSize: {
 			id: 'minSize',
 			type: 'int',

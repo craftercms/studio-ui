@@ -82,7 +82,7 @@ interface ParseComponentsDataSourceContentTypesPropertyOutput {
 }
 
 export function parseComponentsDataSourceContentTypesProperty(
-	dataSource: ComponentsDatasource,
+	dataSource: DataSource,
 	contentTypesPropertyValue: string,
 	validations: Partial<ContentTypeFieldValidations> = {}
 ): Partial<ParseComponentsDataSourceContentTypesPropertyOutput> {
@@ -111,15 +111,18 @@ export function parseComponentsDataSourceContentTypesProperty(
 	value.forEach((typeId) => {
 		allowedContentTypesMeta[typeId] = allowedContentTypesMeta[typeId] ?? {};
 		const propsLookup = dataSource.properties;
-		if (propsLookup.allowEmbedded) {
+		const allowEmbedded = propsLookup.allowEmbedded;
+		const allowShared = propsLookup.allowShared;
+		const allowSharedExisting = propsLookup.enableBrowse || propsLookup.enableSearch;
+		if (allowEmbedded) {
 			allowedContentTypesMeta[typeId].embedded = true;
 			validations.allowedEmbeddedContentTypes.value.push(typeId);
 		}
-		if (propsLookup.allowShared) {
+		if (allowShared) {
 			allowedContentTypesMeta[typeId].shared = true;
 			validations.allowedSharedContentTypes.value.push(typeId);
 		}
-		if (propsLookup.enableBrowse || propsLookup.enableSearch) {
+		if (allowSharedExisting) {
 			allowedContentTypesMeta[typeId].sharedExisting = true;
 			validations.allowedSharedExistingContentTypes.value.push(typeId);
 		}
@@ -129,7 +132,7 @@ export function parseComponentsDataSourceContentTypesProperty(
 
 function getFieldValidations(
 	fieldProperty: LegacyFormDefinitionProperty | LegacyFormDefinitionProperty[],
-	dropTargetsLookup?: LookupTable<LegacyDataSource>
+	dropTargetsLookup?: LookupTable<DataSource>
 ): Partial<ContentTypeFieldValidations> {
 	const map = asArray<LegacyFormDefinitionProperty>(fieldProperty).reduce<LookupTable<LegacyFormDefinitionProperty>>(
 		(table, prop) => {
@@ -167,18 +170,14 @@ function getFieldValidations(
 		if (systemValidationsNames.includes(key)) {
 			if (key === 'itemManager' && dropTargetsLookup) {
 				map.itemManager?.value?.split(',').forEach((itemManagerId) => {
-					asArray(dropTargetsLookup[itemManagerId]?.properties?.property).forEach((prop) => {
-						const mappedPropName = systemValidationsKeysMap[prop.name];
+					Object.entries(dropTargetsLookup[itemManagerId]?.properties ?? {}).forEach(([name, value]) => {
+						const mappedPropName = systemValidationsKeysMap[name];
 						if (mappedPropName === 'allowedContentTypes') {
-							parseComponentsDataSourceContentTypesProperty(
-								dropTargetsLookup[itemManagerId] as ComponentsDatasource,
-								prop.value,
-								validations
-							);
+							parseComponentsDataSourceContentTypesProperty(dropTargetsLookup[itemManagerId], value, validations);
 						} else if (mappedPropName) {
 							validations[mappedPropName] = {
 								id: mappedPropName,
-								value: prop.value?.split(',') ?? immutableEmptyArray,
+								value: value?.split(',') ?? immutableEmptyArray,
 								level: 'required'
 							};
 						}
@@ -247,7 +246,7 @@ function getFieldDataSourceValidations(
 function parseLegacyFormDefinitionFields(
 	legacyFieldsToBeParsed: LegacyFormDefinitionField[] | LegacyFormDefinitionField,
 	currentFieldLookup: LookupTable<ContentTypeField>,
-	dropTargetsLookup: LookupTable<LegacyDataSource>,
+	dropTargetsLookup: LookupTable<DataSource>,
 	sectionFieldIds?: Array<string>,
 	dataSources?: LegacyDataSource[]
 ): void {
@@ -331,6 +330,16 @@ function parseLegacyFormDefinitionFields(
 					}
 					break;
 				case 'minSize':
+					if (value) {
+						const n = Number.parseInt(value, 10);
+						if (!Number.isNaN(n)) {
+							field.validations.minSize = {
+								id: 'minSize',
+								value: Math.max(0, n),
+								level: 'required'
+							};
+						}
+					}
 					break;
 				default:
 					console.log(`[parseLegacyFormDef] Unhandled constraint "${legacyProp.name}"`, legacyProp);
@@ -406,8 +415,7 @@ function parseLegacyFormDefinition(definition: LegacyFormDefinition): ContentTyp
 	const fields: LookupTable<ContentTypeField> = {};
 	const sections: Array<ContentTypeSection> = [];
 	const dataSources: LookupTable<DataSource> = {};
-	// TODO: update type to be LookupTable<DataSource>. https://github.com/craftercms/craftercms/issues/8216
-	const dropTargetsLookup: LookupTable<LegacyDataSource> = {};
+	const dropTargetsLookup: LookupTable<DataSource> = {};
 
 	const legacyDataSourceArray = asArray(definition.datasources?.datasource);
 
@@ -435,7 +443,7 @@ function parseLegacyFormDefinition(definition: LegacyFormDefinition): ContentTyp
 			legacyDatasource.properties[property.name] = value;
 		});
 		if (legacyDatasource.type === 'components') {
-			dropTargetsLookup[datasource.id] = legacyDatasource;
+			dropTargetsLookup[datasource.id] = dataSources[datasource.id];
 		}
 	});
 

@@ -93,7 +93,7 @@ function AuthFields(props: AuthFieldsProps) {
 				}
 			})}
 		>
-			{(type === 'basic' || type === 'token') && (
+			{type === 'basic' && (
 				<TextField
 					id="repoUsername"
 					name="repoUsername"

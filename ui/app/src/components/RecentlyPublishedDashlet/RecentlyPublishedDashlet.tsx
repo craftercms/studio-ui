@@ -226,7 +226,8 @@ export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
 									<FormattedMessage
 										defaultMessage="Approved by {name} to go {publishingTarget, select, live { <render_target>live</render_target>} other {<render_target>staging</render_target>}} on {submittedDate}"
 										values={{
-											name: pkg.submitter?.username,
+											// If a reviewer approved, show their name; otherwise show submitter name
+											name: pkg.reviewer?.username ?? pkg.submitter?.username,
 											publishingTarget: pkg.target,
 											render_target(target: ReactNode[]) {
 												return (

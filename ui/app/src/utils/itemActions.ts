@@ -702,7 +702,7 @@ export const itemActionDispatcher = ({
 									if (dependantItems?.length) {
 										fetchContentItems(
 											site,
-											dependantItems.map((item) => item.uri ?? item.path)
+											dependantItems.map((item) => item.path)
 										).subscribe((contentItems) => {
 											dispatch(
 												pushDialog({

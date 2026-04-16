@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2025 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2026 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -16,25 +16,17 @@
 
 import { createVirtualSection, DescriptorContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
-import { XmlKeys } from '../../../FormsEngine/lib/formConsts';
 import { defineMessage } from 'react-intl';
-import { commonFieldPropertiesDescriptors } from './commonDescriptors';
 
-// TODO: Why is internal name a control type? Doesn't seem to be in use.
-// We may want to have a separate descriptor without postfixes (since there is no post fixes for internal name), but use
-// the same control (in control map).
-
-export const internalNameDescriptor: DescriptorContentType = {
-	id: XmlKeys.internalName,
-	name: defineMessage({ defaultMessage: 'Internal Name' }),
-	description: defineMessage({
-		defaultMessage: 'Internal name displayed for the item throughout the CMS (e.g. sidebar)'
-	}),
+export const inputLinkDescriptor: DescriptorContentType = {
+	id: 'input-link',
+	name: defineMessage({ defaultMessage: 'Input - Link' }),
+	description: defineMessage({ defaultMessage: 'Input field for web links with validation.' }),
 	sections: [
 		createVirtualSection({
 			id: 'properties',
 			title: defineMessage({ defaultMessage: 'Options' }),
-			fields: ['maxlength', 'readonly', 'tokenize', 'escapeContent']
+			fields: ['maxlength', 'readonly', 'tokenized', 'escapeContent']
 		}),
 		createVirtualSection({
 			id: 'constraints',
@@ -47,27 +39,48 @@ export const internalNameDescriptor: DescriptorContentType = {
 			id: 'maxlength',
 			type: 'int',
 			name: defineMessage({ defaultMessage: 'Max Length' }),
+			defaultValue: 50,
+			validations: immutableEmptyObject
+		},
+		readonly: {
+			id: 'readonly',
+			type: 'boolean',
+			name: defineMessage({ defaultMessage: 'Read Only' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
-		readonly: commonFieldPropertiesDescriptors['readonly'],
-		tokenize: commonFieldPropertiesDescriptors['tokenize'],
+		tokenized: {
+			id: 'tokenized',
+			type: 'boolean',
+			name: defineMessage({ defaultMessage: 'Tokenize for Indexing' }),
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
 		escapeContent: {
 			id: 'escapeContent',
 			type: 'boolean',
-			name: 'escapeContent',
+			name: defineMessage({ defaultMessage: 'Escape Content' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
-		required: commonFieldPropertiesDescriptors['required'],
+		required: {
+			id: 'required',
+			type: 'boolean',
+			name: defineMessage({ defaultMessage: 'Required' }),
+			defaultValue: false,
+			validations: immutableEmptyObject
+		},
 		pattern: {
 			id: 'pattern',
 			type: 'string',
 			name: defineMessage({ defaultMessage: 'Match Pattern' }),
-			defaultValue: undefined,
+			defaultValue: '^(https?://)?([a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,}(/\\S*)?$',
 			validations: immutableEmptyObject
 		}
+	},
+	metadata: {
+		suffixes: ['_s']
 	}
 };
 
-export default internalNameDescriptor;
+export default inputLinkDescriptor;

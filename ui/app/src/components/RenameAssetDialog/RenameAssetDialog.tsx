@@ -47,7 +47,7 @@ export function RenameAssetDialog(props: RenameAssetDialogProps) {
 			subRef.current?.unsubscribe();
 			subRef.current = fetchDependantService(siteId, item.path).subscribe({
 				next: (response) => {
-					setDependantItems(parseLegacyItemToContentItem(response));
+					setDependantItems(response);
 					setFetchingDependantItems(false);
 				},
 				error: ({ response }) => {

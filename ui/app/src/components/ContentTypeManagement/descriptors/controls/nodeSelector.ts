@@ -17,6 +17,7 @@
 import { createValidation, createVirtualSection, DescriptorContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
 import { defineMessage } from 'react-intl';
+import { commonFieldPropertiesDescriptors } from './commonDescriptors';
 
 export const nodeSelectorDescriptor: DescriptorContentType = {
 	id: 'node-selector',
@@ -58,13 +59,7 @@ export const nodeSelectorDescriptor: DescriptorContentType = {
 				type: createValidation('type', 'item')
 			}
 		},
-		readonly: {
-			id: 'readonly',
-			type: 'boolean',
-			name: defineMessage({ defaultMessage: 'Read Only' }),
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		},
+		readonly: commonFieldPropertiesDescriptors['readonly'],
 		disableFlattening: {
 			id: 'disableFlattening',
 			type: 'boolean',
