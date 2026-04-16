@@ -458,14 +458,14 @@ function ContentTypeActions(props: FieldFormViewProps): React.JSX.Element {
 }
 
 function pickPanelTitleByMode(props: FieldFormViewProps): React.JSX.Element {
-	if (props.type) {
-		return <FormattedMessage defaultMessage="Edit Type" />;
-	} else if (props.field) {
+	if (props.field) {
 		return <FormattedMessage defaultMessage="Edit Field" />;
 	} else if (props.section) {
 		return <FormattedMessage defaultMessage="Edit Section" />;
 	} else if (props.dataSource) {
 		return <FormattedMessage defaultMessage="Edit Data Source" />;
+	} else if (props.type) {
+		return <FormattedMessage defaultMessage="Edit Type" />;
 	}
 }
 

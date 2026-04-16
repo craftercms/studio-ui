@@ -66,6 +66,7 @@ export interface InternalDialogState {
 
 interface usePublishStateProps {
 	mainItems: LightItem[];
+	childrenItems?: LightItem[];
 }
 
 interface usePublishStateReturn {
@@ -86,7 +87,7 @@ interface usePublishStateReturn {
 	itemsAndDependenciesMap: Record<string, LightItem>;
 }
 
-export const usePublishState = ({ mainItems }: usePublishStateProps): usePublishStateReturn => {
+export const usePublishState = ({ mainItems, childrenItems }: usePublishStateProps): usePublishStateReturn => {
 	const [dependencyData, setDependencyData] = useState<DependencyDataState>(null);
 	const [selectedDependenciesMap, setSelectedDependenciesMap] = useState<LookupTable<boolean>>({});
 	const selectedDependenciesPaths = Object.keys(selectedDependenciesMap).filter(
@@ -95,15 +96,17 @@ export const usePublishState = ({ mainItems }: usePublishStateProps): usePublish
 	const itemsDataSummary = useMemo(() => {
 		const itemPaths = [];
 		const itemMap: Record<string, LightItem> = {};
-		mainItems.forEach((item) => {
-			itemMap[item.path] = item;
-			itemPaths.push(item.path);
+		[...mainItems, ...(childrenItems ?? [])].forEach((item) => {
+			if (!itemMap[item.path]) {
+				itemMap[item.path] = item;
+				itemPaths.push(item.path);
+			}
 		});
 		return {
 			itemMap,
 			itemPaths
 		};
-	}, [mainItems]);
+	}, [mainItems, childrenItems]);
 	const dependencyPaths = dependencyData?.paths;
 	const [trees, parentTreeNodePaths, itemsAndDependenciesPaths] = useMemo(() => {
 		const treeItemPaths = itemsDataSummary.itemPaths.concat(dependencyPaths ?? []);
@@ -130,4 +133,20 @@ export const usePublishState = ({ mainItems }: usePublishStateProps): usePublish
 		dependencyItemMap,
 		itemsAndDependenciesMap
 	};
+};
+
+export const itemsArrayChanged = (prevItems: LightItem[], nextItems: LightItem[]): boolean => {
+	if (prevItems.length !== nextItems.length) {
+		return true;
+	}
+
+	const prevPaths = prevItems.map((item) => item.path).sort();
+	const nextPaths = nextItems.map((item) => item.path).sort();
+
+	for (let i = 0; i < prevPaths.length; i++) {
+		if (prevPaths[i] !== nextPaths[i]) {
+			return true;
+		}
+	}
+	return false;
 };

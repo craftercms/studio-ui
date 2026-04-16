@@ -28,7 +28,6 @@ import type {
 import type LookupTable from '../../models/LookupTable';
 import type { ContentType, SerializeToXmlContentTypeStructure } from '../../models/ContentType';
 import { createLookupTable, noOp, pluckProps } from '../../utils/object';
-import { commonControlFieldsDescriptors, defaultDataSourcesSection } from './descriptors/controls';
 import {
 	FormsEngineFormApiContextProps,
 	FormsEngineItemMetaContextProps,
@@ -56,6 +55,7 @@ import { componentsDataSourceContentTypesPropertyNames, systemValidationsKeysMap
 import { XmlKeys } from '../FormsEngine/lib/formConsts';
 import { getPossibleTranslation } from '../../utils/i18n';
 import { FormatXMLElementFn, PrimitiveType } from 'intl-messageformat';
+import { commonControlFieldsDescriptors, defaultDataSourcesSection } from './descriptors/controls/commonDescriptors';
 
 // TODO: assess which of the utils here should go to utils/contentType.ts, or other places (serializers, etc.)
 
@@ -894,6 +894,9 @@ export function getPropertiesAndValidationsFromDescriptor(descriptor: Descriptor
 export function initializeConfigFromType(type: ContentType) {
 	return {
 		'content-type': {
+			'@:name': type.id, // The legacy API1 get-content-type service requires the config.xml to include the attribute
+			// 'name' in `content-type` tag for correct type resolution. The service is used when creating new content items
+			// to retrieve the list of content types that are allowed for a specific path.
 			label: type.name,
 			form: type.id,
 			'form-path': 'simple',
@@ -907,7 +910,9 @@ export function initializeConfigFromType(type: ContentType) {
 			noThumbnail: !type.thumbnailFileName,
 			'image-thumbnail': type.thumbnailFileName ?? '',
 			paths: {
-				includes: {},
+				includes: {
+					...(type.type === 'page' ? { pattern: '^/site/.*' } : {})
+				},
 				excludes: {}
 			}
 		}

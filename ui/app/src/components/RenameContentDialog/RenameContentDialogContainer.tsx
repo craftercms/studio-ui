@@ -23,7 +23,7 @@ import SecondaryButton from '../SecondaryButton';
 import { FormattedMessage } from 'react-intl';
 import PrimaryButton from '../PrimaryButton';
 import { useEnhancedDialogContext } from '../EnhancedDialog';
-import { ContentItem } from '../../models';
+import { LightItem } from '../../models';
 import { DialogBody } from '../DialogBody';
 import { AjaxError } from 'rxjs/ajax';
 import useDebouncedInput from '../../hooks/useDebouncedInput';
@@ -31,9 +31,11 @@ import { checkPathExistence } from '../../services/content';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { applyContentNameRules } from '../../utils/content';
 
-export interface RenameContentDialogContainerProps
-	extends Pick<RenameContentDialogProps, 'path' | 'value' | 'onRenamed' | 'onClose' | 'validRenameValue'> {
-	dependantItems: ContentItem[];
+export interface RenameContentDialogContainerProps extends Pick<
+	RenameContentDialogProps,
+	'path' | 'value' | 'onRenamed' | 'onClose' | 'validRenameValue'
+> {
+	dependantItems: LightItem[];
 	fetchingDependantItems: boolean;
 	error: AjaxError;
 	fetchDependant(): void;

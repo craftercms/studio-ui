@@ -51,7 +51,8 @@ const siteInitialState: SiteState = {
 		key: false
 	},
 	showIncompatible: true,
-	gitBranch: ''
+	gitBranch: '',
+	singleBranch: true
 };
 
 const searchInitialState = {

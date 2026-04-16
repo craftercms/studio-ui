@@ -15,8 +15,8 @@
  */
 
 import { createVirtualSection, DescriptorContentType } from '../../utils';
-import { immutableEmptyObject } from '../../../../utils/object';
 import { defineMessage } from 'react-intl';
+import { commonFieldPropertiesDescriptors } from './commonDescriptors';
 
 export const forceHttpsDescriptor: DescriptorContentType = {
 	id: 'forcehttps',
@@ -30,13 +30,19 @@ export const forceHttpsDescriptor: DescriptorContentType = {
 		})
 	],
 	fields: {
-		readonly: {
-			id: 'readonly',
-			type: 'boolean',
-			name: defineMessage({ defaultMessage: 'Read Only' }),
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		}
+		id: {
+			id: 'id',
+			type: 'variable',
+			name: defineMessage({ defaultMessage: 'Variable Name' }),
+			defaultValue: 'forceHttps',
+			validations: {
+				required: { id: 'required', level: 'required', value: true }
+			},
+			properties: {
+				readonly: { name: 'readonly', type: 'boolean', value: true }
+			}
+		},
+		readonly: commonFieldPropertiesDescriptors['readonly']
 	}
 };
 
