@@ -181,7 +181,6 @@ export function createFieldAtoms(
 	formContextRef: RefObject<
 		Pick<StableFormContextProps, 'fieldUpdates$' | 'changedFieldIds' | 'originalValues' | 'atoms' | 'itemMeta'>
 	>,
-
 	validatorsData?: {
 		siteId: string;
 		contentTypesById: LookupTable<ContentType>;

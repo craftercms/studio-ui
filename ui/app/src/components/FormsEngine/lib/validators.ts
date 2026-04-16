@@ -22,7 +22,7 @@ import { defineMessage, type MessageDescriptor } from 'react-intl';
 import type { FormatXMLElementFn, PrimitiveType } from 'intl-messageformat';
 import { nnou, nou } from '../../../utils/object';
 import { checkPathExistence } from '../../../services/content';
-import { computePathFromFileName, getBasePath, getPropertyValue, isPagePath } from './formUtils';
+import { computePathFromFileName, getBasePath, getPropertyValue } from './formUtils';
 import { firstValueFrom } from 'rxjs';
 import { isPagePath, withIndex } from '../../../utils/path';
 import { FormsEngineItemMetaContextProps } from './formsEngineContext';
