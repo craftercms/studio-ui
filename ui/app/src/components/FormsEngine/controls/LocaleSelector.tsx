@@ -54,7 +54,9 @@ export function LocaleSelector(props: LocaleSelectorProps) {
 		setIsFetching(true);
 		setError(null);
 		return fetchSiteLocales(siteId).subscribe({
-			next: ({ localeCodes, defaultLocaleCode }) => {
+			next: (config) => {
+				const localeCodes = config?.localeCodes;
+				const defaultLocaleCode = config?.defaultLocaleCode;
 				setIsFetching(false);
 				if (localeCodes) {
 					setLocaleData({
