@@ -117,26 +117,27 @@ function BrowseExternalAssetDialogBody(props: BrowseExternalAssetDialogContainer
 					setItems(files);
 
 					if (multiSelect) {
-						const preSelectedLookup = {};
-						files.forEach((file) => {
-							preSelectedLookup[file.path] = preselectedPaths.includes(file.path) ? file : null;
+						setSelectedLookup((prev) => {
+							const next = { ...prev };
+							files.forEach((file) => {
+								if (preselectedPaths.includes(file.path) && !(file.path in next)) {
+									next[file.path] = file;
+								}
+							});
+							return next;
 						});
-						setSelectedLookup(preSelectedLookup);
 					} else {
 						const preSelectedFile = files.find((file) => preselectedPaths.includes(file.path));
 						if (preSelectedFile) {
 							setSelectedCard(preSelectedFile);
 						}
 					}
-
-					// if (nou(refs.current.foldersByPath?.[path])) {
-					// 	setFoldersByPath((prev) => ({ ...prev, [path]: folders }));
-					// }
 					setFoldersByPath((prev) => ({ ...prev, [path]: folders }));
 				},
 				error: (error) => {
 					if (seq !== requestSeq.current) return;
 					setIsFetchingItems(false);
+					setItems([]);
 					setError(error);
 				}
 			});
@@ -298,7 +299,12 @@ function BrowseExternalAssetDialogBody(props: BrowseExternalAssetDialogContainer
 										</Box>
 									</Toolbar>
 								</Paper>
-								{filteredItems?.length ? (
+								{error ? (
+									<EmptyState
+										title={<FormattedMessage defaultMessage="Unable to load items." />}
+										sxs={{ root: { flexGrow: 1 } }}
+									/>
+								) : filteredItems?.length ? (
 									<Box
 										sx={[
 											{
