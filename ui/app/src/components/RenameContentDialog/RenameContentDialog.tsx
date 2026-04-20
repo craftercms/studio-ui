@@ -20,10 +20,9 @@ import React, { useCallback, useEffect, useState } from 'react';
 import RenameContentDialogContainer from './RenameContentDialogContainer';
 import { fetchDependant as fetchDependantService } from '../../services/dependencies';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
-import { parseLegacyItemToContentItem } from '../../utils/content';
 import useWithPendingChangesCloseRequest from '../../hooks/useWithPendingChangesCloseRequest';
 import { ensureSingleSlash, isBlank } from '../../utils/string';
-import { ContentItem } from '../../models';
+import { LightItem } from '../../models';
 import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
 import { contentEvent } from '../../state/actions/system';
@@ -39,7 +38,7 @@ export interface RenameContentDialogProps extends EnhancedDialogProps {
 
 export function RenameContentDialog(props: RenameContentDialogProps) {
 	const { path, value, validRenameValue, onRenamed, ...dialogProps } = props;
-	const [dependantItems, setDependantItems] = useState<ContentItem[]>([]);
+	const [dependantItems, setDependantItems] = useState<LightItem[]>([]);
 	const [fetchingDependantItems, setFetchingDependantItems] = useState(false);
 	const [error, setError] = useState(null);
 	const siteId = useActiveSiteId();
@@ -52,8 +51,7 @@ export function RenameContentDialog(props: RenameContentDialogProps) {
 		setFetchingDependantItems(true);
 		fetchDependantService(siteId, ensureSingleSlash(`${path}/${value}`)).subscribe({
 			next: (response) => {
-				const dependants = parseLegacyItemToContentItem(response);
-				setDependantItems(dependants);
+				setDependantItems(response);
 				setFetchingDependantItems(false);
 			},
 			error: (response) => {

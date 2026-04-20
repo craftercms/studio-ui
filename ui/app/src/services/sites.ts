@@ -79,19 +79,11 @@ export function fetchAll(paginationOptions?: PaginationOptions): Observable<Page
 	);
 }
 
-export function create(site: CreateSiteMeta): Observable<Site> {
-	let api1Params: any = {};
-	Object.entries(site).forEach(([key, value]) => {
-		if (key === 'siteName') {
-			api1Params.name = value;
-		} else {
-			api1Params[underscore(key)] = value;
-		}
-	});
-	return postJSON('/studio/api/1/services/api/1/site/create.json', api1Params).pipe(
+export function create(site: CreateSiteMeta) {
+	return postJSON('/studio/api/2/sites', site).pipe(
 		map(() => ({
 			id: site.siteId,
-			name: site.siteName,
+			name: site.name,
 			description: site.description ?? '',
 			uuid: null,
 			imageUrl: `/.crafter/screenshots/default.png?crafterSite=${site.siteId}`
