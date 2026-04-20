@@ -172,15 +172,11 @@ export const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>((props, re
 					onClick={(e) => {
 						(
 							onActionButtonClick ??
-							((e, ref) => {
+							((e, inputEl) => {
 								onChange('', e);
-								ref?.focus();
+								inputEl?.focus();
 							})
-						)(
-							e,
-							// @ts-ignore
-							ref
-						);
+						)(e, typeof ref === 'object' && ref !== null ? ref.current : null);
 					}}
 					sx={{ padding: '6px' }}
 					size="small"
