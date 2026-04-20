@@ -41,6 +41,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Divider from '@mui/material/Divider';
 import LookupTable from '../../../models/LookupTable';
 import { SystemIcon } from '../../SystemIcon';
+import ComponentIcon from '../../../icons/Component';
 
 export interface PickFieldDialogProps extends EnhancedDialogProps {
 	type: ContentType;
@@ -112,7 +113,11 @@ export function PickFieldDialogBody(props: PickFieldDialogBodyProps) {
 							</Box>
 							<ListItem>
 								<ListItemIcon>
-									<StarBorderIcon />
+									{selectedField && configLookup?.[selectedField.id]?.icon?.id ? (
+										<SystemIcon icon={configLookup[selectedField.id].icon} />
+									) : (
+										<ComponentIcon />
+									)}
 								</ListItemIcon>
 								<ListItemText primary={selectedField.name} secondary={selectedField.description} />
 							</ListItem>
@@ -266,7 +271,7 @@ export function SelectField(props: {
 									{configLookup?.[field.id]?.icon?.id ? (
 										<SystemIcon icon={configLookup[field.id].icon} />
 									) : (
-										<StarBorderIcon />
+										<ComponentIcon />
 									)}
 								</ListItemIcon>
 								<ListItemText primary={field.name} secondary={field.description} />
@@ -283,7 +288,7 @@ export function SelectField(props: {
 							{configLookup?.[field.id]?.icon?.id ? (
 								<SystemIcon icon={configLookup[field.id].icon} />
 							) : (
-								<StarBorderIcon />
+								<ComponentIcon />
 							)}
 						</ListItemIcon>
 						<ListItemText primary={field.name} secondary={field.description} />
