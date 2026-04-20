@@ -141,7 +141,7 @@ function BrowseExternalAssetDialogBody(props: BrowseExternalAssetDialogContainer
 				}
 			});
 		},
-		[siteId, setSelectedLookup, setSelectedCard, multiSelect, preselectedPaths, profileType]
+		[siteId, setSelectedLookup, setSelectedCard, multiSelect, preselectedPaths, profileType, type]
 	);
 	const fnRefs = useUpdateRefs({ fetchItems });
 
