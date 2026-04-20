@@ -97,7 +97,7 @@ export function GroupManagement() {
 	};
 
 	const onSearchButtonClick = () => {
-		searchInpuRef.current.focus();
+		searchInpuRef.current?.focus();
 	};
 
 	const onSearch = useCallback(
