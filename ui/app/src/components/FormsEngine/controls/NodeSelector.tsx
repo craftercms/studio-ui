@@ -490,7 +490,7 @@ function NodeSelector(props: NodeSelectorProps) {
 		executeDataSourceOption('create', createPickerChoice);
 	};
 	const memoRefs = useUpdateRefs({ handleDataSourceOptionClick });
-	const { menuOptions, singleOptionOnClick } = useMemo(
+	const { menuOptions, availableOptions } = useMemo(
 		() => createAddMenuOptions({ refs: memoRefs, itemPickerDataSourceData: dataSourceSummary, readonly }),
 		[memoRefs, readonly, dataSourceSummary]
 	);
@@ -589,8 +589,8 @@ function NodeSelector(props: NodeSelectorProps) {
 								size="small"
 								color="primary"
 								onClick={() => {
-									if (menuOptions?.length === 1) {
-										singleOptionOnClick?.();
+									if (availableOptions.length === 1) {
+										handleDataSourceOptionClick(null, availableOptions[0]);
 									} else {
 										setAddMenuOpen(true);
 									}
@@ -945,7 +945,10 @@ function createAddMenuOptions({
 	}>;
 	itemPickerDataSourceData: ConsolidatedItemPickerData;
 	readonly: boolean;
-}): { menuOptions: ReactNode[]; singleOptionOnClick: () => void | undefined } {
+}): {
+	menuOptions: ReactNode[];
+	availableOptions: DataSourcePickerType[];
+} {
 	const { allowedCreateTypes, allowedBrowsePaths, allowedSearchPaths, allowedUploadPaths } = itemPickerDataSourceData;
 	const createAllowed = Object.keys(allowedCreateTypes).length > 0;
 	const menuOptions = [];
@@ -955,12 +958,6 @@ function createAddMenuOptions({
 	if (allowedBrowsePaths.length > 0) availableOptions.push('browse');
 	if (allowedUploadPaths.length > 0) availableOptions.push('upload');
 	if (createAllowed) availableOptions.push('create');
-
-	let singleOptionOnClick: (() => void) | undefined;
-	if (availableOptions.length === 1) {
-		const option = availableOptions[0];
-		singleOptionOnClick = () => refs.current.handleDataSourceOptionClick(null, option);
-	}
 
 	if (availableOptions.includes('search')) {
 		menuOptions.push(
@@ -1019,7 +1016,7 @@ function createAddMenuOptions({
 		);
 	}
 
-	return { menuOptions, singleOptionOnClick };
+	return { menuOptions, availableOptions };
 }
 
 function showUploadDialog({
