@@ -119,7 +119,7 @@ export function AwsFileUpload(props: AwsFileUploadProps) {
 									maxHeight: 220
 								}}
 							>
-								<source src={value.url} type={`video/${value.url.match(/\.(.+)$/)?.[1] ?? 'mp4'}`} />
+								<source src={value.url} type={`video/${value.url.match(/\.([a-z0-9]+)(?:\?|$)/i)?.[1] ?? 'mp4'}`} />
 							</Box>
 						) : fileType === 'asset' ? (
 							<Box
@@ -146,9 +146,9 @@ export function AwsFileUpload(props: AwsFileUploadProps) {
 
 function getAwsFileType(fileUrl?: string): 'image' | 'video' | 'asset' | 'unknown' {
 	if (!fileUrl) return 'unknown';
-	if (/\.(jpg|jpeg|png|gif|bmp|ico|svg|webp)$/i.test(fileUrl)) return 'image';
-	if (/\.(mp4|webm|ogv)$/i.test(fileUrl)) return 'video';
-	if (/\.(pdf|html|js|css|txt|json|md|jsx|ts|tsx|yaml|ftl)$/i.test(fileUrl)) return 'asset';
+	if (/\.(jpg|jpeg|png|gif|bmp|ico|svg|webp)(?:\?|$)/i.test(fileUrl)) return 'image';
+	if (/\.(mp4|webm|ogv)(?:\?|$)/i.test(fileUrl)) return 'video';
+	if (/\.(pdf|html|js|css|txt|json|md|jsx|ts|tsx|yaml|ftl)(?:\?|$)/i.test(fileUrl)) return 'asset';
 	return 'unknown';
 }
 
