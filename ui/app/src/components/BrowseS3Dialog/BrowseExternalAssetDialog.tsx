@@ -47,8 +47,6 @@ import { viewModes } from '../BrowseFilesDialog';
 import { SimpleTreeView } from '@mui/x-tree-view';
 import { TreeItem } from '@mui/x-tree-view/TreeItem';
 import BrowseFilesDialogContainerSkeleton from '../BrowseFilesDialog/BrowseFilesDialogContainerSkeleton';
-import useUpdateRefs from '../../hooks/useUpdateRefs';
-import { nou } from '../../utils/object';
 import Checkbox from '@mui/material/Checkbox';
 import useEnv from '../../hooks/useEnv';
 
@@ -85,7 +83,7 @@ function BrowseExternalAssetDialogBody(props: BrowseExternalAssetDialogContainer
 	const [viewMode, setViewMode] = useState<MediaCardViewModes>(getStoredBrowseDialogViewMode(username) ?? viewModes[0]);
 	const filteredItems = items?.filter((item) => item.name.toLowerCase().includes(keyword.toLowerCase()));
 	const [prevProfileId, setPrevProfileId] = useState(undefined);
-	const refs = useUpdateRefs({ foldersByPath });
+	const [currentPath, setCurrentPath] = useState(path);
 	const disableSubmit = isFetchingItems || (!selectedArray.length && !selectedCard);
 	const { guestBase } = useEnv();
 
@@ -130,9 +128,10 @@ function BrowseExternalAssetDialogBody(props: BrowseExternalAssetDialogContainer
 						}
 					}
 
-					if (nou(refs.current.foldersByPath?.[path])) {
-						setFoldersByPath((prev) => ({ ...prev, [path]: folders }));
-					}
+					// if (nou(refs.current.foldersByPath?.[path])) {
+					// 	setFoldersByPath((prev) => ({ ...prev, [path]: folders }));
+					// }
+					setFoldersByPath((prev) => ({ ...prev, [path]: folders }));
 				},
 				error: (error) => {
 					if (seq !== requestSeq.current) return;
@@ -141,7 +140,7 @@ function BrowseExternalAssetDialogBody(props: BrowseExternalAssetDialogContainer
 				}
 			});
 		},
-		[profileId, siteId, refs, setSelectedLookup, setSelectedCard, multiSelect, preselectedPaths, profileType]
+		[profileId, siteId, setSelectedLookup, setSelectedCard, multiSelect, preselectedPaths, profileType]
 	);
 
 	if (profileId !== prevProfileId) {
@@ -182,7 +181,7 @@ function BrowseExternalAssetDialogBody(props: BrowseExternalAssetDialogContainer
 
 	const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
 
-	const onRefresh = () => fetchItems(path);
+	const onRefresh = () => fetchItems(currentPath);
 
 	const switchViewMode = () => {
 		const currentIndex = viewModes.indexOf(viewMode);
@@ -220,6 +219,7 @@ function BrowseExternalAssetDialogBody(props: BrowseExternalAssetDialogContainer
 								path={path}
 								onFolderClick={(e, folderPath) => {
 									e.stopPropagation();
+									setCurrentPath(folderPath);
 									fetchItems(folderPath);
 								}}
 							/>
