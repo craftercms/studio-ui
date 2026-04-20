@@ -46,9 +46,9 @@ export function LocaleSelector(props: LocaleSelectorProps) {
 	}>();
 	const siteId = useActiveSiteId();
 	const handleChange = (event: SelectChangeEvent) => setValue(event.target.value);
-	const refs = useUpdateRefs({ value });
 	const [error, setError] = useState<ApiResponse | null>(null);
 	const readonly: boolean = isFieldReadOnly(field, formReadonly);
+	const refs = useUpdateRefs({ value, readonly });
 
 	const fetchLocales = useCallback(() => {
 		setIsFetching(true);
@@ -66,7 +66,7 @@ export function LocaleSelector(props: LocaleSelectorProps) {
 						})),
 						defaultLocaleCode
 					});
-					if (!refs.current.value && defaultLocaleCode) {
+					if (!refs.current.value && defaultLocaleCode && !refs.current.readonly) {
 						setValue(defaultLocaleCode);
 					}
 				}
