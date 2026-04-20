@@ -66,9 +66,9 @@ export function LocaleSelector(props: LocaleSelectorProps) {
 						})),
 						defaultLocaleCode
 					});
-				}
-				if (!refs.current.value && defaultLocaleCode) {
-					setValue(defaultLocaleCode);
+					if (!refs.current.value && defaultLocaleCode) {
+						setValue(defaultLocaleCode);
+					}
 				}
 			},
 			error: (e) => {
