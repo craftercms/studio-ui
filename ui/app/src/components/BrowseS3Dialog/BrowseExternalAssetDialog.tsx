@@ -67,7 +67,7 @@ export interface BrowseExternalAssetDialogContainerProps extends Pick<
 > {}
 
 function BrowseExternalAssetDialogBody(props: BrowseExternalAssetDialogContainerProps) {
-	const { path, profileId, multiSelect, preselectedPaths = [], profileType = 'aws', onClose, onSuccess } = props;
+	const { path, profileId, multiSelect, preselectedPaths = [], profileType = 'aws', type, onClose, onSuccess } = props;
 	const [isFetchingItems, setIsFetchingItems] = useState(false);
 	const [error, setError] = useState<ApiResponse>(null);
 	const [items, setItems] = useState<MediaItem[]>();
@@ -98,7 +98,8 @@ function BrowseExternalAssetDialogBody(props: BrowseExternalAssetDialogContainer
 
 			setIsFetchingItems(true);
 			currentSub.current = fetchService(siteId, profileId, {
-				path
+				path,
+				type
 			}).subscribe({
 				next: (items) => {
 					if (seq !== requestSeq.current) return;
@@ -356,7 +357,7 @@ function BrowseExternalAssetDialogBody(props: BrowseExternalAssetDialogContainer
 }
 
 export function BrowseExternalAssetDialog(props: BrowseExternalAssetDialogProps) {
-	const { path, profileId, onClose, onSuccess, multiSelect, preselectedPaths, profileType, ...rest } = props;
+	const { path, profileId, onClose, onSuccess, multiSelect, preselectedPaths, profileType, type, ...rest } = props;
 
 	return (
 		<EnhancedDialog
@@ -373,6 +374,7 @@ export function BrowseExternalAssetDialog(props: BrowseExternalAssetDialogProps)
 				profileType={profileType}
 				onClose={onClose}
 				onSuccess={onSuccess}
+				type={type}
 			/>
 		</EnhancedDialog>
 	);
