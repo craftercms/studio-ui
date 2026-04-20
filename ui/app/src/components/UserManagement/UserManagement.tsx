@@ -104,7 +104,7 @@ export function UserManagement(props: UserManagementProps) {
 	};
 
 	const onSearchButtonClick = () => {
-		searchInpuRef.current.focus();
+		searchInpuRef.current?.focus();
 	};
 
 	const onSearch = useCallback(
