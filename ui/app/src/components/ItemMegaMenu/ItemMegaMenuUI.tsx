@@ -17,7 +17,7 @@
 import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
 import EmptyState from '../EmptyState/EmptyState';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import Typography from '@mui/material/Typography';
 import ItemDisplay from '../ItemDisplay';
 import ItemStateIcon from '../ItemStateIcon/ItemStateIcon';
@@ -26,7 +26,7 @@ import React, { ReactNode } from 'react';
 import Popover, { PopoverOrigin, PopoverPosition, PopoverProps, PopoverReference } from '@mui/material/Popover';
 import palette from '../../styles/palette';
 import { SystemIconDescriptor } from '../SystemIcon';
-import { DetailedItem } from '../../models/Item';
+import { ContentItem } from '../../models/Item';
 import { ContextMenuOption } from '../ContextMenu/ContextMenu';
 import GlobalState from '../../models/GlobalState';
 import Skeleton from '@mui/material/Skeleton';
@@ -67,7 +67,7 @@ export interface ItemMegaMenuUIProps {
 	sxs?: PartialSxRecord<ItemMegaMenuUIClassKey>;
 	isLoading?: boolean;
 	numOfLoaderItems?: number;
-	item: DetailedItem;
+	item: ContentItem;
 	options: ContextMenuOption[][];
 	editorialOptions: ContextMenuOption[];
 	nonEditorialOptions: ContextMenuOption[][];
@@ -105,6 +105,7 @@ export function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
 	} = props;
 	const isFolder = item?.systemType === 'folder';
 	const inWorkflow = isInWorkflow(item?.stateMap);
+	const { formatMessage } = useIntl();
 	return (
 		<Popover
 			open={open}
@@ -206,7 +207,7 @@ export function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
 										sxs={{ root: { fontSize: '0.8rem', verticalAlign: 'middle', ...sxs?.icon } }}
 									/>
 									<Typography variant="body2" component="span">
-										{getItemStateText(item?.stateMap, { user: item?.lockOwner?.username })}
+										{getItemStateText(item?.stateMap, formatMessage, { user: item?.lockOwner?.username })}
 									</Typography>
 								</>
 							) : (
@@ -217,7 +218,7 @@ export function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
 										sxs={{ root: { fontSize: '0.8rem', verticalAlign: 'middle', ...sxs?.icon } }}
 									/>
 									<Typography variant="body2" component="span">
-										{getItemPublishingTargetText(item?.stateMap)}
+										{getItemPublishingTargetText(item?.stateMap, formatMessage)}
 									</Typography>
 								</>
 							))}
@@ -305,9 +306,9 @@ export function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
 								defaultMessage="{edited} {date} {byLabel} {by}"
 								values={{
 									date: new Intl.DateTimeFormat(locale.localeCode, locale.dateTimeFormatOptions).format(
-										new Date(item?.sandbox.dateModified)
+										new Date(item?.dateModified)
 									),
-									by: item?.sandbox.modifier?.username ?? '',
+									by: item?.modifier?.username ?? '',
 									edited: (
 										<Box
 											component="span"
@@ -317,7 +318,7 @@ export function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
 											<FormattedMessage id="words.edited" defaultMessage="Edited" />
 										</Box>
 									),
-									byLabel: item?.sandbox.modifier?.username ? (
+									byLabel: item?.modifier?.username ? (
 										<Box
 											component="span"
 											className={classes?.itemEditedText}

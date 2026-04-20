@@ -21,7 +21,7 @@ import {
 	checkPathExistence,
 	fetchChildrenByPath,
 	fetchChildrenByPaths,
-	fetchItemsByPath,
+	fetchContentItems,
 	fetchItemWithChildrenByPath
 } from '../../services/content';
 import { getIndividualPaths, getParentPath, getRootPath, withIndex, withoutIndex } from '../../utils/path';
@@ -51,7 +51,6 @@ import {
 } from '../actions/pathNavigator';
 import { setStoredPathNavigator } from '../../utils/state';
 import { CrafterCMSEpic } from '../store';
-import { showErrorDialog } from '../reducers/dialogs/error';
 import { AjaxError } from 'rxjs/ajax';
 import StandardAction from '../../models/StandardAction';
 import {
@@ -72,6 +71,7 @@ import {
 	workflowEventReject,
 	workflowEventSubmit
 } from '../actions/system';
+import { pushErrorDialog } from '../../utils/system';
 
 export default [
 	// region pathNavigatorInit
@@ -164,7 +164,7 @@ export default [
 
 				return requests.length
 					? forkJoin([
-							fetchItemsByPath(state.sites.active, paths, { castAsDetailedItem: true }),
+							fetchContentItems(state.sites.active, paths),
 							fetchChildrenByPaths(state.sites.active, optionsByPath)
 						]).pipe(
 							map(([items, children]) =>
@@ -207,7 +207,7 @@ export default [
 						map(({ item, children }) => pathNavigatorFetchPathComplete({ id, parent: item, children })),
 						catchAjaxError(
 							(error) => pathNavigatorFetchPathFailed({ id, error }),
-							(error) => showErrorDialog({ error: error.response ?? error })
+							(error) => pushErrorDialog({ props: { error: error.response ?? error } })
 						)
 					)
 			)
@@ -237,7 +237,7 @@ export default [
 						),
 						catchAjaxError(
 							(error) => pathNavigatorConditionallySetPathFailed({ id, error }),
-							(error) => showErrorDialog({ error: error.response ?? error })
+							(error) => pushErrorDialog({ props: { error: error.response ?? error } })
 						)
 					)
 			)
@@ -341,7 +341,7 @@ export default [
 					const parentsPath = getIndividualPaths(path, state.pathNavigator[id].rootPath);
 					if (parentsPath.length > 1) {
 						return forkJoin([
-							fetchItemsByPath(site, parentsPath, { castAsDetailedItem: true }),
+							fetchContentItems(site, parentsPath),
 							fetchChildrenByPath(site, path, {
 								excludes,
 								limit,
@@ -440,7 +440,7 @@ export default [
             // Case (c) - Content epics load any item that's on the state already
             navigator.currentPath === getParentPath(parentPathOfTargetPath)
           ) {
-            actions.push(fetchSandboxItem({ path: parentPathOfTargetPath }));
+            actions.push(fetchContentItem({ path: parentPathOfTargetPath }));
           } */
 				});
 				return refreshRequests.length ? [pathNavigatorBulkRefresh({ requests: refreshRequests })] : NEVER;

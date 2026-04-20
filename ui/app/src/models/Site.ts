@@ -37,6 +37,7 @@ export interface SiteBaseState {
 	submitted: boolean;
 	selectedView: number;
 	gitBranch: string;
+	singleBranch: boolean;
 }
 
 export interface SiteState extends SiteBaseState {
@@ -44,7 +45,7 @@ export interface SiteState extends SiteBaseState {
 	useRemote: boolean;
 	createAsOrphan: boolean;
 	repoUrl: string;
-	repoAuthentication: string;
+	repoAuthentication: 'none' | 'basic' | 'token' | 'key';
 	repoRemoteBranch: string;
 	sandboxBranch: string;
 	repoRemoteName: string;
@@ -73,30 +74,30 @@ export interface DuplicateSiteState extends SiteBaseState {
 
 export interface CreateSiteMeta {
 	siteId: string;
-	siteName?: string;
+	name?: string;
 	description?: string;
 	singleBranch?: boolean;
-	authenticationType?: string;
-	blueprint?: string;
-	useRemote?: boolean;
-	repoRemoteName?: string;
+	blueprintId?: string;
 	remoteUrl?: string;
 	remoteName?: string;
 	remoteBranch?: string;
 	sandboxBranch?: string;
-	remoteUsername?: string;
-	remotePassword?: string;
-	remoteToken?: string;
-	remotePrivateKey?: string;
-	createOption?: string;
 	siteParams?: {
 		[key: string]: string;
 	};
 	createAsOrphan: boolean;
+	sourceType: 'blueprint' | 'remote';
+	authentication: {
+		type: SiteState['repoAuthentication'];
+		username?: string;
+		password?: string;
+		token?: string;
+		privateKey?: string;
+	};
 }
 
-export interface DuplicateSiteMeta
-	extends Pick<CreateSiteMeta, 'siteId' | 'siteName' | 'description' | 'sandboxBranch'> {
+export interface DuplicateSiteMeta extends Pick<CreateSiteMeta, 'siteId' | 'description' | 'sandboxBranch'> {
+	siteName: string;
 	sourceSiteId: string;
 }
 
@@ -132,36 +133,22 @@ export interface BackendSite {
 	state: 'INITIALIZING' | 'READY' | 'DELETING' | 'DELETED';
 }
 
-export interface LegacySite {
-	deleted: number;
-	description: string;
-	id: number;
-	lastCommitId: string;
-	lastSyncedGitlogCommitId: string;
-	lastVerifiedGitlogCommitId: string;
-	liveUrl: string;
+export interface DetailedSite {
+	siteId: string;
+	siteUuid: string;
 	name: string;
-	publishedRepoCreated: number;
-	publishingEnabled: number;
-	publishingLockHeartbeat: string;
-	publishingLockOwner: string;
+	description: string;
+	liveUrl: string;
+	lastCommitId: string;
+	publishingEnabled: boolean;
 	publishingStatus: string;
 	sandboxBranch: string;
-	siteDeleted: boolean;
-	siteId: string;
-	sitePublishedRepoCreated: boolean;
-	siteUuid: string;
-	state: string;
-	blobStores: Array<{
+	publishedRepoCreated: boolean;
+	state: 'INITIALIZING' | 'READY' | 'DELETING' | 'DELETED';
+	blobStores: {
 		id: string;
-		type: string;
-		pattern: string;
-		mappings: Array<{
-			publishingTarget: string;
-			storeTarget: string;
-			prefix: string;
-		}>;
-	}>;
+		readOnly: boolean;
+	}[];
 }
 
 export interface Action {

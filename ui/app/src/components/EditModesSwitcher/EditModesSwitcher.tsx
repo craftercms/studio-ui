@@ -17,11 +17,11 @@
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { setPreviewEditMode } from '../../state/actions/preview';
-import { DetailedItem } from '../../models/Item';
+import { ContentItem } from '../../models/Item';
 import { usePreviewState } from '../../hooks/usePreviewState';
 import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import IconButton from '@mui/material/IconButton';
 import { UNDEFINED } from '../../utils/constants';
 import PowerSettingsNewRoundedIcon from '@mui/icons-material/PowerSettingsNewRounded';
@@ -29,7 +29,7 @@ import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import DragIndicatorRoundedIcon from '@mui/icons-material/DragIndicatorRounded';
 
 export interface EditModesSwitcherProps {
-	item: DetailedItem;
+	item: ContentItem;
 	disabled?: boolean;
 }
 
@@ -37,6 +37,7 @@ export function EditModesSwitcher(props: EditModesSwitcherProps) {
 	const { disabled } = props;
 	const { editMode, highlightMode } = usePreviewState();
 	const dispatch = useDispatch();
+	const { formatMessage } = useIntl();
 	const onEditModeChange = (editMode, highlightMode?) => dispatch(setPreviewEditMode({ editMode, highlightMode }));
 	const isAllHighlightMode = editMode && highlightMode === 'all';
 	const isMoveHighlightMode = editMode && !isAllHighlightMode;
@@ -78,6 +79,10 @@ export function EditModesSwitcher(props: EditModesSwitcherProps) {
 						borderBottomRightRadius: 0,
 						...(!editMode && { cursor: 'default' })
 					}}
+					aria-label={formatMessage(
+						{ id: 'editModesSwitcher.offButtonTooltip', defaultMessage: 'Switch off editing ({shortcutKey})' },
+						{ shortcutKey: editMode ? (isAllHighlightMode ? 'e' : 'm') : 'e | m' }
+					)}
 				>
 					<PowerSettingsNewRoundedIcon />
 				</IconButton>
@@ -96,6 +101,7 @@ export function EditModesSwitcher(props: EditModesSwitcherProps) {
 						borderRadius: 0,
 						...(isAllHighlightMode && commonModeButtonStyle)
 					}}
+					aria-label={formatMessage({ id: 'editModesSwitcher.editModeTooltip', defaultMessage: 'Edit mode (e)' })}
 				>
 					<EditRoundedIcon />
 				</IconButton>
@@ -115,6 +121,7 @@ export function EditModesSwitcher(props: EditModesSwitcherProps) {
 						borderBottomLeftRadius: 0,
 						...(isMoveHighlightMode && commonModeButtonStyle)
 					}}
+					aria-label={formatMessage({ id: 'editModesSwitcher.moveModeTooltip', defaultMessage: 'Move mode (m)' })}
 				>
 					<DragIndicatorRoundedIcon />
 				</IconButton>

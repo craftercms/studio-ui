@@ -16,6 +16,7 @@
 
 import { SystemType } from './SystemType';
 import Person from './Person';
+import { PublishTargetStatus } from './Publishing';
 
 // region export type ItemStates =
 export type ItemStates =
@@ -82,54 +83,6 @@ export type ItemStateMap = { [key in ItemStates]: boolean };
 
 export type ItemActionsMap = { [key in ItemActions]: boolean };
 
-export interface BaseItem {
-	id: number;
-	label: string;
-	parentId: number;
-	contentTypeId: string;
-	path: string;
-	previewUrl: string;
-	systemType: SystemType;
-	mimeType: string;
-	state: number;
-	stateMap: ItemStateMap;
-	lockOwner: Person;
-	disabled: boolean;
-	localeCode: string;
-	translationSourceId: string;
-	availableActions: number;
-	availableActionsMap: ItemActionsMap;
-	childrenCount: number;
-}
-
-interface SandboxEnvProps {
-	creator: Person;
-	dateCreated: string;
-	modifier: Person;
-	dateModified: string;
-	dateSubmitted: string;
-	sizeInBytes: number;
-	expiresOn: string;
-	submitter: Person;
-}
-
-interface PublishEnvProps {
-	dateScheduled: string;
-	datePublished: string;
-	publisher: string;
-	expiresOn: string;
-}
-
-export interface LocalizationItem extends BaseItem {}
-
-export interface SandboxItem extends BaseItem, SandboxEnvProps {}
-
-export interface DetailedItem extends BaseItem {
-	sandbox: SandboxEnvProps;
-	staging: PublishEnvProps;
-	live: PublishEnvProps;
-}
-
 export interface AuditDashboardItem {
 	siteId: string;
 	actor: string;
@@ -165,4 +118,32 @@ export interface LegacyItem {
 export interface PasteItem {
 	path: string;
 	children?: PasteItem[];
+}
+
+export interface LightItem {
+	path: string;
+	label: string;
+	systemType: SystemType;
+	mimeType: string;
+}
+
+export interface ContentItem extends LightItem {
+	id: number;
+	parentId: number;
+	contentTypeId: string;
+	previewUrl: string;
+	state: number;
+	stateMap: ItemStateMap;
+	lockOwner: Person;
+	localeCode: string;
+	translationSourceId: string;
+	creator: Person;
+	dateCreated: string;
+	modifier: Person;
+	dateModified: string;
+	availableActions: number;
+	availableActionsMap: ItemActionsMap;
+	childrenCount: number;
+	staging: PublishTargetStatus;
+	live: PublishTargetStatus;
 }

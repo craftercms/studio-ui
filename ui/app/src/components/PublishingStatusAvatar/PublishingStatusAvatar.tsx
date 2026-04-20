@@ -22,7 +22,8 @@ import { getPublishingStatusCodeColor } from './util';
 import { PartialSxRecord } from '../../models';
 import { SxProps } from '@mui/system';
 import { Theme } from '@mui/material';
-import { SystemStyleObject } from '@mui/system/styleFunctionSx/styleFunctionSx';
+import { consolidateSx } from '../../utils/system';
+import { useTheme } from '@mui/material/styles';
 
 export type PublishingStatusAvatarClassKey = 'root' | 'icon';
 
@@ -43,7 +44,7 @@ const targets: { [prop in PublishingStatusAvatarProps['variant']]: 'backgroundCo
 export const PublishingStatusAvatar = React.forwardRef<HTMLDivElement, PublishingStatusAvatarProps>((props, ref) => {
 	const { status, enabled, variant = 'icon', sx, sxs } = props;
 	const stylingTarget = targets[variant] ?? 'backgroundColor';
-
+	const theme = useTheme();
 	return (
 		<Avatar
 			ref={ref}
@@ -51,23 +52,25 @@ export const PublishingStatusAvatar = React.forwardRef<HTMLDivElement, Publishin
 			className={[props.className, enabled ? status : enabled === false ? 'stopped' : '', props.classes?.root].join(
 				' '
 			)}
-			sx={(theme) => ({
-				...(stylingTarget === 'color' && {
+			sx={consolidateSx(
+				stylingTarget === 'color' && {
 					background: 'none',
 					color: theme.palette.text.secondary
-				}),
-				'&.ready': {
-					[stylingTarget]: getPublishingStatusCodeColor('ready', theme)
 				},
-				'&.publishing': {
-					[stylingTarget]: getPublishingStatusCodeColor('publishing', theme)
+				{
+					'&.ready': {
+						[stylingTarget]: getPublishingStatusCodeColor('ready', theme)
+					},
+					'&.publishing': {
+						[stylingTarget]: getPublishingStatusCodeColor('publishing', theme)
+					},
+					'&.stopped': {
+						[stylingTarget]: getPublishingStatusCodeColor('stopped', theme)
+					}
 				},
-				'&.stopped': {
-					[stylingTarget]: getPublishingStatusCodeColor('stopped', theme)
-				},
-				...(sx as SystemStyleObject<Theme>),
-				...(sxs?.root as SystemStyleObject<Theme>)
-			})}
+				sx,
+				sxs?.root
+			)}
 		>
 			<CloudUploadOutlined className={props.classes?.icon} sx={sxs?.icon} />
 		</Avatar>

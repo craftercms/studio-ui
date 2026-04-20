@@ -18,7 +18,6 @@ import React, { ReactNode, useCallback, useReducer, useRef } from 'react';
 import Typography from '@mui/material/Typography';
 import IconButton, { IconButtonProps } from '@mui/material/IconButton';
 import { TypographyVariant as Variant } from '@mui/material/styles';
-import { DetailedItem, SandboxItem } from '../../models/Item';
 import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded';
 import Popover from '@mui/material/Popover';
 import Paper from '@mui/material/Paper';
@@ -29,12 +28,12 @@ import ApiResponse from '../../models/ApiResponse';
 import { createAction } from '@reduxjs/toolkit';
 import Breadcrumbs from '../PathNavigator/PathNavigatorBreadcrumbs';
 import PathNavigatorList from '../PathNavigator/PathNavigatorList';
-import { fetchChildrenByPath, fetchItemsByPath, fetchItemWithChildrenByPath } from '../../services/content';
+import { fetchChildrenByPath, fetchContentItems, fetchItemWithChildrenByPath } from '../../services/content';
 import { getIndividualPaths, getParentPath, withIndex, withoutIndex } from '../../utils/path';
 import { createLookupTable, nou } from '../../utils/object';
 import { forkJoin } from 'rxjs';
 import { isFolder } from '../PathNavigator/utils';
-import { lookupItemByPath, parseSandBoxItemToDetailedItem } from '../../utils/content';
+import { lookupItemByPath } from '../../utils/content';
 import { GetChildrenResponse } from '../../models/GetChildrenResponse';
 import Pagination from '../Pagination';
 import NavItem from '../PathNavigator/PathNavigatorItem';
@@ -42,7 +41,7 @@ import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import ItemDisplay from '../ItemDisplay';
 import PathNavigatorSkeleton from '../PathNavigator/PathNavigatorSkeleton';
 import Tooltip from '@mui/material/Tooltip';
-import { PartialSxRecord } from '../../models';
+import { ContentItem, PartialSxRecord } from '../../models';
 import Box from '@mui/material/Box';
 
 export type SingleItemSelectorClassKey = 'root' | 'title' | 'selectIcon' | 'popoverRoot' | 'selectedItem' | 'changeBtn';
@@ -51,7 +50,7 @@ interface SingleItemSelectorProps {
 	selectIcon?: React.ElementType;
 	classes?: Partial<Record<SingleItemSelectorClassKey, string>>;
 	sxs?: PartialSxRecord<SingleItemSelectorClassKey>;
-	selectedItem?: DetailedItem;
+	selectedItem?: ContentItem;
 	rootPath: string;
 	label?: ReactNode;
 	titleVariant?: Variant;
@@ -62,13 +61,13 @@ interface SingleItemSelectorProps {
 	buttonSize?: IconButtonProps['size'];
 	tooltip?: string;
 	onClose?(): void;
-	onItemClicked(item: DetailedItem): void;
+	onItemClicked(item: ContentItem): void;
 	onDropdownClick?(): void;
-	filterChildren?(item: SandboxItem): boolean;
+	filterChildren?(item: ContentItem): boolean;
 }
 
 interface SingleItemSelectorState extends PaginationOptions {
-	byId: LookupTable<DetailedItem>;
+	byId: LookupTable<ContentItem>;
 	isFetching: boolean;
 	error: ApiResponse;
 	items: string[];
@@ -166,7 +165,7 @@ const reducer: SingleItemSelectorReducer = (state, { type, payload }) => {
 				...state,
 				byId: {
 					...byId,
-					...createLookupTable(children.map(parseSandBoxItemToDetailedItem), 'path'),
+					...createLookupTable(children, 'path'),
 					...createLookupTable(items, 'path')
 				},
 				items: children.map((item) => item.path),
@@ -182,7 +181,7 @@ const reducer: SingleItemSelectorReducer = (state, { type, payload }) => {
 	}
 };
 
-function getNextPath(currentPath: string, byId: LookupTable<DetailedItem>): string {
+function getNextPath(currentPath: string, byId: LookupTable<ContentItem>): string {
 	let pieces = currentPath.split('/').slice(0);
 	pieces.pop();
 	if (currentPath.includes('index.xml')) {
@@ -195,7 +194,7 @@ function getNextPath(currentPath: string, byId: LookupTable<DetailedItem>): stri
 	return nextPath;
 }
 
-const changeCurrentPath = /*#__PURE__*/ createAction<DetailedItem>('CHANGE_SELECTED_ITEM');
+const changeCurrentPath = /*#__PURE__*/ createAction<ContentItem>('CHANGE_SELECTED_ITEM');
 
 const setKeyword = /*#__PURE__*/ createAction<string>('SET_KEYWORD');
 
@@ -207,12 +206,12 @@ const fetchChildrenByPathAction = /*#__PURE__*/ createAction<string>('FETCH_CHIL
 
 const fetchParentsItems = /*#__PURE__*/ createAction<string>('FETCH_PARENTS_ITEMS');
 
-const fetchParentsItemsComplete = /*#__PURE__*/ createAction<{ items?: DetailedItem[]; children: GetChildrenResponse }>(
+const fetchParentsItemsComplete = /*#__PURE__*/ createAction<{ items?: ContentItem[]; children: GetChildrenResponse }>(
 	'FETCH_PARENTS_ITEMS_COMPLETE'
 );
 
 const fetchChildrenByPathComplete = /*#__PURE__*/ createAction<{
-	parent?: DetailedItem;
+	parent?: ContentItem;
 	children: GetChildrenResponse;
 }>('FETCH_CHILDREN_BY_PATH_COMPLETE');
 
@@ -278,7 +277,7 @@ export function SingleItemSelector(props: SingleItemSelectorProps) {
 
 					if (parentsPath.length > 1) {
 						forkJoin([
-							fetchItemsByPath(site, parentsPath, { castAsDetailedItem: true }),
+							fetchContentItems(site, parentsPath),
 							fetchChildrenByPath(site, payload, {
 								limit: state.limit
 							})
@@ -314,7 +313,7 @@ export function SingleItemSelector(props: SingleItemSelectorProps) {
 		[state, site, filterChildren]
 	);
 
-	const handleDropdownClick = (item: DetailedItem) => {
+	const handleDropdownClick = (item: ContentItem) => {
 		onDropdownClick();
 		let nextPath = item
 			? withoutIndex(item.path) === withoutIndex(rootPath)
@@ -324,7 +323,7 @@ export function SingleItemSelector(props: SingleItemSelectorProps) {
 		exec(fetchParentsItems(nextPath));
 	};
 
-	const onPathSelected = (item: DetailedItem) => {
+	const onPathSelected = (item: ContentItem) => {
 		exec(fetchChildrenByPathAction(item.path));
 	};
 
@@ -332,7 +331,7 @@ export function SingleItemSelector(props: SingleItemSelectorProps) {
 		exec(setKeyword(keyword));
 	};
 
-	const onCrumbSelected = (item: DetailedItem) => {
+	const onCrumbSelected = (item: ContentItem) => {
 		if (state.breadcrumb.length === 1) {
 			handleItemClicked(item);
 		} else {
@@ -340,7 +339,7 @@ export function SingleItemSelector(props: SingleItemSelectorProps) {
 		}
 	};
 
-	const handleItemClicked = (item: DetailedItem) => {
+	const handleItemClicked = (item: ContentItem) => {
 		const folder = isFolder(item);
 
 		if (folder && canSelectFolders === false) {

@@ -20,102 +20,123 @@ import {
 	ContentTypeField,
 	ContentTypeFieldValidation,
 	ContentTypeFieldValidations,
+	ContentTypeSection,
+	DataSource,
 	LegacyContentType,
 	LegacyDataSource,
 	LegacyFormDefinition,
 	LegacyFormDefinitionField,
 	LegacyFormDefinitionProperty,
-	LegacyFormDefinitionSection
+	LegacyFormDefinitionSection,
+	ValidationKeys
 } from '../models/ContentType';
 import { LookupTable } from '../models/LookupTable';
-import { camelize, capitalize, isBlank } from '../utils/string';
+import { camelize, capitalize, isBlank, toColor } from '../utils/string';
 import { forkJoin, Observable, of } from 'rxjs';
 import { errorSelectorApi1, get, getBinary, post, postJSON } from '../utils/ajax';
 import { catchError, map, switchMap } from 'rxjs/operators';
 import { createLookupTable, nou, toQueryString } from '../utils/object';
-import { fetchItemsByPath } from './content';
-import { SandboxItem } from '../models/Item';
+import { fetchContentItems } from './content';
+import { ContentItem } from '../models/Item';
 import { fetchConfigurationDOM, fetchConfigurationJSON, writeConfiguration } from './configuration';
 import { beautify, deserialize, entityEncodingTagValueProcessor, serialize } from '../utils/xml';
-import { stripDuplicateSlashes } from '../utils/path';
 import { Api2ResponseFormat } from '../models/ApiResponse';
-import { asArray } from '../utils/array';
+import { asArray, immutableEmptyArray } from '../utils/array';
 import { fromPromise } from 'rxjs/internal/observable/innerFrom';
 import AllowedContentTypesData from '../models/AllowedContentTypesData';
+import {
+	createFormDefinitionPathFromTypeId,
+	systemValidationsKeysMap,
+	systemValidationsNames
+} from '../utils/contentType';
+import { XmlKeys } from '../components/FormsEngine/lib/formConsts';
+import { AjaxResponse } from 'rxjs/ajax';
 
-const typeMap = {
-	input: 'text',
-	rte: 'html',
-	checkbox: 'boolean',
-	'image-picker': 'image'
-};
+// FE2 TODO: Verify removal
+// const typeMap = {
+//   input: 'text',
+//   rte: 'html',
+//   checkbox: 'boolean',
+//   'image-picker': 'image'
+// };
 
-const systemValidationsNames = [
-	'itemManager',
-	'minSize',
-	'maxSize',
-	'maxlength',
-	'readonly',
-	'width',
-	'height',
-	'minWidth',
-	'minHeight',
-	'maxWidth',
-	'maxHeight',
-	'minValue',
-	'maxValue',
-	'imgRepositoryUpload',
-	'imgDesktopUpload',
-	'videoDesktopUpload',
-	'videoBrowseRepo',
-	'audioDesktopUpload',
-	'audioBrowseRepo'
-];
-
-const systemValidationsKeysMap = {
-	minSize: 'minCount',
-	maxSize: 'maxCount',
-	maxlength: 'maxLength',
-	contentTypes: 'allowedContentTypes',
-	tags: 'allowedContentTypeTags',
-	readonly: 'readOnly',
-	width: 'width',
-	height: 'height',
-	minWidth: 'minWidth',
-	minHeight: 'minHeight',
-	maxWidth: 'maxWidth',
-	maxHeight: 'maxHeight',
-	minValue: 'minValue',
-	maxValue: 'maxValue',
-	imgRepositoryUpload: 'allowImagesFromRepo',
-	imgDesktopUpload: 'allowImageUpload',
-	videoDesktopUpload: 'allowVideoUpload',
-	videoBrowseRepo: 'allowVideosFromRepo',
-	audioDesktopUpload: 'allowAudioUpload',
-	audioBrowseRepo: 'allowAudioFromRepo'
-};
-
-function bestGuessParse(value: any) {
+function bestGuessParse(value: unknown): unknown {
 	if (nou(value)) {
 		return null;
 	} else if (value === 'true') {
 		return true;
 	} else if (value === 'false') {
 		return false;
-	} else if (!isNaN(parseFloat(value))) {
-		return parseFloat(value);
+	} else if (!isNaN(parseFloat(value as string))) {
+		return parseFloat(value as string);
 	} else {
 		return value;
 	}
 }
 
+interface ParseComponentsDataSourceContentTypesPropertyOutput {
+	allowedContentTypes: ContentTypeFieldValidation<LookupTable<AllowedContentTypesData>>;
+	allowedEmbeddedContentTypes: ContentTypeFieldValidation<string[]>;
+	allowedSharedContentTypes: ContentTypeFieldValidation<string[]>;
+	allowedSharedExistingContentTypes: ContentTypeFieldValidation<string[]>;
+}
+
+export function parseComponentsDataSourceContentTypesProperty(
+	dataSource: DataSource,
+	contentTypesPropertyValue: string,
+	validations: Partial<ContentTypeFieldValidations> = {}
+): Partial<ParseComponentsDataSourceContentTypesPropertyOutput> {
+	const value = contentTypesPropertyValue?.split(',') ?? immutableEmptyArray;
+	validations.allowedContentTypes = validations.allowedContentTypes ?? {
+		id: 'allowedContentTypes',
+		level: 'required',
+		value: {} as LookupTable<AllowedContentTypesData<boolean>>
+	};
+	validations.allowedEmbeddedContentTypes = validations.allowedEmbeddedContentTypes ?? {
+		id: 'allowedEmbeddedContentTypes',
+		level: 'required',
+		value: []
+	};
+	validations.allowedSharedContentTypes = validations.allowedSharedContentTypes ?? {
+		id: 'allowedSharedContentTypes',
+		level: 'required',
+		value: []
+	};
+	validations.allowedSharedExistingContentTypes = validations.allowedSharedExistingContentTypes ?? {
+		id: 'allowedSharedExistingContentTypes',
+		level: 'required',
+		value: []
+	};
+	const allowedContentTypesMeta: LookupTable<AllowedContentTypesData> = validations.allowedContentTypes.value;
+	value.forEach((typeId) => {
+		allowedContentTypesMeta[typeId] = allowedContentTypesMeta[typeId] ?? {};
+		const propsLookup = dataSource.properties;
+		const allowEmbedded = propsLookup.allowEmbedded;
+		const allowShared = propsLookup.allowShared;
+		const allowSharedExisting = propsLookup.enableBrowse || propsLookup.enableSearch;
+		if (allowEmbedded) {
+			allowedContentTypesMeta[typeId].embedded = true;
+			validations.allowedEmbeddedContentTypes.value.push(typeId);
+		}
+		if (allowShared) {
+			allowedContentTypesMeta[typeId].shared = true;
+			validations.allowedSharedContentTypes.value.push(typeId);
+		}
+		if (allowSharedExisting) {
+			allowedContentTypesMeta[typeId].sharedExisting = true;
+			validations.allowedSharedExistingContentTypes.value.push(typeId);
+		}
+	});
+	return validations;
+}
+
 function getFieldValidations(
 	fieldProperty: LegacyFormDefinitionProperty | LegacyFormDefinitionProperty[],
-	dropTargetsLookup?: LookupTable<LegacyDataSource>
+	dropTargetsLookup?: LookupTable<DataSource>
 ): Partial<ContentTypeFieldValidations> {
 	const map = asArray<LegacyFormDefinitionProperty>(fieldProperty).reduce<LookupTable<LegacyFormDefinitionProperty>>(
 		(table, prop) => {
-			if (prop.name === 'width' || prop.name === 'height') {
+			if ((prop.name === 'width' || prop.name === 'height') && Boolean(prop.value)) {
 				const parsedValidation = JSON.parse(prop.value);
 				if (parsedValidation.exact) {
 					table[prop.name] = {
@@ -143,65 +164,25 @@ function getFieldValidations(
 		{}
 	);
 
-	let validations: Partial<ContentTypeFieldValidations> = {};
+	const validations: Partial<ContentTypeFieldValidations> = {};
 
 	Object.keys(map).forEach((key) => {
 		if (systemValidationsNames.includes(key)) {
 			if (key === 'itemManager' && dropTargetsLookup) {
-				map.itemManager?.value &&
-					map.itemManager.value.split(',').forEach((itemManagerId) => {
-						asArray(dropTargetsLookup[itemManagerId]?.properties?.property).forEach((prop) => {
-							let mappedPropName = systemValidationsKeysMap[prop.name];
-							if (mappedPropName) {
-								let value = prop.value ? prop.value.split(',') : [];
-								if (mappedPropName === 'allowedContentTypes') {
-									const datasource = dropTargetsLookup[itemManagerId] as ComponentsDatasource;
-									validations.allowedContentTypes = validations.allowedContentTypes ?? {
-										id: 'allowedContentTypes',
-										level: 'required',
-										value: {} as LookupTable<AllowedContentTypesData<boolean>>
-									};
-									validations.allowedEmbeddedContentTypes = validations.allowedEmbeddedContentTypes ?? {
-										id: 'allowedEmbeddedContentTypes',
-										level: 'required',
-										value: []
-									};
-									validations.allowedSharedContentTypes = validations.allowedSharedContentTypes ?? {
-										id: 'allowedSharedContentTypes',
-										level: 'required',
-										value: []
-									};
-									validations.allowedSharedExistingContentTypes = validations.allowedSharedExistingContentTypes ?? {
-										id: 'allowedSharedExistingContentTypes',
-										level: 'required',
-										value: []
-									};
-									const allowedContentTypesMeta = validations.allowedContentTypes.value;
-									value.forEach((typeId) => {
-										allowedContentTypesMeta[typeId] = allowedContentTypesMeta[typeId] ?? {};
-										if (datasource.allowEmbedded) {
-											allowedContentTypesMeta[typeId].embedded = true;
-											validations.allowedEmbeddedContentTypes.value.push(typeId);
-										}
-										if (datasource.allowShared) {
-											allowedContentTypesMeta[typeId].shared = true;
-											validations.allowedSharedContentTypes.value.push(typeId);
-										}
-										if (datasource.enableBrowse || datasource.enableSearch) {
-											allowedContentTypesMeta[typeId].sharedExisting = true;
-											validations.allowedSharedExistingContentTypes.value.push(typeId);
-										}
-									});
-								} else {
-									validations[mappedPropName] = {
-										id: mappedPropName,
-										value,
-										level: 'required'
-									};
-								}
-							}
-						});
+				map.itemManager?.value?.split(',').forEach((itemManagerId) => {
+					Object.entries(dropTargetsLookup[itemManagerId]?.properties ?? {}).forEach(([name, value]) => {
+						const mappedPropName = systemValidationsKeysMap[name];
+						if (mappedPropName === 'allowedContentTypes') {
+							parseComponentsDataSourceContentTypesProperty(dropTargetsLookup[itemManagerId], value, validations);
+						} else if (mappedPropName) {
+							validations[mappedPropName] = {
+								id: mappedPropName,
+								value: value?.split(',') ?? immutableEmptyArray,
+								level: 'required'
+							};
+						}
 					});
+				});
 			} else if (systemValidationsNames.includes(key) && !isBlank(map[key]?.value)) {
 				validations[systemValidationsKeysMap[key]] = {
 					id: systemValidationsKeysMap[key],
@@ -223,11 +204,18 @@ function getFieldDataSourceValidations(
 	if (
 		dataSources &&
 		dataSources.length > 0 &&
-		asArray(fieldProperty).find((prop) => ['imageManager', 'videoManager', 'audioManager'].includes(prop.name))
+		asArray(fieldProperty).find((prop) =>
+			['imageManager', 'videoManager', 'audioManager', 'fileManager'].includes(prop.name)
+		)
 	) {
 		validations = asArray<LegacyFormDefinitionProperty>(fieldProperty).reduce<LookupTable<ContentTypeFieldValidation>>(
 			(table, prop) => {
-				if (prop.name === 'imageManager' || prop.name === 'videoManager' || prop.name === 'audioManager') {
+				if (
+					prop.name === 'imageManager' ||
+					prop.name === 'videoManager' ||
+					prop.name === 'audioManager' ||
+					prop.name === 'fileManager'
+				) {
 					const dataSourcesIds = prop.value.trim() !== '' ? prop.value.split(',') : null;
 					dataSourcesIds?.forEach((id) => {
 						const dataSource = dataSources.find((datasource) => datasource.id === id);
@@ -240,6 +228,13 @@ function getFieldDataSourceValidations(
 						}
 					});
 				}
+				if (prop.name === 'addMedia') {
+					table[systemValidationsKeysMap['addMedia']] = {
+						id: systemValidationsKeysMap['addMedia'] as ValidationKeys,
+						value: prop.value.trim() === 'true',
+						level: 'required'
+					};
+				}
 				return table;
 			},
 			{}
@@ -251,24 +246,32 @@ function getFieldDataSourceValidations(
 function parseLegacyFormDefinitionFields(
 	legacyFieldsToBeParsed: LegacyFormDefinitionField[] | LegacyFormDefinitionField,
 	currentFieldLookup: LookupTable<ContentTypeField>,
-	dropTargetsLookup: LookupTable<LegacyDataSource>,
+	dropTargetsLookup: LookupTable<DataSource>,
 	sectionFieldIds?: Array<string>,
 	dataSources?: LegacyDataSource[]
-) {
+): void {
 	asArray<LegacyFormDefinitionField>(legacyFieldsToBeParsed).forEach((legacyField) => {
-		const fieldId = ['file-name', 'internal-name'].includes(legacyField.id) ? camelize(legacyField.id) : legacyField.id;
+		// FE2 TODO: Changed the camelizing of file-name and internal-name
+		// const fieldId = ['file-name', 'internal-name'].includes(legacyField.id) ? camelize(legacyField.id) : legacyField.id;
+		const fieldId = legacyField.id;
 
 		sectionFieldIds?.push(fieldId);
 
 		const field: ContentTypeField = {
 			id: fieldId,
 			name: legacyField.title,
-			type: typeMap[legacyField.type] || legacyField.type,
+			description: legacyField.description,
+			helpText: legacyField.help,
+			type: legacyField.type, // FE2 TODO: Changed from `type: typeMap[legacyField.type] || legacyField.type,`
 			sortable: legacyField.type === 'node-selector' || legacyField.type === 'repeat',
 			validations: {},
 			properties: {},
 			defaultValue: legacyField.defaultValue
 		};
+
+		if (legacyField.plugin) {
+			field.properties.plugin = legacyField.plugin;
+		}
 
 		asArray<LegacyFormDefinitionProperty>(legacyField.properties?.property).forEach((legacyProp) => {
 			let value;
@@ -277,10 +280,18 @@ function parseLegacyFormDefinitionFields(
 					value = legacyProp.value === 'true';
 					break;
 				case 'int':
-					value = parseInt(legacyProp.value);
+					value = legacyProp.value ? parseInt(legacyProp.value) : null;
 					break;
 				default:
-					value = legacyProp.value;
+					if (
+						legacyField.type === 'repeat' &&
+						(legacyProp.name === 'minOccurs' || legacyProp.name === 'maxOccurs') &&
+						legacyProp.value === '*'
+					) {
+						value = null;
+					} else {
+						value = legacyProp.value;
+					}
 			}
 			field.properties[legacyProp.name] = {
 				...legacyProp,
@@ -289,10 +300,10 @@ function parseLegacyFormDefinitionFields(
 		});
 
 		asArray<LegacyFormDefinitionProperty>(legacyField.constraints?.constraint).forEach((legacyProp) => {
-			const value = legacyProp.value.trim();
+			const value = legacyProp.value?.trim();
 			switch (legacyProp.name) {
 				case 'required':
-					if (value === 'true') {
+					if (value) {
 						field.validations.required = {
 							id: 'required',
 							value: value === 'true',
@@ -301,21 +312,46 @@ function parseLegacyFormDefinitionFields(
 					}
 					break;
 				case 'allowDuplicates':
+					if (value === 'true') {
+						field.validations.allowDuplicates = {
+							id: 'allowDuplicates',
+							value: value === 'true',
+							level: 'required'
+						};
+					}
 					break;
 				case 'pattern':
+					if (value) {
+						field.validations.pattern = {
+							id: 'pattern',
+							value,
+							level: 'required'
+						};
+					}
 					break;
 				case 'minSize':
+					if (value) {
+						const n = Number.parseInt(value, 10);
+						if (!Number.isNaN(n)) {
+							field.validations.minSize = {
+								id: 'minSize',
+								value: Math.max(0, n),
+								level: 'required'
+							};
+						}
+					}
 					break;
 				default:
 					console.log(`[parseLegacyFormDef] Unhandled constraint "${legacyProp.name}"`, legacyProp);
 			}
 		});
 
+		const propertyProp = legacyField.properties?.property;
 		switch (legacyField.type) {
-			case 'repeat':
+			case 'repeat': {
 				field.fields = {};
-				let min = parseInt(legacyField?.minOccurs);
-				let max = parseInt(legacyField?.maxOccurs);
+				let min = legacyField?.minOccurs !== '*' ? parseInt(legacyField?.minOccurs) : null;
+				const max = legacyField?.maxOccurs !== '*' ? parseInt(legacyField?.maxOccurs) : null;
 				isNaN(min) && (min = 0);
 				field.validations.required = {
 					id: 'required',
@@ -328,22 +364,24 @@ function parseLegacyFormDefinitionFields(
 						value: min,
 						level: 'required'
 					});
-				!isNaN(max) &&
-					(field.validations.maxCount = {
+				if (max != null && !Number.isNaN(max)) {
+					field.validations.maxCount = {
 						id: 'maxCount',
 						value: max,
 						level: 'required'
-					});
+					};
+				}
 				parseLegacyFormDefinitionFields(legacyField.fields.field, field.fields, dropTargetsLookup, null, dataSources);
 				break;
+			}
 			case 'node-selector':
 				field.validations = {
 					...field.validations,
-					...getFieldValidations(legacyField.properties.property, dropTargetsLookup)
+					...getFieldValidations(propertyProp, dropTargetsLookup)
 				};
 				field.validations.required = {
 					id: 'required',
-					value: Boolean(field.validations.minCount),
+					value: Boolean(field.validations.minCount?.value),
 					level: 'required'
 				};
 				break;
@@ -353,15 +391,15 @@ function parseLegacyFormDefinitionFields(
 			case 'image-picker':
 				field.validations = {
 					...field.validations,
-					...getFieldValidations(legacyField.properties.property),
-					...getFieldDataSourceValidations(legacyField.properties.property, dataSources)
+					...getFieldValidations(propertyProp),
+					...getFieldDataSourceValidations(propertyProp, dataSources)
 				};
 				break;
 			case 'video-picker':
 			case 'rte':
 				field.validations = {
 					...field.validations,
-					...getFieldDataSourceValidations(legacyField.properties.property, dataSources)
+					...getFieldDataSourceValidations(propertyProp, dataSources)
 				};
 		}
 
@@ -375,72 +413,108 @@ function parseLegacyFormDefinition(definition: LegacyFormDefinition): ContentTyp
 	}
 
 	const fields: LookupTable<ContentTypeField> = {};
-	const sections = [];
-	const dataSources = {};
-	const dropTargetsLookup: LookupTable<LegacyDataSource> = {};
+	const sections: Array<ContentTypeSection> = [];
+	const dataSources: LookupTable<DataSource> = {};
+	const dropTargetsLookup: LookupTable<DataSource> = {};
+
+	const legacyDataSourceArray = asArray(definition.datasources?.datasource);
 
 	// get receptacles dataSources
-	asArray(definition.datasources?.datasource).forEach((datasource: LegacyDataSource) => {
+	legacyDataSourceArray.forEach((datasource: LegacyDataSource) => {
 		// TODO: Delete datasource.properties after props have been added to the root object? Must update code usages of datasource.properties.
-		const properties = asArray(datasource.properties?.property);
-		properties.forEach((property) => {
-			let value: any = property.value;
+		dataSources[datasource.id] = { ...datasource, properties: {} };
+		const legacyDatasource = { ...datasource };
+		asArray(datasource.properties?.property).forEach((property) => {
+			let value: unknown = property.value;
 			switch (property.type) {
 				case 'boolean':
 					value = property.value.trim().toLowerCase() === 'true';
 					break;
 				case 'int':
-					value = parseInt(property.value);
-					if (isNaN(value)) value = 0;
-				// TODO: There's more `types`. Review getSupportedProperties across different datasources.
+					value = Number(property.value);
+					if (isNaN(value as number)) value = 0;
+				// TODO: There's more `types`. Review getSupportedProperties across different DSs. Preferably we drop these. These types should be on the descriptor for the DS form.
 				// case 'minMax':
 				//   value =
 				//   break;
 			}
-			datasource[property.name] = value;
+			dataSources[datasource.id].properties[property.name] = value;
+			// Also update legacyDatasource, since dropTargetsLookup references it for 'components' type datasources.
+			legacyDatasource.properties[property.name] = value;
 		});
-		if (datasource.type === 'components') dropTargetsLookup[datasource.id] = datasource;
-		dataSources[datasource.id] = datasource;
+		if (legacyDatasource.type === 'components') {
+			dropTargetsLookup[datasource.id] = dataSources[datasource.id];
+		}
 	});
 
 	// Parse Sections & Fields
-	asArray<LegacyFormDefinitionSection>(definition.sections?.section).forEach((legacySection) => {
+	asArray<LegacyFormDefinitionSection>(definition.sections?.section).forEach((legacySection, index) => {
 		const fieldIds = [];
 		parseLegacyFormDefinitionFields(
 			legacySection.fields?.field,
 			fields,
 			dropTargetsLookup,
 			fieldIds,
-			asArray(definition.datasources?.datasource)
+			legacyDataSourceArray
 		);
+
 		sections.push({
+			id: `section-${index}`,
+			title: legacySection.title,
+			color: legacySection.color ?? toColor(legacySection.title, 0.7),
 			description: legacySection.description,
 			expandByDefault: legacySection.defaultOpen === 'true',
-			title: legacySection.title,
 			fields: fieldIds
 		});
 	});
 
-	const topLevelProps: LegacyFormDefinitionProperty[] = asArray(definition.properties?.property);
+	const topLevelPropMap: LookupTable<LegacyFormDefinitionProperty> = createLookupTable(
+		asArray(definition.properties?.property) as LegacyFormDefinitionProperty[],
+		'name'
+	);
 
 	return {
 		id: definition['content-type'],
 		name: definition.title,
-		quickCreate: (definition.quickCreate ?? '').trim() === 'true',
+		description: definition.description,
+		quickCreate: definition.quickCreate?.trim() === 'true',
 		quickCreatePath: definition.quickCreatePath,
 		type: definition.objectType as LegacyContentType['type'],
-		displayTemplate: topLevelProps.find((prop) => prop.name === 'display-template')?.value,
-		mergeStrategy: topLevelProps.find((prop) => prop.name === 'merge-strategy')?.value,
+		displayTemplate: topLevelPropMap[XmlKeys.displayTemplate]?.value?.trim() || null,
+		mergeStrategy: topLevelPropMap[XmlKeys.mergeStrategy]?.value?.trim() || null,
+		// ∨∨∨ Added during TypeBuilder 2 ∨∨∨
+		hasJsController: definition.controller?.trim() === 'true',
+		thumbnailFileName: definition.imageThumbnail,
+		isHeadless: topLevelPropMap[XmlKeys.templateNotRequired]?.value?.trim() === 'true',
+		paths: parseLegacyFormDefinitionPathsProp(definition),
+		// ^^^ Added during TypeBuilder 2 ^^^
 		dataSources: Object.values(dataSources),
 		sections,
 		fields
 	};
 }
 
-function parseLegacyContentType(legacy: LegacyContentType): ContentType {
+function parseLegacyFormDefinitionPathsProp(definition: LegacyFormDefinition): ContentType['paths'] {
+	if (!definition.paths || !(definition.paths?.includes && definition.paths?.excludes)) return null;
+	const paths: ContentType['paths'] = {};
+	if (definition.paths?.includes) {
+		paths.includes = asArray(definition.paths.includes);
+	}
+	if (definition.paths?.excludes) {
+		paths.excludes = asArray(definition.paths.excludes);
+	}
+	return paths;
+}
+
+export function parseLegacyContentType(legacy: LegacyContentType): ContentType {
 	return {
+		hasJsController: null,
+		isHeadless: null,
+		paths: null,
+		thumbnailFileName: null,
 		id: legacy.form,
 		name: legacy.label.replace('Component - ', ''),
+		description: null,
 		quickCreate: legacy.quickCreate,
 		quickCreatePath: legacy.quickCreatePath,
 		type: legacy.type,
@@ -453,7 +527,7 @@ function parseLegacyContentType(legacy: LegacyContentType): ContentType {
 }
 
 function fetchFormDefinition(site: string, contentTypeId: string): Observable<ContentType> {
-	const path = `/content-types${contentTypeId}/form-definition.xml`;
+	const path = createFormDefinitionPathFromTypeId(contentTypeId);
 	return fetchConfigurationJSON(site, path, 'studio').pipe(map((def) => parseLegacyFormDefinition(def.form)));
 }
 
@@ -498,23 +572,28 @@ export function fetchLegacyContentTypes(site: string, path?: string): Observable
 	);
 }
 
-export interface FetchContentTypeUsageResponse<T = SandboxItem> {
+export interface FetchContentTypeUsageResponse<T = string> {
 	templates: T[];
 	scripts: T[];
 	content: T[];
 }
 
-export function fetchContentTypeUsage(site: string, contentTypeId: string): Observable<FetchContentTypeUsageResponse> {
+export function fetchContentTypeUsage(
+	site: string,
+	contentTypeId: string
+): Observable<FetchContentTypeUsageResponse<ContentItem>> {
 	const qs = toQueryString({ siteId: site, contentType: contentTypeId });
-	return get<Api2ResponseFormat<{ usage: FetchContentTypeUsageResponse<string> }>>(
+	return get<Api2ResponseFormat<{ usage: FetchContentTypeUsageResponse }>>(
 		`/studio/api/2/configuration/content-type/usage${qs}`
 	).pipe(
 		map((response) => response?.response.usage),
-		switchMap((usage: FetchContentTypeUsageResponse<string>) =>
+		switchMap((usage) =>
 			usage.templates.length + usage.scripts.length + usage.content.length === 0
-				? // @ts-ignore - avoiding creating new object with the exact same structure just for typescript's sake
-					of(usage as FetchContentTypeUsageResponse)
-				: fetchItemsByPath(site, [...usage.templates, ...usage.scripts, ...usage.content]).pipe(
+				? of(
+						// @ts-expect-error: at this point, `usage` is known to be empty arrays so we can safely cast it to `FetchContentTypeUsageResponse<ContentItem>`
+						usage as FetchContentTypeUsageResponse<ContentItem>
+					)
+				: fetchContentItems(site, [...usage.templates, ...usage.scripts, ...usage.content]).pipe(
 						map((items) => {
 							const itemLookup = createLookupTable(items, 'path');
 							const mapper = (path) => itemLookup[path];
@@ -538,7 +617,7 @@ export function deleteContentType(site: string, contentTypeId: string): Observab
 }
 
 export function associateTemplate(site: string, contentTypeId: string, displayTemplate: string): Observable<boolean> {
-	const path = stripDuplicateSlashes(`/content-types/${contentTypeId}/form-definition.xml`);
+	const path = createFormDefinitionPathFromTypeId(contentTypeId);
 	const module = 'studio';
 	return fetchConfigurationDOM(site, path, 'studio').pipe(
 		switchMap((doc) => {
@@ -572,7 +651,7 @@ export function associateTemplate(site: string, contentTypeId: string, displayTe
 }
 
 export function dissociateTemplate(site: string, contentTypeId: string): Observable<boolean> {
-	const path = stripDuplicateSlashes(`/content-types/${contentTypeId}/form-definition.xml`);
+	const path = createFormDefinitionPathFromTypeId(contentTypeId);
 	const module = 'studio';
 	return fetchConfigurationDOM(site, path, 'studio').pipe(
 		switchMap((doc) => {
@@ -592,7 +671,7 @@ export function dissociateTemplate(site: string, contentTypeId: string): Observa
 	);
 }
 
-export function fetchPreviewImage(site: string, contentTypeId: string): Observable<any> {
+export function fetchPreviewImage(site: string, contentTypeId: string): Observable<AjaxResponse<Blob>> {
 	const qs = toQueryString({ siteId: site, contentTypeId });
 	return getBinary(`/studio/api/2/configuration/content-type/preview_image${qs}`);
 }

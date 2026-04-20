@@ -14,14 +14,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { get, postJSON } from '../utils/ajax';
+import { del, get, postJSON } from '../utils/ajax';
 import {
 	Action,
 	BackendSite,
 	ContentValidationResult,
 	CreateSiteMeta,
+	DetailedSite,
 	DuplicateSiteMeta,
-	LegacySite,
 	Site
 } from '../models/Site';
 import { map, pluck } from 'rxjs/operators';
@@ -79,19 +79,11 @@ export function fetchAll(paginationOptions?: PaginationOptions): Observable<Page
 	);
 }
 
-export function create(site: CreateSiteMeta): Observable<Site> {
-	let api1Params: any = {};
-	Object.entries(site).forEach(([key, value]) => {
-		if (key === 'siteName') {
-			api1Params.name = value;
-		} else {
-			api1Params[underscore(key)] = value;
-		}
-	});
-	return postJSON('/studio/api/1/services/api/1/site/create.json', api1Params).pipe(
+export function create(site: CreateSiteMeta) {
+	return postJSON('/studio/api/2/sites', site).pipe(
 		map(() => ({
 			id: site.siteId,
-			name: site.siteName,
+			name: site.name,
 			description: site.description ?? '',
 			uuid: null,
 			imageUrl: `/.crafter/screenshots/default.png?crafterSite=${site.siteId}`
@@ -112,7 +104,7 @@ export function duplicate(site: DuplicateSiteMeta): Observable<Site> {
 }
 
 export function trash(id: string): Observable<boolean> {
-	return postJSON('/studio/api/1/services/api/1/site/delete-site.json', { siteId: id }).pipe(map(() => true));
+	return del(`/studio/api/2/sites/${id}`).pipe(map(() => true));
 }
 
 export function update(site: Omit<Site, 'uuid' | 'imageUrl'>): Observable<Api2ResponseFormat<{}>> {
@@ -123,9 +115,7 @@ export function update(site: Omit<Site, 'uuid' | 'imageUrl'>): Observable<Api2Re
 }
 
 export function exists(siteId: string): Observable<boolean> {
-	return get<{ exists: boolean }>(`/studio/api/1/services/api/1/site/exists.json?site=${siteId}`).pipe(
-		map((response) => response?.response?.exists)
-	);
+	return get(`/studio/api/2/sites/${siteId}/exists`).pipe(map(({ response }) => response?.exists));
 }
 
 export function validateActionPolicy(site: string, action: Action): Observable<ContentValidationResult>;
@@ -145,10 +135,8 @@ export function validateActionPolicy(
 	).pipe(pluck(...toPluck));
 }
 
-export function fetchLegacySite(siteId: string): Observable<LegacySite> {
-	return get(`/studio/api/1/services/api/1/site/get.json?site_id=${siteId}`).pipe(
-		map((response) => response?.response)
-	);
+export function fetchSite(siteId: string): Observable<DetailedSite> {
+	return get(`/studio/api/2/sites/${siteId}`).pipe(map(({ response }) => response?.site));
 }
 
 export function hasInitialPublish(siteId: string): Observable<boolean> {

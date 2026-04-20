@@ -51,8 +51,13 @@ import { SHARED_WORKER_NAME } from '../utils/constants';
 import { fetchActiveEnvironment } from '../services/environment';
 import { batchActions, dispatchDOMEvent } from './actions/misc';
 import { closeSingleFileUploadDialog } from './actions/dialogs';
+import { pushDialog, pushNonDialog } from './actions/dialogStack';
 
-export type EpicMiddlewareDependencies = { getIntl: () => IntlShape; worker: SharedWorker };
+export type EpicMiddlewareDependencies = {
+	getIntl: () => IntlShape;
+	store: CrafterCMSStore;
+	worker: SharedWorker;
+};
 
 export type CrafterCMSStore = EnhancedStore<GlobalState, StandardAction, any>;
 
@@ -167,7 +172,13 @@ export function getStoreSync(): CrafterCMSStore {
 export function createStoreSync(args: { preloadedState?: any; dependencies?: any } = {}): CrafterCMSStore {
 	const { preloadedState, dependencies } = args;
 	const epicMiddleware = createEpicMiddleware<StandardAction, StandardAction, GlobalState, EpicMiddlewareDependencies>({
-		dependencies: { getIntl: getCurrentIntl, ...dependencies }
+		dependencies: {
+			getIntl: getCurrentIntl,
+			get store() {
+				return store;
+			},
+			...dependencies
+		}
 	});
 	const store = configureStore({
 		reducer,
@@ -175,17 +186,20 @@ export function createStoreSync(args: { preloadedState?: any; dependencies?: any
 			getDefaultMiddleware({
 				thunk: false,
 				serializableCheck: {
+					ignoredPaths: ['dialogStack.byId'],
 					ignoredActions: [
 						// The SingleFileUpload dialog used via the global dialog manager will dispatch non-serializables.
 						// It is often used with dispatchDOMEvent and batchActions.
 						batchActions.type,
 						dispatchDOMEvent.type,
-						closeSingleFileUploadDialog.type
+						closeSingleFileUploadDialog.type,
+						pushDialog.type,
+						pushNonDialog.type
 					]
 				}
 			}).concat(epicMiddleware as Middleware),
 		preloadedState,
-		devTools: { name: 'Studio Store' }
+		devTools: { name: `Studio Store ${window.location.host}` }
 		// devTools: import.meta.env.NODE_ENV === 'production' ? false : { name: 'Studio Store' }
 	});
 	epicMiddleware.run(epic);

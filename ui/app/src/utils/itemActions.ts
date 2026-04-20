@@ -15,35 +15,11 @@
  */
 
 import { translations } from '../components/ItemActionsMenu/translations';
-import { AllItemActions, DetailedItem, LegacyItem } from '../models/Item';
+import { AllItemActions, ContentItem, LegacyItem } from '../models/Item';
 import { ContextMenuOption } from '../components/ContextMenu';
 import { getControllerPath, getRootPath, withoutIndex } from './path';
-import {
-	closeChangeContentTypeDialog,
-	closeConfirmDialog,
-	closeCreateFileDialog,
-	closeCreateFolderDialog,
-	closeDeleteDialog,
-	closePublishDialog,
-	closeUploadDialog,
-	showBrokenReferencesDialog,
-	showChangeContentTypeDialog,
-	showCodeEditorDialog,
-	showConfirmDialog,
-	showCreateFileDialog,
-	showCreateFolderDialog,
-	showDeleteDialog,
-	showDependenciesDialog,
-	showEditDialog,
-	showHistoryDialog,
-	showNewContentDialog,
-	showPreviewDialog,
-	showPublishDialog,
-	showRenameAssetDialog,
-	showUploadDialog,
-	showViewPackagesDialog
-} from '../state/actions/dialogs';
-import { fetchItemsByPath, fetchLegacyItemsTree, fetchSandboxItem } from '../services/content';
+import { popCodeEditorDialog, showHistoryDialog } from '../state/actions/dialogs';
+import { checkPathExistence, fetchContentItem, fetchContentItems, fetchLegacyItemsTree } from '../services/content';
 import {
 	batchActions,
 	changeContentType,
@@ -71,11 +47,10 @@ import {
 	duplicateWithPolicyValidation,
 	pasteItem,
 	pasteItemWithPolicyValidation,
-	reloadDetailedItem,
+	reloadContentItem,
 	setClipboard,
 	unlockItem
 } from '../state/actions/content';
-import { showErrorDialog } from '../state/reducers/dialogs/error';
 import { popPiece } from './string';
 import { IntlFormatters, MessageDescriptor } from 'react-intl';
 import {
@@ -102,16 +77,12 @@ import {
 	hasSchedulePublishAction,
 	hasUnlockAction,
 	hasUploadAction,
-	isInActiveWorkflow
-} from './content';
-import {
-	getEditorMode,
-	isImage,
-	isNavigable,
+	isAudio,
+	isInActiveWorkflow,
 	isPdfDocument,
-	isPreviewable,
 	isVideo
-} from '../components/PathNavigator/utils';
+} from './content';
+import { getEditorMode, isImage, isNavigable, isPreviewable } from '../components/PathNavigator/utils';
 import React from 'react';
 import { previewItem } from '../state/actions/preview';
 import { createPresenceTable } from './array';
@@ -122,7 +93,14 @@ import SystemType from '../models/SystemType';
 import { fetchItemVersions } from '../state/actions/versions';
 import StandardAction from '../models/StandardAction';
 import { fetchDependant } from '../services/dependencies';
-import { fetchAffectedPackages } from '../services/workflow';
+import { NewContentDialogProps } from '../components/NewContentDialog/utils';
+import { nanoid } from 'nanoid';
+import { popDialog, pushDialog, updateDialogState } from '../state/actions/dialogStack';
+import { createComponentId, pickShowContentFormAction, pushConfirmDialog, pushErrorDialog } from './system';
+import { checkAndCancelAffectedPackages } from '../components/ViewPackagesDialog/utils';
+import { getNormalizedFolderPathForApi1GetTypes } from './contentType';
+import { fetchLegacyContentTypes, parseLegacyContentType } from '../services/contentTypes';
+import { map } from 'rxjs/operators';
 
 export type ContextMenuOptionDescriptor<ID extends string = string> = {
 	id: ID;
@@ -276,7 +254,7 @@ export function toContextMenuOptionsLookup<Keys extends string = AllItemActions>
 	formatMessage: IntlFormatters['formatMessage']
 ): Record<Keys, ContextMenuOption> {
 	const menuOptions: any = {};
-	// @ts-ignore - not sure why the type system is not picking up that the "values" are ContextMenuOptionDescriptor
+	// @ts-expect-error - not sure why the type system is not picking up that the "values" are ContextMenuOptionDescriptor
 	Object.entries(menuOptionDescriptors).forEach(([key, { id, label }]) => {
 		menuOptions[key] = { id, label: formatMessage(label) };
 	});
@@ -284,7 +262,7 @@ export function toContextMenuOptionsLookup<Keys extends string = AllItemActions>
 }
 
 export function generateSingleItemOptions(
-	item: DetailedItem,
+	item: ContentItem,
 	formatMessage: IntlFormatters['formatMessage'],
 	options?: Partial<{
 		hasClipboard: boolean;
@@ -363,7 +341,7 @@ export function generateSingleItemOptions(
 		if (['page', 'component', 'taxonomy', 'levelDescriptor'].includes(type)) {
 			sectionA.push(menuOptions.view);
 		} else if (isPreviewable(item)) {
-			if (isImage(item) || isVideo(item) || isPdfDocument(item.mimeType)) {
+			if (isImage(item) || isVideo(item) || isAudio(item) || isPdfDocument(item.mimeType)) {
 				sectionA.push(menuOptions.viewMedia);
 			} else {
 				sectionA.push(menuOptions.viewCode);
@@ -446,7 +424,7 @@ export function generateSingleItemOptions(
 }
 
 export function generateMultipleItemOptions(
-	items: DetailedItem[],
+	items: ContentItem[],
 	formatMessage: IntlFormatters['formatMessage'],
 	options?: {
 		includeOnly: AllItemActions[];
@@ -496,18 +474,18 @@ export const itemActionDispatcher = ({
 	extraPayload
 }: {
 	site: string;
-	item: DetailedItem | DetailedItem[];
+	item: ContentItem | ContentItem[];
 	option: AllItemActions;
 	authoringBase: string;
 	dispatch: Dispatch;
-	formatMessage;
+	formatMessage: IntlFormatters['formatMessage'];
 	clipboard?: Clipboard;
 	onActionSuccess?: any;
 	event?: React.MouseEvent<Element, MouseEvent>;
 	extraPayload?: any;
 }) => {
-	let item: DetailedItem;
-	let items: DetailedItem[];
+	let item: ContentItem;
+	let items: ContentItem[];
 	if (Array.isArray(itemOrItems)) {
 		items = itemOrItems;
 	} else {
@@ -519,7 +497,7 @@ export const itemActionDispatcher = ({
 		switch (option) {
 			case 'view': {
 				const path = item.path;
-				dispatch(showEditDialog({ site, path, authoringBase, readonly: true }));
+				dispatch(pickShowContentFormAction({ site, path, authoringBase, readonly: true }));
 				break;
 			}
 			case 'edit': {
@@ -527,41 +505,54 @@ export const itemActionDispatcher = ({
 				//  we need the modelId that's not supplied to this function.
 				// const src = `${defaultSrc}site=${site}&path=${embeddedParentPath}&isHidden=true&modelId=${modelId}&type=form`
 				const path = item.path;
-				const actionToDispatch = showEditDialog({
-					site,
-					path,
-					authoringBase,
-					onSaveSuccess: batchActions([
-						showEditItemSuccessNotification(),
-						...(onActionSuccess ? [onActionSuccess] : [])
-					]),
-					...extraPayload
-				});
-				if (isInActiveWorkflow(item)) {
-					dispatch(showViewPackagesDialog({ item, onContinue: actionToDispatch }));
-				} else {
-					dispatch(actionToDispatch);
-				}
+				dispatch(
+					pickShowContentFormAction({
+						site,
+						path,
+						authoringBase,
+						onSaveSuccess: ({ action }) =>
+							dispatch(
+								batchActions([
+									showEditItemSuccessNotification({ action }),
+									...(onActionSuccess ? [onActionSuccess] : [])
+								])
+							),
+						...extraPayload
+					})
+				);
 				break;
 			}
 			case 'createFolder': {
+				const dialogId = nanoid();
 				dispatch(
-					showCreateFolderDialog({
-						path: item.path,
-						allowBraces: item.path.startsWith('/scripts/rest'),
-						onCreated: batchActions([closeCreateFolderDialog(), showCreateFolderSuccessNotification()])
+					pushDialog({
+						id: dialogId,
+						component: createComponentId('CreateFolderDialog'),
+						props: {
+							path: item.path,
+							allowBraces: item.path.startsWith('/scripts/rest'),
+							onCreated: () =>
+								dispatch(batchActions([popDialog({ id: dialogId }), showCreateFolderSuccessNotification()])),
+							isSubmitting: null
+						}
 					})
 				);
 				break;
 			}
 			case 'rename': {
 				if (item.systemType === 'folder') {
+					const dialogId = nanoid();
 					dispatch(
-						showCreateFolderDialog({
-							path: item.path,
-							allowBraces: item.path.startsWith('/scripts/rest'),
-							rename: true,
-							value: item.label
+						pushDialog({
+							id: dialogId,
+							component: createComponentId('CreateFolderDialog'),
+							props: {
+								path: item.path,
+								allowBraces: item.path.startsWith('/scripts/rest'),
+								rename: true,
+								value: item.label,
+								onRenamed: () => dispatch(popDialog({ id: dialogId }))
+							}
 						})
 					);
 				} else {
@@ -572,79 +563,169 @@ export const itemActionDispatcher = ({
 								? 'controller'
 								: 'asset';
 
+					const dialogId = nanoid();
 					dispatch(
-						showRenameAssetDialog({
-							path: item.path,
-							allowBraces: item.path.startsWith('/scripts/rest'),
-							type,
-							value: item.label
+						pushDialog({
+							id: dialogId,
+							component: createComponentId('RenameAssetDialog'),
+							props: {
+								item,
+								allowBraces: item.path.startsWith('/scripts/rest'),
+								type,
+								onRenamed: () => dispatch(popDialog({ id: dialogId }))
+							}
 						})
 					);
 				}
 				break;
 			}
 			case 'createContent': {
-				dispatch(
-					showNewContentDialog({
-						item,
-						rootPath: getRootPath(item.path),
-						// @ts-ignore - required attributes of `showEditDialog` are submitted by new content dialog `onContentTypeSelected` callback and injected into the showEditDialog action by the GlobalDialogManger
-						onContentTypeSelected: showEditDialog({})
-					})
-				);
+				const id = nanoid();
+
+				dispatch(blockUI({ progress: 'indeterminate' }));
+				// TODO: Right now we're fetching legacy content types to check if there's only one type. Pending API v2 support
+				fetchLegacyContentTypes(site, getNormalizedFolderPathForApi1GetTypes(item))
+					.pipe(map((legacyTypes) => legacyTypes.map(parseLegacyContentType)))
+					.subscribe({
+						next(response) {
+							const contentTypes = response;
+							if (contentTypes?.length === 1) {
+								const contentType = contentTypes[0];
+								dispatch(
+									batchActions([
+										unblockUI(),
+										pickShowContentFormAction({
+											authoringBase,
+											site,
+											path: withoutIndex(item.path),
+											contentTypeId: contentType.id,
+											isNewContent: true
+										})
+									])
+								);
+							} else {
+								dispatch(
+									batchActions([
+										unblockUI(),
+										pushDialog({
+											id,
+											component: createComponentId('NewContentDialog'),
+											props: {
+												item,
+												onContentTypeSelected(response) {
+													dispatch(updateDialogState({ id, props: { open: false } }));
+													dispatch(
+														pickShowContentFormAction({
+															authoringBase,
+															site,
+															path: response.path,
+															contentTypeId: response.contentType.id,
+															isNewContent: true
+														})
+													);
+												}
+											} as Partial<NewContentDialogProps>
+										})
+									])
+								);
+							}
+						},
+						error({ response }) {
+							dispatch(batchActions([unblockUI(), pushErrorDialog({ props: { error: response } })]));
+						}
+					});
 				break;
 			}
 			case 'changeContentType': {
+				const dialogId = nanoid();
 				dispatch(
-					showConfirmDialog({
-						title: formatMessage(translations.changeContentType),
-						body: formatMessage(translations.changeContentTypeBody),
-						onCancel: closeConfirmDialog(),
-						onOk: batchActions([
-							closeConfirmDialog(),
-							showChangeContentTypeDialog({
-								item,
-								rootPath: getRootPath(item.path),
-								selectedContentType: item.contentTypeId,
-								onContentTypeSelected: batchActions([
-									closeChangeContentTypeDialog(),
-									changeContentType({ originalContentTypeId: item.contentTypeId, path: item.path })
-								])
-							})
-						])
+					pushConfirmDialog({
+						id: dialogId,
+						props: {
+							title: formatMessage(translations.changeContentType),
+							body: formatMessage(translations.changeContentTypeBody),
+							onCancel: () => dispatch(popDialog({ id: dialogId })),
+							onOk: () => {
+								const changeContentTypeDialogId = nanoid();
+								dispatch(
+									batchActions([
+										popDialog({ id: dialogId }),
+										pushDialog({
+											id: changeContentTypeDialogId,
+											component: createComponentId('ChangeContentTypeDialog'),
+											props: {
+												item,
+												onContentTypeSelected: ({ contentType }) => {
+													dispatch(
+														batchActions([
+															popDialog({ id: changeContentTypeDialogId }),
+															changeContentType({
+																originalContentTypeId: item.contentTypeId,
+																path: item.path,
+																newContentTypeId: contentType.id
+															})
+														])
+													);
+												}
+											}
+										})
+									])
+								);
+							}
+						}
 					})
 				);
 				break;
 			}
 			case 'cut': {
 				const path = item.path;
-				fetchDependant(site, path).subscribe({
-					next(dependantItems) {
-						const actionToDispatch = batchActions([
-							setClipboard({
-								type: 'CUT',
-								paths: [item.path],
-								sourcePath: item.path
-							}),
-							emitSystemEvent(itemCut({ target: item.path })),
-							showCutItemSuccessNotification()
-						]);
+				if (item.systemType === 'folder') {
+					dispatch(pushDialog({ component: createComponentId('FolderMoveAlertDialog'), props: { item } }));
+				} else {
+					checkAndCancelAffectedPackages({
+						siteId: site,
+						item,
+						dispatch,
+						onContinue: () => {
+							fetchDependant(site, path).subscribe({
+								next(dependantItems) {
+									const actionToDispatch = batchActions([
+										setClipboard({
+											type: 'CUT',
+											paths: [item.path],
+											sourcePath: item.path
+										}),
+										emitSystemEvent(itemCut({ target: item.path })),
+										showCutItemSuccessNotification()
+									]);
 
-						if (dependantItems?.length) {
-							fetchItemsByPath(
-								site,
-								dependantItems.map((item) => item.uri ?? item.path)
-							).subscribe((sandboxItems) => {
-								dispatch(showBrokenReferencesDialog({ path, references: sandboxItems, onContinue: actionToDispatch }));
+									if (dependantItems?.length) {
+										fetchContentItems(
+											site,
+											dependantItems.map((item) => item.path)
+										).subscribe((contentItems) => {
+											dispatch(
+												pushDialog({
+													component: createComponentId('BrokenReferencesDialog'),
+													props: {
+														path,
+														references: contentItems,
+														onContinue: () => dispatch(actionToDispatch)
+													}
+												})
+											);
+										});
+									} else {
+										dispatch(actionToDispatch);
+									}
+								},
+								error({ response }) {
+									dispatch(pushErrorDialog({ props: { error: response } }));
+								}
 							});
-						} else {
-							dispatch(actionToDispatch);
 						}
-					},
-					error({ response }) {
-						dispatch(showErrorDialog({ error: response }));
-					}
-				});
+					});
+				}
 				break;
 			}
 			case 'copy': {
@@ -654,9 +735,9 @@ export const itemActionDispatcher = ({
 						message: `${formatMessage(translations.processing)}...`
 					})
 				);
-				fetchSandboxItem(site, item.path).subscribe({
-					next(item) {
-						if (item) {
+				checkPathExistence(site, item.path).subscribe({
+					next(exists) {
+						if (exists) {
 							dispatch(
 								batchActions([
 									unblockUI(),
@@ -672,11 +753,13 @@ export const itemActionDispatcher = ({
 							dispatch(
 								batchActions([
 									unblockUI(),
-									showErrorDialog({
-										error: {
-											code: '7000',
-											message: `Content not found`,
-											remedialAction: `Check if the item was deleted from the system or blob store`
+									pushErrorDialog({
+										props: {
+											error: {
+												code: '7000',
+												message: `Content not found`,
+												remedialAction: `Check if the item was deleted from the system or blob store`
+											}
 										}
 									})
 								])
@@ -684,7 +767,7 @@ export const itemActionDispatcher = ({
 						}
 					},
 					error(response) {
-						dispatch(batchActions([unblockUI(), showErrorDialog({ error: response })]));
+						dispatch(batchActions([unblockUI(), pushErrorDialog({ props: { error: response } })]));
 					}
 				});
 				break;
@@ -728,12 +811,15 @@ export const itemActionDispatcher = ({
 			}
 			case 'paste': {
 				if (clipboard.type === 'CUT') {
-					fetchSandboxItem(site, clipboard.sourcePath).subscribe((clipboardItem) => {
+					fetchContentItem(site, clipboard.sourcePath).subscribe((clipboardItem) => {
 						if (isInActiveWorkflow(clipboardItem)) {
 							dispatch(
-								showViewPackagesDialog({
-									item: clipboardItem,
-									onContinue: pasteItem({ path: item.path })
+								pushDialog({
+									component: createComponentId('ViewPackagesDialog'),
+									props: {
+										item: clipboardItem,
+										onContinue: () => dispatch(pasteItem({ path: item.path }))
+									}
 								})
 							);
 						} else {
@@ -746,35 +832,49 @@ export const itemActionDispatcher = ({
 				break;
 			}
 			case 'duplicateAsset': {
+				const dialogId = nanoid();
 				dispatch(
-					showConfirmDialog({
-						title: formatMessage(translations.duplicate),
-						body: formatMessage(translations.duplicateDialogBody),
-						onCancel: closeConfirmDialog(),
-						onOk: batchActions([
-							closeConfirmDialog(),
-							duplicateWithPolicyValidation({
-								path: item.path,
-								type: 'asset'
-							})
-						])
+					pushConfirmDialog({
+						id: dialogId,
+						props: {
+							title: formatMessage(translations.duplicate),
+							body: formatMessage(translations.duplicateDialogBody),
+							onCancel: () => dispatch(popDialog({ id: dialogId })),
+							onOk: () =>
+								dispatch(
+									batchActions([
+										popDialog({ id: dialogId }),
+										duplicateWithPolicyValidation({
+											path: item.path,
+											type: 'asset'
+										})
+									])
+								)
+						}
 					})
 				);
 				break;
 			}
 			case 'duplicate': {
+				const dialogId = nanoid();
 				dispatch(
-					showConfirmDialog({
-						title: formatMessage(translations.duplicate),
-						body: formatMessage(translations.duplicateDialogBody),
-						onCancel: closeConfirmDialog(),
-						onOk: batchActions([
-							closeConfirmDialog(),
-							duplicateWithPolicyValidation({
-								path: item.path,
-								type: 'item'
-							})
-						])
+					pushConfirmDialog({
+						id: dialogId,
+						props: {
+							title: formatMessage(translations.duplicate),
+							body: formatMessage(translations.duplicateDialogBody),
+							onCancel: () => dispatch(popDialog({ id: dialogId })),
+							onOk: () =>
+								dispatch(
+									batchActions([
+										popDialog({ id: dialogId }),
+										duplicateWithPolicyValidation({
+											path: item.path,
+											type: 'item'
+										})
+									])
+								)
+						}
 					})
 				);
 				break;
@@ -792,7 +892,12 @@ export const itemActionDispatcher = ({
 				break;
 			}
 			case 'dependencies': {
-				dispatch(showDependenciesDialog({ item, rootPath: getRootPath(item.path) }));
+				dispatch(
+					pushDialog({
+						component: createComponentId('DependenciesDialog'),
+						props: { item, rootPath: getRootPath(item.path) }
+					})
+				);
 				break;
 			}
 			case 'editTemplate': {
@@ -805,66 +910,88 @@ export const itemActionDispatcher = ({
 			}
 			case 'createTemplate':
 			case 'createController': {
+				const dialogId = nanoid();
 				dispatch(
-					showCreateFileDialog({
-						path: withoutIndex(item.path),
-						type: option === 'createController' ? 'controller' : 'template',
-						allowBraces: option === 'createController' ? item.path.startsWith('/scripts/rest') : false,
-						onCreated: batchActions([
-							closeCreateFileDialog(),
-							showCreateItemSuccessNotification(),
-							option === 'createController' ? editController() : editTemplate()
-						])
+					pushDialog({
+						id: dialogId,
+						component: createComponentId('CreateFileDialog'),
+						props: {
+							path: withoutIndex(item.path),
+							type: option === 'createController' ? 'controller' : 'template',
+							allowBraces: option === 'createController' ? item.path.startsWith('/scripts/rest') : false,
+							onCreated: (payload) =>
+								dispatch(
+									batchActions([
+										popDialog({ id: dialogId }),
+										showCreateItemSuccessNotification(),
+										option === 'createController' ? editController(payload) : editTemplate(payload)
+									])
+								),
+							isSubmitting: null
+						}
 					})
 				);
 				break;
 			}
 			case 'editCode': {
-				const editorShowAction = showCodeEditorDialog({
-					path: item.path,
-					mode: getEditorMode(item)
-				});
-				if (isInActiveWorkflow(item)) {
-					dispatch(
-						showViewPackagesDialog({
-							item,
-							onContinue: editorShowAction
-						})
-					);
-				} else {
-					dispatch(editorShowAction);
-				}
+				const dialogId = nanoid();
+				dispatch(
+					pushDialog({
+						id: dialogId,
+						component: createComponentId('CodeEditorDialog'),
+						allowMinimize: true,
+						allowFullScreen: true,
+						props: {
+							path: item.path,
+							mode: getEditorMode(item),
+							onClose: () => dispatch(popCodeEditorDialog({ id: dialogId }))
+						}
+					})
+				);
 				break;
 			}
 			case 'viewCode': {
 				const mode = getEditorMode(item);
 				dispatch(
-					showPreviewDialog({
-						type: 'editor',
-						title: item.label,
-						url: item.path,
-						path: item.path,
-						mode
+					pushDialog({
+						id: nanoid(),
+						component: createComponentId('PreviewDialog'),
+						allowMinimize: true,
+						allowFullScreen: true,
+						props: {
+							type: 'editor',
+							title: item.label,
+							url: item.path,
+							path: item.path,
+							mode
+						}
 					})
 				);
 				break;
 			}
 			case 'viewMedia': {
 				dispatch(
-					showPreviewDialog({
-						type: isImage(item) ? 'image' : isVideo(item) ? 'video' : 'pdf',
-						title: item.label,
-						url: item.path
+					pushDialog({
+						component: createComponentId('PreviewDialog'),
+						allowMinimize: true,
+						allowFullScreen: true,
+						props: {
+							type: isImage(item) ? 'image' : isVideo(item) ? 'video' : isAudio(item) ? 'audio' : 'pdf',
+							title: item.label,
+							url: item.path
+						}
 					})
 				);
 				break;
 			}
 			case 'upload': {
 				dispatch(
-					showUploadDialog({
-						path: item.path,
-						site,
-						onClose: closeUploadDialog()
+					pushDialog({
+						component: createComponentId('UploadDialog'),
+						props: {
+							path: item.path,
+							site
+						}
 					})
 				);
 				break;
@@ -878,7 +1005,7 @@ export const itemActionDispatcher = ({
 				break;
 			}
 			case 'viewPackages': {
-				dispatch(showViewPackagesDialog({ item }));
+				dispatch(pushDialog({ component: createComponentId('ViewPackagesDialog'), props: { item } }));
 				break;
 			}
 			default:
@@ -889,14 +1016,22 @@ export const itemActionDispatcher = ({
 	// TODO: some actions below aren't really well covered for multiple actions (e.g. deleting controller or template)
 	switch (option) {
 		case 'delete': {
+			const dialogId = nanoid();
 			dispatch(
-				showDeleteDialog({
-					items,
-					onSuccess: batchActions([
-						showDeleteItemSuccessNotification(),
-						closeDeleteDialog(),
-						...(onActionSuccess ? [onActionSuccess] : [])
-					])
+				pushDialog({
+					id: dialogId,
+					component: createComponentId('DeleteDialog'),
+					props: {
+						items,
+						onSuccess: ({ items }: { items: ContentItem[] }) =>
+							dispatch(
+								batchActions([
+									showDeleteItemSuccessNotification({ items }),
+									popDialog({ id: dialogId }),
+									...(onActionSuccess ? [onActionSuccess] : [])
+								])
+							)
+					}
 				})
 			);
 			break;
@@ -913,22 +1048,31 @@ export const itemActionDispatcher = ({
 		case 'schedulePublish':
 		case 'requestPublish': {
 			const schedulingMap = {
-				approvePublish: null,
+				approvePublish: undefined,
 				schedulePublish: 'custom',
 				requestPublish: 'now',
 				publish: 'now'
 			};
+			const dialogId = nanoid();
 			dispatch(
-				showPublishDialog({
-					items,
-					scheduling: schedulingMap[option],
-					onSuccess: batchActions([
-						showPublishItemSuccessNotification(),
-						...items.map((item) => reloadDetailedItem({ path: item.path })),
-						closePublishDialog(),
-						fetchPublishingStatus(),
-						...(onActionSuccess ? [onActionSuccess] : [])
-					])
+				pushDialog({
+					id: dialogId,
+					component: createComponentId('PublishDialog'),
+					props: {
+						items,
+						scheduling: schedulingMap[option],
+						onSuccess: (payload) => {
+							dispatch(
+								batchActions([
+									showPublishItemSuccessNotification(payload),
+									...items.map((item) => reloadContentItem({ path: item.path })),
+									popDialog({ id: dialogId }),
+									fetchPublishingStatus(),
+									...(onActionSuccess ? [onActionSuccess] : [])
+								])
+							);
+						}
+					}
 				})
 			);
 			break;

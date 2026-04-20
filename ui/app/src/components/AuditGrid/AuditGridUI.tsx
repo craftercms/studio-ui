@@ -307,7 +307,11 @@ export function AuditGridUI(props: AuditGridUIProps) {
 				renderCell: (params: GridCellParams) => {
 					return parametersLookup[params.id] === undefined || parametersLookup[params.id]?.length ? (
 						<Tooltip title={<FormattedMessage id="auditGrid.showParameters" defaultMessage="Show parameters" />}>
-							<IconButton onClick={() => onGetParameters(params)} size="large">
+							<IconButton
+								onClick={() => onGetParameters(params)}
+								size="large"
+								aria-label={formatMessage({ id: 'auditGrid.showParameters', defaultMessage: 'Show parameters' })}
+							>
 								<VisibilityRoundedIcon />
 							</IconButton>
 						</Tooltip>
@@ -406,6 +410,26 @@ export function AuditGridUI(props: AuditGridUIProps) {
 				pageSizeOptions={[5, 10, 15]}
 				paginationMode="server"
 				rowCount={auditLogs.total}
+				localeText={{
+					// localeTextConstants retrieved from https://github.com/mui/mui-x/blob/HEAD/packages/x-data-grid/src/constants/localeTextConstants.ts
+					paginationRowsPerPage: formatMessage({ defaultMessage: 'Rows per page:' }),
+					paginationDisplayedRows: ({ from, to, count, estimated }) => {
+						if (!estimated) {
+							return formatMessage(
+								{ defaultMessage: '{from}–{to} de {countValid, select, true {{count}} other {more than {to}}}' },
+								{ from, to, count, countValid: count !== -1 }
+							);
+						}
+						const estimatedLabel = formatMessage(
+							{ defaultMessage: '{around, select, true {around {estimated}} other {more than {to}}}' },
+							{ estimated, to, around: estimated > to }
+						);
+						return formatMessage(
+							{ defaultMessage: '{from}–{to} of {countValid, select, true {{count}} other {{estimatedLabel}}}' },
+							{ from, to, count, estimatedLabel, countValid: count !== -1 }
+						);
+					}
+				}}
 			/>
 			<AuditGridFilterPopover
 				open={Boolean(anchorPosition)}

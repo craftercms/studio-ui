@@ -36,21 +36,24 @@ import TextIcon from '@mui/icons-material/SubjectRounded';
 import FolderIcon from '@mui/icons-material/FolderOpenRounded';
 import TaxonomyIcon from '@mui/icons-material/LocalOfferOutlined';
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
-import { DetailedItem, SandboxItem } from '../../models/Item';
+import { ContentItem } from '../../models/Item';
 import { IntlFormatters, useIntl } from 'react-intl';
 import { messages } from './translations';
 import { SvgIconProps } from '@mui/material/SvgIcon';
 import { BoxProps } from '@mui/material/Box';
 
 export interface ItemTypeIconProps extends SvgIconProps {
-	item: DetailedItem | SandboxItem;
+	item: Pick<ContentItem, 'systemType' | 'mimeType'>;
 	tooltipProps?: Partial<TooltipProps>;
 	sxs?: Partial<{
 		icon: BoxProps['sx'];
 	}>;
 }
 
-export function getItemTypeText(item: DetailedItem | SandboxItem, formatMessage: IntlFormatters['formatMessage']) {
+export function getItemTypeText(
+	item: Pick<ContentItem, 'systemType' | 'mimeType'>,
+	formatMessage: IntlFormatters['formatMessage']
+) {
 	return messages[item.systemType]
 		? formatMessage(messages[item.systemType])
 		: item.mimeType
@@ -147,7 +150,7 @@ export function ItemTypeIcon(props: ItemTypeIconProps) {
 	}
 	return (
 		<Tooltip {...tooltipProps} title={getItemTypeText(item, formatMessage)}>
-			<TheIcon sx={sxs?.icon} {...rest} />
+			<TheIcon sx={sxs?.icon} aria-label={getItemTypeText(item, formatMessage)} aria-hidden={false} {...rest} />
 		</Tooltip>
 	);
 }

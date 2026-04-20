@@ -21,9 +21,14 @@ import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import { Control } from '../../models/FormsEngine';
 import commonStyles from './styles';
+import usePossibleTranslation from '../../hooks/usePossibleTranslation';
+import { useIntl } from 'react-intl';
+import { getPossibleTranslation } from '../../utils/i18n';
 
 export function Dropdown(props: Control) {
 	const { field, value = '', onChange, disabled } = props;
+	const label = usePossibleTranslation(field.name);
+	const { formatMessage } = useIntl();
 
 	const handleSelectChange = (event: SelectChangeEvent<{ value: unknown }>) => {
 		onChange(event.target.value);
@@ -31,11 +36,11 @@ export function Dropdown(props: Control) {
 
 	return (
 		<FormControl variant="outlined" sx={commonStyles.formControl} fullWidth>
-			<InputLabel id={`labelFor_${field.id}`}>{field.name}</InputLabel>
+			<InputLabel id={`labelFor_${field.id}`}>{label}</InputLabel>
 			<Select
 				labelId={`labelFor_${field.id}`}
 				id={`select_${field.id}`}
-				label={field.name}
+				label={label}
 				fullWidth
 				value={value}
 				onChange={handleSelectChange}
@@ -43,7 +48,7 @@ export function Dropdown(props: Control) {
 			>
 				{field.values?.map((possibleValue: any) => (
 					<MenuItem value={possibleValue.value} key={possibleValue.value}>
-						{possibleValue.label}
+						{getPossibleTranslation(possibleValue.label, formatMessage)}
 					</MenuItem>
 				))}
 			</Select>

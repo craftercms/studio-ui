@@ -18,25 +18,19 @@ import { useSpreadState } from '../../hooks/useSpreadState';
 import React, { SyntheticEvent, useEffect, useMemo, useState } from 'react';
 import { PublishingTarget, PublishParams } from '../../models/Publishing';
 import LookupTable from '../../models/LookupTable';
-import { InternalDialogState, PublishDialogContainerProps, usePublishState } from './utils';
+import { InternalDialogState, itemsArrayChanged, PublishDialogContainerProps, usePublishState } from './utils';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useDispatch } from 'react-redux';
 import { calculatePackage, publish } from '../../services/publishing';
-import { getComputedPublishingTarget, getDateScheduled } from '../../utils/content';
 import { FormattedMessage } from 'react-intl';
 import { isBlank } from '../../utils/string';
-import { updatePublishDialog } from '../../state/actions/dialogs';
-import { fetchDetailedItems } from '../../services/content';
-import { DetailedItem } from '../../models';
-import { fetchDetailedItemsComplete } from '../../state/actions/content';
+import { ContentItem, LightItem } from '../../models';
 import { createAtLeastHalfHourInFutureDate } from '../../utils/datetime';
-import { batchActions } from '../../state/actions/misc';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
 import DialogBody from '../DialogBody';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { LoadingState } from '../LoadingState';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import Alert from '@mui/material/Alert';
 import { Fade, Typography } from '@mui/material';
 import { DateTimeTimezonePickerProps } from '../DateTimeTimezonePicker';
@@ -48,20 +42,22 @@ import Paper from '@mui/material/Paper';
 import Divider from '@mui/material/Divider';
 import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
-import { map, switchMap } from 'rxjs/operators';
-import { createLookupTable } from '../../utils/object';
+import { createLookupTable, nnou } from '../../utils/object';
 import PublishPackageItemsView from './PublishPackageItemsView';
 import PublishReferencesLegend from './PublishReferencesLegend';
-import { of } from 'rxjs';
 import { PublishDialogForm } from './PublishDialogForm';
+import useActiveUser from '../../hooks/useActiveUser';
+import { pushErrorDialog } from '../../utils/system';
+import { useEnhancedDialogContext } from '../EnhancedDialog';
+import { ConfirmDropdown } from '../ConfirmDropdown';
 
 export type DependencyType = 'soft' | 'hard';
 export type DependencyMap = Record<string, DependencyType>;
 export type DependencyDataState = {
 	paths: string[];
 	typeByPath: DependencyMap;
-	itemsByPath: LookupTable<DetailedItem>;
-	items: DetailedItem[];
+	itemsByPath: LookupTable<LightItem>;
+	items: LightItem[];
 };
 
 export function DependencyChip({ type }: { type: DependencyType }) {
@@ -80,8 +76,9 @@ export function DependencyChip({ type }: { type: DependencyType }) {
 export function PublishDialogContainer(props: PublishDialogContainerProps) {
 	const { items: initialItems, scheduling = 'now', onSuccess, onClose, isSubmitting } = props;
 	const siteId = useActiveSiteId();
+	const { permissionsBySite } = useActiveUser();
 	const dispatch = useDispatch();
-	const [detailedItems, setDetailedItems] = useState<DetailedItem[]>();
+	const [contentItems, setContentItems] = useState<ContentItem[]>();
 	const [isFetchingItems, setIsFetchingItems] = useState(false);
 	const [state, setState] = useSpreadState<InternalDialogState>({
 		packageTitle: '',
@@ -93,7 +90,9 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 		error: null,
 		fetchingItems: false
 	});
-	const [mainItems, setMainItems] = useState<DetailedItem[]>(initialItems);
+	const [mainItems, setMainItems] = useState<LightItem[]>(initialItems);
+	const [previousItems, setPreviousItems] = useState<LightItem[] | null>(null);
+	const [childrenItems, setChildrenItems] = useState<LightItem[]>([]);
 	const [published, setPublished] = useState<boolean>(null);
 	const [publishingTargets, setPublishingTargets] = useState<PublishingTarget[]>(null);
 	const {
@@ -107,75 +106,27 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 		parentTreeNodePaths,
 		itemsAndDependenciesPaths,
 		itemsAndDependenciesMap
-	} = usePublishState({ mainItems });
-	const effectRefs = useUpdateRefs({ initialItems, state });
-	const hasPublishPermission = itemsDataSummary.allItemsHavePublishPermission;
-	const { mixedPublishingTargets, mixedPublishingDates, dateScheduled, publishingTarget } = useMemo(() => {
-		const state = {
-			mixedPublishingTargets: false,
-			mixedPublishingDates: false,
-			dateScheduled: null,
-			publishingTarget: '' as InternalDialogState['publishingTarget']
-		};
-
+	} = usePublishState({ mainItems, childrenItems });
+	const { updateSubmittingOrHasPendingChanges } = useEnhancedDialogContext();
+	const hasPublishPermission = permissionsBySite[siteId].includes('publish_approve');
+	const publishingTarget = useMemo(() => {
+		let target: InternalDialogState['publishingTarget'] = '';
 		if (mainItems) {
-			const itemsIncludedForPublish = mainItems;
-			if (itemsIncludedForPublish.length === 0) {
-				return state;
+			if (mainItems.length === 0) {
+				return target;
 			}
-
-			// region Discover mixed targets and/or schedules and sets the publishingTarget based off the items
-			let target: string;
-			let schedule: string;
-			itemsIncludedForPublish.some((item, index) => {
-				const computedTarget = getComputedPublishingTarget(itemsIncludedForPublish[0]);
-				const computedSchedule = getDateScheduled(itemsIncludedForPublish[0]); // TODO: Uses .live/.staging
-				if (index === 0) {
-					target = computedTarget;
-					schedule = computedSchedule;
-				} else {
-					if (target !== computedTarget) {
-						// If the computed target is different, we have mixed targets.
-						// Could be any combination of live vs staging vs null that triggers mixed targets.
-						state.mixedPublishingTargets = true;
-					}
-					if (schedule !== computedSchedule) {
-						// If the current item's computed scheduled date is different, we have mixed dates.
-						// Could be any combination of live vs staging vs null that triggers mixed targets.
-						state.mixedPublishingDates = true;
-					}
-				}
-				if (state.publishingTarget === '' && computedTarget !== null) {
-					state.publishingTarget = computedTarget;
-				}
-				// First found dateScheduled cached for later
-				if (state.dateScheduled === null && computedSchedule !== null) {
-					state.dateScheduled = computedSchedule;
-				}
-				// Once these things are found to be true, no need to iterate further.
-				return state.mixedPublishingTargets && state.mixedPublishingDates && state.dateScheduled !== null;
-			});
-			// endregion
-
 			// If there aren't any available target (or they haven't loaded), dialog should not have a selected target.
-			if (publishingTargets?.length) {
-				// If there are mixed targets, we want manual user selection of a target.
-				// Otherwise, use what was previously found as the target on the selected items.
-				if (!state.mixedPublishingTargets && state.publishingTarget === '') {
-					// If we haven't found a target by this point, we wish to default the dialog to
-					// staging (as long as that target is enabled in the system, which is checked next).
-					state.publishingTarget =
-						publishingTargets.find((target) => target.name === 'staging')?.name ?? publishingTargets[0].name;
-				}
-			} else {
-				state.publishingTarget = '';
+			if (publishingTargets?.length && target === '') {
+				// If we haven't found a target by this point, we wish to default the dialog to
+				// staging (as long as that target is enabled in the system, which is checked next).
+				target = publishingTargets.find((target) => target.name === 'staging')?.name ?? publishingTargets[0].name;
 			}
 		}
 
-		return state;
+		return target;
 	}, [publishingTargets, mainItems]);
 	const isRequestPublish = !hasPublishPermission || state.requestApproval;
-	const showRequestApproval = hasPublishPermission && !itemsDataSummary.allItemsInSubmittedState;
+	const showRequestApproval = hasPublishPermission;
 	const submitLabel =
 		state.scheduling === 'custom' ? (
 			<FormattedMessage id="words.schedule" defaultMessage="Schedule" />
@@ -185,12 +136,21 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 			<FormattedMessage id="words.publish" defaultMessage="Publish" />
 		);
 	const disabled = isSubmitting;
+	const [includeChildren, setIncludeChildren] = useState(
+		// Initial state is true if all mainItems are folders, since publishing only folders is not allowed.
+		mainItems.length > 0 && mainItems.every((item) => item.systemType === 'folder')
+	);
+	const effectRefs = useUpdateRefs({ initialItems, state, mainItems, childrenItems, includeChildren });
+	const arePublishingItemsFolders = useMemo(() => {
+		const allItems = [...mainItems, ...childrenItems];
+		return allItems.length > 0 && allItems.every((item) => item.systemType === 'folder');
+	}, [mainItems, childrenItems]);
 
 	// Submit button should be disabled when:
 	const submitDisabled =
 		// Detailed items haven't loaded
 		isFetchingItems ||
-		!detailedItems ||
+		!contentItems ||
 		// While submitting
 		isSubmitting ||
 		// If package title is blank
@@ -206,56 +166,54 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 		// When there's an error
 		Boolean(state.error) ||
 		// The scheduled date is in the past
-		state.scheduledDateTime < new Date();
+		state.scheduledDateTime < new Date() ||
+		// All items to publish are empty folders.
+		arePublishingItemsFolders;
 
 	useEffect(() => {
 		setState({ fetchingItems: true });
-		// TODO: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		// TODO: This is not scalable (bulk fetch of countless DetailedItems). We must review and discuss how to adjust.
-		// TODO: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		if (state.publishingTarget) {
-			calculatePackage(siteId, {
+			const sub = calculatePackage(siteId, {
 				publishingTarget: state.publishingTarget,
-				paths: itemsDataSummary.itemPaths.map((path) => ({ path, includeChildren: false, includeSoftDeps: false })),
-				commitIds: [] // TODO: there's a bug where the API fails if commitsIds is not provided. Needs to be fixed.
-			})
-				.pipe(
-					switchMap((dependenciesByType) => {
-						const dependencies = [...dependenciesByType.hardDependencies, ...dependenciesByType.softDependencies];
-						if (dependencies.length) {
-							return fetchDetailedItems(siteId, dependencies).pipe(
-								map((detailedItemsList) => {
-									return { dependenciesByType, detailedItemsList };
-								})
-							);
-						} else {
-							return of({ dependenciesByType, detailedItemsList: [] });
+				paths: itemsDataSummary.itemPaths.map((path) => ({
+					path,
+					includeChildren,
+					includeSoftDeps: false
+				}))
+			}).subscribe({
+				next(dependenciesByType) {
+					const itemsList = [...dependenciesByType.hardDependencies, ...dependenciesByType.softDependencies];
+					const depMap: DependencyMap = {};
+					const depLookup: LookupTable<LightItem> = createLookupTable(itemsList, 'path');
+					dependenciesByType.hardDependencies.forEach(({ path }) => {
+						depMap[path] = 'hard';
+					});
+					dependenciesByType.softDependencies.forEach(({ path }) => {
+						depMap[path] = 'soft';
+					});
+					setState({ fetchingItems: false });
+					if (includeChildren && dependenciesByType.items) {
+						if (itemsArrayChanged(effectRefs.current.childrenItems, dependenciesByType.items)) {
+							setChildrenItems(dependenciesByType.items);
 						}
-					})
-				)
-				.subscribe({
-					next({ dependenciesByType, detailedItemsList }) {
-						const depMap: DependencyMap = {};
-						const depLookup: LookupTable<DetailedItem> = createLookupTable(detailedItemsList, 'path');
-						dependenciesByType.hardDependencies.forEach((path) => {
-							depMap[path] = 'hard';
-						});
-						dependenciesByType.softDependencies.forEach((path) => {
-							depMap[path] = 'soft';
-						});
-						setState({ fetchingItems: false });
-						setDependencyData({
-							typeByPath: depMap,
-							paths: Object.keys(depMap),
-							itemsByPath: depLookup,
-							items: detailedItemsList
-						});
-					},
-					error() {
-						setState({ fetchingItems: false });
-						setDependencyData(null);
+					} else {
+						if (effectRefs.current.childrenItems.length !== 0) {
+							setChildrenItems([]);
+						}
 					}
-				});
+					setDependencyData({
+						typeByPath: depMap,
+						paths: Object.keys(depMap),
+						itemsByPath: depLookup,
+						items: itemsList
+					});
+				},
+				error() {
+					setState({ fetchingItems: false });
+					setDependencyData(null);
+				}
+			});
+			return () => sub.unsubscribe();
 		}
 	}, [
 		itemsDataSummary.itemPaths,
@@ -263,7 +221,9 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 		siteId,
 		setSelectedDependenciesMap,
 		state.publishingTarget,
-		setDependencyData
+		setDependencyData,
+		includeChildren,
+		effectRefs
 	]);
 
 	useEffect(() => {
@@ -273,35 +233,13 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 	useEffect(() => {
 		const partialState: Partial<InternalDialogState> = {
 			publishingTarget: publishingTarget || effectRefs.current.state.publishingTarget,
-			scheduling: dateScheduled || scheduling !== 'now' ? 'custom' : 'now'
+			scheduling: scheduling !== 'now' ? 'custom' : 'now'
 		};
-		if (dateScheduled) {
-			partialState.scheduledDateTime = dateScheduled;
-		}
 		setState(partialState);
-	}, [dateScheduled, publishingTarget, setState, scheduling, effectRefs]);
+	}, [setState, scheduling, effectRefs, publishingTarget]);
 
 	useEffect(() => {
-		// If `incompleteDetailedItemPaths` is empty, we have all the detailed items we need.
-		if (itemsDataSummary.incompleteDetailedItemPaths.length === 0) {
-			setDetailedItems(effectRefs.current.initialItems);
-		} else {
-			setIsFetchingItems(true);
-			const subscription = fetchDetailedItems(siteId, itemsDataSummary.incompleteDetailedItemPaths).subscribe({
-				next(detailedItemsList) {
-					setDetailedItems(detailedItemsList);
-					dispatch(fetchDetailedItemsComplete({ items: detailedItemsList }));
-					setIsFetchingItems(false);
-				},
-				error(error) {
-					setState({ error: error.response?.response ?? error });
-					setIsFetchingItems(false);
-				}
-			});
-			return () => {
-				subscription.unsubscribe();
-			};
-		}
+		setContentItems(effectRefs.current.initialItems);
 	}, [effectRefs, itemsDataSummary, siteId, setState, dispatch]);
 
 	const handleSubmit = (e?: SyntheticEvent) => {
@@ -309,7 +247,7 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 
 		const { publishingTarget, scheduling: schedule } = state;
 		const { itemPaths, itemMap } = itemsDataSummary;
-		const { requestApproval, packageTitle, submissionComment, scheduling, scheduledDateTime } = state;
+		const { packageTitle, submissionComment, scheduling, scheduledDateTime } = state;
 		const data: PublishParams = {
 			publishingTarget: state.publishingTarget,
 			paths: itemPaths.map((path: string) => ({
@@ -318,16 +256,16 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 				includeSoftDeps: false
 			})),
 			schedule: scheduling === 'custom' ? scheduledDateTime.toISOString() : null,
-			requestApproval,
+			requestApproval: isRequestPublish,
 			title: packageTitle,
 			comment: submissionComment
 		};
 
-		dispatch(updatePublishDialog({ isSubmitting: true }));
+		updateSubmittingOrHasPendingChanges({ isSubmitting: true });
 
 		publish(siteId, data).subscribe({
 			next() {
-				dispatch(updatePublishDialog({ isSubmitting: false, hasPendingChanges: false }));
+				updateSubmittingOrHasPendingChanges({ isSubmitting: false, hasPendingChanges: false });
 				onSuccess?.({
 					schedule: schedule,
 					publishingTarget,
@@ -338,16 +276,15 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 				});
 			},
 			error({ response }) {
-				dispatch(
-					batchActions([updatePublishDialog({ isSubmitting: false }), showErrorDialog({ error: response.response })])
-				);
+				updateSubmittingOrHasPendingChanges({ isSubmitting: false });
+				dispatch(pushErrorDialog({ props: { error: response.response } }));
 			}
 		});
 	};
 
 	const onPublishingArgumentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		let value: unknown;
-		dispatch(updatePublishDialog({ hasPendingChanges: true }));
+		updateSubmittingOrHasPendingChanges({ hasPendingChanges: true });
 		switch (e.target.type) {
 			case 'checkbox':
 				value = e.target.checked;
@@ -372,10 +309,24 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 	};
 
 	const onApplyDependenciesChanges = () => {
+		setPreviousItems(mainItems);
 		// Update the list of mainItems for the dependencies to be re-calculated. Also clear the current set of selected
 		// dependencies.
 		setMainItems([...mainItems, ...selectedDependenciesPaths.map((path) => dependencyData.itemsByPath[path])]);
 		setSelectedDependenciesMap({});
+	};
+
+	/**
+	 * This function restores the `mainItems` state to the previously saved state (`previousItems`),
+	 * clears the `selectedDependenciesMap` to remove any selected dependencies (they get recalculated), and resets the
+	 * `previousItems` state to an empty array.
+	 */
+	const onRevertDependenciesChanges = () => {
+		if (!previousItems) return;
+		setChildrenItems([]);
+		setMainItems(previousItems);
+		setSelectedDependenciesMap({});
+		setPreviousItems(null);
 	};
 
 	const handleDateTimePickerChange: DateTimeTimezonePickerProps['onChange'] = (date) => {
@@ -396,8 +347,8 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 					<ApiResponseErrorState error={state.error} />
 				) : isFetchingItems ? (
 					<LoadingState sx={{ flexGrow: 1 }} />
-				) : detailedItems ? (
-					detailedItems.length ? (
+				) : contentItems ? (
+					contentItems.length ? (
 						<Grid container spacing={2} sx={{ flex: 1 }}>
 							<Grid size={{ xs: 12, sm: 5 }}>
 								<PublishDialogForm
@@ -408,8 +359,6 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 									showRequestApproval={showRequestApproval}
 									isRequestPublish={isRequestPublish}
 									disabled={disabled}
-									mixedPublishingDates={mixedPublishingDates}
-									mixedPublishingTargets={mixedPublishingTargets}
 									onFetchedPublishedTargets={({ targets, published }) => {
 										setPublished(published);
 										setPublishingTargets(targets);
@@ -439,7 +388,16 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 											selectedDependenciesMap={selectedDependenciesMap}
 											trees={trees}
 											onCheckboxChange={onDependencyCheckboxChange}
+											includeChildren={includeChildren}
+											setIncludeChildren={setIncludeChildren}
 										/>
+										{arePublishingItemsFolders && (
+											<Fade in={arePublishingItemsFolders}>
+												<Alert severity="warning" sx={{ borderTopRightRadius: 0, borderTopLeftRadius: 0 }}>
+													<FormattedMessage defaultMessage="Publishing only folders is not allowed" />
+												</Alert>
+											</Fade>
+										)}
 										{Boolean(selectedDependenciesPaths.length) && (
 											<Fade in={Boolean(selectedDependenciesPaths?.length)}>
 												<Alert
@@ -452,6 +410,31 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 													sx={{ borderTopRightRadius: 0, borderTopLeftRadius: 0 }}
 												>
 													<FormattedMessage defaultMessage="Changes in the item selection must be applied" />
+												</Alert>
+											</Fade>
+										)}
+										{nnou(previousItems) && !selectedDependenciesPaths.length && (
+											<Fade in={nnou(previousItems)}>
+												<Alert
+													severity="info"
+													action={
+														<ConfirmDropdown
+															cancelText={<FormattedMessage id="words.no" defaultMessage="No" />}
+															confirmText={<FormattedMessage id="words.yes" defaultMessage="Yes" />}
+															text={<FormattedMessage defaultMessage="Revert" />}
+															confirmHelperText={<FormattedMessage defaultMessage="Revert changes?" />}
+															iconTooltip={<FormattedMessage defaultMessage="Revert changes?" />}
+															onConfirm={() => onRevertDependenciesChanges()}
+															buttonProps={{
+																variant: 'text',
+																size: 'small',
+																color: 'inherit'
+															}}
+														/>
+													}
+													sx={{ borderTopRightRadius: 0, borderTopLeftRadius: 0 }}
+												>
+													<FormattedMessage defaultMessage="Last applied changes can be reverted" />
 												</Alert>
 											</Fade>
 										)}

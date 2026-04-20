@@ -14,16 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { BrokenReferencesDialogContainerProps } from './types';
 import { FormattedMessage } from 'react-intl';
 import { EmptyState } from '../EmptyState';
 import { useDispatch } from 'react-redux';
-import { fetchBrokenReferences, showEditDialog } from '../../state/actions/dialogs';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import useEnv from '../../hooks/useEnv';
 import { DialogBody } from '../DialogBody';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
@@ -32,20 +31,51 @@ import DialogFooter from '../DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import ApiResponseErrorState from '../ApiResponseErrorState';
+import { fetchDependant } from '../../services/dependencies';
+import { fetchContentItems } from '../../services/content';
+import { map, switchMap } from 'rxjs/operators';
+import { of } from 'rxjs';
+
+import { pickShowContentFormAction, pushErrorDialog } from '../../utils/system';
+import { extractErrorPayload } from '../../utils/ajax';
 
 export function BrokenReferencesDialogContainer(props: BrokenReferencesDialogContainerProps) {
-	const { references, error, onClose, onContinue } = props;
+	const { path, references: initialReferences, error, onClose, onContinue } = props;
 	const dispatch = useDispatch();
 	const site = useActiveSiteId();
 	const { authoringBase } = useEnv();
+	const [references, setReferences] = useState(initialReferences || []);
 
 	const onContinueClick = (e) => {
 		onClose(e, null);
 		onContinue();
 	};
 
-	const onEditReferenceClick = (path: string) => {
-		dispatch(showEditDialog({ path, authoringBase, site, onSaveSuccess: fetchBrokenReferences() }));
+	const onEditReferenceClick = (referencePath: string) => {
+		dispatch(
+			pickShowContentFormAction({
+				path: referencePath,
+				authoringBase,
+				site,
+				onSaveSuccess: () => {
+					fetchDependant(site, path)
+						.pipe(
+							map((lightItems) => lightItems.map((item) => item.path)),
+							// Items of type 'ContentItem' are needed in this component (fetchDependant returns LightItem[])
+							// AvailableActionsMap of items is needed to render the edit button of each reference.
+							switchMap((paths) => (paths.length ? fetchContentItems(site, paths) : of([])))
+						)
+						.subscribe({
+							next: (contentItems) => {
+								setReferences(contentItems);
+							},
+							error: (error) => {
+								dispatch(pushErrorDialog({ props: { error: extractErrorPayload(error) } }));
+							}
+						});
+				}
+			})
+		);
 	};
 
 	return error ? (
@@ -67,7 +97,7 @@ export function BrokenReferencesDialogContainer(props: BrokenReferencesDialogCon
 										key={reference.path}
 										divider={references.length - 1 !== index}
 										secondaryAction={
-											reference.availableActionsMap.edit ? (
+											reference.availableActionsMap?.edit ? (
 												<Button
 													color="primary"
 													onClick={() => {

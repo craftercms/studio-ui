@@ -356,7 +356,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
 		// Retrieve all SandboxItems to determine if the user has the edit permissions.
 		this._renderItemsSubscription?.unsubscribe();
 		this._renderItemsSubscription = craftercms.services.content
-			.fetchItemsByPath(CStudioAuthoringContext.site, sharedItems)
+			.fetchContentItems(CStudioAuthoringContext.site, sharedItems)
 			.subscribe((sandboxItems) => {
 				itemsContainerEl.innerHTML = '';
 				var tar = new YAHOO.util.DDTarget(itemsContainerEl);
@@ -405,15 +405,21 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
 					const deleteBtn = $(
 						'<button class="fa fa-trash node-selector-item-icon" title="Delete" aria-label="Delete" role="button"></button>'
 					);
+					const ds = _self.datasources ?? [];
+					const selectedDatasource = ds.find((item) => item.id === _self.items[itemIndex].datasource) || ds[0];
 					// isEditable: studio-ui has mechanisms to edit the item (e.g. a component or a text file)
 					// allowEdit: the datasource has edit capabilities (datasource.edit exists).
-					const isEditable = this.allowEdit && (isComponent || craftercms.utils.content.isEditableAsset(item.key));
-					if (isEditable && hasEditAction) {
+					const isEditable =
+						Boolean(selectedDatasource?.edit) && // the datasource has edit capabilities (datasource.edit exists).
+						(isComponent ||
+							craftercms.utils.content.isAsset(item.key) ||
+							craftercms.utils.content.isEditableAsset(item.key));
+					// At this point, we only need to check if the item is editable (see definition above). If the user doesn't
+					// have write permission, the datasource.edit method will open the item in view mode.
+					if (isEditable) {
 						$actionsContainer.append(editBtn);
 						editBtn.on('click', function () {
 							const elIndex = $(this).data('index');
-							let selectedDatasource =
-								_self.datasources.find((item) => item.id === _self.items[elIndex].datasource) || _self.datasources[0];
 							selectedDatasource.edit(item.key, _self, elIndex, {
 								failure: function (error) {
 									if (error.status === 404) {
@@ -534,12 +540,12 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
 		return validation;
 	},
 
-	newInsertItem: function (key, value, type) {
+	newInsertItem: function (key, value, type, datasource) {
 		const validation = this.checkValidations(key, value);
 
 		if (validation.successful) {
 			let item = {};
-			item = { key: key, value: value };
+			item = { key: key, value: value, datasource };
 
 			if (type === 'embedded') {
 				item.key = key;
@@ -684,7 +690,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
 	updateEditedItem: function (updatedItem, datasource, index) {
 		let item = this.items[index];
 		if (datasource) {
-			item.datasource;
+			item.datasource = datasource;
 		}
 		this.items[index] = {
 			...item,

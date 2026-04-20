@@ -15,7 +15,7 @@
  */
 
 import queryString, { ParsedQuery } from 'query-string';
-import { DetailedItem, PasteItem } from '../models/Item';
+import { ContentItem, PasteItem } from '../models/Item';
 import { toQueryString } from './object';
 import LookupTable from '../models/LookupTable';
 import ContentType from '../models/ContentType';
@@ -280,16 +280,17 @@ export function getCodeEditorSrc({
 	return `${authoringBase}/legacy/form${qs}`;
 }
 
+// TODO: Dupe of ensureSingleSlash
 export function stripDuplicateSlashes(str: string): string {
 	return str.replace(/\/+/g, '/');
 }
 
-export function getItemGroovyPath(item: DetailedItem): string {
+export function getItemGroovyPath(item: ContentItem): string {
 	const contentTypeName = /[^/]*$/.exec(item.contentTypeId)[0];
 	return `${getControllerPath(item.systemType)}/${contentTypeName}.groovy`;
 }
 
-export function getItemTemplatePath(item: DetailedItem, contentTypes: LookupTable<ContentType>): string {
+export function getItemTemplatePath(item: ContentItem, contentTypes: LookupTable<ContentType>): string {
 	return contentTypes[item.contentTypeId].displayTemplate;
 }
 
@@ -297,7 +298,10 @@ export function getControllerPath(type: SystemType): string {
 	return `/scripts/${type === 'page' ? 'pages' : 'components'}`;
 }
 
+// For nested embedded components, parentPath will be the last non-embedded (shared) path, meaning that the parent
+// path will always be a 'physical' path.
 const availableMacrosRegex = /{(objectId|objectGroupId|objectGroupId2|year|month|yyyy|mm|dd|parentPath(\[[0-9]+])?)}/;
+
 export function processPathMacros(dependencies: {
 	path: string;
 	objectId: string;
@@ -389,3 +393,14 @@ export const getFileNameWithExtensionForItemType = (type: string, name: string) 
 	`${name}.${pickExtensionForItemType(type)}`
 		.replace(/(\.groovy)(\.groovy)|(\.ftl)(\.ftl)/g, '$1$3')
 		.replace(/\.{2,}/g, '.');
+
+/**
+ * Determines if the given path corresponds to a page path.
+ *
+ * @param {string} path - The path to check.
+ * @returns {boolean} - Returns `true` if the path matches the pattern for a page path; otherwise, `false`.
+ *
+ */
+export const isPagePath = (path: string): boolean => {
+	return /^\/site\/website(\/.*)?\/index.*\.xml$/.test(path);
+};

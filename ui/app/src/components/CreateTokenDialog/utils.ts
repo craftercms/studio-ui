@@ -16,15 +16,13 @@
 
 import { Token } from '../../models/Token';
 import { EnhancedDialogProps } from '../EnhancedDialog';
-import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 
 export interface CreateTokenBaseProps {}
 
 export interface CreateTokenDialogProps extends CreateTokenBaseProps, EnhancedDialogProps {
 	onCreated?(response: Token): void;
-	onSubmittingAndOrPendingChange(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
 export interface CreateTokenContainerProps
 	extends CreateTokenBaseProps,
-		Pick<CreateTokenDialogProps, 'onClose' | 'onCreated' | 'onSubmittingAndOrPendingChange' | 'isSubmitting'> {}
+		Pick<CreateTokenDialogProps, 'onClose' | 'onCreated' | 'isSubmitting'> {}

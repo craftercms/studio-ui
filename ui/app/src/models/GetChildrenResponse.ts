@@ -14,9 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SandboxItem } from './Item';
+import { ContentItem } from './Item';
 import { PagedArray } from './PagedArray';
 
-export interface GetChildrenResponse extends PagedArray<SandboxItem> {
-	levelDescriptor: SandboxItem;
+export interface GetChildrenResponse extends PagedArray<ContentItem> {
+	levelDescriptor: ContentItem;
 }

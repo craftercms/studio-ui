@@ -19,6 +19,18 @@ import { ReplaySubject } from 'rxjs';
 import { take } from 'rxjs/operators';
 import Monaco from '../models/Monaco';
 import { ProjectToolsRoutes } from '../env/routes';
+import type { SxProps } from '@mui/system';
+import type { Theme } from '@mui/material/styles';
+import { pushDialog } from '../state/actions/dialogStack';
+import type { FormsEngineProps } from '../components/FormsEngine/FormsEngine';
+import { getHostToGuestBus } from './subjects';
+import { reloadRequest } from '../state/actions/preview';
+import { Context, useContext } from 'react';
+import type { LegacyFormDialogProps } from '../components/LegacyFormDialog/utils';
+import { nanoid } from 'nanoid';
+import { DialogStackItem } from '../models';
+import type { ConfirmDialogProps, ErrorDialogProps } from '../components';
+import { getPathFromPreviewURL, getPreviewURLFromPath, isPagePath } from './path';
 
 export type SystemLinkId =
 	| 'preview'
@@ -41,7 +53,7 @@ export function getSystemLink({
 	page?: string;
 }) {
 	return {
-		preview: `${authoringBase}${PREVIEW_URL_PATH}#/?page=${page}&site=${site}`,
+		preview: `${authoringBase}${PREVIEW_URL_PATH}#/?page=${encodeURIComponent(page)}&site=${site}`,
 		siteTools: `${authoringBase}${ProjectToolsRoutes.ProjectTools}`,
 		siteSearch: `${authoringBase}${ProjectToolsRoutes.Search}`,
 		siteDashboard: `${authoringBase}${ProjectToolsRoutes.SiteDashboard}`
@@ -63,7 +75,7 @@ export function withMonaco(onReady: (api: Monaco) => void): void {
 	if (!monaco$) {
 		monaco$ = new ReplaySubject(1);
 		const script = document.createElement('script');
-		script.src = '/studio/static-assets/libs/monaco/monaco.0.48.0.js';
+		script.src = '/studio/static-assets/libs/monaco/monaco.0.54.0.js';
 		script.onload = () => {
 			// @ts-ignore
 			monaco$.next(window.monaco);
@@ -86,4 +98,101 @@ export function isDashboardAppUrl(pathname = window.location.pathname): boolean 
 
 export function isProjectToolsAppUrl(pathname = window.location.pathname): boolean {
 	return pathname.includes(ProjectToolsRoutes.ProjectTools);
+}
+
+export function consolidateSx(...sxs: SxProps<Theme>[]): SxProps<Theme> {
+	return sxs.flatMap((item) => item ?? []);
+}
+
+export function pickShowContentFormAction(oldProps: LegacyFormDialogProps) {
+	const useLegacy = window.localStorage.getItem('useLegacyFormEngine') === 'true';
+	const dialogId = nanoid();
+	return useLegacy
+		? pushDialog({
+				id: dialogId,
+				component: createComponentId('LegacyFormDialog'),
+				allowFullScreen: true,
+				allowMinimize: true,
+				props: { ...oldProps, dialogId }
+			})
+		: pushDialog({
+				component: createComponentId('FormsEngineDialog'),
+				allowFullScreen: true,
+				allowMinimize: true,
+				props: {
+					formProps: {
+						...(oldProps.isNewContent
+							? { create: { path: oldProps.path, contentTypeId: oldProps.contentTypeId } }
+							: { update: { path: oldProps.path, changeTypeId: oldProps.changeTemplate } }),
+						readonly: oldProps.readonly ?? false,
+						onSave(result) {
+							if (isPreviewAppUrl()) {
+								const params = new URLSearchParams(window.location.hash.replace(/^#\/?\?/, ''));
+								const previewURL = params.get('page');
+								if (
+									previewURL &&
+									result.path &&
+									isPagePath(oldProps.path) &&
+									getPathFromPreviewURL(previewURL) === oldProps.path &&
+									oldProps.path !== result.path
+								) {
+									// oldProps.path is a page and the same as the preview page path, but the new path is different,
+									// which means there was a rename of the page currently being previewed. Then we need to update the
+									// preview URL to reflect the new page path.
+									window.location.href = getSystemLink({
+										page: getPreviewURLFromPath(result.path),
+										systemLinkId: 'preview',
+										site: oldProps.site,
+										authoringBase: oldProps.authoringBase
+									});
+								} else {
+									getHostToGuestBus().next(reloadRequest());
+								}
+							}
+							// FE2 TODO: handling oldProps.onSaveSuccess required?
+						}
+					} as FormsEngineProps
+				}
+			});
+}
+
+export function createUseContextHook<T>(name: string, context: Context<T>): () => T;
+export function createUseContextHook<T, K extends keyof T>(
+	name: string,
+	context: Context<T>,
+	selector: (instance: T) => T[K]
+): () => T[K];
+export function createUseContextHook<T, K extends keyof T>(
+	name: string,
+	context: Context<T>,
+	selector?: (instance: T) => T[K]
+): () => T | T[K] {
+	const contextName = context.displayName ?? name.replace('use', '');
+	return () => {
+		const instance = useContext(context);
+		if (instance === undefined) {
+			throw new Error(`${name} must be used within a ${contextName}`);
+		}
+		return selector?.(instance) ?? instance;
+	};
+}
+
+export function createComponentId(componentName: string) {
+	return `craftercms.components.${componentName}`;
+}
+
+type confirmDialogStackItemProps = Partial<DialogStackItem<Partial<ConfirmDialogProps>>>;
+export function pushConfirmDialog(props: Omit<confirmDialogStackItemProps, 'component'>) {
+	return pushDialog({
+		component: createComponentId('ConfirmDialog'),
+		...props
+	});
+}
+
+type errorDialogStackItemProps = Partial<DialogStackItem<Partial<ErrorDialogProps>>>;
+export function pushErrorDialog(props: Omit<errorDialogStackItemProps, 'component'>) {
+	return pushDialog({
+		component: createComponentId('ErrorDialog'),
+		...props
+	});
 }

@@ -17,7 +17,7 @@
 import { ElementRecord, ICERecord } from '../models/InContextEditing';
 import { pluckProps } from '@craftercms/studio-ui/utils/object';
 import LookupTable from '@craftercms/studio-ui/src/models/LookupTable';
-import { ContentInstance, SandboxItem } from '@craftercms/studio-ui/models';
+import { ContentInstance, ContentItem } from '@craftercms/studio-ui/models';
 
 export const foo = (...args: any[]) => void null;
 export const //
@@ -56,14 +56,14 @@ export function createLocationArgument() {
 export function isEditActionAvailable(args: {
 	record: ElementRecord | ICERecord;
 	models: LookupTable<ContentInstance>;
-	sandboxItemsByPath: LookupTable<SandboxItem>;
+	contentItemsByPath: LookupTable<ContentItem>;
 	parentModelId: string | null;
 }): boolean {
-	const { record, models, sandboxItemsByPath, parentModelId } = args;
+	const { record, models, contentItemsByPath, parentModelId } = args;
 	const model = models[record.modelId];
-	let path = model.craftercms.path;
+	let path = model?.craftercms.path;
 	if (!path) {
-		path = models[parentModelId].craftercms.path;
+		path = models[parentModelId]?.craftercms.path;
 	}
-	return sandboxItemsByPath[path]?.availableActionsMap.edit;
+	return contentItemsByPath[path]?.availableActionsMap.edit;
 }

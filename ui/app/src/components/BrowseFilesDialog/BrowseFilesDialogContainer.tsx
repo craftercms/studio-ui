@@ -21,7 +21,6 @@ import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useEnv } from '../../hooks/useEnv';
 import { useDebouncedInput } from '../../hooks/useDebouncedInput';
 import { useSpreadState } from '../../hooks/useSpreadState';
-import { closeSingleFileUploadDialog, showSingleFileUploadDialog } from '../../state/actions/dialogs';
 import { useDispatch } from 'react-redux';
 import LookupTable from '../../models/LookupTable';
 import { BrowseFilesDialogUI } from '.';
@@ -30,8 +29,6 @@ import { checkPathExistence } from '../../services/content';
 import { FormattedMessage } from 'react-intl';
 import EmptyState from '../EmptyState';
 import BrowseFilesDialogContainerSkeleton from './BrowseFilesDialogContainerSkeleton';
-import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
-import { createCustomDocumentEventListener } from '../../utils/dom';
 import { getStoredBrowseDialogViewMode, setStoredBrowseDialogViewMode } from '../../utils/state';
 import useActiveUser from '../../hooks/useActiveUser';
 import { withIndex, withoutIndex } from '../../utils/path';
@@ -39,6 +36,10 @@ import { MediaCardViewModes } from '../MediaCard';
 import { createPresenceTable } from '../../utils/array';
 import { createLookupTable } from '../../utils/object';
 import { prepareSearchParams } from '../Search/utils';
+import { popDialog, pushDialog } from '../../state/actions/dialogStack';
+import { nanoid } from 'nanoid';
+
+import { createComponentId } from '../../utils/system';
 
 const viewModes: MediaCardViewModes[] = ['card', 'compact', 'row'];
 const defaultPreselectedPaths = [];
@@ -76,6 +77,10 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
 	const [total, setTotal] = useState<number>();
 	const [selectedLookup, setSelectedLookup] = useSpreadState<LookupTable<MediaItem>>({});
 	const selectedArray = Object.keys(selectedLookup).filter((key) => selectedLookup[key]);
+	const selectedInCurrentPage = items?.filter((item) => selectedArray.includes(item.path));
+	const allSelectedInCurrentPage = items?.length > 0 && selectedInCurrentPage.length === items.length;
+	const someSelectedInCurrentPage =
+		(items?.length > 0 && selectedInCurrentPage.length > 0 && selectedInCurrentPage.length < items?.length) ?? false;
 	const browsePath = path.replace(/\/+$/, '');
 	const [currentPath, setCurrentPath] = useState(browsePath);
 	const [fetchingBrowsePathExists, setFetchingBrowsePathExists] = useState(false);
@@ -104,20 +109,22 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
 
 	useEffect(() => {
 		const query = preselectedPaths?.map((path) => `localId:"${path}"`).join(' ');
-		setFetchingPreselectedItems(true);
-		search(site, { query }).subscribe({
-			next: ({ items }) => {
-				if (multiSelect) {
-					setSelectedLookup(createLookupTable(items, 'path'));
-				} else if (items.length) {
-					setSelectedCard(items[0]);
+		if (query) {
+			setFetchingPreselectedItems(true);
+			search(site, { query }).subscribe({
+				next: ({ items }) => {
+					if (multiSelect) {
+						setSelectedLookup(createLookupTable(items, 'path'));
+					} else if (items.length) {
+						setSelectedCard(items[0]);
+					}
+					setFetchingPreselectedItems(false);
+				},
+				error: () => {
+					setFetchingPreselectedItems(false);
 				}
-				setFetchingPreselectedItems(false);
-			},
-			error: () => {
-				setFetchingPreselectedItems(false);
-			}
-		});
+			});
+		}
 	}, [site, preselectedPaths, multiSelect, setSelectedLookup]);
 
 	useEffect(() => {
@@ -145,6 +152,16 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
 			setSelectedLookup({ [item.path]: selectedLookup[item.path] ? null : item });
 		} else {
 			setSelectedCard(selectedCard?.path === item.path ? null : item);
+		}
+	};
+
+	const onSelectAll = () => {
+		if (multiSelect) {
+			const newSelectedLookup = { ...selectedLookup };
+			items.forEach((item) => {
+				newSelectedLookup[item.path] = allSelectedInCurrentPage ? null : item;
+			});
+			setSelectedLookup(newSelectedLookup);
 		}
 	};
 
@@ -185,21 +202,25 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
 	const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
 
 	const onUpload = () => {
+		const dialogId = nanoid();
 		dispatch(
-			showSingleFileUploadDialog({
-				site,
-				path: currentPath,
-				fileTypes: mimeTypes,
-				onClose: closeSingleFileUploadDialog(),
-				onUploadComplete: batchActions([closeSingleFileUploadDialog(), dispatchDOMEvent({ id: 'imageUploaded' })])
+			pushDialog({
+				id: dialogId,
+				component: createComponentId('SingleFileUploadDialog'),
+				props: {
+					site,
+					path: currentPath,
+					fileTypes: mimeTypes,
+					onClose: () => dispatch(popDialog({ id: dialogId })),
+					onUploadComplete: () => {
+						dispatch(popDialog({ id: dialogId }));
+						setTimeout(() => {
+							fetchItems();
+						}, 2000);
+					}
+				}
 			})
 		);
-
-		createCustomDocumentEventListener('imageUploaded', (response) => {
-			setTimeout(() => {
-				fetchItems();
-			}, 2000);
-		});
 	};
 
 	const onRefresh = () => {
@@ -254,6 +275,9 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
 			preselectedLookup={preselectedLookup}
 			disableChangePreselected={disableChangePreselected}
 			disableSubmission={disableSubmission}
+			onSelectAll={onSelectAll}
+			allSelected={allSelectedInCurrentPage}
+			someSelected={someSelectedInCurrentPage}
 		/>
 	) : (
 		<EmptyState

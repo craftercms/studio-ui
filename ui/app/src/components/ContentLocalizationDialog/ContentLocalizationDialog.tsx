@@ -23,17 +23,17 @@ import IconButton from '@mui/material/IconButton';
 import MoreVertIcon from '@mui/icons-material/MoreVertRounded';
 import ContextMenu, { ContextMenuOption } from '../ContextMenu';
 import { markForTranslation } from '../../services/translation';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';
 import palette from '../../styles/palette';
 import DialogBody from '../DialogBody/DialogBody';
 import DialogHeader from '../DialogHeader';
 import SingleItemSelector from '../SingleItemSelector';
-import { DetailedItem } from '../../models/Item';
+import { ContentItem } from '../../models/Item';
 import ActionsBar from '../ActionsBar';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useUnmount } from '../../hooks/useUnmount';
 import Box from '@mui/material/Box';
+import { pushErrorDialog } from '../../utils/system';
 
 const translations: { [id: string]: any } = defineMessages({
 	mark: {
@@ -132,8 +132,8 @@ interface ContentLocalizationDialogProps {
 	open: boolean;
 	locales: any;
 	rootPath: string;
-	item: DetailedItem;
-	onItemChange?(item: DetailedItem): void;
+	item: ContentItem;
+	onItemChange?(item: ContentItem): void;
 	onClose?(): void;
 	onClosed?(): void;
 }
@@ -184,11 +184,7 @@ function ContentLocalizationDialogUI(props: ContentLocalizationDialogProps) {
 						});
 					},
 					({ response }) => {
-						dispatch(
-							showErrorDialog({
-								error: response
-							})
-						);
+						dispatch(pushErrorDialog({ props: { error: response } }));
 					}
 				);
 				break;

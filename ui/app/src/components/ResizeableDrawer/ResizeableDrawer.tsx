@@ -115,7 +115,8 @@ export function ResizeableDrawer(props: ResizeableDrawerProps) {
 			...sxs?.drawerPaper
 		},
 		belowToolbar && {
-			top: 65,
+			// TODO: make the toolbar height a global const
+			top: 57,
 			height: 'auto',
 			zIndex: (theme) => theme.zIndex.appBar - 1,
 			...sxs?.drawerPaperBelowToolbar

@@ -55,7 +55,7 @@ import { nou } from '../../utils/object';
 import Tooltip from '@mui/material/Tooltip';
 import Skeleton from '@mui/material/Skeleton';
 import { ItemTypeIcon } from '../ItemTypeIcon';
-import { SandboxItem } from '../../models';
+import { ContentItem } from '../../models';
 import Avatar from '@mui/material/Avatar';
 import { getAvatarWithIconColors } from '../../utils/contentType';
 import { darken, useTheme } from '@mui/material/styles';
@@ -115,7 +115,13 @@ export function PreviewComponentsPanel() {
 				continue;
 			}
 			// if contentType.type === 'component' ...
-			if (allowedTypesData[id]?.embedded || allowedTypesData[id]?.shared) {
+			// When selecting 'Allow any component' in the content type editor, there will be a key '*' in the allowedTypesData
+			if (
+				allowedTypesData[id]?.embedded ||
+				allowedTypesData[id]?.shared ||
+				allowedTypesData['*']?.embedded ||
+				allowedTypesData['*']?.shared
+			) {
 				allowedTypes.push(contentType);
 			} else {
 				otherTypes.push(contentType);
@@ -243,7 +249,12 @@ export function PreviewComponentsPanel() {
 										arrow
 										title={<FormattedMessage defaultMessage="Compatible types are configured in the content model." />}
 									>
-										<IconButton size="small">
+										<IconButton
+											size="small"
+											aria-label={formatMessage({
+												defaultMessage: 'Compatible types are configured in the content model.'
+											})}
+										>
 											<InfoRounded fontSize="small" />
 										</IconButton>
 									</Tooltip>
@@ -419,7 +430,7 @@ export function PreviewComponentsPanel() {
 						<Avatar component="div" sx={{ backgroundColor: menuContext?.backgroundColor, ml: 1 }}>
 							<ItemTypeIcon
 								fontSize="medium"
-								item={{ systemType: menuContext?.contentType.type ?? '', mimeType: '' } as SandboxItem}
+								item={{ systemType: menuContext?.contentType.type ?? '', mimeType: '' } as ContentItem}
 								sx={{ color: menuContext?.textColor }}
 							/>
 						</Avatar>

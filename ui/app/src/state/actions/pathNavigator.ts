@@ -15,7 +15,7 @@
  */
 
 import { createAction } from '@reduxjs/toolkit';
-import { DetailedItem } from '../../models/Item';
+import { ContentItem } from '../../models/Item';
 import { PathNavigatorStateProps } from '../../components/PathNavigator/PathNavigator';
 import { GetChildrenResponse } from '../../models/GetChildrenResponse';
 import { AjaxError } from 'rxjs/ajax';
@@ -55,7 +55,7 @@ export const pathNavigatorConditionallySetPath = /*#__PURE__*/ createAction<
 >('PATH_NAV_CONDITIONALLY_SET_PATH');
 
 export const pathNavigatorConditionallySetPathComplete = /*#__PURE__*/ createAction<
-	PayloadWithId<{ path: string; parent?: DetailedItem; children: GetChildrenResponse }>
+	PayloadWithId<{ path: string; parent?: ContentItem; children: GetChildrenResponse }>
 >('PATH_NAV_CONDITIONALLY_SET_PATH_COMPLETE');
 
 export const pathNavigatorConditionallySetPathFailed = /*#__PURE__*/ createAction<{
@@ -72,10 +72,10 @@ export const pathNavigatorBulkRefresh = /*#__PURE__*/ createAction<{
 }>('PATH_NAV_BULK_REFRESH');
 
 export const pathNavigatorItemChecked =
-	/*#__PURE__*/ createAction<PayloadWithId<{ item: DetailedItem }>>('PATH_NAV_ITEM_CHECKED');
+	/*#__PURE__*/ createAction<PayloadWithId<{ item: ContentItem }>>('PATH_NAV_ITEM_CHECKED');
 
 export const pathNavigatorItemUnchecked =
-	/*#__PURE__*/ createAction<PayloadWithId<{ item: DetailedItem }>>('PATH_NAV_ITEM_UNCHECKED');
+	/*#__PURE__*/ createAction<PayloadWithId<{ item: ContentItem }>>('PATH_NAV_ITEM_UNCHECKED');
 
 export const pathNavigatorClearChecked = /*#__PURE__*/ createAction<{ id: string }>('PATH_NAV_CLEAR_CHECKED');
 
@@ -95,16 +95,16 @@ export const pathNavigatorFetchPath =
 	/*#__PURE__*/ createAction<PayloadWithId<{ path: string; keyword?: string }>>('PATH_NAV_FETCH_PATH');
 
 export const pathNavigatorFetchPathComplete =
-	/*#__PURE__*/ createAction<PayloadWithId<{ parent?: DetailedItem; children: GetChildrenResponse }>>(
+	/*#__PURE__*/ createAction<PayloadWithId<{ parent?: ContentItem; children: GetChildrenResponse }>>(
 		'PATH_NAV_FETCH_PATH_COMPLETE'
 	);
 
 export const pathNavigatorBulkFetchPathComplete = /*#__PURE__*/ createAction<{
-	paths: PayloadWithId<{ parent?: DetailedItem; children: GetChildrenResponse }>[];
+	paths: PayloadWithId<{ parent?: ContentItem; children: GetChildrenResponse }>[];
 }>('PATH_NAV_BULK_FETCH_PATH_COMPLETE');
 
 export const pathNavigatorFetchParentItemsComplete = /*#__PURE__*/ createAction<
-	PayloadWithId<{ items: DetailedItem[]; children: GetChildrenResponse }>
+	PayloadWithId<{ items: ContentItem[]; children: GetChildrenResponse }>
 >('PATH_NAV_FETCH_PARENT_ITEMS_COMPLETE');
 
 export const pathNavigatorFetchPathFailed = /*#__PURE__*/ createAction<{

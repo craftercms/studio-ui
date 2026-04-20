@@ -16,7 +16,7 @@
 
 import * as React from 'react';
 import PublishingStatusWidget from '../PublishingStatusWidget';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import { PublishingQueueWidget } from '../PublishingQueue';
 import PublishOnDemandWidget from '../PublishOnDemandWidget';
 import GlobalAppToolbar from '../GlobalAppToolbar';
@@ -26,6 +26,7 @@ import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDial
 import Box from '@mui/material/Box';
 import { useTheme } from '@mui/material/styles';
 import useActiveUser from '../../hooks/useActiveUser';
+import type { PublishOnDemandMode } from '../../models';
 
 interface PublishingDashboardProps {
 	embedded?: boolean;
@@ -37,10 +38,11 @@ export function PublishingDashboard(props: PublishingDashboardProps) {
 	const { embedded, showAppsButton, onSubmittingAndOrPendingChange } = props;
 	const user = useActiveUser();
 	const site = useActiveSiteId();
-	const userRoles = user?.rolesBySite[site] ?? [];
 	const userPermissions = user?.permissionsBySite[site] ?? [];
-	const allowedRole = userRoles.some((role) => role === 'developer' || role === 'admin');
-	const hasPublishPermission = userPermissions?.includes('publish');
+	// TODO: These permission checks should be on the PublishOnDemand widget itself. Dashboard should only check for `publish` permission to render the widget or not.
+	const hasPublishPermission = userPermissions?.includes('publish_approve');
+	const allowedPublishOnDemandModes: PublishOnDemandMode[] = [];
+	if (hasPublishPermission) allowedPublishOnDemandModes.push('everything', 'studio', 'git');
 	const {
 		spacing,
 		palette: { mode }
@@ -58,6 +60,7 @@ export function PublishingDashboard(props: PublishingDashboardProps) {
 				container
 				sx={{
 					padding: spacing(2),
+					pb: 4,
 					...(embedded
 						? {}
 						: {
@@ -69,7 +72,7 @@ export function PublishingDashboard(props: PublishingDashboardProps) {
 				<Grid size={12}>
 					<PublishingStatusWidget siteId={site} />
 				</Grid>
-				{userPermissions.includes('get_publishing_queue') && (
+				{userPermissions.includes('publish_get_queue') && (
 					<Grid size={12}>
 						<PublishingQueueWidget siteId={site} readOnly={!hasPublishPermission} />
 					</Grid>
@@ -78,7 +81,7 @@ export function PublishingDashboard(props: PublishingDashboardProps) {
 					<Grid size={12}>
 						<PublishOnDemandWidget
 							siteId={site}
-							mode={allowedRole ? null : 'everything'}
+							mode={allowedPublishOnDemandModes}
 							onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
 						/>
 					</Grid>

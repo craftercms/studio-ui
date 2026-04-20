@@ -26,7 +26,7 @@ import FilterListRoundedIcon from '@mui/icons-material/FilterListRounded';
 import LookupTable from '../../models/LookupTable';
 import { createPresenceTable } from '../../utils/array';
 import { getStateBitmap } from './utils';
-import { ItemStateMap, ItemStates, SandboxItem } from '../../models/Item';
+import { ContentItem, ItemStateMap, ItemStates } from '../../models/Item';
 import { PagedArray } from '../../models/PagedArray';
 import Box from '@mui/material/Box';
 import CloseIcon from '@mui/icons-material/Close';
@@ -37,9 +37,9 @@ import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import { Divider, drawerClasses } from '@mui/material';
-import ItemPublishingTargetIcon from '../ItemPublishingTargetIcon';
+import ItemPublishingTargetIcon, { ItemPublishingTargetIconProps } from '../ItemPublishingTargetIcon';
 import { getItemPublishingTargetText, getItemStateText } from '../ItemDisplay/utils';
-import ItemStateIcon from '../ItemStateIcon';
+import ItemStateIcon, { ItemStateIconProps } from '../ItemStateIcon';
 import translations from './translations';
 import ResizeableDrawer from '../ResizeableDrawer/ResizeableDrawer';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
@@ -55,7 +55,8 @@ import useMount from '../../hooks/useMount';
 import { fetchPublishingTargets } from '../../services/publishing';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { EmptyState } from '../EmptyState';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
+import { pushErrorDialog } from '../../utils/system';
+import { extractErrorPayload } from '../../utils/ajax';
 
 const workflowStateManagementMessages = defineMessages({
 	statesUpdatedMessage: {
@@ -87,7 +88,7 @@ const initialStates: ItemStates[] = [
 export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
 	const { embedded, showAppsButton = !embedded, onSubmittingAndOrPendingChange } = props;
 	const [fetching, setFetching] = useState(false);
-	const [items, setItems] = useState<PagedArray<SandboxItem>>(null);
+	const [items, setItems] = useState<PagedArray<ContentItem>>(null);
 	const [error, setError] = useState<ApiResponse>();
 	const siteId = useActiveSiteId();
 	const [openSetStateDialog, setOpenSetStateDialog] = useState(false);
@@ -100,8 +101,8 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
 	const [invalidPathRegex, setInvalidPathRegex] = useState(false);
 	const [offset, setOffset] = useState(0);
 	const [limit, setLimit] = useState(10);
-	const [selectedItems, setSelectedItems] = useState<LookupTable<SandboxItem>>({});
-	const [selectedItem, setSelectedItem] = useState<SandboxItem>(null);
+	const [selectedItems, setSelectedItems] = useState<LookupTable<ContentItem>>({});
+	const [selectedItem, setSelectedItem] = useState<ContentItem>(null);
 	const [isSelectedItemsOnAllPages, setIsSelectedItemsOnAllPages] = useState(false);
 	const [hasStaging, setHasStaging] = useState(false);
 	const states = useMemo(
@@ -155,6 +156,9 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
 		const sub = fetchPublishingTargets(siteId).subscribe({
 			next({ publishingTargets: targets }) {
 				setHasStaging(targets.some((target) => target.name === 'staging'));
+			},
+			error(error) {
+				dispatch(pushErrorDialog({ props: { error: extractErrorPayload(error) } }));
 			}
 		});
 		return () => {
@@ -212,7 +216,7 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
 		setLimit(e.target.value);
 	};
 
-	const onItemSelected = (selectedItem: SandboxItem, value: boolean) => {
+	const onItemSelected = (selectedItem: ContentItem, value: boolean) => {
 		if (isSelectedItemsOnAllPages) {
 			const selectedItemsOnPage = {};
 			setIsSelectedItemsOnAllPages(false);
@@ -227,7 +231,7 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
 		}
 	};
 
-	const onRowSelected = (item: SandboxItem) => {
+	const onRowSelected = (item: ContentItem) => {
 		setSelectedItem(item);
 		setOpenSetStateDialog(true);
 	};
@@ -273,11 +277,7 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
 	};
 
 	const onError = (error: ApiResponse) => {
-		dispatch(
-			showErrorDialog({
-				error
-			})
-		);
+		dispatch(pushErrorDialog({ props: { error } }));
 	};
 
 	const onSetItemStateDialogConfirm = (update: StatesToUpdate) => {
@@ -512,13 +512,15 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
 										label={
 											['staged', 'live'].includes(id) ? (
 												<>
-													<ItemPublishingTargetIcon item={{ stateMap: { [id]: true } } as SandboxItem} />
-													{getItemPublishingTargetText({ [id]: true } as ItemStateMap)}
+													<ItemPublishingTargetIcon
+														item={{ stateMap: { [id]: true } } as ItemPublishingTargetIconProps['item']}
+													/>
+													{getItemPublishingTargetText({ [id]: true } as ItemStateMap, formatMessage)}
 												</>
 											) : (
 												<>
-													<ItemStateIcon item={{ stateMap: { [id]: true } } as SandboxItem} />
-													{getItemStateText({ [id]: true } as ItemStateMap)}
+													<ItemStateIcon item={{ stateMap: { [id]: true } } as ItemStateIconProps['item']} />
+													{getItemStateText({ [id]: true } as ItemStateMap, formatMessage)}
 												</>
 											)
 										}
@@ -541,6 +543,7 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
 					/>
 				}
 				open={openSetStateDialog}
+				hasStaging={hasStaging}
 				onClose={onSetItemStateDialogClose}
 				onConfirm={onSetItemStateDialogConfirm}
 			/>

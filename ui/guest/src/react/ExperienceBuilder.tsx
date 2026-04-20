@@ -14,15 +14,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react';
+import React, { type PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react';
 import { fromEvent, interval, merge } from 'rxjs';
 import { filter, map, take, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 import * as iceRegistry from '../iceRegistry';
+import { getById, getReferentialEntries, subscribeToAllowedContentTypes } from '../iceRegistry';
 import {
 	contentTypes$,
 	flushRequestedPaths,
+	getCachedContentItems,
 	getCachedModels,
-	getCachedSandboxItems,
 	modelHierarchyMap,
 	operations$
 } from '../contentController';
@@ -117,10 +118,9 @@ import { SHARED_WORKER_NAME } from '@craftercms/studio-ui/utils/constants';
 import useUnmount from '@craftercms/studio-ui/hooks/useUnmount';
 import { DeepPartial } from '@craftercms/studio-ui/models/DeepPartial';
 import { emitSystemEvent, emitSystemEvents } from '@craftercms/studio-ui/state/actions/system';
-import StandardAction from '@craftercms/studio-ui/models/StandardAction';
-import { getById, getReferentialEntries, subscribeToAllowedContentTypes } from '../iceRegistry';
 import { getParentModelId } from '../utils/ice';
 import { SxProps } from '@mui/system';
+import { I18nProvider } from './I18nProvider';
 
 // TODO: add themeOptions and global styles customising
 interface BaseXBProps {
@@ -192,7 +192,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
 					const { type } = event;
 					const record = elementRegistry.get(dispatcherElementRecordId);
 					if (nullOrUndefined(record)) {
-						console.error('[Guest] No record found for dispatcher element');
+						console.warn('[Guest] No record found for dispatcher element');
 					} else {
 						if (refs.current.keysPressed.z && type === 'click') {
 							return false;
@@ -435,17 +435,17 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
 		if (!hasHost) {
 			// prettier-ignore
 			interval(1000).pipe(
-        takeUntil(
-          merge(fromTopic(hostCheckIn.type), fromTopic('LEGACY_CHECK_IN')).pipe(
-            tap(dispatch),
-            take(1)
-          )
-        ),
-        take(1)
-      ).subscribe(() => setSnack({
-        autoHideDuration: 8000,
-        message: 'In-context editing is disabled: page running out of CrafterCMS frame.'
-      }));
+				takeUntil(
+					merge(fromTopic(hostCheckIn.type), fromTopic('LEGACY_CHECK_IN')).pipe(
+						tap(dispatch),
+						take(1)
+					)
+				),
+				take(1)
+			).subscribe(() => setSnack({
+				autoHideDuration: 8000,
+				message: 'In-context editing is disabled: page running out of CrafterCMS frame.'
+			}));
 		}
 	}, [dispatch, hasHost]);
 
@@ -636,6 +636,8 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
 							const hasValidations = Boolean(validations.length);
 							const hasFailedRequired = validations.some(({ level }) => level === 'required');
 							const elementRecord = elementRegistry.get(highlight.id);
+							// If no elementRecord is found, the item was removed while the hover was on top. Skip.
+							if (!elementRecord) return null;
 							const elementPath = models[elementRecord.modelId]?.craftercms.path ?? path;
 							const { isLocked, isExternallyModified, isLockedByCurrentUser } = checkIfLockedOrModified(
 								state,
@@ -647,7 +649,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
 							const isEditable = isEditActionAvailable({
 								record: elementRecord,
 								models: getCachedModels(),
-								sandboxItemsByPath: getCachedSandboxItems(),
+								contentItemsByPath: getCachedContentItems(),
 								parentModelId: getParentModelId(elementRecord.modelId, getCachedModels(), modelHierarchyMap)
 							});
 							let zoneMarkerModeStyles: Record<string, SxProps<Theme>>;
@@ -729,18 +731,20 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
 	);
 }
 
-export function ExperienceBuilder(props: GenericXBProps<{ model: ContentInstance }>): JSX.Element;
-export function ExperienceBuilder(props: GenericXBProps<{ path: string }>): JSX.Element;
-export function ExperienceBuilder(props: ExperienceBuilderProps): JSX.Element {
+export function ExperienceBuilder(props: GenericXBProps<{ model: ContentInstance }>): React.JSX.Element;
+export function ExperienceBuilder(props: GenericXBProps<{ path: string }>): React.JSX.Element;
+export function ExperienceBuilder(props: ExperienceBuilderProps): React.JSX.Element {
 	let { children, isAuthoring = false, path, model } = props as CompleteGuestProps;
 	let store = useMemo(() => isAuthoring && createGuestStore(), [isAuthoring]);
 	path = path || prop(model, 'path');
 	return isAuthoring && path ? (
 		<Provider store={store} context={GuestReduxContext}>
-			<ExperienceBuilderInternal {...props} path={path} />
+			<I18nProvider>
+				<ExperienceBuilderInternal {...props} path={path} />
+			</I18nProvider>
 		</Provider>
 	) : (
-		(children as JSX.Element)
+		(children as React.JSX.Element)
 	);
 }
 

@@ -19,7 +19,7 @@ import { SplitButton } from '../SplitButton';
 import { SplitButtonOption } from '../SplitButton/utils';
 import { defineMessages, useIntl } from 'react-intl';
 
-type CommonSaveOptions = 'save' | 'saveAndClose' | 'saveAndMinimize';
+export type CommonSaveOptions = 'save' | 'saveAndClose' | 'saveAndMinimize';
 
 export interface MultiChoiceSaveButtonProps {
 	options?: Array<CommonSaveOptions | SplitButtonOption>;

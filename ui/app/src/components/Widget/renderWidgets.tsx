@@ -15,7 +15,7 @@
  */
 
 import WidgetDescriptor from '../../models/WidgetDescriptor';
-import React, { ReactElement } from 'react';
+import React, { type ReactElement } from 'react';
 import Widget, { WidgetProps } from './Widget';
 
 type MapperFn = (widget: WidgetDescriptor, index: number) => ReactElement;
@@ -26,7 +26,7 @@ export function renderWidgets(
 		userRoles?: string[];
 		createMapperFn?(originalMapperFn: MapperFn): MapperFn;
 	}
-): JSX.Element[] {
+): React.JSX.Element[] {
 	if (!Array.isArray(widgets)) {
 		return [];
 	}
@@ -36,13 +36,15 @@ export function renderWidgets(
 	));
 	return Array.isArray(userRoles)
 		? widgets
-				.filter(
-					(widget) =>
-						// Incorrect deserialization or content of permittedRoles may cause it to be something other than an array
+				.filter((widget) => {
+					// Incorrect deserialization or content of permittedRoles may cause it to be something other than an array
+					const lowerCasePermittedRoles = (widget.permittedRoles ?? []).map((role) => role.toLowerCase());
+					return (
 						!Array.isArray(widget.permittedRoles) ||
 						(widget.permittedRoles ?? []).length === 0 ||
-						(userRoles ?? []).some((role) => widget.permittedRoles.includes(role))
-				)
+						(userRoles ?? []).some((role) => lowerCasePermittedRoles.includes(role.toLowerCase()))
+					);
+				})
 				.map(mapperFn)
 		: widgets.map(mapperFn);
 }

@@ -26,9 +26,9 @@ import MoreVertRounded from '@mui/icons-material/MoreVertRounded';
 import Checkbox from '@mui/material/Checkbox';
 import ListItemText from '@mui/material/ListItemText';
 import ItemDisplay from '../ItemDisplay';
-import React, { useCallback, useState } from 'react';
+import React, { type DetailedHTMLProps, type HTMLAttributes, useCallback, useState } from 'react';
 import { DependencyChip, DependencyDataState } from './PublishDialogContainer';
-import { AllItemActions, DetailedItem } from '../../models';
+import { AllItemActions, ContentItem, LightItem } from '../../models';
 import { PathTreeNode } from './buildPathTrees';
 import { getPublishingPackagePreferredView, setPublishingPackagePreferredView } from '../../utils/state';
 import { nnou } from '../../utils/object';
@@ -39,13 +39,14 @@ import useEnv from '../../hooks/useEnv';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { useDispatch } from 'react-redux';
 import { renderTreeNode } from '../PackageItems/utils';
-import { FixedSizeList as List } from 'react-window';
 import Popover, { getOffsetLeft, getOffsetTop } from '@mui/material/Popover';
-import AutoSizer from 'react-virtualized-auto-sizer';
 import PackageItemsActions from '../PackageItems/PackageItemsActions';
+import useItemsByPath from '../../hooks/useItemsByPath';
+import { fetchContentItem } from '../../services/content';
+import { List, type RowComponentProps } from 'react-window';
 
 export interface PublishItemsProps {
-	itemMap: Record<string, DetailedItem>;
+	itemMap: Record<string, LightItem>;
 	defaultExpandedPaths?: string[];
 	itemsAndDependenciesPaths: string[];
 	dependencyTypeMap?: DependencyDataState['typeByPath'];
@@ -53,6 +54,8 @@ export interface PublishItemsProps {
 	selectedDependenciesMap?: Record<string, boolean>;
 	trees: PathTreeNode[];
 	onCheckboxChange?: (event: React.ChangeEvent<HTMLInputElement>, checked: boolean, path: string) => void;
+	includeChildren?: boolean;
+	setIncludeChildren?: (value: boolean) => void;
 }
 
 const maxTreeItems = 100;
@@ -66,7 +69,9 @@ export function PublishPackageItemsView(props: PublishItemsProps) {
 		selectedDependenciesPaths = [],
 		selectedDependenciesMap = {},
 		trees,
-		onCheckboxChange
+		onCheckboxChange,
+		includeChildren,
+		setIncludeChildren
 	} = props;
 	const { username } = useActiveUser();
 	const storedPreferredView = getPublishingPackagePreferredView(username);
@@ -83,6 +88,7 @@ export function PublishPackageItemsView(props: PublishItemsProps) {
 	});
 	const totalItems = itemsAndDependenciesPaths.length;
 	const disableTreeView = totalItems > maxTreeItems;
+	const itemsByPath = useItemsByPath();
 
 	const onContextMenuClose = () => {
 		setContextMenu({
@@ -116,12 +122,21 @@ export function PublishPackageItemsView(props: PublishItemsProps) {
 			const anchorRect = element.getBoundingClientRect();
 			const top = anchorRect.top + getOffsetTop(anchorRect, 'top');
 			const left = anchorRect.left + getOffsetLeft(anchorRect, 'left');
-			const itemMenuOptions = generateSingleItemOptions(item, formatMessage, {
-				includeOnly: ['view', 'dependencies', 'history']
-			});
-			setContextMenu({ anchorPosition: { top, left }, options: itemMenuOptions.flat(), item });
+
+			const menuOptionsCb = (contentItem: ContentItem) => {
+				const itemMenuOptions = generateSingleItemOptions(contentItem, formatMessage, {
+					includeOnly: ['view', 'dependencies', 'history']
+				});
+				setContextMenu({ anchorPosition: { top, left }, options: itemMenuOptions.flat(), item: contentItem });
+			};
+
+			if (itemsByPath?.[item.path]) {
+				menuOptionsCb(itemsByPath[item.path]);
+			} else {
+				fetchContentItem(siteId, item.path).subscribe(menuOptionsCb);
+			}
 		},
-		[formatMessage, itemMap]
+		[formatMessage, itemMap, itemsByPath, siteId]
 	);
 
 	return (
@@ -132,9 +147,11 @@ export function PublishPackageItemsView(props: PublishItemsProps) {
 				setExpandedPaths={setExpandedPaths}
 				disableTreeView={disableTreeView}
 				maxTreeItems={maxTreeItems}
+				includeChildren={includeChildren}
+				setIncludeChildren={setIncludeChildren}
 			/>
 			<Divider />
-			<Box sx={{ p: 1, flexGrow: 1, overflowY: 'auto' }}>
+			<Box sx={{ p: 1, flexGrow: 1, overflowY: 'auto', maxHeight: '70vh' }}>
 				{!disableTreeView && isTreeView ? (
 					<SimpleTreeView
 						expandedItems={expandedPaths ?? defaultExpandedPaths}
@@ -157,71 +174,73 @@ export function PublishPackageItemsView(props: PublishItemsProps) {
 								dependencyTypeMap,
 								onMenuClick: onContextMenuOpen,
 								onCheckboxChange,
-								selectedDependencies: selectedDependenciesPaths
+								selectedDependencies: selectedDependenciesPaths,
+								showItemTarget: false
 							})
 						)}
 					</SimpleTreeView>
 				) : (
-					<AutoSizer>
-						{({ height, width }) => (
-							<List height={height} itemCount={totalItems} itemSize={59} width={width}>
-								{({ index, style }) => {
-									const path = itemsAndDependenciesPaths[index];
-									return (
-										<Box
-											style={style}
-											sx={{
-												[`.${listItemSecondaryActionClasses.root}`]: { right: (theme) => theme.spacing(1) },
-												[`.${listItemClasses.root} .item-menu-button`]: { display: 'none' },
-												[`.${listItemClasses.root}:hover`]: { bgcolor: 'action.hover' },
-												[`.${listItemClasses.root}:hover .item-menu-button`]: { display: 'flex' }
-											}}
-										>
-											<ListItem
-												key={path}
-												secondaryAction={
-													<Box display="flex" alignItems="center">
-														<IconButton
-															className="item-menu-button"
-															size="small"
-															onClick={(e) => {
-																e.stopPropagation();
-																onContextMenuOpen?.(e, path);
-															}}
-														>
-															<MoreVertRounded />
-														</IconButton>
-														{dependencyTypeMap?.[path] === 'soft' && (
-															<Checkbox
-																size="small"
-																checked={selectedDependenciesMap[path]}
-																onChange={(e, checked) => onCheckboxChange?.(e, checked, path)}
-															/>
-														)}
-													</Box>
-												}
-											>
-												<ListItemText
-													primary={
-														<Box display="flex">
-															<ItemDisplay
-																item={itemMap[path]}
-																showNavigableAsLinks={false}
-																showWorkflowState={false}
-																sx={{ mr: 1 }}
-															/>
-															<DependencyChip type={dependencyTypeMap?.[path]} />
-														</Box>
-													}
-													secondary={path}
-												/>
-											</ListItem>
-										</Box>
-									);
-								}}
-							</List>
-						)}
-					</AutoSizer>
+					<List
+						rowCount={totalItems}
+						rowHeight={72}
+						rowProps={{}}
+						rowComponent={({ index, style }: RowComponentProps) => {
+							const path = itemsAndDependenciesPaths[index];
+							return (
+								<Box
+									style={style as DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>}
+									sx={{
+										[`.${listItemSecondaryActionClasses.root}`]: { right: (theme) => theme.spacing(1) },
+										[`.${listItemClasses.root} .item-menu-button`]: { display: 'none' },
+										[`.${listItemClasses.root}:hover`]: { bgcolor: 'action.hover' },
+										[`.${listItemClasses.root}:hover .item-menu-button`]: { display: 'flex' }
+									}}
+								>
+									<ListItem
+										key={path}
+										secondaryAction={
+											<Box display="flex" alignItems="center">
+												<IconButton
+													className="item-menu-button"
+													size="small"
+													onClick={(e) => {
+														e.stopPropagation();
+														onContextMenuOpen?.(e, path);
+													}}
+													aria-label={formatMessage({ defaultMessage: 'Options' })}
+												>
+													<MoreVertRounded />
+												</IconButton>
+												{dependencyTypeMap?.[path] === 'soft' && (
+													<Checkbox
+														size="small"
+														checked={selectedDependenciesMap[path]}
+														onChange={(e, checked) => onCheckboxChange?.(e, checked, path)}
+													/>
+												)}
+											</Box>
+										}
+									>
+										<ListItemText
+											primary={
+												<Box display="flex" gap={1}>
+													<ItemDisplay
+														item={itemMap[path]}
+														showNavigableAsLinks={false}
+														showWorkflowState={false}
+														sx={{ mr: 1 }}
+														showPublishingTarget={false}
+													/>
+													<DependencyChip type={dependencyTypeMap?.[path]} />
+												</Box>
+											}
+											secondary={path}
+										/>
+									</ListItem>
+								</Box>
+							);
+						}}
+					/>
 				)}
 			</Box>
 			<Popover

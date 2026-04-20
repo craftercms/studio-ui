@@ -20,9 +20,8 @@ import useReference from '../../../hooks/useReference';
 import { useActiveSiteId } from '../../../hooks/useActiveSiteId';
 import SiteTools, { Tool } from '../SiteTools';
 import { onSubmittingAndOrPendingChangeProps } from '../../../hooks/useEnhancedDialogState';
-import { useDispatch } from 'react-redux';
-import { updateWidgetDialog } from '../../../state/actions/dialogs';
 import { SiteToolsContext, SiteToolsContextProps } from '../siteToolsContext';
+import useEnhancedDialogContext from '../../EnhancedDialog/useEnhancedDialogContext';
 
 interface EmbeddedSiteToolsProps {
 	onMinimize?: () => void;
@@ -36,11 +35,11 @@ export const EmbeddedSiteToolsContainer = (props: EmbeddedSiteToolsProps) => {
 	const siteTools = useReference('craftercms.siteTools');
 	const tools: Tool[] = siteTools?.tools;
 	const site = useActiveSiteId();
-	const dispatch = useDispatch();
 	const contextValue = useMemo<SiteToolsContextProps>(
 		() => ({ setTool: (id) => setActiveToolId(id.replace(/^\//, '')), activeToolId }),
 		[activeToolId]
 	);
+	const { updateSubmittingOrHasPendingChanges } = useEnhancedDialogContext();
 
 	const onNavItemClick = (id: string) => {
 		setActiveToolId(id);
@@ -49,7 +48,7 @@ export const EmbeddedSiteToolsContainer = (props: EmbeddedSiteToolsProps) => {
 	const onSubmittingAndOrPendingChange =
 		props.onSubmittingAndOrPendingChange ??
 		((value: onSubmittingAndOrPendingChangeProps) => {
-			dispatch(updateWidgetDialog(value));
+			updateSubmittingOrHasPendingChanges(value);
 		});
 
 	return (
@@ -68,13 +67,7 @@ export const EmbeddedSiteToolsContainer = (props: EmbeddedSiteToolsProps) => {
 				tools={tools}
 				sx={{ height: '100%' }}
 				onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
-				onMinimize={() => {
-					if (props.onMinimize) {
-						props.onMinimize();
-					} else {
-						dispatch(updateWidgetDialog({ isMinimized: true }));
-					}
-				}}
+				onMinimize={() => props.onMinimize?.()}
 				mountMode="dialog"
 			/>
 		</SiteToolsContext.Provider>

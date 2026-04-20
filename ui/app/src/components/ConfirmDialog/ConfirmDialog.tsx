@@ -27,8 +27,10 @@ export function ConfirmDialog(props: ConfirmDialogProps) {
 	const { formatMessage } = useIntl();
 	return (
 		<AlertDialog
-			disableBackdropClick
-			disableEscapeKeyDown
+			// The backdrop or escape should trigger the onCancel (this action is likely the one that won't cause data
+			// loss or undesired changes). If this action is not provided, then disable backdrop and escape close.
+			disableBackdropClick={!onCancel}
+			disableEscapeKeyDown={!onCancel}
 			{...rest}
 			buttons={
 				<>

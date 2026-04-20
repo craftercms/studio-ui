@@ -14,14 +14,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { type ReactNode } from 'react';
 import Accordion from '@mui/material/Accordion';
 import { PathNavigatorHeader } from '../PathNavigator/PathNavigatorHeader';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import { StateStylingProps } from '../../models/UiConfig';
 import PathNavigatorTreeItem, { PathNavigatorTreeItemProps } from './PathNavigatorTreeItem';
 import LookupTable from '../../models/LookupTable';
-import { DetailedItem } from '../../models/Item';
+import { ContentItem } from '../../models/Item';
 import { SystemIconDescriptor } from '../SystemIcon';
 import RefreshRounded from '@mui/icons-material/RefreshRounded';
 import { FormattedMessage } from 'react-intl';
@@ -43,12 +43,12 @@ export interface PathNavigatorTreeUIProps
 		| 'childrenByParentPath'
 		| 'errorByPath'
 	> {
-	title: string;
+	title: ReactNode;
 	icon?: SystemIconDescriptor;
 	container?: Partial<StateStylingProps>;
 	rootPath: string;
 	isRootPathMissing: boolean;
-	itemsByPath: LookupTable<DetailedItem>;
+	itemsByPath: LookupTable<ContentItem>;
 	onIconClick(path: string): void;
 	onLabelClick(event: React.MouseEvent<Element, MouseEvent>, path: string): void;
 	onChangeCollapsed(collapsed: boolean): void;
@@ -130,7 +130,7 @@ export function PathNavigatorTreeUI(props: PathNavigatorTreeUIProps) {
 			/>
 			{isRootPathMissing ? (
 				<ErrorState
-					sxs={{ image: { display: 'none' } }}
+					sxs={{ root: { textAlign: 'center' }, image: { display: 'none' } }}
 					title={
 						<FormattedMessage
 							id="pathNavigatorTree.missingRootPath"

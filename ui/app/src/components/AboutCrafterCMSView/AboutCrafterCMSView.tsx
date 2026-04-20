@@ -80,10 +80,7 @@ export function AboutCrafterCMSView() {
 									values={{
 										a: (msg) => (
 											<Link
-												href={`https://docs.craftercms.org/en/${env.packageVersion?.substr(
-													0,
-													3
-												)}/acknowledgements/index.html`}
+												href={`https://craftercms.com/docs/current/contribute/acknowledgements.html`}
 												target="_blank"
 											>
 												{msg}

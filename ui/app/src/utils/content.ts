@@ -14,13 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BaseItem, DetailedItem, ItemActionsMap, ItemStateMap, LegacyItem, SandboxItem } from '../models/Item';
+import { ContentItem, ItemActionsMap, ItemStateMap, LegacyItem } from '../models/Item';
 import { getStateMapFromLegacyItem } from './state';
-import { nnou, nou, reversePluckProps } from './object';
+import { nnou, nou } from './object';
 import { ContentType, ContentTypeField } from '../models/ContentType';
 import LookupTable from '../models/LookupTable';
 import ContentInstance, { ContentInstanceBase } from '../models/ContentInstance';
-import { deserialize, getInnerHtml, getInnerHtmlNumber, wrapElementInAuxDocument } from './xml';
+import { deserialize, fromString, getInnerHtml, getInnerHtmlNumber, serialize, wrapElementInAuxDocument } from './xml';
 import { fileNameFromPath, replaceAccentedVowels, unescapeHTML } from './string';
 import { getRootPath, isRootPath, withIndex, withoutIndex } from './path';
 import { isFolder, isNavigable, isPreviewable } from '../components/PathNavigator/utils';
@@ -77,10 +77,14 @@ import { getStateBitmap } from '../components/WorkflowStateManagement/utils';
 import { forEach } from './array';
 import { PublishingTargets } from '../models';
 import slugify from 'slugify';
-import { showCodeEditorDialog, showEditDialog } from '../state/actions/dialogs';
 import { Dispatch } from 'react';
 import { AnyAction } from 'redux';
 import { findParentModelId, getModelIdFromInheritedField, isInheritedField } from './model';
+import { XmlKeys } from '../components/FormsEngine/lib/formConsts';
+import { pushDialog } from '../state/actions/dialogStack';
+import { nanoid } from 'nanoid';
+import { createComponentId, pickShowContentFormAction } from './system';
+import { popCodeEditorDialog } from '../state/actions/dialogs';
 
 export function isEditableAsset(path: string) {
 	return (
@@ -148,15 +152,16 @@ export function isImage(path: string): boolean {
 	);
 }
 
-export function isItemLockedForMe(item: DetailedItem | SandboxItem | LegacyItem, username: string): boolean {
-	return item ? isLockedState(item.state) && item.lockOwner.username !== username : true;
+// TODO: check why is LegacyItem accepted.
+export function isItemLockedForMe(item: ContentItem | LegacyItem, username: string): boolean {
+	return item ? isLockedState(item.state) && item.lockOwner?.username !== username : true;
 }
 
 export function isBlobUrl(url: string): boolean {
 	return url.startsWith('blob:');
 }
 
-export function isInActiveWorkflow(item: DetailedItem | SandboxItem): boolean {
+export function isInActiveWorkflow(item: ContentItem): boolean {
 	return item.stateMap.scheduled || item.stateMap.submitted;
 }
 
@@ -169,7 +174,7 @@ export function getComputedEditMode({
 	username,
 	editMode
 }: {
-	item: DetailedItem;
+	item: ContentItem;
 	username: string;
 	editMode: boolean;
 }): boolean {
@@ -228,7 +233,14 @@ function getLegacyItemSystemType(item: LegacyItem): SystemType {
 	}
 }
 
-export function parseLegacyItemToBaseItem(item: LegacyItem): BaseItem {
+export function parseLegacyItemToContentItem(item: LegacyItem): ContentItem;
+export function parseLegacyItemToContentItem(item: LegacyItem[]): ContentItem[];
+export function parseLegacyItemToContentItem(item: LegacyItem | LegacyItem[]): ContentItem | ContentItem[] {
+	if (Array.isArray(item)) {
+		// If no internalName then skipping (e.g. level descriptors)
+		return item.flatMap((i) => (i.internalName || i.name ? [parseLegacyItemToContentItem(i)] : []));
+	}
+
 	const stateMap = getStateMapFromLegacyItem(item);
 	const state = getStateBitmap(stateMap);
 	return {
@@ -244,25 +256,8 @@ export function parseLegacyItemToBaseItem(item: LegacyItem): BaseItem {
 		state,
 		stateMap,
 		lockOwner: null,
-		disabled: null,
 		localeCode: 'en',
 		translationSourceId: null,
-		availableActions: null,
-		availableActionsMap: null,
-		childrenCount: 0
-	};
-}
-
-export function parseLegacyItemToSandBoxItem(item: LegacyItem): SandboxItem;
-export function parseLegacyItemToSandBoxItem(item: LegacyItem[]): SandboxItem[];
-export function parseLegacyItemToSandBoxItem(item: LegacyItem | LegacyItem[]): SandboxItem | SandboxItem[] {
-	if (Array.isArray(item)) {
-		// If no internalName then skipping (e.g. level descriptors)
-		return item.flatMap((i) => (i.internalName || i.name ? [parseLegacyItemToSandBoxItem(i)] : []));
-	}
-
-	return {
-		...parseLegacyItemToBaseItem(item),
 		creator: null,
 		dateCreated: null,
 		modifier: {
@@ -272,89 +267,33 @@ export function parseLegacyItemToSandBoxItem(item: LegacyItem | LegacyItem[]): S
 			avatar: null
 		},
 		dateModified: item.lastEditDate,
-		dateSubmitted: null,
-		sizeInBytes: null,
-		expiresOn: null,
-		submitter: null
-	};
-}
-
-export function parseLegacyItemToDetailedItem(item: LegacyItem): DetailedItem;
-export function parseLegacyItemToDetailedItem(item: LegacyItem[]): DetailedItem[];
-export function parseLegacyItemToDetailedItem(item: LegacyItem | LegacyItem[]): DetailedItem | DetailedItem[] {
-	if (Array.isArray(item)) {
-		// If no internalName then skipping (e.g. level descriptors)
-		return item.flatMap((i) => (i.internalName || i.name ? [parseLegacyItemToDetailedItem(i)] : []));
-	}
-
-	return {
-		...parseLegacyItemToBaseItem(item),
-		sandbox: {
-			creator: null,
-			dateCreated: null,
-			modifier: {
+		availableActions: null,
+		availableActionsMap: null,
+		childrenCount: 0,
+		staging: {
+			dateScheduled: item.scheduledDate,
+			dateLastPublished: item.publishedDate ?? item.eventDate,
+			publisher: {
 				username: item.user,
 				firstName: null,
 				lastName: null,
 				avatar: null
-			},
-			dateModified: item.lastEditDate,
-			dateSubmitted: null,
-			sizeInBytes: null,
-			expiresOn: null,
-			submitter: null
-		},
-		staging: {
-			dateScheduled: item.scheduledDate,
-			datePublished: item.publishedDate ?? item.eventDate,
-			publisher: item.user,
-			expiresOn: null
+			}
 		},
 		live: {
 			dateScheduled: item.scheduledDate,
-			datePublished: item.publishedDate ?? item.eventDate,
-			publisher: item.user,
-			expiresOn: null
+			dateLastPublished: item.publishedDate ?? item.eventDate,
+			publisher: {
+				username: item.user,
+				firstName: null,
+				lastName: null,
+				avatar: null
+			}
 		}
 	};
 }
 
-export function parseSandBoxItemToDetailedItem(item: SandboxItem): DetailedItem;
-export function parseSandBoxItemToDetailedItem(item: SandboxItem[]): DetailedItem[];
-export function parseSandBoxItemToDetailedItem(
-	item: SandboxItem,
-	detailedItemComplement: Pick<DetailedItem, 'live' | 'staging'>
-): DetailedItem;
-export function parseSandBoxItemToDetailedItem(
-	item: SandboxItem[],
-	detailedItemComplementByPath: LookupTable<Pick<DetailedItem, 'live' | 'staging'>>
-): DetailedItem[];
-export function parseSandBoxItemToDetailedItem(
-	item: SandboxItem | SandboxItem[],
-	detailedItemComplement?: Pick<DetailedItem, 'live' | 'staging'> | LookupTable<Pick<DetailedItem, 'live' | 'staging'>>
-): DetailedItem | DetailedItem[] {
-	if (Array.isArray(item)) {
-		// including level descriptors to avoid issues on pathNavigator;
-		return item.map((i) => parseSandBoxItemToDetailedItem(i, detailedItemComplement?.[i.path]));
-	}
-	return {
-		sandbox: {
-			creator: item.creator,
-			dateCreated: item.dateCreated,
-			modifier: item.modifier,
-			dateModified: item.dateModified,
-			dateSubmitted: item.dateSubmitted,
-			sizeInBytes: item.sizeInBytes,
-			expiresOn: item.expiresOn,
-			submitter: item.submitter
-		},
-		staging: (detailedItemComplement?.staging as DetailedItem['staging']) ?? null,
-		live: (detailedItemComplement?.live as DetailedItem['live']) ?? null,
-		...(reversePluckProps(item, 'creator', 'dateCreated', 'modifier', 'dateModified', 'sizeInBytes') as BaseItem)
-	};
-}
-
-const systemPropsList = [
+export const systemPropsList = [
 	'orderDefault_f',
 	'savedAsDraft',
 	'content-type',
@@ -372,6 +311,18 @@ const systemPropsList = [
 	'lastModifiedDate',
 	'lastModifiedDate_dt'
 ];
+
+export const systemPropMap = {
+	[XmlKeys.fileName]: 'fileName',
+	[XmlKeys.internalName]: 'label',
+	[XmlKeys.contentTypeId]: 'contentTypeId',
+	[XmlKeys.dateCreated]: 'dateCreated',
+	[XmlKeys.dateCreatedDt]: 'dateCreated',
+	[XmlKeys.dateModified]: 'dateModified',
+	[XmlKeys.dateModifiedDt]: 'dateModified',
+	disabled: 'disabled',
+	orderDefault_f: 'orderInNav'
+};
 
 /**
  * doc {XMLDocument}
@@ -410,12 +361,12 @@ export function parseContentXML(
 		unflattenedPaths[path] = current;
 	}
 	if (nnou(doc)) {
-		current.craftercms.label = getInnerHtml(
-			doc.querySelector(':scope > internal-name') ?? doc.querySelector(':scope > file-name'),
-			{ applyLegacyUnescaping: true }
-		);
-		current.craftercms.dateCreated = getInnerHtml(doc.querySelector(':scope > createdDate_dt'));
-		current.craftercms.dateModified = getInnerHtml(doc.querySelector(':scope > lastModifiedDate_dt'));
+		const internalName = doc.querySelector(':scope > internal-name');
+		const labelFromInternalName = internalName ? getInnerHtml(internalName, { applyLegacyUnescaping: true }) : null;
+		current.craftercms.label = labelFromInternalName || (path ? fileNameFromPath(path) : '');
+		current.craftercms.dateCreated = getInnerHtml(doc.querySelector(`:scope > ${XmlKeys.dateCreatedDt}`));
+		current.craftercms.dateModified = getInnerHtml(doc.querySelector(`:scope > ${XmlKeys.dateModifiedDt}`));
+		current.craftercms.disabled = getInnerHtml(doc.querySelector(':scope > disabled'), { trim: true }) === 'true';
 	}
 	id && (instanceLookup[id] = current);
 	if (nnou(doc)) {
@@ -470,7 +421,7 @@ export function parseContentXML(
  * instanceLookup {LookupTable<ContentInstance>}
  * unflattenedPaths {LookupTable<ContentInstance>} A lookup table directly completed/mutated by this function indexed by path of those objects that are incomplete/unflattened
  */
-function parseElementByContentType(
+export function parseElementByContentType(
 	element: Element,
 	field: ContentTypeField,
 	contentTypesLookup: LookupTable<ContentType>,
@@ -552,17 +503,17 @@ function parseElementByContentType(
 			}
 			return array;
 		}
-		case 'html':
+		case 'rte':
 			return unescapeHTML(getInnerHtml(element));
 		case 'checkbox-group': {
 			const deserialized = deserialize(element);
 			const extract = deserialized[element.tagName].item;
 			return nou(extract) ? [] : Array.isArray(extract) ? extract : [extract];
 		}
-		case 'text':
+		case 'input':
 		case 'textarea':
 			return getInnerHtml(element, { applyLegacyUnescaping: true });
-		case 'image':
+		case 'image-picker':
 		case 'date-time':
 		case 'time':
 			return getInnerHtml(element);
@@ -572,13 +523,13 @@ function parseElementByContentType(
 			} else {
 				return getInnerHtml(element);
 			}
-		case 'boolean':
-		case 'page-nav-order':
+		case 'checkbox':
+		case 'page-nav-order': // FE2 TODO: This seems wrong, check
 			return getInnerHtml(element) === 'true';
 		case 'numeric-input':
 			return getInnerHtmlNumber(element, parseFloat);
 		default:
-			!['transcoded-video', 'transcoded-video-picker', 'taxonomy-selector'].includes(type) &&
+			!['transcoded-video', 'transcoded-video-picker', 'taxonomy-selector', 'video-picker'].includes(type) &&
 				console.log(
 					`%c[parseElementByContentType] Missing type "${type}" on switch statement for field "${field.id}".`,
 					'color: blue',
@@ -628,6 +579,7 @@ export const createModelHierarchyDescriptor: (
 
 let contentTypeMissingWarningQueue = [];
 let contentTypeMissingWarningTimeout: NodeJS.Timeout;
+
 export function createModelHierarchyDescriptorMap(
 	normalizedModels: LookupTable<ContentInstance>,
 	contentTypes: LookupTable<ContentType>
@@ -724,6 +676,7 @@ export function createModelHierarchyDescriptorMap(
 			}
 		});
 	}
+
 	// endregion
 	Object.values(normalizedModels).forEach((model) => {
 		process(model, model, getFields(model.craftercms.contentTypeId));
@@ -855,7 +808,7 @@ export function denormalizeModel(
 	return model;
 }
 
-export function getNumOfMenuOptionsForItem(item: DetailedItem): number {
+export function getNumOfMenuOptionsForItem(item: ContentItem): number {
 	if (isNavigable(item)) {
 		return isRootPath(item.path) ? 11 : 16;
 	} else if (isFolder(item)) {
@@ -975,7 +928,7 @@ export const createItemActionMap: (availableActions: number) => ItemActionsMap =
  * lookupTable {Record<string, T>} The map-like object containing all items in which to look the path up
  * @returns {T} The item if found, undefined otherwise
  **/
-export function lookupItemByPath<T = DetailedItem>(path: string, lookupTable: LookupTable<T>): T {
+export function lookupItemByPath<T = ContentItem>(path: string, lookupTable: LookupTable<T>): T {
 	return lookupTable[withIndex(path)] ?? lookupTable[withoutIndex(path)];
 }
 
@@ -1046,10 +999,7 @@ export function getEditorMode(mimeType: string): 'ftl' | 'groovy' | 'javascript'
 	}
 }
 
-export function prepareVirtualItemProps(item: SandboxItem): SandboxItem;
-export function prepareVirtualItemProps(item: DetailedItem): DetailedItem;
-export function prepareVirtualItemProps(item: SandboxItem | DetailedItem): SandboxItem | DetailedItem;
-export function prepareVirtualItemProps(item: SandboxItem | DetailedItem): SandboxItem | DetailedItem {
+export function prepareVirtualItemProps(item: ContentItem): ContentItem {
 	return {
 		...item,
 		stateMap: createItemStateMap(item.state),
@@ -1057,21 +1007,21 @@ export function prepareVirtualItemProps(item: SandboxItem | DetailedItem): Sandb
 	};
 }
 
-export function getDateScheduled(item: DetailedItem): string {
+export function getDateScheduled(item: ContentItem): string {
 	return item.live?.dateScheduled ?? item.staging?.dateScheduled ?? null;
 }
 
-export function getDatePublished(item: DetailedItem): string {
-	return item.live?.datePublished ?? item.staging?.datePublished ?? null;
+export function getDatePublished(item: ContentItem): string {
+	return item.live?.dateLastPublished ?? item.staging?.dateLastPublished ?? null;
 }
 
-export function getComputedPublishingTarget(item: DetailedItem): PublishingTargets | null {
+export function getComputedPublishingTarget(item: ContentItem): PublishingTargets | null {
 	// prettier-ignore
 	return item.stateMap.submittedToLive
-    ? 'live'
-    : item.stateMap.submittedToStaging
-      ? 'staging'
-      : null;
+		? 'live'
+		: item.stateMap.submittedToStaging
+			? 'staging'
+			: null;
 }
 
 export function applyFolderNameRules(name: string, options?: { allowBraces: boolean }): string {
@@ -1107,11 +1057,11 @@ export function applyContentNameRules(name: string): string {
 }
 
 export const openItemEditor = (
-	item: DetailedItem,
+	item: ContentItem,
 	authoringBase: string,
 	siteId: string,
 	dispatch: Dispatch<AnyAction>,
-	onSaveSuccess?: AnyAction
+	onSaveSuccess?: () => void
 ) => {
 	let type = 'controller';
 
@@ -1122,16 +1072,29 @@ export const openItemEditor = (
 	}
 
 	if (type === 'form') {
-		dispatch(showEditDialog({ path: item.path, authoringBase, site: siteId, onSaveSuccess }));
-	} else {
 		dispatch(
-			showCodeEditorDialog({
-				site: siteId,
-				authoringBase,
+			pickShowContentFormAction({
 				path: item.path,
-				type,
-				mode: getEditorMode(item.mimeType),
-				onSuccess: onSaveSuccess
+				authoringBase,
+				site: siteId,
+				onSaveSuccess: () => onSaveSuccess?.()
+			})
+		);
+	} else {
+		const dialogId = nanoid();
+		dispatch(
+			pushDialog({
+				id: dialogId,
+				component: createComponentId('CodeEditorDialog'),
+				props: {
+					site: siteId,
+					authoringBase,
+					path: item.path,
+					type,
+					mode: getEditorMode(item.mimeType),
+					onSuccess: () => onSaveSuccess?.(),
+					onClose: () => dispatch(popCodeEditorDialog({ id: dialogId }))
+				}
 			})
 		);
 	}
@@ -1213,8 +1176,95 @@ export function generatePlaceholderImageDataUrl(attributes?: Partial<GeneratePla
 	return canvas.toDataURL();
 }
 
+/**
+ * Retrieves the value of a property from a content instance model, considering system properties.
+ *
+ * @param model - The content instance model to retrieve the value from.
+ * @param prop - The property to retrieve the value from.
+ * @returns The value of the property from the model.
+ * */
+export function getContentInstanceValueFromProp(model: ContentInstance, prop: string) {
+	const systemProp = systemPropMap[prop];
+	if (systemProp) {
+		if (systemProp === 'fileName') {
+			return getContentInstanceFileName(model);
+		} else {
+			return model.craftercms[systemProp];
+		}
+	} else {
+		return model[prop];
+	}
+}
+
+export function getContentInstanceXmlValueFromProp(xml: string, prop: string): string {
+	const selectionProp = XmlKeys[prop] ?? prop;
+	const doc = fromString(xml).querySelector(selectionProp);
+	return doc ? serialize(doc) : '';
+}
+
+export function getContentFileNameFromPath(path: string): string {
+	let fileName = path.replace('/site/website', '');
+
+	if (path.endsWith('/index.xml')) {
+		fileName = fileName.replace('/index.xml', '');
+		return fileName.substring(fileName.lastIndexOf('/')) || '/';
+	}
+
+	if (path.includes('.xml')) {
+		return fileName.substring(fileName.lastIndexOf('/') + 1).replace('.xml', '');
+	}
+	return fileName;
+}
+
+/**
+ * Retrieves the file name from the given content instance model.
+ *
+ * @param model - The content instance model containing the path.
+ * @returns The file name extracted from the model's path, or null if the path is not defined.
+ */
+export function getContentInstanceFileName(model: ContentInstance) {
+	const path = model.craftercms.path;
+	if (!path) return null;
+
+	return getContentFileNameFromPath(path);
+}
+
+export const getMockContentInstance = () => {
+	return {
+		craftercms: {
+			id: null,
+			path: null,
+			label: null,
+			dateCreated: null,
+			dateModified: null,
+			contentTypeId: null,
+			disabled: false
+		}
+	};
+};
+
+export const isComparableAsset = (item) => {
+	return (
+		item?.systemType === 'asset' &&
+		(isEditableAsset(item.path) || isImage(item.path) || isVideo(item) || isPdfDocument(item.mimeType))
+	);
+};
+
 // region Package presence checker functions
 export const hasApproveAction = (value: number) => Boolean(value & PACKAGE_APPROVE_MASK);
 export const hasRejectAction = (value: number) => Boolean(value & PACKAGE_REJECT_MASK);
 export const hasCancelAction = (value: number) => Boolean(value & PACKAGE_CANCEL_MASK);
 export const hasResubmitAction = (value: number) => Boolean(value & PACKAGE_RESUBMIT_MASK);
+
+export function isVideo(item: Pick<ContentItem, 'mimeType'>): boolean {
+	return item?.mimeType.startsWith('video/');
+}
+
+export function isAudio(item: Pick<ContentItem, 'mimeType'>): boolean {
+	return item?.mimeType.startsWith('audio/');
+}
+
+export function isPdfDocument(mimeType: string): boolean {
+	// Using `startsWith` to cover possible mime types like `application/pdf; charset=UTF-8`
+	return mimeType.toLowerCase().startsWith('application/pdf');
+}

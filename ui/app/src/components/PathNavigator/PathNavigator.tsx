@@ -15,7 +15,7 @@
  */
 
 import React, { ChangeEvent, ElementType, useEffect, useState } from 'react';
-import { DetailedItem } from '../../models/Item';
+import { ContentItem } from '../../models/Item';
 import ContextMenu, { ContextMenuOption } from '../ContextMenu/ContextMenu';
 import { useDispatch } from 'react-redux';
 import { withIndex, withoutIndex } from '../../utils/path';
@@ -33,17 +33,7 @@ import {
 	pathNavigatorSetKeyword,
 	pathNavigatorSetLocaleCode
 } from '../../state/actions/pathNavigator';
-import { showEditDialog, showItemMegaMenu, showPreviewDialog } from '../../state/actions/dialogs';
-import {
-	getEditorMode,
-	isEditableViaFormEditor,
-	isFolder,
-	isImage,
-	isNavigable,
-	isPreviewable,
-	isVideo,
-	isPdfDocument
-} from './utils';
+import { getEditorMode, isEditableViaFormEditor, isFolder, isImage, isNavigable, isPreviewable } from './utils';
 import { StateStylingProps } from '../../models/UiConfig';
 import { debounceTime } from 'rxjs/operators';
 import PathNavigatorUI from './PathNavigatorUI';
@@ -51,18 +41,24 @@ import PathNavigatorSkeleton from './PathNavigatorSkeleton';
 import GlobalState from '../../models/GlobalState';
 import { SystemIconDescriptor } from '../SystemIcon';
 import { getOffsetLeft, getOffsetTop } from '@mui/material/Popover';
-import { getNumOfMenuOptionsForItem, lookupItemByPath } from '../../utils/content';
+import { getNumOfMenuOptionsForItem, isPdfDocument, isVideo, lookupItemByPath } from '../../utils/content';
 import { useSelection } from '../../hooks/useSelection';
 import { useEnv } from '../../hooks/useEnv';
 import { useItemsByPath } from '../../hooks/useItemsByPath';
 import { useSubject } from '../../hooks/useSubject';
 import { useSiteLocales } from '../../hooks/useSiteLocales';
 import { useMount } from '../../hooks/useMount';
-import { getSystemLink } from '../../utils/system';
+import { createComponentId, getSystemLink, pickShowContentFormAction } from '../../utils/system';
 import { getStoredPathNavigator } from '../../utils/state';
 import { useActiveSite } from '../../hooks/useActiveSite';
 import { useActiveUser } from '../../hooks/useActiveUser';
 import { GetChildrenOptions, PartialSxRecord } from '../../models';
+import { pushDialog } from '../../state/actions/dialogStack';
+import { nanoid } from 'nanoid';
+import { showItemMegaMenu } from '../../state/actions/dialogs';
+import TranslationOrText from '../../models/TranslationOrText';
+import usePossibleTranslation from '../../hooks/usePossibleTranslation';
+import { useIntl } from 'react-intl';
 
 interface Menu {
 	path?: string;
@@ -79,7 +75,7 @@ export type PathNavigatorClassKey = 'root' | 'body' | 'searchRoot';
 
 export interface PathNavigatorProps {
 	id: string;
-	label: string;
+	label: TranslationOrText;
 	rootPath: string;
 	sortStrategy?: GetChildrenOptions['sortStrategy'];
 	order?: GetChildrenOptions['order'];
@@ -93,11 +89,11 @@ export interface PathNavigatorProps {
 	container?: Partial<StateStylingProps>;
 	classes?: Partial<Record<PathNavigatorClassKey, string>>;
 	sxs?: PartialSxRecord<PathNavigatorClassKey>;
-	onItemClicked?(item: DetailedItem, event?: React.MouseEvent): void;
-	computeActiveItems?: (items: DetailedItem[]) => string[];
+	onItemClicked?(item: ContentItem, event?: React.MouseEvent): void;
+	computeActiveItems?: (items: ContentItem[]) => string[];
 	createItemClickedHandler?: (
-		defaultHandler: (item: DetailedItem, event?: React.MouseEvent) => void
-	) => (item: DetailedItem) => void;
+		defaultHandler: (item: ContentItem, event?: React.MouseEvent) => void
+	) => (item: ContentItem) => void;
 }
 
 export interface PathNavigatorStateProps {
@@ -133,15 +129,16 @@ export interface PathNavigatorStateProps {
 // };
 
 export function PathNavigator(props: PathNavigatorProps) {
+	const { formatMessage } = useIntl();
+	const translatedLabel = usePossibleTranslation(props.label) || formatMessage({ defaultMessage: '(No name)' });
 	// region const { ... } = props;
 	const {
-		label = '(No name)',
 		icon,
 		expandedIcon,
 		collapsedIcon,
 		container,
 		rootPath: path,
-		id = label.replace(/\s/g, ''),
+		id = path,
 		limit = 10,
 		locale,
 		excludes,
@@ -240,7 +237,7 @@ export function PathNavigator(props: PathNavigatorProps) {
 		return <PathNavigatorSkeleton renderBody={storedState ? !storedState.collapsed : !initialCollapsed} />;
 	}
 
-	const onPathSelected = (item: DetailedItem) => {
+	const onPathSelected = (item: ContentItem) => {
 		dispatch(
 			pathNavigatorFetchPath({
 				id,
@@ -250,26 +247,37 @@ export function PathNavigator(props: PathNavigatorProps) {
 		);
 	};
 
-	const onPreview = (item: DetailedItem) => {
+	const onPreview = (item: ContentItem) => {
 		if (isEditableViaFormEditor(item)) {
-			dispatch(showEditDialog({ path: item.path, authoringBase, site: siteId, readonly: true }));
+			dispatch(pickShowContentFormAction({ path: item.path, authoringBase, site: siteId, readonly: true }));
 		} else if (isImage(item) || isVideo(item) || isPdfDocument(item.mimeType)) {
 			dispatch(
-				showPreviewDialog({
-					type: isImage(item) ? 'image' : isVideo(item) ? 'video' : 'pdf',
-					title: item.label,
-					url: item.path
+				pushDialog({
+					component: createComponentId('PreviewDialog'),
+					allowMinimize: true,
+					allowFullScreen: true,
+					props: {
+						type: isImage(item) ? 'image' : isVideo(item) ? 'video' : 'pdf',
+						title: item.label,
+						url: item.path
+					}
 				})
 			);
 		} else {
 			const mode = getEditorMode(item);
 			dispatch(
-				showPreviewDialog({
-					type: 'editor',
-					title: item.label,
-					url: item.path,
-					path: item.path,
-					mode
+				pushDialog({
+					id: nanoid(),
+					component: createComponentId('PreviewDialog'),
+					allowMinimize: true,
+					allowFullScreen: true,
+					props: {
+						type: 'editor',
+						title: item.label,
+						url: item.path,
+						path: item.path,
+						mode
+					}
 				})
 			);
 		}
@@ -296,7 +304,7 @@ export function PathNavigator(props: PathNavigatorProps) {
 		);
 	};
 
-	const onSelectItem = (item: DetailedItem, checked: boolean) => {
+	const onSelectItem = (item: ContentItem, checked: boolean) => {
 		dispatch(
 			checked
 				? pathNavigatorItemChecked({ id, item })
@@ -325,7 +333,7 @@ export function PathNavigator(props: PathNavigatorProps) {
 		);
 	};
 
-	const onOpenItemMenu = (element: Element, item: DetailedItem) => {
+	const onOpenItemMenu = (element: Element, item: ContentItem) => {
 		const anchorRect = element.getBoundingClientRect();
 		const top = anchorRect.top + getOffsetTop(anchorRect, 'top');
 		const left = anchorRect.left + getOffsetLeft(anchorRect, 'left');
@@ -353,7 +361,7 @@ export function PathNavigator(props: PathNavigatorProps) {
 
 	const onItemClicked = onItemClickedProp
 		? onItemClickedProp
-		: createItemClickedHandler((item: DetailedItem, e) => {
+		: createItemClickedHandler((item: ContentItem, e) => {
 				if (isNavigable(item)) {
 					const url = getSystemLink({
 						site: siteId,
@@ -373,7 +381,7 @@ export function PathNavigator(props: PathNavigatorProps) {
 				}
 			});
 
-	const onBreadcrumbSelected = (item: DetailedItem) => {
+	const onBreadcrumbSelected = (item: ContentItem) => {
 		if (withoutIndex(item.path) !== withoutIndex(state.currentPath)) {
 			dispatch(pathNavigatorConditionallySetPath({ id, path: item.path, keyword }));
 		}
@@ -408,7 +416,7 @@ export function PathNavigator(props: PathNavigatorProps) {
 				itemsByPath={itemsByPath}
 				icon={expandedIcon && collapsedIcon ? (state.collapsed ? collapsedIcon : expandedIcon) : icon}
 				container={container}
-				title={label}
+				title={translatedLabel}
 				onChangeCollapsed={onChangeCollapsed}
 				onHeaderButtonClick={state.collapsed ? void 0 : onHeaderButtonClick}
 				onCurrentParentMenu={onCurrentParentMenu}

@@ -21,17 +21,19 @@ import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { fetchMarketplacePluginUsage, uninstallMarketplacePlugin } from '../../services/marketplace';
 import { UninstallPluginDialogBody } from './UninstallPluginDialogBody';
 import { useDispatch } from 'react-redux';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
 import useSpreadState from '../../hooks/useSpreadState';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { LoadingState } from '../LoadingState';
+import { pushErrorDialog } from '../../utils/system';
+import { useEnhancedDialogContext } from '../EnhancedDialog';
 
 export function UninstallPluginDialogContainer(props: UninstallPluginDialogContainerProps) {
-	const { onClose, pluginId, onComplete, isSubmitting, onSubmittingAndOrPendingChange } = props;
+	const { onClose, pluginId, onComplete, isSubmitting } = props;
 	const site = useActiveSiteId();
 	const dispatch = useDispatch();
-	const callbacksRef = useUpdateRefs({ onSubmittingAndOrPendingChange });
+	const { updateSubmittingOrHasPendingChanges } = useEnhancedDialogContext();
+	const callbacksRef = useUpdateRefs({ updateSubmittingOrHasPendingChanges });
 	const [{ data, isFetching, error }, setState] = useSpreadState({
 		data: null,
 		isFetching: false,
@@ -60,22 +62,22 @@ export function UninstallPluginDialogContainer(props: UninstallPluginDialogConta
 	}, [site, pluginId, setState]);
 
 	const onSubmit = (id: string) => {
-		onSubmittingAndOrPendingChange({
+		updateSubmittingOrHasPendingChanges({
 			isSubmitting: true
 		});
 
 		uninstallMarketplacePlugin(site, id, true).subscribe({
 			next: () => {
-				callbacksRef.current.onSubmittingAndOrPendingChange({
+				callbacksRef.current.updateSubmittingOrHasPendingChanges({
 					isSubmitting: false
 				});
 				onComplete?.();
 			},
 			error: ({ response: { response } }) => {
-				callbacksRef.current.onSubmittingAndOrPendingChange({
+				callbacksRef.current.updateSubmittingOrHasPendingChanges({
 					isSubmitting: false
 				});
-				dispatch(showErrorDialog({ error: response }));
+				dispatch(pushErrorDialog({ props: { error: response } }));
 			}
 		});
 	};

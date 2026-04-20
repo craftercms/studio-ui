@@ -14,16 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import Card from '@mui/material/Card';
 import CardActionArea from '@mui/material/CardActionArea';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
 import CardActions from '@mui/material/CardActions';
-import SwipeableViews from 'react-swipeable-views';
-// @ts-ignore
-import { autoPlay } from 'react-swipeable-views-utils';
 import { MarketplacePlugin } from '../../models/MarketplacePlugin';
 import { defineMessages, useIntl } from 'react-intl';
 import MobileStepper from '../MobileStepper/MobileStepper';
@@ -33,21 +30,19 @@ import Tooltip from '@mui/material/Tooltip';
 import cardTitleStyles, { cardSubtitleStyles } from '../../styles/card';
 import SecondaryButton from '../SecondaryButton';
 import Box from '@mui/material/Box';
+import PluginMediaCarousel from '../PluginDetailsView/PluginMediaCarousel';
 
 interface PluginCardProps {
 	plugin: MarketplacePlugin;
-	changeImageSlideInterval?: number;
 	isMarketplacePlugin?: boolean;
 	inUse?: boolean;
 	usePermission?: boolean;
 	beingInstalled?: boolean;
-	useLabel?: string | JSX.Element;
+	useLabel?: string | React.JSX.Element;
 	disableCardActionClick?: boolean;
 	onPluginSelected(plugin: MarketplacePlugin, view: number): any;
 	onDetails(plugin: MarketplacePlugin, index?: number): any;
 }
-
-const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 
 const messages = defineMessages({
 	version: {
@@ -90,7 +85,6 @@ function PluginCard(props: PluginCardProps) {
 	const {
 		onPluginSelected,
 		plugin,
-		changeImageSlideInterval = 5000,
 		isMarketplacePlugin = true,
 		onDetails,
 		inUse = false,
@@ -104,6 +98,7 @@ function PluginCard(props: PluginCardProps) {
 	const isGitCard = id === 'GIT';
 	const isDuplicateCard = id === 'DUPLICATE';
 	const isGitOrDuplicateCard = isGitCard || isDuplicateCard;
+	const sliderRef = useRef<{ moveToItem: (itemIndex: number) => void } | null>(null);
 
 	function handleChangeIndex(value: number) {
 		setIndex(value);
@@ -111,7 +106,7 @@ function PluginCard(props: PluginCardProps) {
 
 	function onDotClick(e: any, step: number) {
 		e.stopPropagation();
-		setIndex(step);
+		sliderRef.current?.moveToItem(step);
 	}
 
 	function handlePlay() {
@@ -124,6 +119,7 @@ function PluginCard(props: PluginCardProps) {
 
 	function onImageClick(e: any, index: number = 0) {
 		if (isGitOrDuplicateCard) return false;
+
 		e.stopPropagation();
 		e.preventDefault();
 		onDetails(plugin, index);
@@ -302,15 +298,7 @@ function PluginCard(props: PluginCardProps) {
 				}}
 				sx={isGitOrDuplicateCard ? { display: 'flex', justifyContent: 'start' } : null}
 			>
-				<AutoPlaySwipeableViews
-					index={index}
-					interval={changeImageSlideInterval}
-					autoplay={false}
-					onChangeIndex={handleChangeIndex}
-					enableMouseEvents
-				>
-					{renderMedias(id)}
-				</AutoPlaySwipeableViews>
+				<PluginMediaCarousel ref={sliderRef} items={renderMedias(id)} onChangeItem={handleChangeIndex} />
 				{isGitOrDuplicateCard && (
 					<CardContent sx={isGitOrDuplicateCard ? { height: 'unset !important' } : null} className="cardContent">
 						<Typography gutterBottom variant="subtitle2" component="h2" className="cardTitle">

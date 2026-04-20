@@ -21,15 +21,16 @@ import * as contentController from '../contentController';
 import { ContentTypeFieldValidations } from '@craftercms/studio-ui/models/ContentType';
 import { message$, post } from '../utils/communicator';
 import { GuestStandardAction } from '../store/models/GuestStandardAction';
-import { Observable, Subject } from 'rxjs';
+import { NEVER, Observable, Subject } from 'rxjs';
 import { filter, startWith, take } from 'rxjs/operators';
-import { reversePluckProps } from '@craftercms/studio-ui/utils/object';
+import { nou, reversePluckProps } from '@craftercms/studio-ui/utils/object';
 import { showEditDialog, snackGuestMessage } from '@craftercms/studio-ui/state/actions/preview';
 import { RteSetup } from '../models/Rte';
 import { editComponentInline, exitComponentInlineEdit } from '../store/actions';
 import { emptyFieldClass } from '../constants';
 import { rtePickerActionResult, showRtePickerActions } from '@craftercms/studio-ui/state/actions/dialogs';
 import { unlockItem } from '@craftercms/studio-ui/state/actions/content';
+import { getPreviewURLFromPath } from '@craftercms/studio-ui/utils/path';
 
 export function initTinyMCE(
 	path: string,
@@ -37,6 +38,20 @@ export function initTinyMCE(
 	validations: Partial<ContentTypeFieldValidations>,
 	rteSetup?: RteSetup
 ): Observable<GuestStandardAction> {
+	// Tinymce needs the document to be in standards mode to work, if it's not the case, we can't initialize it and we
+	// show an error message instead.
+	if (nou(document.doctype)) {
+		console.error('Unable to initialize Rich Text Editor. Please contact your administrator for assistance.');
+		post(
+			snackGuestMessage({
+				id: 'noDocTypeError',
+				level: 'required'
+			})
+		);
+		post(unlockItem({ path }));
+		return NEVER;
+	}
+
 	const dispatch$ = new Subject<GuestStandardAction>();
 	const { field, model } = iceRegistry.getReferentialEntries(record.iceIds[0]);
 	const type = field?.type;
@@ -46,6 +61,7 @@ export function initTinyMCE(
 	const originalRawContent = originalElement.innerHTML;
 	let rteEl = originalElement;
 	const isRecordElInline = record.element.tagName.match(inlineElsRegex);
+	const isRTE = type === 'rte';
 
 	// If record element is of type inline (doesn't matter the display prop), replace it with a block element (div).
 	// This is because of an issue happening with inline elements (for example a span tag even with 'display: block' style
@@ -112,6 +128,8 @@ export function initTinyMCE(
 	record.element.classList.remove(emptyFieldClass);
 
 	const maxLength = validations?.maxLength ? parseInt(validations.maxLength.value) : null;
+	// If the validation is not set, we set allowAddMedia to true for backwards compatibility.
+	const allowAddMedia = validations?.addMedia ? validations.addMedia.value : true;
 	window.tinymce.init({
 		license_key: 'gpl',
 		target: rteEl,
@@ -123,8 +141,8 @@ export function initTinyMCE(
 		// For some reason this is not working.
 		// body_class: 'craftercms-rich-text-editor',
 		plugins: ['craftercms_paste editform', rteSetup?.tinymceOptions?.plugins].filter(Boolean).join(' '), // 'editform' plugin will always be loaded
-		paste_as_text: type !== 'html',
-		paste_data_images: type === 'html',
+		paste_as_text: !isRTE,
+		paste_data_images: isRTE,
 		paste_preprocess(editor, args) {
 			const currentContent = editor.getContent({ format: 'text' });
 			const fullContent = currentContent + args.content;
@@ -147,7 +165,7 @@ export function initTinyMCE(
 		paste_postprocess(plugin, args) {
 			window.tinymce.activeEditor.plugins.craftercms_paste_extension?.paste_postprocess(plugin, args);
 		},
-		toolbar: type === 'html',
+		toolbar: isRTE,
 		menubar: false,
 		inline: true,
 		base_url: '/studio/static-assets/libs/tinymce',
@@ -158,46 +176,53 @@ export function initTinyMCE(
 		media_live_embeds: true,
 		file_picker_types: 'image media',
 		craftercms_paste_cleanup: rteSetup?.tinymceOptions?.craftercms_paste_cleanup ?? true, // If doesn't exist or if true => true
-		file_picker_callback: function (cb, value, meta) {
-			// meta contains info about type (image, media, etc). Used to properly add DS to dialogs.
-			// meta.filetype === 'file | image | media'
-			const datasources = {};
-			Object.values(field.validations).forEach((validation) => {
-				if (
-					[
-						'allowImageUpload',
-						'allowImagesFromRepo',
-						'allowVideoUpload',
-						'allowVideosFromRepo',
-						'allowAudioUpload',
-						'allowAudioFromRepo'
-					].includes(validation.id)
-				) {
-					datasources[validation.id] = validation;
+		// If the allowAddMedia validation is set to false, then the callback is not set, so the add media/file options won't be shown in the editor.
+		file_picker_callback: allowAddMedia
+			? function (cb, value, meta) {
+					// meta contains info about type (image, media, etc). Used to properly add DS to dialogs.
+					// meta.filetype === 'file | image | media'
+					const datasources = {};
+					Object.values(field.validations).forEach((validation) => {
+						if (
+							[
+								'allowImageUpload',
+								'allowImagesFromRepo',
+								'allowVideoUpload',
+								'allowVideosFromRepo',
+								'allowAudioUpload',
+								'allowAudioFromRepo',
+								'allowFilesFromRepo'
+							].includes(validation.id)
+						) {
+							datasources[validation.id] = validation;
+						}
+					});
+					const browseBtn = document.querySelector('.tox-dialog .tox-browse-url');
+
+					post(
+						showRtePickerActions({
+							datasources,
+							model,
+							type: meta.filetype,
+							rect: browseBtn.getBoundingClientRect()
+						})
+					);
+
+					message$
+						.pipe(
+							filter((e) => e.type === rtePickerActionResult.type),
+							take(1)
+						)
+						.subscribe(({ payload }) => {
+							if (payload) {
+								// For selections of pages or components from the 'Insert link' dialog, use the preview URL (the actual page or component link)
+								// instead of the repoURL returned by the browse dialog.
+								const path = meta.filetype === 'file' ? getPreviewURLFromPath(payload.path) : payload.path;
+								cb(path, { alt: payload.name });
+							}
+						});
 				}
-			});
-			const browseBtn = document.querySelector('.tox-dialog .tox-browse-url');
-
-			post(
-				showRtePickerActions({
-					datasources,
-					model,
-					type: meta.filetype,
-					rect: browseBtn.getBoundingClientRect()
-				})
-			);
-
-			message$
-				.pipe(
-					filter((e) => e.type === rtePickerActionResult.type),
-					take(1)
-				)
-				.subscribe(({ payload }) => {
-					if (payload) {
-						cb(payload.path, { alt: payload.name });
-					}
-				});
-		},
+			: null,
 		setup(editor: Editor) {
 			let changed = false;
 			const pluginManager = window.tinymce.util.Tools.resolve('tinymce.PluginManager');
@@ -233,11 +258,11 @@ export function initTinyMCE(
 			}
 
 			function getContent() {
-				return editor.getContent({ format: type === 'html' ? 'html' : 'text' });
+				return editor.getContent({ format: isRTE ? 'html' : 'text' });
 			}
 
 			function getSelectionContent() {
-				return editor.selection.getContent({ format: type === 'html' ? 'html' : 'text' });
+				return editor.selection.getContent({ format: isRTE ? 'html' : 'text' });
 			}
 
 			function destroyEditor() {
@@ -277,7 +302,7 @@ export function initTinyMCE(
 					// Replace line breaks with <br> for textarea fields
 					// Address line breaks in textarea fields: https://github.com/craftercms/craftercms/issues/6432
 					editor.setContent(content.replaceAll('\n', '<br>'), { format: 'html' });
-				} else if (type === 'html') {
+				} else if (isRTE) {
 					// Set content in 'html' format for the editor to exec its internal cleanup mechanisms
 					// For example, removal of potentially problematic line breaks which we're seeing cause the list plugin to crash (https://github.com/craftercms/craftercms/issues/6514)
 					editor.setContent(content, { format: 'html' });
@@ -382,7 +407,7 @@ export function initTinyMCE(
 					// Hypothesis is the focusout destroys the editor before some internal tiny thing runs.
 					// @ts-ignore - Add "forced" property to be able to recognise this manually-triggered focusout on our handler.
 					setTimeout(() => editor.fire('focusout', { forced: true }));
-				} else if (e.key === 'Enter' && type !== 'html' && type !== 'textarea') {
+				} else if (e.key === 'Enter' && !isRTE && type !== 'textarea') {
 					// Avoid new line in plain text fields
 					e.preventDefault();
 				} else if (

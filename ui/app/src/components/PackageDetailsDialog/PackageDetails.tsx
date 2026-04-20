@@ -22,9 +22,12 @@ import { fetchPackage } from '../../services/publishing';
 import { LoadingState } from '../LoadingState';
 import ApiResponseErrorState from '../ApiResponseErrorState';
 import Typography from '@mui/material/Typography';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import { PublishPackageReview } from './PublishPackageReview';
 import PackageItems from '../PackageItems/PackageItems';
+import Box from '@mui/material/Box';
+import Alert from '@mui/material/Alert';
+import { PACKAGE_TYPE_INITIAL_PUBLISH } from '../../utils/constants';
 
 export interface PackageDetailsProps {
 	packageId: number;
@@ -36,6 +39,7 @@ export function PackageDetails(props: PackageDetailsProps) {
 	const site = useActiveSiteId();
 	const [state, setState] = useSpreadState({
 		publishPackage: null,
+		isInitialPublish: false,
 		loading: false,
 		error: null,
 		total: null
@@ -47,6 +51,7 @@ export function PackageDetails(props: PackageDetailsProps) {
 				next(publishPackage) {
 					setState({
 						publishPackage,
+						isInitialPublish: publishPackage.packageType === PACKAGE_TYPE_INITIAL_PUBLISH,
 						loading: false,
 						total: publishPackage.itemCount
 					});
@@ -77,7 +82,15 @@ export function PackageDetails(props: PackageDetailsProps) {
 						{props.reviewActions}
 					</Grid>
 					<Grid size={{ xs: 12, sm: 7 }}>
-						<PackageItems packageId={packageId} />
+						{state.isInitialPublish ? (
+							<Box sx={{ height: '40vh' }}>
+								<Alert severity="info">
+									<FormattedMessage defaultMessage="The entire project was published since this is the first publish request" />
+								</Alert>
+							</Box>
+						) : (
+							<PackageItems packageId={packageId} />
+						)}
 					</Grid>
 				</Grid>
 			)}

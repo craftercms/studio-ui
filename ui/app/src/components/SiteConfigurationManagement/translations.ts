@@ -161,15 +161,6 @@ export const translations = defineMessages({
 		id: 'siteConfigurationManagement.confTabEnvironmentConfigurationDesc',
 		defaultMessage: 'This file configures the environments Crafter Studio can publish to'
 	},
-	confTabCMISConfiguration: {
-		id: 'siteConfigurationManagement.confTabCMISConfiguration',
-		defaultMessage: 'CMIS Configuration'
-	},
-	confTabCMISConfigurationDesc: {
-		id: 'siteConfigurationManagement.confTabCMISConfigurationDesc',
-		defaultMessage:
-			'This files configures 0 or more CMIS-capable repositories as data-sources for content authors to pick from'
-	},
 	confTabEngineSiteConfiguration: {
 		id: 'siteConfigurationManagement.confTabEngineSiteConfiguration',
 		defaultMessage: 'Engine Project Configuration'

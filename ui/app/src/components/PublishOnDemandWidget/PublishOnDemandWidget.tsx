@@ -32,29 +32,25 @@ import Typography from '@mui/material/Typography';
 import { fetchPublishingTargets, publish } from '../../services/publishing';
 import { showSystemNotification } from '../../state/actions/system';
 import { useDispatch } from 'react-redux';
-import {
-	closeConfirmDialog,
-	closePublishDialog,
-	showConfirmDialog,
-	showPublishDialog
-} from '../../state/actions/dialogs';
-import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
 import Link from '@mui/material/Link';
 import { useSpreadState } from '../../hooks/useSpreadState';
-import { useSelection } from '../../hooks/useSelection';
 import { isBlank } from '../../utils/string';
 import PrimaryButton from '../PrimaryButton';
 import SecondaryButton from '../SecondaryButton';
-import { createCustomDocumentEventListener } from '../../utils/dom';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
 import { hasInitialPublish as hasInitialPublishService } from '../../services/sites';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import Box from '@mui/material/Box';
-import useDetailedItem from '../../hooks/useDetailedItem';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
+import useContentItem from '../../hooks/useContentItem';
 import usePermissionsBySite from '../../hooks/usePermissionsBySite';
 import { StandardAction } from '../../models';
+import Checkbox from '@mui/material/Checkbox';
+import Alert, { alertClasses } from '@mui/material/Alert';
+import { popDialog, pushDialog } from '../../state/actions/dialogStack';
+import { nanoid } from 'nanoid';
+import { createComponentId, pushConfirmDialog, pushErrorDialog } from '../../utils/system';
+import { extractErrorPayload } from '../../utils/ajax';
 
 const messages = defineMessages({
 	publishStudioWarning: {
@@ -107,12 +103,23 @@ const initialPublishEverythingFormData = {
 
 interface PublishOnDemandWidgetProps {
 	siteId: string;
-	mode?: 'everything' | 'studio' | 'git';
+	mode?: PublishOnDemandMode | PublishOnDemandMode[];
 	showHeader?: boolean;
 	onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;
 	onCancel?: StandardAction;
 	onSuccess?: StandardAction;
 }
+
+const pickMode = (mode: PublishOnDemandWidgetProps['mode']) => {
+	if (!mode) {
+		return null;
+	} else if (Array.isArray(mode)) {
+		// If only one mode in the array, pre-select that. If more than one, don't pre-select anything.
+		return mode.length === 1 ? mode[0] : null;
+	} else {
+		return mode;
+	}
+};
 
 export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 	const {
@@ -125,15 +132,16 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 	} = props;
 	const dispatch = useDispatch();
 	const { formatMessage } = useIntl();
-	const [selectedMode, setSelectedMode] = useState<PublishOnDemandMode>(mode ?? null);
+	const [selectedMode, setSelectedMode] = useState<PublishOnDemandMode>(() => pickMode(mode));
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const permissionsBySite = usePermissionsBySite();
-	const hasPublishPermission = permissionsBySite[siteId]?.includes('publish');
+	const hasPublishPermission = permissionsBySite[siteId]?.includes('publish_approve');
 	const [hasInitialPublish, setHasInitialPublish] = useState(false);
-	const initialPublishItem = useDetailedItem('/site/website/index.xml');
+	const initialPublishItem = useContentItem('/site/website/index.xml');
 	const [initialPublishingTarget, setInitialPublishingTarget] = useState(null);
 	const [publishingTargets, setPublishingTargets] = useState(null);
 	const [publishingTargetsError, setPublishingTargetsError] = useState(null);
+	const [publishEverythingAck, setPublishEverythingAck] = useState(false);
 	const [publishGitFormData, setPublishGitFormData] = useSpreadState<PublishFormData>(initialPublishGitFormData);
 	const publishGitFormValid =
 		!isBlank(publishGitFormData.publishingTarget) &&
@@ -153,7 +161,8 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 	const publishEverythingFormValid =
 		publishEverythingFormData.publishingTarget !== '' &&
 		!isBlank(publishEverythingFormData.comment) &&
-		!isBlank(publishEverythingFormData.title);
+		!isBlank(publishEverythingFormData.title) &&
+		publishEverythingAck;
 	const fnRefs = useUpdateRefs({ onSubmittingAndOrPendingChange });
 	// region currentFormData
 	const currentFormData =
@@ -227,7 +236,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 				setHasInitialPublish(response);
 			},
 			error(error) {
-				dispatch(showErrorDialog(error));
+				dispatch(pushErrorDialog({ props: { error } }));
 			}
 		});
 		fetchPublishingTargets(siteId).subscribe({
@@ -264,67 +273,63 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 				);
 				setPublishGitFormData({ ...initialPublishGitFormData, publishingTarget });
 				nou(mode) && setSelectedMode(null);
+				setSelectedMode(pickMode(mode));
 
 				if (onSuccessProp) {
 					dispatch(onSuccessProp);
 				}
 			},
-			error({ response }) {
+			error(error) {
 				setIsSubmitting(false);
-				dispatch(
-					showSystemNotification({
-						message: response.message,
-						options: { variant: 'error' }
-					})
-				);
+				dispatch(pushErrorDialog({ props: { error: extractErrorPayload(error) } }));
 			}
 		});
 	};
 
 	const onSubmitBulkPublish = () => {
-		const eventId = 'bulkPublishWidgetSubmit';
 		const studioNote = formatMessage(messages.publishStudioNote, { a: (msg) => msg[0] });
+		const dialogId = nanoid();
 		dispatch(
-			showConfirmDialog({
-				body: `${formatMessage(messages.publishStudioWarning)} ${studioNote}`,
-				onCancel: batchActions([closeConfirmDialog(), dispatchDOMEvent({ id: eventId, button: 'cancel' })]),
-				onOk: batchActions([closeConfirmDialog(), dispatchDOMEvent({ id: eventId, button: 'ok' })])
-			})
-		);
-		createCustomDocumentEventListener<{ button: 'ok' | 'cancel' }>(eventId, ({ button }) => {
-			if (button === 'ok') {
-				setIsSubmitting(true);
-				const { path, publishingTarget, title, comment } = publishStudioFormData;
-
-				publish(siteId, {
-					publishingTarget,
-					paths: [{ path, includeChildren: true, includeSoftDeps: false }],
-					title,
-					comment
-				}).subscribe({
-					next() {
-						setIsSubmitting(false);
-						setPublishStudioFormData({ ...initialPublishStudioFormData, publishingTarget });
-						nou(mode) && setSelectedMode(null);
-						dispatch(
-							showSystemNotification({
-								message: formatMessage(messages.bulkPublishStarted)
-							})
-						);
-						if (onSuccessProp) {
-							dispatch(onSuccessProp);
-						}
+			pushConfirmDialog({
+				id: dialogId,
+				props: {
+					body: `${formatMessage(messages.publishStudioWarning)} ${studioNote}`,
+					onCancel: () => {
+						dispatch(popDialog({ id: dialogId }));
 					},
-					error({ response }) {
-						setIsSubmitting(false);
-						showSystemNotification({
-							message: response.message,
-							options: { variant: 'error' }
+					onOk: () => {
+						dispatch(popDialog({ id: dialogId }));
+						setIsSubmitting(true);
+						const { path, publishingTarget, title, comment } = publishStudioFormData;
+
+						publish(siteId, {
+							publishingTarget,
+							paths: [{ path, includeChildren: true, includeSoftDeps: false }],
+							title,
+							comment
+						}).subscribe({
+							next() {
+								setIsSubmitting(false);
+								setPublishStudioFormData({ ...initialPublishStudioFormData, publishingTarget });
+								setSelectedMode(pickMode(mode));
+								dispatch(
+									showSystemNotification({
+										message: formatMessage(messages.bulkPublishStarted)
+									})
+								);
+								if (onSuccessProp) {
+									dispatch(onSuccessProp);
+								}
+							},
+							error(error) {
+								setIsSubmitting(false);
+								dispatch(pushErrorDialog({ props: { error: extractErrorPayload(error) } }));
+							}
 						});
 					}
-				});
-			}
-		});
+				}
+			})
+		);
 	};
 
 	const onSubmitPublishEverything = () => {
@@ -344,26 +349,23 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 					})
 				);
 				setPublishEverythingFormData({ ...initialPublishEverythingFormData, publishingTarget });
-				nou(mode) && setSelectedMode(null);
+				setSelectedMode(pickMode(mode));
+				setPublishEverythingAck(false);
 				if (onSuccessProp) {
 					dispatch(onSuccessProp);
 				}
 			},
-			error({ response }) {
+			error(error) {
 				setIsSubmitting(false);
-				dispatch(
-					showSystemNotification({
-						message: response.message,
-						options: { variant: 'error' }
-					})
-				);
+				dispatch(pushErrorDialog({ props: { error: extractErrorPayload(error) } }));
 			}
 		});
 	};
 
 	const onCancel = () => {
-		nou(mode) && setSelectedMode(null);
+		setSelectedMode(pickMode(mode));
 		setDefaultPublishingTarget(publishingTargets, true);
+		setPublishEverythingAck(false);
 		if (onCancelProp) {
 			dispatch(onCancelProp);
 		}
@@ -404,19 +406,21 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 		}
 	};
 
-	const customEventId = 'dialogDismissConfirm';
 	const onInitialPublish = () => {
+		const dialogId = nanoid();
 		dispatch(
-			showPublishDialog({
-				items: [initialPublishItem],
-				onSuccess: batchActions([closePublishDialog(), dispatchDOMEvent({ id: customEventId, type: 'publish' })]),
-				onClosed: dispatchDOMEvent({ id: customEventId, type: 'cancel' })
+			pushDialog({
+				id: dialogId,
+				component: createComponentId('PublishDialog'),
+				props: {
+					items: [initialPublishItem],
+					onSuccess: () => {
+						setHasInitialPublish(true);
+						dispatch(popDialog({ id: dialogId }));
+					}
+				}
 			})
 		);
-
-		createCustomDocumentEventListener(customEventId, ({ type }) => {
-			type === 'publish' && setHasInitialPublish(true);
-		});
 	};
 
 	return (
@@ -433,7 +437,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 						>
 							<form>
 								<RadioGroup value={selectedMode ?? ''} onChange={handleChange}>
-									{(nou(mode) || mode === 'studio') && (
+									{(nou(mode) || mode.includes('studio')) && (
 										<FormControlLabel
 											disabled={isSubmitting}
 											value="studio"
@@ -446,13 +450,13 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 															defaultMessage="Publish changes made in Studio via the UI"
 														/>
 													}
-													secondary="By path"
+													secondary={<FormattedMessage defaultMessage="By path" />}
 												/>
 											}
 											sx={{ marginBottom: '10px' }}
 										/>
 									)}
-									{(nou(mode) || mode === 'git') && (
+									{(nou(mode) || mode.includes('git')) && (
 										<FormControlLabel
 											disabled={isSubmitting}
 											value="git"
@@ -465,12 +469,12 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 															defaultMessage="Publish changes made via direct git actions against the repository or pulled from a remote repository"
 														/>
 													}
-													secondary="By tags or commit ids"
+													secondary={<FormattedMessage defaultMessage="By tags or commit ids" />}
 												/>
 											}
 										/>
 									)}
-									{(nou(mode) || mode === 'everything') && (
+									{(nou(mode) || mode.includes('everything')) && (
 										<FormControlLabel
 											disabled={isSubmitting}
 											value="everything"
@@ -483,7 +487,9 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 															defaultMessage="Publish everything"
 														/>
 													}
-													secondary="Publish all changes on the repo to the publishing target you choose"
+													secondary={
+														<FormattedMessage defaultMessage="Publish all changes on the repo to the publishing target you choose" />
+													}
 												/>
 											}
 										/>
@@ -506,7 +512,20 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 								publishingTargets={publishingTargets}
 								publishingTargetsError={publishingTargetsError}
 							/>
-							{selectedMode !== 'everything' && (
+							{selectedMode === 'everything' ? (
+								<Alert severity="warning" icon={false} sx={{ [`.${alertClasses.message}`]: { overflow: 'visible' } }}>
+									<FormControlLabel
+										control={
+											<Checkbox
+												checked={publishEverythingAck}
+												color="primary"
+												onChange={(e, checked) => setPublishEverythingAck(checked)}
+											/>
+										}
+										label={<FormattedMessage defaultMessage="I understand the entire site will be published." />}
+									/>
+								</Alert>
+							) : (
 								<Box sx={{ textAlign: 'center', marginTop: '20px' }}>
 									<Typography
 										variant="caption"
@@ -580,7 +599,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 			{selectedMode && (
 				<DialogFooter>
 					<SecondaryButton onClick={onCancel} disabled={isSubmitting}>
-						<FormattedMessage id="words.cancel" defaultMessage="Cancel" />
+						<FormattedMessage defaultMessage="Reset" />
 					</SecondaryButton>
 					<PrimaryButton loading={isSubmitting} disabled={!currentFormValid} onClick={onSubmitForm}>
 						<FormattedMessage id="words.publish" defaultMessage="Publish" />

@@ -18,8 +18,8 @@ import React, { ReactNode } from 'react';
 import Typography from '@mui/material/Typography';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Fab from '@mui/material/Fab';
-import crack from '../../assets/warning.svg';
 import { nnou } from '../../utils/object';
+import ErrorOutlineRounded from '@mui/icons-material/ErrorOutlineRounded';
 import { PartialSxRecord } from '../../models';
 import Box from '@mui/material/Box';
 
@@ -27,7 +27,7 @@ type ErrorStateClassKey = 'root' | 'image' | 'title' | 'message' | 'button';
 
 export type ErrorStateProps = React.PropsWithChildren<{
 	title?: ReactNode;
-	message?: string;
+	message?: ReactNode;
 	imageUrl?: string;
 	buttonIcon?: ReactNode;
 	buttonText?: string;
@@ -43,7 +43,7 @@ export function ErrorState(props: ErrorStateProps) {
 		buttonText = 'Back',
 		buttonIcon = <ArrowBackIcon />,
 		onButtonClick,
-		imageUrl = crack,
+		imageUrl,
 		children,
 		sxs
 	} = props;
@@ -61,17 +61,21 @@ export function ErrorState(props: ErrorStateProps) {
 				...sxs?.root
 			}}
 		>
-			<Box
-				component="img"
-				className={props.classes?.image}
-				sx={{
-					maxWidth: '100%',
-					marginBottom: (theme) => theme.spacing(1),
-					...sxs?.image
-				}}
-				src={imageUrl}
-				alt=""
-			/>
+			{imageUrl ? (
+				<Box
+					component="img"
+					className={props.classes?.image}
+					sx={{
+						maxWidth: '100%',
+						marginBottom: (theme) => theme.spacing(1),
+						...sxs?.image
+					}}
+					src={imageUrl}
+					alt=""
+				/>
+			) : (
+				<ErrorOutlineRounded />
+			)}
 			{nnou(title) && (
 				<Typography
 					variant="body1"

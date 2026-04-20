@@ -18,8 +18,7 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { createFile, fetchSandboxItem } from '../../services/content';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
+import { checkPathExistence, createFile } from '../../services/content';
 import { validateActionPolicy } from '../../services/sites';
 import DialogBody from '../DialogBody/DialogBody';
 import TextField from '@mui/material/TextField';
@@ -29,15 +28,15 @@ import PrimaryButton from '../PrimaryButton';
 import ConfirmDialog from '../ConfirmDialog';
 import { CreateFileContainerProps } from './utils';
 import { translations } from './translations';
-import { updateCreateFileDialog, updateCreateFolderDialog } from '../../state/actions/dialogs';
-import { batchActions } from '../../state/actions/misc';
 import useEnhancedDialogContext from '../EnhancedDialog/useEnhancedDialogContext';
 import useItemsByPath from '../../hooks/useItemsByPath';
 import { UNDEFINED } from '../../utils/constants';
 import { isBlank } from '../../utils/string';
 import { applyAssetNameRules } from '../../utils/content';
 import { getFileNameWithExtensionForItemType, pickExtensionForItemType } from '../../utils/path';
-import ApiResponse from '../../models/ApiResponse';
+import { pushErrorDialog } from '../../utils/system';
+import { extractErrorPayload } from '../../utils/ajax';
+import { AjaxError } from 'rxjs/ajax';
 
 export function CreateFileDialogContainer(props: CreateFileContainerProps) {
 	const { onClose, onCreated, type, path, allowBraces } = props;
@@ -54,39 +53,25 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
 	const [itemExists, setItemExists] = useState(false);
 	const fileExists = itemExists || itemLookup[computedFilePath] !== UNDEFINED;
 	const isValid = !isBlank(name) && !fileExists;
+	const { updateSubmittingOrHasPendingChanges } = useEnhancedDialogContext();
 
-	const onError = (error: ApiResponse) => {
-		dispatch(
-			batchActions([
-				showErrorDialog({ error }),
-				updateCreateFileDialog({
-					isSubmitting: false
-				})
-			])
-		);
+	const onError = (error: AjaxError) => {
+		updateSubmittingOrHasPendingChanges({ isSubmitting: false });
+		dispatch(pushErrorDialog({ props: { error: extractErrorPayload(error) } }));
 	};
 
 	const onCreateFile = (site: string, path: string, fileName: string) => {
 		createFile(site, path, fileName).subscribe({
 			next() {
+				updateSubmittingOrHasPendingChanges({ hasPendingChanges: false, isSubmitting: false });
 				onCreated?.({ path, fileName, mode: pickExtensionForItemType(type), openOnSuccess: true });
-				dispatch(
-					updateCreateFileDialog({
-						hasPendingChanges: false,
-						isSubmitting: false
-					})
-				);
 			},
 			error: onError
 		});
 	};
 
 	const onSubmit = () => {
-		dispatch(
-			updateCreateFileDialog({
-				isSubmitting: true
-			})
-		);
+		updateSubmittingOrHasPendingChanges({ isSubmitting: true });
 		if (name) {
 			validateActionPolicy(site, {
 				type: 'CREATE',
@@ -97,11 +82,11 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
 						const fileName = getFileNameWithExtensionForItemType(type, name);
 						const pathToCheckExists = modifiedValue ?? `${path}/${fileName}`;
 						setItemExists(false);
-						fetchSandboxItem(site, pathToCheckExists).subscribe({
-							next: (item) => {
-								if (item) {
+						checkPathExistence(site, pathToCheckExists).subscribe({
+							next: (exists) => {
+								if (exists) {
 									setItemExists(true);
-									dispatch(updateCreateFileDialog({ isSubmitting: false }));
+									updateSubmittingOrHasPendingChanges({ isSubmitting: false });
 								} else {
 									if (modifiedValue) {
 										setConfirm({ body: message });
@@ -117,11 +102,7 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
 							error: true,
 							body: formatMessage(translations.policyError, { fileName: name, detail: message })
 						});
-						dispatch(
-							updateCreateFolderDialog({
-								isSubmitting: false
-							})
-						);
+						updateSubmittingOrHasPendingChanges({ isSubmitting: false });
 					}
 				},
 				error: onError
@@ -136,23 +117,14 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
 
 	const onConfirmCancel = () => {
 		setConfirm(null);
-		dispatch(
-			updateCreateFileDialog({
-				isSubmitting: false
-			})
-		);
+		updateSubmittingOrHasPendingChanges({ isSubmitting: false });
 	};
 
 	const onInputChanges = (value: string) => {
 		setName(value);
 		setItemExists(false);
 		const newHasPending = !isBlank(value);
-		hasPendingChanges !== newHasPending &&
-			dispatch(
-				updateCreateFileDialog({
-					hasPendingChanges: newHasPending
-				})
-			);
+		hasPendingChanges !== newHasPending && updateSubmittingOrHasPendingChanges({ hasPendingChanges: newHasPending });
 	};
 
 	return (
@@ -172,7 +144,7 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
 						fullWidth
 						autoFocus
 						required
-						error={(!name && isSubmitting !== null) || fileExists}
+						error={(!name && Boolean(isSubmitting)) || fileExists}
 						placeholder={formatMessage(translations.placeholder)}
 						helperText={
 							fileExists ? (

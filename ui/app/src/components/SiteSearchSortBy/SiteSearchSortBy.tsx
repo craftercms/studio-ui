@@ -84,9 +84,10 @@ export function SiteSearchSortBy(props: SortByProps) {
 			<MenuItem value="_score">{formatMessage(filtersMessages.relevance)}</MenuItem>
 			<MenuItem value="internalName">{formatMessage(filtersMessages.internalName)}</MenuItem>
 			{filterKeys.map((name: string, i: number) => {
+				const camelizedName = camelize(name);
 				return (
 					<MenuItem value={name} key={i}>
-						{formatMessage(filtersMessages[camelize(name)])}
+						{camelizedName in filtersMessages ? formatMessage(filtersMessages[camelizedName]) : name}
 					</MenuItem>
 				);
 			})}

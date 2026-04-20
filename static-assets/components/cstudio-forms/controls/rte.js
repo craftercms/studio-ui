@@ -74,13 +74,17 @@ CStudioForms.Controls.RTE.rteConfigManager =
 				}
 			},
 			awaitRteConfigInitialization: (store, callback) => {
-				manager
-					.getState$(store)
-					.pipe(
-						filter(() => Boolean(manager.getRTEState(store))),
-						take(1)
-					)
-					.subscribe(() => callback());
+				if (manager.getRTEState(store)) {
+					callback();
+				} else {
+					manager
+						.getState$(store)
+						.pipe(
+							filter(() => Boolean(manager.getRTEState(store))),
+							take(1)
+						)
+						.subscribe(() => callback());
+				}
 			}
 		};
 		return manager;
@@ -152,6 +156,17 @@ CStudioAuthoring.Module.requireModule(
 										manager.awaitRteConfigInitialization(store, doRteInitialization);
 										manager.dispatchInitRTEConfig(store);
 									});
+
+								// If ui config XML not loaded yet, dispatch action to load it
+								const state = store.getState();
+								if (!state.uiConfig?.xml) {
+									store.dispatch({
+										type: 'FETCH_SITE_UI_CONFIG',
+										payload: {
+											site: state.sites.active
+										}
+									});
+								}
 							}
 						});
 				},
@@ -325,12 +340,7 @@ CStudioAuthoring.Module.requireModule(
 						editorContainerPL = parseFloat($editorContainer.css('padding-left').replace('px', ''));
 
 					const imageDatasources = this.imageManagerName ? this.imageManagerName.split(',') : [];
-					const imageUploadDatasources = [
-						'img-CMIS-upload',
-						'img-desktop-upload',
-						'img-S3-upload',
-						'img-WebDAV-upload'
-					];
+					const imageUploadDatasources = ['img-desktop-upload', 'img-S3-upload', 'img-WebDAV-upload'];
 					this.editorImageDatasources = this.form.definition.datasources.filter(
 						(datasource) =>
 							datasource.interface === 'image' &&
@@ -404,7 +414,7 @@ CStudioAuthoring.Module.requireModule(
 								_thisControl._onChange(null, _thisControl);
 							});
 
-							editor.on('keyup paste undo redo', function (e) {
+							editor.on('keyup paste undo redo external_change', function (e) {
 								_thisControl.save();
 								_thisControl._onChangeVal(null, _thisControl);
 							});
@@ -515,10 +525,13 @@ CStudioAuthoring.Module.requireModule(
 						})
 					});
 
+					const isInRepeatGroup = Boolean(config.repeatContainer);
 					// Update all content before saving the form (all content is automatically updated on focusOut)
-					callback = {};
-					callback.beforeSave = function () {
-						_thisControl.save();
+					callback = {
+						beforeSave: function () {
+							_thisControl.save();
+						},
+						...(isInRepeatGroup ? { repeatGroupId: config.repeatContainer.id, rteId } : {})
 					};
 					_thisControl.form.registerBeforeSaveCallback(callback);
 

@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import GitForm from './GitForm';
 import { LookupTable, MarketplacePlugin, PartialSxRecord, SiteState } from '../../models';
 import { FormattedMessage } from 'react-intl';

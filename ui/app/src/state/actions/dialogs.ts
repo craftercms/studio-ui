@@ -28,7 +28,6 @@ import { WidgetDialogStateProps } from '../../components/WidgetDialog/utils';
 import { CodeEditorDialogStateProps } from '../../components/CodeEditorDialog';
 import { PublishDialogStateProps } from '../../components/PublishDialog/utils';
 import { DeleteDialogStateProps } from '../../components/DeleteDialog/utils';
-import { FetchDeleteDependenciesResponse } from '../../services/dependencies';
 import { CreateFolderStateProps } from '../../components/CreateFolderDialog';
 import { DependenciesDialogStateProps } from '../../components/DependenciesDialog';
 import { HistoryDialogStateProps } from '../../components/HistoryDialog/utils';
@@ -43,22 +42,23 @@ import { EditSiteDialogStateProps } from '../../components/EditSiteDialog/utils'
 import { LegacyFormDialogStateProps } from '../../components/LegacyFormDialog/utils';
 import { SingleFileUploadDialogStateProps } from '../../components/SingleFileUploadDialog';
 import ContentInstance from '../../models/ContentInstance';
-import { ContentTypeFieldValidation, DetailedItem } from '../../models';
+import type { ContentItem, ContentTypeFieldValidation, LegacyItem } from '../../models';
 import { RenameAssetStateProps } from '../../components/RenameAssetDialog';
 import { AjaxError } from 'rxjs/ajax';
 import { BrokenReferencesDialogStateProps } from '../../components/BrokenReferencesDialog/types';
 import { PublishingPackageReviewDialogStateProps } from '../../components/PublishPackageReviewDialog/types';
 import { CancelPackageDialogProps } from '../../components/CancelPackageDialog';
 import { PublishingPackageResubmitDialogStateProps } from '../../components/PublishingPackageResubmitDialog/types';
-import { PackageDetailsDialogProps } from '../../components';
+import type { ErrorDialogStateProps, PackageDetailsDialogProps } from '../../components';
 import { ViewPackagesDialogProps } from '../../components/ViewPackagesDialog';
+import type { FolderMoveAlertDialogStateProps } from '../../components/FolderMoveAlertDialog/FolderMoveAlertDialog';
 
 // region History
 export const showHistoryDialog = /*#__PURE__*/ createAction<Partial<HistoryDialogStateProps>>('SHOW_HISTORY_DIALOG');
 export const closeHistoryDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_HISTORY_DIALOG');
 export const historyDialogClosed = /*#__PURE__*/ createAction('HISTORY_DIALOG_CLOSED');
 export const historyDialogUpdate =
-	/*#__PURE__*/ createAction<Partial<HistoryDialogStateProps>>('HISTORY_DIALOG_UPDATE');
+	/*#__PURE__*/ createAction<Partial<HistoryDialogStateProps>>('UPDATE_HISTORY_DIALOG');
 // endregion
 
 // region View Versions
@@ -128,11 +128,6 @@ export const showDeleteDialog = /*#__PURE__*/ createAction<Partial<DeleteDialogS
 export const updateDeleteDialog = /*#__PURE__*/ createAction<Partial<DeleteDialogStateProps>>('UPDATE_DELETE_DIALOG');
 export const closeDeleteDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_DELETE_DIALOG');
 export const deleteDialogClosed = /*#__PURE__*/ createAction('DELETE_DIALOG_CLOSED');
-export const fetchDeleteDependencies = /*#__PURE__*/ createAction<{ paths: string[] }>('FETCH_DELETE_DEPENDENCIES');
-export const fetchDeleteDependenciesComplete = /*#__PURE__*/ createAction<FetchDeleteDependenciesResponse>(
-	'FETCH_DELETE_DEPENDENCIES_COMPLETE'
-);
-export const fetchDeleteDependenciesFailed = /*#__PURE__*/ createAction<AjaxError>('FETCH_DELETE_DEPENDENCIES_FAILED');
 // endregion
 
 // region New Content
@@ -163,9 +158,11 @@ export const dependenciesDialogClosed = /*#__PURE__*/ createAction('DEPENDENCIES
 export const showEditDialog = /*#__PURE__*/ createAction<LegacyFormDialogStateProps>('SHOW_EDIT_DIALOG');
 export const closeEditDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_EDIT_DIALOG');
 export const editDialogClosed = /*#__PURE__*/ createAction<StandardAction>('EDIT_DIALOG_CLOSED');
-export const newContentCreationComplete = /*#__PURE__*/ createAction<StandardAction>('NEW_CONTENT_CREATION_COMPLETE');
+export const newContentCreationComplete = /*#__PURE__*/ createAction<{ item: LegacyItem; redirectUrl: string }>(
+	'NEW_CONTENT_CREATION_COMPLETE'
+);
 export const updateEditDialogConfig =
-	/*#__PURE__*/ createAction<Partial<LegacyFormDialogStateProps>>('UPDATE_EDIT_DIALOG_CONFIG');
+	/*#__PURE__*/ createAction<Partial<LegacyFormDialogStateProps>>('UPDATE_EDIT_DIALOG');
 // endregion
 
 // region Legacy Code Editor
@@ -202,8 +199,10 @@ export const closeRenameAssetDialog = /*#__PURE__*/ createAction<StandardAction>
 export const renameAssetDialogClosed = /*#__PURE__*/ createAction('RENAME_ASSET_DIALOG_CLOSED');
 export const updateRenameAssetDialog =
 	/*#__PURE__*/ createAction<Partial<RenameAssetStateProps>>('UPDATE_RENAME_ASSET_DIALOG');
-export const fetchRenameAssetDependants = /*#__PURE__*/ createAction('FETCH_RENAME_ASSET_DEPENDANTS');
-export const fetchRenameAssetDependantsComplete = /*#__PURE__*/ createAction<{ dependants: DetailedItem[] }>(
+export const fetchRenameAssetDependants = /*#__PURE__*/ createAction<{ path: string; dialogId: string }>(
+	'FETCH_RENAME_ASSET_DEPENDANTS'
+);
+export const fetchRenameAssetDependantsComplete = /*#__PURE__*/ createAction<{ dependants: ContentItem[] }>(
 	'FETCH_RENAME_ASSET_DEPENDANTS_COMPLETE'
 );
 export const fetchRenameAssetDependantsFailed = /*#__PURE__*/ createAction('FETCH_RENAME_ASSET_DEPENDANTS_FAILED');
@@ -230,8 +229,9 @@ export const closeSingleFileUploadDialog = /*#__PURE__*/ createAction<StandardAc
 	'CLOSE_SINGLE_FILE_UPLOAD_DIALOG'
 );
 export const singleFileUploadDialogClosed = /*#__PURE__*/ createAction('SINGLE_FILE_UPLOAD_DIALOG_CLOSED');
-export const updateSingleFileUploadDialog =
-	/*#__PURE__*/ createAction<Partial<CreateFileStateProps>>('UPDATE_CREATE_FILE_DIALOG');
+export const updateSingleFileUploadDialog = /*#__PURE__*/ createAction<Partial<CreateFileStateProps>>(
+	'UPDATE_SINGLE_FILE_UPLOAD_DIALOG'
+);
 // endregion
 
 // region Preview Dialog
@@ -272,6 +272,7 @@ export const itemMegaMenuClosed = /*#__PURE__*/ createAction('ITEM_MEGA_MENU_CLO
 
 // region Global Nav
 export const showLauncher = /*#__PURE__*/ createAction<Partial<LauncherStateProps>>('SHOW_LAUNCHER');
+export const updateLauncher = /*#__PURE__*/ createAction<Partial<LauncherStateProps>>('UPDATE_LAUNCHER');
 export const closeLauncher = /*#__PURE__*/ createAction('CLOSE_LAUNCHER');
 // endregion
 
@@ -372,3 +373,19 @@ export const closeViewPackagesDialog = /*#__PURE__*/ createAction<StandardAction
 export const viewPackagesDialogClosed = /*#__PURE__*/ createAction('VIEW_PACKAGES_DIALOG_CLOSED');
 
 // endregion
+
+// region FolderMoveAlertDialog
+export const showFolderMoveAlertDialog = /*#__PURE__*/ createAction<Partial<FolderMoveAlertDialogStateProps>>(
+	'SHOW_FOLDER_MOVE_ALERT_DIALOG'
+);
+export const closeFolderMoveAlertDialog = /*#__PURE__*/ createAction('CLOSE_FOLDER_MOVE_ALERT_DIALOG');
+export const folderMoveAlertDialogClosed = /*#__PURE__*/ createAction('FOLDER_MOVE_ALERT_DIALOG_CLOSED');
+// endregion
+
+// region Error Dialog
+export const showErrorDialog = /*#__PURE__*/ createAction<Partial<ErrorDialogStateProps>>('SHOW_ERROR_DIALOG');
+export const closeErrorDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_ERROR_DIALOG');
+export const errorDialogClosed = /*#__PURE__*/ createAction<StandardAction>('ERROR_DIALOG_CLOSED');
+// endregion
+
+export const popCodeEditorDialog = /*#__PURE__*/ createAction<{ id: string }>('POP_CODE_EDITOR_DIALOG');

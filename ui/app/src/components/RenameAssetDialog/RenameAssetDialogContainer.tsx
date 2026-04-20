@@ -16,10 +16,9 @@
 
 import { RenameAssetContainerProps } from './utils';
 import { useEnhancedDialogContext } from '../EnhancedDialog';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
-import { fetchRenameAssetDependants, updateRenameAssetDialog } from '../../state/actions/dialogs';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import useItemsByPath from '../../hooks/useItemsByPath';
 import { getFileNameWithExtensionForItemType, getParentPath } from '../../utils/path';
@@ -31,24 +30,27 @@ import PrimaryButton from '../PrimaryButton';
 import { validateActionPolicy } from '../../services/sites';
 import { ConfirmDialog } from '../ConfirmDialog';
 import { renameContent } from '../../services/content';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { translations } from '../CreateFileDialog/translations';
 import { RenameItemView } from '../RenameDialogBody';
 import { applyAssetNameRules } from '../../utils/content';
 import { DialogBody } from '../DialogBody';
+import { pushErrorDialog } from '../../utils/system';
+import { checkAndCancelAffectedPackages } from '../ViewPackagesDialog/utils';
 
 export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
 	const {
 		onClose,
 		onRenamed,
-		path,
-		value = '',
+		item,
 		allowBraces = false,
 		type,
 		dependantItems,
 		fetchingDependantItems,
-		error
+		error,
+		fetchDependant
 	} = props;
+	const path = item?.path ?? '';
+	const value = item?.label ?? '';
 	const { isSubmitting, hasPendingChanges } = useEnhancedDialogContext();
 	const [name, setName] = useState(value);
 	const dispatch = useDispatch();
@@ -63,55 +65,67 @@ export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
 	const { formatMessage } = useIntl();
 	const renameDisabled =
 		isSubmitting || !isValid || fetchingDependantItems || (dependantItems?.length > 0 && !confirmBrokenReferences);
-
-	useEffect(() => {
-		dispatch(fetchRenameAssetDependants());
-	}, [dispatch]);
+	const { updateSubmittingOrHasPendingChanges } = useEnhancedDialogContext();
 
 	const onInputChanges = (newValue: string) => {
 		setName(newValue);
 		const newHasPendingChanges = newValue !== value;
 		hasPendingChanges !== newHasPendingChanges &&
-			dispatch(updateRenameAssetDialog({ hasPendingChanges: newHasPendingChanges }));
+			updateSubmittingOrHasPendingChanges({ hasPendingChanges: newHasPendingChanges });
 	};
 
 	const onRenameAsset = (siteId: string, path: string, name: string) => {
 		const fileName = type !== 'asset' ? getFileNameWithExtensionForItemType(type, name) : name;
 		renameContent(siteId, path, fileName).subscribe({
 			next() {
+				updateSubmittingOrHasPendingChanges({ isSubmitting: false, hasPendingChanges: false });
 				onRenamed?.({ path, name });
-				dispatch(updateRenameAssetDialog({ isSubmitting: false, hasPendingChanges: false }));
 			},
 			error({ response }) {
-				dispatch(showErrorDialog({ error: response.response }));
-				dispatch(updateRenameAssetDialog({ isSubmitting: false }));
+				dispatch(pushErrorDialog({ props: { error: response.response } }));
+				updateSubmittingOrHasPendingChanges({ isSubmitting: false });
 			}
 		});
 	};
 
 	const onConfirmCancel = () => {
 		setConfirm(null);
-		dispatch(updateRenameAssetDialog({ isSubmitting: false }));
+		updateSubmittingOrHasPendingChanges({ isSubmitting: false });
 	};
 
-	const onRename = () => {
-		dispatch(updateRenameAssetDialog({ isSubmitting: true }));
+	const renameAsset = () => {
+		validateActionPolicy(siteId, {
+			type: 'RENAME',
+			target: newAssetPath
+		}).subscribe(({ allowed, modifiedValue, message }) => {
+			if (allowed && modifiedValue) {
+				setConfirm({ body: message });
+			} else if (allowed) {
+				onRenameAsset(siteId, path, name);
+			} else {
+				setConfirm({
+					error: true,
+					body: formatMessage(translations.policyError, { fileName: name, detail: message })
+				});
+			}
+		});
+	};
+
+	const onRenameSubmit = () => {
+		updateSubmittingOrHasPendingChanges({ isSubmitting: true });
 		if (name) {
-			validateActionPolicy(siteId, {
-				type: 'RENAME',
-				target: newAssetPath
-			}).subscribe(({ allowed, modifiedValue, message }) => {
-				if (allowed && modifiedValue) {
-					setConfirm({ body: message });
-				} else if (allowed) {
-					onRenameAsset(siteId, path, name);
-				} else {
-					setConfirm({
-						error: true,
-						body: formatMessage(translations.policyError, { fileName: name, detail: message })
-					});
-				}
+			checkAndCancelAffectedPackages({
+				siteId,
+				item,
+				dispatch,
+				onContinue: () => renameAsset(),
+				onClose: () => {
+					updateSubmittingOrHasPendingChanges({ isSubmitting: false });
+				},
+				cancelPackagesMessage: `Cancel packages to rename "${item.path}"`
 			});
+		} else {
+			updateSubmittingOrHasPendingChanges({ isSubmitting: false });
 		}
 	};
 
@@ -122,13 +136,14 @@ export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
 					name={name}
 					disabled={renameDisabled}
 					newNameExists={assetExists}
+					fetchDependant={fetchDependant}
 					dependantItems={dependantItems}
 					isSubmitting={isSubmitting}
 					confirmBrokenReferences={confirmBrokenReferences}
 					fetchingDependantItems={fetchingDependantItems}
 					error={error}
 					setConfirmBrokenReferences={setConfirmBrokenReferences}
-					onRename={onRename}
+					onRename={onRenameSubmit}
 					onInputChanges={(event) => onInputChanges(applyAssetNameRules(event.target.value, { allowBraces }))}
 					helperText={
 						assetExists ? (
@@ -151,7 +166,7 @@ export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
 				<SecondaryButton onClick={(e) => onClose(e, null)} disabled={isSubmitting}>
 					<FormattedMessage id="words.cancel" defaultMessage="Cancel" />
 				</SecondaryButton>
-				<PrimaryButton onClick={onRename} disabled={renameDisabled} loading={isSubmitting}>
+				<PrimaryButton onClick={onRenameSubmit} disabled={renameDisabled} loading={isSubmitting}>
 					<FormattedMessage id="words.rename" defaultMessage="Rename" />
 				</PrimaryButton>
 			</DialogFooter>

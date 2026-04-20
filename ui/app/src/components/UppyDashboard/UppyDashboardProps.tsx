@@ -14,13 +14,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Uppy } from '@uppy/core';
+import { Uppy, type DashboardOptions } from 'uppy';
 import React from 'react';
-import { UppyFile } from '@uppy/utils';
-import { DashboardOptions } from '@uppy/dashboard';
+import type { UppyFile, Meta, Body } from '@uppy/utils/lib/UppyFile';
 
 export interface UppyDashboardProps {
-	uppy: Uppy;
+	uppy: Uppy<{ site: string }>;
 	site: string;
 	path: string;
 	title: string;
@@ -28,12 +27,12 @@ export interface UppyDashboardProps {
 	onMinimized?(): void;
 	onPendingChanges?(pending: boolean): void;
 	onClose?(): void;
-	options?: DashboardOptions & {
+	options?: DashboardOptions<Meta, Body> & {
 		successfulUploadButton?: {
 			/** One of the "known" icon ids (e.g. more, edit, download), or a `d` attribute for a `path` tag with a "0 0 24 24" view box */
 			icon: 'more' | 'edit' | 'download' | 'MoreVertRounded' | 'EditRounded' | 'DownloadRounded' | string;
 			label: string;
-			onClick(event: React.MouseEvent, file: UppyFile, api: { remove(): void }): void;
+			onClick(event: React.MouseEvent, file: UppyFile<Meta, Body>, api: { remove(): void }): void;
 		};
 		autoProceed: boolean;
 	};

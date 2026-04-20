@@ -15,26 +15,25 @@
  */
 
 import LookupTable from '../../models/LookupTable';
-import { DetailedItem } from '../../models';
+import { ContentItem, LightItem } from '../../models';
 import { buildPathTrees, PathTreeNode } from '../PublishDialog/buildPathTrees';
 import React, { useMemo } from 'react';
 import { treeItemClasses } from '@mui/x-tree-view/TreeItem';
 import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
 import { renderTreeNode } from './utils';
-import { PackageItem } from './PackageItems';
 
 export interface PackageItemsTreeProps {
-	items: PackageItem[];
+	items: LightItem[];
 	expandedPaths: string[];
 	setExpandedPaths(paths: string[]): void;
-	onOpenMenu(e: React.MouseEvent<HTMLButtonElement>, item: PackageItem): void;
+	onOpenMenu(e: React.MouseEvent<HTMLButtonElement>, item: LightItem): void;
 }
 
 export function PackageItemsTree(props: PackageItemsTreeProps) {
 	const { items, expandedPaths, setExpandedPaths, onOpenMenu } = props;
 	const { itemMap, itemPaths } = useMemo(() => {
 		const itemPaths = [];
-		const itemMap: Record<string, PackageItem> = {};
+		const itemMap: Record<string, LightItem> = {};
 
 		items.forEach((item) => {
 			itemMap[item.path] = item;
@@ -69,7 +68,7 @@ export function PackageItemsTree(props: PackageItemsTreeProps) {
 		>
 			{trees.map((node) =>
 				renderTreeNode({
-					itemMap: itemMap as unknown as LookupTable<DetailedItem>,
+					itemMap: itemMap,
 					node,
 					dependencyTypeMap: {},
 					onMenuClick: (e, path) => onOpenMenu(e, itemMap[path]),

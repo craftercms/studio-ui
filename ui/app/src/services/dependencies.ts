@@ -17,7 +17,7 @@
 import { errorSelectorApi1, post, postJSON } from '../utils/ajax';
 import { catchError, map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-import { LegacyItem } from '../models/Item';
+import { LegacyItem, LightItem } from '../models/Item';
 import { toQueryString } from '../utils/object';
 
 export interface FetchDependenciesResponse {
@@ -26,31 +26,28 @@ export interface FetchDependenciesResponse {
 }
 
 export function fetchDependencies(siteId: string, paths: string[]): Observable<FetchDependenciesResponse> {
-	return postJSON('/studio/api/2/dependency/dependencies', {
-		siteId,
-		paths
-	}).pipe(map((response) => response?.response?.items));
+	return postJSON(`/studio/api/2/dependency/${siteId}/publish_dependencies`, { paths }).pipe(
+		map((response) => response?.response?.items)
+	);
 }
 
-export function fetchSimpleDependencies(site: string, path: string): Observable<LegacyItem[]> {
-	return post(
-		`/studio/api/1/services/api/1/dependency/get-simple-dependencies.json${toQueryString({ site, path })}`
-	).pipe(
-		map((response) => response?.response),
+export function fetchSimpleDependencies(site: string, path: string): Observable<LightItem[]> {
+	return post(`/studio/api/2/dependency/${site}/dependencies`, { path }).pipe(
+		map((response) => response?.response?.items),
 		catchError(errorSelectorApi1)
 	);
 }
 
-export function fetchDependant(site: string, path: string): Observable<LegacyItem[]> {
-	return post(`/studio/api/1/services/api/1/dependency/get-dependant.json${toQueryString({ site, path })}`).pipe(
-		map((response) => response?.response),
+export function fetchDependant(site: string, path: string): Observable<LightItem[]> {
+	return post(`/studio/api/2/dependency/${site}/dependent_items`, { path }).pipe(
+		map((response) => response?.response?.items),
 		catchError(errorSelectorApi1)
 	);
 }
 
 export interface FetchDeleteDependenciesResponse {
-	childItems: string[];
-	dependentItems: string[];
+	childItems: LightItem[];
+	dependentItems: LightItem[];
 }
 
 export function fetchDeleteDependencies(siteId: string, paths: string[]): Observable<FetchDeleteDependenciesResponse> {

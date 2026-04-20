@@ -15,7 +15,7 @@
  */
 
 import { ElasticParams, MediaItem, SearchResult } from '../../models/Search';
-import { AllItemActions, DetailedItem } from '../../models/Item';
+import { AllItemActions, ContentItem } from '../../models/Item';
 import { generateMultipleItemOptions, generateSingleItemOptions, itemActionDispatcher } from '../../utils/itemActions';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
@@ -24,19 +24,20 @@ import { useSelection } from '../../hooks/useSelection';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useEnv } from '../../hooks/useEnv';
 import { ContextMenuOption } from '../ContextMenu';
-import { showEditDialog, showItemMegaMenu, showPreviewDialog, updatePreviewDialog } from '../../state/actions/dialogs';
 import { getNumOfMenuOptionsForItem, getSystemTypeFromPath } from '../../utils/content';
 import LookupTable from '../../models/LookupTable';
 import { search } from '../../services/search';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { translations } from './translations';
 import { ApiResponse } from '../../models/ApiResponse';
 import { contentEvent, deleteContentEvent, deleteContentEvents, moveContentEvent } from '../../state/actions/system';
 import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
-import { fetchContentXML } from '../../services/content';
 import { getPreviewURLFromPath } from '../../utils/path';
-import useFetchSandboxItems from '../../hooks/useFetchSandboxItems';
+import { IconButtonProps } from '@mui/material/IconButton';
+import useFetchContentItems from '../../hooks/useFetchContentItems';
+import { pushDialog } from '../../state/actions/dialogStack';
+import { createComponentId, pickShowContentFormAction, pushErrorDialog } from '../../utils/system';
+import { showItemMegaMenu } from '../../state/actions/dialogs';
 
 export const drawerWidth = 300;
 
@@ -62,7 +63,15 @@ export const actionsToBeShown: AllItemActions[] = [
 	'history'
 ];
 
-export interface URLDrivenSearchProps {
+export interface BaseSearchProps {
+	mode: 'default' | 'select';
+	embedded: boolean;
+	onClose(): void;
+	onSelect(path: string, selected: boolean): void;
+	onAcceptSelection(paths: string[], items: MediaItem[]): void;
+}
+
+export interface URLDrivenSearchProps extends Partial<BaseSearchProps> {
 	location: Location;
 	mode?: 'default' | 'select';
 	embedded?: boolean;
@@ -75,15 +84,10 @@ export interface SearchParameters extends Partial<ElasticParams> {
 	path?: string;
 }
 
-export interface SearchProps {
-	mode?: 'default' | 'select';
-	embedded?: boolean;
+export interface SearchProps extends Partial<BaseSearchProps> {
 	initialParameters?: SearchParameters;
 	preselectedPaths?: string[];
 	disableChangePreselected?: boolean;
-	onClose?(): void;
-	onSelect?(path: string, selected: boolean): any;
-	onAcceptSelection?(items: string[]): any;
 }
 
 export interface CheckedFilter {
@@ -156,18 +160,17 @@ export const deserializeSearchFilters = (filters) => {
 	return deserializedFilters;
 };
 
-interface UseSearchStateHookProps {
+export interface UseSearchStateHookProps extends Pick<BaseSearchProps, 'onSelect'> {
 	searchParameters: ElasticParams;
 	preselectedPaths?: string[];
 	disableChangePreselected?: SearchProps['disableChangePreselected'];
-	onSelect?(path: string, selected: boolean): any;
 }
 
-interface useSearchStateReturn {
+export interface UseSearchStateReturn {
 	selected: string[];
 	areAllSelected: boolean;
 	selectionOptions: ContextMenuOption[];
-	itemsByPath: LookupTable<DetailedItem>;
+	itemsByPath: LookupTable<ContentItem>;
 	guestBase: string;
 	searchResults: SearchResult;
 	selectedPath: string;
@@ -176,7 +179,7 @@ interface useSearchStateReturn {
 	currentView: 'grid' | 'list';
 	isFetching: boolean;
 	onActionClicked(option: AllItemActions, event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
-	onHeaderButtonClick(event: any, item: MediaItem): void;
+	onHeaderButtonClick(event: Parameters<IconButtonProps['onClick']>[0], item: MediaItem): void;
 	handleClearSelected(): void;
 	handleSelect(path: string, isSelected: boolean): void;
 	handleSelectAll(checked: boolean): void;
@@ -208,7 +211,7 @@ export const useSearchState = ({
 	preselectedPaths = [],
 	disableChangePreselected = true,
 	onSelect
-}: UseSearchStateHookProps): useSearchStateReturn => {
+}: UseSearchStateHookProps): UseSearchStateReturn => {
 	const { formatMessage } = useIntl();
 	const dispatch = useDispatch();
 	const clipboard = useSelection((state) => state.content.clipboard);
@@ -217,7 +220,7 @@ export const useSearchState = ({
 	const [selected, setSelected] = useState<string[]>(preselectedPaths);
 	const [searchResults, setSearchResults] = useState<SearchResult>(null);
 	const [selectedPath, setSelectedPath] = useState<string>(searchParameters.path ?? '');
-	useFetchSandboxItems(selected);
+	useFetchContentItems(selected);
 	const { itemsBeingFetchedByPath, itemsByPath } = useSelection((state) => state.content);
 	const isFetching = selected.some((path) => itemsBeingFetchedByPath[path]);
 	const [drawerOpen, setDrawerOpen] = useState(window.innerWidth > 960);
@@ -257,13 +260,13 @@ export const useSearchState = ({
 
 	const onActionClicked = (option: AllItemActions, event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
 		if (selected.length > 1) {
-			const detailedItems = [];
+			const contentItems = [];
 			selected.forEach((path) => {
-				itemsByPath?.[path] && detailedItems.push(itemsByPath[path]);
+				itemsByPath?.[path] && contentItems.push(itemsByPath[path]);
 			});
 			itemActionDispatcher({
 				site,
-				item: detailedItems,
+				item: contentItems,
 				option,
 				authoringBase,
 				dispatch,
@@ -297,7 +300,7 @@ export const useSearchState = ({
 				numOfLoaderItems: getNumOfMenuOptionsForItem({
 					path: item.path,
 					systemType: getSystemTypeFromPath(item.path)
-				} as DetailedItem)
+				} as ContentItem)
 			})
 		);
 	};
@@ -319,9 +322,11 @@ export const useSearchState = ({
 				} else {
 					console.error(error);
 					dispatch(
-						showErrorDialog({
-							error: {
-								message: formatMessage(translations.unknownError)
+						pushErrorDialog({
+							props: {
+								error: {
+									message: formatMessage(translations.unknownError)
+								}
 							}
 						})
 					);
@@ -382,45 +387,79 @@ export const useSearchState = ({
 		switch (type) {
 			case 'Image': {
 				dispatch(
-					showPreviewDialog({
-						type: 'image',
-						title,
-						url: path
+					pushDialog({
+						component: createComponentId('PreviewDialog'),
+						allowMinimize: true,
+						allowFullScreen: true,
+						props: {
+							type: 'image',
+							title,
+							url: path
+						}
 					})
 				);
 				break;
 			}
 			case 'Page': {
 				dispatch(
-					showPreviewDialog({
-						type: 'page',
-						title,
-						url: `${guestBase}${getPreviewURLFromPath(path)}?crafterCMSGuestDisabled=true`
+					pushDialog({
+						component: createComponentId('PreviewDialog'),
+						allowMinimize: true,
+						allowFullScreen: true,
+						props: {
+							type: 'page',
+							title,
+							url: `${guestBase}${getPreviewURLFromPath(path)}?crafterCMSGuestDisabled=true`
+						}
 					})
 				);
 				break;
 			}
 			case 'Component':
 			case 'Taxonomy': {
-				dispatch(showEditDialog({ site, path: item.path, authoringBase, readonly: true }));
+				dispatch(pickShowContentFormAction({ site, path: item.path, authoringBase, readonly: true }));
 				break;
 			}
 			case 'Video':
 				dispatch(
-					showPreviewDialog({
-						type: 'video',
-						title,
-						url: path
+					pushDialog({
+						component: createComponentId('PreviewDialog'),
+						allowMinimize: true,
+						allowFullScreen: true,
+						props: {
+							type: 'video',
+							title,
+							url: path
+						}
 					})
 				);
 				break;
 			case 'Audio':
 				dispatch(
-					showPreviewDialog({
-						type: 'audio',
-						title,
-						url: path,
-						mimeType: item.mimeType
+					pushDialog({
+						component: createComponentId('PreviewDialog'),
+						allowMinimize: true,
+						allowFullScreen: true,
+						props: {
+							type: 'audio',
+							title,
+							url: path,
+							mimeType: item.mimeType
+						}
+					})
+				);
+				break;
+			case 'PDF':
+				dispatch(
+					pushDialog({
+						component: createComponentId('PreviewDialog'),
+						allowMinimize: true,
+						allowFullScreen: true,
+						props: {
+							type: 'pdf',
+							title,
+							url: path
+						}
 					})
 				);
 				break;
@@ -436,22 +475,19 @@ export const useSearchState = ({
 					mode = 'css';
 				}
 				dispatch(
-					showPreviewDialog({
-						type: 'editor',
-						title,
-						url: path,
-						path: path,
-						mode
+					pushDialog({
+						component: createComponentId('PreviewDialog'),
+						allowMinimize: true,
+						allowFullScreen: true,
+						props: {
+							type: 'editor',
+							title,
+							url: path,
+							path: path,
+							mode
+						}
 					})
 				);
-
-				fetchContentXML(site, path).subscribe((content) => {
-					dispatch(
-						updatePreviewDialog({
-							content
-						})
-					);
-				});
 				break;
 			}
 		}

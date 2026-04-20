@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { DetailedItem } from '../../models/Item';
+import { ContentItem } from '../../models/Item';
 import { FormattedMessage } from 'react-intl';
 import LookupTable from '../../models/LookupTable';
 import { SelectionList, SelectionListProps } from './SelectionList';
@@ -24,7 +24,7 @@ import { FetchDependenciesResponse } from '../../services/dependencies';
 import Box from '@mui/material/Box';
 
 export interface DependencySelectionProps extends Pick<SelectionListProps, 'onItemClicked' | 'onSelectAllClicked'> {
-	items?: DetailedItem[];
+	items?: ContentItem[];
 	selectedItems: LookupTable<boolean>;
 	dependencies: FetchDependenciesResponse;
 	disabled?: boolean;
