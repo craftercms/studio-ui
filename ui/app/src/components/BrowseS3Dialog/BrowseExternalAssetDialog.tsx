@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { EnhancedDialog, EnhancedDialogProps } from '../EnhancedDialog';
 import { FormattedMessage, useIntl } from 'react-intl';
 import ApiResponse from '../../models/ApiResponse';
@@ -49,6 +49,7 @@ import { TreeItem } from '@mui/x-tree-view/TreeItem';
 import BrowseFilesDialogContainerSkeleton from '../BrowseFilesDialog/BrowseFilesDialogContainerSkeleton';
 import Checkbox from '@mui/material/Checkbox';
 import useEnv from '../../hooks/useEnv';
+import useUpdateRefs from '../../hooks/useUpdateRefs';
 
 export interface BrowseExternalAssetDialogProps extends EnhancedDialogProps {
 	path: string;
@@ -82,7 +83,6 @@ function BrowseExternalAssetDialogBody(props: BrowseExternalAssetDialogContainer
 	const [keyword, setKeyword] = useState('');
 	const [viewMode, setViewMode] = useState<MediaCardViewModes>(getStoredBrowseDialogViewMode(username) ?? viewModes[0]);
 	const filteredItems = items?.filter((item) => item.name.toLowerCase().includes(keyword.toLowerCase()));
-	const [prevProfileId, setPrevProfileId] = useState(undefined);
 	const [currentPath, setCurrentPath] = useState(path);
 	const disableSubmit = isFetchingItems || (!selectedArray.length && !selectedCard);
 	const { guestBase } = useEnv();
@@ -90,7 +90,7 @@ function BrowseExternalAssetDialogBody(props: BrowseExternalAssetDialogContainer
 	const requestSeq = useRef(0);
 	const currentSub = useRef<{ unsubscribe?: () => void } | null>(null);
 	const fetchItems = useCallback(
-		(path) => {
+		(path, profileId) => {
 			const fetchService = profileType === 'aws' ? listAws : listWebdav;
 			requestSeq.current += 1;
 			const seq = requestSeq.current;
@@ -140,13 +140,13 @@ function BrowseExternalAssetDialogBody(props: BrowseExternalAssetDialogContainer
 				}
 			});
 		},
-		[profileId, siteId, setSelectedLookup, setSelectedCard, multiSelect, preselectedPaths, profileType]
+		[siteId, setSelectedLookup, setSelectedCard, multiSelect, preselectedPaths, profileType]
 	);
+	const fnRefs = useUpdateRefs({ fetchItems });
 
-	if (profileId !== prevProfileId) {
-		setPrevProfileId(profileId);
-		fetchItems(path);
-	}
+	useEffect(() => {
+		fnRefs.current.fetchItems(path, profileId);
+	}, [profileId, path, fnRefs]);
 
 	const onCardSelected = (item: MediaItem) => {
 		if (multiSelect) {
@@ -181,7 +181,7 @@ function BrowseExternalAssetDialogBody(props: BrowseExternalAssetDialogContainer
 
 	const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
 
-	const onRefresh = () => fetchItems(currentPath);
+	const onRefresh = () => fetchItems(currentPath, profileId);
 
 	const switchViewMode = () => {
 		const currentIndex = viewModes.indexOf(viewMode);
@@ -220,7 +220,7 @@ function BrowseExternalAssetDialogBody(props: BrowseExternalAssetDialogContainer
 								onFolderClick={(e, folderPath) => {
 									e.stopPropagation();
 									setCurrentPath(folderPath);
-									fetchItems(folderPath);
+									fetchItems(folderPath, profileId);
 								}}
 							/>
 						</SimpleTreeView>
