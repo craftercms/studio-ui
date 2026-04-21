@@ -92,7 +92,7 @@ import {
 } from '../../services/content';
 import { filter, map, switchMap, take, takeUntil } from 'rxjs/operators';
 import { BehaviorSubject, forkJoin, Observable, of } from 'rxjs';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { getGuestToHostBus, getHostToGuestBus, getHostToHostBus } from '../../utils/subjects';
 import { useDispatch, useStore } from 'react-redux';
 import { getPersonFullName, nnou } from '../../utils/object';
@@ -137,8 +137,10 @@ import { useActiveSite } from '../../hooks/useActiveSite';
 import { getPathFromPreviewURL, processPathMacros, withIndex } from '../../utils/path';
 import {
 	closeItemMegaMenu,
+	imageEdited,
 	itemMegaMenuClosed,
 	rtePickerActionResult,
+	showImageEditorDialog,
 	showItemMegaMenu,
 	showRtePickerActions,
 	type ShowRtePickerActionsPayload
@@ -186,6 +188,7 @@ import StandardAction from '../../models/StandardAction';
 import { createComponentId, pickShowContentFormAction } from '../../utils/system';
 import { popDialog, pushDialog } from '../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
+import { getImageRestrictionMessages } from '../FormsEngine/lib/controlHelpers';
 
 const issueDescriptorRequest = (props: {
 	site: string;
@@ -1125,6 +1128,39 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 					extendedAction.payload.onClosed = batchActions([itemMegaMenuClosed(), dispatchDOMEvent({ id })]);
 					createCustomDocumentEventListener(id, () => iframe.contentWindow.focus());
 					dispatch(action);
+					break;
+				}
+				case showImageEditorDialog.type: {
+					const id = nanoid();
+					const { path, restrictions, writeContent, fileName, recordId, uploadPath } = action.payload;
+					const imageRestrictionMessages = getImageRestrictionMessages(restrictions);
+					dispatch(
+						pushDialog({
+							id,
+							component: createComponentId('ImageEditorDialog'),
+							props: {
+								path,
+								subtitle: (
+									<FormattedMessage
+										defaultMessage="The image does not meet the width & height constraints (Width: {width}. Height: {height})."
+										values={{
+											width: imageRestrictionMessages.width,
+											height: imageRestrictionMessages.height
+										}}
+									/>
+								),
+								restrictions,
+								writeContent,
+								onCrop: (blob: Blob, newPath: string) => {
+									dispatch(popDialog({ id }));
+									hostToGuest$.next({
+										type: imageEdited.type,
+										payload: { blob, newPath, fileName, recordId, uploadPath }
+									});
+								}
+							}
+						})
+					);
 					break;
 				}
 				// region actions whitelisted
