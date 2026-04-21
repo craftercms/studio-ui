@@ -1302,6 +1302,9 @@ function doesImageMeetSizeRestrictions(file: HTMLImageElement, restrictions?: Im
  * @returns Promise that resolves to true if the image meets the restrictions or no restrictions are provided, false otherwise.
  * */
 export function validateImageRestrictions(path: string, restrictions?: ImageRestrictions): Promise<boolean> {
+	if (!isImage(path)) {
+		return Promise.resolve(true);
+	}
 	return new Promise((resolve) => {
 		if (restrictions) {
 			const img = new window.Image();
