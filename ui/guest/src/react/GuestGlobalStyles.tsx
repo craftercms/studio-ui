@@ -181,7 +181,7 @@ export function GuestGlobalStyles(props: GuestGlobalStylesProps) {
 										color: '#fff',
 										display: 'inline-block',
 										padding: '10px',
-										content: '"No items on this area."',
+										content: '"Empty component dropzone. Drag new or existing content items to zone to add them"',
 										fontWeight: 'bold'
 									}
 								},
