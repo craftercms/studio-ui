@@ -360,9 +360,25 @@ export function numericInputValidator(
 	const pattern: string = getValidationValue(field.validations, 'pattern');
 	const maxValue: number = getValidationValue(field.validations, 'maxValue');
 	const minValue: number = getValidationValue(field.validations, 'minValue');
+	const numType = field.id.substring(field.id.lastIndexOf('_'));
 
 	if (nou(currentValue) || Number.isNaN(Number(currentValue))) {
 		return isValid;
+	}
+
+	let numTypeRegex;
+	if (numType === '_f' || numType === '_d') {
+		// with decimals
+		numTypeRegex = /^(\d|-)?(\d|,)*\.?\d*$/;
+		if (!String(currentValue).match(numTypeRegex)) {
+			isValid = false;
+		}
+	} else {
+		numTypeRegex = /^([+-]?[1-9]\d*|0)$/;
+		if (!String(currentValue).match(numTypeRegex)) {
+			isValid = false;
+			messages.push([defineMessage({ defaultMessage: "Decimals aren't allowed on this input." })]);
+		}
 	}
 
 	// If there's a pattern and it doesn't match
