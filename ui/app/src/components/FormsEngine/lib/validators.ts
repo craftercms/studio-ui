@@ -37,7 +37,7 @@ interface ValidatorMetaData {
 	siteId: string;
 	fileName: string;
 	itemMeta: FormsEngineItemMetaContextProps;
-	contentTypesById: LookupTable<ContentType>;
+	contentTypesById?: LookupTable<ContentType>;
 }
 type ValidatorFunctionDef = (
 	field: ContentTypeField,

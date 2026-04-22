@@ -360,7 +360,7 @@ function FormBootstrap(props: FormsEngineProps) {
 					fieldId,
 					atoms,
 					value,
-					{ siteId, contentTypesById }
+					{ siteId, contentTypesById: effectRefs.current.contentTypesById }
 				);
 			};
 			const values =
@@ -407,7 +407,9 @@ function FormBootstrap(props: FormsEngineProps) {
 					update,
 					parentStackData,
 					stableFormContextRef,
-					parentPathInSite
+					parentPathInSite,
+					siteId,
+					contentTypesById: effectRefs.current.contentTypesById
 				});
 				initializeState(requirements.atoms, requirements.values, requirements.itemMeta);
 			};
