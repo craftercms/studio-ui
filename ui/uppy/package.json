@@ -37,7 +37,7 @@
 	"dependencies": {
 		"@transloadit/prettier-bytes": "^1.1.0",
 		"classnames": "^2.5.1",
-		"preact": "^10.28.3"
+		"preact": "^10.29.0"
 	},
 	"devDependencies": {
 		"@babel/cli": "^7.28.6",
@@ -51,7 +51,7 @@
 		"@types/eslint": "^9.6.1",
 		"babel-plugin-inline-package-json": "^2.0.0",
 		"build-if-changed": "^1.5.5",
-		"eslint": "^9.39.2"
+		"eslint": "^10.0.3"
 	},
 	"peerDependencies": {
 		"uppy": "^5.2.3"
@@ -59,10 +59,5 @@
 	"files": [
 		"lib/*",
 		"types/*"
-	],
-	"eslintConfig": {
-		"parserOptions": {
-			"sourceType": "module"
-		}
-	}
+	]
 }
