@@ -637,37 +637,21 @@ export const itemActionDispatcher = ({
 				break;
 			}
 			case 'changeContentType': {
-				const dialogId = nanoid();
+				const changeContentTypeDialogId = nanoid();
 				dispatch(
-					pushConfirmDialog({
-						id: dialogId,
+					pushDialog({
+						id: changeContentTypeDialogId,
+						component: createComponentId('ChangeContentTypeDialog'),
 						props: {
-							title: formatMessage(translations.changeContentType),
-							body: formatMessage(translations.changeContentTypeBody),
-							onCancel: () => dispatch(popDialog({ id: dialogId })),
-							onOk: () => {
-								const changeContentTypeDialogId = nanoid();
+							item,
+							onContentTypeSelected: ({ contentType }) => {
 								dispatch(
 									batchActions([
-										popDialog({ id: dialogId }),
-										pushDialog({
-											id: changeContentTypeDialogId,
-											component: createComponentId('ChangeContentTypeDialog'),
-											props: {
-												item,
-												onContentTypeSelected: ({ contentType }) => {
-													dispatch(
-														batchActions([
-															popDialog({ id: changeContentTypeDialogId }),
-															changeContentType({
-																originalContentTypeId: item.contentTypeId,
-																path: item.path,
-																newContentTypeId: contentType.id
-															})
-														])
-													);
-												}
-											}
+										popDialog({ id: changeContentTypeDialogId }),
+										changeContentType({
+											originalContentTypeId: item.contentTypeId,
+											path: item.path,
+											newContentTypeId: contentType.id
 										})
 									])
 								);
