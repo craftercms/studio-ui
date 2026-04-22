@@ -110,7 +110,7 @@ export const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>((props, re
 		>
 			{showDecoratorIcon && onDecoratorButtonClick ? (
 				<IconButton
-					onClick={() => onDecoratorButtonClick()}
+					onClick={onDecoratorButtonClick}
 					size="large"
 					aria-label={formatMessage({ defaultMessage: 'Filter' })}
 				>
