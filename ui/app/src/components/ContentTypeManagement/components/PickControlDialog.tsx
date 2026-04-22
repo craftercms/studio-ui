@@ -30,6 +30,7 @@ export interface PickControlDialogProps extends EnhancedDialogProps {
 	type: ContentType;
 	fieldIdPath?: string;
 	onInsertField: (fieldType: string, position: number) => void;
+	configControls?: ContentTypeManagementConfig['controls'];
 	configDescriptors?: DescriptorContentType[];
 	controlExclusions: ContentTypeManagementConfig['controlExclusions'];
 }
@@ -44,11 +45,22 @@ export const systemFieldsIds: BuiltInControlType[] = [
 	'disabled',
 	'page-nav-order',
 	'locale-selector',
-	'expired-date'
+	'expired-date',
+	'forcehttps',
+	'uuid'
 ];
 
 export function PickControlDialog(props: PickControlDialogProps) {
-	const { onInsertField, type, sectionId, fieldIdPath, configDescriptors, controlExclusions, ...dialogProps } = props;
+	const {
+		onInsertField,
+		type,
+		sectionId,
+		fieldIdPath,
+		configControls,
+		configDescriptors,
+		controlExclusions,
+		...dialogProps
+	} = props;
 	const { sectionFields } = useMemo(() => {
 		let sectionFields: ContentTypeField[];
 		if (nou(fieldIdPath)) {
@@ -70,9 +82,12 @@ export function PickControlDialog(props: PickControlDialogProps) {
 
 	// Before rendering the PickFieldDialog we need to do two things:
 	// 1. Filter out the controls that are in the controlExclusions list.
-	// 2. Add the configDescriptors (plugins) to the list of controls.
+	// 2. Filter out OOB controls not in the configuration list.
+	// 3. Add the configDescriptors (plugins) to the list of controls.
 	const typesFullList = [
-		...types.filter((type) => !(controlExclusions ?? []).includes(type.id)),
+		...types.filter((type) => {
+			return configControls?.[type.id] && !(controlExclusions ?? []).includes(type.id);
+		}),
 		...(configDescriptors ?? [])
 	];
 
@@ -82,6 +97,7 @@ export function PickControlDialog(props: PickControlDialogProps) {
 			onInsert={onInsertField}
 			type={type}
 			title={<FormattedMessage defaultMessage="Insert Control" />}
+			configLookup={configControls}
 			typesFullList={typesFullList}
 			typesCurrentList={sectionFields}
 			systemFieldsIds={systemFieldsIds}
