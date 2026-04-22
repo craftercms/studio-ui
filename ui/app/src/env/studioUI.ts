@@ -139,6 +139,7 @@ export const components = {
 	FolderMoveAlertDialog: lazy(() => import('../components/FolderMoveAlertDialog')),
 	FormEngineControls: lazy(() => import('../components/FormEngineControls')),
 	FormsEngine: lazy(() => import('../components/FormsEngine/FormsEngine')),
+	FieldInformationDialog: lazy(() => import('../components/FormsEngine/components/FieldInformationDialog')),
 	FormsEngineDialog: lazy(() => import('../components/FormsEngine/FormsEngineDialog')),
 	Gears: lazy(() => import('../components/Gears')),
 	GitAuthForm: lazy(() => import('../components/GitAuthForm')),

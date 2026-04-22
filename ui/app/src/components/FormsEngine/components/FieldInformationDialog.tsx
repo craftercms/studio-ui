@@ -48,6 +48,8 @@ export function FieldInformationDialog(props: FieldInformationDialogProps) {
 	);
 }
 
+export default FieldInformationDialog;
+
 function Body(props) {
 	const { field } = props;
 	const { formatMessage } = useIntl();

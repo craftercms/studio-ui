@@ -45,10 +45,11 @@ import { useAtomValue } from 'jotai';
 import { translateIfMessageDescriptor } from '../../ContentTypeManagement/utils';
 import useLoadableAtom from '../lib/useLoadableAtom';
 import { XmlKeys } from '../lib/formConsts';
-import { FieldInformationDialog } from './FieldInformationDialog';
-import useEnhancedDialogState from '../../../hooks/useEnhancedDialogState';
 import EditOutlined from '@mui/icons-material/EditOutlined';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import { useDispatch } from 'react-redux';
+import { pushDialog } from '../../../state/actions/dialogStack';
+import { createComponentId } from '../../../utils/system';
 
 function createLengthBlock({ length, max, min }: { length: number; max: number; min: number }) {
 	const pieces = [];
@@ -128,9 +129,9 @@ export const FormsEngineField = forwardRef<HTMLDivElement, FormsEngineFieldProps
 	const validityData = useLoadableAtom(atoms.validationByFieldId[fieldId]);
 	const value = useAtomValue(atoms.valueByFieldId[fieldId]);
 	const isValid = props.isValid ?? (validityData.state === 'hasData' ? validityData?.data.isValid : true);
+	const dispatch = useDispatch();
 	const handleCloseMenu = () => setOpenMenu(false);
 	const handleRollback = () => formApi.rollbackField(field.id);
-	const fieldInformationDialogState = useEnhancedDialogState();
 	useEffect(() => {
 		// Offer controls the option to focus on the label when the field is rendered.
 		if (autoFocus) {
@@ -181,7 +182,16 @@ export const FormsEngineField = forwardRef<HTMLDivElement, FormsEngineFieldProps
 									onClose={handleCloseMenu}
 									onClick={handleCloseMenu}
 								>
-									<MenuItem onClick={() => fieldInformationDialogState.onOpen()}>
+									<MenuItem
+										onClick={() => {
+											dispatch(
+												pushDialog({
+													component: createComponentId('FieldInformationDialog'),
+													props: { field }
+												})
+											);
+										}}
+									>
 										<ListItemText>
 											<FormattedMessage defaultMessage="Field Information" />
 										</ListItemText>
@@ -288,11 +298,6 @@ export const FormsEngineField = forwardRef<HTMLDivElement, FormsEngineFieldProps
 						<FormHelperText key={key}>{translateValidityMessage(messageData, formatMessage)}</FormHelperText>
 					))}
 			</FormControl>
-			<FieldInformationDialog
-				open={fieldInformationDialogState.open}
-				onClose={fieldInformationDialogState.onClose}
-				field={field}
-			/>
 		</>
 	);
 });
