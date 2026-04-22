@@ -21,7 +21,7 @@ import useActiveSiteId from '../../../hooks/useActiveSiteId';
 import useEnv from '../../../hooks/useEnv';
 import SiteTools, { Tool } from '../SiteTools';
 import { getSystemLink } from '../../../utils/system';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router';
 import { SiteToolsContext, SiteToolsContextProps } from '../siteToolsContext';
 
 interface UrlDrivenSiteToolsProps {

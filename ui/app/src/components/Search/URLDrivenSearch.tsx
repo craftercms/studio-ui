@@ -30,7 +30,7 @@ import {
 } from './utils';
 import SearchUI from '../SearchUI';
 import { UNDEFINED } from '../../utils/constants';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router';
 
 export function URLDrivenSearch(props: URLDrivenSearchProps) {
   const { mode = 'default', onSelect, embedded = false, onAcceptSelection, onClose } = props;
