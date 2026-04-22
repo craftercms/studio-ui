@@ -41,7 +41,7 @@ export function GroupManagement() {
 	const [error, setError] = useState<ApiResponse | null>(null);
 	const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
 	const [keyword, setKeyword] = useState('');
-	const searchInpuRef = useRef(undefined);
+	const searchInputRef = useRef<HTMLInputElement | null>(null);
 
 	const fetchGroups = useCallback(
 		(keyword = '', _offset = offset) => {
@@ -97,7 +97,7 @@ export function GroupManagement() {
 	};
 
 	const onSearchButtonClick = () => {
-		searchInpuRef.current?.focus();
+		searchInputRef.current?.focus();
 	};
 
 	const onSearch = useCallback(
@@ -130,7 +130,7 @@ export function GroupManagement() {
 				}
 				rightContent={
 					<SearchBar
-						ref={searchInpuRef}
+						ref={searchInputRef}
 						sxs={{
 							root: {
 								transition: 'width 500ms',
