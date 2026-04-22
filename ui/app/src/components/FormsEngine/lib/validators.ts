@@ -422,8 +422,9 @@ export async function nodeSelectorValidator(
 	// Validate fields of each embedded item
 	embeddedContent.forEach(({ component }) => {
 		const contentTypeId = component['content-type'] as string;
-		if (visited.has(contentTypeId)) return; // prevent circular validation
-		visited.add(contentTypeId);
+		const objectId = component['objectId'] as string;
+		if (visited.has(objectId)) return; // prevent circular validation
+		visited.add(objectId);
 		const contentType = meta.contentTypesById[contentTypeId];
 		if (!contentType) return;
 		const fields = contentType.fields;
