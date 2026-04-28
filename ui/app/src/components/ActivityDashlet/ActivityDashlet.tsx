@@ -654,7 +654,7 @@ export function ActivityDashlet(props: ActivityDashletProps) {
 														alignContent: 'center'
 													}}
 												>
-													<Box sx={{ width: '100%' }}>
+													<Box sx={{ flex: 1, minWidth: 0 }}>
 														<PersonFullName person={activity.person} />
 														<Typography sx={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
 															{renderActivity(activity, { formatMessage, onPackageClick, onItemClick })}
