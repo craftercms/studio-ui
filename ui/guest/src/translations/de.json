@@ -1,7 +1,7 @@
 {
   "contentType.contentNotFound": "Inhalt nicht gefunden.",
   "words.edit": "Bearbeiten",
-  "words.move": "Verschieben ",
+  "words.move": "Verschieben",
   "words.no": "Nein",
   "words.options": "Optionen",
   "words.yes": "Ja",
@@ -19,5 +19,5 @@
   "zoneMenu.moveDown": "Nach rechts/unten verschieben (→ oder ↓)",
   "zoneMenu.moveUp": "Nach links/oben verschieben (← oder ↑)",
   "zoneMenu.trash": "Löschen/Entfernen (⌫)",
-  "zoneMenu.trashConfirmation": "Dieses Element {isEmbedded, select, true {Löschen} other {abhängen}}?"
+  "zoneMenu.trashConfirmation": "Dieses Element {isEmbedded, select, true {löschen} other {entfernen}}?"
 }
