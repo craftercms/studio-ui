@@ -39,7 +39,7 @@ export interface CopyDependenciesProps extends ControlProps {
 
 export function CopyDependencies(props: CopyDependenciesProps) {
 	const { field, value, setValue } = props;
-	const copyDependencies = value?.['copy-dependency'];
+	const copyDependencies = value?.['copy-dependency'] ?? [];
 	const htmlId = useId();
 
 	const handleChange = (
@@ -56,7 +56,7 @@ export function CopyDependencies(props: CopyDependenciesProps) {
 	};
 
 	const addDependency = () => {
-		setValue({ 'copy-dependency': [...value['copy-dependency'], {}] });
+		setValue({ 'copy-dependency': [...copyDependencies, { pattern: '', target: '' }] });
 	};
 
 	const removeDependency = (index: number) => {

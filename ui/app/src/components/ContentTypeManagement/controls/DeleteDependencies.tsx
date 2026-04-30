@@ -17,7 +17,7 @@
 import React, { ChangeEvent, useId } from 'react';
 import FormsEngineField from '../../FormsEngine/components/FormsEngineField';
 import { ControlProps } from '../../FormsEngine/types';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import TextField from '@mui/material/TextField';
 import Card from '@mui/material/Card';
 import { Switch } from '@mui/material';
@@ -41,8 +41,9 @@ export interface DeleteDependenciesProps extends ControlProps {
 
 export function DeleteDependencies(props: DeleteDependenciesProps) {
 	const { field, value, setValue } = props;
-	const deleteDependencies = value?.['delete-dependency'];
+	const deleteDependencies = value?.['delete-dependency'] ?? [];
 	const htmlId = useId();
+	const { formatMessage } = useIntl();
 
 	const handleChange = (
 		e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -58,7 +59,9 @@ export function DeleteDependencies(props: DeleteDependenciesProps) {
 	};
 
 	const addDependency = () => {
-		setValue({ 'delete-dependency': [...value['delete-dependency'], {}] });
+		setValue({
+			'delete-dependency': [...deleteDependencies, { pattern: '', 'remove-empty-folder': false }]
+		});
 	};
 
 	const removeDependency = (index: number) => {
@@ -90,7 +93,10 @@ export function DeleteDependencies(props: DeleteDependenciesProps) {
 					</Box>
 					<Box display="flex" alignItems="center">
 						<Tooltip title={<FormattedMessage defaultMessage="Remove Dependency" />}>
-							<IconButton onClick={() => removeDependency(index)}>
+							<IconButton
+								aria-label={formatMessage({ defaultMessage: 'Remove Dependency' })}
+								onClick={() => removeDependency(index)}
+							>
 								<RemoveCircleOutlineRoundedIcon />
 							</IconButton>
 						</Tooltip>
@@ -99,7 +105,7 @@ export function DeleteDependencies(props: DeleteDependenciesProps) {
 			))}
 			<Box display="flex" justifyContent="center">
 				<Tooltip title={<FormattedMessage defaultMessage="Add Dependency" />}>
-					<IconButton onClick={() => addDependency()}>
+					<IconButton aria-label={formatMessage({ defaultMessage: 'Add Dependency' })} onClick={() => addDependency()}>
 						<AddCircleOutlineRoundedIcon />
 					</IconButton>
 				</Tooltip>
