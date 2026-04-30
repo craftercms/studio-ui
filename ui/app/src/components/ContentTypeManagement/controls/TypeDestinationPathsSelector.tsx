@@ -32,12 +32,9 @@ export interface TypeDestinationPathsSelectorProps extends TypeBuilderControl {
 
 type Destination = 'includes' | 'excludes';
 interface DestinationPaths {
-	includes: string[];
-	excludes: string[];
+	includes: { pattern: string[] };
+	excludes: { pattern: string[] };
 }
-
-/* TODO: Update this control to handle memory data structures (objects) and its retriever/serializer to handle/generate
-     xml instead of escaped/encoded JSON. */
 /**
  * Allows users to specify "includes" and "excludes" destination paths for content types.
  */
@@ -46,18 +43,18 @@ export function TypeDestinationPathsSelector(props: TypeDestinationPathsSelector
 	const htmlId = useId();
 	const maxLength = field.validations.maxLength?.value;
 	const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, prop: Destination, index: number) => {
-		const nextArr = value[prop].slice();
+		const nextArr = value[prop]?.pattern?.slice();
 		nextArr[index] = e.currentTarget.value;
-		setValue({ ...value, [prop]: nextArr });
+		setValue({ ...value, [prop]: { pattern: nextArr } });
 	};
 
 	const addPath = (prop: Destination) => {
-		setValue({ ...value, [prop]: [...value[prop], ''] });
+		setValue({ ...value, [prop]: { pattern: [...(value[prop]?.pattern ?? []), ''] } });
 	};
 
 	const removePath = (prop: Destination, index: number) => {
-		const nextArr = value[prop].filter((_, i) => i !== index);
-		setValue({ ...value, [prop]: nextArr });
+		const nextArr = value[prop].pattern.filter((_, i) => i !== index);
+		setValue({ ...value, [prop]: { pattern: nextArr } });
 	};
 
 	return (
@@ -71,7 +68,7 @@ export function TypeDestinationPathsSelector(props: TypeDestinationPathsSelector
 							<FormattedMessage defaultMessage="Excludes" />
 						)}
 					</Typography>
-					{value.map((path, index) => (
+					{value?.pattern?.map((path, index) => (
 						<Box key={index} sx={{ display: 'flex', gap: 2 }}>
 							<TextField
 								fullWidth

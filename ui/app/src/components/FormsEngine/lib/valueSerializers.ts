@@ -96,7 +96,9 @@ export const valueSerializersLookup: Record<BuiltInControlType | DescriptorContr
 	'date-time-expression-input': undefined,
 	'input-email': undefined,
 	'input-link': undefined,
-	'input-phone': undefined
+	'input-phone': undefined,
+	'delete-dependencies': (field, value) => prepareObject(field, value as object),
+	'copy-dependencies': (field, value) => prepareObject(field, value as object)
 };
 
 /**
