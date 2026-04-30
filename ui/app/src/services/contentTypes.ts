@@ -497,8 +497,11 @@ function parseLegacyFormDefinition(definition: LegacyFormDefinition): ContentTyp
 }
 
 function parseLegacyFormDefinitionPathsProp(definition: LegacyFormDefinition): ContentType['paths'] {
-	if (!definition.paths || !(definition.paths?.includes || definition.paths?.excludes)) return null;
-	const paths: ContentType['paths'] = { includes: null, excludes: null };
+	const paths: ContentType['paths'] = {
+		includes: { pattern: [] },
+		excludes: { pattern: [] }
+	};
+	if (!definition.paths) return paths;
 	if (definition.paths?.includes) {
 		paths.includes = {
 			pattern: asArray(definition.paths.includes.pattern)
@@ -513,16 +516,14 @@ function parseLegacyFormDefinitionPathsProp(definition: LegacyFormDefinition): C
 }
 
 function parseFormDefinitionDeleteDependencies(definition: LegacyFormDefinition): ContentType['delete-dependencies'] {
-	if (!definition['delete-dependencies']?.['delete-dependency']) return null;
 	return {
-		'delete-dependency': asArray(definition['delete-dependencies']['delete-dependency'])
+		'delete-dependency': asArray(definition['delete-dependencies']?.['delete-dependency'])
 	};
 }
 
 function parseFormDefinitionCopyDependencies(definition: LegacyFormDefinition): ContentType['copy-dependencies'] {
-	if (!definition['copy-dependencies']?.['copy-dependency']) return null;
 	return {
-		'copy-dependency': asArray(definition['copy-dependencies']['copy-dependency'])
+		'copy-dependency': asArray(definition['copy-dependencies']?.['copy-dependency'])
 	};
 }
 
