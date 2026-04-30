@@ -485,7 +485,7 @@ CStudioAuthoring.Messages.registerBundle('forms', 'de', {
 	newContTypeDialogContentTypeName: 'ID',
 	newContTypeDialogType: 'Typ',
 	component: 'Komponente',
-	newContTypeDialogLabelMsg: 'Vergeben Sie ein Label für den neuen Inhaltstyp',
+	newContTypeDialogLabelMsg: 'Vergeben Sie einen Namen für den neuen Inhaltstyp',
 	newContTypeDialogContentTypeNamelMsg: 'Vergeben Sie einen System-internen Namen für den neuen Inhaltstyp',
 	newContTypeDialogTypeMsg: 'Wählen Sie den Typ für den neuen Inhaltstyp',
 	contentTypeDisplayNameExists: 'Der Name existiert bereits',

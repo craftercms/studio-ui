@@ -368,7 +368,7 @@
 	"deleteDialog.confirmDeletion": "Mir ist bekannt, dass gelöschte Elemente sofort veröffentlicht werden.",
 	"deleteDialog.deleteItems": "Elemente löschen",
 	"deleteDialog.dependentItems": "Abhängige Gegenstände",
-	"deleteDialog.emptyChildItems": "Keine untergeordneten Element",
+	"deleteDialog.emptyChildItems": "Keine untergeordneten Elemente",
 	"deleteDialog.emptyDependentItems": "Keine abhängigen Elemente",
 	"deleteDialog.maxCharacters": "Maximal {maxLength} Zeichen",
 	"deleteDialog.submissionCommentLabel": "Kommentar",
