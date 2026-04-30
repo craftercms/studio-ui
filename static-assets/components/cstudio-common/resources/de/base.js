@@ -311,7 +311,7 @@ CStudioAuthoring.Messages.registerBundle('siteDropdown', 'de', {
 	wcmContentSubmit: 'Publizieren angefordert',
 	wcmContentApprove: 'Freigeben & Publizieren',
 
-	notification: 'Hinweis',
+	notification: 'Benachrichtigung',
 	previewInitiated: 'Vollständige Synchronisation des Vorschau-Servers initialisiert.',
 	syncfromRepoInitiated: 'Synchronisation aus Repository initialisiert.',
 
@@ -703,7 +703,7 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'de', {
 	warningViewDeps: 'Um möglicherweise betroffene Links anzuzeigen, klicken Sie bitte ',
 	warningLink: 'hier',
 
-	notification: 'Vorgang abbrechen',
+	notification: 'Hinweis',
 	deploymentCanceled: 'Deployment abgebrochen.',
 
 	createTemplate: 'Neue Vorlage',
