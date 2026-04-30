@@ -281,7 +281,10 @@ export const typeBasicDetailsDescriptor: DescriptorContentType = {
 			name: defineMessage({ defaultMessage: 'Paths' }),
 			description: '',
 			helpText: '',
-			defaultValue: { includes: [], excludes: [] },
+			defaultValue: {
+				includes: { pattern: [] },
+				excludes: { pattern: [] }
+			},
 			validations: immutableEmptyObject
 		},
 		'delete-dependencies': {
