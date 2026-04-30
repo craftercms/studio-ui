@@ -363,7 +363,7 @@ export function createEmptyTypeStructure(mixin?: Partial<ContentType>): ContentT
 		paths: null,
 		'delete-dependencies': null,
 		'copy-dependencies': null,
-		previewable: false, // TODO: should this be auto set to true if page? (check how to)
+		previewable: false,
 		fields: {},
 		sections: [],
 		...mixin
@@ -901,33 +901,4 @@ export function getPropertiesAndValidationsFromDescriptor(descriptor: Descriptor
 	});
 
 	return { properties, validations };
-}
-
-// TODO: remove this
-export function initializeConfigFromType(type: ContentType) {
-	return {
-		'content-type': {
-			'@:name': type.id, // The legacy API1 get-content-type service requires the config.xml to include the attribute
-			// 'name' in `content-type` tag for correct type resolution. The service is used when creating new content items
-			// to retrieve the list of content types that are allowed for a specific path.
-			label: type.name,
-			form: type.id,
-			'form-path': 'simple',
-			'model-instance-path': 'NOT-USED-BY-SIMPLE-FORM-ENGINE',
-			'file-extension': 'xml',
-			'content-as-folder': type.type === 'page',
-			previewable: Boolean(type.previewable),
-			quickCreate: Boolean(type.quickCreate),
-			quickCreatePath: type.quickCreatePath ?? '',
-			controller: Boolean(type.hasJsController),
-			noThumbnail: !type.thumbnailFileName,
-			'image-thumbnail': type.thumbnailFileName ?? '',
-			paths: {
-				includes: {
-					...(type.type === 'page' ? { pattern: '^/site/.*' } : {})
-				},
-				excludes: {}
-			}
-		}
-	};
 }

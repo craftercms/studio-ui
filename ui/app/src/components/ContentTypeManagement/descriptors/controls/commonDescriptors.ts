@@ -160,7 +160,7 @@ export const typeBasicDetailsDescriptor: DescriptorContentType = {
 		createVirtualSection({
 			id: 'rendering',
 			title: defineMessage({ defaultMessage: 'Rendering' }),
-			fields: ['configuration', 'hasJsController', 'displayTemplate', 'isHeadless']
+			fields: ['hasJsController', 'displayTemplate', 'isHeadless']
 		}),
 		// This section and paths field won't be available until 'config.xml' is removed from the content type.
 		createVirtualSection({
@@ -268,15 +268,6 @@ export const typeBasicDetailsDescriptor: DescriptorContentType = {
 				defaultMessage:
 					'Check this to authorize this content type to leave the display template field empty as it is a headless type'
 			}),
-			helpText: '',
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		},
-		configuration: {
-			id: 'configuration',
-			type: 'type-configuration',
-			name: defineMessage({ defaultMessage: 'Configuration' }),
-			description: '',
 			helpText: '',
 			defaultValue: undefined,
 			validations: immutableEmptyObject
