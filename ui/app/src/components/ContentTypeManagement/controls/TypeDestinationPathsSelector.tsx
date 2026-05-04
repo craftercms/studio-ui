@@ -39,11 +39,12 @@ interface DestinationPaths {
  * Allows users to specify "includes" and "excludes" destination paths for content types.
  */
 export function TypeDestinationPathsSelector(props: TypeDestinationPathsSelectorProps) {
-	const { value, field, setValue } = props;
+	const { field, setValue } = props;
+	const value = props.value ?? { includes: { pattern: [] }, excludes: { pattern: [] } };
 	const htmlId = useId();
 	const maxLength = field.validations.maxLength?.value;
 	const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, prop: Destination, index: number) => {
-		const nextArr = value[prop]?.pattern?.slice();
+		const nextArr = [...(value[prop]?.pattern ?? [])];
 		nextArr[index] = e.currentTarget.value;
 		setValue({ ...value, [prop]: { pattern: nextArr } });
 	};
@@ -53,7 +54,7 @@ export function TypeDestinationPathsSelector(props: TypeDestinationPathsSelector
 	};
 
 	const removePath = (prop: Destination, index: number) => {
-		const nextArr = value[prop].pattern.filter((_, i) => i !== index);
+		const nextArr = (value[prop]?.pattern ?? []).filter((_, i) => i !== index);
 		setValue({ ...value, [prop]: { pattern: nextArr } });
 	};
 
