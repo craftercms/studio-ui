@@ -32,7 +32,7 @@ import {
 import { LookupTable } from '../models/LookupTable';
 import { camelize, capitalize, isBlank, toColor } from '../utils/string';
 import { Observable, of } from 'rxjs';
-import { get, getBinary, getGlobalHeaders, post } from '../utils/ajax';
+import { CONTENT_TYPE_JSON, get, getBinary, getGlobalHeaders, post } from '../utils/ajax';
 import { map, switchMap } from 'rxjs/operators';
 import { createLookupTable, nou, toQueryString } from '../utils/object';
 import { fetchContentItems } from './content';
@@ -597,7 +597,7 @@ export function deleteContentType(site: string, contentTypeId: string): Observab
 		url: `/studio/api/2/configuration/content_types/${site}`,
 		method: 'DELETE',
 		body: { contentType: contentTypeId, deleteDependencies: true },
-		headers: getGlobalHeaders()
+		headers: { ...getGlobalHeaders(), ...CONTENT_TYPE_JSON }
 	}).pipe(map(() => true));
 }
 
