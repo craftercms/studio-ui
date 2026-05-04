@@ -517,7 +517,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 				dispatch(
 					restoreClipboard({
 						type: localClipboard.type,
-						paths: localClipboard.paths,
+						includeChildren: localClipboard.includeChildrenl,
 						sourcePath: localClipboard.sourcePath
 					})
 				);
