@@ -758,12 +758,12 @@ export const itemActionDispatcher = ({
 				const itemPath = item.path;
 				dispatch(
 					batchActions([
-						unblockUI(),
 						setClipboard({
 							type: 'COPY',
 							sourcePath: itemPath,
 							includeChildren: true
-						})
+						}),
+						showCopyItemSuccessNotification()
 					])
 				);
 				break;
