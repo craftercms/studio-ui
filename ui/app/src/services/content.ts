@@ -1361,16 +1361,6 @@ export function checkPathExistence(siteId: string, path: string): Observable<boo
 	);
 }
 
-export function fetchLegacyItemsTree(
-	site: string,
-	path: string,
-	options?: Partial<{ depth: number; order: string }>
-): Observable<LegacyItem> {
-	return get(
-		`/studio/api/1/services/api/1/content/get-items-tree.json${toQueryString({ site_id: site, path, ...options })}`
-	).pipe(pluck('response', 'item'), catchError(errorSelectorApi1));
-}
-
 export function fetchContentByCommitId(site: string, path: string, commitId: string): Observable<string | Blob> {
 	return getBinary(
 		`/studio/api/2/content/get_content_by_commit_id${toQueryString({ siteId: site, path, commitId })}`,
