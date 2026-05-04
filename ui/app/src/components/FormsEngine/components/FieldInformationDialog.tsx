@@ -50,7 +50,9 @@ export function FieldInformationDialog(props: FieldInformationDialogProps) {
 
 export default FieldInformationDialog;
 
-function Body(props) {
+type FieldInformationDialogBodyProps = Pick<FieldInformationDialogProps, 'field'>;
+
+function Body(props: FieldInformationDialogBodyProps) {
 	const { field } = props;
 	const { formatMessage } = useIntl();
 
