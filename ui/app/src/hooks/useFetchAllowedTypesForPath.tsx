@@ -28,7 +28,7 @@ export function useFetchAllowedTypesForPath(path: string, responseFilterFn?: (ty
 	const site = useActiveSiteId();
 	const dispatch = useDispatch();
 	const [isFetching, setIsFetching] = useState(false);
-	const fullContentTypesList = useContentTypeList();
+	const fullContentTypesList = useContentTypeList() ?? [];
 	const [contentTypes, setContentTypes] = useState<ContentType[]>();
 	const effectRefs = useUpdateRefs({ responseFilterFn, fullContentTypesList });
 	useEffect(() => {
