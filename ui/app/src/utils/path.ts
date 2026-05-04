@@ -393,3 +393,14 @@ export const getFileNameWithExtensionForItemType = (type: string, name: string) 
 	`${name}.${pickExtensionForItemType(type)}`
 		.replace(/(\.groovy)(\.groovy)|(\.ftl)(\.ftl)/g, '$1$3')
 		.replace(/\.{2,}/g, '.');
+
+/**
+ * Determines if the given path corresponds to a page path.
+ *
+ * @param {string} path - The path to check.
+ * @returns {boolean} - Returns `true` if the path matches the pattern for a page path; otherwise, `false`.
+ *
+ */
+export const isPagePath = (path: string): boolean => {
+	return /^\/site\/website(\/.*)?\/index.*\.xml$/.test(path);
+};

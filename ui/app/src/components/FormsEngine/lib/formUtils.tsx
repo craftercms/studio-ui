@@ -72,8 +72,8 @@ import { getFormsEngineCloseAfterSave, getFormsEngineCollapseToCKey } from '../.
 import { createComponentId } from '../../../utils/system';
 import { showErrorDialog } from '../../../state/actions/dialogs';
 import { ensureSingleSlash } from '../../../utils/string';
-import { nnou, nou } from '../../../utils/object';
-import { WritableAtom } from 'jotai/vanilla';
+import { nou } from '../../../utils/object';
+import { isPagePath } from '../../../utils/path';
 
 /**
  * Returns the scroll container for the form's container.
@@ -232,17 +232,6 @@ export function createFieldAtoms(
 /** Creates the readonly flag property atom based on the lock result atom */
 export const createReadonlyAtom = (lockedResultAtom: Atom<FormsEngineEditContextProps>) =>
 	atom((get) => !get(lockedResultAtom).locked);
-
-/**
- * Determines if the given path corresponds to a page path.
- *
- * @param {string} path - The path to check.
- * @returns {boolean} - Returns `true` if the path matches the pattern for a page path; otherwise, `false`.
- *
- */
-export const isPagePath = (path: string): boolean => {
-	return /^\/site\/website(\/.*)?\/index.*\.xml$/.test(path);
-};
 
 /**
  * Creates a Jotai atom for the file name based on the given path.

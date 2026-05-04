@@ -56,6 +56,7 @@ import { fetchPublishingTargets } from '../../services/publishing';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { EmptyState } from '../EmptyState';
 import { pushErrorDialog } from '../../utils/system';
+import { extractErrorPayload } from '../../utils/ajax';
 
 const workflowStateManagementMessages = defineMessages({
 	statesUpdatedMessage: {
@@ -155,6 +156,9 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
 		const sub = fetchPublishingTargets(siteId).subscribe({
 			next({ publishingTargets: targets }) {
 				setHasStaging(targets.some((target) => target.name === 'staging'));
+			},
+			error(error) {
+				dispatch(pushErrorDialog({ props: { error: extractErrorPayload(error) } }));
 			}
 		});
 		return () => {
@@ -539,6 +543,7 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
 					/>
 				}
 				open={openSetStateDialog}
+				hasStaging={hasStaging}
 				onClose={onSetItemStateDialogClose}
 				onConfirm={onSetItemStateDialogConfirm}
 			/>

@@ -23,7 +23,7 @@ import { useDebouncedInput } from '../../hooks/useDebouncedInput';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import { useDispatch } from 'react-redux';
 import LookupTable from '../../models/LookupTable';
-import { BrowseFilesDialogUI } from '.';
+import { BrowseFilesDialogUI, viewModes } from '.';
 import { BrowseFilesDialogContainerProps, initialParameters } from './utils';
 import { checkPathExistence } from '../../services/content';
 import { FormattedMessage } from 'react-intl';
@@ -41,7 +41,6 @@ import { nanoid } from 'nanoid';
 
 import { createComponentId } from '../../utils/system';
 
-const viewModes: MediaCardViewModes[] = ['card', 'compact', 'row'];
 const defaultPreselectedPaths = [];
 
 export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProps) {

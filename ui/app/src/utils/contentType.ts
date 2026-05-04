@@ -305,7 +305,8 @@ export const systemValidationsKeysMap = {
 	videoBrowseRepo: 'allowVideosFromRepo',
 	audioDesktopUpload: 'allowAudioUpload',
 	audioBrowseRepo: 'allowAudioFromRepo',
-	fileBrowseRepo: 'allowFilesFromRepo'
+	fileBrowseRepo: 'allowFilesFromRepo',
+	addMedia: 'addMedia'
 };
 
 export const componentsDataSourceContentTypesPropertyNames = [
