@@ -102,8 +102,8 @@ export function LocaleSelector(props: LocaleSelectorProps) {
 						</Button>
 					}
 				>
-					{error.message}
-					{error.remedialAction ? `. ${error.remedialAction}` : ''}
+					{error.message || <FormattedMessage defaultMessage="Unable to load locales." />}
+					{error.remedialAction ? `${error.message ? '. ' : ' '}${error.remedialAction}` : ''}
 				</Alert>
 			) : (
 				<Select value={value} onChange={handleChange} autoFocus={autoFocus} disabled={readonly}>
