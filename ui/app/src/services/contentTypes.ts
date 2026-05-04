@@ -552,7 +552,7 @@ export function fetchContentTypes(site: string): Observable<ContentType[]> {
 export function fetchAllowedTypes(siteId: string, path: string): Observable<string[]> {
 	const qs = toQueryString({ path });
 	return get(`/studio/api/2/configuration/content_types/${siteId}/allowed_types${qs}`).pipe(
-		map((response) => response?.response?.allowedTypes)
+		map((response) => response?.response?.allowedTypes ?? [])
 	);
 }
 
