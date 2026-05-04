@@ -15,7 +15,7 @@
  */
 
 import { ControlProps } from '../types';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { fetchSiteLocales } from '../../../services/translation';
 import useActiveSiteId from '../../../hooks/useActiveSiteId';
 import { extractErrorPayload } from '../../../utils/ajax';
@@ -29,6 +29,7 @@ import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import { FormattedMessage } from 'react-intl';
 import { isFieldReadOnly } from '../lib/formUtils';
+import { Subscription } from 'rxjs';
 
 export interface LocaleSelectorProps extends ControlProps {
 	value: string;
@@ -49,16 +50,19 @@ export function LocaleSelector(props: LocaleSelectorProps) {
 	const [error, setError] = useState<ApiResponse | null>(null);
 	const readonly: boolean = isFieldReadOnly(field, formReadonly);
 	const refs = useUpdateRefs({ value, readonly });
+	const fetchSubscriptionRef = useRef<Subscription | null>(null);
 
 	const fetchLocales = useCallback(() => {
+		fetchSubscriptionRef.current?.unsubscribe();
 		setIsFetching(true);
 		setError(null);
-		return fetchSiteLocales(siteId).subscribe({
+		setLocaleData(undefined);
+		const subscription = fetchSiteLocales(siteId).subscribe({
 			next: (config) => {
-				const localeCodes = config?.localeCodes;
+				const localeCodes = config?.localeCodes ?? [];
 				const defaultLocaleCode = config?.defaultLocaleCode;
 				setIsFetching(false);
-				if (localeCodes) {
+				if (localeCodes.length) {
 					setLocaleData({
 						localeCodes: localeCodes.map((code) => ({
 							code,
@@ -76,12 +80,15 @@ export function LocaleSelector(props: LocaleSelectorProps) {
 				setError(extractErrorPayload(e));
 			}
 		});
+		fetchSubscriptionRef.current = subscription;
+		return subscription;
 	}, [refs, setValue, siteId]);
 
 	useEffect(() => {
-		const subscription = fetchLocales();
+		fetchLocales();
 		return () => {
-			subscription.unsubscribe?.();
+			fetchSubscriptionRef.current?.unsubscribe();
+			fetchSubscriptionRef.current = null;
 		};
 	}, [fetchLocales]);
 
