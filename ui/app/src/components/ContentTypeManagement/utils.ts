@@ -273,7 +273,9 @@ export function reverseTypeFieldValuesObject(
 				properties[property] = { ...mergedProperties[property] };
 				// Serialize field properties
 				const serializer = valueSerializersLookup[fieldDescriptor.type];
-				properties[property].value = serializer ? serializer(null, values[property]) : (values[property] as never);
+				properties[property].value = serializer
+					? serializer(fieldDescriptor, values[property])
+					: (values[property] as never);
 			}
 		} else if (property === 'validations') {
 			fieldWithReversedValues.validations = { ...field.validations };
