@@ -119,7 +119,6 @@
   * Updated `dependencies/fetchSimpleDependencies` to use API v2 (`/studio/api/2/dependency/{siteId}/dependencies`)
   * Updated `dependencies/fetchDependant` to use API v2 (`/studio/api/2/dependency/{siteId}/dependent_items`)
   * Removed `content/fetchLegacyItemsTree` service.
-  * `content`: Removed `fetchLegacyItemsTree`.
 * `PublishingItem` interface changes:
   * `approver` is now `reviewer`, of type Person.
   * `comment` is removed, and now there's `reviewerComment` and `submitterComment`.
@@ -185,7 +184,7 @@
 
 ## 4.2.0
 
-* [utils/xml] Upgrade prettier to v3x which change1d from sync apis to async
+* [utils/xml] Upgrade prettier to v3x which changed from sync apis to async
   * `serialize` no longer formats code
   * `beautify` is now async
 * [components]
