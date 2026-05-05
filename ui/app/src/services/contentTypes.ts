@@ -488,7 +488,7 @@ function parseLegacyFormDefinition(definition: LegacyFormDefinition): ContentTyp
 		paths: parseLegacyFormDefinitionPathsProp(definition),
 		'delete-dependencies': parseFormDefinitionDeleteDependencies(definition),
 		'copy-dependencies': parseFormDefinitionCopyDependencies(definition),
-		previewable: definition.previewable === 'true',
+		previewable: definition.previewable?.trim() === 'true',
 		// ^^^ Added during TypeBuilder 2 ^^^
 		dataSources: Object.values(dataSources),
 		sections,
