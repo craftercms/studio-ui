@@ -90,13 +90,14 @@ export function useSaveForm(props: UseSaveFormProps) {
 	const { setRenamedPath } = useContext(RenamedPathContext);
 	const initialFileName = itemPath ? getFileNameValueFromPath(itemPath, isPage) : '';
 	const item = useContext(ItemContext);
-	return async () => {
+	return async (draft?: boolean) => {
 		const values = extractAtomValues(jotai, stableFormContext.atoms.valueByFieldId);
 		const validityStates = await Promise.all(
 			Object.values(stableFormContext.atoms.validationByFieldId).map((validityDataAtom) => jotai.get(validityDataAtom))
 		);
 		// Put system properties in before creating the XML
-		const saveAsDraft = validityStates.some((state) => !state.isValid);
+		const isFormInvalid = validityStates.some((state) => !state.isValid);
+		const saveAsDraft = draft || isFormInvalid;
 
 		const onSavePromiseHandler = ({ close }: FormSavePromiseResult) => {
 			if (saveAsDraft) {

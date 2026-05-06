@@ -24,20 +24,32 @@ export interface SplitButtonOption {
 
 export interface SplitButtonProps {
 	options: SplitButtonOption[];
+	disabledOptions?: string[];
 	defaultSelected?: string;
 	disablePortal?: boolean;
 	disabled?: boolean;
 	loading?: boolean;
 	storageKey?: string;
+	fullWidth?: boolean;
+	/**
+	 * If provided, SplitButton will be controlled and use this value as the selected index.
+	 */
+	selectedIndex?: number;
+	/**
+	 * Callback fired when the selected index changes (from menu or click).
+	 */
+	onSelectedIndexChange?: (index: number) => void;
 }
 
 export interface SplitButtonUIProps {
 	options: SplitButtonOption[];
+	disabledOptions?: SplitButtonProps['disabledOptions'];
 	disablePortal?: boolean;
 	loading?: boolean;
 	disabled?: boolean;
 	anchorRef: MutableRefObject<HTMLDivElement>;
 	selectedIndex: number;
+	fullWidth?: SplitButtonProps['fullWidth'];
 	open: boolean;
 	handleClick(e): void;
 	handleToggle(e): void;
