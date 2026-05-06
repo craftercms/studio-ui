@@ -15,11 +15,11 @@
  */
 
 import { translations } from '../components/ItemActionsMenu/translations';
-import { AllItemActions, ContentItem, LegacyItem } from '../models/Item';
+import { AllItemActions, ContentItem } from '../models/Item';
 import { ContextMenuOption } from '../components/ContextMenu';
 import { getControllerPath, getRootPath, withoutIndex } from './path';
 import { popCodeEditorDialog, showHistoryDialog } from '../state/actions/dialogs';
-import { checkPathExistence, fetchContentItem, fetchContentItems, fetchLegacyItemsTree } from '../services/content';
+import { checkPathExistence, fetchContentItem, fetchContentItems } from '../services/content';
 import {
 	batchActions,
 	changeContentType,
@@ -670,7 +670,6 @@ export const itemActionDispatcher = ({
 									const actionToDispatch = batchActions([
 										setClipboard({
 											type: 'CUT',
-											paths: [item.path],
 											sourcePath: item.path
 										}),
 										emitSystemEvent(itemCut({ target: item.path })),
@@ -721,7 +720,6 @@ export const itemActionDispatcher = ({
 									unblockUI(),
 									setClipboard({
 										type: 'COPY',
-										paths: [item.path],
 										sourcePath: item.path
 									}),
 									showCopyItemSuccessNotification()
@@ -751,40 +749,17 @@ export const itemActionDispatcher = ({
 				break;
 			}
 			case 'copyWithChildren': {
-				dispatch(
-					blockUI({
-						progress: 'indeterminate',
-						message: `${formatMessage(translations.processing)}...`
-					})
-				);
 				const itemPath = item.path;
-				fetchLegacyItemsTree(site, itemPath, { depth: 1000, order: 'default' }).subscribe({
-					next(item: LegacyItem) {
-						let paths = [];
-						function process(parent: LegacyItem) {
-							paths.push(parent.uri);
-							if (parent.children.length) {
-								parent.children.forEach((item: LegacyItem) => {
-									if (item.children) {
-										process(item);
-									}
-								});
-							}
-						}
-						process(item);
-
-						dispatch(
-							batchActions([
-								unblockUI(),
-								setClipboard({
-									type: 'COPY',
-									sourcePath: itemPath,
-									paths
-								})
-							])
-						);
-					}
-				});
+				dispatch(
+					batchActions([
+						setClipboard({
+							type: 'COPY',
+							sourcePath: itemPath,
+							includeChildren: true
+						}),
+						showCopyItemSuccessNotification()
+					])
+				);
 				break;
 			}
 			case 'paste': {
