@@ -81,6 +81,7 @@ import { ensureSingleSlash } from '../../../utils/string';
 import { isPagePath } from '../../../utils/path';
 import { nou, reversePluckProps } from '../../../utils/object';
 import { Editor } from '@tinymce/tinymce-react';
+import { getCurrentLocale } from '../../../utils/i18n';
 
 /**
  * Returns the scroll container for the form's container.
@@ -923,6 +924,14 @@ export function composePathForType(basePath: string, fileName: string, contentTy
 	}
 }
 
+// Maps application locales to their corresponding TinyMCE language codes.
+const tinymceLangMap = {
+	es: 'es',
+	en: 'en',
+	ko: 'ko_KR',
+	de: 'de'
+};
+
 export function getTinyMceInitOptions(
 	field: ContentTypeField,
 	rteConfig: GlobalState['preview']['richTextEditor'], // GlobalState['preview']['richTextEditor']['']['']
@@ -933,6 +942,7 @@ export function getTinyMceInitOptions(
 	const height = getPropertyValue(field.properties, 'height', 300) as number;
 	const autoGrow = getPropertyValue(field.properties, 'autoGrow', false) as boolean;
 	const allowAddMedia = getValidationValue(field.validations, 'addMedia', true) as boolean;
+	const language = getCurrentLocale();
 
 	const defaultTinymceOptions = defaultOptions
 		? { id: '', tinymceOptions: defaultOptions }
@@ -961,6 +971,7 @@ export function getTinyMceInitOptions(
 		// Needs to be set to split when the editor is rendered in a scrollable container.
 		// The `height` and `overflow` of the FormsEngine root breaks some of Tiny's internal rendering mechanics.
 		ui_mode: 'split',
+		language: tinymceLangMap[language] ?? 'en',
 		target: tinymceOptions.target,
 		promotion: false,
 		branding: false,
