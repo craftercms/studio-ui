@@ -134,7 +134,7 @@ export function renderActivity(
 		case 'PUBLISH':
 			return (
 				<FormattedMessage
-					id="activityDashlet.publishedActivityMessage"
+					id="activityDashlet.publishActivityMessage"
 					defaultMessage="Approved <render_package_link>a package</render_package_link>"
 					values={{ render_package_link }}
 				/>
