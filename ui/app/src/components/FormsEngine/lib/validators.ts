@@ -503,14 +503,27 @@ const inputPhoneValidator = (
 const rteValidator = (field: ContentTypeField, currentValue: string, messages?: FieldValidityMessage[]): boolean => {
 	if (nou(field)) return true;
 	const isRequired = isFieldRequired(field);
-	if (!isRequired) return true;
+	let isValid = true;
 
+	const maxLength: number | undefined = getValidationValue(field.validations, 'maxLength');
 	const aux = document.createElement('div');
 	aux.innerHTML = currentValue;
 	const trimmedContent = aux.innerText.trim(); // Get only the text and remove white space
-	const isValid = trimmedContent !== '';
-	if (!isValid) {
-		messages?.push(defineMessage({ defaultMessage: 'This field is required.' }));
+
+	if (isRequired) {
+		isValid = trimmedContent !== '';
+		if (!isValid) {
+			messages?.push(defineMessage({ defaultMessage: 'This field is required.' }));
+		}
+	}
+	if (nnou(maxLength) && trimmedContent.length > maxLength) {
+		messages.push([
+			defineMessage({
+				defaultMessage: `The value is greater than the allowed maximum ({maxLength}).`
+			}),
+			{ maxLength }
+		]);
+		isValid = false;
 	}
 
 	return isValid;
