@@ -15,7 +15,6 @@
  */
 
 import {
-	ComponentsDatasource,
 	ContentType,
 	ContentTypeField,
 	ContentTypeFieldValidation,
@@ -32,13 +31,13 @@ import {
 } from '../models/ContentType';
 import { LookupTable } from '../models/LookupTable';
 import { camelize, capitalize, isBlank, toColor } from '../utils/string';
-import { forkJoin, Observable, of } from 'rxjs';
-import { errorSelectorApi1, get, getBinary, post, postJSON } from '../utils/ajax';
-import { catchError, map, switchMap } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { CONTENT_TYPE_JSON, get, getBinary, getGlobalHeaders, post } from '../utils/ajax';
+import { map, switchMap } from 'rxjs/operators';
 import { createLookupTable, nou, toQueryString } from '../utils/object';
 import { fetchContentItems } from './content';
 import { ContentItem } from '../models/Item';
-import { fetchConfigurationDOM, fetchConfigurationJSON, writeConfiguration } from './configuration';
+import { fetchConfigurationDOM, writeConfiguration } from './configuration';
 import { beautify, deserialize, entityEncodingTagValueProcessor, serialize } from '../utils/xml';
 import { Api2ResponseFormat } from '../models/ApiResponse';
 import { asArray, immutableEmptyArray } from '../utils/array';
@@ -50,7 +49,7 @@ import {
 	systemValidationsNames
 } from '../utils/contentType';
 import { XmlKeys } from '../components/FormsEngine/lib/formConsts';
-import { AjaxResponse } from 'rxjs/ajax';
+import { ajax, AjaxResponse } from 'rxjs/ajax';
 
 // FE2 TODO: Verify removal
 // const typeMap = {
@@ -488,6 +487,9 @@ function parseLegacyFormDefinition(definition: LegacyFormDefinition): ContentTyp
 		thumbnailFileName: definition.imageThumbnail,
 		isHeadless: topLevelPropMap[XmlKeys.templateNotRequired]?.value?.trim() === 'true',
 		paths: parseLegacyFormDefinitionPathsProp(definition),
+		'delete-dependencies': parseFormDefinitionDeleteDependencies(definition),
+		'copy-dependencies': parseFormDefinitionCopyDependencies(definition),
+		previewable: definition.previewable?.trim() === 'true',
 		// ^^^ Added during TypeBuilder 2 ^^^
 		dataSources: Object.values(dataSources),
 		sections,
@@ -496,52 +498,34 @@ function parseLegacyFormDefinition(definition: LegacyFormDefinition): ContentTyp
 }
 
 function parseLegacyFormDefinitionPathsProp(definition: LegacyFormDefinition): ContentType['paths'] {
-	if (!definition.paths || !(definition.paths?.includes && definition.paths?.excludes)) return null;
-	const paths: ContentType['paths'] = {};
+	const paths: ContentType['paths'] = {
+		includes: { pattern: [] },
+		excludes: { pattern: [] }
+	};
+	if (!definition.paths) return paths;
 	if (definition.paths?.includes) {
-		paths.includes = asArray(definition.paths.includes);
+		paths.includes = {
+			pattern: asArray(definition.paths.includes.pattern)
+		};
 	}
 	if (definition.paths?.excludes) {
-		paths.excludes = asArray(definition.paths.excludes);
+		paths.excludes = {
+			pattern: asArray(definition.paths.excludes.pattern)
+		};
 	}
 	return paths;
 }
 
-export function parseLegacyContentType(legacy: LegacyContentType): ContentType {
+function parseFormDefinitionDeleteDependencies(definition: LegacyFormDefinition): ContentType['delete-dependencies'] {
 	return {
-		hasJsController: null,
-		isHeadless: null,
-		paths: null,
-		thumbnailFileName: null,
-		id: legacy.form,
-		name: legacy.label.replace('Component - ', ''),
-		description: null,
-		quickCreate: legacy.quickCreate,
-		quickCreatePath: legacy.quickCreatePath,
-		type: legacy.type,
-		fields: null,
-		sections: null,
-		displayTemplate: null,
-		dataSources: null,
-		mergeStrategy: null
+		'delete-dependency': asArray(definition['delete-dependencies']?.['delete-dependency'])
 	};
 }
 
-function fetchFormDefinition(site: string, contentTypeId: string): Observable<ContentType> {
-	const path = createFormDefinitionPathFromTypeId(contentTypeId);
-	return fetchConfigurationJSON(site, path, 'studio').pipe(map((def) => parseLegacyFormDefinition(def.form)));
-}
-
-export function fetchContentType(site: string, contentTypeId: string): Observable<ContentType> {
-	return forkJoin({
-		type: fetchLegacyContentType(site, contentTypeId).pipe(map(parseLegacyContentType)),
-		definition: fetchFormDefinition(site, contentTypeId)
-	}).pipe(
-		map(({ type, definition }) => ({
-			...type,
-			...definition
-		}))
-	);
+function parseFormDefinitionCopyDependencies(definition: LegacyFormDefinition): ContentType['copy-dependencies'] {
+	return {
+		'copy-dependency': asArray(definition['copy-dependencies']?.['copy-dependency'])
+	};
 }
 
 export function fetchContentTypes(site: string): Observable<ContentType[]> {
@@ -559,17 +543,17 @@ export function fetchContentTypes(site: string): Observable<ContentType[]> {
 	);
 }
 
-export function fetchLegacyContentType(site: string, contentTypeId: string): Observable<LegacyContentType> {
-	return get<LegacyContentType>(
-		`/studio/api/1/services/api/1/content/get-content-type.json?site_id=${site}&type=${contentTypeId}`
-	).pipe(map((response) => response?.response));
-}
-
-export function fetchLegacyContentTypes(site: string, path?: string): Observable<LegacyContentType[]> {
-	const qs = toQueryString({ site, path });
-	return get<LegacyContentType[]>(`/studio/api/1/services/api/1/content/get-content-types.json${qs}`).pipe(
-		map((response) => response?.response),
-		catchError(errorSelectorApi1)
+/**
+ * Get allowed content types for a given site at a given path
+ *
+ * @param {string} siteId - The ID of the site for which to fetch allowed content types.
+ * @param {string} path - The path within the site to check for allowed content types.
+ * @returns {Observable<string[]>} An Observable that emits an array of allowed content type IDs.
+ */
+export function fetchAllowedTypes(siteId: string, path: string): Observable<string[]> {
+	const qs = toQueryString({ path });
+	return get(`/studio/api/2/configuration/content_types/${siteId}/allowed_types${qs}`).pipe(
+		map((response) => response?.response?.allowedTypes ?? [])
 	);
 }
 
@@ -583,9 +567,9 @@ export function fetchContentTypeUsage(
 	site: string,
 	contentTypeId: string
 ): Observable<FetchContentTypeUsageResponse<ContentItem>> {
-	const qs = toQueryString({ siteId: site, contentType: contentTypeId });
+	const qs = toQueryString({ contentType: contentTypeId });
 	return get<Api2ResponseFormat<{ usage: FetchContentTypeUsageResponse }>>(
-		`/studio/api/2/configuration/content-type/usage${qs}`
+		`/studio/api/2/configuration/content_types/${site}/usage${qs}`
 	).pipe(
 		map((response) => response?.response.usage),
 		switchMap((usage) =>
@@ -610,10 +594,11 @@ export function fetchContentTypeUsage(
 }
 
 export function deleteContentType(site: string, contentTypeId: string): Observable<boolean> {
-	return postJSON(`/studio/api/2/configuration/content-type/delete`, {
-		siteId: site,
-		contentType: contentTypeId,
-		deleteDependencies: true
+	return ajax({
+		url: `/studio/api/2/configuration/content_types/${site}`,
+		method: 'DELETE',
+		body: { contentType: contentTypeId, deleteDependencies: true },
+		headers: { ...getGlobalHeaders(), ...CONTENT_TYPE_JSON }
 	}).pipe(map(() => true));
 }
 
@@ -673,14 +658,14 @@ export function dissociateTemplate(site: string, contentTypeId: string): Observa
 }
 
 export function fetchPreviewImage(site: string, contentTypeId: string): Observable<AjaxResponse<Blob>> {
-	const qs = toQueryString({ siteId: site, contentTypeId });
-	return getBinary(`/studio/api/2/configuration/content-type/preview_image${qs}`);
+	const qs = toQueryString({ contentTypeId });
+	return getBinary(`/studio/api/2/configuration/content_types/${site}/preview_image${qs}`);
 }
 
 /**
  * @deprecated Only for Forms Engine v1 (FE1) usage. FE1 gets replaced by FE2 in CrafterCMS v5.
  **/
 export function getFetchLegacyFormControllerUrl(site: string, contentTypeId: string): string {
-	const qs = toQueryString({ siteId: site, contentTypeId });
-	return `/studio/api/2/configuration/content-type/form_controller${qs}`;
+	const qs = toQueryString({ contentTypeId });
+	return `/studio/api/2/configuration/content_types/${site}/form_controller${qs}`;
 }

@@ -93,7 +93,6 @@ export const components = {
 	ContentTypeFilter: lazy(() => import('../components/ContentTypeFilter')),
 	ContentTypeManagement: lazy(() => import('../components/ContentTypeManagement')),
 	ContextMenu: lazy(() => import('../components/ContextMenu')),
-	CopyDialog: lazy(() => import('../components/CopyDialog')),
 	CopyTokenDialog: lazy(() => import('../components/CopyTokenDialog')),
 	CrafterCMSNextBridge: lazy(() => import('../components/CrafterCMSNextBridge')),
 	CrafterThemeProvider: lazy(() => import('../components/CrafterThemeProvider')),

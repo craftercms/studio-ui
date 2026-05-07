@@ -36,5 +36,4 @@ export interface ChangeContentTypeDialogStateProps extends ChangeContentTypeDial
 }
 
 export interface ChangeContentTypeDialogContainerProps
-	extends ChangeContentTypeDialogBaseProps,
-		Pick<ChangeContentTypeDialogProps, 'onContentTypeSelected'> {}
+	extends ChangeContentTypeDialogBaseProps, Pick<ChangeContentTypeDialogProps, 'onContentTypeSelected' | 'onClose'> {}

@@ -35,6 +35,7 @@ export function ChangeContentTypeDialog(props: ChangeContentTypeDialogProps) {
 				item={item}
 				initialCompact={initialCompact}
 				onContentTypeSelected={onContentTypeSelected}
+				onClose={props.onClose}
 			/>
 		</EnhancedDialog>
 	);
