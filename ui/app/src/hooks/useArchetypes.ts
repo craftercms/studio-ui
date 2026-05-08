@@ -65,8 +65,8 @@ export function useArchetypes() {
 							descriptor: extendArchetypeDescriptor(parentArchetype?.descriptor, deserializedDescriptor)
 						};
 					}
-					setArchetypes(archetypes);
 				});
+			setArchetypes(archetypes);
 		}
 	}, [uiConfigXml]);
 
