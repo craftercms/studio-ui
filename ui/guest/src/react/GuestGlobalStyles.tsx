@@ -191,7 +191,7 @@ export function GuestGlobalStyles(props: GuestGlobalStylesProps) {
 										padding: '10px',
 										content: `"${formatMessage({
 											id: 'globalStyles.emptyTarget',
-											defaultMessage: 'Empty components target. Drag items here to add.'
+											defaultMessage: 'Empty components target. Drag new or existing content items here to add them'
 										})}"`,
 										fontWeight: 'bold'
 									}
