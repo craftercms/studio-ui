@@ -93,11 +93,12 @@ export const valueSerializersLookup: Record<BuiltInControlType | DescriptorContr
 	'datasource:audio:singleSelection': undefined,
 	'datasource:item:singleSelection': undefined,
 	variable: undefined,
-	'type-configuration': undefined,
 	'date-time-expression-input': undefined,
 	'input-email': undefined,
 	'input-link': undefined,
-	'input-phone': undefined
+	'input-phone': undefined,
+	'delete-dependencies': (field, value) => (value == null ? undefined : prepareObject(field, value as object)),
+	'copy-dependencies': (field, value) => (value == null ? undefined : prepareObject(field, value as object))
 };
 
 /**
@@ -121,7 +122,7 @@ function prepareValuesForXmlSerialising(
 		if (serializer) {
 			jObj[id] = serializer(field, value, contentTypesLookup);
 		}
-		if (field?.properties?.tokenized?.value) {
+		if (field?.properties?.tokenize?.value) {
 			fieldAttributes[createAttrHint('tokenized')] = true;
 		}
 		// TODO: Carry/implement attributes (no-default, remote, others?)

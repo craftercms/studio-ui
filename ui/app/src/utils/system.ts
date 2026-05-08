@@ -30,8 +30,7 @@ import type { LegacyFormDialogProps } from '../components/LegacyFormDialog/utils
 import { nanoid } from 'nanoid';
 import { DialogStackItem } from '../models';
 import type { ConfirmDialogProps, ErrorDialogProps } from '../components';
-import { getPathFromPreviewURL, getPreviewURLFromPath } from './path';
-import { isPagePath } from '../components/FormsEngine/lib/formUtils';
+import { getPathFromPreviewURL, getPreviewURLFromPath, isPagePath } from './path';
 
 export type SystemLinkId =
 	| 'preview'

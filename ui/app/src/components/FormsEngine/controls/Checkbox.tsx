@@ -18,13 +18,19 @@ import React, { ChangeEvent, useId } from 'react';
 import { FormsEngineField } from '../components/FormsEngineField';
 import { ControlProps } from '../types';
 import Switch from '@mui/material/Switch';
+import { isFieldReadOnly } from '../lib/formUtils';
 
 export interface CheckboxProps extends ControlProps {
 	value: boolean;
 }
 
 export function Checkbox(props: CheckboxProps) {
-	const { field, value, setValue, readonly, autoFocus } = props;
+	const { field, value, setValue, readonly: formReadonly, autoFocus } = props;
+
+	//  region field properties/validations
+	const readonly = isFieldReadOnly(field, formReadonly);
+	// endregion
+
 	const htmlId = useId();
 	const handleChange = (e: ChangeEvent<HTMLInputElement>) => setValue(e.target.checked);
 	return (

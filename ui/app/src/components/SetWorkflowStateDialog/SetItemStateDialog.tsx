@@ -22,6 +22,7 @@ import { StatesToUpdate } from '../../services/workflow';
 export interface SetItemStateDialogProps {
 	open: boolean;
 	title: React.ReactNode;
+	hasStaging: boolean;
 	onClose(): void;
 	onClosed?(): void;
 	onConfirm(update: StatesToUpdate): void;

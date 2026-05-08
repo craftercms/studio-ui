@@ -35,6 +35,7 @@ import LookupTable from '../../../models/LookupTable';
 
 export interface RichTextEditorProps extends ControlProps {
 	value: string;
+	defaultInitOptions?: Editor['props']['init'];
 }
 
 const tinymceScriptSrc = '/studio/static-assets/libs/tinymce/tinymce.min.js';
@@ -49,13 +50,15 @@ declare global {
 function getTinyMceInitOptions(
 	field: ContentTypeField,
 	rteConfig: GlobalState['preview']['richTextEditor'], // GlobalState['preview']['richTextEditor']['']['']
+	defaultOptions?: Editor['props']['init'],
 	setup?: Editor['props']['init']['setup']
 ): Editor['props']['init'] {
 	const setupId: string = (field.properties?.rteConfiguration?.value as string) ?? 'generic';
-	const tinymceOptions: Editor['props']['init'] = (
-		rteConfig[setupId] ??
-		Object.values(rteConfig)[0] ?? { id: '', tinymceOptions: {} }
-	)?.tinymceOptions;
+
+	const defaultTinymceOptions = defaultOptions
+		? { id: '', tinymceOptions: defaultOptions }
+		: (Object.values(rteConfig)[0] ?? { id: '', tinymceOptions: {} });
+	const tinymceOptions: Editor['props']['init'] = (rteConfig[setupId] ?? defaultTinymceOptions)?.tinymceOptions;
 	const controlProps: Partial<Editor['props']['init']> = {};
 	if (field.properties?.enableSpellCheck?.value === false) {
 		controlProps.browser_spellcheck = true;
@@ -388,7 +391,7 @@ function getTinyMceInitOptions(
 }
 
 export function RichTextEditor(props: RichTextEditorProps) {
-	const { field, value, setValue, readonly } = props;
+	const { field, value, setValue, readonly, defaultInitOptions } = props;
 	const rteConfig = useRTEConfig();
 	const editorRef = useRef<Editor>(undefined);
 	const hasReceivedFocusRef = useRef(false);
@@ -464,7 +467,7 @@ export function RichTextEditor(props: RichTextEditorProps) {
 		>
 			<Editor
 				licenseKey="gpl"
-				init={getTinyMceInitOptions(field, rteConfig)}
+				init={getTinyMceInitOptions(field, rteConfig, defaultInitOptions)}
 				tinymceScriptSrc={tinymceScriptSrc}
 				onEditorChange={handleChange}
 				value={value}

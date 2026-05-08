@@ -60,7 +60,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Radio from '@mui/material/Radio';
 import Grid from '@mui/material/Grid';
 import ContentType from '../../../models/ContentType';
-import { fetchLegacyContentTypes } from '../../../services/contentTypes';
+import { fetchAllowedTypes } from '../../../services/contentTypes';
 import useActiveSiteId from '../../../hooks/useActiveSiteId';
 import { forkJoin } from 'rxjs';
 import Dialog from '@mui/material/Dialog';
@@ -303,7 +303,7 @@ function NodeSelector(props: NodeSelectorProps) {
 					dispatch,
 					path: processPath(pickerChoice.path),
 					contentTypes: pickerChoice.allowedContentTypes,
-					preselectedPaths: value.map((item) => item.key).filter(Boolean),
+					preselectedPaths: allowDuplicates ? [] : value.map((item) => item.key).filter(Boolean),
 					onSuccess(items: MediaItem | MediaItem[]) {
 						const newNodeSelectorItems = [];
 						asArray(items).forEach((item) => {
@@ -490,7 +490,7 @@ function NodeSelector(props: NodeSelectorProps) {
 		executeDataSourceOption('create', createPickerChoice);
 	};
 	const memoRefs = useUpdateRefs({ handleDataSourceOptionClick });
-	const menuOptions = useMemo(
+	const { menuOptions, availableOptions } = useMemo(
 		() => createAddMenuOptions({ refs: memoRefs, itemPickerDataSourceData: dataSourceSummary, readonly }),
 		[memoRefs, readonly, dataSourceSummary]
 	);
@@ -589,7 +589,11 @@ function NodeSelector(props: NodeSelectorProps) {
 								size="small"
 								color="primary"
 								onClick={() => {
-									setAddMenuOpen(true);
+									if (availableOptions.length === 1) {
+										handleDataSourceOptionClick(null, availableOptions[0]);
+									} else {
+										setAddMenuOpen(true);
+									}
 								}}
 							>
 								<AddRounded fontSize="small" />
@@ -779,28 +783,24 @@ function CreateDataSourcePicker(props: {
 		const allowedCreateTypes = props.allowedCreateTypes;
 		if (allowedCreatePaths.length) {
 			// Find out all the types that can be created on the allowed creation paths (coming from shared-content DS).
-			const sub = forkJoin(allowedCreatePaths.map((path) => fetchLegacyContentTypes(siteId, path))).subscribe(
-				(responses) => {
-					const result = [
-						...new Set(
-							responses.flatMap((types) => types.map((type) => type.name)).concat(Object.keys(allowedCreateTypes))
-						)
-					];
-					const allowedLookup = { ...allowedCreateTypes };
-					result.forEach((contentTypeId) => {
-						allowedLookup[contentTypeId] = { ...allowedLookup[contentTypeId] };
-						allowedLookup[contentTypeId].shared = true;
-					});
-					setAllowedTypes(result);
-					setAllowedCreateTypes(allowedLookup);
-					const value: CreateDataSourcePickerData = {
-						path: allowedLookup[result[0]].createPaths?.[0] ?? '',
-						strategy: allowedLookup[result[0]].embedded ? 'embedded' : 'shared',
-						contentTypeId: result[0]
-					};
-					setValue(value);
-				}
-			);
+			const sub = forkJoin(allowedCreatePaths.map((path) => fetchAllowedTypes(siteId, path))).subscribe((responses) => {
+				const result = [
+					...new Set(responses.flatMap((types) => types.map((type) => type)).concat(Object.keys(allowedCreateTypes)))
+				];
+				const allowedLookup = { ...allowedCreateTypes };
+				result.forEach((contentTypeId) => {
+					allowedLookup[contentTypeId] = { ...allowedLookup[contentTypeId] };
+					allowedLookup[contentTypeId].shared = true;
+				});
+				setAllowedTypes(result);
+				setAllowedCreateTypes(allowedLookup);
+				const value: CreateDataSourcePickerData = {
+					path: allowedLookup[result[0]].createPaths?.[0] ?? '',
+					strategy: allowedLookup[result[0]].embedded ? 'embedded' : 'shared',
+					contentTypeId: result[0]
+				};
+				setValue(value);
+			});
 			return () => sub.unsubscribe();
 		} else {
 			const result = Object.keys(allowedCreateTypes);
@@ -941,12 +941,21 @@ function createAddMenuOptions({
 	}>;
 	itemPickerDataSourceData: ConsolidatedItemPickerData;
 	readonly: boolean;
-}): ReactNode[] {
+}): {
+	menuOptions: ReactNode[];
+	availableOptions: DataSourcePickerType[];
+} {
 	const { allowedCreateTypes, allowedBrowsePaths, allowedSearchPaths, allowedUploadPaths } = itemPickerDataSourceData;
 	const createAllowed = Object.keys(allowedCreateTypes).length > 0;
 	const menuOptions = [];
 
-	if (allowedSearchPaths.length > 0) {
+	const availableOptions: DataSourcePickerType[] = [];
+	if (allowedSearchPaths.length > 0) availableOptions.push('search');
+	if (allowedBrowsePaths.length > 0) availableOptions.push('browse');
+	if (allowedUploadPaths.length > 0) availableOptions.push('upload');
+	if (createAllowed) availableOptions.push('create');
+
+	if (availableOptions.includes('search')) {
 		menuOptions.push(
 			<MenuItem
 				key="search"
@@ -960,7 +969,7 @@ function createAddMenuOptions({
 			</MenuItem>
 		);
 	}
-	if (allowedBrowsePaths.length > 0) {
+	if (availableOptions.includes('browse')) {
 		menuOptions.push(
 			<MenuItem
 				key="browse"
@@ -974,7 +983,7 @@ function createAddMenuOptions({
 			</MenuItem>
 		);
 	}
-	if (allowedUploadPaths.length > 0) {
+	if (availableOptions.includes('upload')) {
 		menuOptions.push(
 			<MenuItem
 				key="upload"
@@ -1003,7 +1012,7 @@ function createAddMenuOptions({
 		);
 	}
 
-	return menuOptions;
+	return { menuOptions, availableOptions };
 }
 
 function showUploadDialog({
