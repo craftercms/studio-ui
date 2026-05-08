@@ -259,7 +259,7 @@ export function GuestGlobalStyles(props: GuestGlobalStylesProps) {
 				<Global styles={typographyStyles} />
 			</>
 		),
-		[styles]
+		[styles, formatMessage]
 	);
 }
 
