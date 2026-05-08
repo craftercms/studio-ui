@@ -151,10 +151,10 @@ export function GuestGlobalStyles(props: GuestGlobalStylesProps) {
 								[`&.${moveModeClass} [${eventCaptureOverlayAttribute}]`]: {
 									background: overlayBackgroundColor,
 									'&::before': {
-										content: formatMessage({
+										content: `"${formatMessage({
 											id: 'globalStyles.contentHidden',
-											defaultMessage: '"Content hidden to enable dragging."'
-										})
+											defaultMessage: 'Content hidden to enable dragging.'
+										})}"`
 									},
 									'> *': {
 										visibility: 'hidden'
@@ -162,10 +162,10 @@ export function GuestGlobalStyles(props: GuestGlobalStylesProps) {
 								},
 								[`&.${iceBypassKeyClass} [${eventCaptureOverlayAttribute}]:hover::before`]: {
 									backgroundColor: overlayBackgroundColor,
-									content: formatMessage({
+									content: `"${formatMessage({
 										id: 'globalStyles.turnOffEditMode',
-										defaultMessage: '"Turn off edit mode to interact with this element."'
-									})
+										defaultMessage: 'Turn off edit mode to interact with this element.'
+									})}"`
 								},
 								[`[${eventCaptureOverlayAttribute}]`]: {
 									position: 'relative',
@@ -189,10 +189,10 @@ export function GuestGlobalStyles(props: GuestGlobalStylesProps) {
 										color: '#fff',
 										display: 'inline-block',
 										padding: '10px',
-										content: formatMessage({
+										content: `"${formatMessage({
 											id: 'globalStyles.emptyTarget',
-											defaultMessage: '"Empty components target. Drag items here to add."'
-										}),
+											defaultMessage: 'Empty components target. Drag items here to add.'
+										})}"`,
 										fontWeight: 'bold'
 									}
 								},
@@ -205,10 +205,10 @@ export function GuestGlobalStyles(props: GuestGlobalStylesProps) {
 										color: '#fff',
 										display: 'inline-block',
 										padding: '10px',
-										content: formatMessage({
+										content: `"${formatMessage({
 											id: 'globalStyles.clickToAddContent',
-											defaultMessage: '"Click to add content."'
-										}),
+											defaultMessage: 'Click to add content.'
+										})}"`,
 										fontWeight: 'bold'
 									}
 								}
