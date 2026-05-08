@@ -291,7 +291,6 @@ export async function repeatGroupValidator(
 	});
 
 	const results = await Promise.all(validationPromises);
-	// let isValid = true;
 	results.forEach((result) => {
 		if (!result.isValid) {
 			isValid = false;
@@ -429,9 +428,9 @@ export async function nodeSelectorValidator(
 		if (!contentType) return;
 		const fields = contentType.fields;
 		if (!fields) return;
-		Object.values(fields).forEach((field) => {
-			const value = component[field.id];
-			const validationPromise = validateFieldValue(field, value, meta);
+		Object.values(fields).forEach((embeddedField) => {
+			const value = component[embeddedField.id];
+			const validationPromise = validateFieldValue(embeddedField, value, meta);
 			validationPromises.push(validationPromise);
 		});
 	});
