@@ -32,7 +32,9 @@ export function useArchetypes() {
 			const archetypes = {};
 
 			configDOM
-				.querySelectorAll('[id="craftercms.components.ContentTypeManagement"] > configuration > objectTypes')
+				.querySelectorAll(
+					'[id="craftercms.components.ContentTypeManagement"] > configuration > objectTypes > objectType'
+				)
 				.forEach((tag) => {
 					const descriptor = tag.querySelector('descriptor');
 					// Parent archetypes must be defined before children so that they can be extended properly

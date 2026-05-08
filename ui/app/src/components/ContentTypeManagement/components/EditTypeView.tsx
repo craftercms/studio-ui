@@ -780,9 +780,9 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 				const contentTypesConfig = contentTypesConfigDOM ? deserialize(contentTypesConfigDOM).configuration : null;
 				if (contentTypesConfig) {
 					setConfig({
-						controls: parseConfigPlugins(contentTypesConfig.controls),
+						controls: parseConfigPlugins(asArray(contentTypesConfig.controls?.control) ?? []),
 						controlExclusions: asArray(contentTypesConfig.controlExclusions),
-						dataSources: parseConfigPlugins(contentTypesConfig.datasources),
+						dataSources: parseConfigPlugins(asArray(contentTypesConfig.dataSources?.dataSource) ?? []),
 						dataSourceExclusions: asArray(contentTypesConfig.dataSourceExclusions)
 					});
 				}
