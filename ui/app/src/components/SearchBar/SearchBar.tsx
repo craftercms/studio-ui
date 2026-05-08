@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { CSSProperties, ElementType, Ref, useRef, useState, forwardRef } from 'react';
+import React, { CSSProperties, ElementType, forwardRef, Ref, useState } from 'react';
 import IconButton from '@mui/material/IconButton';
 import InputBase, { inputBaseClasses, InputBaseProps } from '@mui/material/InputBase';
 import SearchIcon from '@mui/icons-material/SearchRounded';
@@ -54,7 +54,7 @@ export interface SearchBarProps {
 	onChange(value: string, event: React.SyntheticEvent): void;
 	onKeyPress?(key: string): void;
 	onKeyDown?: InputBaseProps['onKeyDown'];
-	onActionButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>, input: HTMLInputElement): void;
+	onActionButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>, input: HTMLInputElement | null): void;
 	onDecoratorButtonClick?(): void;
 }
 
