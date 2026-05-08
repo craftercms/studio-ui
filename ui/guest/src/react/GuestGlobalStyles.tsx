@@ -35,6 +35,7 @@ import { Theme } from '@mui/material/styles';
 import { deepmerge } from '@mui/utils';
 import { DeepPartial } from '@craftercms/studio-ui/models/DeepPartial';
 import { typographyStyles } from '@craftercms/studio-ui/components/GlobalStyles/typography';
+import { useIntl } from 'react-intl';
 
 export type GlobalStyleKeys =
 	| 'craftercms-asset-uploader-mask-container'
@@ -61,6 +62,7 @@ const overlayBackgroundColor = 'rgba(0, 0, 0, .4)';
 
 export function GuestGlobalStyles(props: GuestGlobalStylesProps) {
 	const { styles } = props;
+	const { formatMessage } = useIntl();
 	return useMemo(
 		() => (
 			<>
@@ -149,7 +151,10 @@ export function GuestGlobalStyles(props: GuestGlobalStylesProps) {
 								[`&.${moveModeClass} [${eventCaptureOverlayAttribute}]`]: {
 									background: overlayBackgroundColor,
 									'&::before': {
-										content: '"Content hidden to enable dragging."'
+										content: formatMessage({
+											id: 'globalStyles.contentHidden',
+											defaultMessage: '"Content hidden to enable dragging."'
+										})
 									},
 									'> *': {
 										visibility: 'hidden'
@@ -157,7 +162,10 @@ export function GuestGlobalStyles(props: GuestGlobalStylesProps) {
 								},
 								[`&.${iceBypassKeyClass} [${eventCaptureOverlayAttribute}]:hover::before`]: {
 									backgroundColor: overlayBackgroundColor,
-									content: '"Turn off edit mode to interact with this element."'
+									content: formatMessage({
+										id: 'globalStyles.turnOffEditMode',
+										defaultMessage: '"Turn off edit mode to interact with this element."'
+									})
 								},
 								[`[${eventCaptureOverlayAttribute}]`]: {
 									position: 'relative',
@@ -181,7 +189,10 @@ export function GuestGlobalStyles(props: GuestGlobalStylesProps) {
 										color: '#fff',
 										display: 'inline-block',
 										padding: '10px',
-										content: '"Empty component dropzone. Drag new or existing content items here to add them"',
+										content: formatMessage({
+											id: 'globalStyles.emptyTarget',
+											defaultMessage: '"Empty components target. Drag items here to add."'
+										}),
 										fontWeight: 'bold'
 									}
 								},
@@ -194,7 +205,10 @@ export function GuestGlobalStyles(props: GuestGlobalStylesProps) {
 										color: '#fff',
 										display: 'inline-block',
 										padding: '10px',
-										content: '"Click to add content."',
+										content: formatMessage({
+											id: 'globalStyles.clickToAddContent',
+											defaultMessage: '"Click to add content."'
+										}),
 										fontWeight: 'bold'
 									}
 								}
