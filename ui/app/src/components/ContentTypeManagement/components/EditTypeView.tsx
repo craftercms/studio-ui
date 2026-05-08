@@ -780,9 +780,9 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 				const contentTypesConfig = contentTypesConfigDOM ? deserialize(contentTypesConfigDOM).configuration : null;
 				if (contentTypesConfig) {
 					setConfig({
-						controls: parseConfigPlugins(asArray(contentTypesConfig.controls?.control) ?? []),
+						controls: parseConfigPlugins(asArray(contentTypesConfig.controls?.control)),
 						controlExclusions: asArray(contentTypesConfig.controlExclusions),
-						dataSources: parseConfigPlugins(asArray(contentTypesConfig.dataSources?.dataSource) ?? []),
+						dataSources: parseConfigPlugins(asArray(contentTypesConfig.dataSources?.dataSource)),
 						dataSourceExclusions: asArray(contentTypesConfig.dataSourceExclusions)
 					});
 				}
@@ -1244,7 +1244,7 @@ async function validityAtomsHaveErrors(
 function parseConfigPlugins(
 	plugins: { descriptor?: DescriptorContentType; icon: { id: string }; id: string }[]
 ): LookupTable<{ descriptor?: DescriptorContentType; icon: { id: string }; id: string }> {
-	if (!plugins) return;
+	if (!plugins) return {};
 	const parsedPlugins = asArray(plugins).map((plugin) => {
 		if (plugin.descriptor) {
 			const fields = Object.values(plugin.descriptor.fields ?? {})?.map((field) => {
