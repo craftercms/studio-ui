@@ -130,6 +130,8 @@ export function AwsFileUpload(props: AwsFileUploadProps) {
 							<Box
 								component="iframe"
 								src={value.url}
+								title={formatMessage({ defaultMessage: 'File preview' })}
+								sandbox="allow-same-origin"
 								sx={{
 									width: '100%',
 									maxHeight: 250,
