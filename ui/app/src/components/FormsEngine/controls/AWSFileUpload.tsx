@@ -108,6 +108,7 @@ export function AwsFileUpload(props: AwsFileUploadProps) {
 							<Box
 								component="img"
 								src={value.url}
+								alt={value.key}
 								sx={{
 									maxWidth: '100%',
 									maxHeight: 220
