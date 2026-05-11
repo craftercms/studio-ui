@@ -59,7 +59,11 @@ export function AwsFileUpload(props: AwsFileUploadProps) {
 				})
 			);
 		} else {
-			const item = result.successful[0].response.body.item;
+			const item = result.successful[0]?.response?.body?.item;
+			if (!item) {
+				// This is to guard against nullish `response.body.item`. Visual feedback is handled by SingleFileUpload component.
+				return;
+			}
 			const awsFile: AwsFile = {
 				key: item.name,
 				bucket: item.bucketName ? `${item.bucketName}${item.prefix ? `/${item.prefix}` : ''}` : (item.bucket ?? ''),
