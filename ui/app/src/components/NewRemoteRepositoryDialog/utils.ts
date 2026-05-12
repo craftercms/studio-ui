@@ -44,7 +44,7 @@ export const inputsInitialState: Partial<SiteState> & { remoteName: string; remo
 	expanded: {
 		basic: false,
 		token: false,
-		key: false
+		private_key: false
 	},
 	repoAuthentication: 'none',
 	repoUsername: '',

@@ -48,7 +48,7 @@ const siteInitialState: SiteState = {
 	expanded: {
 		basic: false,
 		token: false,
-		key: false
+		private_key: false
 	},
 	showIncompatible: true,
 	gitBranch: '',

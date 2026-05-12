@@ -60,7 +60,7 @@ export interface SiteState extends SiteBaseState {
 	expanded: {
 		basic: boolean;
 		token: boolean;
-		key: boolean;
+		private_key: boolean;
 	};
 	showIncompatible: boolean;
 
