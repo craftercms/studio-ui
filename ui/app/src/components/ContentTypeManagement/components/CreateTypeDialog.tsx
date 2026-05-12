@@ -233,7 +233,7 @@ function suggestTypeId(label: string): string {
 		sanitized = `_${sanitized}`;
 	}
 
-	let camelized = camelize(sanitized.replace(/\s/g, '-'));
+	let camelized = camelize(sanitized);
 	camelized = camelized.charAt(0).toLowerCase() + camelized.substring(1);
 	return transformId(camelized);
 }
