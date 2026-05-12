@@ -43,8 +43,15 @@ export function isTextContent(mimeType: string): boolean {
 	);
 }
 
+const blackListMediaTypes = [
+	'video/x-msvideo' // .avi files are not supported by browsers and the video player can't play them.
+];
+
 export function isMediaContent(mimeType: string) {
-	return /^image\//.test(mimeType) || /^video\//.test(mimeType) || /^audio\//.test(mimeType);
+	return (
+		(/^image\//.test(mimeType) || /^video\//.test(mimeType) || /^audio\//.test(mimeType)) &&
+		!blackListMediaTypes.includes(mimeType)
+	);
 }
 
 export function isPreviewable(item: Pick<ContentItem, 'mimeType' | 'systemType'>): boolean {

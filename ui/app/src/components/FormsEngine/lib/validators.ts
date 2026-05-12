@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { ContentTypeField } from '../../../models/ContentType';
+import ContentType, { type ContentTypeField } from '../../../models/ContentType';
 import type { BuiltInControlType } from './controlMap';
 import LookupTable from '../../../models/LookupTable';
 import { XmlKeys } from './formConsts';
@@ -22,11 +22,10 @@ import { defineMessage, type MessageDescriptor } from 'react-intl';
 import type { FormatXMLElementFn, PrimitiveType } from 'intl-messageformat';
 import { nnou, nou } from '../../../utils/object';
 import { checkPathExistence } from '../../../services/content';
-import { getBasePath, computePathFromFileName } from './formUtils';
+import { computePathFromFileName, getBasePath, getPropertyValue } from './formUtils';
 import { firstValueFrom } from 'rxjs';
 import { isPagePath, withIndex } from '../../../utils/path';
 import { FormsEngineItemMetaContextProps } from './formsEngineContext';
-import { getPropertyValue } from './formUtils';
 import { validateDatePopulateExpression } from './controlHelpers';
 import type { DescriptorControlType } from '../../ContentTypeManagement/controlMap';
 import type { RepeatItem } from '../controls/Repeat';
@@ -38,6 +37,7 @@ interface ValidatorMetaData {
 	siteId: string;
 	fileName: string;
 	itemMeta: FormsEngineItemMetaContextProps;
+	contentTypesById?: LookupTable<ContentType>;
 }
 type ValidatorFunctionDef = (
 	field: ContentTypeField,
@@ -67,8 +67,8 @@ export const validatorsMap: Partial<Record<BuiltInControlType | DescriptorContro
 	'link-textarea': undefined,
 	'linked-dropdown': undefined,
 	'locale-selector': undefined,
-	'node-selector': (field, currentValue, messages) =>
-		nodeSelectorValidator(field, currentValue as NodeSelectorItem[], messages),
+	'node-selector': (field, currentValue, messages, meta) =>
+		nodeSelectorValidator(field, currentValue as NodeSelectorItem[], messages, meta),
 	'numeric-input': (field, currentValue, messages) => numericInputValidator(field, currentValue as number, messages),
 	'page-nav-order': undefined,
 	rte: undefined,
@@ -291,7 +291,6 @@ export async function repeatGroupValidator(
 	});
 
 	const results = await Promise.all(validationPromises);
-	// let isValid = true;
 	results.forEach((result) => {
 		if (!result.isValid) {
 			isValid = false;
@@ -389,32 +388,63 @@ export function numericInputValidator(
 	return isValid;
 }
 
-export function nodeSelectorValidator(
+export async function nodeSelectorValidator(
 	field: ContentTypeField,
-	currentValue: NodeSelectorItem[],
-	messages: FieldValidityState['messages']
-): boolean {
+	currentValue: Array<NodeSelectorItem>,
+	messages: FieldValidityState['messages'],
+	meta: ValidatorMetaData
+): Promise<boolean> {
 	let isValid = true;
-	const minCount = field.validations?.minCount?.value ?? 0;
-	const maxCount = field.validations?.maxCount?.value ?? Infinity;
-	const selectedCount = Array.isArray(currentValue) ? currentValue.length : 0;
-	if (selectedCount < minCount) {
+	if (!Array.isArray(currentValue)) return isValid;
+	// This set is used to keep track of visited content items during validation to prevent infinite loops in case of circular references.
+	const visited = new Set<string>();
+	const minSize: number = getPropertyValue(field.properties, 'minSize') as number;
+	const maxSize: number = getPropertyValue(field.properties, 'maxSize') as number;
+	const embeddedContent = currentValue.filter((item) => nnou(item.component));
+
+	// Validate node selector restrictions (min/max occurrences)
+	if (nnou(minSize) && currentValue.length < minSize) {
+		messages?.push([defineMessage({ defaultMessage: 'At least {minSize} item(s) are required.' }), { minSize }]);
 		isValid = false;
-		messages.push([
-			defineMessage({
-				defaultMessage: `Please select at least the minimum required items ({minCount}).`
-			}),
-			{ minCount }
-		]);
 	}
-	if (selectedCount > maxCount) {
+	if (nnou(maxSize) && currentValue.length > maxSize) {
+		messages?.push([defineMessage({ defaultMessage: 'No more than {maxSize} item(s) are allowed.' }), { maxSize }]);
 		isValid = false;
-		messages.push([
-			defineMessage({
-				defaultMessage: `Please select no more than the maximum allowed items ({maxCount}).`
-			}),
-			{ maxCount }
-		]);
+	}
+
+	// If there are no embedded items, return validation result (items validation is not needed if there are no items)
+	if (embeddedContent.length === 0) return isValid;
+	if (!meta.contentTypesById) return isValid;
+
+	const validationPromises: Promise<FieldValidityState>[] = [];
+
+	// Validate fields of each embedded item
+	embeddedContent.forEach(({ component }) => {
+		const contentTypeId = component['content-type'] as string;
+		const objectId = component['objectId'] as string;
+		if (visited.has(objectId)) return; // prevent circular validation
+		visited.add(objectId);
+		const contentType = meta.contentTypesById[contentTypeId];
+		if (!contentType) return;
+		const fields = contentType.fields;
+		if (!fields) return;
+		Object.values(fields).forEach((embeddedField) => {
+			const value = component[embeddedField.id];
+			const validationPromise = validateFieldValue(embeddedField, value, meta);
+			validationPromises.push(validationPromise);
+		});
+	});
+
+	const results = await Promise.all(validationPromises);
+	let invalidEmbedded = false;
+	results.forEach((result) => {
+		if (!result.isValid) {
+			invalidEmbedded = true;
+			isValid = false;
+		}
+	});
+	if (invalidEmbedded) {
+		messages.push(defineMessage({ defaultMessage: 'One or more embedded content items are invalid.' }));
 	}
 	return isValid;
 }

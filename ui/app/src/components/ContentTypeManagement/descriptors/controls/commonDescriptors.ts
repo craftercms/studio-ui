@@ -160,14 +160,14 @@ export const typeBasicDetailsDescriptor: DescriptorContentType = {
 		createVirtualSection({
 			id: 'rendering',
 			title: defineMessage({ defaultMessage: 'Rendering' }),
-			fields: ['configuration', 'hasJsController', 'displayTemplate', 'isHeadless']
-		})
+			fields: ['hasJsController', 'displayTemplate', 'isHeadless']
+		}),
 		// This section and paths field won't be available until 'config.xml' is removed from the content type.
-		/* createVirtualSection({
+		createVirtualSection({
 			id: 'allowedDestinations',
 			title: defineMessage({ defaultMessage: 'Allowed Destinations' }),
-			fields: ['paths']
-		})*/
+			fields: ['paths', 'delete-dependencies', 'copy-dependencies', 'previewable']
+		})
 	],
 	fields: {
 		id: {
@@ -272,27 +272,48 @@ export const typeBasicDetailsDescriptor: DescriptorContentType = {
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
-		configuration: {
-			id: 'configuration',
-			type: 'type-configuration',
-			name: defineMessage({ defaultMessage: 'Configuration' }),
-			description: '',
-			helpText: '',
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		}
 		/* This field is for the destination paths of the content type. It won't be available until 'config.xml' is removed
 		from the content type. Currently, `config.xml` can't be removed yet, since the back end still uses properties like
 		`form`, `thumbnail`, even `paths`. */
-		/* paths: {
+		paths: {
 			id: 'paths',
 			type: 'type-destination-paths-selector',
 			name: defineMessage({ defaultMessage: 'Paths' }),
 			description: '',
 			helpText: '',
-			defaultValue: '{ "includes": [], "excludes": [] }',
+			defaultValue: {
+				includes: { pattern: [] },
+				excludes: { pattern: [] }
+			},
 			validations: immutableEmptyObject
-		}*/
+		},
+		'delete-dependencies': {
+			id: 'delete-dependencies',
+			type: 'delete-dependencies',
+			name: defineMessage({ defaultMessage: 'Delete Dependencies' }),
+			description: '',
+			helpText: '',
+			defaultValue: { 'delete-dependency': [] },
+			validations: immutableEmptyObject
+		},
+		'copy-dependencies': {
+			id: 'copy-dependencies',
+			type: 'copy-dependencies',
+			name: defineMessage({ defaultMessage: 'Copy Dependencies' }),
+			description: '',
+			helpText: '',
+			defaultValue: { 'copy-dependency': [] },
+			validations: immutableEmptyObject
+		},
+		previewable: {
+			id: 'previewable',
+			type: 'boolean',
+			name: defineMessage({ defaultMessage: 'Previewable' }),
+			description: undefined,
+			helpText: '',
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		}
 	}
 };
 

@@ -24,6 +24,7 @@ import { deserialize, unescapeXml } from '../../../utils/xml';
 import type { DescriptorControlType } from '../../ContentTypeManagement/controlMap';
 import { nnou } from '../../../utils/object';
 import { v4 as uuid } from 'uuid';
+import { Matcher } from 'path-expression-matcher';
 
 export type ValueRetriever<T = unknown> = (value: unknown, field: ContentTypeField) => T;
 
@@ -69,7 +70,7 @@ export const valueRetrieverLookup: Record<BuiltInControlType | DescriptorControl
 	range: (value) => objectExtractor(value as string),
 	'type-js-controller-selector': textFieldExtractor,
 	'key-value-map': (value) => objectArrayExtractor(value as string),
-	'type-destination-paths-selector': (value) => objectExtractor(value as string),
+	'type-destination-paths-selector': null,
 	'path-with-macro-creator': textFieldExtractor,
 	'merge-strategy-selector': textFieldExtractor,
 	'datasource:image': (value) => stringArrayExtractor(value as string),
@@ -82,11 +83,12 @@ export const valueRetrieverLookup: Record<BuiltInControlType | DescriptorControl
 	'datasource:audio:singleSelection': textFieldExtractor,
 	'datasource:item:singleSelection': textFieldExtractor,
 	variable: textFieldExtractor,
-	'type-configuration': textFieldExtractor,
 	'date-time-expression-input': textFieldExtractor,
 	'input-email': textFieldExtractor,
 	'input-link': textFieldExtractor,
-	'input-phone': textFieldExtractor
+	'input-phone': textFieldExtractor,
+	'delete-dependencies': null,
+	'copy-dependencies': null
 };
 
 /**
@@ -173,7 +175,9 @@ export function deserializeContentDoc(contentDom: XMLDocument | Element): Lookup
 		// Ideally, we would extract all collection types (item selector, repeat) that have
 		// this sort of syntax to avoid false positives.
 		// e.g.collectionFieldIds.map((fieldId) => `${rootTagName}.${fieldId}.item`).includes(jPath);
-		isArray: (tagName: string, jPath: string) => jPath.endsWith('.item')
+		isArray: (tagName: string, jPathOrMatcher: string | Matcher) => {
+			return typeof jPathOrMatcher === 'string' && jPathOrMatcher.endsWith('.item');
+		}
 	})[(contentDom as XMLDocument).documentElement?.tagName ?? (contentDom as Element).tagName];
 }
 

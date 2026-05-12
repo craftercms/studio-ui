@@ -92,11 +92,12 @@ export const valueSerializersLookup: Record<BuiltInControlType | DescriptorContr
 	'datasource:audio:singleSelection': undefined,
 	'datasource:item:singleSelection': undefined,
 	variable: undefined,
-	'type-configuration': undefined,
 	'date-time-expression-input': undefined,
 	'input-email': undefined,
 	'input-link': undefined,
-	'input-phone': undefined
+	'input-phone': undefined,
+	'delete-dependencies': (field, value) => (value == null ? undefined : prepareObject(field, value as object)),
+	'copy-dependencies': (field, value) => (value == null ? undefined : prepareObject(field, value as object))
 };
 
 /**

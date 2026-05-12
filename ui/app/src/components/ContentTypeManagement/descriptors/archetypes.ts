@@ -43,6 +43,7 @@ export function initializeTypeForCreate(
 		mergeStrategy: 'inherit-levels',
 		...descriptor,
 		...mixin,
+		previewable: archetype === 'page',
 		fields: {
 			...(descriptor?.fields ?? {}),
 			...mixin?.fields

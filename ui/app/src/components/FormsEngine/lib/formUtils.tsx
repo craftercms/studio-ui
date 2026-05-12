@@ -172,6 +172,8 @@ export const displayFormBeingSavedSnack = (dispatch: ReduxDispatch, formatMessag
 export const getTargetHeight = (isDialog: boolean, isFullScreen: boolean, theme: Theme) =>
 	isDialog ? `calc(100vh - ${isFullScreen ? 0 : theme.spacing(4)})` : '100%';
 
+export type ValidatorsData = { siteId: string; contentTypesById: LookupTable<ContentType> };
+
 /**
  * Creates the value and validity atoms for a give field.
  **/
@@ -181,8 +183,7 @@ export function createFieldAtoms(
 	formContextRef: RefObject<
 		Pick<StableFormContextProps, 'fieldUpdates$' | 'changedFieldIds' | 'originalValues' | 'atoms' | 'itemMeta'>
 	>,
-	// TODO: Consider a more comprehensive context for validators
-	siteId?: string
+	validatorsData?: ValidatorsData
 ): [PrimitiveAtom<unknown>, Atom<Promise<FieldValidityState>>] {
 	let isInitialization = true;
 	const valueAtom = atom(initialValue);
@@ -221,7 +222,8 @@ export function createFieldAtoms(
 			formContextRef.current.fieldUpdates$.next(field.id);
 		}
 		return validateFieldValue(field, value, {
-			siteId,
+			siteId: validatorsData?.siteId,
+			contentTypesById: validatorsData?.contentTypesById,
 			itemMeta: formContextRef.current.itemMeta as FormsEngineItemMetaContextProps,
 			fileName: formContextRef.current.atoms.fileName ? get(formContextRef.current.atoms.fileName) : ''
 		});
@@ -479,7 +481,7 @@ export function setFieldAtoms(
 	fieldId: string,
 	atomsTarget: FormsEngineAtoms,
 	value: unknown,
-	siteId?: string
+	validatorsData?: ValidatorsData
 ): void {
 	let field = fieldLookup[fieldId];
 	if (!field) {
@@ -504,7 +506,7 @@ export function setFieldAtoms(
 			return;
 		}
 	}
-	const [valueAtom, validityAtom] = createFieldAtoms(field, value, stableFormContextRef, siteId);
+	const [valueAtom, validityAtom] = createFieldAtoms(field, value, stableFormContextRef, validatorsData);
 	atomsTarget.valueByFieldId[fieldId] = valueAtom;
 	atomsTarget.validationByFieldId[fieldId] = validityAtom;
 }
@@ -799,6 +801,8 @@ export function prepareEmbeddedItemForm(props: {
 	parentStackData: StableFormContextProps;
 	stableFormContextRef: RefObject<StableFormContextProps>;
 	parentPathInSite: string;
+	siteId: string;
+	contentTypesById?: LookupTable<ContentType>;
 }): { atoms: FormsEngineAtoms; values: LookupTable<unknown>; itemMeta: FormsEngineItemMetaContextProps } {
 	const {
 		username,
@@ -809,7 +813,9 @@ export function prepareEmbeddedItemForm(props: {
 		parentPathInSite,
 		locked,
 		lockError,
-		affectedPackages
+		affectedPackages,
+		siteId,
+		contentTypesById
 	} = props;
 	const lockResultAtom = atom<FormsEngineEditContextProps>({
 		locked,
@@ -823,10 +829,16 @@ export function prepareEmbeddedItemForm(props: {
 		fileName: atom(update.modelId)
 	});
 	const values = update.values;
+	const validatorsData = { siteId, contentTypesById };
 	Object.entries(values).forEach(([fieldId, value]) => {
 		// System fields (e.g. content-type, display-template, etc.) are not part of the content type, but are part of the content object. We don't need atoms or validity checks for these.
 		if (!contentType.fields[fieldId]) return;
-		const [valueAtom, validityAtom] = createFieldAtoms(contentType.fields[fieldId], value, stableFormContextRef);
+		const [valueAtom, validityAtom] = createFieldAtoms(
+			contentType.fields[fieldId],
+			value,
+			stableFormContextRef,
+			validatorsData
+		);
 		atoms.valueByFieldId[fieldId] = valueAtom;
 		atoms.validationByFieldId[fieldId] = validityAtom;
 	});

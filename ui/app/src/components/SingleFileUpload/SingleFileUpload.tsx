@@ -96,6 +96,7 @@ export interface SingleFileUploadProps {
 	customFileName?: string;
 	fileTypes?: string[];
 	onFileAdded?: (file: UppyFile<Meta, Body>, uppy: Uppy, callback: () => void) => void;
+	method?: 'PUT' | 'POST';
 	onUploadStart?(): void;
 	onComplete?(result: FileUploadResult): void;
 	onError?({ file, error, response }): void;
@@ -112,7 +113,8 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 		customFileName,
 		fileTypes,
 		path,
-		onFileAdded: onFileAddedProp
+		onFileAdded: onFileAddedProp,
+		method = 'PUT'
 	} = props;
 	const { formatMessage } = useIntl();
 	const dispatch = useDispatch();
@@ -206,7 +208,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 			})
 			.use(XHRUpload, {
 				endpoint: url,
-				method: 'PUT',
+				method,
 				formData: true,
 				fieldName: 'file',
 				timeout: upload.timeout,
@@ -223,7 +225,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 			instance.cancelAll();
 			instance.destroy();
 		};
-	}, [uppy, formTarget, url, upload.timeout, path, site, formatMessage]);
+	}, [uppy, formTarget, url, upload.timeout, path, site, formatMessage, method]);
 
 	useEffect(() => {
 		const onUploadSuccess = () => {

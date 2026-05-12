@@ -26,6 +26,7 @@ import { ContentTypeManagementConfig } from './EditTypeView';
 export interface PickDataSourceDialogProps extends EnhancedDialogProps {
 	type: ContentType;
 	onInsert: PickFieldDialogProps['onInsert'];
+	configDataSources?: ContentTypeManagementConfig['dataSources'];
 	configDescriptors?: DescriptorContentType[];
 	dataSourceExclusions: ContentTypeManagementConfig['controlExclusions'];
 }
@@ -33,20 +34,24 @@ export interface PickDataSourceDialogProps extends EnhancedDialogProps {
 const types = Object.values(dataSourceDescriptors).sort((a, b) => (a?.name > b?.name ? 1 : -1));
 
 export function PickDataSourceDialog(props: PickDataSourceDialogProps) {
-	const { configDescriptors, dataSourceExclusions, ...rest } = props;
+	const { configDataSources, configDescriptors, dataSourceExclusions, ...rest } = props;
 
 	// Before rendering the PickFieldDialog we need to do two things:
 	// 1. Filter out the dataSources that are in the dataSourceExclusions list.
-	// 2. Add the configDescriptors (plugins) to the list of datasources.
+	// 2. Filter out OOB datasources not in the configuration list.
+	// 3. Add the configDescriptors (plugins) to the list of datasources.
 	const typesFullList = [
-		...types.filter((type) => !(dataSourceExclusions ?? []).includes(type.id)),
-		...configDescriptors
+		...types.filter((type) => {
+			return configDataSources?.[type.id] && !(dataSourceExclusions ?? []).includes(type.id);
+		}),
+		...(configDescriptors ?? [])
 	];
 
 	return (
 		<PickFieldDialog
 			{...rest}
 			title={<FormattedMessage defaultMessage="Insert Data Source" />}
+			configLookup={configDataSources}
 			typesFullList={typesFullList}
 			typesCurrentList={props.type.dataSources}
 		/>
