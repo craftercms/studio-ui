@@ -20,18 +20,18 @@ import IconButton from '@mui/material/IconButton';
 import NavigateBeforeRoundedIcon from '@mui/icons-material/NavigateBeforeRounded';
 import NavigateNextRoundedIcon from '@mui/icons-material/NavigateNextRounded';
 import { useIntl } from 'react-intl';
-import { SxProps } from '@mui/system';
 import { Theme } from '@mui/material';
+import { SystemStyleObject } from '@mui/system/styleFunctionSx/styleFunctionSx';
 
 interface PluginMediaCarouselProps {
 	items: ReactNode[];
 	initialIndex?: number;
 	onChangeItem?: (itemIndex: number) => void;
-	sx?: SxProps<Theme>;
+	sx?: SystemStyleObject<Theme>;
 }
 
 export const PluginMediaCarousel = forwardRef((props: PluginMediaCarouselProps, ref) => {
-	const { items, initialIndex = 0, onChangeItem, sx = {} } = props;
+	const { items, initialIndex = 0, onChangeItem, sx } = props;
 	const [index, setIndex] = useState(initialIndex);
 	const { formatMessage } = useIntl();
 
@@ -66,15 +66,17 @@ export const PluginMediaCarousel = forwardRef((props: PluginMediaCarouselProps, 
 
 	return (
 		<Box
-			sx={{
-				position: 'relative',
-				width: '100%',
-				overflow: 'hidden',
-				'& .navigate-button': { visibility: 'hidden' },
-				'&:hover .navigate-button': { visibility: 'visible' },
-				'& .navigate-button:focus-within': { visibility: 'visible' },
-				...sx
-			}}
+			sx={[
+				{
+					position: 'relative',
+					width: '100%',
+					overflow: 'hidden',
+					'& .navigate-button': { visibility: 'hidden' },
+					'&:hover .navigate-button': { visibility: 'visible' },
+					'& .navigate-button:focus-within': { visibility: 'visible' }
+				},
+				sx
+			]}
 		>
 			{items?.length > 0 && (
 				<>
