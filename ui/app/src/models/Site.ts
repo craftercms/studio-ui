@@ -45,7 +45,7 @@ export interface SiteState extends SiteBaseState {
 	useRemote: boolean;
 	createAsOrphan: boolean;
 	repoUrl: string;
-	repoAuthentication: 'none' | 'basic' | 'token' | 'key';
+	repoAuthentication: 'none' | 'basic' | 'token' | 'private_key';
 	repoRemoteBranch: string;
 	sandboxBranch: string;
 	repoRemoteName: string;

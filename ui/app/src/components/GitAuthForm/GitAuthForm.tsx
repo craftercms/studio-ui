@@ -185,7 +185,7 @@ function AuthFields(props: AuthFieldsProps) {
 					}}
 				/>
 			)}
-			{type === 'key' && (
+			{type === 'private_key' && (
 				<TextField
 					id="repoKey"
 					name="repoKey"
