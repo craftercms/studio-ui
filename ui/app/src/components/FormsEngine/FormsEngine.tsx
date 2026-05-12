@@ -373,7 +373,7 @@ function FormBootstrap(props: FormsEngineProps) {
 			const xmlDoc = fromString(parentStackData.itemMeta.contentXml);
 			const fieldId = repeat.fieldId;
 			const index = repeat.index ?? 0;
-			const element = xmlDoc.querySelector(`:scope > ${fieldId}`).children[index];
+			const element = xmlDoc.querySelector(`:scope > ${fieldId}`)?.children[index];
 			const contentObject =
 				(parentStackData.itemMeta.contentObject[fieldId] as { item: Array<LookupTable<unknown>> }).item?.[index] ?? {};
 
