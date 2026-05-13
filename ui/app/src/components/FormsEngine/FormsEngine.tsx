@@ -372,10 +372,10 @@ function FormBootstrap(props: FormsEngineProps) {
 
 			const xmlDoc = fromString(parentStackData.itemMeta.contentXml);
 			const fieldId = repeat.fieldId;
-			const index = repeat.index;
-			const element = xmlDoc.querySelector(`:scope > ${fieldId}`).children[index];
-			const contentObject = (parentStackData.itemMeta.contentObject[fieldId] as { item: Array<LookupTable<unknown>> })
-				.item[index];
+			const index = repeat.index ?? 0;
+			const element = xmlDoc.querySelector(`:scope > ${fieldId}`)?.children[index];
+			const contentObject =
+				(parentStackData.itemMeta.contentObject[fieldId] as { item: Array<LookupTable<unknown>> }).item?.[index] ?? {};
 
 			initializeState(atoms, values, {
 				id: parentId,
@@ -384,7 +384,7 @@ function FormBootstrap(props: FormsEngineProps) {
 				pathInSite: parentPathInSite,
 				contentType: parentContentType,
 				contentObject,
-				contentXml: element.outerHTML
+				contentXml: element?.outerHTML ?? ''
 			});
 		} else if (
 			// An embedded component is being opened as a stacked form.
