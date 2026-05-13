@@ -25,6 +25,7 @@ import { XMLBuilder, XmlBuilderOptions } from 'fast-xml-parser';
 import type { DescriptorControlType } from '../../ContentTypeManagement/controlMap';
 import { nnou } from '../../../utils/object';
 import { escapeXml } from '../../../utils/xml';
+import { AwsFile } from '../controls/AWSFileUpload';
 
 const attributeNamePrefix = '@:';
 const cdataPropName = '__cdata__';
@@ -38,7 +39,7 @@ export type ValueSerializer<T = unknown> = (
 
 export const valueSerializersLookup: Record<BuiltInControlType | DescriptorControlType, ValueSerializer | undefined> = {
 	'auto-filename': undefined,
-	'aws-file-upload': undefined,
+	'aws-file-upload': (field, value) => prepareAwsFile(field, value as AwsFile),
 	'checkbox-group': prepareArray,
 	checkbox: undefined,
 	boolean: undefined,
@@ -144,7 +145,7 @@ type XmlNuancedArrayFormat<T = unknown> = {
 };
 
 function prepareString(field: ContentTypeField, value: string): string {
-	const escapeContent = (field.properties?.escapeContent?.value as boolean) ?? false;
+	const escapeContent = (field?.properties?.escapeContent?.value as boolean) ?? false;
 	return nnou(value) && escapeContent ? escapeXml(value as string) : value;
 }
 
@@ -215,6 +216,10 @@ function prepareObjectArray(field: ContentTypeField, value: object[]): string {
 
 function prepareObject(field: ContentTypeField, value: object): string {
 	return JSON.stringify(value);
+}
+
+function prepareAwsFile(field: ContentTypeField, value: AwsFile) {
+	return { item: value };
 }
 
 function createAttrHint(attributeName: string): string {
