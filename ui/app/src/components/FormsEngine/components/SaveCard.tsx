@@ -59,8 +59,11 @@ export function SaveCard(props: SaveCardProps) {
 				pushConfirmDialog({
 					id: dialogId,
 					props: {
-						title: formatMessage({ defaultMessage: 'Cannot save' }),
-						body: formatMessage({ defaultMessage: 'You cannot save until all form requirements are satisfied.' }),
+						title: formatMessage({ defaultMessage: 'Cannot Proceed' }),
+						body: formatMessage({
+							defaultMessage:
+								'You cannot save until all form requirements are satisfied. If you still want to save, you can use the Save as draft option, but required fields left blank may cause errors when previewed or deployed.'
+						}),
 						cancelButtonText: formatMessage({ defaultMessage: 'Ok' }),
 						onCancel: () => dispatch(popDialog({ id: dialogId }))
 					}
