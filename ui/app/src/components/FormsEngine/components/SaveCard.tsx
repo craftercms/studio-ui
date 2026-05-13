@@ -26,6 +26,10 @@ import FormHelperText from '@mui/material/FormHelperText';
 import Grow from '@mui/material/Grow';
 import Alert from '@mui/material/Alert';
 import { SplitButton } from '../../SplitButton';
+import { useDispatch } from 'react-redux';
+import { pushConfirmDialog } from '../../../utils/system';
+import { popDialog } from '../../../state/actions/dialogStack';
+import { nanoid } from 'nanoid';
 
 export interface SaveCardProps {
 	isRepeatMode: boolean;
@@ -46,6 +50,27 @@ export function SaveCard(props: SaveCardProps) {
 	const [closeAfterSave, setCloseAfterSave] = useAtom(stableFormContext.atoms.closeAfterSave);
 	const disableSave = isSubmitting || !hasPendingChanges;
 	const { formatMessage } = useIntl();
+	const dispatch = useDispatch();
+
+	const handleSave = (e: MouseEvent, type: 'save' | 'saveDraft', draft?: boolean) => {
+		if (type === 'save' && invalidForm) {
+			const dialogId = nanoid();
+			dispatch(
+				pushConfirmDialog({
+					id: dialogId,
+					props: {
+						title: formatMessage({ defaultMessage: 'Cannot save' }),
+						body: formatMessage({ defaultMessage: 'You cannot save until all form requirements are satisfied.' }),
+						cancelButtonText: formatMessage({ defaultMessage: 'Ok' }),
+						onCancel: () => dispatch(popDialog({ id: dialogId }))
+					}
+				})
+			);
+		} else {
+			onSave(e, draft);
+		}
+	};
+
 	return (
 		<Paper sx={{ p: 1 }}>
 			{(!isEmbedded || !isStackedForm) && !isRepeatMode && (
@@ -66,16 +91,11 @@ export function SaveCard(props: SaveCardProps) {
 					<Checkbox size="small" checked={closeAfterSave} onChange={(e, checked) => setCloseAfterSave(checked)} />
 				}
 			/>
-			{/*
-			TODO:
-				- If validations aren't all passed, should read "Save Draft" and a different colour.
-				- What about embedded drafts? Should they be allowed?
-      */}
 			<SplitButton
 				fullWidth
 				loading={isSubmitting}
 				disabled={disableSave}
-				selectedIndex={invalidForm ? 1 : undefined}
+				storageKey="formEditor"
 				options={[
 					{
 						id: 'save',
@@ -85,7 +105,7 @@ export function SaveCard(props: SaveCardProps) {
 								: formatMessage({ defaultMessage: 'Save' }),
 						callback: (e) => {
 							setSaveAsDraft(false);
-							onSave(e);
+							handleSave(e, 'save');
 						}
 					},
 					{
@@ -96,11 +116,10 @@ export function SaveCard(props: SaveCardProps) {
 								: formatMessage({ defaultMessage: 'Save Draft' }),
 						callback: (e) => {
 							setSaveAsDraft(true);
-							onSave(e, true);
+							handleSave(e, 'saveDraft', true);
 						}
 					}
 				]}
-				disabledOptions={invalidForm ? ['save'] : []}
 			/>
 			{isStackedForm && isEmbedded && (
 				<FormHelperText sx={{ textAlign: 'center' }}>

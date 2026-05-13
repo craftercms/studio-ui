@@ -33,21 +33,16 @@ export function SplitButton(props: SplitButtonProps) {
 		disabled,
 		loading,
 		storageKey,
-		fullWidth,
-		selectedIndex: controlledSelectedIndex,
-		onSelectedIndexChange
+		fullWidth
 	} = props;
 	const [open, setOpen] = React.useState(false);
 	const user = useActiveUser();
 	const anchorRef = React.useRef<HTMLDivElement>(null);
 
 	const indexFromDefaultSelected = options.findIndex((option) => option.id === defaultSelected);
-	const [uncontrolledSelectedIndex, setUncontrolledSelectedIndex] = React.useState(
+	const [selectedIndex, setSelectedIndex] = React.useState(
 		indexFromDefaultSelected !== -1 ? indexFromDefaultSelected : 0
 	);
-
-	// Use controlled selectedIndex if provided, otherwise use internal state
-	const selectedIndex = controlledSelectedIndex !== undefined ? controlledSelectedIndex : uncontrolledSelectedIndex;
 
 	useEffect(() => {
 		if (storageKey) {
@@ -55,32 +50,20 @@ export function SplitButton(props: SplitButtonProps) {
 			if (storedValue) {
 				const index = options.findIndex((option) => option.id === storedValue);
 				if (index !== -1) {
-					if (controlledSelectedIndex === undefined) {
-						setUncontrolledSelectedIndex(index);
-					}
+					setSelectedIndex(index);
 				} else {
 					removeStoredSaveButtonSubAction(user.username, storageKey);
 				}
 			}
 		}
-		// Only update internal state if uncontrolled
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [storageKey, options, user.username]);
 
 	const handleClick = (e) => {
 		options[selectedIndex]?.callback(e);
-		if (onSelectedIndexChange) {
-			onSelectedIndexChange(selectedIndex);
-		}
 	};
 
 	const handleMenuItemClick = (event: React.MouseEvent<Element, MouseEvent>, index: number) => {
-		if (controlledSelectedIndex === undefined) {
-			setUncontrolledSelectedIndex(index);
-		}
-		if (onSelectedIndexChange) {
-			onSelectedIndexChange(index);
-		}
+		setSelectedIndex(index);
 
 		if (storageKey) {
 			const storageValue = options[index].id;

@@ -31,14 +31,6 @@ export interface SplitButtonProps {
 	loading?: boolean;
 	storageKey?: string;
 	fullWidth?: boolean;
-	/**
-	 * If provided, SplitButton will be controlled and use this value as the selected index.
-	 */
-	selectedIndex?: number;
-	/**
-	 * Callback fired when the selected index changes (from menu or click).
-	 */
-	onSelectedIndexChange?: (index: number) => void;
 }
 
 export interface SplitButtonUIProps {
