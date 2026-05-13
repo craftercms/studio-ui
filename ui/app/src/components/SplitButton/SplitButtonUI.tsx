@@ -29,7 +29,6 @@ import { SplitButtonUIProps } from './utils';
 export function SplitButtonUI(props: SplitButtonUIProps) {
 	const {
 		options,
-		disabledOptions,
 		disablePortal,
 		disabled,
 		anchorRef,
@@ -64,13 +63,7 @@ export function SplitButtonUI(props: SplitButtonUIProps) {
 				aria-label="split button"
 				fullWidth={fullWidth}
 			>
-				<Button
-					color="primary"
-					variant="contained"
-					loading={loading}
-					onClick={handleClick}
-					disabled={disabledOptions?.includes(options[selectedIndex].id)}
-				>
+				<Button color="primary" variant="contained" loading={loading} onClick={handleClick}>
 					{options[selectedIndex].label}
 				</Button>
 				{options.length > 1 && (
@@ -111,7 +104,6 @@ export function SplitButtonUI(props: SplitButtonUIProps) {
 										<MenuItem
 											key={option.label}
 											selected={index === selectedIndex}
-											disabled={disabledOptions?.includes(option.id)}
 											onClick={(event) => handleMenuItemClick(event, index)}
 										>
 											{option.label}

@@ -27,8 +27,7 @@ import useActiveUser from '../../hooks/useActiveUser';
 export function SplitButton(props: SplitButtonProps) {
 	const {
 		options,
-		disabledOptions = [],
-		defaultSelected = options[0].id,
+		defaultSelected = options?.[0].id,
 		disablePortal = true,
 		disabled,
 		loading,
@@ -89,7 +88,6 @@ export function SplitButton(props: SplitButtonProps) {
 	return (
 		<SplitButtonUI
 			options={options}
-			disabledOptions={disabledOptions}
 			loading={loading}
 			disablePortal={disablePortal}
 			disabled={disabled}
