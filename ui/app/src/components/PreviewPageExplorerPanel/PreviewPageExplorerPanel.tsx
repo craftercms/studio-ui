@@ -670,7 +670,7 @@ export function PreviewPageExplorerPanel() {
 				onExpandedItemsChange={handleChange}
 			>
 				<Box sx={{ padding: '10px' }}>
-					<SearchBar showActionButton={Boolean(keyword)} onChange={handleSearchKeyword} keyword={keyword} />
+					<SearchBar showActionButton={Boolean(keyword)} onChange={handleSearchKeyword} keyword={keyword} autoFocus />
 					<Divider sx={{ marginTop: '10px' }} />
 				</Box>
 				{models && ContentTypesById ? (
