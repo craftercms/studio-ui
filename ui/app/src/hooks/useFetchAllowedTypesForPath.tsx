@@ -18,33 +18,34 @@ import { ContentType } from '../models';
 import { useDispatch } from 'react-redux';
 import { useEffect, useState } from 'react';
 import useUpdateRefs from './useUpdateRefs';
-import { fetchLegacyContentTypes, parseLegacyContentType } from '../services/contentTypes';
-import { map } from 'rxjs/operators';
+import { fetchAllowedTypes } from '../services/contentTypes';
 import useActiveSiteId from './useActiveSiteId';
 import { pushErrorDialog } from '../utils/system';
+import { extractErrorPayload } from '../utils/ajax';
+import useContentTypeList from './useContentTypeList';
 
 export function useFetchAllowedTypesForPath(path: string, responseFilterFn?: (types: ContentType[]) => ContentType[]) {
 	const site = useActiveSiteId();
 	const dispatch = useDispatch();
 	const [isFetching, setIsFetching] = useState(false);
+	const fullContentTypesList = useContentTypeList() ?? [];
 	const [contentTypes, setContentTypes] = useState<ContentType[]>();
-	const effectRefs = useUpdateRefs({ responseFilterFn });
+	const effectRefs = useUpdateRefs({ responseFilterFn, fullContentTypesList });
 	useEffect(() => {
 		if (path) {
 			setIsFetching(true);
-			const sub = fetchLegacyContentTypes(site, path)
-				.pipe(map((legacyTypes) => legacyTypes.map(parseLegacyContentType)))
-				.subscribe({
-					next(response) {
-						const responseFilterFn = effectRefs.current.responseFilterFn;
-						setIsFetching(false);
-						setContentTypes(responseFilterFn ? responseFilterFn(response) : response);
-					},
-					error(response) {
-						setIsFetching(false);
-						dispatch(pushErrorDialog({ props: { error: response } }));
-					}
-				});
+			const sub = fetchAllowedTypes(site, path).subscribe({
+				next(typesIds) {
+					const { fullContentTypesList, responseFilterFn } = effectRefs.current;
+					const contentTypes = fullContentTypesList.filter((contentType) => typesIds.includes(contentType.id));
+					setIsFetching(false);
+					setContentTypes(responseFilterFn ? responseFilterFn(contentTypes) : contentTypes);
+				},
+				error(error) {
+					setIsFetching(false);
+					dispatch(pushErrorDialog({ props: { error: extractErrorPayload(error) } }));
+				}
+			});
 			return () => {
 				sub.unsubscribe();
 			};

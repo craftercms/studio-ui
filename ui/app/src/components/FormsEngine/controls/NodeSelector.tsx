@@ -60,7 +60,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Radio from '@mui/material/Radio';
 import Grid from '@mui/material/Grid';
 import ContentType from '../../../models/ContentType';
-import { fetchLegacyContentTypes } from '../../../services/contentTypes';
+import { fetchAllowedTypes } from '../../../services/contentTypes';
 import useActiveSiteId from '../../../hooks/useActiveSiteId';
 import { forkJoin } from 'rxjs';
 import Dialog from '@mui/material/Dialog';
@@ -783,28 +783,24 @@ function CreateDataSourcePicker(props: {
 		const allowedCreateTypes = props.allowedCreateTypes;
 		if (allowedCreatePaths.length) {
 			// Find out all the types that can be created on the allowed creation paths (coming from shared-content DS).
-			const sub = forkJoin(allowedCreatePaths.map((path) => fetchLegacyContentTypes(siteId, path))).subscribe(
-				(responses) => {
-					const result = [
-						...new Set(
-							responses.flatMap((types) => types.map((type) => type.name)).concat(Object.keys(allowedCreateTypes))
-						)
-					];
-					const allowedLookup = { ...allowedCreateTypes };
-					result.forEach((contentTypeId) => {
-						allowedLookup[contentTypeId] = { ...allowedLookup[contentTypeId] };
-						allowedLookup[contentTypeId].shared = true;
-					});
-					setAllowedTypes(result);
-					setAllowedCreateTypes(allowedLookup);
-					const value: CreateDataSourcePickerData = {
-						path: allowedLookup[result[0]].createPaths?.[0] ?? '',
-						strategy: allowedLookup[result[0]].embedded ? 'embedded' : 'shared',
-						contentTypeId: result[0]
-					};
-					setValue(value);
-				}
-			);
+			const sub = forkJoin(allowedCreatePaths.map((path) => fetchAllowedTypes(siteId, path))).subscribe((responses) => {
+				const result = [
+					...new Set(responses.flatMap((types) => types.map((type) => type)).concat(Object.keys(allowedCreateTypes)))
+				];
+				const allowedLookup = { ...allowedCreateTypes };
+				result.forEach((contentTypeId) => {
+					allowedLookup[contentTypeId] = { ...allowedLookup[contentTypeId] };
+					allowedLookup[contentTypeId].shared = true;
+				});
+				setAllowedTypes(result);
+				setAllowedCreateTypes(allowedLookup);
+				const value: CreateDataSourcePickerData = {
+					path: allowedLookup[result[0]].createPaths?.[0] ?? '',
+					strategy: allowedLookup[result[0]].embedded ? 'embedded' : 'shared',
+					contentTypeId: result[0]
+				};
+				setValue(value);
+			});
 			return () => sub.unsubscribe();
 		} else {
 			const result = Object.keys(allowedCreateTypes);

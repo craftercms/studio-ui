@@ -282,6 +282,7 @@ export function PreviewSearchPanel() {
 					onChange={(keyword) => handleSearchKeyword(keyword)}
 					showDecoratorIcon={true}
 					showActionButton={Boolean(keyword)}
+					autoFocus
 				/>
 			</Box>
 			{state.items && !error && (

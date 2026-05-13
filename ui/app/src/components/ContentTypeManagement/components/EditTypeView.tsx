@@ -44,7 +44,6 @@ import {
 	getFieldFromType,
 	getPropertiesAndValidationsFromDescriptor,
 	getSectionFromType,
-	initializeConfigFromType,
 	isComposedPath,
 	NEW_DATASOURCE_ID,
 	NEW_FIELD_ID,
@@ -781,9 +780,9 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 				const contentTypesConfig = contentTypesConfigDOM ? deserialize(contentTypesConfigDOM).configuration : null;
 				if (contentTypesConfig) {
 					setConfig({
-						controls: parseConfigPlugins(contentTypesConfig.controls),
+						controls: parseConfigPlugins(asArray(contentTypesConfig.controls?.control)),
 						controlExclusions: asArray(contentTypesConfig.controlExclusions),
-						dataSources: parseConfigPlugins(contentTypesConfig.datasources),
+						dataSources: parseConfigPlugins(asArray(contentTypesConfig.dataSources?.dataSource)),
 						dataSourceExclusions: asArray(contentTypesConfig.dataSourceExclusions)
 					});
 				}
@@ -1212,13 +1211,6 @@ function save(
 	xml = cleanupStaleDatasourceValuesFromXml(xml, type);
 	const requests = [writeConfiguration(siteId, createFormDefinitionPathFromTypeId(type.id), 'studio', xml)];
 
-	if ((type as PossibleContentTypeDraft).NEW) {
-		const config = initializeConfigFromType(type);
-		const builder = getXmlBuilder();
-		const configXml = builder.build(config);
-		requests.push(writeConfiguration(siteId, createConfigPathFromTypeId(type.id), 'studio', configXml));
-	}
-
 	return forkJoin(requests).pipe(map(() => xml));
 }
 
@@ -1252,7 +1244,7 @@ async function validityAtomsHaveErrors(
 function parseConfigPlugins(
 	plugins: { descriptor?: DescriptorContentType; icon: { id: string }; id: string }[]
 ): LookupTable<{ descriptor?: DescriptorContentType; icon: { id: string }; id: string }> {
-	if (!plugins) return;
+	if (!plugins) return {};
 	const parsedPlugins = asArray(plugins).map((plugin) => {
 		if (plugin.descriptor) {
 			const fields = Object.values(plugin.descriptor.fields ?? {})?.map((field) => {
@@ -1469,7 +1461,6 @@ export default EditTypeView;
 //  - Because IDs can be modified, keep a lookup table of `{ [nanoid]: id }`? - Probably N/A
 //  - BE tickets for APIs etc
 //  - BE ticket for UM section ids
-//  - BE ticket for UM config.xml transfer props to form-def.xml and remove file.
 // 		- Changes have been made on the UI to assume controller, imageThumbnail, no-template-required and paths are in form-def.xml (e.g. parseLegacyFormDefinition)
 //  - BE ticket: `/studio/api/2/configuration/content-type/usage` API replies with paths and within the UI (fetchContentTypeUsage) it'll immediately fetch the ContentItem for each path. Could we update for API to return ContentItems?
 //  - Can we move display-template, no-template-required and merge-strategy to the root of the type def? If so, update BE, UI and UM

@@ -360,7 +360,7 @@ function FormBootstrap(props: FormsEngineProps) {
 					fieldId,
 					atoms,
 					value,
-					siteId
+					{ siteId, contentTypesById: effectRefs.current.contentTypesById }
 				);
 			};
 			const values =
@@ -372,10 +372,10 @@ function FormBootstrap(props: FormsEngineProps) {
 
 			const xmlDoc = fromString(parentStackData.itemMeta.contentXml);
 			const fieldId = repeat.fieldId;
-			const index = repeat.index;
-			const element = xmlDoc.querySelector(`:scope > ${fieldId}`).children[index];
-			const contentObject = (parentStackData.itemMeta.contentObject[fieldId] as { item: Array<LookupTable<unknown>> })
-				.item[index];
+			const index = repeat.index ?? 0;
+			const element = xmlDoc.querySelector(`:scope > ${fieldId}`)?.children[index];
+			const contentObject =
+				(parentStackData.itemMeta.contentObject[fieldId] as { item: Array<LookupTable<unknown>> }).item?.[index] ?? {};
 
 			initializeState(atoms, values, {
 				id: parentId,
@@ -384,7 +384,7 @@ function FormBootstrap(props: FormsEngineProps) {
 				pathInSite: parentPathInSite,
 				contentType: parentContentType,
 				contentObject,
-				contentXml: element.outerHTML
+				contentXml: element?.outerHTML ?? ''
 			});
 		} else if (
 			// An embedded component is being opened as a stacked form.
@@ -407,7 +407,9 @@ function FormBootstrap(props: FormsEngineProps) {
 					update,
 					parentStackData,
 					stableFormContextRef,
-					parentPathInSite
+					parentPathInSite,
+					siteId,
+					contentTypesById: effectRefs.current.contentTypesById
 				});
 				initializeState(requirements.atoms, requirements.values, requirements.itemMeta);
 			};
@@ -440,7 +442,10 @@ function FormBootstrap(props: FormsEngineProps) {
 			});
 			const contentObject = createObjectWithSystemProps(contentType);
 			const values = createParsedValuesObject(contentType.fields, contentObject, contentTypesById, (fieldId, value) => {
-				setFieldAtoms(stableFormContextRef, contentType, contentType.fields, fieldId, atoms, value, siteId);
+				setFieldAtoms(stableFormContextRef, contentType, contentType.fields, fieldId, atoms, value, {
+					siteId,
+					contentTypesById
+				});
 			});
 
 			initializeState(atoms, values, {
@@ -505,7 +510,7 @@ function FormBootstrap(props: FormsEngineProps) {
 								fieldId,
 								atoms,
 								value,
-								siteId
+								{ siteId, contentTypesById }
 							);
 						}
 					);

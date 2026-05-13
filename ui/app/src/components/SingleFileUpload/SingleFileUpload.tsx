@@ -29,7 +29,6 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import useSiteUIConfig from '../../hooks/useSiteUIConfig';
 import { ensureSingleSlash } from '../../utils/string';
-import { toQueryString } from '../../utils/object';
 import Alert from '@mui/material/Alert';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
@@ -97,6 +96,9 @@ export interface SingleFileUploadProps {
 	fileTypes?: string[];
 	onFileAdded?: (file: UppyFile<Meta, Body>, uppy: Uppy, callback: () => void) => void;
 	method?: 'PUT' | 'POST';
+	showFileDetails?: boolean;
+	showProgressBar?: boolean;
+	disabled?: boolean;
 	onUploadStart?(): void;
 	onComplete?(result: FileUploadResult): void;
 	onError?({ file, error, response }): void;
@@ -114,7 +116,10 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 		fileTypes,
 		path,
 		onFileAdded: onFileAddedProp,
-		method = 'PUT'
+		method = 'PUT',
+		showFileDetails = true,
+		showProgressBar = true,
+		disabled = false
 	} = props;
 	const { formatMessage } = useIntl();
 	const dispatch = useDispatch();
@@ -373,7 +378,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 			<form id="asset_upload_form">
 				<input type="hidden" name="site" value={site} />
 			</form>
-			<Box className="uppy-progress-bar" sx={{ display: error ? 'none' : null }} />
+			<Box className="uppy-progress-bar" sx={{ display: !showProgressBar || error ? 'none' : null }} />
 			<div className="uploaded-files">
 				{error ? (
 					<Alert
@@ -397,26 +402,30 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 						</Typography>
 					</Alert>
 				) : (
+					showFileDetails && (
+						<Typography variant="subtitle1" component="h2" sx={{ mb: 2 }}>
+							{description}
+						</Typography>
+					)
+				)}
+				{showFileDetails && (
 					<Typography variant="subtitle1" component="h2" sx={{ mb: 2 }}>
-						{description}
+						{file && (
+							<Box
+								component="em"
+								className={`single-file-upload--filename ${fileNameErrorClass}`}
+								sx={{
+									overflow: 'hidden',
+									textOverflow: 'ellipsis',
+									whiteSpace: 'nowrap'
+								}}
+								title={file.name}
+							>
+								{file.name}
+							</Box>
+						)}
 					</Typography>
 				)}
-				<Typography variant="subtitle1" component="h2" sx={{ mb: 2 }}>
-					{file && (
-						<Box
-							component="em"
-							className={`single-file-upload--filename ${fileNameErrorClass}`}
-							sx={{
-								overflow: 'hidden',
-								textOverflow: 'ellipsis',
-								whiteSpace: 'nowrap'
-							}}
-							title={file.name}
-						>
-							{file.name}
-						</Box>
-					)}
-				</Typography>
 				<Box sx={{ marginBottom: '10px' }}>
 					<Box
 						component="input"
@@ -426,10 +435,10 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 						type="file"
 						onChange={onChange}
 						onClick={onInputClick}
-						disabled={disableInput}
+						disabled={disabled || disableInput}
 					/>
 					<label htmlFor="contained-button-file">
-						<Button variant="outlined" component="span" disabled={disableInput}>
+						<Button variant="outlined" component="span" disabled={disabled || disableInput}>
 							{formatMessage(messages.chooseFile)}
 						</Button>
 					</label>

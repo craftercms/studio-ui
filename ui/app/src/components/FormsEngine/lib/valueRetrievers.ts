@@ -30,7 +30,7 @@ export type ValueRetriever<T = unknown> = (value: unknown, field: ContentTypeFie
 
 export const valueRetrieverLookup: Record<BuiltInControlType | DescriptorControlType, ValueRetriever | null> = {
 	'auto-filename': textFieldExtractor,
-	'aws-file-upload': null,
+	'aws-file-upload': awsFileExtractor,
 	'checkbox-group': arrayFieldExtractor,
 	checkbox: booleanFieldExtractor,
 	boolean: booleanFieldExtractor,
@@ -70,7 +70,7 @@ export const valueRetrieverLookup: Record<BuiltInControlType | DescriptorControl
 	range: (value) => objectExtractor(value as string),
 	'type-js-controller-selector': textFieldExtractor,
 	'key-value-map': (value) => objectArrayExtractor(value as string),
-	'type-destination-paths-selector': (value) => objectExtractor(value as string),
+	'type-destination-paths-selector': null,
 	'path-with-macro-creator': textFieldExtractor,
 	'merge-strategy-selector': textFieldExtractor,
 	'datasource:image': (value) => stringArrayExtractor(value as string),
@@ -83,11 +83,12 @@ export const valueRetrieverLookup: Record<BuiltInControlType | DescriptorControl
 	'datasource:audio:singleSelection': textFieldExtractor,
 	'datasource:item:singleSelection': textFieldExtractor,
 	variable: textFieldExtractor,
-	'type-configuration': textFieldExtractor,
 	'date-time-expression-input': textFieldExtractor,
 	'input-email': textFieldExtractor,
 	'input-link': textFieldExtractor,
-	'input-phone': textFieldExtractor
+	'input-phone': textFieldExtractor,
+	'delete-dependencies': null,
+	'copy-dependencies': null
 };
 
 /**
@@ -232,4 +233,8 @@ export function objectExtractor(value: string): object {
 
 export function uuidExtractor(value: unknown): string {
 	return textOrNullExtractor(value) ?? uuid();
+}
+
+export function awsFileExtractor(value) {
+	return arrayFieldExtractor(value)[0];
 }

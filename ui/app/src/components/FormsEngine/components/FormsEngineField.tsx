@@ -47,21 +47,15 @@ import { translateIfMessageDescriptor } from '../../ContentTypeManagement/utils'
 import useLoadableAtom from '../lib/useLoadableAtom';
 import { XmlKeys } from '../lib/formConsts';
 
-function createLengthBlock({ length, max, min }: { length: number; max: number; min: number }) {
+function createLengthBlock({ length, max }: { length: number; max: number }) {
 	const pieces = [];
 	if (length != null) {
 		pieces.push(`${length}`);
 	}
-	if (min != null && max != null) {
-		pieces.push(` (${min}-${max})`);
-	} else if (max != null) {
-		// pieces.push(`≤${max}`);
+	if (max != null) {
 		pieces.push(`/${max}`);
-	} else if (min != null) {
-		// pieces.push(`≥${min}`);
-		// pieces.push(` (${min} - ∞)`);
-		pieces.push(`/${min}+`);
 	}
+
 	return pieces.length ? (
 		<Typography variant="body2" color="textSecondary" children={pieces.join('')} sx={{ mr: 1 }} />
 	) : null;
@@ -120,7 +114,7 @@ export const FormsEngineField = forwardRef<HTMLDivElement, FormsEngineFieldProps
 	const hasChanges = changedFieldIds.has(field.id);
 	const hasHelpText = Boolean(field.helpText);
 	const hasDescription = Boolean(field.description);
-	const lengthBlock = createLengthBlock({ length, max, min });
+	const lengthBlock = createLengthBlock({ length, max });
 	const isRequired = isFieldRequired(field);
 	const validityData = useLoadableAtom(atoms.validationByFieldId[fieldId]);
 	const value = useAtomValue(atoms.valueByFieldId[fieldId]);
