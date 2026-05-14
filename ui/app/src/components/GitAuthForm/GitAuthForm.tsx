@@ -185,7 +185,7 @@ function AuthFields(props: AuthFieldsProps) {
 					}}
 				/>
 			)}
-			{type === 'key' && (
+			{type === 'private_key' && (
 				<TextField
 					id="repoKey"
 					name="repoKey"
@@ -258,11 +258,11 @@ export function GitAuthForm(props: GitAuthFormProps) {
 					<AuthFields inputs={inputs} handleInputChange={handleInputChange} />
 				</Collapse>
 				<FormControlLabel
-					value="key"
-					control={<Radio onChange={() => viewAuth('key')} />}
+					value="private_key"
+					control={<Radio onChange={() => viewAuth('private_key')} />}
 					label={<FormattedMessage id="gitForm.privateKey" defaultMessage="Private Key" />}
 				/>
-				<Collapse in={inputs.expanded.key} timeout={300} unmountOnExit>
+				<Collapse in={inputs.expanded.private_key} timeout={300} unmountOnExit>
 					<AuthFields inputs={inputs} handleInputChange={handleInputChange} />
 				</Collapse>
 			</RadioGroup>
