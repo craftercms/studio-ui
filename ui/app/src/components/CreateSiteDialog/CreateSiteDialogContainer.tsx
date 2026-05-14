@@ -59,6 +59,7 @@ import GitFilled from '../../icons/GitFilled';
 import { previewSwitch } from '../../services/security';
 import { keyframes } from '@emotion/react';
 import { fadeIn } from 'react-animations';
+import { extractErrorPayload } from '../../utils/ajax';
 
 interface SearchState {
 	searchKey: string;
@@ -627,7 +628,7 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
 				(apiState.errorResponse && (
 					<ApiResponseErrorState
 						sxs={{ root: { height: '100%' } }}
-						error={apiState.errorResponse}
+						error={extractErrorPayload(apiState.errorResponse)}
 						onButtonClick={handleErrorBack}
 					/>
 				)) ||
