@@ -789,7 +789,10 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
 							)}
 						</DialogBody>
 					) : apiState.error ? (
-						<ApiResponseErrorState sxs={{ root: { height: '100%' } }} error={apiState.errorResponse} />
+						<ApiResponseErrorState
+							sxs={{ root: { height: '100%' } }}
+							error={extractErrorPayload(apiState.errorResponse)}
+						/>
 					) : (
 						<Box sx={{ position: 'relative', padding: 16, flexGrow: 1 }}>
 							<LoadingState />
