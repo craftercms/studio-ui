@@ -305,7 +305,8 @@ export const showSearchDialog = ({
 	path,
 	preselectedPaths = [],
 	contentTypes,
-	onAcceptSelection
+	onAcceptSelection,
+	initialParameters
 }: {
 	path: string;
 	contentTypes?: string[];
@@ -325,6 +326,7 @@ export const showSearchDialog = ({
 				initialParameters: {
 					path,
 					sortBy: 'internalName',
+					...initialParameters,
 					...(contentTypes && { filters: { 'content-type': contentTypes } })
 				},
 				preselectedPaths,
