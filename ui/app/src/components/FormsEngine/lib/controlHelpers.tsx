@@ -267,7 +267,8 @@ export const showBrowseFilesDialog = ({
 	path,
 	contentTypes,
 	multiSelect = true,
-	preselectedPaths = []
+	preselectedPaths = [],
+	initialParameters = {}
 }: {
 	path: string;
 	dispatch: ReduxDispatch;
@@ -275,6 +276,7 @@ export const showBrowseFilesDialog = ({
 	contentTypes?: string[];
 	multiSelect?: boolean;
 	preselectedPaths?: string[];
+	initialParameters?: BrowseFilesDialogProps['initialParameters'];
 }): void => {
 	const id = nanoid();
 	dispatch(
@@ -287,6 +289,7 @@ export const showBrowseFilesDialog = ({
 				allowUpload: false,
 				contentTypes: contentTypes ?? [],
 				preselectedPaths,
+				initialParameters,
 				onClose: () => dispatch(popDialog({ id })),
 				onSuccess(items) {
 					dispatch(popDialog({ id }));
