@@ -70,7 +70,7 @@ export const controlMap: Record<BuiltInControlType, ElementType> = {
 	'link-input': null,
 	'link-textarea': null,
 	'linked-dropdown': null,
-	'locale-selector': null,
+	'locale-selector': lazy(() => import('../controls/LocaleSelector')),
 	'node-selector': lazy(() => import('../controls/NodeSelector')),
 	'numeric-input': lazy(() => import('../controls/Numeric')),
 	'page-nav-order': null,
