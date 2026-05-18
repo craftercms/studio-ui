@@ -257,7 +257,6 @@ function FormBootstrap(props: FormsEngineProps) {
 	const [ready, setReady] = useState(false);
 	const [prepError, setPrepError] = useState<symbol>();
 	const store = useJotaiStore();
-	const reduxStore = useReduxStore<GlobalState>();
 	const theme = useTheme();
 	const { isFullScreen = false } = useEnhancedDialogContext() ?? {};
 	const username = useActiveUser()?.username;
@@ -462,7 +461,7 @@ function FormBootstrap(props: FormsEngineProps) {
 				pathInSite: create.path,
 				contentType,
 				contentObject,
-				contentXml: buildContentXml(valuesWithoutFileName, reduxStore.getState().contentTypes.byId)
+				contentXml: buildContentXml(valuesWithoutFileName, contentTypesById)
 			});
 		} /* if (isUpdateMode) */ else {
 			const subscription = fetchUpdateRequirements({
