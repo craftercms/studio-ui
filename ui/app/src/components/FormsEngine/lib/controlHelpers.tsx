@@ -310,6 +310,7 @@ export const showSearchDialog = ({
 	path: string;
 	contentTypes?: string[];
 	preselectedPaths?: string[];
+	initialParameters?: SearchProps['initialParameters'];
 	dispatch: ReduxDispatch;
 	onAcceptSelection: SearchProps['onAcceptSelection'];
 }): void => {
