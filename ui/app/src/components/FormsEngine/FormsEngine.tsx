@@ -17,7 +17,7 @@
 import { useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useStore as useReduxStore } from 'react-redux';
 import useActiveSite from '../../hooks/useActiveSite';
 import useContentTypes from '../../hooks/useContentTypes';
 import React, { createElement, type RefCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
@@ -130,7 +130,9 @@ import {
 import { getHostToHostBus } from '../../utils/subjects';
 import { fetchAffectedPackages } from '../../services/workflow';
 import useMount from '../../hooks/useMount';
-import { nnou } from '../../utils/object';
+import { nnou, nou } from '../../utils/object';
+import { buildContentXml } from './lib/valueSerializers';
+import GlobalState from '../../models/GlobalState';
 
 export interface FormSavePromiseResult {
 	close: boolean;
@@ -255,6 +257,7 @@ function FormBootstrap(props: FormsEngineProps) {
 	const [ready, setReady] = useState(false);
 	const [prepError, setPrepError] = useState<symbol>();
 	const store = useJotaiStore();
+	const reduxStore = useReduxStore<GlobalState>();
 	const theme = useTheme();
 	const { isFullScreen = false } = useEnhancedDialogContext() ?? {};
 	const username = useActiveUser()?.username;
@@ -337,12 +340,13 @@ function FormBootstrap(props: FormsEngineProps) {
 			isChildForm &&
 			repeat?.fieldId
 		) {
-			const contentType = effectRefs.current.contentTypesById[parentContentType.id];
+			const contentType = parentContentType ? effectRefs.current.contentTypesById[parentContentType.id] : undefined;
 			if (!contentType) return setPrepError(ContentTypeNotFoundError);
 			const parentLockResult = store.get(parentAtoms.lockResult);
 			const isParentLocked = parentLockResult.locked;
+			const isCreate = nou(parentPath);
 			const lockResultAtom = atom<FormsEngineEditContextProps>({
-				locked: isParentLocked,
+				locked: isCreate ? true : isParentLocked,
 				lockError: parentLockResult.lockError,
 				affectedPackages: parentLockResult.affectedPackages
 			});
@@ -373,9 +377,9 @@ function FormBootstrap(props: FormsEngineProps) {
 			const xmlDoc = fromString(parentStackData.itemMeta.contentXml);
 			const fieldId = repeat.fieldId;
 			const index = repeat.index ?? 0;
-			const element = xmlDoc.querySelector(`:scope > ${fieldId}`)?.children[index];
+			const element = xmlDoc?.querySelector(`:scope > ${fieldId}`)?.children[index];
 			const contentObject =
-				(parentStackData.itemMeta.contentObject[fieldId] as { item: Array<LookupTable<unknown>> }).item?.[index] ?? {};
+				(parentStackData.itemMeta.contentObject[fieldId] as { item: Array<LookupTable<unknown>> })?.item?.[index] ?? {};
 
 			initializeState(atoms, values, {
 				id: parentId,
@@ -447,6 +451,7 @@ function FormBootstrap(props: FormsEngineProps) {
 					contentTypesById
 				});
 			});
+			const { [XmlKeys.fileName]: _, ...valuesWithoutFileName } = values;
 
 			initializeState(atoms, values, {
 				id: contentObject[XmlKeys.modelId] as string,
@@ -457,7 +462,7 @@ function FormBootstrap(props: FormsEngineProps) {
 				pathInSite: create.path,
 				contentType,
 				contentObject,
-				contentXml: null
+				contentXml: buildContentXml(valuesWithoutFileName, reduxStore.getState().contentTypes.byId)
 			});
 		} /* if (isUpdateMode) */ else {
 			const subscription = fetchUpdateRequirements({
@@ -550,7 +555,7 @@ function FormBootstrap(props: FormsEngineProps) {
 	} else if (
 		ready &&
 		// Create doesn't need the liveUpdateItem, but otherwise, it should be preset before proceeding to rendering a form
-		(create || liveUpdatedItem)
+		(create || repeat || liveUpdatedItem)
 	) {
 		return (
 			<FormsEngineFormContextApi.Provider value={contextApi}>
