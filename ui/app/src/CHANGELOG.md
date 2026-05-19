@@ -5,6 +5,7 @@
 * [utils/content]:
   * Removed `parseLegacyItemToBaseItem`, `parseLegacyItemToSandBoxItem` and `parseLegacyItemToDetailedItem`. Replaced by `parseLegacyItemToContentItem`.
   * Moved `PathNavigator/utils.ts` `isVideo`, `isAudio` and `isPdfDocument` functions to `utils/content.ts`.
+  * Removed `parseLegacyItemToContentItem` and `getLegacyItemSystemType`.
 * [utils/path]:
   * Removed `getPasteItemFromPath` and `addToPasteItem`.
 * [components]
