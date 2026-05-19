@@ -602,7 +602,7 @@ export function processPopulateExpression({
 		if (normalized === 'now') {
 			if (!allowPastDate) date.setSeconds(59, 0);
 		} else {
-			const match = normalized.match(/^now([+-])(\d+)(d|days|w|weeks|y|years|h|hours|m|minutes)$/);
+			const match = normalized.match(/^(?:now)?([+-])(\d+)(d|days|w|weeks|y|years|h|hours|m|minutes)$/);
 			if (match) {
 				const [, sign, value, unit] = match;
 				const n = parseInt(value, 10) * (sign === '-' ? -1 : 1);
