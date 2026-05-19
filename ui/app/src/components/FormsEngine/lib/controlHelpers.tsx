@@ -564,12 +564,17 @@ export function processPopulateExpression({
 	validatePopulateExpression(expr: string): boolean;
 	allowPastDate?: boolean;
 }): Date {
-	// Match {macro} or {macro} time
-	const macroMatch = expression.match(/^\{([^}]+)\}(?:\s+([0-9]{1,2}:[0-9]{2}(?::[0-9]{2})?))?$/i);
-	if (!macroMatch) return new Date();
+	const trimmed = expression?.trim() ?? '';
+	const macroMatch = trimmed.match(/^\{([^}]+)\}(?:\s+([0-9]{1,2}:[0-9]{2}(?::[0-9]{2})?))?$/i);
+	const macro = (macroMatch ? macroMatch[1] : trimmed).trim();
+	const staticTime = macroMatch?.[2]?.trim() ?? null;
 
-	const macro = macroMatch[1].trim();
-	const staticTime = macroMatch[2]?.trim() ?? null;
+	if (!validatePopulateExpression(trimmed)) {
+		const fallback = new Date();
+		if (!allowPastDate) fallback.setSeconds(59, 0);
+		return fallback;
+	}
+
 	let date = new Date();
 
 	// Day-of-week mapping
@@ -625,8 +630,6 @@ export function processPopulateExpression({
 				}
 			}
 		}
-	} else if (!allowPastDate) {
-		date.setSeconds(59, 0);
 	}
 
 	if (staticTime) setTimeOnDate(date, staticTime);
