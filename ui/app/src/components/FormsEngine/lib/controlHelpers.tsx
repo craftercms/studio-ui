@@ -449,13 +449,96 @@ export function validateTimePopulateExpression(expr: string): boolean {
 
 /**
  * Checks if the populate date expression is valid.
- *
  * @param expr {string} The populate date expression to validate.
  * @returns true if the expression is valid, false otherwise.
+ *
+ * Supports: now, now+/-N[days|weeks|years|hours|minutes], day-of-week macros, and {macro} with optional time.
  */
 export function validateDatePopulateExpression(expr: string): boolean {
-	const normalized = expr.replace(/ /g, '');
-	return /^(now|((now)?[+-]\d+(days|weeks|years|hours|minutes)))$/i.test(normalized);
+	if (!expr) return false;
+	const trimmed = expr.trim();
+	const days = [
+		'sunday',
+		'monday',
+		'tuesday',
+		'wednesday',
+		'thursday',
+		'friday',
+		'saturday',
+		'sun',
+		'mon',
+		'tue',
+		'wed',
+		'thu',
+		'fri',
+		'sat'
+	];
+
+	// 1. Check for {macro} or {macro} time
+	const macroMatch = trimmed.match(/^\{([^}]+)\}(?:\s+([0-9]{1,2}:[0-9]{2}(?::[0-9]{2})?))?$/i);
+	if (macroMatch) {
+		const macro = macroMatch[1].trim().toLowerCase();
+		const staticTime = macroMatch[2] ? macroMatch[2].trim() : null;
+
+		// Validate macro (day-of-week or now/now+/-N...)
+		if (
+			days.includes(macro) ||
+			/^(now|((now)?[+-]\d+(d|days|w|weeks|y|years|h|hours|m|minutes)))$/i.test(macro.replace(/ /g, ''))
+		) {
+			// If static time is present, validate format HH:mm or HH:mm:ss
+			if (staticTime) {
+				if (/^([01]?\d|2[0-3]):[0-5]\d(:[0-5]\d)?$/.test(staticTime)) {
+					return true;
+				} else {
+					return false;
+				}
+			}
+			return true;
+		}
+		return false;
+	}
+
+	const lowered = trimmed.toLowerCase();
+	// 2. Day of week macro (plain)
+	if (days.includes(lowered)) return true;
+
+	// 3. now, now+2d, now-3weeks, now+1years, now-4hours, now+30minutes (plain)
+	if (/^(now|((now)?[+-]\d+(d|days|w|weeks|y|years|h|hours|m|minutes)))$/i.test(lowered.replace(/ /g, ''))) return true;
+
+	return false;
+}
+
+/**
+ * Returns a new Date object representing the next occurrence of the specified day of the week after the given date.
+ *
+ * @param date - The reference date from which to calculate the next day of the week.
+ * @param dayOfWeek - The target day of the week as a number (0 = Sunday, 1 = Monday, ..., 6 = Saturday).
+ * @returns A new Date object set to the next occurrence of the specified day of the week.
+ *
+ */
+function getNextDayOfWeek(date: Date, dayOfWeek: number): Date {
+	const result = new Date(date);
+	const current = result.getDay();
+	let delta = dayOfWeek - current;
+	if (delta <= 0) delta += 7;
+	result.setDate(result.getDate() + delta);
+	return result;
+}
+
+/**
+ * Sets the time (hours, minutes, seconds) on a given Date object based on a time string.
+ *
+ * @param date - The Date object to modify.
+ * @param timeStr - The time string in the format "HH:mm" or "HH:mm:ss".
+ * @returns The modified Date object with the specified time set.
+ *
+ */
+function setTimeOnDate(date: Date, timeStr: string) {
+	const parts = timeStr.split(':').map(Number);
+	if (parts.length >= 2) {
+		date.setHours(parts[0], parts[1], parts[2] || 0, 0);
+	}
+	return date;
 }
 
 /**
@@ -481,37 +564,71 @@ export function processPopulateExpression({
 	validatePopulateExpression(expr: string): boolean;
 	allowPastDate?: boolean;
 }): Date {
-	const date = new Date();
-	const daysInWeek = 7;
-	let modifier = 1;
+	// Match {macro} or {macro} time
+	const macroMatch = expression.match(/^\{([^}]+)\}(?:\s+([0-9]{1,2}:[0-9]{2}(?::[0-9]{2})?))?$/i);
+	if (!macroMatch) return new Date();
 
-	const populateDateExp = expression.replace(/ /g, '');
-	const normalized = populateDateExp.toLowerCase();
+	const macro = macroMatch[1].trim();
+	const staticTime = macroMatch[2]?.trim() ?? null;
+	let date = new Date();
 
-	if (validatePopulateExpression(expression)) {
+	// Day-of-week mapping
+	const dayOfWeekMap: Record<string, number> = {
+		sunday: 0,
+		sun: 0,
+		monday: 1,
+		mon: 1,
+		tuesday: 2,
+		tue: 2,
+		wednesday: 3,
+		wed: 3,
+		thursday: 4,
+		thu: 4,
+		friday: 5,
+		fri: 5,
+		saturday: 6,
+		sat: 6
+	};
+	const macroLower = macro.toLowerCase();
+	if (macroLower in dayOfWeekMap) {
+		date = getNextDayOfWeek(date, dayOfWeekMap[macroLower]);
+	} else if (validatePopulateExpression(macro)) {
+		const normalized = macro.replace(/ /g, '').toLowerCase();
 		if (normalized === 'now') {
 			if (!allowPastDate) date.setSeconds(59, 0);
 		} else {
-			const action = normalized.match(/[+-]/)![0];
-			const expValue = parseInt(normalized.match(/\d+/)![0], 10);
-			const type = normalized.match(/(days|weeks|years|hours|minutes)/)![0];
-			if (action === '-') {
-				modifier = modifier * -1;
-			}
-			if (type === 'years') {
-				date.setFullYear(date.getFullYear() + modifier * expValue);
-			} else if (type === 'weeks') {
-				date.setDate(date.getDate() + modifier * expValue * daysInWeek);
-			} else if (type === 'days') {
-				date.setDate(date.getDate() + modifier * expValue);
-			} else if (type === 'hours') {
-				date.setTime(date.getTime() + modifier * (expValue * 3600000));
-			} else if (type === 'minutes') {
-				date.setTime(date.getTime() + modifier * expValue * 60000);
+			const match = normalized.match(/^now([+-])(\d+)(d|days|w|weeks|y|years|h|hours|m|minutes)$/);
+			if (match) {
+				const [, sign, value, unit] = match;
+				const n = parseInt(value, 10) * (sign === '-' ? -1 : 1);
+				switch (unit) {
+					case 'y':
+					case 'years':
+						date.setFullYear(date.getFullYear() + n);
+						break;
+					case 'w':
+					case 'weeks':
+						date.setDate(date.getDate() + n * 7);
+						break;
+					case 'd':
+					case 'days':
+						date.setDate(date.getDate() + n);
+						break;
+					case 'h':
+					case 'hours':
+						date.setTime(date.getTime() + n * 3600000);
+						break;
+					case 'm':
+					case 'minutes':
+						date.setTime(date.getTime() + n * 60000);
+						break;
+				}
 			}
 		}
-	} else {
-		if (!allowPastDate) date.setSeconds(59, 0);
+	} else if (!allowPastDate) {
+		date.setSeconds(59, 0);
 	}
+
+	if (staticTime) setTimeOnDate(date, staticTime);
 	return date;
 }
