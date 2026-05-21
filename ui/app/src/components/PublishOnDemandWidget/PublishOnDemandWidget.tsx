@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ReactNode, useEffect, useId, useState } from 'react';
+import React, { ReactNode, useEffect, useId, useRef, useState } from 'react';
 import Paper from '@mui/material/Paper';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import DialogHeader from '../DialogHeader/DialogHeader';
@@ -171,6 +171,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 			: selectedMode === 'git'
 				? publishGitFormData
 				: publishEverythingFormData;
+	const refs = useUpdateRefs({ currentFormData });
 	// endregion
 	// region currentSetFormData
 	const currentSetFormData =
@@ -201,6 +202,30 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 				: publishEverythingFormData.comment !== initialPublishEverythingFormData.comment ||
 					publishEverythingFormData.publishingTarget !== initialPublishingTarget;
 	// endregion
+
+	useEffect(() => {
+		const formData = refs.current.currentFormData;
+
+		if (formData.comment === '') {
+			if (selectedMode === 'everything') {
+				currentSetFormData({
+					comment: formatMessage(
+						{ defaultMessage: 'Publish all changes on the repo to {target}' },
+						{ target: formData.publishingTarget }
+					)
+				});
+			} else if (selectedMode === 'studio') {
+				currentSetFormData({
+					comment: formatMessage({ defaultMessage: 'Publish changes made in Studio via the UI' })
+				});
+			} else if (selectedMode === 'git') {
+				currentSetFormData({
+					comment: formatMessage({ defaultMessage: 'Publish by tags or commit ids' })
+				});
+			}
+		}
+	}, [selectedMode, refs, currentSetFormData, formatMessage]);
+
 	const bottomElId = useId();
 
 	const setDefaultPublishingTarget = (targets, clearData?) => {
