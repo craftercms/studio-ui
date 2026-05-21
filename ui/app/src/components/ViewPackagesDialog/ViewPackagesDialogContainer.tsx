@@ -15,7 +15,7 @@
  */
 
 import { ViewPackagesDialogProps } from './ViewPackagesDialog';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { fetchAffectedPackages } from '../../services/workflow';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useSpreadState } from '../../hooks/useSpreadState';
@@ -42,12 +42,17 @@ import { createComponentId } from '../../utils/system';
 import { hasApproveAction, hasRejectAction } from '../../utils/content';
 import { PublishPackage } from '../../models';
 import { SubmittedPackageDetail } from '../DashletCard/dashletCommons';
+import FormControl from '@mui/material/FormControl';
+import TextFieldWithMax from '../TextFieldWithMax';
+import Grid from '@mui/material/Grid';
 
-export interface ViewPackagesDialogContainerProps
-	extends Pick<ViewPackagesDialogProps, 'item' | 'onContinue' | 'onClose'> {}
+export interface ViewPackagesDialogContainerProps extends Pick<
+	ViewPackagesDialogProps,
+	'item' | 'cancelPackagesInitialComment' | 'onContinue' | 'onClose'
+> {}
 
 export function ViewPackagesDialogContainer(props: ViewPackagesDialogContainerProps) {
-	const { item, onContinue, onClose } = props;
+	const { item, cancelPackagesInitialComment, onContinue, onClose } = props;
 	const siteId = useActiveSiteId();
 	const dispatch = useDispatch();
 	const [state, setState] = useSpreadState({
@@ -55,6 +60,8 @@ export function ViewPackagesDialogContainer(props: ViewPackagesDialogContainerPr
 		fetching: false,
 		error: null
 	});
+	const [cancelPackagesComment, setCancelPackagesComment] = useState(cancelPackagesInitialComment ?? '');
+	const disableContinue = onContinue ? cancelPackagesComment.trim() === '' : false;
 
 	const onShowPackageDetails = (pkg: PublishPackage) => {
 		if (
@@ -80,7 +87,7 @@ export function ViewPackagesDialogContainer(props: ViewPackagesDialogContainerPr
 	};
 
 	const onContinueClick = (e: React.MouseEvent) => {
-		onContinue();
+		onContinue(cancelPackagesComment);
 		onClose(e, null);
 	};
 
@@ -159,6 +166,21 @@ export function ViewPackagesDialogContainer(props: ViewPackagesDialogContainerPr
 								</ListItemButton>
 							))}
 						</List>
+
+						{onContinue && (
+							<Grid size={12} sx={{ pt: 2 }}>
+								<FormControl fullWidth>
+									<TextFieldWithMax
+										value={cancelPackagesComment}
+										label={<FormattedMessage defaultMessage="Cancellation comment" />}
+										fullWidth
+										multiline
+										onChange={(e) => setCancelPackagesComment(e.target.value)}
+										required
+									/>
+								</FormControl>
+							</Grid>
+						)}
 					</DialogBody>
 					{onContinue && (
 						<DialogFooter>
@@ -168,7 +190,7 @@ export function ViewPackagesDialogContainer(props: ViewPackagesDialogContainerPr
 								</SecondaryButton>
 							)}
 							{onContinue && (
-								<PrimaryButton onClick={onContinueClick} autoFocus>
+								<PrimaryButton onClick={onContinueClick} disabled={disableContinue} autoFocus>
 									<FormattedMessage id="workflowCancellation.continue" defaultMessage="Continue" />
 								</PrimaryButton>
 							)}
