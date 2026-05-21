@@ -121,10 +121,16 @@ export function fetchContentInstance(
 	return fetchContentDOM(site, path).pipe(map((doc) => parseContentXML(doc, path, contentTypesLookup, {})));
 }
 
-export function writeContent(siteId: string, path: string, content: string, options?: { unlock: boolean }) {
+export function writeContent(
+	siteId: string,
+	path: string,
+	content: string,
+	options?: { unlock: boolean; comment?: string }
+) {
 	const request$ = postJSON(`/studio/api/2/content/${siteId}`, {
 		path,
-		content
+		content,
+		comment: options?.comment || ''
 	});
 	if (options?.unlock) {
 		return request$.pipe(switchMap((response) => unlock(siteId, path).pipe(map(() => response))));
