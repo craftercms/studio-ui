@@ -159,7 +159,7 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 				if (strippedCount > 0) {
 					comment += ` ${formatMessage({ defaultMessage: 'and {count} more' }, { count: strippedCount })}`;
 				}
-				submissionComment = comment;
+				submissionComment = comment.length > commentMaxLength ? comment.slice(0, commentMaxLength) : comment;
 			}
 
 			if (labels.length > 0) {
