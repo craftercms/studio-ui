@@ -87,8 +87,8 @@ export function ViewPackagesDialogContainer(props: ViewPackagesDialogContainerPr
 	};
 
 	const onContinueClick = (e: React.MouseEvent) => {
-		onContinue(cancelPackagesComment);
-		onClose(e, null);
+		onContinue?.(cancelPackagesComment);
+		onClose?.(e, null);
 	};
 
 	useEffect(() => {
