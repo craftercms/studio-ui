@@ -106,8 +106,6 @@ export function PublishingPackageReviewDialogContainer(props: PublishingPackageR
 		isSubmitting ||
 		// No action has been selected
 		!state.action ||
-		// If the action is approve and the approver comment is empty
-		(state.action === 'approve' && !state.approverComment) ||
 		// If the action is reject and the reject comment is empty
 		(state.action === 'reject' && !state.rejectComment);
 
@@ -192,7 +190,7 @@ export function PublishingPackageReviewDialogContainer(props: PublishingPackageR
 		updateSubmittingOrHasPendingChanges({ isSubmitting: true });
 		if (state.action === 'approve') {
 			const data: PublishingPackageApproveParams = {
-				comment: state.approverComment,
+				comment: state.approverComment || formatMessage({ defaultMessage: 'Approved with no comment' }),
 				schedule:
 					state.scheduling === 'custom'
 						? state.schedule.toISOString()
@@ -323,7 +321,6 @@ export function PublishingPackageReviewDialogContainer(props: PublishingPackageR
 											onChange={onArgumentChange}
 											multiline
 											name="approverComment"
-											required
 										/>
 									</>
 								) : (
