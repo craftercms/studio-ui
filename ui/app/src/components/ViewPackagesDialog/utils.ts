@@ -53,7 +53,7 @@ export function checkAndCancelAffectedPackages({
 						component: 'craftercms.components.ViewPackagesDialog',
 						props: {
 							item,
-							cancelPackagesInitialMessage: cancelPackagesInitialComment,
+							cancelPackagesInitialComment,
 							onContinue: (cancelPackagesUpdatedComment: string) => {
 								cancelPackages(siteId, {
 									packageIds: affectedPackages.map((p) => p.id),
