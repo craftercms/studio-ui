@@ -42,7 +42,7 @@ export interface ContentTypesSelectorProps extends TypeBuilderControl {
 export function ContentTypesSelector(props: ContentTypesSelectorProps) {
 	const { field, value, setValue } = props;
 	const maxLength = field.validations?.maxLength?.value;
-	const type = getPropertyValue(field.properties, 'type') ?? ('component' as string);
+	const type = getPropertyValue(field.properties, 'type', 'component') as string;
 	const contentTypes = useContentTypes();
 	const [selectedLookup, setSelectedLookup] = useState<Record<string, boolean>>(createPresenceTable(asArray(value)));
 	const [searchTerm, setSearchTerm] = useState('');
