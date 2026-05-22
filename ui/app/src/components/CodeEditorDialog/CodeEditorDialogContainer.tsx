@@ -414,7 +414,13 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 					/>
 				</DialogBody>
 				<DialogFooter>
-					<Button onClick={() => setSaveWithCommentState({ openDialog: false })} disabled={loading}>
+					<Button
+						onClick={() => {
+							setSaveWithCommentState({ openDialog: false });
+							saveChoiceSelection(saveWithCommentState.saveType);
+						}}
+						disabled={loading}
+					>
 						<FormattedMessage id="words.cancel" defaultMessage="Cancel" />
 					</Button>
 					<Button
