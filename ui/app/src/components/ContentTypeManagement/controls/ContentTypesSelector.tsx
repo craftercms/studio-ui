@@ -30,6 +30,7 @@ import { EmptyState } from '../../EmptyState';
 import { FormattedMessage } from 'react-intl';
 import { reversePluckProps } from '../../../utils/object';
 import { SearchBar, type SearchBarProps } from '../../SearchBar';
+import { getPropertyValue } from '../../FormsEngine/lib/formUtils';
 
 export interface ContentTypesSelectorProps extends TypeBuilderControl {
 	value: string[] | '*';
@@ -41,6 +42,7 @@ export interface ContentTypesSelectorProps extends TypeBuilderControl {
 export function ContentTypesSelector(props: ContentTypesSelectorProps) {
 	const { field, value, setValue } = props;
 	const maxLength = field.validations?.maxLength?.value;
+	const type = getPropertyValue(field.properties, 'type') ?? ('component' as string);
 	const contentTypes = useContentTypes();
 	const [selectedLookup, setSelectedLookup] = useState<Record<string, boolean>>(createPresenceTable(asArray(value)));
 	const [searchTerm, setSearchTerm] = useState('');
@@ -48,12 +50,12 @@ export function ContentTypesSelector(props: ContentTypesSelectorProps) {
 		() =>
 			Object.values(contentTypes).filter((contentType) => {
 				return (
-					contentType.type === 'component' &&
+					contentType.type === type &&
 					(contentType.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
 						contentType.name.toLowerCase().includes(searchTerm.toLowerCase()))
 				);
 			}),
-		[contentTypes, searchTerm]
+		[contentTypes, searchTerm, type]
 	);
 
 	const handleToggle = (selectionValue: string) => () => {

@@ -38,7 +38,8 @@ export function useConsolidatedItemPickerData(dataSources: DataSource[]): Consol
 
 		dataSources.forEach((ds) => {
 			switch (ds.type) {
-				case 'components': {
+				case 'components':
+				case 'pages': {
 					// TODO: Handle '*' from components DS
 					const allowedContentTypesData =
 						parseComponentsDataSourceContentTypesProperty(ds as ComponentsDatasource, ds.properties.contentTypes)
