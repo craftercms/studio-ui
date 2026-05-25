@@ -35,7 +35,6 @@ export interface SaveCardProps {
 	isRepeatMode: boolean;
 	isStackedForm: boolean;
 	isEmbedded: boolean;
-	saveAsDraft: boolean;
 	setSaveAsDraft: (value: boolean) => void;
 	invalidForm: boolean;
 	onSave: (e: MouseEvent, draft?: boolean) => void;
