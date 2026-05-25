@@ -59,6 +59,7 @@ import GitFilled from '../../icons/GitFilled';
 import { previewSwitch } from '../../services/security';
 import { keyframes } from '@emotion/react';
 import { fadeIn } from 'react-animations';
+import { extractErrorPayload } from '../../utils/ajax';
 
 interface SearchState {
 	searchKey: string;
@@ -204,7 +205,7 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
 			if (type === 'token') {
 				map['repoToken'] = !site.repoToken;
 			}
-			if (type === 'key') {
+			if (type === 'private_key') {
 				map['repoKey'] = !site.repoKey;
 			}
 		}
@@ -367,7 +368,7 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
 			if (!site.repoUrl) return false;
 			else if (site.repoAuthentication === 'basic' && (!site.repoUsername || !site.repoPassword)) return false;
 			else if (site.repoAuthentication === 'token' && !site.repoToken) return false;
-			else return !(site.repoAuthentication === 'key' && !site.repoKey);
+			else return !(site.repoAuthentication === 'private_key' && !site.repoKey);
 		} else {
 			return checkAdditionalFields();
 		}
@@ -425,7 +426,7 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
 				if (site.repoAuthentication === 'token') {
 					authentication.token = site.repoToken;
 				}
-				if (site.repoAuthentication === 'key') {
+				if (site.repoAuthentication === 'private_key') {
 					authentication.privateKey = site.repoKey;
 				}
 
@@ -627,7 +628,7 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
 				(apiState.errorResponse && (
 					<ApiResponseErrorState
 						sxs={{ root: { height: '100%' } }}
-						error={apiState.errorResponse}
+						error={extractErrorPayload(apiState.errorResponse)}
 						onButtonClick={handleErrorBack}
 					/>
 				)) ||
@@ -788,7 +789,10 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
 							)}
 						</DialogBody>
 					) : apiState.error ? (
-						<ApiResponseErrorState sxs={{ root: { height: '100%' } }} error={apiState.errorResponse} />
+						<ApiResponseErrorState
+							sxs={{ root: { height: '100%' } }}
+							error={extractErrorPayload(apiState.errorResponse)}
+						/>
 					) : (
 						<Box sx={{ position: 'relative', padding: 16, flexGrow: 1 }}>
 							<LoadingState />
