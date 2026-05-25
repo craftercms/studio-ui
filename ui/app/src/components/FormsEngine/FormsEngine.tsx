@@ -700,7 +700,7 @@ function FormOrchestrator(props: FormsEngineProps) {
 	}, [isSubmitting, hasPendingChanges, isStackedForm, updateSubmittingOrHasPendingChanges]);
 
 	// Unlock content when the form is closed.
-	useUnlockOnClose({ ...props, saveAsDraft });
+	useUnlockOnClose({ ...props, saveAsDraft, invalidForm });
 
 	// region Workflow item updates
 	useEffect(() => {
@@ -999,7 +999,6 @@ function FormOrchestrator(props: FormsEngineProps) {
 										isEmbedded={isEmbedded}
 										isStackedForm={isStackedForm}
 										isRepeatMode={isRepeatMode}
-										saveAsDraft={saveAsDraft}
 										setSaveAsDraft={setSaveAsDraft}
 										invalidForm={invalidForm}
 										onSave={(e, draft) => saveFn(draft)}
