@@ -372,7 +372,7 @@ function FormBootstrap(props: FormsEngineProps) {
 			// If repeat.values was provided, `createCleanValuesObject` didn't run; hence, atomValueCreator needs to be run manually.
 			repeat.values && Object.keys(values).forEach((fieldId) => atomValueCreator(fieldId, values[fieldId]));
 
-			const xmlDoc = fromString(parentStackData.itemMeta.contentXml);
+			const xmlDoc = fromString(parentStackData.itemMeta.contentXml ?? '');
 			const fieldId = repeat.fieldId;
 			const index = repeat.index ?? 0;
 			const element = xmlDoc?.querySelector(`:scope > ${fieldId}`)?.children[index];
