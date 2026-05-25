@@ -52,6 +52,7 @@ import { showSystemNotification } from '../../state/actions/system';
 import { hasApproveAction, hasRejectAction } from '../../utils/content';
 import { pushErrorDialog } from '../../utils/system';
 import { useEnhancedDialogContext } from '../EnhancedDialog';
+import { isBlank } from '../../utils/string';
 
 export type PackageReviewAction = 'approve' | 'reject';
 interface InternalDialogState {
@@ -190,7 +191,9 @@ export function PublishingPackageReviewDialogContainer(props: PublishingPackageR
 		updateSubmittingOrHasPendingChanges({ isSubmitting: true });
 		if (state.action === 'approve') {
 			const data: PublishingPackageApproveParams = {
-				comment: state.approverComment || formatMessage({ defaultMessage: 'Approved with no comment' }),
+				comment: isBlank(state.approverComment)
+					? formatMessage({ defaultMessage: 'Approved with no comment' })
+					: state.approverComment.trim(),
 				schedule:
 					state.scheduling === 'custom'
 						? state.schedule.toISOString()
