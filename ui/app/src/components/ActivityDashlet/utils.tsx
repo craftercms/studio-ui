@@ -142,7 +142,7 @@ export function renderActivity(
 		case 'REJECT_PUBLISH_PACKAGE':
 			return (
 				<FormattedMessage
-					id="activityDashlet.publishedActivityMessage"
+					id="activityDashlet.rejectedActivityMessage"
 					defaultMessage="Rejected <render_package_link>a package</render_package_link>"
 					values={{ render_package_link }}
 				/>
