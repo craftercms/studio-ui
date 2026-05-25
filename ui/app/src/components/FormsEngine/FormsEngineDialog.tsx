@@ -48,7 +48,6 @@ export function FormsEngineDialog(props: FormsEngineDialogProps) {
 				}
 			}}
 			{...rest}
-			open={true}
 			omitHeader
 			maxWidth="xl"
 			title="Content Form"

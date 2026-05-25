@@ -50,8 +50,9 @@ export function RichTextEditor(props: RichTextEditorProps) {
 	const rteConfig = useRTEConfig();
 	const editorRef = useRef<Editor>(undefined);
 	const hasReceivedFocusRef = useRef(false);
-	const maxLength = getPropertyValue(field.properties, 'maxLength') as number;
-	const { setDisableEnforceFocus } = useContext(FormsEngineDialogContext);
+	const maxLength = getPropertyValue(field.properties, 'maxlength') as number;
+	const dialogContext = useContext(FormsEngineDialogContext);
+	const setDisableEnforceFocus = dialogContext?.setDisableEnforceFocus;
 
 	// region Initialize RTE config FE2 TODO: Move elsewhere
 	const uiConfig = useSiteUIConfig();
@@ -135,10 +136,10 @@ export function RichTextEditor(props: RichTextEditorProps) {
 				licenseKey="gpl"
 				init={getTinyMceInitOptions(field, rteConfig, defaultInitOptions, (editor) => {
 					editor.on('OpenWindow', () => {
-						setDisableEnforceFocus(true);
+						setDisableEnforceFocus?.(true);
 					});
 					editor.on('CloseWindow', () => {
-						setDisableEnforceFocus(false);
+						setDisableEnforceFocus?.(false);
 					});
 				})}
 				tinymceScriptSrc={tinymceScriptSrc}

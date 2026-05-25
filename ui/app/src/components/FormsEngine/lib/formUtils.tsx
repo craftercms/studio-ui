@@ -1122,9 +1122,8 @@ export function getTinyMceInitOptions(
 				'autosave_prefix',
 				'autosave_restore_when_empty',
 				'autosave_retention',
-				'file_picker_callback', // No file picker is set by default, and functions are not supported in config file.
+				'file_picker_callback', // No file picker is set by default, and functions are not supported in config file. Files/images handlers currently not supported.
 				'height', // Height is set to the size of content
-				'file_picker_callback', // Files/images handlers currently not supported
 				'paste_postprocess',
 				'paste_preprocess',
 				'paste_as_text', // Considered above,
