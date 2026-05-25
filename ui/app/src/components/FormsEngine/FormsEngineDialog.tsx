@@ -15,9 +15,10 @@
  */
 
 import EnhancedDialog, { EnhancedDialogProps } from '../EnhancedDialog';
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import FormsEngine, { FormsEngineProps } from './FormsEngine';
 import { dialogClasses } from '@mui/material/Dialog';
+import { FormsEngineDialogContext } from './lib/formsEngineContext';
 
 export interface FormsEngineDialogProps extends EnhancedDialogProps {
 	formProps: FormsEngineProps;
@@ -25,6 +26,20 @@ export interface FormsEngineDialogProps extends EnhancedDialogProps {
 
 export function FormsEngineDialog(props: FormsEngineDialogProps) {
 	const { formProps, ...rest } = props;
+
+	const [disableEnforceFocus, setDisableEnforceFocus] = useState(false);
+	const stableFormsEngineDialogContextRef = useRef(undefined);
+	if (!stableFormsEngineDialogContextRef.current) {
+		stableFormsEngineDialogContextRef.current = {
+			disableEnforceFocus,
+			setDisableEnforceFocus
+		};
+	}
+	// Keep context value in sync with state
+	useEffect(() => {
+		stableFormsEngineDialogContextRef.current.disableEnforceFocus = disableEnforceFocus;
+	}, [disableEnforceFocus]);
+
 	return (
 		<EnhancedDialog
 			sx={{
@@ -33,19 +48,22 @@ export function FormsEngineDialog(props: FormsEngineDialogProps) {
 				}
 			}}
 			{...rest}
+			open={true}
 			omitHeader
 			maxWidth="xl"
 			title="Content Form"
 			data-area-id="forms-engine-dialog-root"
-			disableEnforceFocus={true} // This allows TinyMCE popups to gain focus (e.g. code editor, needs focus to be able to type in it)
+			disableEnforceFocus={disableEnforceFocus} // This allows TinyMCE popups to gain focus (e.g. code editor, needs focus to be able to type in it)
 		>
-			<FormsEngine
-				onMinimize={props.onMinimize}
-				onFullScreen={props.onFullScreen}
-				onCancelFullScreen={props.onCancelFullScreen}
-				{...formProps}
-				isDialog
-			/>
+			<FormsEngineDialogContext.Provider value={stableFormsEngineDialogContextRef.current}>
+				<FormsEngine
+					onMinimize={props.onMinimize}
+					onFullScreen={props.onFullScreen}
+					onCancelFullScreen={props.onCancelFullScreen}
+					{...formProps}
+					isDialog
+				/>
+			</FormsEngineDialogContext.Provider>
 		</EnhancedDialog>
 	);
 }

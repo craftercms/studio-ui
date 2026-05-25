@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { FormsEngineField } from '../components/FormsEngineField';
 import { ControlProps } from '../types';
 import useRTEConfig from '../../../hooks/useRTEConfig';
@@ -30,6 +30,7 @@ import { TinyMCE } from 'tinymce';
 import { getTinymce } from '@tinymce/tinymce-react/lib/es2015/main/ts/TinyMCE';
 import { getPropertyValue, getTinyMceInitOptions } from '../lib/formUtils';
 import { loadAceEditorAssets } from '../../../utils/system';
+import { FormsEngineDialogContext } from '../lib/formsEngineContext';
 
 export interface RichTextEditorProps extends ControlProps {
 	value: string;
@@ -50,6 +51,7 @@ export function RichTextEditor(props: RichTextEditorProps) {
 	const editorRef = useRef<Editor>(undefined);
 	const hasReceivedFocusRef = useRef(false);
 	const maxLength = getPropertyValue(field.properties, 'maxLength') as number;
+	const { setDisableEnforceFocus } = useContext(FormsEngineDialogContext);
 
 	// region Initialize RTE config FE2 TODO: Move elsewhere
 	const uiConfig = useSiteUIConfig();
@@ -131,7 +133,14 @@ export function RichTextEditor(props: RichTextEditorProps) {
 		>
 			<Editor
 				licenseKey="gpl"
-				init={getTinyMceInitOptions(field, rteConfig, defaultInitOptions)}
+				init={getTinyMceInitOptions(field, rteConfig, defaultInitOptions, (editor) => {
+					editor.on('OpenWindow', () => {
+						setDisableEnforceFocus(true);
+					});
+					editor.on('CloseWindow', () => {
+						setDisableEnforceFocus(false);
+					});
+				})}
 				tinymceScriptSrc={tinymceScriptSrc}
 				onEditorChange={handleChange}
 				value={value}
