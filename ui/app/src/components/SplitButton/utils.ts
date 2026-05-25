@@ -24,7 +24,6 @@ export interface SplitButtonOption {
 
 export interface SplitButtonProps {
 	options: SplitButtonOption[];
-	disabledOptions?: string[];
 	defaultSelected?: string;
 	disablePortal?: boolean;
 	disabled?: boolean;
@@ -35,7 +34,6 @@ export interface SplitButtonProps {
 
 export interface SplitButtonUIProps {
 	options: SplitButtonOption[];
-	disabledOptions?: SplitButtonProps['disabledOptions'];
 	disablePortal?: boolean;
 	loading?: boolean;
 	disabled?: boolean;
