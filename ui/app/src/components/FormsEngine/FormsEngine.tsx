@@ -300,8 +300,8 @@ function FormBootstrap(props: FormsEngineProps) {
 	api.updateProps(stackIndex, props);
 
 	useEffect(() => {
-		if (!liveUpdatedItem) setReady(false);
-	}, [liveUpdatedItem]);
+		if (!create && !repeat && !liveUpdatedItem) setReady(false);
+	}, [liveUpdatedItem, create, repeat]);
 
 	useEffect(() => {
 		contentTypesById && setContentTypesLoaded(true);
