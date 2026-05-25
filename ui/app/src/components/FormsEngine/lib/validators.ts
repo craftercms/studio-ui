@@ -369,9 +369,10 @@ export function numericInputValidator(
 	let numTypeRegex;
 	if (numType === '_f' || numType === '_d') {
 		// with decimals
-		numTypeRegex = /^(\d|-)?(\d|,)*\.?\d*$/;
+		numTypeRegex = /^[+-]?\d+(\.\d+)?$/;
 		if (!String(currentValue).match(numTypeRegex)) {
 			isValid = false;
+			messages.push([defineMessage({ defaultMessage: 'Please enter a valid decimal number.' })]);
 		}
 	} else {
 		numTypeRegex = /^([+-]?[1-9]\d*|0)$/;
