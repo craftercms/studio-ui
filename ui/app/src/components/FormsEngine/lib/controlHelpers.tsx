@@ -327,7 +327,12 @@ export const showSearchDialog = ({
 					path,
 					sortBy: 'internalName',
 					...initialParameters,
-					...(contentTypes && { filters: { 'content-type': contentTypes } })
+					...(contentTypes && {
+						filters: {
+							...(initialParameters?.filters ?? {}),
+							'content-type': contentTypes
+						}
+					})
 				},
 				preselectedPaths,
 				onClose: () => dispatch(popDialog({ id })),
