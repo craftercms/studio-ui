@@ -17,7 +17,7 @@
 import { useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useDispatch, useStore as useReduxStore } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import useActiveSite from '../../hooks/useActiveSite';
 import useContentTypes from '../../hooks/useContentTypes';
 import React, { createElement, type RefCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
@@ -132,7 +132,6 @@ import { fetchAffectedPackages } from '../../services/workflow';
 import useMount from '../../hooks/useMount';
 import { nnou, nou } from '../../utils/object';
 import { buildContentXml } from './lib/valueSerializers';
-import GlobalState from '../../models/GlobalState';
 
 export interface FormSavePromiseResult {
 	close: boolean;
