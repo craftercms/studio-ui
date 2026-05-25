@@ -360,7 +360,8 @@ export function numericInputValidator(
 	const pattern: string = getValidationValue(field.validations, 'pattern');
 	const maxValue: number = getValidationValue(field.validations, 'maxValue');
 	const minValue: number = getValidationValue(field.validations, 'minValue');
-	const numType = field.id.substring(field.id.lastIndexOf('_'));
+	const lastUnderscore = field.id.lastIndexOf('_');
+	const numType = lastUnderscore !== -1 ? field.id.substring(lastUnderscore) : '_i';
 
 	if (nou(currentValue) || Number.isNaN(Number(currentValue))) {
 		return isValid;
