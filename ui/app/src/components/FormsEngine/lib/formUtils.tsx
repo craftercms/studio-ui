@@ -637,14 +637,28 @@ export interface ShouldUnlockArguments {
 	isParentReadonly: boolean;
 	siteId: string;
 	isRenamed: boolean;
+	saveAsDraft: boolean;
+	invalidForm: boolean;
 }
 
 /**
  * Determines if an item should be unlocked when its form is being unmounted.
  **/
 export function shouldUnlockItem(props: ShouldUnlockArguments): boolean {
-	const { isRepeatMode, isCreateMode, readonly, isEmbedded, isStackedForm, isParentReadonly, isRenamed } = props;
+	const {
+		isRepeatMode,
+		isCreateMode,
+		readonly,
+		isEmbedded,
+		isStackedForm,
+		isParentReadonly,
+		isRenamed,
+		saveAsDraft,
+		invalidForm
+	} = props;
 	return (
+		!invalidForm &&
+		!saveAsDraft &&
 		!isRenamed &&
 		!isRepeatMode &&
 		!isCreateMode &&
@@ -663,8 +677,8 @@ export function shouldUnlockItem(props: ShouldUnlockArguments): boolean {
  * When the consumer component is being unmounted, checks if it should be unlocked and unlocks if so.
  * @param props {FormsEngineProps}
  **/
-export function useUnlockOnClose(props: FormsEngineProps) {
-	const { create, update, repeat, stackIndex = 0 } = props;
+export function useUnlockOnClose(props: FormsEngineProps & { saveAsDraft?: boolean; invalidForm?: boolean }) {
+	const { create, update, repeat, stackIndex = 0, saveAsDraft = false, invalidForm } = props;
 	const itemPath = useContext(ItemContext)?.path;
 	const { atoms } = useContext(StableFormContext);
 	const { formsStackData } = useContext(StableGlobalContext);
@@ -690,7 +704,9 @@ export function useUnlockOnClose(props: FormsEngineProps) {
 		isStackedForm,
 		isParentReadonly: formsStackData[stackIndex - 1] ? store.get(formsStackData[stackIndex - 1].atoms.readonly) : false,
 		siteId,
-		isRenamed
+		isRenamed,
+		saveAsDraft,
+		invalidForm
 	});
 	useEffect(
 		() => () => {
@@ -708,7 +724,7 @@ export function useUnlockOnClose(props: FormsEngineProps) {
 				});
 			}
 		},
-		[itemPath, unlockEffectRefs]
+		[itemPath, unlockEffectRefs, saveAsDraft]
 	);
 }
 

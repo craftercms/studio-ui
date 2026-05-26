@@ -643,6 +643,9 @@ function FormOrchestrator(props: FormsEngineProps) {
 		lockStatus
 	});
 	const [collapseHeader, setCollapseHeader] = useState(false);
+	const [saveAsDraft, setSaveAsDraft] = useState(false);
+	const [invalidForm, setInvalidForm] = useState(false);
+	const jotai = useJotaiStore();
 
 	useMount(() => {
 		// If 'update.changeTypeId' has content, it means the content type has changed, so we set pending changes to true
@@ -650,6 +653,19 @@ function FormOrchestrator(props: FormsEngineProps) {
 		if (update?.changeTypeId) {
 			setHasPendingChanges(true);
 		}
+		const checkValidationState = async () => {
+			const validityStates = await Promise.all(
+				Object.values(stableFormContext.atoms.validationByFieldId).map((validityDataAtom) =>
+					jotai.get(validityDataAtom)
+				)
+			);
+			setInvalidForm(validityStates.some((state) => !state.isValid));
+		};
+		void checkValidationState();
+		const subscription = stableFormContext.fieldUpdates$
+			.pipe(debounceTime(300))
+			.subscribe(() => void checkValidationState());
+		return () => subscription.unsubscribe();
 	});
 
 	// Changes comment generation & change detection/tracking
@@ -684,7 +700,7 @@ function FormOrchestrator(props: FormsEngineProps) {
 	}, [isSubmitting, hasPendingChanges, isStackedForm, updateSubmittingOrHasPendingChanges]);
 
 	// Unlock content when the form is closed.
-	useUnlockOnClose(props);
+	useUnlockOnClose({ ...props, saveAsDraft, invalidForm });
 
 	// region Workflow item updates
 	useEffect(() => {
@@ -983,7 +999,9 @@ function FormOrchestrator(props: FormsEngineProps) {
 										isEmbedded={isEmbedded}
 										isStackedForm={isStackedForm}
 										isRepeatMode={isRepeatMode}
-										onSave={() => saveFn()}
+										setSaveAsDraft={setSaveAsDraft}
+										invalidForm={invalidForm}
+										onSave={(e, draft) => saveFn(draft)}
 									/>
 									{!isCreateMode && // There's no locking on create mode
 										(!isRepeatMode || (isRepeatMode && repeat.values)) && // No point in the "unlock" button for new repeat items

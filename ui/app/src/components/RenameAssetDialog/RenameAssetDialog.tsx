@@ -21,7 +21,6 @@ import { RenameAssetDialogProps } from './utils';
 import { RenameAssetDialogContainer } from './RenameAssetDialogContainer';
 import { useDispatch } from 'react-redux';
 import { fetchDependant as fetchDependantService } from '../../services/dependencies';
-import { parseLegacyItemToContentItem } from '../../utils/content';
 import { pushErrorDialog } from '../../utils/system';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import type { Subscription } from 'rxjs';

@@ -25,7 +25,15 @@ import {
 import useActiveUser from '../../hooks/useActiveUser';
 
 export function SplitButton(props: SplitButtonProps) {
-	const { options, defaultSelected = options[0].id, disablePortal = true, disabled, loading, storageKey } = props;
+	const {
+		options,
+		defaultSelected = options?.[0].id,
+		disablePortal = true,
+		disabled,
+		loading,
+		storageKey,
+		fullWidth
+	} = props;
 	const [open, setOpen] = React.useState(false);
 	const user = useActiveUser();
 	const anchorRef = React.useRef<HTMLDivElement>(null);
@@ -90,6 +98,7 @@ export function SplitButton(props: SplitButtonProps) {
 			handleToggle={handleToggle}
 			handleClose={handleClose}
 			handleMenuItemClick={handleMenuItemClick}
+			fullWidth={fullWidth}
 		/>
 	);
 }
