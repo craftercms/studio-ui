@@ -100,7 +100,15 @@ export function ContentTypesSelector(props: ContentTypesSelectorProps) {
 								<ListItemIcon sx={{ py: 1 }}>
 									{selectedLookup['*'] ? <CheckBoxRoundedIcon color="primary" /> : <CheckBoxOutlineBlankRoundedIcon />}
 								</ListItemIcon>
-								<ListItemText primary={<FormattedMessage defaultMessage="Allow any component" />} />
+								<ListItemText
+									primary={
+										type === 'page' ? (
+											<FormattedMessage defaultMessage="Allow any page" />
+										) : (
+											<FormattedMessage defaultMessage="Allow any component" />
+										)
+									}
+								/>
 							</ListItemButton>
 						</ListItem>
 						{components.map((contentType) => (
