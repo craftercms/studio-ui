@@ -61,7 +61,7 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
 	const site = useActiveSiteId();
 	const { guestBase } = useEnv();
 	const dispatch = useDispatch();
-	const [keyword, setKeyword] = useState('');
+	const [keyword, setKeyword] = useState(initialParametersProp?.keywords ?? '');
 	const [selectedCard, setSelectedCard] = useState<MediaItem>();
 	const [searchParameters, setSearchParameters] = useSpreadState({
 		...initialParameters,
