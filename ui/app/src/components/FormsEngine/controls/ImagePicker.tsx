@@ -191,6 +191,7 @@ export function ImagePicker(props: ImagePickerProps) {
 					setPickerType('search');
 					setOpenPickerDialog(true);
 				}
+				break;
 			}
 		}
 	};
