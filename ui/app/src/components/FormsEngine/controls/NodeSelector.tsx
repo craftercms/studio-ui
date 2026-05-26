@@ -903,7 +903,7 @@ function CreateDataSourcePicker(props: {
 			{value.strategy === 'shared' && props.allowedCreateTypes[value.contentTypeId]?.createPaths?.length > 1 && (
 				<Grid sx={{ display: 'flex', flexDirection: 'column' }}>
 					<FormControl sx={{ mt: 1 }} fullWidth>
-						<FormLabel>
+						<FormLabel id="creationPathLabel">
 							<FormattedMessage defaultMessage="Creation Path" />
 						</FormLabel>
 						<RadioGroup aria-labelledby="creationPathLabel" name="creationPath" value={value.path} sx={{}}>
