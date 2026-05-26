@@ -33,7 +33,7 @@ import { FormattedMessage } from 'react-intl';
 import LinkOffRoundedIcon from '@mui/icons-material/LinkOffRounded';
 import Tooltip from '@mui/material/Tooltip';
 import useContentTypes from '../../../hooks/useContentTypes';
-import {
+import React, {
 	lazy,
 	MouseEvent as ReactMouseEvent,
 	ReactNode,
@@ -78,7 +78,7 @@ import useItemsByPath from '../../../hooks/useItemsByPath';
 import ItemDisplay from '../../ItemDisplay';
 import useActiveUser from '../../../hooks/useActiveUser';
 import { getFileExtension, processPathMacros } from '../../../utils/path';
-import { ensureSingleSlash } from '../../../utils/string';
+import { ensureSingleSlash, isEmpty } from '../../../utils/string';
 import { popDialog, pushDialog } from '../../../state/actions/dialogStack';
 import FieldBox from '../components/FieldBox';
 import { isTouchDevice, KeyDownEvent, sortableListKeyDownHandler } from '../lib/sortableListUtil';
@@ -106,6 +106,11 @@ import {
 } from '../../PathNavigator/utils';
 import useSelection from '../../../hooks/useSelection';
 import { getValidationValue, isFieldReadOnly, showAlert } from '../lib/formUtils';
+import TypeList from '../../ContentTypeManagement/components/TypeList';
+import { SearchBar } from '../../SearchBar';
+import useDebouncedInput from '../../../hooks/useDebouncedInput';
+import { filterTypesByKeywordsAndObjectType } from '../../../utils/contentType';
+import { TypeListControlBarProps } from '../../ContentTypeManagement/components/TypeListControlBar';
 
 const SortableList = lazy(() => import('../components/SortableList'));
 const TouchSortableList = lazy(() => import('../components/TouchSortableList'));
@@ -508,7 +513,17 @@ function NodeSelector(props: NodeSelectorProps) {
 				}}
 				children={menuOptions}
 			/>
-			<Dialog open={pickerDialogOpen} onClose={handleCloseDataSourcePickerDialog} fullWidth maxWidth="sm">
+			<Dialog
+				open={pickerDialogOpen}
+				onClose={handleCloseDataSourcePickerDialog}
+				fullWidth
+				maxWidth={pickerType !== 'create' ? 'sm' : 'md'}
+				slotProps={{
+					paper: {
+						sx: [pickerType === 'create' && { minHeight: '60vh' }]
+					}
+				}}
+			>
 				<DialogHeader
 					title={<FormattedMessage defaultMessage="Choose how to proceed" />}
 					onCloseButtonClick={handleCloseDataSourcePickerDialog}
@@ -764,8 +779,8 @@ function CreateDataSourcePicker(props: {
 	});
 	const refs = useUpdateRefs({ value, onChange });
 	const [allowedStrategies, setAllowedStrategies] = useState({ embedded: false, shared: false });
-	const handleTypeChange = (event: SyntheticEvent) => {
-		const newValue = { ...value, contentTypeId: (event.target as HTMLInputElement).value };
+	const handleTypeChange = (event: SyntheticEvent, contentType: ContentType) => {
+		const newValue = { ...value, contentTypeId: contentType.id };
 		setValue(newValue);
 		onChange?.(event, newValue);
 	};
@@ -831,27 +846,63 @@ function CreateDataSourcePicker(props: {
 	useEffect(() => {
 		refs.current.onChange?.(null, value);
 	}, [refs, value]);
+
+	const [filteredTypes, setFilteredTypes] = useState(undefined);
+	const filteredTypesRef = useRef(undefined);
+	filteredTypesRef.current = filteredTypes;
+	const [keywords, setKeywords] = useState<string>('');
+	const onKeyword$ = useDebouncedInput((keywords) => {
+		if (!allowedTypes) return;
+		const types = filterTypesByKeywordsAndObjectType(
+			allowedTypes.map((typeId) => contentTypesLookup[typeId]).filter(Boolean),
+			keywords,
+			'all'
+		);
+		setFilteredTypes(types);
+	});
+
+	useEffect(() => {
+		if (allowedTypes?.length && !filteredTypesRef.current) {
+			setFilteredTypes(allowedTypes.map((typeId) => contentTypesLookup[typeId]).filter(Boolean));
+		}
+	}, [allowedTypes, contentTypesLookup]);
+
+	const handleKeywordsChange: TypeListControlBarProps['onKeywordsChange'] = (value) => {
+		setKeywords(value);
+		onKeyword$.next(value);
+	};
+
 	return (
-		<Grid container spacing={2} justifyContent="center">
-			<Grid sx={{ display: 'flex', flexDirection: 'column' }}>
-				<FormControl>
-					<FormLabel id="contentTypeLabel" sx={{ minHeight: 28, display: 'flex', alignItems: 'center' }}>
-						<FormattedMessage defaultMessage="Content Type" />
-					</FormLabel>
-					<RadioGroup aria-labelledby="contentTypeLabel" name="contentType" value={value.contentTypeId}>
-						{allowedTypes?.map((contentTypeId) => (
-							<FormControlLabel
-								key={contentTypeId}
-								value={contentTypeId}
-								control={<Radio />}
-								label={contentTypesLookup[contentTypeId].name}
-								onChange={handleTypeChange}
-							/>
-						))}
+		<Grid container spacing={2} display="flex" flexDirection="column">
+			<Grid>
+				<FormControl sx={{ mb: 1, flexShrink: 0 }} fullWidth>
+					<Box alignItems="center" display="flex">
+						<FormLabel id="creationStrategyLabel">
+							<FormattedMessage defaultMessage="Creation Strategy" />
+						</FormLabel>
+						<IconButton size="small" sx={{ ml: 1 }} color="primary" component="a" href="/studio" target="_blank">
+							<HelpOutline fontSize="inherit" />
+						</IconButton>
+					</Box>
+					<RadioGroup aria-labelledby="creationStrategyLabel" name="creationStrategy" value={value.strategy} row>
+						<FormControlLabel
+							value="embedded"
+							disabled={!allowedStrategies.embedded}
+							control={<Radio onChange={handleStrategyChange} />}
+							label={<FormattedMessage defaultMessage="Embedded" />}
+						/>
+						<FormControlLabel
+							disabled={!allowedStrategies.shared}
+							value="shared"
+							control={<Radio onChange={handleStrategyChange} />}
+							label={<FormattedMessage defaultMessage="Shared" />}
+						/>
 					</RadioGroup>
 				</FormControl>
-				{props.allowedCreateTypes[value.contentTypeId]?.createPaths?.length > 1 && (
-					<FormControl sx={{ mt: 1 }}>
+			</Grid>
+			{value.strategy === 'shared' && props.allowedCreateTypes[value.contentTypeId]?.createPaths?.length > 1 && (
+				<Grid sx={{ display: 'flex', flexDirection: 'column' }}>
+					<FormControl sx={{ mt: 1 }} fullWidth>
 						<FormLabel>
 							<FormattedMessage defaultMessage="Creation Path" />
 						</FormLabel>
@@ -868,32 +919,37 @@ function CreateDataSourcePicker(props: {
 							))}
 						</RadioGroup>
 					</FormControl>
-				)}
-			</Grid>
-			<Grid>
-				<FormControl sx={{ mb: 1, shrink: 0 }}>
-					<Box alignItems="center" display="flex">
-						<FormLabel id="creationStrategyLabel">
-							<FormattedMessage defaultMessage="Creation Strategy" />
-						</FormLabel>
-						<IconButton size="small" sx={{ ml: 1 }} color="primary" component="a" href="/studio" target="_blank">
-							<HelpOutline fontSize="inherit" />
-						</IconButton>
-					</Box>
-					<RadioGroup aria-labelledby="creationStrategyLabel" name="creationStrategy" value={value.strategy}>
-						<FormControlLabel
-							value="embedded"
-							disabled={!allowedStrategies.embedded}
-							control={<Radio onChange={handleStrategyChange} />}
-							label={<FormattedMessage defaultMessage="Embedded" />}
-						/>
-						<FormControlLabel
-							disabled={!allowedStrategies.shared}
-							value="shared"
-							control={<Radio onChange={handleStrategyChange} />}
-							label={<FormattedMessage defaultMessage="Shared" />}
-						/>
-					</RadioGroup>
+				</Grid>
+			)}
+
+			<Grid width="100%">
+				<FormControl fullWidth>
+					<FormLabel id="contentTypeLabel" sx={{ minHeight: 28, display: 'flex', alignItems: 'center' }}>
+						<FormattedMessage defaultMessage="Content Type" />
+					</FormLabel>
+					<SearchBar
+						keyword={keywords}
+						onChange={(value) => handleKeywordsChange(value)}
+						showActionButton={!isEmpty(keywords)}
+						sxs={{
+							root: {
+								background: 'none !important',
+								border: 'none !important',
+								borderRadius: 0,
+								boxShadow: 'none',
+								flexGrow: 1,
+								py: 1
+							},
+							inputInput: { padding: '8px 5px' }
+						}}
+					/>
+					<TypeList
+						contentTypes={filteredTypes}
+						compact={true}
+						onCardClick={handleTypeChange}
+						selectedTypeId={value.contentTypeId}
+						disableSelected={false}
+					/>
 				</FormControl>
 			</Grid>
 		</Grid>
