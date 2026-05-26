@@ -55,6 +55,7 @@ import { SearchProps } from '../../Search';
 import type { ImageRestrictions } from '../../ImageEditorDialog/types';
 import type { SingleFileUploadDialogProps } from '../../SingleFileUploadDialog';
 import type { FileUploadResult } from '../../SingleFileUpload';
+import { ImagePickerType } from '../controls/ImagePicker';
 
 // Note: These persist past the closing of the form.
 const lazyControlMap = new Map<string, LazyExoticComponent<ComponentType>>();
@@ -212,8 +213,10 @@ export function createMediaMenuOptions(
 ) {
 	const { allowedBrowsePaths, allowedUploadPaths, allowedSearchPaths } = dataSourceSummary;
 	const menuOptions = [];
+	const availableOptions: ImagePickerType[] = [];
 
 	if (allowedBrowsePaths.length > 0) {
+		availableOptions.push('browse');
 		menuOptions.push(
 			<MenuItem key="browse" onClick={(event) => handleDataSourceOptionClick(event, 'browse')} disabled={readonly}>
 				<ListItemIcon sx={{ mr: 0 }}>
@@ -226,6 +229,7 @@ export function createMediaMenuOptions(
 		);
 	}
 	if (allowedSearchPaths.length > 0) {
+		availableOptions.push('search');
 		menuOptions.push(
 			<MenuItem key="search" onClick={(event) => handleDataSourceOptionClick(event, 'search')} disabled={readonly}>
 				<ListItemIcon sx={{ mr: 0 }}>
@@ -238,6 +242,7 @@ export function createMediaMenuOptions(
 		);
 	}
 	if (allowedUploadPaths.length > 0) {
+		availableOptions.push('upload');
 		menuOptions.push(
 			<MenuItem key="upload" onClick={(event) => handleDataSourceOptionClick(event, 'upload')} disabled={readonly}>
 				<ListItemIcon sx={{ mr: 0 }}>
@@ -249,7 +254,7 @@ export function createMediaMenuOptions(
 			</MenuItem>
 		);
 	}
-	return menuOptions;
+	return { menuOptions, availableOptions };
 }
 
 export function downloadMedia(base: string, url: string) {
