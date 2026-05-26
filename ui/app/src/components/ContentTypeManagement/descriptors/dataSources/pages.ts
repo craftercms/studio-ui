@@ -72,7 +72,7 @@ export const pagesDataSourceDescriptor: DescriptorContentType = {
 			id: 'baseRepoPath',
 			type: 'content-path-input',
 			name: defineMessage({ defaultMessage: 'Path for New Items' }),
-			defaultValue: '/site/components',
+			defaultValue: '/site/website',
 			validations: immutableEmptyObject
 		},
 		baseBrowsePath: {
