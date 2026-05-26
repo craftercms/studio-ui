@@ -426,7 +426,7 @@ export function ImagePicker(props: ImagePickerProps) {
 											onClick={() => {
 												if (menuOptions.length === 1) {
 													handleDataSourceOptionClick(null, availableOptions[0]);
-												} else {
+												} else if (availableOptions.length > 1) {
 													setAddMenuOpen(true);
 												}
 											}}
