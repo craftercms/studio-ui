@@ -160,7 +160,7 @@ export function ImagePicker(props: ImagePickerProps) {
 	const imageRestrictionMessages = getImageRestrictionMessages(restrictions);
 	/* TODO: handleDataSourceOptionClick and executeDataSourceOption only handle hardcoded 'browse', 'upload' and 'search' options.
 	    We need to make them dynamic to support plugins. */
-	const handleDataSourceOptionClick = (event: ReactMouseEvent<HTMLLIElement, MouseEvent>, option: ImagePickerType) => {
+	const handleDataSourceOptionClick = (option: ImagePickerType) => {
 		setAddMenuOpen(false);
 		switch (option) {
 			case 'browse': {
@@ -424,8 +424,8 @@ export function ImagePicker(props: ImagePickerProps) {
 											disabled={readonly}
 											autoFocus={autoFocus}
 											onClick={() => {
-												if (menuOptions.length === 1) {
-													handleDataSourceOptionClick(null, availableOptions[0]);
+												if (availableOptions.length === 1) {
+													handleDataSourceOptionClick(availableOptions[0]);
 												} else if (availableOptions.length > 1) {
 													setAddMenuOpen(true);
 												}

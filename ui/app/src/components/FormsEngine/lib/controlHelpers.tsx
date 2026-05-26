@@ -205,10 +205,7 @@ export function renderFieldControl(
  * */
 export function createMediaMenuOptions(
 	dataSourceSummary: ConsolidatedMediaPickerData,
-	handleDataSourceOptionClick: (
-		event: ReactMouseEvent<HTMLLIElement, MouseEvent>,
-		option: 'browse' | 'search' | 'upload'
-	) => void,
+	handleDataSourceOptionClick: (option: ImagePickerType) => void,
 	readonly: boolean = false
 ) {
 	const { allowedBrowsePaths, allowedUploadPaths, allowedSearchPaths } = dataSourceSummary;
@@ -218,7 +215,7 @@ export function createMediaMenuOptions(
 	if (allowedBrowsePaths.length > 0) {
 		availableOptions.push('browse');
 		menuOptions.push(
-			<MenuItem key="browse" onClick={(event) => handleDataSourceOptionClick(event, 'browse')} disabled={readonly}>
+			<MenuItem key="browse" onClick={(event) => handleDataSourceOptionClick('browse')} disabled={readonly}>
 				<ListItemIcon sx={{ mr: 0 }}>
 					<TravelExploreOutlined fontSize="small" />
 				</ListItemIcon>
@@ -231,7 +228,7 @@ export function createMediaMenuOptions(
 	if (allowedSearchPaths.length > 0) {
 		availableOptions.push('search');
 		menuOptions.push(
-			<MenuItem key="search" onClick={(event) => handleDataSourceOptionClick(event, 'search')} disabled={readonly}>
+			<MenuItem key="search" onClick={(event) => handleDataSourceOptionClick('search')} disabled={readonly}>
 				<ListItemIcon sx={{ mr: 0 }}>
 					<SearchRounded fontSize="small" />
 				</ListItemIcon>
@@ -244,7 +241,7 @@ export function createMediaMenuOptions(
 	if (allowedUploadPaths.length > 0) {
 		availableOptions.push('upload');
 		menuOptions.push(
-			<MenuItem key="upload" onClick={(event) => handleDataSourceOptionClick(event, 'upload')} disabled={readonly}>
+			<MenuItem key="upload" onClick={(event) => handleDataSourceOptionClick('upload')} disabled={readonly}>
 				<ListItemIcon sx={{ mr: 0 }}>
 					<UploadFileOutlinedIcon fontSize="small" />
 				</ListItemIcon>
