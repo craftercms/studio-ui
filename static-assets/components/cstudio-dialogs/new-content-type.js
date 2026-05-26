@@ -591,13 +591,20 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
     var checkButton = function () {
       enableButton = true;
 
-      // Clean content-type id
-      document.getElementById('contentTypeName').value = document
+      let sanitized = document
         .getElementById('contentTypeName')
         // normalizing to NFD Unicode normal form decomposes combined graphemes into the combination of simple ones
         .value.normalize('NFD')
         .replace(/\p{Diacritic}/gu, '')
-        .replace(/[^a-zA-Z0-9-_\/.]/g, '');
+        .replace(/[^A-Za-z0-9_]/g, '');
+
+      // Ensure the first character is a letter or underscore
+      if (sanitized !== '' && !/^[_A-Za-z]/.test(sanitized)) {
+        sanitized = `_${sanitized}`;
+      }
+
+      // Clean content-type id
+      document.getElementById('contentTypeName').value = sanitized;
 
       const isValid = me.validateContentType();
 
