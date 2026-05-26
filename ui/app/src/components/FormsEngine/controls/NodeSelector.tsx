@@ -847,9 +847,7 @@ function CreateDataSourcePicker(props: {
 		refs.current.onChange?.(null, value);
 	}, [refs, value]);
 
-	const [filteredTypes, setFilteredTypes] = useState(undefined);
-	const filteredTypesRef = useRef(undefined);
-	filteredTypesRef.current = filteredTypes;
+	const [filteredTypes, setFilteredTypes] = useState<ContentType[] | undefined>(undefined);
 	const [keywords, setKeywords] = useState<string>('');
 	const onKeyword$ = useDebouncedInput((keywords) => {
 		if (!allowedTypes) return;
@@ -862,8 +860,10 @@ function CreateDataSourcePicker(props: {
 	});
 
 	useEffect(() => {
-		if (allowedTypes?.length && !filteredTypesRef.current) {
-			setFilteredTypes(allowedTypes.map((typeId) => contentTypesLookup[typeId]).filter(Boolean));
+		if (allowedTypes?.length) {
+			setFilteredTypes((current) =>
+				current === undefined ? allowedTypes.map((typeId) => contentTypesLookup[typeId]).filter(Boolean) : current
+			);
 		}
 	}, [allowedTypes, contentTypesLookup]);
 
