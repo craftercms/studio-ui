@@ -867,7 +867,7 @@ function CreateDataSourcePicker(props: {
 		}
 	}, [allowedTypes, contentTypesLookup]);
 
-	const handleKeywordsChange: TypeListControlBarProps['onKeywordsChange'] = (value) => {
+	const handleKeywordsChange = (value: string) => {
 		setKeywords(value);
 		onKeyword$.next(value);
 	};
@@ -900,7 +900,7 @@ function CreateDataSourcePicker(props: {
 					</RadioGroup>
 				</FormControl>
 			</Grid>
-			{value.strategy === 'shared' && props.allowedCreateTypes[value.contentTypeId]?.createPaths?.length > 1 && (
+			{value.strategy === 'shared' && allowedCreateTypes[value.contentTypeId]?.createPaths?.length > 1 && (
 				<Grid sx={{ display: 'flex', flexDirection: 'column' }}>
 					<FormControl sx={{ mt: 1 }} fullWidth>
 						<FormLabel id="creationPathLabel">
@@ -949,6 +949,7 @@ function CreateDataSourcePicker(props: {
 						onCardClick={handleTypeChange}
 						selectedTypeId={value.contentTypeId}
 						disableSelected={false}
+						skeleton={filteredTypes === undefined}
 					/>
 				</FormControl>
 			</Grid>
