@@ -907,7 +907,7 @@ function CreateDataSourcePicker(props: {
 							<FormattedMessage defaultMessage="Creation Path" />
 						</FormLabel>
 						<RadioGroup aria-labelledby="creationPathLabel" name="creationPath" value={value.path} sx={{}}>
-							{props.allowedCreateTypes[value.contentTypeId].createPaths.map((path) => (
+							{allowedCreateTypes[value.contentTypeId].createPaths.map((path) => (
 								<FormControlLabel
 									key={path}
 									value={path}
