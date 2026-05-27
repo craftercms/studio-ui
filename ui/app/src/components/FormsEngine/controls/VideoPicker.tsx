@@ -76,7 +76,8 @@ export function VideoPicker(props: VideoPickerProps) {
 		const allowedBrowsePaths: Array<{ title: string; path: string }> = [];
 		const allowedUploadPaths: Array<{ title: string; path: string }> = [];
 
-		contentTypes[contentType.id].dataSources.forEach((ds) => {
+		const dataSources = contentTypes?.[contentType.id]?.dataSources ?? [];
+		dataSources.forEach((ds) => {
 			if (dataSourceIds.includes(ds.id)) {
 				// TODO: when adding other DS (like s3 and webdav), check if property is 'repoPath' too
 				if (videoDataSourcesTypesMap[ds.type] === 'browse') {
