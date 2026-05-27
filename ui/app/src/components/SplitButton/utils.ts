@@ -29,6 +29,7 @@ export interface SplitButtonProps {
 	disabled?: boolean;
 	loading?: boolean;
 	storageKey?: string;
+	fullWidth?: boolean;
 }
 
 export interface SplitButtonUIProps {
@@ -38,6 +39,7 @@ export interface SplitButtonUIProps {
 	disabled?: boolean;
 	anchorRef: MutableRefObject<HTMLDivElement>;
 	selectedIndex: number;
+	fullWidth?: SplitButtonProps['fullWidth'];
 	open: boolean;
 	handleClick(e): void;
 	handleToggle(e): void;

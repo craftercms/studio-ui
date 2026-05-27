@@ -290,8 +290,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 													entries.contentType.dataSources?.find(
 														(ds) =>
 															ds.type === 'components' && ds.properties.contentTypes.split(',').includes(contentType.id)
-														// FE2 TODO: check type
-													)?.baseRepoPath ?? null;
+													)?.properties?.baseRepoPath ?? null;
 												newComponentPath = newComponentPath
 													? processPathMacros({
 															path: newComponentPath,
@@ -580,7 +579,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 										'Please add tinymce on to the page to enable editing.'
 								);
 							} else if (not(validations?.readOnly?.value)) {
-								const setupId = field.properties?.rteConfiguration?.value ?? 'generic';
+								const setupId = (field.properties?.rteConfiguration?.value as string) ?? 'generic';
 								const setup = state.rteConfig[setupId] ?? Object.values(state.rteConfig)[0] ?? {};
 								// Only pass rte setup to html type, text/textarea (plaintext) controls won't show full rich-text-editing.
 

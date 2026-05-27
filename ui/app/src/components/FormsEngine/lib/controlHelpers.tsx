@@ -266,13 +266,17 @@ export const showBrowseFilesDialog = ({
 	onSuccess,
 	path,
 	contentTypes,
-	multiSelect = true
+	multiSelect = true,
+	preselectedPaths = [],
+	initialParameters = {}
 }: {
 	path: string;
 	dispatch: ReduxDispatch;
 	onSuccess: BrowseFilesDialogProps['onSuccess'];
 	contentTypes?: string[];
 	multiSelect?: boolean;
+	preselectedPaths?: string[];
+	initialParameters?: BrowseFilesDialogProps['initialParameters'];
 }): void => {
 	const id = nanoid();
 	dispatch(
@@ -284,6 +288,8 @@ export const showBrowseFilesDialog = ({
 				multiSelect,
 				allowUpload: false,
 				contentTypes: contentTypes ?? [],
+				preselectedPaths,
+				initialParameters,
 				onClose: () => dispatch(popDialog({ id })),
 				onSuccess(items) {
 					dispatch(popDialog({ id }));
@@ -297,11 +303,15 @@ export const showBrowseFilesDialog = ({
 export const showSearchDialog = ({
 	dispatch,
 	path,
+	preselectedPaths = [],
 	contentTypes,
-	onAcceptSelection
+	onAcceptSelection,
+	initialParameters
 }: {
 	path: string;
 	contentTypes?: string[];
+	preselectedPaths?: string[];
+	initialParameters?: SearchProps['initialParameters'];
 	dispatch: ReduxDispatch;
 	onAcceptSelection: SearchProps['onAcceptSelection'];
 }): void => {
@@ -316,8 +326,15 @@ export const showSearchDialog = ({
 				initialParameters: {
 					path,
 					sortBy: 'internalName',
-					...(contentTypes && { filters: { 'content-type': contentTypes } })
+					...initialParameters,
+					...(contentTypes && {
+						filters: {
+							...(initialParameters?.filters ?? {}),
+							'content-type': contentTypes
+						}
+					})
 				},
+				preselectedPaths,
 				onClose: () => dispatch(popDialog({ id })),
 				onAcceptSelection(paths, items) {
 					dispatch(popDialog({ id }));

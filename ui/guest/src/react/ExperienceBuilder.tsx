@@ -83,7 +83,7 @@ import { GuestState } from '../store/models/GuestStore';
 import { nnou, nullOrUndefined } from '@craftercms/studio-ui/utils/object';
 import { scrollToDropTargets } from '../utils/dom';
 import { checkIfLockedOrModified, dragOk } from '../store/util';
-import { createLocationArgument, isEditActionAvailable } from '../utils/util';
+import { createLocationArgument, getContentItemFromRecord, isEditActionAvailable } from '../utils/util';
 import FieldInstanceSwitcher from './FieldInstanceSwitcher';
 import LookupTable from '@craftercms/studio-ui/models/LookupTable';
 import { Snackbar, SnackbarProps, Theme, ThemeOptions, ThemeProvider } from '@mui/material';
@@ -667,6 +667,13 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
 									: sxStylesConfig.zoneMarker.selectModeHighlight;
 							}
 							const zoneMarkerSx = deepmerge(sxStylesConfig.zoneMarker.base, zoneMarkerModeStyles, { clone: true });
+							const contentItem = getContentItemFromRecord({
+								record: elementRecord,
+								models: getCachedModels(),
+								contentItemsByPath: getCachedContentItems(),
+								parentModelId: getParentModelId(elementRecord.modelId, getCachedModels(), modelHierarchyMap)
+							});
+							const itemStateMap = contentItem?.stateMap;
 							return (
 								<ZoneMarker
 									key={highlight.id}
@@ -676,6 +683,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
 									lockInfo={lockInfo}
 									isStale={isExternallyModified}
 									isEditable={isEditable}
+									stateMap={itemStateMap}
 									field={field}
 									onPopperClick={
 										isMoveMode && isFieldSelectedMode

@@ -18,15 +18,21 @@ import OutlinedInput, { OutlinedInputProps } from '@mui/material/OutlinedInput';
 import React, { useId } from 'react';
 import { FormsEngineField } from '../components/FormsEngineField';
 import { ControlProps } from '../types';
+import { getValidationValue, isFieldReadOnly } from '../lib/formUtils';
 
 export interface TextProps extends ControlProps {
 	value: string;
 }
 
 export function Text(props: TextProps) {
-	const { field, value, setValue, readonly, autoFocus } = props;
+	const { field, value, setValue, readonly: formReadonly, autoFocus } = props;
 	const htmlId = useId();
-	const maxLength = field.validations.maxLength?.value;
+
+	// region field properties/validations
+	const maxLength: number | undefined = getValidationValue(field.validations, 'maxLength');
+	const readonly: boolean = isFieldReadOnly(field, formReadonly);
+	// endregion
+
 	const handleChange: OutlinedInputProps['onChange'] = (e) => setValue(e.currentTarget.value);
 	return (
 		<FormsEngineField htmlFor={htmlId} field={field} max={maxLength} length={value.length}>

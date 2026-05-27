@@ -160,38 +160,6 @@ export function getIndividualPaths(path: string, rootPath = ''): string[] {
 	return individualPaths;
 }
 
-export function getPasteItemFromPath(path: string, paths: string[]): PasteItem {
-	// create PasteItem with base path
-	let pasteItem = {
-		path,
-		children: []
-	};
-
-	paths.forEach((path) => addToPasteItem(pasteItem, path));
-	return pasteItem;
-}
-
-function addToPasteItem(pasteItem: PasteItem, path: string): void {
-	const parentPath = getParentPath(path);
-
-	if (withoutIndex(pasteItem.path) === parentPath) {
-		// if current path is direct children of pasteItem's root path
-		pasteItem.children.push({
-			path,
-			children: []
-		});
-	} else if (pasteItem.path !== path) {
-		// neither root nor direct children - look in which of the children the item belongs to
-		const pathWithoutIndex = withoutIndex(path);
-		const pasteItemParent = pasteItem.children.find((item) =>
-			// includes parameter ends with a '/' to make it sure that it's a complete path and not part of a name in a path
-			// (it may match with another path that starts with the same chars)
-			pathWithoutIndex.includes(`${withoutIndex(item.path)}/`)
-		);
-		addToPasteItem(pasteItemParent, path);
-	}
-}
-
 export function isValidCopyPastePath(targetPath: string, sourcePath: string): boolean {
 	return !getIndividualPaths(targetPath).includes(sourcePath);
 }
@@ -393,3 +361,14 @@ export const getFileNameWithExtensionForItemType = (type: string, name: string) 
 	`${name}.${pickExtensionForItemType(type)}`
 		.replace(/(\.groovy)(\.groovy)|(\.ftl)(\.ftl)/g, '$1$3')
 		.replace(/\.{2,}/g, '.');
+
+/**
+ * Determines if the given path corresponds to a page path.
+ *
+ * @param {string} path - The path to check.
+ * @returns {boolean} - Returns `true` if the path matches the pattern for a page path; otherwise, `false`.
+ *
+ */
+export const isPagePath = (path: string): boolean => {
+	return /^\/site\/website(\/.*)?\/index.*\.xml$/.test(path);
+};

@@ -31,7 +31,6 @@ import { VersionsStateProps } from './Version';
 import QuickCreateItem from './content/QuickCreateItem';
 import { PathNavigatorStateProps } from '../components/PathNavigator';
 import { ContentItem } from './Item';
-import { CopyDialogStateProps } from '../components/CopyDialog/utils';
 import { PathSelectionDialogStateProps } from '../components/PathSelectionDialog/PathSelectionDialog';
 import { WidgetDescriptor } from './WidgetDescriptor';
 import { ItemMenuStateProps } from '../components/ItemActionsMenu';
@@ -122,7 +121,7 @@ export interface GuestData {
 
 export interface Clipboard {
 	type: 'CUT' | 'COPY';
-	paths?: string[];
+	includeChildren?: boolean;
 	sourcePath: string;
 }
 
