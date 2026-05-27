@@ -146,7 +146,7 @@ export function VideoPicker(props: VideoPickerProps) {
 			<FormsEngineField field={field}>
 				{hasValue ? (
 					<Card sx={{ display: 'flex' }}>
-						<CardMedia component="video" sx={{ width: '40%' }} image={`${guestBase}${value}`} />
+						<CardMedia component="video" sx={{ width: '40%' }} image={ensureSingleSlash(`${guestBase}${value}`)} />
 						<Box sx={{ display: 'flex', flexDirection: 'column' }}>
 							<CardContent sx={{ flex: '1 0 auto' }}>
 								<Typography component="div" variant="body1" marginBottom={1}>
