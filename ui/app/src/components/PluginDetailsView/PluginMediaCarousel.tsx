@@ -21,13 +21,14 @@ import NavigateBeforeRoundedIcon from '@mui/icons-material/NavigateBeforeRounded
 import NavigateNextRoundedIcon from '@mui/icons-material/NavigateNextRounded';
 import { useIntl } from 'react-intl';
 import { Theme } from '@mui/material';
-import { SystemStyleObject } from '@mui/system/styleFunctionSx/styleFunctionSx';
+import { SxProps } from '@mui/system';
+import { consolidateSx } from '../../utils/system';
 
 interface PluginMediaCarouselProps {
 	items: ReactNode[];
 	initialIndex?: number;
 	onChangeItem?: (itemIndex: number) => void;
-	sx?: SystemStyleObject<Theme>;
+	sx?: SxProps<Theme>;
 }
 
 export const PluginMediaCarousel = forwardRef((props: PluginMediaCarouselProps, ref) => {
@@ -66,7 +67,7 @@ export const PluginMediaCarousel = forwardRef((props: PluginMediaCarouselProps, 
 
 	return (
 		<Box
-			sx={[
+			sx={consolidateSx(
 				{
 					position: 'relative',
 					width: '100%',
@@ -76,7 +77,7 @@ export const PluginMediaCarousel = forwardRef((props: PluginMediaCarouselProps, 
 					'& .navigate-button:focus-within': { visibility: 'visible' }
 				},
 				sx
-			]}
+			)}
 		>
 			{items?.length > 0 && (
 				<>
