@@ -82,14 +82,18 @@ export function useVideoInfo(url: string): {
 			(async () => {
 				try {
 					const response = await fetch(url, { method: 'HEAD', signal: abortController.signal });
+					if (!response.ok) {
+						throw new Error(`Metadata request failed (${response.status})`);
+					}
 					const contentType = response.headers.get('Content-Type');
 					const contentLength = response.headers.get('Content-Length');
-					const sizeKb = contentLength ? Math.round(Number(contentLength) / 1024) : null;
+					const sizeKb =
+						contentLength && !Number.isNaN(Number(contentLength)) ? Math.round(Number(contentLength) / 1024) : null;
 					setVideoInfo({ contentType, size: sizeKb });
 					setIsFetchingMetadata(false);
 				} catch (error) {
 					if (abortController.signal.aborted) return;
-					setErrorMetadata(error as Error);
+					setErrorMetadata(error instanceof Error ? error : new Error('Metadata request failed'));
 					setIsFetchingMetadata(false);
 				}
 			})();
