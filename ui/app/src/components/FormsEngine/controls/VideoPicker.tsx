@@ -97,7 +97,7 @@ export function VideoPicker(props: VideoPickerProps) {
 		});
 
 		const menuOptions = [];
-		// TODO: pending when datasources implementation is ready.
+		// TODO: pending when datasources implementation is ready - consider eliminating extra clicks for single data source adds - https://github.com/craftercms/craftercms/issues/6935.
 		const handleDataSourceOptionClick = (event: ReactMouseEvent<HTMLLIElement, MouseEvent>, option: PickerType) => {};
 		if (allowedBrowsePaths.length > 0) {
 			menuOptions.push(
