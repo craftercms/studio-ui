@@ -452,8 +452,6 @@ function FormBootstrap(props: FormsEngineProps) {
 			});
 			const { [XmlKeys.fileName]: _, ...valuesWithoutFileName } = values;
 
-			console.log('create path', create.path);
-			console.log('objectId', contentObject[XmlKeys.modelId]);
 			const objectId = contentObject[XmlKeys.modelId] as string;
 			initializeState(atoms, values, {
 				id: objectId,
