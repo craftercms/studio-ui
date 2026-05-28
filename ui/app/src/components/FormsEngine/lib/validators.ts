@@ -538,6 +538,9 @@ const pathWithMacroValidator = (
 	currentValue: string,
 	messages: FieldValidityMessage[]
 ): boolean => {
+	if (currentValue.trim() === '') {
+		return true;
+	}
 	const validMacros = Object.values(macroCreatorLookupTable).map(({ macro }) => macro);
 	// Find all macros in the currentValue (e.g., {macroName})
 	const macroRegex = /(\{[a-zA-Z0-9_]+\})/g;
