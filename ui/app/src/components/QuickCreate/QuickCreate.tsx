@@ -327,7 +327,6 @@ const QuickCreate = forwardRef<HTMLButtonElement, { item?: ContentItem }>((props
 
 	const onQuickCreateItemSelected = (props) => {
 		onMenuClose();
-		console.log('props', props);
 		dispatch(
 			pickShowContentFormAction({
 				...props,
