@@ -116,7 +116,7 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
 		const formatPath = processPathMacros({
 			path: path ? path : defaultPath,
 			// Since we can't support these at this stage of creation, at least this will avoid the form opening with an error
-			objectId: '(objectId)',
+			objectId: '{objectId}',
 			objectGroupId: '(objectGroupId)',
 			fullParentPath: '',
 			useUUID: false
@@ -327,6 +327,7 @@ const QuickCreate = forwardRef<HTMLButtonElement, { item?: ContentItem }>((props
 
 	const onQuickCreateItemSelected = (props) => {
 		onMenuClose();
+		console.log('props', props);
 		dispatch(
 			pickShowContentFormAction({
 				...props,

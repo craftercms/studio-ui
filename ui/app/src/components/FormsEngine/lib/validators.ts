@@ -32,6 +32,7 @@ import type { RepeatItem } from '../controls/Repeat';
 import { getValidationValue } from './formUtils';
 import type { NodeSelectorItem } from '../controls/NodeSelector';
 import type { CheckboxGroupProps } from '../controls/CheckboxGroup';
+import { macroCreatorLookupTable } from '../../ContentTypeManagement/controls/PathWithMacroCreator';
 
 interface ValidatorMetaData {
 	siteId: string;
@@ -82,7 +83,9 @@ export const validatorsMap: Partial<Record<BuiltInControlType | DescriptorContro
 		dateTimeExpressionInputValidator(field, currentValue as string, messages),
 	'input-email': (field, currentValue, messages) => inputEmailValidator(field, currentValue as string, messages),
 	'input-link': (field, currentValue, messages) => inputLinkValidator(field, currentValue as string, messages),
-	'input-phone': (field, currentValue, messages) => inputPhoneValidator(field, currentValue as string, messages)
+	'input-phone': (field, currentValue, messages) => inputPhoneValidator(field, currentValue as string, messages),
+	'path-with-macro-creator': (field, currentValue, messages) =>
+		pathWithMacroValidator(field, currentValue as string, messages)
 };
 
 // TODO: Fix FormatXMLElementFn generics
@@ -528,6 +531,30 @@ const inputPhoneValidator = (
 	return inputValidator(field, currentValue, messages, {
 		pattern: defineMessage({ defaultMessage: 'Please enter a valid phone number.' })
 	});
+};
+
+const pathWithMacroValidator = (
+	field: ContentTypeField,
+	currentValue: string,
+	messages: FieldValidityMessage[]
+): boolean => {
+	const validMacros = Object.values(macroCreatorLookupTable).map(({ macro }) => macro);
+	// Find all macros in the currentValue (e.g., {macroName})
+	const macroRegex = /(\{[a-zA-Z0-9_]+\})/g;
+	const foundMacros = Array.from(currentValue.matchAll(macroRegex)).map((match) => match[1]);
+
+	// Find macros not in the whitelist
+	const invalidMacros = foundMacros.filter((macro) => !validMacros.includes(macro));
+
+	if (invalidMacros.length > 0) {
+		messages.push([
+			defineMessage({ defaultMessage: 'The following are invalid macros: {invalidMacros}.' }),
+			{ invalidMacros: invalidMacros.join(', ') }
+		]);
+		return false;
+	}
+
+	return true;
 };
 
 export default validateFieldValue;
