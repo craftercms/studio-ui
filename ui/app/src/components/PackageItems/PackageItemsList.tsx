@@ -88,6 +88,7 @@ export function PackageItemsList(props: PackageItemsListProps) {
 									}
 									secondary={item.path}
 								/>
+
 								{over === item.path && (
 									<Tooltip title={<FormattedMessage defaultMessage="Options" />}>
 										<IconButton
