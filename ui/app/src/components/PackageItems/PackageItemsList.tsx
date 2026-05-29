@@ -37,7 +37,7 @@ export interface PackageItemsListProps {
 
 export function PackageItemsList(props: PackageItemsListProps) {
 	const { items, totalItems, fetchLimit = 10, loadNextPage, onOpenMenu } = props;
-	const rowCount = items.length + (items.length < totalItems ? 20 : 0);
+	const rowCount = items.length + (items.length < totalItems ? fetchLimit : 0);
 	const [over, setOver] = useState(null);
 	const { formatMessage } = useIntl();
 
