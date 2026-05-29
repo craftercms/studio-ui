@@ -15,7 +15,7 @@
  */
 
 import React, { type DetailedHTMLProps, type HTMLAttributes, useState } from 'react';
-import { ContentItem, LightItem } from '../../models';
+import { LightItem } from '../../models';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import ItemDisplay from '../ItemDisplay';
@@ -30,25 +30,25 @@ import Box from '@mui/material/Box';
 export interface PackageItemsListProps {
 	items: LightItem[];
 	totalItems: number;
-	hasNextPage: boolean;
-	isNextPageLoading: boolean;
+	fetchLimit: number;
 	loadNextPage: (startIndex: number, stopIndex: number) => Promise<void>;
 	onOpenMenu(e: React.MouseEvent<HTMLButtonElement>, item: LightItem): void;
 }
 
 export function PackageItemsList(props: PackageItemsListProps) {
-	const { items, hasNextPage, isNextPageLoading, loadNextPage, onOpenMenu } = props;
+	const { items, totalItems, fetchLimit = 10, loadNextPage, onOpenMenu } = props;
+	const rowCount = items.length + (items.length < totalItems ? 20 : 0);
 	const [over, setOver] = useState(null);
-	// If there are more items to be loaded then add an extra row to hold a loading indicator.
-	const currentItemsCount = hasNextPage ? items.length + 1 : items.length;
 	const { formatMessage } = useIntl();
 
 	// Every row is loaded except for our loading indicator row.
-	const isItemLoaded = (index) => !hasNextPage || index < items.length;
+	const isItemLoaded = (index) => {
+		return items[index] !== undefined;
+	};
 
 	const onRowsRendered = useInfiniteLoader({
 		isRowLoaded: isItemLoaded,
-		rowCount: currentItemsCount,
+		rowCount,
 		loadMoreRows: loadNextPage
 	});
 
@@ -56,10 +56,10 @@ export function PackageItemsList(props: PackageItemsListProps) {
 		<Box sx={{ flex: 1 }}>
 			<List
 				className="List"
-				rowCount={currentItemsCount}
+				rowCount={rowCount}
 				rowHeight={59}
 				onRowsRendered={onRowsRendered}
-				rowProps={{}}
+				rowProps={{ rows: items }}
 				rowComponent={({ index, style }: RowComponentProps) => {
 					let content;
 					if (!isItemLoaded(index)) {
@@ -88,7 +88,6 @@ export function PackageItemsList(props: PackageItemsListProps) {
 									}
 									secondary={item.path}
 								/>
-
 								{over === item.path && (
 									<Tooltip title={<FormattedMessage defaultMessage="Options" />}>
 										<IconButton
