@@ -470,8 +470,8 @@ export function createFormsEngineAtoms(
 		closeAfterSave: atomWithStorage(getFormsEngineCloseAfterSave(username), true, undefined, {
 			getOnInit: true
 		}) as unknown as AtomWithStorage,
-		minimizeAfterSave: atomWithStorage(getFormsEngineMinimizeAfterSave(username), true, undefined, {
-			getOnInit: false
+		minimizeAfterSave: atomWithStorage(getFormsEngineMinimizeAfterSave(username), false, undefined, {
+			getOnInit: true
 		}) as unknown as AtomWithStorage,
 		...mixin
 	};
