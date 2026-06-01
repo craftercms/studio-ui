@@ -48,7 +48,7 @@ export function SaveCard(props: SaveCardProps) {
 	const hasPendingChanges = useAtomValue(stableFormContext.atoms.hasPendingChanges);
 	const [closeAfterSave, setCloseAfterSave] = useAtom(stableFormContext.atoms.closeAfterSave);
 	const [minimizeAfterSave, setMinimizeAfterSave] = useAtom(stableFormContext.atoms.minimizeAfterSave);
-	const disableSave = isSubmitting || !versionComment;
+	const disableSave = !isEmbedded && (isSubmitting || !versionComment);
 	const { formatMessage } = useIntl();
 	const dispatch = useDispatch();
 
@@ -100,22 +100,25 @@ export function SaveCard(props: SaveCardProps) {
 					onFocus={(e) => e.target.select()}
 				/>
 			)}
-			<FormControlLabel
-				label={<FormattedMessage defaultMessage="Minimize after saving" />}
-				control={
-					<Checkbox
-						size="small"
-						checked={minimizeAfterSave}
-						onChange={(e, checked) => handleSetMinimizeAfterSave(checked)}
-					/>
-				}
-			/>
+			{!isEmbedded && (
+				<FormControlLabel
+					label={<FormattedMessage defaultMessage="Minimize after saving" />}
+					control={
+						<Checkbox
+							size="small"
+							checked={minimizeAfterSave}
+							onChange={(e, checked) => handleSetMinimizeAfterSave(checked)}
+						/>
+					}
+				/>
+			)}
 			<FormControlLabel
 				label={<FormattedMessage defaultMessage="Close after saving" />}
 				control={
 					<Checkbox size="small" checked={closeAfterSave} onChange={(e, checked) => handleSetCloseAfterSave(checked)} />
 				}
 			/>
+
 			<SplitButton
 				fullWidth
 				loading={isSubmitting}
