@@ -47,10 +47,23 @@ export function SaveCard(props: SaveCardProps) {
 	const [versionComment, setVersionComment] = useAtom(stableFormContext.atoms.versionComment);
 	const hasPendingChanges = useAtomValue(stableFormContext.atoms.hasPendingChanges);
 	const [closeAfterSave, setCloseAfterSave] = useAtom(stableFormContext.atoms.closeAfterSave);
-	const disableSave = isSubmitting || !hasPendingChanges;
+	const [minimizeAfterSave, setMinimizeAfterSave] = useAtom(stableFormContext.atoms.minimizeAfterSave);
+	const disableSave = isSubmitting || !versionComment;
 	const { formatMessage } = useIntl();
 	const dispatch = useDispatch();
 
+	const handleSetCloseAfterSave = (checked: boolean) => {
+		if (checked) {
+			setMinimizeAfterSave(false);
+		}
+		setCloseAfterSave(checked);
+	};
+	const handleSetMinimizeAfterSave = (checked: boolean) => {
+		if (checked) {
+			setCloseAfterSave(false);
+		}
+		setMinimizeAfterSave(checked);
+	};
 	const handleSave = (e: MouseEvent, type: 'save' | 'saveDraft', draft?: boolean) => {
 		if (type === 'save' && invalidForm) {
 			const dialogId = nanoid();
@@ -88,16 +101,25 @@ export function SaveCard(props: SaveCardProps) {
 				/>
 			)}
 			<FormControlLabel
+				label={<FormattedMessage defaultMessage="Minimize after saving" />}
+				control={
+					<Checkbox
+						size="small"
+						checked={minimizeAfterSave}
+						onChange={(e, checked) => handleSetMinimizeAfterSave(checked)}
+					/>
+				}
+			/>
+			<FormControlLabel
 				label={<FormattedMessage defaultMessage="Close after saving" />}
 				control={
-					<Checkbox size="small" checked={closeAfterSave} onChange={(e, checked) => setCloseAfterSave(checked)} />
+					<Checkbox size="small" checked={closeAfterSave} onChange={(e, checked) => handleSetCloseAfterSave(checked)} />
 				}
 			/>
 			<SplitButton
 				fullWidth
 				loading={isSubmitting}
 				disabled={disableSave}
-				storageKey="formEditor"
 				options={[
 					{
 						id: 'save',

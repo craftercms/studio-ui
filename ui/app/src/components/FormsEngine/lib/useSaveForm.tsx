@@ -64,6 +64,7 @@ export interface UseSaveFormProps {
 	onBeforeSave?: FormsEngineProps['onSave'];
 	onSave?: FormsEngineProps['onSave'];
 	onClose?(): void;
+	onMinimize?(): void;
 }
 
 const wrapOnSaveProp: (onSaveProp: FormsEngineProps['onSave']) => FormsEngineProps['onSave'] = (onSaveProp) => (args) =>
@@ -75,7 +76,7 @@ export function useSaveForm(props: UseSaveFormProps) {
 	const dispatch = useDispatch();
 	const { formatMessage } = useIntl();
 	const siteId = useActiveSiteId();
-	const { isEmbedded, isRepeatMode, isCreateMode, onClose, createPath } = props;
+	const { isEmbedded, isRepeatMode, isCreateMode, onClose, onMinimize, createPath } = props;
 	const { id, contentType, contentObject, path: itemPath } = useContext(ItemMetaContext);
 	const isPage = contentType.type === 'page';
 	const stableFormContext = useContext(StableFormContext);
@@ -83,7 +84,8 @@ export function useSaveForm(props: UseSaveFormProps) {
 	const formContextApi = useContext(FormsEngineFormContextApi);
 	const setIsSubmitting = useSetAtom(stableFormContext.atoms.isSubmitting);
 	const closeAfterSave = useAtomValue(stableFormContext.atoms.closeAfterSave);
-	const versionComment = useAtomValue(stableFormContext.atoms.versionComment);
+	const minimizeAfterSave = useAtomValue(stableFormContext.atoms.minimizeAfterSave);
+	const [versionComment, setVersionComment] = useAtom(stableFormContext.atoms.versionComment);
 	const setHasPendingChanges = useSetAtom(stableFormContext.atoms.hasPendingChanges);
 	const onSave = wrapOnSaveProp(props.onSave);
 	const fileName = useAtomValue(stableFormContext.atoms.fileName);
@@ -118,7 +120,12 @@ export function useSaveForm(props: UseSaveFormProps) {
 				// TODO: What would `setValuesCheckpoint` do if called on a repeat group form?
 				!isRepeatMode && formContextApi.setValuesCheckpoint(values);
 			});
-			(close || closeAfterSave) && onClose?.();
+			if (close || closeAfterSave) {
+				onClose?.();
+			} else if (minimizeAfterSave) {
+				setVersionComment('');
+				onMinimize?.();
+			}
 		};
 		// Repeat handled here. If true, execution ends inside if statement.
 		if (isRepeatMode) {

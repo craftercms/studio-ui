@@ -44,10 +44,8 @@ export interface FormsEngineFormApiContextProps {
 }
 
 export interface FormRequirementsResponse
-	extends Pick<
-			FormsEngineItemMetaContextProps,
-			'sourceMap' | 'pathInSite' | 'contentType' | 'contentObject' | 'contentXml'
-		>,
+	extends
+		Pick<FormsEngineItemMetaContextProps, 'sourceMap' | 'pathInSite' | 'contentType' | 'contentObject' | 'contentXml'>,
 		FormsEngineEditContextProps {
 	item: ContentItem;
 	contentObject: LookupTable<unknown>;
@@ -86,6 +84,7 @@ export interface FormsEngineAtoms {
 	expandedStateBySectionId: LookupTable<PrimitiveAtom<boolean>>;
 	tableOfContentsDrawerOpen: PrimitiveAtom<boolean>;
 	closeAfterSave: AtomWithStorage;
+	minimizeAfterSave: AtomWithStorage;
 	fileName?: Atom<string>;
 }
 
