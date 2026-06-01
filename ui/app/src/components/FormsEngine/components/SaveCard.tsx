@@ -48,7 +48,7 @@ export function SaveCard(props: SaveCardProps) {
 	const hasPendingChanges = useAtomValue(stableFormContext.atoms.hasPendingChanges);
 	const [closeAfterSave, setCloseAfterSave] = useAtom(stableFormContext.atoms.closeAfterSave);
 	const [minimizeAfterSave, setMinimizeAfterSave] = useAtom(stableFormContext.atoms.minimizeAfterSave);
-	const disableSave = !isEmbedded && (isSubmitting || !versionComment);
+	const disableSave = !isEmbedded && !isRepeatMode && (isSubmitting || !versionComment);
 	const { formatMessage } = useIntl();
 	const dispatch = useDispatch();
 
@@ -100,7 +100,7 @@ export function SaveCard(props: SaveCardProps) {
 					onFocus={(e) => e.target.select()}
 				/>
 			)}
-			{!isEmbedded && (
+			{!isEmbedded && !isRepeatMode && (
 				<FormControlLabel
 					label={<FormattedMessage defaultMessage="Minimize after saving" />}
 					control={
