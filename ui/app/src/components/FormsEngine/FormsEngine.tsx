@@ -808,7 +808,7 @@ function FormOrchestrator(props: FormsEngineProps) {
 		isRepeatMode,
 		createPath: create?.path,
 		onClose: () => onCloseHandler(null, null),
-		onMinimize: () => props.onMinimize()
+		onMinimize: () => props.onMinimize?.()
 	});
 
 	// If not on a dialog or the prop is not provided, there's no need to handle the close. The form is running in a standalone mode.
