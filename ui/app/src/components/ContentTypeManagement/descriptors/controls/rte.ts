@@ -29,6 +29,7 @@ export const rteDescriptor: DescriptorContentType = {
 			title: defineMessage({ defaultMessage: 'Options' }),
 			fields: [
 				'height',
+				'maxlength',
 				'autoGrow',
 				'enableSpellCheck',
 				'rteConfiguration',
@@ -50,6 +51,13 @@ export const rteDescriptor: DescriptorContentType = {
 			id: 'height',
 			type: 'int',
 			name: defineMessage({ defaultMessage: 'Height' }),
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		maxlength: {
+			id: 'maxlength',
+			type: 'int',
+			name: defineMessage({ defaultMessage: 'Max Length' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},

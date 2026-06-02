@@ -121,6 +121,7 @@ import { emitSystemEvent, emitSystemEvents } from '@craftercms/studio-ui/state/a
 import { getParentModelId } from '../utils/ice';
 import { SxProps } from '@mui/system';
 import { I18nProvider } from './I18nProvider';
+import { loadAceEditorAssets } from '@craftercms/studio-ui/utils/system';
 
 // TODO: add themeOptions and global styles customising
 interface BaseXBProps {
@@ -458,16 +459,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
 				// script.onload = () => ...;
 				document.head.appendChild(script);
 			}
-			if (!window.ace) {
-				const script = document.createElement('script');
-				script.src = '/studio/static-assets/libs/ace/ace.js';
-				document.head.appendChild(script);
-
-				const styleSheet = document.createElement('link');
-				styleSheet.rel = 'stylesheet';
-				styleSheet.href = '/studio/static-assets/styles/tinymce-ace.css';
-				document.head.appendChild(styleSheet);
-			}
+			loadAceEditorAssets();
 			const allowedTypesSubscription = subscribeToAllowedContentTypes((allowed) =>
 				post(allowedContentTypesUpdate(allowed))
 			);

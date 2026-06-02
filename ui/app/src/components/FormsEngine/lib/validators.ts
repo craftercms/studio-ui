@@ -71,7 +71,7 @@ export const validatorsMap: Partial<Record<BuiltInControlType | DescriptorContro
 		nodeSelectorValidator(field, currentValue as NodeSelectorItem[], messages, meta),
 	'numeric-input': (field, currentValue, messages) => numericInputValidator(field, currentValue as number, messages),
 	'page-nav-order': undefined,
-	rte: undefined,
+	rte: (field, currentValue, messages) => rteValidator(field, currentValue as string, messages),
 	textarea: (field, currentValue, messages) => inputValidator(field, currentValue as string, messages),
 	time: undefined,
 	'transcoded-video-picker': undefined,
@@ -321,7 +321,7 @@ export function inputValidator(
 		return isValid;
 	}
 	const pattern = field.validations.pattern?.value as string;
-	const maxLength: number | undefined = getValidationValue(field.validations, 'maxLength');
+	const maxLength: number | undefined = getValidationValue(field.validations, 'maxlength');
 	// If there's a pattern and it doesn't match, it's invalid.
 	if (pattern && !String(currentValue).match(pattern)) {
 		messages?.push([
@@ -528,6 +528,35 @@ const inputPhoneValidator = (
 	return inputValidator(field, currentValue, messages, {
 		pattern: defineMessage({ defaultMessage: 'Please enter a valid phone number.' })
 	});
+};
+
+const rteValidator = (field: ContentTypeField, currentValue: string, messages?: FieldValidityMessage[]): boolean => {
+	if (nou(field)) return true;
+	const isRequired = isFieldRequired(field);
+	let isValid = true;
+
+	const maxLength: number | undefined = getValidationValue(field.validations, 'maxLength');
+	const aux = document.createElement('div');
+	aux.innerHTML = currentValue;
+	const trimmedContent = aux.innerText.trim(); // Get only the text and remove white space
+
+	if (isRequired) {
+		isValid = trimmedContent !== '';
+		if (!isValid) {
+			messages?.push(defineMessage({ defaultMessage: 'This field is required.' }));
+		}
+	}
+	if (nnou(maxLength) && trimmedContent.length > maxLength) {
+		messages.push([
+			defineMessage({
+				defaultMessage: `The value is greater than the allowed maximum ({maxLength}).`
+			}),
+			{ maxLength }
+		]);
+		isValid = false;
+	}
+
+	return isValid;
 };
 
 export default validateFieldValue;

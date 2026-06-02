@@ -21,6 +21,7 @@ import pkg from './package.json' with { type: 'json' };
 import { swc } from 'rollup-plugin-swc3';
 import alias from '@rollup/plugin-alias';
 import json from '@rollup/plugin-json';
+import svg from 'rollup-plugin-svg';
 
 /** @type {import('rollup').InputPluginOption} */
 const plugins = [
@@ -28,8 +29,11 @@ const plugins = [
   replace({
     preventAssignment: true,
     'process.env.NODE_ENV': JSON.stringify('production'),
-    'process.env.VERSION': JSON.stringify(pkg.version)
+    'process.env.VERSION': JSON.stringify(pkg.version),
+    'import.meta.env.NODE_ENV': JSON.stringify('production'),
+    'import.meta.env.VERSION': JSON.stringify(pkg.version)
   }),
+  svg(),
   swc({ sourceMaps: true }),
   alias({
     entries: [{ find: '@craftercms/studio-ui', replacement: '@craftercms/studio-ui/build_tsc' }]
