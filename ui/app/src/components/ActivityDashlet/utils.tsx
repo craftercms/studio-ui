@@ -131,10 +131,10 @@ export function renderActivity(
 					values={{ render_package_link }}
 				/>
 			);
-		case 'APPROVE':
+		case 'PUBLISH':
 			return (
 				<FormattedMessage
-					id="activityDashlet.publishedActivityMessage"
+					id="activityDashlet.publishActivityMessage"
 					defaultMessage="Approved <render_package_link>a package</render_package_link>"
 					values={{ render_package_link }}
 				/>
@@ -142,7 +142,7 @@ export function renderActivity(
 		case 'REJECT_PUBLISH_PACKAGE':
 			return (
 				<FormattedMessage
-					id="activityDashlet.publishedActivityMessage"
+					id="activityDashlet.rejectedActivityMessage"
 					defaultMessage="Rejected <render_package_link>a package</render_package_link>"
 					values={{ render_package_link }}
 				/>
@@ -204,7 +204,7 @@ export const activityNameLookup: Record<Activities | 'ALL', any> = {
 	DELETE: <FormattedMessage id="words.delete" defaultMessage="Delete" />,
 	INITIAL_PUBLISH: <FormattedMessage id="operations.initialPublish" defaultMessage="Initial Publish" />,
 	MOVE: <FormattedMessage id="words.move" defaultMessage="Move" />,
-	APPROVE: <FormattedMessage id="words.approve" defaultMessage="Approve" />,
+	PUBLISH: <FormattedMessage id="words.approve" defaultMessage="Approve" />,
 	PUBLISHED: <FormattedMessage id="words.publish" defaultMessage="Publish" />,
 	REJECT_PUBLISH_PACKAGE: <FormattedMessage id="words.reject" defaultMessage="Reject" />,
 	REQUEST_PUBLISH: <FormattedMessage id="operations.requestPublish" defaultMessage="Request Publish" />,
