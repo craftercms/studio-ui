@@ -1,5 +1,9 @@
 {
   "contentType.contentNotFound": "Inhalt nicht gefunden.",
+  "globalStyles.clickToAddContent": "Klicken Sie, um Inhalte hinzuzufügen.",
+  "globalStyles.contentHidden": "Inhalte sind ausgeblendet, um das Ziehen zu ermöglichen.",
+  "globalStyles.emptyTarget": "Leeres Komponenten-Ziel. Ziehen Sie neue oder vorhandene Inhaltselemente hierher, um sie hinzuzufügen.",
+  "globalStyles.turnOffEditMode": "Deaktivieren Sie den Bearbeitungsmodus, um mit diesem Element zu interagieren.",
   "words.edit": "Bearbeiten",
   "words.move": "Bewegen ",
   "words.no": "Nein",
