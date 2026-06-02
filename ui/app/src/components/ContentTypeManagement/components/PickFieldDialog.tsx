@@ -95,6 +95,7 @@ export function PickFieldDialogBody(props: PickFieldDialogBodyProps) {
 				{selectedView === 0 ? (
 					<SelectField
 						configLookup={configLookup}
+						typesCurrentList={typesCurrentList}
 						typesFullList={typesFullList}
 						selectedField={selectedField}
 						setSelectedField={onSelectField}
@@ -219,10 +220,12 @@ export function SelectField(props: {
 	setSelectedField: (field: PartialContentType) => void;
 	systemFieldsIds?: PickFieldDialogProps['systemFieldsIds'];
 	systemFieldsTitle?: PickFieldDialogProps['systemFieldsTitle'];
+	typesCurrentList?: PickFieldDialogProps['typesCurrentList'];
 }) {
 	const {
 		configLookup,
 		typesFullList,
+		typesCurrentList,
 		selectedField,
 		setSelectedField,
 		systemFieldsIds = [],
@@ -230,6 +233,7 @@ export function SelectField(props: {
 	} = props;
 	const [searchTerm, setSearchTerm] = useState('');
 	const { formatMessage } = useIntl();
+	const currentTypeIds = new Set((typesCurrentList ?? []).map((item) => item.id));
 
 	const basicFields = typesFullList
 		.map((type) => applyTranslations(type, formatMessage))
@@ -237,8 +241,17 @@ export function SelectField(props: {
 			(type) =>
 				(type.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
 					type.description.toLowerCase().includes(searchTerm.toLowerCase())) &&
-				systemFieldsIds.includes(type.id)
+				systemFieldsIds.includes(type.id) &&
+				// Type is not in 'currentTypeIds'
+				!currentTypeIds.has(type.id) &&
+				// If type is file-name and `currentTypeIds` has auto-filename, or
+				// type is auto-filename and `currentTypeIds` has file-name, then filter out
+				!(
+					(type.id === 'file-name' && currentTypeIds.has('auto-filename')) ||
+					(type.id === 'auto-filename' && currentTypeIds.has('file-name'))
+				)
 		);
+
 	const filteredFields = typesFullList
 		.map((type) => applyTranslations(type, formatMessage))
 		.filter(
@@ -255,6 +268,20 @@ export function SelectField(props: {
 	return (
 		<>
 			<SearchBar keyword={searchTerm} onChange={handleSearchChange} autoFocus={true} />
+			<Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', mt: 2 }}>
+				{filteredFields.map((field, index) => (
+					<ListItemButton key={index} onClick={() => setSelectedField(field)} selected={selectedField?.id === field.id}>
+						<ListItemIcon>
+							{configLookup?.[field.id]?.icon?.id ? (
+								<SystemIcon icon={configLookup[field.id].icon} />
+							) : (
+								<ComponentIcon />
+							)}
+						</ListItemIcon>
+						<ListItemText primary={field.name} secondary={field.description} />
+					</ListItemButton>
+				))}
+			</Box>
 			{basicFields.length > 0 && (
 				<>
 					<FormControl sx={{ mt: 2 }}>
@@ -281,20 +308,6 @@ export function SelectField(props: {
 					{filteredFields.length > 0 && <Divider />}
 				</>
 			)}
-			<Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', mt: 2 }}>
-				{filteredFields.map((field, index) => (
-					<ListItemButton key={index} onClick={() => setSelectedField(field)} selected={selectedField?.id === field.id}>
-						<ListItemIcon>
-							{configLookup?.[field.id]?.icon?.id ? (
-								<SystemIcon icon={configLookup[field.id].icon} />
-							) : (
-								<ComponentIcon />
-							)}
-						</ListItemIcon>
-						<ListItemText primary={field.name} secondary={field.description} />
-					</ListItemButton>
-				))}
-			</Box>
 		</>
 	);
 }
