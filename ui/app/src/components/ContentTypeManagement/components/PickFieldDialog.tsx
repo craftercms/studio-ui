@@ -57,11 +57,12 @@ export interface PickFieldDialogProps extends EnhancedDialogProps {
 export interface PickFieldDialogBodyProps extends Omit<PickFieldDialogProps, 'title'> {}
 
 export function PickFieldDialogBody(props: PickFieldDialogBodyProps) {
-	const { configLookup, typesFullList, typesCurrentList, onInsert, onClose, systemFieldsTitle, systemFieldsIds } =
+	const { configLookup, typesFullList, typesCurrentList, onInsert, onClose, systemFieldsTitle, systemFieldsIds, type } =
 		props;
 	const [selectedField, setSelectedField] = useState<PartialContentType>(undefined);
 	const [selectedView, setSelectedView] = useState<number>(0);
 	const [position, setPosition] = useState<number>(typesCurrentList?.length ?? 0);
+	const currentFieldTypes = Object.values(type.fields ?? {}).map((field) => field.type);
 
 	const onSecondaryAction = (e: React.MouseEvent) => {
 		if (selectedView === 0) {
@@ -95,7 +96,7 @@ export function PickFieldDialogBody(props: PickFieldDialogBodyProps) {
 				{selectedView === 0 ? (
 					<SelectField
 						configLookup={configLookup}
-						typesCurrentList={typesCurrentList}
+						currentFieldTypes={currentFieldTypes}
 						typesFullList={typesFullList}
 						selectedField={selectedField}
 						setSelectedField={onSelectField}
@@ -220,12 +221,12 @@ export function SelectField(props: {
 	setSelectedField: (field: PartialContentType) => void;
 	systemFieldsIds?: PickFieldDialogProps['systemFieldsIds'];
 	systemFieldsTitle?: PickFieldDialogProps['systemFieldsTitle'];
-	typesCurrentList?: PickFieldDialogProps['typesCurrentList'];
+	currentFieldTypes?: string[];
 }) {
 	const {
 		configLookup,
 		typesFullList,
-		typesCurrentList,
+		currentFieldTypes,
 		selectedField,
 		setSelectedField,
 		systemFieldsIds = [],
@@ -233,7 +234,6 @@ export function SelectField(props: {
 	} = props;
 	const [searchTerm, setSearchTerm] = useState('');
 	const { formatMessage } = useIntl();
-	const currentTypeIds = new Set((typesCurrentList ?? []).map((item) => item.id));
 
 	const basicFields = typesFullList
 		.map((type) => applyTranslations(type, formatMessage))
@@ -243,12 +243,12 @@ export function SelectField(props: {
 					type.description.toLowerCase().includes(searchTerm.toLowerCase())) &&
 				systemFieldsIds.includes(type.id) &&
 				// Type is not in 'currentTypeIds'
-				!currentTypeIds.has(type.id) &&
+				!currentFieldTypes.includes(type.id) &&
 				// If type is file-name and `currentTypeIds` has auto-filename, or
 				// type is auto-filename and `currentTypeIds` has file-name, then filter out
 				!(
-					(type.id === 'file-name' && currentTypeIds.has('auto-filename')) ||
-					(type.id === 'auto-filename' && currentTypeIds.has('file-name'))
+					(type.id === 'file-name' && currentFieldTypes.includes('auto-filename')) ||
+					(type.id === 'auto-filename' && currentFieldTypes.includes('file-name'))
 				)
 		);
 
@@ -268,7 +268,7 @@ export function SelectField(props: {
 	return (
 		<>
 			<SearchBar keyword={searchTerm} onChange={handleSearchChange} autoFocus={true} />
-			<Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', mt: 2 }}>
+			<Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', mt: 1, mb: 2 }}>
 				{filteredFields.map((field, index) => (
 					<ListItemButton key={index} onClick={() => setSelectedField(field)} selected={selectedField?.id === field.id}>
 						<ListItemIcon>
@@ -284,10 +284,11 @@ export function SelectField(props: {
 			</Box>
 			{basicFields.length > 0 && (
 				<>
+					<Divider />
 					<FormControl sx={{ mt: 2 }}>
 						<FormLabel id="fieldSectionRadioGroupLabel">{systemFieldsTitle}</FormLabel>
 					</FormControl>
-					<Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', mt: 1, mb: 2 }}>
+					<Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', mt: 2 }}>
 						{basicFields.map((field, index) => (
 							<ListItemButton
 								key={index}
@@ -305,7 +306,6 @@ export function SelectField(props: {
 							</ListItemButton>
 						))}
 					</Box>
-					{filteredFields.length > 0 && <Divider />}
 				</>
 			)}
 		</>
