@@ -1038,7 +1038,9 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 				}
 				case snackGuestMessage.type: {
 					enqueueSnackbar(
-						payload.id in guestMessages ? formatMessage(guestMessages[payload.id], payload.values ?? {}) : payload.id,
+						payload.id in guestMessages
+							? formatMessage(guestMessages[payload.id], payload.values ?? {})
+							: (payload.message ?? payload.id),
 						{
 							variant: payload.level
 								? payload.level === 'required'

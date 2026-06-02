@@ -631,11 +631,14 @@ const reducer = createReducer(initialState, {
 			return state;
 		}
 		const instanceId = instance.craftercms.id;
+		let isInstanceDuplicateInZone = false;
 		const dropTargets = getContentTypeDropTargets(
 			instance.craftercms.contentTypeId,
 			(record: ICERecord, hierarchyMap: ModelHierarchyMap) => {
 				const { field: { validations = [] } = {} } = getReferentialEntries(record);
 				const allowDuplicates = (validations as ContentTypeFieldValidations)?.allowDuplicates?.value ?? false;
+				const isComponentDuplicate = hierarchyMap[record.modelId]?.children?.includes(instanceId);
+				if (isComponentDuplicate) isInstanceDuplicateInZone = true;
 
 				return (
 					!isEditActionAvailable({
@@ -644,7 +647,7 @@ const reducer = createReducer(initialState, {
 						contentItemsByPath: getCachedContentItems(),
 						parentModelId: getParentModelId(record.modelId, getCachedModels(), modelHierarchyMap)
 					}) ||
-					(!allowDuplicates && hierarchyMap[record.modelId]?.children?.includes(instanceId))
+					(!allowDuplicates && isComponentDuplicate)
 				);
 			},
 			// This action type ensures we're working with existing 'shared' components
@@ -668,7 +671,8 @@ const reducer = createReducer(initialState, {
 				contentType,
 				inZone: false,
 				targetIndex: null,
-				dragged: null
+				dragged: null,
+				isInstanceDuplicateInZone
 			}
 		};
 	},

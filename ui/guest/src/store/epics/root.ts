@@ -843,7 +843,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 		),
 	// endregion
 	// region componentInstanceDragStarted
-	(action$: MouseEventActionObservable, state$) => {
+	(action$: MouseEventActionObservable, state$, { getIntl }) => {
 		return action$.pipe(
 			ofType(componentInstanceDragStarted.type),
 			withLatestFrom(state$),
@@ -852,13 +852,25 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 					console.error('No contentTypeId found for this drag instance.');
 				} else {
 					if (state.dragContext.dropZones.length === 0) {
-						post(
-							snackGuestMessage({
-								id: 'dropTargetsNotFound',
-								level: 'info',
-								values: { contentType: state.dragContext.contentType.name }
-							})
-						);
+						if (state.dragContext.isInstanceDuplicateInZone) {
+							post(
+								snackGuestMessage({
+									message: getIntl().formatMessage({
+										id: 'instanceDragStarted.duplicateItem',
+										defaultMessage: 'Drop targets do not allow duplicate items.'
+									}),
+									level: 'info'
+								})
+							);
+						} else {
+							post(
+								snackGuestMessage({
+									id: 'dropTargetsNotFound',
+									level: 'info',
+									values: { contentType: state.dragContext.contentType.name }
+								})
+							);
+						}
 					} else {
 						document.documentElement.classList.add(dragAndDropActiveClass);
 						return initializeDragSubjects(state$);

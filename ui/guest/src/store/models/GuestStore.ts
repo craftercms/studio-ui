@@ -50,6 +50,7 @@ export interface GuestState {
 		scrolling?: boolean;
 		contentType?: ContentType;
 		instance?: ContentInstance;
+		isInstanceDuplicateInZone?: boolean;
 	};
 	hostCheckedIn: boolean;
 	status: EditingStatus;
