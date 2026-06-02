@@ -226,7 +226,7 @@ export function SelectField(props: {
 	const {
 		configLookup,
 		typesFullList,
-		currentFieldTypes,
+		currentFieldTypes = [],
 		selectedField,
 		setSelectedField,
 		systemFieldsIds = [],
