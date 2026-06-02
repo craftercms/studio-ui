@@ -359,9 +359,27 @@ export function numericInputValidator(
 	const pattern: string = getValidationValue(field.validations, 'pattern');
 	const maxValue: number = getValidationValue(field.validations, 'maxValue');
 	const minValue: number = getValidationValue(field.validations, 'minValue');
+	const lastUnderscore = field.id.lastIndexOf('_');
+	const numType = lastUnderscore !== -1 ? field.id.substring(lastUnderscore) : '_i';
 
 	if (nou(currentValue) || Number.isNaN(Number(currentValue))) {
 		return isValid;
+	}
+
+	let numTypeRegex;
+	if (numType === '_f' || numType === '_d') {
+		// with decimals
+		numTypeRegex = /^[+-]?\d+(\.\d+)?$/;
+		if (!String(currentValue).match(numTypeRegex)) {
+			isValid = false;
+			messages.push([defineMessage({ defaultMessage: 'Please enter a valid decimal number.' })]);
+		}
+	} else {
+		numTypeRegex = /^([+-]?[1-9]\d*|0)$/;
+		if (!String(currentValue).match(numTypeRegex)) {
+			isValid = false;
+			messages.push([defineMessage({ defaultMessage: "Decimals aren't allowed on this input." })]);
+		}
 	}
 
 	// If there's a pattern and it doesn't match
