@@ -89,8 +89,10 @@
 		"@types/react-is": "^19.2.0",
 		"build-if-changed": "^1.5.5",
 		"npm-run-all": "^4.1.5",
+		"postcss": "^8.5.15",
 		"replace-in-file": "^8.4.0",
 		"rollup": "^4.59.0",
+		"rollup-plugin-postcss": "^4.0.2",
 		"rollup-plugin-svg": "^2.0.0",
 		"rollup-plugin-swc3": "^0.12.1",
 		"yargs": "^18.0.0"

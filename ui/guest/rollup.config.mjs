@@ -22,6 +22,7 @@ import { swc } from 'rollup-plugin-swc3';
 import alias from '@rollup/plugin-alias';
 import json from '@rollup/plugin-json';
 import svg from 'rollup-plugin-svg';
+import postcss from 'rollup-plugin-postcss';
 
 /** @type {import('rollup').InputPluginOption} */
 const plugins = [
@@ -34,6 +35,10 @@ const plugins = [
     'import.meta.env.VERSION': JSON.stringify(pkg.version)
   }),
   svg(),
+  postcss({
+    inject: true, // Injects styles into <head> at runtime
+    minimize: true, // Minifies the CSS
+  }),
   swc({ sourceMaps: true }),
   alias({
     entries: [{ find: '@craftercms/studio-ui', replacement: '@craftercms/studio-ui/build_tsc' }]
