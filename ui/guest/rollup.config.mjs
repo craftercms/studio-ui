@@ -22,6 +22,7 @@ import { swc } from 'rollup-plugin-swc3';
 import alias from '@rollup/plugin-alias';
 import json from '@rollup/plugin-json';
 import svg from 'rollup-plugin-svg';
+import postcss from 'rollup-plugin-postcss';
 
 /** @type {import('rollup').InputPluginOption} */
 const plugins = [
@@ -43,7 +44,11 @@ const plugins = [
     dedupe: ['react', 'react-dom', 'react-is'],
     mainFields: ['module', 'main', 'browser']
   }),
-  commonjs({ include: /node_modules|jquery/ })
+  commonjs({ include: /node_modules|jquery/ }),
+  postcss({
+    inject: true, // Injects styles into <head> at runtime
+    minimize: true, // Minifies the CSS
+  }),
 ];
 
 /** @type {import('rollup').OutputOptions['globals']} */
