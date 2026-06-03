@@ -35,6 +35,10 @@ const plugins = [
     'import.meta.env.VERSION': JSON.stringify(pkg.version)
   }),
   svg(),
+  postcss({
+    inject: true, // Injects styles into <head> at runtime
+    minimize: true, // Minifies the CSS
+  }),
   swc({ sourceMaps: true }),
   alias({
     entries: [{ find: '@craftercms/studio-ui', replacement: '@craftercms/studio-ui/build_tsc' }]
@@ -44,11 +48,7 @@ const plugins = [
     dedupe: ['react', 'react-dom', 'react-is'],
     mainFields: ['module', 'main', 'browser']
   }),
-  commonjs({ include: /node_modules|jquery/ }),
-  postcss({
-    inject: true, // Injects styles into <head> at runtime
-    minimize: true, // Minifies the CSS
-  }),
+  commonjs({ include: /node_modules|jquery/ })
 ];
 
 /** @type {import('rollup').OutputOptions['globals']} */
