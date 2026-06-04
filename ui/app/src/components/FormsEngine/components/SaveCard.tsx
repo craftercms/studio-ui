@@ -101,24 +101,29 @@ export function SaveCard(props: SaveCardProps) {
 				/>
 			)}
 			{!isEmbedded && !isRepeatMode && (
-				<FormControlLabel
-					label={<FormattedMessage defaultMessage="Minimize after saving" />}
-					control={
-						<Checkbox
-							size="small"
-							checked={minimizeAfterSave}
-							onChange={(e, checked) => handleSetMinimizeAfterSave(checked)}
-						/>
-					}
-				/>
+				<>
+					<FormControlLabel
+						label={<FormattedMessage defaultMessage="Minimize after saving" />}
+						control={
+							<Checkbox
+								size="small"
+								checked={minimizeAfterSave}
+								onChange={(e, checked) => handleSetMinimizeAfterSave(checked)}
+							/>
+						}
+					/>
+					<FormControlLabel
+						label={<FormattedMessage defaultMessage="Close after saving" />}
+						control={
+							<Checkbox
+								size="small"
+								checked={closeAfterSave}
+								onChange={(e, checked) => handleSetCloseAfterSave(checked)}
+							/>
+						}
+					/>
+				</>
 			)}
-			<FormControlLabel
-				label={<FormattedMessage defaultMessage="Close after saving" />}
-				control={
-					<Checkbox size="small" checked={closeAfterSave} onChange={(e, checked) => handleSetCloseAfterSave(checked)} />
-				}
-			/>
-
 			<SplitButton
 				fullWidth
 				loading={isSubmitting}
