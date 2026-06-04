@@ -42,7 +42,7 @@ export function useConsolidatedImagePickerData(dataSources: DataSource[]): Conso
 					if (!path) break;
 					const sortOptions = {
 						sortBy: ds.properties?.['sortBy'],
-						sortOrder: ds.properties['sortOrder']
+						sortOrder: ds.properties?.['sortOrder']
 					};
 					if (ds.properties.useSearch) {
 						allowedSearchPaths.push({
