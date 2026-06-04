@@ -38,6 +38,10 @@ const sortByOptions = [
 ];
 const sortOrderOptions = [
 	{
+		key: '',
+		value: defineMessage({ defaultMessage: 'None' })
+	},
+	{
 		key: 'asc',
 		value: defineMessage({ defaultMessage: 'Ascending' })
 	},
@@ -59,7 +63,7 @@ export function SortDropdown(props: SortDropdownProps) {
 	const options = type === 'sortBy' ? sortByOptions : sortOrderOptions;
 
 	const handleChange = (event: SelectChangeEvent) => {
-		setValue(event.target.value);
+		setValue(event.target.value || undefined);
 	};
 
 	return (

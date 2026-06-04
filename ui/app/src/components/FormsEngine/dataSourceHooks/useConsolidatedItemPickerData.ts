@@ -66,8 +66,8 @@ export function useConsolidatedItemPickerData(dataSources: DataSource[]): Consol
 						}
 					});
 					const sortOptions = {
-						sortBy: ds.properties?.['sortBy'],
-						sortOrder: ds.properties?.['sortOrder']
+						sortBy: ds.properties?.['sortBy'] as string | undefined,
+						sortOrder: ds.properties?.['sortOrder'] as 'asc' | 'desc' | undefined
 					};
 					if (ds.properties.enableBrowse) {
 						allowedBrowsePaths.push({
