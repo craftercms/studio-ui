@@ -45,7 +45,8 @@ export type DescriptorControlType =
 	| 'date-time-expression-input'
 	| 'rte'
 	| 'delete-dependencies'
-	| 'copy-dependencies';
+	| 'copy-dependencies'
+	| 'sort-dropdown';
 
 const DataSourceMultiSelector = lazy(() => import('./controls/DataSourceMultiSelector'));
 const DataSourceSingleSelector = lazy(() => import('./controls/DataSourceSingleSelector'));
@@ -79,5 +80,6 @@ export const controlMap: Record<DescriptorControlType, ElementType> = {
 	'date-time-expression-input': lazy(() => import('./controls/DateTimeExpressionInput')),
 	rte: lazy(() => import('./controls/RichTextEditor')),
 	'delete-dependencies': lazy(() => import('./controls/DeleteDependencies')),
-	'copy-dependencies': lazy(() => import('./controls/CopyDependencies'))
+	'copy-dependencies': lazy(() => import('./controls/CopyDependencies')),
+	'sort-dropdown': lazy(() => import('./controls/SortDropdown'))
 };

@@ -65,18 +65,24 @@ export function useConsolidatedItemPickerData(dataSources: DataSource[]): Consol
 							allowedSharedExisingTypes.push(contentTypeId);
 						}
 					});
+					const sortOptions = {
+						sortBy: ds.properties?.['sortBy'],
+						sortOrder: ds.properties?.['sortOrder']
+					};
 					if (ds.properties.enableBrowse) {
 						allowedBrowsePaths.push({
 							title: ds.title,
 							path: ds.properties.baseBrowsePath,
-							allowedContentTypes: allowedSharedExisingTypes
+							allowedContentTypes: allowedSharedExisingTypes,
+							options: sortOptions
 						});
 					}
 					if (ds.properties.enableSearch) {
 						allowedSearchPaths.push({
 							title: ds.title,
 							path: ds.properties.baseBrowsePath,
-							allowedContentTypes: allowedSharedExisingTypes
+							allowedContentTypes: allowedSharedExisingTypes,
+							options: sortOptions
 						});
 					}
 					break;

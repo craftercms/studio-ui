@@ -88,7 +88,8 @@ export const valueRetrieverLookup: Record<BuiltInControlType | DescriptorControl
 	'input-link': textFieldExtractor,
 	'input-phone': textFieldExtractor,
 	'delete-dependencies': null,
-	'copy-dependencies': null
+	'copy-dependencies': null,
+	'sort-dropdown': textFieldExtractor
 };
 
 /**
