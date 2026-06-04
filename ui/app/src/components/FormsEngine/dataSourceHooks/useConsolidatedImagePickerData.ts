@@ -41,8 +41,8 @@ export function useConsolidatedImagePickerData(dataSources: DataSource[]): Conso
 					const path = ds.properties.repoPath || ds.properties.path;
 					if (!path) break;
 					const sortOptions = {
-						sortBy: ds.properties?.['sortBy'],
-						sortOrder: ds.properties?.['sortOrder']
+						sortBy: ds.properties?.['sortBy'] as string | undefined,
+						sortOrder: ds.properties?.['sortOrder'] as 'asc' | 'desc' | undefined
 					};
 					if (ds.properties.useSearch) {
 						allowedSearchPaths.push({
