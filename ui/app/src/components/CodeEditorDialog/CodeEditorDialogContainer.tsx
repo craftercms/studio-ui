@@ -114,7 +114,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 				? writeConfiguration(site, path.replace(`/config/${module}`, ''), module, value)
 				: writeContent(site, path, value, {
 						unlock: false,
-						comment: saveWithCommentState.saveWithComment && saveWithCommentState.comment
+						...(saveWithCommentState.saveWithComment && { comment: saveWithCommentState.comment })
 					});
 			// If item is in packages in active workflow, before saving we need to cancel the packages.
 			const preWriteAction$ = affectedPackages?.length
