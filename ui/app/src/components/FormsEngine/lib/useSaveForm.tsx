@@ -212,7 +212,7 @@ export function useSaveForm(props: UseSaveFormProps) {
 		const saveContent = (cancelPackagesComment: string = '') => {
 			const saveOrMoveService$ = isRename
 				? moveAndUpdateContent(siteId, itemPath, path, xml)
-				: writeContent(siteId, path, xml);
+				: writeContent(siteId, path, xml, { comment: versionComment });
 			const saveOrCancel$ = affectedPackages?.length
 				? cancelPackages(siteId, {
 						packageIds: affectedPackages.map((pkg) => pkg.id),

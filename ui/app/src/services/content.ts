@@ -125,7 +125,7 @@ export function writeContent(
 	siteId: string,
 	path: string,
 	content: string,
-	options?: { unlock: boolean; comment?: string }
+	options?: { unlock?: boolean; comment?: string }
 ) {
 	const request$ = postJSON(`/studio/api/2/content/${siteId}`, {
 		path,

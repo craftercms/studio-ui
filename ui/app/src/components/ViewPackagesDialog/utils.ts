@@ -83,7 +83,7 @@ export function checkAndCancelAffectedPackages({
 			dispatch(
 				pushDialog({
 					component: 'craftercms.components.ErrorDialog',
-					props: { error: response.response }
+					props: { error: response?.response }
 				})
 			);
 		}

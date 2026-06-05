@@ -207,7 +207,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 		const formData = refs.current.currentFormData;
 
 		if (formData.comment === '') {
-			if (selectedMode === 'everything') {
+			if (selectedMode === 'everything' && formData.publishingTarget) {
 				currentSetFormData({
 					comment: formatMessage(
 						{ defaultMessage: 'Publish all changes on the repo to {target}' },
