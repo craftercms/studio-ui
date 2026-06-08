@@ -62,7 +62,7 @@ import {
 	setHostSize,
 	setHostWidth,
 	setItemBeingDragged,
-	disableKeyboardShortcuts,
+	enableKeyboardShortcuts,
 	setPreviewEditMode,
 	setWindowSize,
 	toggleEditModePadding,
@@ -180,7 +180,7 @@ const initialState: GlobalState['preview'] = {
 	windowSize: window.innerWidth,
 	xbDetectionTimeoutMs: 5000,
 	error: null,
-	disableKeyboardShortcuts: false
+	enableKeyboardShortcuts: true
 };
 
 const minDrawerWidth = 240;
@@ -267,7 +267,7 @@ const reducer = createReducer<GlobalState['preview']>(initialState, (builder) =>
 			const previewConfigEl = configDOM.querySelector('[id="craftercms.components.Preview"]');
 			const initialEditModeOn = previewConfigEl?.getAttribute('initialEditModeOn');
 			const initialHighlightMode = previewConfigEl?.getAttribute('initialHighlightMode') as HighlightMode;
-			const initialDisabledKeyboardShortcuts = payload.storedDisabledKeyboardShortcuts ?? false;
+			const initialEnabledKeyboardShortcuts = payload.storedEnabledKeyboardShortcuts ?? true;
 
 			// If there is no storedEditMode, set it to the value of initialEditModeOn (config value), otherwise, defaults to true
 			state.editMode = payload.storedEditMode ?? (initialEditModeOn ? initialEditModeOn === 'true' : true);
@@ -275,7 +275,7 @@ const reducer = createReducer<GlobalState['preview']>(initialState, (builder) =>
 				payload.storedHighlightMode ??
 				(['all', 'move'].includes(initialHighlightMode) ? initialHighlightMode : state.highlightMode);
 			state.editModePadding = payload.storedPaddingMode ?? state.editModePadding;
-			state.disableKeyboardShortcuts = initialDisabledKeyboardShortcuts;
+			state.enableKeyboardShortcuts = initialEnabledKeyboardShortcuts;
 		})
 		.addCase(openToolsPanel, (state) => {
 			const { windowSize, editMode, toolsPanelWidth, icePanelWidth } = state;
@@ -821,8 +821,8 @@ const reducer = createReducer<GlobalState['preview']>(initialState, (builder) =>
 			if (!state.guest) return state;
 			state.guest.contentTypesUpdated = true;
 		})
-		.addCase(disableKeyboardShortcuts, (state, { payload }) => {
-			state.disableKeyboardShortcuts = payload.disabled;
+		.addCase(enableKeyboardShortcuts, (state, { payload }) => {
+			state.enableKeyboardShortcuts = payload.enabled;
 		});
 });
 

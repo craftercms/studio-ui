@@ -39,7 +39,8 @@ import {
 	removeCompareVersionDialogViewModes,
 	removeViewVersionDialogViewModes,
 	removeTypeViewCompactMode,
-	removeViewGroupedTypes
+	removeViewGroupedTypes,
+	removeStoredEnabledKeyboardShortcutsState
 } from '../../utils/state';
 
 export const preferencesGroups: Array<{
@@ -140,6 +141,7 @@ export const preferencesGroups: Array<{
 			removeViewVersionDialogViewModes(props.username);
 			removeTypeViewCompactMode(props.username);
 			removeViewGroupedTypes(props.username);
+			removeStoredEnabledKeyboardShortcutsState(props.username);
 		}
 	}
 ];

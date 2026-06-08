@@ -18,36 +18,36 @@ import Tooltip from '@mui/material/Tooltip';
 import type { SwitchProps } from '@mui/material/Switch';
 import { FormattedMessage } from 'react-intl';
 import { useDispatch } from 'react-redux';
-import { disableKeyboardShortcuts as disableKeyboardShortcutsAction } from '../../state/actions/preview';
+import { enableKeyboardShortcuts as enableKeyboardShortcutsAction } from '../../state/actions/preview';
 import useSelection from '../../hooks/useSelection';
 import { Switch } from '@mui/material';
-import { setStoredDisabledKeyboardShortcutsState } from '../../utils/state';
+import { setStoredEnableKeyboardShortcutsState } from '../../utils/state';
 import useActiveUser from '../../hooks/useActiveUser';
 import { ChangeEvent } from 'react';
 
-export function DisableKeyboardShortcutsSwitch(props: SwitchProps) {
+export function KeyboardShortcutsSwitch(props: SwitchProps) {
 	const dispatch = useDispatch();
-	const shortcutsDisabled = useSelection((state) => state.preview.disableKeyboardShortcuts);
+	const shortcutsEnabled = useSelection((state) => state.preview.enableKeyboardShortcuts);
 	const { username } = useActiveUser();
 
 	const onChange = (e: ChangeEvent<HTMLInputElement>) => {
-		setStoredDisabledKeyboardShortcutsState(e.target.checked, username);
-		dispatch(disableKeyboardShortcutsAction({ disabled: e.target.checked }));
+		setStoredEnableKeyboardShortcutsState(e.target.checked, username);
+		dispatch(enableKeyboardShortcutsAction({ enabled: e.target.checked }));
 	};
 
 	return (
 		<Tooltip
 			title={
-				shortcutsDisabled ? (
-					<FormattedMessage defaultMessage="Enable shortcuts" />
-				) : (
+				shortcutsEnabled ? (
 					<FormattedMessage defaultMessage="Disable shortcuts" />
+				) : (
+					<FormattedMessage defaultMessage="Enable shortcuts" />
 				)
 			}
 		>
-			<Switch {...props} checked={shortcutsDisabled} onChange={onChange} />
+			<Switch {...props} checked={shortcutsEnabled} onChange={onChange} />
 		</Tooltip>
 	);
 }
 
-export default DisableKeyboardShortcutsSwitch;
+export default KeyboardShortcutsSwitch;

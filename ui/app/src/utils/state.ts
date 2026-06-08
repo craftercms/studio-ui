@@ -514,11 +514,15 @@ export function removeViewGroupedTypes(user: string) {
 	window.localStorage.removeItem(`craftercms.${user}.viewGroupedTypes`);
 }
 
-export function setStoredDisabledKeyboardShortcutsState(disabled: boolean, user: string): void {
-	window.localStorage.setItem(`craftercms.${user}.disabledKeyboardShortcuts`, JSON.stringify(disabled));
+export function setStoredEnableKeyboardShortcutsState(enabled: boolean, user: string): void {
+	window.localStorage.setItem(`craftercms.${user}.enabledKeyboardShortcuts`, JSON.stringify(enabled));
 }
 
-export function getStoredDisabledKeyboardShortcutsState(user: string): boolean | null {
-	const value = window.localStorage.getItem(`craftercms.${user}.disabledKeyboardShortcuts`);
-	return value ? value === 'true' : null;
+export function getStoredEnabledKeyboardShortcutsState(user: string): boolean {
+	const value = window.localStorage.getItem(`craftercms.${user}.enabledKeyboardShortcuts`);
+	return value ? value === 'true' : true;
+}
+
+export function removeStoredEnabledKeyboardShortcutsState(user: string): void {
+	window.localStorage.removeItem(`craftercms.${user}.enabledKeyboardShortcuts`);
 }

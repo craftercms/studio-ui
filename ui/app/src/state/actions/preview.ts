@@ -249,7 +249,7 @@ export const initPreviewConfig = /*#__PURE__*/ createAction<{
 	storedEditMode: boolean;
 	storedHighlightMode: HighlightMode;
 	storedPaddingMode: boolean;
-	storedDisabledKeyboardShortcuts: boolean | null;
+	storedEnabledKeyboardShortcuts: boolean | null;
 }>('INIT_PREVIEW_PANEL_CONFIG');
 
 export const selectForEdit = /*#__PURE__*/ createAction<EditSelection>(SELECT_FOR_EDIT);
@@ -449,6 +449,4 @@ export const mainModelModifiedExternally = /*#__PURE__*/ createAction<ContentEve
 	'MAIN_MODEL_MODIFIED_EXTERNALLY'
 );
 
-export const disableKeyboardShortcuts = /*#__PURE__*/ createAction<{ disabled: boolean }>(
-	'KEYBOARD_SHORTCUTS_STATE_CHANGED'
-);
+export const enableKeyboardShortcuts = /*#__PURE__*/ createAction<{ enabled: boolean }>('KEYBOARD_SHORTCUTS_TOGGLE');

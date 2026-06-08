@@ -101,7 +101,7 @@ import RubbishBin from '../RubbishBin/RubbishBin';
 import { useSnackbar } from 'notistack';
 import {
 	getStoredClipboard,
-	getStoredDisabledKeyboardShortcutsState,
+	getStoredEnabledKeyboardShortcutsState,
 	getStoredEditModeChoice,
 	getStoredEditModePadding,
 	getStoredHighlightModeChoice,
@@ -333,7 +333,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 	const { enqueueSnackbar } = useSnackbar();
 	const { formatMessage } = useIntl();
 	const stack = useSelection((state) => state.dialogStack);
-	const keyboardShortcutsDisabled = useSelection((state) => state.preview.disableKeyboardShortcuts);
+	const keyboardShortcutsEnabled = useSelection((state) => state.preview.enableKeyboardShortcuts);
 	const models = guest?.models;
 	const modelIdByPath = guest?.modelIdByPath;
 	const hierarchyMap = guest?.hierarchyMap;
@@ -390,7 +390,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 		browseFilesDialogState,
 		stack,
 		onShortCutKeypress(event: KeyboardEvent) {
-			if (upToDateRefs.current.stack.ids?.length || keyboardShortcutsDisabled) return;
+			if (upToDateRefs.current.stack.ids?.length || !keyboardShortcutsEnabled) return;
 
 			const key = event.key;
 			switch (key) {
@@ -473,14 +473,14 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 			const storedEditMode = getStoredEditModeChoice(username, uuid);
 			const storedHighlightMode = getStoredHighlightModeChoice(username, uuid);
 			const storedPaddingMode = getStoredEditModePadding(username);
-			const storedDisabledKeyboardShortcuts = getStoredDisabledKeyboardShortcutsState(username);
+			const storedEnabledKeyboardShortcuts = getStoredEnabledKeyboardShortcutsState(username);
 			dispatch(
 				initPreviewConfig({
 					configXml: uiConfig.xml,
 					storedEditMode,
 					storedHighlightMode,
 					storedPaddingMode,
-					storedDisabledKeyboardShortcuts
+					storedEnabledKeyboardShortcuts
 				})
 			);
 		}

@@ -14,6 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './DisableKeyboardShortcutsSwitch';
+export { default } from './KeyboardShortcutsSwitch';
 
-export * from './DisableKeyboardShortcutsSwitch';
+export * from './KeyboardShortcutsSwitch';
