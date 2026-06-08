@@ -513,3 +513,12 @@ export function getViewGroupedTypes(user: string): boolean {
 export function removeViewGroupedTypes(user: string) {
 	window.localStorage.removeItem(`craftercms.${user}.viewGroupedTypes`);
 }
+
+export function setStoredDisabledKeyboardShortcutsState(disabled: boolean, user: string): void {
+	window.localStorage.setItem(`craftercms.${user}.disabledKeyboardShortcuts`, JSON.stringify(disabled));
+}
+
+export function getStoredDisabledKeyboardShortcutsState(user: string): boolean {
+	const value = window.localStorage.getItem(`craftercms.${user}.disabledKeyboardShortcuts`);
+	return value ? value === 'true' : null;
+}

@@ -34,6 +34,7 @@ import EditModeSwitch from '../EditModeSwitch';
 import { usePreviewState } from '../../hooks/usePreviewState';
 import { HighlightMode } from '../../models/GlobalState';
 import PaddingModeSwitchListItem from '../PaddingModeSwitchListItem';
+import { DisableKeyboardShortcutsSwitch } from '../DisableKeyboardShortcutsSwitch/DisableKeyboardShortcutsSwitch';
 
 const translations = defineMessages({
 	editMode: {
@@ -82,6 +83,10 @@ export function PreviewSettingsPanel() {
 				<EditModeSwitch edge="end" />
 			</ListItem>
 			<FormHelperText sx={formHelperTextSx}>{formatMessage(translations.editModeHelperText)}</FormHelperText>
+			<ListItem>
+				<ListItemText primary={formatMessage({ defaultMessage: 'Disable keyboard shortcuts' })} />
+				<DisableKeyboardShortcutsSwitch edge="end" />
+			</ListItem>
 			<Divider />
 			<ListSubheader id="settingsPanelHighlightModeLabel" children={formatMessage(translations.highlightMode)} />
 			<FormControl sx={{ pt: 0, pb: 0, pl: 2, pr: 2 }} component="li">
