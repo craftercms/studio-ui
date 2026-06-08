@@ -518,7 +518,7 @@ export function setStoredDisabledKeyboardShortcutsState(disabled: boolean, user:
 	window.localStorage.setItem(`craftercms.${user}.disabledKeyboardShortcuts`, JSON.stringify(disabled));
 }
 
-export function getStoredDisabledKeyboardShortcutsState(user: string): boolean {
+export function getStoredDisabledKeyboardShortcutsState(user: string): boolean | null {
 	const value = window.localStorage.getItem(`craftercms.${user}.disabledKeyboardShortcuts`);
 	return value ? value === 'true' : null;
 }
