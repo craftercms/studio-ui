@@ -104,6 +104,7 @@ import {
   getStoredClipboard,
   getStoredEditModeChoice,
   getStoredEditModePadding,
+  getStoredEnabledKeyboardShortcutsState,
   getStoredHighlightModeChoice,
   getStoredOutdatedXBValidationDate,
   removeStoredClipboard,
@@ -366,6 +367,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   const priorState = useRef({ site: siteId });
   const { enqueueSnackbar } = useSnackbar();
   const { formatMessage } = useIntl();
+  const dialogs = useSelection((state) => state.dialogs);
+  const keyboardShortcutsEnabled = useSelection((state) => state.preview.enableKeyboardShortcuts);
   const models = guest?.models;
   const modelIdByPath = guest?.modelIdByPath;
   const hierarchyMap = guest?.hierarchyMap;
@@ -422,7 +425,11 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
     showToolsPanel,
     toolsPanelWidth,
     browseFilesDialogState,
+    dialogs,
     onShortCutKeypress(event: KeyboardEvent) {
+      const openDialogs: boolean = Object.values(upToDateRefs.current.dialogs).some((dialog) => dialog.open);
+      if (openDialogs || !keyboardShortcutsEnabled) return;
+
       const key = event.key;
       switch (key) {
         case 'e':
@@ -501,7 +508,16 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
       const storedEditMode = getStoredEditModeChoice(username, uuid);
       const storedHighlightMode = getStoredHighlightModeChoice(username, uuid);
       const storedPaddingMode = getStoredEditModePadding(username);
-      dispatch(initPreviewConfig({ configXml: uiConfig.xml, storedEditMode, storedHighlightMode, storedPaddingMode }));
+      const storedEnabledKeyboardShortcuts = getStoredEnabledKeyboardShortcutsState(username);
+      dispatch(
+        initPreviewConfig({
+          configXml: uiConfig.xml,
+          storedEditMode,
+          storedHighlightMode,
+          storedPaddingMode,
+          storedEnabledKeyboardShortcuts
+        })
+      );
     }
   }, [uiConfig.xml, username, uuid, dispatch]);
 
