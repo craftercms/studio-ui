@@ -409,6 +409,13 @@ export function AuditGridUI(props: AuditGridUIProps) {
               { defaultMessage: '{from}–{to} of {countValid, select, true {{count}} other {{estimatedLabel}}}' },
               { from, to, count, estimatedLabel, countValid: count !== -1 }
             );
+          },
+          paginationItemAriaLabel: (type) => {
+            if (type === 'previous') {
+              return formatMessage({ defaultMessage: 'Go to previous page' });
+            } else {
+              return formatMessage({ defaultMessage: 'Go to next page' });
+            }
           }
         }}
       />

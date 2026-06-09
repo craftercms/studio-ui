@@ -415,10 +415,12 @@ export function SearchUI(props: SearchUIProps) {
             slotProps={{
               actions: {
                 previousButton: {
-                  'aria-label': formatMessage(translations.previousPage)
+                  'aria-label': formatMessage(translations.previousPage),
+                  title: formatMessage(translations.previousPage)
                 },
                 nextButton: {
-                  'aria-label': formatMessage(translations.nextPage)
+                  'aria-label': formatMessage(translations.nextPage),
+                  title: formatMessage(translations.nextPage)
                 }
               }
             }}
