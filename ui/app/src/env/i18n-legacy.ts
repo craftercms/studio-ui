@@ -313,6 +313,12 @@ export const contentTypesMessages = defineMessages({
   },
   invalidMacros: {
     defaultMessage: 'The following invalid macros were removed: {macros}'
+  },
+  searchControls: {
+    defaultMessage: 'Search controls...'
+  },
+  searchDataSources: {
+    defaultMessage: 'Search data sources...'
   }
 });
 
