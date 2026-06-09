@@ -249,7 +249,7 @@ export const initPreviewConfig = /*#__PURE__*/ createAction<{
 	storedEditMode: boolean;
 	storedHighlightMode: HighlightMode;
 	storedPaddingMode: boolean;
-	storedEnabledKeyboardShortcuts: boolean | null;
+	storedEnabledKeyboardShortcuts: boolean;
 }>('INIT_PREVIEW_PANEL_CONFIG');
 
 export const selectForEdit = /*#__PURE__*/ createAction<EditSelection>(SELECT_FOR_EDIT);
