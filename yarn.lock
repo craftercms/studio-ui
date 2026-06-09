@@ -1720,7 +1720,7 @@ __metadata:
     "@mui/x-data-grid": "npm:^8.27.5"
     "@mui/x-date-pickers": "npm:^8.27.2"
     "@mui/x-tree-view": "npm:^8.27.2"
-    "@prettier/plugin-xml": "npm:3.4.2"
+    "@prettier/plugin-xml": "npm:3.3.0"
     "@reduxjs/toolkit": "npm:^2.11.2"
     "@rollup/plugin-swc": "npm:^0.4.0"
     "@stomp/stompjs": "npm:^7.3.0"
@@ -3436,14 +3436,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@prettier/plugin-xml@npm:3.4.2":
-  version: 3.4.2
-  resolution: "@prettier/plugin-xml@npm:3.4.2"
+"@prettier/plugin-xml@npm:3.3.0":
+  version: 3.3.0
+  resolution: "@prettier/plugin-xml@npm:3.3.0"
   dependencies:
     "@xml-tools/parser": "npm:^1.0.11"
   peerDependencies:
     prettier: ^3.0.0
-  checksum: 10/038dcbc865b6d4154a213e52122035a5ed1f7df99a887394e92141efb656babbb5a96322e0e4e56d21175968ccf93b74d18ae4377badd4594d8cd76e9a496eac
+  checksum: 10/0f33b044af7d7a79fdf73a4754aed56f73efbf200be24efa40ef5f52b849243ddfe5a27ec3f1ad7ffdc21b6b0015319509a37cd365f6f52466df41c0eeec3b4d
   languageName: node
   linkType: hard
 
