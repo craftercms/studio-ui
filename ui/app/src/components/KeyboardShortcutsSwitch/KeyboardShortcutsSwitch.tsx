@@ -21,7 +21,7 @@ import { useDispatch } from 'react-redux';
 import { enableKeyboardShortcuts as enableKeyboardShortcutsAction } from '../../state/actions/preview';
 import useSelection from '../../hooks/useSelection';
 import Switch from '@mui/material/Switch';
-import { setStoredEnableKeyboardShortcutsState } from '../../utils/state';
+import { setStoredEnabledKeyboardShortcutsState } from '../../utils/state';
 import useActiveUser from '../../hooks/useActiveUser';
 import { ChangeEvent } from 'react';
 
@@ -32,7 +32,7 @@ export function KeyboardShortcutsSwitch(props: SwitchProps) {
 	const { formatMessage } = useIntl();
 
 	const onChange = (e: ChangeEvent<HTMLInputElement>) => {
-		setStoredEnableKeyboardShortcutsState(e.target.checked, username);
+		setStoredEnabledKeyboardShortcutsState(e.target.checked, username);
 		dispatch(enableKeyboardShortcutsAction({ enabled: e.target.checked }));
 	};
 

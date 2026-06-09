@@ -514,7 +514,7 @@ export function removeViewGroupedTypes(user: string) {
 	window.localStorage.removeItem(`craftercms.${user}.viewGroupedTypes`);
 }
 
-export function setStoredEnableKeyboardShortcutsState(enabled: boolean, user: string): void {
+export function setStoredEnabledKeyboardShortcutsState(enabled: boolean, user: string): void {
 	window.localStorage.setItem(`craftercms.${user}.enabledKeyboardShortcuts`, JSON.stringify(enabled));
 }
 
