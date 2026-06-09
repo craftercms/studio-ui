@@ -426,9 +426,10 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
     toolsPanelWidth,
     browseFilesDialogState,
     dialogs,
+    keyboardShortcutsEnabled,
     onShortCutKeypress(event: KeyboardEvent) {
       const openDialogs: boolean = Object.values(upToDateRefs.current.dialogs).some((dialog) => dialog.open);
-      if (openDialogs || !keyboardShortcutsEnabled) return;
+      if (openDialogs || !upToDateRefs.current.keyboardShortcutsEnabled) return;
 
       const key = event.key;
       switch (key) {
