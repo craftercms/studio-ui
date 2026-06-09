@@ -389,8 +389,9 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 		toolsPanelWidth,
 		browseFilesDialogState,
 		stack,
+		keyboardShortcutsEnabled,
 		onShortCutKeypress(event: KeyboardEvent) {
-			if (upToDateRefs.current.stack.ids?.length || !keyboardShortcutsEnabled) return;
+			if (upToDateRefs.current.stack.ids?.length || !upToDateRefs.current.keyboardShortcutsEnabled) return;
 
 			const key = event.key;
 			switch (key) {
