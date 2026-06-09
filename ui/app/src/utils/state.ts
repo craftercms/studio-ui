@@ -441,7 +441,7 @@ export function removeStoredWidgetsAccordion(siteIdentifier: string, user: strin
   window.localStorage.removeItem(`craftercms.${user}.widgetsAccordion.${siteIdentifier}.${id}`);
 }
 
-export function setStoredEnableKeyboardShortcutsState(enabled: boolean, user: string): void {
+export function setStoredEnabledKeyboardShortcutsState(enabled: boolean, user: string): void {
   window.localStorage.setItem(`craftercms.${user}.enabledKeyboardShortcuts`, JSON.stringify(enabled));
 }
 
