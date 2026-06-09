@@ -16,11 +16,11 @@
 
 import Tooltip from '@mui/material/Tooltip';
 import type { SwitchProps } from '@mui/material/Switch';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
 import { enableKeyboardShortcuts as enableKeyboardShortcutsAction } from '../../state/actions/preview';
 import useSelection from '../../hooks/useSelection';
-import { Switch } from '@mui/material';
+import Switch from '@mui/material/Switch';
 import { setStoredEnableKeyboardShortcutsState } from '../../utils/state';
 import useActiveUser from '../../hooks/useActiveUser';
 import { ChangeEvent } from 'react';
@@ -29,6 +29,7 @@ export function KeyboardShortcutsSwitch(props: SwitchProps) {
   const dispatch = useDispatch();
   const shortcutsEnabled = useSelection((state) => state.preview.enableKeyboardShortcuts);
   const { username } = useActiveUser();
+  const { formatMessage } = useIntl();
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
     setStoredEnableKeyboardShortcutsState(e.target.checked, username);
@@ -45,7 +46,16 @@ export function KeyboardShortcutsSwitch(props: SwitchProps) {
         )
       }
     >
-      <Switch {...props} checked={shortcutsEnabled} onChange={onChange} />
+      <Switch
+        {...props}
+        checked={shortcutsEnabled}
+        onChange={onChange}
+        slotProps={{
+          input: {
+            'aria-label': formatMessage({ defaultMessage: 'Toggle keyboard shortcuts' })
+          }
+        }}
+      />
     </Tooltip>
   );
 }
