@@ -49,7 +49,13 @@ export function renderActivity(
   let item = activity.item;
   let systemType: string = activity.item?.systemType;
   if (messages[systemType]) {
-    systemType = formatMessage(messages[systemType]).toLowerCase();
+    const crafterStudioLanguage = getCurrentLocale();
+    const message = formatMessage(messages[systemType]);
+    // In Deutsch, the system types for 'page' and 'component' are capitalized.
+    systemType =
+      crafterStudioLanguage === 'de' && (systemType === 'page' || systemType === 'component')
+        ? message
+        : message.toLowerCase();
   }
   const anchor = (chunks: ReactNode[]) => {
     const [label, systemType, previewUrl, path] = chunks;
