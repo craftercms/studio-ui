@@ -133,7 +133,6 @@ export function Pagination(props: PaginationProps) {
             'aria-label': formatMessage(translations.previousPage),
             title: formatMessage(translations.previousPage),
             size: 'small',
-
             ...props.backIconButtonProps
           },
           nextButton: {

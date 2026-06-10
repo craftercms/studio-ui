@@ -521,7 +521,7 @@ export const formEngineMessages = defineMessages({
   viewOrder: { defaultMessage: 'View Order' },
   editNavigationOrder: { defaultMessage: 'Edit Navigation Order' },
   editNavigationOrderSubtitle: {
-    defaultMessage: 'Drag and Drop "This Page" to the desired location in the navigation structure.!'
+    defaultMessage: 'Drag and Drop "This Page" to the desired location in the navigation structure.'
   }
 });
 
