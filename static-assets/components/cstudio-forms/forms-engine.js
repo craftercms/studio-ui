@@ -407,7 +407,7 @@ const initializeCStudioForms = () => {
 
                 var titleEl = document.createElement('div');
                 YAHOO.util.Dom.addClass(titleEl, 'dialog-title');
-                titleEl.innerHTML = 'Help';
+                titleEl.innerHTML = formatMessage(formEngineMessages.help);
                 helpDialogEl.appendChild(titleEl);
 
                 var helpDialogContainerEl = document.createElement('div');
