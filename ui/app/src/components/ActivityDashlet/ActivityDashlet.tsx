@@ -493,7 +493,12 @@ export function ActivityDashlet(props: ActivityDashletProps) {
 							value={authorFilterValue}
 							disabled={isFetching}
 							onChange={handleAuthorFilterInputChange}
-							placeholder='e.g. "jon.doe, jdoe, jane@example.com"'
+							placeholder={formatMessage(
+								{ defaultMessage: 'e.g. "{examples}"' },
+								{
+									examples: 'jon.doe, jdoe, jane@example.com'
+								}
+							)}
 							onKeyUp={handleAuthorFilterKeyUp}
 							slotProps={{
 								input: {

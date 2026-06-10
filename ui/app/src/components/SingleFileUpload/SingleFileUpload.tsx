@@ -274,12 +274,12 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 		const onFileAdded = (file: UppyFile<Meta, Body>) => {
 			setError(null);
 			setFileNameErrorClass('');
-
+			const fileName = file.name;
 			const validatePolicy = () => {
 				setDescription(`${formatMessage(messages.validatingFile)}:`);
 				validateActionPolicy(site, {
 					type: 'CREATE',
-					target: ensureSingleSlash(`${path}/${file.name}`),
+					target: ensureSingleSlash(`${path}/${fileName}`),
 					contentMetadata: {
 						fileSize: file.size
 					}
@@ -290,7 +290,15 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 							if (modifiedValue) {
 								// Modified value is expected to be a path.
 								const modifiedName = modifiedValue.match(/[^/]+$/)?.[0] ?? modifiedValue;
-								setConfirm({ body: message });
+								setConfirm({
+									body: formatMessage(
+										{
+											defaultMessage:
+												'Path `{fileName}` was transformed to `{modifiedName}` per the project file name policy'
+										},
+										{ fileName, modifiedName }
+									)
+								});
 								setSuggestedName(modifiedName);
 							} else {
 								// When uploading large files to aws/s3, something causes requests to fail and get retried n times before finally stating it failed; despite the file seemingly actually getting uploaded.

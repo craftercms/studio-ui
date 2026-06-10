@@ -60,10 +60,12 @@ export function HistoryDialogPagination(props: PaginationProps) {
 			rowsPerPage={rowsPerPage}
 			page={page}
 			backIconButtonProps={{
-				'aria-label': formatMessage(translations.previousPage)
+				'aria-label': formatMessage(translations.previousPage),
+				title: formatMessage(translations.previousPage)
 			}}
 			nextIconButtonProps={{
-				'aria-label': formatMessage(translations.nextPage)
+				'aria-label': formatMessage(translations.nextPage),
+				title: formatMessage(translations.nextPage)
 			}}
 			onPageChange={(e: React.MouseEvent<HTMLButtonElement>, nextPage: number) => {
 				props.onPageChanged(nextPage);
