@@ -635,7 +635,13 @@ export function moveItem(
 			writeContentComment
 		);
 	} else {
-		const writeContentComment = `Moving item ${originalFieldId} from ${originalIndex} to ${targetIndex} in ${originalParentPath} to ${targetParentPath}`;
+		const writeContentComment = getCurrentIntl().formatMessage(
+			{
+				defaultMessage:
+					'Moving item {originalFieldId} from {originalIndex} to {targetIndex} in {originalParentPath} to {targetParentPath}'
+			},
+			{ originalFieldId, originalIndex, targetIndex, originalParentPath, targetParentPath }
+		);
 		let removedItemHTML: string;
 		return performMutation(
 			site,
