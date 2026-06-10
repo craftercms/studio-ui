@@ -411,10 +411,17 @@ export function AuditGridUI(props: AuditGridUIProps) {
             );
           },
           paginationItemAriaLabel: (type) => {
-            if (type === 'previous') {
-              return formatMessage({ defaultMessage: 'Go to previous page' });
-            } else {
-              return formatMessage({ defaultMessage: 'Go to next page' });
+            switch (type) {
+              case 'previous':
+                return formatMessage({ defaultMessage: 'Go to previous page' });
+              case 'next':
+                return formatMessage({ defaultMessage: 'Go to next page' });
+              case 'first':
+                return formatMessage({ defaultMessage: 'Go to first page' });
+              case 'last':
+                return formatMessage({ defaultMessage: 'Go to last page' });
+              default:
+                return formatMessage({ defaultMessage: 'Go to page' });
             }
           }
         }}
