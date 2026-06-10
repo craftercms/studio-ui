@@ -92,7 +92,7 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
 		(paths: string[]) => {
 			fetchDeleteDependenciesService(site, paths).subscribe({
 				next: (response) => {
-					const itemsToDelete = [...refs.current.items, ...response.childItems]
+					const itemsToDelete = [...refs.current.items, ...(response.childItems || [])]
 						.map((item) => item.label)
 						.filter((label) => !isBlank(label))
 						.join(', ');
