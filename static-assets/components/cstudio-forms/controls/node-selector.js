@@ -395,7 +395,9 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
           const hasWritePermission = !(item.key in itemsByPath) || itemsByPath[item.key].availableActionsMap.edit;
           // If the user has write permission, the user can edit the item. If the item is an embedded component, check for the readonly property.
           const hasEditAction = hasWritePermission && !(item.inline && this.readonly);
-          const editBtnLabel = hasEditAction ? 'Edit' : 'View';
+          const editBtnLabel = hasEditAction
+            ? _self.formatMessage(_self.formEngineMessages.edit)
+            : _self.formatMessage(_self.formEngineMessages.view);
           const editBtnIconClass = hasEditAction ? 'fa-pencil' : 'fa-eye';
 
           const $actionsContainer = $(`<span class="actions-container ml-auto" />`);
@@ -403,7 +405,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
             `<button class="fa ${editBtnIconClass} node-selector-item-icon" title="${editBtnLabel}" aria-label="${editBtnLabel}" role="button" data-index="${i}"></button>`
           );
           const deleteBtn = $(
-            '<button class="fa fa-trash node-selector-item-icon" title="Delete" aria-label="Delete" role="button"></button>'
+            `<button class="fa fa-trash node-selector-item-icon" title="${_self.formatMessage(_self.formEngineMessages.delete)}" aria-label="${_self.formatMessage(_self.formEngineMessages.delete)}" role="button"></button>`
           );
           const ds = _self.datasources ?? [];
           const selectedDatasource = ds.find((item) => item.id === _self.items[itemIndex].datasource) || ds[0];

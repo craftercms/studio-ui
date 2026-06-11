@@ -479,10 +479,12 @@ function PublishingQueue(props: PublishingQueueProps) {
         slotProps={{
           actions: {
             previousButton: {
-              'aria-label': formatMessage(messages.previous)
+              'aria-label': formatMessage(messages.previous),
+              title: formatMessage(messages.previous)
             },
             nextButton: {
-              'aria-label': formatMessage(messages.next)
+              'aria-label': formatMessage(messages.next),
+              title: formatMessage(messages.next)
             }
           }
         }}

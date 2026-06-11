@@ -32,6 +32,8 @@ CStudioForms.Controls.PageNavOrder =
     this.orderDefault = 'orderDefault_f';
     this.orderValue = null;
     this.placeInNav = 'placeInNav';
+    this.formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
+    this.formEngineMessages = CrafterCMSNext.i18n.messages.formEngineMessages;
 
     return this;
   };
@@ -186,7 +188,7 @@ YAHOO.extend(CStudioForms.Controls.PageNavOrder, CStudioForms.CStudioFormField, 
     this.editPositionEl = editPositionEl;
     YAHOO.util.Dom.addClass(editPositionEl, 'btn btn-default btn-sm edit-position');
     editPositionEl.type = 'button';
-    editPositionEl.value = 'Edit Position';
+    editPositionEl.value = this.formatMessage(this.formEngineMessages.editPosition);
     editPositionEl.style.padding = '1px 5px';
     editPositionEl.style.marginLeft = '5px';
     editPositionEl.style.display = 'none';
@@ -219,7 +221,7 @@ YAHOO.extend(CStudioForms.Controls.PageNavOrder, CStudioForms.CStudioFormField, 
 
     if (this.readonly == true) {
       dropdownEl.disabled = true;
-      editPositionEl.value = 'View Order';
+      editPositionEl.value = this.formatMessage(this.formEngineMessages.viewOrder);
     }
 
     YAHOO.util.Event.addListener(dropdownEl, 'change', this.showEditPosition, this, true);
