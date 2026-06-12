@@ -21,6 +21,7 @@ import React, {
 	PropsWithChildren,
 	ReactNode,
 	Suspense,
+	useEffect,
 	useLayoutEffect,
 	useState
 } from 'react';
@@ -38,7 +39,8 @@ import LoadingState from '../LoadingState';
 import GlobalStyles from '../GlobalStyles';
 import ErrorState from '../ErrorState/ErrorState';
 import NotistackVariant from '../NotistackVariant';
-
+import { getStoredSnackbarDuration } from '../../utils/state';
+import { DEFAULT_SNACKBAR_DURATION } from '../AccountManagement';
 const LegacyConcierge = lazy(() => import('../LegacyConcierge/LegacyConcierge'));
 const GlobalDialogManager = lazy(() => import('../GlobalDialogManager/GlobalDialogManager'));
 
@@ -54,6 +56,7 @@ export function CrafterCMSNextBridge(
 ) {
 	const [store, setStore] = useState<CrafterCMSStore>(null);
 	const [storeError, setStoreError] = useState<string>();
+	const [autoHideDuration, setAutoHideDuration] = useState<number>(DEFAULT_SNACKBAR_DURATION);
 	const {
 		children,
 		themeOptions,
@@ -67,7 +70,7 @@ export function CrafterCMSNextBridge(
 	const snackbarOrFragmentProps = mountSnackbarProvider
 		? ({
 				maxSnack: 5,
-				autoHideDuration: 5000,
+				autoHideDuration: autoHideDuration,
 				anchorOrigin: { vertical: 'bottom', horizontal: 'left' },
 				action: (id) => <SnackbarCloseButton id={id} />,
 				Components: {
@@ -87,6 +90,21 @@ export function CrafterCMSNextBridge(
 			error: (message) => setStoreError(message)
 		});
 	}, []);
+
+	useEffect(() => {
+		if (!store) {
+			return;
+		}
+		const user = store.getState().user;
+		if (!user?.username) {
+			return;
+		}
+
+		const storedDuration = getStoredSnackbarDuration(user.username);
+		if (storedDuration != null) {
+			setAutoHideDuration(storedDuration);
+		}
+	}, [store]);
 	return (
 		<CrafterThemeProvider themeOptions={themeOptions}>
 			<I18nProvider>
