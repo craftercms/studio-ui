@@ -520,7 +520,7 @@ export function setStoredSnackbarDuration(user: string, value: number) {
 
 export function getStoredSnackbarDuration(user: string): number | null {
 	const value = window.localStorage.getItem(`craftercms.${user}.snackbarDuration`);
-	return value ? parseInt(value) : null;
+	return value ? parseInt(value, 10) : null;
 }
 
 export function removeStoredSnackbarDuration(user: string) {

@@ -37,19 +37,19 @@ muiCache.compat = true;
 export function CrafterThemeProvider(props: CrafterThemeProviderProps) {
 	const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
 	const enableAnimations = useEnableAnimations();
-	
+
 	const theme = useMemo(() => {
 		const mode = prefersDarkMode ? 'dark' : 'light';
 		const auxTheme = createTheme({ palette: { mode } });
 		const defaultThemeOptions = createDefaultThemeOptions({ mode });
 		return createTheme({
+			...(props.themeOptions ?? defaultThemeOptions),
 			// Animations: Disable MUI JavaScript/CSS transition helpers
 			...(!enableAnimations && {
 				transitions: {
 					create: () => 'none'
 				}
 			}),
-			...(props.themeOptions ?? defaultThemeOptions),
 			palette: {
 				mode,
 				primary: {
@@ -96,9 +96,9 @@ export function CrafterThemeProvider(props: CrafterThemeProviderProps) {
 					// Animations: Disable interactive ripple effects globally
 					...(!enableAnimations && {
 						defaultProps: {
-							disableRipple: true,
+							disableRipple: true
 						}
-					}),
+					})
 				},
 				MuiInputBase: {
 					styleOverrides: {

@@ -15,7 +15,7 @@
  */
 
 import Box, { BoxProps } from '@mui/material/Box';
-import React, { forwardRef, useEffect, useId, useState } from 'react';
+import React, { forwardRef, useEffect, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import { Checkbox, FormControlLabel, Typography } from '@mui/material';
@@ -187,6 +187,7 @@ export function AccountManagement(props: AccountManagementProps) {
 	};
 
 	const onSaveAccessibility = () => {
+		if (snackDuration === null) return;
 		dispatch(
 			showSystemNotification({
 				message: formatMessage({ defaultMessage: 'Accessibility settings saved' }),
@@ -403,6 +404,7 @@ export function AccountManagement(props: AccountManagementProps) {
 								value={snackDuration}
 								onValueChange={setSnackDuration}
 								min={0}
+								max={60000}
 								step={100}
 								format={{ maximumFractionDigits: 0 }}
 							>
@@ -427,7 +429,10 @@ export function AccountManagement(props: AccountManagementProps) {
 							/>
 						</FormControl>
 						<PrimaryButton
-							disabled={initialSnackDuration === snackDuration && initialEnableAnimations === enableAnimations}
+							disabled={
+								snackDuration === null ||
+								(initialSnackDuration === snackDuration && initialEnableAnimations === enableAnimations)
+							}
 							sx={{ marginLeft: 'auto' }}
 							onClick={() => onSaveAccessibility()}
 						>
