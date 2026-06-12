@@ -22,7 +22,6 @@ import Box from '@mui/material/Box';
 import { SxProps } from '@mui/system';
 import { Theme } from '@mui/material/styles';
 import { consolidateSx } from '../../utils/system';
-import { getStoredEnableAnimations } from '../../utils/state';
 
 type LoadingStateClassKey = 'root' | 'title' | 'subtitle' | 'graphic' | 'graphicRoot';
 
