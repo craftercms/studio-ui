@@ -42,10 +42,6 @@ export type ConditionalLoadingStateProps = LoadingStateProps & PropsWithChildren
 export function LoadingState(props: LoadingStateProps) {
 	const { graphic: Graphic = Gears, classes, revealTimeout = 300, sxs } = props;
 	const [reveal, setReveal] = useState(revealTimeout === 0);
-	// LoadingState is used outside of the StoreProvider, so we need to get the enableAnimations from localStorage.
-	const username = localStorage.getItem('username');
-	const enableAnimations = username ? getStoredEnableAnimations(username) : true;
-
 	useEffect(() => {
 		const timeout = setTimeout(() => {
 			setReveal(true);
@@ -105,12 +101,7 @@ export function LoadingState(props: LoadingStateProps) {
 					...sxs?.graphicRoot
 				}}
 			>
-				<Graphic
-					className={classes?.graphic}
-					sxs={{ root: { width: 120, ...sxs?.graphic } }}
-					{...props.graphicProps}
-					enableAnimations={enableAnimations}
-				/>
+				<Graphic className={classes?.graphic} sxs={{ root: { width: 120, ...sxs?.graphic } }} {...props.graphicProps} />
 			</Box>
 		</Box>
 	);
