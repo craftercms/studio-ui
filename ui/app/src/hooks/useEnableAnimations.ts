@@ -22,7 +22,7 @@ export function useEnableAnimations(): boolean {
 	const username = typeof window !== 'undefined' ? localStorage.getItem('username') : null;
 	return useSyncExternalStore(
 		subscribeEnableAnimations,
-		() => getStoredEnableAnimations(username) ?? true,
+		() => (username ? (getStoredEnableAnimations(username) ?? true) : true),
 		() => true
 	);
 }
