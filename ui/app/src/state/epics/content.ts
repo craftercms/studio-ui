@@ -42,7 +42,7 @@ import {
 	reloadContentItem,
 	unlockItem
 } from '../actions/content';
-import { catchAjaxError, extractErrorPayload } from '../../utils/ajax';
+import { catchAjaxError } from '../../utils/ajax';
 import {
 	duplicate,
 	fetchContentItem as fetchContentItemService,
