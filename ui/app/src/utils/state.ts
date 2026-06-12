@@ -514,8 +514,23 @@ export function removeViewGroupedTypes(user: string) {
 	window.localStorage.removeItem(`craftercms.${user}.viewGroupedTypes`);
 }
 
+const SNACKBAR_DURATION_CHANGED = 'craftercms:snackbarDurationChanged';
+export function subscribeSnackbarDuration(onStoreChange: () => void) {
+	window.addEventListener(SNACKBAR_DURATION_CHANGED, onStoreChange);
+	const storageListener = (e: StorageEvent) => {
+		if (e.key?.includes('.snackbarDuration')) {
+			onStoreChange();
+		}
+	};
+	window.addEventListener('storage', storageListener);
+	return () => {
+		window.removeEventListener(SNACKBAR_DURATION_CHANGED, onStoreChange);
+		window.removeEventListener('storage', storageListener);
+	};
+}
 export function setStoredSnackbarDuration(user: string, value: number) {
 	window.localStorage.setItem(`craftercms.${user}.snackbarDuration`, value.toString());
+	window.dispatchEvent(new CustomEvent(SNACKBAR_DURATION_CHANGED, { detail: { user, value } }));
 }
 
 export function getStoredSnackbarDuration(user: string): number | null {

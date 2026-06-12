@@ -14,17 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, {
-	ElementType,
-	Fragment,
-	lazy,
-	PropsWithChildren,
-	ReactNode,
-	Suspense,
-	useEffect,
-	useLayoutEffect,
-	useState
-} from 'react';
+import React, { ElementType, Fragment, lazy, PropsWithChildren, ReactNode, Suspense, useLayoutEffect, useState } from 'react';
 import { ThemeOptions } from '@mui/material/styles';
 import { setRequestForgeryToken } from '../../utils/auth';
 import { CrafterCMSStore, getStore } from '../../state/store';
@@ -39,8 +29,7 @@ import LoadingState from '../LoadingState';
 import GlobalStyles from '../GlobalStyles';
 import ErrorState from '../ErrorState/ErrorState';
 import NotistackVariant from '../NotistackVariant';
-import { getStoredSnackbarDuration } from '../../utils/state';
-import { DEFAULT_SNACKBAR_DURATION } from '../AccountManagement';
+import useSnackbarDuration from '../../hooks/useSnackbarDuration';
 const LegacyConcierge = lazy(() => import('../LegacyConcierge/LegacyConcierge'));
 const GlobalDialogManager = lazy(() => import('../GlobalDialogManager/GlobalDialogManager'));
 
@@ -56,7 +45,7 @@ export function CrafterCMSNextBridge(
 ) {
 	const [store, setStore] = useState<CrafterCMSStore>(null);
 	const [storeError, setStoreError] = useState<string>();
-	const [autoHideDuration, setAutoHideDuration] = useState<number>(DEFAULT_SNACKBAR_DURATION);
+	const autoHideDuration = useSnackbarDuration();
 	const {
 		children,
 		themeOptions,
@@ -91,20 +80,6 @@ export function CrafterCMSNextBridge(
 		});
 	}, []);
 
-	useEffect(() => {
-		if (!store) {
-			return;
-		}
-		const user = store.getState().user;
-		if (!user?.username) {
-			return;
-		}
-
-		const storedDuration = getStoredSnackbarDuration(user.username);
-		if (storedDuration != null) {
-			setAutoHideDuration(storedDuration);
-		}
-	}, [store]);
 	return (
 		<CrafterThemeProvider themeOptions={themeOptions}>
 			<I18nProvider>

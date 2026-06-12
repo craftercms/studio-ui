@@ -86,6 +86,7 @@ const OutlinedInputWithRef = forwardRef<HTMLInputElement, OutlinedInputProps>((p
 		/>
 	);
 });
+OutlinedInputWithRef.displayName = 'OutlinedInputWithRef';
 
 interface AccountManagementProps {
 	passwordRequirementsMinComplexity?: number;
