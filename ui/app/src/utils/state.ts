@@ -530,10 +530,16 @@ export function removeStoredSnackbarDuration(user: string) {
 const ENABLE_ANIMATIONS_CHANGED = 'craftercms:enableAnimationsChanged';
 export function subscribeEnableAnimations(onStoreChange: () => void) {
 	window.addEventListener(ENABLE_ANIMATIONS_CHANGED, onStoreChange);
-	window.addEventListener('storage', onStoreChange); // other tabs
+	const storageListener = (e: StorageEvent) => {
+		// Filter by key to avoid listening to other localStorage changes
+		if (e.key?.includes('.enableAnimations')) {
+			onStoreChange();
+		}
+	};
+	window.addEventListener('storage', storageListener);
 	return () => {
 		window.removeEventListener(ENABLE_ANIMATIONS_CHANGED, onStoreChange);
-		window.removeEventListener('storage', onStoreChange);
+		window.removeEventListener('storage', storageListener);
 	};
 }
 export function setStoredEnableAnimations(user: string, value: boolean) {
