@@ -103,7 +103,6 @@ const translations = defineMessages({
 });
 
 export const DEFAULT_SNACKBAR_DURATION = 5000;
-export const DEFAULT_ANIMATIONS_DURATION = 1000; // TODO: check what's the default value for animations duration
 
 export function AccountManagement(props: AccountManagementProps) {
 	const { passwordRequirementsMinComplexity = 4 } = props;
