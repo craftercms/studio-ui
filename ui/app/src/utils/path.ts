@@ -349,16 +349,20 @@ export function processPathMacros(dependencies: {
 	return processedPath;
 }
 
-export const pickExtensionForItemType = (systemType: string, name?: string) => {
+export const pickExtensionForItemType = (systemType: string, name?: string, extension?: string) => {
 	if (systemType === 'asset') {
 		return getFileExtension(name);
+	} else if (systemType === 'controller') {
+		return 'groovy';
+	} else if (extension) {
+		return extension.replace(/^\./, '');
 	} else {
-		return systemType === 'controller' ? `groovy` : `ftl`;
+		return 'ftl';
 	}
 };
 
-export const getFileNameWithExtensionForItemType = (type: string, name: string) =>
-	`${name}.${pickExtensionForItemType(type)}`
+export const getFileNameWithExtensionForItemType = (type: string, name: string, extension?: string) =>
+	`${name}.${pickExtensionForItemType(type, name, extension)}`
 		.replace(/(\.groovy)(\.groovy)|(\.ftl)(\.ftl)/g, '$1$3')
 		.replace(/\.{2,}/g, '.');
 
