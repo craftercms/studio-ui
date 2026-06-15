@@ -25,6 +25,7 @@ export * from './FieldInstanceSwitcher';
 export * from './GuestContext';
 export * from './GuestGlobalStyles';
 export * from './GuestProxy';
+export * from './I18nProvider';
 export * from './Model';
 export * from './RenderComponents';
 export * from './RenderField';

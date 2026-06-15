@@ -13,6 +13,7 @@
   * and a host of other deps. See [4639](https://github.com/craftercms/studio-ui/pull/4639)
 
 ## 5.0.0 (CrafterCMS 4.4.3)
+
 * Version 5.0.0 should be paired with CrafterCMS 4.4.3 or later.
 * Upgrade to the latest version to date of the following libraries:
   * @mui/icons-material
