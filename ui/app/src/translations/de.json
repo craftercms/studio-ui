@@ -166,7 +166,7 @@
   "BrowseFilesDialog.sortBy": "Sortiere nach",
   "browseSearchMessages.lookUpChildError": "Untergeordneter Formularrückruf für Suche kann nicht gesucht werden: {searchId}",
   "browseSearchMessages.lookUpParentError": "Übergeordneter Kontext für Suche kann nicht gesucht werden: {searchId}",
-  "bU1C+4": "Bestellung ansehen",
+  "bU1C+4": "Reihenfolge anzeigen",
   "C2Dzgl": "{from}-{to} von {countValid, select, true {{count}} other {mehr als {to}}}",
   "c42lky": "ordner",
   "Cfa5N3": "Nach Tags oder Commit-IDs",
