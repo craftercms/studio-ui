@@ -361,10 +361,11 @@ export const pickExtensionForItemType = (systemType: string, name?: string, exte
 	}
 };
 
-export const getFileNameWithExtensionForItemType = (type: string, name: string, extension?: string) =>
-	`${name}.${pickExtensionForItemType(type, name, extension)}`
-		.replace(/(\.groovy)(\.groovy)|(\.ftl)(\.ftl)/g, '$1$3')
-		.replace(/\.{2,}/g, '.');
+export const getFileNameWithExtensionForItemType = (type: string, name: string, extension?: string) => {
+	const pickedExtension = pickExtensionForItemType(type, name, extension);
+	const normalizedName = name.replace(new RegExp(`\\.${pickedExtension}$`), '');
+	return `${normalizedName}.${pickedExtension}`.replace(/\.{2,}/g, '.');
+};
 
 /**
  * Determines if the given path corresponds to a page path.
