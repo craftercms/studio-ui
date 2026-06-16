@@ -54,9 +54,9 @@ export function UserManagement(props: UserManagementProps) {
 	const searchInpuRef = useRef(undefined);
 
 	const fetchUsers = useCallback(
-		(keyword = '', _offset = offset) => {
+		(searchKeyword = keyword, _offset = offset, _showDisabled = showDisabled) => {
 			setFetching(true);
-			return fetchAll({ limit, offset: _offset, keyword, showDisabled }).subscribe({
+			return fetchAll({ limit, offset: _offset, keyword: searchKeyword, showDisabled: _showDisabled }).subscribe({
 				next(users) {
 					setUsers(users);
 					setError(null);
@@ -129,7 +129,6 @@ export function UserManagement(props: UserManagementProps) {
 		setShowDisabled(checked);
 		setStoredShowDisabledUsers(user.username, checked);
 		setOffset(0);
-		fetchUsers(keyword, 0);
 	};
 
 	return (
