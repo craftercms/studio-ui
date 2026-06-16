@@ -102,10 +102,10 @@ export function UsersGridUI(props: UsersGridUIProps) {
 										{user.username}
 									</Typography>
 								</GlobalAppGridCell>
-								<GlobalAppGridCell align="left" className="width60">
+								<GlobalAppGridCell align="left" className="width40">
 									{user.email}
 								</GlobalAppGridCell>
-								<GlobalAppGridCell align="right" className="width60">
+								<GlobalAppGridCell align="right" className="width20">
 									{!user.enabled && <Chip label={<FormattedMessage defaultMessage="Disabled" />} size="small" />}
 								</GlobalAppGridCell>
 							</GlobalAppGridRow>

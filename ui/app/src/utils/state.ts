@@ -520,7 +520,7 @@ export function setStoredShowDisabledUsers(user: string, value: boolean) {
 
 export function getStoredShowDisabledUsers(user: string): boolean {
 	const value = window.localStorage.getItem(`craftercms.${user}.showDisabledUsers`);
-	return value ? value === 'true' : null;
+	return value ? value === 'true' : false;
 }
 
 export function removeStoredShowDisabledUsers(user: string) {

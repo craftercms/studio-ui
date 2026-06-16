@@ -51,13 +51,12 @@ export function UserManagement(props: UserManagementProps) {
 	const [keyword, setKeyword] = useState('');
 	const user = useActiveUser();
 	const [showDisabled, setShowDisabled] = useState(getStoredShowDisabledUsers(user.username));
-	const showDisabledRef = useRef(showDisabled);
 	const searchInpuRef = useRef(undefined);
 
 	const fetchUsers = useCallback(
 		(keyword = '', _offset = offset) => {
 			setFetching(true);
-			return fetchAll({ limit, offset: _offset, keyword, showDisabled: showDisabledRef.current }).subscribe({
+			return fetchAll({ limit, offset: _offset, keyword, showDisabled }).subscribe({
 				next(users) {
 					setUsers(users);
 					setError(null);
@@ -69,7 +68,7 @@ export function UserManagement(props: UserManagementProps) {
 				}
 			});
 		},
-		[limit, offset]
+		[limit, offset, showDisabled]
 	);
 
 	useEffect(() => {
@@ -127,7 +126,6 @@ export function UserManagement(props: UserManagementProps) {
 	}
 
 	const onShowDisabledChange = (checked: boolean) => {
-		showDisabledRef.current = checked;
 		setShowDisabled(checked);
 		setStoredShowDisabledUsers(user.username, checked);
 		setOffset(0);
