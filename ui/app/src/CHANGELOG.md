@@ -68,6 +68,7 @@
   * [RenameContentDialogContainer] Updated `dependantItems` prop to be of type `LightItem[]`.
   * [RenameItemView] Updated `dependantItems` prop to be of type `LightItem[]`.
   * Removed `CopyDialog` component.
+[UserManagement] Removed delete user functionality. Only `enable`/`disable` users is allowed.
 * [hooks]
   * Removed `useLogicResource` hook.
   * Removed `useSelectorResource` hook.
@@ -120,6 +121,7 @@
   * Updated `dependencies/fetchSimpleDependencies` to use API v2 (`/studio/api/2/dependency/{siteId}/dependencies`)
   * Updated `dependencies/fetchDependant` to use API v2 (`/studio/api/2/dependency/{siteId}/dependent_items`)
   * Removed `content/fetchLegacyItemsTree` service.
+  * Removed `users/trash` service.
 * `PublishingItem` interface changes:
   * `approver` is now `reviewer`, of type Person.
   * `comment` is removed, and now there's `reviewerComment` and `submitterComment`.
