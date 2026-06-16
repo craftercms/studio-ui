@@ -140,7 +140,7 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
 	};
 
 	const onExtensionChange = (event: SelectChangeEvent<TemplateExtension>) => {
-		setExtension(event.target.value as TemplateExtension);
+		setExtension(event.target.value);
 		setItemExists(false);
 	};
 
