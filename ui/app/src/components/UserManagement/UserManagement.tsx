@@ -33,6 +33,8 @@ import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { useWithPendingChangesCloseRequest } from '../../hooks/useWithPendingChangesCloseRequest';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { EmptyState } from '../EmptyState';
+import { useActiveUser } from '../../hooks/useActiveUser';
+import { getStoredShowDisabledUsers, setStoredShowDisabledUsers } from '../../utils/state';
 
 export interface UserManagementProps {
 	passwordRequirementsMinComplexity?: number;
@@ -47,12 +49,15 @@ export function UserManagement(props: UserManagementProps) {
 	const [error, setError] = useState<ApiResponse | null>(null);
 	const [viewUser, setViewUser] = useState<User | null>(null);
 	const [keyword, setKeyword] = useState('');
+	const user = useActiveUser();
+	const [showDisabled, setShowDisabled] = useState(getStoredShowDisabledUsers(user.username));
+	const showDisabledRef = useRef(showDisabled);
 	const searchInpuRef = useRef(undefined);
 
 	const fetchUsers = useCallback(
 		(keyword = '', _offset = offset) => {
 			setFetching(true);
-			return fetchAll({ limit, offset: _offset, keyword }).subscribe({
+			return fetchAll({ limit, offset: _offset, keyword, showDisabled: showDisabledRef.current }).subscribe({
 				next(users) {
 					setUsers(users);
 					setError(null);
@@ -121,6 +126,14 @@ export function UserManagement(props: UserManagementProps) {
 		onSearch$.next(keyword);
 	}
 
+	const onShowDisabledChange = (checked: boolean) => {
+		showDisabledRef.current = checked;
+		setShowDisabled(checked);
+		setStoredShowDisabledUsers(user.username, checked);
+		setOffset(0);
+		fetchUsers(keyword, 0);
+	};
+
 	return (
 		<Paper elevation={0}>
 			<GlobalAppToolbar
@@ -165,6 +178,8 @@ export function UserManagement(props: UserManagementProps) {
 						onRowClicked={onRowClicked}
 						onPageChange={onPageChange}
 						onRowsPerPageChange={onRowsPerPageChange}
+						showDisabled={showDisabled}
+						onShowDisabledChange={onShowDisabledChange}
 					/>
 				) : (
 					<EmptyState title={<FormattedMessage id="usersGrid.emptyStateMessage" defaultMessage="No Users Found" />} />

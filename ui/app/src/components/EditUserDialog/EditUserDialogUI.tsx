@@ -95,7 +95,6 @@ export function EditUserDialogUI(props: EditUserDialogUIProps) {
 		passwordRequirementsMinComplexity,
 		onSave,
 		onCloseButtonClick,
-		onDelete,
 		onCloseResetPasswordDialog,
 		onInputChange,
 		onEnableChange,
@@ -130,18 +129,6 @@ export function EditUserDialogUI(props: EditUserDialogUIProps) {
 									<PasswordRoundedIcon />
 								</IconButton>
 							</Tooltip>
-							<ConfirmDropdown
-								cancelText={formatMessage(translations.confirmCancel)}
-								confirmText={formatMessage(translations.confirmOk)}
-								confirmHelperText={formatMessage(translations.confirmHelperText, {
-									username: user.username
-								})}
-								iconTooltip={<FormattedMessage id="userInfoDialog.deleteUser" defaultMessage="Delete user" />}
-								icon={DeleteRoundedIcon}
-								onConfirm={() => {
-									onDelete(user.username);
-								}}
-							/>
 						</>
 					) : (
 						<Chip

@@ -513,3 +513,16 @@ export function getViewGroupedTypes(user: string): boolean {
 export function removeViewGroupedTypes(user: string) {
 	window.localStorage.removeItem(`craftercms.${user}.viewGroupedTypes`);
 }
+
+export function setStoredShowDisabledUsers(user: string, value: boolean) {
+	window.localStorage.setItem(`craftercms.${user}.showDisabledUsers`, JSON.stringify(value));
+}
+
+export function getStoredShowDisabledUsers(user: string): boolean {
+	const value = window.localStorage.getItem(`craftercms.${user}.showDisabledUsers`);
+	return value ? value === 'true' : null;
+}
+
+export function removeStoredShowDisabledUsers(user: string) {
+	window.localStorage.removeItem(`craftercms.${user}.showDisabledUsers`);
+}
