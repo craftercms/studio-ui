@@ -45,8 +45,7 @@ export interface BrowseFilesDialogPropsStateProps extends BrowseFilesDialogBaseP
 }
 
 export interface BrowseFilesDialogContainerProps
-	extends BrowseFilesDialogBaseProps,
-		Pick<BrowseFilesDialogProps, 'onClose' | 'onSuccess'> {}
+	extends BrowseFilesDialogBaseProps, Pick<BrowseFilesDialogProps, 'onClose' | 'onSuccess'> {}
 
 export interface BrowseFilesDialogUIProps {
 	items: SearchItem[];
@@ -96,3 +95,5 @@ export const initialParameters: ElasticParams = {
 	sortOrder: 'desc',
 	filters: {}
 };
+
+export const viewModes: MediaCardViewModes[] = ['card', 'compact', 'row'];

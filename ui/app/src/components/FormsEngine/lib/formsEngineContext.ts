@@ -28,6 +28,11 @@ import { createUseContextHook } from '../../../utils/system';
 
 export type FormsEngineSourceMap = LookupTable<string>;
 
+export interface FormsEngineDialogContextProps {
+	disableEnforceFocus?: boolean;
+	setDisableEnforceFocus?: (disable: boolean) => void;
+}
+
 // Provides an API global to the form(s) to manage & operate the forms stack
 export interface FormsEngineGlobalApiContextProps {
 	updateProps(stackIndex: number, formProps: FormsEngineProps): void;
@@ -44,10 +49,8 @@ export interface FormsEngineFormApiContextProps {
 }
 
 export interface FormRequirementsResponse
-	extends Pick<
-			FormsEngineItemMetaContextProps,
-			'sourceMap' | 'pathInSite' | 'contentType' | 'contentObject' | 'contentXml'
-		>,
+	extends
+		Pick<FormsEngineItemMetaContextProps, 'sourceMap' | 'pathInSite' | 'contentType' | 'contentObject' | 'contentXml'>,
 		FormsEngineEditContextProps {
 	item: ContentItem;
 	contentObject: LookupTable<unknown>;
@@ -114,6 +117,10 @@ export interface StableFormContextProps {
 	props: FormsEngineProps;
 	state: FormsEngineCachedStackedFormState;
 }
+
+export const FormsEngineDialogContext = /*#__PURE__*/ createContext<FormsEngineDialogContextProps | undefined>(
+	undefined
+);
 
 export const FormsEngineFormContextApi = /*#__PURE__*/ createContext<FormsEngineFormApiContextProps>(undefined);
 FormsEngineFormContextApi.displayName = 'FormsEngineFormContextApi';

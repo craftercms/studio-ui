@@ -641,7 +641,7 @@ export function ActivityDashlet(props: ActivityDashletProps) {
 												<TimelineConnector />
 											</SizedTimelineSeparator>
 											<TimelineContent
-												sx={{ py: '12px', px: 2 }}
+												sx={{ py: '12px', px: 2, width: 'calc(100% - 40px)' }} // Considering size of the Timeline Separator
 												onMouseEnter={() => onActivityMouseOver(activity)}
 												onMouseLeave={() => onActivityMouseLeave()}
 											>
@@ -654,9 +654,9 @@ export function ActivityDashlet(props: ActivityDashletProps) {
 														alignContent: 'center'
 													}}
 												>
-													<Box>
+													<Box sx={{ flex: 1, minWidth: 0 }}>
 														<PersonFullName person={activity.person} />
-														<Typography>
+														<Typography sx={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
 															{renderActivity(activity, { formatMessage, onPackageClick, onItemClick })}
 														</Typography>
 														<Typography

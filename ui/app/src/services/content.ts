@@ -44,7 +44,7 @@ import QuickCreateItem from '../models/content/QuickCreateItem';
 import ApiResponse from '../models/ApiResponse';
 import { fetchContentTypes } from './contentTypes';
 import { Clipboard } from '../models/GlobalState';
-import { getFileNameFromPath, getPasteItemFromPath } from '../utils/path';
+import { getFileNameFromPath } from '../utils/path';
 import { StandardAction } from '../models/StandardAction';
 import { GetChildrenResponse } from '../models/GetChildrenResponse';
 import { GetItemWithChildrenResponse } from '../models/GetItemWithChildrenResponse';
@@ -1287,11 +1287,11 @@ export function fetchItemWithChildrenByPath(
 }
 
 export function paste(siteId: string, targetPath: string, clipboard: Clipboard): Observable<any> {
-	return postJSON('/studio/api/2/content/paste', {
-		siteId,
+	return postJSON(`/studio/api/2/content/${siteId}/paste`, {
 		operation: clipboard.type,
+		sourcePath: clipboard.sourcePath,
 		targetPath,
-		item: getPasteItemFromPath(clipboard.sourcePath, clipboard.paths)
+		includeChildren: clipboard.includeChildren
 	}).pipe(pluck('response'));
 }
 
@@ -1359,16 +1359,6 @@ export function checkPathExistence(siteId: string, path: string): Observable<boo
 	return get(`/studio/api/2/content/exists${toQueryString({ siteId, path })}`).pipe(
 		map(({ response }) => response.exists)
 	);
-}
-
-export function fetchLegacyItemsTree(
-	site: string,
-	path: string,
-	options?: Partial<{ depth: number; order: string }>
-): Observable<LegacyItem> {
-	return get(
-		`/studio/api/1/services/api/1/content/get-items-tree.json${toQueryString({ site_id: site, path, ...options })}`
-	).pipe(pluck('response', 'item'), catchError(errorSelectorApi1));
 }
 
 export function fetchContentByCommitId(site: string, path: string, commitId: string): Observable<string | Blob> {

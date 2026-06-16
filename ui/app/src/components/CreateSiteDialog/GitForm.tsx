@@ -18,7 +18,7 @@ import React from 'react';
 import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 import { SiteState } from '../../models/Site';
-import { defineMessages, useIntl } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import GitAuthForm from '../GitAuthForm';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
@@ -120,6 +120,31 @@ function GitForm(props: GitFormProps) {
 
 	return (
 		<>
+			<Grid size={12}>
+				<FormControlLabel
+					control={
+						<Switch
+							name="singleBranch"
+							checked={inputs.singleBranch}
+							onChange={(event) => handleInputChange(event)}
+							color="primary"
+						/>
+					}
+					label={<FormattedMessage defaultMessage="Single Branch" />}
+				/>
+				<Typography
+					variant="caption"
+					color="text.secondary"
+					component="small"
+					sx={{
+						display: 'block',
+						mb: 2,
+						ml: 2
+					}}
+				>
+					<FormattedMessage defaultMessage="If checked, only the branch specified above will be cloned. Otherwise, all branches in the repository will be cloned." />
+				</Typography>
+			</Grid>
 			<Grid size={12} data-field-id="repoUrl">
 				<TextField
 					id="repoUrl"

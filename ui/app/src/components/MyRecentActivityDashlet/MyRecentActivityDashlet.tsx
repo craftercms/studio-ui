@@ -352,6 +352,9 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
 										onPackageClick,
 										onItemClick
 									})}
+									slotProps={{
+										primary: { sx: { overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' } }
+									}}
 									secondary={renderActivityTimestamp(activity.actionTimestamp, locale)}
 								/>
 								{isItemActivity ? (

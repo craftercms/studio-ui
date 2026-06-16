@@ -47,26 +47,30 @@ export type BuiltInControlType =
 	| 'transcoded-video-picker'
 	| 'uuid' // TODO: Not in BPs, seems not to be in use
 	| 'video-picker'
-	| 'colorPicker';
+	| 'colorPicker'
+	| 'expired-date'
+	| 'input-email'
+	| 'input-link'
+	| 'input-phone';
 
 export const controlMap: Record<BuiltInControlType, ElementType> = {
 	'auto-filename': lazy(() => import('../controls/AutoFileName')),
-	'aws-file-upload': null,
+	'aws-file-upload': lazy(() => import('../controls/AWSFileUpload')),
 	checkbox: lazy(() => import('../controls/Checkbox')),
 	'checkbox-group': lazy(() => import('../controls/CheckboxGroup')),
 	'date-time': lazy(() => import('../controls/DateTime')),
 	disabled: null,
 	dropdown: lazy(() => import('../controls/Dropdown')),
 	'file-name': lazy(() => import('../controls/./FileName')),
-	forcehttps: null, // TODO: probably not needed, getname returns `disabled`
+	forcehttps: lazy(() => import('../controls/Checkbox')),
 	'image-picker': lazy(() => import('../controls/ImagePicker')),
 	input: lazy(() => import('../controls/Text')),
 	'internal-name': null,
-	label: null,
+	label: lazy(() => import('../controls/Label')),
 	'link-input': null,
 	'link-textarea': null,
 	'linked-dropdown': null,
-	'locale-selector': null,
+	'locale-selector': lazy(() => import('../controls/LocaleSelector')),
 	'node-selector': lazy(() => import('../controls/NodeSelector')),
 	'numeric-input': lazy(() => import('../controls/Numeric')),
 	'page-nav-order': lazy(() => import('../controls/PageNavOrder')),
@@ -75,7 +79,11 @@ export const controlMap: Record<BuiltInControlType, ElementType> = {
 	textarea: lazy(() => import('../controls/Textarea')),
 	time: lazy(() => import('../controls/Time')),
 	'transcoded-video-picker': null,
-	uuid: null,
+	uuid: lazy(() => import('../controls/Uuid')),
 	'video-picker': null,
-	colorPicker: lazy(() => import('../controls/ColorPicker'))
+	colorPicker: lazy(() => import('../controls/ColorPicker')),
+	'expired-date': lazy(() => import('../controls/DateTime')),
+	'input-email': lazy(() => import('../controls/Text')),
+	'input-link': lazy(() => import('../controls/Text')),
+	'input-phone': lazy(() => import('../controls/Text'))
 };

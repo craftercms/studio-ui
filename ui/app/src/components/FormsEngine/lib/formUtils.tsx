@@ -14,7 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ContentTypeField, type ContentTypeFieldValidation, ContentTypeSection, PublishPackage } from '../../../models';
+import {
+	ContentTypeField,
+	type ContentTypeFieldValidation,
+	ContentTypeSection,
+	GlobalState,
+	PublishPackage
+} from '../../../models';
 import LookupTable from '../../../models/LookupTable';
 import ContentType from '../../../models/ContentType';
 import validateFieldValue, { FieldValidityState } from './validators';
@@ -72,8 +78,10 @@ import { getFormsEngineCloseAfterSave, getFormsEngineCollapseToCKey } from '../.
 import { createComponentId } from '../../../utils/system';
 import { showErrorDialog } from '../../../state/actions/dialogs';
 import { ensureSingleSlash } from '../../../utils/string';
-import { nnou, nou } from '../../../utils/object';
-import { WritableAtom } from 'jotai/vanilla';
+import { isPagePath } from '../../../utils/path';
+import { nou, reversePluckProps } from '../../../utils/object';
+import { Editor } from '@tinymce/tinymce-react';
+import { getCurrentLocale } from '../../../utils/i18n';
 
 /**
  * Returns the scroll container for the form's container.
@@ -172,6 +180,8 @@ export const displayFormBeingSavedSnack = (dispatch: ReduxDispatch, formatMessag
 export const getTargetHeight = (isDialog: boolean, isFullScreen: boolean, theme: Theme) =>
 	isDialog ? `calc(100vh - ${isFullScreen ? 0 : theme.spacing(4)})` : '100%';
 
+export type ValidatorsData = { siteId: string; contentTypesById: LookupTable<ContentType> };
+
 /**
  * Creates the value and validity atoms for a give field.
  **/
@@ -181,8 +191,7 @@ export function createFieldAtoms(
 	formContextRef: RefObject<
 		Pick<StableFormContextProps, 'fieldUpdates$' | 'changedFieldIds' | 'originalValues' | 'atoms' | 'itemMeta'>
 	>,
-	// TODO: Consider a more comprehensive context for validators
-	siteId?: string
+	validatorsData?: ValidatorsData
 ): [PrimitiveAtom<unknown>, Atom<Promise<FieldValidityState>>] {
 	let isInitialization = true;
 	const valueAtom = atom(initialValue);
@@ -221,7 +230,8 @@ export function createFieldAtoms(
 			formContextRef.current.fieldUpdates$.next(field.id);
 		}
 		return validateFieldValue(field, value, {
-			siteId,
+			siteId: validatorsData?.siteId,
+			contentTypesById: validatorsData?.contentTypesById,
 			itemMeta: formContextRef.current.itemMeta as FormsEngineItemMetaContextProps,
 			fileName: formContextRef.current.atoms.fileName ? get(formContextRef.current.atoms.fileName) : ''
 		});
@@ -232,17 +242,6 @@ export function createFieldAtoms(
 /** Creates the readonly flag property atom based on the lock result atom */
 export const createReadonlyAtom = (lockedResultAtom: Atom<FormsEngineEditContextProps>) =>
 	atom((get) => !get(lockedResultAtom).locked);
-
-/**
- * Determines if the given path corresponds to a page path.
- *
- * @param {string} path - The path to check.
- * @returns {boolean} - Returns `true` if the path matches the pattern for a page path; otherwise, `false`.
- *
- */
-export const isPagePath = (path: string): boolean => {
-	return /^\/site\/website(\/.*)?\/index.*\.xml$/.test(path);
-};
 
 /**
  * Creates a Jotai atom for the file name based on the given path.
@@ -490,7 +489,7 @@ export function setFieldAtoms(
 	fieldId: string,
 	atomsTarget: FormsEngineAtoms,
 	value: unknown,
-	siteId?: string
+	validatorsData?: ValidatorsData
 ): void {
 	let field = fieldLookup[fieldId];
 	if (!field) {
@@ -515,7 +514,7 @@ export function setFieldAtoms(
 			return;
 		}
 	}
-	const [valueAtom, validityAtom] = createFieldAtoms(field, value, stableFormContextRef, siteId);
+	const [valueAtom, validityAtom] = createFieldAtoms(field, value, stableFormContextRef, validatorsData);
 	atomsTarget.valueByFieldId[fieldId] = valueAtom;
 	atomsTarget.validationByFieldId[fieldId] = validityAtom;
 }
@@ -646,14 +645,28 @@ export interface ShouldUnlockArguments {
 	isParentReadonly: boolean;
 	siteId: string;
 	isRenamed: boolean;
+	saveAsDraft: boolean;
+	invalidForm: boolean;
 }
 
 /**
  * Determines if an item should be unlocked when its form is being unmounted.
  **/
 export function shouldUnlockItem(props: ShouldUnlockArguments): boolean {
-	const { isRepeatMode, isCreateMode, readonly, isEmbedded, isStackedForm, isParentReadonly, isRenamed } = props;
+	const {
+		isRepeatMode,
+		isCreateMode,
+		readonly,
+		isEmbedded,
+		isStackedForm,
+		isParentReadonly,
+		isRenamed,
+		saveAsDraft,
+		invalidForm
+	} = props;
 	return (
+		!invalidForm &&
+		!saveAsDraft &&
 		!isRenamed &&
 		!isRepeatMode &&
 		!isCreateMode &&
@@ -672,8 +685,8 @@ export function shouldUnlockItem(props: ShouldUnlockArguments): boolean {
  * When the consumer component is being unmounted, checks if it should be unlocked and unlocks if so.
  * @param props {FormsEngineProps}
  **/
-export function useUnlockOnClose(props: FormsEngineProps) {
-	const { create, update, repeat, stackIndex = 0 } = props;
+export function useUnlockOnClose(props: FormsEngineProps & { saveAsDraft?: boolean; invalidForm?: boolean }) {
+	const { create, update, repeat, stackIndex = 0, saveAsDraft = false, invalidForm } = props;
 	const itemPath = useContext(ItemContext)?.path;
 	const { atoms } = useContext(StableFormContext);
 	const { formsStackData } = useContext(StableGlobalContext);
@@ -699,7 +712,9 @@ export function useUnlockOnClose(props: FormsEngineProps) {
 		isStackedForm,
 		isParentReadonly: formsStackData[stackIndex - 1] ? store.get(formsStackData[stackIndex - 1].atoms.readonly) : false,
 		siteId,
-		isRenamed
+		isRenamed,
+		saveAsDraft,
+		invalidForm
 	});
 	useEffect(
 		() => () => {
@@ -717,7 +732,7 @@ export function useUnlockOnClose(props: FormsEngineProps) {
 				});
 			}
 		},
-		[itemPath, unlockEffectRefs]
+		[itemPath, unlockEffectRefs, saveAsDraft]
 	);
 }
 
@@ -810,6 +825,8 @@ export function prepareEmbeddedItemForm(props: {
 	parentStackData: StableFormContextProps;
 	stableFormContextRef: RefObject<StableFormContextProps>;
 	parentPathInSite: string;
+	siteId: string;
+	contentTypesById?: LookupTable<ContentType>;
 }): { atoms: FormsEngineAtoms; values: LookupTable<unknown>; itemMeta: FormsEngineItemMetaContextProps } {
 	const {
 		username,
@@ -820,7 +837,9 @@ export function prepareEmbeddedItemForm(props: {
 		parentPathInSite,
 		locked,
 		lockError,
-		affectedPackages
+		affectedPackages,
+		siteId,
+		contentTypesById
 	} = props;
 	const lockResultAtom = atom<FormsEngineEditContextProps>({
 		locked,
@@ -834,10 +853,16 @@ export function prepareEmbeddedItemForm(props: {
 		fileName: atom(update.modelId)
 	});
 	const values = update.values;
+	const validatorsData = { siteId, contentTypesById };
 	Object.entries(values).forEach(([fieldId, value]) => {
 		// System fields (e.g. content-type, display-template, etc.) are not part of the content type, but are part of the content object. We don't need atoms or validity checks for these.
 		if (!contentType.fields[fieldId]) return;
-		const [valueAtom, validityAtom] = createFieldAtoms(contentType.fields[fieldId], value, stableFormContextRef);
+		const [valueAtom, validityAtom] = createFieldAtoms(
+			contentType.fields[fieldId],
+			value,
+			stableFormContextRef,
+			validatorsData
+		);
 		atoms.valueByFieldId[fieldId] = valueAtom;
 		atoms.validationByFieldId[fieldId] = validityAtom;
 	});
@@ -925,4 +950,219 @@ export function composePathForType(basePath: string, fileName: string, contentTy
 	} else {
 		return ensureSingleSlash(`${basePath}/${fileName}.xml`);
 	}
+}
+
+// Maps application locales to their corresponding TinyMCE language codes.
+const tinymceLangMap = {
+	es: 'es',
+	en: 'en',
+	ko: 'ko_KR',
+	de: 'de'
+};
+
+export function getTinyMceInitOptions(
+	field: ContentTypeField,
+	rteConfig: GlobalState['preview']['richTextEditor'], // GlobalState['preview']['richTextEditor']['']['']
+	defaultOptions?: Editor['props']['init'],
+	setup?: Editor['props']['init']['setup']
+): Editor['props']['init'] {
+	const setupId: string = getPropertyValue(field.properties, 'rteConfiguration', 'generic') as string;
+	const height = getPropertyValue(field.properties, 'height', 300) as number;
+	const autoGrow = getPropertyValue(field.properties, 'autoGrow', false) as boolean;
+	const allowAddMedia = getValidationValue(field.validations, 'addMedia', true) as boolean;
+	const language = getCurrentLocale();
+
+	const defaultTinymceOptions = defaultOptions
+		? { id: '', tinymceOptions: defaultOptions }
+		: (Object.values(rteConfig)[0] ?? { id: '', tinymceOptions: {} });
+	const tinymceOptions: Editor['props']['init'] = (
+		rteConfig[setupId] ??
+		Object.values(rteConfig)[0] ??
+		defaultTinymceOptions ?? { id: '', tinymceOptions: {} }
+	)?.tinymceOptions;
+	const controlProps: Partial<Editor['props']['init']> = {};
+	if (field.properties?.enableSpellCheck?.value === false) {
+		controlProps.browser_spellcheck = true;
+	}
+	const external: LookupTable<string> = {
+		...tinymceOptions.external_plugins,
+		acecode: '/studio/static-assets/js/tinymce-plugins/ace/plugin.min.js',
+		editform: '/studio/static-assets/js/tinymce-plugins/editform/plugin.js',
+		craftercms_paste_extension: '/studio/static-assets/js/tinymce-plugins/craftercms_paste_extension/plugin.js',
+		template: '/studio/static-assets/js/tinymce-plugins/template/plugin.js',
+		craftercms_paste: '/studio/static-assets/js/tinymce-plugins/craftercms_paste/plugin.js'
+	};
+	// TODO: Tiny: must remove `autoresize_on_init`, `templates` from all configs
+	const init: Editor['props']['init'] = {
+		// @ts-expect-error: Typings state the prop is wrong for the React integration, but the prop is correct.
+		license_key: 'gpl',
+		// Needs to be set to split when the editor is rendered in a scrollable container.
+		// The `height` and `overflow` of the FormsEngine root breaks some of Tiny's internal rendering mechanics.
+		ui_mode: 'split',
+		language: tinymceLangMap[language] ?? 'en',
+		target: tinymceOptions.target,
+		promotion: false,
+		branding: false,
+		// Templates plugin is deprecated but still available on v6, since it may be used, we'll keep it. Please
+		// note that it will become premium on version 7.
+		deprecation_warnings: true,
+		height: height + 78,
+		min_height: height + 78,
+		plugins: ['craftercms_paste', tinymceOptions.plugins, autoGrow ? 'autoresize' : false].filter(Boolean).join(' '), // 'editform' plugin will always be loaded
+		encoding: 'xml',
+		paste_as_text: tinymceOptions?.paste_as_text ?? false,
+		paste_data_images: true,
+		paste_preprocess(plugin, args) {
+			tinymceOptions.paste_preprocess?.(plugin, args);
+			window.tinymce.activeEditor.plugins.craftercms_paste_extension?.paste_preprocess(plugin, args);
+		},
+		paste_postprocess(plugin, args) {
+			// TODO: handle dragged datasources
+			// if (args.node.outerText === '' && !args.internal && !_thisControl.editorImageDatasources.length) {
+			// 	args.preventDefault();
+			// 	_thisControl.editor.notificationManager.open({
+			// 		text: _thisControl.formatMessage(_thisControl.messages.noDatasourcesConfigured),
+			// 		timeout: 3000,
+			// 		type: 'error'
+			// 	});
+			// } else {
+			tinymceOptions.paste_postprocess?.(plugin, args);
+			window.tinymce.activeEditor.plugins.craftercms_paste_extension?.paste_postprocess(plugin, args);
+		},
+		toolbar: tinymceOptions.toolbar,
+		menubar: tinymceOptions.menubar ?? false,
+		inline: tinymceOptions.inline,
+		base_url: '/studio/static-assets/libs/tinymce',
+		suffix: '.min',
+		external_plugins: external,
+		code_editor_inline: false,
+		skin: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'oxide-dark' : 'oxide',
+		// skin_url: '/studio/static-assets/libs/tinymce',
+		content_css: (tinymceOptions?.content_css as string | string[])?.length
+			? tinymceOptions.content_css
+			: window.matchMedia('(prefers-color-scheme: dark)').matches
+				? 'dark'
+				: 'default',
+		media_live_embeds: true,
+		file_picker_types: 'image media',
+		craftercms_paste_cleanup: tinymceOptions.craftercms_paste_cleanup ?? true, // If doesn't exist or if true => true
+		// If the allowAddMedia validation is set to false, then the callback is not set, so the add media/file options won't be shown in the editor.
+		file_picker_callback: allowAddMedia
+			? function (cb, value, meta) {
+					//   // meta contains info about type (image, media, etc). Used to properly add DS to dialogs.
+					//   // meta.filetype === 'file | image | media'
+					//   const datasources = {};
+					//   Object.values(field.validations).forEach((validation) => {
+					//     if (
+					//       [
+					//         'allowImageUpload',
+					//         'allowImagesFromRepo',
+					//         'allowVideoUpload',
+					//         'allowVideosFromRepo',
+					//         'allowAudioUpload',
+					//         'allowAudioFromRepo'
+					//       ].includes(validation.id)
+					//     ) {
+					//       datasources[validation.id] = validation;
+					//     }
+					//   });
+					//   const browseBtn = document.querySelector('.tox-dialog .tox-browse-url');
+					//
+					//   // post(
+					//   //   showRtePickerActions({
+					//   //     datasources,
+					//   //     model,
+					//   //     type: meta.filetype,
+					//   //     rect: browseBtn.getBoundingClientRect()
+					//   //   })
+					//   // );
+					//
+					//   // message$
+					//   //   .pipe(
+					//   //     filter((e) => e.type === rtePickerActionResult.type),
+					//   //     take(1)
+					//   //   )
+					//   //   .subscribe(({ payload }) => {
+					//   //     if (payload) {
+					//   //       cb(payload.path, { alt: payload.name });
+					//   //     }
+					//   //   });
+				}
+			: null,
+		setup(editor) {
+			const pluginManager = window.tinymce.util.Tools.resolve('tinymce.PluginManager');
+
+			editor.on('DblClick', (e) => {
+				e.preventDefault();
+				e.stopPropagation();
+				if (e.target.nodeName === 'IMG') {
+					window.tinymce.activeEditor.execCommand('mceImage');
+				}
+			});
+
+			// editor.on('click', (e) => {
+			//   e.preventDefault();
+			//   e.stopPropagation();
+			// });
+
+			editor.on('paste', (e) => {
+				// console.log('content', getContent());
+			});
+
+			// Register 'templates_css' for a set of custom css styles (files) that will apply to the templates content
+			editor.options.register('templates_css', { processor: 'string[]' });
+			editor.options.set('templates_css', [
+				window.matchMedia('(prefers-color-scheme: dark)').matches
+					? '/studio/static-assets/libs/tinymce/skins/content/dark/content.min.css'
+					: '/studio/static-assets/libs/tinymce/skins/content/default/content.min.css'
+			]);
+
+			// No point in waiting for `craftercms_tinymce_hooks` if the hook won't be loaded at all.
+			external.craftercms_tinymce_hooks &&
+				pluginManager.waitFor(
+					'craftercms_tinymce_hooks',
+					() => {
+						const hooks = pluginManager.get('craftercms_tinymce_hooks');
+						if (hooks) {
+							pluginManager.get('craftercms_tinymce_hooks').setup?.(editor);
+						} else {
+							console.error(
+								"The `craftercms_tinymce_hooks` was configured to be loaded but didn't load. Check the path is correct in the rte configuration file."
+							);
+						}
+					},
+					'loaded'
+				);
+			setup?.(editor);
+		},
+		...(tinymceOptions && {
+			...reversePluckProps(
+				// Tiny seems to somehow mutate the options object which would cause crashes when attempting
+				// to mutate immutable object (possibly from redux). Also, we don't want the state to get mutated.
+				JSON.parse(JSON.stringify(tinymceOptions)),
+				'target', // Target can't be changed
+				'inline', // Not using inline view doesn't behave well on XB, this setting shouldn't be changed.
+				'setup',
+				'base_url',
+				'encoding',
+				'autosave_ask_before_unload', // Auto-save options are removed since it is not supported in control.
+				'autosave_interval',
+				'autosave_prefix',
+				'autosave_restore_when_empty',
+				'autosave_retention',
+				'file_picker_callback', // No file picker is set by default, and functions are not supported in config file. Files/images handlers currently not supported.
+				'height', // Height is set to the size of content
+				'paste_postprocess',
+				'paste_preprocess',
+				'paste_as_text', // Considered above,
+				'images_upload_handler',
+				'code_editor_inline',
+				'plugins', // Considered/used above, mixed with our options
+				'external_plugins', // Considered/used above, mixed with our options,
+				'content_css' // Handled above, if no content_css is found it will use dark/default styles.
+			)
+		}),
+		...controlProps
+	};
+	return init;
 }
