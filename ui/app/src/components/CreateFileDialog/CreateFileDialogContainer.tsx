@@ -22,8 +22,8 @@ import { checkPathExistence, createFile } from '../../services/content';
 import { validateActionPolicy } from '../../services/sites';
 import DialogBody from '../DialogBody/DialogBody';
 import TextField from '@mui/material/TextField';
+import Box from '@mui/material/Box';
 import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import DialogFooter from '../DialogFooter/DialogFooter';
@@ -144,6 +144,52 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
 		setItemExists(false);
 	};
 
+	const fileNameField = (
+		<TextField
+			label={<FormattedMessage id="createFileDialog.fileName" defaultMessage="File Name" />}
+			value={name}
+			fullWidth={type !== 'template'}
+			autoFocus
+			required
+			error={(!name && Boolean(isSubmitting)) || fileExists}
+			placeholder={formatMessage(translations.placeholder)}
+			helperText={
+				fileExists ? (
+					<FormattedMessage
+						id="createFileDialog.fileAlreadyExists"
+						defaultMessage="A file with that name already exists"
+					/>
+				) : !name && isSubmitting ? (
+					<FormattedMessage id="createFileDialog.fileNameRequired" defaultMessage="File name is required." />
+				) : (
+					<FormattedMessage
+						id="createFileDialog.helperText"
+						defaultMessage="Consisting of letters, numbers, dot (.), dash (-) and underscore (_)."
+					/>
+				)
+			}
+			disabled={isSubmitting}
+			margin={type === 'template' ? 'none' : 'normal'}
+			sx={type === 'template' ? { flex: 1 } : undefined}
+			slotProps={{
+				inputLabel: { shrink: true }
+			}}
+			onChange={(event) => onInputChanges(applyAssetNameRules(event.target.value, { allowBraces }))}
+		/>
+	);
+
+	const extensionField = (
+		<FormControl variant="outlined" sx={{ minWidth: 110, flexShrink: 0 }} disabled={isSubmitting}>
+			<Select id="createFileDialogExtension" value={extension} onChange={onExtensionChange}>
+				{TEMPLATE_EXTENSIONS.map((templateExtension) => (
+					<MenuItem key={templateExtension} value={templateExtension}>
+						{`.${templateExtension}`}
+					</MenuItem>
+				))}
+			</Select>
+		</FormControl>
+	);
+
 	return (
 		<>
 			<DialogBody>
@@ -155,55 +201,13 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
 						}
 					}}
 				>
-					<TextField
-						label={<FormattedMessage id="createFileDialog.fileName" defaultMessage="File Name" />}
-						value={name}
-						fullWidth
-						autoFocus
-						required
-						error={(!name && Boolean(isSubmitting)) || fileExists}
-						placeholder={formatMessage(translations.placeholder)}
-						helperText={
-							fileExists ? (
-								<FormattedMessage
-									id="createFileDialog.fileAlreadyExists"
-									defaultMessage="A file with that name already exists"
-								/>
-							) : !name && isSubmitting ? (
-								<FormattedMessage id="createFileDialog.fileNameRequired" defaultMessage="File name is required." />
-							) : (
-								<FormattedMessage
-									id="createFileDialog.helperText"
-									defaultMessage="Consisting of letters, numbers, dot (.), dash (-) and underscore (_)."
-								/>
-							)
-						}
-						disabled={isSubmitting}
-						margin="normal"
-						slotProps={{
-							inputLabel: { shrink: true }
-						}}
-						onChange={(event) => onInputChanges(applyAssetNameRules(event.target.value, { allowBraces }))}
-					/>
-					{type === 'template' && (
-						<FormControl variant="outlined" fullWidth margin="normal" disabled={isSubmitting}>
-							<InputLabel id="createFileDialogExtensionLabel" shrink>
-								<FormattedMessage defaultMessage="Extension" />
-							</InputLabel>
-							<Select
-								labelId="createFileDialogExtensionLabel"
-								id="createFileDialogExtension"
-								value={extension}
-								label={<FormattedMessage defaultMessage="Extension" />}
-								onChange={onExtensionChange}
-							>
-								{TEMPLATE_EXTENSIONS.map((templateExtension) => (
-									<MenuItem key={templateExtension} value={templateExtension}>
-										{`.${templateExtension}`}
-									</MenuItem>
-								))}
-							</Select>
-						</FormControl>
+					{type === 'template' ? (
+						<Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1, mt: 2, mb: 1 }}>
+							{fileNameField}
+							{extensionField}
+						</Box>
+					) : (
+						fileNameField
 					)}
 				</form>
 			</DialogBody>
