@@ -1382,25 +1382,19 @@ export function fetchContentByCommitId(site: string, path: string, commitId: str
 }
 
 export interface PageNavItem {
+	path: string;
 	order: number;
-	name: string;
-	id: string;
-	disabled: string;
-	placeInNav: string;
+	label: string;
 }
 
-export function getNavItemsOrder(site: string, path: string, order: string = 'default'): Observable<PageNavItem[]> {
-	const qs = toQueryString({ site, path, order });
-	return get(`/studio/api/1/services/api/1/content/get-item-orders.json${qs}`).pipe(
-		map((response) => response?.response?.order),
-		catchError(errorSelectorApi1)
-	);
+export function getNavItemsOrder(siteId: string, parentPath: string): Observable<PageNavItem[]> {
+	const qs = toQueryString({ parentPath });
+	return get(`/studio/api/2/content/${siteId}/order${qs}`).pipe(map((response) => response?.response?.items));
 }
 
-export function reorderNavItems(site: string, path: string, before: string, after: string) {
-	const qs = toQueryString({ site, path, before, after });
-	return get(`/studio/api/1/services/api/1/content/reorder-items.json${qs}`).pipe(
-		map((response) => response?.response?.orderValue),
-		catchError(errorSelectorApi1)
-	);
+export function reorderNavItems(siteId: string, type: 'addBefore' | 'addAfter', referencePath: string) {
+	return postJSON(`/studio/api/2/content/${siteId}/order/reorder`, {
+		type,
+		referencePath
+	}).pipe(map((response) => response.response));
 }

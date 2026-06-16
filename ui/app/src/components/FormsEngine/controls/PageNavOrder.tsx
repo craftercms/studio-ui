@@ -44,6 +44,8 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Radio from '@mui/material/Radio';
 import Alert from '@mui/material/Alert';
 import { isFieldReadOnly } from '../lib/formUtils';
+import { getParentPath } from '../../../utils/path';
+import { nou } from '../../../utils/object';
 
 export interface PageNavOrderProps extends ControlProps {
 	value: boolean;
@@ -79,7 +81,8 @@ export function PageNavOrder(props: PageNavOrderProps) {
 	useEffect(() => {
 		if (currentPath) {
 			setPagesOrderState({ fetching: true, error: null });
-			const subscription = getNavItemsOrder(siteId, currentPath).subscribe({
+			const parentPath = getParentPath(currentPath);
+			const subscription = getNavItemsOrder(siteId, parentPath).subscribe({
 				next: (order) => {
 					const newOrder = createSortableItemList(order);
 					// If the initialValue is false, then it means that we'll be adding this page to the navigation (since it won't
@@ -116,10 +119,10 @@ export function PageNavOrder(props: PageNavOrderProps) {
 		const previewItemPath = previewItemIndex >= 0 ? pagesOrderState.order[previewItemIndex]?.key : undefined;
 		const nextItemPath =
 			nextItemIndex < pagesOrderState.order.length ? pagesOrderState.order[nextItemIndex]?.key : undefined;
-		// TODO: Waiting for the new v2 API to handle reordering the full items list. Currently, this only reorders
-		//  the current item, and no other items can be re-arranged.
-		reorderNavItems(siteId, currentPath, previewItemPath, nextItemPath).subscribe({
-			next: () => {
+		const type = nou(previewItemPath) ? 'addBefore' : nou(nextItemPath) ? 'addAfter' : 'addBefore';
+		const referencePath = nou(previewItemPath) ? nextItemPath : nou(nextItemPath) ? previewItemPath : nextItemPath;
+		reorderNavItems(siteId, type, referencePath).subscribe({
+			next: ({ order }) => {
 				setPagesOrderState({ changedOrder: false });
 				// TODO: After implementing additional fields support, this needs to set the order value for the current item.
 				dispatch(showSystemNotification({ message: formatMessage({ defaultMessage: 'Navigation items reordered.' }) }));
@@ -225,8 +228,8 @@ export function PageNavOrder(props: PageNavOrderProps) {
  */
 function createSortableItemList(order: PageNavItem[]): TItem<PageNavItem>[] {
 	return order.map((item) => ({
-		key: item.id,
-		value: item.name,
+		key: item.path,
+		value: item.label,
 		data: item
 	}));
 }
