@@ -1004,6 +1004,7 @@
   "publishingDashboard.COMPLETED": "Abgeschlossen",
   "publishingDashboard.confirmAllHelper": "Status für alle ausgewählten Elemente auf \"Abgebrochen\" setzen?",
   "publishingDashboard.confirmHelperText": "Artikelstatus auf \"Abgebrochen\" setzen?",
+  "publishingDashboard.FAILED": "Fehlgeschlagen",
   "publishingDashboard.fetchPackagesFiles": "Paketdateien abrufen",
   "publishingDashboard.filesList": "Dateiliste",
   "publishingDashboard.filteredBy": "Angezeigt: {state, select, all {} other {: {state}.}} {environment, select, all {} other {{environment} veröffentlichungsziel.}} {path, select, none {} other {Gefiltert nach {path}}}",

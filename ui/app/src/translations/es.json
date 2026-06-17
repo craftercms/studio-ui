@@ -1004,6 +1004,7 @@
   "publishingDashboard.COMPLETED": "Completado",
   "publishingDashboard.confirmAllHelper": "¿Establecer el estado de todos los elementos seleccionados en \"Cancelado\"?",
   "publishingDashboard.confirmHelperText": "¿Establecer el estado del elemento en \"Cancelado\"?",
+  "publishingDashboard.FAILED": "Fallido",
   "publishingDashboard.fetchPackagesFiles": "Obtener archivos de paquetes",
   "publishingDashboard.filesList": "Lista de archivos",
   "publishingDashboard.filteredBy": "Mostrando: {state, select, all {} other {estado: {state}.}} {environment, select, all {} other {{environment} objetivo.}} {path, select, none {} other {Filtrado por {path}}}",
