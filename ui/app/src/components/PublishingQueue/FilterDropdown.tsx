@@ -108,6 +108,10 @@ export const stateMessages = defineMessages({
   BLOCKED: {
     id: 'publishingDashboard.BLOCKED',
     defaultMessage: 'Blocked'
+  },
+  FAILED: {
+    id: 'publishingDashboard.FAILED',
+    defaultMessage: 'Failed'
   }
 });
 
