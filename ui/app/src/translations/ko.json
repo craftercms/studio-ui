@@ -1004,6 +1004,7 @@
   "publishingDashboard.COMPLETED": "완료된",
   "publishingDashboard.confirmAllHelper": "선택한 모든 항목의 상태를 \"취소\"로 설정 하시겠습니까?",
   "publishingDashboard.confirmHelperText": "항목 상태를 \"취소됨\"으로 설정 하시겠습니까?",
+  "publishingDashboard.FAILED": "실패",
   "publishingDashboard.fetchPackagesFiles": "패키지 파일 가져 오기",
   "publishingDashboard.filesList": "파일 목록",
   "publishingDashboard.filteredBy": "표시 : {state, select, all {} other {상태: {state}.}} {environment, select, all {} other {{environment} 목표.}} {path, select, none {} other {에 의해 필터링 {path}}}",

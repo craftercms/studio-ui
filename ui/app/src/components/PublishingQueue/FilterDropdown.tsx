@@ -248,7 +248,7 @@ export function FilterDropdown(props: FilterDropdownProps) {
                       onChange={handleFilterChange}
                     />
                   }
-                  label={formatMessage(stateMessages[filter])}
+                  label={stateMessages[filter] ? formatMessage(stateMessages[filter]) : filter}
                 />
               ))}
             </FormGroup>
