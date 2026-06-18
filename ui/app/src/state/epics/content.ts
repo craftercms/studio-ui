@@ -439,7 +439,37 @@ const content: CrafterCMSEpic[] = [
 						map(() => batchActions([unblockUI(), clearClipboard(), showPasteItemSuccessNotification()])),
 						catchAjaxError(
 							() => unblockUI(),
-							(error) => pushErrorDialog({ props: { error: error.response } })
+							(error) => {
+								const responseCode = error.response.code;
+								if (responseCode === 56001) {
+									const item = state.content.itemsByPath[state.content.clipboard.sourcePath];
+									const sourceContentType = item?.contentTypeId;
+									return pushErrorDialog({
+										props: {
+											error: {
+												message: getIntl().formatMessage(
+													{ defaultMessage: 'Cannot copy "{sourceLabel}" to "{targetPath}".' },
+													{
+														sourceLabel: item?.label ?? state.content.clipboard.sourcePath,
+														targetPath: payload.path
+													}
+												),
+												remedialAction: getIntl().formatMessage(
+													{
+														defaultMessage:
+															'Content type "{contentType}" of the source item is not allowed in the target location.'
+													},
+													{
+														contentType: sourceContentType
+													}
+												)
+											}
+										}
+									});
+								} else {
+									return pushErrorDialog({ props: { error: error.response } });
+								}
+							}
 						)
 					)
 				)
