@@ -30,7 +30,8 @@ export interface TextProps extends TypeBuilderControl {
 
 const DATE_TIME_FORMAT_OFFSET = 'now [+ or -] [number] [days | weeks | years | hours | minutes] [optional HH:mm[:ss]]';
 const DATE_TIME_FORMAT_DAY = '{day-of-week} [optional HH:mm[:ss]]';
-const DATE_TIME_EXAMPLE = "'now', 'now+5days', 'now-30minutes', 'now+2days 09:30:15' , '{monday}', '{friday} 09:00'";
+const DATE_TIME_EXAMPLE =
+	"'now', 'now+5days', 'now-30m', '+2d', '-2w', 'monday', '{friday} 09:00', '{now+2days} 09:30:15'";
 const TIME_FORMAT = 'now[+ or -][number][hours | minutes]';
 const TIME_EXAMPLE = "'now', 'now+5hours', 'now-30minutes'";
 
