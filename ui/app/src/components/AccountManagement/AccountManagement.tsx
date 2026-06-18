@@ -389,7 +389,7 @@ export function AccountManagement(props: AccountManagementProps) {
 						<FormControl sx={{ mt: 2, mb: 1 }}>
 							<Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
 								<InputLabel htmlFor="snackDuration" shrink sx={{ position: 'static', transform: 'none', mb: 0 }}>
-									<FormattedMessage defaultMessage="Snackbar duration (ms)" />
+									<FormattedMessage defaultMessage="On-screen notification display time (in seconds)" />
 								</InputLabel>
 								<Button
 									variant="text"
@@ -402,11 +402,11 @@ export function AccountManagement(props: AccountManagementProps) {
 							</Box>
 							<NumberField.Root
 								id="snackDuration"
-								value={snackDuration}
-								onValueChange={setSnackDuration}
+								value={snackDuration / 1000} // Display in seconds
+								onValueChange={(value) => setSnackDuration(value * 1000)} // Store in milliseconds
 								min={0}
-								max={60000}
-								step={100}
+								max={60}
+								step={1}
 								format={{ maximumFractionDigits: 0 }}
 							>
 								<NumberField.Group render={<Box display="flex" />}>
@@ -419,6 +419,9 @@ export function AccountManagement(props: AccountManagementProps) {
 									</NumberField.Increment>
 								</NumberField.Group>
 							</NumberField.Root>
+							<FormHelperText sx={{ mt: 1, ml: 0 }}>
+								<FormattedMessage defaultMessage="How long notifications stay visible at on the screen before closing automatically. These appear when you save, publish, or complete other actions. You can dismiss them anytime using their close button." />
+							</FormHelperText>
 						</FormControl>
 
 						<FormControl sx={{ my: 2 }}>
