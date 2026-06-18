@@ -135,7 +135,12 @@ const dialogsMap = {
 	[showFolderMoveAlertDialog.type]: 'craftercms.components.FolderMoveAlertDialog'
 };
 
-const allowMinimizeDialogs = [showPreviewDialog.type, showCodeEditorDialog.type, showEditDialog.type];
+const allowMinimizeDialogs = [
+	showPreviewDialog.type,
+	showCodeEditorDialog.type,
+	showEditDialog.type,
+	showWidgetDialog.type
+];
 const allowFullScreenDialogs = [showPreviewDialog.type, showCodeEditorDialog.type];
 
 const showDialogsEpics: CrafterCMSEpic[] = [

@@ -332,6 +332,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 	const priorState = useRef({ site: siteId });
 	const { enqueueSnackbar } = useSnackbar();
 	const { formatMessage } = useIntl();
+	const dialogs = useSelection((state) => state.dialogs);
 	const stack = useSelection((state) => state.dialogStack);
 	const keyboardShortcutsEnabled = useSelection((state) => state.preview.enableKeyboardShortcuts);
 	const models = guest?.models;
@@ -388,10 +389,14 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 		showToolsPanel,
 		toolsPanelWidth,
 		browseFilesDialogState,
+		dialogs,
 		stack,
 		keyboardShortcutsEnabled,
 		onShortCutKeypress(event: KeyboardEvent) {
-			if (upToDateRefs.current.stack.ids?.length || !upToDateRefs.current.keyboardShortcutsEnabled) return;
+			const openDialogs: boolean =
+				Object.values(upToDateRefs.current.dialogs).some((dialog) => dialog.open) ||
+				Boolean(upToDateRefs.current.stack.ids?.length);
+			if (openDialogs || !upToDateRefs.current.keyboardShortcutsEnabled) return;
 
 			const key = event.key;
 			switch (key) {
