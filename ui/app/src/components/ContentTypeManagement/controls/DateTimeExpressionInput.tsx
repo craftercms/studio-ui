@@ -28,8 +28,9 @@ export interface TextProps extends TypeBuilderControl {
 	value: string;
 }
 
-const DATE_TIME_FORMAT = 'now[+ or -][number][days | weeks | years | hours | minutes]';
-const DATE_TIME_EXAMPLE = "'now', 'now+5hours', 'now-30minutes', 'now+10days', 'now-2weeks', 'now+1years'";
+const DATE_TIME_FORMAT_OFFSET = 'now [+ or -] [number] [days | weeks | years | hours | minutes] [optional HH:mm[:ss]]';
+const DATE_TIME_FORMAT_DAY = '{day-of-week} [optional HH:mm[:ss]]';
+const DATE_TIME_EXAMPLE = "'now', 'now+5days', 'now-30minutes', 'now+2days 09:30:15' , '{monday}', '{friday} 09:00'";
 const TIME_FORMAT = 'now[+ or -][number][hours | minutes]';
 const TIME_EXAMPLE = "'now', 'now+5hours', 'now-30minutes'";
 
@@ -61,7 +62,17 @@ export function DateTimeExpressionInput(props: TextProps) {
 								<Box>
 									<FormattedMessage defaultMessage="Date expression to process:" />
 								</Box>
-								<Box>{type === 'dateTime' ? DATE_TIME_FORMAT : TIME_FORMAT}</Box>
+								{type === 'dateTime' ? (
+									<>
+										<Box>{DATE_TIME_FORMAT_OFFSET}</Box>
+										<Box>
+											<FormattedMessage defaultMessage="or" />
+										</Box>
+										<Box>{DATE_TIME_FORMAT_DAY}</Box>
+									</>
+								) : (
+									<Box>{TIME_FORMAT}</Box>
+								)}
 								<Box>
 									<FormattedMessage defaultMessage="e.g." />: {type === 'dateTime' ? DATE_TIME_EXAMPLE : TIME_EXAMPLE}
 								</Box>
