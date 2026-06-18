@@ -42,7 +42,7 @@ import {
 	reloadContentItem,
 	unlockItem
 } from '../actions/content';
-import { catchAjaxError } from '../../utils/ajax';
+import { catchAjaxError, extractErrorPayload } from '../../utils/ajax';
 import {
 	duplicate,
 	fetchContentItem as fetchContentItemService,
@@ -440,8 +440,8 @@ const content: CrafterCMSEpic[] = [
 						catchAjaxError(
 							() => unblockUI(),
 							(error) => {
-								const responseCode = error.response.code;
-								if (responseCode === 56001) {
+								const responseCode = error.response?.code;
+								if (responseCode === 1001) {
 									const item = state.content.itemsByPath[state.content.clipboard.sourcePath];
 									const sourceContentType = item?.contentTypeId;
 									return pushErrorDialog({
@@ -454,20 +454,22 @@ const content: CrafterCMSEpic[] = [
 														targetPath: payload.path
 													}
 												),
-												remedialAction: getIntl().formatMessage(
-													{
-														defaultMessage:
-															'Content type "{contentType}" of the source item is not allowed in the target location.'
-													},
-													{
-														contentType: sourceContentType
-													}
-												)
+												remedialAction: sourceContentType
+													? getIntl().formatMessage(
+															{
+																defaultMessage:
+																	'Content type "{contentType}" of the source item is not allowed in the target location.'
+															},
+															{
+																contentType: sourceContentType
+															}
+														)
+													: undefined
 											}
 										}
 									});
 								} else {
-									return pushErrorDialog({ props: { error: error.response } });
+									return pushErrorDialog({ props: { error: extractErrorPayload(error as AjaxError) } });
 								}
 							}
 						)
