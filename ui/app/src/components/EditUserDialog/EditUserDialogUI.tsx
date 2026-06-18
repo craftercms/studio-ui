@@ -61,18 +61,6 @@ const translations = defineMessages({
 		id: 'words.roles',
 		defaultMessage: 'Roles'
 	},
-	confirmHelperText: {
-		id: 'userInfoDialog.helperText',
-		defaultMessage: 'Delete user "{username}"?'
-	},
-	confirmOk: {
-		id: 'words.yes',
-		defaultMessage: 'Yes'
-	},
-	confirmCancel: {
-		id: 'words.no',
-		defaultMessage: 'No'
-	},
 	invalidMinLength: {
 		id: 'userInfoDialog.invalidMinLength',
 		defaultMessage: 'Min {length} characters'
