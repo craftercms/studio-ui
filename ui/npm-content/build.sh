@@ -56,6 +56,7 @@ echo "jQuery UI build complete"
 # tinymce build
 rm -rf "$libsDirectory/tinymce"
 cp -r ../../node_modules/tinymce "$libsDirectory/tinymce"
+rsync -ar --delete ./src/tinymce/langs "$libsDirectory/tinymce"
 
 echo "Copied TinyMCE"
 

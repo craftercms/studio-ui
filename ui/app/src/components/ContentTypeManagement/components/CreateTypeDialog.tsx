@@ -226,7 +226,14 @@ function transformId(value: string): string {
 }
 
 function suggestTypeId(label: string): string {
-	let camelized = camelize(label.replace(/\s/g, '-'));
+	// Replace spaces with hyphens so camelize() can produce camelCase.
+	let sanitized = label.replace(/\s/g, '-').replace(/[^-A-Za-z0-9]/g, '');
+	// Ensure the first character is a letter or underscore
+	if (sanitized !== '' && !/^[_A-Za-z]/.test(sanitized)) {
+		sanitized = `_${sanitized}`;
+	}
+
+	let camelized = camelize(sanitized);
 	camelized = camelized.charAt(0).toLowerCase() + camelized.substring(1);
 	return transformId(camelized);
 }
