@@ -32,10 +32,6 @@ import { pushErrorDialog } from '../../utils/system';
 import { useEnhancedDialogContext } from '../EnhancedDialog';
 
 const translations = defineMessages({
-	userDeleted: {
-		id: 'userInfoDialog.userDeleted',
-		defaultMessage: 'User deleted successfully'
-	},
 	userUpdated: {
 		id: 'userInfoDialog.userUpdated',
 		defaultMessage: 'User updated successfully'
