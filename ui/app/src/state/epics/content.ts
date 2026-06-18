@@ -441,7 +441,7 @@ const content: CrafterCMSEpic[] = [
 							() => unblockUI(),
 							(error) => {
 								const responseCode = error.response?.code;
-								if (responseCode === 1001) {
+								if (responseCode === 56001) {
 									const item = state.content.itemsByPath[state.content.clipboard.sourcePath];
 									const sourceContentType = item?.contentTypeId;
 									return pushErrorDialog({
