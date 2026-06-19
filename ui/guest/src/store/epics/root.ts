@@ -19,6 +19,7 @@ import { GuestStandardAction } from '../models/GuestStandardAction';
 import {
 	catchError,
 	filter,
+	finalize,
 	ignoreElements,
 	map,
 	switchMap,
@@ -547,7 +548,8 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 								const originalSrc = aImg.src;
 								if (allowed) {
 									const fileName = modifiedValue ? modifiedValue.replace(path, '').replace(/^\//, '') : imageFileName;
-									aImg.src = URL.createObjectURL(blob);
+									const previewUrl = URL.createObjectURL(blob);
+									aImg.src = previewUrl;
 
 									post(snackGuestMessage({ id: 'assetUploadStarted' }));
 									return uploadDataUrl(
@@ -593,7 +595,8 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 												})
 											);
 											return of(desktopAssetUploadFailed({ record }));
-										})
+										}),
+										finalize(() => URL.revokeObjectURL(previewUrl))
 									);
 								} else {
 									aImg.src = originalSrc;
