@@ -210,15 +210,14 @@ export function useSaveForm(props: UseSaveFormProps) {
 		}
 
 		// TODO: write-content url on FE1 sends phase, path, fileName, contentType QSAs. Important?
-		const saveContent = () => {
+		const saveContent = (cancelPackagesComment: string = '') => {
 			const saveOrMoveService$ = isRename
 				? moveAndUpdateContent(siteId, itemPath, path, xml)
-				: writeContent(siteId, path, xml);
+				: writeContent(siteId, path, xml, { comment: versionComment });
 			const saveOrCancel$ = affectedPackages?.length
 				? cancelPackages(siteId, {
 						packageIds: affectedPackages.map((pkg) => pkg.id),
-						// TODO: Correct comment generation
-						comment: `Cancel packages to write on "${path}`
+						comment: cancelPackagesComment
 					}).pipe(
 						switchMap(() => {
 							return saveOrMoveService$;
@@ -239,8 +238,12 @@ export function useSaveForm(props: UseSaveFormProps) {
 						component: createComponentId('ViewPackagesDialog'),
 						props: {
 							item,
-							onContinue: () => {
-								saveContent();
+							cancelPackagesInitialComment: formatMessage(
+								{ defaultMessage: 'Cancel packages to write on "{path}"' },
+								{ path }
+							),
+							onContinue: (cancelPackagesUpdatedComment) => {
+								saveContent(cancelPackagesUpdatedComment);
 								dispatch(popDialog({ id: dialogId }));
 							},
 							onClose: () => {

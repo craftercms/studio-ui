@@ -43,7 +43,7 @@ import { reloadRequest } from '../../state/actions/preview';
 import { CodeEditorDialogContainerProps, getContentModelSnippets } from './utils';
 import { MultiChoiceSaveButton } from '../MultiChoiceSaveButton';
 import useUpToDateRefs from '../../hooks/useUpdateRefs';
-import { useEnhancedDialogContext } from '../EnhancedDialog';
+import { EnhancedDialog, useEnhancedDialogContext } from '../EnhancedDialog';
 import { writeConfiguration } from '../../services/configuration';
 import { forkJoin, switchMap } from 'rxjs';
 import { cancelPackages, fetchAffectedPackages } from '../../services/workflow';
@@ -52,6 +52,11 @@ import Alert, { alertClasses } from '@mui/material/Alert';
 import { pushDialog } from '../../state/actions/dialogStack';
 import { createComponentId, pushErrorDialog } from '../../utils/system';
 import { useContentItem } from '../../hooks/useContentItem';
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import TextFieldWithMax from '../TextFieldWithMax';
+import { Typography } from '@mui/material';
+import useSpreadState from '../../hooks/useSpreadState';
 
 export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps) {
 	const { path, onMinimize, onClose, mode, readonly, contentType, onFullScreen, onSuccess } = props;
@@ -80,6 +85,18 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 		'craftercms.groovyCodeSnippets': groovyCodeSnippets
 	} = useReferences() ?? {};
 	const onChangeTimeoutRef = useRef<any>(null);
+	const [saveWithCommentState, setSaveWithCommentState] = useSpreadState<{
+		saveWithComment: boolean;
+		openDialog: boolean;
+		comment: string;
+		saveType: 'save' | 'saveAndClose' | 'saveAndMinimize';
+	}>({
+		saveWithComment: false,
+		openDialog: false,
+		comment: '',
+		saveType: null
+	});
+	const isConfig = path.startsWith('/config');
 
 	const onEditorChanges = () => {
 		clearTimeout(onChangeTimeoutRef.current);
@@ -88,21 +105,22 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 		}, 150);
 	};
 
-	const save = (callback?: () => void) => {
+	const save = (callback?: () => void, cancelPackagesComment: string = '') => {
 		if (!isLockedForMe && !readonly) {
 			updateSubmittingOrHasPendingChanges({ isSubmitting: true });
 			const value = editorRef.current.getValue();
-			const isConfig = path.startsWith('/config');
 			const module = isConfig ? (path.split('/')[2] as 'studio') : null;
 			const service$ = isConfig
 				? writeConfiguration(site, path.replace(`/config/${module}`, ''), module, value)
-				: writeContent(site, path, value, { unlock: false });
+				: writeContent(site, path, value, {
+						unlock: false,
+						...(saveWithCommentState.saveWithComment && { comment: saveWithCommentState.comment })
+					});
 			// If item is in packages in active workflow, before saving we need to cancel the packages.
 			const preWriteAction$ = affectedPackages?.length
 				? cancelPackages(site, {
 						packageIds: affectedPackages.map((p) => p.id),
-						// TODO: Correct comment generation
-						comment: `Cancel packages to write on "${path}"`
+						comment: cancelPackagesComment
 					}).pipe(switchMap(() => service$))
 				: service$;
 
@@ -131,8 +149,12 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 					component: createComponentId('ViewPackagesDialog'),
 					props: {
 						item,
-						onContinue: () => {
-							save(callback);
+						cancelPackagesInitialComment: formatMessage(
+							{ defaultMessage: 'Cancel packages to write on "{path}"' },
+							{ path }
+						),
+						onContinue: (cancelPackagesUpdatedComment: string) => {
+							save(callback, cancelPackagesUpdatedComment);
 						}
 					}
 				})
@@ -165,7 +187,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 		fnRefs.current.onClose(e, null);
 	};
 
-	const onMultiChoiceSaveButtonClick = (e, type) => {
+	const saveChoiceSelection = (type) => {
 		switch (type) {
 			case 'save':
 				onSaveButtonClick();
@@ -179,6 +201,14 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 					onMinimize?.();
 				});
 				break;
+		}
+	};
+
+	const onMultiChoiceSaveButtonClick = (e, type) => {
+		if (saveWithCommentState.saveWithComment) {
+			setSaveWithCommentState({ openDialog: true, saveType: type });
+		} else {
+			saveChoiceSelection(type);
 		}
 	};
 
@@ -315,6 +345,22 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 					>
 						<FormattedMessage id="codeEditor.insertCode" defaultMessage="Insert Code" />
 					</Button>
+					{!isConfig && (
+						<FormControlLabel
+							control={
+								<Checkbox
+									size="small"
+									checked={saveWithCommentState.saveWithComment}
+									onChange={(e) => setSaveWithCommentState({ saveWithComment: e.target.checked })}
+								/>
+							}
+							label={
+								<Typography variant="body2">
+									<FormattedMessage defaultMessage="Save with comment" />
+								</Typography>
+							}
+						/>
+					)}
 					<SecondaryButton onClick={onCloseButtonClick} sx={{ mr: '8px' }} disabled={isSubmitting}>
 						<FormattedMessage id="words.cancel" defaultMessage="Cancel" />
 					</SecondaryButton>
@@ -346,6 +392,47 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 					</MenuItem>
 				))}
 			</Menu>
+			<EnhancedDialog
+				open={saveWithCommentState.openDialog}
+				onClose={() => setSaveWithCommentState({ openDialog: false })}
+				maxWidth="sm"
+				fullWidth
+				title={<FormattedMessage defaultMessage="Save with Comment" />}
+			>
+				<DialogBody>
+					<TextFieldWithMax
+						autoFocus
+						margin="dense"
+						label={<FormattedMessage defaultMessage="Comment" />}
+						type="text"
+						fullWidth
+						multiline
+						minRows={2}
+						value={saveWithCommentState.comment}
+						onChange={(e) => setSaveWithCommentState({ comment: e.target.value })}
+						disabled={loading}
+					/>
+				</DialogBody>
+				<DialogFooter>
+					<Button
+						onClick={() => setSaveWithCommentState({ openDialog: false, comment: '', saveType: null })}
+						disabled={loading}
+					>
+						<FormattedMessage id="words.cancel" defaultMessage="Cancel" />
+					</Button>
+					<Button
+						onClick={() => {
+							setSaveWithCommentState({ openDialog: false });
+							saveChoiceSelection(saveWithCommentState.saveType);
+						}}
+						disabled={loading || !saveWithCommentState.comment.trim()}
+						variant="contained"
+						color="primary"
+					>
+						<FormattedMessage id="words.save" defaultMessage="Save" />
+					</Button>
+				</DialogFooter>
+			</EnhancedDialog>
 		</>
 	);
 }

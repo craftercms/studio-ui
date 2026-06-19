@@ -46,6 +46,9 @@ import { map, switchMap } from 'rxjs/operators';
 import { pushErrorDialog } from '../../utils/system';
 import { extractErrorPayload } from '../../utils/ajax';
 import { AjaxError } from 'rxjs/ajax';
+import FormControl from '@mui/material/FormControl';
+import TextFieldWithMax from '../TextFieldWithMax';
+import Grid from '@mui/material/Grid';
 
 export function CreateFolderContainer(props: CreateFolderContainerProps) {
 	const { onClose, onCreated, onRenamed, rename = false, value = '', allowBraces = false } = props;
@@ -77,14 +80,24 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
 	const [packagesInWorkflow, setPackagesInWorkflow] = useState(undefined);
 	const containsItemsInWorkflow = packagesInWorkflow?.length > 0;
 	const [cancelPackagesAck, setCancelPackagesAck] = useState(false);
+	const [cancelPackagesComment, setCancelPackagesComment] = useState<string>(
+		formatMessage({ defaultMessage: 'Cancel packages to rename folder "{path}"' }, { path })
+	);
 	const isValid =
+		// 'name' has a value
 		!isBlank(name) &&
+		// folder doesn't exist
 		!folderExists &&
 		(!rename ||
+			// Rename scenario
+			// 'name' has changed
 			(name !== value &&
+				// move folder ack has been checked
 				moveFolderAck &&
+				// packages are not fetching
 				!fetchingAffectedPackages &&
-				(!containsItemsInWorkflow || cancelPackagesAck)));
+				// if there are items in workflow, cancel packages ack has been checked, and cancellation comment is not empty
+				(!containsItemsInWorkflow || (cancelPackagesAck && cancelPackagesComment.trim() !== ''))));
 	const { updateSubmittingOrHasPendingChanges } = useEnhancedDialogContext();
 
 	useEffect(() => {
@@ -178,8 +191,7 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
 					}
 					// Note: By this point, is a rename and containsItemsInWorkflow
 					const packageIds: number[] = packagesInWorkflow.map((pkg) => pkg.id);
-					// TODO: Correct comment generation
-					cancelPackages(site, { packageIds, comment: `Cancel packages to rename folder "${path}"` }).subscribe({
+					cancelPackages(site, { packageIds, comment: cancelPackagesComment }).subscribe({
 						next: () => onRenameFolder(site, path, name),
 						error: onError
 					});
@@ -277,17 +289,33 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
 						onChange={(event) => onInputChanges(applyFolderNameRules(event.target.value, { allowBraces }))}
 					/>
 					{rename && containsItemsInWorkflow && (
-						<Alert severity="warning" icon={false} sx={{ mb: 1 }}>
-							<FormControlLabel
-								disableTypography
-								control={<Checkbox onChange={onCancelPackagesAckChange} />}
-								label={
-									<Typography>
-										<FormattedMessage defaultMessage="The folder contains items which take part in one or more publishing packages. Renaming it will cancel the packages." />
-									</Typography>
-								}
-							/>
-						</Alert>
+						<>
+							<Alert severity="warning" icon={false} sx={{ mb: 1 }}>
+								<FormControlLabel
+									disableTypography
+									control={<Checkbox onChange={onCancelPackagesAckChange} />}
+									label={
+										<Typography>
+											<FormattedMessage defaultMessage="The folder contains items which take part in one or more publishing packages. Renaming it will cancel the packages." />
+										</Typography>
+									}
+								/>
+							</Alert>
+							{cancelPackagesAck && (
+								<Grid size={12} sx={{ py: 1 }}>
+									<FormControl fullWidth>
+										<TextFieldWithMax
+											value={cancelPackagesComment}
+											label={<FormattedMessage defaultMessage="Cancellation comment" />}
+											fullWidth
+											multiline
+											onChange={(e) => setCancelPackagesComment(e.target.value)}
+											required
+										/>
+									</FormControl>
+								</Grid>
+							)}
+						</>
 					)}
 					{rename && <FolderMoveAlert initialExpanded checked={moveFolderAck} onChange={onMoveFolderAckChange} />}
 				</form>
