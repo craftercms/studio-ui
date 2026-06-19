@@ -81,6 +81,7 @@ export function UsersGridUI(props: UsersGridUIProps) {
 											<FormattedMessage defaultMessage="Show disabled users" />
 										</Typography>
 									}
+									labelPlacement="start"
 								/>
 							</GlobalAppGridCell>
 						</GlobalAppGridRow>
