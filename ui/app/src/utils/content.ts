@@ -1302,25 +1302,21 @@ function doesImageMeetSizeRestrictions(file: HTMLImageElement, restrictions?: Im
  * @returns Promise that resolves to true if the image meets the restrictions or no restrictions are provided, false otherwise.
  * */
 export function validateImageRestrictions(path: string, restrictions?: ImageRestrictions): Promise<boolean> {
-	if (!isImage(path)) {
+	if (!restrictions || (!isImage(path) && !isBlobUrl(path) && !path.startsWith('data:image/'))) {
 		return Promise.resolve(true);
 	}
 	return new Promise((resolve) => {
-		if (restrictions) {
-			const img = new window.Image();
-			const done = (result: boolean) => resolve(result);
-			const timeout = window.setTimeout(() => done(true), 5000);
-			img.onload = () => {
-				window.clearTimeout(timeout);
-				done(doesImageMeetSizeRestrictions(img, restrictions));
-			};
-			img.onerror = img.onabort = () => {
-				window.clearTimeout(timeout);
-				done(true);
-			};
-			img.src = path;
-		} else {
-			resolve(true);
-		}
+		const img = new window.Image();
+		const done = (result: boolean) => resolve(result);
+		const timeout = window.setTimeout(() => done(true), 5000);
+		img.onload = () => {
+			window.clearTimeout(timeout);
+			done(doesImageMeetSizeRestrictions(img, restrictions));
+		};
+		img.onerror = img.onabort = () => {
+			window.clearTimeout(timeout);
+			done(true);
+		};
+		img.src = path;
 	});
 }
