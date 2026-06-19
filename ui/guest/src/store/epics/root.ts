@@ -258,9 +258,8 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 								switch (status) {
 									case EditingStatus.PLACING_DETACHED_ASSET: {
 										const { dropZone } = dragContext;
-										const iceRecord = iceRegistry.getById(dropZone.iceId);
-
 										if (dropZone && dragContext.inZone) {
+											const iceRecord = iceRegistry.getById(dropZone.iceId);
 											const field = iceRegistry.getRecordField(iceRecord);
 											const {
 												validations: { allowImageUpload }
