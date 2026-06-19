@@ -209,6 +209,7 @@ export interface GlobalState {
       code: number;
       message: string;
     };
+    enableKeyboardShortcuts: boolean;
   };
   previewNavigation: {
     currentUrlPath: string;
