@@ -466,7 +466,7 @@ export const formEngineMessages = defineMessages({
   },
   saveAndMinimize: {
     id: 'formEngine.saveAndMinimize',
-    defaultMessage: 'Save & Minimize'
+    defaultMessage: 'Save Draft & Minimize'
   },
   saveDraft: {
     id: 'formEngine.saveDraft',
