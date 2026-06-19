@@ -402,7 +402,7 @@ export const showImageCropDialog = ({
 			props: {
 				path,
 				mimeType,
-				subtitle: <ImageRestrictionSubtitle restrictions={restrictions} />,
+				subtitle: restrictions ? <ImageRestrictionSubtitle restrictions={restrictions} /> : undefined,
 				restrictions,
 				writeContent,
 				onCrop: (blob: Blob, newPath: string) => {
@@ -443,7 +443,8 @@ const hasWidthRestriction = (restrictions: ImageRestrictions) =>
 const hasHeightRestriction = (restrictions: ImageRestrictions) =>
 	Boolean(restrictions.height || restrictions.minHeight || restrictions.maxHeight);
 
-export const ImageRestrictionSubtitle = ({ restrictions }: { restrictions: ImageRestrictions }) => {
+export const ImageRestrictionSubtitle = ({ restrictions }: { restrictions?: ImageRestrictions }) => {
+	if (!restrictions) return null;
 	const { width, height } = getImageRestrictionMessages(restrictions);
 	const hasWidth = hasWidthRestriction(restrictions);
 	const hasHeight = hasHeightRestriction(restrictions);
