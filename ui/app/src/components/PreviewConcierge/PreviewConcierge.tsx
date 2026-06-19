@@ -1140,7 +1140,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 							component: createComponentId('ImageEditorDialog'),
 							props: {
 								path,
-								subtitle: <ImageRestrictionSubtitle restrictions={restrictions} />,
+								subtitle: restrictions ? <ImageRestrictionSubtitle restrictions={restrictions} /> : undefined,
 								restrictions,
 								writeContent,
 								onCrop: (blob: Blob, newPath: string) => {
