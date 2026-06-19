@@ -46,8 +46,7 @@ export const systemFieldsIds: BuiltInControlType[] = [
 	'page-nav-order',
 	'locale-selector',
 	'expired-date',
-	'forcehttps',
-	'uuid'
+	'forcehttps'
 ];
 
 export function PickControlDialog(props: PickControlDialogProps) {
