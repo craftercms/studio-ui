@@ -299,7 +299,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 																uploadPath
 															})
 														);
-														return of(desktopAssetUploadStarted({ record }));
+														return of(desktopAssetDragEnded());
 													}
 												})
 											);
@@ -413,7 +413,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 																	})
 																);
 
-																return of(desktopAssetUploadStarted({ record }));
+																return of(desktopAssetDragEnded());
 															} else {
 																return merge(
 																	of(desktopAssetUploadStarted({ record })),
@@ -535,6 +535,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 				if (dropZone) {
 					return merge(
 						of(desktopAssetDragEnded()),
+						of(desktopAssetUploadStarted({ record })),
 						validateActionPolicy(state.activeSite, {
 							type: 'CREATE',
 							target: ensureSingleSlash(`${path}/${imageFileName}`),
