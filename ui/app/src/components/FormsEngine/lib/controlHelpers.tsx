@@ -395,7 +395,6 @@ export const showImageCropDialog = ({
 	onCrop: (blob: Blob, newPath?: string) => void;
 }): void => {
 	const dialogId = nanoid();
-	const imageRestrictionMessages = getImageRestrictionMessages(restrictions);
 	dispatch(
 		pushDialog({
 			id: dialogId,
@@ -403,15 +402,7 @@ export const showImageCropDialog = ({
 			props: {
 				path,
 				mimeType,
-				subtitle: (
-					<FormattedMessage
-						defaultMessage="The image does not meet the width & height constraints (Width: {width}. Height: {height})."
-						values={{
-							width: imageRestrictionMessages.width,
-							height: imageRestrictionMessages.height
-						}}
-					/>
-				),
+				subtitle: <ImageRestrictionSubtitle restrictions={restrictions} />,
 				restrictions,
 				writeContent,
 				onCrop: (blob: Blob, newPath: string) => {
@@ -444,6 +435,44 @@ export const getImageRestrictionMessages = (restrictions: ImageRestrictions) => 
 		.filter(Boolean)
 		.join(',');
 	return { width, height };
+};
+
+const hasWidthRestriction = (restrictions: ImageRestrictions) =>
+	Boolean(restrictions.width || restrictions.minWidth || restrictions.maxWidth);
+
+const hasHeightRestriction = (restrictions: ImageRestrictions) =>
+	Boolean(restrictions.height || restrictions.minHeight || restrictions.maxHeight);
+
+export const ImageRestrictionSubtitle = ({ restrictions }: { restrictions: ImageRestrictions }) => {
+	const { width, height } = getImageRestrictionMessages(restrictions);
+	const hasWidth = hasWidthRestriction(restrictions);
+	const hasHeight = hasHeightRestriction(restrictions);
+
+	if (hasWidth && hasHeight) {
+		return (
+			<FormattedMessage
+				defaultMessage="The image does not meet the width & height constraints (Width: {width}. Height: {height})."
+				values={{ width, height }}
+			/>
+		);
+	}
+	if (hasWidth) {
+		return (
+			<FormattedMessage
+				defaultMessage="The image does not meet the width constraint (Width: {width})."
+				values={{ width }}
+			/>
+		);
+	}
+	if (hasHeight) {
+		return (
+			<FormattedMessage
+				defaultMessage="The image does not meet the height constraint (Height: {height})."
+				values={{ height }}
+			/>
+		);
+	}
+	return null;
 };
 
 /**

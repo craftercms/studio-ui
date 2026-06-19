@@ -189,7 +189,7 @@ import StandardAction from '../../models/StandardAction';
 import { createComponentId, pickShowContentFormAction } from '../../utils/system';
 import { popDialog, pushDialog } from '../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
-import { getImageRestrictionMessages } from '../FormsEngine/lib/controlHelpers';
+import { ImageRestrictionSubtitle } from '../FormsEngine/lib/controlHelpers';
 
 const issueDescriptorRequest = (props: {
 	site: string;
@@ -1134,22 +1134,13 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 				case showImageEditorDialog.type: {
 					const id = nanoid();
 					const { path, restrictions, writeContent, fileName, recordId, uploadPath } = action.payload;
-					const imageRestrictionMessages = getImageRestrictionMessages(restrictions);
 					dispatch(
 						pushDialog({
 							id,
 							component: createComponentId('ImageEditorDialog'),
 							props: {
 								path,
-								subtitle: (
-									<FormattedMessage
-										defaultMessage="The image does not meet the width & height constraints (Width: {width}. Height: {height})."
-										values={{
-											width: imageRestrictionMessages.width,
-											height: imageRestrictionMessages.height
-										}}
-									/>
-								),
+								subtitle: <ImageRestrictionSubtitle restrictions={restrictions} />,
 								restrictions,
 								writeContent,
 								onCrop: (blob: Blob, newPath: string) => {
