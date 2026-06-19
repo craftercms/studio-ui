@@ -430,7 +430,7 @@ export function GuestProxy() {
 
 							ifrm.onload = function () {
 								spinner.remove();
-								let itemElement = ifrm.contentWindow.document.documentElement.querySelector(
+								const itemElement = ifrm.contentWindow.document.documentElement.querySelector(
 									`[data-craftercms-model-id="${inheritedModelId}"][data-craftercms-field-id="${fieldId}"][data-craftercms-index="${targetIndex}"]`
 								);
 								let component = document.createElement('div');
