@@ -173,8 +173,8 @@ export function byPathFetchIfNotLoaded(path: string): Observable<ContentInstance
 		return of(null);
 	} else if (requestedPaths[path]) {
 		return paths$.pipe(
-			take(1),
 			filter((paths) => Boolean(paths[path])),
+			take(1),
 			map((paths) => models$.value[paths[path]])
 		);
 	} else {
