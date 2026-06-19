@@ -17,6 +17,7 @@
 import { createValidation, createVirtualSection, DescriptorContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
 import { defineMessage } from 'react-intl';
+import { commonFieldPropertiesDescriptors } from './commonDescriptors';
 
 export const timeDescriptor: DescriptorContentType = {
 	id: 'time',
@@ -80,13 +81,7 @@ export const timeDescriptor: DescriptorContentType = {
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
-		readonly: {
-			id: 'readonly',
-			type: 'boolean',
-			name: defineMessage({ defaultMessage: 'Read Only' }),
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		},
+		readonly: commonFieldPropertiesDescriptors['readonly'],
 		readonlyEdit: {
 			id: 'readonlyEdit',
 			type: 'boolean',
@@ -94,13 +89,7 @@ export const timeDescriptor: DescriptorContentType = {
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
-		required: {
-			id: 'required',
-			type: 'boolean',
-			name: defineMessage({ defaultMessage: 'Required' }),
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		}
+		required: commonFieldPropertiesDescriptors['required']
 	},
 	metadata: {
 		suffixes: ['_to']

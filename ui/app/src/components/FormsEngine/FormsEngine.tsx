@@ -130,7 +130,8 @@ import {
 import { getHostToHostBus } from '../../utils/subjects';
 import { fetchAffectedPackages } from '../../services/workflow';
 import useMount from '../../hooks/useMount';
-import { nnou } from '../../utils/object';
+import { nnou, nou } from '../../utils/object';
+import { buildContentXml } from './lib/valueSerializers';
 
 export interface FormSavePromiseResult {
 	close: boolean;
@@ -299,8 +300,8 @@ function FormBootstrap(props: FormsEngineProps) {
 	api.updateProps(stackIndex, props);
 
 	useEffect(() => {
-		if (!liveUpdatedItem) setReady(false);
-	}, [liveUpdatedItem]);
+		if (!create && !repeat && !liveUpdatedItem) setReady(false);
+	}, [liveUpdatedItem, create, repeat]);
 
 	useEffect(() => {
 		contentTypesById && setContentTypesLoaded(true);
@@ -337,12 +338,13 @@ function FormBootstrap(props: FormsEngineProps) {
 			isChildForm &&
 			repeat?.fieldId
 		) {
-			const contentType = effectRefs.current.contentTypesById[parentContentType.id];
+			const contentType = parentContentType ? effectRefs.current.contentTypesById[parentContentType.id] : undefined;
 			if (!contentType) return setPrepError(ContentTypeNotFoundError);
 			const parentLockResult = store.get(parentAtoms.lockResult);
 			const isParentLocked = parentLockResult.locked;
+			const isCreate = nou(parentPath);
 			const lockResultAtom = atom<FormsEngineEditContextProps>({
-				locked: isParentLocked,
+				locked: isCreate ? true : isParentLocked,
 				lockError: parentLockResult.lockError,
 				affectedPackages: parentLockResult.affectedPackages
 			});
@@ -360,7 +362,7 @@ function FormBootstrap(props: FormsEngineProps) {
 					fieldId,
 					atoms,
 					value,
-					siteId
+					{ siteId, contentTypesById: effectRefs.current.contentTypesById }
 				);
 			};
 			const values =
@@ -370,12 +372,12 @@ function FormBootstrap(props: FormsEngineProps) {
 			// If repeat.values was provided, `createCleanValuesObject` didn't run; hence, atomValueCreator needs to be run manually.
 			repeat.values && Object.keys(values).forEach((fieldId) => atomValueCreator(fieldId, values[fieldId]));
 
-			const xmlDoc = fromString(parentStackData.itemMeta.contentXml);
+			const xmlDoc = fromString(parentStackData.itemMeta.contentXml ?? '');
 			const fieldId = repeat.fieldId;
-			const index = repeat.index;
-			const element = xmlDoc.querySelector(`:scope > ${fieldId}`).children[index];
-			const contentObject = (parentStackData.itemMeta.contentObject[fieldId] as { item: Array<LookupTable<unknown>> })
-				.item[index];
+			const index = repeat.index ?? 0;
+			const element = xmlDoc?.querySelector(`:scope > ${fieldId}`)?.children[index];
+			const contentObject =
+				(parentStackData.itemMeta.contentObject[fieldId] as { item: Array<LookupTable<unknown>> })?.item?.[index] ?? {};
 
 			initializeState(atoms, values, {
 				id: parentId,
@@ -384,7 +386,7 @@ function FormBootstrap(props: FormsEngineProps) {
 				pathInSite: parentPathInSite,
 				contentType: parentContentType,
 				contentObject,
-				contentXml: element.outerHTML
+				contentXml: element?.outerHTML ?? ''
 			});
 		} else if (
 			// An embedded component is being opened as a stacked form.
@@ -407,7 +409,9 @@ function FormBootstrap(props: FormsEngineProps) {
 					update,
 					parentStackData,
 					stableFormContextRef,
-					parentPathInSite
+					parentPathInSite,
+					siteId,
+					contentTypesById: effectRefs.current.contentTypesById
 				});
 				initializeState(requirements.atoms, requirements.values, requirements.itemMeta);
 			};
@@ -440,8 +444,12 @@ function FormBootstrap(props: FormsEngineProps) {
 			});
 			const contentObject = createObjectWithSystemProps(contentType);
 			const values = createParsedValuesObject(contentType.fields, contentObject, contentTypesById, (fieldId, value) => {
-				setFieldAtoms(stableFormContextRef, contentType, contentType.fields, fieldId, atoms, value, siteId);
+				setFieldAtoms(stableFormContextRef, contentType, contentType.fields, fieldId, atoms, value, {
+					siteId,
+					contentTypesById
+				});
 			});
+			const { [XmlKeys.fileName]: _, ...valuesWithoutFileName } = values;
 
 			initializeState(atoms, values, {
 				id: contentObject[XmlKeys.modelId] as string,
@@ -452,7 +460,7 @@ function FormBootstrap(props: FormsEngineProps) {
 				pathInSite: create.path,
 				contentType,
 				contentObject,
-				contentXml: null
+				contentXml: buildContentXml(valuesWithoutFileName, contentTypesById)
 			});
 		} /* if (isUpdateMode) */ else {
 			const subscription = fetchUpdateRequirements({
@@ -505,7 +513,7 @@ function FormBootstrap(props: FormsEngineProps) {
 								fieldId,
 								atoms,
 								value,
-								siteId
+								{ siteId, contentTypesById }
 							);
 						}
 					);
@@ -545,7 +553,7 @@ function FormBootstrap(props: FormsEngineProps) {
 	} else if (
 		ready &&
 		// Create doesn't need the liveUpdateItem, but otherwise, it should be preset before proceeding to rendering a form
-		(create || liveUpdatedItem)
+		(create || repeat || liveUpdatedItem)
 	) {
 		return (
 			<FormsEngineFormContextApi.Provider value={contextApi}>
@@ -638,6 +646,9 @@ function FormOrchestrator(props: FormsEngineProps) {
 		lockStatus
 	});
 	const [collapseHeader, setCollapseHeader] = useState(false);
+	const [saveAsDraft, setSaveAsDraft] = useState(false);
+	const [invalidForm, setInvalidForm] = useState(false);
+	const jotai = useJotaiStore();
 
 	useMount(() => {
 		// If 'update.changeTypeId' has content, it means the content type has changed, so we set pending changes to true
@@ -645,6 +656,19 @@ function FormOrchestrator(props: FormsEngineProps) {
 		if (update?.changeTypeId) {
 			setHasPendingChanges(true);
 		}
+		const checkValidationState = async () => {
+			const validityStates = await Promise.all(
+				Object.values(stableFormContext.atoms.validationByFieldId).map((validityDataAtom) =>
+					jotai.get(validityDataAtom)
+				)
+			);
+			setInvalidForm(validityStates.some((state) => !state.isValid));
+		};
+		void checkValidationState();
+		const subscription = stableFormContext.fieldUpdates$
+			.pipe(debounceTime(300))
+			.subscribe(() => void checkValidationState());
+		return () => subscription.unsubscribe();
 	});
 
 	// Changes comment generation & change detection/tracking
@@ -679,7 +703,7 @@ function FormOrchestrator(props: FormsEngineProps) {
 	}, [isSubmitting, hasPendingChanges, isStackedForm, updateSubmittingOrHasPendingChanges]);
 
 	// Unlock content when the form is closed.
-	useUnlockOnClose(props);
+	useUnlockOnClose({ ...props, saveAsDraft, invalidForm });
 
 	// region Workflow item updates
 	useEffect(() => {
@@ -978,7 +1002,9 @@ function FormOrchestrator(props: FormsEngineProps) {
 										isEmbedded={isEmbedded}
 										isStackedForm={isStackedForm}
 										isRepeatMode={isRepeatMode}
-										onSave={() => saveFn()}
+										setSaveAsDraft={setSaveAsDraft}
+										invalidForm={invalidForm}
+										onSave={(e, draft) => saveFn(draft)}
 									/>
 									{!isCreateMode && // There's no locking on create mode
 										(!isRepeatMode || (isRepeatMode && repeat.values)) && // No point in the "unlock" button for new repeat items

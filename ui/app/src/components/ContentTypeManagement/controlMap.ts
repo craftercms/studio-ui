@@ -30,7 +30,6 @@ export type DescriptorControlType =
 	| 'path-with-macro-creator'
 	| 'merge-strategy-selector'
 	| 'variable'
-	| 'type-configuration'
 	| 'datasource:image'
 	| 'datasource:video'
 	| 'datasource:audio'
@@ -44,7 +43,9 @@ export type DescriptorControlType =
 	| 'int'
 	| 'string'
 	| 'date-time-expression-input'
-	| 'rte';
+	| 'rte'
+	| 'delete-dependencies'
+	| 'copy-dependencies';
 
 const DataSourceMultiSelector = lazy(() => import('./controls/DataSourceMultiSelector'));
 const DataSourceSingleSelector = lazy(() => import('./controls/DataSourceSingleSelector'));
@@ -72,10 +73,11 @@ export const controlMap: Record<DescriptorControlType, ElementType> = {
 	'path-with-macro-creator': lazy(() => import('./controls/PathWithMacroCreator')),
 	'merge-strategy-selector': lazy(() => import('./controls/MergeStrategySelector')),
 	variable: lazy(() => import('./controls/Variable')),
-	'type-configuration': lazy(() => import('./controls/TypeConfiguration')),
 	boolean: lazy(() => import('../FormsEngine/controls/Checkbox')),
 	int: lazy(() => import('../FormsEngine/controls/Numeric')),
 	string: lazy(() => import('../FormsEngine/controls/Text')),
 	'date-time-expression-input': lazy(() => import('./controls/DateTimeExpressionInput')),
-	rte: lazy(() => import('./controls/RichTextEditor'))
+	rte: lazy(() => import('./controls/RichTextEditor')),
+	'delete-dependencies': lazy(() => import('./controls/DeleteDependencies')),
+	'copy-dependencies': lazy(() => import('./controls/CopyDependencies'))
 };

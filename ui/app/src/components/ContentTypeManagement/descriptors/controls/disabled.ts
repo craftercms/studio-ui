@@ -15,8 +15,8 @@
  */
 
 import { createVirtualSection, DescriptorContentType } from '../../utils';
-import { immutableEmptyObject } from '../../../../utils/object';
 import { defineMessage } from 'react-intl';
+import { commonFieldPropertiesDescriptors } from './commonDescriptors';
 
 // TODO: Why is disabled a control type? Doesn't seem to be in use.
 export const disabledDescriptor: DescriptorContentType = {
@@ -31,13 +31,7 @@ export const disabledDescriptor: DescriptorContentType = {
 		})
 	],
 	fields: {
-		readonly: {
-			id: 'readonly',
-			type: 'boolean',
-			name: defineMessage({ defaultMessage: 'readonly' }),
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		}
+		readonly: commonFieldPropertiesDescriptors['readonly']
 	}
 };
 

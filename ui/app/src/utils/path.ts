@@ -160,38 +160,6 @@ export function getIndividualPaths(path: string, rootPath = ''): string[] {
 	return individualPaths;
 }
 
-export function getPasteItemFromPath(path: string, paths: string[]): PasteItem {
-	// create PasteItem with base path
-	let pasteItem = {
-		path,
-		children: []
-	};
-
-	paths.forEach((path) => addToPasteItem(pasteItem, path));
-	return pasteItem;
-}
-
-function addToPasteItem(pasteItem: PasteItem, path: string): void {
-	const parentPath = getParentPath(path);
-
-	if (withoutIndex(pasteItem.path) === parentPath) {
-		// if current path is direct children of pasteItem's root path
-		pasteItem.children.push({
-			path,
-			children: []
-		});
-	} else if (pasteItem.path !== path) {
-		// neither root nor direct children - look in which of the children the item belongs to
-		const pathWithoutIndex = withoutIndex(path);
-		const pasteItemParent = pasteItem.children.find((item) =>
-			// includes parameter ends with a '/' to make it sure that it's a complete path and not part of a name in a path
-			// (it may match with another path that starts with the same chars)
-			pathWithoutIndex.includes(`${withoutIndex(item.path)}/`)
-		);
-		addToPasteItem(pasteItemParent, path);
-	}
-}
-
 export function isValidCopyPastePath(targetPath: string, sourcePath: string): boolean {
 	return !getIndividualPaths(targetPath).includes(sourcePath);
 }

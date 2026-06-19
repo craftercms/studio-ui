@@ -200,7 +200,7 @@ export function PreviewAssetsPanel() {
 		<Box sx={dragInProgress ? { overflow: 'hidden' } : null}>
 			<div ref={elementRef}>
 				<Box sx={{ padding: '15px 15px 0 15px' }}>
-					<SearchBar showActionButton={Boolean(keyword)} onChange={handleSearchKeyword} keyword={keyword} />
+					<SearchBar showActionButton={Boolean(keyword)} onChange={handleSearchKeyword} keyword={keyword} autoFocus />
 				</Box>
 				<ErrorBoundary>
 					{assets.error ? (

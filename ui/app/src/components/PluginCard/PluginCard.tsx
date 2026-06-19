@@ -298,7 +298,12 @@ function PluginCard(props: PluginCardProps) {
 				}}
 				sx={isGitOrDuplicateCard ? { display: 'flex', justifyContent: 'start' } : null}
 			>
-				<PluginMediaCarousel ref={sliderRef} items={renderMedias(id)} onChangeItem={handleChangeIndex} />
+				<PluginMediaCarousel
+					ref={sliderRef}
+					items={renderMedias(id)}
+					onChangeItem={handleChangeIndex}
+					sx={{ width: isGitOrDuplicateCard ? 'unset' : '100%' }}
+				/>
 				{isGitOrDuplicateCard && (
 					<CardContent sx={isGitOrDuplicateCard ? { height: 'unset !important' } : null} className="cardContent">
 						<Typography gutterBottom variant="subtitle2" component="h2" className="cardTitle">

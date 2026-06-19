@@ -196,3 +196,29 @@ export function pushErrorDialog(props: Omit<errorDialogStackItemProps, 'componen
 		...props
 	});
 }
+
+let aceAssetsLoadStarted = false;
+export function loadAceEditorAssets() {
+	const aceScriptSrc = '/studio/static-assets/libs/ace/ace.js';
+	const aceCssHref = '/studio/static-assets/styles/tinymce-ace.css';
+	const hasAceScript = Boolean(document.querySelector(`script[src="${aceScriptSrc}"]`));
+	if (!window.ace && !aceAssetsLoadStarted && !hasAceScript) {
+		aceAssetsLoadStarted = true;
+		const script = document.createElement('script');
+		script.src = aceScriptSrc;
+		script.onload = () => {
+			aceAssetsLoadStarted = false;
+		};
+		script.onerror = () => {
+			aceAssetsLoadStarted = false;
+		};
+		document.head.appendChild(script);
+	}
+	const hasAceCss = Boolean(document.querySelector(`link[rel="stylesheet"][href="${aceCssHref}"]`));
+	if (!hasAceCss) {
+		const styleSheet = document.createElement('link');
+		styleSheet.rel = 'stylesheet';
+		styleSheet.href = aceCssHref;
+		document.head.appendChild(styleSheet);
+	}
+}

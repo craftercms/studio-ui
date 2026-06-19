@@ -126,7 +126,15 @@ const assetsPanelInitialState = createEntityState({
 		offset: 0,
 		limit: 10,
 		filters: {
-			'mime-type': ['image/png', 'image/jpeg', 'image/gif', 'video/mp4', 'image/svg+xml', 'image/webp']
+			'mime-type': [
+				'image/png',
+				'image/jpeg',
+				'image/gif',
+				'video/mp4',
+				'image/svg+xml',
+				'image/webp',
+				'video/quicktime'
+			]
 		}
 	}
 }) as PagedEntityState<MediaItem>;

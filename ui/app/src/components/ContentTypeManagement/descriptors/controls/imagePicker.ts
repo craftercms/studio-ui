@@ -17,6 +17,7 @@
 import { createValidation, createVirtualSection, DescriptorContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
 import { defineMessage } from 'react-intl';
+import { commonFieldPropertiesDescriptors } from './commonDescriptors';
 
 export const imagePickerDescriptor: DescriptorContentType = {
 	id: 'image-picker',
@@ -72,20 +73,8 @@ export const imagePickerDescriptor: DescriptorContentType = {
 				type: createValidation('type', 'image')
 			}
 		},
-		readonly: {
-			id: 'readonly',
-			type: 'boolean',
-			name: defineMessage({ defaultMessage: 'Read Only' }),
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		},
-		required: {
-			id: 'required',
-			type: 'boolean',
-			name: defineMessage({ defaultMessage: 'Required' }),
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		}
+		readonly: commonFieldPropertiesDescriptors['readonly'],
+		required: commonFieldPropertiesDescriptors['required']
 	},
 	metadata: {
 		suffixes: ['_s']

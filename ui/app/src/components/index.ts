@@ -48,7 +48,6 @@ export * from './ContentLocalizationDialog';
 export * from './ContentTypeFilter';
 export * from './ContentTypeManagement';
 export * from './ContextMenu';
-export * from './CopyDialog';
 export * from './CopyTokenDialog';
 export * from './CrafterCMSNextBridge';
 export * from './CrafterThemeProvider';

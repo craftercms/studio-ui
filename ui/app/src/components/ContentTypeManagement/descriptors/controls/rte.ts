@@ -17,6 +17,7 @@
 import { createValidation, createVirtualSection, DescriptorContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
 import { defineMessage } from 'react-intl';
+import { commonFieldPropertiesDescriptors } from './commonDescriptors';
 
 export const rteDescriptor: DescriptorContentType = {
 	id: 'rte',
@@ -28,6 +29,7 @@ export const rteDescriptor: DescriptorContentType = {
 			title: defineMessage({ defaultMessage: 'Options' }),
 			fields: [
 				'height',
+				'maxlength',
 				'autoGrow',
 				'enableSpellCheck',
 				'rteConfiguration',
@@ -49,6 +51,13 @@ export const rteDescriptor: DescriptorContentType = {
 			id: 'height',
 			type: 'int',
 			name: defineMessage({ defaultMessage: 'Height' }),
+			defaultValue: undefined,
+			validations: immutableEmptyObject
+		},
+		maxlength: {
+			id: 'maxlength',
+			type: 'int',
+			name: defineMessage({ defaultMessage: 'Max Length' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
@@ -109,13 +118,7 @@ export const rteDescriptor: DescriptorContentType = {
 				type: createValidation('type', 'item')
 			}
 		},
-		required: {
-			id: 'required',
-			type: 'boolean',
-			name: defineMessage({ defaultMessage: 'Required' }),
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		},
+		required: commonFieldPropertiesDescriptors['required'],
 		addMedia: {
 			id: 'addMedia',
 			type: 'boolean',
