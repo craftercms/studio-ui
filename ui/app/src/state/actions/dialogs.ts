@@ -391,16 +391,23 @@ export const errorDialogClosed = /*#__PURE__*/ createAction<StandardAction>('ERR
 
 export const popCodeEditorDialog = /*#__PURE__*/ createAction<{ id: string }>('POP_CODE_EDITOR_DIALOG');
 
-// region showImageEditorDialog
-export const showImageEditorDialog =
-	/*#__PURE__*/ createAction<Partial<ImageEditorDialogBaseProps>>('SHOW_IMAGE_EDITOR_DIALOG');
-export const imageEdited = /*#__PURE__*/ createAction<{
+export interface ShowImageEditorDialogPayload extends Partial<ImageEditorDialogBaseProps> {
+	fileName?: string;
+	recordId?: number;
+	uploadPath?: string;
+}
+export interface ImageEditedPayload {
 	blob: Blob;
 	newPath?: string;
 	fileName?: string;
 	recordId?: number;
 	uploadPath?: string;
-}>('IMAGE_EDITED');
+}
+
+// region showImageEditorDialog
+export const showImageEditorDialog =
+	/*#__PURE__*/ createAction<ShowImageEditorDialogPayload>('SHOW_IMAGE_EDITOR_DIALOG');
+export const imageEdited = /*#__PURE__*/ createAction<ImageEditedPayload>('IMAGE_EDITED');
 export const imageEditCancelled = /*#__PURE__*/ createAction<{
 	fileName?: string;
 	recordId: number;
