@@ -68,6 +68,7 @@
   * [RenameContentDialogContainer] Updated `dependantItems` prop to be of type `LightItem[]`.
   * [RenameItemView] Updated `dependantItems` prop to be of type `LightItem[]`.
   * Removed `CopyDialog` component.
+  * [TypeList] Added `disableSelected` prop.
 * [hooks]
   * Removed `useLogicResource` hook.
   * Removed `useSelectorResource` hook.
