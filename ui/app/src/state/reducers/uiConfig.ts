@@ -111,7 +111,7 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, (builder) =
 				...state,
 				isFetching: false,
 				xml: config,
-				references: references
+				references
 			};
 		})
 		.addCase(fetchSiteUiConfigFailed, (state, { payload }) => ({

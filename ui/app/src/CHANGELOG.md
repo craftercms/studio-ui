@@ -2,6 +2,12 @@
 
 ## 5.0.0
 * [utils/resource] Removed `createFakeResource`, `createResource` and `createResourceBundle` utils.
+* [utils/content]:
+  * Removed `parseLegacyItemToBaseItem`, `parseLegacyItemToSandBoxItem` and `parseLegacyItemToDetailedItem`. Replaced by `parseLegacyItemToContentItem`.
+  * Moved `PathNavigator/utils.ts` `isVideo`, `isAudio` and `isPdfDocument` functions to `utils/content.ts`.
+  * Removed `parseLegacyItemToContentItem` and `getLegacyItemSystemType`.
+* [utils/path]:
+  * Removed `getPasteItemFromPath` and `addToPasteItem`.
 * [components]
   * Removed `pages/QuickCreateMenu` component.
   * Removed `SuspenseWithEmptyState` and `WithEmptyState` components.
@@ -22,16 +28,55 @@
   * Removed `PublishDialog/styles.ts` file.
   * `PackageDetailsDialog`: Updated `packageId` prop to be of type `number`.
   * `PublishOnDemandForm`: Removed `bulkPublishCommentRequired` and `publishByCommitCommentRequired` props.
-  * `PublishingQueue/FilterDropdown`: Removed `filterStates` prop.
+  * `PublishingQueue/FilterDropdown`: Removed `filterStates` and `handleEnterKey` props.
+  * `PublishingQueue/PublishingPackage`: Removed `id`, `schedule`, `approver`, `state`, `environment`, `comment`, `filesPerPackage` and `setFilesPerPackage` properties. Added `pkg` property of type `PublishPackage`.
   * `PackageDetailsDialog`: Update packageId prop to be of type number.
   * Removed `WorkflowCancellationDialog`. Replaced by `ViewPackagesDialog`.
   * Removed `UnlockPublisherDialog` component.
+  * `PackageItems`: Component no longer shows the publishing target icon for items.
+  * [ChangeContentTypeDialog] `rootPath`, `compact`, `selectedContentType` props removed. Prop `initialCompact` added.
+  * [ContentTypesFilter] Completely redone. Props are now same as @mui/material/SelectProps
+  * [NewContentCard] Removed
+  * [ContentTypesGrid] Removed
+  * [ContentTypesLoader] Removed
+  * [NewContentDialog] Props `rootPath`, `compact` removed. Prop `initialCompact` added.
+    * Prop `onContentTypeSelected` changed its signature from sending an object with `authoringBase`, `path`, `isNewContent`, `contentTypeId`, `onSaveSuccess` to `{ path: string; contentType: ContentType }`
+  * [CompareVersions] Removed.
+  * [EnhancedDialog] Removed unused `id` prop.
+  * [CompareVersionsDialog] Added `subtitle`, `selectionContent`, and `fields` properties.
+  * [ViewVersionDialog] Added `onClose` property.
+  * [ViewVersionDialogContainer] Added `contentTypesBranch`, `showXml` and `data` properties.
+  * [DeleteDialog] Removed `childItems` and `dependentItems` props. Dependencies are not in redux state anymore.
+  * [RenameAssetDialog] Removed `dependantItems` and `fetchingDependantItems` props. Dependencies are not in redux state anymore.
+  * [PublishingStatusTile] Removed `enabled` and `status` properties. Replaced with `publishingStatus` (type `PublishingStatus`).
+  * [PublishDialog]
+    * Added `buildPathTrees` util that builds a tree structure from a list of paths, grouping them by root directories.
+  * [PublishDialogForm]
+    * Removed `state`, `published`, `publishingTargetsStatus`, `onPublishingChannelsFailRetry`, `submissionCommentRequired`, `publishingChannels` and `onChange` props. Added `onSubmit`, `formState`, `onInputChange`, `onDateTimePickerChange`, `showRequestApproval`, `isPromote`, and `onFetchedPublishedTargets` props.
+    * Updated `PublishFormProps` type to `PublishDialogFormProps` interface.
+  * [PublishingStatusButtonUI] Removed `numberOfItems`, `totalItems` and `status` properties. Added `published` and `currentTask` properties.
+  * Added dialogs: `CancelPackageDialog`, `BulkCancelPackageDialog`, `PublishPackageReviewDialog`, `PublishingPackageResubmitDialog`, `ViewPackagesDialog`.
+  * [RenameAssetDialog] Removed `path` and `value` properties. Replaced with `item` property.
+  * [ItemDisplay] Updated `item` prop to be of type `LightItem | ContentItem`.
+  * `PathNavigator/PathNavigatorTree`: Updated `label` prop to be of type `TranslationOrText`.
+  * `PathNavigatorTreeUI/PathNavigatorUI/PathNavigatorTreeHeader`: Updated `title` prop to be of type `string | ReactNode`.
+  * Removed `LegacyComponentsPanel` component.
+  * [EditGroupDialogUI] Updated `onFetchMoreUsers` prop return type to `Promise`.
+  * [PackageItemsList] Updated `loadNextPage` prop return type to `Promise`.
+  * [TransferListColumn] Updated `onFetchMore` prop return type to `Promise`.
+  * [DependenciesDialog] Updated `dependencies` prop to be of type `ContentItem[] | LightItem[]` and `renderAction` prop to be of type `(item: ContentItem | LightItem) => ReactNode`.
+  * [RenameContentDialogContainer] Updated `dependantItems` prop to be of type `LightItem[]`.
+  * [RenameItemView] Updated `dependantItems` prop to be of type `LightItem[]`.
+  * Removed `CopyDialog` component.
 * [hooks]
   * Removed `useLogicResource` hook.
   * Removed `useSelectorResource` hook.
   * Removed `useQuickCreateListResource` hook.
   * Removed `useSystemVersionResource` hook.
   * Removed `useResolveWhenNoNullResource` hook.
+  * Renamed `useDetailedItem` to `useContentItem`.
+  * Removed `useDetailedItems` hook. Use `useFetchContentItems` instead.
+  * Renamed `useFetchSandboxItems` to `useFetchContentItems`.
 * Upgrade to the latest version to date of the following libraries:
   * @mui/icons-material
   * @mui/lab
@@ -39,6 +84,12 @@
   * @mui/x-data-grid
   * @mui/x-date-pickers
   * @mui/x-tree-view
+  * Uppy
+  * GraphiQL
+  * react-window
+* Moved getPersonFullName to utils/object
+* FE2 TODO: image=>image-picker, text=>input, etc services/contentType typeMap removed
+* Removed WidgetDialogContextType, WidgetDialogContext, useWidgetDialogContext. Use `useEnhancedDialogContext` instead.
 * [services]
   * `publishing/fetchPackages` filters param updated to be a Partial of `target`, `states`, `approvalStates`, `submitter`, `reviewer`, `isScheduled`, `sort`, `offset` and `limit`.
   `environment` is now `target` and `path` was removed from filters param.
@@ -51,6 +102,24 @@
   * Removed `publishing/bulkGoLive`, `publishing/publishByCommits` and `publishing/publishAll` services, replaced by `publishing/publish`.
   * Removed `content/fetchWorkflowAffectedItems` service. Now workflow affected validation is checked against packages using `workflow/fetchAffectedPackages`.
   * Removed `publishing/clearLock` service.
+  * Removed `cmis` services.
+  * Removed `content/uploadToCMIS` service.
+  * Removed `models/CMIS` service.
+  * Renamed `content/fetchDetailedItem` to `fetchContentItem`.
+  * Renamed `content/fetchItemsByPath` to `fetchContentItems`.
+  * Removed `content/fetchSandboxItem`. Replaced by `fetchContentItem`.
+  * Removed `content/fetchDetailedItems`. Replaced by `fetchContentItems`.
+  * Removed `content/changeContentType`.
+  * Updated `dashboard/fetchPublishingHistoryPackageItems` `packageId` parameter to be of type `number`.
+  * Updated `dependencies/fetchDependencies` `items` parameter to be of type `string[]`, renamed variable to `paths`
+  * Updated `publishing/fetchPackage` `packageId` parameter to be of type `number`, and added the parameter `data`.
+  * Updated `publishing/fetchPackages` `filters` parameter to be required, and removed the filters object props `environment` and `path`. Added filters object props `target`, `approvalStates`, `submitter`, `reviewer`, `isScheduled` and `sort`.
+  * Removed `sites/fetchLegacySite`. Replaced by `sites/fetchSite`.
+  * Updated `configuration/fetchProductLanguages` to use API v2 (`/api/2/system/available_languages`)
+  * Updated `dependencies/fetchDependencies` to use API v2 (`/studio/api/2/dependency/{siteId}/publish_dependencies`)
+  * Updated `dependencies/fetchSimpleDependencies` to use API v2 (`/studio/api/2/dependency/{siteId}/dependencies`)
+  * Updated `dependencies/fetchDependant` to use API v2 (`/studio/api/2/dependency/{siteId}/dependent_items`)
+  * Removed `content/fetchLegacyItemsTree` service.
 * `PublishingItem` interface changes:
   * `approver` is now `reviewer`, of type Person.
   * `comment` is removed, and now there's `reviewerComment` and `submitterComment`.
@@ -59,8 +128,60 @@
   * `state` is now `approvalState`.
   * Added `title`, `submittedOn`, `reviewedOn`,`packageState`, `reviewer`, `liveError`, `stagingError`, `publishedOn`, `packageType`, `commitId`, `publishedStagingCommitId` and `publishedLiveCommitId` props.
 * `PublishFormData` interface change: Added `title` prop.
-* `approvePublish` anb `rejectPublish` are no longer item actions in BaseItem's `availableActionsMap` property.
+* ExpiredItem interface change: changed `sandboxItem` prop to `contentItem`.
+* Removed `SandboxItem` and `DetailedItem` interfaces, replaced by `ContentItem`.
+* `DeleteDialogBaseProps` and `FetchDeleteDependenciesResponse` interfaces: Update `childItems` and `dependentItems` to be of type `LightItem[]`.
+* `CalculatedPackageResponse` interface: Update `hardDependencies`, `softDependencies` and `items` to be of type `LightItem[]`.
+* `approvePublish` and `rejectPublish` are no longer item actions in BaseItem's `availableActionsMap` property.
 * [SiteDashboard/utils] Renamed `getValidatedSelectionState` to `getItemsValidatedSelectionState`.
+* [state]
+  * `actions/content`:
+    * Renamed `fetchDetailedItem` action to `fetchContentItem`. Action string changed from `FETCH_DETAILED_ITEM` to `FETCH_CONTENT_ITEM`.
+    * Renamed `reloadDetailedItem` action to `reloadContentItem`. Action string changed from `RELOAD_DETAILED_ITEM` to `RELOAD_CONTENT_ITEM`.
+    * Renamed `fetchDetailedItemComplete` action to `fetchContentItemComplete`. Action string changed from `FETCH_DETAILED_ITEM_COMPLETE` to `FETCH_CONTENT_ITEM_COMPLETE`.
+    * Renamed `fetchSandboxItems` to `fetchContentItems`. Action string changed from `FETCH_SANDBOX_ITEMS` to `FETCH_CONTENT_ITEMS`.
+    * Renamed `fetchSandboxItemsComplete` to `fetchContentItemsComplete`. Action string changed from `FETCH_SANDBOX_ITEMS_COMPLETE` to `FETCH_CONTENT_ITEMS_COMPLETE`.
+    * Removed `fetchSandboxItem` action. Replaced by `fetchContentItem`.
+    * Removed `fetchDetailedItemComplete` action. Replaced by `fetchContentItemComplete`.
+    * Removed `fetchDetailedItems` action. Replaced by `fetchContentItems`.
+    * Removed `fetchDetailedItemsComplete` action. Replaced by `fetchContentItemsComplete`.
+    * Removed `completeDetailedItem` action.
+    * Updated `setClipboard` and `restoreClipboard` action payload, removed `paths` and added `includeChildren` property.
+  * `actions/dialogs`:
+    * Updated `historyDialogUpdate` action type to `UPDATE_HISTORY_DIALOG`.
+    * Removed `fetchDeleteDependencies`, `fetchDeleteDependenciesComplete`, `fetchDeleteDependenciesFailed` actions.
+    * Updated `newContentCreationComplete` action payload to be `{ item: LegacyItem; redirectUrl: string }`.
+    * Updated `updateEditDialogConfig` action type to `UPDATE_EDIT_DIALOG`.
+    * Updated `fetchRenameAssetDependants` action payload to be `{ path: string; dialogId: string }`.
+    * Updated `updateSingleFileUploadDialog` action payload to be `Partial<CreateFileStateProps>`
+    * Created `updateLauncher` action.
+    * Removed `showCopyDialog`, `closeCopyDialog`, `copyDialogClosed` and `updateCopyDialog` actions.
+  * `actions/system`:
+    * Updated `showEditItemSuccessNotification` action payload to be `{ action: CommonSaveOptions; }`.
+    * Removed `workflowEvent`. Replaced by `workflowEventSubmit`, `workflowEventDirectPublish`, `workflowEventApprove`, `workflowEventReject`, `workflowEventCancel`.
+  * `actions/preview`:
+    * `requestWorkflowCancellationDialog`: Removed `path`, replaced by `item`.
+* [models/Publishing]
+  * `Package`: Updated id to be of type `number`.
+  * `CurrentFilters`: Removed `environment`, `path`, `state` and `page` properties. Added `target`, `states`, `approvalStates`, `submitter`, `reviewer`, `isScheduled`, `sort` and `offset` properties.
+  * `PublishingStatusCodes`: Removed `processing`, `queued`, `error` and `readyWithErrors`.
+  * `PublishingStatus`:
+    * Removed `status`, `lockOwner`, `lockTTL`, `publishingTarget`, `submissionId`, `numberOfItems`, and `totalItems`. Added `currentTask` property.
+    * Updated `state` property to be of type `'READY' | 'IN_PROGRESS' | 'COMPLETED'`.
+  * `PublishFormData`: Added `title` property.
+  * `PublishingTarget`: updated `name` property to be of type `'live' | 'staging'`.
+  * `PublishingParams`: Removed `optionalDependencies` and `sendEmailNotifications` properties. Added `paths`, `commitIds`, `requestApproval`, `publishAll` and `title` properties.
+* [models/Site]
+  * Removed `LegacySite` model. Use `BackendSite` model instead.
+* [models/GlobalState]
+  * Updated `Clipboard` interface: removed `paths` property, added `includeChildren` property.
+* [common-api.js]
+  * Removed `CStudioAuthoring.Operations.uploadCMISAsset` and `CStudioAuthoring.Operations.openCMISUploadDialog`.
+* Removed LegacyVersionDialog and the entire associated `/studio/diff` route
+* [ItemDisplay/utils]
+  * Updated `getItemPublishingTargetText` to return a string. It now receives `formatMessage` as a parameter.
+  * Updated `getItemStateText` to return a string. It now receives `formatMessage` as a parameter.
+* Removed `react-swipeable-views` packages and replaced it with a new forwardRef `PluginMediaCarousel` component.
 
 ## 4.2.0
 

@@ -15,7 +15,15 @@
  */
 
 import { Activity } from '../../models/Activity';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+	type DetailedHTMLProps,
+	type HTMLAttributes,
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState
+} from 'react';
 import RefreshRounded from '@mui/icons-material/RefreshRounded';
 import MoreVertRounded from '@mui/icons-material/MoreVertRounded';
 import { PREVIEW_URL_PATH, UNDEFINED } from '../../utils/constants';
@@ -47,11 +55,17 @@ import { RangePickerModal } from './RangePickerModal';
 import Tooltip from '@mui/material/Tooltip';
 import DashletCard, { DashletCardProps } from '../DashletCard/DashletCard';
 import { asLocalizedDateTime } from '../../utils/datetime';
-import { DashletAvatar, DashletEmptyMessage, PersonAvatar, PersonFullName } from '../DashletCard/dashletCommons';
+import {
+	DashletAvatar,
+	DashletEmptyMessage,
+	DashletItemOptions,
+	PersonAvatar,
+	PersonFullName,
+	usePackageContextMenu
+} from '../DashletCard/dashletCommons';
 import { getSystemLink } from '../../utils/system';
 import { useDispatch } from 'react-redux';
 import { changeCurrentUrl } from '../../state/actions/preview';
-import { useWidgetDialogContext } from '../WidgetDialog';
 import PackageDetailsDialog from '../PackageDetailsDialog/PackageDetailsDialog';
 import {
 	contentEvent,
@@ -75,10 +89,12 @@ import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import ReplyRounded from '@mui/icons-material/ReplyRounded';
 import ClearRounded from '@mui/icons-material/ClearRounded';
-import InfiniteLoader from 'react-window-infinite-loader';
-import { FixedSizeList as List } from 'react-window';
-import AutoSizer from 'react-virtualized-auto-sizer';
+import useEnhancedDialogContext from '../EnhancedDialog/useEnhancedDialogContext';
+import { List, type RowComponentProps } from 'react-window';
 import Box from '@mui/material/Box';
+import { firstValueFrom } from 'rxjs';
+import { useInfiniteLoader } from 'react-window-infinite-loader';
+import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
 
 export interface ActivityDashletProps extends Partial<DashletCardProps> {}
 
@@ -157,7 +173,7 @@ export function ActivityDashlet(props: ActivityDashletProps) {
 	const { authoringBase } = useEnv();
 	const { formatMessage } = useIntl();
 	const dispatch = useDispatch();
-	const widgetDialogContext = useWidgetDialogContext();
+	const widgetDialogContext = useEnhancedDialogContext();
 	// region const { ... } = state
 	const [
 		{
@@ -258,28 +274,31 @@ export function ActivityDashlet(props: ActivityDashletProps) {
 	// endregion
 	const listRef = useRef(undefined);
 	const loadNextPage = () => {
-		let newOffset = offset + limit;
+		if (loadingChunk || loadingFeed) return;
+		const newOffset = offset + limit;
 		setState({ loadingChunk: true });
-		fetchActivity(site, {
-			actions: activities.filter((key) => key !== 'ALL'),
-			usernames,
-			dateTo,
-			dateFrom,
-			limit,
-			offset: newOffset
-		}).subscribe({
-			next: (nextFeedChunk) => {
+
+		return firstValueFrom(
+			fetchActivity(site, {
+				actions: activities.filter((key) => key !== 'ALL'),
+				usernames,
+				dateTo,
+				dateFrom,
+				limit,
+				offset: newOffset
+			})
+		)
+			.then((nextFeedChunk) => {
 				setState({
 					feed: feed.concat(nextFeedChunk),
 					total: nextFeedChunk.total,
 					offset: newOffset,
 					loadingChunk: false
 				});
-			},
-			error(error) {
+			})
+			.catch((error) => {
 				setState({ loadingFeed: false, loadingChunk: false, error: error });
-			}
-		});
+			});
 	};
 	const onRefresh = useCallback(() => {
 		setState({
@@ -318,17 +337,25 @@ export function ActivityDashlet(props: ActivityDashletProps) {
 	const onPackageClick = (pkg) => {
 		setState({ openPackageDetailsDialog: true, selectedPackageId: pkg.id });
 	};
+	const [hoveredActivity, setHoveredActivity] = useState<Activity | null>(null);
+	const packageContextMenu = usePackageContextMenu();
 
 	const currentPage = offset / limit;
 	const totalPages = total ? Math.ceil(total / limit) : 0;
 	const hasNextPage = currentPage + 1 < totalPages;
 	// If there are more items to be loaded then add an extra row to hold a loading indicator.
 	const currentItemsCount = feed ? (hasNextPage ? feed.length + 1 : feed.length) : 0;
-	// Only load 1 page of items at a time.
-	// Pass an empty callback to InfiniteLoader in case it asks us to load more than once.
-	const loadMoreItems = loadingChunk ? () => {} : loadNextPage;
 	// Every row is loaded except for our loading indicator row.
 	const isItemLoaded = (index) => !hasNextPage || index < feed?.length;
+
+	const onActivityMouseOver = (activity: Activity) => {
+		setHoveredActivity(activity);
+		packageContextMenu.setContextMenu({ package: activity.package });
+	};
+
+	const onActivityMouseLeave = () => {
+		setHoveredActivity(null);
+	};
 
 	const hasMoreItemsToLoad = total > 0 && limit + offset < total;
 	const isFetching = loadingChunk || loadingFeed;
@@ -400,6 +427,13 @@ export function ActivityDashlet(props: ActivityDashletProps) {
 			});
 		}
 	}, [authorFilterOpen, isFetching]);
+
+	const onRowsRendered = useInfiniteLoader({
+		isRowLoaded: isItemLoaded,
+		rowCount: currentItemsCount,
+		loadMoreRows: loadNextPage
+	});
+
 	// endregion
 	return (
 		<DashletCard
@@ -407,7 +441,11 @@ export function ActivityDashlet(props: ActivityDashletProps) {
 			borderLeftColor={borderLeftColor}
 			title={<FormattedMessage id="words.activity" defaultMessage="Activity" />}
 			headerAction={
-				<LoadingIconButton onClick={() => onRefresh()} loading={isFetching}>
+				<LoadingIconButton
+					onClick={() => onRefresh()}
+					loading={isFetching}
+					aria-label={formatMessage({ defaultMessage: 'Refresh' })}
+				>
 					<RefreshRounded />
 				</LoadingIconButton>
 			}
@@ -468,6 +506,7 @@ export function ActivityDashlet(props: ActivityDashletProps) {
 												edge="end"
 												onClick={submitAuthorFilterChanges}
 												size="small"
+												aria-label={formatMessage({ defaultMessage: 'Submit' })}
 											>
 												<ReplyRounded sx={{ transform: 'scaleX(-1)' }} />
 											</IconButton>
@@ -477,6 +516,7 @@ export function ActivityDashlet(props: ActivityDashletProps) {
 												edge="end"
 												onClick={clearAuthorFilterValue}
 												size="small"
+												aria-label={formatMessage({ defaultMessage: 'Clear & close' })}
 											>
 												<ClearRounded />
 											</IconButton>
@@ -549,7 +589,15 @@ export function ActivityDashlet(props: ActivityDashletProps) {
 											/>
 										}
 									>
-										<IconButton color="primary" size="small" onClick={loadNextPage}>
+										<IconButton
+											color="primary"
+											size="small"
+											onClick={loadNextPage}
+											aria-label={formatMessage(
+												{ id: 'activityDashlet.loadMore', defaultMessage: 'Load {limit} more' },
+												{ limit }
+											)}
+										>
 											<MoreVertRounded />
 										</IconButton>
 									</Tooltip>
@@ -570,62 +618,88 @@ export function ActivityDashlet(props: ActivityDashletProps) {
 						</SizedTimelineSeparator>
 						<TimelineContent sx={emptyTimelineContentSx} />
 					</CustomTimelineItem>
-					<InfiniteLoader isItemLoaded={isItemLoaded} loadMoreItems={loadMoreItems} itemCount={currentItemsCount}>
-						{({ onItemsRendered, ref }) => (
-							<Box sx={{ flex: 1 }}>
-								<AutoSizer>
-									{({ height, width }) => (
-										<List
-											className="List"
-											height={height}
-											itemCount={currentItemsCount}
-											itemSize={104}
-											onItemsRendered={onItemsRendered}
-											ref={ref}
-											width={width}
-										>
-											{({ index, style }) => {
-												let content;
-												if (!isItemLoaded(index)) {
-													content = <FormattedMessage defaultMessage="Loading..." />;
-												} else {
-													const activity = feed[index];
-													content = (
-														<CustomTimelineItem key={activity.id}>
-															<SizedTimelineSeparator>
-																<TimelineConnector />
-																<TimelineDotWithAvatar>
-																	<PersonAvatar person={activity.person} />
-																</TimelineDotWithAvatar>
-																<TimelineConnector />
-															</SizedTimelineSeparator>
-															<TimelineContent sx={{ py: '12px', px: 2 }}>
-																<PersonFullName person={activity.person} />
-																<Typography>
-																	{renderActivity(activity, { formatMessage, onPackageClick, onItemClick })}
-																</Typography>
-																<Typography
-																	variant="caption"
-																	title={asLocalizedDateTime(
-																		activity.actionTimestamp,
-																		locale.localeCode,
-																		locale.dateTimeFormatOptions
-																	)}
-																>
-																	{renderActivityTimestamp(activity.actionTimestamp, locale)}
-																</Typography>
-															</TimelineContent>
-														</CustomTimelineItem>
-													);
-												}
-												return <div style={style}>{content}</div>;
-											}}
-										</List>
-									)}
-								</AutoSizer>
-							</Box>
-						)}
-					</InfiniteLoader>
+					<Box sx={{ flex: 1 }}>
+						<List
+							className="List"
+							rowCount={currentItemsCount}
+							rowHeight={104}
+							onRowsRendered={onRowsRendered}
+							rowProps={{}}
+							rowComponent={({ index, style }: RowComponentProps) => {
+								let content;
+								if (!isItemLoaded(index)) {
+									content = <FormattedMessage defaultMessage="Loading..." />;
+								} else {
+									const activity = feed[index];
+									content = (
+										<CustomTimelineItem key={activity.id}>
+											<SizedTimelineSeparator>
+												<TimelineConnector />
+												<TimelineDotWithAvatar>
+													<PersonAvatar person={activity.person} />
+												</TimelineDotWithAvatar>
+												<TimelineConnector />
+											</SizedTimelineSeparator>
+											<TimelineContent
+												sx={{ py: '12px', px: 2, width: 'calc(100% - 40px)' }} // Considering size of the Timeline Separator
+												onMouseEnter={() => onActivityMouseOver(activity)}
+												onMouseLeave={() => onActivityMouseLeave()}
+											>
+												<Box
+													sx={{
+														display: 'flex',
+														flexDirection: 'row',
+														gap: 1,
+														justifyContent: 'space-between',
+														alignContent: 'center'
+													}}
+												>
+													<Box sx={{ flex: 1, minWidth: 0 }}>
+														<PersonFullName person={activity.person} />
+														<Typography sx={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+															{renderActivity(activity, { formatMessage, onPackageClick, onItemClick })}
+														</Typography>
+														<Typography
+															variant="caption"
+															title={asLocalizedDateTime(
+																activity.actionTimestamp,
+																locale.localeCode,
+																locale.dateTimeFormatOptions
+															)}
+														>
+															{renderActivityTimestamp(activity.actionTimestamp, locale)}
+														</Typography>
+													</Box>
+													<Box
+														sx={{
+															alignSelf: 'center',
+															visibility: hoveredActivity?.id === activity.id ? 'visible' : 'hidden'
+														}}
+													>
+														{activity.package ? (
+															<IconButton
+																aria-label={formatMessage({ defaultMessage: 'Package options' })}
+																onClick={(e) => {
+																	e.stopPropagation();
+																	packageContextMenu?.openContextMenu(e, activity.package);
+																}}
+															>
+																<MoreVertRoundedIcon />
+															</IconButton>
+														) : (
+															activity.actionType !== 'DELETE' &&
+															activity.item && <DashletItemOptions path={activity.item.path} />
+														)}
+													</Box>
+												</Box>
+											</TimelineContent>
+										</CustomTimelineItem>
+									);
+								}
+								return <div style={style}>{content}</div>;
+							}}
+						/>
+					</Box>
 					{!hasMoreItemsToLoad && (
 						<CustomTimelineItem>
 							<SizedTimelineSeparator>
@@ -660,6 +734,7 @@ export function ActivityDashlet(props: ActivityDashletProps) {
 				onClosed={() => setState({ selectedPackageId: null })}
 				packageId={selectedPackageId}
 			/>
+			{packageContextMenu?.contextMenuElement}
 		</DashletCard>
 	);
 }

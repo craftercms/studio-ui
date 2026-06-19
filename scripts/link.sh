@@ -3,7 +3,7 @@
 promptForCrafterHome() {
   echo ""
   echo "A settings_local.sh with your CRAFTER_HOME is required. Let's create one 😎"
-  echo "What's your craftercms build home? (the directory that container crafter-authoring, crafter-delivery, etc)"
+  echo "What's your CrafterCMS build home? (the directory that container crafter-authoring, crafter-delivery, etc)"
   read -r crafterHome
   if [[ ! -d "$crafterHome" ]]; then
     echo "Oops. That directory doesn't exist. Please check and re-run this script. Bye."
@@ -61,6 +61,7 @@ DO_REMOVE=false
 DO_RESTORE=false
 DO_SYNC=false
 DO_BACKUP=false
+DO_APP=false
 
 for ARG in "$@"; do
   case "$ARG" in
@@ -98,6 +99,14 @@ for ARG in "$@"; do
     DO_RESTORE=false
     DO_SYNC=false
     DO_BACKUP=true
+    ;;
+  --app)
+    DO_LINK=false
+    DO_REMOVE=false
+    DO_RESTORE=false
+    DO_SYNC=false
+    DO_BACKUP=false
+    DO_APP=true
     ;;
   *)
     echo "Unknown option $ARG."
@@ -201,6 +210,13 @@ if [[ $DO_SYNC == true ]]; then
   cp -r "$SRC/static-assets/yui" "$STATIC_ASSETS"
   cp -r "$SRC/static-assets/css" "$STATIC_ASSETS"
   cp -r "$SRC/static-assets/js" "$STATIC_ASSETS"
+fi
+# endregion
+
+# region App
+if [[ $DO_APP == true ]]; then
+  echo "Copying App"
+  cp -r "$SRC/static-assets/app" "$STATIC_ASSETS"
 fi
 # endregion
 

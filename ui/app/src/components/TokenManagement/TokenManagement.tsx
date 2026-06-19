@@ -42,7 +42,6 @@ import TableHead from '@mui/material/TableHead';
 import TableBody from '@mui/material/TableBody';
 import Chip from '@mui/material/Chip';
 import Switch from '@mui/material/Switch';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
@@ -50,6 +49,7 @@ import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { useWithPendingChangesCloseRequest } from '../../hooks/useWithPendingChangesCloseRequest';
 import Tooltip from '@mui/material/Tooltip';
 import { CreatePreviewTokenDialog } from '../CreatePreviewTokenDialog';
+import { pushErrorDialog } from '../../utils/system';
 
 const StyledTableCell = styled(TableCell)(() => ({
 	padding: '5px'
@@ -197,7 +197,7 @@ export function TokenManagement() {
 			},
 			(response) => {
 				setTokens(_tokens);
-				dispatch(showErrorDialog({ error: response }));
+				dispatch(pushErrorDialog({ props: { error: response } }));
 			}
 		);
 	};
@@ -224,7 +224,7 @@ export function TokenManagement() {
 					...checkedLookup,
 					[id]: false
 				});
-				dispatch(showErrorDialog({ error: response }));
+				dispatch(pushErrorDialog({ props: { error: response } }));
 			}
 		);
 	};
@@ -257,7 +257,7 @@ export function TokenManagement() {
 					},
 					(response) => {
 						fetchTokens();
-						dispatch(showErrorDialog({ error: response }));
+						dispatch(pushErrorDialog({ props: { error: response } }));
 					}
 				);
 				break;
@@ -480,7 +480,7 @@ export function TokenManagement() {
 				hasPendingChanges={createTokenDialogState.hasPendingChanges}
 				isSubmitting={createTokenDialogState.isSubmitting}
 				isMinimized={createTokenDialogState.isMinimized}
-				onSubmittingAndOrPendingChange={createTokenDialogState.onSubmittingAndOrPendingChange}
+				updateSubmittingOrHasPendingChanges={createTokenDialogState.onSubmittingAndOrPendingChange}
 				onWithPendingChangesCloseRequest={createTokenDialogPendingChangesCloseRequest}
 				onCreated={onTokenCreated}
 				onClose={createTokenDialogState.onClose}
@@ -490,7 +490,7 @@ export function TokenManagement() {
 				hasPendingChanges={createPreviewTokenDialogState.hasPendingChanges}
 				isSubmitting={createPreviewTokenDialogState.isSubmitting}
 				isMinimized={createPreviewTokenDialogState.isMinimized}
-				onSubmittingAndOrPendingChange={createPreviewTokenDialogState.onSubmittingAndOrPendingChange}
+				updateSubmittingOrHasPendingChanges={createPreviewTokenDialogState.onSubmittingAndOrPendingChange}
 				onWithPendingChangesCloseRequest={createPreviewTokenDialogPendingChangesCloseRequest}
 				onClose={createPreviewTokenDialogState.onClose}
 			/>

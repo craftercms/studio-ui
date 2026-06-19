@@ -30,8 +30,7 @@ import { ApiResponse } from './ApiResponse';
 import { VersionsStateProps } from './Version';
 import QuickCreateItem from './content/QuickCreateItem';
 import { PathNavigatorStateProps } from '../components/PathNavigator';
-import { DetailedItem } from './Item';
-import { CopyDialogStateProps } from '../components/CopyDialog/utils';
+import { ContentItem } from './Item';
 import { PathSelectionDialogStateProps } from '../components/PathSelectionDialog/PathSelectionDialog';
 import { WidgetDescriptor } from './WidgetDescriptor';
 import { ItemMenuStateProps } from '../components/ItemActionsMenu';
@@ -64,12 +63,17 @@ import { RenameAssetStateProps } from '../components/RenameAssetDialog';
 import Person from './Person';
 import { BrokenReferencesDialogStateProps } from '../components/BrokenReferencesDialog/types';
 import AllowedContentTypesData from './AllowedContentTypesData';
+import { Editor } from '@tinymce/tinymce-react';
+import { ElementType } from 'react';
 import { PublishingPackageReviewDialogStateProps } from '../components/PublishPackageReviewDialog/types';
 import { CancelPackageDialogStateProps } from '../components/CancelPackageDialog';
 import { BulkCancelPackageDialogStateProps } from '../components/BulkCancelPackageDialog';
 import { PublishingPackageResubmitDialogStateProps } from '../components/PublishingPackageResubmitDialog/types';
 import { PackageDetailsDialogStateProps } from '../components';
 import { ViewPackagesDialogStateProps } from '../components/ViewPackagesDialog';
+import type { FolderMoveAlertDialogStateProps } from '../components/FolderMoveAlertDialog/FolderMoveAlertDialog';
+import type { PublishingStatus } from './Publishing';
+import type { Archetype } from '../components/ContentTypeManagement/descriptors/archetypes';
 
 export type HighlightMode = 'all' | 'move';
 
@@ -117,8 +121,16 @@ export interface GuestData {
 
 export interface Clipboard {
 	type: 'CUT' | 'COPY';
-	paths?: string[];
+	includeChildren?: boolean;
 	sourcePath: string;
+}
+
+export interface DialogStackItem<P = unknown> {
+	id: string;
+	component: string | ElementType<P>;
+	allowMinimize?: boolean;
+	allowFullScreen?: boolean;
+	props: P;
 }
 
 export interface GlobalState {
@@ -140,7 +152,7 @@ export interface GlobalState {
 			isFetching: boolean;
 			items: QuickCreateItem[];
 		};
-		itemsByPath: LookupTable<DetailedItem>;
+		itemsByPath: LookupTable<ContentItem>;
 		clipboard: Clipboard;
 		itemsBeingFetchedByPath: LookupTable<boolean>;
 	};
@@ -201,7 +213,7 @@ export interface GlobalState {
 		icePanel: {
 			widgets: WidgetDescriptor[];
 		};
-		richTextEditor: LookupTable;
+		richTextEditor: LookupTable<{ id: string; tinymceOptions: Editor['props']['init'] }>;
 		editModePadding: boolean;
 		windowSize: number;
 		xbDetectionTimeoutMs: number;
@@ -218,42 +230,19 @@ export interface GlobalState {
 		historyNavigationType: 'back' | 'forward';
 	};
 	versions: VersionsStateProps;
+	dialogStack: {
+		ids: string[];
+		byId: LookupTable<DialogStackItem<unknown>>;
+	};
 	dialogs: {
-		confirm: ConfirmDialogStateProps;
-		error: ErrorDialogStateProps;
 		minimizedTabs: MinimizedDialogsStateProps;
-		newContent: NewContentDialogStateProps;
 		history: HistoryDialogStateProps;
 		viewVersion: ViewVersionDialogStateProps;
 		compareVersions: CompareVersionsDialogStateProps;
-		publish: PublishDialogStateProps;
-		publishingPackageApproval: PublishingPackageReviewDialogStateProps;
-		dependencies: DependenciesDialogStateProps;
-		delete: DeleteDialogStateProps;
-		edit: LegacyFormDialogStateProps;
-		codeEditor: CodeEditorDialogStateProps;
-		createFolder: CreateFolderStateProps;
-		createFile: CreateFileStateProps;
-		renameAsset: RenameAssetStateProps;
-		copy: CopyDialogStateProps;
-		upload: UploadDialogStateProps;
-		singleFileUpload: SingleFileUploadDialogStateProps;
-		preview: PreviewDialogStateProps;
-		editSite: EditSiteDialogStateProps;
-		pathSelection: PathSelectionDialogStateProps;
-		changeContentType: ChangeContentTypeDialogStateProps;
 		itemMenu: ItemMenuStateProps;
 		itemMegaMenu: ItemMegaMenuStateProps;
 		launcher: LauncherStateProps;
-		publishingStatus: PublishingStatusDialogStateProps;
-		widget: WidgetDialogStateProps;
 		uiBlocker: UIBlockerStateProps;
-		brokenReferences: BrokenReferencesDialogStateProps;
-		cancelPackage: CancelPackageDialogStateProps;
-		bulkCancelPackage: BulkCancelPackageDialogStateProps;
-		publishingPackageResubmit: PublishingPackageResubmitDialogStateProps;
-		packageDetails: PackageDetailsDialogStateProps;
-		viewPackages: ViewPackagesDialogStateProps;
 	};
 	uiConfig: {
 		error: ApiResponse;
@@ -299,6 +288,12 @@ export interface GlobalState {
 		error: AjaxError;
 		items: Array<{ icon: SystemIconDescriptor; id: string; label: string }>;
 		isFetching: boolean;
+	};
+	publishing: {
+		isFetching: boolean;
+		enabled: PublishingStatus['enabled'];
+		published: PublishingStatus['published'];
+		currentTask: PublishingStatus['currentTask'];
 	};
 }
 

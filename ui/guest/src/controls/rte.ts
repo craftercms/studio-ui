@@ -19,17 +19,18 @@ import * as iceRegistry from '../iceRegistry';
 import { Editor, EditorEvent } from 'tinymce';
 import * as contentController from '../contentController';
 import { ContentTypeFieldValidations } from '@craftercms/studio-ui/models/ContentType';
-import { message$, post } from '../utils/communicator';
+import { post } from '../utils/communicator';
 import { GuestStandardAction } from '../store/models/GuestStandardAction';
-import { Observable, Subject } from 'rxjs';
-import { filter, startWith, take } from 'rxjs/operators';
-import { reversePluckProps } from '@craftercms/studio-ui/utils/object';
-import { showEditDialog, snackGuestMessage } from '@craftercms/studio-ui/state/actions/preview';
-import { RteSetup } from '../models/Rte';
+import { NEVER, Observable, Subject } from 'rxjs';
+import { startWith } from 'rxjs/operators';
+import { nou } from '@craftercms/studio-ui/utils/object';
+import { snackGuestMessage } from '@craftercms/studio-ui/state/actions/preview';
 import { editComponentInline, exitComponentInlineEdit } from '../store/actions';
 import { emptyFieldClass } from '../constants';
-import { rtePickerActionResult, showRtePickerActions } from '@craftercms/studio-ui/state/actions/dialogs';
 import { unlockItem } from '@craftercms/studio-ui/state/actions/content';
+import { Editor as EditorReact } from '@tinymce/tinymce-react';
+import { getTinyMceInitOptions } from '@craftercms/studio-ui/components/FormsEngine/lib/formUtils';
+import { RteSetup } from '../models/Rte';
 
 export function initTinyMCE(
 	path: string,
@@ -37,6 +38,20 @@ export function initTinyMCE(
 	validations: Partial<ContentTypeFieldValidations>,
 	rteSetup?: RteSetup
 ): Observable<GuestStandardAction> {
+	// Tinymce needs the document to be in standards mode to work, if it's not the case, we can't initialize it and we
+	// show an error message instead.
+	if (nou(document.doctype)) {
+		console.error('Unable to initialize Rich Text Editor. Please contact your administrator for assistance.');
+		post(
+			snackGuestMessage({
+				id: 'noDocTypeError',
+				level: 'required'
+			})
+		);
+		post(unlockItem({ path }));
+		return NEVER;
+	}
+
 	const dispatch$ = new Subject<GuestStandardAction>();
 	const { field, model } = iceRegistry.getReferentialEntries(record.iceIds[0]);
 	const type = field?.type;
@@ -46,6 +61,7 @@ export function initTinyMCE(
 	const originalRawContent = originalElement.innerHTML;
 	let rteEl = originalElement;
 	const isRecordElInline = record.element.tagName.match(inlineElsRegex);
+	const isRTE = type === 'rte';
 
 	// If record element is of type inline (doesn't matter the display prop), replace it with a block element (div).
 	// This is because of an issue happening with inline elements (for example a span tag even with 'display: block' style
@@ -80,15 +96,6 @@ export function initTinyMCE(
 		recordEl.parentNode.insertBefore(rteEl, recordEl);
 	}
 
-	const openEditForm = () => {
-		post({
-			type: showEditDialog.type,
-			payload: {
-				selectedFields: [field.id]
-			}
-		});
-	};
-
 	const controlPropsMap = {
 		enableSpellCheck: 'browser_spellcheck'
 	};
@@ -111,94 +118,47 @@ export function initTinyMCE(
 
 	record.element.classList.remove(emptyFieldClass);
 
-	const maxLength = validations?.maxLength ? parseInt(validations.maxLength.value) : null;
-	window.tinymce.init({
-		license_key: 'gpl',
-		target: rteEl,
-		promotion: false,
-		branding: false,
-		// Templates plugin is deprecated but still available on v6, since it may be used, we'll keep it. Please
-		// note that it will become premium on version 7.
-		deprecation_warnings: false,
-		// For some reason this is not working.
-		// body_class: 'craftercms-rich-text-editor',
-		plugins: ['craftercms_paste editform', rteSetup?.tinymceOptions?.plugins].filter(Boolean).join(' '), // 'editform' plugin will always be loaded
-		paste_as_text: type !== 'html',
-		paste_data_images: type === 'html',
-		paste_preprocess(editor, args) {
-			const currentContent = editor.getContent({ format: 'text' });
-			const fullContent = currentContent + args.content;
-			const maxLengthExceeded = maxLength && fullContent.length > maxLength;
-			if (maxLengthExceeded) {
-				post(
-					snackGuestMessage({
-						id: 'maxLength',
-						level: 'required',
-						values: {
-							maxLength: args.content.length === maxLength ? fullContent.length : `${fullContent.length}/${maxLength}`
+	const setupId = rteSetup?.id ?? 'generic';
+	const rteConfig = getTinyMceInitOptions(
+		field,
+		{
+			setupId: {
+				id: setupId,
+				tinymceOptions: {
+					// Tinymce typings for tinymce-react are wrong (not in sync with tinymce ones).
+					...(rteSetup?.tinymceOptions as unknown as EditorReact['props']['init']),
+					target: rteEl as any,
+					deprecation_warnings: false,
+					paste_as_text: !isRTE,
+					paste_data_images: isRTE,
+					toolbar: isRTE,
+					menubar: isRTE,
+					inline: true,
+					code_editor_inline: false,
+					paste_preprocess(editor, args) {
+						const currentContent = editor.getContent({ format: 'text' });
+						const pastedText = new DOMParser().parseFromString(args.content, 'text/html').body.textContent ?? '';
+						const selectedContent = editor.selection.getContent({ format: isRTE ? 'html' : 'text' });
+						const fullLength = currentContent.length + pastedText.length - selectedContent.length;
+						const maxLengthExceeded = maxLength !== null && fullLength > maxLength;
+						if (maxLengthExceeded) {
+							post(
+								snackGuestMessage({
+									id: 'maxLength',
+									level: 'required',
+									values: {
+										maxLength: `${fullLength}/${maxLength}`
+									}
+								})
+							);
+							args.content = args.content.substring(0, maxLength - (currentContent.length - selectedContent.length));
 						}
-					})
-				);
-				args.content = args.content.substring(0, maxLength - currentContent.length);
-			}
-
-			window.tinymce.activeEditor.plugins.craftercms_paste_extension?.paste_preprocess(editor, args);
-		},
-		paste_postprocess(plugin, args) {
-			window.tinymce.activeEditor.plugins.craftercms_paste_extension?.paste_postprocess(plugin, args);
-		},
-		toolbar: type === 'html',
-		menubar: false,
-		inline: true,
-		base_url: '/studio/static-assets/libs/tinymce',
-		suffix: '.min',
-		external_plugins: external,
-		code_editor_inline: false,
-		skin: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'oxide-dark' : 'oxide',
-		media_live_embeds: true,
-		file_picker_types: 'image media',
-		craftercms_paste_cleanup: rteSetup?.tinymceOptions?.craftercms_paste_cleanup ?? true, // If doesn't exist or if true => true
-		file_picker_callback: function (cb, value, meta) {
-			// meta contains info about type (image, media, etc). Used to properly add DS to dialogs.
-			// meta.filetype === 'file | image | media'
-			const datasources = {};
-			Object.values(field.validations).forEach((validation) => {
-				if (
-					[
-						'allowImageUpload',
-						'allowImagesFromRepo',
-						'allowVideoUpload',
-						'allowVideosFromRepo',
-						'allowAudioUpload',
-						'allowAudioFromRepo'
-					].includes(validation.id)
-				) {
-					datasources[validation.id] = validation;
-				}
-			});
-			const browseBtn = document.querySelector('.tox-dialog .tox-browse-url');
-
-			post(
-				showRtePickerActions({
-					datasources,
-					model,
-					type: meta.filetype,
-					rect: browseBtn.getBoundingClientRect()
-				})
-			);
-
-			message$
-				.pipe(
-					filter((e) => e.type === rtePickerActionResult.type),
-					take(1)
-				)
-				.subscribe(({ payload }) => {
-					if (payload) {
-						cb(payload.path, { alt: payload.name });
 					}
-				});
+				}
+			}
 		},
-		setup(editor: Editor) {
+		{},
+		(editor: Editor) => {
 			let changed = false;
 			const pluginManager = window.tinymce.util.Tools.resolve('tinymce.PluginManager');
 			const nonChars = [
@@ -233,11 +193,11 @@ export function initTinyMCE(
 			}
 
 			function getContent() {
-				return editor.getContent({ format: type === 'html' ? 'html' : 'text' });
+				return editor.getContent({ format: isRTE ? 'html' : 'text' });
 			}
 
 			function getSelectionContent() {
-				return editor.selection.getContent({ format: type === 'html' ? 'html' : 'text' });
+				return editor.selection.getContent({ format: isRTE ? 'html' : 'text' });
 			}
 
 			function destroyEditor() {
@@ -277,7 +237,7 @@ export function initTinyMCE(
 					// Replace line breaks with <br> for textarea fields
 					// Address line breaks in textarea fields: https://github.com/craftercms/craftercms/issues/6432
 					editor.setContent(content.replaceAll('\n', '<br>'), { format: 'html' });
-				} else if (type === 'html') {
+				} else if (isRTE) {
 					// Set content in 'html' format for the editor to exec its internal cleanup mechanisms
 					// For example, removal of potentially problematic line breaks which we're seeing cause the list plugin to crash (https://github.com/craftercms/craftercms/issues/6514)
 					editor.setContent(content, { format: 'html' });
@@ -382,7 +342,7 @@ export function initTinyMCE(
 					// Hypothesis is the focusout destroys the editor before some internal tiny thing runs.
 					// @ts-ignore - Add "forced" property to be able to recognise this manually-triggered focusout on our handler.
 					setTimeout(() => editor.fire('focusout', { forced: true }));
-				} else if (e.key === 'Enter' && type !== 'html' && type !== 'textarea') {
+				} else if (e.key === 'Enter' && !isRTE && type !== 'textarea') {
 					// Avoid new line in plain text fields
 					e.preventDefault();
 				} else if (
@@ -442,35 +402,12 @@ export function initTinyMCE(
 					},
 					'loaded'
 				);
-		},
-		...(rteSetup?.tinymceOptions && {
-			...reversePluckProps(
-				// Tiny seems to somehow mutate the options object which would cause crashes when attempting
-				// to mutate immutable object (possibly from redux). Also, we don't want the state to get mutated.
-				JSON.parse(JSON.stringify(rteSetup.tinymceOptions)),
-				'target', // Target can't be changed
-				'inline', // Not using inline view doesn't behave well on pageBuilder, this setting shouldn't be changed.
-				'setup',
-				'base_url',
-				'encoding',
-				'autosave_ask_before_unload', // Auto-save options are removed since it is not supported in control.
-				'autosave_interval',
-				'autosave_prefix',
-				'autosave_restore_when_empty',
-				'autosave_retention',
-				'file_picker_callback', // No file picker is set by default, and functions are not supported in config file.
-				'height', // Height is set to the size of content
-				'file_picker_callback', // Files/images handlers currently not supported
-				'paste_postprocess',
-				'images_upload_handler',
-				'code_editor_inline',
-				'plugins', // Considered/used above, mixed with our options
-				'external_plugins' // Considered/used above, mixed with our options
-			)
-		}),
-		...controlProps,
-		openEditForm
-	});
+		}
+	);
+
+	const maxLength = validations?.maxLength ? parseInt(validations.maxLength.value) : null;
+	// @ts-expect-error - Typings state the prop is wrong for the React integration, but the prop is correct.
+	window.tinymce.init(rteConfig);
 
 	return dispatch$.pipe(startWith({ type: editComponentInline.type }));
 }

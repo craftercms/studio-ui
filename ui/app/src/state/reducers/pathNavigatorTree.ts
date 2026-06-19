@@ -39,7 +39,7 @@ import {
 import { changeSiteComplete } from '../actions/sites';
 import { fetchSiteUiConfig } from '../actions/configuration';
 import { reversePluckProps } from '../../utils/object';
-import { fetchSandboxItemComplete } from '../actions/content';
+import { fetchContentItemComplete } from '../actions/content';
 import { getIndividualPaths, getParentPath, withIndex, withoutIndex } from '../../utils/path';
 import { deleteContentEvent, deleteContentEvents, moveContentEvent } from '../actions/system';
 import { createPresenceTable } from '../../utils/array';
@@ -177,7 +177,7 @@ const deleteContentEventHandler: CaseReducer<
 	contentAndDeleteEventForEachApplicableTree(state, targetPath, (tree, targetPath, parentPathOfTargetPath) => {
 		if (targetPath === tree.rootPath) {
 			tree.isRootPathMissing = true;
-		} else if (parentPathOfTargetPath in tree.totalByPath) {
+		} else if (parentPathOfTargetPath in tree.totalByPath || withIndex(parentPathOfTargetPath) in tree.totalByPath) {
 			deleteItemFromState(tree, targetPath);
 		}
 	});
@@ -297,8 +297,8 @@ const reducer = createReducer<GlobalState['pathNavigatorTree']>({}, (builder) =>
 		//
 		.addCase(changeSiteComplete, () => ({}))
 		.addCase(fetchSiteUiConfig, () => ({}))
-		// region fetchSandboxItemComplete
-		.addCase(fetchSandboxItemComplete, (state, { payload: { item } }) => {
+		// region fetchContentItemComplete
+		.addCase(fetchContentItemComplete, (state, { payload: { item } }) => {
 			const path = item.path;
 			Object.values(state).forEach((tree) => {
 				if (path in tree.totalByPath) {

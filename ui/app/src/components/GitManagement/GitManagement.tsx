@@ -226,6 +226,7 @@ export function GitManagement(props: GitManagementProps) {
 								fetchRepositories();
 								fetchRepoStatus();
 							}}
+							aria-label={formatMessage({ id: 'words.refresh', defaultMessage: 'Refresh' })}
 						>
 							<RefreshRounded />
 						</IconButton>
@@ -299,7 +300,7 @@ export function GitManagement(props: GitManagementProps) {
 					isMinimized={newRemoteRepositoryDialogState.isMinimized}
 					isSubmitting={newRemoteRepositoryDialogState.isSubmitting}
 					hasPendingChanges={newRemoteRepositoryDialogState.hasPendingChanges}
-					onSubmittingAndOrPendingChange={newRemoteRepositoryDialogState.onSubmittingAndOrPendingChange}
+					updateSubmittingOrHasPendingChanges={newRemoteRepositoryDialogState.onSubmittingAndOrPendingChange}
 					onWithPendingChangesCloseRequest={newRemoteRepositoryDialogStatePendingChangesCloseRequest}
 					onClose={newRemoteRepositoryDialogState.onClose}
 					onCreateSuccess={onRepoCreatedSuccess}

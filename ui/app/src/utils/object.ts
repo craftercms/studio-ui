@@ -19,6 +19,8 @@ import { LookupTable } from '../models/LookupTable';
 import { MutableRefObject } from 'react';
 import { EntityState } from '../models/EntityState';
 import queryString, { StringifyOptions } from 'query-string';
+import Person from '../models/Person';
+import type { ContentType } from '../models';
 
 export function pluckProps<T extends object, K extends keyof T>(
 	source: T,
@@ -74,6 +76,19 @@ export function createLookupTable<T>(list: T[], idProp: string = 'id'): LookupTa
 		table[retrieveProperty(item as any, idProp)] = item;
 	});
 	return table;
+}
+
+/**
+ * { K: V } => { V: K }
+ **/
+export function reverseLookupTable<K extends string | number | symbol, V extends string | number | symbol>(
+	original: Record<K, V>
+): Record<V, K> {
+	const reversed = {} as Record<V, K>;
+	Object.entries(original ?? {}).forEach(([key, value]) => {
+		reversed[value as V] = key as K;
+	});
+	return reversed;
 }
 
 export function flattenHierarchical<T>(root: T | T[], childrenProp = 'children'): T[] {
@@ -265,9 +280,9 @@ export function deepCopy<T extends object = any>(target: T): T {
 	return JSON.parse(JSON.stringify(target));
 }
 
-export const foo = {};
+export const immutableEmptyObject = Object.freeze({});
 
-export const fooFn = () => undefined;
+export const noOp = Object.freeze(() => undefined);
 
 export function isApiResponse(source: object): boolean {
 	source = source ?? {};
@@ -283,4 +298,69 @@ export function isAjaxError(source: object): boolean {
 		Object.prototype.hasOwnProperty.call(source, 'status') &&
 		Object.prototype.hasOwnProperty.call(source, 'name')
 	);
+}
+
+export function prettyPrintPerson(
+	person: Person,
+	format: 'username' | 'name' | 'fullName' | 'firstInitial+last' = 'fullName'
+): { display: string; tooltip: string } {
+	let display;
+	const tooltip = `"${person.firstName} ${person.lastName}"<${person.username}>`;
+	switch (format) {
+		case 'username':
+			display = person.username;
+			break;
+		case 'firstInitial+last':
+			display = `${person.firstName[0]}. ${person.lastName}`;
+			break;
+		case 'fullName':
+			display = getPersonFullName(person);
+			break;
+		case 'name':
+		default:
+			display = person.firstName;
+			break;
+	}
+	return { display, tooltip };
+}
+
+export function getPersonFullName(person: Person): string {
+	return `${person.firstName} ${person.lastName}`;
+}
+
+/**
+ * Merges two archetype descriptors into a single descriptor by combining their properties.
+ *
+ * @param {ContentType} parentDescriptor - The parent archetype descriptor to extend.
+ * @param {ContentType} childDescriptor - The child archetype descriptor to merge with the parent.
+ * @returns {ContentType} A new archetype descriptor that combines the fields, sections, and data sources
+ *                        of both the parent and child descriptors.
+ *
+ * - Fields: Combines the fields from both descriptors, with the child's fields taking precedence.
+ * - Sections: Merges sections from both descriptors, ensuring no duplicate sections by `id`. The child's sections take precedence.
+ * - Data Sources: Concatenates the data sources from both descriptors.
+ */
+export function extendArchetypeDescriptor(parentDescriptor: ContentType, childDescriptor: ContentType): ContentType {
+	return {
+		...(parentDescriptor ?? {}),
+		...childDescriptor,
+		fields: {
+			...(parentDescriptor?.fields ?? {}),
+			...(childDescriptor.fields ?? {})
+		},
+		// Merge parentDescriptor and childDescriptor into a single array, ensuring there are no duplicate sections by id.
+		// Child sections take precedence over parent sections.
+		sections: [...(parentDescriptor?.sections ?? []), ...(childDescriptor.sections ?? [])].reduceRight(
+			(acc, section) => {
+				// If the section id is not already in the accumulator, add it.
+				if (!acc.some((s) => s.id === section.id)) {
+					// Add to the beginning to maintain order.
+					acc.unshift(section);
+				}
+				return acc;
+			},
+			[]
+		),
+		dataSources: [...(parentDescriptor?.dataSources ?? []), ...(childDescriptor.dataSources ?? [])]
+	};
 }

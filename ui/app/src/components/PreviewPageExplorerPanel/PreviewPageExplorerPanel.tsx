@@ -49,7 +49,6 @@ import ItemActionsMenu from '../ItemActionsMenu';
 import SearchBar from '../SearchBar/SearchBar';
 import Divider from '@mui/material/Divider';
 import { getOffsetLeft, getOffsetTop } from '@mui/material/Popover';
-import { showItemMegaMenu } from '../../state/actions/dialogs';
 import { useSelection } from '../../hooks/useSelection';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { usePreviewGuest } from '../../hooks/usePreviewGuest';
@@ -59,6 +58,7 @@ import { SimpleTreeView } from '@mui/x-tree-view';
 import { LoadingState } from '../LoadingState';
 import { svgIconClasses, typographyClasses } from '@mui/material';
 import Box from '@mui/material/Box';
+import { showItemMegaMenu } from '../../state/actions/dialogs';
 
 const rootPrefix = '{root}_';
 
@@ -670,7 +670,7 @@ export function PreviewPageExplorerPanel() {
 				onExpandedItemsChange={handleChange}
 			>
 				<Box sx={{ padding: '10px' }}>
-					<SearchBar showActionButton={Boolean(keyword)} onChange={handleSearchKeyword} keyword={keyword} />
+					<SearchBar showActionButton={Boolean(keyword)} onChange={handleSearchKeyword} keyword={keyword} autoFocus />
 					<Divider sx={{ marginTop: '10px' }} />
 				</Box>
 				{models && ContentTypesById ? (

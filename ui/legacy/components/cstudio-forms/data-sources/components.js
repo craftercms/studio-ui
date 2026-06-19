@@ -58,6 +58,21 @@
 
 	Components.prototype = {
 		add: function (control) {
+			CrafterCMSNext.system.getStore().subscribe((store) => {
+				if (store.getState().contentTypes?.byId) {
+					this._renderControlEntries(control);
+				} else {
+					const unsubscribe = store.subscribe(() => {
+						if (store.getState().contentTypes?.byId) {
+							unsubscribe();
+							this._renderControlEntries(control);
+						}
+					});
+				}
+			});
+		},
+
+		_renderControlEntries: function (control) {
 			control.$dropdownMenu.append(
 				`<li><div class="cstudio-form-control-node-selector-add-container-item-block-label">${this.title}</div></li>`
 			);
@@ -171,6 +186,7 @@
 		},
 
 		_openBrowse: function (contentType, control) {
+			const _self = this;
 			const path = this._processPathsForMacros(this.baseBrowsePath);
 			const multiSelect = this.selectItemsCount === -1 || this.selectItemsCount > 1;
 			// Paths already in the control, by sending them to the Browse Dialog, it'll mark them as selected, and disable
@@ -188,14 +204,15 @@
 				onSuccess: (result) => {
 					(Array.isArray(result) ? result : [result]).forEach(({ name, path }) => {
 						const value = name && name !== '' ? name : path;
-						control.newInsertItem(path, value, 'shared');
-						control._renderItems();
+						control.newInsertItem(path, value, 'shared', _self.id);
 					});
+					control._renderItems();
 				}
 			});
 		},
 
 		_openSearch: function (control) {
+			const _self = this;
 			let searchPath = this._processPathsForMacros(this.baseBrowsePath);
 			searchPath = craftercms.utils.string.ensureSingleSlash(`${searchPath}/.+`);
 			const searchContext = {
@@ -236,9 +253,9 @@
 					success(searchId, selectedTOs) {
 						selectedTOs.forEach(function (item) {
 							const value = item.label && item.label !== '' ? item.label : item.path;
-							control.newInsertItem(item.path, value, 'shared');
-							control._renderItems();
+							control.newInsertItem(item.path, value, 'shared', _self.id);
 						});
+						control._renderItems();
 					},
 					failure: function () {}
 				},
@@ -247,13 +264,14 @@
 		},
 
 		_openCreateAny: function (control, type) {
+			const _self = this;
 			CStudioAuthoring.Operations.createNewContent(
 				CStudioAuthoringContext.site,
 				'getAllContentType',
 				false,
 				{
 					success: function (contentTO, editorId, name, value) {
-						control.newInsertItem(name, value, type);
+						control.newInsertItem(name, value, type, _self.id);
 						control._renderItems();
 					},
 					failure: function () {}
@@ -267,18 +285,14 @@
 
 		_editShared(key, control, datasource, index, callback) {
 			craftercms.getStore().dispatch({ type: 'BLOCK_UI' });
-			craftercms.services.content.fetchSandboxItem(CStudioAuthoringContext.site, key).subscribe({
+			craftercms.services.content.fetchContentItem(CStudioAuthoringContext.site, key).subscribe({
 				next(sandboxItem) {
 					const readonly = !sandboxItem.availableActionsMap.edit;
 					const action =
 						readonly || !sandboxItem.availableActionsMap.edit
 							? CStudioAuthoring.Operations.viewContent
 							: CStudioAuthoring.Operations.editContent;
-					// CStudioAuthoring.Operations.editContent shows the UI blocker too, so no point
-					// hiding it yet in the case of an edit.
-					if (action === CStudioAuthoring.Operations.viewContent) {
-						craftercms.getStore().dispatch({ type: 'UNBLOCK_UI' });
-					}
+					craftercms.getStore().dispatch({ type: 'UNBLOCK_UI' });
 					action(
 						sandboxItem.contentTypeId,
 						CStudioAuthoringContext.siteId,
@@ -394,7 +408,11 @@
 				? this._processPathsForMacros(this.baseRepoPath)
 				: craftercms.utils.content.generateComponentBasePath(contentType);
 
-			let parentPath = self.form.path;
+			const urlParams = new URLSearchParams(window.location.search);
+			// If `self.form.path` is undefined, but the URL has a `parentPath` parameter, it means that the form is embedded.
+			// In that case, we use the `parentPath` parameter as the parent path (meaning that the parent path is the immediate
+			// shared parent).
+			let parentPath = Boolean(self.form.path) ? self.form.path : urlParams.get('parentPath');
 			CStudioAuthoring.Operations.openContentWebForm(
 				contentType,
 				null,
@@ -404,7 +422,7 @@
 				false,
 				{
 					success: function (contentTO, editorId, name, value, draft, action) {
-						control.newInsertItem(name, value, type);
+						control.newInsertItem(name, value, type, self.id);
 						control._renderItems();
 					},
 					failure: function () {}
@@ -418,8 +436,13 @@
 			);
 		},
 
-		_getContentTypeName(contentType) {
-			return CrafterCMSNext.util.string.capitalize(contentType.replace('/component/', '').replace(/-/g, ' '));
+		_getContentTypeName(contentTypeId) {
+			const contentTypesById = craftercms.getStore().getState().contentTypes?.byId;
+			const contentTypeName = contentTypesById?.[contentTypeId]?.name;
+			return (
+				contentTypeName ??
+				CrafterCMSNext.util.string.capitalize(contentTypeId.replace('/component/', '').replace(/-/g, ' '))
+			);
 		}
 	};
 

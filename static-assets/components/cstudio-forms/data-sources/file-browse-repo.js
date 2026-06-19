@@ -50,7 +50,7 @@ YAHOO.extend(CStudioForms.Datasources.FileBrowseRepo, CStudioForms.CStudioFormDa
 			// Paths already in the control, by sending them to the Browse Dialog, it'll mark them as selected, and disable
 			// the actions for those paths.
 			const preselectedPaths = craftercms.utils.array
-				.asArray(control?.form.model[control.fieldDef.id])
+				.asArray(control?.form?.model[control.fieldDef.id])
 				.flatMap((item) => item.key || []);
 
 			CStudioAuthoring.Operations.openBrowseFilesDialog({
@@ -87,30 +87,28 @@ YAHOO.extend(CStudioForms.Datasources.FileBrowseRepo, CStudioForms.CStudioFormDa
 		}
 	},
 
-	edit: function (key) {
-		var getContentItemCb = {
-			success: function (contentTO) {
-				var editCallback = {
-					success: function () {
-						// update label?
-					},
-					failure: function () {}
-				};
+	edit: function (key, _control, _index, cb) {
+		craftercms.services.content.fetchContentItem(CStudioAuthoringContext.site, key).subscribe({
+			next(contentItem) {
+				const readonly = !contentItem.availableActionsMap.edit;
 
-				CStudioAuthoring.Operations.editContent(
-					contentTO.item.contentType,
-					CStudioAuthoringContext.siteId,
-					contentTO.item.mimeType,
-					contentTO.item.nodeRef,
-					contentTO.item.uri,
-					false,
-					editCallback
-				);
+				if (readonly) {
+					CStudioAuthoring.Operations.showPreviewAsset(contentItem);
+				} else {
+					CStudioAuthoring.Operations.editContent(
+						contentItem.contentTypeId,
+						CStudioAuthoringContext.siteId,
+						contentItem.mimeType,
+						null,
+						contentItem.path,
+						false
+					);
+				}
 			},
-			failure: function () {}
-		};
-
-		CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, key, getContentItemCb);
+			error(error) {
+				cb?.failure?.(error?.response?.response);
+			}
+		});
 	},
 
 	getLabel: function () {

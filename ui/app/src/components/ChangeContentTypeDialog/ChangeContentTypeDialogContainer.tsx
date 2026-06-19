@@ -15,144 +15,102 @@
  */
 
 import { ChangeContentTypeDialogContainerProps } from './utils';
-import { useActiveSiteId } from '../../hooks/useActiveSiteId';
-import { useDispatch } from 'react-redux';
-import React, { useEffect, useMemo, useState } from 'react';
-import { LegacyContentType } from '../../models/ContentType';
-import { fetchLegacyContentTypes } from '../../services/contentTypes';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
-import { useSubject } from '../../hooks/useSubject';
-import { debounceTime } from 'rxjs/operators';
+import React from 'react';
 import DialogBody from '../DialogBody/DialogBody';
-import { Box, Checkbox, FormControlLabel } from '@mui/material';
-import SingleItemSelector from '../SingleItemSelector';
-import { FormattedMessage } from 'react-intl';
-import SearchBar from '../SearchBar/SearchBar';
-import { ContentTypesGrid, ContentTypesLoader } from '../NewContentDialog';
-import DialogFooter from '../DialogFooter/DialogFooter';
-import EmptyState from '../EmptyState';
+import { FormattedMessage, useIntl } from 'react-intl';
+import SelectTypeView from '../ContentTypeManagement/components/SelectTypeView';
+import { getNormalizedFolderPathForApi1GetTypes } from '../../utils/contentType';
+import { TypeListProps } from '../ContentTypeManagement/components/TypeList';
+import ItemDisplay from '../ItemDisplay';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import useFetchAllowedTypesForPath from '../../hooks/useFetchAllowedTypesForPath';
+import { ObjectTypeOption } from '../ContentTypeFilter';
+import { DialogFooter } from '../DialogFooter';
+import SecondaryButton from '../SecondaryButton';
+import { EmptyState } from '../EmptyState';
+import { useDispatch } from 'react-redux';
+import { nanoid } from 'nanoid';
+import { pushConfirmDialog } from '../../utils/system';
+import { popDialog } from '../../state/actions/dialogStack';
 
 export function ChangeContentTypeDialogContainer(props: ChangeContentTypeDialogContainerProps) {
-	const { item, onContentTypeSelected, compact = false, rootPath, selectedContentType } = props;
-	const site = useActiveSiteId();
+	const { item, onContentTypeSelected, initialCompact = false, onClose } = props;
 	const dispatch = useDispatch();
+	const { formatMessage } = useIntl();
 
-	const [isCompact, setIsCompact] = useState(compact);
-	const [openSelector, setOpenSelector] = useState(false);
-	const [selectedItem, setSelectedItem] = useState(item);
-	const [contentTypes, setContentTypes] = useState<LegacyContentType[]>();
-	const [isFetching, setIsFetching] = useState(false);
-	const [keyword, setKeyword] = useState('');
-	const [debounceKeyword, setDebounceKeyword] = useState('');
-	const filteredContentTypes = useMemo(() => {
-		const lowercaseKeyword = debounceKeyword.toLowerCase();
-		return contentTypes?.filter((contentType) => contentType.label.toLowerCase().includes(lowercaseKeyword));
-	}, [contentTypes, debounceKeyword]);
-
-	const onSelectedContentType = (contentType: LegacyContentType) => {
-		onContentTypeSelected?.({
-			newContentTypeId: contentType.form
-		});
-	};
-
-	useEffect(() => {
-		if (selectedItem.path) {
-			setIsFetching(true);
-			const sub = fetchLegacyContentTypes(site, selectedItem.path).subscribe({
-				next: (response) => {
-					setIsFetching(false);
-					setContentTypes(
-						response.filter(
-							(contentType) =>
-								contentType.type === selectedItem.systemType && contentType.name !== selectedItem.contentTypeId
-						)
-					);
-				},
-				error: (response) => {
-					setIsFetching(false);
-					dispatch(showErrorDialog({ error: response }));
+	const handleContentTypeSelected: TypeListProps['onCardClick'] = (_, contentType) => {
+		const dialogId = nanoid();
+		dispatch(
+			pushConfirmDialog({
+				id: dialogId,
+				props: {
+					title: formatMessage({ defaultMessage: 'Change Type' }),
+					body: formatMessage({
+						defaultMessage: 'The following operation may result in data loss. Would you like to proceed?'
+					}),
+					onCancel: () => dispatch(popDialog({ id: dialogId })),
+					onOk: () => {
+						dispatch(popDialog({ id: dialogId }));
+						onContentTypeSelected?.({
+							path: item.path,
+							contentType: contentType
+						});
+					}
 				}
-			});
-			return () => {
-				sub.unsubscribe();
-			};
-		}
-	}, [dispatch, selectedItem, site]);
-
-	const onSearch$ = useSubject<string>();
-
-	useEffect(() => {
-		onSearch$.pipe(debounceTime(400)).subscribe((keywords) => {
-			setDebounceKeyword(keywords);
-		});
-	});
-
-	const onSearch = (keyword: string) => {
-		onSearch$.next(keyword);
-		setKeyword(keyword);
+			})
+		);
 	};
+
+	const { contentTypes, isFetching } = useFetchAllowedTypesForPath(
+		getNormalizedFolderPathForApi1GetTypes(item),
+		// Filter only compatible types, and filter out current type.
+		(types) => types.filter((type) => type.type === item.systemType && item.contentTypeId != type.id)
+	);
+	// Show the select type view if there are content types to show, or if it's still loading (to show the skeleton). Otherwise, show the empty state.
+	const showSelectTpeView = contentTypes?.length || isFetching;
 
 	return (
 		<>
-			<DialogBody sx={{ minHeight: '455px' }}>
-				<Box display="flex" justifyContent="space-between" alignItems="center">
-					<Box>
-						<SingleItemSelector
-							label={<FormattedMessage id="words.item" defaultMessage="Item" />}
-							open={openSelector}
-							onClose={() => setOpenSelector(false)}
-							onDropdownClick={() => setOpenSelector(!openSelector)}
-							rootPath={rootPath}
-							selectedItem={selectedItem}
-							onItemClicked={(item) => {
-								setOpenSelector(false);
-								setSelectedItem(item);
-							}}
-						/>
-					</Box>
-					<Box sx={{ minWidth: '33%' }}>
-						<SearchBar onChange={onSearch} keyword={keyword} autoFocus showActionButton={Boolean(keyword)} />
-					</Box>
-				</Box>
-				{isFetching ? (
-					<ContentTypesLoader numOfItems={6} isCompact={isCompact} />
-				) : filteredContentTypes ? (
-					filteredContentTypes.length > 0 ? (
-						<ContentTypesGrid
-							contentTypes={filteredContentTypes}
-							isCompact={isCompact}
-							onTypeOpen={onSelectedContentType}
-							selectedContentType={selectedContentType}
-						/>
-					) : (
-						<EmptyState
-							title={
-								<FormattedMessage
-									id="changeContentTypeDialog.emptyStateMessage"
-									defaultMessage="No Content Types Found"
-								/>
+			<DialogBody sx={{ minHeight: 670, justifyContent: showSelectTpeView ? 'start' : 'center' }}>
+				{showSelectTpeView ? (
+					<SelectTypeView
+						initialCompact={initialCompact}
+						initialObjectTypeFilter={item.systemType as ObjectTypeOption}
+						contentTypesList={contentTypes}
+						slotProps={{
+							listing: {
+								skeleton: isFetching,
+								skeletonItemCount: 4,
+								onCardClick: handleContentTypeSelected,
+								selectedTypeId: item.contentTypeId
+							},
+							bar: {
+								slotProps: {
+									contentTypesFilter: { disabled: true }
+								},
+								leftChildren: (
+									<Box sx={{ pl: 2, mr: 2, maxWidth: 300 }}>
+										<Typography variant="body2" color="textSecondary">
+											<FormattedMessage defaultMessage="Target Item" />
+										</Typography>
+										<ItemDisplay item={item} showNavigableAsLinks={false} />
+									</Box>
+								)
 							}
-							sxs={{
-								image: {
-									width: '250px',
-									marginBottom: '17px'
-								}
-							}}
-						/>
-					)
+						}}
+					/>
 				) : (
-					<></>
+					<EmptyState
+						title={<FormattedMessage defaultMessage="No types available for the item." />}
+						sxs={{ root: { height: '100%' } }}
+					/>
 				)}
 			</DialogBody>
 			<DialogFooter>
-				<FormControlLabel
-					sx={{
-						marginRight: 'auto',
-						paddingLeft: '20px'
-					}}
-					control={<Checkbox checked={isCompact} onChange={() => setIsCompact(!isCompact)} color="primary" />}
-					label={<FormattedMessage id="words.compact" defaultMessage="Compact" />}
-				/>
+				<SecondaryButton onClick={(e) => onClose(e, null)}>
+					<FormattedMessage defaultMessage="Cancel" />
+				</SecondaryButton>
 			</DialogFooter>
 		</>
 	);

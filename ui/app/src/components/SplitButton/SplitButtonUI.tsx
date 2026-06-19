@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { useState, useLayoutEffect } from 'react';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import Button from '@mui/material/Button';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
@@ -25,7 +25,6 @@ import MenuList from '@mui/material/MenuList';
 import MenuItem from '@mui/material/MenuItem';
 import Popper from '@mui/material/Popper';
 import { SplitButtonUIProps } from './utils';
-import LoadingButton from '@mui/lab/LoadingButton';
 
 export function SplitButtonUI(props: SplitButtonUIProps) {
 	const {
@@ -39,15 +38,34 @@ export function SplitButtonUI(props: SplitButtonUIProps) {
 		handleToggle,
 		handleClose,
 		handleMenuItemClick,
-		loading
+		loading,
+		fullWidth
 	} = props;
+
+	// Store the width of the anchor element (ButtonGroup) if fullWidth is true
+	const [popperWidth, setPopperWidth] = useState<number | undefined>(undefined);
+
+	useLayoutEffect(() => {
+		if (fullWidth && anchorRef?.current) {
+			setPopperWidth(anchorRef.current.offsetWidth);
+		} else {
+			setPopperWidth(undefined);
+		}
+	}, [fullWidth, anchorRef, open]);
 
 	return (
 		<>
-			<ButtonGroup disabled={disabled} variant="contained" color="primary" ref={anchorRef} aria-label="split button">
-				<LoadingButton color="primary" variant="contained" loading={loading} onClick={handleClick}>
+			<ButtonGroup
+				disabled={disabled}
+				variant="contained"
+				color="primary"
+				ref={anchorRef}
+				aria-label="split button"
+				fullWidth={fullWidth}
+			>
+				<Button color="primary" variant="contained" loading={loading} onClick={handleClick}>
 					{options[selectedIndex].label}
-				</LoadingButton>
+				</Button>
 				{options.length > 1 && (
 					<Button
 						disabled={loading}
@@ -58,12 +76,20 @@ export function SplitButtonUI(props: SplitButtonUIProps) {
 						aria-label="select option"
 						aria-haspopup="menu"
 						onClick={handleToggle}
+						sx={{ flex: fullWidth ? 1 : 'unset' }}
 					>
 						<ArrowDropDownIcon />
 					</Button>
 				)}
 			</ButtonGroup>
-			<Popper open={open} anchorEl={anchorRef.current} role={undefined} transition disablePortal={disablePortal}>
+			<Popper
+				open={open}
+				anchorEl={() => anchorRef.current}
+				role={undefined}
+				transition
+				disablePortal={disablePortal}
+				sx={{ zIndex: 2 }}
+			>
 				{({ TransitionProps, placement }) => (
 					<Grow
 						{...TransitionProps}
@@ -71,7 +97,7 @@ export function SplitButtonUI(props: SplitButtonUIProps) {
 							transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom'
 						}}
 					>
-						<Paper>
+						<Paper style={popperWidth ? { minWidth: popperWidth } : undefined}>
 							<ClickAwayListener onClickAway={handleClose}>
 								<MenuList id="split-button-menu">
 									{options.map((option, index) => (

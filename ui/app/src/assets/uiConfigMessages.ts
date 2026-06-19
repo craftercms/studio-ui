@@ -48,5 +48,81 @@ defineMessages({
 	site: {
 		id: 'launcher.siteSectionTitle',
 		defaultMessage: 'Project <muted>• {siteName}</muted>'
+	},
+	contentTypes: {
+		id: 'dropTargetsMessages.contentTypes',
+		defaultMessage: 'Content Types'
+	},
+	encryptionTools: {
+		id: 'GlobalMenu.EncryptionToolEntryLabel',
+		defaultMessage: 'Encryption Tool'
+	},
+	audit: {
+		id: 'GlobalMenu.AuditEntryLabel',
+		defaultMessage: 'Audit'
+	},
+	logConsole: {
+		id: 'GlobalMenu.LogConsoleEntryLabel',
+		defaultMessage: 'Log Console'
+	},
+	pluginManager: {
+		id: 'PluginManagement.title',
+		defaultMessage: 'Plugin Management'
+	},
+	settings: {
+		id: 'words.settings',
+		defaultMessage: 'Settings'
+	},
+	pages: {
+		id: 'pathNavigatorTree.pages',
+		defaultMessage: 'Pages'
+	},
+	components: {
+		id: 'pathNavigatorTree.components',
+		defaultMessage: 'Components'
+	},
+	taxonomy: {
+		id: 'pathNavigatorTree.taxonomy',
+		defaultMessage: 'Taxonomy'
+	},
+	staticAssets: {
+		id: 'pathNavigatorTree.staticAssets',
+		defaultMessage: 'Static Assets'
+	},
+	templates: {
+		id: 'pathNavigatorTree.templates',
+		defaultMessage: 'Templates'
+	},
+	scripts: {
+		id: 'pathNavigatorTree.scripts',
+		defaultMessage: 'Scripts'
+	},
+	audiencesPanelSegmentLabel: {
+		id: 'audiencesPanel.segmentLabel',
+		defaultMessage: 'Segment'
+	},
+	audiencesPanelGuyValueLabel: {
+		id: 'audiencesPanel.guyValueLabel',
+		defaultMessage: 'Guy'
+	},
+	audiencesPanelGalValueLabel: {
+		id: 'audiencesPanel.galValueLabel',
+		defaultMessage: 'Gal'
+	},
+	audiencesPanelAnonymousValueLabel: {
+		id: 'audiencesPanel.anonymousValueLabel',
+		defaultMessage: 'Anonymous'
+	},
+	audiencesPanelSegmentHelpText: {
+		id: 'previewAudiencesPanel.segmentHelpText',
+		defaultMessage: 'Setting the segment will change content targeting to the audience selected'
+	},
+	audiencesPanelNameLabel: {
+		id: 'audiencesPanel.nameLabel',
+		defaultMessage: 'Name'
+	},
+	audiencesPanelNameHelpText: {
+		id: 'audiencesPanel.nameHelpText',
+		defaultMessage: "Enter user's first and last name"
 	}
 });

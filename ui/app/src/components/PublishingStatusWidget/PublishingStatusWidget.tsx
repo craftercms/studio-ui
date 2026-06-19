@@ -28,7 +28,7 @@ type PublishingStatusWidgetProps = {
 
 export function PublishingStatusWidget(props: PublishingStatusWidgetProps) {
 	const { siteId } = props;
-	const state = useSelection((state) => state.dialogs.publishingStatus);
+	const state = useSelection((state) => state.publishing);
 	const { enabled, published, currentTask } = state;
 	const dispatch = useDispatch();
 

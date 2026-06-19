@@ -18,25 +18,20 @@ import SiteSearchToolBar from '../SiteSearchToolbar';
 import React, { ReactNode, useRef } from 'react';
 import Drawer from '@mui/material/Drawer';
 import SiteSearchFilters from '../SiteSearchFilters';
-import { ElasticParams, Filter, MediaItem, SearchResult } from '../../models/Search';
-import { CheckedFilter, drawerWidth, SearchProps } from '../Search/utils';
+import { ElasticParams, Filter, MediaItem } from '../../models/Search';
+import { CheckedFilter, drawerWidth, SearchProps, UseSearchStateReturn } from '../Search/utils';
 import LookupTable from '../../models/LookupTable';
-import FormGroup from '@mui/material/FormGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
-import Typography from '@mui/material/Typography';
 import { translations } from '../Search/translations';
 import TablePagination, { tablePaginationClasses } from '@mui/material/TablePagination';
 import ApiResponseErrorState from '../ApiResponseErrorState';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import MediaCard from '../MediaCard/MediaCard';
 import EmptyState from '../EmptyState/EmptyState';
 import ItemActionsSnackbar from '../ItemActionsSnackbar';
 import Button from '@mui/material/Button';
 import ListItemText from '@mui/material/ListItemText';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { AllItemActions } from '../../models/Item';
-import { ContextMenuOption } from '../ContextMenu';
 import ApiResponse from '../../models/ApiResponse';
 import IconButton from '@mui/material/IconButton';
 import MoreVertRounded from '@mui/icons-material/MoreVertRounded';
@@ -44,46 +39,47 @@ import { UNDEFINED } from '../../utils/constants';
 import { LoadingState } from '../LoadingState';
 import Box from '@mui/material/Box';
 import { drawerClasses } from '@mui/material';
+import Tooltip from '@mui/material/Tooltip';
 
-export interface SearchUIProps {
-	selectedPath: string;
-	selected: string[];
-	selectionOptions: ContextMenuOption[];
-	guestBase: string;
+export interface SearchUIProps
+	extends Required<Pick<SearchProps, 'mode' | 'embedded' | 'onClose' | 'onAcceptSelection'>>,
+		Pick<
+			UseSearchStateReturn,
+			| 'currentView'
+			| 'drawerOpen'
+			| 'guestBase'
+			| 'handleSelect'
+			| 'handleChangeView'
+			| 'handleSelectAll'
+			| 'handleClearSelected'
+			| 'isFetching'
+			| 'onHeaderButtonClick'
+			| 'onPreview'
+			| 'onActionClicked'
+			| 'onSelectedPathChanges'
+			| 'toggleDrawer'
+			| 'selectedPath'
+			| 'selectionOptions'
+			| 'searchResults'
+			| 'selected'
+		> {
 	sortBy?: string;
 	sortOrder?: string;
 	keyword: string;
-	mode: 'select' | 'default';
-	drawerOpen: boolean;
-	embedded: boolean;
 	desktopScreen: boolean;
-	currentView: 'grid' | 'list';
-	searchResults: SearchResult;
 	areAllSelected: boolean;
 	checkedFilters: LookupTable<CheckedFilter>;
 	searchParameters: ElasticParams;
 	error: ApiResponse;
-	isFetching: boolean;
 	preselectedLookup?: LookupTable<boolean>;
 	disableChangePreselected?: SearchProps['disableChangePreselected'];
-	onActionClicked(option: AllItemActions, event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
-	handleSelectAll(checked: any): void;
-	onSelectedPathChanges(path: string): void;
-	onCheckedFiltersChanges(checkedFilters: LookupTable<CheckedFilter>): any;
+	onCheckedFiltersChanges(checkedFilters: LookupTable<CheckedFilter>): void;
 	clearFilter(facet: string): void;
 	clearFilters(): void;
 	handleSearchKeyword(keyword: string): void;
-	handleChangeView(): void;
-	toggleDrawer(): void;
 	handleFilterChange(filter: Filter, isFilter?: boolean): void;
 	handleChangePage(event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null, newPage: number): void;
 	handleChangeRowsPerPage(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void;
-	handleSelect(path: string, isSelected: boolean): void;
-	onPreview(item: MediaItem): void;
-	onHeaderButtonClick(event: any, item: MediaItem): void;
-	handleClearSelected(): void;
-	onClose(): void;
-	onAcceptSelection?(items: string[]): void;
 }
 
 export function SearchUI(props: SearchUIProps) {
@@ -229,24 +225,15 @@ export function SearchUI(props: SearchUIProps) {
 				<Box
 					sx={(theme) => ({
 						display: 'flex',
-						padding: '0 6px 0 20px',
+						padding: '0 6px',
 						alignItems: 'center',
 						background: theme.palette.background.paper,
 						borderBottom: `1px solid ${theme.palette.divider}`
 					})}
 				>
-					<FormGroup>
-						<FormControlLabel
-							control={
-								<Checkbox
-									color="primary"
-									checked={areAllSelected}
-									onClick={(e: any) => handleSelectAll(e.target.checked)}
-								/>
-							}
-							label={<Typography color="textPrimary">{formatMessage(translations.selectAll)}</Typography>}
-						/>
-					</FormGroup>
+					<Tooltip title={<FormattedMessage id="search.selectAll" defaultMessage="Select all on this page" />}>
+						<Checkbox checked={areAllSelected} onChange={(e) => handleSelectAll(e.target.checked)} />
+					</Tooltip>
 					<TablePagination
 						rowsPerPageOptions={[9, 15, 21]}
 						sx={{
@@ -382,7 +369,11 @@ export function SearchUI(props: SearchUIProps) {
 													previewAppBaseUri={guestBase}
 													action={
 														mode === 'default' ? (
-															<IconButton onClick={(e) => onHeaderButtonClick(e, item)} size="small">
+															<IconButton
+																onClick={(e) => onHeaderButtonClick(e, item)}
+																size="small"
+																aria-label={formatMessage({ defaultMessage: 'Options' })}
+															>
 																<MoreVertRounded />
 															</IconButton>
 														) : null
@@ -432,17 +423,26 @@ export function SearchUI(props: SearchUIProps) {
 						}
 					}}
 				>
-					<Button variant="outlined" onClick={onClose}>
-						{formatMessage(translations.cancel)}
-					</Button>
-					<Button
-						variant="contained"
-						color="primary"
-						disabled={selected.length === 0}
-						onClick={() => onAcceptSelection?.(selected)}
-					>
-						{formatMessage(translations.acceptSelection)}
-					</Button>
+					{onClose && (
+						<Button variant="outlined" onClick={onClose}>
+							{formatMessage(translations.cancel)}
+						</Button>
+					)}
+					{onAcceptSelection && (
+						<Button
+							variant="contained"
+							color="primary"
+							disabled={selected.length === 0}
+							onClick={() =>
+								onAcceptSelection(
+									selected,
+									selected.flatMap((path) => searchResults.items?.find((item) => item.path === path) ?? [])
+								)
+							}
+						>
+							{formatMessage(translations.acceptSelection)}
+						</Button>
+					)}
 				</Box>
 			)}
 		</Box>

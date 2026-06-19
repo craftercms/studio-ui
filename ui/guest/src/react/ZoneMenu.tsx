@@ -32,10 +32,10 @@ import ContentCopyRoundedIcon from '@mui/icons-material/ContentCopyRounded';
 import {
 	deleteItem,
 	duplicateItem,
+	getCachedContentItem,
 	getCachedModel,
 	getCachedModels,
 	getCachedPermissions,
-	getCachedSandboxItem,
 	getModelIdFromInheritedField,
 	insertItem,
 	isInheritedField,
@@ -63,8 +63,9 @@ import UltraStyledTypography from './UltraStyledTypography';
 import UltraStyledTooltip from './UltraStyledTooltip';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
-import { showItemMegaMenu } from '@craftercms/studio-ui/state/actions/dialogs';
 import { unlockItem } from '@craftercms/studio-ui/state/actions/content';
+import { showItemMegaMenu } from '@craftercms/studio-ui/state/actions/dialogs';
+import { FormattedMessage } from 'react-intl';
 
 export interface ZoneMenuProps {
 	record: ElementRecord;
@@ -156,10 +157,10 @@ export function ZoneMenu(props: ZoneMenuProps) {
 	// If the current modelId is not being referenced by any other model (no parentModelId found), we use modelId.
 	const containerModelId = findParentModelId(componentId ?? modelId, modelHierarchyMap, models) ?? modelId;
 	const containerItemAvailableActions = models[containerModelId]
-		? getCachedSandboxItem(models[containerModelId].craftercms.path).availableActionsMap
+		? getCachedContentItem(models[containerModelId].craftercms.path).availableActionsMap
 		: null;
 	const containerHasEditAction = containerItemAvailableActions?.edit ?? false;
-	const itemAvailableActions = getCachedSandboxItem(componentPath ?? modelPath).availableActionsMap;
+	const itemAvailableActions = getCachedContentItem(componentPath ?? modelPath).availableActionsMap;
 	const hasEditAction = itemAvailableActions.edit;
 
 	const isMovable =
@@ -237,7 +238,7 @@ export function ZoneMenu(props: ZoneMenuProps) {
 			path,
 			site: activeSite,
 			username,
-			localItem: getCachedSandboxItem(path)
+			localItem: getCachedContentItem(path)
 		}).subscribe(subscriber);
 	};
 
@@ -446,7 +447,7 @@ export function ZoneMenu(props: ZoneMenuProps) {
 		<>
 			<Box display="flex">
 				{hasEditAction && !isLockedItem && (
-					<UltraStyledTooltip title="Edit" key="edit">
+					<UltraStyledTooltip title={<FormattedMessage id="words.edit" defaultMessage="Edit" />} key="edit">
 						<UltraStyledIconButton size="small" onClick={onEdit}>
 							<PencilIcon />
 						</UltraStyledIconButton>
@@ -462,14 +463,20 @@ export function ZoneMenu(props: ZoneMenuProps) {
 				{showCodeEditOptions && (
 					<>
 						{itemAvailableActions.editTemplate && (
-							<UltraStyledTooltip title="Edit template" key="editTemplate">
+							<UltraStyledTooltip
+								title={<FormattedMessage id="zoneMenu.editTemplate" defaultMessage="Edit template" />}
+								key="editTemplate"
+							>
 								<UltraStyledIconButton size="small" onClick={onEditTemplate}>
 									<FreemarkerIcon />
 								</UltraStyledIconButton>
 							</UltraStyledTooltip>
 						)}
 						{itemAvailableActions.editController && (
-							<UltraStyledTooltip title="Edit controller" key="editController">
+							<UltraStyledTooltip
+								title={<FormattedMessage id="zoneMenu.editController" defaultMessage="Edit controller" />}
+								key="editController"
+							>
 								<UltraStyledIconButton size="small" onClick={onEditController}>
 									<GroovyIcon />
 								</UltraStyledIconButton>
@@ -478,14 +485,20 @@ export function ZoneMenu(props: ZoneMenuProps) {
 					</>
 				)}
 				{!isLockedItem && showAddItem && (
-					<UltraStyledTooltip title="Add new item" key="addNewItem">
+					<UltraStyledTooltip
+						title={<FormattedMessage id="zoneMenu.addItem" defaultMessage="Add new item" />}
+						key="addNewItem"
+					>
 						<UltraStyledIconButton size="small" onClick={onAddRepeatItem}>
 							<AddCircleOutlineRoundedIcon />
 						</UltraStyledIconButton>
 					</UltraStyledTooltip>
 				)}
 				{showDuplicate && (
-					<UltraStyledTooltip title="Duplicate item" key="duplicateItem">
+					<UltraStyledTooltip
+						title={<FormattedMessage id="zoneMenu.duplicateItem" defaultMessage="Duplicate item" />}
+						key="duplicateItem"
+					>
 						<UltraStyledIconButton size="small" onClick={onDuplicateItem}>
 							<ContentCopyRoundedIcon />
 						</UltraStyledIconButton>
@@ -495,14 +508,20 @@ export function ZoneMenu(props: ZoneMenuProps) {
 					(!isLockedItem || !isEmbedded) &&
 					!isOnlyItem && [
 						!isFirstItem && (
-							<UltraStyledTooltip title="Move up/left (← or ↑)" key="moveUp">
+							<UltraStyledTooltip
+								title={<FormattedMessage id="zoneMenu.moveUp" defaultMessage="Move up/left (← or ↑)" />}
+								key="moveUp"
+							>
 								<UltraStyledIconButton size="small" onClick={onMoveUp}>
 									<ArrowUpwardRoundedIcon />
 								</UltraStyledIconButton>
 							</UltraStyledTooltip>
 						),
 						!isLastItem && (
-							<UltraStyledTooltip title="Move down/right (→ or ↓)" key="moveDown">
+							<UltraStyledTooltip
+								title={<FormattedMessage id="zoneMenu.moveDown" defaultMessage="Move down/right (→ or ↓)" />}
+								key="moveDown"
+							>
 								<UltraStyledIconButton size="small" onClick={onMoveDown}>
 									<ArrowDownwardRoundedIcon />
 								</UltraStyledIconButton>
@@ -510,14 +529,14 @@ export function ZoneMenu(props: ZoneMenuProps) {
 						)
 					]}
 				{isTrashable && !isLockedItem && (
-					<UltraStyledTooltip title="Trash (⌫)" key="trash">
+					<UltraStyledTooltip title={<FormattedMessage id="zoneMenu.trash" defaultMessage="Trash (⌫)" />} key="trash">
 						<UltraStyledIconButton size="small" onClick={onTrash} ref={trashButtonRef}>
 							<DeleteOutlineRoundedIcon />
 						</UltraStyledIconButton>
 					</UltraStyledTooltip>
 				)}
 				{isMovable && (!isLockedItem || !isEmbedded) && (
-					<UltraStyledTooltip title="Move" key="move">
+					<UltraStyledTooltip title={<FormattedMessage id="words.move" defaultMessage="Move" />} key="move">
 						<UltraStyledIconButton size="small" draggable sx={{ cursor: 'grab' }} onDragStart={onDragStart}>
 							<DragIndicatorRounded />
 						</UltraStyledIconButton>
@@ -527,13 +546,16 @@ export function ZoneMenu(props: ZoneMenuProps) {
 			<Box display="flex">
 				<Divider orientation="vertical" flexItem sx={{ mx: 0.5 }} />
 				{showItemMenuButton && (
-					<UltraStyledTooltip title="Options" onClick={handleRequestItemMenu}>
+					<UltraStyledTooltip
+						title={<FormattedMessage id="words.options" defaultMessage="Options" />}
+						onClick={handleRequestItemMenu}
+					>
 						<UltraStyledIconButton size="small">
 							<MoreRoundedIcon />
 						</UltraStyledIconButton>
 					</UltraStyledTooltip>
 				)}
-				<UltraStyledTooltip title="Cancel (Esc)">
+				<UltraStyledTooltip title={<FormattedMessage id="zoneMenu.cancel" defaultMessage="Cancel (Esc)" />}>
 					<UltraStyledIconButton size="small" onClick={onCancel}>
 						<CloseRoundedIcon />
 					</UltraStyledIconButton>
@@ -554,7 +576,11 @@ export function ZoneMenu(props: ZoneMenuProps) {
 				sx={{ zIndex: 1501 }}
 			>
 				<UltraStyledTypography variant="body1" sx={{ padding: '10px 16px 10px 16px' }}>
-					{isEmbedded ? 'Delete' : 'Disassociate'} this item?
+					<FormattedMessage
+						id="zoneMenu.trashConfirmation"
+						defaultMessage="{isEmbedded, select, true {Delete} other {Disassociate}} this item?"
+						values={{ isEmbedded }}
+					/>
 				</UltraStyledTypography>
 				<MenuItem
 					onClick={(e) => {
@@ -562,10 +588,14 @@ export function ZoneMenu(props: ZoneMenuProps) {
 						setShowTrashConfirmation(false);
 					}}
 				>
-					<UltraStyledTypography>No</UltraStyledTypography>
+					<UltraStyledTypography>
+						<FormattedMessage id="words.no" defaultMessage="No" />
+					</UltraStyledTypography>
 				</MenuItem>
 				<MenuItem onClick={(e) => refs.current.doTrash()}>
-					<UltraStyledTypography>Yes</UltraStyledTypography>
+					<UltraStyledTypography>
+						<FormattedMessage id="words.yes" defaultMessage="Yes" />{' '}
+					</UltraStyledTypography>
 				</MenuItem>
 			</Menu>
 		</>

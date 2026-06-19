@@ -10,4 +10,18 @@ updates:
     schedule:
       interval: "daily"
       time: "04:00"
-
+    target-branch: "develop"
+    groups:
+        all-ui-deps:
+            patterns:
+                - "*"
+  - package-ecosystem: "npm" # See documentation for possible values
+    directory: "/" # Location of package manifests
+    schedule:
+      interval: "daily"
+      time: "04:15"
+    target-branch: "support/4.x"
+    groups:
+        all-ui-deps:
+            patterns:
+                - "*"

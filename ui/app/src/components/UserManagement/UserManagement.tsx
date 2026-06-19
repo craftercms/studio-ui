@@ -16,7 +16,7 @@
 
 import { FormattedMessage } from 'react-intl';
 import AddIcon from '@mui/icons-material/Add';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import UsersGridUI, { UsersGridSkeletonTable } from '../UsersGrid';
 import CreateUserDialog from '../CreateUserDialog';
 import EditUserDialog from '../EditUserDialog';
@@ -43,22 +43,23 @@ export function UserManagement(props: UserManagementProps) {
 	const [offset, setOffset] = useState(0);
 	const [limit, setLimit] = useState(10);
 	const [fetching, setFetching] = useState(false);
-	const [users, setUsers] = useState<PagedArray<User>>(null);
-	const [error, setError] = useState<ApiResponse>();
-	const [viewUser, setViewUser] = useState(null);
-	const [showSearchBox, setShowSearchBox] = useState(false);
+	const [users, setUsers] = useState<PagedArray<User> | null>(null);
+	const [error, setError] = useState<ApiResponse | null>(null);
+	const [viewUser, setViewUser] = useState<User | null>(null);
 	const [keyword, setKeyword] = useState('');
+	const searchInpuRef = useRef(undefined);
 
 	const fetchUsers = useCallback(
 		(keyword = '', _offset = offset) => {
 			setFetching(true);
-			fetchAll({ limit, offset: _offset, keyword }).subscribe({
+			return fetchAll({ limit, offset: _offset, keyword }).subscribe({
 				next(users) {
 					setUsers(users);
+					setError(null);
 					setFetching(false);
 				},
 				error({ response }) {
-					setError(response);
+					setError(response?.response);
 					setFetching(false);
 				}
 			});
@@ -67,7 +68,8 @@ export function UserManagement(props: UserManagementProps) {
 	);
 
 	useEffect(() => {
-		fetchUsers();
+		const sub = fetchUsers();
+		return () => sub?.unsubscribe();
 	}, [fetchUsers]);
 
 	const createUserDialogState = useEnhancedDialogState();
@@ -101,8 +103,8 @@ export function UserManagement(props: UserManagementProps) {
 		setLimit(e.target.value);
 	};
 
-	const onShowSearchBox = () => {
-		setShowSearchBox(!showSearchBox);
+	const onSearchButtonClick = () => {
+		searchInpuRef.current?.focus();
 	};
 
 	const onSearch = useCallback(
@@ -135,25 +137,18 @@ export function UserManagement(props: UserManagementProps) {
 				}
 				rightContent={
 					<SearchBar
+						ref={searchInpuRef}
 						sxs={{
 							root: {
 								transition: 'width 500ms',
 								width: '210px',
-								...(showSearchBox
-									? {}
-									: {
-											width: '50px',
-											border: '0',
-											background: 'none',
-											'& input': {
-												visibility: 'hidden'
-											}
-										})
+								border: 0,
+								background: 'none'
 							}
 						}}
 						keyword={keyword}
 						onChange={handleSearchKeyword}
-						onDecoratorButtonClick={onShowSearchBox}
+						onDecoratorButtonClick={onSearchButtonClick}
 						showActionButton={Boolean(keyword)}
 					/>
 				}
@@ -187,7 +182,7 @@ export function UserManagement(props: UserManagementProps) {
 				isMinimized={createUserDialogState.isMinimized}
 				hasPendingChanges={createUserDialogState.hasPendingChanges}
 				onWithPendingChangesCloseRequest={createUserDialogPendingChangesCloseRequest}
-				onSubmittingAndOrPendingChange={createUserDialogState.onSubmittingAndOrPendingChange}
+				updateSubmittingOrHasPendingChanges={createUserDialogState.onSubmittingAndOrPendingChange}
 			/>
 			<EditUserDialog
 				open={editUserDialogState.open}
@@ -200,7 +195,7 @@ export function UserManagement(props: UserManagementProps) {
 				hasPendingChanges={editUserDialogState.hasPendingChanges}
 				passwordRequirementsMinComplexity={passwordRequirementsMinComplexity}
 				onWithPendingChangesCloseRequest={editUserDialogPendingChangesCloseRequest}
-				onSubmittingAndOrPendingChange={editUserDialogState.onSubmittingAndOrPendingChange}
+				updateSubmittingOrHasPendingChanges={editUserDialogState.onSubmittingAndOrPendingChange}
 			/>
 		</Paper>
 	);

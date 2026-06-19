@@ -31,11 +31,12 @@ import PrimaryButton from '../PrimaryButton';
 import { useSelection } from '../../hooks/useSelection';
 import { CreateTokenContainerProps } from './utils';
 import { createToken } from '../../services/tokens';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
 import { createAtLeastHalfHourInFutureDate } from '../../utils/datetime';
 import Box from '@mui/material/Box';
+import { pushErrorDialog } from '../../utils/system';
+import { useEnhancedDialogContext } from '../EnhancedDialog';
 
 const translations = defineMessages({
 	placeholder: {
@@ -49,12 +50,13 @@ const translations = defineMessages({
 });
 
 export function CreateTokenDialogContainer(props: CreateTokenContainerProps) {
-	const { isSubmitting, onCreated, onClose, onSubmittingAndOrPendingChange } = props;
+	const { isSubmitting, onCreated, onClose } = props;
 	const [expires, setExpires] = useState(false);
 	const [expiresAt, setExpiresAt] = useState(createAtLeastHalfHourInFutureDate());
 	const [label, setLabel] = useState('');
 	const { formatMessage } = useIntl();
 	const dispatch = useDispatch();
+	const { updateSubmittingOrHasPendingChanges } = useEnhancedDialogContext();
 	const onSubmit = (e) => {
 		e.preventDefault();
 		e.stopPropagation();
@@ -62,31 +64,38 @@ export function CreateTokenDialogContainer(props: CreateTokenContainerProps) {
 	};
 	const locale = useSelection<GlobalState['uiConfig']['locale']>((state) => state.uiConfig.locale);
 	const functionRefs = useUpdateRefs({
-		onSubmittingAndOrPendingChange
+		updateSubmittingOrHasPendingChanges
 	});
 
 	useEffect(() => {
-		onSubmittingAndOrPendingChange({
+		updateSubmittingOrHasPendingChanges({
 			hasPendingChanges: Boolean(expires || label)
 		});
-	}, [onSubmittingAndOrPendingChange, expires, label]);
+	}, [updateSubmittingOrHasPendingChanges, expires, label]);
 
 	const onOk = ({ label, expiresAt }) => {
-		functionRefs.current.onSubmittingAndOrPendingChange({
+		functionRefs.current.updateSubmittingOrHasPendingChanges({
 			isSubmitting: true
 		});
 		createToken(label, expiresAt).subscribe(
 			(token) => {
-				functionRefs.current.onSubmittingAndOrPendingChange({
+				functionRefs.current.updateSubmittingOrHasPendingChanges({
 					isSubmitting: false
 				});
 				onCreated?.(token);
 			},
-			(response) => {
-				functionRefs.current.onSubmittingAndOrPendingChange({
+			({ response }) => {
+				functionRefs.current.updateSubmittingOrHasPendingChanges({
 					isSubmitting: false
 				});
-				dispatch(showErrorDialog({ error: response }));
+				dispatch(
+					pushErrorDialog({
+						props: {
+							error: response.response,
+							validationErrors: response.validationErrors
+						}
+					})
+				);
 			}
 		);
 	};

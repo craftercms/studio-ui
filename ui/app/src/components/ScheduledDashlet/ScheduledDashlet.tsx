@@ -239,7 +239,11 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
 			borderLeftColor={borderLeftColor}
 			title={<FormattedMessage id="scheduledDashlet.widgetTitle" defaultMessage="Scheduled for Publish" />}
 			headerAction={
-				<LoadingIconButton onClick={onRefresh} loading={loading}>
+				<LoadingIconButton
+					onClick={onRefresh}
+					loading={loading}
+					aria-label={formatMessage({ defaultMessage: 'Refresh' })}
+				>
 					<RefreshRounded />
 				</LoadingIconButton>
 			}
@@ -322,7 +326,7 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
 							<ListItemText
 								primary={
 									<FormattedMessage
-										defaultMessage="<bold>{title}</bold> ({total} items)"
+										defaultMessage="<bold>{title}</bold> ({total} {total, plural, one {item} other {items}})"
 										values={{
 											title: pkg.title,
 											total: pkg.itemCount,
@@ -334,7 +338,8 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
 									<FormattedMessage
 										defaultMessage="Approved by {name} to go {publishingTarget, select, live { <render_target>live</render_target>} other {<render_target>staging</render_target>}} on {submittedDate}"
 										values={{
-											name: pkg.submitter?.username,
+											// If a reviewer approved, show their name; otherwise show submitter name
+											name: pkg.reviewer?.username ?? pkg.submitter?.username,
 											publishingTarget: pkg.target,
 											render_target(target: ReactNode[]) {
 												return (
@@ -348,7 +353,7 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
 											submittedDate: asLocalizedDateTime(
 												pkg.schedule,
 												locale.localeCode,
-												reversePluckProps(locale.dateTimeFormatOptions, 'hour', 'minute', 'second')
+												locale.dateTimeFormatOptions
 											)
 										}}
 									/>

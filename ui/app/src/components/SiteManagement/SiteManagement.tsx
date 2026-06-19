@@ -32,8 +32,6 @@ import { trash } from '../../services/sites';
 import { batchActions } from '../../state/actions/misc';
 import { showSystemNotification } from '../../state/actions/system';
 import { fetchSites, popSite } from '../../state/actions/sites';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
-import { showEditSiteDialog } from '../../state/actions/dialogs';
 import { ErrorBoundary } from '../ErrorBoundary/ErrorBoundary';
 import SitesGrid from '../SitesGrid/SitesGrid';
 import PublishingStatusDialog from '../PublishingStatusDialog';
@@ -41,13 +39,13 @@ import GlobalAppToolbar from '../GlobalAppToolbar';
 import Button from '@mui/material/Button';
 import { getStoredGlobalMenuSiteViewPreference, setStoredGlobalMenuSiteViewPreference } from '../../utils/state';
 import { hasGlobalPermissions } from '../../services/users';
-import { foo } from '../../utils/object';
+import { immutableEmptyObject } from '../../utils/object';
 import { useEnv } from '../../hooks/useEnv';
 import { useActiveUser } from '../../hooks/useActiveUser';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import { useSitesBranch } from '../../hooks/useSitesBranch';
 import Paper from '@mui/material/Paper';
-import { getSystemLink } from '../../utils/system';
+import { createComponentId, getSystemLink, pushErrorDialog } from '../../utils/system';
 import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { DuplicateSiteDialog } from '../DuplicateSiteDialog';
 import Card from '@mui/material/Card';
@@ -60,6 +58,8 @@ import Checkbox from '@mui/material/Checkbox';
 import { ConfirmDialog } from '../ConfirmDialog';
 import { previewSwitch } from '../../services/security';
 import { EmptyState } from '../EmptyState';
+import { popDialog, pushDialog } from '../../state/actions/dialogStack';
+import { nanoid } from 'nanoid';
 
 const translations = defineMessages({
 	siteDeleted: {
@@ -86,7 +86,7 @@ export function SiteManagement() {
 	const { byId: sitesById, isFetching, active } = useSitesBranch();
 	const sitesList = sitesById ? Object.values(sitesById) : null;
 	const [selectedSiteStatus, setSelectedSiteStatus] = useState<PublishingStatus>(null);
-	const [permissionsLookup, setPermissionsLookup] = useState<LookupTable<boolean>>(foo);
+	const [permissionsLookup, setPermissionsLookup] = useState<LookupTable<boolean>>(immutableEmptyObject);
 	const duplicateSiteDialogState = useEnhancedDialogState();
 	const [duplicateSiteId, setDuplicateSiteId] = useState(null);
 	const [isDuplicateDialogFromCreateDialog, setIsDuplicateDialogFromCreateDialog] = useState(false);
@@ -132,13 +132,23 @@ export function SiteManagement() {
 			},
 			error({ response: { response } }) {
 				setDisabledSitesLookup({ [site.id]: false });
-				dispatch(showErrorDialog({ error: response }));
+				dispatch(pushErrorDialog({ props: { error: response } }));
 			}
 		});
 	};
 
 	const onEditSiteClick = (site: Site) => {
-		dispatch(showEditSiteDialog({ site }));
+		const dialogId = nanoid();
+		dispatch(
+			pushDialog({
+				id: dialogId,
+				component: createComponentId('EditSiteDialog'),
+				props: {
+					site,
+					onSaveSuccess: () => dispatch(popDialog({ id: dialogId }))
+				}
+			})
+		);
 	};
 
 	const onPublishButtonClick = (
@@ -206,7 +216,11 @@ export function SiteManagement() {
 				}
 				rightContent={
 					<Tooltip title={<FormattedMessage id="sites.ChangeView" defaultMessage="Change view" />}>
-						<IconButton onClick={handleChangeView} size="large">
+						<IconButton
+							onClick={handleChangeView}
+							size="large"
+							aria-label={formatMessage({ id: 'sites.ChangeView', defaultMessage: 'Change view' })}
+						>
 							{currentView === 'grid' ? <ListViewIcon /> : <GridViewIcon />}
 						</IconButton>
 					</Tooltip>
@@ -296,7 +310,7 @@ export function SiteManagement() {
 				onGoBack={isDuplicateDialogFromCreateDialog ? createSiteDialogGoBackFromDuplicate : null}
 				hasPendingChanges={duplicateSiteDialogState.hasPendingChanges}
 				isSubmitting={duplicateSiteDialogState.isSubmitting}
-				onSubmittingAndOrPendingChange={duplicateSiteDialogState.onSubmittingAndOrPendingChange}
+				updateSubmittingOrHasPendingChanges={duplicateSiteDialogState.onSubmittingAndOrPendingChange}
 			/>
 			<ConfirmDialog
 				open={confirmDeleteState.open}

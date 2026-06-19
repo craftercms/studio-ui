@@ -16,9 +16,10 @@
 
 import React, { PropsWithChildren } from 'react';
 import { ContentTypeField } from '../../models/ContentType';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import FormHelperText from '@mui/material/FormHelperText';
 import Divider from '@mui/material/Divider';
+import usePossibleTranslation from '../../hooks/usePossibleTranslation';
 
 type AudiencesFormSectionProps = PropsWithChildren<{
 	field: ContentTypeField;
@@ -27,11 +28,12 @@ type AudiencesFormSectionProps = PropsWithChildren<{
 
 export function AudiencesFormSection(props: AudiencesFormSectionProps) {
 	const { field, showDivider, children } = props;
+	const helpText = usePossibleTranslation(field.helpText);
 	return (
 		<>
 			<Grid size={12}>
 				{children}
-				<FormHelperText>{field.helpText}</FormHelperText>
+				<FormHelperText>{helpText}</FormHelperText>
 			</Grid>
 			{showDivider && <Divider style={{ margin: '15px 0' }} />}
 		</>

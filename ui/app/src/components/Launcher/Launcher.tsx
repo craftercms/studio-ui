@@ -17,7 +17,7 @@
 import React, { Suspense, useEffect, useMemo } from 'react';
 import { defineMessages, FormattedMessage, IntlShape, useIntl } from 'react-intl';
 import Popover from '@mui/material/Popover';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import LauncherSiteCard, { LauncherSiteCardOption } from '../LauncherSiteCard/LauncherSiteCard';
 import CloseIcon from '@mui/icons-material/Close';
@@ -49,7 +49,6 @@ import { useSystemVersion } from '../../hooks/useSystemVersion';
 import { useActiveUser } from '../../hooks/useActiveUser';
 import { useSiteList } from '../../hooks/useSiteList';
 import { useSiteUIConfig } from '../../hooks/useSiteUIConfig';
-import { initLauncherConfig } from '../../state/actions/launcher';
 import { getSystemLink, SystemLinkId } from '../../utils/system';
 import { PREVIEW_URL_PATH } from '../../utils/constants';
 import { WidgetDescriptor } from '../../models';
@@ -57,6 +56,7 @@ import useMinimizedDialogWarning from '../../hooks/useMinimizedDialogWarning';
 import TranslationOrText from '../../models/TranslationOrText';
 import { SystemIconDescriptor } from '../SystemIcon';
 import Box from '@mui/material/Box';
+import { initLauncherConfig } from '../../state/actions/launcher';
 
 export interface LauncherStateProps {
 	open: boolean;

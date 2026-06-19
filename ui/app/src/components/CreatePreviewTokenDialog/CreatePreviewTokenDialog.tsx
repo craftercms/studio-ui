@@ -15,7 +15,7 @@
  */
 
 import React, { SyntheticEvent, useEffect, useId, useRef, useState } from 'react';
-import EnhancedDialog, { EnhancedDialogProps } from '../EnhancedDialog';
+import EnhancedDialog, { EnhancedDialogProps, useEnhancedDialogContext } from '../EnhancedDialog';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
 import GlobalState from '../../models/GlobalState';
@@ -25,7 +25,6 @@ import DateTimeTimezonePicker, { DateTimeTimezonePickerProps } from '../DateTime
 import DialogFooter from '../DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
-import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 import useSelection from '../../hooks/useSelection';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import FormControl from '@mui/material/FormControl';
@@ -42,8 +41,7 @@ import FormLabel from '@mui/material/FormLabel';
 import Alert from '@mui/material/Alert';
 import Divider from '@mui/material/Divider';
 import { encrypt } from '../../services/security';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
-import { copyToClipboard } from '../../utils/system';
+import { copyToClipboard, pushErrorDialog } from '../../utils/system';
 import { showSystemNotification } from '../../state/actions/system';
 import useSitesBranch from '../../hooks/useSitesBranch';
 import Tabs from '@mui/material/Tabs';
@@ -55,13 +53,12 @@ import useActiveSiteId from '../../hooks/useActiveSiteId';
 
 interface BodyProps extends Pick<EnhancedDialogProps, 'isSubmitting' | 'onClose'> {
 	onTokenGenerated?(token: string): void;
-	onSubmittingAndOrPendingChange(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
 export interface CreateTokenDialogProps extends EnhancedDialogProps, BodyProps {}
 
 export function CreatePreviewTokenDialog(props: CreateTokenDialogProps) {
-	const { onSubmittingAndOrPendingChange, onTokenGenerated, ...rest } = props;
+	const { onTokenGenerated, ...rest } = props;
 
 	return (
 		<EnhancedDialog
@@ -70,11 +67,7 @@ export function CreatePreviewTokenDialog(props: CreateTokenDialogProps) {
 			maxWidth="sm"
 			{...rest}
 		>
-			<Body
-				onTokenGenerated={onTokenGenerated}
-				isSubmitting={props.isSubmitting}
-				onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
-			/>
+			<Body onTokenGenerated={onTokenGenerated} isSubmitting={props.isSubmitting} />
 		</EnhancedDialog>
 	);
 }
@@ -138,7 +131,7 @@ const getInitialDate = () => {
 };
 
 function Body(props: BodyProps) {
-	const { isSubmitting, onTokenGenerated, onClose, onSubmittingAndOrPendingChange } = props;
+	const { isSubmitting, onTokenGenerated, onClose } = props;
 	const id = useId();
 	const siteId = useActiveSiteId();
 	const [expiresAt, setExpiresAt] = useState(getInitialDate);
@@ -152,7 +145,8 @@ function Body(props: BodyProps) {
 	const dispatch = useDispatch();
 
 	const locale = useSelection<GlobalState['uiConfig']['locale']>((state) => state.uiConfig.locale);
-	const functionRefs = useUpdateRefs({ onSubmittingAndOrPendingChange });
+	const { updateSubmittingOrHasPendingChanges } = useEnhancedDialogContext();
+	const functionRefs = useUpdateRefs({ updateSubmittingOrHasPendingChanges });
 	const chipsContainerRef = useRef<HTMLDivElement>(undefined);
 
 	const theme = useTheme();
@@ -183,17 +177,17 @@ function Body(props: BodyProps) {
 		e.preventDefault();
 		e.stopPropagation();
 		if (!valid) return;
-		functionRefs.current.onSubmittingAndOrPendingChange({ isSubmitting: true });
+		functionRefs.current.updateSubmittingOrHasPendingChanges({ isSubmitting: true });
 		encrypt(`${projects.join(',')}|${expiresAt.getTime()}`).subscribe({
 			next(token) {
-				functionRefs.current.onSubmittingAndOrPendingChange({ isSubmitting: false, hasPendingChanges: false });
+				functionRefs.current.updateSubmittingOrHasPendingChanges({ isSubmitting: false, hasPendingChanges: false });
 				onTokenGenerated?.(token);
 				setToken(token);
 				copy(token, false);
 			},
 			error(response) {
-				functionRefs.current.onSubmittingAndOrPendingChange({ isSubmitting: false });
-				dispatch(showErrorDialog({ error: response }));
+				functionRefs.current.updateSubmittingOrHasPendingChanges({ isSubmitting: false });
+				dispatch(pushErrorDialog({ props: { error: response } }));
 			}
 		});
 	};
@@ -218,7 +212,7 @@ function Body(props: BodyProps) {
 	};
 
 	useEffect(() => {
-		functionRefs.current.onSubmittingAndOrPendingChange({ hasPendingChanges: projects.length > 0 });
+		functionRefs.current.updateSubmittingOrHasPendingChanges({ hasPendingChanges: projects.length > 0 });
 	}, [functionRefs, projects]);
 
 	const selectLabel = formatMessage({ defaultMessage: 'Projects' });

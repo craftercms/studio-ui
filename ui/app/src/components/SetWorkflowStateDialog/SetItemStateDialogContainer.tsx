@@ -33,7 +33,7 @@ import { SxProps } from '@mui/system';
 import { Theme } from '@mui/material';
 
 export function SetItemStateDialogContainer(props: SetItemStateDialogProps) {
-	const { onClose, onClosed, title } = props;
+	const { onClose, onClosed, title, hasStaging } = props;
 	const [update, setUpdate] = useSpreadState({
 		clearSystemProcessing: false,
 		clearUserLocked: false,
@@ -161,48 +161,50 @@ export function SetItemStateDialogContainer(props: SetItemStateDialogProps) {
 							/>
 						</Box>
 					</Box>
-					<Box display="flex" alignItems="center">
-						<Bracket width="12px" height="42px" sx={{ marginRight: '10px' }} />
-						<Box display="flex" flexDirection="column">
-							<FormControlLabel
-								control={
-									<Switch
-										checked={update.staged}
-										color="primary"
-										onChange={(e) => {
-											setUpdate({
-												staged: e.target.checked,
-												clearStaged: e.target.checked ? false : update.clearStaged
-											});
-										}}
-									/>
-								}
-								label={
-									<FormattedMessage
-										id="setWorkflowStateDialog.setAsPublishedToStaging"
-										defaultMessage="Set as published to staging"
-									/>
-								}
-							/>
-							<FormControlLabel
-								control={
-									<Switch
-										checked={update.clearStaged}
-										color="primary"
-										onChange={(e) => {
-											setUpdate({ clearStaged: e.target.checked, staged: e.target.checked ? false : update.staged });
-										}}
-									/>
-								}
-								label={
-									<FormattedMessage
-										id="setWorkflowStateDialog.clearAsPublishedToStaging"
-										defaultMessage="Clear as published to staging"
-									/>
-								}
-							/>
+					{hasStaging && (
+						<Box display="flex" alignItems="center">
+							<Bracket width="12px" height="42px" sx={{ marginRight: '10px' }} />
+							<Box display="flex" flexDirection="column">
+								<FormControlLabel
+									control={
+										<Switch
+											checked={update.staged}
+											color="primary"
+											onChange={(e) => {
+												setUpdate({
+													staged: e.target.checked,
+													clearStaged: e.target.checked ? false : update.clearStaged
+												});
+											}}
+										/>
+									}
+									label={
+										<FormattedMessage
+											id="setWorkflowStateDialog.setAsPublishedToStaging"
+											defaultMessage="Set as published to staging"
+										/>
+									}
+								/>
+								<FormControlLabel
+									control={
+										<Switch
+											checked={update.clearStaged}
+											color="primary"
+											onChange={(e) => {
+												setUpdate({ clearStaged: e.target.checked, staged: e.target.checked ? false : update.staged });
+											}}
+										/>
+									}
+									label={
+										<FormattedMessage
+											id="setWorkflowStateDialog.clearAsPublishedToStaging"
+											defaultMessage="Clear as published to staging"
+										/>
+									}
+								/>
+							</Box>
 						</Box>
-					</Box>
+					)}
 				</FormGroup>
 			</DialogBody>
 			<DialogFooter>

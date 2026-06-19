@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { DetailedItem } from '../../models/Item';
+import { ContentItem } from '../../models/Item';
 import React, { useState } from 'react';
 import SearchBar from '../SearchBar/SearchBar';
 import MuiBreadcrumbs, { breadcrumbsClasses } from '@mui/material/Breadcrumbs';
@@ -36,12 +36,12 @@ export type PathNavigatorBreadcrumbsClassKey =
 	| 'searchCloseButton';
 
 export interface BreadcrumbsProps {
-	breadcrumb: DetailedItem[];
+	breadcrumb: ContentItem[];
 	keyword?: string;
 	classes?: Partial<Record<PathNavigatorBreadcrumbsClassKey, string>>;
 	sxs?: PartialSxRecord<PathNavigatorBreadcrumbsClassKey>;
 	onSearch?(keyword: string): void;
-	onCrumbSelected(breadcrumb: DetailedItem, event: React.SyntheticEvent): void;
+	onCrumbSelected(breadcrumb: ContentItem, event: React.SyntheticEvent): void;
 }
 
 const messages = defineMessages({
@@ -90,7 +90,7 @@ function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
 							}
 						}}
 					>
-						{breadcrumb.map((item: DetailedItem, i: number) =>
+						{breadcrumb.map((item: ContentItem, i: number) =>
 							maxIndex !== i ? (
 								<Link
 									key={item.id}
@@ -176,6 +176,7 @@ function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
 							}}
 							className={props.classes?.searchCloseButton}
 							sx={{ marginTop: '5px', marginBottom: '5px', marginRight: '10px', ...sxs?.searchCloseButton }}
+							aria-label={formatMessage({ defaultMessage: 'Close' })}
 						>
 							<CloseIconRounded />
 						</IconButton>

@@ -46,8 +46,8 @@ import { parseDescriptor, preParseSearchResults } from '@craftercms/content';
 import { crafterConf } from '@craftercms/classes';
 import { getDefaultValue } from '@craftercms/studio-ui/utils/contentType';
 import { ModelHierarchyDescriptor, ModelHierarchyMap, modelsToLookup } from '@craftercms/studio-ui/utils/content';
-import { SandboxItem, StandardAction } from '@craftercms/studio-ui/models';
-import { fetchSandboxItemComplete } from '@craftercms/studio-ui/state/actions/content';
+import { ContentItem, StandardAction } from '@craftercms/studio-ui/models';
+import { fetchContentItemComplete } from '@craftercms/studio-ui/state/actions/content';
 
 // if (process.env.NODE_ENV === 'development') {
 // TODO: Notice
@@ -79,8 +79,8 @@ const models$ = new BehaviorSubject<LookupTable<ContentInstance>>({
 	/* 'modelId': { ...modelData } */
 });
 
-const items$ = new BehaviorSubject<LookupTable<SandboxItem>>({
-	/* 'path': { ...sandboxItem } */
+const items$ = new BehaviorSubject<LookupTable<ContentItem>>({
+	/* 'path': { ...contentItem } */
 });
 
 const permissions$ = new BehaviorSubject<string[]>([]);
@@ -124,11 +124,11 @@ export function getCachedModelsByPath(): LookupTable<string> {
 	return paths$.value;
 }
 
-export function getCachedSandboxItems(): LookupTable<SandboxItem> {
+export function getCachedContentItems(): LookupTable<ContentItem> {
 	return items$.value;
 }
 
-export function getCachedSandboxItem(path: string): SandboxItem {
+export function getCachedContentItem(path: string): ContentItem {
 	return items$.value[path];
 }
 
@@ -255,16 +255,24 @@ function collectReferrers(modelId) {
 
 function updateHierarchyMapIndexesFromCollection(collection: string[]) {
 	if (collection.length) {
-		const isSimpleIndex = isSimple(modelHierarchyMap[collection[0]].parentContainerFieldIndex);
+		const firstEntry = modelHierarchyMap[collection[0]];
+		if (!firstEntry) {
+			return;
+		}
+		const isSimpleIndex = isSimple(firstEntry.parentContainerFieldIndex);
 		// 1. Update item being sorted and items getting displaced because of that sort
 		collection.forEach(
 			isSimpleIndex
 				? (id, index) => {
-						modelHierarchyMap[id].parentContainerFieldIndex = String(index);
+						if (modelHierarchyMap[id]) {
+							modelHierarchyMap[id].parentContainerFieldIndex = String(index);
+						}
 					}
 				: (id, index) => {
-						const current = modelHierarchyMap[id].parentContainerFieldIndex as string;
-						modelHierarchyMap[id].parentContainerFieldIndex = `${removeLastPiece(current)}.${index}`;
+						const entry = modelHierarchyMap[id];
+						if (!entry) return;
+						const current = entry.parentContainerFieldIndex as string;
+						entry.parentContainerFieldIndex = `${removeLastPiece(current)}.${index}`;
 					}
 		);
 	}
@@ -768,12 +776,12 @@ export interface FetchGuestModelCompletePayload {
 	modelLookup: LookupTable<ContentInstance>;
 	modelIdByPath: LookupTable<string>;
 	hierarchyMap: ModelHierarchyMap;
-	sandboxItems: SandboxItem[];
+	contentItems: ContentItem[];
 	permissions: string[];
 }
 
 fromTopic(fetchGuestModelComplete.type).subscribe((action: StandardAction<FetchGuestModelCompletePayload>) => {
-	const { modelLookup, hierarchyMap, modelIdByPath, sandboxItems, permissions } = action.payload;
+	const { modelLookup, hierarchyMap, modelIdByPath, contentItems, permissions } = action.payload;
 	Object.keys(modelIdByPath).forEach((path) => {
 		requestedPaths[path] = true;
 	});
@@ -787,7 +795,9 @@ fromTopic(fetchGuestModelComplete.type).subscribe((action: StandardAction<FetchG
 			mhm[id].parentContainerFieldPath = mhm[id].parentContainerFieldPath ?? hierarchyMap[id].parentContainerFieldPath;
 			mhm[id].parentContainerFieldIndex =
 				mhm[id].parentContainerFieldIndex ?? hierarchyMap[id].parentContainerFieldIndex;
-			mhm[id].children = mhm[id].children ?? hierarchyMap[id].children;
+			// Flipping around from the fix on ticket #6433 for ticket #8154. The children coming from Host must be the latest.
+			// TODO: Observed the local hierarchyMap[id].children containing duplicates. Where is that coming from? Are children computed locally?
+			mhm[id].children = hierarchyMap[id].children ?? mhm[id].children;
 		} else {
 			mhm[id] = hierarchyMap[id];
 		}
@@ -802,11 +812,20 @@ fromTopic(fetchGuestModelComplete.type).subscribe((action: StandardAction<FetchG
 	});
 	models$.next(nextModels);
 	paths$.next({ ...paths$.value, ...modelIdByPath });
-	items$.next({ ...items$.value, ...createLookupTable(sandboxItems, 'path') });
+	items$.next({ ...items$.value, ...createLookupTable(contentItems, 'path') });
 	permissions$.next(permissions);
 });
 
-merge(fromTopic(updateFieldValueOperationComplete.type), fromTopic(fetchSandboxItemComplete.type))
+fromTopic(fetchContentItemComplete.type)
+	.pipe(map((action) => action?.payload))
+	.subscribe((item) => {
+		items$.next({
+			...items$.value,
+			[item.path]: item
+		});
+	});
+
+fromTopic(updateFieldValueOperationComplete.type)
 	.pipe(map((action) => action?.payload))
 	.subscribe(({ item }) => {
 		items$.next({

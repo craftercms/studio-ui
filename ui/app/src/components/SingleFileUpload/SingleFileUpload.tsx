@@ -15,30 +15,27 @@
  */
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import Core from '@uppy/core';
-import XHRUpload from '@uppy/xhr-upload';
+import { Uppy, XHRUpload, Form } from 'uppy';
 import ProgressBar from '@uppy/progress-bar';
-import Form from '@uppy/form';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import '@uppy/core/src/style.scss';
-import '@uppy/progress-bar/src/style.scss';
-import '@uppy/file-input/src/style.scss';
+import 'uppy/dist/uppy.css';
+import '@uppy/progress-bar/dist/style.css';
 import { getGlobalHeaders } from '../../utils/ajax';
 import { validateActionPolicy } from '../../services/sites';
 import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
-import { UppyFile } from '@uppy/utils';
+import type { Body, Meta, UppyFile } from '@uppy/utils/lib/UppyFile';
 import { useDispatch } from 'react-redux';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import useSiteUIConfig from '../../hooks/useSiteUIConfig';
 import { ensureSingleSlash } from '../../utils/string';
-import { toQueryString } from '../../utils/object';
 import Alert from '@mui/material/Alert';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import { getResponseError } from '../UploadDialog/util';
 import ReplayRoundedIcon from '@mui/icons-material/ReplayRounded';
 import Box from '@mui/material/Box';
+import { pushErrorDialog } from '../../utils/system';
 
 const messages = defineMessages({
 	chooseFile: {
@@ -96,7 +93,12 @@ export interface SingleFileUploadProps {
 	url?: string;
 	path: string;
 	customFileName?: string;
-	fileTypes?: [string];
+	fileTypes?: string[];
+	onFileAdded?: (file: UppyFile<Meta, Body>, uppy: Uppy, callback: () => void) => void;
+	method?: 'PUT' | 'POST';
+	showFileDetails?: boolean;
+	showProgressBar?: boolean;
+	disabled?: boolean;
 	onUploadStart?(): void;
 	onComplete?(result: FileUploadResult): void;
 	onError?({ file, error, response }): void;
@@ -104,7 +106,8 @@ export interface SingleFileUploadProps {
 
 export function SingleFileUpload(props: SingleFileUploadProps) {
 	const {
-		url = '/studio/api/1/services/api/1/content/write-content.json',
+		site,
+		url = `/studio/api/2/content/${site}`,
 		formTarget = '#asset_upload_form',
 		onUploadStart,
 		onComplete,
@@ -112,12 +115,16 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 		customFileName,
 		fileTypes,
 		path,
-		site
+		onFileAdded: onFileAddedProp,
+		method = 'PUT',
+		showFileDetails = true,
+		showProgressBar = true,
+		disabled = false
 	} = props;
 	const { formatMessage } = useIntl();
 	const dispatch = useDispatch();
 	const [description, setDescription] = useState<string>(formatMessage(messages.selectFileMessage));
-	const [file, setFile] = useState<UppyFile>(null);
+	const [file, setFile] = useState<UppyFile<Meta, Body>>(null);
 	const fileRef = useRef(null);
 	const [suggestedName, setSuggestedName] = useState(null);
 	const suggestedNameRef = useRef(null);
@@ -134,7 +141,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 
 	const uppy = useMemo(
 		() =>
-			new Core({
+			new Uppy({
 				autoProceed: false,
 				...(fileTypes ? { restrictions: { allowedFileTypes: fileTypes } } : {}),
 				...(customFileName
@@ -145,7 +152,8 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 									name: customFileName,
 									meta: {
 										...currentFile.meta,
-										name: customFileName
+										name: customFileName,
+										path: ensureSingleSlash(`${path}/${customFileName}`)
 									}
 								};
 							}
@@ -160,18 +168,28 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 								name: suggestedNameRef.current,
 								meta: {
 									...files[fileRef.current.id].meta,
-									name: suggestedNameRef.current
+									name: suggestedNameRef.current,
+									path: ensureSingleSlash(`${path}/${suggestedNameRef.current}`)
 								}
 							}
 						};
 						setSuggestedName(null);
 						return updatedFiles;
 					} else {
-						return files;
+						return {
+							...files,
+							[fileRef.current.id]: {
+								...files[fileRef.current.id],
+								meta: {
+									...files[fileRef.current.id].meta,
+									path: ensureSingleSlash(`${path}/${files[fileRef.current.id].meta.name}`)
+								}
+							}
+						};
 					}
 				}
 			}),
-		[fileTypes, customFileName]
+		[fileTypes, customFileName, path]
 	);
 
 	const retryUpload = () => {
@@ -194,24 +212,28 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 				hideAfterFinish: false
 			})
 			.use(XHRUpload, {
-				endpoint: `${url}${toQueryString({ path, site })}`,
+				endpoint: url,
+				method,
 				formData: true,
 				fieldName: 'file',
 				timeout: upload.timeout,
 				headers: getGlobalHeaders(),
-				getResponseError: (responseText) => getResponseError(responseText, formatMessage),
-				getResponseData: (responseText, response) => response
+				onAfterResponse: (response) => {
+					if (response.status !== 200) {
+						throw getResponseError(response.responseText, formatMessage);
+					}
+				}
 			});
 
 		return () => {
 			// https://uppy.io/docs/uppy/#uppy-close
 			instance.cancelAll();
-			instance.close();
+			instance.destroy();
 		};
-	}, [uppy, formTarget, url, upload.timeout, path, site, formatMessage]);
+	}, [uppy, formTarget, url, upload.timeout, path, site, formatMessage, method]);
 
 	useEffect(() => {
-		const onUploadSuccess = (file) => {
+		const onUploadSuccess = () => {
 			setDescription(`${formatMessage(messages.uploadedFile)}:`);
 		};
 
@@ -249,37 +271,59 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 	}, [onError, uppy]);
 
 	useEffect(() => {
-		const onFileAdded = (file: UppyFile) => {
+		const onFileAdded = (file: UppyFile<Meta, Body>) => {
 			setError(null);
-			setDescription(`${formatMessage(messages.validatingFile)}:`);
-			setFile(file);
 			setFileNameErrorClass('');
-			validateActionPolicy(site, {
-				type: 'CREATE',
-				target: ensureSingleSlash(`${path}/${file.name}`),
-				contentMetadata: {
-					fileSize: file.size
-				}
-			}).subscribe(({ allowed, modifiedValue, message }) => {
-				if (allowed) {
-					setDisableInput(true);
-					if (modifiedValue) {
-						// Modified value is expected to be a path.
-						const modifiedName = modifiedValue.match(/[^/]+$/)?.[0] ?? modifiedValue;
-						setConfirm({ body: message });
-						setSuggestedName(modifiedName);
-					} else {
-						uppy.upload();
-						setDescription(`${formatMessage(messages.uploadingFile)}:`);
-						onUploadStart?.();
+
+			const validatePolicy = () => {
+				setDescription(`${formatMessage(messages.validatingFile)}:`);
+				validateActionPolicy(site, {
+					type: 'CREATE',
+					target: ensureSingleSlash(`${path}/${file.name}`),
+					contentMetadata: {
+						fileSize: file.size
 					}
-				} else {
-					setConfirm({
-						error: true,
-						body: formatMessage(messages.policyError, { fileName: file.name, detail: message })
-					});
-				}
-			});
+				}).subscribe({
+					next: ({ allowed, modifiedValue, message }) => {
+						if (allowed) {
+							setDisableInput(true);
+							if (modifiedValue) {
+								// Modified value is expected to be a path.
+								const modifiedName = modifiedValue.match(/[^/]+$/)?.[0] ?? modifiedValue;
+								setConfirm({ body: message });
+								setSuggestedName(modifiedName);
+							} else {
+								// When uploading large files to aws/s3, something causes requests to fail and get retried n times before finally stating it failed; despite the file seemingly actually getting uploaded.
+								// This setTimeout avoids that issue. The mechanism of failure or why this avoids it is unknown.
+								setTimeout(() => uppy.upload(), 50);
+								setDescription(`${formatMessage(messages.uploadingFile)}:`);
+								onUploadStart?.();
+							}
+						} else {
+							setConfirm({
+								error: true,
+								body: formatMessage(messages.policyError, { fileName: file.name, detail: message })
+							});
+						}
+					},
+					error: ({ response }) => {
+						dispatch(pushErrorDialog({ props: { error: response?.response } }));
+					}
+				});
+			};
+			// When using the 'onFileAdded' prop, we need to make sure the 'file' state is set after the callback is executed,
+			// then we call 'validatePolicy' to validate the file against action policies. If no 'onFileAdded' prop is provided,
+			// we just set the 'file' state and call 'validatePolicy'.
+			// 'onFileAdded' is useful when you need to do something with the file before starting the upload.
+			if (onFileAddedProp) {
+				onFileAddedProp?.(file, uppy, () => {
+					setFile(file);
+					validatePolicy();
+				});
+			} else {
+				setFile(file);
+				validatePolicy();
+			}
 		};
 
 		uppy.on('file-added', onFileAdded);
@@ -287,10 +331,10 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 		return () => {
 			uppy.off('file-added', onFileAdded);
 		};
-	}, [onUploadStart, formatMessage, path, site, uppy]);
+	}, [onUploadStart, formatMessage, path, site, uppy, dispatch, onFileAddedProp]);
 
 	const onConfirm = () => {
-		uppy.upload().then(() => {});
+		uppy.upload();
 		setSuggestedName(null);
 		setDescription(`${formatMessage(messages.uploadingFile)}:`);
 		onUploadStart?.();
@@ -332,10 +376,9 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 	return (
 		<>
 			<form id="asset_upload_form">
-				<input type="hidden" name="path" value={path} />
 				<input type="hidden" name="site" value={site} />
 			</form>
-			<Box className="uppy-progress-bar" sx={{ display: error ? 'none' : null }} />
+			<Box className="uppy-progress-bar" sx={{ display: !showProgressBar || error ? 'none' : null }} />
 			<div className="uploaded-files">
 				{error ? (
 					<Alert
@@ -343,7 +386,11 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 						severity="error"
 						action={
 							<Tooltip title={<FormattedMessage defaultMessage="Retry" />}>
-								<IconButton onClick={() => retryUpload()} size="small">
+								<IconButton
+									onClick={() => retryUpload()}
+									size="small"
+									aria-label={formatMessage({ defaultMessage: 'Retry' })}
+								>
 									<ReplayRoundedIcon />
 								</IconButton>
 							</Tooltip>
@@ -355,26 +402,30 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 						</Typography>
 					</Alert>
 				) : (
+					showFileDetails && (
+						<Typography variant="subtitle1" component="h2" sx={{ mb: 2 }}>
+							{description}
+						</Typography>
+					)
+				)}
+				{showFileDetails && (
 					<Typography variant="subtitle1" component="h2" sx={{ mb: 2 }}>
-						{description}
+						{file && (
+							<Box
+								component="em"
+								className={`single-file-upload--filename ${fileNameErrorClass}`}
+								sx={{
+									overflow: 'hidden',
+									textOverflow: 'ellipsis',
+									whiteSpace: 'nowrap'
+								}}
+								title={file.name}
+							>
+								{file.name}
+							</Box>
+						)}
 					</Typography>
 				)}
-				<Typography variant="subtitle1" component="h2" sx={{ mb: 2 }}>
-					{file && (
-						<Box
-							component="em"
-							className={`single-file-upload--filename ${fileNameErrorClass}`}
-							sx={{
-								overflow: 'hidden',
-								textOverflow: 'ellipsis',
-								whiteSpace: 'nowrap'
-							}}
-							title={file.name}
-						>
-							{file.name}
-						</Box>
-					)}
-				</Typography>
 				<Box sx={{ marginBottom: '10px' }}>
 					<Box
 						component="input"
@@ -384,10 +435,10 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 						type="file"
 						onChange={onChange}
 						onClick={onInputClick}
-						disabled={disableInput}
+						disabled={disabled || disableInput}
 					/>
 					<label htmlFor="contained-button-file">
-						<Button variant="outlined" component="span" disabled={disableInput}>
+						<Button variant="outlined" component="span" disabled={disabled || disableInput}>
 							{formatMessage(messages.chooseFile)}
 						</Button>
 					</label>

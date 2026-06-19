@@ -19,9 +19,29 @@ import ContentType, { ContentTypeField } from '../models/ContentType';
 import Jabber from 'jabber';
 import LookupTable from '../models/LookupTable';
 import { generatePlaceholderImageDataUrl } from './content';
-import { toColor } from './string';
+import { ensureSingleSlash, isEmpty, toColor } from './string';
 import { darken } from '@mui/material/styles';
-import { Theme } from '@mui/material';
+import type { Theme } from '@mui/material';
+import type { ObjectTypeOption } from '../components/ContentTypeFilter/ContentTypesFilter';
+import { ContentItem } from '../models/Item';
+import type { BuiltInControlType } from '../components/FormsEngine/lib/controlMap';
+import { defineMessages, IntlShape } from 'react-intl';
+import { XmlKeys } from '../components/FormsEngine/lib/formConsts';
+
+const messages = defineMessages({
+	[XmlKeys.displayTemplate]: {
+		defaultMessage: 'Display template'
+	},
+	[XmlKeys.templateNotRequired]: {
+		defaultMessage: 'No template required'
+	},
+	[XmlKeys.dateModified]: {
+		defaultMessage: 'Last modified date'
+	},
+	[XmlKeys.dateCreated]: {
+		defaultMessage: 'Created date'
+	}
+});
 
 // TODO: Not used.
 export function getRelatedContentTypeIds(contentType: ContentType): string[] {
@@ -105,8 +125,8 @@ export function getDefaultValue(field: ContentTypeField): string | number | bool
 	if (field.defaultValue) {
 		return field.defaultValue;
 	} else if (field.validations.required?.value) {
-		switch (field.type) {
-			case 'image': {
+		switch (field.type as BuiltInControlType) {
+			case 'image-picker': {
 				const width = field.validations.width?.value ?? field.validations.minWidth?.value ?? 150;
 				const height = field.validations.height?.value ?? field.validations.minHeight?.value ?? width;
 				return generatePlaceholderImageDataUrl({
@@ -118,7 +138,7 @@ export function getDefaultValue(field: ContentTypeField): string | number | bool
 					textPositionX: width / 2
 				});
 			}
-			case 'text':
+			case 'input':
 			case 'textarea': {
 				const maxLength = parseInt(field.validations.maxLength?.value);
 				const textGen = new Jabber();
@@ -126,14 +146,14 @@ export function getDefaultValue(field: ContentTypeField): string | number | bool
 					? `${textGen.createParagraph(50).substring(0, maxLength)}.`.replace(/\.+/, '.')
 					: textGen.createParagraph(10);
 			}
-			case 'html': {
+			case 'rte': {
 				const textGen = new Jabber();
 				return textGen.createParagraph(10);
 			}
 			case 'numeric-input': {
 				return field.validations.minValue?.value ?? 1;
 			}
-			case 'boolean': {
+			case 'checkbox': {
 				return 'false';
 			}
 			case 'date-time': {
@@ -180,3 +200,118 @@ export function getAvatarWithIconColors(
 	const textColor = theme.palette.getContrastText(base);
 	return { backgroundColor, textColor };
 }
+
+export const filterTypesByKeywordsAndObjectType = (
+	contentTypesList: ContentType[],
+	value: string,
+	objectTypeFilter: ObjectTypeOption
+) => {
+	if (!contentTypesList) return [];
+	if (isEmpty(value) && objectTypeFilter === 'all') return contentTypesList;
+	const keyword = value.toLowerCase();
+	return contentTypesList.filter(
+		(type) =>
+			(objectTypeFilter === 'all' || type.type === objectTypeFilter) &&
+			`${type.name}${type.id}`.toLowerCase().includes(keyword)
+	);
+};
+
+export function getNormalizedFolderPathForApi1GetTypes(item: ContentItem): string {
+	// TODO: https://github.com/craftercms/craftercms/issues/4473
+	return item.systemType === 'folder' && !item.path.endsWith('/') ? `${item.path}/` : item.path;
+}
+
+export function createFormDefinitionPathFromTypeId(contentTypeId: string): string {
+	return ensureSingleSlash(`/content-types/${contentTypeId}/form-definition.xml`);
+}
+
+/**
+ * Retrieves the internal content-type fields used by studio.
+ *
+ * @param formatMessage - i18n formatter.
+ * @returns An array of `ContentTypeField` objects representing the internal fields.
+ */
+export function getStudioContentInternalFields(formatMessage: IntlShape['formatMessage']): ContentTypeField[] {
+	return [
+		{
+			id: XmlKeys.templateNotRequired,
+			name: formatMessage(messages[XmlKeys.templateNotRequired]),
+			type: 'boolean',
+			validations: {},
+			defaultValue: ''
+		},
+		{
+			id: XmlKeys.dateModified,
+			name: formatMessage(messages[XmlKeys.dateModified]),
+			type: 'date-time',
+			validations: {},
+			defaultValue: ''
+		},
+		{
+			id: XmlKeys.dateCreated,
+			name: formatMessage(messages[XmlKeys.dateCreated]),
+			type: 'date-time',
+			validations: {},
+			defaultValue: ''
+		}
+	];
+}
+
+export function createConfigPathFromTypeId(contentTypeId: string): string {
+	return ensureSingleSlash(`/content-types/${contentTypeId}/config.xml`);
+}
+
+export const systemValidationsNames = [
+	'itemManager',
+	'minSize',
+	'maxSize',
+	'maxlength',
+	'readonly',
+	'width',
+	'height',
+	'minWidth',
+	'minHeight',
+	'maxWidth',
+	'maxHeight',
+	'minValue',
+	'maxValue',
+	'imgRepositoryUpload',
+	'imgDesktopUpload',
+	'videoDesktopUpload',
+	'videoBrowseRepo',
+	'audioDesktopUpload',
+	'audioBrowseRepo',
+	'fileBrowseRepo'
+];
+
+export const systemValidationsKeysMap = {
+	minSize: 'minCount',
+	maxSize: 'maxCount',
+	maxlength: 'maxLength',
+	contentTypes: 'allowedContentTypes',
+	tags: 'allowedContentTypeTags',
+	readonly: 'readOnly',
+	width: 'width',
+	height: 'height',
+	minWidth: 'minWidth',
+	minHeight: 'minHeight',
+	maxWidth: 'maxWidth',
+	maxHeight: 'maxHeight',
+	minValue: 'minValue',
+	maxValue: 'maxValue',
+	imgRepositoryUpload: 'allowImagesFromRepo',
+	imgDesktopUpload: 'allowImageUpload',
+	videoDesktopUpload: 'allowVideoUpload',
+	videoBrowseRepo: 'allowVideosFromRepo',
+	audioDesktopUpload: 'allowAudioUpload',
+	audioBrowseRepo: 'allowAudioFromRepo',
+	fileBrowseRepo: 'allowFilesFromRepo',
+	addMedia: 'addMedia'
+};
+
+export const componentsDataSourceContentTypesPropertyNames = [
+	'allowedContentTypes',
+	'allowedEmbeddedContentTypes',
+	'allowedSharedContentTypes',
+	'allowedSharedExistingContentTypes'
+];

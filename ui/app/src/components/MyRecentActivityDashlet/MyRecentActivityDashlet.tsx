@@ -31,7 +31,8 @@ import {
 	getItemSkeleton,
 	ListItemIcon,
 	Pager,
-	PersonAvatar
+	PersonAvatar,
+	usePackageContextMenu
 } from '../DashletCard/dashletCommons';
 import List from '@mui/material/List';
 import ListItemText from '@mui/material/ListItemText';
@@ -59,12 +60,14 @@ import Checkbox from '@mui/material/Checkbox';
 import Box from '@mui/material/Box';
 import ActionsBar from '../ActionsBar';
 import useItemsByPath from '../../hooks/useItemsByPath';
-import useFetchSandboxItems from '../../hooks/useFetchSandboxItems';
+import useFetchContentItems from '../../hooks/useFetchContentItems';
 import { itemActionDispatcher } from '../../utils/itemActions';
 import ListItemButton from '@mui/material/ListItemButton';
-import { fetchSandboxItemComplete, fetchSandboxItems } from '../../state/actions/content';
+import { fetchContentItemComplete, fetchContentItems } from '../../state/actions/content';
 import LoadingIconButton from '../LoadingIconButton';
 import { fetchItemByPath } from '../../services/content';
+import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
+import IconButton from '@mui/material/IconButton';
 
 interface MyRecentActivityDashletProps extends CommonDashletProps {}
 
@@ -88,6 +91,8 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
 	const { username, firstName, lastName } = useActiveUser();
 	const person: Person = { username, firstName, lastName, avatar: null };
 	const dispatch = useDispatch();
+	const packageContextMenu = usePackageContextMenu();
+
 	const [
 		{ loading, loadingSkeleton, total, feed, limit, offset, selectedPackageId, openPackageDetailsDialog },
 		setState
@@ -105,7 +110,7 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
 	const totalPages = total ? Math.ceil(total / limit) : 0;
 	const itemsByPath = useItemsByPath();
 	const [selectedPaths, setSelectedPaths] = useState([]);
-	useFetchSandboxItems(selectedPaths);
+	useFetchContentItems(selectedPaths);
 	const selectedItems = useMemo(() => {
 		const items = [];
 		if (selectedPaths.length > 0) {
@@ -168,11 +173,11 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
 		const isSelected = selectedPaths.includes(path);
 		if (!isSelected) {
 			// If item has been already fetched, re-fecth to get the latest version, if not loaded, it'll be fetched with the
-			// useFetchSandboxItems hook
+			// useFetchContentItem hook
 			if (itemsByPath[path]) {
 				setLoadingActionsBar(true);
 				fetchItemByPath(siteId, path).subscribe((item) => {
-					dispatch(fetchSandboxItemComplete({ item }));
+					dispatch(fetchContentItemComplete({ item }));
 					setLoadingActionsBar(false);
 				});
 			}
@@ -218,7 +223,7 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
 		];
 		const hostToHost$ = getHostToHostBus();
 		const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
-			dispatch(fetchSandboxItems({ paths: selectedPaths }));
+			dispatch(fetchContentItems({ paths: selectedPaths }));
 			loadPage(getCurrentPage(offset, limit), true);
 		});
 		return () => {
@@ -254,7 +259,11 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
 				footer: { justifyContent: 'space-between' }
 			}}
 			headerAction={
-				<LoadingIconButton onClick={onRefresh} loading={loading}>
+				<LoadingIconButton
+					onClick={onRefresh}
+					loading={loading}
+					aria-label={formatMessage({ defaultMessage: 'Refresh' })}
+				>
 					<RefreshRounded />
 				</LoadingIconButton>
 			}
@@ -343,9 +352,24 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
 										onPackageClick,
 										onItemClick
 									})}
+									slotProps={{
+										primary: { sx: { overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' } }
+									}}
 									secondary={renderActivityTimestamp(activity.actionTimestamp, locale)}
 								/>
-								{isItemActivity && <DashletItemOptions path={activity.item.path} />}
+								{isItemActivity ? (
+									<DashletItemOptions path={activity.item.path} />
+								) : activity.package ? (
+									<IconButton
+										aria-label={formatMessage({ defaultMessage: 'Package options' })}
+										onClick={(e) => {
+											e.stopPropagation();
+											packageContextMenu?.openContextMenu(e, activity.package);
+										}}
+									>
+										<MoreVertRoundedIcon />
+									</IconButton>
+								) : null}
 							</ListItemComponent>
 						);
 					})}
@@ -362,6 +386,7 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
 				onClosed={() => setState({ selectedPackageId: null })}
 				packageId={selectedPackageId}
 			/>
+			{packageContextMenu?.contextMenuElement}
 		</DashletCard>
 	);
 }

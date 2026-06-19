@@ -28,6 +28,8 @@ import SystemIcon from '../SystemIcon';
 import Box from '@mui/material/Box';
 import { PartialSxRecord } from '../../models/CustomRecord';
 import { CSSSelectorObjectOrCssVariables } from '@mui/system/styleFunctionSx/styleFunctionSx';
+import { consolidateSx } from '../../utils/system';
+import { useIntl } from 'react-intl';
 
 export type MediaCardViewModes = 'card' | 'compact' | 'row';
 
@@ -98,9 +100,11 @@ function MediaCard(props: MediaCardProps) {
 					e.preventDefault();
 					e.stopPropagation();
 					onPreview(e);
-				}
+				},
+				'aria-label': name
 			}
 		: {};
+	const { formatMessage } = useIntl();
 
 	return (
 		<Card
@@ -109,7 +113,7 @@ function MediaCard(props: MediaCardProps) {
 			onDragStart={onDragStart}
 			onDragEnd={onDragEnd}
 			onClick={onClick}
-			sx={[
+			sx={consolidateSx(
 				{ position: 'relative' },
 				viewMode === 'row' && {
 					display: 'flex',
@@ -117,8 +121,8 @@ function MediaCard(props: MediaCardProps) {
 					[`& .${cardHeaderClasses.root}`]: { flexGrow: 1 },
 					[`& .${cardMediaClasses.root}`]: { paddingTop: '0 !important', height: '80px !important', width: '80px' }
 				},
-				sxs?.root as CSSSelectorObjectOrCssVariables
-			]}
+				sxs?.root
+			)}
 		>
 			<CardHeader
 				classes={{ root: props.classes?.cardHeader }}
@@ -132,6 +136,7 @@ function MediaCard(props: MediaCardProps) {
 								onClick={(e: any) => !disableSelection && onSelect(path, e.target.checked)}
 								color="primary"
 								size="small"
+								aria-label={formatMessage({ defaultMessage: 'Select {name}' }, { name })}
 							/>
 						</FormGroup>
 					) : (

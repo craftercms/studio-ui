@@ -37,7 +37,6 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import { useDispatch } from 'react-redux';
 import { fetchInstalledMarketplacePlugins } from '../../services/marketplace';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import {
 	emitSystemEvent,
 	pluginInstalled,
@@ -66,6 +65,7 @@ import { fetchMyPermissions } from '../../services/users';
 import Tooltip from '@mui/material/Tooltip';
 import PencilIcon from '@mui/icons-material/EditOutlined';
 import { styled } from '@mui/material/styles';
+import { pushErrorDialog } from '../../utils/system';
 
 const messages = defineMessages({
 	pluginInstalled: {
@@ -130,11 +130,7 @@ export const PluginManagement = (props: PluginManagementProps) => {
 					);
 				},
 				(error) => {
-					dispatch(
-						showErrorDialog({
-							error
-						})
-					);
+					dispatch(pushErrorDialog({ props: { error } }));
 				}
 			),
 		[dispatch, siteId]
@@ -293,7 +289,11 @@ export const PluginManagement = (props: PluginManagementProps) => {
 										</StyledTableCell>
 										<StyledTableCell align="left">
 											{plugin.files.length}
-											<IconButton onClick={(e) => showPluginFiles(e, plugin)} size="small">
+											<IconButton
+												onClick={(e) => showPluginFiles(e, plugin)}
+												size="small"
+												aria-label={formatMessage({ defaultMessage: 'View files' })}
+											>
 												<Tooltip title={<FormattedMessage defaultMessage="View files" />}>
 													<ExpandMoreRoundedIcon />
 												</Tooltip>
@@ -309,6 +309,7 @@ export const PluginManagement = (props: PluginManagementProps) => {
 														onEditPluginConfig(plugin);
 													}}
 													color="primary"
+													aria-label={formatMessage({ defaultMessage: 'Edit configuration' })}
 												>
 													<PencilIcon />
 												</IconButton>
@@ -320,6 +321,7 @@ export const PluginManagement = (props: PluginManagementProps) => {
 														deletePluginDialogState.onOpen();
 													}}
 													color="primary"
+													aria-label={formatMessage({ defaultMessage: 'Uninstall plugin' })}
 												>
 													<DeleteIcon />
 												</IconButton>
@@ -352,7 +354,7 @@ export const PluginManagement = (props: PluginManagementProps) => {
 				isSubmitting={deletePluginDialogState.isSubmitting}
 				hasPendingChanges={deletePluginDialogState.hasPendingChanges}
 				isMinimized={deletePluginDialogState.isMinimized}
-				onSubmittingAndOrPendingChange={deletePluginDialogState.onSubmittingAndOrPendingChange}
+				updateSubmittingOrHasPendingChanges={deletePluginDialogState.onSubmittingAndOrPendingChange}
 				pluginId={pluginToDelete}
 				onComplete={onDeletePlugin}
 			/>
@@ -367,7 +369,7 @@ export const PluginManagement = (props: PluginManagementProps) => {
 				isFullScreen={configPluginDialogState.isFullScreen}
 				onFullScreen={configPluginDialogState.onFullScreen}
 				onCancelFullScreen={configPluginDialogState.onCancelFullScreen}
-				onSubmittingAndOrPendingChange={configPluginDialogState.onSubmittingAndOrPendingChange}
+				updateSubmittingOrHasPendingChanges={configPluginDialogState.onSubmittingAndOrPendingChange}
 				pluginId={pluginToConfig}
 				onSaved={onSavedPluginConfig}
 				onWithPendingChangesCloseRequest={onWithPendingChangesCloseRequest}

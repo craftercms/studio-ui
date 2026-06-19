@@ -20,7 +20,6 @@ import { fetchAffectedPackages } from '../../services/workflow';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import { useDispatch } from 'react-redux';
-import { showPackageDetailsDialog } from '../../state/actions/dialogs';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { LoadingState } from '../LoadingState';
 import { EmptyState } from '../EmptyState';
@@ -38,6 +37,11 @@ import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import ListItemButton from '@mui/material/ListItemButton';
 import ItemDisplay from '../ItemDisplay';
+import { pushDialog } from '../../state/actions/dialogStack';
+import { createComponentId } from '../../utils/system';
+import { hasApproveAction, hasRejectAction } from '../../utils/content';
+import { PublishPackage } from '../../models';
+import { SubmittedPackageDetail } from '../DashletCard/dashletCommons';
 
 export interface ViewPackagesDialogContainerProps
 	extends Pick<ViewPackagesDialogProps, 'item' | 'onContinue' | 'onClose'> {}
@@ -52,13 +56,32 @@ export function ViewPackagesDialogContainer(props: ViewPackagesDialogContainerPr
 		error: null
 	});
 
-	const onShowPackageDetails = (packageId: number) => {
-		dispatch(showPackageDetailsDialog({ packageId }));
+	const onShowPackageDetails = (pkg: PublishPackage) => {
+		if (
+			pkg.approvalState === 'SUBMITTED' &&
+			(hasApproveAction(pkg.availableActions) || hasRejectAction(pkg.availableActions))
+		) {
+			dispatch(
+				pushDialog({
+					component: createComponentId('PublishPackageReviewDialog'),
+					props: {
+						packageId: pkg.id
+					}
+				})
+			);
+		} else {
+			dispatch(
+				pushDialog({
+					component: createComponentId('PackageDetailsDialog'),
+					props: { packageId: pkg.id }
+				})
+			);
+		}
 	};
 
-	const onContinueClick = (e) => {
-		onClose(e, null);
+	const onContinueClick = (e: React.MouseEvent) => {
 		onContinue();
+		onClose(e, null);
 	};
 
 	useEffect(() => {
@@ -102,14 +125,34 @@ export function ViewPackagesDialogContainer(props: ViewPackagesDialogContainerPr
 							})}
 						>
 							{state.packages?.map((pkg) => (
-								<ListItemButton key={pkg.id} onClick={() => onShowPackageDetails?.(pkg.id)}>
+								<ListItemButton key={pkg.id} onClick={() => onShowPackageDetails?.(pkg)}>
 									<ListItemText
 										primary={`${pkg.id} - ${pkg.title}`}
-										secondary={pkg.submitterComment}
-										secondaryTypographyProps={{ noWrap: true, title: pkg.title }}
+										secondary={
+											<>
+												<Typography variant="body2">
+													<SubmittedPackageDetail pkg={pkg} />
+												</Typography>
+												<Typography
+													variant="body2"
+													sx={{
+														mt: 0.5,
+														display: '-webkit-box',
+														overflow: 'hidden',
+														width: '100%',
+														textOverflow: 'ellipsis',
+														WebkitLineClamp: 2,
+														WebkitBoxOrient: 'vertical'
+													}}
+												>
+													{pkg.submitterComment}
+												</Typography>
+											</>
+										}
+										slotProps={{ secondary: { title: pkg.title, component: 'div' } }}
 									/>
 									<Tooltip title={<FormattedMessage defaultMessage="View package details" />}>
-										<IconButton onClick={() => onShowPackageDetails?.(pkg.id)}>
+										<IconButton>
 											<ChevronRightRoundedIcon />
 										</IconButton>
 									</Tooltip>

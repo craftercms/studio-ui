@@ -14,9 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { DetailedItem, SandboxItem } from '../../models/Item';
+import { ContentItem } from '../../models/Item';
+import { isPdfDocument } from '../../utils/content';
 
-export function isNavigable(item: DetailedItem | SandboxItem): boolean {
+export function isNavigable(item: Pick<ContentItem, 'previewUrl' | 'systemType'>): boolean {
 	if (item) {
 		// Assets have a valid previewUrl but we don't want assets to show in the
 		// Guest iFrame but rather as a preview dialog.
@@ -25,20 +26,12 @@ export function isNavigable(item: DetailedItem | SandboxItem): boolean {
 	return false;
 }
 
-export function isEditableViaFormEditor(item: DetailedItem | SandboxItem): boolean {
+export function isEditableViaFormEditor(item: Pick<ContentItem, 'systemType'>): boolean {
 	return ['page', 'component', 'taxonomy'].includes(item.systemType);
 }
 
-export function isImage(item: DetailedItem | SandboxItem): boolean {
+export function isImage(item: Pick<ContentItem, 'mimeType'>): boolean {
 	return item?.mimeType.startsWith('image/');
-}
-
-export function isVideo(item: DetailedItem | SandboxItem): boolean {
-	return item?.mimeType.startsWith('video/');
-}
-
-export function isAudio(item: DetailedItem | SandboxItem): boolean {
-	return item?.mimeType.startsWith('audio/');
 }
 
 export function isTextContent(mimeType: string): boolean {
@@ -50,15 +43,18 @@ export function isTextContent(mimeType: string): boolean {
 	);
 }
 
+const blackListMediaTypes = [
+	'video/x-msvideo' // .avi files are not supported by browsers and the video player can't play them.
+];
+
 export function isMediaContent(mimeType: string) {
-	return /^image\//.test(mimeType) || /^video\//.test(mimeType) || /^audio\//.test(mimeType);
+	return (
+		(/^image\//.test(mimeType) || /^video\//.test(mimeType) || /^audio\//.test(mimeType)) &&
+		!blackListMediaTypes.includes(mimeType)
+	);
 }
 
-export function isPdfDocument(mimeType: string) {
-	return 'application/pdf' === mimeType;
-}
-
-export function isPreviewable(item: DetailedItem | SandboxItem): boolean {
+export function isPreviewable(item: Pick<ContentItem, 'mimeType' | 'systemType'>): boolean {
 	if (item?.systemType === 'asset') {
 		return isMediaContent(item.mimeType) || isTextContent(item.mimeType) || isPdfDocument(item.mimeType);
 	} else {
@@ -66,11 +62,13 @@ export function isPreviewable(item: DetailedItem | SandboxItem): boolean {
 	}
 }
 
-export function isFolder(item: DetailedItem | SandboxItem): boolean {
+export function isFolder(item: Pick<ContentItem, 'systemType'>): boolean {
 	return item?.systemType === 'folder';
 }
 
-export function getEditorMode(item: DetailedItem | SandboxItem): 'ftl' | 'groovy' | 'javascript' | 'css' | 'text' {
+export function getEditorMode(
+	item: Pick<ContentItem, 'mimeType' | 'systemType'>
+): 'ftl' | 'groovy' | 'javascript' | 'css' | 'text' {
 	if (item.systemType === 'renderingTemplate') {
 		return 'ftl';
 	} else if (item.systemType === 'script') {

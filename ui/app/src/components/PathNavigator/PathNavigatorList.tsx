@@ -15,7 +15,7 @@
  */
 
 import List from '@mui/material/List';
-import { DetailedItem } from '../../models/Item';
+import { ContentItem } from '../../models/Item';
 import NavItem from './PathNavigatorItem';
 import React, { useMemo } from 'react';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
@@ -23,17 +23,17 @@ import { PartialSxRecord } from '../../models';
 
 export interface NavProps {
 	locale?: string;
-	items: DetailedItem[];
+	items: ContentItem[];
 	isSelectMode?: boolean;
-	computeActiveItems?: (items: DetailedItem[]) => string[];
+	computeActiveItems?: (items: ContentItem[]) => string[];
 	showItemNavigateToButton?: boolean;
 	classes?: Partial<Record<'root', string>>;
 	sxs?: PartialSxRecord<'root'>;
-	onItemClicked?(item: DetailedItem, event?: React.MouseEvent): void;
-	onSelectItem?(item: DetailedItem, unselect: boolean): void;
-	onPathSelected?(item: DetailedItem): void;
-	onPreview?(item: DetailedItem): void;
-	onOpenItemMenu?(element: Element, item: DetailedItem): void;
+	onItemClicked?(item: ContentItem, event?: React.MouseEvent): void;
+	onSelectItem?(item: ContentItem, unselect: boolean): void;
+	onPathSelected?(item: ContentItem): void;
+	onPreview?(item: ContentItem): void;
+	onOpenItemMenu?(element: Element, item: ContentItem): void;
 }
 
 function PathNavigatorList(props: NavProps) {
@@ -54,7 +54,7 @@ function PathNavigatorList(props: NavProps) {
 	const active = useMemo(() => fnRefs.current.computeActiveItems?.(items) ?? [], [items, fnRefs]);
 	return (
 		<List component="nav" disablePadding classes={{ root: props.classes?.root }} sx={sxs?.root}>
-			{items?.map((item: DetailedItem) => (
+			{items?.map((item: ContentItem) => (
 				<NavItem
 					item={item}
 					key={item.id}

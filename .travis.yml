@@ -12,9 +12,7 @@ cache:
 branches:
   only:
     - develop
-    - support/4.1.x
-    - support/4.0.x
-    - master
+    - support/4.x
 notifications:
   slack: craftersoftware:7YiSb41ZG5rfMgiAY7Qgprc7
 before_install:

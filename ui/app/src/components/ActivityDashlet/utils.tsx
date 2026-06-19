@@ -125,22 +125,16 @@ export function renderActivity(
 				/>
 			);
 		case 'REQUEST_PUBLISH':
-			return item.label === null ? (
-				<FormattedMessage
-					id="activityDashlet.deletedItemRequestPublishActivityMessage"
-					defaultMessage="Requested publishing for an item that no longer exists"
-				/>
-			) : (
-				<FormattedMessage
-					id="activityDashlet.requestPublishActivityMessage"
-					defaultMessage="Requested publishing for <anchor>{item}</anchor> {systemType}"
-					values={{ item: [item.label, item.systemType, item.previewUrl, item.path], anchor, systemType }}
-				/>
-			);
-		case 'APPROVE':
 			return (
 				<FormattedMessage
-					id="activityDashlet.publishedActivityMessage"
+					defaultMessage="Requested <render_package_link>a package</render_package_link> for publishing"
+					values={{ render_package_link }}
+				/>
+			);
+		case 'PUBLISH':
+			return (
+				<FormattedMessage
+					id="activityDashlet.publishActivityMessage"
 					defaultMessage="Approved <render_package_link>a package</render_package_link>"
 					values={{ render_package_link }}
 				/>
@@ -148,7 +142,7 @@ export function renderActivity(
 		case 'REJECT_PUBLISH_PACKAGE':
 			return (
 				<FormattedMessage
-					id="activityDashlet.publishedActivityMessage"
+					id="activityDashlet.rejectedActivityMessage"
 					defaultMessage="Rejected <render_package_link>a package</render_package_link>"
 					values={{ render_package_link }}
 				/>
@@ -210,7 +204,7 @@ export const activityNameLookup: Record<Activities | 'ALL', any> = {
 	DELETE: <FormattedMessage id="words.delete" defaultMessage="Delete" />,
 	INITIAL_PUBLISH: <FormattedMessage id="operations.initialPublish" defaultMessage="Initial Publish" />,
 	MOVE: <FormattedMessage id="words.move" defaultMessage="Move" />,
-	APPROVE: <FormattedMessage id="words.approve" defaultMessage="Approve" />,
+	PUBLISH: <FormattedMessage id="words.approve" defaultMessage="Approve" />,
 	PUBLISHED: <FormattedMessage id="words.publish" defaultMessage="Publish" />,
 	REJECT_PUBLISH_PACKAGE: <FormattedMessage id="words.reject" defaultMessage="Reject" />,
 	REQUEST_PUBLISH: <FormattedMessage id="operations.requestPublish" defaultMessage="Request Publish" />,

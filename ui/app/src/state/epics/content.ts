@@ -18,61 +18,42 @@ import { ofType } from 'redux-observable';
 import { filter, map, mergeMap, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import {
 	clearClipboard,
-	completeDetailedItem,
 	conditionallyUnlockItem,
+	contentItemsMissing,
 	deleteController,
 	deleteTemplate,
 	duplicateAsset,
 	duplicateItem,
 	duplicateWithPolicyValidation,
-	fetchDetailedItem,
-	fetchDetailedItemComplete,
-	fetchDetailedItemFailed,
-	fetchDetailedItems,
-	fetchDetailedItemsComplete,
-	fetchDetailedItemsFailed,
+	fetchContentItem,
+	fetchContentItemComplete,
+	fetchContentItemFailed,
+	fetchContentItems,
+	fetchContentItemsComplete,
+	fetchContentItemsFailed,
 	fetchQuickCreateList as fetchQuickCreateListAction,
 	fetchQuickCreateListComplete,
 	fetchQuickCreateListFailed,
-	fetchSandboxItem,
-	fetchSandboxItemComplete,
-	fetchSandboxItemFailed,
-	FetchSandboxItemPayload,
-	fetchSandboxItems,
-	fetchSandboxItemsComplete,
-	fetchSandboxItemsFailed,
 	lockItem,
 	lockItemCompleted,
 	lockItemFailed,
 	pasteItem,
 	pasteItemWithPolicyValidation,
-	reloadDetailedItem,
-	sandboxItemsMissing,
+	reloadContentItem,
 	unlockItem
 } from '../actions/content';
 import { catchAjaxError } from '../../utils/ajax';
 import {
 	duplicate,
-	fetchDetailedItem as fetchDetailedItemService,
-	fetchDetailedItems as fetchDetailedItemsService,
+	fetchContentItem as fetchContentItemService,
+	fetchContentItems as fetchContentItemsService,
 	fetchItemByPath,
-	fetchItemsByPath,
 	fetchQuickCreateList,
-	fetchSandboxItem as fetchSandboxItemService,
 	lock,
 	paste,
 	unlock
 } from '../../services/content';
 import { merge, Observable, of } from 'rxjs';
-import {
-	closeConfirmDialog,
-	closeDeleteDialog,
-	showCodeEditorDialog,
-	showConfirmDialog,
-	showDeleteDialog,
-	showEditDialog,
-	showItemMegaMenu
-} from '../actions/dialogs';
 import { getEditorMode, isEditableAsset } from '../../utils/content';
 import {
 	blockUI,
@@ -102,10 +83,14 @@ import { CrafterCMSEpic } from '../store';
 import StandardAction from '../../models/StandardAction';
 import { asArray } from '../../utils/array';
 import { AjaxError } from 'rxjs/ajax';
-import { showErrorDialog } from '../reducers/dialogs/error';
 import { dissociateTemplate } from '../actions/preview';
 import { isBlank } from '../../utils/string';
 import SocketEvent, { MoveContentEventPayload } from '../../models/SocketEvent';
+import { popDialog, pushDialog } from '../actions/dialogStack';
+import { nanoid } from 'nanoid';
+import { createComponentId, pickShowContentFormAction, pushConfirmDialog, pushErrorDialog } from '../../utils/system';
+import type { ContentItem } from '../../models';
+import { popCodeEditorDialog, showItemMegaMenu } from '../actions/dialogs';
 
 export const sitePolicyMessages = defineMessages({
 	itemPastePolicyConfirm: {
@@ -181,84 +166,56 @@ const content: CrafterCMSEpic[] = [
 	(action$) =>
 		action$.pipe(
 			ofType(showItemMegaMenu.type),
-			map(({ payload }) => fetchSandboxItem({ path: payload.path }))
+			map(({ payload }) => fetchContentItem({ path: payload.path }))
 		),
 	// endregion
-	// region fetchDetailedItem, reloadDetailedItem
+	// region fetchContentItem, reloadContentItem
 	(action$, state$) =>
 		action$.pipe(
-			ofType(fetchDetailedItem.type, reloadDetailedItem.type),
+			ofType(reloadContentItem.type),
 			withLatestFrom(state$),
 			filter(
 				([{ payload, type }, state]) =>
 					// Only fetch if the item isn't already in state or it is an explicit re-fetch
-					// request (via reloadDetailedItem action)
-					!state.content.itemsByPath[payload.path] || type === reloadDetailedItem.type
+					// request (via reloadContentItem action)
+					!state.content.itemsByPath[payload.path] || type === reloadContentItem.type
 			),
 			mergeMap(([{ payload }, state]) =>
-				fetchDetailedItemService(state.sites.active, payload.path).pipe(
-					map(fetchDetailedItemComplete),
-					catchAjaxError(fetchDetailedItemFailed)
+				fetchContentItemService(state.sites.active, payload.path).pipe(
+					map((item) => fetchContentItemComplete({ item })),
+					catchAjaxError(fetchContentItemFailed)
 				)
 			)
 		),
 	// endregion
-	// region fetchDetailedItems
+	// region fetchContentItem
 	(action$, state$) =>
 		action$.pipe(
-			ofType(fetchDetailedItems.type),
-			withLatestFrom(state$),
-			switchMap(([{ payload }, state]) =>
-				fetchDetailedItemsService(state.sites.active, payload.paths).pipe(
-					map((items) => fetchDetailedItemsComplete({ items })),
-					catchAjaxError(fetchDetailedItemsFailed)
-				)
-			)
-		),
-	// endregion
-	// region completeDetailedItem
-	(action$, state$) =>
-		action$.pipe(
-			ofType(completeDetailedItem.type),
-			withLatestFrom(state$),
-			// Only fetch if the item isn't fully loaded (i.e. it's a parsed SandboxItem and need the DetailedItems)
-			filter(([{ payload }, state]) => payload.force || !state.content.itemsByPath?.[payload.path]?.live),
-			mergeMap(([{ payload }, state]) =>
-				fetchDetailedItemService(state.sites.active, payload.path).pipe(
-					map((item) => fetchDetailedItemComplete(item)),
-					catchAjaxError(fetchDetailedItemFailed)
-				)
-			)
-		),
-	// endregion
-	// region fetchSandboxItem
-	(action$: Observable<StandardAction<FetchSandboxItemPayload>>, state$) =>
-		action$.pipe(
-			ofType(fetchSandboxItem.type),
+			ofType(fetchContentItem.type),
 			withLatestFrom(state$),
 			mergeMap(([{ payload }, state]) =>
-				fetchSandboxItemService(state.sites.active, payload.path).pipe(
-					map((item) => (item ? fetchSandboxItemComplete({ item }) : sandboxItemsMissing({ paths: [payload.path] }))),
-					catchAjaxError(fetchSandboxItemFailed)
+				fetchContentItemService(state.sites.active, payload.path).pipe(
+					map((item) => (item ? fetchContentItemComplete({ item }) : contentItemsMissing({ paths: [payload.path] }))),
+					catchAjaxError(fetchContentItemFailed)
 				)
 			)
 		),
 	// endregion
-	// region fetchSandboxItems
+	// region fetchContentItems
 	(action$, state$) =>
 		action$.pipe(
-			ofType(fetchSandboxItems.type),
+			ofType(fetchContentItems.type),
 			withLatestFrom(state$),
-			switchMap(([{ payload }, state]) =>
-				fetchItemsByPath(state.sites.active, payload.paths).pipe(
-					map((items) => fetchSandboxItemsComplete({ items })),
-					catchAjaxError(fetchSandboxItemsFailed)
+			mergeMap(([{ payload }, state]) =>
+				fetchContentItemsService(state.sites.active, payload.paths).pipe(
+					map((items) => fetchContentItemsComplete({ items })),
+					catchAjaxError(fetchContentItemsFailed)
 				)
 			)
 		),
 	// endregion
 	// region duplicateItem
-	(action$, state$, { getIntl }) =>
+	(action$, state$, { getIntl, store }) =>
 		action$.pipe(
 			ofType(duplicateItem.type),
 			withLatestFrom(state$),
@@ -273,11 +230,11 @@ const content: CrafterCMSEpic[] = [
 					duplicate(state.sites.active, payload.path).pipe(
 						switchMap(({ item: path }) => [
 							unblockUI(),
-							showEditDialog({
+							pickShowContentFormAction({
 								site: state.sites.active,
 								path,
 								authoringBase: state.env.authoringBase,
-								onSaveSuccess: payload.onSuccess
+								onSaveSuccess: () => store.dispatch(payload.onSuccess)
 							})
 						])
 					)
@@ -285,7 +242,7 @@ const content: CrafterCMSEpic[] = [
 			),
 			catchAjaxError(
 				() => unblockUI(),
-				(error) => showErrorDialog({ error: error.response })
+				(error) => pushErrorDialog({ props: { error: error.response } })
 			)
 		),
 	// endregion
@@ -332,7 +289,7 @@ const content: CrafterCMSEpic[] = [
 		),
 	// endregion
 	// region duplicateAsset
-	(action$, state$, { getIntl }) =>
+	(action$, state$, { getIntl, store }) =>
 		action$.pipe(
 			ofType(duplicateAsset.type),
 			withLatestFrom(state$),
@@ -348,16 +305,22 @@ const content: CrafterCMSEpic[] = [
 						switchMap(({ item: path }) => {
 							const mode = getEditorMode(state.content.itemsByPath[payload.path].mimeType);
 							const editableAsset = isEditableAsset(payload.path);
+							const dialogId = nanoid();
 							return [
 								unblockUI(),
 								...(editableAsset
 									? [
-											showCodeEditorDialog({
-												authoringBase: state.env.authoringBase,
-												site: state.sites.active,
-												path,
-												mode,
-												onSuccess: payload.onSuccess
+											pushDialog({
+												id: dialogId,
+												component: createComponentId('CodeEditorDialog'),
+												props: {
+													authoringBase: state.env.authoringBase,
+													site: state.sites.active,
+													path,
+													mode,
+													onSuccess: () => store.dispatch(payload.onSuccess),
+													onClose: () => store.dispatch(popCodeEditorDialog({ id: dialogId }))
+												}
 											})
 										]
 									: [])
@@ -365,7 +328,7 @@ const content: CrafterCMSEpic[] = [
 						}),
 						catchAjaxError(
 							() => unblockUI(),
-							(error) => showErrorDialog({ error: error.response })
+							(error) => pushErrorDialog({ props: { error: error.response } })
 						)
 					)
 				)
@@ -373,7 +336,7 @@ const content: CrafterCMSEpic[] = [
 		),
 	// endregion
 	// region duplicateWithPolicyValidation
-	(action$, state$, { getIntl }) =>
+	(action$, state$, { getIntl, store }) =>
 		action$.pipe(
 			ofType(duplicateWithPolicyValidation.type),
 			withLatestFrom(state$),
@@ -385,30 +348,38 @@ const content: CrafterCMSEpic[] = [
 				}).pipe(
 					map(({ allowed, modifiedValue, target, message }) => {
 						if (allowed && modifiedValue) {
-							return showConfirmDialog({
-								body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyConfirm, {
-									action: getIntl().formatMessage(sitePolicyMessages.duplicate),
-									path: target,
-									modifiedPath: modifiedValue,
-									detail: message
-								}),
-								onCancel: closeConfirmDialog(),
-								onOk: batchActions([
-									...(payload.type === 'item'
-										? [
-												duplicateItem({
-													path: payload.path,
-													onSuccess: showDuplicatedItemSuccessNotification()
-												})
-											]
-										: [
-												duplicateAsset({
-													path: payload.path,
-													onSuccess: showDuplicatedItemSuccessNotification()
-												})
-											]),
-									closeConfirmDialog()
-								])
+							const dialogId = nanoid();
+							return pushConfirmDialog({
+								id: dialogId,
+								props: {
+									body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyConfirm, {
+										action: getIntl().formatMessage(sitePolicyMessages.duplicate),
+										path: target,
+										modifiedPath: modifiedValue,
+										detail: message
+									}),
+									onCancel: () => store.dispatch(popDialog({ id: dialogId })),
+									onOk: () => {
+										store.dispatch(
+											batchActions([
+												...(payload.type === 'item'
+													? [
+															duplicateItem({
+																path: payload.path,
+																onSuccess: showDuplicatedItemSuccessNotification()
+															})
+														]
+													: [
+															duplicateAsset({
+																path: payload.path,
+																onSuccess: showDuplicatedItemSuccessNotification()
+															})
+														]),
+												popDialog({ id: dialogId })
+											])
+										);
+									}
+								}
 							});
 						} else if (allowed) {
 							return payload.type === 'item'
@@ -421,11 +392,16 @@ const content: CrafterCMSEpic[] = [
 										onSuccess: showDuplicatedItemSuccessNotification()
 									});
 						} else {
-							return showConfirmDialog({
-								body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyError, {
-									action: getIntl().formatMessage(sitePolicyMessages.duplicate),
-									detail: message
-								})
+							const dialogId = nanoid();
+							return pushConfirmDialog({
+								id: dialogId,
+								props: {
+									body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyError, {
+										action: getIntl().formatMessage(sitePolicyMessages.duplicate),
+										detail: message
+									}),
+									onOk: () => store.dispatch(popDialog({ id: dialogId }))
+								}
 							});
 						}
 					})
@@ -463,7 +439,7 @@ const content: CrafterCMSEpic[] = [
 						map(() => batchActions([unblockUI(), clearClipboard(), showPasteItemSuccessNotification()])),
 						catchAjaxError(
 							() => unblockUI(),
-							(error) => showErrorDialog({ error: error.response })
+							(error) => pushErrorDialog({ props: { error: error.response } })
 						)
 					)
 				)
@@ -471,7 +447,7 @@ const content: CrafterCMSEpic[] = [
 		),
 	// endregion
 	// region pasteItemWithPolicyValidation
-	(action$, state$, { getIntl }) =>
+	(action$, state$, { getIntl, store }) =>
 		action$.pipe(
 			ofType(pasteItemWithPolicyValidation.type),
 			withLatestFrom(state$),
@@ -497,17 +473,23 @@ const content: CrafterCMSEpic[] = [
 					}).pipe(
 						switchMap(({ allowed, modifiedValue, target, message }) => {
 							if (allowed && modifiedValue) {
+								const dialogId = nanoid();
 								return [
 									unblockUI(),
-									showConfirmDialog({
-										body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyConfirm, {
-											action: state.content.clipboard.type === 'CUT' ? 'cut' : 'copy',
-											path: target,
-											modifiedPath: modifiedValue,
-											detail: message
-										}),
-										onCancel: closeConfirmDialog(),
-										onOk: batchActions([pasteItem({ path: payload.path }), closeConfirmDialog()])
+									pushConfirmDialog({
+										id: dialogId,
+										props: {
+											body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyConfirm, {
+												action: state.content.clipboard.type === 'CUT' ? 'cut' : 'copy',
+												path: target,
+												modifiedPath: modifiedValue,
+												detail: message
+											}),
+											onCancel: () => store.dispatch(popDialog({ id: dialogId })),
+											onOk: () => {
+												store.dispatch(batchActions([pasteItem({ path: payload.path }), popDialog({ id: dialogId })]));
+											}
+										}
 									})
 								];
 							} else if (allowed) {
@@ -517,13 +499,18 @@ const content: CrafterCMSEpic[] = [
 									})
 								];
 							} else {
+								const dialogId = nanoid();
 								return [
 									unblockUI(),
-									showConfirmDialog({
-										body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyError, {
-											action: state.content.clipboard.type === 'CUT' ? 'cut' : 'copy',
-											detail: message
-										})
+									pushConfirmDialog({
+										id: dialogId,
+										props: {
+											body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyError, {
+												action: state.content.clipboard.type === 'CUT' ? 'cut' : 'copy',
+												detail: message
+											}),
+											onOk: () => store.dispatch(popDialog({ id: dialogId }))
+										}
 									})
 								];
 							}
@@ -534,7 +521,7 @@ const content: CrafterCMSEpic[] = [
 		),
 	// endregion
 	// region deleteController, deleteTemplate
-	(action$, state$, { getIntl }) =>
+	(action$, state$, { getIntl, store }) =>
 		action$.pipe(
 			ofType(deleteController.type, deleteTemplate.type),
 			withLatestFrom(state$),
@@ -545,43 +532,65 @@ const content: CrafterCMSEpic[] = [
 
 				// path may be empty string if the displayTemplate has not been set for a content type.
 				if (isBlank(path)) {
+					const dialogId = nanoid();
 					return of(
-						showConfirmDialog({
-							body: getIntl().formatMessage(
-								itemFailureMessages[type === 'DELETE_CONTROLLER' ? 'controllerNotFound' : 'templateNotFound']
-							)
+						pushConfirmDialog({
+							id: dialogId,
+							props: {
+								body: getIntl().formatMessage(
+									itemFailureMessages[type === 'DELETE_CONTROLLER' ? 'controllerNotFound' : 'templateNotFound']
+								),
+								onOk: () => store.dispatch(popDialog({ id: dialogId }))
+							}
 						})
 					);
 				} else {
 					return merge(
 						of(blockUI({ message: `${getIntl().formatMessage(inProgressMessages.processing)}...` })),
 						fetchItemByPath(state.sites.active, path).pipe(
-							switchMap((itemToDelete) => [
-								showDeleteDialog({
-									items: asArray(itemToDelete),
-									onSuccess: batchActions(
-										[
-											showDeleteItemSuccessNotification(),
-											type === 'DELETE_TEMPLATE' && dissociateTemplate({ contentTypeId: item.contentTypeId }),
-											closeDeleteDialog(),
-											onSuccess
-										].filter(Boolean)
-									)
-								}),
-								unblockUI()
-							]),
-							catchAjaxError((error: AjaxError) =>
-								batchActions([
+							switchMap((itemToDelete) => {
+								const dialogId = nanoid();
+								return [
+									pushDialog({
+										id: dialogId,
+										component: createComponentId('DeleteDialog'),
+										props: {
+											items: asArray(itemToDelete),
+											onSuccess: ({ items }: { items: ContentItem[] }) =>
+												store.dispatch(
+													batchActions(
+														[
+															showDeleteItemSuccessNotification({ items }),
+															type === 'DELETE_TEMPLATE' && dissociateTemplate({ contentTypeId: item.contentTypeId }),
+															popDialog({ id: dialogId }),
+															onSuccess
+														].filter(Boolean)
+													)
+												)
+										}
+									}),
+									unblockUI()
+								];
+							}),
+							catchAjaxError((error: AjaxError) => {
+								const dialogId = nanoid();
+								return batchActions([
 									unblockUI(),
 									error.status === 404
-										? showConfirmDialog({
-												body: getIntl().formatMessage(
-													itemFailureMessages[type === 'DELETE_CONTROLLER' ? 'controllerNotFound' : 'templateNotFound']
-												)
+										? pushConfirmDialog({
+												id: dialogId,
+												props: {
+													body: getIntl().formatMessage(
+														itemFailureMessages[
+															type === 'DELETE_CONTROLLER' ? 'controllerNotFound' : 'templateNotFound'
+														]
+													),
+													onOk: () => store.dispatch(popDialog({ id: dialogId }))
+												}
 											})
-										: showErrorDialog({ error: error.response ?? error })
-								])
-							)
+										: pushErrorDialog({ props: { error: error.response ?? error } })
+								]);
+							})
 						)
 					);
 				}
@@ -595,12 +604,12 @@ const content: CrafterCMSEpic[] = [
 			withLatestFrom(state$),
 			filter(([{ payload }, state]) => Boolean(state.content.itemsByPath[payload.targetPath])),
 			switchMap(([{ payload }, state]) =>
-				fetchSandboxItemService(state.sites.active, payload.targetPath).pipe(
+				fetchContentItemService(state.sites.active, payload.targetPath).pipe(
 					tap((item) => {
-						getHostToGuestBus().next(fetchSandboxItemComplete({ item }));
+						getHostToGuestBus().next(fetchContentItemComplete({ item }));
 					}),
-					map((item) => fetchSandboxItemComplete({ item })),
-					catchAjaxError(fetchSandboxItemFailed)
+					map((item) => fetchContentItemComplete({ item })),
+					catchAjaxError(fetchContentItemFailed)
 				)
 			)
 		),
@@ -616,10 +625,10 @@ const content: CrafterCMSEpic[] = [
 				const parentWithIndex = withIndex(parentPath);
 				return [
 					// If the item is in state, assume it got updated
-					state.content.itemsByPath[targetPath] && fetchSandboxItem({ path: targetPath }),
+					state.content.itemsByPath[targetPath] && fetchContentItem({ path: targetPath }),
 					// If the parent of the item is in state, a new item may have been added, re-fetch to update its child count
-					state.content.itemsByPath[parentPath] && fetchSandboxItem({ path: parentPath }),
-					state.content.itemsByPath[parentWithIndex] && fetchSandboxItem({ path: parentWithIndex })
+					state.content.itemsByPath[parentPath] && fetchContentItem({ path: parentPath }),
+					state.content.itemsByPath[parentWithIndex] && fetchContentItem({ path: parentWithIndex })
 				].filter(Boolean);
 			})
 		),
@@ -641,7 +650,7 @@ const content: CrafterCMSEpic[] = [
 				[targetPath, parentOfTarget, parentOfSource, withIndex(parentOfTarget), withIndex(parentOfSource)].forEach(
 					(path) => {
 						if (itemsByPath[path]) {
-							actions.push(fetchSandboxItem({ path }));
+							actions.push(fetchContentItem({ path }));
 						}
 					}
 				);

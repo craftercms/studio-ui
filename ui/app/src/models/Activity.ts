@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SandboxItem } from './Item';
+import { ContentItem } from './Item';
 
 // Omitting UNKNOWN, APPROVE & APPROVE_SCHEDULED for now.
 export type Activities =
@@ -23,15 +23,12 @@ export type Activities =
 	| 'DELETE'
 	| 'MOVE'
 	| 'REQUEST_PUBLISH'
-	| 'APPROVE'
 	| 'REJECT_PUBLISH_PACKAGE'
 	| 'REVERT'
 	| 'PUBLISHED'
 	| 'INITIAL_PUBLISH'
 	| 'CANCEL_PUBLISH_PACKAGE'
-	// TODO - Change when backend is updated
-	//  PUBLISH is what the backend sends for APPROVE & APPROVE_SCHEDULED.
-	//  The latter are never sent back currently.
+	| 'PUBLISH'
 	| 'PUBLISH_ALL';
 
 export interface Activity {
@@ -44,7 +41,7 @@ export interface Activity {
 	};
 	actionType: Activities;
 	actionTimestamp: string;
-	item: Pick<SandboxItem, 'path' | 'label' | 'previewUrl' | 'systemType'>;
+	item: Pick<ContentItem, 'path' | 'label' | 'previewUrl' | 'systemType'>;
 	package: any; // TODO: Type package
 }
 

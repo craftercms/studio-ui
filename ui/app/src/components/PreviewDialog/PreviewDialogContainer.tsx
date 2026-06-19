@@ -27,15 +27,18 @@ import { FormattedMessage } from 'react-intl';
 import PrimaryButton from '../PrimaryButton';
 import { DialogBody } from '../DialogBody';
 import { useDispatch } from 'react-redux';
-import { closePreviewDialog, showCodeEditorDialog } from '../../state/actions/dialogs';
+import { popCodeEditorDialog } from '../../state/actions/dialogs';
 import { batchActions } from '../../state/actions/misc';
 import { hasEditAction, isBlobUrl } from '../../utils/content';
 import { useSelection } from '../../hooks/useSelection';
 import useItemsByPath from '../../hooks/useItemsByPath';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
-import { fetchSandboxItem } from '../../state/actions/content';
+import { fetchContentItem } from '../../state/actions/content';
 import useItemsBeingFetchedByPath from '../../hooks/useItemsBeingFetchedByPath';
 import palette from '../../styles/palette';
+import { pushDialog } from '../../state/actions/dialogStack';
+import { nanoid } from 'nanoid';
+import { createComponentId } from '../../utils/system';
 
 export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
 	const { title, content, mode, url, path, onClose, type, mimeType, backgroundModeIndex, showEdit = true } = props;
@@ -49,7 +52,7 @@ export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
 
 	useEffect(() => {
 		if (type === 'editor' && path && !items[path] && !itemsBeingFetchedByPath[path]) {
-			dispatch(fetchSandboxItem({ path }));
+			dispatch(fetchContentItem({ path }));
 		}
 	}, [siteId, items, path, type, dispatch, itemsBeingFetchedByPath]);
 
@@ -114,12 +117,20 @@ export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
 	};
 
 	const onEdit = () => {
+		const codeEditorDialogId = nanoid();
+		onClose(null, null);
 		dispatch(
 			batchActions([
-				closePreviewDialog(),
-				showCodeEditorDialog({
-					path: url,
-					mode
+				pushDialog({
+					id: codeEditorDialogId,
+					component: createComponentId('CodeEditorDialog'),
+					allowMinimize: true,
+					allowFullScreen: true,
+					props: {
+						path: url,
+						mode,
+						onClose: () => dispatch(popCodeEditorDialog({ id: codeEditorDialogId }))
+					}
 				})
 			])
 		);

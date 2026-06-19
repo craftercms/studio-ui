@@ -35,6 +35,7 @@ import { getRootPath } from '../../utils/path';
 import MoreVertIcon from '@mui/icons-material/MoreVertRounded';
 import IconButton from '@mui/material/IconButton';
 import Box from '@mui/material/Box';
+import { ContentItem } from '../../models';
 
 export function DependenciesDialogUI(props: DependenciesDialogUIProps) {
 	const {
@@ -133,7 +134,7 @@ export function DependenciesDialogUI(props: DependenciesDialogUIProps) {
 							dependencies={dependencies}
 							compactView={compactView}
 							showTypes={showTypes}
-							renderAction={(dependency) =>
+							renderAction={(dependency: ContentItem) =>
 								isEditableItem(dependency.path) ? (
 									<IconButton
 										aria-haspopup="true"
@@ -195,7 +196,7 @@ export function DependenciesDialogUI(props: DependenciesDialogUIProps) {
 							color="primary"
 						/>
 					}
-					label="Compact"
+					label={<FormattedMessage defaultMessage="Compact" />}
 				/>
 				<FormControl sx={{ minWidth: 120, marginLeft: 'auto' }}>
 					<Select

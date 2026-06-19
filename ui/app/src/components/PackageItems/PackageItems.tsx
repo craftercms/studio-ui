@@ -20,7 +20,7 @@ import { useDispatch } from 'react-redux';
 import { fetchPackageItems } from '../../services/publishing';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { AllItemActions, ApiResponse, PublishingItem } from '../../models';
+import { AllItemActions, ApiResponse, LightItem } from '../../models';
 import Popover, { getOffsetLeft, getOffsetTop } from '@mui/material/Popover';
 import { EmptyState } from '../EmptyState';
 import PackageItemsList from './PackageItemsList';
@@ -31,11 +31,12 @@ import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import PackageItemsTree from './PackageItemsTree';
 import Paper from '@mui/material/Paper';
-import { fetchDetailedItem } from '../../services/content';
+import { fetchContentItem } from '../../services/content';
 import { generateSingleItemOptions, itemActionDispatcher } from '../../utils/itemActions';
 import MenuItem from '@mui/material/MenuItem';
 import useEnv from '../../hooks/useEnv';
 import PackageItemsActions from './PackageItemsActions';
+import { firstValueFrom } from 'rxjs';
 
 export interface PackageItemsProps {
 	packageId: number;
@@ -43,19 +44,12 @@ export interface PackageItemsProps {
 
 const maxTreeItems = 100;
 
-export interface PackageItem {
-	path: PublishingItem['path'];
-	label: PublishingItem['itemMetadata']['label'];
-	systemType: PublishingItem['itemMetadata']['systemType'];
-	mimeType: PublishingItem['itemMetadata']['mimeType'];
-}
-
 export function PackageItems(props: PackageItemsProps) {
 	const { packageId } = props;
 	const siteId = useActiveSiteId();
 	const dispatch = useDispatch();
 	const [state, setState] = useSpreadState<{
-		items: PackageItem[];
+		items: LightItem[];
 		loading: boolean;
 		error: ApiResponse;
 		total: number;
@@ -107,8 +101,8 @@ export function PackageItems(props: PackageItemsProps) {
 
 	const loadNextPage = () => {
 		setState({ isNextPageLoading: true, error: null });
-		fetchPackageItems(siteId, packageId, { limit: state.limit, offset: state.offset }).subscribe({
-			next(items) {
+		return firstValueFrom(fetchPackageItems(siteId, packageId, { limit: state.limit, offset: state.offset }))
+			.then((items) => {
 				const newOffset = state.offset + state.limit;
 				setState({
 					items: [...state.items, ...items.map((item) => ({ ...item.itemMetadata, path: item.path }))],
@@ -116,23 +110,22 @@ export function PackageItems(props: PackageItemsProps) {
 					offset: newOffset,
 					total: items.total
 				});
-			},
-			error({ response }) {
+			})
+			.catch(({ response }) => {
 				setState({ error: response.response, isNextPageLoading: false });
-			}
-		});
+			});
 	};
 
-	const onOpenMenu = (e: React.MouseEvent<HTMLButtonElement>, packageItem: PackageItem) => {
+	const onOpenMenu = (e: React.MouseEvent<HTMLButtonElement>, packageItem: LightItem) => {
 		const element = e.currentTarget;
 		const anchorRect = element.getBoundingClientRect();
 		const top = anchorRect.top + getOffsetTop(anchorRect, 'top');
 		const left = anchorRect.left + getOffsetLeft(anchorRect, 'left');
-		fetchDetailedItem(siteId, packageItem.path).subscribe((detailedItem) => {
-			const itemMenuOptions = generateSingleItemOptions(detailedItem, formatMessage, {
+		fetchContentItem(siteId, packageItem.path).subscribe((contentItem) => {
+			const itemMenuOptions = generateSingleItemOptions(contentItem, formatMessage, {
 				includeOnly: ['view', 'dependencies', 'history']
 			});
-			setContextMenu({ options: itemMenuOptions.flat(), item: detailedItem, anchorPosition: { top, left } });
+			setContextMenu({ options: itemMenuOptions.flat(), item: contentItem, anchorPosition: { top, left } });
 		});
 	};
 

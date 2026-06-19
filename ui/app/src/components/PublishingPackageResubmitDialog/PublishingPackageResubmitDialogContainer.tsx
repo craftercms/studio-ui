@@ -23,36 +23,34 @@ import { DependencyMap, InternalDialogState, usePublishState } from '../PublishD
 import { createAtLeastHalfHourInFutureDate } from '../../utils/datetime';
 import { DialogBody } from '../DialogBody';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import { FormattedMessage } from 'react-intl';
 import { DateTimeTimezonePickerProps } from '../DateTimeTimezonePicker';
 import Divider from '@mui/material/Divider';
 import PublishReferencesLegend from '../PublishDialog/PublishReferencesLegend';
-import { DetailedItem, PublishingTarget, PublishParams } from '../../models';
+import { LightItem, PublishingTarget, PublishParams } from '../../models';
 import { PublishDialogForm } from '../PublishDialog/PublishDialogForm';
 import { publish, recalculatePackage } from '../../services/publishing';
-import { of, switchMap } from 'rxjs';
-import { fetchDetailedItems } from '../../services/content';
 import PublishPackageItemsView from '../PublishDialog/PublishPackageItemsView';
 import Paper from '@mui/material/Paper';
 import LookupTable from '../../models/LookupTable';
 import { DialogFooter } from '../DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
-import { map } from 'rxjs/operators';
 import { createLookupTable } from '../../utils/object';
 import { Fade } from '@mui/material';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
-import { updatePublishingPackageResubmitDialog } from '../../state/actions/dialogs';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
-import { batchActions } from '../../state/actions/misc';
 import { isBlank } from '../../utils/string';
 import { LoadingState } from '../LoadingState';
+import useActiveUser from '../../hooks/useActiveUser';
+import { pushErrorDialog } from '../../utils/system';
+import { useEnhancedDialogContext } from '../EnhancedDialog';
 
 export function PublishingPackageResubmitDialogContainer(props: PublishingPackageResubmitDialogContainerProps) {
 	const { pkg, type, isSubmitting, onSuccess, onClose } = props;
 	const siteId = useActiveSiteId();
+	const { permissionsBySite } = useActiveUser();
 	const dispatch = useDispatch();
 	const [state, setState] = useSpreadState<InternalDialogState>({
 		packageTitle: pkg.title,
@@ -64,7 +62,7 @@ export function PublishingPackageResubmitDialogContainer(props: PublishingPackag
 		error: null,
 		fetchingItems: false
 	});
-	const [mainItems, setMainItems] = useState<DetailedItem[]>([]);
+	const [mainItems, setMainItems] = useState<LightItem[]>([]);
 	const [publishingTargets, setPublishingTargets] = useState<PublishingTarget[]>(null);
 	const {
 		itemsDataSummary,
@@ -78,9 +76,10 @@ export function PublishingPackageResubmitDialogContainer(props: PublishingPackag
 		itemsAndDependenciesPaths,
 		itemsAndDependenciesMap
 	} = usePublishState({ mainItems });
+	const { updateSubmittingOrHasPendingChanges } = useEnhancedDialogContext();
 	const disabled = isSubmitting;
-	const hasPublishPermission = itemsDataSummary.allItemsHavePublishPermission;
-	const showRequestApproval = hasPublishPermission && !itemsDataSummary.allItemsInSubmittedState;
+	const hasPublishPermission = permissionsBySite[siteId].includes('publish_approve');
+	const showRequestApproval = hasPublishPermission;
 	const isRequestPublish = !hasPublishPermission || state.requestApproval;
 	// Submit button should be disabled when
 	const submitDisabled =
@@ -114,7 +113,7 @@ export function PublishingPackageResubmitDialogContainer(props: PublishingPackag
 
 	const onPublishingArgumentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		let value: unknown;
-		dispatch(updatePublishingPackageResubmitDialog({ hasPendingChanges: true }));
+		updateSubmittingOrHasPendingChanges({ hasPendingChanges: true });
 		switch (e.target.type) {
 			case 'checkbox':
 				value = e.target.checked;
@@ -173,20 +172,16 @@ export function PublishingPackageResubmitDialogContainer(props: PublishingPackag
 			comment: submissionComment
 		};
 
-		dispatch(updatePublishingPackageResubmitDialog({ isSubmitting: true }));
+		updateSubmittingOrHasPendingChanges({ isSubmitting: true });
 
 		publish(siteId, data).subscribe({
 			next() {
-				dispatch(updatePublishingPackageResubmitDialog({ isSubmitting: false, hasPendingChanges: false }));
+				updateSubmittingOrHasPendingChanges({ isSubmitting: false, hasPendingChanges: false });
 				onSuccess?.();
 			},
 			error({ response }) {
-				dispatch(
-					batchActions([
-						updatePublishingPackageResubmitDialog({ isSubmitting: false }),
-						showErrorDialog({ error: response.response })
-					])
-				);
+				updateSubmittingOrHasPendingChanges({ isSubmitting: false });
+				dispatch(pushErrorDialog({ props: { error: response.response } }));
 			}
 		});
 	};
@@ -196,54 +191,37 @@ export function PublishingPackageResubmitDialogContainer(props: PublishingPackag
 			if (!mainItems.length) {
 				setState({ fetchingItems: true });
 			}
-			// TODO: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-			// TODO: This is not scalable (bulk fetch of countless DetailedItems). We must review and discuss how to adjust.
-			// TODO: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-			recalculatePackage(siteId, pkg.id, state.publishingTarget)
-				.pipe(
-					switchMap((calculatedPackage) => {
-						const packageItems = [
-							...calculatedPackage.items,
-							...calculatedPackage.hardDependencies,
-							...calculatedPackage.softDependencies
-						];
-						if (packageItems) {
-							return fetchDetailedItems(siteId, packageItems).pipe(
-								map((detailedItemsList) => {
-									return { calculatedPackage, detailedItemsList };
-								})
-							);
-						} else {
-							return of({ calculatedPackage, detailedItemsList: [] });
-						}
-					})
-				)
-				.subscribe({
-					next({ calculatedPackage, detailedItemsList }) {
-						const depMap: DependencyMap = {};
-						const depLookup: LookupTable<DetailedItem> = createLookupTable(detailedItemsList, 'path');
-						calculatedPackage.hardDependencies.forEach((path) => {
-							depMap[path] = 'hard';
-						});
-						calculatedPackage.softDependencies.forEach((path) => {
-							depMap[path] = 'soft';
-						});
-						setState({ fetchingItems: false });
-						setDependencyData({
-							typeByPath: depMap,
-							paths: Object.keys(depMap),
-							itemsByPath: depLookup,
-							items: detailedItemsList
-						});
-						setMainItems(calculatedPackage.items.map((path) => depLookup[path]));
-					},
-					error() {
-						setState({ fetchingItems: false });
-						setDependencyData(null);
-					}
-				});
+			recalculatePackage(siteId, pkg.id, state.publishingTarget).subscribe({
+				next(calculatedPackage) {
+					const itemsList = [
+						...calculatedPackage.items,
+						...calculatedPackage.hardDependencies,
+						...calculatedPackage.softDependencies
+					];
+					const depMap: DependencyMap = {};
+					const depLookup: LookupTable<LightItem> = createLookupTable(itemsList, 'path');
+					calculatedPackage.hardDependencies.forEach(({ path }) => {
+						depMap[path] = 'hard';
+					});
+					calculatedPackage.softDependencies.forEach(({ path }) => {
+						depMap[path] = 'soft';
+					});
+					setState({ fetchingItems: false });
+					setDependencyData({
+						typeByPath: depMap,
+						paths: Object.keys(depMap),
+						itemsByPath: depLookup,
+						items: itemsList
+					});
+					setMainItems(calculatedPackage.items.map(({ path }) => depLookup[path]));
+				},
+				error() {
+					setState({ fetchingItems: false });
+					setDependencyData(null);
+				}
+			});
 		}
-	}, [pkg.id, setState, siteId, state.publishingTarget, setDependencyData]);
+	}, [pkg.id, setState, siteId, state.publishingTarget, setDependencyData, mainItems?.length]);
 
 	return (
 		<>

@@ -92,26 +92,35 @@ export function importFile(
 	file?: string,
 	id?: string
 ): Promise<any> {
-	// @ts-ignore — methods share same signature
-	const url = buildFileUrl(...arguments);
+	// @ts-expect-error — methods share same signature, this is fine.
+	let url = buildFileUrl(...arguments);
+	if (import.meta.env.DEV && !hasProtocol(url)) {
+		url = `${origin}${url}`;
+	}
 	return import(/* @vite-ignore */ url);
 }
 
-export function importPlugin(fileBuilder: PluginFileBuilder): Promise<any>;
-export function importPlugin(site: string, type: string, name: string): Promise<any>;
-export function importPlugin(site: string, type: string, name: string, file: string): Promise<any>;
-export function importPlugin(site: string, type: string, name: string, file: string, id: string): Promise<any>;
+export function importPlugin(fileBuilder: PluginFileBuilder): Promise<PluginDescriptor>;
+export function importPlugin(site: string, type: string, name: string): Promise<PluginDescriptor>;
+export function importPlugin(site: string, type: string, name: string, file: string): Promise<PluginDescriptor>;
+export function importPlugin(
+	site: string,
+	type: string,
+	name: string,
+	file: string,
+	id: string
+): Promise<PluginDescriptor>;
 export function importPlugin(
 	siteOrBuilder: PluginFileBuilder | string,
 	type?: string,
 	name?: string,
 	file?: string,
 	id?: string
-): Promise<any> {
+): Promise<PluginDescriptor> {
 	// @ts-ignore — methods share the same signature(s)
 	const args: [string, string, string, string, string] = arguments;
 	return importFile(...args).then((module) => {
-		const plugin = module.plugin ?? module.default;
+		const plugin: PluginDescriptor = module.plugin ?? module.default;
 		if (plugin) {
 			// The file may have been previously loaded and hence the plugin registered previously.
 			// This may however cause silent skips of legitimate duplicate plugin id registrations.

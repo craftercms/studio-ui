@@ -29,7 +29,7 @@ import Switch from '@mui/material/Switch';
 import Chip from '@mui/material/Chip';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import Skeleton from '@mui/material/Skeleton';
 import { rand } from '../PathNavigator/utils';
 import ResetPasswordDialog from '../ResetPasswordDialog';
@@ -122,7 +122,11 @@ export function EditUserDialogUI(props: EditUserDialogUIProps) {
 					{managedInStudio ? (
 						<>
 							<Tooltip title={<FormattedMessage id="userInfoDialog.resetPassword" defaultMessage="Reset password" />}>
-								<IconButton onClick={() => onResetPassword(true)} size="large">
+								<IconButton
+									onClick={() => onResetPassword(true)}
+									size="large"
+									aria-label={formatMessage({ id: 'userInfoDialog.resetPassword', defaultMessage: 'Reset password' })}
+								>
 									<PasswordRoundedIcon />
 								</IconButton>
 							</Tooltip>
@@ -151,7 +155,12 @@ export function EditUserDialogUI(props: EditUserDialogUIProps) {
 						/>
 					)}
 					<Tooltip title={<FormattedMessage id="userInfoDialog.close" defaultMessage="Close" />}>
-						<IconButton edge="end" onClick={onCloseButtonClick} size="large">
+						<IconButton
+							edge="end"
+							onClick={onCloseButtonClick}
+							size="large"
+							aria-label={formatMessage({ id: 'userInfoDialog.close', defaultMessage: 'Close' })}
+						>
 							<CloseRoundedIcon />
 						</IconButton>
 					</Tooltip>

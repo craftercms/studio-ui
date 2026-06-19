@@ -22,7 +22,7 @@ import MuiCheckbox from '@mui/material/Checkbox';
 import ListItemText from '@mui/material/ListItemText';
 import Skeleton from '@mui/material/Skeleton';
 import Typography from '@mui/material/Typography';
-import React, { PropsWithChildren } from 'react';
+import React, { PropsWithChildren, ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import MuiListItem from '@mui/material/ListItem';
 import MuiListItemIcon from '@mui/material/ListItemIcon';
 import MuiListSubheader from '@mui/material/ListSubheader';
@@ -32,19 +32,31 @@ import { UNDEFINED } from '../../utils/constants';
 import { getInitials, toColor } from '../../utils/string';
 import Person from '../../models/Person';
 import Avatar from '@mui/material/Avatar';
-import { getPersonFullName } from '../SiteDashboard/utils';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import { FormattedMessage } from 'react-intl';
+import { defineMessages, FormattedMessage, MessageDescriptor, useIntl } from 'react-intl';
 import { Pagination } from '../Pagination';
-import { AllItemActions } from '../../models';
+import { Activity, AllItemActions, PackageActions, PublishPackage } from '../../models';
 import { SxProps } from '@mui/system';
 import { useDispatch } from 'react-redux';
 import { getOffsetLeft, getOffsetTop } from '@mui/material/Popover';
-import { showItemMegaMenu } from '../../state/actions/dialogs';
 import IconButton, { IconButtonProps } from '@mui/material/IconButton';
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
 import Tooltip from '@mui/material/Tooltip';
+import { getPersonFullName, reversePluckProps } from '../../utils/object';
+import { showItemMegaMenu } from '../../state/actions/dialogs';
+import useSpreadState from '../../hooks/useSpreadState';
+import { ContextMenu, ContextMenuOption } from '../ContextMenu';
+import { generatePackageOptions, packageActionDispatcher } from '../../utils/packageActions';
+import { LIVE_COLOUR, STAGING_COLOUR } from '../ItemPublishingTargetIcon/styles';
+import { asLocalizedDateTime } from '../../utils/datetime';
+import useLocale from '../../hooks/useLocale';
+import { useTheme } from '@mui/material/styles';
+import { fetchPackage } from '../../services/publishing';
+import useActiveSiteId from '../../hooks/useActiveSiteId';
+import { pushErrorDialog } from '../../utils/system';
+import { extractErrorPayload } from '../../utils/ajax';
+import { Subscription } from 'rxjs';
 
 export const actionsToBeShown: AllItemActions[] = [
 	'edit',
@@ -182,6 +194,7 @@ export function Pager(props: {
 export function DashletItemOptions(props: { path: string; iconButtonProps?: IconButtonProps }) {
 	const { path, iconButtonProps } = props;
 	const dispatch = useDispatch();
+	const { formatMessage } = useIntl();
 
 	const onOpenItemMegaMenu = (element: Element) => {
 		const anchorRect = element.getBoundingClientRect();
@@ -204,10 +217,159 @@ export function DashletItemOptions(props: { path: string; iconButtonProps?: Icon
 					e.stopPropagation();
 					onOpenItemMegaMenu(e.currentTarget);
 				}}
+				aria-label={formatMessage({ defaultMessage: 'Options' })}
 				{...iconButtonProps}
 			>
 				<MoreVertRoundedIcon />
 			</IconButton>
 		</Tooltip>
+	);
+}
+
+export function usePackageContextMenu() {
+	const [contextMenu, setContextMenu] = useSpreadState<{
+		el: HTMLButtonElement | null;
+		package: PublishPackage | null;
+		options: ContextMenuOption[];
+	}>({
+		el: null,
+		package: null,
+		options: []
+	});
+	const { formatMessage } = useIntl();
+	const dispatch = useDispatch();
+	const position = contextMenu.el?.getBoundingClientRect();
+	const theme = useTheme();
+	const transitionDuration = theme.transitions.duration.standard;
+	const siteId = useActiveSiteId();
+	const subscriptionRef = useRef<Subscription | null>(null);
+	const [isFetchingPackage, setIsFetchingPackage] = useState<boolean>(false);
+
+	const handleContextMenuClick = useCallback(
+		(e: React.MouseEvent<HTMLButtonElement>, pkg: PublishPackage) => {
+			// https://github.com/craftercms/craftercms/issues/8552 - Because of a limitation in the back end, the packages at
+			// this point may not have the full AA. So we need to fetch the package to generate the proper set of options.
+			const currentTarget = e.currentTarget;
+			subscriptionRef.current?.unsubscribe();
+			setContextMenu({ el: currentTarget });
+			setIsFetchingPackage(true);
+			subscriptionRef.current = fetchPackage(siteId, pkg.id).subscribe({
+				next(publishPackage) {
+					setIsFetchingPackage(false);
+					const contextMenuOptions = generatePackageOptions([publishPackage], {
+						includeOnly: ['view', 'resubmit']
+					}).map((option) => ({
+						id: option.id,
+						label: formatMessage(option.label as MessageDescriptor)
+					}));
+					setContextMenu({ package: publishPackage, options: contextMenuOptions });
+				},
+				error(error) {
+					setIsFetchingPackage(false);
+					dispatch(pushErrorDialog({ props: { error: extractErrorPayload(error) } }));
+				}
+			});
+		},
+		[formatMessage, setContextMenu, siteId, dispatch]
+	);
+
+	useEffect(() => {
+		return () => {
+			// Cleanup on unmount
+			subscriptionRef.current?.unsubscribe();
+		};
+	}, []);
+
+	const handleContextMenuClose = useCallback(() => {
+		setContextMenu({
+			el: null,
+			package: null
+		});
+	}, [setContextMenu]);
+
+	const handleOptionClicked = useCallback(
+		(option: PackageActions, pkg: PublishPackage) => {
+			handleContextMenuClose();
+			packageActionDispatcher({
+				pkg,
+				option,
+				dispatch
+			});
+		},
+		[dispatch, handleContextMenuClose]
+	);
+
+	useEffect(() => {
+		if (!contextMenu.el) {
+			// If contextMenu.el is null (meaning the menu is closed), clear the options after the transition has ended.
+			// This is done to prevent the 'No options available' to show while closing the menu (if options is cleared at the same time as el).
+			const timeout = setTimeout(() => {
+				setContextMenu({
+					options: []
+				});
+			}, transitionDuration);
+			return () => clearTimeout(timeout);
+		}
+	}, [contextMenu.el, setContextMenu, transitionDuration]);
+
+	const contextMenuElement = (
+		<ContextMenu
+			open={Boolean(contextMenu.el)}
+			anchorReference={'anchorPosition'}
+			anchorPosition={{ top: position?.bottom ?? 0, left: position?.left ?? 0 }}
+			onClose={handleContextMenuClose}
+			options={[contextMenu.options]}
+			onMenuItemClicked={(option) => handleOptionClicked(option as PackageActions, contextMenu.package!)}
+			transitionDuration={transitionDuration}
+			isLoading={isFetchingPackage}
+		/>
+	);
+	return {
+		contextMenu,
+		openContextMenu: handleContextMenuClick,
+		closeContextMenu: handleContextMenuClose,
+		setContextMenu,
+		contextMenuElement
+	};
+}
+
+const submittedPackageDetailMessages = defineMessages({
+	staging: { id: 'words.staging', defaultMessage: 'Staging' },
+	live: { id: 'words.live', defaultMessage: 'Live' }
+});
+
+/**
+ * Displays details about a submitted package, including the submitter's name,
+ * the publishing target (live or staging), and the submission date.
+ *
+ * @param {Object} props - The component props.
+ * @param {PublishPackage} props.pkg - The package data containing submission details.
+ */
+export function SubmittedPackageDetail({ pkg }: { pkg: PublishPackage }) {
+	const { formatMessage } = useIntl();
+	const locale = useLocale();
+
+	return (
+		<FormattedMessage
+			defaultMessage="Submitted by {name} to go {publishingTarget, select, live { <render_target>live</render_target>} other {<render_target>staging</render_target>}} on {submittedDate}"
+			values={{
+				name: pkg.submitter?.username,
+				publishingTarget: pkg.target,
+				render_target(target: ReactNode[]) {
+					return (
+						<Box component="span" color={target[0] === 'live' ? LIVE_COLOUR : STAGING_COLOUR}>
+							{submittedPackageDetailMessages[target[0] as string]
+								? formatMessage(submittedPackageDetailMessages[target[0] as string]).toLowerCase()
+								: target[0]}
+						</Box>
+					);
+				},
+				submittedDate: asLocalizedDateTime(
+					pkg.schedule ?? pkg.submittedOn,
+					locale.localeCode,
+					locale.dateTimeFormatOptions
+				)
+			}}
+		/>
 	);
 }
