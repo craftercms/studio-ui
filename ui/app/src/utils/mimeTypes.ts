@@ -95,7 +95,7 @@ const messages = defineMessages({
 	},
 	'application/typescript': {
 		id: 'mimeTypes.application/typescript',
-		defaultMessage: 'Typescript'
+		defaultMessage: 'TypeScript'
 	},
 	'text/css': {
 		id: 'mimeTypes.text/css',
