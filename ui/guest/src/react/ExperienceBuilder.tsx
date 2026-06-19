@@ -121,7 +121,7 @@ import { emitSystemEvent, emitSystemEvents } from '@craftercms/studio-ui/state/a
 import { getParentModelId } from '../utils/ice';
 import { SxProps } from '@mui/system';
 import { I18nProvider } from './I18nProvider';
-import { imageEdited } from '@craftercms/studio-ui/state/actions/dialogs';
+import { imageEditCancelled, imageEdited } from '@craftercms/studio-ui/state/actions/dialogs';
 
 // TODO: add themeOptions and global styles customising
 interface BaseXBProps {
@@ -417,6 +417,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
 				case setEditModePadding.type:
 				case assetDragStarted.type:
 				case imageEdited.type:
+				case imageEditCancelled.type:
 					dispatch(action);
 					break;
 				// endregion

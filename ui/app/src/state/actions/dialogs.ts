@@ -394,5 +394,16 @@ export const popCodeEditorDialog = /*#__PURE__*/ createAction<{ id: string }>('P
 // region showImageEditorDialog
 export const showImageEditorDialog =
 	/*#__PURE__*/ createAction<Partial<ImageEditorDialogBaseProps>>('SHOW_IMAGE_EDITOR_DIALOG');
-export const imageEdited = /*#__PURE__*/ createAction<{ blob: Blob; path?: string | null }>('IMAGE_EDITED');
+export const imageEdited = /*#__PURE__*/ createAction<{
+	blob: Blob;
+	newPath?: string;
+	fileName?: string;
+	recordId?: number;
+	uploadPath?: string;
+}>('IMAGE_EDITED');
+export const imageEditCancelled = /*#__PURE__*/ createAction<{
+	fileName?: string;
+	recordId: number;
+	uploadPath?: string;
+}>('IMAGE_EDIT_CANCELLED');
 // endregion

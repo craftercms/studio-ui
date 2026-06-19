@@ -137,6 +137,7 @@ import { useActiveSite } from '../../hooks/useActiveSite';
 import { getPathFromPreviewURL, processPathMacros, withIndex } from '../../utils/path';
 import {
 	closeItemMegaMenu,
+	imageEditCancelled,
 	imageEdited,
 	itemMegaMenuClosed,
 	rtePickerActionResult,
@@ -1156,6 +1157,13 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 									hostToGuest$.next({
 										type: imageEdited.type,
 										payload: { blob, newPath, fileName, recordId, uploadPath }
+									});
+								},
+								onClose: () => {
+									dispatch(popDialog({ id }));
+									hostToGuest$.next({
+										type: imageEditCancelled.type,
+										payload: { fileName, recordId, uploadPath }
 									});
 								}
 							}

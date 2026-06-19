@@ -103,7 +103,7 @@ import { ensureSingleSlash } from '@craftercms/studio-ui/utils/string';
 import { getInheritanceParentIdsForField, validateImageRestrictions } from '@craftercms/studio-ui/utils/content';
 import { SearchItem } from '@craftercms/studio-ui/models';
 import type { ImageRestrictions } from '@craftercms/studio-ui/components/ImageEditorDialog/types';
-import { imageEdited, showImageEditorDialog } from '@craftercms/studio-ui/state/actions/dialogs';
+import { imageEditCancelled, imageEdited, showImageEditorDialog } from '@craftercms/studio-ui/state/actions/dialogs';
 
 const createReader$ = (file: File) =>
 	new Observable((subscriber: Subscriber<ProgressEvent<FileReader>>) => {
@@ -615,6 +615,17 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 				} else {
 					return NEVER;
 				}
+			})
+		);
+	},
+	// endregion
+	// region imageEditCancelled
+	(action$) => {
+		return action$.pipe(
+			ofType(imageEditCancelled.type),
+			switchMap(({ payload: { recordId } }) => {
+				const record = get(recordId);
+				return merge(of(desktopAssetDragEnded()), of(desktopAssetUploadFailed({ record })));
 			})
 		);
 	},
