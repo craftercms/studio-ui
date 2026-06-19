@@ -365,8 +365,12 @@ export function numericInputValidator(
 	const lastUnderscore = field.id.lastIndexOf('_');
 	const numType = lastUnderscore !== -1 ? field.id.substring(lastUnderscore) : '_i';
 
-	if (nou(currentValue) || Number.isNaN(Number(currentValue))) {
+	if (nou(currentValue)) {
 		return isValid;
+	}
+	if (Number.isNaN(Number(currentValue))) {
+		messages.push([defineMessage({ defaultMessage: 'Please enter a valid number.' })]);
+		return false;
 	}
 
 	let numTypeRegex;
@@ -555,10 +559,11 @@ const rteValidator = (field: ContentTypeField, currentValue: string, messages?: 
 	if (nou(field)) return true;
 	const isRequired = isFieldRequired(field);
 	let isValid = true;
+	const safeValue = typeof currentValue === 'string' ? currentValue : '';
 
 	const maxLength: number | undefined = getValidationValue(field.validations, 'maxLength');
 	const aux = document.createElement('div');
-	aux.innerHTML = currentValue;
+	aux.innerHTML = safeValue;
 	const trimmedContent = aux.innerText.trim(); // Get only the text and remove white space
 
 	if (isRequired) {
@@ -568,7 +573,7 @@ const rteValidator = (field: ContentTypeField, currentValue: string, messages?: 
 		}
 	}
 	if (nnou(maxLength) && trimmedContent.length > maxLength) {
-		messages.push([
+		messages?.push([
 			defineMessage({
 				defaultMessage: `The value is greater than the allowed maximum ({maxLength}).`
 			}),
