@@ -537,7 +537,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 						of(desktopAssetDragEnded()),
 						validateActionPolicy(state.activeSite, {
 							type: 'CREATE',
-							target: ensureSingleSlash(`${path}/${blob.name}`),
+							target: ensureSingleSlash(`${path}/${imageFileName}`),
 							contentMetadata: {
 								fileSize: blob.size
 							}
