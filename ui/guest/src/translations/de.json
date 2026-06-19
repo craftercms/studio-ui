@@ -7,7 +7,7 @@
   "words.yes": "Ja",
   "zoneMarker.allTypes": "Alle Arten",
   "zoneMarker.dropTargetInfo": "Zielbereich kompatibel mit {type} als {modes}",
-  "zoneMarker.existingShared": "existing shared",
+  "zoneMarker.existingShared": "bestehende gemeinsame",
   "zoneMarker.lockedBy": "Gesperrt durch {username}",
   "zoneMarker.modifiedItem": "Dieses Element wurde geändert. Aktualisieren Sie die Seite, um die Bearbeitung zu aktivieren.",
   "zoneMarker.notEditable": "Nicht bearbeitbar",

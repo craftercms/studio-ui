@@ -80,7 +80,10 @@ const translations = defineMessages({
 	},
 	filter: {
 		defaultMessage: 'Filter...'
-	}
+	},
+	shared: { defaultMessage: 'existing' },
+	embedded: { defaultMessage: 'embedded' },
+	sharedExisting: { defaultMessage: 'existing shared' }
 });
 
 type ContentTypeData = {
@@ -440,7 +443,7 @@ export function PreviewComponentsPanel() {
 							defaultMessage="The model is configured for {modes}"
 							values={{
 								modes: Object.keys(allowedTypesData?.[menuContext?.contentType.id] ?? {})
-									.map((mode) => (mode === 'sharedExisting' ? 'existing shared' : mode))
+									.map((mode) => (translations[mode] ? formatMessage(translations[mode]) : mode))
 									.join(', ')
 							}}
 						/>

@@ -20,11 +20,13 @@ import React, { ReactNode, useMemo, useState } from 'react';
 import { Activities, Activity } from '../../models/Activity';
 import GlobalState from '../../models/GlobalState';
 import { asLocalizedDateTime } from '../../utils/datetime';
-import moment from 'moment';
+// @ts-expect-error - TS2307: Cannot find module moment/min/moment-with-locales or its corresponding type declarations.
+import moment from 'moment/min/moment-with-locales';
 import { messages } from '../ItemTypeIcon/translations';
 import SystemType from '../../models/SystemType';
 import { DashboardPublishingPackage } from '../../models';
 import { isPage } from '../SiteDashboard/utils';
+import { getCurrentLocale } from '../../utils/i18n';
 
 export interface ActivityItem {
 	id: number;
@@ -47,7 +49,13 @@ export function renderActivity(
 	let item = activity.item;
 	let systemType: string = activity.item?.systemType;
 	if (messages[systemType]) {
-		systemType = formatMessage(messages[systemType]).toLowerCase();
+		const crafterStudioLanguage = getCurrentLocale();
+		const message = formatMessage(messages[systemType]);
+		// In Deutsch, the system types for 'page' and 'component' are capitalized.
+		systemType =
+			crafterStudioLanguage === 'de' && (systemType === 'page' || systemType === 'component')
+				? message
+				: message.toLowerCase();
 	}
 	const anchor = (chunks: ReactNode[]) => {
 		const [label, systemType, previewUrl, path] = chunks;
@@ -193,8 +201,9 @@ export function renderActivity(
 export function renderActivityTimestamp(timestamp: string, locale: GlobalState['uiConfig']['locale']) {
 	const now = Date.now();
 	const date = new Date(timestamp).getTime();
+	const crafterStudioLanguage = getCurrentLocale();
 	return now - date < 3.6e7
-		? moment(date).fromNow()
+		? moment(date).locale(crafterStudioLanguage).fromNow()
 		: asLocalizedDateTime(timestamp, locale.localeCode, locale.dateTimeFormatOptions);
 }
 
