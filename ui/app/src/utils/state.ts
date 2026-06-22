@@ -482,6 +482,7 @@ export function getStoredSnackbarDuration(user: string): number | null {
 
 export function removeStoredSnackbarDuration(user: string) {
   window.localStorage.removeItem(`craftercms.${user}.snackbarDuration`);
+  window.dispatchEvent(new CustomEvent(SNACKBAR_DURATION_CHANGED, { detail: { user, value: null } }));
 }
 
 const ENABLE_ANIMATIONS_CHANGED = 'craftercms:enableAnimationsChanged';
@@ -512,4 +513,5 @@ export function getStoredEnableAnimations(user: string): boolean | null {
 
 export function removeStoredEnableAnimations(user: string) {
   window.localStorage.removeItem(`craftercms.${user}.enableAnimations`);
+  window.dispatchEvent(new CustomEvent(ENABLE_ANIMATIONS_CHANGED, { detail: { user, value: null } }));
 }
