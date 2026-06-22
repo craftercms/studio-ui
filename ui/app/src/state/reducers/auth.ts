@@ -35,6 +35,8 @@ export const initialState: GlobalState['auth'] = {
 	isFetching: false
 };
 
+export const INCORRECT_CREDENTIALS_ERROR_CODE = 6004;
+
 const reducer = createReducer<GlobalState['auth']>(initialState, (builder) => {
 	builder
 		.addCase(storeInitialized, (state, { payload }) => ({
@@ -66,7 +68,7 @@ const reducer = createReducer<GlobalState['auth']>(initialState, (builder) => {
 			error:
 				action.payload?.status === 401
 					? {
-							code: 6004,
+							code: INCORRECT_CREDENTIALS_ERROR_CODE,
 							message: 'Incorrect password',
 							remedialAction: 'Please use correct password'
 						}

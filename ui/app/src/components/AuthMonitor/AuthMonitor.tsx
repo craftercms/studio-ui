@@ -37,6 +37,7 @@ import { PartialSxRecord } from '../../models';
 import Box from '@mui/material/Box';
 import palette from '../../styles/palette';
 import { WarningRounded } from '@mui/icons-material';
+import { INCORRECT_CREDENTIALS_ERROR_CODE } from '../../state/reducers/auth';
 
 const translations = defineMessages({
 	sessionExpired: {
@@ -132,7 +133,7 @@ function AuthMonitorBody(props: AuthMonitorBodyProps) {
 			<DialogContent sx={{ width: '400px' }}>
 				<>
 					{error ? (
-						error.code === 6004 ? (
+						error.code === INCORRECT_CREDENTIALS_ERROR_CODE ? (
 							<Typography
 								variant="body2"
 								role="alert"
