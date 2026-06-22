@@ -54,6 +54,7 @@
     "bom": "mkdir -p target && yarn cyclonedx --output-file target/bom.json"
   },
   "dependencies": {
+    "@base-ui-components/react": "^1.0.0-rc.0",
     "@craftercms/uppy": "workspace:^",
     "@emotion/css": "^11.13.5",
     "@emotion/react": "^11.14.0",
