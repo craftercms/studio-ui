@@ -59,7 +59,7 @@ const reducer = createReducer<GlobalState['auth']>(initialState, (builder) => {
 		}))
 		.addCase(sessionTimeout, () => initialState)
 		.addCase(sharedWorkerUnauthenticated, () => initialState)
-		.addCase(login, (state) => ({ ...state, isFetching: true }))
+		.addCase(login, (state) => ({ ...state, isFetching: true, error: null }))
 		.addCase(loginFailed, (state, action) => ({
 			...state,
 			isFetching: false,

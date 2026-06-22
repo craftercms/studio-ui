@@ -35,6 +35,8 @@ import ErrorState from '../ErrorState/ErrorState';
 import { useSelection } from '../../hooks/useSelection';
 import { PartialSxRecord } from '../../models';
 import Box from '@mui/material/Box';
+import palette from '../../styles/palette';
+import { WarningRounded } from '@mui/icons-material';
 
 const translations = defineMessages({
 	sessionExpired: {
@@ -43,7 +45,7 @@ const translations = defineMessages({
 	},
 	incorrectPasswordMessage: {
 		id: 'authMonitor.incorrectPasswordMessage',
-		defaultMessage: 'Incorrect password. Please try again.'
+		defaultMessage: 'Incorrect username or password. Please try again.'
 	},
 	postSSOLoginMismatch: {
 		id: 'authMonitor.postSSOLoginMismatchMessage',
@@ -130,7 +132,33 @@ function AuthMonitorBody(props: AuthMonitorBodyProps) {
 			<DialogContent sx={{ width: '400px' }}>
 				<>
 					{error ? (
-						<ApiResponseErrorState error={error} sxs={{ image: { width: 150 } }} />
+						error.code === 6004 ? (
+							<>
+								<Typography
+									variant="body2"
+									role="alert"
+									sx={(theme) => ({
+										backgroundColor: palette.red.tint,
+										color: palette.white,
+										marginBottom: theme.spacing(2),
+										padding: theme.spacing(1),
+										borderRadius: theme.spacing(1),
+										border: `1px solid ${palette.red.main}`,
+										display: 'flex',
+										placeContent: 'center',
+										lineHeight: 1.7,
+										'& .MuiSvgIcon-root': {
+											marginRight: theme.spacing(0.5),
+											color: palette.white
+										}
+									})}
+								>
+									<WarningRounded /> {formatMessage(translations.incorrectPasswordMessage)}
+								</Typography>
+							</>
+						) : (
+							<ApiResponseErrorState error={error} sxs={{ image: { width: 150 } }} />
+						)
 					) : (
 						<ErrorState
 							imageUrl={loginGraphicUrl}
