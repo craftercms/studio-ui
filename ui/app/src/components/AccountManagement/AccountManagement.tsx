@@ -54,6 +54,7 @@ import OutlinedInput, { OutlinedInputProps } from '@mui/material/OutlinedInput';
 import AddRounded from '@mui/icons-material/AddRounded';
 import MinusRounded from '@mui/icons-material/RemoveRounded';
 import {
+  DEFAULT_SNACKBAR_DURATION,
   getStoredEnableAnimations,
   getStoredSnackbarDuration,
   setStoredEnableAnimations,
@@ -102,8 +103,6 @@ const translations = defineMessages({
     defaultMessage: 'Password changed successfully'
   }
 });
-
-export const DEFAULT_SNACKBAR_DURATION = 5000;
 
 export function AccountManagement(props: AccountManagementProps) {
   const { passwordRequirementsMinComplexity = 4 } = props;
@@ -410,7 +409,7 @@ export function AccountManagement(props: AccountManagementProps) {
                 </NumberField.Group>
               </NumberField.Root>
               <FormHelperText sx={{ mt: 1, ml: 0 }}>
-                <FormattedMessage defaultMessage="How long notifications stay visible at on the screen before closing automatically. These appear when you save, publish, or complete other actions. You can dismiss them anytime using their close button." />
+                <FormattedMessage defaultMessage="How long notifications stay visible on the screen before closing automatically. These appear when you save, publish, or complete other actions. You can dismiss them anytime using their close button." />
               </FormHelperText>
             </FormControl>
             <FormControl sx={{ my: 2 }}>
@@ -422,10 +421,7 @@ export function AccountManagement(props: AccountManagementProps) {
               />
             </FormControl>
             <PrimaryButton
-              disabled={
-                snackDuration === null ||
-                (initialSnackDuration === snackDuration && initialEnableAnimations === enableAnimations)
-              }
+              disabled={initialSnackDuration === snackDuration && initialEnableAnimations === enableAnimations}
               sx={{ marginLeft: 'auto' }}
               onClick={() => onSaveAccessibility()}
             >
