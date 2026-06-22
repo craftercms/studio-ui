@@ -14,11 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Box from '@mui/material/Box';
-import React, { useEffect, useState } from 'react';
+import Box, { BoxProps } from '@mui/material/Box';
+import React, { forwardRef, useEffect, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import GlobalAppToolbar from '../GlobalAppToolbar';
-import { Typography } from '@mui/material';
+import { Checkbox, FormControlLabel, Typography } from '@mui/material';
 import Paper from '@mui/material/Paper';
 import useStyles from './styles';
 import Avatar from '@mui/material/Avatar';
@@ -49,6 +49,44 @@ import TableBody from '@mui/material/TableBody';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import { preferencesGroups } from './utils';
+import { NumberField } from '@base-ui-components/react/number-field';
+import OutlinedInput, { OutlinedInputProps } from '@mui/material/OutlinedInput';
+import AddRounded from '@mui/icons-material/AddRounded';
+import MinusRounded from '@mui/icons-material/RemoveRounded';
+import {
+  getStoredEnableAnimations,
+  getStoredSnackbarDuration,
+  setStoredEnableAnimations,
+  setStoredSnackbarDuration
+} from '../../utils/state';
+
+const decrementButtonSx: BoxProps['sx'] = {
+  borderTopRightRadius: 0,
+  borderBottomRightRadius: 0,
+  boxShadow: 'none',
+  borderRight: 'none'
+};
+
+const incrementButtonSx: BoxProps['sx'] = {
+  borderTopLeftRadius: 0,
+  borderBottomLeftRadius: 0,
+  boxShadow: 'none',
+  borderLeft: 'none'
+};
+
+// MUI OutlinedInput's ref points to the wrapper elements, not to the input. Base UI needs the input directly.
+const OutlinedInputWithRef = forwardRef<HTMLInputElement, OutlinedInputProps>((props, ref) => {
+  const { sx, ...other } = props;
+  return (
+    <OutlinedInput
+      {...other}
+      fullWidth
+      inputRef={ref}
+      sx={{ borderRadius: 0, py: '0px', input: { textAlign: 'center' }, ...sx }}
+    />
+  );
+});
+OutlinedInputWithRef.displayName = 'OutlinedInputWithRef';
 
 interface AccountManagementProps {
   passwordRequirementsMinComplexity?: number;
@@ -64,6 +102,8 @@ const translations = defineMessages({
     defaultMessage: 'Password changed successfully'
   }
 });
+
+export const DEFAULT_SNACKBAR_DURATION = 5000;
 
 export function AccountManagement(props: AccountManagementProps) {
   const { passwordRequirementsMinComplexity = 4 } = props;
@@ -82,6 +122,12 @@ export function AccountManagement(props: AccountManagementProps) {
   const sitesLookup = useSiteLookup();
   const sitesIds = Object.keys(sitesLookup);
   const [selectedSite, setSelectedSite] = useState('all');
+  const [snackDuration, setSnackDuration] = useState<number | null>(
+    getStoredSnackbarDuration(user.username) ?? DEFAULT_SNACKBAR_DURATION
+  );
+  const [initialSnackDuration, setInitialSnackDuration] = useState<number | null>(snackDuration);
+  const [enableAnimations, setEnableAnimations] = useState<boolean>(getStoredEnableAnimations(user.username) ?? true);
+  const [initialEnableAnimations, setInitialEnableAnimations] = useState<boolean>(enableAnimations);
 
   // Retrieve Platform Languages.
   useEffect(() => {
@@ -141,6 +187,22 @@ export function AccountManagement(props: AccountManagementProps) {
   const onClearEverything = () => {
     preferencesGroups.forEach((group) => onClearPreference(group, false));
     dispatch(showSystemNotification({ message: formatMessage({ defaultMessage: 'Preferences cleared' }) }));
+  };
+
+  const onSaveAccessibility = () => {
+    if (snackDuration === null) return;
+    dispatch(
+      showSystemNotification({
+        message: formatMessage({ defaultMessage: 'Accessibility settings saved' }),
+        options: {
+          autoHideDuration: snackDuration
+        }
+      })
+    );
+    setStoredSnackbarDuration(user.username, snackDuration);
+    setInitialSnackDuration(snackDuration);
+    setStoredEnableAnimations(user.username, enableAnimations);
+    setInitialEnableAnimations(enableAnimations);
   };
 
   return (
@@ -306,6 +368,68 @@ export function AccountManagement(props: AccountManagementProps) {
               </TableBody>
             </Table>
           </TableContainer>
+        </Paper>
+        <Paper className={classes.paper}>
+          <Typography variant="h5">
+            <FormattedMessage defaultMessage="Accessibility" />
+          </Typography>
+          <Box display="flex" flexDirection="column">
+            <FormControl sx={{ mt: 2, mb: 1 }}>
+              <Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
+                <InputLabel htmlFor="snackDuration" shrink sx={{ position: 'static', transform: 'none', mb: 0 }}>
+                  <FormattedMessage defaultMessage="On-screen notification display time (in seconds)" />
+                </InputLabel>
+                <Button
+                  variant="text"
+                  size="small"
+                  disabled={snackDuration === DEFAULT_SNACKBAR_DURATION}
+                  onClick={() => setSnackDuration(DEFAULT_SNACKBAR_DURATION)}
+                >
+                  <FormattedMessage defaultMessage="Reset to default" />
+                </Button>
+              </Box>
+              <NumberField.Root
+                id="snackDuration"
+                value={snackDuration / 1000} // Display in seconds
+                onValueChange={(value) => setSnackDuration(value * 1000)} // Store in milliseconds
+                min={0}
+                max={60}
+                step={1}
+                format={{ maximumFractionDigits: 0 }}
+              >
+                <NumberField.Group render={<Box display="flex" />}>
+                  <NumberField.Decrement render={<Button variant="outlined" sx={decrementButtonSx} />}>
+                    <MinusRounded />
+                  </NumberField.Decrement>
+                  <NumberField.Input render={<OutlinedInputWithRef />} />
+                  <NumberField.Increment render={<Button variant="outlined" sx={incrementButtonSx} />}>
+                    <AddRounded />
+                  </NumberField.Increment>
+                </NumberField.Group>
+              </NumberField.Root>
+              <FormHelperText sx={{ mt: 1, ml: 0 }}>
+                <FormattedMessage defaultMessage="How long notifications stay visible at on the screen before closing automatically. These appear when you save, publish, or complete other actions. You can dismiss them anytime using their close button." />
+              </FormHelperText>
+            </FormControl>
+            <FormControl sx={{ my: 2 }}>
+              <FormControlLabel
+                control={
+                  <Checkbox checked={enableAnimations} onChange={(e) => setEnableAnimations(e.target.checked)} />
+                }
+                label={<FormattedMessage defaultMessage="Enable animations" />}
+              />
+            </FormControl>
+            <PrimaryButton
+              disabled={
+                snackDuration === null ||
+                (initialSnackDuration === snackDuration && initialEnableAnimations === enableAnimations)
+              }
+              sx={{ marginLeft: 'auto' }}
+              onClick={() => onSaveAccessibility()}
+            >
+              <FormattedMessage id="words.save" defaultMessage="Save" />
+            </PrimaryButton>
+          </Box>
         </Paper>
       </Container>
 

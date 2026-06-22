@@ -38,7 +38,7 @@ import LoadingState from '../LoadingState';
 import GlobalStyles from '../GlobalStyles';
 import ErrorState from '../ErrorState/ErrorState';
 import NotistackVariant from '../NotistackVariant';
-
+import useSnackbarDuration from '../../hooks/useSnackbarDuration';
 const LegacyConcierge = lazy(() => import('../LegacyConcierge/LegacyConcierge'));
 const GlobalDialogManager = lazy(() => import('../GlobalDialogManager/GlobalDialogManager'));
 
@@ -54,6 +54,7 @@ export function CrafterCMSNextBridge(
 ) {
   const [store, setStore] = useState<CrafterCMSStore>(null);
   const [storeError, setStoreError] = useState<string>();
+  const autoHideDuration = useSnackbarDuration();
   const {
     children,
     themeOptions,
@@ -67,7 +68,7 @@ export function CrafterCMSNextBridge(
   const snackbarOrFragmentProps = mountSnackbarProvider
     ? ({
         maxSnack: 5,
-        autoHideDuration: 5000,
+        autoHideDuration,
         anchorOrigin: { vertical: 'bottom', horizontal: 'left' },
         action: (id) => <SnackbarCloseButton id={id} />,
         Components: {
