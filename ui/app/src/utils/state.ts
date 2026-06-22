@@ -492,7 +492,7 @@ export function subscribeEnableAnimations(onStoreChange: () => void) {
   window.addEventListener(ENABLE_ANIMATIONS_CHANGED, onStoreChange);
   const storageListener = (e: StorageEvent) => {
     // Filter by key to avoid listening to other localStorage changes
-    if (e.key?.includes('.enableAnimations')) {
+    if (e.key?.endsWith('.enableAnimations')) {
       onStoreChange();
     }
   };

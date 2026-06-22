@@ -121,7 +121,7 @@ export function AccountManagement(props: AccountManagementProps) {
   const sitesLookup = useSiteLookup();
   const sitesIds = Object.keys(sitesLookup);
   const [selectedSite, setSelectedSite] = useState('all');
-  const [snackDuration, setSnackDuration] = useState<number | null>(
+  const [snackDuration, setSnackDuration] = useState<number>(
     getStoredSnackbarDuration(user.username) ?? DEFAULT_SNACKBAR_DURATION
   );
   const [initialSnackDuration, setInitialSnackDuration] = useState<number | null>(snackDuration);
@@ -189,7 +189,6 @@ export function AccountManagement(props: AccountManagementProps) {
   };
 
   const onSaveAccessibility = () => {
-    if (snackDuration === null) return;
     dispatch(
       showSystemNotification({
         message: formatMessage({ defaultMessage: 'Accessibility settings saved' }),
