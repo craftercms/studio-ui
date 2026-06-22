@@ -91,7 +91,7 @@
             break;
           }
 
-          const numType = obj.id.substring(obj.id.indexOf('_'));
+          const numType = obj.id.substring(obj.id.lastIndexOf('_'));
           let numTypeRegex;
           let numTypeErrMessage;
           if (numType === '_f' || numType === '_d') {

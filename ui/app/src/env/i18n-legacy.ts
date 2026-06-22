@@ -313,6 +313,12 @@ export const contentTypesMessages = defineMessages({
   },
   invalidMacros: {
     defaultMessage: 'The following invalid macros were removed: {macros}'
+  },
+  searchControls: {
+    defaultMessage: 'Search controls...'
+  },
+  searchDataSources: {
+    defaultMessage: 'Search data sources...'
   }
 });
 
@@ -460,7 +466,7 @@ export const formEngineMessages = defineMessages({
   },
   saveAndMinimize: {
     id: 'formEngine.saveAndMinimize',
-    defaultMessage: 'Save & Minimize'
+    defaultMessage: 'Save Draft & Minimize'
   },
   saveDraft: {
     id: 'formEngine.saveDraft',
@@ -503,6 +509,19 @@ export const formEngineMessages = defineMessages({
   maxItemsReached: {
     defaultMessage:
       'A max of {maxSize} {maxSize, plural, one {item is} other {items are}} allowed. Please remove items to fit the limit before trying to add more.'
+  },
+  delete: {
+    defaultMessage: 'Delete'
+  },
+  view: {
+    defaultMessage: 'View'
+  },
+  help: { defaultMessage: 'Help' },
+  editPosition: { defaultMessage: 'Edit Position' },
+  viewOrder: { defaultMessage: 'View Order' },
+  editNavigationOrder: { defaultMessage: 'Edit Navigation Order' },
+  editNavigationOrderSubtitle: {
+    defaultMessage: 'Drag and Drop "This Page" to the desired location in the navigation structure.'
   }
 });
 

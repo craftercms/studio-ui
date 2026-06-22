@@ -423,7 +423,12 @@ export function ActivityDashlet(props: ActivityDashletProps) {
               value={authorFilterValue}
               disabled={isFetching}
               onChange={handleAuthorFilterInputChange}
-              placeholder='e.g. "jon.doe, jdoe, jane@example.com"'
+              placeholder={formatMessage(
+                { defaultMessage: 'e.g. "{examples}"' },
+                {
+                  examples: 'jon.doe, jdoe, jane@example.com'
+                }
+              )}
               onKeyUp={handleAuthorFilterKeyUp}
               slotProps={{
                 input: {
@@ -538,7 +543,6 @@ export function ActivityDashlet(props: ActivityDashletProps) {
             </SizedTimelineSeparator>
             <TimelineContent sx={emptyTimelineContentSx} />
           </CustomTimelineItem>
-          {/* @ts-expect-error - TS2786: InfiniteScroll cannot be used as a JSX component. Lib Types are not compatible with the latest react types. */}
           <InfiniteScroll
             initialLoad={false}
             pageStart={0}

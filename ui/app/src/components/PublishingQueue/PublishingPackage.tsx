@@ -347,7 +347,11 @@ export function PublishingPackage(props: PublishingPackageProps) {
         </Typography>
         <Typography variant="body2">
           {formatMessage(translations.status, {
-            state: <strong key={state}>{formatMessage(stateMessages[state])}</strong>,
+            state: (
+              <strong key={state}>
+                {stateMessages[state] ? formatMessage(stateMessages[state]) : state}
+              </strong>
+            ),
             environment: <strong key={environment}>{environment}</strong>
           })}
         </Typography>

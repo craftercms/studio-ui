@@ -38,7 +38,7 @@ import useActiveUser from '../../hooks/useActiveUser';
 import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
 import { closeConfirmDialog, showConfirmDialog } from '../../state/actions/dialogs';
 import { createCustomDocumentEventListener } from '../../utils/dom';
-import { useBeforeUnload, useNavigate } from 'react-router-dom';
+import { useBeforeUnload, useNavigate } from 'react-router';
 import { GlobalRoutes } from '../../env/routes';
 
 const translations = defineMessages({

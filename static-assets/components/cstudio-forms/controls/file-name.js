@@ -100,8 +100,10 @@ CStudioForms.Controls.FileName =
     this.defaultValue = '';
     this.showWarnOnEdit = true;
     this.messages = {
-      fileNameControlMessages: CrafterCMSNext.i18n.messages.fileNameControlMessages
+      fileNameControlMessages: CrafterCMSNext.i18n.messages.fileNameControlMessages,
+      formEngineMessages: CrafterCMSNext.i18n.messages.formEngineMessages
     };
+    this.formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
 
     return this;
   };
@@ -454,7 +456,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
       YAHOO.util.Dom.addClass(editFileNameEl, 'cstudio-form-control-filename-edit');
       var editFileNameBtn = document.createElement('input');
       editFileNameBtn.type = 'button';
-      editFileNameBtn.value = 'Edit';
+      editFileNameBtn.value = this.formatMessage(this.messages.formEngineMessages.edit);
       editFileNameBtn.style.padding = '1px 5px';
       editFileNameBtn.style.minWidth = '0';
       editFileNameBtn.style.marginLeft = '5px';

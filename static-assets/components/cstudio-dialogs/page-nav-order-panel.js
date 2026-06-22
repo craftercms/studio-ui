@@ -23,6 +23,9 @@ CStudioAuthoring.Dialogs = CStudioAuthoring.Dialogs || {};
  * Submit to go live
  */
 CStudioAuthoring.Dialogs.panelPageNavOrder = CStudioAuthoring.Dialogs.panelPageNavOrder || {
+  formatMessage: CrafterCMSNext.i18n.intl.formatMessage,
+  formEngineMessages: CrafterCMSNext.i18n.messages.formEngineMessages,
+  commonMessages: CrafterCMSNext.i18n.messages.words,
   /**
    * initialize module
    */
@@ -86,14 +89,14 @@ CStudioAuthoring.Dialogs.panelPageNavOrder = CStudioAuthoring.Dialogs.panelPageN
 
     var reorderHeadertextSpan = document.createElement('span');
     reorderHeadertextSpan.className = 'reorderHeadertext';
-    var txt = document.createTextNode('Edit Navigation Order');
-    reorderHeadertextSpan.appendChild(txt);
+    const reorderHeadertext = this.formatMessage(this.formEngineMessages.editNavigationOrder);
+    reorderHeadertextSpan.appendChild(document.createTextNode(reorderHeadertext));
     YAHOO.util.Dom.get('reorderContainer').appendChild(reorderHeadertextSpan);
 
     var reorderSubtextDiv = document.createElement('div');
     reorderSubtextDiv.className = 'reorderSubtext';
-    txt = document.createTextNode('Drag and Drop "This Page" to the desired location in the navigation structure.');
-    reorderSubtextDiv.appendChild(txt);
+    const reorderSubtext = this.formatMessage(this.formEngineMessages.editNavigationOrderSubtitle);
+    reorderSubtextDiv.appendChild(document.createTextNode(reorderSubtext));
     YAHOO.util.Dom.get('reorderContainer').appendChild(reorderSubtextDiv);
 
     var width100Div = document.createElement('div');
@@ -221,7 +224,7 @@ CStudioAuthoring.Dialogs.panelPageNavOrder = CStudioAuthoring.Dialogs.panelPageN
     dndCancelButtonDiv.id = 'dndCancelButton';
     dndCancelButtonDiv.className = 'cstudio-xform-button btn btn-default';
     dndCancelButtonDiv.setAttribute('type', 'submit');
-    dndCancelButtonDiv.setAttribute('value', 'Cancel');
+    dndCancelButtonDiv.setAttribute('value', this.formatMessage(this.commonMessages.cancel));
 
     YAHOO.util.Dom.get('reorderButtonWrapper').appendChild(dndCancelButtonDiv);
     YAHOO.util.Dom.get('reorderButtonWrapper').appendChild(dndOKButtonDiv);

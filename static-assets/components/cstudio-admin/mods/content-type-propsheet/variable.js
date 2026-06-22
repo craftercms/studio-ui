@@ -35,7 +35,11 @@ YAHOO.extend(
 
       if (updateFn) {
         const cleanVariable = (value) => {
-          return value.replace(/[^A-Za-z0-9-_]/g, '').replace(/[-]/g, '_');
+          let sanitized = value.replace(/[^A-Za-z0-9-_]/g, '').replace(/[-]/g, '_');
+          if (sanitized !== '' && !/^[_A-Za-z]/.test(sanitized)) {
+            sanitized = `_${sanitized}`;
+          }
+          return sanitized;
         };
 
         var updateFieldFn = function (event, el) {

@@ -17,14 +17,14 @@
 import Avatar from '@mui/material/Avatar';
 import CloudUploadOutlined from '@mui/icons-material/CloudUploadOutlined';
 import * as React from 'react';
-import { CSSProperties } from 'react';
 import { PublishingStatus, PublishingStatusCodes } from '../../models/Publishing';
 import { makeStyles } from 'tss-react/mui';
 import { getPublishingStatusCodeColor } from './util';
+import { CSSObject } from 'tss-react';
 
 type PublishingStatusAvatarClassKey = 'root' | 'icon';
 
-type PublishingStatusAvatarStyles = Partial<Record<PublishingStatusAvatarClassKey, CSSProperties>>;
+type PublishingStatusAvatarStyles = Partial<Record<PublishingStatusAvatarClassKey, CSSObject>>;
 
 export interface PublishingStatusAvatarProps extends Pick<PublishingStatus, 'enabled' | 'status'> {
   className?: string;
@@ -35,7 +35,7 @@ export interface PublishingStatusAvatarProps extends Pick<PublishingStatus, 'ena
 
 const useStyles = makeStyles<{ styles: PublishingStatusAvatarStyles; stylingTarget: 'backgroundColor' | 'color' }>()((
   theme,
-  { styles, stylingTarget } = {} as any
+  { styles, stylingTarget } = {} as { styles: PublishingStatusAvatarStyles; stylingTarget: 'backgroundColor' | 'color' }
 ) => {
   return {
     root: {

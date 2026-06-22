@@ -32,7 +32,7 @@ import HighlightOffIcon from '@mui/icons-material/HighlightOffRounded';
 import RefreshIcon from '@mui/icons-material/RefreshRounded';
 import Button from '@mui/material/Button';
 import { alpha } from '@mui/material/styles';
-import { BLOCKED, CANCELLED, COMPLETED, PROCESSING, READY_FOR_LIVE } from './constants';
+import { BLOCKED, CANCELLED, COMPLETED, FAILED, PROCESSING, READY_FOR_LIVE } from './constants';
 import palette from '../../styles/palette';
 import ApiResponseErrorState from '../ApiResponseErrorState';
 import { useSpreadState } from '../../hooks/useSpreadState';
@@ -158,7 +158,7 @@ const useStyles = makeStyles()((theme) => ({
 const currentFiltersInitialState: CurrentFilters = {
   environment: '',
   path: '',
-  state: [READY_FOR_LIVE, PROCESSING, COMPLETED, CANCELLED, BLOCKED],
+  state: [READY_FOR_LIVE, PROCESSING, COMPLETED, CANCELLED, BLOCKED, FAILED],
   limit: 5,
   page: 0
 };
@@ -479,10 +479,12 @@ function PublishingQueue(props: PublishingQueueProps) {
         slotProps={{
           actions: {
             previousButton: {
-              'aria-label': formatMessage(messages.previous)
+              'aria-label': formatMessage(messages.previous),
+              title: formatMessage(messages.previous)
             },
             nextButton: {
-              'aria-label': formatMessage(messages.next)
+              'aria-label': formatMessage(messages.next),
+              title: formatMessage(messages.next)
             }
           }
         }}

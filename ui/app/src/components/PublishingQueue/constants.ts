@@ -19,3 +19,4 @@ export const PROCESSING = 'PROCESSING';
 export const COMPLETED = 'COMPLETED';
 export const CANCELLED = 'CANCELLED';
 export const BLOCKED = 'BLOCKED';
+export const FAILED = 'FAILED';

@@ -441,6 +441,19 @@ export function removeStoredWidgetsAccordion(siteIdentifier: string, user: strin
   window.localStorage.removeItem(`craftercms.${user}.widgetsAccordion.${siteIdentifier}.${id}`);
 }
 
+export function setStoredEnabledKeyboardShortcutsState(enabled: boolean, user: string): void {
+  window.localStorage.setItem(`craftercms.${user}.enabledKeyboardShortcuts`, JSON.stringify(enabled));
+}
+
+export function getStoredEnabledKeyboardShortcutsState(user: string): boolean {
+  const value = window.localStorage.getItem(`craftercms.${user}.enabledKeyboardShortcuts`);
+  return value ? value === 'true' : true;
+}
+
+export function removeStoredEnabledKeyboardShortcutsState(user: string): void {
+  window.localStorage.removeItem(`craftercms.${user}.enabledKeyboardShortcuts`);
+}
+
 const SNACKBAR_DURATION_CHANGED = 'craftercms:snackbarDurationChanged';
 export function subscribeSnackbarDuration(onStoreChange: () => void) {
   window.addEventListener(SNACKBAR_DURATION_CHANGED, onStoreChange);

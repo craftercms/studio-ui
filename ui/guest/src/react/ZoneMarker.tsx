@@ -33,6 +33,7 @@ import UltraStyledTypography from './UltraStyledTypography';
 import UltraStyledTooltip from './UltraStyledTooltip';
 import { SystemCssProperties } from '@mui/system/styleFunctionSx/styleFunctionSx';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { defineMessages } from 'react-intl';
 
 const AllowedTypeCircle = styled('div')({
   width: 20,
@@ -108,6 +109,12 @@ function getStyles(sx: ZoneMarkerPartialSx): ZoneMarkerFullSx {
     }
   } as Record<ZoneMarkerClassKey, SxProps<Theme>>;
 }
+
+const dropTargetModesMessages = defineMessages({
+  shared: { id: 'zoneMarker.existing', defaultMessage: 'existing' },
+  embedded: { id: 'zoneMarker.embedded', defaultMessage: 'embedded' },
+  sharedExisting: { id: 'zoneMarker.existingShared', defaultMessage: 'existing shared' }
+});
 
 export function ZoneMarker(props: ZoneMarkerProps) {
   const {
@@ -203,12 +210,7 @@ export function ZoneMarker(props: ZoneMarkerProps) {
                               type: type?.name ?? '',
                               modes: Object.keys(modes)
                                 .map((mode) =>
-                                  mode === 'sharedExisting'
-                                    ? formatMessage({
-                                        id: 'zoneMarker.existingShared',
-                                        defaultMessage: 'existing shared'
-                                      })
-                                    : mode
+                                  dropTargetModesMessages[mode] ? formatMessage(dropTargetModesMessages[mode]) : mode
                                 )
                                 .join(', ')
                             }}

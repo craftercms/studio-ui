@@ -662,7 +662,7 @@
               ${CMgs.format(langBundle, 'controls')}
             </h4>
             <div>
-              <input id="controlsSearchInput" class="content-types--controls--search-input" type="text" value="" placeholder="Search controls...">
+              <input id="controlsSearchInput" class="content-types--controls--search-input" type="text" value="" placeholder="${formatMessage(contentTypesMessages.searchControls)}">
               <div id="widgets-container"></div>
             </div>
           </div>
@@ -672,7 +672,7 @@
               ${CMgs.format(langBundle, 'datasources')}
             </h4>
             <div>
-              <input id="datasourcesSearchInput" class="content-types--controls--search-input" type="text" value="" placeholder="Search data sources...">
+              <input id="datasourcesSearchInput" class="content-types--controls--search-input" type="text" value="" placeholder="${formatMessage(contentTypesMessages.searchDataSources)}">
               <div id="datasources-container"></div>
             </div>
           </div>
@@ -3501,8 +3501,8 @@
           CStudioForms.Util.escapeXml(formDef.quickCreatePath) +
           '</quickCreatePath>\r\n';
 
-        xml += `\t<!-- Specifies whether a form-controller.js is present in the type definition and should be loaded by the Forms Engine -->\n`
-        xml += `\t<controller>${config.controller === 'true'}</controller>\n`
+        xml += `\t<!-- Specifies whether a form-controller.js is present in the type definition and should be loaded by the Forms Engine -->\n`;
+        xml += `\t<controller>${config.controller === 'true'}</controller>\n`;
 
         if (formDef.imageThumbnail && formDef.imageThumbnail != '' && formDef.imageThumbnail != 'undefined') {
           xml +=

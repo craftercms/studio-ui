@@ -586,7 +586,9 @@ $dark-mode-input-border-focus: #007aff;
   }
 
   // form engine
-  .cstudio-form-control-asset-picker-preview-block {
+  .cstudio-form-control-asset-picker-preview-block,
+  .cstudio-form-control-transcoded-video-preview-block,
+  .cstudio-form-control-transcoded-video-options {
     background: none;
   }
 

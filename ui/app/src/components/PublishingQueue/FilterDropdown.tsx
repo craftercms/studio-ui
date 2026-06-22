@@ -108,6 +108,10 @@ export const stateMessages = defineMessages({
   BLOCKED: {
     id: 'publishingDashboard.BLOCKED',
     defaultMessage: 'Blocked'
+  },
+  FAILED: {
+    id: 'publishingDashboard.FAILED',
+    defaultMessage: 'Failed'
   }
 });
 
@@ -244,7 +248,7 @@ export function FilterDropdown(props: FilterDropdownProps) {
                       onChange={handleFilterChange}
                     />
                   }
-                  label={formatMessage(stateMessages[filter])}
+                  label={stateMessages[filter] ? formatMessage(stateMessages[filter]) : filter}
                 />
               ))}
             </FormGroup>
