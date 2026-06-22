@@ -32,11 +32,9 @@ import { of } from 'rxjs';
 import { AjaxError } from 'rxjs/ajax';
 import * as auth from '../../services/auth';
 import { getRequestForgeryToken, getXSRFToken, setJwt, setRequestForgeryToken } from '../../utils/auth';
-import { reversePluckProps } from '../../utils/object';
 import { CrafterCMSEpic } from '../store';
 import { messageSharedWorker, openSiteSocket, showSystemNotification } from '../actions/system';
 import { sessionTimeout } from '../actions/user';
-import { catchAjaxError } from '../../utils/ajax';
 
 const epics: CrafterCMSEpic[] = [
 	// region login

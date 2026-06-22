@@ -133,29 +133,27 @@ function AuthMonitorBody(props: AuthMonitorBodyProps) {
 				<>
 					{error ? (
 						error.code === 6004 ? (
-							<>
-								<Typography
-									variant="body2"
-									role="alert"
-									sx={(theme) => ({
-										backgroundColor: palette.red.tint,
-										color: palette.white,
-										marginBottom: theme.spacing(2),
-										padding: theme.spacing(1),
-										borderRadius: theme.spacing(1),
-										border: `1px solid ${palette.red.main}`,
-										display: 'flex',
-										placeContent: 'center',
-										lineHeight: 1.7,
-										'& .MuiSvgIcon-root': {
-											marginRight: theme.spacing(0.5),
-											color: palette.white
-										}
-									})}
-								>
-									<WarningRounded /> {formatMessage(translations.incorrectPasswordMessage)}
-								</Typography>
-							</>
+							<Typography
+								variant="body2"
+								role="alert"
+								sx={(theme) => ({
+									backgroundColor: palette.red.tint,
+									color: palette.white,
+									marginBottom: theme.spacing(2),
+									padding: theme.spacing(1),
+									borderRadius: theme.spacing(1),
+									border: `1px solid ${palette.red.main}`,
+									display: 'flex',
+									placeContent: 'center',
+									lineHeight: 1.7,
+									'& .MuiSvgIcon-root': {
+										marginRight: theme.spacing(0.5),
+										color: palette.white
+									}
+								})}
+							>
+								<WarningRounded /> {formatMessage(translations.incorrectPasswordMessage)}
+							</Typography>
 						) : (
 							<ApiResponseErrorState error={error} sxs={{ image: { width: 150 } }} />
 						)
