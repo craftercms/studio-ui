@@ -15,19 +15,20 @@
  */
 
 import React from 'react';
-import { EnhancedDialog, EnhancedDialogProps } from '../../EnhancedDialog';
-import { type ContentTypeField } from '../../../models';
+import { EnhancedDialog, EnhancedDialogProps } from '../EnhancedDialog';
+import { type ContentTypeField } from '../../models';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
-import controlDescriptors, { commonControlFieldsDescriptors } from '../../ContentTypeManagement/descriptors/controls';
-import { getPossibleTranslation } from '../../../utils/i18n';
+import controlDescriptors from '../ContentTypeManagement/descriptors/controls';
+import { commonControlFieldsDescriptors } from '../ContentTypeManagement/descriptors/controls/commonDescriptors';
+import { getPossibleTranslation } from '../../utils/i18n';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import { Chip } from '@mui/material';
-import inputDescriptor from '../../ContentTypeManagement/descriptors/controls/input';
-import { nnou } from '../../../utils/object';
+import inputDescriptor from '../ContentTypeManagement/descriptors/controls/input';
+import { nnou } from '../../utils/object';
 
 export interface FieldInformationDialogProps extends EnhancedDialogProps {
 	field: ContentTypeField;
@@ -91,7 +92,7 @@ function Body(props: FieldInformationDialogBodyProps) {
 			</Card>
 
 			{descriptor.sections?.map((section, index) => (
-				<Card key={index}>
+				<Card key={section.title}>
 					<CardContent>
 						<Typography variant="subtitle1" fontWeight="bold">
 							{getPossibleTranslation(section.title, formatMessage)}
