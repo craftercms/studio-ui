@@ -29,7 +29,6 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import useSiteUIConfig from '../../hooks/useSiteUIConfig';
 import { ensureSingleSlash } from '../../utils/string';
-import { toQueryString } from '../../utils/object';
 import Alert from '@mui/material/Alert';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
@@ -96,6 +95,10 @@ export interface SingleFileUploadProps {
 	customFileName?: string;
 	fileTypes?: string[];
 	onFileAdded?: (file: UppyFile<Meta, Body>, uppy: Uppy, callback: () => void) => void;
+	method?: 'PUT' | 'POST';
+	showFileDetails?: boolean;
+	showProgressBar?: boolean;
+	disabled?: boolean;
 	onUploadStart?(): void;
 	onComplete?(result: FileUploadResult): void;
 	onError?({ file, error, response }): void;
@@ -112,7 +115,11 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 		customFileName,
 		fileTypes,
 		path,
-		onFileAdded: onFileAddedProp
+		onFileAdded: onFileAddedProp,
+		method = 'PUT',
+		showFileDetails = true,
+		showProgressBar = true,
+		disabled = false
 	} = props;
 	const { formatMessage } = useIntl();
 	const dispatch = useDispatch();
@@ -206,7 +213,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 			})
 			.use(XHRUpload, {
 				endpoint: url,
-				method: 'PUT',
+				method,
 				formData: true,
 				fieldName: 'file',
 				timeout: upload.timeout,
@@ -223,7 +230,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 			instance.cancelAll();
 			instance.destroy();
 		};
-	}, [uppy, formTarget, url, upload.timeout, path, site, formatMessage]);
+	}, [uppy, formTarget, url, upload.timeout, path, site, formatMessage, method]);
 
 	useEffect(() => {
 		const onUploadSuccess = () => {
@@ -267,12 +274,12 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 		const onFileAdded = (file: UppyFile<Meta, Body>) => {
 			setError(null);
 			setFileNameErrorClass('');
-
+			const fileName = file.name;
 			const validatePolicy = () => {
 				setDescription(`${formatMessage(messages.validatingFile)}:`);
 				validateActionPolicy(site, {
 					type: 'CREATE',
-					target: ensureSingleSlash(`${path}/${file.name}`),
+					target: ensureSingleSlash(`${path}/${fileName}`),
 					contentMetadata: {
 						fileSize: file.size
 					}
@@ -283,7 +290,15 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 							if (modifiedValue) {
 								// Modified value is expected to be a path.
 								const modifiedName = modifiedValue.match(/[^/]+$/)?.[0] ?? modifiedValue;
-								setConfirm({ body: message });
+								setConfirm({
+									body: formatMessage(
+										{
+											defaultMessage:
+												'Path `{fileName}` was transformed to `{modifiedName}` per the project file name policy'
+										},
+										{ fileName, modifiedName }
+									)
+								});
 								setSuggestedName(modifiedName);
 							} else {
 								// When uploading large files to aws/s3, something causes requests to fail and get retried n times before finally stating it failed; despite the file seemingly actually getting uploaded.
@@ -371,7 +386,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 			<form id="asset_upload_form">
 				<input type="hidden" name="site" value={site} />
 			</form>
-			<Box className="uppy-progress-bar" sx={{ display: error ? 'none' : null }} />
+			<Box className="uppy-progress-bar" sx={{ display: !showProgressBar || error ? 'none' : null }} />
 			<div className="uploaded-files">
 				{error ? (
 					<Alert
@@ -395,26 +410,30 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 						</Typography>
 					</Alert>
 				) : (
+					showFileDetails && (
+						<Typography variant="subtitle1" component="h2" sx={{ mb: 2 }}>
+							{description}
+						</Typography>
+					)
+				)}
+				{showFileDetails && (
 					<Typography variant="subtitle1" component="h2" sx={{ mb: 2 }}>
-						{description}
+						{file && (
+							<Box
+								component="em"
+								className={`single-file-upload--filename ${fileNameErrorClass}`}
+								sx={{
+									overflow: 'hidden',
+									textOverflow: 'ellipsis',
+									whiteSpace: 'nowrap'
+								}}
+								title={file.name}
+							>
+								{file.name}
+							</Box>
+						)}
 					</Typography>
 				)}
-				<Typography variant="subtitle1" component="h2" sx={{ mb: 2 }}>
-					{file && (
-						<Box
-							component="em"
-							className={`single-file-upload--filename ${fileNameErrorClass}`}
-							sx={{
-								overflow: 'hidden',
-								textOverflow: 'ellipsis',
-								whiteSpace: 'nowrap'
-							}}
-							title={file.name}
-						>
-							{file.name}
-						</Box>
-					)}
-				</Typography>
 				<Box sx={{ marginBottom: '10px' }}>
 					<Box
 						component="input"
@@ -424,10 +443,10 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 						type="file"
 						onChange={onChange}
 						onClick={onInputClick}
-						disabled={disableInput}
+						disabled={disabled || disableInput}
 					/>
 					<label htmlFor="contained-button-file">
-						<Button variant="outlined" component="span" disabled={disableInput}>
+						<Button variant="outlined" component="span" disabled={disabled || disableInput}>
 							{formatMessage(messages.chooseFile)}
 						</Button>
 					</label>

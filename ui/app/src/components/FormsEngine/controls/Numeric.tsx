@@ -23,12 +23,12 @@ import Box, { BoxProps } from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import MinusRounded from '@mui/icons-material/RemoveRounded';
 import { NumberField } from '@base-ui-components/react/number-field';
-import { nou } from '../../../utils/object';
+import { getValidationValue, isFieldReadOnly } from '../lib/formUtils';
 
 type NumberFieldRootProps = ComponentProps<typeof NumberField.Root>;
 
 export interface NumberProps extends ControlProps {
-	value: string;
+	value: number | null;
 }
 
 const decrementButtonSx: BoxProps['sx'] = {
@@ -59,11 +59,17 @@ const OutlinedInputWithRef = forwardRef<HTMLInputElement, OutlinedInputProps>((p
 });
 
 export function Numeric(props: NumberProps) {
-	const { field, setValue, readonly, autoFocus } = props;
+	const { field, value, setValue, readonly: formReadonly, autoFocus } = props;
 	const htmlId = useId();
-	const maxLength = field.validations.maxLength?.value;
-	const value = parseValue(props.value);
-	const handleChange: NumberFieldRootProps['onValueChange'] = (value) => setValue(value);
+
+	// region field properties/validations
+	const maxLength: number | undefined = getValidationValue(field.validations, 'maxLength');
+	const maxValue: number | undefined = getValidationValue(field.validations, 'maxValue');
+	const minValue: number | undefined = getValidationValue(field.validations, 'minValue');
+	const readonly: boolean = isFieldReadOnly(field, formReadonly);
+	// endregion
+
+	const handleChange: NumberFieldRootProps['onValueChange'] = (newValue) => setValue(newValue);
 	return (
 		<FormsEngineField htmlFor={htmlId} field={field} max={maxLength}>
 			<NumberField.Root
@@ -72,6 +78,8 @@ export function Numeric(props: NumberProps) {
 				onValueChange={handleChange}
 				readOnly={readonly}
 				autoFocus={autoFocus}
+				min={minValue}
+				max={maxValue}
 			>
 				<NumberField.Group render={<Box display="flex" />}>
 					<NumberField.Decrement render={<Button variant="outlined" sx={decrementButtonSx} />}>
@@ -85,16 +93,6 @@ export function Numeric(props: NumberProps) {
 			</NumberField.Root>
 		</FormsEngineField>
 	);
-}
-
-function parseValue(value: string | number) {
-	if (nou(value)) return null;
-	if (typeof value === 'string') {
-		const number = parseFloat(value);
-		if (isNaN(number)) return null;
-		return number;
-	}
-	return value;
 }
 
 export default Numeric;

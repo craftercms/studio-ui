@@ -16,7 +16,7 @@
 
 import { FormattedMessage } from 'react-intl';
 import AddIcon from '@mui/icons-material/Add';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import UsersGridUI, { UsersGridSkeletonTable } from '../UsersGrid';
 import CreateUserDialog from '../CreateUserDialog';
 import EditUserDialog from '../EditUserDialog';
@@ -46,8 +46,8 @@ export function UserManagement(props: UserManagementProps) {
 	const [users, setUsers] = useState<PagedArray<User> | null>(null);
 	const [error, setError] = useState<ApiResponse | null>(null);
 	const [viewUser, setViewUser] = useState<User | null>(null);
-	const [showSearchBox, setShowSearchBox] = useState(false);
 	const [keyword, setKeyword] = useState('');
+	const searchInpuRef = useRef(undefined);
 
 	const fetchUsers = useCallback(
 		(keyword = '', _offset = offset) => {
@@ -103,10 +103,6 @@ export function UserManagement(props: UserManagementProps) {
 		setLimit(e.target.value);
 	};
 
-	const onShowSearchBox = () => {
-		setShowSearchBox(!showSearchBox);
-	};
-
 	const onSearch = useCallback(
 		(keyword) => {
 			fetchUsers(keyword, 0);
@@ -137,25 +133,17 @@ export function UserManagement(props: UserManagementProps) {
 				}
 				rightContent={
 					<SearchBar
+						ref={searchInpuRef}
 						sxs={{
 							root: {
 								transition: 'width 500ms',
 								width: '210px',
-								...(showSearchBox
-									? {}
-									: {
-											width: '50px',
-											border: '0',
-											background: 'none',
-											'& input': {
-												visibility: 'hidden'
-											}
-										})
+								border: 0,
+								background: 'none'
 							}
 						}}
 						keyword={keyword}
 						onChange={handleSearchKeyword}
-						onDecoratorButtonClick={onShowSearchBox}
 						showActionButton={Boolean(keyword)}
 					/>
 				}

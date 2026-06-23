@@ -19,6 +19,7 @@ import { Dispatch } from 'redux';
 import { nanoid } from 'nanoid';
 import { popDialog, pushDialog } from '../../state/actions/dialogStack';
 import { cancelPackages, fetchAffectedPackages } from '../../services/workflow';
+import { IntlShape } from 'react-intl';
 
 export function checkAndCancelAffectedPackages({
 	siteId,
@@ -26,15 +27,20 @@ export function checkAndCancelAffectedPackages({
 	dispatch,
 	onContinue,
 	onClose,
-	cancelPackagesMessage
+	cancelPackagesComment,
+	formatMessage
 }: {
 	siteId: string;
 	item: ContentItem;
 	dispatch: Dispatch;
 	onContinue: () => void;
 	onClose?: () => void;
-	cancelPackagesMessage?: string;
+	cancelPackagesComment?: string;
+	formatMessage: IntlShape['formatMessage'];
 }) {
+	const cancelPackagesInitialComment =
+		cancelPackagesComment ??
+		formatMessage({ defaultMessage: 'Cancel affected packages of "{path}"' }, { path: item.path });
 	fetchAffectedPackages(siteId, item.path).subscribe({
 		next: (affectedPackages) => {
 			if (!affectedPackages || affectedPackages.length === 0) {
@@ -47,11 +53,11 @@ export function checkAndCancelAffectedPackages({
 						component: 'craftercms.components.ViewPackagesDialog',
 						props: {
 							item,
-							onContinue: () => {
+							cancelPackagesInitialComment,
+							onContinue: (cancelPackagesUpdatedComment: string) => {
 								cancelPackages(siteId, {
 									packageIds: affectedPackages.map((p) => p.id),
-									// TODO: Correct comment generation
-									comment: cancelPackagesMessage ?? `Cancel affected packages of "${item.path}"`
+									comment: cancelPackagesUpdatedComment
 								}).subscribe({
 									next: () => onContinue(),
 									error: ({ response }) => {
@@ -77,7 +83,7 @@ export function checkAndCancelAffectedPackages({
 			dispatch(
 				pushDialog({
 					component: 'craftercms.components.ErrorDialog',
-					props: { error: response.response }
+					props: { error: response?.response }
 				})
 			);
 		}

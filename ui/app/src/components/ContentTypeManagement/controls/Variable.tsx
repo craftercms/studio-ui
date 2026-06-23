@@ -27,6 +27,7 @@ import { suffixesMap, SuffixesType } from '../suffixesMap';
 import { useStableFormContext } from '../../FormsEngine/lib/formsEngineContext';
 import { useAtomValue } from 'jotai';
 import useUpdateRefs from '../../../hooks/useUpdateRefs';
+import { isFieldReadOnly } from '../../FormsEngine/lib/formUtils';
 
 export interface VariableProps extends ControlProps {
 	value: string;
@@ -43,7 +44,7 @@ export function Variable(props: VariableProps) {
 	const controlDescriptor = contentType?.id && controlDescriptors[contentType?.id];
 	const supportedSuffixes: SuffixesType[] = controlDescriptor?.metadata?.suffixes;
 	const { formatMessage } = useIntl();
-	const disabled = readonly || disabledFields.includes(value);
+	const disabled = isFieldReadOnly(field, readonly) || disabledFields.includes(value);
 	const showSuffixes = supportedSuffixes && !disableSuffixes.includes(value);
 	const effectRefs = useUpdateRefs({
 		value,
@@ -139,7 +140,12 @@ export function Variable(props: VariableProps) {
 }
 
 const cleanVariable = (value) => {
-	return value.replace(/-/g, '_').replace(/[^A-Za-z0-9-_]/g, '');
+	let sanitized = value.replace(/-/g, '_').replace(/[^A-Za-z0-9_]/g, '');
+	// Ensure the first character is a letter or underscore
+	if (sanitized !== '' && !/^[_A-Za-z]/.test(sanitized)) {
+		sanitized = `_${sanitized}`;
+	}
+	return sanitized;
 };
 
 const getValueWithSuffix = (value: string, suffix: string, supportedSuffixes: SuffixesType[]): string => {

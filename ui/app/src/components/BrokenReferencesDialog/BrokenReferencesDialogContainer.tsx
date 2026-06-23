@@ -32,10 +32,12 @@ import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import ApiResponseErrorState from '../ApiResponseErrorState';
 import { fetchDependant } from '../../services/dependencies';
-import type { LegacyItem } from '../../models';
-import { parseLegacyItemToContentItem } from '../../utils/content';
+import { fetchContentItems } from '../../services/content';
+import { map, switchMap } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 import { pickShowContentFormAction, pushErrorDialog } from '../../utils/system';
+import { extractErrorPayload } from '../../utils/ajax';
 
 export function BrokenReferencesDialogContainer(props: BrokenReferencesDialogContainerProps) {
 	const { path, references: initialReferences, error, onClose, onContinue } = props;
@@ -56,16 +58,21 @@ export function BrokenReferencesDialogContainer(props: BrokenReferencesDialogCon
 				authoringBase,
 				site,
 				onSaveSuccess: () => {
-					// Fetch broken references again after editing
-					fetchDependant(site, path).subscribe({
-						next: (response: LegacyItem[]) => {
-							const refs = parseLegacyItemToContentItem(response);
-							setReferences(refs);
-						},
-						error: ({ response }) => {
-							dispatch(pushErrorDialog({ props: { error: response.response } }));
-						}
-					});
+					fetchDependant(site, path)
+						.pipe(
+							map((lightItems) => lightItems.map((item) => item.path)),
+							// Items of type 'ContentItem' are needed in this component (fetchDependant returns LightItem[])
+							// AvailableActionsMap of items is needed to render the edit button of each reference.
+							switchMap((paths) => (paths.length ? fetchContentItems(site, paths) : of([])))
+						)
+						.subscribe({
+							next: (contentItems) => {
+								setReferences(contentItems);
+							},
+							error: (error) => {
+								dispatch(pushErrorDialog({ props: { error: extractErrorPayload(error) } }));
+							}
+						});
 				}
 			})
 		);

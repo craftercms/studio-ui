@@ -56,7 +56,7 @@ function Body({ item, onClose }: FolderMoveAlertDialogProps) {
 	const onContinue = () => {
 		dispatch(
 			batchActions([
-				setClipboard({ type: 'CUT', paths: [item.path], sourcePath: item.path }),
+				setClipboard({ type: 'CUT', sourcePath: item.path }),
 				emitSystemEvent(itemCut({ target: item.path })),
 				showCutItemSuccessNotification()
 			])

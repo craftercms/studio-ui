@@ -16,9 +16,10 @@
 
 import { LookupTable } from './LookupTable';
 import { XmlKeys } from '../components/FormsEngine/lib/formConsts';
+import { DescriptorFieldValidationKeys } from '../components/ContentTypeManagement/utils';
 
 export interface ContentTypeFieldValidation<T = any> {
-	id: ValidationKeys;
+	id: ValidationKeys | DescriptorFieldValidationKeys;
 	value: T;
 	level: 'required' | 'suggestion';
 }
@@ -51,7 +52,9 @@ export type ValidationKeys =
 	| 'allowAudioUpload'
 	| 'allowAudioFromRepo'
 	| 'pattern'
-	| 'allowDuplicates';
+	| 'allowDuplicates'
+	| 'addMedia'
+	| 'minSize';
 
 export type ContentTypeFieldValidations = Record<ValidationKeys, ContentTypeFieldValidation>;
 
@@ -181,9 +184,22 @@ export interface ContentType {
 	//  Possibly split into `allowedTypeCreationBlacklist` and `allowedTypeCreationWhitelist`?
 	//  `creationPathBlacklist`, `creationPathWhitelist`?
 	paths: {
-		excludes?: Array<{ pattern: string }>;
-		includes?: Array<{ pattern: string }>;
+		excludes?: { pattern: string[] };
+		includes?: { pattern: string[] };
 	};
+	'delete-dependencies': {
+		'delete-dependency': {
+			pattern: string;
+			'remove-empty-folder': boolean;
+		}[];
+	};
+	'copy-dependencies': {
+		'copy-dependency': {
+			pattern: string;
+			target: string;
+		}[];
+	};
+	previewable: boolean;
 	// ^^^ Added during TypeBuilder 2 ^^^
 	sections: ContentTypeSection[];
 	fields: LookupTable<ContentTypeField>;
@@ -285,9 +301,11 @@ export interface SerializeToXmlContentTypeStructure {
 	quickCreate: 'true' | 'false';
 	quickCreatePath: string;
 	paths: {
-		excludes?: Array<{ pattern: string }>;
-		includes?: Array<{ pattern: string }>;
+		excludes?: { pattern: string[] };
+		includes?: { pattern: string[] };
 	};
+	'delete-dependencies': ContentType['delete-dependencies'];
+	'copy-dependencies': ContentType['copy-dependencies'];
 	// ^^^ config.xml ^^^
 	// TODO: Can we move these to the root or drop `label` and `type`?
 	properties: {
@@ -314,6 +332,7 @@ export interface SerializeToXmlContentTypeStructure {
 	};
 	sections: { section: Array<LegacyFormDefinitionSectionWithId> };
 	datasources: { datasource: Array<LegacyDataSource> };
+	previewable: boolean;
 }
 
 // Note: nearly identical to SerializeToXmlContentTypeObject
@@ -330,14 +349,12 @@ export interface LegacyFormDefinition {
 	quickCreatePath: string; // e.g. /site/pages
 	// ∨∨∨ config.xml ∨∨∨
 	controller: 'true' | 'false';
-	paths: {
-		excludes: { pattern: string } | Array<{ pattern: string }>;
-		includes: { pattern: string } | Array<{ pattern: string }>;
-	};
+	paths: ContentType['paths'];
 	// ^^^ config.xml ^^^
 	sections: { section: LegacyFormDefinitionSection | Array<LegacyFormDefinitionSection> };
 	properties: { property: LegacyFormDefinitionProperty | Array<LegacyFormDefinitionProperty> };
 	datasources: { datasource: LegacyDataSource | Array<LegacyDataSource> };
+	previewable: string;
 }
 
 // As returned by `/studio/api/1/services/api/1/content/get-content-types.json?site=${site}`

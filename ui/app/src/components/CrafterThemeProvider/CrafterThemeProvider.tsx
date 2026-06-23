@@ -22,6 +22,7 @@ import palette from '../../styles/palette';
 import { deepmerge } from '@mui/utils';
 import createCache from '@emotion/cache';
 import { CacheProvider } from '@emotion/react';
+import useEnableAnimations from '../../hooks/useEnableAnimations';
 
 export type CrafterThemeProviderProps = PropsWithChildren<{ themeOptions?: ThemeOptions }>;
 
@@ -35,12 +36,20 @@ muiCache.compat = true;
 
 export function CrafterThemeProvider(props: CrafterThemeProviderProps) {
 	const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+	const enableAnimations = useEnableAnimations();
+
 	const theme = useMemo(() => {
 		const mode = prefersDarkMode ? 'dark' : 'light';
 		const auxTheme = createTheme({ palette: { mode } });
 		const defaultThemeOptions = createDefaultThemeOptions({ mode });
 		return createTheme({
 			...(props.themeOptions ?? defaultThemeOptions),
+			// Animations: Disable MUI JavaScript/CSS transition helpers
+			...(!enableAnimations && {
+				transitions: {
+					create: () => 'none'
+				}
+			}),
 			palette: {
 				mode,
 				primary: {
@@ -83,16 +92,35 @@ export function CrafterThemeProvider(props: CrafterThemeProviderProps) {
 						}
 					}
 				},
+				MuiButtonBase: {
+					// Animations: Disable interactive ripple effects globally
+					...(!enableAnimations && {
+						defaultProps: {
+							disableRipple: true
+						}
+					})
+				},
 				MuiInputBase: {
 					styleOverrides: {
 						root: {
 							backgroundColor: auxTheme.palette.background.paper
 						}
 					}
+				},
+				// Animations: Force-disable pure CSS transitions and animations
+				MuiCssBaseline: {
+					...(!enableAnimations && {
+						styleOverrides: {
+							'*, *::before, *::after': {
+								transition: 'none !important',
+								animation: 'none !important'
+							}
+						}
+					})
 				}
 			})
 		});
-	}, [prefersDarkMode, props.themeOptions]);
+	}, [prefersDarkMode, props.themeOptions, enableAnimations]);
 	return (
 		<CacheProvider value={muiCache}>
 			<ThemeProvider theme={theme} children={props.children} />

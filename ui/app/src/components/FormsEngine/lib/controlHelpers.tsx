@@ -55,6 +55,7 @@ import { SearchProps } from '../../Search';
 import type { ImageRestrictions } from '../../ImageEditorDialog/types';
 import type { SingleFileUploadDialogProps } from '../../SingleFileUploadDialog';
 import type { FileUploadResult } from '../../SingleFileUpload';
+import { ImagePickerType } from '../controls/ImagePicker';
 
 // Note: These persist past the closing of the form.
 const lazyControlMap = new Map<string, LazyExoticComponent<ComponentType>>();
@@ -204,18 +205,17 @@ export function renderFieldControl(
  * */
 export function createMediaMenuOptions(
 	dataSourceSummary: ConsolidatedMediaPickerData,
-	handleDataSourceOptionClick: (
-		event: ReactMouseEvent<HTMLLIElement, MouseEvent>,
-		option: 'browse' | 'search' | 'upload'
-	) => void,
+	handleDataSourceOptionClick: (option: ImagePickerType) => void,
 	readonly: boolean = false
 ) {
 	const { allowedBrowsePaths, allowedUploadPaths, allowedSearchPaths } = dataSourceSummary;
 	const menuOptions = [];
+	const availableOptions: ImagePickerType[] = [];
 
 	if (allowedBrowsePaths.length > 0) {
+		availableOptions.push('browse');
 		menuOptions.push(
-			<MenuItem key="browse" onClick={(event) => handleDataSourceOptionClick(event, 'browse')} disabled={readonly}>
+			<MenuItem key="browse" onClick={(event) => handleDataSourceOptionClick('browse')} disabled={readonly}>
 				<ListItemIcon sx={{ mr: 0 }}>
 					<TravelExploreOutlined fontSize="small" />
 				</ListItemIcon>
@@ -226,8 +226,9 @@ export function createMediaMenuOptions(
 		);
 	}
 	if (allowedSearchPaths.length > 0) {
+		availableOptions.push('search');
 		menuOptions.push(
-			<MenuItem key="search" onClick={(event) => handleDataSourceOptionClick(event, 'search')} disabled={readonly}>
+			<MenuItem key="search" onClick={(event) => handleDataSourceOptionClick('search')} disabled={readonly}>
 				<ListItemIcon sx={{ mr: 0 }}>
 					<SearchRounded fontSize="small" />
 				</ListItemIcon>
@@ -238,8 +239,9 @@ export function createMediaMenuOptions(
 		);
 	}
 	if (allowedUploadPaths.length > 0) {
+		availableOptions.push('upload');
 		menuOptions.push(
-			<MenuItem key="upload" onClick={(event) => handleDataSourceOptionClick(event, 'upload')} disabled={readonly}>
+			<MenuItem key="upload" onClick={(event) => handleDataSourceOptionClick('upload')} disabled={readonly}>
 				<ListItemIcon sx={{ mr: 0 }}>
 					<UploadFileOutlinedIcon fontSize="small" />
 				</ListItemIcon>
@@ -249,7 +251,7 @@ export function createMediaMenuOptions(
 			</MenuItem>
 		);
 	}
-	return menuOptions;
+	return { menuOptions, availableOptions };
 }
 
 export function downloadMedia(base: string, url: string) {
@@ -266,13 +268,17 @@ export const showBrowseFilesDialog = ({
 	onSuccess,
 	path,
 	contentTypes,
-	multiSelect = true
+	multiSelect = true,
+	preselectedPaths = [],
+	initialParameters = {}
 }: {
 	path: string;
 	dispatch: ReduxDispatch;
 	onSuccess: BrowseFilesDialogProps['onSuccess'];
 	contentTypes?: string[];
 	multiSelect?: boolean;
+	preselectedPaths?: string[];
+	initialParameters?: BrowseFilesDialogProps['initialParameters'];
 }): void => {
 	const id = nanoid();
 	dispatch(
@@ -284,6 +290,8 @@ export const showBrowseFilesDialog = ({
 				multiSelect,
 				allowUpload: false,
 				contentTypes: contentTypes ?? [],
+				preselectedPaths,
+				initialParameters,
 				onClose: () => dispatch(popDialog({ id })),
 				onSuccess(items) {
 					dispatch(popDialog({ id }));
@@ -297,11 +305,15 @@ export const showBrowseFilesDialog = ({
 export const showSearchDialog = ({
 	dispatch,
 	path,
+	preselectedPaths = [],
 	contentTypes,
-	onAcceptSelection
+	onAcceptSelection,
+	initialParameters
 }: {
 	path: string;
 	contentTypes?: string[];
+	preselectedPaths?: string[];
+	initialParameters?: SearchProps['initialParameters'];
 	dispatch: ReduxDispatch;
 	onAcceptSelection: SearchProps['onAcceptSelection'];
 }): void => {
@@ -316,8 +328,15 @@ export const showSearchDialog = ({
 				initialParameters: {
 					path,
 					sortBy: 'internalName',
-					...(contentTypes && { filters: { 'content-type': contentTypes } })
+					...initialParameters,
+					...(contentTypes && {
+						filters: {
+							...(initialParameters?.filters ?? {}),
+							'content-type': contentTypes
+						}
+					})
 				},
+				preselectedPaths,
 				onClose: () => dispatch(popDialog({ id })),
 				onAcceptSelection(paths, items) {
 					dispatch(popDialog({ id }));

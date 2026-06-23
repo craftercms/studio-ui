@@ -20,11 +20,11 @@ import { PublishingTarget, PublishParams } from '../../models/Publishing';
 import LookupTable from '../../models/LookupTable';
 import { InternalDialogState, itemsArrayChanged, PublishDialogContainerProps, usePublishState } from './utils';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { calculatePackage, publish } from '../../services/publishing';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { isBlank } from '../../utils/string';
-import { ContentItem, LightItem } from '../../models';
+import { ContentItem, GlobalState, LightItem } from '../../models';
 import { createAtLeastHalfHourInFutureDate } from '../../utils/datetime';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
 import DialogBody from '../DialogBody';
@@ -108,7 +108,6 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 		itemsAndDependenciesMap
 	} = usePublishState({ mainItems, childrenItems });
 	const { updateSubmittingOrHasPendingChanges } = useEnhancedDialogContext();
-	const effectRefs = useUpdateRefs({ initialItems, state, mainItems, childrenItems });
 	const hasPublishPermission = permissionsBySite[siteId].includes('publish_approve');
 	const publishingTarget = useMemo(() => {
 		let target: InternalDialogState['publishingTarget'] = '';
@@ -126,6 +125,50 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 
 		return target;
 	}, [publishingTargets, mainItems]);
+	const commentMaxLength = useSelector<GlobalState, number>(
+		(state) => state.uiConfig.publishing.submissionCommentMaxLength
+	);
+	const { formatMessage } = useIntl();
+
+	// Auto-generate submission comment based on mainItems labels if comment is blank
+	useEffect(() => {
+		if (state && mainItems && Array.isArray(mainItems) && isBlank(state.submissionComment)) {
+			const labels = mainItems.map((item) => item.label).filter(Boolean);
+			const base = `${formatMessage({ defaultMessage: 'Publishing' })}: `;
+
+			let submissionComment = `${base}${labels.join(', ')}`;
+			if (submissionComment.length > commentMaxLength) {
+				// Calculate how many items fit within {commentMaxLength} chars
+				let totalLength = base.length;
+				let count = 0;
+				const resultLabels: string[] = [];
+				let strippedCount = 0;
+				for (let i = 0; i < labels.length; i++) {
+					const next = (count === 0 ? '' : ', ') + labels[i];
+					// Predict the length if we add " and X more items"
+					const remaining = labels.length - (count + 1);
+					const suffix =
+						remaining > 0 ? ` ${formatMessage({ defaultMessage: 'and {count} more' }, { count: remaining })}` : '';
+					if (totalLength + next.length + suffix.length > commentMaxLength) break;
+					resultLabels.push(labels[i]);
+					totalLength += next.length;
+					count++;
+				}
+				strippedCount = labels.length - count;
+				let comment = `${base}${resultLabels.join(', ')}`;
+				if (strippedCount > 0) {
+					comment += ` ${formatMessage({ defaultMessage: 'and {count} more' }, { count: strippedCount })}`;
+				}
+				submissionComment = comment;
+			}
+
+			if (labels.length > 0) {
+				setState({ submissionComment });
+			}
+		}
+		// Only run when mainItems or submissionComment changes
+	}, [mainItems, state, setState, formatMessage, commentMaxLength]);
+
 	const isRequestPublish = !hasPublishPermission || state.requestApproval;
 	const showRequestApproval = hasPublishPermission;
 	const submitLabel =
@@ -137,7 +180,11 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 			<FormattedMessage id="words.publish" defaultMessage="Publish" />
 		);
 	const disabled = isSubmitting;
-	const [includeChildren, setIncludeChildren] = useState(false);
+	const [includeChildren, setIncludeChildren] = useState(
+		// Initial state is true if all mainItems are folders, since publishing only folders is not allowed.
+		mainItems.length > 0 && mainItems.every((item) => item.systemType === 'folder')
+	);
+	const effectRefs = useUpdateRefs({ initialItems, state, mainItems, childrenItems, includeChildren });
 	const arePublishingItemsFolders = useMemo(() => {
 		const allItems = [...mainItems, ...childrenItems];
 		return allItems.length > 0 && allItems.every((item) => item.systemType === 'folder');

@@ -517,7 +517,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 				dispatch(
 					restoreClipboard({
 						type: localClipboard.type,
-						paths: localClipboard.paths,
+						includeChildren: localClipboard.includeChildren,
 						sourcePath: localClipboard.sourcePath
 					})
 				);
@@ -1109,7 +1109,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 							props: {
 								item: payload.item,
 								onClosed: () => dispatch(requestWorkflowCancellationDialogOnResult({ type: 'close' })),
-								onContinue: () => dispatch(requestWorkflowCancellationDialogOnResult({ type: 'continue' }))
+								onContinue: (cancelPackagesComment) =>
+									dispatch(requestWorkflowCancellationDialogOnResult({ type: 'continue', cancelPackagesComment }))
 							}
 						})
 					);

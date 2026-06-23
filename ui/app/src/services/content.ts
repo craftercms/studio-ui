@@ -44,7 +44,7 @@ import QuickCreateItem from '../models/content/QuickCreateItem';
 import ApiResponse from '../models/ApiResponse';
 import { fetchContentTypes } from './contentTypes';
 import { Clipboard } from '../models/GlobalState';
-import { getFileNameFromPath, getPasteItemFromPath } from '../utils/path';
+import { getFileNameFromPath } from '../utils/path';
 import { StandardAction } from '../models/StandardAction';
 import { GetChildrenResponse } from '../models/GetChildrenResponse';
 import { GetItemWithChildrenResponse } from '../models/GetItemWithChildrenResponse';
@@ -53,6 +53,7 @@ import { v4 as uuid } from 'uuid';
 import FetchItemsByPathArray from '../models/FetchItemsByPathArray';
 import { isMediaContent, isTextContent } from '../components/PathNavigator/utils';
 import { fromPromise } from 'rxjs/internal/observable/innerFrom';
+import { getCurrentIntl } from '../utils/i18n';
 
 export function fetchComponentInstanceHTML(path: string): Observable<string> {
 	return getText(`/crafter-controller/component.html${toQueryString({ path })}`).pipe(pluck('response'));
@@ -121,10 +122,16 @@ export function fetchContentInstance(
 	return fetchContentDOM(site, path).pipe(map((doc) => parseContentXML(doc, path, contentTypesLookup, {})));
 }
 
-export function writeContent(siteId: string, path: string, content: string, options?: { unlock: boolean }) {
+export function writeContent(
+	siteId: string,
+	path: string,
+	content: string,
+	options?: { unlock?: boolean; comment?: string }
+) {
 	const request$ = postJSON(`/studio/api/2/content/${siteId}`, {
 		path,
-		content
+		content,
+		comment: options?.comment || ''
 	});
 	if (options?.unlock) {
 		return request$.pipe(switchMap((response) => unlock(siteId, path).pipe(map(() => response))));
@@ -240,6 +247,10 @@ export function updateField(
 	value: any,
 	serializeValue: boolean | ((value: any) => string) = false
 ): Observable<any> {
+	const writeContentComment = getCurrentIntl().formatMessage(
+		{ defaultMessage: 'Updated {fieldId} in {path}' },
+		{ fieldId, path }
+	);
 	return performMutation(
 		site,
 		path,
@@ -266,7 +277,8 @@ export function updateField(
 						? cdataWrap(value)
 						: value;
 		},
-		modelId
+		modelId,
+		writeContentComment
 	);
 }
 // endregion
@@ -276,7 +288,8 @@ function performMutation(
 	site: string,
 	path: string,
 	mutation: (doc: Element) => void,
-	modelId: string = null
+	modelId: string = null,
+	writeContentComment?: string
 ): Observable<{ updatedDocument: XMLDocument }> {
 	return fetchContentDOM(site, path).pipe(
 		switchMap((doc) => {
@@ -292,7 +305,11 @@ function performMutation(
 			updateModifiedDateElement(doc.documentElement);
 
 			return fromPromise(beautify(serialize(doc))).pipe(
-				switchMap((xml) => writeContent(site, path, xml, { unlock: true }).pipe(map(() => ({ updatedDocument: doc }))))
+				switchMap((xml) =>
+					writeContent(site, path, xml, { unlock: true, comment: writeContentComment }).pipe(
+						map(() => ({ updatedDocument: doc }))
+					)
+				)
 			);
 		})
 	);
@@ -316,6 +333,10 @@ export function insertComponent(
 	isSharedInstance = false,
 	shouldSerializeValueFn?: (fieldId: string) => boolean
 ): Observable<any> {
+	const writeContentComment = getCurrentIntl().formatMessage(
+		{ defaultMessage: 'Inserted component {label} in {path}' },
+		{ label: insertedContentInstance.craftercms.label, path: parentDocPath }
+	);
 	return performMutation(
 		siteId,
 		parentDocPath,
@@ -344,7 +365,8 @@ export function insertComponent(
 
 			insertCollectionItem(element, parentFieldId, targetIndex, newItem);
 		},
-		parentModelId
+		parentModelId,
+		writeContentComment
 	);
 }
 // endregion
@@ -363,6 +385,10 @@ export function insertInstance(
 	insertedInstance: ContentInstance,
 	datasource?: string
 ): Observable<any> {
+	const writeContentComment = getCurrentIntl().formatMessage(
+		{ defaultMessage: 'Inserted instance {label} in {path}' },
+		{ label: insertedInstance.craftercms.label, path: parentDocPath }
+	);
 	return performMutation(
 		siteId,
 		parentDocPath,
@@ -384,7 +410,8 @@ export function insertInstance(
 
 			insertCollectionItem(element, parentFieldId, targetIndex, newItem);
 		},
-		parentModelId
+		parentModelId,
+		writeContentComment
 	);
 }
 // endregion
@@ -488,16 +515,24 @@ export function duplicateItem(
 						updateComponentId(componentDoc.documentElement, newItemData.modelId);
 						updateModifiedDateElement(componentDoc.documentElement);
 						updateCreatedDateElement(componentDoc.documentElement);
+						const writeContentComment = getCurrentIntl().formatMessage(
+							{ defaultMessage: 'Duplicated item {itemPath} in {path}' },
+							{ itemPath, path }
+						);
 						return forkJoin([
 							// Write the main document.
 							fromPromise(beautify(serialize(doc))).pipe(
-								switchMap((xml) => writeContent(site, path, xml, { unlock: true }))
+								switchMap((xml) => writeContent(site, path, xml, { unlock: true, comment: writeContentComment }))
 							),
 							// Write the new/duplicated shared component.
 							fromPromise(beautify(serialize(componentDoc))).pipe(
 								switchMap((xml) =>
 									writeContent(site, `${returnValue.newItem.path}/${returnValue.newItem.modelId}.xml`, xml, {
-										unlock: true
+										unlock: true,
+										comment: getCurrentIntl().formatMessage(
+											{ defaultMessage: 'Created duplicated shared component {path}/{modelId}.xml' },
+											{ path: returnValue.newItem.path, modelId: returnValue.newItem.modelId }
+										)
 									})
 								)
 							)
@@ -524,6 +559,10 @@ export function sortItem(
 	targetIndex: number,
 	path: string
 ): Observable<any> {
+	const writeContentComment = getCurrentIntl().formatMessage(
+		{ defaultMessage: 'Moved item from index {currentIndex} to {targetIndex} in {fieldId}. Path: {path}' },
+		{ currentIndex, targetIndex, fieldId, path }
+	);
 	return performMutation(
 		site,
 		path,
@@ -531,7 +570,8 @@ export function sortItem(
 			const item = extractNode(element, fieldId, currentIndex);
 			insertCollectionItem(element, fieldId, targetIndex, item, currentIndex);
 		},
-		modelId
+		modelId,
+		writeContentComment
 	);
 }
 // endregion
@@ -556,35 +596,52 @@ export function moveItem(
 	const isSameModel = originalModelId === targetModelId;
 	const isSameDocument = originalParentPath === targetParentPath;
 	if (isSameDocument || isSameModel) {
+		const writeContentComment = getCurrentIntl().formatMessage(
+			{ defaultMessage: 'Moving item {originalFieldId} from {originalIndex} to {targetIndex} in {originalParentPath}' },
+			{ originalFieldId, originalIndex, targetIndex, originalParentPath }
+		);
 		// Moving items between two fields of the same document or model...
-		return performMutation(site, originalParentPath, (element) => {
-			// Item may be moving...
-			// - from parent model to an embedded model
-			// - from an embedded model to the parent model
-			// - from an embedded model to another embedded model
-			// - from a field to another WITHIN the same model (parent or embedded)
-			const parentDocumentModelId = getInnerHtml(element.querySelector(':scope > objectId'));
-			const sourceModelElement =
-				parentDocumentModelId === originalModelId ? element : element.querySelector(`[id="${originalModelId}"]`);
-			const targetModelElement =
-				parentDocumentModelId === targetModelId ? element : element.querySelector(`[id="${targetModelId}"]`);
-			const item = extractNode(sourceModelElement, originalFieldId, originalIndex);
-			let targetField = extractNode(targetModelElement, targetFieldId, removeLastPiece(`${targetIndex}`));
-			if (!targetField) {
-				const newField = createElement(originalFieldId);
-				newField.setAttribute('item-list', 'true');
-				targetModelElement.appendChild(newField);
-				targetField = newField;
-			}
-			const targetFieldItems = targetField.querySelectorAll(':scope > item');
-			const parsedTargetIndex = parseInt(popPiece(`${targetIndex}`));
-			if (targetFieldItems.length === parsedTargetIndex) {
-				targetField.appendChild(item);
-			} else {
-				targetField.insertBefore(item, targetFieldItems[parsedTargetIndex]);
-			}
-		});
+		return performMutation(
+			site,
+			originalParentPath,
+			(element) => {
+				// Item may be moving...
+				// - from parent model to an embedded model
+				// - from an embedded model to the parent model
+				// - from an embedded model to another embedded model
+				// - from a field to another WITHIN the same model (parent or embedded)
+				const parentDocumentModelId = getInnerHtml(element.querySelector(':scope > objectId'));
+				const sourceModelElement =
+					parentDocumentModelId === originalModelId ? element : element.querySelector(`[id="${originalModelId}"]`);
+				const targetModelElement =
+					parentDocumentModelId === targetModelId ? element : element.querySelector(`[id="${targetModelId}"]`);
+				const item = extractNode(sourceModelElement, originalFieldId, originalIndex);
+				let targetField = extractNode(targetModelElement, targetFieldId, removeLastPiece(`${targetIndex}`));
+				if (!targetField) {
+					const newField = createElement(originalFieldId);
+					newField.setAttribute('item-list', 'true');
+					targetModelElement.appendChild(newField);
+					targetField = newField;
+				}
+				const targetFieldItems = targetField.querySelectorAll(':scope > item');
+				const parsedTargetIndex = parseInt(popPiece(`${targetIndex}`));
+				if (targetFieldItems.length === parsedTargetIndex) {
+					targetField.appendChild(item);
+				} else {
+					targetField.insertBefore(item, targetFieldItems[parsedTargetIndex]);
+				}
+			},
+			null,
+			writeContentComment
+		);
 	} else {
+		const writeContentComment = getCurrentIntl().formatMessage(
+			{
+				defaultMessage:
+					'Moving item {originalFieldId} from {originalIndex} to {targetIndex} in {originalParentPath} to {targetParentPath}'
+			},
+			{ originalFieldId, originalIndex, targetIndex, originalParentPath, targetParentPath }
+		);
 		let removedItemHTML: string;
 		return performMutation(
 			site,
@@ -596,7 +653,8 @@ export function moveItem(
 				removedItemHTML = item.outerHTML;
 				field.removeChild(item);
 			},
-			originalModelId
+			originalModelId,
+			writeContentComment
 		).pipe(
 			switchMap(() =>
 				performMutation(
@@ -634,6 +692,10 @@ export function deleteItem(
 	indexToDelete: number | string,
 	path: string
 ): Observable<any> {
+	const writeContentComment = getCurrentIntl().formatMessage(
+		{ defaultMessage: 'Removed item {fieldId} at index {indexToDelete} in {path}' },
+		{ fieldId, indexToDelete, path }
+	);
 	return performMutation(
 		site,
 		path,
@@ -658,7 +720,8 @@ export function deleteItem(
 				fieldNode.innerHTML = '';
 			}
 		},
-		modelId
+		modelId,
+		writeContentComment
 	);
 }
 // endregion
@@ -1287,11 +1350,11 @@ export function fetchItemWithChildrenByPath(
 }
 
 export function paste(siteId: string, targetPath: string, clipboard: Clipboard): Observable<any> {
-	return postJSON('/studio/api/2/content/paste', {
-		siteId,
+	return postJSON(`/studio/api/2/content/${siteId}/paste`, {
 		operation: clipboard.type,
+		sourcePath: clipboard.sourcePath,
 		targetPath,
-		item: getPasteItemFromPath(clipboard.sourcePath, clipboard.paths)
+		includeChildren: clipboard.includeChildren
 	}).pipe(pluck('response'));
 }
 
@@ -1359,16 +1422,6 @@ export function checkPathExistence(siteId: string, path: string): Observable<boo
 	return get(`/studio/api/2/content/exists${toQueryString({ siteId, path })}`).pipe(
 		map(({ response }) => response.exists)
 	);
-}
-
-export function fetchLegacyItemsTree(
-	site: string,
-	path: string,
-	options?: Partial<{ depth: number; order: string }>
-): Observable<LegacyItem> {
-	return get(
-		`/studio/api/1/services/api/1/content/get-items-tree.json${toQueryString({ site_id: site, path, ...options })}`
-	).pipe(pluck('response', 'item'), catchError(errorSelectorApi1));
 }
 
 export function fetchContentByCommitId(site: string, path: string, commitId: string): Observable<string | Blob> {

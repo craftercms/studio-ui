@@ -24,7 +24,7 @@ import HelpOutline from '@mui/icons-material/HelpOutline';
 import SearchRounded from '@mui/icons-material/SearchRounded';
 import { FormsEngineField } from '../components/FormsEngineField';
 import { ControlProps } from '../types';
-import { MediaItem, Primitive } from '../../../models';
+import type { ContentItem, MediaItem, Primitive } from '../../../models';
 import List from '@mui/material/List';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
@@ -33,7 +33,7 @@ import { FormattedMessage } from 'react-intl';
 import LinkOffRoundedIcon from '@mui/icons-material/LinkOffRounded';
 import Tooltip from '@mui/material/Tooltip';
 import useContentTypes from '../../../hooks/useContentTypes';
-import {
+import React, {
 	lazy,
 	MouseEvent as ReactMouseEvent,
 	ReactNode,
@@ -60,7 +60,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Radio from '@mui/material/Radio';
 import Grid from '@mui/material/Grid';
 import ContentType from '../../../models/ContentType';
-import { fetchLegacyContentTypes } from '../../../services/contentTypes';
+import { fetchAllowedTypes } from '../../../services/contentTypes';
 import useActiveSiteId from '../../../hooks/useActiveSiteId';
 import { forkJoin } from 'rxjs';
 import Dialog from '@mui/material/Dialog';
@@ -71,13 +71,15 @@ import SecondaryButton from '../../SecondaryButton';
 import { DialogBody } from '../../DialogBody';
 import Typography from '@mui/material/Typography';
 import { useDispatch } from 'react-redux';
+import { nanoid } from 'nanoid';
 import useUpdateRefs from '../../../hooks/useUpdateRefs';
 import useFetchContentItems from '../../../hooks/useFetchContentItems';
 import useItemsByPath from '../../../hooks/useItemsByPath';
 import ItemDisplay from '../../ItemDisplay';
 import useActiveUser from '../../../hooks/useActiveUser';
-import { processPathMacros } from '../../../utils/path';
-import { ensureSingleSlash } from '../../../utils/string';
+import { getFileExtension, processPathMacros } from '../../../utils/path';
+import { ensureSingleSlash, isEmpty } from '../../../utils/string';
+import { popDialog, pushDialog } from '../../../state/actions/dialogStack';
 import FieldBox from '../components/FieldBox';
 import { isTouchDevice, KeyDownEvent, sortableListKeyDownHandler } from '../lib/sortableListUtil';
 import SortableListSkeleton from '../components/SortableListSkeleton';
@@ -86,13 +88,31 @@ import { XmlKeys } from '../lib/formConsts';
 import useConsolidatedItemPickerData, {
 	ConsolidatedItemPickerData
 } from '../dataSourceHooks/useConsolidatedItemPickerData';
-import { useExtractItemPickerDataSources } from '../dataSourceHooks/useExtractItemPickerDataSources';
 import { showBrowseFilesDialog, showSearchDialog } from '../lib/controlHelpers';
+import { Dispatch as ReduxDispatch } from 'redux';
+import { useExtractDataSources } from '../dataSourceHooks/useExtractDataSources';
+import UploadFileOutlinedIcon from '@mui/icons-material/UploadFileOutlined';
+import type { FileUploadResult } from '../../SingleFileUpload';
+import type { SingleFileUploadDialogProps } from '../../SingleFileUploadDialog';
+import { showCodeEditorDialog } from '../../../state/actions/dialogs';
+import { getEditorMode, isAudio, isEditableAsset, isPdfDocument, isVideo } from '../../../utils/content';
+import { createComponentId, pickShowContentFormAction } from '../../../utils/system';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import {
+	getEditorMode as getItemEditorMode,
+	isEditableViaFormEditor,
+	isImage,
+	isMediaContent
+} from '../../PathNavigator/utils';
+import useSelection from '../../../hooks/useSelection';
+import { getValidationValue, isFieldReadOnly, showAlert } from '../lib/formUtils';
+import TypeList from '../../ContentTypeManagement/components/TypeList';
+import { SearchBar } from '../../SearchBar';
+import useDebouncedInput from '../../../hooks/useDebouncedInput';
+import { filterTypesByKeywordsAndObjectType } from '../../../utils/contentType';
 
 const SortableList = lazy(() => import('../components/SortableList'));
 const TouchSortableList = lazy(() => import('../components/TouchSortableList'));
-
-// TODO: process path macros
 
 export interface NodeSelectorProps extends ControlProps {
 	value: NodeSelectorItem[];
@@ -104,9 +124,19 @@ export interface NodeSelectorItem {
 	include?: string;
 	disableFlattening?: boolean;
 	component?: Record<string, Primitive>;
+	// @see https://craftercms.com/docs/current/by-role/developer/common/content-modeling/content-modeling.html#form-control-variable-names
+	// _smv: When using single multi-value mode (neither useSingleValueFilename nor useMVS is true).
+	fileSize_smv?: number;
+	fileType_smv?: string;
+	// _mvs: when using multi-value support mode (useMVS is true).
+	fileType_mvs?: string;
+	// _s When using single value filename mode (useSingleValueFilename is true).
+	fileType_s?: string;
+	// _s when using single value filename mode or multi-value support mode (useMVS is true).
+	fileSize_s?: number;
 }
 
-export type DataSourcePickerType = 'search' | 'browse' | 'create';
+export type DataSourcePickerType = 'search' | 'browse' | 'create' | 'upload';
 
 export type AllowedContentTypesDataWithDestinations = AllowedContentTypesData & { createPaths?: string[] };
 
@@ -129,265 +159,17 @@ const oppositeStrategy: Record<ContentCreationStrategy, ContentCreationStrategy>
 	shared: 'embedded'
 };
 
-// Internal/private component
-function CreateDataSourcePicker(props: {
-	siteId: string;
-	contentTypesLookup: LookupTable<ContentType>;
-	allowedCreateTypes: LookupTable<AllowedContentTypesDataWithDestinations>;
-	allowedCreatePaths: string[];
-	onChange(e, choice: CreateDataSourcePickerData): void;
-}) {
-	const { siteId, allowedCreatePaths, contentTypesLookup, onChange } = props;
-	const [allowedTypes, setAllowedTypes] = useState<string[]>();
-	const [allowedCreateTypes, setAllowedCreateTypes] = useState<LookupTable<AllowedContentTypesDataWithDestinations>>(
-		props.allowedCreateTypes
-	);
-	const [value, setValue] = useState<CreateDataSourcePickerData>(() => {
-		for (const key in allowedCreateTypes) {
-			return {
-				path: allowedCreateTypes[key].createPaths?.[0] ?? '',
-				strategy: allowedCreateTypes[key].embedded ? 'embedded' : 'shared',
-				contentTypeId: key
-			};
-		}
-		return null;
-	});
-	const refs = useUpdateRefs({ value, onChange });
-	const [allowedStrategies, setAllowedStrategies] = useState({ embedded: false, shared: false });
-	const handleTypeChange = (event: SyntheticEvent) => {
-		const newValue = { ...value, contentTypeId: (event.target as HTMLInputElement).value };
-		setValue(newValue);
-		onChange?.(event, newValue);
-	};
-	const handleStrategyChange = (event: SyntheticEvent) => {
-		const newValue = { ...value, strategy: (event.target as HTMLInputElement).value as ContentCreationStrategy };
-		setValue(newValue);
-		onChange?.(event, newValue);
-	};
-	const handlePathChange = (event: SyntheticEvent) => {
-		const newValue = { ...value, path: (event.target as HTMLInputElement).value };
-		setValue(newValue);
-		onChange?.(event, newValue);
-	};
-	useEffect(() => {
-		const allowedCreateTypes = props.allowedCreateTypes;
-		if (allowedCreatePaths.length) {
-			// Find out all the types that can be created on the allowed creation paths (coming from shared-content DS).
-			const sub = forkJoin(allowedCreatePaths.map((path) => fetchLegacyContentTypes(siteId, path))).subscribe(
-				(responses) => {
-					const result = [
-						...new Set(
-							responses.flatMap((types) => types.map((type) => type.name)).concat(Object.keys(allowedCreateTypes))
-						)
-					];
-					const allowedLookup = { ...allowedCreateTypes };
-					result.forEach((contentTypeId) => {
-						allowedLookup[contentTypeId] = { ...allowedLookup[contentTypeId] };
-						allowedLookup[contentTypeId].shared = true;
-					});
-					setAllowedTypes(result);
-					setAllowedCreateTypes(allowedLookup);
-					const value: CreateDataSourcePickerData = {
-						path: allowedLookup[result[0]].createPaths[0] ?? '',
-						strategy: allowedLookup[result[0]].embedded ? 'embedded' : 'shared',
-						contentTypeId: result[0]
-					};
-					setValue(value);
-				}
-			);
-			return () => sub.unsubscribe();
-		} else {
-			const result = Object.keys(allowedCreateTypes);
-			setAllowedTypes(result);
-			const value: CreateDataSourcePickerData = {
-				path: allowedCreateTypes[result[0]].createPaths[0] ?? '',
-				strategy: allowedCreateTypes[result[0]].embedded ? 'embedded' : 'shared',
-				contentTypeId: result[0]
-			};
-			setValue(value);
-		}
-	}, [allowedCreatePaths, props.allowedCreateTypes, refs, siteId]);
-	useEffect(() => {
-		if (value.contentTypeId) {
-			const newValue: CreateDataSourcePickerData = { ...refs.current.value };
-			const strategy = refs.current.value.strategy;
-			if (!allowedCreateTypes[value.contentTypeId][strategy]) {
-				newValue.strategy = oppositeStrategy[strategy];
-			}
-			newValue.path = allowedCreateTypes[value.contentTypeId].createPaths?.[0] ?? '';
-			setValue(newValue);
-			setAllowedStrategies({
-				shared: allowedCreateTypes[value.contentTypeId].shared,
-				embedded: allowedCreateTypes[value.contentTypeId].embedded
-			});
-		}
-	}, [allowedCreateTypes, refs, value.contentTypeId]);
-	useEffect(() => {
-		refs.current.onChange?.(null, value);
-	}, [refs, value]);
-	return (
-		<Grid container spacing={2} justifyContent="center">
-			<Grid sx={{ display: 'flex', flexDirection: 'column' }}>
-				<FormControl>
-					<FormLabel id="contentTypeLabel" sx={{ minHeight: 28, display: 'flex', alignItems: 'center' }}>
-						<FormattedMessage defaultMessage="Content Type" />
-					</FormLabel>
-					<RadioGroup aria-labelledby="contentTypeLabel" name="contentType" value={value.contentTypeId}>
-						{allowedTypes?.map((contentTypeId) => (
-							<FormControlLabel
-								key={contentTypeId}
-								value={contentTypeId}
-								control={<Radio />}
-								label={contentTypesLookup[contentTypeId].name}
-								onChange={handleTypeChange}
-							/>
-						))}
-					</RadioGroup>
-				</FormControl>
-				{props.allowedCreateTypes[value.contentTypeId]?.createPaths?.length > 1 && (
-					<FormControl sx={{ mt: 1 }}>
-						<FormLabel>
-							<FormattedMessage defaultMessage="Creation Path" />
-						</FormLabel>
-						<RadioGroup aria-labelledby="creationPathLabel" name="creationPath" value={value.path} sx={{}}>
-							{props.allowedCreateTypes[value.contentTypeId].createPaths.map((path) => (
-								<FormControlLabel
-									key={path}
-									value={path}
-									control={<Radio />}
-									onChange={handlePathChange}
-									label={<Typography noWrap maxWidth="100%" component="div" title={path} children={path} />}
-									disableTypography
-								/>
-							))}
-						</RadioGroup>
-					</FormControl>
-				)}
-			</Grid>
-			<Grid>
-				<FormControl sx={{ mb: 1, shrink: 0 }}>
-					<Box alignItems="center" display="flex">
-						<FormLabel id="creationStrategyLabel">
-							<FormattedMessage defaultMessage="Creation Strategy" />
-						</FormLabel>
-						<IconButton size="small" sx={{ ml: 1 }} color="primary" component="a" href="/studio" target="_blank">
-							<HelpOutline fontSize="inherit" />
-						</IconButton>
-					</Box>
-					<RadioGroup aria-labelledby="creationStrategyLabel" name="creationStrategy" value={value.strategy}>
-						<FormControlLabel
-							value="embedded"
-							disabled={!allowedStrategies.embedded}
-							control={<Radio onChange={handleStrategyChange} />}
-							label={<FormattedMessage defaultMessage="Embedded" />}
-						/>
-						<FormControlLabel
-							disabled={!allowedStrategies.shared}
-							value="shared"
-							control={<Radio onChange={handleStrategyChange} />}
-							label={<FormattedMessage defaultMessage="Shared" />}
-						/>
-					</RadioGroup>
-				</FormControl>
-			</Grid>
-		</Grid>
-	);
-}
-
-// Internal/private component
-function DataSourcePicker(props: { allowedPaths: AllowedPathsData[]; onChange(e, choice: AllowedPathsData): void }) {
-	const { allowedPaths, onChange } = props;
-	const handleChange = (event: SyntheticEvent) =>
-		onChange?.(event, allowedPaths[(event.target as HTMLInputElement).value]);
-	return (
-		<FormControl>
-			<FormLabel id="dataSourcePickerLabel">
-				<FormattedMessage defaultMessage="Available Settings" />
-			</FormLabel>
-			<RadioGroup aria-labelledby="dataSourcePickerLabel" name="dataSourceConfig">
-				{allowedPaths?.map((data, index) => (
-					<FormControlLabel
-						disableTypography
-						key={index}
-						value={index}
-						control={<Radio />}
-						label={
-							<Box display="flex" flexDirection="column">
-								<Typography component="span" children={data.title} />
-								<Typography variant="body2" color="textSecondary" component="span" children={data.path} />
-							</Box>
-						}
-						onChange={handleChange}
-					/>
-				))}
-			</RadioGroup>
-		</FormControl>
-	);
-}
-
-const createAddMenuOptions = ({
-	refs,
-	readonly,
-	itemPickerDataSourceData
-}: {
-	refs: RefObject<{
-		handleDataSourceOptionClick(event: ReactMouseEvent<HTMLLIElement, MouseEvent>, option: DataSourcePickerType): void;
-	}>;
-	itemPickerDataSourceData: ConsolidatedItemPickerData;
-	readonly: boolean;
-}): ReactNode[] => {
-	const { allowedCreateTypes, allowedBrowsePaths, allowedSearchPaths } = itemPickerDataSourceData;
-	const createAllowed = Object.keys(allowedCreateTypes).length > 0;
-	const menuOptions = [];
-
-	if (allowedSearchPaths.length > 0) {
-		menuOptions.push(
-			<MenuItem
-				key="search"
-				disabled={readonly}
-				onClick={(event) => refs.current.handleDataSourceOptionClick(event, 'search')}
-			>
-				<ListItemIcon sx={{ mr: 0 }}>
-					<SearchRounded fontSize="small" />
-				</ListItemIcon>
-				<ListItemText children={<FormattedMessage defaultMessage="Search" />} />
-			</MenuItem>
-		);
-	}
-	if (allowedBrowsePaths.length > 0) {
-		menuOptions.push(
-			<MenuItem
-				key="browse"
-				disabled={readonly}
-				onClick={(event) => refs.current.handleDataSourceOptionClick(event, 'browse')}
-			>
-				<ListItemIcon sx={{ mr: 0 }}>
-					<TravelExploreOutlined fontSize="small" />
-				</ListItemIcon>
-				<ListItemText children={<FormattedMessage defaultMessage="Browse" />} />
-			</MenuItem>
-		);
-	}
-	if (createAllowed) {
-		menuOptions.push(
-			<MenuItem
-				key="create"
-				disabled={readonly}
-				onClick={(event) => refs.current.handleDataSourceOptionClick(event, 'create')}
-			>
-				<ListItemIcon sx={{ mr: 0 }}>
-					<AddRounded fontSize="small" />
-				</ListItemIcon>
-				<ListItemText children={<FormattedMessage defaultMessage="Create" />} />
-			</MenuItem>
-		);
-	}
-
-	return menuOptions;
-};
-
 function NodeSelector(props: NodeSelectorProps) {
-	const { field, contentType, value, setValue, readonly, autoFocus } = props;
+	const { field, contentType, value, setValue, readonly: formReadonly, autoFocus } = props;
+
+	// region field properties/validations
+	const readonly: boolean = isFieldReadOnly(field, formReadonly);
+	const disableFlattening: boolean = getValidationValue(field.validations, 'disableFlattening', false);
+	const useSingleValueFilename: boolean = getValidationValue(field.validations, 'useSingleValueFilename', false);
+	const useMVS: boolean = getValidationValue(field.validations, 'useMVS', false);
+	const allowDuplicates: boolean = getValidationValue(field.validations, 'allowDuplicates', false);
+	// endregion
+
 	useFetchContentItems(value.flatMap((item) => item.include ?? []));
 	const [sortMode, setSortMode] = useState(false);
 	const useTouchSorting = useMemo(() => isTouchDevice(), []);
@@ -407,17 +189,57 @@ function NodeSelector(props: NodeSelectorProps) {
 	const addMenuButtonRef = useRef<HTMLButtonElement>(undefined);
 	const contentTypes = useContentTypes();
 	const siteId = useActiveSiteId();
-	const dataSourceSummary = useConsolidatedItemPickerData(useExtractItemPickerDataSources(contentType, field));
+	const authoringBase = useSelection((state) => state.env.authoringBase);
+	const dataSourceSummary = useConsolidatedItemPickerData(useExtractDataSources(contentType, field, 'itemManager'));
 	const handleRemoveItem = (event: ReactMouseEvent, index: number) => {
 		event.stopPropagation();
 		const nextValue = value.concat();
 		nextValue.splice(index, 1);
 		setValue(nextValue);
 	};
-	const handleOpenItem = (event: { stopPropagation(): void }, index: number, edit: boolean = false) => {
+	const handleViewItem = (event: { stopPropagation(): void }, index: number) => {
+		event.stopPropagation();
+		const item: ContentItem = itemsByPath[value[index].key];
+
+		if (!item) {
+			console.error('Item not found:', value[index].key);
+			return;
+		}
+
+		if (isEditableViaFormEditor(item)) {
+			// If the item is editable via form editor (page, component or taxonomy), open the form editor in read-only mode
+			dispatch(pickShowContentFormAction({ path: item.path, authoringBase, site: siteId, readonly: true }));
+		} else {
+			// Otherwise, open the preview dialog, it may be a preview of media (image, video, audio) or document (pdf) or code editor for other text-based files
+			const dialogProps =
+				isMediaContent(item.mimeType) || isPdfDocument(item.mimeType)
+					? {
+							type: isImage(item) ? 'image' : isVideo(item) ? 'video' : isAudio(item) ? 'audio' : 'pdf',
+							title: item.label,
+							url: item.path
+						}
+					: {
+							type: 'editor',
+							title: item.label,
+							url: item.path,
+							path: item.path,
+							mode: getItemEditorMode(item)
+						};
+
+			dispatch(
+				pushDialog({
+					component: createComponentId('PreviewDialog'),
+					allowMinimize: true,
+					allowFullScreen: true,
+					props: dialogProps
+				})
+			);
+		}
+	};
+	const handleEditItem = (event: { stopPropagation(): void }, index: number, edit: boolean = false) => {
 		event.stopPropagation();
 		const item: NodeSelectorItem = value[index];
-		if (item.component || item.include) {
+		if (isItemComponent(item)) {
 			const isEmbedded = Boolean(item.component);
 			api.pushForm({
 				readonly: !edit,
@@ -445,7 +267,7 @@ function NodeSelector(props: NodeSelectorProps) {
 						key,
 						value: values[XmlKeys.internalName] as string,
 						[isEmbedded ? 'component' : 'include']: isEmbedded ? (values as LookupTable<Primitive>) : key,
-						disableFlattening: (field.properties.disableFlattening?.value as boolean) ?? false
+						disableFlattening
 					};
 					const nextValue = value.concat();
 					nextValue.splice(index, 1, newItem);
@@ -454,8 +276,12 @@ function NodeSelector(props: NodeSelectorProps) {
 				}
 			});
 		} else {
-			// TODO: Handle files?
-			console.log('Edit file requested', item);
+			dispatch(
+				showCodeEditorDialog({
+					path: item.include,
+					mode: getEditorMode(itemsByPath[item.include]?.mimeType ?? 'text/plain')
+				})
+			);
 		}
 	};
 	const handleItemKeyDown = (e: KeyDownEvent, index: number) => {
@@ -464,14 +290,13 @@ function NodeSelector(props: NodeSelectorProps) {
 			value,
 			index,
 			(newList) => setValue(newList),
-			(index, edit) => handleOpenItem(e, index, edit && !readonly)
+			(index, edit) => handleEditItem(e, index, edit && !readonly)
 		);
 	};
 	const executeDataSourceOption = (
 		optionType: DataSourcePickerType,
 		choice: AllowedPathsData | CreateDataSourcePickerData
 	) => {
-		// TODO: Test cases with paths macros; ensure behaviour is consistent with FE1
 		const processPath = (path: string) =>
 			processPathMacros({ path, objectId: id, fullParentPath: contextItem?.path ?? pathInSite });
 		switch (optionType) {
@@ -482,17 +307,22 @@ function NodeSelector(props: NodeSelectorProps) {
 					dispatch,
 					path: processPath(pickerChoice.path),
 					contentTypes: pickerChoice.allowedContentTypes,
+					preselectedPaths: allowDuplicates ? [] : value.map((item) => item.key).filter(Boolean),
 					onSuccess(items: MediaItem | MediaItem[]) {
-						const nextValue = value.concat();
+						const newNodeSelectorItems = [];
 						asArray(items).forEach((item) => {
-							nextValue.push({
+							const fileType = getFileExtension(item.name);
+							newNodeSelectorItems.push({
 								key: item.path,
 								value: item.name,
 								include: item.path,
-								disableFlattening: Boolean(field.properties?.disableFlattening?.value)
+								disableFlattening,
+								...(fileType ? getFileMetaData({ fileType, useSingleValueFilename, useMVS }) : {})
 							});
 						});
-						setValue(nextValue);
+						const { validItems, duplicateItems } = validateNewItems(newNodeSelectorItems, value, allowDuplicates);
+						setValue(validItems);
+						if (!allowDuplicates && duplicateItems.length) showDuplicatesWarning(dispatch, duplicateItems);
 					}
 				});
 				break;
@@ -504,17 +334,20 @@ function NodeSelector(props: NodeSelectorProps) {
 					dispatch,
 					path: ensureSingleSlash(`${processPath(pickerChoice.path)}/.+`),
 					contentTypes: pickerChoice.allowedContentTypes,
+					preselectedPaths: value.map((item) => item.key).filter(Boolean),
 					onAcceptSelection(paths, items) {
-						const nextValue = value.concat();
+						const newNodeSelectorItems = [];
 						items?.forEach((item) => {
-							nextValue.push({
+							newNodeSelectorItems.push({
 								key: item.path,
 								value: item.name,
 								include: item.path,
-								disableFlattening: Boolean(field.properties?.disableFlattening?.value)
+								disableFlattening
 							});
 						});
-						setValue(nextValue);
+						const { validItems, duplicateItems } = validateNewItems(newNodeSelectorItems, value, allowDuplicates);
+						setValue(validItems);
+						if (!allowDuplicates && duplicateItems.length) showDuplicatesWarning(dispatch, duplicateItems);
 					}
 				});
 				break;
@@ -522,27 +355,53 @@ function NodeSelector(props: NodeSelectorProps) {
 			case 'create': {
 				const pickerChoice = choice as CreateDataSourcePickerData;
 				const isEmbedded = pickerChoice.strategy === 'embedded';
-				const destinationPath = processPath(pickerChoice.path);
 				// Push to form stack a new form in create mode with the selected content type
 				api.pushForm({
 					create: {
 						contentTypeId: pickerChoice.contentTypeId,
-						path: pickerChoice.strategy === 'embedded' ? contextItem.path : processPath(pickerChoice.path)
+						path: pickerChoice.strategy === 'embedded' ? contextItem.path : processPath(pickerChoice.path),
+						embedded: isEmbedded
 					},
 					onSave(result) {
-						const key = isEmbedded
-							? ((result.values[XmlKeys.fileName] || result.values.objectId) as string)
-							: ensureSingleSlash(`${destinationPath}/${result.values[XmlKeys.fileName]}`);
+						const key = isEmbedded ? (result.values.objectId as string) : result.path;
 						const newItem: NodeSelectorItem = {
 							key,
 							value: result.values[XmlKeys.internalName] as string,
 							[isEmbedded ? 'component' : 'include']: isEmbedded ? (result.values as LookupTable<Primitive>) : key,
-							disableFlattening: (field.properties.disableFlattening?.value as boolean) ?? false
+							disableFlattening
 						};
-						const nextValue = value.concat();
-						nextValue.push(newItem);
-						setValue(nextValue);
+						const { validItems, duplicateItems } = validateNewItems([newItem], value, allowDuplicates);
+						setValue(validItems);
+						if (!allowDuplicates && duplicateItems.length) showDuplicatesWarning(dispatch, duplicateItems);
 						return Promise.resolve({ close: true });
+					}
+				});
+				break;
+			}
+			case 'upload': {
+				showUploadDialog({
+					dispatch,
+					path: processPath(choice.path),
+					siteId,
+					onUploadComplete: (result: FileUploadResult) => {
+						if (result.successful.length) {
+							const newNodeSelectorItems = [];
+							asArray(result.successful).forEach((item) => {
+								const fileType = item.extension;
+								const fileSize = item.size;
+								const value = ensureSingleSlash(`${item.meta.path}/${item.meta.name}`);
+								newNodeSelectorItems.push({
+									key: value,
+									value: item.meta.name,
+									include: value,
+									disableFlattening,
+									...(fileType ? getFileMetaData({ fileType, fileSize, useSingleValueFilename, useMVS }) : {})
+								});
+							});
+							const { validItems, duplicateItems } = validateNewItems(newNodeSelectorItems, value, allowDuplicates);
+							setValue(validItems);
+							if (!allowDuplicates && duplicateItems.length) showDuplicatesWarning(dispatch, duplicateItems);
+						}
 					}
 				});
 				break;
@@ -595,7 +454,7 @@ function NodeSelector(props: NodeSelectorProps) {
 					const strategy = allowedCreateTypes[contentTypeId].embedded ? 'embedded' : 'shared';
 					// Open create dialog
 					executeDataSourceOption('create', {
-						path: strategy === 'embedded' ? '' : allowedCreateTypes[contentTypeId].createPaths[0],
+						path: strategy === 'embedded' ? '' : allowedCreateTypes[contentTypeId].createPaths?.[0],
 						strategy: strategy,
 						contentTypeId
 					});
@@ -606,12 +465,22 @@ function NodeSelector(props: NodeSelectorProps) {
 				}
 				break;
 			}
+			case 'upload': {
+				if (allowedUploadPaths.length === 1) {
+					executeDataSourceOption('upload', allowedUploadPaths[0]);
+				} else {
+					setPickerType('upload');
+					setPickerDialogOpen(true);
+				}
+				break;
+			}
 		}
 	};
 	const handleDataSourcePickerDialogChange = (event, choice: AllowedPathsData | CreateDataSourcePickerData) => {
 		switch (pickerType) {
 			case 'search':
 			case 'browse':
+			case 'upload':
 				executeDataSourceOption(pickerType, choice);
 				setPickerDialogOpen(false);
 				break;
@@ -625,11 +494,12 @@ function NodeSelector(props: NodeSelectorProps) {
 		executeDataSourceOption('create', createPickerChoice);
 	};
 	const memoRefs = useUpdateRefs({ handleDataSourceOptionClick });
-	const menuOptions = useMemo(
+	const { menuOptions, availableOptions } = useMemo(
 		() => createAddMenuOptions({ refs: memoRefs, itemPickerDataSourceData: dataSourceSummary, readonly }),
 		[memoRefs, readonly, dataSourceSummary]
 	);
-	const { allowedCreateTypes, allowedCreatePaths, allowedBrowsePaths, allowedSearchPaths } = dataSourceSummary;
+	const { allowedCreateTypes, allowedCreatePaths, allowedBrowsePaths, allowedSearchPaths, allowedUploadPaths } =
+		dataSourceSummary;
 	const maxLimitReached = value.length >= field.validations.maxCount?.value;
 	const isAddDisabled = readonly || maxLimitReached || !menuOptions.length;
 	return (
@@ -642,7 +512,17 @@ function NodeSelector(props: NodeSelectorProps) {
 				}}
 				children={menuOptions}
 			/>
-			<Dialog open={pickerDialogOpen} onClose={handleCloseDataSourcePickerDialog} fullWidth maxWidth="sm">
+			<Dialog
+				open={pickerDialogOpen}
+				onClose={handleCloseDataSourcePickerDialog}
+				fullWidth
+				maxWidth={pickerType !== 'create' ? 'sm' : 'md'}
+				slotProps={{
+					paper: {
+						sx: [pickerType === 'create' && { minHeight: '60vh' }]
+					}
+				}}
+			>
 				<DialogHeader
 					title={<FormattedMessage defaultMessage="Choose how to proceed" />}
 					onCloseButtonClick={handleCloseDataSourcePickerDialog}
@@ -655,6 +535,9 @@ function NodeSelector(props: NodeSelectorProps) {
 							),
 							search: (
 								<DataSourcePicker allowedPaths={allowedSearchPaths} onChange={handleDataSourcePickerDialogChange} />
+							),
+							upload: (
+								<DataSourcePicker allowedPaths={allowedUploadPaths} onChange={handleDataSourcePickerDialogChange} />
 							),
 							create: (
 								<CreateDataSourcePicker
@@ -720,7 +603,11 @@ function NodeSelector(props: NodeSelectorProps) {
 								size="small"
 								color="primary"
 								onClick={() => {
-									setAddMenuOpen(true);
+									if (availableOptions.length === 1) {
+										handleDataSourceOptionClick(null, availableOptions[0]);
+									} else {
+										setAddMenuOpen(true);
+									}
 								}}
 							>
 								<AddRounded fontSize="small" />
@@ -747,18 +634,25 @@ function NodeSelector(props: NodeSelectorProps) {
 								) : (
 									<FormattedMessage defaultMessage="Unlink" />
 								);
-								const isComponent = item.include || item.component;
+								const isComponent = isItemComponent(item);
 								const canBeEdited =
-									isComponent &&
-									(isEmbedded ||
-										(itemsByPath[item.include]?.availableActionsMap.edit &&
-											(itemsByPath[item.include]?.lockOwner == null ||
-												user.username === itemsByPath[item.include]?.lockOwner?.username)));
+									// Is a component and is embedded or is shared, and user can edit it (has edit action and is not locked)
+									(isComponent &&
+										(isEmbedded ||
+											(itemsByPath[item.include]?.availableActionsMap.edit &&
+												(itemsByPath[item.include]?.lockOwner == null ||
+													user.username === itemsByPath[item.include]?.lockOwner?.username)))) ||
+									// is an editable asset, and the user can edit it (has edit action and is not locked)
+									(!isComponent &&
+										isEditableAsset(item.key) &&
+										itemsByPath[item.include]?.availableActionsMap.edit &&
+										(itemsByPath[item.include]?.lockOwner == null ||
+											user.username === itemsByPath[item.include]?.lockOwner?.username));
 								return (
 									<ListItemButton
-										key={item.key}
+										key={`${item.key}-${index}`} // Including index in the key because there can be duplicate items (same item included more than once)
 										divider={index !== value.length - 1}
-										onClick={(e) => handleOpenItem(e, index, false)}
+										onClick={(e) => (canBeEdited ? handleEditItem(e, index, false) : handleViewItem(e, index))}
 										onKeyDown={(e) => handleItemKeyDown(e, index)}
 									>
 										<ListItemText
@@ -789,24 +683,28 @@ function NodeSelector(props: NodeSelectorProps) {
 												)
 											}
 										/>
-										{(canBeEdited || !readonly) && (
-											<ListItemSecondaryAction sx={{ position: 'static', display: 'flex', transform: 'none' }}>
-												{canBeEdited && (
-													<Tooltip title="Edit">
-														<IconButton size="small" onClick={(e) => handleOpenItem(e, index, !readonly)}>
-															<EditOutlined fontSize="small" />
-														</IconButton>
-													</Tooltip>
-												)}
-												{!readonly && (
-													<Tooltip title={iconTooltip}>
-														<IconButton size="small" onClick={(e) => handleRemoveItem(e, index)}>
-															<Icon fontSize="small" />
-														</IconButton>
-													</Tooltip>
-												)}
-											</ListItemSecondaryAction>
-										)}
+										<ListItemSecondaryAction sx={{ position: 'static', display: 'flex', transform: 'none' }}>
+											{canBeEdited ? (
+												<Tooltip title="Edit">
+													<IconButton size="small" onClick={(e) => handleEditItem(e, index, !readonly)}>
+														<EditOutlined fontSize="small" />
+													</IconButton>
+												</Tooltip>
+											) : (
+												<Tooltip title="View">
+													<IconButton size="small" onClick={(e) => handleViewItem(e, index)}>
+														<VisibilityOutlinedIcon fontSize="small" />
+													</IconButton>
+												</Tooltip>
+											)}
+											{!readonly && (
+												<Tooltip title={iconTooltip}>
+													<IconButton size="small" onClick={(e) => handleRemoveItem(e, index)}>
+														<Icon fontSize="small" />
+													</IconButton>
+												</Tooltip>
+											)}
+										</ListItemSecondaryAction>
 									</ListItemButton>
 								);
 							})}
@@ -853,6 +751,475 @@ function NodeSelector(props: NodeSelectorProps) {
 			</FormsEngineField>
 		</>
 	);
+}
+
+// Internal/private component
+function CreateDataSourcePicker(props: {
+	siteId: string;
+	contentTypesLookup: LookupTable<ContentType>;
+	allowedCreateTypes: LookupTable<AllowedContentTypesDataWithDestinations>;
+	allowedCreatePaths: string[];
+	onChange(e, choice: CreateDataSourcePickerData): void;
+}) {
+	const { siteId, allowedCreatePaths, contentTypesLookup, onChange } = props;
+	const [allowedTypes, setAllowedTypes] = useState<string[]>();
+	const [allowedCreateTypes, setAllowedCreateTypes] = useState<LookupTable<AllowedContentTypesDataWithDestinations>>(
+		props.allowedCreateTypes
+	);
+	const [value, setValue] = useState<CreateDataSourcePickerData>(() => {
+		for (const key in allowedCreateTypes) {
+			return {
+				path: allowedCreateTypes[key].createPaths?.[0] ?? '',
+				strategy: allowedCreateTypes[key].embedded ? 'embedded' : 'shared',
+				contentTypeId: key
+			};
+		}
+		return null;
+	});
+	const refs = useUpdateRefs({ value, onChange });
+	const [allowedStrategies, setAllowedStrategies] = useState({ embedded: false, shared: false });
+	const handleTypeChange = (event: SyntheticEvent, contentType: ContentType) => {
+		const newValue = { ...value, contentTypeId: contentType.id };
+		setValue(newValue);
+		onChange?.(event, newValue);
+	};
+	const handleStrategyChange = (event: SyntheticEvent) => {
+		const newValue = { ...value, strategy: (event.target as HTMLInputElement).value as ContentCreationStrategy };
+		setValue(newValue);
+		onChange?.(event, newValue);
+	};
+	const handlePathChange = (event: SyntheticEvent) => {
+		const newValue = { ...value, path: (event.target as HTMLInputElement).value };
+		setValue(newValue);
+		onChange?.(event, newValue);
+	};
+	useEffect(() => {
+		const allowedCreateTypes = props.allowedCreateTypes;
+		if (allowedCreatePaths.length) {
+			// Find out all the types that can be created on the allowed creation paths (coming from shared-content DS).
+			const sub = forkJoin(allowedCreatePaths.map((path) => fetchAllowedTypes(siteId, path))).subscribe((responses) => {
+				const result = [
+					...new Set(responses.flatMap((types) => types.map((type) => type)).concat(Object.keys(allowedCreateTypes)))
+				];
+				const allowedLookup = { ...allowedCreateTypes };
+				result.forEach((contentTypeId) => {
+					allowedLookup[contentTypeId] = { ...allowedLookup[contentTypeId] };
+					allowedLookup[contentTypeId].shared = true;
+				});
+				setAllowedTypes(result);
+				setAllowedCreateTypes(allowedLookup);
+				const value: CreateDataSourcePickerData = {
+					path: allowedLookup[result[0]].createPaths?.[0] ?? '',
+					strategy: allowedLookup[result[0]].embedded ? 'embedded' : 'shared',
+					contentTypeId: result[0]
+				};
+				setValue(value);
+			});
+			return () => sub.unsubscribe();
+		} else {
+			const result = Object.keys(allowedCreateTypes);
+			setAllowedTypes(result);
+			const value: CreateDataSourcePickerData = {
+				path: allowedCreateTypes[result[0]].createPaths?.[0] ?? '',
+				strategy: allowedCreateTypes[result[0]].embedded ? 'embedded' : 'shared',
+				contentTypeId: result[0]
+			};
+			setValue(value);
+		}
+	}, [allowedCreatePaths, props.allowedCreateTypes, refs, siteId]);
+	useEffect(() => {
+		if (value.contentTypeId) {
+			const newValue: CreateDataSourcePickerData = { ...refs.current.value };
+			const strategy = refs.current.value.strategy;
+			if (!allowedCreateTypes[value.contentTypeId][strategy]) {
+				newValue.strategy = oppositeStrategy[strategy];
+			}
+			newValue.path = allowedCreateTypes[value.contentTypeId].createPaths?.[0] ?? '';
+			setValue(newValue);
+			setAllowedStrategies({
+				shared: allowedCreateTypes[value.contentTypeId].shared,
+				embedded: allowedCreateTypes[value.contentTypeId].embedded
+			});
+		}
+	}, [allowedCreateTypes, refs, value.contentTypeId]);
+	useEffect(() => {
+		refs.current.onChange?.(null, value);
+	}, [refs, value]);
+
+	const [filteredTypes, setFilteredTypes] = useState<ContentType[] | undefined>(undefined);
+	const [keywords, setKeywords] = useState<string>('');
+	const onKeyword$ = useDebouncedInput((keywords) => {
+		if (!allowedTypes) return;
+		const types = filterTypesByKeywordsAndObjectType(
+			allowedTypes.map((typeId) => contentTypesLookup[typeId]).filter(Boolean),
+			keywords,
+			'all'
+		);
+		setFilteredTypes(types);
+	});
+
+	useEffect(() => {
+		if (allowedTypes?.length) {
+			setFilteredTypes((current) =>
+				current === undefined ? allowedTypes.map((typeId) => contentTypesLookup[typeId]).filter(Boolean) : current
+			);
+		}
+	}, [allowedTypes, contentTypesLookup]);
+
+	const handleKeywordsChange = (value: string) => {
+		setKeywords(value);
+		onKeyword$.next(value);
+	};
+
+	return (
+		<Grid container spacing={2} display="flex" flexDirection="column">
+			<Grid>
+				<FormControl sx={{ mb: 1, flexShrink: 0 }} fullWidth>
+					<Box alignItems="center" display="flex">
+						<FormLabel id="creationStrategyLabel">
+							<FormattedMessage defaultMessage="Creation Strategy" />
+						</FormLabel>
+						<IconButton size="small" sx={{ ml: 1 }} color="primary" component="a" href="/studio" target="_blank">
+							<HelpOutline fontSize="inherit" />
+						</IconButton>
+					</Box>
+					<RadioGroup aria-labelledby="creationStrategyLabel" name="creationStrategy" value={value.strategy} row>
+						<FormControlLabel
+							value="embedded"
+							disabled={!allowedStrategies.embedded}
+							control={<Radio onChange={handleStrategyChange} />}
+							label={<FormattedMessage defaultMessage="Embedded" />}
+						/>
+						<FormControlLabel
+							disabled={!allowedStrategies.shared}
+							value="shared"
+							control={<Radio onChange={handleStrategyChange} />}
+							label={<FormattedMessage defaultMessage="Shared" />}
+						/>
+					</RadioGroup>
+				</FormControl>
+			</Grid>
+			{value.strategy === 'shared' && allowedCreateTypes[value.contentTypeId]?.createPaths?.length > 1 && (
+				<Grid sx={{ display: 'flex', flexDirection: 'column' }}>
+					<FormControl sx={{ mt: 1 }} fullWidth>
+						<FormLabel id="creationPathLabel">
+							<FormattedMessage defaultMessage="Creation Path" />
+						</FormLabel>
+						<RadioGroup aria-labelledby="creationPathLabel" name="creationPath" value={value.path} sx={{}}>
+							{allowedCreateTypes[value.contentTypeId].createPaths.map((path) => (
+								<FormControlLabel
+									key={path}
+									value={path}
+									control={<Radio />}
+									onChange={handlePathChange}
+									label={<Typography noWrap maxWidth="100%" component="div" title={path} children={path} />}
+									disableTypography
+								/>
+							))}
+						</RadioGroup>
+					</FormControl>
+				</Grid>
+			)}
+
+			<Grid width="100%">
+				<FormControl fullWidth>
+					<FormLabel id="contentTypeLabel" sx={{ minHeight: 28, display: 'flex', alignItems: 'center' }}>
+						<FormattedMessage defaultMessage="Content Type" />
+					</FormLabel>
+					<SearchBar
+						keyword={keywords}
+						onChange={(value) => handleKeywordsChange(value)}
+						showActionButton={!isEmpty(keywords)}
+						sxs={{
+							root: {
+								background: 'none !important',
+								border: 'none !important',
+								borderRadius: 0,
+								boxShadow: 'none',
+								flexGrow: 1,
+								py: 1
+							},
+							inputInput: { padding: '8px 5px' }
+						}}
+					/>
+					<TypeList
+						contentTypes={filteredTypes}
+						compact={true}
+						onCardClick={handleTypeChange}
+						selectedTypeId={value.contentTypeId}
+						disableSelected={false}
+						skeleton={filteredTypes === undefined}
+					/>
+				</FormControl>
+			</Grid>
+		</Grid>
+	);
+}
+
+// Internal/private component
+function DataSourcePicker(props: { allowedPaths: AllowedPathsData[]; onChange(e, choice: AllowedPathsData): void }) {
+	const { allowedPaths, onChange } = props;
+	const handleChange = (event: SyntheticEvent) =>
+		onChange?.(event, allowedPaths[(event.target as HTMLInputElement).value]);
+	return (
+		<FormControl>
+			<FormLabel id="dataSourcePickerLabel">
+				<FormattedMessage defaultMessage="Available Settings" />
+			</FormLabel>
+			<RadioGroup aria-labelledby="dataSourcePickerLabel" name="dataSourceConfig">
+				{allowedPaths?.map((data, index) => (
+					<FormControlLabel
+						disableTypography
+						key={index}
+						value={index}
+						control={<Radio />}
+						label={
+							<Box display="flex" flexDirection="column">
+								<Typography component="span" children={data.title} />
+								<Typography variant="body2" color="textSecondary" component="span" children={data.path} />
+							</Box>
+						}
+						onChange={handleChange}
+					/>
+				))}
+			</RadioGroup>
+		</FormControl>
+	);
+}
+
+function createAddMenuOptions({
+	refs,
+	readonly,
+	itemPickerDataSourceData
+}: {
+	refs: RefObject<{
+		handleDataSourceOptionClick(event: ReactMouseEvent<HTMLLIElement, MouseEvent>, option: DataSourcePickerType): void;
+	}>;
+	itemPickerDataSourceData: ConsolidatedItemPickerData;
+	readonly: boolean;
+}): {
+	menuOptions: ReactNode[];
+	availableOptions: DataSourcePickerType[];
+} {
+	const { allowedCreateTypes, allowedBrowsePaths, allowedSearchPaths, allowedUploadPaths } = itemPickerDataSourceData;
+	const createAllowed = Object.keys(allowedCreateTypes).length > 0;
+	const menuOptions = [];
+
+	const availableOptions: DataSourcePickerType[] = [];
+	if (allowedSearchPaths.length > 0) availableOptions.push('search');
+	if (allowedBrowsePaths.length > 0) availableOptions.push('browse');
+	if (allowedUploadPaths.length > 0) availableOptions.push('upload');
+	if (createAllowed) availableOptions.push('create');
+
+	if (availableOptions.includes('search')) {
+		menuOptions.push(
+			<MenuItem
+				key="search"
+				disabled={readonly}
+				onClick={(event) => refs.current.handleDataSourceOptionClick(event, 'search')}
+			>
+				<ListItemIcon sx={{ mr: 0 }}>
+					<SearchRounded fontSize="small" />
+				</ListItemIcon>
+				<ListItemText children={<FormattedMessage defaultMessage="Search" />} />
+			</MenuItem>
+		);
+	}
+	if (availableOptions.includes('browse')) {
+		menuOptions.push(
+			<MenuItem
+				key="browse"
+				disabled={readonly}
+				onClick={(event) => refs.current.handleDataSourceOptionClick(event, 'browse')}
+			>
+				<ListItemIcon sx={{ mr: 0 }}>
+					<TravelExploreOutlined fontSize="small" />
+				</ListItemIcon>
+				<ListItemText children={<FormattedMessage defaultMessage="Browse" />} />
+			</MenuItem>
+		);
+	}
+	if (availableOptions.includes('upload')) {
+		menuOptions.push(
+			<MenuItem
+				key="upload"
+				disabled={readonly}
+				onClick={(event) => refs.current.handleDataSourceOptionClick(event, 'upload')}
+			>
+				<ListItemIcon sx={{ mr: 0 }}>
+					<UploadFileOutlinedIcon fontSize="small" />
+				</ListItemIcon>
+				<ListItemText children={<FormattedMessage defaultMessage="Upload" />} />
+			</MenuItem>
+		);
+	}
+	if (createAllowed) {
+		menuOptions.push(
+			<MenuItem
+				key="create"
+				disabled={readonly}
+				onClick={(event) => refs.current.handleDataSourceOptionClick(event, 'create')}
+			>
+				<ListItemIcon sx={{ mr: 0 }}>
+					<AddRounded fontSize="small" />
+				</ListItemIcon>
+				<ListItemText children={<FormattedMessage defaultMessage="Create" />} />
+			</MenuItem>
+		);
+	}
+
+	return { menuOptions, availableOptions };
+}
+
+function showUploadDialog({
+	dispatch,
+	path,
+	siteId,
+	onUploadComplete
+}: {
+	dispatch: ReduxDispatch;
+	path: string;
+	siteId: string;
+	onUploadComplete: SingleFileUploadDialogProps['onUploadComplete'];
+}) {
+	const id = nanoid();
+	dispatch(
+		pushDialog({
+			id,
+			component: 'craftercms.components.SingleFileUploadDialog',
+			props: {
+				site: siteId,
+				path,
+				onUploadComplete: (result: FileUploadResult) => {
+					onUploadComplete(result);
+					dispatch(popDialog({ id }));
+				}
+			} as SingleFileUploadDialogProps
+		})
+	);
+}
+
+type FileMetadata = {
+	fileType_smv?: string;
+	fileSize_smv?: number;
+	fileType_mvs?: string;
+	fileType_s?: string;
+	fileSize_s?: number;
+};
+
+/**
+ * Returns an object with the appropriate file metadata fields based on the configuration.
+ * @param fileType {string} - The file type (e.g., 'jpg', 'png').
+ * @param fileSize {number} - The file size (e.g., 2048).
+ * @param useSingleValueFilename {boolean} - Whether single value filename is used.
+ * @param useMVS {boolean} - Whether multi-value support is used.
+ * @returns {FileMetadata} An object containing the appropriate file metadata fields.
+ * */
+function getFileMetaData({
+	fileType,
+	fileSize,
+	useSingleValueFilename,
+	useMVS
+}: {
+	fileType: string;
+	fileSize?: number;
+	useSingleValueFilename: boolean;
+	useMVS: boolean;
+}): FileMetadata {
+	const metaData: FileMetadata = {};
+	if (!useSingleValueFilename && !useMVS) {
+		metaData['fileType_smv'] = fileType;
+		if (fileSize) metaData['fileSize_smv'] = fileSize;
+	} else if (useMVS) {
+		metaData['fileType_mvs'] = fileType;
+		if (fileSize) metaData['fileSize_s'] = fileSize;
+	} else if (useSingleValueFilename) {
+		metaData['fileType_s'] = fileType;
+		if (fileSize) metaData['fileSize_s'] = fileSize;
+	}
+	return metaData;
+}
+
+/**
+ * Validates if a NodeSelectorItem represents a component (embedded or shared).
+ *
+ * @param item {NodeSelectorItem} - The NodeSelectorItem to validate.
+ * @returns {boolean} True if the item is a component, false otherwise.
+ */
+function isItemComponent(item: NodeSelectorItem): boolean {
+	return Boolean(
+		// There are 3 scenarios when an item is considered a component:
+		// 1. It has the 'component' property (embedded component).
+		// 2. It has an 'include' property that starts with '/site/' (shared component).
+		// 3. It has an 'include' property that does not point to an editable asset (shared component).
+		item.component || (item.include && (item.include.startsWith('/site/') || !isEditableAsset(item.include)))
+	);
+}
+
+/**
+ * Validates and separates new items into valid and duplicate categories.
+ * When allowDuplicates is true, validItems includes all items (existing + new, including duplicates).
+ * When allowDuplicates is false, validItems excludes duplicate new items.
+ *
+ * @param newItems {NodeSelectorItem[]} - The array of new items to validate.
+ * @param items {NodeSelectorItem[]} - The existing array of items to compare against.
+ * @param allowDuplicates {boolean} - A flag indicating whether duplicates are allowed.
+ * @returns {Object} An object containing two arrays:
+ *   - `validItems`: All existing items plus new items (includes duplicates if allowDuplicates is true).
+ *   - `duplicateItems`: The array of items that were identified as duplicates.
+ */
+function validateNewItems(
+	newItems: NodeSelectorItem[],
+	items: NodeSelectorItem[],
+	allowDuplicates: boolean
+): {
+	validItems: NodeSelectorItem[];
+	duplicateItems: NodeSelectorItem[];
+} {
+	const validItems: NodeSelectorItem[] = [...items];
+	const duplicateItems: NodeSelectorItem[] = [];
+
+	newItems.forEach((newItem) => {
+		const isDuplicate = validItems.find((item) => item.key === newItem.key);
+		if (isDuplicate) {
+			duplicateItems.push(newItem);
+			if (allowDuplicates) validItems.push(newItem);
+		} else {
+			validItems.push(newItem);
+		}
+	});
+
+	return { validItems, duplicateItems };
+}
+
+/**
+ * Displays a warning message for duplicate items that were not added.
+ *
+ * @param dispatch {ReduxDispatch} - The Redux dispatch function used to trigger the alert.
+ * @param duplicateItems {NodeSelectorItem[]} - An array of duplicate items that were not added.
+ */
+function showDuplicatesWarning(dispatch: ReduxDispatch, duplicateItems: NodeSelectorItem[]) {
+	if (duplicateItems.length) {
+		showAlert({
+			message: 'The following items are duplicates and were not added:',
+			children: (
+				<List>
+					{duplicateItems.map((item) => (
+						<ListItemText
+							key={item.key}
+							primary={item.value}
+							secondary={item.include}
+							slotProps={{
+								primary: { noWrap: true },
+								secondary: { noWrap: true }
+							}}
+						/>
+					))}
+				</List>
+			),
+			dispatch
+		});
+	}
 }
 
 export default NodeSelector;

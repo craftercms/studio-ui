@@ -39,9 +39,13 @@ import RadioGroup from '@mui/material/RadioGroup';
 import Radio from '@mui/material/Radio';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Divider from '@mui/material/Divider';
+import LookupTable from '../../../models/LookupTable';
+import { SystemIcon } from '../../SystemIcon';
+import ComponentIcon from '../../../icons/Component';
 
 export interface PickFieldDialogProps extends EnhancedDialogProps {
 	type: ContentType;
+	configLookup?: LookupTable<{ descriptor?: DescriptorContentType; icon: { id: string }; id: string }>; // TODO: not a li
 	typesFullList: DescriptorContentType[];
 	typesCurrentList: DescriptorField[] | DataSource[];
 	title: ReactNode;
@@ -53,10 +57,12 @@ export interface PickFieldDialogProps extends EnhancedDialogProps {
 export interface PickFieldDialogBodyProps extends Omit<PickFieldDialogProps, 'title'> {}
 
 export function PickFieldDialogBody(props: PickFieldDialogBodyProps) {
-	const { type, typesFullList, typesCurrentList, onInsert, onClose, systemFieldsTitle, systemFieldsIds } = props;
+	const { configLookup, typesFullList, typesCurrentList, onInsert, onClose, systemFieldsTitle, systemFieldsIds, type } =
+		props;
 	const [selectedField, setSelectedField] = useState<PartialContentType>(undefined);
 	const [selectedView, setSelectedView] = useState<number>(0);
 	const [position, setPosition] = useState<number>(typesCurrentList?.length ?? 0);
+	const currentFieldTypes = Object.values(type.fields ?? {}).map((field) => field.type);
 
 	const onSecondaryAction = (e: React.MouseEvent) => {
 		if (selectedView === 0) {
@@ -89,6 +95,8 @@ export function PickFieldDialogBody(props: PickFieldDialogBodyProps) {
 			<DialogBody sx={{ transition: 'height 0.3s ease-in-out', minHeight: '40vh' }}>
 				{selectedView === 0 ? (
 					<SelectField
+						configLookup={configLookup}
+						currentFieldTypes={currentFieldTypes}
 						typesFullList={typesFullList}
 						selectedField={selectedField}
 						setSelectedField={onSelectField}
@@ -107,7 +115,11 @@ export function PickFieldDialogBody(props: PickFieldDialogBodyProps) {
 							</Box>
 							<ListItem>
 								<ListItemIcon>
-									<StarBorderIcon />
+									{selectedField && configLookup?.[selectedField.id]?.icon?.id ? (
+										<SystemIcon icon={configLookup[selectedField.id].icon} />
+									) : (
+										<ComponentIcon />
+									)}
 								</ListItemIcon>
 								<ListItemText primary={selectedField.name} secondary={selectedField.description} />
 							</ListItem>
@@ -205,12 +217,16 @@ export function PickFieldDialog({
 export function SelectField(props: {
 	typesFullList: DescriptorContentType[];
 	selectedField: PartialContentType;
+	configLookup?: PickFieldDialogProps['configLookup'];
 	setSelectedField: (field: PartialContentType) => void;
 	systemFieldsIds?: PickFieldDialogProps['systemFieldsIds'];
 	systemFieldsTitle?: PickFieldDialogProps['systemFieldsTitle'];
+	currentFieldTypes?: string[];
 }) {
 	const {
+		configLookup,
 		typesFullList,
+		currentFieldTypes = [],
 		selectedField,
 		setSelectedField,
 		systemFieldsIds = [],
@@ -225,8 +241,17 @@ export function SelectField(props: {
 			(type) =>
 				(type.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
 					type.description.toLowerCase().includes(searchTerm.toLowerCase())) &&
-				systemFieldsIds.includes(type.id)
+				systemFieldsIds.includes(type.id) &&
+				// Type is not in 'currentTypeIds'
+				!currentFieldTypes.includes(type.id) &&
+				// If type is file-name and `currentTypeIds` has auto-filename, or
+				// type is auto-filename and `currentTypeIds` has file-name, then filter out
+				!(
+					(type.id === 'file-name' && currentFieldTypes.includes('auto-filename')) ||
+					(type.id === 'auto-filename' && currentFieldTypes.includes('file-name'))
+				)
 		);
+
 	const filteredFields = typesFullList
 		.map((type) => applyTranslations(type, formatMessage))
 		.filter(
@@ -243,12 +268,27 @@ export function SelectField(props: {
 	return (
 		<>
 			<SearchBar keyword={searchTerm} onChange={handleSearchChange} autoFocus={true} />
+			<Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', mt: 1, mb: 2 }}>
+				{filteredFields.map((field, index) => (
+					<ListItemButton key={index} onClick={() => setSelectedField(field)} selected={selectedField?.id === field.id}>
+						<ListItemIcon>
+							{configLookup?.[field.id]?.icon?.id ? (
+								<SystemIcon icon={configLookup[field.id].icon} />
+							) : (
+								<ComponentIcon />
+							)}
+						</ListItemIcon>
+						<ListItemText primary={field.name} secondary={field.description} />
+					</ListItemButton>
+				))}
+			</Box>
 			{basicFields.length > 0 && (
 				<>
+					<Divider />
 					<FormControl sx={{ mt: 2 }}>
 						<FormLabel id="fieldSectionRadioGroupLabel">{systemFieldsTitle}</FormLabel>
 					</FormControl>
-					<Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', mt: 1, mb: 2 }}>
+					<Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', mt: 2 }}>
 						{basicFields.map((field, index) => (
 							<ListItemButton
 								key={index}
@@ -256,25 +296,18 @@ export function SelectField(props: {
 								selected={selectedField?.id === field.id}
 							>
 								<ListItemIcon>
-									<StarBorderIcon />
+									{configLookup?.[field.id]?.icon?.id ? (
+										<SystemIcon icon={configLookup[field.id].icon} />
+									) : (
+										<ComponentIcon />
+									)}
 								</ListItemIcon>
 								<ListItemText primary={field.name} secondary={field.description} />
 							</ListItemButton>
 						))}
 					</Box>
-					{filteredFields.length > 0 && <Divider />}
 				</>
 			)}
-			<Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', mt: 2 }}>
-				{filteredFields.map((field, index) => (
-					<ListItemButton key={index} onClick={() => setSelectedField(field)} selected={selectedField?.id === field.id}>
-						<ListItemIcon>
-							<StarBorderIcon />
-						</ListItemIcon>
-						<ListItemText primary={field.name} secondary={field.description} />
-					</ListItemButton>
-				))}
-			</Box>
 		</>
 	);
 }

@@ -129,11 +129,13 @@ export function Pagination(props: PaginationProps) {
 			)}
 			backIconButtonProps={{
 				'aria-label': formatMessage(translations.previousPage),
+				title: formatMessage(translations.previousPage),
 				size: 'small',
 				...props.backIconButtonProps
 			}}
 			nextIconButtonProps={{
 				'aria-label': formatMessage(translations.nextPage),
+				title: formatMessage(translations.nextPage),
 				size: 'small',
 				...props.nextIconButtonProps
 			}}

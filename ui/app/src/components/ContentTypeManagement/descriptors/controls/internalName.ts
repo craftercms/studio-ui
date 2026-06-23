@@ -18,6 +18,7 @@ import { createVirtualSection, DescriptorContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
 import { XmlKeys } from '../../../FormsEngine/lib/formConsts';
 import { defineMessage } from 'react-intl';
+import { commonFieldPropertiesDescriptors } from './commonDescriptors';
 
 // TODO: Why is internal name a control type? Doesn't seem to be in use.
 // We may want to have a separate descriptor without postfixes (since there is no post fixes for internal name), but use
@@ -33,7 +34,7 @@ export const internalNameDescriptor: DescriptorContentType = {
 		createVirtualSection({
 			id: 'properties',
 			title: defineMessage({ defaultMessage: 'Options' }),
-			fields: ['maxlength', 'readonly', 'tokenized', 'escapeContent']
+			fields: ['maxlength', 'readonly', 'tokenize', 'escapeContent']
 		}),
 		createVirtualSection({
 			id: 'constraints',
@@ -49,20 +50,8 @@ export const internalNameDescriptor: DescriptorContentType = {
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
-		readonly: {
-			id: 'readonly',
-			type: 'boolean',
-			name: defineMessage({ defaultMessage: 'Read Only' }),
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		},
-		tokenized: {
-			id: 'tokenized',
-			type: 'boolean',
-			name: defineMessage({ defaultMessage: 'Tokenize for Indexing' }),
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		},
+		readonly: commonFieldPropertiesDescriptors['readonly'],
+		tokenize: commonFieldPropertiesDescriptors['tokenize'],
 		escapeContent: {
 			id: 'escapeContent',
 			type: 'boolean',
@@ -70,13 +59,7 @@ export const internalNameDescriptor: DescriptorContentType = {
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
-		required: {
-			id: 'required',
-			type: 'boolean',
-			name: defineMessage({ defaultMessage: 'Required' }),
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		},
+		required: commonFieldPropertiesDescriptors['required'],
 		pattern: {
 			id: 'pattern',
 			type: 'string',

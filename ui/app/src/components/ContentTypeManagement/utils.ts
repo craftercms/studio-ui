@@ -28,7 +28,6 @@ import type {
 import type LookupTable from '../../models/LookupTable';
 import type { ContentType, SerializeToXmlContentTypeStructure } from '../../models/ContentType';
 import { createLookupTable, noOp, pluckProps } from '../../utils/object';
-import { commonControlFieldsDescriptors, defaultDataSourcesSection } from './descriptors/controls';
 import {
 	FormsEngineFormApiContextProps,
 	FormsEngineItemMetaContextProps,
@@ -56,6 +55,7 @@ import { componentsDataSourceContentTypesPropertyNames, systemValidationsKeysMap
 import { XmlKeys } from '../FormsEngine/lib/formConsts';
 import { getPossibleTranslation } from '../../utils/i18n';
 import { FormatXMLElementFn, PrimitiveType } from 'intl-messageformat';
+import { commonControlFieldsDescriptors, defaultDataSourcesSection } from './descriptors/controls/commonDescriptors';
 
 // TODO: assess which of the utils here should go to utils/contentType.ts, or other places (serializers, etc.)
 
@@ -90,6 +90,9 @@ export type TypePropsToEdit = Pick<
 	| 'isHeadless'
 	| 'paths'
 	| 'sections'
+	| 'delete-dependencies'
+	| 'copy-dependencies'
+	| 'previewable'
 >;
 
 type ContentTypeValuesObject = TypePropsToEdit & { groovyController: string };
@@ -107,7 +110,10 @@ export const typePropsToEdit: Array<keyof TypePropsToEdit> = [
 	'displayTemplate',
 	'isHeadless',
 	'paths',
-	'sections'
+	'sections',
+	'delete-dependencies',
+	'copy-dependencies',
+	'previewable'
 ];
 
 // Some system fields resolve to other built-in controls, so we need to map them to the correct type
@@ -273,7 +279,9 @@ export function reverseTypeFieldValuesObject(
 				properties[property] = { ...mergedProperties[property] };
 				// Serialize field properties
 				const serializer = valueSerializersLookup[fieldDescriptor.type];
-				properties[property].value = serializer ? serializer(null, values[property]) : (values[property] as never);
+				properties[property].value = serializer
+					? serializer(fieldDescriptor, values[property])
+					: (values[property] as never);
 			}
 		} else if (property === 'validations') {
 			fieldWithReversedValues.validations = { ...field.validations };
@@ -355,6 +363,9 @@ export function createEmptyTypeStructure(mixin?: Partial<ContentType>): ContentT
 		thumbnailFileName: null,
 		isHeadless: null,
 		paths: null,
+		'delete-dependencies': null,
+		'copy-dependencies': null,
+		previewable: false,
 		fields: {},
 		sections: [],
 		...mixin
@@ -542,7 +553,8 @@ export const createStableFormContextProps = (
 			useCollapsedToC: undefined,
 			isLargeContainer: undefined,
 			tableOfContentsDrawerOpen: undefined,
-			closeAfterSave: undefined
+			closeAfterSave: undefined,
+			minimizeAfterSave: undefined
 		},
 		changedFieldIds: null,
 		fieldUpdates$: null,
@@ -585,6 +597,9 @@ export function prepareSerializeToXmlTypeObject(
 		quickCreatePath: type.quickCreatePath,
 		imageThumbnail: type.thumbnailFileName,
 		paths: type.paths,
+		'delete-dependencies': type['delete-dependencies'],
+		'copy-dependencies': type['copy-dependencies'],
+		previewable: type.previewable,
 		properties: {
 			property: [
 				{
@@ -889,30 +904,4 @@ export function getPropertiesAndValidationsFromDescriptor(descriptor: Descriptor
 	});
 
 	return { properties, validations };
-}
-
-export function initializeConfigFromType(type: ContentType) {
-	return {
-		'content-type': {
-			'@:name': type.id, // The legacy API1 get-content-type service requires the config.xml to include the attribute
-			// 'name' in `content-type` tag for correct type resolution. The service is used when creating new content items
-			// to retrieve the list of content types that are allowed for a specific path.
-			label: type.name,
-			form: type.id,
-			'form-path': 'simple',
-			'model-instance-path': 'NOT-USED-BY-SIMPLE-FORM-ENGINE',
-			'file-extension': 'xml',
-			'content-as-folder': type.type === 'page',
-			previewable: type.type === 'page',
-			quickCreate: Boolean(type.quickCreate),
-			quickCreatePath: type.quickCreatePath ?? '',
-			controller: Boolean(type.hasJsController),
-			noThumbnail: !type.thumbnailFileName,
-			'image-thumbnail': type.thumbnailFileName ?? '',
-			paths: {
-				includes: {},
-				excludes: {}
-			}
-		}
-	};
 }

@@ -32,8 +32,9 @@ import { DisabledItemIcon } from '../DisabledItemIcon';
 
 export type ItemDisplayClassKey = 'root' | 'label' | 'labelPreviewable' | 'icon' | 'typeIcon';
 
-export interface ItemDisplayProps<LabelTypographyComponent extends React.ElementType = 'span'>
-	extends React.HTMLAttributes<HTMLSpanElement> {
+export interface ItemDisplayProps<
+	LabelTypographyComponent extends React.ElementType = 'span'
+> extends React.HTMLAttributes<HTMLSpanElement> {
 	showPublishingTarget?: boolean;
 	showWorkflowState?: boolean;
 	showItemType?: boolean;
@@ -100,7 +101,7 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
 			}}
 		>
 			{/* @see https://github.com/craftercms/craftercms/issues/5442 */}
-			{inWorkflow
+			{inWorkflow && !shouldItemShowAsStaged(item)
 				? showWorkflowState && (
 						<ItemStateIcon
 							{...stateIconProps}
@@ -158,5 +159,25 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
 		</Box>
 	);
 });
+
+/**
+ * Determines if the item's icon should be displayed as staged.
+ *
+ * @param item - The content item to check.
+ * @returns True if the item should be displayed as staged, false otherwise.
+ *
+ * Staging has priority over modified and null. Additionally, if an item is submitted to live, submitted to staging, or
+ * scheduled, it should not be shown as staged.
+ */
+function shouldItemShowAsStaged(item: ContentItem | LightItem): boolean {
+	if (!('stateMap' in item) || !item.stateMap) return false;
+	return (
+		item.stateMap?.staged &&
+		(item.stateMap?.new || item.stateMap?.modified) &&
+		!item.stateMap?.submittedToLive &&
+		!item.stateMap?.submittedToStaging &&
+		!item.stateMap?.scheduled
+	);
+}
 
 export default ItemDisplay;

@@ -29,6 +29,8 @@ import { ApiResponse } from '../../models';
 import { pickShowContentFormAction, pushErrorDialog } from '../../utils/system';
 import { useEnhancedDialogContext } from '../EnhancedDialog';
 import { fetchDeleteDependencies as fetchDeleteDependenciesService } from '../../services/dependencies';
+import { useIntl } from 'react-intl';
+import useUpdateRefs from '../../hooks/useUpdateRefs';
 
 function createCheckedList(selectedItems: LookupTable<boolean>, excludedPaths?: string[]) {
 	return Object.entries(selectedItems)
@@ -83,11 +85,23 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
 			}
 		});
 	};
+	const { formatMessage } = useIntl();
+	const refs = useUpdateRefs({ items });
 
 	const fetchDependencies = useCallback(
 		(paths: string[]) => {
 			fetchDeleteDependenciesService(site, paths).subscribe({
 				next: (response) => {
+					const itemsToDelete = [...refs.current.items, ...(response.childItems || [])]
+						.map((item) => item.label)
+						.filter((label) => !isBlank(label))
+						.join(', ');
+					const comment = formatMessage(
+						{ defaultMessage: 'Deleting the following items: {items}' },
+						{ items: itemsToDelete }
+					);
+					setComment(comment);
+
 					setDependentItems(response.dependentItems);
 					setChildItems(response.childItems);
 					setIsFetching(false);
@@ -97,7 +111,7 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
 				}
 			});
 		},
-		[site, dispatch]
+		[site, dispatch, refs, formatMessage]
 	);
 
 	const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);

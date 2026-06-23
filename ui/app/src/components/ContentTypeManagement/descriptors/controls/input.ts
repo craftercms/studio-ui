@@ -17,6 +17,7 @@
 import { createVirtualSection, DescriptorContentType } from '../../utils';
 import { immutableEmptyObject } from '../../../../utils/object';
 import { defineMessage } from 'react-intl';
+import { commonFieldPropertiesDescriptors } from './commonDescriptors';
 
 export const inputDescriptor: DescriptorContentType = {
 	id: 'input',
@@ -26,7 +27,7 @@ export const inputDescriptor: DescriptorContentType = {
 		createVirtualSection({
 			id: 'properties',
 			title: defineMessage({ defaultMessage: 'Options' }),
-			fields: ['maxlength', 'readonly', 'tokenized', 'escapeContent']
+			fields: ['maxlength', 'readonly', 'tokenize', 'escapeContent']
 		}),
 		createVirtualSection({
 			id: 'constraints',
@@ -42,20 +43,8 @@ export const inputDescriptor: DescriptorContentType = {
 			defaultValue: 50,
 			validations: immutableEmptyObject
 		},
-		readonly: {
-			id: 'readonly',
-			type: 'boolean',
-			name: defineMessage({ defaultMessage: 'Read Only' }),
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		},
-		tokenized: {
-			id: 'tokenized',
-			type: 'boolean',
-			name: defineMessage({ defaultMessage: 'Tokenize for Indexing' }),
-			defaultValue: undefined,
-			validations: immutableEmptyObject
-		},
+		readonly: commonFieldPropertiesDescriptors['readonly'],
+		tokenize: commonFieldPropertiesDescriptors['tokenize'],
 		escapeContent: {
 			id: 'escapeContent',
 			type: 'boolean',
@@ -63,13 +52,7 @@ export const inputDescriptor: DescriptorContentType = {
 			defaultValue: undefined,
 			validations: immutableEmptyObject
 		},
-		required: {
-			id: 'required',
-			type: 'boolean',
-			name: defineMessage({ defaultMessage: 'Required' }),
-			defaultValue: false,
-			validations: immutableEmptyObject
-		},
+		required: commonFieldPropertiesDescriptors['required'],
 		pattern: {
 			id: 'pattern',
 			type: 'string',

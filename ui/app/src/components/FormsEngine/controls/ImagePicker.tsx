@@ -63,7 +63,7 @@ export interface ImagePickerProps extends ControlProps {
 	value: string | null;
 }
 
-type PickerType = 'browse' | 'upload' | 'search';
+export type ImagePickerType = 'browse' | 'upload' | 'search';
 
 /** Validates if an HTMLImageElement meets the given size restrictions. The restrictions may be a range (min/max) or an
  * exact value (width/height). If no restrictions are provided, the image is considered valid.
@@ -148,7 +148,7 @@ export function ImagePicker(props: ImagePickerProps) {
 	const [addMenuOpen, setAddMenuOpen] = useState(false);
 	const dispatch = useDispatch();
 	const [openPickerDialog, setOpenPickerDialog] = useState(false);
-	const [pickerType, setPickerType] = useState<PickerType | null>(null);
+	const [pickerType, setPickerType] = useState<ImagePickerType | null>(null);
 
 	useEffect(() => {
 		// If there's a default value and no value has been set yet, set it as the value.
@@ -160,7 +160,7 @@ export function ImagePicker(props: ImagePickerProps) {
 	const imageRestrictionMessages = getImageRestrictionMessages(restrictions);
 	/* TODO: handleDataSourceOptionClick and executeDataSourceOption only handle hardcoded 'browse', 'upload' and 'search' options.
 	    We need to make them dynamic to support plugins. */
-	const handleDataSourceOptionClick = (event: ReactMouseEvent<HTMLLIElement, MouseEvent>, option: PickerType) => {
+	const handleDataSourceOptionClick = (option: ImagePickerType) => {
 		setAddMenuOpen(false);
 		switch (option) {
 			case 'browse': {
@@ -191,10 +191,11 @@ export function ImagePicker(props: ImagePickerProps) {
 					setPickerType('search');
 					setOpenPickerDialog(true);
 				}
+				break;
 			}
 		}
 	};
-	const executeDataSourceOption = (optionType: PickerType, choice: AllowedPathsData) => {
+	const executeDataSourceOption = (optionType: ImagePickerType, choice: AllowedPathsData) => {
 		const processPath = (path: string) =>
 			processPathMacros({ path, objectId: id, fullParentPath: contextItem?.path ?? pathInSite });
 
@@ -204,6 +205,7 @@ export function ImagePicker(props: ImagePickerProps) {
 					dispatch,
 					path: processPath(choice.path),
 					multiSelect: false,
+					preselectedPaths: value ? [value] : [],
 					onSuccess(imageData: MediaItem) {
 						// Check if the image meets restrictions
 						validateImageRestrictions(imageData.path, restrictions).then((meetsRestrictions) => {
@@ -230,6 +232,7 @@ export function ImagePicker(props: ImagePickerProps) {
 				showSearchDialog({
 					dispatch,
 					path: ensureSingleSlash(`${processPath(choice.path)}/.+`),
+					preselectedPaths: value ? [value] : [],
 					onAcceptSelection(images) {
 						validateImageRestrictions(images[0], restrictions).then((meetsRestrictions) => {
 							if (!meetsRestrictions) {
@@ -300,7 +303,11 @@ export function ImagePicker(props: ImagePickerProps) {
 		setOpenPickerDialog(false);
 	};
 
-	const menuOptions = createMediaMenuOptions(dataSourceSummary, handleDataSourceOptionClick, readonly);
+	const { menuOptions, availableOptions } = createMediaMenuOptions(
+		dataSourceSummary,
+		handleDataSourceOptionClick,
+		readonly
+	);
 
 	const handleRemoveImage = () => {
 		setValue(null);
@@ -418,7 +425,11 @@ export function ImagePicker(props: ImagePickerProps) {
 											disabled={readonly}
 											autoFocus={autoFocus}
 											onClick={() => {
-												setAddMenuOpen(true);
+												if (availableOptions.length === 1) {
+													handleDataSourceOptionClick(availableOptions[0]);
+												} else if (availableOptions.length > 1) {
+													setAddMenuOpen(true);
+												}
 											}}
 										>
 											<EditOutlined />

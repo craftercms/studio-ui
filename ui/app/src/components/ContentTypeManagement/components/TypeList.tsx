@@ -27,6 +27,7 @@ export interface TypeListProps extends Pick<TypeCardProps, 'showTypeId' | 'compa
 	skeletonItemCount?: number;
 	contentTypes: ContentType[];
 	selectedTypeId?: string;
+	disableSelected?: boolean;
 	onCardClick?: TypeCardProps['onClick'];
 }
 
@@ -38,6 +39,7 @@ export function TypeList(props: TypeListProps) {
 		showTypeId,
 		compact,
 		selectedTypeId,
+		disableSelected = true,
 		onCardClick
 	} = props;
 	if (!skeleton && !contentTypes) {
@@ -66,8 +68,13 @@ export function TypeList(props: TypeListProps) {
 								type={type}
 								showTypeId={showTypeId}
 								compact={compact}
-								onClick={isSelected ? undefined : (e) => onCardClick?.(e, type)}
-								sx={[isSelected && { border: `2px solid ${palette.blue.tint}`, opacity: 0.7, boxShadow: 0 }]}
+								onClick={isSelected && disableSelected ? undefined : (e) => onCardClick?.(e, type)}
+								sx={[
+									isSelected && {
+										boxShadow: `0 0 0 2px ${palette.blue.tint}`,
+										opacity: disableSelected ? 0.7 : 1
+									}
+								]}
 							/>
 						);
 					})}

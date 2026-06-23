@@ -81,8 +81,7 @@ export function beforeWrite$<T extends any = 'continue', S extends any = never>(
 						payload.type === 'continue'
 							? cancelPackages(site, {
 									packageIds: affectedPackages.map((p) => p.id),
-									// TODO: Correct comment generation
-									comment: `Cancel packages to write on "${path}"`
+									comment: payload.cancelPackagesComment || `Cancel packages to write on "${path}"`
 								}).pipe(switchMap(() => continue$))
 							: stop$
 					)
