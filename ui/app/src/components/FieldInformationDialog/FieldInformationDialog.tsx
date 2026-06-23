@@ -92,7 +92,7 @@ function Body(props: FieldInformationDialogBodyProps) {
 			</Card>
 
 			{descriptor.sections?.map((section, index) => (
-				<Card key={section.title}>
+				<Card key={`${section.title}_${index}`}>
 					<CardContent>
 						<Typography variant="subtitle1" fontWeight="bold">
 							{getPossibleTranslation(section.title, formatMessage)}

@@ -133,166 +133,164 @@ export const FormsEngineField = forwardRef<HTMLDivElement, FormsEngineFieldProps
 		}
 	}, [autoFocus]);
 	return (
-		<>
-			<FormControl
-				ref={ref}
-				fullWidth
-				error={!isValid}
-				variant="standard"
-				data-field-id={fieldId}
-				required={isRequired}
-				sx={{ '.MuiFormLabel-asterisk': { display: 'none' }, ...props.sx }}
-			>
-				<Box display="flex" justifyContent="space-between" alignItems="center">
-					<Box display="flex" alignItems="center">
-						<FormLabel
-							htmlFor={htmlFor}
-							id={labelId}
-							component="label"
-							ref={labelRef}
-							tabIndex={autoFocus ? 0 : undefined}
-						>
-							{field.name}
-						</FormLabel>
-						{isRequired && <FieldRequiredStateIndicator isValid={isValid} />}
-						{hasHelpText && (
-							<IconButton size="small" onClick={() => setShowHelp(!showHelp)}>
-								<HelpOutlineRounded fontSize="small" />
+		<FormControl
+			ref={ref}
+			fullWidth
+			error={!isValid}
+			variant="standard"
+			data-field-id={fieldId}
+			required={isRequired}
+			sx={{ '.MuiFormLabel-asterisk': { display: 'none' }, ...props.sx }}
+		>
+			<Box display="flex" justifyContent="space-between" alignItems="center">
+				<Box display="flex" alignItems="center">
+					<FormLabel
+						htmlFor={htmlFor}
+						id={labelId}
+						component="label"
+						ref={labelRef}
+						tabIndex={autoFocus ? 0 : undefined}
+					>
+						{field.name}
+					</FormLabel>
+					{isRequired && <FieldRequiredStateIndicator isValid={isValid} />}
+					{hasHelpText && (
+						<IconButton size="small" onClick={() => setShowHelp(!showHelp)}>
+							<HelpOutlineRounded fontSize="small" />
+						</IconButton>
+					)}
+				</Box>
+				<Box display="flex" alignItems="center">
+					{lengthBlock}
+					{action}
+					{menu && (
+						<>
+							{/* TODO: Should the menu button be tabbable? Perhaps it could be a preference whether it should be tabbable or not. */}
+							<IconButton size="small" tabIndex={-1} ref={menuButtonRef} onClick={() => setOpenMenu(true)}>
+								<MoreVertRounded fontSize="small" />
 							</IconButton>
-						)}
-					</Box>
-					<Box display="flex" alignItems="center">
-						{lengthBlock}
-						{action}
-						{menu && (
-							<>
-								{/* TODO: Should the menu button be tabbable? Perhaps it could be a preference whether it should be tabbable or not. */}
-								<IconButton size="small" tabIndex={-1} ref={menuButtonRef} onClick={() => setOpenMenu(true)}>
-									<MoreVertRounded fontSize="small" />
-								</IconButton>
-								<Menu
-									open={openMenu}
-									anchorEl={menuButtonRef.current}
-									onClose={handleCloseMenu}
-									onClick={handleCloseMenu}
+							<Menu
+								open={openMenu}
+								anchorEl={menuButtonRef.current}
+								onClose={handleCloseMenu}
+								onClick={handleCloseMenu}
+							>
+								<MenuItem
+									onClick={() => {
+										dispatch(
+											pushDialog({
+												component: createComponentId('FieldInformationDialog'),
+												props: { field }
+											})
+										);
+									}}
 								>
-									<MenuItem
-										onClick={() => {
-											dispatch(
-												pushDialog({
-													component: createComponentId('FieldInformationDialog'),
-													props: { field }
-												})
-											);
-										}}
-									>
+									<ListItemText>
+										<FormattedMessage defaultMessage="Field Information" />
+									</ListItemText>
+								</MenuItem>
+								{hasChanges && [
+									<Divider key="rollback-divider" />,
+									<MenuItem key="rollback-action" onClick={handleRollback}>
 										<ListItemText>
-											<FormattedMessage defaultMessage="Field Information" />
+											<FormattedMessage defaultMessage="Rollback changes" />
 										</ListItemText>
 									</MenuItem>
-									{hasChanges && [
-										<Divider key="rollback-divider" />,
-										<MenuItem key="rollback-action" onClick={handleRollback}>
-											<ListItemText>
-												<FormattedMessage defaultMessage="Rollback changes" />
-											</ListItemText>
+								]}
+								{menuOptions && <Divider />}
+								{menuOptions?.map((option, index) =>
+									option === 'divider' ? (
+										<Divider key={`divider_${index}`} />
+									) : (
+										<MenuItem key={option.id} onClick={(e) => onMenuOptionClick?.(e, option.id, handleCloseMenu)}>
+											<ListItemText children={option.text} />
 										</MenuItem>
-									]}
-									{menuOptions && <Divider />}
-									{menuOptions?.map((option, index) =>
-										option === 'divider' ? (
-											<Divider key={`divider_${index}`} />
-										) : (
-											<MenuItem key={option.id} onClick={(e) => onMenuOptionClick?.(e, option.id, handleCloseMenu)}>
-												<ListItemText children={option.text} />
-											</MenuItem>
-										)
-									)}
-								</Menu>
-							</>
-						)}
-					</Box>
+									)
+								)}
+							</Menu>
+						</>
+					)}
 				</Box>
-				{hasHelpText && (
-					<Collapse in={showHelp}>
-						<Alert severity="info" variant="outlined" sx={{ border: 'none' }}>
-							<Typography
-								variant="body2"
-								component="section"
-								color="textSecondary"
-								dangerouslySetInnerHTML={{ __html: field.helpText }}
-								sx={{ 'p:first-of-type:last-of-type': { margin: 0 } }}
-							/>
-						</Alert>
-					</Collapse>
-				)}
-				{sourceMap?.[fieldId] && fieldId !== XmlKeys['fileName'] && (
-					<Alert
-						variant="standard"
-						severity="info"
-						// TODO: Create or link to content inheritance article
-						icon={
-							<IconButton
-								href="/"
-								size="small"
-								color="inherit"
-								target="_blank"
-								component="a"
-								title={formatMessage({ defaultMessage: 'Learn more about content inheritance' })}
-								sx={{ p: 0 }}
-							>
-								<InfoOutlinedIcon />
-							</IconButton>
-						}
-						action={
-							<>
-								<IconButton
-									color="inherit"
-									size="small"
-									sx={{ px: 0.5, minWidth: 0 }}
-									onClick={() => {
-										globalApi.pushForm({
-											update: { path: sourceMap[fieldId] }
-										});
-									}}
-									title={formatMessage({ defaultMessage: 'Edit' })}
-								>
-									<EditOutlined fontSize="small" />
-								</IconButton>
-							</>
-						}
-						sx={{
-							px: 1,
-							mb: 0.625,
-							borderRadius: 5,
-							alignItems: 'center',
-							[`.${alertClasses.message}`]: { display: 'flex', alignItems: 'center' },
-							[`.${alertClasses.action}`]: { mr: 0 },
-							[`.${alertClasses.icon}`]: { mr: 1 }
-						}}
-					>
-						{isEmptyValue(field, value) ? (
-							<FormattedMessage
-								defaultMessage="Value is inherited from {label}"
-								values={{ label: itemsByPath[sourceMap[fieldId]]?.label ?? sourceMap[fieldId] }}
-							/>
-						) : (
-							<FormattedMessage
-								defaultMessage="Inherited value from {label} is overridden"
-								values={{ label: itemsByPath[sourceMap[fieldId]]?.label ?? sourceMap[fieldId] }}
-							/>
-						)}
+			</Box>
+			{hasHelpText && (
+				<Collapse in={showHelp}>
+					<Alert severity="info" variant="outlined" sx={{ border: 'none' }}>
+						<Typography
+							variant="body2"
+							component="section"
+							color="textSecondary"
+							dangerouslySetInnerHTML={{ __html: field.helpText }}
+							sx={{ 'p:first-of-type:last-of-type': { margin: 0 } }}
+						/>
 					</Alert>
-				)}
-				{children}
-				{hasDescription && <FormHelperText>{field.description}</FormHelperText>}
-				{!isValid &&
-					validityData.state === 'hasData' &&
-					validityData.data?.messages?.map((messageData, key) => (
-						<FormHelperText key={key}>{translateValidityMessage(messageData, formatMessage)}</FormHelperText>
-					))}
-			</FormControl>
-		</>
+				</Collapse>
+			)}
+			{sourceMap?.[fieldId] && fieldId !== XmlKeys['fileName'] && (
+				<Alert
+					variant="standard"
+					severity="info"
+					// TODO: Create or link to content inheritance article
+					icon={
+						<IconButton
+							href="/"
+							size="small"
+							color="inherit"
+							target="_blank"
+							component="a"
+							title={formatMessage({ defaultMessage: 'Learn more about content inheritance' })}
+							sx={{ p: 0 }}
+						>
+							<InfoOutlinedIcon />
+						</IconButton>
+					}
+					action={
+						<>
+							<IconButton
+								color="inherit"
+								size="small"
+								sx={{ px: 0.5, minWidth: 0 }}
+								onClick={() => {
+									globalApi.pushForm({
+										update: { path: sourceMap[fieldId] }
+									});
+								}}
+								title={formatMessage({ defaultMessage: 'Edit' })}
+							>
+								<EditOutlined fontSize="small" />
+							</IconButton>
+						</>
+					}
+					sx={{
+						px: 1,
+						mb: 0.625,
+						borderRadius: 5,
+						alignItems: 'center',
+						[`.${alertClasses.message}`]: { display: 'flex', alignItems: 'center' },
+						[`.${alertClasses.action}`]: { mr: 0 },
+						[`.${alertClasses.icon}`]: { mr: 1 }
+					}}
+				>
+					{isEmptyValue(field, value) ? (
+						<FormattedMessage
+							defaultMessage="Value is inherited from {label}"
+							values={{ label: itemsByPath[sourceMap[fieldId]]?.label ?? sourceMap[fieldId] }}
+						/>
+					) : (
+						<FormattedMessage
+							defaultMessage="Inherited value from {label} is overridden"
+							values={{ label: itemsByPath[sourceMap[fieldId]]?.label ?? sourceMap[fieldId] }}
+						/>
+					)}
+				</Alert>
+			)}
+			{children}
+			{hasDescription && <FormHelperText>{field.description}</FormHelperText>}
+			{!isValid &&
+				validityData.state === 'hasData' &&
+				validityData.data?.messages?.map((messageData, key) => (
+					<FormHelperText key={key}>{translateValidityMessage(messageData, formatMessage)}</FormHelperText>
+				))}
+		</FormControl>
 	);
 });
 
