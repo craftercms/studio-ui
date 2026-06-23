@@ -112,13 +112,11 @@ export function DependenciesDialogUI(props: DependenciesDialogUIProps) {
 						title={
 							dependenciesShown === 'depends-on-me' ? (
 								<FormattedMessage
-									// id="dependenciesDialog.emptyDependantsMessage"
 									defaultMessage={'"{itemName}" has no references'}
 									values={{ itemName: item?.label }}
 								/>
 							) : (
 								<FormattedMessage
-									// id="dependenciesDialog.emptyDependenciesMessage"
 									defaultMessage={'Nothing is referenced by "{itemName}"'}
 									values={{ itemName: item?.label }}
 								/>
