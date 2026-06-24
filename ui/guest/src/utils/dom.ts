@@ -423,7 +423,7 @@ export function elementOffset(element: Element) {
 	return { top: top, left: left };
 }
 
-export const DRAG_SCROLL_MARGIN = 50;
+export const DRAG_SCROLL_MARGIN = 150;
 export const DRAG_SCROLL_STEP = 1;
 export const DRAG_SCROLL_INTERVAL = 80;
 
@@ -437,54 +437,6 @@ export const DRAG_SCROLL_INTERVAL = 80;
  */
 function isDocumentScrollElement(element: Element): boolean {
 	return element === document.scrollingElement || element === document.documentElement || element === document.body;
-}
-
-/** Bottom edge of fixed/sticky elements that overlay the top of the viewport. */
-/**
- * Calculates the bottom edge (in pixels) of any fixed or sticky elements
- * that overlay the top of the viewport (e.g., fixed headers, sticky navbars).
- *
- * This is useful when you need to determine how much of the viewport's top
- * is obscured by persistent UI elements, so that you can offset scroll
- * positions or drag scroll bounds accordingly.
- *
- *
- * @returns {number} The greatest bottom pixel value (relative to the viewport) of fixed or sticky elements at the top,
- *                   or 0 if no such elements are found.
- */
-export function getViewportTopInset(): number {
-	let inset = 0;
-	const elements = document.body?.getElementsByTagName('*') ?? [];
-
-	for (let i = 0; i < elements.length; i++) {
-		const el = elements[i];
-		const style = getComputedStyle(el);
-		const { position } = style;
-
-		if (position !== 'fixed' && position !== 'sticky') {
-			continue;
-		}
-
-		const rect = el.getBoundingClientRect();
-		if (rect.height === 0 || rect.bottom <= 0 || rect.top >= window.innerHeight / 2) {
-			continue;
-		}
-
-		if (position === 'sticky') {
-			const stickTop = parseFloat(style.top) || 0;
-			// If the sticky element is not currently stuck to its top position,
-			// skip it (it may be "unstuck" on the page).
-			if (rect.top > stickTop + 1) {
-				continue;
-			}
-		}
-
-		if (rect.bottom > inset) {
-			inset = rect.bottom;
-		}
-	}
-
-	return inset;
 }
 
 /**
@@ -514,15 +466,16 @@ export function getScrollContainer(element: Element): Element {
  * Otherwise, returns the bounding rect of the scroll container element.
  *
  * @param scrollContainer - Element to use for scrolling
- * @param viewportTopInset - Top inset in pixels for viewport (default: 0)
  */
-export function getDragScrollBounds(
-	scrollContainer: Element,
-	viewportTopInset = 0
-): { top: number; bottom: number; left: number; right: number } {
+export function getDragScrollBounds(scrollContainer: Element): {
+	top: number;
+	bottom: number;
+	left: number;
+	right: number;
+} {
 	if (isDocumentScrollElement(scrollContainer)) {
 		return {
-			top: viewportTopInset,
+			top: 0,
 			bottom: window.innerHeight,
 			left: 0,
 			right: window.innerWidth

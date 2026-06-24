@@ -57,7 +57,6 @@ import {
 	DRAG_SCROLL_STEP,
 	getDragScrollBounds,
 	getScrollContainer,
-	getViewportTopInset,
 	scrollContainerBy
 } from '../utils/dom';
 import { emptyCollectionClass } from '../constants';
@@ -212,11 +211,10 @@ export function GuestProxy() {
 
 		let stopDragScroll = false;
 		let scrollContainer: Element = document.documentElement;
-		let viewportTopInset = 0;
 
 		const onDragScroll: JQuery.EventHandlerBase<any, any> = (e): void => {
 			const { clientX, clientY } = e.originalEvent;
-			const bounds = getDragScrollBounds(scrollContainer, viewportTopInset);
+			const bounds = getDragScrollBounds(scrollContainer);
 			const topEdge = bounds.top + DRAG_SCROLL_MARGIN;
 			const bottomEdge = bounds.bottom - DRAG_SCROLL_MARGIN;
 
@@ -239,9 +237,7 @@ export function GuestProxy() {
 
 		const handler: JQuery.EventHandlerBase<any, any> = (e: Event): void => {
 			if (e.type === 'dragstart') {
-				const element = e.currentTarget as Element;
-				scrollContainer = getScrollContainer(element);
-				viewportTopInset = getViewportTopInset();
+				scrollContainer = getScrollContainer(e.currentTarget as Element);
 				stopDragScroll = false;
 			} else if (e.type === 'drag' || e.type === 'dragover') {
 				onDragScroll(e);
