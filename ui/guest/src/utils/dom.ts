@@ -422,3 +422,130 @@ export function elementOffset(element: Element) {
 	var left = rec.left + window.scrollX;
 	return { top: top, left: left };
 }
+
+export const DRAG_SCROLL_MARGIN = 50;
+export const DRAG_SCROLL_STEP = 1;
+export const DRAG_SCROLL_INTERVAL = 80;
+
+/**
+ * Determines if the given element is one of the primary scroll elements for the entire document.
+ *
+ * Checks if the element is equal to the document's scrollingElement, documentElement, or body.
+ *
+ * @param {Element} element - The element to check.
+ * @returns {boolean} True if the element represents the document's main scrollable area, false otherwise.
+ */
+function isDocumentScrollElement(element: Element): boolean {
+	return element === document.scrollingElement || element === document.documentElement || element === document.body;
+}
+
+/** Bottom edge of fixed/sticky elements that overlay the top of the viewport. */
+/**
+ * Calculates the bottom edge (in pixels) of any fixed or sticky elements
+ * that overlay the top of the viewport (e.g., fixed headers, sticky navbars).
+ *
+ * This is useful when you need to determine how much of the viewport's top
+ * is obscured by persistent UI elements, so that you can offset scroll
+ * positions or drag scroll bounds accordingly.
+ *
+ *
+ * @returns {number} The greatest bottom pixel value (relative to the viewport) of fixed or sticky elements at the top,
+ *                   or 0 if no such elements are found.
+ */
+export function getViewportTopInset(): number {
+	let inset = 0;
+	const elements = document.body?.getElementsByTagName('*') ?? [];
+
+	for (let i = 0; i < elements.length; i++) {
+		const el = elements[i];
+		const style = getComputedStyle(el);
+		const { position } = style;
+
+		if (position !== 'fixed' && position !== 'sticky') {
+			continue;
+		}
+
+		const rect = el.getBoundingClientRect();
+		if (rect.height === 0 || rect.bottom <= 0 || rect.top >= window.innerHeight / 2) {
+			continue;
+		}
+
+		if (position === 'sticky') {
+			const stickTop = parseFloat(style.top) || 0;
+			// If the sticky element is not currently stuck to its top position,
+			// skip it (it may be "unstuck" on the page).
+			if (rect.top > stickTop + 1) {
+				continue;
+			}
+		}
+
+		if (rect.bottom > inset) {
+			inset = rect.bottom;
+		}
+	}
+
+	return inset;
+}
+
+/**
+ * Returns the nearest scrollable parent element of the provided element.
+ *
+ * @param {Element} element - The element for which to find the nearest scrollable container.
+ * @returns {Element} The closest scrollable parent element, or the document's scrolling element if none are found.
+ */
+export function getScrollContainer(element: Element): Element {
+	let parent = element.parentElement;
+
+	while (parent) {
+		const { overflow, overflowY } = getComputedStyle(parent);
+		const scrollable = /(auto|scroll)/.test(overflowY) || /(auto|scroll)/.test(overflow);
+		if (scrollable && parent.scrollHeight > parent.clientHeight) {
+			return parent;
+		}
+		parent = parent.parentElement;
+	}
+
+	return document.scrollingElement ?? document.documentElement;
+}
+
+/**
+ * Returns the visible bounds (top, bottom, left, right) for drag-scroll detection.
+ * If the scroll container is the document, calculates bounds based on the viewport.
+ * Otherwise, returns the bounding rect of the scroll container element.
+ *
+ * @param scrollContainer - Element to use for scrolling
+ * @param viewportTopInset - Top inset in pixels for viewport (default: 0)
+ */
+export function getDragScrollBounds(
+	scrollContainer: Element,
+	viewportTopInset = 0
+): { top: number; bottom: number; left: number; right: number } {
+	if (isDocumentScrollElement(scrollContainer)) {
+		return {
+			top: viewportTopInset,
+			bottom: window.innerHeight,
+			left: 0,
+			right: window.innerWidth
+		};
+	}
+
+	const rect = scrollContainer.getBoundingClientRect();
+	return { top: rect.top, bottom: rect.bottom, left: rect.left, right: rect.right };
+}
+
+/**
+ * Scrolls the given container vertically by the specified number of pixels.
+ *
+ * If the scroll container is the document's scrolling element, this function scrolls the window.
+ * Otherwise, it scrolls the provided element by modifying its scrollTop property.
+ *
+ * @param {Element} scrollContainer - The container element to scroll. This can be a DOM element or the document's scrolling element.
+ * @param {number} delta - The number of pixels by which to scroll vertically. Positive values scroll down, negative values scroll up.
+ */
+export function scrollContainerBy(scrollContainer: Element, delta: number): void {
+	if (isDocumentScrollElement(scrollContainer)) {
+		window.scrollTo({ top: window.scrollY + delta, behavior: 'auto' });
+	} else {
+		scrollContainer.scrollTop += delta;
+	}
+}

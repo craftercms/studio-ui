@@ -50,7 +50,16 @@ import { GuestState } from '../store/models/GuestStore';
 import { notNullOrUndefined } from '@craftercms/studio-ui/utils/object';
 import { forEach } from '@craftercms/studio-ui/utils/array';
 import { isSimple, popPiece, removeLastPiece } from '@craftercms/studio-ui/utils/string';
-import { addAnimation } from '../utils/dom';
+import {
+	addAnimation,
+	DRAG_SCROLL_INTERVAL,
+	DRAG_SCROLL_MARGIN,
+	DRAG_SCROLL_STEP,
+	getDragScrollBounds,
+	getScrollContainer,
+	getViewportTopInset,
+	scrollContainerBy
+} from '../utils/dom';
 import { emptyCollectionClass } from '../constants';
 import type { BuiltInControlType } from '@craftercms/studio-ui/components/FormsEngine/lib/controlMap';
 
@@ -202,39 +211,47 @@ export function GuestProxy() {
 			});
 
 		let stopDragScroll = false;
-		const handler: JQuery.EventHandlerBase<any, any> = (e: Event): void => {
-			if (e.type === 'dragover') {
-				onDragHandler(e);
-			}
-			const record = ElementRegistry.fromElement(e.currentTarget as Element);
-			if (notNullOrUndefined(record)) {
-				persistenceRef.current.onEvent(e, record.id);
-			}
-		};
-		const onDragHandler: JQuery.EventHandlerBase<any, any> = (e): void => {
-			const DRAG_SCROLL_STEP = 1; // pixels per scroll
-			const DRAG_SCROLL_INTERVAL = 80; // ms; increase this to slow down scrolling
+		let scrollContainer: Element = document.documentElement;
+		let viewportTopInset = 0;
 
-			const dragScroll = function (step: number) {
-				const scrollY = window.scrollY || window.pageYOffset;
-				window.scrollTo({ top: scrollY + step, behavior: 'auto' });
+		const onDragScroll: JQuery.EventHandlerBase<any, any> = (e): void => {
+			const { clientX, clientY } = e.originalEvent;
+			const bounds = getDragScrollBounds(scrollContainer, viewportTopInset);
+			const topEdge = bounds.top + DRAG_SCROLL_MARGIN;
+			const bottomEdge = bounds.bottom - DRAG_SCROLL_MARGIN;
+
+			const dragScroll = (step: number) => {
+				scrollContainerBy(scrollContainer, step);
 				if (!stopDragScroll) {
-					setTimeout(function () {
-						dragScroll(step);
-					}, DRAG_SCROLL_INTERVAL);
+					setTimeout(() => dragScroll(step), DRAG_SCROLL_INTERVAL);
 				}
 			};
 
 			stopDragScroll = true;
-			if (e.originalEvent.clientY < 150) {
+			if (clientX >= bounds.left && clientX <= bounds.right && clientY < topEdge) {
 				stopDragScroll = false;
 				dragScroll(-DRAG_SCROLL_STEP);
-			}
-			const windowHeight = document.querySelector('html').clientHeight;
-			const windowWidth = document.querySelector('html').clientWidth;
-			if (e.originalEvent.clientX <= windowWidth && e.originalEvent.clientY > windowHeight - 150) {
+			} else if (clientX >= bounds.left && clientX <= bounds.right && clientY > bottomEdge) {
 				stopDragScroll = false;
 				dragScroll(DRAG_SCROLL_STEP);
+			}
+		};
+
+		const handler: JQuery.EventHandlerBase<any, any> = (e: Event): void => {
+			if (e.type === 'dragstart') {
+				const element = e.currentTarget as Element;
+				scrollContainer = getScrollContainer(element);
+				viewportTopInset = getViewportTopInset();
+				stopDragScroll = false;
+			} else if (e.type === 'drag' || e.type === 'dragover') {
+				onDragScroll(e);
+			} else if (e.type === 'dragend') {
+				stopDragScroll = true;
+			}
+
+			const record = ElementRegistry.fromElement(e.currentTarget as Element);
+			if (notNullOrUndefined(record)) {
+				persistenceRef.current.onEvent(e, record.id);
 			}
 		};
 
@@ -242,14 +259,13 @@ export function GuestProxy() {
 			.on('mouseover', '[data-craftercms-model-id]', handler)
 			.on('mouseleave', '[data-craftercms-model-id]', handler)
 			.on('dragstart', '[data-craftercms-model-id]', handler)
+			.on('drag', '[data-craftercms-model-id]', handler)
 			.on('dragover', '[data-craftercms-model-id]', handler)
 			.on('dragleave', '[data-craftercms-model-id]', handler)
 			.on('drop', '[data-craftercms-model-id]', handler)
 			.on('dragend', '[data-craftercms-model-id]', handler)
 			.on('click', '[data-craftercms-model-id]', handler)
-			.on('dblclick', '[data-craftercms-model-id]', handler)
-			.on('drag', '[data-craftercms-model-id]', (e) => onDragHandler(e, window, stopDragScroll))
-			.on('dragend', '[data-craftercms-model-id]', () => (stopDragScroll = true));
+			.on('dblclick', '[data-craftercms-model-id]', handler);
 
 		const sub = operations$.subscribe((op: Operation) => {
 			switch (op.type) {
@@ -522,6 +538,7 @@ export function GuestProxy() {
 				.off('mouseover', '[data-craftercms-model-id]', handler)
 				.off('mouseleave', '[data-craftercms-model-id]', handler)
 				.off('dragstart', '[data-craftercms-model-id]', handler)
+				.off('drag', '[data-craftercms-model-id]', handler)
 				.off('dragover', '[data-craftercms-model-id]', handler)
 				.off('dragleave', '[data-craftercms-model-id]', handler)
 				.off('drop', '[data-craftercms-model-id]', handler)
