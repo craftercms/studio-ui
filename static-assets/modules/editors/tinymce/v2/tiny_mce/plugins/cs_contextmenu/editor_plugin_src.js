@@ -113,8 +113,8 @@
 			return {
 				longname : 'CStudioContextmenu',
 				author : 'CrafterCMS',
-				authorurl : 'https://craftercms.org',
-				infourl : 'https://craftercms.org',
+				authorurl : 'https://craftercms.com',
+				infourl : 'https://craftercms.com',
 				version : "1.0"
 			};
 		},

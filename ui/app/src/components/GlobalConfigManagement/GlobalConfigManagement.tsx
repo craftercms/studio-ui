@@ -34,11 +34,11 @@ import { MAX_CONFIG_SIZE } from '../../utils/constants';
 import { MaxLengthCircularProgress } from '../MaxLengthCircularProgress';
 import useUnmount from '../../hooks/useUnmount';
 import useActiveUser from '../../hooks/useActiveUser';
-import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
-import { closeConfirmDialog, showConfirmDialog } from '../../state/actions/dialogs';
-import { createCustomDocumentEventListener } from '../../utils/dom';
 import { useBeforeUnload, useNavigate } from 'react-router';
 import { GlobalRoutes } from '../../env/routes';
+import { popDialog } from '../../state/actions/dialogStack';
+import { nanoid } from 'nanoid';
+import { pushConfirmDialog } from '../../utils/system';
 
 const translations = defineMessages({
 	configSaved: {
@@ -95,23 +95,25 @@ export function GlobalConfigManagement() {
 	useUnmount(() => {
 		if (hasChangesRef.current) {
 			sessionStorage.setItem(sessionStorageKey, aceEditorRef.current.getValue());
-			const eventId = 'unsavedConfigManagementChangesConfirmation';
+			const dialogId = nanoid();
 			dispatch(
-				showConfirmDialog({
-					body: <FormattedMessage defaultMessage="You left unsaved changes. Go back and continue editing?" />,
-					onCancel: batchActions([closeConfirmDialog(), dispatchDOMEvent({ id: eventId, button: 'cancel' })]),
-					onOk: batchActions([closeConfirmDialog(), dispatchDOMEvent({ id: eventId, button: 'ok' })]),
-					okButtonText: <FormattedMessage defaultMessage="Continue editing" />,
-					cancelButtonText: <FormattedMessage defaultMessage="Discard changes" />
+				pushConfirmDialog({
+					id: dialogId,
+					props: {
+						body: <FormattedMessage defaultMessage="You left unsaved changes. Go back and continue editing?" />,
+						onCancel: () => {
+							dispatch(popDialog({ id: dialogId }));
+							sessionStorage.removeItem(sessionStorageKey);
+						},
+						onOk: () => {
+							dispatch(popDialog({ id: dialogId }));
+							navigate(GlobalRoutes.GlobalConfig);
+						},
+						okButtonText: <FormattedMessage defaultMessage="Continue editing" />,
+						cancelButtonText: <FormattedMessage defaultMessage="Discard changes" />
+					}
 				})
 			);
-			createCustomDocumentEventListener<{ button: 'ok' | 'cancel' }>(eventId, ({ button }) => {
-				if (button === 'ok') {
-					navigate(GlobalRoutes.GlobalConfig);
-				} else {
-					sessionStorage.removeItem(sessionStorageKey);
-				}
-			});
 		}
 	});
 

@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { DetailedItem } from '../../models/Item';
+import { ContentItem } from '../../models/Item';
 import React, { useState } from 'react';
 import ListItemButton from '@mui/material/ListItemButton';
 import Checkbox from '@mui/material/Checkbox';
@@ -27,18 +27,18 @@ import { defineMessages, useIntl } from 'react-intl';
 import ItemDisplay from '../ItemDisplay';
 
 export interface NavItemProps {
-	item: DetailedItem;
+	item: ContentItem;
 	locale: string;
 	isActive?: boolean;
 	isCurrentPath?: boolean;
 	isLevelDescriptor?: boolean;
 	isSelectMode?: boolean;
 	showItemNavigateToButton?: boolean;
-	onItemClicked?(item: DetailedItem, event?: React.MouseEvent): void;
-	onChangeParent?(item: DetailedItem): void;
-	onPreview?(item: DetailedItem): void;
-	onItemChecked?(item: DetailedItem, unselect: boolean): void;
-	onOpenItemMenu?(element: Element, item: DetailedItem): void;
+	onItemClicked?(item: ContentItem, event?: React.MouseEvent): void;
+	onChangeParent?(item: ContentItem): void;
+	onPreview?(item: ContentItem): void;
+	onItemChecked?(item: ContentItem, unselect: boolean): void;
+	onOpenItemMenu?(element: Element, item: ContentItem): void;
 }
 
 const translations = defineMessages({

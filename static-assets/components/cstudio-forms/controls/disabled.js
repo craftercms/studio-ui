@@ -145,7 +145,7 @@ YAHOO.extend(CStudioForms.Controls.Disabled, CStudioForms.CStudioFormField, {
 	},
 
 	getSupportedProperties: function () {
-		return [{ label: Mgs.format(langBundle, 'readonly'), name: 'readonly', type: 'boolean' }];
+		return [{ label: CMgs.format(langBundle, 'readonly'), name: 'readonly', type: 'boolean' }];
 	},
 
 	getSupportedConstraints: function () {

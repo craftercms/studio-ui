@@ -21,7 +21,6 @@ import React, { useEffect, useMemo, useState } from 'react';
 import LookupTable from '../../models/LookupTable';
 import { disable, enable, fetchRolesBySite, trash, update } from '../../services/users';
 import { showSystemNotification } from '../../state/actions/system';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { EditUserDialogUI } from './EditUserDialogUI';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import { useSitesBranch } from '../../hooks/useSitesBranch';
@@ -29,6 +28,8 @@ import { EditUserDialogContainerProps } from './utils';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
 import { isInvalidEmail, validateFieldMinLength } from '../UserManagement/utils';
 import { pluckProps } from '../../utils/object';
+import { pushErrorDialog } from '../../utils/system';
+import { useEnhancedDialogContext } from '../EnhancedDialog';
 
 const translations = defineMessages({
 	userDeleted: {
@@ -50,14 +51,7 @@ const translations = defineMessages({
 });
 
 export function EditUserDialogContainer(props: EditUserDialogContainerProps) {
-	const {
-		open,
-		onClose,
-		onUserEdited,
-		passwordRequirementsMinComplexity,
-		isSubmitting,
-		onSubmittingAndOrPendingChange
-	} = props;
+	const { open, onClose, onUserEdited, passwordRequirementsMinComplexity, isSubmitting } = props;
 	const dispatch = useDispatch();
 	const { formatMessage } = useIntl();
 	const [user, setUser] = useSpreadState<User>({
@@ -77,7 +71,8 @@ export function EditUserDialogContainer(props: EditUserDialogContainerProps) {
 	const [rolesBySite, setRolesBySite] = useState<LookupTable<string[]>>({});
 	const [dirty, setDirty] = useState(false);
 	const [openResetPassword, setOpenResetPassword] = useState(false);
-	const fnRefs = useUpdateRefs({ onSubmittingAndOrPendingChange, onUserEdited });
+	const { updateSubmittingOrHasPendingChanges } = useEnhancedDialogContext();
+	const fnRefs = useUpdateRefs({ updateSubmittingOrHasPendingChanges, onUserEdited });
 
 	const editMode = !props.user?.externallyManaged;
 
@@ -107,7 +102,7 @@ export function EditUserDialogContainer(props: EditUserDialogContainerProps) {
 					);
 				},
 				error({ response: { response } }) {
-					dispatch(showErrorDialog({ error: response }));
+					dispatch(pushErrorDialog({ props: { error: response } }));
 				}
 			});
 		} else {
@@ -120,7 +115,7 @@ export function EditUserDialogContainer(props: EditUserDialogContainerProps) {
 					);
 				},
 				error({ response: { response } }) {
-					dispatch(showErrorDialog({ error: response }));
+					dispatch(pushErrorDialog({ props: { error: response } }));
 				}
 			});
 		}
@@ -130,7 +125,7 @@ export function EditUserDialogContainer(props: EditUserDialogContainerProps) {
 		if (!editMode) {
 			return;
 		}
-		onSubmittingAndOrPendingChange({
+		updateSubmittingOrHasPendingChanges({
 			isSubmitting: true
 		});
 		update(pluckProps(user, 'id', 'firstName', 'lastName', 'email', 'enabled')).subscribe({
@@ -143,13 +138,13 @@ export function EditUserDialogContainer(props: EditUserDialogContainerProps) {
 				setDirty(false);
 				setLastSavedUser(user);
 				fnRefs.current.onUserEdited();
-				fnRefs.current.onSubmittingAndOrPendingChange({
+				fnRefs.current.updateSubmittingOrHasPendingChanges({
 					isSubmitting: false
 				});
 			},
 			error({ response: { response } }) {
-				dispatch(showErrorDialog({ error: response }));
-				fnRefs.current.onSubmittingAndOrPendingChange({
+				dispatch(pushErrorDialog({ props: { error: response } }));
+				fnRefs.current.updateSubmittingOrHasPendingChanges({
 					isSubmitting: false
 				});
 			}
@@ -168,7 +163,7 @@ export function EditUserDialogContainer(props: EditUserDialogContainerProps) {
 				fnRefs.current.onUserEdited();
 			},
 			error({ response: { response } }) {
-				dispatch(showErrorDialog({ error: response }));
+				dispatch(pushErrorDialog({ props: { error: response } }));
 			}
 		});
 	};
@@ -211,10 +206,10 @@ export function EditUserDialogContainer(props: EditUserDialogContainerProps) {
 		);
 	}, [user, refs]);
 	useEffect(() => {
-		onSubmittingAndOrPendingChange({
+		updateSubmittingOrHasPendingChanges({
 			hasPendingChanges: dirty
 		});
-	}, [dirty, onSubmittingAndOrPendingChange]);
+	}, [dirty, updateSubmittingOrHasPendingChanges]);
 
 	return (
 		<EditUserDialogUI

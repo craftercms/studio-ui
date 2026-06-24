@@ -28,11 +28,11 @@ import LogConsoleGridUI from '../LogConsoleGrid';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import { ConditionalLoadingState } from '../LoadingState/LoadingState';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import LogConsoleDetailsDialog from '../LogConsoleDetailsDialog';
 import EmptyState from '../EmptyState/EmptyState';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useMount } from '../../hooks/useMount';
+import { pushErrorDialog } from '../../utils/system';
 
 interface LogConsoleManagementProps {
 	logType?: 'studio' | 'preview';
@@ -64,7 +64,7 @@ export function LogConsole(props: LogConsoleManagementProps) {
 				error(response) {
 					response = response.response ? response.response.response : response;
 					setError(response);
-					dispatch(showErrorDialog({ error: response }));
+					dispatch(pushErrorDialog({ props: { error: response } }));
 				}
 			});
 		},

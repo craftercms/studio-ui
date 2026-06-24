@@ -30,7 +30,7 @@ import { messages } from './translations';
 import Alert from '@mui/material/Alert';
 import translations from '../translations';
 import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import { DropDownMenu } from '../../DropDownMenuButton';
 
 export interface RepoStatusUIProps {

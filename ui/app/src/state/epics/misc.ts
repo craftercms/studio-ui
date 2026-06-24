@@ -26,20 +26,21 @@ import {
 	editController,
 	editTemplate
 } from '../actions/misc';
-import { changeContentType, createFile, fetchSandboxItem } from '../../services/content';
-import { showCodeEditorDialog, showEditDialog, showViewPackagesDialog } from '../actions/dialogs';
-import { reloadDetailedItem } from '../actions/content';
+import { createFile, fetchContentItem } from '../../services/content';
+import { reloadContentItem } from '../actions/content';
 import { blockUI, showEditItemSuccessNotification, unblockUI } from '../actions/system';
 import { CrafterCMSEpic } from '../store';
 import { translations } from '../../components/ItemActionsMenu/translations';
-import { showErrorDialog } from '../reducers/dialogs/error';
 import { getFileNameFromPath, getParentPath } from '../../utils/path';
 import { popPiece } from '../../utils/string';
 import { associateTemplate } from '../actions/preview';
-import { isInActiveWorkflow } from '../../utils/content';
+import { pushDialog } from '../actions/dialogStack';
+import { createComponentId, pickShowContentFormAction, pushErrorDialog } from '../../utils/system';
+import { nanoid } from 'nanoid';
+import { popCodeEditorDialog } from '../actions/dialogs';
 
 const epics = [
-	(action$, state$: Observable<GlobalState>) =>
+	(action$, state$: Observable<GlobalState>, { store }) =>
 		action$.pipe(
 			ofType(changeContentTypeAction.type),
 			withLatestFrom(state$),
@@ -47,22 +48,21 @@ const epics = [
 				const newContentTypeId = payload.newContentTypeId;
 				const path = payload.path;
 				if (payload.originalContentTypeId !== newContentTypeId) {
-					return changeContentType(state.sites.active, path, newContentTypeId).pipe(
-						map(() =>
-							showEditDialog({
-								site: state.sites.active,
-								path,
-								authoringBase: state.env.authoringBase,
-								changeTemplate: newContentTypeId,
-								onSaveSuccess: batchActions([showEditItemSuccessNotification(), reloadDetailedItem({ path })])
-							})
-						)
+					return of(
+						pickShowContentFormAction({
+							site: state.sites.active,
+							path,
+							authoringBase: state.env.authoringBase,
+							changeTemplate: newContentTypeId,
+							onSaveSuccess: ({ action }) =>
+								store.dispatch(batchActions([showEditItemSuccessNotification({ action }), reloadContentItem({ path })]))
+						})
 					);
 				}
 				return NEVER;
 			})
 		),
-	(action$, state$, { getIntl }) =>
+	(action$, state$, { getIntl, store }) =>
 		action$.pipe(
 			ofType(editTemplate.type, editController.type, editContentTypeTemplate.type),
 			filter(({ payload }) => payload.openOnSuccess || payload.openOnSuccess === void 0),
@@ -91,31 +91,31 @@ const epics = [
 				const destinationPath = editContentTypeTemplate.type === type ? getParentPath(path) : payload.path;
 				return merge(
 					of(blockUI({ message: getIntl().formatMessage(translations.verifyingAffectedWorkflows) })),
-					fetchSandboxItem(state.sites.active, path).pipe(
-						map((item) =>
-							item
-								? isInActiveWorkflow(item)
-									? batchActions([
-											showViewPackagesDialog({
-												item,
-												onContinue: showCodeEditorDialog({
-													path,
-													mode,
-													contentType
-												})
-											}),
-											unblockUI()
-										])
-									: batchActions([
-											showCodeEditorDialog({
-												site: state.sites.active,
-												path,
-												mode,
-												contentType
-											}),
-											unblockUI()
-										])
-								: createFileAction({
+					fetchContentItem(state.sites.active, path).pipe(
+						map((item) => {
+							const dialogId = nanoid();
+							return batchActions([
+								pushDialog({
+									id: dialogId,
+									component: createComponentId('CodeEditorDialog'),
+									allowFullScreen: true,
+									allowMinimize: true,
+									props: {
+										site: state.sites.active,
+										path,
+										mode,
+										contentType,
+										onClose: () => store.dispatch(popCodeEditorDialog({ id: dialogId }))
+									}
+								}),
+								unblockUI()
+							]);
+						}),
+						catchError(({ response }) => {
+							if (response.response.code === 7000) {
+								const dialogId = nanoid();
+								return of(
+									createFileAction({
 										path: destinationPath,
 										fileName,
 										onCreated: batchActions(
@@ -123,26 +123,25 @@ const epics = [
 												// Only editing templates should associate. Groovy controllers are not on the content type definition.
 												type !== editController.type &&
 													associateTemplate({ contentTypeId: contentType, displayTemplate: path }),
-												showCodeEditorDialog({
-													site: state.sites.active,
-													path,
-													mode,
-													contentType
+												pushDialog({
+													id: dialogId,
+													component: createComponentId('CodeEditorDialog'),
+													props: {
+														site: state.sites.active,
+														path,
+														mode,
+														contentType,
+														onClose: () => store.dispatch(popCodeEditorDialog({ id: dialogId }))
+													}
 												}),
 												unblockUI()
 											].filter(Boolean)
 										)
 									})
-						),
-						catchError(({ response }) => {
-							return of(
-								batchActions([
-									showErrorDialog({
-										error: response.response
-									}),
-									unblockUI()
-								])
-							);
+								);
+							} else {
+								return of(batchActions([pushErrorDialog({ props: { error: response.response } }), unblockUI()]));
+							}
 						})
 					)
 				);

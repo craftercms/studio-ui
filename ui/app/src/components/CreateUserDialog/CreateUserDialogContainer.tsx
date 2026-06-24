@@ -18,14 +18,13 @@ import React, { useEffect, useRef, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
 import { create } from '../../services/users';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import DialogBody from '../DialogBody/DialogBody';
 import TextField from '@mui/material/TextField';
 import PasswordTextField from '../PasswordTextField/PasswordTextField';
 import DialogFooter from '../DialogFooter/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import UserGroupMembershipEditor from '../UserGroupMembershipEditor';
 import { map, switchMap } from 'rxjs/operators';
 import { forkJoin, of } from 'rxjs';
@@ -49,6 +48,8 @@ import useUpdateRefs from '../../hooks/useUpdateRefs';
 import { showSystemNotification } from '../../state/actions/system';
 import { PasswordStrengthDisplayPopper } from '../PasswordStrengthDisplayPopper';
 import Box from '@mui/material/Box';
+import { pushErrorDialog } from '../../utils/system';
+import { useEnhancedDialogContext } from '../EnhancedDialog';
 
 const translations = defineMessages({
 	invalidMinLength: {
@@ -62,8 +63,7 @@ const translations = defineMessages({
 });
 
 export function CreateUserDialogContainer(props: CreateUserDialogContainerProps) {
-	const { onClose, passwordRequirementsMinComplexity, onCreateSuccess, isSubmitting, onSubmittingAndOrPendingChange } =
-		props;
+	const { onClose, passwordRequirementsMinComplexity, onCreateSuccess, isSubmitting } = props;
 	const [newUser, setNewUser] = useSpreadState({
 		firstName: '',
 		lastName: '',
@@ -80,14 +80,16 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
 	const { formatMessage } = useIntl();
 	const dispatch = useDispatch();
 	const selectedGroupsRef = useRef([]);
+	const { updateSubmittingOrHasPendingChanges } = useEnhancedDialogContext();
 	const functionRefs = useUpdateRefs({
-		onSubmittingAndOrPendingChange
+		updateSubmittingOrHasPendingChanges
 	});
 
 	const onSubmit = (e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
 		e.preventDefault();
 		if (submitOk) {
-			functionRefs.current.onSubmittingAndOrPendingChange({
+			// TODO: check API
+			functionRefs.current.updateSubmittingOrHasPendingChanges({
 				isSubmitting: true
 			});
 			setSubmitted(true);
@@ -115,15 +117,15 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
 								})
 							);
 							onCreateSuccess?.();
-							functionRefs.current.onSubmittingAndOrPendingChange({
+							functionRefs.current.updateSubmittingOrHasPendingChanges({
 								isSubmitting: false
 							});
 						},
 						error({ response: { response } }) {
-							functionRefs.current.onSubmittingAndOrPendingChange({
+							functionRefs.current.updateSubmittingOrHasPendingChanges({
 								isSubmitting: false
 							});
-							dispatch(showErrorDialog({ error: response }));
+							dispatch(pushErrorDialog({ props: { error: response } }));
 						}
 					});
 			} else {
@@ -174,12 +176,12 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
 					newUser.password === passwordConfirm
 			)
 		);
-		onSubmittingAndOrPendingChange({
+		updateSubmittingOrHasPendingChanges({
 			hasPendingChanges: Boolean(
 				newUser.firstName || newUser.email || newUser.password || validPassword || passwordConfirm
 			)
 		});
-	}, [newUser, passwordConfirm, onSubmittingAndOrPendingChange, validPassword, refs]);
+	}, [newUser, passwordConfirm, updateSubmittingOrHasPendingChanges, validPassword, refs]);
 
 	return (
 		<Box component="form" sx={{ display: 'contents' }}>

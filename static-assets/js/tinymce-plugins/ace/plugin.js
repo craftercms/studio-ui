@@ -16,7 +16,31 @@
 
 (function () {
 	const PLUGIN_NAME = 'acecode';
-	const BUTTON_TOOL_TIP = 'Toggle code view mode';
+
+	tinymce.addI18n('en', {
+		'code-editor': 'Code Editor',
+		'toggle-code-view': 'Toggle code view mode',
+		fullscreen: 'Fullscreen',
+		'exit-fullscreen': 'Exit fullscreen'
+	});
+	tinymce.addI18n('es', {
+		'code-editor': 'Editor de Código',
+		'toggle-code-view': 'Alternar el modo de vista de código',
+		fullscreen: 'Pantalla completa',
+		'exit-fullscreen': 'Salir de pantalla completa'
+	});
+	tinymce.addI18n('de', {
+		'code-editor': 'Code-Editor',
+		'toggle-code-view': 'Codeansichtsmodus umschalten',
+		fullscreen: 'Vollbild',
+		'exit-fullscreen': 'Vollbildmodus beenden'
+	});
+	tinymce.addI18n('ko_KR', {
+		'code-editor': '코드 편집기',
+		'toggle-code-view': '코드 보기 모드 전환',
+		fullscreen: '전체 화면',
+		'exit-fullscreen': '전체 화면 종료'
+	});
 
 	tinymce.PluginManager.add(PLUGIN_NAME, function (editor, url) {
 		const aceModes = {
@@ -52,14 +76,14 @@
 		let isActive = true;
 		editor.ui.registry.addButton(PLUGIN_NAME, {
 			icon: 'sourcecode',
-			tooltip: BUTTON_TOOL_TIP,
+			tooltip: editor.translate('toggle-code-view'),
 			onAction: function () {
 				onAction(this, editor);
 			}
 		});
 		editor.ui.registry.addMenuItem(PLUGIN_NAME, {
 			icon: 'sourcecode',
-			text: 'Code Editor',
+			text: editor.translate('code-editor'),
 			onAction: function () {
 				onAction(this, editor);
 			}
@@ -94,12 +118,12 @@
 					aceContainer.innerHTML =
 						`<div class="inline-container-header">` +
 						`<button id="${aceID}-toggleCode" class="acecode-inline-btn toggle" ` +
-						`  title="${BUTTON_TOOL_TIP}" type="button" tabIndex="-1" ` +
+						`  title="${editor.translate('toggle-code-view')}" type="button" tabIndex="-1" ` +
 						'>' +
 						icons.sourceCode +
 						'</button>' +
 						`<button id="${aceID}-fullscreenMode" class="acecode-inline-btn fullscreen"` +
-						'  title="Fullscreen" type="button" tabIndex="-1"' +
+						`  title="${editor.translate('fullscreen')}" type="button" tabIndex="-1"` +
 						'>' +
 						icons.resize +
 						'</button></div>' +
@@ -131,6 +155,7 @@
 						let value = aceEditor.getValue();
 						editorTextareaEl.value = value;
 						editor.setContent(value);
+						editor.dispatch('external_change');
 					});
 
 					editor.container.classList.add('hidden');
@@ -153,7 +178,7 @@
 
 		const showDialog = function (editor, fullscreenMode) {
 			editor.windowManager.open({
-				title: 'Code Editor',
+				title: editor.translate('code-editor'),
 				size: 'large',
 				body: {
 					type: 'panel',
@@ -175,10 +200,10 @@
 			// Inline mode is the one used in forms (when on ICE inlineMode is set to false to always use modal)
 			if (inlineMode) {
 				if (fullscreenMode) {
-					dialogCloseIcon.setAttribute('title', 'Toggle code view mode');
+					dialogCloseIcon.setAttribute('title', editor.translate('toggle-code-view'));
 					dialogCloseIcon.querySelector('.tox-icon').innerHTML = icons.sourceCode;
 				} else {
-					dialogCloseIcon.setAttribute('title', 'Exit fullscreen');
+					dialogCloseIcon.setAttribute('title', editor.translate('exit-fullscreen'));
 					dialogCloseIcon.querySelector('.tox-icon').innerHTML = icons.resize;
 				}
 			}
@@ -200,8 +225,6 @@
 				if (inlineMode) {
 					aceModes.inline.getSession().setValue(aceEditor.getValue());
 				}
-
-				editor.dispatch('external_change');
 			});
 		};
 	});

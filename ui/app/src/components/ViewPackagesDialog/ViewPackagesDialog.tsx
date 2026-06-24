@@ -20,14 +20,15 @@ import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import StandardAction from '../../models/StandardAction';
 import { FormattedMessage } from 'react-intl';
 import ViewPackagesDialogContainer from './ViewPackagesDialogContainer';
-import { DetailedItem, SandboxItem } from '../../models';
+import { ContentItem } from '../../models';
 
 export interface ViewPackagesDialogBaseProps {
-	item: SandboxItem | DetailedItem;
+	item: ContentItem;
+	cancelPackagesInitialComment?: string;
 }
 
 export interface ViewPackagesDialogProps extends ViewPackagesDialogBaseProps, EnhancedDialogProps {
-	onContinue?(): void;
+	onContinue?(cancelPackagesMessage: string): void;
 }
 
 export interface ViewPackagesDialogStateProps extends ViewPackagesDialogBaseProps, EnhancedDialogState {
@@ -37,7 +38,7 @@ export interface ViewPackagesDialogStateProps extends ViewPackagesDialogBaseProp
 }
 
 export function ViewPackagesDialog(props: ViewPackagesDialogProps) {
-	const { item, onContinue, ...enhancedDialogProps } = props;
+	const { item, cancelPackagesInitialComment, onContinue, ...enhancedDialogProps } = props;
 	return (
 		<EnhancedDialog
 			fullWidth
@@ -48,7 +49,11 @@ export function ViewPackagesDialog(props: ViewPackagesDialogProps) {
 			}
 			{...enhancedDialogProps}
 		>
-			<ViewPackagesDialogContainer item={item} onContinue={onContinue} />
+			<ViewPackagesDialogContainer
+				item={item}
+				cancelPackagesInitialComment={cancelPackagesInitialComment}
+				onContinue={onContinue}
+			/>
 		</EnhancedDialog>
 	);
 }

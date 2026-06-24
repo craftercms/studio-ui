@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { DetailedItem } from '../../models/Item';
+import { ContentItem, LightItem } from '../../models/Item';
 import { ApiResponse } from '../../models/ApiResponse';
 import StandardAction from '../../models/StandardAction';
 import { GoLiveResponse } from '../../services/publishing';
@@ -30,11 +30,11 @@ export interface ExtendedGoLiveResponse extends GoLiveResponse {
 	schedule: 'now' | 'custom';
 	publishingTarget: string;
 	type: 'submit' | 'publish';
-	items: DetailedItem[];
+	items: LightItem[];
 }
 
 export interface PublishDialogBaseProps {
-	items?: DetailedItem[];
+	items?: ContentItem[];
 	// if null it means the dialog should determinate which one to use
 	scheduling?: 'now' | 'custom';
 }
@@ -65,16 +65,14 @@ export interface InternalDialogState {
 }
 
 interface usePublishStateProps {
-	mainItems: DetailedItem[];
+	mainItems: LightItem[];
+	childrenItems?: LightItem[];
 }
 
 interface usePublishStateReturn {
 	itemsDataSummary: {
-		itemMap: Record<string, DetailedItem>;
+		itemMap: Record<string, LightItem>;
 		itemPaths: string[];
-		allItemsInSubmittedState: boolean;
-		allItemsHavePublishPermission: boolean;
-		incompleteDetailedItemPaths: string[];
 	};
 	dependencyData: DependencyDataState;
 	setDependencyData: (data: DependencyDataState) => void;
@@ -85,39 +83,30 @@ interface usePublishStateReturn {
 	trees: PathTreeNode[];
 	parentTreeNodePaths: string[];
 	itemsAndDependenciesPaths: string[];
-	dependencyItemMap: Record<string, DetailedItem>;
-	itemsAndDependenciesMap: Record<string, DetailedItem>;
+	dependencyItemMap: Record<string, LightItem>;
+	itemsAndDependenciesMap: Record<string, LightItem>;
 }
 
-export const usePublishState = ({ mainItems }: usePublishStateProps): usePublishStateReturn => {
+export const usePublishState = ({ mainItems, childrenItems }: usePublishStateProps): usePublishStateReturn => {
 	const [dependencyData, setDependencyData] = useState<DependencyDataState>(null);
 	const [selectedDependenciesMap, setSelectedDependenciesMap] = useState<LookupTable<boolean>>({});
 	const selectedDependenciesPaths = Object.keys(selectedDependenciesMap).filter(
 		(path) => selectedDependenciesMap[path]
 	);
 	const itemsDataSummary = useMemo(() => {
-		let allItemsInSubmittedState = true;
-		let allItemsHavePublishPermission = true;
 		const itemPaths = [];
-		const itemMap: Record<string, DetailedItem> = {};
-		const incompleteDetailedItemPaths = [];
-		mainItems.forEach((item) => {
-			itemMap[item.path] = item;
-			itemPaths.push(item.path);
-			allItemsHavePublishPermission = allItemsHavePublishPermission && item.availableActionsMap.publish;
-			allItemsInSubmittedState = allItemsInSubmittedState && item.stateMap.submitted;
-			if (item.live == null || item.staging == null) {
-				incompleteDetailedItemPaths.push(item.path);
+		const itemMap: Record<string, LightItem> = {};
+		[...mainItems, ...(childrenItems ?? [])].forEach((item) => {
+			if (!itemMap[item.path]) {
+				itemMap[item.path] = item;
+				itemPaths.push(item.path);
 			}
 		});
 		return {
 			itemMap,
-			itemPaths,
-			allItemsInSubmittedState,
-			allItemsHavePublishPermission,
-			incompleteDetailedItemPaths
+			itemPaths
 		};
-	}, [mainItems]);
+	}, [mainItems, childrenItems]);
 	const dependencyPaths = dependencyData?.paths;
 	const [trees, parentTreeNodePaths, itemsAndDependenciesPaths] = useMemo(() => {
 		const treeItemPaths = itemsDataSummary.itemPaths.concat(dependencyPaths ?? []);
@@ -144,4 +133,20 @@ export const usePublishState = ({ mainItems }: usePublishStateProps): usePublish
 		dependencyItemMap,
 		itemsAndDependenciesMap
 	};
+};
+
+export const itemsArrayChanged = (prevItems: LightItem[], nextItems: LightItem[]): boolean => {
+	if (prevItems.length !== nextItems.length) {
+		return true;
+	}
+
+	const prevPaths = prevItems.map((item) => item.path).sort();
+	const nextPaths = nextItems.map((item) => item.path).sort();
+
+	for (let i = 0; i < prevPaths.length; i++) {
+		if (prevPaths[i] !== nextPaths[i]) {
+			return true;
+		}
+	}
+	return false;
 };

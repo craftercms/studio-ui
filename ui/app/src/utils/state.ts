@@ -452,3 +452,125 @@ export function getPublishingPackagePreferredView(username: string): 'tree' | 'l
 export function removePublishingPackagePreferredView(username: string) {
 	window.localStorage.removeItem(`craftercms.${username}.publishingPackagePreferredView`);
 }
+
+export function getFormsEngineCollapseToCKey(username: string): string {
+	return `craftercms.${username}.formsEngine.collapsedToC`;
+}
+
+export function getFormsEngineCloseAfterSave(username: string): string {
+	return `craftercms.${username}.formsEngine.closeAfterSave`;
+}
+
+export function getFormsEngineMinimizeAfterSave(username: string): string {
+	return `craftercms.${username}.formsEngine.minimizeAfterSave`;
+}
+
+export function getCompareVersionDialogViewModes(username: string): { entireDiff: boolean; accordionView: boolean } {
+	return JSON.parse(localStorage.getItem(`craftercms.${username}.compareVersionDialog.viewModes`));
+}
+
+export function setCompareVersionDialogViewModes(
+	username: string,
+	viewModes: { entireDiff: boolean; accordionView: boolean }
+) {
+	localStorage.setItem(`craftercms.${username}.compareVersionDialog.viewModes`, JSON.stringify(viewModes));
+}
+
+export function removeCompareVersionDialogViewModes(username: string) {
+	localStorage.removeItem(`craftercms.${username}.compareVersionDialog.viewModes`);
+}
+
+export function getViewVersionDialogViewModes(username: string) {
+	return localStorage.getItem(`craftercms.${username}.viewVersionDialog.viewModes`) === 'true';
+}
+
+export function setViewVersionDialogViewModes(username: string, singleFieldView: boolean) {
+	localStorage.setItem(`craftercms.${username}.viewVersionDialog.viewModes`, String(singleFieldView));
+}
+
+export function removeViewVersionDialogViewModes(username: string) {
+	localStorage.removeItem(`craftercms.${username}.viewVersionDialog.viewModes`);
+}
+
+export function setTypeViewCompactMode(user: string, value: boolean) {
+	window.localStorage.setItem(`craftercms.${user}.typeViewCompactMode`, JSON.stringify(value));
+}
+
+export function getTypeViewCompactMode(user: string): boolean {
+	const value = window.localStorage.getItem(`craftercms.${user}.typeViewCompactMode`);
+	return value ? value === 'true' : null;
+}
+
+export function removeTypeViewCompactMode(user: string) {
+	window.localStorage.removeItem(`craftercms.${user}.typeViewCompactMode`);
+}
+
+export function setViewGroupedTypes(user: string, value: boolean) {
+	window.localStorage.setItem(`craftercms.${user}.viewGroupedTypes`, JSON.stringify(value));
+}
+
+export function getViewGroupedTypes(user: string): boolean {
+	const value = window.localStorage.getItem(`craftercms.${user}.viewGroupedTypes`);
+	return value ? value === 'true' : null;
+}
+
+export function removeViewGroupedTypes(user: string) {
+	window.localStorage.removeItem(`craftercms.${user}.viewGroupedTypes`);
+}
+
+const SNACKBAR_DURATION_CHANGED = 'craftercms:snackbarDurationChanged';
+export function subscribeSnackbarDuration(onStoreChange: () => void) {
+	window.addEventListener(SNACKBAR_DURATION_CHANGED, onStoreChange);
+	const storageListener = (e: StorageEvent) => {
+		if (e.key?.includes('.snackbarDuration')) {
+			onStoreChange();
+		}
+	};
+	window.addEventListener('storage', storageListener);
+	return () => {
+		window.removeEventListener(SNACKBAR_DURATION_CHANGED, onStoreChange);
+		window.removeEventListener('storage', storageListener);
+	};
+}
+export function setStoredSnackbarDuration(user: string, value: number) {
+	window.localStorage.setItem(`craftercms.${user}.snackbarDuration`, value.toString());
+	window.dispatchEvent(new CustomEvent(SNACKBAR_DURATION_CHANGED, { detail: { user, value } }));
+}
+
+export function getStoredSnackbarDuration(user: string): number | null {
+	const value = window.localStorage.getItem(`craftercms.${user}.snackbarDuration`);
+	return value ? parseInt(value, 10) : null;
+}
+
+export function removeStoredSnackbarDuration(user: string) {
+	window.localStorage.removeItem(`craftercms.${user}.snackbarDuration`);
+}
+
+const ENABLE_ANIMATIONS_CHANGED = 'craftercms:enableAnimationsChanged';
+export function subscribeEnableAnimations(onStoreChange: () => void) {
+	window.addEventListener(ENABLE_ANIMATIONS_CHANGED, onStoreChange);
+	const storageListener = (e: StorageEvent) => {
+		// Filter by key to avoid listening to other localStorage changes
+		if (e.key?.includes('.enableAnimations')) {
+			onStoreChange();
+		}
+	};
+	window.addEventListener('storage', storageListener);
+	return () => {
+		window.removeEventListener(ENABLE_ANIMATIONS_CHANGED, onStoreChange);
+		window.removeEventListener('storage', storageListener);
+	};
+}
+export function setStoredEnableAnimations(user: string, value: boolean) {
+	window.localStorage.setItem(`craftercms.${user}.enableAnimations`, JSON.stringify(value));
+	window.dispatchEvent(new CustomEvent(ENABLE_ANIMATIONS_CHANGED, { detail: { user, value } }));
+}
+
+export function getStoredEnableAnimations(user: string): boolean | null {
+	const value = window.localStorage.getItem(`craftercms.${user}.enableAnimations`);
+	return value ? value === 'true' : null;
+}
+
+export function removeStoredEnableAnimations(user: string) {
+	window.localStorage.removeItem(`craftercms.${user}.enableAnimations`);
+}

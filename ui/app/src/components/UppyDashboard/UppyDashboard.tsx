@@ -25,11 +25,12 @@ import { useDispatch } from 'react-redux';
 import { alpha } from '@mui/material';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
-import { UppyFile } from '@uppy/utils';
+import type { UppyFile, Meta, Body } from '@uppy/utils/lib/UppyFile';
 import { ensureSingleSlash } from '../../utils/string';
 import { UppyDashboardProps } from './UppyDashboardProps';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Box from '@mui/material/Box';
+import type { DashboardOptions } from 'uppy';
 
 const translations = defineMessages({
 	cancelPending: {
@@ -104,6 +105,15 @@ const translations = defineMessages({
 	},
 	proceedSingle: {
 		defaultMessage: 'Start Upload'
+	},
+	browseFiles: {
+		defaultMessage: 'browse files'
+	},
+	browseFolders: {
+		defaultMessage: 'browse folders'
+	},
+	dropPasteBoth: {
+		defaultMessage: 'Drop files here, {browseFiles} or {browseFolders}'
 	}
 });
 
@@ -150,6 +160,8 @@ export function UppyDashboard(props: UppyDashboardProps) {
 			...options,
 			inline: true,
 			target: ref.current,
+			singleFileFullScreen: false,
+			proudlyDisplayPoweredByUppy: false,
 			validateActionPolicy,
 			onPendingChanges: function () {
 				functionsRef.current.onPendingChanges.apply(null, arguments);
@@ -166,7 +178,6 @@ export function UppyDashboard(props: UppyDashboardProps) {
 			path: ensureSingleSlash(`${path}/`),
 			locale: {
 				strings: {
-					// @ts-ignore - TODO: find substitution(s)
 					cancelPending: formatMessage(translations.cancelPending),
 					clearCompleted: formatMessage(translations.clearCompleted),
 					clear: formatMessage(translations.clear),
@@ -182,13 +193,29 @@ export function UppyDashboard(props: UppyDashboardProps) {
 					minimize: formatMessage(translations.minimize),
 					close: formatMessage(translations.close),
 					proceed: formatMessage(translations.proceed),
-					proceedSingle: formatMessage(translations.proceedSingle)
-				}
+					proceedSingle: formatMessage(translations.proceedSingle),
+					browseFiles: formatMessage(translations.browseFiles),
+					browseFolders: formatMessage(translations.browseFolders),
+					dropPasteBoth: formatMessage(translations.dropPasteBoth, {
+						// These values are for uppy's mechanism to replace the placeholders with links
+						browseFiles: '%{browseFiles}',
+						browseFolders: '%{browseFolders}'
+					})
+				},
+				pluralize: (n: number) => (n === 1 ? 0 : 1)
 			},
 			maxActiveUploads,
 			externalMessages: {
 				maxFiles: formatMessage(translations.maxFiles, { maxFiles: maxActiveUploads }),
-				projectPoliciesChangeRequired: (fileName, detail) => detail,
+				projectPoliciesChangeRequired: (fileName, suggestedFileName) => {
+					return formatMessage(
+						{
+							defaultMessage:
+								'Path `{fileName}` was transformed to `{suggestedFileName}` per the project file name policy'
+						},
+						{ fileName, suggestedFileName }
+					);
+				},
 				projectPoliciesNoComply: (fileName, detail) => {
 					return formatMessage(translations.projectPoliciesNoComply, { fileName, detail });
 				}
@@ -200,9 +227,9 @@ export function UppyDashboard(props: UppyDashboardProps) {
 					})
 				);
 			}
-		});
+		} as DashboardOptions<Meta, Body>);
 
-		const onUploadSuccess = (file: UppyFile<Record<string, unknown>>) => {
+		const onUploadSuccess = (file: UppyFile<Meta, Body>) => {
 			onItemsUploaded$.next(file.id);
 			targetsRef.current.push(file.id);
 		};

@@ -1,18 +1,15 @@
 import StandardAction from '../../models/StandardAction';
-import { DetailedItem } from '../../models/Item';
+import { ContentItem, LightItem } from '../../models/Item';
 import React from 'react';
 import LookupTable from '../../models/LookupTable';
-import { InputProps } from '@mui/material/Input';
 import { SelectionListProps } from '../DependencySelection/SelectionList';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import ApiResponse from '../../models/ApiResponse';
 
 export interface DeleteDialogBaseProps {
-	items: DetailedItem[];
+	items: ContentItem[];
 	isFetching: boolean;
-	childItems: string[];
-	dependentItems: string[];
 	error: ApiResponse;
 }
 
@@ -31,15 +28,16 @@ export interface DeleteDialogContainerProps
 		Pick<DeleteDialogProps, 'isSubmitting' | 'onClose' | 'onSuccess'> {}
 
 export interface DeleteDialogContentUIProps {
-	items: DetailedItem[];
-	childItems: string[];
-	dependentItems: string[];
+	items: ContentItem[];
+	childItems: LightItem[];
+	dependentItems: LightItem[];
+	title: string;
 	comment: string;
 	selectedItems: LookupTable<boolean>;
 	isCommentRequired: boolean;
 	isDisabled: boolean;
 	isConfirmDeleteChecked: boolean;
-	onCommentChange: InputProps['onChange'];
+	onInputChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, fieldId: string): void;
 	onItemClicked: SelectionListProps['onItemClicked'];
 	onSelectAllClicked: SelectionListProps['onSelectAllClicked'];
 	onConfirmDeleteChange(event: React.ChangeEvent, checked: boolean): void;

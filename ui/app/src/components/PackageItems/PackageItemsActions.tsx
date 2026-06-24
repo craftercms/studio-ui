@@ -17,7 +17,7 @@
 import React from 'react';
 import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import Button from '@mui/material/Button';
 import ListRoundedIcon from '@mui/icons-material/ListRounded';
 import TreeOutlined from '../../icons/TreeOutlined';
@@ -26,6 +26,9 @@ import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import UnfoldMoreRoundedIcon from '@mui/icons-material/UnfoldMoreRounded';
 import UnfoldLessRoundedIcon from '@mui/icons-material/UnfoldLessRounded';
+import { nnou } from '../../utils/object';
+import CheckBoxOutlineBlankRoundedIcon from '@mui/icons-material/CheckBoxOutlineBlankRounded';
+import CheckBoxRoundedIcon from '@mui/icons-material/CheckBoxRounded';
 
 export interface PackageItemsActionsProps {
 	isTreeView: boolean;
@@ -33,10 +36,21 @@ export interface PackageItemsActionsProps {
 	setExpandedPaths(value: string[] | undefined): void;
 	disableTreeView: boolean;
 	maxTreeItems: number;
+	includeChildren?: boolean;
+	setIncludeChildren?(value: boolean): void;
 }
 
 export function PackageItemsActions(props: PackageItemsActionsProps) {
-	const { isTreeView, onSetIsTreeView, disableTreeView, maxTreeItems, setExpandedPaths } = props;
+	const {
+		isTreeView,
+		onSetIsTreeView,
+		disableTreeView,
+		maxTreeItems,
+		setExpandedPaths,
+		includeChildren,
+		setIncludeChildren
+	} = props;
+	const { formatMessage } = useIntl();
 	return (
 		<Box display="flex" justifyContent="space-between" alignItems="center" mr={1} ml={1}>
 			<Box display="flex" py={0.5}>
@@ -73,15 +87,37 @@ export function PackageItemsActions(props: PackageItemsActionsProps) {
 				{!disableTreeView && isTreeView && (
 					<>
 						<Divider flexItem orientation="vertical" sx={{ mx: 0.5 }} />
-						<IconButton size="small" color="primary" onClick={() => setExpandedPaths(undefined)}>
+						<IconButton
+							size="small"
+							color="primary"
+							onClick={() => setExpandedPaths(undefined)}
+							aria-label={formatMessage({ defaultMessage: 'Collapse All' })}
+						>
 							<UnfoldMoreRoundedIcon fontSize="small" />
 						</IconButton>
-						<IconButton size="small" color="primary" onClick={() => setExpandedPaths([])}>
+						<IconButton
+							size="small"
+							color="primary"
+							onClick={() => setExpandedPaths([])}
+							aria-label={formatMessage({ defaultMessage: 'Expand All' })}
+						>
 							<UnfoldLessRoundedIcon fontSize="small" />
 						</IconButton>
 					</>
 				)}
 			</Box>
+			{nnou(includeChildren) && (
+				<Box>
+					<Button
+						size="small"
+						startIcon={includeChildren ? <CheckBoxRoundedIcon /> : <CheckBoxOutlineBlankRoundedIcon />}
+						sx={{ [`.${buttonClasses.startIcon}`]: { mr: 0.5 } }}
+						onClick={() => setIncludeChildren(!includeChildren)}
+					>
+						<FormattedMessage defaultMessage="Include children" />
+					</Button>
+				</Box>
+			)}
 		</Box>
 	);
 }

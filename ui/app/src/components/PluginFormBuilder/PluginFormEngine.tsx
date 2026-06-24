@@ -17,7 +17,7 @@
 import React from 'react';
 import { MarketplacePluginParameter } from '../../models/MarketplacePlugin';
 import TextField from '@mui/material/TextField';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import { defineMessages, useIntl } from 'react-intl';
 import PasswordTextField from '../PasswordTextField/PasswordTextField';
 

@@ -28,6 +28,7 @@ import {
 	historyDialogUpdate,
 	showCompareVersionsDialog,
 	showConfirmDialog,
+	showErrorDialog,
 	showPreviewDialog,
 	showViewVersionDialog
 } from '../../state/actions/dialogs';
@@ -35,7 +36,7 @@ import translations from './translations';
 import { batchActions } from '../../state/actions/misc';
 import { fetchContentTypes } from '../../state/actions/preview';
 import { fetchContentByCommitId } from '../../services/content';
-import { getEditorMode, isImage, isPdfDocument, isPreviewable, isVideo } from '../PathNavigator/utils';
+import { getEditorMode, isImage, isPreviewable } from '../PathNavigator/utils';
 import {
 	compareBothVersions,
 	compareToPreviousVersion,
@@ -53,23 +54,23 @@ import VersionList from '../VersionList';
 import DialogFooter from '../DialogFooter/DialogFooter';
 import { HistoryDialogPagination } from './HistoryDialogPagination';
 import useSelection from '../../hooks/useSelection';
-import useFetchSandboxItems from '../../hooks/useFetchSandboxItems';
+import useFetchContentItems from '../../hooks/useFetchContentItems';
 import { UNDEFINED } from '../../utils/constants';
 import { ErrorBoundary } from '../ErrorBoundary';
 import { LoadingState } from '../LoadingState';
 import Box from '@mui/material/Box';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { contentEvent } from '../../state/actions/system';
 import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
 import { getRootPath } from '../../utils/path';
+import { isComparableAsset, isPdfDocument, isVideo } from '../../utils/content';
 
 export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
 	const { versionsBranch, error } = props;
 	const { count, page, limit, current, rootPath, isConfig } = versionsBranch;
-	useFetchSandboxItems([versionsBranch.item.path]);
+	useFetchContentItems([versionsBranch.item.path]);
 	// TODO: It'd be best for the dialog to directly receive a live item. Must change versions branch to only hold the path.
 	const item = useSelection((state) => state.content.itemsByPath[versionsBranch.item.path]);
 	const path = item?.path ?? '';
@@ -80,15 +81,14 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
 	const timeoutRef = useRef(null);
 	const isItemPreviewable = isPreviewable(item);
 	// Item may be null for config items in config management.
-	const isDiffSupported = ['page', 'component', 'taxonomy'].includes(item?.systemType);
-	const [compareMode, setCompareMode] = useState(false);
-	const [selectedCompareVersions, setSelectedCompareVersions] = useState([]);
-
+	const isDiffSupported = ['page', 'component', 'taxonomy'].includes(item?.systemType) || isComparableAsset(item);
+	const [compareMode, setCompareMode] = useState<boolean>(false);
+	const [selectedCompareVersions, setSelectedCompareVersions] = useState<string[]>([]);
 	const [menu, setMenu] = useSpreadState<Menu>(menuInitialState);
 
 	const handleOpenMenu = useCallback(
 		(anchorEl, version, isCurrent = false, initialCommit) => {
-			const hasOptions = ['page', 'component', 'taxonomy'].includes(item.systemType);
+			const hasOptions = ['page', 'component', 'taxonomy', 'asset'].includes(item.systemType);
 			const contextMenuOptions: { [prop in keyof typeof menuOptions]: ContextMenuOption } = {};
 			Object.entries(menuOptions).forEach(([key, value]) => {
 				contextMenuOptions[key] = {
@@ -154,7 +154,8 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
 	const handleViewItem = (version: ItemHistoryEntry) => {
 		const versionPath = Boolean(version.path) && path !== version.path ? version.path : path;
 
-		if (isDiffSupported) {
+		// If diff is supported, but the item is an asset, we don't show the ViewVersionDialog, instead we show the Preview dialog.
+		if (isDiffSupported && item?.systemType !== 'asset') {
 			dispatch(
 				batchActions([
 					fetchContentTypes(),
@@ -167,14 +168,13 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
 				const image = isImage(item);
 				const video = isVideo(item);
 				const pdf = isPdfDocument(item.mimeType);
+				const isBinary = image || video || pdf;
 				dispatch(
 					showPreviewDialog({
 						type: image ? 'image' : video ? 'video' : pdf ? 'pdf' : 'editor',
 						title: item.label,
-						[image || video || pdf ? 'url' : 'content']: content,
-						mode: image || video || pdf ? UNDEFINED : getEditorMode(item),
+						...(isBinary ? { url: content } : { content, mode: getEditorMode(item) }),
 						path: item.path,
-						url: item.path,
 						showEdit: current === version.versionNumber,
 						subtitle: `v.${version.versionNumber}`,
 						...(video ? { mimeType: item.mimeType } : {})
@@ -363,6 +363,7 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
 							control={<Switch color="primary" checked={compareMode} />}
 							label={<FormattedMessage defaultMessage="Compare" />}
 							labelPlacement="start"
+							disabled={versionsBranch.versions?.length <= 1}
 							onChange={(e) => {
 								setCompareMode((e.currentTarget as HTMLInputElement).checked);
 							}}

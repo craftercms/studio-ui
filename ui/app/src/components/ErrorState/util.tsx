@@ -19,7 +19,7 @@ import { ErrorState, ErrorStateProps } from './ErrorState';
 import { isAjaxError, isApiResponse } from '../../utils/object';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 
-export function renderErrorState(error: any, errorStateProps?: ErrorStateProps): JSX.Element {
+export function renderErrorState(error: any, errorStateProps?: ErrorStateProps): React.JSX.Element {
 	const errorObj = error.response ?? error;
 	return isApiResponse(errorObj) ? (
 		<ApiResponseErrorState error={errorObj} {...errorStateProps} />

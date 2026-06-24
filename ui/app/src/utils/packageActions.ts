@@ -20,20 +20,16 @@ import { ContextMenuOptionDescriptor } from './itemActions';
 import { ContextMenuOption } from '../components';
 import { createPresenceTable } from './array';
 import { Action, Dispatch } from 'redux';
-import {
-	closeBulkCancelPackageDialog,
-	closeCancelPackageDialog,
-	closePublishingPackageResubmitDialog,
-	closePublishingPackageReviewDialog,
-	showBulkCancelPackageDialog,
-	showCancelPackageDialog,
-	showPublishingPackageResubmitDialog,
-	showPublishingPackageReviewDialog
-} from '../state/actions/dialogs';
 import { batchActions } from '../state/actions/misc';
 import { hasApproveAction, hasCancelAction, hasRejectAction, hasResubmitAction } from './content';
+import { popDialog, pushDialog } from '../state/actions/dialogStack';
+import { nanoid } from 'nanoid';
+import { createComponentId } from './system';
 
 const translations = defineMessages({
+	view: {
+		defaultMessage: 'View'
+	},
 	review: {
 		defaultMessage: 'Review'
 	},
@@ -49,6 +45,10 @@ const translations = defineMessages({
 });
 
 const unparsedOptions: Record<PackageActions, ContextMenuOptionDescriptor<PackageActions>> = {
+	view: {
+		id: 'view',
+		label: translations.view
+	},
 	review: {
 		id: 'review',
 		label: translations.review
@@ -84,6 +84,9 @@ export const generatePackageOptions = (
 		const packagesHaveCancelAction = packages.every((pkg) => hasCancelAction(pkg.availableActions));
 		if (packages?.length === 1) {
 			const pkg = packages[0];
+			if (actionsToInclude.view) {
+				packageOptions.push(unparsedOptions.view);
+			}
 			if (
 				(hasApproveAction(pkg.availableActions) || hasRejectAction(pkg.availableActions)) &&
 				pkg.approvalState === 'SUBMITTED' &&
@@ -119,37 +122,75 @@ export const packageActionDispatcher = ({
 	onActionSuccess?: Action;
 }) => {
 	switch (option) {
-		case 'review':
+		case 'view': {
+			if (Array.isArray(pkg)) break;
 			dispatch(
-				showPublishingPackageReviewDialog({
-					packageId: (pkg as PublishPackage).id,
-					onSuccess: batchActions([closePublishingPackageReviewDialog(), onActionSuccess].filter(Boolean))
+				pushDialog({
+					component: createComponentId('PackageDetailsDialog'),
+					props: {
+						packageId: (pkg as PublishPackage).id
+					}
 				})
 			);
 			break;
+		}
+		case 'review': {
+			const dialogId = nanoid();
+			dispatch(
+				pushDialog({
+					id: dialogId,
+					component: createComponentId('PublishPackageReviewDialog'),
+					props: {
+						packageId: (pkg as PublishPackage).id,
+						onSuccess: () => {
+							dispatch(batchActions([popDialog({ id: dialogId }), onActionSuccess].filter(Boolean)));
+						}
+					}
+				})
+			);
+			break;
+		}
 		case 'resubmit':
-		case 'promote':
+		case 'promote': {
+			const dialogId = nanoid();
 			dispatch(
-				showPublishingPackageResubmitDialog({
-					pkg,
-					type: option,
-					onSuccess: batchActions([closePublishingPackageResubmitDialog(), onActionSuccess].filter(Boolean))
+				pushDialog({
+					id: dialogId,
+					component: createComponentId('PublishingPackageResubmitDialog'),
+					props: {
+						pkg,
+						type: option,
+						onSuccess: () => {
+							dispatch(batchActions([popDialog({ id: dialogId }), onActionSuccess].filter(Boolean)));
+						}
+					}
 				})
 			);
 			break;
+		}
 		case 'cancel':
 			if (Array.isArray(pkg)) {
+				const dialogId = nanoid();
 				dispatch(
-					showBulkCancelPackageDialog({
-						packages: pkg,
-						onSuccess: batchActions([closeBulkCancelPackageDialog(), onActionSuccess].filter(Boolean))
+					pushDialog({
+						id: dialogId,
+						component: createComponentId('BulkCancelPackageDialog'),
+						props: {
+							packages: pkg,
+							onSuccess: () => dispatch(batchActions([popDialog({ id: dialogId }), onActionSuccess].filter(Boolean)))
+						}
 					})
 				);
 			} else {
+				const dialogId = nanoid();
 				dispatch(
-					showCancelPackageDialog({
-						packageId: pkg.id,
-						onSuccess: batchActions([closeCancelPackageDialog(), onActionSuccess].filter(Boolean))
+					pushDialog({
+						id: dialogId,
+						component: createComponentId('CancelPackageDialog'),
+						props: {
+							packageId: pkg.id,
+							onSuccess: () => dispatch(batchActions([popDialog({ id: dialogId }), onActionSuccess].filter(Boolean)))
+						}
 					})
 				);
 			}

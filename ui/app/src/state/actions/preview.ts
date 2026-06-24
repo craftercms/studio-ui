@@ -28,7 +28,7 @@ import {
 import { ContentTypeDropTarget } from '../../models/ContentTypeDropTarget';
 import { ContentEventPayload, EditSelection, WidgetDescriptor } from '../../models';
 import LookupTable from '../../models/LookupTable';
-import { DetailedItem, SandboxItem } from '../../models/Item';
+import { ContentItem } from '../../models/Item';
 import GlobalState, { HighlightMode } from '../../models/GlobalState';
 import { AjaxError } from 'rxjs/ajax';
 import { ActiveTargetingModel } from '../../services/configuration';
@@ -129,7 +129,7 @@ export const deleteItemOperationFailed = /*#__PURE__*/ createAction('DELETE_ITEM
 export const updateFieldValueOperation = /*#__PURE__*/ createAction<
 	{ index: string | number; value: unknown } & CommonOperationProps
 >('UPDATE_FIELD_VALUE_OPERATION');
-export const updateFieldValueOperationComplete = /*#__PURE__*/ createAction<{ item: SandboxItem }>(
+export const updateFieldValueOperationComplete = /*#__PURE__*/ createAction<{ item: ContentItem }>(
 	'UPDATE_FIELD_VALUE_OPERATION_COMPLETE'
 );
 export const updateFieldValueOperationFailed = /*#__PURE__*/ createAction('UPDATE_FIELD_VALUE_OPERATION_FAILED');
@@ -179,10 +179,11 @@ export const hotKey =
 export const showEditDialog = /*#__PURE__*/ createAction('SHOW_EDIT_DIALOG');
 export const requestWorkflowCancellationDialog = /*#__PURE__*/ createAction<{
 	siteId: string;
-	item: SandboxItem;
+	item: ContentItem;
 }>('REQUEST_WORKFLOW_CANCELLATION_DIALOG');
 export const requestWorkflowCancellationDialogOnResult = /*#__PURE__*/ createAction<{
 	type: 'continue' | 'close';
+	cancelPackagesComment?: string;
 }>('REQUEST_WORKFLOW_CANCELLATION_DIALOG_ON_RESULT');
 export const updateRteConfig = /*#__PURE__*/ createAction('UPDATE_RTE_CONFIG');
 export const highlightModeChanged = /*#__PURE__*/ createAction('HIGHLIGHT_MODE_CHANGED');
@@ -296,7 +297,7 @@ export const fetchGuestModelComplete = /*#__PURE__*/ createAction<{
 	modelLookup: Record<string, ContentInstance>;
 	hierarchyMap: ModelHierarchyMap;
 	modelIdByPath: Record<string, string>;
-	sandboxItems: SandboxItem[];
+	contentItems: ContentItem[];
 	permissions: string[];
 }>('FETCH_GUEST_MODEL_COMPLETE');
 
@@ -365,7 +366,7 @@ export const setPreviewEditMode = /*#__PURE__*/ createAction<{ editMode: boolean
 	'EDIT_MODE_CHANGED'
 );
 
-export const previewItem = /*#__PURE__*/ createAction<{ item: DetailedItem; newTab?: boolean }>('PREVIEW_ITEM');
+export const previewItem = /*#__PURE__*/ createAction<{ item: ContentItem; newTab?: boolean }>('PREVIEW_ITEM');
 
 export const updateIcePanelWidth = /*#__PURE__#*/ createAction<{ width: number }>('UPDATE_ICE_PANEL_WIDTH');
 

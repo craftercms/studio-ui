@@ -21,13 +21,11 @@ import { fetchContentXML, lock, writeContent } from '../../services/content';
 import { ConditionalLoadingState } from '../LoadingState/LoadingState';
 import AceEditor from '../AceEditor/AceEditor';
 import { useDispatch } from 'react-redux';
-import { updateCodeEditorDialog } from '../../state/actions/dialogs';
 import Skeleton from '@mui/material/Skeleton';
 import ListSubheader from '@mui/material/ListSubheader';
 import DialogFooter from '../DialogFooter/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { showSystemNotification } from '../../state/actions/system';
 import translations from './translations';
 import MenuItem from '@mui/material/MenuItem';
@@ -39,21 +37,31 @@ import { isItemLockedForMe, isLockedState } from '../../utils/content';
 import { useContentTypes } from '../../hooks/useContentTypes';
 import { useActiveUser } from '../../hooks/useActiveUser';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
-import { useDetailedItem } from '../../hooks/useDetailedItem';
 import { useReferences } from '../../hooks/useReferences';
 import { getHostToGuestBus } from '../../utils/subjects';
 import { reloadRequest } from '../../state/actions/preview';
 import { CodeEditorDialogContainerProps, getContentModelSnippets } from './utils';
-import { batchActions } from '../../state/actions/misc';
 import { MultiChoiceSaveButton } from '../MultiChoiceSaveButton';
 import useUpToDateRefs from '../../hooks/useUpdateRefs';
-import { useEnhancedDialogContext } from '../EnhancedDialog';
+import { EnhancedDialog, useEnhancedDialogContext } from '../EnhancedDialog';
 import { writeConfiguration } from '../../services/configuration';
+import { forkJoin, switchMap } from 'rxjs';
+import { cancelPackages, fetchAffectedPackages } from '../../services/workflow';
+import { PublishPackage } from '../../models';
+import Alert, { alertClasses } from '@mui/material/Alert';
+import { pushDialog } from '../../state/actions/dialogStack';
+import { createComponentId, pushErrorDialog } from '../../utils/system';
+import { useContentItem } from '../../hooks/useContentItem';
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import TextFieldWithMax from '../TextFieldWithMax';
+import { Typography } from '@mui/material';
+import useSpreadState from '../../hooks/useSpreadState';
 
 export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps) {
 	const { path, onMinimize, onClose, mode, readonly, contentType, onFullScreen, onSuccess } = props;
 	const { open, isSubmitting } = useEnhancedDialogContext();
-	const item = useDetailedItem(path);
+	const item = useContentItem(path);
 	const site = useActiveSiteId();
 	const user = useActiveUser();
 	const [loading, setLoading] = useState(false);
@@ -69,53 +77,96 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 	const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 	const [snippets, setSnippets] = useState<LookupTable<{ label: string; value: string }>>({});
 	const [contentModelSnippets, setContentModelSnippets] = useState<Array<{ label: string; value: string }>>(null);
+	const [affectedPackages, setAffectedPackages] = useState<PublishPackage[]>(undefined);
+	const { updateSubmittingOrHasPendingChanges } = useEnhancedDialogContext();
 	const storedId = 'codeEditor';
 	const {
 		'craftercms.freemarkerCodeSnippets': freemarkerCodeSnippets,
 		'craftercms.groovyCodeSnippets': groovyCodeSnippets
-	} = useReferences();
+	} = useReferences() ?? {};
 	const onChangeTimeoutRef = useRef<any>(null);
+	const [saveWithCommentState, setSaveWithCommentState] = useSpreadState<{
+		saveWithComment: boolean;
+		openDialog: boolean;
+		comment: string;
+		saveType: 'save' | 'saveAndClose' | 'saveAndMinimize';
+	}>({
+		saveWithComment: false,
+		openDialog: false,
+		comment: '',
+		saveType: null
+	});
+	const isConfig = path.startsWith('/config');
 
 	const onEditorChanges = () => {
 		clearTimeout(onChangeTimeoutRef.current);
 		onChangeTimeoutRef.current = setTimeout(() => {
-			dispatch(
-				updateCodeEditorDialog({
-					hasPendingChanges: content !== editorRef.current.getValue()
-				})
-			);
+			updateSubmittingOrHasPendingChanges({ hasPendingChanges: content !== editorRef.current.getValue() });
 		}, 150);
 	};
 
-	const save = (callback?: Function) => {
+	const save = (callback?: () => void, cancelPackagesComment: string = '') => {
 		if (!isLockedForMe && !readonly) {
-			dispatch(updateCodeEditorDialog({ isSubmitting: true }));
+			updateSubmittingOrHasPendingChanges({ isSubmitting: true });
 			const value = editorRef.current.getValue();
-			const isConfig = path.startsWith('/config');
 			const module = isConfig ? (path.split('/')[2] as 'studio') : null;
 			const service$ = isConfig
 				? writeConfiguration(site, path.replace(`/config/${module}`, ''), module, value)
-				: writeContent(site, path, value, { unlock: false });
-			service$.subscribe({
+				: writeContent(site, path, value, {
+						unlock: false,
+						...(saveWithCommentState.saveWithComment && { comment: saveWithCommentState.comment })
+					});
+			// If item is in packages in active workflow, before saving we need to cancel the packages.
+			const preWriteAction$ = affectedPackages?.length
+				? cancelPackages(site, {
+						packageIds: affectedPackages.map((p) => p.id),
+						comment: cancelPackagesComment
+					}).pipe(switchMap(() => service$))
+				: service$;
+
+			preWriteAction$.subscribe({
 				next() {
-					dispatch(
-						batchActions([
-							showSystemNotification({ message: formatMessage(translations.saved) }),
-							updateCodeEditorDialog({ isSubmitting: false, hasPendingChanges: false })
-						])
-					);
+					updateSubmittingOrHasPendingChanges({ isSubmitting: false, hasPendingChanges: false });
+					dispatch(showSystemNotification({ message: formatMessage(translations.saved) }));
 					setTimeout(callback);
 					getHostToGuestBus().next(reloadRequest());
 					onSuccess?.();
 				},
 				error({ response }) {
-					dispatch(showErrorDialog({ error: response }));
+					updateSubmittingOrHasPendingChanges({ isSubmitting: false });
+					dispatch(pushErrorDialog({ props: { error: response } }));
 				}
 			});
 		}
 	};
 
-	const onSave = () => save(() => setContent(editorRef.current.getValue()));
+	const checkItemWorkflow = (callback?: () => void) => {
+		// Before saving, check if the item is part of a package in active workflow. If so, show a dialog to review the
+		// packages before continuing with the cancellation of the packages and saving the item.
+		if (affectedPackages?.length) {
+			dispatch(
+				pushDialog({
+					component: createComponentId('ViewPackagesDialog'),
+					props: {
+						item,
+						cancelPackagesInitialComment: formatMessage(
+							{ defaultMessage: 'Cancel packages to write on "{path}"' },
+							{ path }
+						),
+						onContinue: (cancelPackagesUpdatedComment: string) => {
+							save(callback, cancelPackagesUpdatedComment);
+						}
+					}
+				})
+			);
+		} else {
+			save(callback);
+		}
+	};
+
+	const onSaveButtonClick = () => {
+		checkItemWorkflow(() => setContent(editorRef.current.getValue()));
+	};
 
 	const onAddSnippet = (event) => {
 		setAnchorEl(event.currentTarget);
@@ -136,16 +187,16 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 		fnRefs.current.onClose(e, null);
 	};
 
-	const onMultiChoiceSaveButtonClick = (e, type) => {
+	const saveChoiceSelection = (type) => {
 		switch (type) {
 			case 'save':
-				onSave();
+				onSaveButtonClick();
 				break;
 			case 'saveAndClose':
-				save(() => onCloseButtonClick(null));
+				checkItemWorkflow(() => onCloseButtonClick(null));
 				break;
 			case 'saveAndMinimize':
-				save(() => {
+				checkItemWorkflow(() => {
 					setContent(editorRef.current.getValue());
 					onMinimize?.();
 				});
@@ -153,16 +204,24 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 		}
 	};
 
+	const onMultiChoiceSaveButtonClick = (e, type) => {
+		if (saveWithCommentState.saveWithComment) {
+			setSaveWithCommentState({ openDialog: true, saveType: type });
+		} else {
+			saveChoiceSelection(type);
+		}
+	};
+
 	const onAceInit = (editor: AceAjax.Editor) => {
 		editor.commands.addCommand({
 			name: 'saveToCrafter',
 			bindKey: { win: 'Ctrl-S', mac: 'Command-S' },
-			exec: () => fnRefs.current.onSave(),
+			exec: () => fnRefs.current.onSaveButtonClick(),
 			readOnly: false
 		});
 	};
 
-	const fnRefs = useUpToDateRefs({ onSave, onClose });
+	const fnRefs = useUpToDateRefs({ onSaveButtonClick, onClose });
 
 	// add content model variables
 	useEffect(() => {
@@ -189,17 +248,20 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 	useEffect(() => {
 		if (content === null) {
 			setLoading(true);
-			dispatch(updateCodeEditorDialog({ isSubmitting: true }));
-			const subscription = fetchContentXML(site, path).subscribe((xml) => {
-				setContent(xml);
-				setLoading(false);
-				dispatch(updateCodeEditorDialog({ isSubmitting: false }));
-			});
+			updateSubmittingOrHasPendingChanges({ isSubmitting: true });
+			const subscription = forkJoin([fetchContentXML(site, path), fetchAffectedPackages(site, path)]).subscribe(
+				([xml, affectedPackages]) => {
+					setContent(xml);
+					setAffectedPackages(affectedPackages);
+					setLoading(false);
+					updateSubmittingOrHasPendingChanges({ isSubmitting: false });
+				}
+			);
 			return () => {
 				subscription.unsubscribe();
 			};
 		}
-	}, [content, dispatch, path, site]);
+	}, [content, dispatch, path, site, updateSubmittingOrHasPendingChanges]);
 
 	useEffect(() => {
 		if (shouldPerformLock) {
@@ -211,6 +273,38 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 		<>
 			<DialogHeader
 				title={item ? item.label : <Skeleton width="120px" />}
+				subtitle={
+					affectedPackages?.length ? (
+						<Alert
+							variant="outlined"
+							severity="warning"
+							sx={{
+								p: 0,
+								border: 'none',
+								[`& .${alertClasses.icon}, & .${alertClasses.message}`]: {
+									p: 0
+								},
+								[`& .${alertClasses.action}`]: {
+									py: 0
+								}
+							}}
+							action={
+								<Button
+									color="inherit"
+									size="small"
+									sx={{ p: 0 }}
+									onClick={() => {
+										dispatch(pushDialog({ component: createComponentId('ViewPackagesDialog'), props: { item } }));
+									}}
+								>
+									<FormattedMessage defaultMessage="Review" />
+								</Button>
+							}
+						>
+							<FormattedMessage defaultMessage="The item is part of one or more publishing packages. Editing it will cancel the packages." />
+						</Alert>
+					) : null
+				}
 				onCloseButtonClick={onCloseButtonClick}
 				onMinimizeButtonClick={onMinimize}
 				onFullScreenButtonClick={onFullScreen}
@@ -251,6 +345,22 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 					>
 						<FormattedMessage id="codeEditor.insertCode" defaultMessage="Insert Code" />
 					</Button>
+					{!isConfig && (
+						<FormControlLabel
+							control={
+								<Checkbox
+									size="small"
+									checked={saveWithCommentState.saveWithComment}
+									onChange={(e) => setSaveWithCommentState({ saveWithComment: e.target.checked })}
+								/>
+							}
+							label={
+								<Typography variant="body2">
+									<FormattedMessage defaultMessage="Save with comment" />
+								</Typography>
+							}
+						/>
+					)}
 					<SecondaryButton onClick={onCloseButtonClick} sx={{ mr: '8px' }} disabled={isSubmitting}>
 						<FormattedMessage id="words.cancel" defaultMessage="Cancel" />
 					</SecondaryButton>
@@ -282,6 +392,47 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 					</MenuItem>
 				))}
 			</Menu>
+			<EnhancedDialog
+				open={saveWithCommentState.openDialog}
+				onClose={() => setSaveWithCommentState({ openDialog: false })}
+				maxWidth="sm"
+				fullWidth
+				title={<FormattedMessage defaultMessage="Save with Comment" />}
+			>
+				<DialogBody>
+					<TextFieldWithMax
+						autoFocus
+						margin="dense"
+						label={<FormattedMessage defaultMessage="Comment" />}
+						type="text"
+						fullWidth
+						multiline
+						minRows={2}
+						value={saveWithCommentState.comment}
+						onChange={(e) => setSaveWithCommentState({ comment: e.target.value })}
+						disabled={loading}
+					/>
+				</DialogBody>
+				<DialogFooter>
+					<Button
+						onClick={() => setSaveWithCommentState({ openDialog: false, comment: '', saveType: null })}
+						disabled={loading}
+					>
+						<FormattedMessage id="words.cancel" defaultMessage="Cancel" />
+					</Button>
+					<Button
+						onClick={() => {
+							setSaveWithCommentState({ openDialog: false });
+							saveChoiceSelection(saveWithCommentState.saveType);
+						}}
+						disabled={loading || !saveWithCommentState.comment.trim()}
+						variant="contained"
+						color="primary"
+					>
+						<FormattedMessage id="words.save" defaultMessage="Save" />
+					</Button>
+				</DialogFooter>
+			</EnhancedDialog>
 		</>
 	);
 }

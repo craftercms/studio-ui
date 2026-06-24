@@ -28,12 +28,13 @@ import EmptyState from '../EmptyState';
 import { FormattedMessage } from 'react-intl';
 import Skeleton from '@mui/material/Skeleton';
 import { useTheme } from '@mui/material/styles';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import ActivityDashlet from '../ActivityDashlet/ActivityDashlet';
 import DevContentOpsDashlet from '../DevContentOpsDashlet/DevContentOpsDashlet';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { IconGuideDashlet } from '../IconGuideDashlet';
 import { SiteDashboardContext } from './useSiteDashboardContext';
+import { ErrorBoundary } from '../ErrorBoundary';
 
 export interface DashboardProps {
 	mountMode?: string;
@@ -135,7 +136,7 @@ export function Dashboard(props: DashboardProps) {
 									defaultProps: { contentHeight: height, onMinimize, maximizable: true },
 									createMapperFn: (mapper) => (widget, index) => (
 										<Grid size={{ xs: 12, md: 6 }} key={index}>
-											{mapper(widget, index)}
+											<ErrorBoundary>{mapper(widget, index)}</ErrorBoundary>
 										</Grid>
 									)
 								})

@@ -17,7 +17,7 @@
 import React, { useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import Typography from '@mui/material/Typography';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import ItemStateIcon from '../ItemStateIcon';
 import { getItemPublishingTargetText, getItemStateText } from '../ItemDisplay/utils';
 import ItemTypeIcon from '../ItemTypeIcon';
@@ -29,6 +29,8 @@ import { styled } from '@mui/material/styles';
 import AccordionSummary, { accordionSummaryClasses } from '@mui/material/AccordionSummary';
 import Box from '@mui/material/Box';
 import { typographyClasses } from '@mui/material';
+import { DisabledItemIcon } from '../DisabledItemIcon';
+import { LightItem } from '../../models';
 
 export interface IconGuideDashletProps {
 	contentHeight?: number | string;
@@ -141,7 +143,7 @@ export function IconGuideDashlet(props: IconGuideDashletProps) {
 										sxs={{ root: { display: 'flex', alignItems: 'center' } }}
 									/>
 									<Typography variant="body2" component="span">
-										{getItemPublishingTargetText(status[key].stateMap)}
+										{getItemPublishingTargetText(status[key].stateMap, formatMessage)}
 									</Typography>
 								</Grid>
 							))}
@@ -155,10 +157,20 @@ export function IconGuideDashlet(props: IconGuideDashletProps) {
 								<Grid key={key} size={{ xs: 6, sm: 4, md: 3, lg: 2 }} sx={{ display: 'flex', alignItems: 'center' }}>
 									<ItemStateIcon item={states[key]} sxs={{ root: { marginRight: (theme) => theme.spacing(1) } }} />
 									<Typography variant="body2" component="span">
-										{getItemStateText(states[key].stateMap)}
+										{getItemStateText(states[key].stateMap, formatMessage)}
 									</Typography>
 								</Grid>
 							))}
+							<Grid size={{ xs: 6, sm: 4, md: 3, lg: 2 }} sx={{ display: 'flex', alignItems: 'center' }}>
+								<DisabledItemIcon
+									item={types['component'] as LightItem}
+									itemTypeIconProps={{}}
+									sxs={{ icon: { mr: 1 } }}
+								/>
+								<Typography variant="body2" component="span">
+									<FormattedMessage defaultMessage="Disabled" />
+								</Typography>
+							</Grid>
 						</Grid>
 
 						<Typography variant="subtitle2">

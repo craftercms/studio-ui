@@ -32,6 +32,9 @@ import { getAvatarWithIconColors } from '@craftercms/studio-ui/utils/contentType
 import UltraStyledTypography from './UltraStyledTypography';
 import UltraStyledTooltip from './UltraStyledTooltip';
 import { SystemCssProperties } from '@mui/system/styleFunctionSx/styleFunctionSx';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { ItemStateMap } from '@craftercms/studio-ui';
+import { defineMessages } from 'react-intl';
 
 const AllowedTypeCircle = styled('div')({
 	width: 20,
@@ -64,6 +67,7 @@ export interface ZoneMarkerProps {
 	sx?: ZoneMarkerPartialSx;
 	classes?: PartialClassRecord<ZoneMarkerClassKey>;
 	field?: ContentTypeField;
+	stateMap?: ItemStateMap;
 }
 
 function getStyles(sx: ZoneMarkerPartialSx): ZoneMarkerFullSx {
@@ -108,6 +112,12 @@ function getStyles(sx: ZoneMarkerPartialSx): ZoneMarkerFullSx {
 	} as Record<ZoneMarkerClassKey, SxProps<Theme>>;
 }
 
+const dropTargetModesMessages = defineMessages({
+	shared: { id: 'zoneMarker.existing', defaultMessage: 'existing' },
+	embedded: { id: 'zoneMarker.embedded', defaultMessage: 'embedded' },
+	sharedExisting: { id: 'zoneMarker.existingShared', defaultMessage: 'existing shared' }
+});
+
 export function ZoneMarker(props: ZoneMarkerProps) {
 	const {
 		rect,
@@ -120,7 +130,8 @@ export function ZoneMarker(props: ZoneMarkerProps) {
 		lockInfo = null,
 		isStale = false,
 		isEditable,
-		field
+		field,
+		stateMap
 	} = props;
 	const isLockedItem = Boolean(lockInfo);
 	const [zoneStyle, setZoneStyle] = useState<CSSProperties>();
@@ -133,9 +144,12 @@ export function ZoneMarker(props: ZoneMarkerProps) {
 		allowedTypesMeta = field.validations.allowedContentTypes.value;
 		contentTypes = getCachedContentTypes();
 	}
+	const { formatMessage } = useIntl();
 	useEffect(() => {
 		setZoneStyle(getZoneMarkerStyle(rect));
 	}, [rect]);
+	const isSystemProcessing = Boolean(stateMap?.systemProcessing);
+
 	return (
 		<>
 			<Box
@@ -179,7 +193,11 @@ export function ZoneMarker(props: ZoneMarkerProps) {
 									onClick={(e) => e.stopPropagation()}
 								>
 									{Object.entries(allowedTypesMeta).map(([id, modes]) => {
-										const type = contentTypes[id];
+										// 'id' can be '*' (meaning all content types), so we need to handle that scenario
+										const type =
+											id === '*'
+												? { id: 'all', name: formatMessage({ id: 'zoneMarker.allTypes', defaultMessage: 'All types' }) }
+												: contentTypes[id];
 										const { backgroundColor, textColor } = getAvatarWithIconColors(
 											type?.id ?? type?.name,
 											theme,
@@ -189,10 +207,20 @@ export function ZoneMarker(props: ZoneMarkerProps) {
 											<UltraStyledTooltip
 												key={id}
 												arrow
-												// TODO: i18n
-												title={`Drop target compatible with "${type?.name}" as ${Object.keys(modes)
-													.map((mode) => (mode === 'sharedExisting' ? 'existing shared' : mode))
-													.join(', ')}`}
+												title={
+													<FormattedMessage
+														id="zoneMarker.dropTargetInfo"
+														defaultMessage="Drop target compatible with {type} as {modes}"
+														values={{
+															type: type?.name ?? '',
+															modes: Object.keys(modes)
+																.map((mode) =>
+																	dropTargetModesMessages[mode] ? formatMessage(dropTargetModesMessages[mode]) : mode
+																)
+																.join(', ')
+														}}
+													/>
+												}
 											>
 												<AllowedTypeCircle
 													sx={{
@@ -211,20 +239,28 @@ export function ZoneMarker(props: ZoneMarkerProps) {
 						</div>
 						{isLockedItem && (
 							<Typography noWrap variant="body2" component="div">
-								{/* TODO: i18n */}
-								Locked by {lockInfo.username}
+								<FormattedMessage
+									id="zoneMarker.lockedBy"
+									defaultMessage="Locked by {username}"
+									values={{ username: lockInfo.username }}
+								/>
 							</Typography>
 						)}
 						{!isEditable && !isLockedItem && (
 							<Typography noWrap variant="body2" component="div">
-								{/* TODO: i18n */}
-								Not editable
+								{isSystemProcessing ? (
+									<FormattedMessage id="zoneMarker.systemProcessing" defaultMessage="System processing" />
+								) : (
+									<FormattedMessage id="zoneMarker.notEditable" defaultMessage="Not editable" />
+								)}
 							</Typography>
 						)}
 						{isStale && (
 							<Typography noWrap variant="body2" component="div">
-								{/* TODO: i18n */}
-								Item was modified. Refresh to enable editing.
+								<FormattedMessage
+									id="zoneMarker.modifiedItem"
+									defaultMessage="Item was modified. Refresh to enable editing."
+								/>
 							</Typography>
 						)}
 						{menuItems && <Box sx={sx.menuItemsContainer}>{menuItems}</Box>}

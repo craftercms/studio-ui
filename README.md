@@ -1,7 +1,7 @@
 Crafter Studio UI
 =================
 
-Studio UI is the authoring interface for CrafterCMS. Learn more at http://docs.craftercms.org.
+Studio UI is the authoring interface for CrafterCMS. Learn more at http://craftercms.com/docs.
 
 # Community
 ## Contributors

@@ -16,6 +16,8 @@
 
 import LookupTable from './LookupTable';
 import { PackageApprovalState } from '../services/publishing';
+import Person from './Person';
+import { LightItem } from './Item';
 
 export type PublishingTargets = 'live' | 'staging';
 
@@ -51,6 +53,14 @@ export interface CurrentFilters {
 
 export type PublishingStatusCodes = 'ready' | 'publishing' | 'stopped';
 
+export interface currentTaskStage {
+	name: string;
+	state: PublishingStatus['currentTask']['state'];
+	processed: number;
+	errors: boolean;
+	total: number;
+}
+
 export interface PublishingStatus {
 	enabled: boolean;
 	published: boolean;
@@ -62,13 +72,8 @@ export interface PublishingStatus {
 		type: string;
 		startTime: string;
 		endTime: string;
-		state: string;
-		stages: {
-			name: string;
-			state: string;
-			processed: number;
-			errors: boolean;
-		}[];
+		state: 'READY' | 'IN_PROGRESS' | 'COMPLETED';
+		stages: currentTaskStage[];
 	};
 }
 
@@ -108,13 +113,16 @@ export interface PublishingStats {
 	numberOfEditedAndPublishedItems: number;
 }
 
-export interface PublishingPackageApproveParams {
+export interface PublishingPackagesApproveParams {
 	comment: string;
 	schedule: string;
 	updateSchedule: boolean;
+	packageIds: number[];
 }
 
-export type PackageActions = 'review' | 'cancel' | 'resubmit' | 'promote';
+export interface PublishingPackageApproveParams extends Omit<PublishingPackagesApproveParams, 'packageIds'> {}
+
+export type PackageActions = 'view' | 'review' | 'cancel' | 'resubmit' | 'promote';
 
 export interface PublishingItem {
 	action: string;
@@ -127,9 +135,9 @@ export interface PublishingItem {
 	stagingPreviousPath: string;
 	userRequested: boolean;
 	itemMetadata: {
-		label: string;
-		systemType: string;
-		mimeType: string;
+		label: LightItem['label'];
+		systemType: LightItem['systemType'];
+		mimeType: LightItem['mimeType'];
 	};
 }
 
@@ -170,4 +178,10 @@ export interface PublishPackage {
 	publishedLiveCommitId: string;
 	itemCount: number;
 	availableActions: number;
+}
+
+export interface PublishTargetStatus {
+	dateLastPublished: string;
+	dateScheduled: string;
+	publisher: Person;
 }

@@ -45,8 +45,7 @@ export interface BrowseFilesDialogPropsStateProps extends BrowseFilesDialogBaseP
 }
 
 export interface BrowseFilesDialogContainerProps
-	extends BrowseFilesDialogBaseProps,
-		Pick<BrowseFilesDialogProps, 'onClose' | 'onSuccess'> {}
+	extends BrowseFilesDialogBaseProps, Pick<BrowseFilesDialogProps, 'onClose' | 'onSuccess'> {}
 
 export interface BrowseFilesDialogUIProps {
 	items: SearchItem[];
@@ -70,6 +69,8 @@ export interface BrowseFilesDialogUIProps {
 	preselectedLookup?: LookupTable<boolean>;
 	disableChangePreselected?: BrowseFilesDialogBaseProps['disableChangePreselected'];
 	disableSubmission?: boolean;
+	allSelected: boolean;
+	someSelected: boolean;
 	onCardSelected(item: MediaItem): void;
 	onPreviewImage?(item: MediaItem): void;
 	onCheckboxChecked(path: string, selected: boolean): void;
@@ -82,6 +83,7 @@ export interface BrowseFilesDialogUIProps {
 	onRefresh(): void;
 	onUpload(): void;
 	onToggleViewMode?(): void;
+	onSelectAll(): void;
 }
 
 export const initialParameters: ElasticParams = {
@@ -93,3 +95,5 @@ export const initialParameters: ElasticParams = {
 	sortOrder: 'desc',
 	filters: {}
 };
+
+export const viewModes: MediaCardViewModes[] = ['card', 'compact', 'row'];

@@ -16,47 +16,75 @@
 
 import { EnhancedDialog, EnhancedDialogProps } from '../EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
-import React, { useEffect, useState } from 'react';
-import { DetailedItem } from '../../models';
+import React, { useCallback, useEffect, useState } from 'react';
 import RenameContentDialogContainer from './RenameContentDialogContainer';
-import { fetchDependant } from '../../services/dependencies';
+import { fetchDependant as fetchDependantService } from '../../services/dependencies';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
-import { parseLegacyItemToDetailedItem } from '../../utils/content';
 import useWithPendingChangesCloseRequest from '../../hooks/useWithPendingChangesCloseRequest';
-import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 import { ensureSingleSlash, isBlank } from '../../utils/string';
+import { LightItem } from '../../models';
+import { getHostToHostBus } from '../../utils/subjects';
+import { filter } from 'rxjs/operators';
+import { contentEvent } from '../../state/actions/system';
+import useUpdateRefs from '../../hooks/useUpdateRefs';
 
 export interface RenameContentDialogProps extends EnhancedDialogProps {
 	path: string;
 	value?: string;
+	validRenameValue?: string; // Specifies a literal item name value (e.g. 'new-article') that is permitted for renaming content. If the user enters this value, it will be accepted even if it doesn't meet the usual validation criteria.
+	// e.g.: If validRenameValue is 'new-article', the user can enter 'new-article' even if it already exists. This allows renaming back to the original item name.
 	onRenamed(name: string): void;
-	onSubmittingAndOrPendingChange(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
 export function RenameContentDialog(props: RenameContentDialogProps) {
-	const { path, value, onRenamed, onSubmittingAndOrPendingChange, ...dialogProps } = props;
-	const [dependantItems, setDependantItems] = useState<DetailedItem[]>(null);
+	const { path, value, validRenameValue, onRenamed, ...dialogProps } = props;
+	const [dependantItems, setDependantItems] = useState<LightItem[]>([]);
 	const [fetchingDependantItems, setFetchingDependantItems] = useState(false);
 	const [error, setError] = useState(null);
 	const siteId = useActiveSiteId();
 	const pendingChangesCloseRequest = useWithPendingChangesCloseRequest(dialogProps.onClose);
+	const refs = useUpdateRefs({
+		dependantItems
+	});
+
+	const fetchDependant = useCallback(() => {
+		setFetchingDependantItems(true);
+		fetchDependantService(siteId, ensureSingleSlash(`${path}/${value}`)).subscribe({
+			next: (response) => {
+				setDependantItems(response);
+				setFetchingDependantItems(false);
+			},
+			error: (response) => {
+				if (response.status === 404) {
+					setDependantItems([]);
+				} else {
+					setError(response.response);
+				}
+				setFetchingDependantItems(false);
+			}
+		});
+	}, [path, value, siteId]);
 
 	useEffect(() => {
 		if (!isBlank(value) && !isBlank(path)) {
-			setFetchingDependantItems(true);
-			fetchDependant(siteId, ensureSingleSlash(`${path}/${value}`)).subscribe({
-				next: (response) => {
-					const dependants = parseLegacyItemToDetailedItem(response);
-					setDependantItems(dependants);
-					setFetchingDependantItems(false);
-				},
-				error: ({ response }) => {
-					setError(response);
-					setFetchingDependantItems(false);
-				}
-			});
+			fetchDependant();
+			const hostToHost$ = getHostToHostBus();
+			const subscription = hostToHost$
+				.pipe(
+					filter((e) => {
+						const isContentEvent = e.type === contentEvent.type;
+						if (!isContentEvent) return false;
+						return refs.current.dependantItems.some((dependant) => dependant.path === e.payload?.targetPath);
+					})
+				)
+				.subscribe(() => {
+					fetchDependant();
+				});
+			return () => {
+				subscription.unsubscribe();
+			};
 		}
-	}, [path, value, siteId]);
+	}, [fetchDependant, path, value, refs]);
 
 	return (
 		<EnhancedDialog
@@ -68,9 +96,10 @@ export function RenameContentDialog(props: RenameContentDialogProps) {
 			<RenameContentDialogContainer
 				path={path}
 				value={value}
+				validRenameValue={validRenameValue}
+				fetchDependant={fetchDependant}
 				dependantItems={dependantItems}
 				fetchingDependantItems={fetchingDependantItems}
-				onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
 				onRenamed={onRenamed}
 				error={error}
 			/>

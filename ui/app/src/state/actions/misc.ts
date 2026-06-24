@@ -32,7 +32,7 @@ export const dispatchDOMEvent = /*#__PURE__*/ createAction<{ id: string } & { [k
 export const changeContentType = /*#__PURE__*/ createAction<{
 	originalContentTypeId: string;
 	path: string;
-	newContentTypeId?: string;
+	newContentTypeId: string;
 }>('CHANGE_CONTENT_TYPE');
 
 export const editContentTypeTemplate = /*#__PURE__*/ createAction<{ contentTypeId: string }>(

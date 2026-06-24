@@ -16,7 +16,7 @@
 
 import * as React from 'react';
 import MenuItem from '@mui/material/MenuItem';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import Select, { selectClasses } from '@mui/material/Select';
 import { isBlank } from '../../utils/string';
 import { changeSite } from '../../state/actions/sites';
@@ -31,6 +31,7 @@ import SiteStatusIndicator from '../SiteStatusIndicator/SiteStatusIndicator';
 import { previewSwitch } from '../../services/security';
 import { BaseSelectProps } from '@mui/material/Select/Select';
 import { PartialSxRecord } from '../../models';
+import { outlinedInputClasses } from '@mui/material/OutlinedInput';
 
 export interface SiteSwitcherSelectProps extends BaseSelectProps {
 	site: string;
@@ -43,6 +44,7 @@ function SiteSwitcherSelect(props: SiteSwitcherSelectProps) {
 	const { authoringBase, useBaseDomain } = useEnv();
 	const dispatch = useDispatch();
 	const checkMinimized = useMinimizedDialogWarning();
+	const { formatMessage } = useIntl();
 
 	const onSiteChange = ({ target: { value } }) => {
 		if (!isBlank(value) && site !== value && !checkMinimized()) {
@@ -64,18 +66,13 @@ function SiteSwitcherSelect(props: SiteSwitcherSelectProps) {
 	return (
 		<Select
 			displayEmpty
-			variant="standard"
+			variant="outlined"
 			{...rest}
 			className={props.className}
 			sx={{
 				maxWidth: 150,
 				background: 'transparent',
-				'&.MuiInput-underline::before': {
-					display: 'none'
-				},
-				'&.MuiInput-underline::after': {
-					display: 'none'
-				},
+				[`.${outlinedInputClasses.notchedOutline}`]: { border: 0 },
 				...sxs?.menuRoot,
 				[`& .${selectClasses.select}`]: {
 					border: 'none',
@@ -90,6 +87,11 @@ function SiteSwitcherSelect(props: SiteSwitcherSelectProps) {
 			}}
 			value={site}
 			onChange={onSiteChange}
+			slotProps={{
+				input: {
+					'aria-label': formatMessage({ defaultMessage: 'Select site' })
+				}
+			}}
 		>
 			{sites.length === 0 && (
 				<MenuItem value="">

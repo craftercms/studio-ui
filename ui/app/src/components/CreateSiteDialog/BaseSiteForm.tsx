@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 import { siteIdMaxLength, siteInputMaxLength, siteNameMaxLength } from './utils';
 import React from 'react';
@@ -90,7 +90,7 @@ export function BaseSiteForm(props: BaseSiteFormProps) {
 					id="siteName"
 					name="siteName"
 					label={formatMessage(messages.siteName)}
-					placeholder="e.g. Corporate Website"
+					placeholder={formatMessage({ defaultMessage: 'e.g. Corporate Website' })}
 					required
 					autoFocus
 					fullWidth

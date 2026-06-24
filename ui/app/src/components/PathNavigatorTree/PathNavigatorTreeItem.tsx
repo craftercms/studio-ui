@@ -16,7 +16,7 @@
 
 import { TreeItem, treeItemClasses } from '@mui/x-tree-view/TreeItem';
 import React, { useState } from 'react';
-import { DetailedItem } from '../../models/Item';
+import { ContentItem } from '../../models/Item';
 import LookupTable from '../../models/LookupTable';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Typography } from '@mui/material';
@@ -38,10 +38,12 @@ import { PathNavigatorTreeStateProps } from './PathNavigatorTree';
 import { PartialSxRecord } from '../../models';
 import Box from '@mui/material/Box';
 
-export interface PathNavigatorTreeItemProps
-	extends Pick<PathNavigatorTreeStateProps, 'keywordByPath' | 'totalByPath' | 'childrenByParentPath' | 'errorByPath'> {
+export interface PathNavigatorTreeItemProps extends Pick<
+	PathNavigatorTreeStateProps,
+	'keywordByPath' | 'totalByPath' | 'childrenByParentPath' | 'errorByPath'
+> {
 	path: string;
-	itemsByPath: LookupTable<DetailedItem>;
+	itemsByPath: LookupTable<ContentItem>;
 	active?: Record<string, boolean>;
 	classes?: Partial<Record<PathNavigatorTreeBreadcrumbsClassKey, string>>;
 	sxs?: PartialSxRecord<PathNavigatorTreeBreadcrumbsClassKey>;
@@ -185,7 +187,9 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
 					</Button>
 				</Box>
 			);
-	} else if (totalByPath[path] > 0 && !childrenByParentPath.length) {
+	} else if (totalByPath[path] > 0 && !childrenByParentPath[path]?.length) {
+		// If totalByPath at the current path is greater than 0, but there are no children in childrenByParentPath for the current path,
+		// it means that the children are still loading, so we show a loading indicator. If there is an error for the current path, we show an error message instead.
 		propsForTreeItem.children.push(
 			errorByPath[path] ? (
 				<Box
@@ -319,6 +323,7 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
 										e.stopPropagation();
 										onOpenItemMenu(e.currentTarget, path);
 									}}
+									aria-label={formatMessage({ id: 'words.options', defaultMessage: 'Options' })}
 								>
 									<MoreVertRoundedIcon />
 								</IconButton>
@@ -336,6 +341,7 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
 										onClearKeywords();
 										onFilterButtonClick();
 									}}
+									aria-label={formatMessage({ id: 'words.filter', defaultMessage: 'Filter' })}
 								>
 									<SearchRoundedIcon color={showFilter ? 'primary' : 'action'} />
 								</IconButton>
@@ -395,6 +401,7 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
 									marginRight: '10px',
 									...sxs?.searchCloseButton
 								}}
+								aria-label={formatMessage({ defaultMessage: 'Close' })}
 							>
 								<CloseIconRounded />
 							</IconButton>

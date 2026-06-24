@@ -20,7 +20,7 @@ import TablePagination, {
 	TablePaginationProps
 } from '@mui/material/TablePagination';
 import React from 'react';
-import { defineMessages, useIntl } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { PartialSxRecord } from '../../models/CustomRecord';
 import { Theme } from '@mui/material';
 import { inputBaseClasses } from '@mui/material/InputBase';
@@ -124,13 +124,18 @@ export function Pagination(props: PaginationProps) {
 			labelRowsPerPage={formatMessage(translations.itemsPerPage)}
 			{...tablePaginationProps}
 			rowsPerPageOptions={props.rowsPerPageOptions ?? [5, 10, 25, 50]}
+			labelDisplayedRows={({ from, to, count }) => (
+				<FormattedMessage defaultMessage="{from}-{to} of {count}" values={{ from, to, count }} />
+			)}
 			backIconButtonProps={{
 				'aria-label': formatMessage(translations.previousPage),
+				title: formatMessage(translations.previousPage),
 				size: 'small',
 				...props.backIconButtonProps
 			}}
 			nextIconButtonProps={{
 				'aria-label': formatMessage(translations.nextPage),
+				title: formatMessage(translations.nextPage),
 				size: 'small',
 				...props.nextIconButtonProps
 			}}

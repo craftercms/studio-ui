@@ -23,9 +23,8 @@ import Alert from '@mui/material/Alert';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import React, { ReactNode } from 'react';
-import { DetailedItem } from '../../models';
-import { fetchRenameAssetDependants } from '../../state/actions/dialogs';
+import React, { ReactNode, useState } from 'react';
+import { LightItem } from '../../models';
 import useEnv from '../../hooks/useEnv';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { useDispatch } from 'react-redux';
@@ -34,12 +33,15 @@ import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import IconButton from '@mui/material/IconButton';
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import { AjaxError } from 'rxjs/ajax';
+import { fetchContentItem } from '../../services/content';
+import { pushErrorDialog } from '../../utils/system';
+import { extractErrorPayload } from '../../utils/ajax';
 
 export interface RenameItemViewProps {
 	name: string;
 	disabled: boolean;
 	newNameExists: boolean;
-	dependantItems: DetailedItem[];
+	dependantItems: LightItem[];
 	isSubmitting: boolean;
 	confirmBrokenReferences: boolean;
 	setConfirmBrokenReferences: (value: boolean) => void;
@@ -48,6 +50,7 @@ export interface RenameItemViewProps {
 	onRename: () => void;
 	onInputChanges: (event: React.ChangeEvent<HTMLInputElement>) => void;
 	helperText?: ReactNode;
+	fetchDependant(): void;
 }
 
 export function RenameItemView(props: RenameItemViewProps) {
@@ -63,14 +66,26 @@ export function RenameItemView(props: RenameItemViewProps) {
 		helperText,
 		setConfirmBrokenReferences,
 		onRename,
-		onInputChanges
+		onInputChanges,
+		fetchDependant
 	} = props;
 	const { authoringBase } = useEnv();
 	const siteId = useActiveSiteId();
 	const dispatch = useDispatch();
+	const [fetchingContentItem, setFetchingContentItem] = useState<boolean>(false);
 
-	const handleEditorDisplay = (item: DetailedItem) => {
-		openItemEditor(item, authoringBase, siteId, dispatch, fetchRenameAssetDependants());
+	const handleEditorDisplay = (item: LightItem) => {
+		setFetchingContentItem(true);
+		fetchContentItem(siteId, item.path).subscribe({
+			next: (contentItem) => {
+				setFetchingContentItem(false);
+				openItemEditor(contentItem, authoringBase, siteId, dispatch, () => fetchDependant());
+			},
+			error: (error) => {
+				setFetchingContentItem(false);
+				dispatch(pushErrorDialog({ props: { error: extractErrorPayload(error) } }));
+			}
+		});
 	};
 
 	return fetchingDependantItems ? (
@@ -105,7 +120,7 @@ export function RenameItemView(props: RenameItemViewProps) {
 					autoComplete="off"
 				/>
 			</form>
-			{dependantItems.length > 0 ? (
+			{dependantItems?.length > 0 ? (
 				<>
 					<Typography variant="subtitle2" sx={{ mt: 1, mb: 1 }}>
 						<FormattedMessage id="renameAsset.dependentItems" defaultMessage="Dependent Items" />
@@ -116,7 +131,11 @@ export function RenameItemView(props: RenameItemViewProps) {
 						showTypes="all-deps"
 						renderAction={(dependency) =>
 							isEditableAsset(dependency.path) ? (
-								<IconButton onClick={() => handleEditorDisplay(dependency)}>
+								<IconButton
+									disabled={fetchingContentItem}
+									loading={fetchingContentItem}
+									onClick={() => handleEditorDisplay(dependency)}
+								>
 									<EditRoundedIcon />
 								</IconButton>
 							) : null

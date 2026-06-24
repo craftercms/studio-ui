@@ -58,6 +58,10 @@ export const PublishingStatusButtonUI = forwardRef<HTMLButtonElement, Publishing
 					onClick={onClick}
 					ref={ref}
 					style={{ padding: rest.size === 'small' ? 0 : 4, ...style }}
+					aria-label={`${formatMessage(publishingStatusMessages.publishingStatus)}: ${getPublishingStatusText(
+						props,
+						formatMessage
+					)}`}
 				>
 					<PublishingStatusAvatar
 						enabled={enabled}

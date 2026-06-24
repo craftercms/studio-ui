@@ -50,6 +50,7 @@ import ListViewIcon from '@mui/icons-material/ViewStreamRounded';
 import GridViewIcon from '@mui/icons-material/GridOnRounded';
 import ReorderRoundedIcon from '@mui/icons-material/ReorderRounded';
 import { SORT_AUTO } from '../Search/utils';
+import Checkbox from '@mui/material/Checkbox';
 
 export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
 	// region const { ... } = props;
@@ -85,7 +86,10 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
 		onToggleViewMode,
 		preselectedLookup = {},
 		disableChangePreselected = true,
-		disableSubmission
+		disableSubmission,
+		allSelected,
+		someSelected,
+		onSelectAll
 	} = props;
 	// endregion
 	const { formatMessage } = useIntl();
@@ -120,14 +124,29 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
 						>
 							<Toolbar disableGutters variant="dense">
 								<Box sx={{ flexGrow: 1, display: 'flex' }}>
+									{multiSelect && (
+										<>
+											<Tooltip title={<FormattedMessage defaultMessage="Select All on this page" />}>
+												<Checkbox checked={allSelected} indeterminate={someSelected} onChange={onSelectAll} />
+											</Tooltip>
+											<Divider orientation="vertical" flexItem sx={{ marginTop: '-3px', marginBottom: '-3px' }} />
+										</>
+									)}
 									<Tooltip title={<FormattedMessage id="word.refresh" defaultMessage="Refresh" />}>
-										<IconButton onClick={onRefresh}>
+										<IconButton
+											onClick={onRefresh}
+											aria-label={formatMessage({ id: 'word.refresh', defaultMessage: 'Refresh' })}
+										>
 											<RefreshIcon />
 										</IconButton>
 									</Tooltip>
 									{allowUpload && (
 										<Tooltip title={<FormattedMessage id="word.upload" defaultMessage="Upload" />}>
-											<IconButton onClick={onUpload} sx={{ mr: 1 }}>
+											<IconButton
+												onClick={onUpload}
+												sx={{ mr: 1 }}
+												aria-label={formatMessage({ id: 'word.upload', defaultMessage: 'Upload' })}
+											>
 												<UploadFileIcon />
 											</IconButton>
 										</Tooltip>
@@ -197,11 +216,16 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
 													<MenuItem value={'internalName'}>
 														<FormattedMessage id="words.name" defaultMessage="Name" />
 													</MenuItem>
-													{sortKeys.map((name, i) => (
-														<MenuItem value={name} key={i}>
-															{formatMessage(filtersMessages[camelize(name)])}
-														</MenuItem>
-													))}
+													{sortKeys.map((name, i) => {
+														const camelizedName = camelize(name);
+														return (
+															<MenuItem value={name} key={i}>
+																{camelizedName in filtersMessages
+																	? formatMessage(filtersMessages[camelizedName])
+																	: name}
+															</MenuItem>
+														);
+													})}
 												</Select>
 											</FormControl>
 										</MenuItem>
@@ -252,7 +276,11 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
 								</Box>
 								<Box sx={{ display: 'flex', flexGrow: 0 }}>
 									<Tooltip title={<FormattedMessage defaultMessage="Switch view mode" />}>
-										<IconButton onClick={onToggleViewMode} sx={{ mr: 1 }}>
+										<IconButton
+											onClick={onToggleViewMode}
+											sx={{ mr: 1 }}
+											aria-label={formatMessage({ defaultMessage: 'Switch view mode' })}
+										>
 											{viewMode === 'card' ? (
 												<ListViewIcon />
 											) : viewMode === 'compact' ? (

@@ -37,12 +37,14 @@ import {
 import { NEVER, of } from 'rxjs';
 import { historyDialogClosed } from '../actions/dialogs';
 import { fetchHistory as getConfigurationHistory } from '../../services/configuration';
-import { reloadDetailedItem } from '../actions/content';
+import { reloadContentItem } from '../actions/content';
 import { emitSystemEvent, itemReverted, showRevertItemSuccessNotification } from '../actions/system';
 import { batchActions } from '../actions/misc';
 import { getHostToGuestBus } from '../../utils/subjects';
 import { reloadRequest } from '../actions/preview';
 import { CrafterCMSEpic } from '../store';
+import { getControllerPath } from '../../utils/path';
+import { popPiece } from '../../utils/string';
 
 export default [
 	(action$, state$: StateObservable<GlobalState>) =>
@@ -92,7 +94,23 @@ export default [
 			ofType(revertContentComplete.type),
 			withLatestFrom(state$),
 			switchMap(([{ payload }, state]) => {
-				if (payload.path === state.preview.guest?.path) {
+				const currentPreviewPath = state.preview.guest?.path;
+				let isPreviewTemplateOrController = false;
+				if (currentPreviewPath) {
+					const currentItem = state.content.itemsByPath[currentPreviewPath];
+					const currentContentTypeId = currentItem?.contentTypeId;
+					const currentContentType = currentContentTypeId ? state.contentTypes.byId[currentContentTypeId] : null;
+					const controllerPath =
+						currentContentTypeId && currentItem
+							? `${getControllerPath(currentItem.systemType)}${popPiece(currentContentTypeId, '/')}.groovy}`
+							: null;
+
+					if (currentContentType?.displayTemplate === payload.path || controllerPath === payload.path) {
+						isPreviewTemplateOrController = true;
+					}
+				}
+
+				if (payload.path === currentPreviewPath || isPreviewTemplateOrController) {
 					getHostToGuestBus().next({ type: reloadRequest.type });
 				}
 				return of(
@@ -100,7 +118,7 @@ export default [
 						emitSystemEvent(itemReverted({ target: payload.path })),
 						fetchItemVersions(),
 						showRevertItemSuccessNotification(),
-						reloadDetailedItem({ path: payload.path })
+						reloadContentItem({ path: payload.path })
 					])
 				);
 			})

@@ -17,16 +17,27 @@
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 import replace from '@rollup/plugin-replace';
-import pkg from './package.json' assert { type: 'json' };
+import pkg from './package.json' with { type: 'json' };
 import { swc } from 'rollup-plugin-swc3';
 import alias from '@rollup/plugin-alias';
+import json from '@rollup/plugin-json';
+import svg from 'rollup-plugin-svg';
+import postcss from 'rollup-plugin-postcss';
 
 /** @type {import('rollup').InputPluginOption} */
 const plugins = [
+  json(),
   replace({
     preventAssignment: true,
     'process.env.NODE_ENV': JSON.stringify('production'),
-    'process.env.VERSION': JSON.stringify(pkg.version)
+    'process.env.VERSION': JSON.stringify(pkg.version),
+    'import.meta.env.NODE_ENV': JSON.stringify('production'),
+    'import.meta.env.VERSION': JSON.stringify(pkg.version)
+  }),
+  svg(),
+  postcss({
+    inject: true, // Injects styles into <head> at runtime
+    minimize: true, // Minifies the CSS
   }),
   swc({ sourceMaps: true }),
   alias({
@@ -76,7 +87,8 @@ export default [
       file: '../../static-assets/scripts/craftercms-xb.umd.js',
       format: 'umd',
       amd: { id: pkg.craftercms.id },
-      globals
+      globals,
+      inlineDynamicImports: true,
     }
   },
 
