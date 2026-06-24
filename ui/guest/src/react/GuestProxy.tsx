@@ -212,26 +212,29 @@ export function GuestProxy() {
 			}
 		};
 		const onDragHandler: JQuery.EventHandlerBase<any, any> = (e): void => {
-			const dragScroll = function (step) {
-				var scrollY = $(window).scrollTop();
-				$(window).scrollTop(scrollY + step);
+			const DRAG_SCROLL_STEP = 1; // pixels per scroll
+			const DRAG_SCROLL_INTERVAL = 80; // ms; increase this to slow down scrolling
+
+			const dragScroll = function (step: number) {
+				const scrollY = window.scrollY || window.pageYOffset;
+				window.scrollTo({ top: scrollY + step, behavior: 'auto' });
 				if (!stopDragScroll) {
 					setTimeout(function () {
 						dragScroll(step);
-					}, 20);
+					}, DRAG_SCROLL_INTERVAL);
 				}
 			};
 
 			stopDragScroll = true;
 			if (e.originalEvent.clientY < 150) {
 				stopDragScroll = false;
-				dragScroll(-1);
+				dragScroll(-DRAG_SCROLL_STEP);
 			}
 			const windowHeight = document.querySelector('html').clientHeight;
 			const windowWidth = document.querySelector('html').clientWidth;
 			if (e.originalEvent.clientX <= windowWidth && e.originalEvent.clientY > windowHeight - 150) {
 				stopDragScroll = false;
-				dragScroll(1);
+				dragScroll(DRAG_SCROLL_STEP);
 			}
 		};
 
