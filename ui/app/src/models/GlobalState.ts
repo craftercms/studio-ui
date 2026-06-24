@@ -221,6 +221,7 @@ export interface GlobalState {
 			code: number;
 			message: string;
 		};
+		createContentCompactView: boolean;
 	};
 	previewNavigation: {
 		currentUrlPath: string;

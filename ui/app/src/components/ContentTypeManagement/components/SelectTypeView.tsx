@@ -37,6 +37,7 @@ import Typography from '@mui/material/Typography';
 import useArchetypes from '../../../hooks/useArchetypes';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { getPossibleTranslation } from '../../../utils/i18n';
+import { useSelection } from '../../../hooks/useSelection';
 
 export interface SelectContentTypeProps {
 	sx?: BoxProps['sx'];
