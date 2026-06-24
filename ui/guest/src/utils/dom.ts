@@ -424,8 +424,8 @@ export function elementOffset(element: Element) {
 }
 
 export const DRAG_SCROLL_MARGIN = 150;
-export const DRAG_SCROLL_STEP = 1;
-export const DRAG_SCROLL_INTERVAL = 80;
+export const DRAG_SCROLL_STEP = 5; // pixels to scroll per interval
+export const DRAG_SCROLL_INTERVAL = 8; // milliseconds between intervals
 
 /**
  * Determines if the given element is one of the primary scroll elements for the entire document.

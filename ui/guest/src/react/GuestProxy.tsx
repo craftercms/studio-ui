@@ -211,6 +211,17 @@ export function GuestProxy() {
 
 		let stopDragScroll = false;
 		let scrollContainer: Element = document.documentElement;
+		let dragScrollTimer: ReturnType<typeof setTimeout> | null = null;
+		let dragScrollStep = 0;
+
+		const stopDragScrolling = () => {
+			stopDragScroll = true;
+			dragScrollStep = 0;
+			if (dragScrollTimer) {
+				clearTimeout(dragScrollTimer);
+				dragScrollTimer = null;
+			}
+		};
 
 		const onDragScroll: JQuery.EventHandlerBase<any, any> = (e): void => {
 			const { clientX, clientY } = e.originalEvent;
@@ -218,31 +229,35 @@ export function GuestProxy() {
 			const topEdge = bounds.top + DRAG_SCROLL_MARGIN;
 			const bottomEdge = bounds.bottom - DRAG_SCROLL_MARGIN;
 
-			const dragScroll = (step: number) => {
-				scrollContainerBy(scrollContainer, step);
-				if (!stopDragScroll) {
-					setTimeout(() => dragScroll(step), DRAG_SCROLL_INTERVAL);
-				}
+			const dragScroll = () => {
+				if (stopDragScroll || dragScrollStep === 0) return;
+				scrollContainerBy(scrollContainer, dragScrollStep);
+				dragScrollTimer = setTimeout(dragScroll, DRAG_SCROLL_INTERVAL);
 			};
 
-			stopDragScroll = true;
+			dragScrollStep = 0;
 			if (clientX >= bounds.left && clientX <= bounds.right && clientY < topEdge) {
-				stopDragScroll = false;
-				dragScroll(-DRAG_SCROLL_STEP);
+				dragScrollStep = -DRAG_SCROLL_STEP;
 			} else if (clientX >= bounds.left && clientX <= bounds.right && clientY > bottomEdge) {
+				dragScrollStep = DRAG_SCROLL_STEP;
+			}
+
+			if (dragScrollStep === 0) {
+				stopDragScrolling();
+			} else if (!dragScrollTimer) {
 				stopDragScroll = false;
-				dragScroll(DRAG_SCROLL_STEP);
+				dragScroll();
 			}
 		};
 
 		const handler: JQuery.EventHandlerBase<any, any> = (e: Event): void => {
 			if (e.type === 'dragstart') {
 				scrollContainer = getScrollContainer(e.currentTarget as Element);
-				stopDragScroll = false;
+				stopDragScrolling();
 			} else if (e.type === 'drag' || e.type === 'dragover') {
 				onDragScroll(e);
 			} else if (e.type === 'dragend') {
-				stopDragScroll = true;
+				stopDragScrolling();
 			}
 
 			const record = ElementRegistry.fromElement(e.currentTarget as Element);
@@ -529,6 +544,7 @@ export function GuestProxy() {
 		});
 
 		return () => {
+			stopDragScrolling();
 			sub.unsubscribe();
 			$(document)
 				.off('mouseover', '[data-craftercms-model-id]', handler)
