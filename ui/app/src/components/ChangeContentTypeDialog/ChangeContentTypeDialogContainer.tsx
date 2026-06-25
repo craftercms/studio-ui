@@ -33,9 +33,10 @@ import { useDispatch } from 'react-redux';
 import { nanoid } from 'nanoid';
 import { pushConfirmDialog } from '../../utils/system';
 import { popDialog } from '../../state/actions/dialogStack';
+import Alert from '@mui/material/Alert';
 
 export function ChangeContentTypeDialogContainer(props: ChangeContentTypeDialogContainerProps) {
-	const { item, onContentTypeSelected, initialCompact = false, onClose } = props;
+	const { item, onContentTypeSelected, initialCompact = false, onClose, contentTypes, isFetching } = props;
 	const dispatch = useDispatch();
 	const { formatMessage } = useIntl();
 
@@ -62,17 +63,14 @@ export function ChangeContentTypeDialogContainer(props: ChangeContentTypeDialogC
 		);
 	};
 
-	const { contentTypes, isFetching } = useFetchAllowedTypesForPath(
-		getNormalizedFolderPathForApi1GetTypes(item),
-		// Filter only compatible types, and filter out current type.
-		(types) => types.filter((type) => type.type === item.systemType && item.contentTypeId != type.id)
-	);
 	// Show the select type view if there are content types to show, or if it's still loading (to show the skeleton). Otherwise, show the empty state.
 	const showSelectTpeView = contentTypes?.length || isFetching;
 
 	return (
 		<>
-			<DialogBody sx={{ minHeight: 670, justifyContent: showSelectTpeView ? 'start' : 'center' }}>
+			<DialogBody
+				sx={{ minHeight: contentTypes?.length ? 670 : 300, justifyContent: showSelectTpeView ? 'start' : 'center' }}
+			>
 				{showSelectTpeView ? (
 					<SelectTypeView
 						initialCompact={initialCompact}
@@ -101,15 +99,28 @@ export function ChangeContentTypeDialogContainer(props: ChangeContentTypeDialogC
 						}}
 					/>
 				) : (
-					<EmptyState
-						title={<FormattedMessage defaultMessage="No types available for the item." />}
-						sxs={{ root: { height: '100%' } }}
-					/>
+					<>
+						<EmptyState
+							title={<FormattedMessage defaultMessage="No available content types." />}
+							subtitle={
+								<FormattedMessage defaultMessage="There are no compatible content types available for this item." />
+							}
+							sxs={{ root: { height: '100%' } }}
+						/>
+						{/* <Alert severity="info">
+							<FormattedMessage defaultMessage="No available content types." />
+							<FormattedMessage defaultMessage="There are no available content types for this item." />
+						</Alert> */}
+					</>
 				)}
 			</DialogBody>
 			<DialogFooter>
 				<SecondaryButton onClick={(e) => onClose(e, null)}>
-					<FormattedMessage defaultMessage="Cancel" />
+					{contentTypes?.length ? (
+						<FormattedMessage defaultMessage="Cancel" />
+					) : (
+						<FormattedMessage defaultMessage="Close" />
+					)}
 				</SecondaryButton>
 			</DialogFooter>
 		</>

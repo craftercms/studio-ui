@@ -19,10 +19,13 @@ import StandardAction from '../../models/StandardAction';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 import { NewContentDialogProps } from '../NewContentDialog/utils';
+import { ContentType } from '../../models';
 
 export interface ChangeContentTypeDialogBaseProps {
 	item: ContentItem;
 	initialCompact: boolean;
+	contentTypes: ContentType[];
+	isFetching: boolean;
 }
 
 export interface ChangeContentTypeDialogProps extends ChangeContentTypeDialogBaseProps, EnhancedDialogProps {
