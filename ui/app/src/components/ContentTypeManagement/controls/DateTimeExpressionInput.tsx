@@ -28,8 +28,9 @@ export interface TextProps extends TypeBuilderControl {
 	value: string;
 }
 
-const DATE_TIME_FORMAT_OFFSET = 'now [+ or -] [number] [days | weeks | years | hours | minutes] [optional HH:mm[:ss]]';
-const DATE_TIME_FORMAT_DAY = '{day-of-week} [optional HH:mm[:ss]]';
+const DATE_TIME_FORMAT_OFFSET =
+	'[now] [+ or -] [number] [days | weeks | years | hours | minutes | d | w | y | h | m] [optional HH:mm[:ss]]';
+const DATE_TIME_FORMAT_DAY = '[day-of-week | {day-of-week} | {macro}] [optional HH:mm[:ss]]';
 const DATE_TIME_EXAMPLE =
 	"'now', 'now+5days', 'now-30m', '+2d', '-2w', 'monday', '{friday} 09:00', '{now+2days} 09:30:15'";
 const TIME_FORMAT = 'now[+ or -][number][hours | minutes]';

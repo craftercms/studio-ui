@@ -632,6 +632,12 @@ export function processPopulateExpression({
 		}
 	}
 
-	if (staticTime) setTimeOnDate(date, staticTime);
+	if (staticTime) {
+		setTimeOnDate(date, staticTime);
+		if (!allowPastDate && date.getTime() < Date.now()) {
+			date = new Date();
+			date.setSeconds(59, 0);
+		}
+	}
 	return date;
 }
