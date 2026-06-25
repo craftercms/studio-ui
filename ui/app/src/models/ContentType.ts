@@ -59,7 +59,8 @@ export type ValidationKeys =
 export type ContentTypeFieldValidations = Record<ValidationKeys, ContentTypeFieldValidation>;
 
 export interface ValidationResult {
-	id: string;
+	id?: string;
+	message?: string;
 	level?: 'required' | 'suggestion' | 'info';
 	values?: object;
 }
