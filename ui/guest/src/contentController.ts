@@ -174,8 +174,8 @@ export function byPathFetchIfNotLoaded(path: string): Observable<ContentInstance
 	} else if (requestedPaths[path]) {
 		return paths$.pipe(
 			filter((paths) => Boolean(paths[path])),
-			map((paths) => paths[path]),
-			map((modelId) => models$.value[modelId])
+			take(1),
+			map((paths) => models$.value[paths[path]])
 		);
 	} else {
 		requestedPaths[path] = true;
