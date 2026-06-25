@@ -24,8 +24,6 @@ import { ContentType } from '../../models';
 export interface ChangeContentTypeDialogBaseProps {
 	item: ContentItem;
 	initialCompact: boolean;
-	contentTypes?: ContentType[];
-	isFetching: boolean;
 }
 
 export interface ChangeContentTypeDialogProps extends ChangeContentTypeDialogBaseProps, EnhancedDialogProps {
@@ -39,4 +37,7 @@ export interface ChangeContentTypeDialogStateProps extends ChangeContentTypeDial
 }
 
 export interface ChangeContentTypeDialogContainerProps
-	extends ChangeContentTypeDialogBaseProps, Pick<ChangeContentTypeDialogProps, 'onContentTypeSelected' | 'onClose'> {}
+	extends ChangeContentTypeDialogBaseProps, Pick<ChangeContentTypeDialogProps, 'onContentTypeSelected' | 'onClose'> {
+	contentTypes?: ContentType[];
+	isFetching: boolean;
+}
