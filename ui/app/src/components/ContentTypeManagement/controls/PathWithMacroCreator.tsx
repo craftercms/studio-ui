@@ -40,7 +40,7 @@ export interface PathWithMacroCreatorProps extends TypeBuilderControl {
 	value: string;
 }
 
-const macroCreatorLookupTable = {
+export const macroCreatorLookupTable = {
 	objectId: {
 		macro: '{objectId}',
 		description: defineMessage({ defaultMessage: 'Inserts a GUID.' })

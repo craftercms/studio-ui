@@ -132,6 +132,7 @@ import { fetchAffectedPackages } from '../../services/workflow';
 import useMount from '../../hooks/useMount';
 import { nnou, nou } from '../../utils/object';
 import { buildContentXml } from './lib/valueSerializers';
+import { processPathMacros } from '../../utils/path';
 
 export interface FormSavePromiseResult {
 	close: boolean;
@@ -451,13 +452,19 @@ function FormBootstrap(props: FormsEngineProps) {
 			});
 			const { [XmlKeys.fileName]: _, ...valuesWithoutFileName } = values;
 
+			const objectId = contentObject[XmlKeys.modelId] as string;
 			initializeState(atoms, values, {
-				id: contentObject[XmlKeys.modelId] as string,
+				id: objectId,
 				// TODO: Should/could we somehow deduce the target path?
 				path: null,
 				// TODO: Sourcemap? How can we determine what would be inherited by this content? New API?
 				sourceMap: null,
-				pathInSite: create.path,
+				pathInSite: processPathMacros({
+					path: create.path,
+					objectId,
+					fullParentPath: '',
+					useUUID: false
+				}),
 				contentType,
 				contentObject,
 				contentXml: buildContentXml(valuesWithoutFileName, contentTypesById)
