@@ -452,7 +452,9 @@ export function validateTimePopulateExpression(expr: string): boolean {
  * @param expr {string} The populate date expression to validate.
  * @returns true if the expression is valid, false otherwise.
  *
- * Supports: now, now+/-N[days|weeks|years|hours|minutes], day-of-week macros, and {macro} with optional time.
+ * Supports: now, now+/-N[days|weeks|years|hours|minutes], day-of-week names, and {macro} with optional HH:mm[:ss].
+ * A static time suffix is only valid on the {macro} form (e.g. "{friday} 09:00"), not on plain expressions
+ * (e.g. "monday 09:00" or "now+2d 09:00").
  */
 export function validateDatePopulateExpression(expr: string): boolean {
 	if (!expr) return false;
@@ -542,15 +544,21 @@ function setTimeOnDate(date: Date, timeStr: string) {
 }
 
 /**
- * Takes an expression like "now", "now+5days", "now-3weeks", "now+2years", "now-4hours", "now+30minutes"
- * and returns a Date object representing the calculated date. If the expression is invalid, it returns the
- * current date.
+ * Evaluates a populate date/time expression and returns the resulting Date.
+ * If the expression is invalid, returns the current date.
+ *
+ * Supported forms include plain offsets ("now", "now+5days", "+2d"), day-of-week names ("monday"),
+ * and braced macros with an optional static time ("{friday} 09:00", "{now+2days} 09:30:15").
  *
  * @param params {Object} - The parameters for processing the date expression.
- * @param params.expression {string}  - The date expression to process ('now[+ or -][number][days or weeks or years or hours or minutes]'
- * 																			e.g. 'now', 'now+5hours', 'now-30minutes', 'now+10days', 'now-2weeks', 'now+1years').
- * @param params.validatePopulateExpression {Function} - A function to validate the expression. If the expression is invalid, the current date is returned.
- * @param [params.allowPastDate=false] {boolean} - If `false`, sets "now" expression to the end of the current minute. Note: This does not prevent past dates for other expressions (e.g., "now-5days"); the calling control is responsible for that validation.
+ * @param params.expression {string} - The populate expression to evaluate.
+ * @param params.validatePopulateExpression {Function} - Validates the expression; invalid expressions fall back to now.
+ * @param [params.allowPastDate=false] {boolean} - When `false` (the default), avoids populating a datetime in the past:
+ *   - Plain `now` sets seconds to :59 on the current minute.
+ *   - `{macro} HH:mm[:ss]` applies the static time first; if the result is already in the past, falls back to
+ *     the current time with seconds set to :59 (e.g. `{now} 00:00` does not stay at midnight for most of the day).
+ *   - Other past-producing expressions (e.g. "now-5days") are not clamped here; the field control validates those.
+ *   When `true`, the computed datetime is returned as-is, including past static-time results.
  *
  * @returns {Date} The calculated date based on the expression.
  */

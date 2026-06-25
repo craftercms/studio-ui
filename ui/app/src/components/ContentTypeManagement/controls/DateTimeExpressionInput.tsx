@@ -29,8 +29,8 @@ export interface TextProps extends TypeBuilderControl {
 }
 
 const DATE_TIME_FORMAT_OFFSET =
-	'[now] [+ or -] [number] [days | weeks | years | hours | minutes | d | w | y | h | m] [optional HH:mm[:ss]]';
-const DATE_TIME_FORMAT_DAY = '[day-of-week | {day-of-week} | {macro}] [optional HH:mm[:ss]]';
+	'[now] [+ or -] [number] [days | weeks | years | hours | minutes | d | w | y | h | m]';
+const DATE_TIME_FORMAT_DAY = '[day-of-week | {day-of-week}] or {macro} [optional HH:mm[:ss]]';
 const DATE_TIME_EXAMPLE =
 	"'now', 'now+5days', 'now-30m', '+2d', '-2w', 'monday', '{friday} 09:00', '{now+2days} 09:30:15'";
 const TIME_FORMAT = 'now[+ or -][number][hours | minutes]';
@@ -78,6 +78,11 @@ export function DateTimeExpressionInput(props: TextProps) {
 								<Box>
 									<FormattedMessage defaultMessage="e.g." />: {type === 'dateTime' ? DATE_TIME_EXAMPLE : TIME_EXAMPLE}
 								</Box>
+								{type === 'dateTime' && (
+									<Box>
+										<FormattedMessage defaultMessage="When the field disallows past dates, a static time that resolves to a past datetime (e.g. '{now} 00:00') falls back to the current time instead." />
+									</Box>
+								)}
 							</Box>
 						}
 					>
