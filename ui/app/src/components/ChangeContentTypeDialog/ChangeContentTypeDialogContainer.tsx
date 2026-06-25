@@ -19,12 +19,10 @@ import React from 'react';
 import DialogBody from '../DialogBody/DialogBody';
 import { FormattedMessage, useIntl } from 'react-intl';
 import SelectTypeView from '../ContentTypeManagement/components/SelectTypeView';
-import { getNormalizedFolderPathForApi1GetTypes } from '../../utils/contentType';
 import { TypeListProps } from '../ContentTypeManagement/components/TypeList';
 import ItemDisplay from '../ItemDisplay';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import useFetchAllowedTypesForPath from '../../hooks/useFetchAllowedTypesForPath';
 import { ObjectTypeOption } from '../ContentTypeFilter';
 import { DialogFooter } from '../DialogFooter';
 import SecondaryButton from '../SecondaryButton';
@@ -33,7 +31,6 @@ import { useDispatch } from 'react-redux';
 import { nanoid } from 'nanoid';
 import { pushConfirmDialog } from '../../utils/system';
 import { popDialog } from '../../state/actions/dialogStack';
-import Alert from '@mui/material/Alert';
 
 export function ChangeContentTypeDialogContainer(props: ChangeContentTypeDialogContainerProps) {
 	const { item, onContentTypeSelected, initialCompact = false, onClose, contentTypes, isFetching } = props;

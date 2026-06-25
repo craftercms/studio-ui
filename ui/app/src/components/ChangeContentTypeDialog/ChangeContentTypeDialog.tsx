@@ -46,7 +46,7 @@ export function ChangeContentTypeDialog(props: ChangeContentTypeDialogProps) {
 				item={item}
 				initialCompact={initialCompact}
 				contentTypes={contentTypes}
-				isFetching={true}
+				isFetching={isFetching}
 				onContentTypeSelected={onContentTypeSelected}
 				onClose={props.onClose}
 			/>
