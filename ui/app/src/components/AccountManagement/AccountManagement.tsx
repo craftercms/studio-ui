@@ -49,7 +49,7 @@ import TableBody from '@mui/material/TableBody';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import { preferencesGroups } from './utils';
-import { NumberField } from '@base-ui-components/react/number-field';
+import { NumberField } from '@base-ui/react/number-field';
 import OutlinedInput, { OutlinedInputProps } from '@mui/material/OutlinedInput';
 import AddRounded from '@mui/icons-material/AddRounded';
 import MinusRounded from '@mui/icons-material/RemoveRounded';

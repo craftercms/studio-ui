@@ -1443,6 +1443,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/runtime@npm:^7.29.2":
+  version: 7.29.7
+  resolution: "@babel/runtime@npm:7.29.7"
+  checksum: 10/9883b4951787779fd382b121f22f92966d85f19434841f65fb00b2dfec232107e139683f47c6f252891826ad8ee18317b46c3a0e4819116a9885f47b46d7126a
+  languageName: node
+  linkType: hard
+
 "@babel/template@npm:^7.27.1, @babel/template@npm:^7.27.2":
   version: 7.27.2
   resolution: "@babel/template@npm:7.27.2"
@@ -1515,35 +1522,39 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@base-ui-components/react@npm:^1.0.0-rc.0":
-  version: 1.0.0-rc.0
-  resolution: "@base-ui-components/react@npm:1.0.0-rc.0"
+"@base-ui/react@npm:^1.6.0":
+  version: 1.6.0
+  resolution: "@base-ui/react@npm:1.6.0"
   dependencies:
-    "@babel/runtime": "npm:^7.28.4"
-    "@base-ui-components/utils": "npm:0.2.2"
-    "@floating-ui/react-dom": "npm:^2.1.6"
-    "@floating-ui/utils": "npm:^0.2.10"
-    reselect: "npm:^5.1.1"
-    tabbable: "npm:^6.3.0"
+    "@babel/runtime": "npm:^7.29.2"
+    "@base-ui/utils": "npm:0.3.1"
+    "@floating-ui/react-dom": "npm:^2.1.8"
+    "@floating-ui/utils": "npm:^0.2.11"
     use-sync-external-store: "npm:^1.6.0"
   peerDependencies:
+    "@date-fns/tz": ^1.2.0
     "@types/react": ^17 || ^18 || ^19
+    date-fns: ^4.0.0
     react: ^17 || ^18 || ^19
     react-dom: ^17 || ^18 || ^19
   peerDependenciesMeta:
+    "@date-fns/tz":
+      optional: true
     "@types/react":
       optional: true
-  checksum: 10/ea22dd8206962a1b74fea30f4b20f8b5995bd20155466a5ee7fc7a59cc1632e2ba9615094eac9983dbf8387e50daa8b078024da85b3a8d60cdbc43fb1cfc3b50
+    date-fns:
+      optional: true
+  checksum: 10/7fed3b731e6224a473e68a901ac75014f65712e897ace01ee7cbcecd2e985c60ff0e1239a92f21cdc5db822a3b664d3f32aed27fe6f00428b2c58669771056d2
   languageName: node
   linkType: hard
 
-"@base-ui-components/utils@npm:0.2.2":
-  version: 0.2.2
-  resolution: "@base-ui-components/utils@npm:0.2.2"
+"@base-ui/utils@npm:0.3.1":
+  version: 0.3.1
+  resolution: "@base-ui/utils@npm:0.3.1"
   dependencies:
-    "@babel/runtime": "npm:^7.28.4"
-    "@floating-ui/utils": "npm:^0.2.10"
-    reselect: "npm:^5.1.1"
+    "@babel/runtime": "npm:^7.29.2"
+    "@floating-ui/utils": "npm:^0.2.11"
+    reselect: "npm:^5.2.0"
     use-sync-external-store: "npm:^1.6.0"
   peerDependencies:
     "@types/react": ^17 || ^18 || ^19
@@ -1552,7 +1563,7 @@ __metadata:
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: 10/a67803b5637cfce1071963f958306f90784f7934ae0b072b450dbf7f2e3423ea9b40e420672849cfcf2965c94ac5960d2c6a5e04e359f1f76166b929dda932a2
+  checksum: 10/48fe7f0b1acf8c76457ac502f75e702f0c5d266311e58f96a192a73d1d3ce3e1f2f2fe9e612cb11631dbe3ecd4acc87664341e9973946ec0472163d6195a72bf
   languageName: node
   linkType: hard
 
@@ -1749,7 +1760,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@craftercms/studio-ui@workspace:ui/app"
   dependencies:
-    "@base-ui-components/react": "npm:^1.0.0-rc.0"
+    "@base-ui/react": "npm:^1.6.0"
     "@craftercms/uppy": "workspace:^"
     "@emotion/css": "npm:^11.13.5"
     "@emotion/react": "npm:^11.14.0"
@@ -2392,7 +2403,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@floating-ui/react-dom@npm:^2.1.6":
+"@floating-ui/react-dom@npm:^2.1.8":
   version: 2.1.8
   resolution: "@floating-ui/react-dom@npm:2.1.8"
   dependencies:
@@ -2411,7 +2422,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@floating-ui/utils@npm:^0.2.10, @floating-ui/utils@npm:^0.2.11":
+"@floating-ui/utils@npm:^0.2.11":
   version: 0.2.11
   resolution: "@floating-ui/utils@npm:0.2.11"
   checksum: 10/72150138ba1c274d757a1da85233202fa9fdfd2272ec1fb0883eb0ffdf138863af81573049ed2c20b98adb4b7ae2236065541ce14037fe328955089831a678d5
@@ -12117,6 +12128,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"reselect@npm:^5.2.0":
+  version: 5.2.0
+  resolution: "reselect@npm:5.2.0"
+  checksum: 10/e53d37a35f84132682b0a819d942ff7debea90fe126f4bb5eef0f21b1f48f45dec89d27990f2ef5865f5e05d64bb88fb41e4341eb276674aee6f1f7f7362c3e8
+  languageName: node
+  linkType: hard
+
 "resolve-alpn@npm:^1.2.0":
   version: 1.2.1
   resolution: "resolve-alpn@npm:1.2.1"
@@ -13234,13 +13252,6 @@ __metadata:
   dependencies:
     "@pkgr/core": "npm:^0.2.9"
   checksum: 10/2f51978bfed81aaf0b093f596709a72c49b17909020f42b43c5549f9c0fe18b1fe29f82e41ef771172d729b32e9ce82900a85d2b87fa14d59f886d4df8d7a329
-  languageName: node
-  linkType: hard
-
-"tabbable@npm:^6.3.0":
-  version: 6.5.0
-  resolution: "tabbable@npm:6.5.0"
-  checksum: 10/c3b37430dd1a9f1c3a413b46d0598e3af55588959d4c386eeb1910a82632ac45cb6ed237902353e38e2a956326286773621cf5b8dca6d82c76da441918f8c718
   languageName: node
   linkType: hard
 
