@@ -35,7 +35,9 @@ export const componentsDataSourceDescriptor: DescriptorContentType = {
 				'baseRepoPath',
 				'baseBrowsePath',
 				'contentTypes',
-				'tags'
+				'tags',
+				'sortBy',
+				'sortOrder'
 			]
 		})
 	],
@@ -95,6 +97,26 @@ export const componentsDataSourceDescriptor: DescriptorContentType = {
 			name: defineMessage({ defaultMessage: 'Tags' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
+		},
+		sortBy: {
+			id: 'sortBy',
+			type: 'sort-dropdown',
+			name: defineMessage({ defaultMessage: 'Sort By' }),
+			defaultValue: '-AUTO-',
+			validations: immutableEmptyObject,
+			properties: {
+				type: { name: 'type', type: 'string', value: 'sortBy' }
+			}
+		},
+		sortOrder: {
+			id: 'sortOrder',
+			type: 'sort-dropdown',
+			name: defineMessage({ defaultMessage: 'Sort Order' }),
+			defaultValue: undefined,
+			validations: immutableEmptyObject,
+			properties: {
+				type: { name: 'type', type: 'string', value: 'sortOrder' }
+			}
 		}
 	}
 };

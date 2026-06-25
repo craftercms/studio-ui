@@ -206,6 +206,10 @@ export function ImagePicker(props: ImagePickerProps) {
 					path: processPath(choice.path),
 					multiSelect: false,
 					preselectedPaths: value ? [value] : [],
+					initialParameters: {
+						sortBy: choice.options?.sortBy,
+						sortOrder: choice.options?.sortOrder
+					},
 					onSuccess(imageData: MediaItem) {
 						// Check if the image meets restrictions
 						validateImageRestrictions(imageData.path, restrictions).then((meetsRestrictions) => {
@@ -233,6 +237,10 @@ export function ImagePicker(props: ImagePickerProps) {
 					dispatch,
 					path: ensureSingleSlash(`${processPath(choice.path)}/.+`),
 					preselectedPaths: value ? [value] : [],
+					initialParameters: {
+						sortBy: choice.options?.sortBy,
+						sortOrder: choice.options?.sortOrder
+					},
 					onAcceptSelection(images) {
 						validateImageRestrictions(images[0], restrictions).then((meetsRestrictions) => {
 							if (!meetsRestrictions) {

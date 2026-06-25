@@ -144,6 +144,10 @@ export interface AllowedPathsData {
 	path: string;
 	title: string;
 	allowedContentTypes?: string[];
+	options?: {
+		sortBy?: string;
+		sortOrder?: 'asc' | 'desc';
+	};
 }
 
 type ContentCreationStrategy = 'embedded' | 'shared';
@@ -308,6 +312,10 @@ function NodeSelector(props: NodeSelectorProps) {
 					path: processPath(pickerChoice.path),
 					contentTypes: pickerChoice.allowedContentTypes,
 					preselectedPaths: allowDuplicates ? [] : value.map((item) => item.key).filter(Boolean),
+					initialParameters: {
+						sortBy: pickerChoice.options?.sortBy,
+						sortOrder: pickerChoice.options?.sortOrder
+					},
 					onSuccess(items: MediaItem | MediaItem[]) {
 						const newNodeSelectorItems = [];
 						asArray(items).forEach((item) => {
@@ -335,6 +343,10 @@ function NodeSelector(props: NodeSelectorProps) {
 					path: ensureSingleSlash(`${processPath(pickerChoice.path)}/.+`),
 					contentTypes: pickerChoice.allowedContentTypes,
 					preselectedPaths: value.map((item) => item.key).filter(Boolean),
+					initialParameters: {
+						sortBy: pickerChoice.options?.sortBy,
+						sortOrder: pickerChoice.options?.sortOrder
+					},
 					onAcceptSelection(paths, items) {
 						const newNodeSelectorItems = [];
 						items?.forEach((item) => {

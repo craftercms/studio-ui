@@ -40,15 +40,21 @@ export function useConsolidatedImagePickerData(dataSources: DataSource[]): Conso
 				case 'img-repository-upload': {
 					const path = ds.properties.repoPath || ds.properties.path;
 					if (!path) break;
+					const sortOptions = {
+						sortBy: ds.properties?.['sortBy'] as string | undefined,
+						sortOrder: ds.properties?.['sortOrder'] as 'asc' | 'desc' | undefined
+					};
 					if (ds.properties.useSearch) {
 						allowedSearchPaths.push({
 							title: ds.title,
-							path
+							path,
+							options: sortOptions
 						});
 					} else {
 						allowedBrowsePaths.push({
 							title: ds.title,
-							path
+							path,
+							options: sortOptions
 						});
 					}
 					break;
