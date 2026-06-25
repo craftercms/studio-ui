@@ -461,6 +461,10 @@ export function getFormsEngineCloseAfterSave(username: string): string {
 	return `craftercms.${username}.formsEngine.closeAfterSave`;
 }
 
+export function getFormsEngineMinimizeAfterSave(username: string): string {
+	return `craftercms.${username}.formsEngine.minimizeAfterSave`;
+}
+
 export function getCompareVersionDialogViewModes(username: string): { entireDiff: boolean; accordionView: boolean } {
 	return JSON.parse(localStorage.getItem(`craftercms.${username}.compareVersionDialog.viewModes`));
 }
@@ -512,6 +516,63 @@ export function getViewGroupedTypes(user: string): boolean {
 
 export function removeViewGroupedTypes(user: string) {
 	window.localStorage.removeItem(`craftercms.${user}.viewGroupedTypes`);
+}
+
+const SNACKBAR_DURATION_CHANGED = 'craftercms:snackbarDurationChanged';
+export function subscribeSnackbarDuration(onStoreChange: () => void) {
+	window.addEventListener(SNACKBAR_DURATION_CHANGED, onStoreChange);
+	const storageListener = (e: StorageEvent) => {
+		if (e.key?.includes('.snackbarDuration')) {
+			onStoreChange();
+		}
+	};
+	window.addEventListener('storage', storageListener);
+	return () => {
+		window.removeEventListener(SNACKBAR_DURATION_CHANGED, onStoreChange);
+		window.removeEventListener('storage', storageListener);
+	};
+}
+export function setStoredSnackbarDuration(user: string, value: number) {
+	window.localStorage.setItem(`craftercms.${user}.snackbarDuration`, value.toString());
+	window.dispatchEvent(new CustomEvent(SNACKBAR_DURATION_CHANGED, { detail: { user, value } }));
+}
+
+export function getStoredSnackbarDuration(user: string): number | null {
+	const value = window.localStorage.getItem(`craftercms.${user}.snackbarDuration`);
+	return value ? parseInt(value, 10) : null;
+}
+
+export function removeStoredSnackbarDuration(user: string) {
+	window.localStorage.removeItem(`craftercms.${user}.snackbarDuration`);
+}
+
+const ENABLE_ANIMATIONS_CHANGED = 'craftercms:enableAnimationsChanged';
+export function subscribeEnableAnimations(onStoreChange: () => void) {
+	window.addEventListener(ENABLE_ANIMATIONS_CHANGED, onStoreChange);
+	const storageListener = (e: StorageEvent) => {
+		// Filter by key to avoid listening to other localStorage changes
+		if (e.key?.includes('.enableAnimations')) {
+			onStoreChange();
+		}
+	};
+	window.addEventListener('storage', storageListener);
+	return () => {
+		window.removeEventListener(ENABLE_ANIMATIONS_CHANGED, onStoreChange);
+		window.removeEventListener('storage', storageListener);
+	};
+}
+export function setStoredEnableAnimations(user: string, value: boolean) {
+	window.localStorage.setItem(`craftercms.${user}.enableAnimations`, JSON.stringify(value));
+	window.dispatchEvent(new CustomEvent(ENABLE_ANIMATIONS_CHANGED, { detail: { user, value } }));
+}
+
+export function getStoredEnableAnimations(user: string): boolean | null {
+	const value = window.localStorage.getItem(`craftercms.${user}.enableAnimations`);
+	return value ? value === 'true' : null;
+}
+
+export function removeStoredEnableAnimations(user: string) {
+	window.localStorage.removeItem(`craftercms.${user}.enableAnimations`);
 }
 
 export function setStoredShowDisabledUsers(user: string, value: boolean) {

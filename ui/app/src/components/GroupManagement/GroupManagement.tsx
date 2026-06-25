@@ -96,10 +96,6 @@ export function GroupManagement() {
 		setSelectedGroup(null);
 	};
 
-	const onSearchButtonClick = () => {
-		searchInputRef.current?.focus();
-	};
-
 	const onSearch = useCallback(
 		(keyword) => {
 			fetchGroups(keyword, 0);
@@ -141,7 +137,6 @@ export function GroupManagement() {
 						}}
 						keyword={keyword}
 						onChange={handleSearchKeyword}
-						onDecoratorButtonClick={onSearchButtonClick}
 						showActionButton={Boolean(keyword)}
 					/>
 				}

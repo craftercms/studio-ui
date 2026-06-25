@@ -467,10 +467,12 @@ function PublishingQueue(props: PublishingQueueProps) {
 				)}
 				page={page}
 				backIconButtonProps={{
-					'aria-label': formatMessage(messages.previous)
+					'aria-label': formatMessage(messages.previous),
+					title: formatMessage(messages.previous)
 				}}
 				nextIconButtonProps={{
-					'aria-label': formatMessage(messages.next)
+					'aria-label': formatMessage(messages.next),
+					title: formatMessage(messages.next)
 				}}
 				onPageChange={handleChangePage}
 				onRowsPerPageChange={handleChangeRowsPerPage}

@@ -89,6 +89,7 @@ export interface FormsEngineAtoms {
 	expandedStateBySectionId: LookupTable<PrimitiveAtom<boolean>>;
 	tableOfContentsDrawerOpen: PrimitiveAtom<boolean>;
 	closeAfterSave: AtomWithStorage;
+	minimizeAfterSave: AtomWithStorage;
 	fileName?: Atom<string>;
 }
 

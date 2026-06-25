@@ -1,5 +1,9 @@
 {
   "contentType.contentNotFound": "Contenido no encontrado.",
+  "globalStyles.clickToAddContent": "Haz clic para añadir contenido.",
+  "globalStyles.contentHidden": "Contenido oculto para permitir el arrastre.",
+  "globalStyles.emptyTarget": "Zona vacía para componentes. Arrastra aquí elementos de contenido nuevos o existentes para añadirlos.",
+  "globalStyles.turnOffEditMode": "Desactiva el modo de edición para interactuar con este elemento.",
   "words.edit": "Editar",
   "words.move": "Mover",
   "words.no": "No",

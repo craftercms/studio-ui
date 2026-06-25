@@ -700,7 +700,8 @@ export const itemActionDispatcher = ({
 									dispatch(pushErrorDialog({ props: { error: response } }));
 								}
 							});
-						}
+						},
+						formatMessage
 					});
 				}
 				break;

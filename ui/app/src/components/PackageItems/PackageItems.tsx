@@ -65,7 +65,6 @@ export function PackageItems(props: PackageItemsProps) {
 		offset: 0,
 		isNextPageLoading: false
 	});
-	const hasNextPage = state.items?.length < state.total;
 	const { username } = useActiveUser();
 	const storedPreferredView = getPublishingPackagePreferredView(username);
 	const [isTreeView, setIsTreeView] = useState(nnou(storedPreferredView) ? storedPreferredView === 'tree' : true);
@@ -99,15 +98,16 @@ export function PackageItems(props: PackageItemsProps) {
 		}
 	}, [packageId, siteId, setState, state.limit]);
 
-	const loadNextPage = () => {
+	const loadNextPage = (startIndex: number, stopIndex: number) => {
+		if (state.isNextPageLoading) return Promise.resolve();
 		setState({ isNextPageLoading: true, error: null });
-		return firstValueFrom(fetchPackageItems(siteId, packageId, { limit: state.limit, offset: state.offset }))
+		const offset = startIndex;
+		return firstValueFrom(fetchPackageItems(siteId, packageId, { limit: state.limit, offset }))
 			.then((items) => {
-				const newOffset = state.offset + state.limit;
 				setState({
 					items: [...state.items, ...items.map((item) => ({ ...item.itemMetadata, path: item.path }))],
 					isNextPageLoading: false,
-					offset: newOffset,
+					offset: offset + state.limit,
 					total: items.total
 				});
 			})
@@ -205,8 +205,7 @@ export function PackageItems(props: PackageItemsProps) {
 							<PackageItemsList
 								items={state.items}
 								totalItems={state.total}
-								hasNextPage={hasNextPage}
-								isNextPageLoading={state.isNextPageLoading}
+								fetchLimit={state.limit}
 								loadNextPage={loadNextPage}
 								onOpenMenu={onOpenMenu}
 							/>
