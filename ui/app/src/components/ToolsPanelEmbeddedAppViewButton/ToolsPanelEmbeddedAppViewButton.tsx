@@ -19,8 +19,8 @@ import ToolsPanelListItemButton, { ToolsPanelListItemButtonProps } from '../Tool
 import { usePossibleTranslation } from '../../hooks/usePossibleTranslation';
 import { WidgetDescriptor } from '../../models';
 import { useDispatch, useStore } from 'react-redux';
-import { showWidgetDialog, updateWidgetDialog } from '../../state/actions/dialogs';
-import { generateDialogId } from '../../utils/dialogs';
+import { pushDialog, updateDialogState } from '../../state/actions/dialogStack';
+import { createComponentId } from '../../utils/system';
 import GlobalState from '../../models/GlobalState';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 
@@ -33,21 +33,31 @@ export function ToolsPanelEmbeddedAppViewButton(props: ToolsPanelEmbeddedAppView
 	const title = usePossibleTranslation(props.title);
 	const dispatch = useDispatch();
 	const store = useStore<GlobalState>();
-	const widgetDialogId = generateDialogId(showWidgetDialog.type);
+	const widgetDialogId = widget.id;
 
 	const openEmbeddedApp = () => {
 		const existing = store.getState().dialogStack.byId[widgetDialogId];
 		if (existing) {
 			const { isMinimized } = existing.props as EnhancedDialogProps;
 			dispatch(
-				updateWidgetDialog({
-					title,
-					widget,
-					...(isMinimized && { isMinimized: false })
+				updateDialogState({
+					id: widgetDialogId,
+					props: {
+						title,
+						widget,
+						...(isMinimized && { isMinimized: false })
+					}
 				})
 			);
 		} else {
-			dispatch(showWidgetDialog({ title, widget }));
+			dispatch(
+				pushDialog({
+					id: widgetDialogId,
+					component: createComponentId('WidgetDialog'),
+					allowMinimize: true,
+					props: { title, widget }
+				})
+			);
 		}
 	};
 
