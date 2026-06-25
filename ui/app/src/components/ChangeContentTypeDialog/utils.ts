@@ -24,7 +24,7 @@ import { ContentType } from '../../models';
 export interface ChangeContentTypeDialogBaseProps {
 	item: ContentItem;
 	initialCompact: boolean;
-	contentTypes: ContentType[];
+	contentTypes?: ContentType[];
 	isFetching: boolean;
 }
 

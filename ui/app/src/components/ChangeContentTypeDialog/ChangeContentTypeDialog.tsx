@@ -32,12 +32,13 @@ export function ChangeContentTypeDialog(props: ChangeContentTypeDialogProps) {
 
 	return (
 		<EnhancedDialog
-			maxWidth={contentTypes?.length ? 'lg' : 'xs'}
+			maxWidth={isFetching || contentTypes?.length ? 'lg' : 'xs'}
 			dialogHeaderProps={{
 				title: <FormattedMessage defaultMessage="Change Content Type" />,
-				subtitle: contentTypes?.length ? (
-					<FormattedMessage defaultMessage="The item can only be changed to the types below." />
-				) : undefined
+				subtitle:
+					isFetching || contentTypes?.length ? (
+						<FormattedMessage defaultMessage="The item can only be changed to the types below." />
+					) : undefined
 			}}
 			{...rest}
 		>
@@ -45,7 +46,7 @@ export function ChangeContentTypeDialog(props: ChangeContentTypeDialogProps) {
 				item={item}
 				initialCompact={initialCompact}
 				contentTypes={contentTypes}
-				isFetching={isFetching}
+				isFetching={true}
 				onContentTypeSelected={onContentTypeSelected}
 				onClose={props.onClose}
 			/>
