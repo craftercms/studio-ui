@@ -99,19 +99,13 @@ export function ChangeContentTypeDialogContainer(props: ChangeContentTypeDialogC
 						}}
 					/>
 				) : (
-					<>
-						<EmptyState
-							title={<FormattedMessage defaultMessage="No available content types." />}
-							subtitle={
-								<FormattedMessage defaultMessage="There are no compatible content types available for this item." />
-							}
-							sxs={{ root: { height: '100%' } }}
-						/>
-						{/* <Alert severity="info">
-							<FormattedMessage defaultMessage="No available content types." />
-							<FormattedMessage defaultMessage="There are no available content types for this item." />
-						</Alert> */}
-					</>
+					<EmptyState
+						title={<FormattedMessage defaultMessage="No available content types." />}
+						subtitle={
+							<FormattedMessage defaultMessage="There are no compatible content types available for this item." />
+						}
+						sxs={{ root: { height: '100%' } }}
+					/>
 				)}
 			</DialogBody>
 			<DialogFooter>
