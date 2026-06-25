@@ -334,7 +334,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 	const { formatMessage } = useIntl();
 	const dialogs = useSelection((state) => state.dialogs);
 	const stack = useSelection((state) => state.dialogStack);
-	const keyboardShortcutsEnabled = useSelection((state) => state.preview.enableKeyboardShortcuts);
+	const keyboardShortcutsEnabled = useSelection((state) => state.preview.keyboardShortcutsEnabled);
 	const models = guest?.models;
 	const modelIdByPath = guest?.modelIdByPath;
 	const hierarchyMap = guest?.hierarchyMap;

@@ -221,7 +221,7 @@ export interface GlobalState {
 			code: number;
 			message: string;
 		};
-		enableKeyboardShortcuts: boolean;
+		keyboardShortcutsEnabled: boolean;
 	};
 	previewNavigation: {
 		currentUrlPath: string;

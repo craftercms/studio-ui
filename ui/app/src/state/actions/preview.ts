@@ -449,4 +449,6 @@ export const mainModelModifiedExternally = /*#__PURE__*/ createAction<ContentEve
 	'MAIN_MODEL_MODIFIED_EXTERNALLY'
 );
 
-export const enableKeyboardShortcuts = /*#__PURE__*/ createAction<{ enabled: boolean }>('KEYBOARD_SHORTCUTS_TOGGLE');
+export const setKeyboardShortcutsEnabled = /*#__PURE__*/ createAction<{ enabled: boolean }>(
+	'SET_KEYBOARD_SHORTCUTS_ENABLED'
+);

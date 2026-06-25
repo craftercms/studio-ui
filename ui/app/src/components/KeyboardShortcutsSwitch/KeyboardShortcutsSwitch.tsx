@@ -18,7 +18,7 @@ import Tooltip from '@mui/material/Tooltip';
 import type { SwitchProps } from '@mui/material/Switch';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
-import { enableKeyboardShortcuts as enableKeyboardShortcutsAction } from '../../state/actions/preview';
+import { setKeyboardShortcutsEnabled as setKeyboardShortcutsEnabledAction } from '../../state/actions/preview';
 import useSelection from '../../hooks/useSelection';
 import Switch from '@mui/material/Switch';
 import { setStoredEnabledKeyboardShortcutsState } from '../../utils/state';
@@ -27,13 +27,13 @@ import { ChangeEvent } from 'react';
 
 export function KeyboardShortcutsSwitch(props: SwitchProps) {
 	const dispatch = useDispatch();
-	const shortcutsEnabled = useSelection((state) => state.preview.enableKeyboardShortcuts);
+	const shortcutsEnabled = useSelection((state) => state.preview.keyboardShortcutsEnabled);
 	const { username } = useActiveUser();
 	const { formatMessage } = useIntl();
 
 	const onChange = (e: ChangeEvent<HTMLInputElement>) => {
 		setStoredEnabledKeyboardShortcutsState(e.target.checked, username);
-		dispatch(enableKeyboardShortcutsAction({ enabled: e.target.checked }));
+		dispatch(setKeyboardShortcutsEnabledAction({ enabled: e.target.checked }));
 	};
 
 	return (
