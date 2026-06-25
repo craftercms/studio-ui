@@ -553,7 +553,8 @@ export const createStableFormContextProps = (
 			useCollapsedToC: undefined,
 			isLargeContainer: undefined,
 			tableOfContentsDrawerOpen: undefined,
-			closeAfterSave: undefined
+			closeAfterSave: undefined,
+			minimizeAfterSave: undefined
 		},
 		changedFieldIds: null,
 		fieldUpdates$: null,

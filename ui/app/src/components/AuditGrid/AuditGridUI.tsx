@@ -428,6 +428,20 @@ export function AuditGridUI(props: AuditGridUIProps) {
 							{ defaultMessage: '{from}–{to} of {countValid, select, true {{count}} other {{estimatedLabel}}}' },
 							{ from, to, count, estimatedLabel, countValid: count !== -1 }
 						);
+					},
+					paginationItemAriaLabel: (type) => {
+						switch (type) {
+							case 'previous':
+								return formatMessage({ defaultMessage: 'Go to previous page' });
+							case 'next':
+								return formatMessage({ defaultMessage: 'Go to next page' });
+							case 'first':
+								return formatMessage({ defaultMessage: 'Go to first page' });
+							case 'last':
+								return formatMessage({ defaultMessage: 'Go to last page' });
+							default:
+								return formatMessage({ defaultMessage: 'Go to page' });
+						}
 					}
 				}}
 			/>

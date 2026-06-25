@@ -42,7 +42,8 @@ import { drawerClasses } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
 
 export interface SearchUIProps
-	extends Required<Pick<SearchProps, 'mode' | 'embedded' | 'onClose' | 'onAcceptSelection'>>,
+	extends
+		Required<Pick<SearchProps, 'mode' | 'embedded' | 'onClose' | 'onAcceptSelection'>>,
 		Pick<
 			UseSearchStateReturn,
 			| 'currentView'
@@ -291,10 +292,12 @@ export function SearchUI(props: SearchUIProps) {
 						rowsPerPage={searchParameters.limit}
 						page={Math.ceil(searchParameters.offset / searchParameters.limit)}
 						backIconButtonProps={{
-							'aria-label': formatMessage(translations.previousPage)
+							'aria-label': formatMessage(translations.previousPage),
+							title: formatMessage(translations.previousPage)
 						}}
 						nextIconButtonProps={{
-							'aria-label': formatMessage(translations.nextPage)
+							'aria-label': formatMessage(translations.nextPage),
+							title: formatMessage(translations.nextPage)
 						}}
 						onPageChange={handleChangePage}
 						onRowsPerPageChange={handleChangeRowsPerPage}

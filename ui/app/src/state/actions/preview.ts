@@ -183,6 +183,7 @@ export const requestWorkflowCancellationDialog = /*#__PURE__*/ createAction<{
 }>('REQUEST_WORKFLOW_CANCELLATION_DIALOG');
 export const requestWorkflowCancellationDialogOnResult = /*#__PURE__*/ createAction<{
 	type: 'continue' | 'close';
+	cancelPackagesComment?: string;
 }>('REQUEST_WORKFLOW_CANCELLATION_DIALOG_ON_RESULT');
 export const updateRteConfig = /*#__PURE__*/ createAction('UPDATE_RTE_CONFIG');
 export const highlightModeChanged = /*#__PURE__*/ createAction('HIGHLIGHT_MODE_CHANGED');

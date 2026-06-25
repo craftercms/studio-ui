@@ -16,6 +16,7 @@
 
 import { LookupTable } from '../../../../models';
 import componentsDescriptor from './components';
+import pagesDescriptor from './pages';
 import audioBrowseRepoDescriptor from './audioBrowseRepo';
 import audioDesktopUploadDescriptor from './audioDesktopUpload';
 import configuredListDescriptor from './configuredList';
@@ -69,6 +70,7 @@ export const commonDataSourceDescriptors: LookupTable<DescriptorField> = {
 
 export type BuiltInDataSourceType =
 	| 'components'
+	| 'pages'
 	| 'audio-browse-repo'
 	| 'audio-desktop-upload'
 	| 'configured-list'
@@ -99,6 +101,7 @@ export type BuiltInDataSourceType =
 
 export const dataSourceDescriptors: Record<BuiltInDataSourceType, DescriptorContentType> = {
 	components: componentsDescriptor,
+	pages: pagesDescriptor,
 	'audio-browse-repo': audioBrowseRepoDescriptor,
 	'audio-desktop-upload': audioDesktopUploadDescriptor,
 	'configured-list': configuredListDescriptor,

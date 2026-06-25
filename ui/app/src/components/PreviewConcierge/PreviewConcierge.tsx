@@ -1130,7 +1130,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 							props: {
 								item: payload.item,
 								onClosed: () => dispatch(requestWorkflowCancellationDialogOnResult({ type: 'close' })),
-								onContinue: () => dispatch(requestWorkflowCancellationDialogOnResult({ type: 'continue' }))
+								onContinue: (cancelPackagesComment) =>
+									dispatch(requestWorkflowCancellationDialogOnResult({ type: 'continue', cancelPackagesComment }))
 							}
 						})
 					);

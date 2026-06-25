@@ -74,7 +74,11 @@ import { areAllPairsEqual } from '../../../utils/array';
 import { deserializeContentDoc } from './valueRetrievers';
 import useUpdateRefs from '../../../hooks/useUpdateRefs';
 import ApiResponse from '../../../models/ApiResponse';
-import { getFormsEngineCloseAfterSave, getFormsEngineCollapseToCKey } from '../../../utils/state';
+import {
+	getFormsEngineCloseAfterSave,
+	getFormsEngineCollapseToCKey,
+	getFormsEngineMinimizeAfterSave
+} from '../../../utils/state';
 import { createComponentId } from '../../../utils/system';
 import { showErrorDialog } from '../../../state/actions/dialogs';
 import { ensureSingleSlash } from '../../../utils/string';
@@ -472,6 +476,9 @@ export function createFormsEngineAtoms(
 			getOnInit: true
 		}) as unknown as AtomWithStorage,
 		closeAfterSave: atomWithStorage(getFormsEngineCloseAfterSave(username), true, undefined, {
+			getOnInit: true
+		}) as unknown as AtomWithStorage,
+		minimizeAfterSave: atomWithStorage(getFormsEngineMinimizeAfterSave(username), false, undefined, {
 			getOnInit: true
 		}) as unknown as AtomWithStorage,
 		...mixin

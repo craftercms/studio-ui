@@ -103,10 +103,6 @@ export function UserManagement(props: UserManagementProps) {
 		setLimit(e.target.value);
 	};
 
-	const onSearchButtonClick = () => {
-		searchInpuRef.current?.focus();
-	};
-
 	const onSearch = useCallback(
 		(keyword) => {
 			fetchUsers(keyword, 0);
@@ -148,7 +144,6 @@ export function UserManagement(props: UserManagementProps) {
 						}}
 						keyword={keyword}
 						onChange={handleSearchKeyword}
-						onDecoratorButtonClick={onSearchButtonClick}
 						showActionButton={Boolean(keyword)}
 					/>
 				}
