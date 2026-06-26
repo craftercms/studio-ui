@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ReactNode, useEffect, useId, useRef, useState } from 'react';
+import React, { ReactNode, useEffect, useId, useMemo, useRef, useState } from 'react';
 import Paper from '@mui/material/Paper';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import DialogHeader from '../DialogHeader/DialogHeader';
@@ -146,21 +146,18 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 	const publishGitFormValid =
 		!isBlank(publishGitFormData.publishingTarget) &&
 		!isBlank(publishGitFormData.title) &&
-		!isBlank(publishGitFormData.comment) &&
 		publishGitFormData.commitIds.replace(/\s/g, '') !== '';
 	const [publishStudioFormData, setPublishStudioFormData] =
 		useSpreadState<PublishFormData>(initialPublishStudioFormData);
 	const publishStudioFormValid =
 		!isBlank(publishStudioFormData.publishingTarget) &&
 		!isBlank(publishStudioFormData.title) &&
-		!isBlank(publishStudioFormData.comment) &&
 		publishStudioFormData.path.replace(/\s/g, '') !== '';
 	const [publishEverythingFormData, setPublishEverythingFormData] = useSpreadState<PublishFormData>(
 		initialPublishEverythingFormData
 	);
 	const publishEverythingFormValid =
 		publishEverythingFormData.publishingTarget !== '' &&
-		!isBlank(publishEverythingFormData.comment) &&
 		!isBlank(publishEverythingFormData.title) &&
 		publishEverythingAck;
 	const fnRefs = useUpdateRefs({ onSubmittingAndOrPendingChange });
@@ -203,28 +200,29 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 					publishEverythingFormData.publishingTarget !== initialPublishingTarget;
 	// endregion
 
-	useEffect(() => {
+	const submissionCommentPlaceholder = useMemo(() => {
+		let comment = '';
 		const formData = refs.current.currentFormData;
 
-		if (formData.comment === '') {
-			if (selectedMode === 'everything' && formData.publishingTarget) {
-				currentSetFormData({
-					comment: formatMessage(
-						{ defaultMessage: 'Publish all changes on the repo to {target}' },
-						{ target: formData.publishingTarget }
-					)
-				});
-			} else if (selectedMode === 'studio') {
-				currentSetFormData({
-					comment: formatMessage({ defaultMessage: 'Publish changes made in Studio via the UI' })
-				});
-			} else if (selectedMode === 'git') {
-				currentSetFormData({
-					comment: formatMessage({ defaultMessage: 'Publish by tags or commit ids' })
-				});
-			}
+		if (selectedMode === 'everything' && formData.publishingTarget) {
+			comment = formatMessage(
+				{ defaultMessage: 'Publish all changes on the repo to {target}' },
+				{ target: formData.publishingTarget }
+			);
+		} else if (selectedMode === 'studio') {
+			comment = formatMessage(
+				{ defaultMessage: 'Publish changes made in Studio via the UI to {target}' },
+				{ target: formData.publishingTarget }
+			);
+		} else if (selectedMode === 'git') {
+			comment = formatMessage(
+				{ defaultMessage: 'Publish by tags or commit ids to {target}' },
+				{ target: formData.publishingTarget }
+			);
 		}
-	}, [selectedMode, refs, currentSetFormData, formatMessage]);
+
+		return comment;
+	}, [selectedMode, refs.current.currentFormData, formatMessage]);
 
 	const bottomElId = useId();
 
@@ -287,7 +285,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 			publishingTarget,
 			commitIds: ids,
 			title,
-			comment
+			comment: isBlank(comment) ? submissionCommentPlaceholder : comment
 		}).subscribe({
 			next() {
 				setIsSubmitting(false);
@@ -331,7 +329,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 							publishingTarget,
 							paths: [{ path, includeChildren: true, includeSoftDeps: false }],
 							title,
-							comment
+							comment: isBlank(comment) ? submissionCommentPlaceholder : comment
 						}).subscribe({
 							next() {
 								setIsSubmitting(false);
@@ -364,7 +362,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 			publishingTarget,
 			publishAll: true,
 			title,
-			comment
+			comment: isBlank(comment) ? submissionCommentPlaceholder : comment
 		}).subscribe({
 			next() {
 				setIsSubmitting(false);
@@ -536,6 +534,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 								mode={selectedMode}
 								publishingTargets={publishingTargets}
 								publishingTargetsError={publishingTargetsError}
+								submissionCommentPlaceholder={submissionCommentPlaceholder}
 							/>
 							{selectedMode === 'everything' ? (
 								<Alert severity="warning" icon={false} sx={{ [`.${alertClasses.message}`]: { overflow: 'visible' } }}>
