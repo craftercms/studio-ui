@@ -121,7 +121,7 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 				// staging (as long as that target is enabled in the system, which is checked next).
 				target = published
 					? (publishingTargets.find((target) => target.name === 'staging')?.name ?? publishingTargets[0].name)
-					: publishingTargets[0].name;
+					: (publishingTargets.find((target) => target.name !== 'staging')?.name ?? '');
 			}
 		}
 
