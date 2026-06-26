@@ -119,12 +119,14 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 			if (publishingTargets?.length && target === '') {
 				// If we haven't found a target by this point, we wish to default the dialog to
 				// staging (as long as that target is enabled in the system, which is checked next).
-				target = publishingTargets.find((target) => target.name === 'staging')?.name ?? publishingTargets[0].name;
+				target = published
+					? (publishingTargets.find((target) => target.name === 'staging')?.name ?? publishingTargets[0].name)
+					: publishingTargets[0].name;
 			}
 		}
 
 		return target;
-	}, [publishingTargets, mainItems]);
+	}, [publishingTargets, mainItems, published]);
 	const commentMaxLength = useSelector<GlobalState, number>(
 		(state) => state.uiConfig.publishing.submissionCommentMaxLength
 	);
