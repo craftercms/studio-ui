@@ -908,7 +908,7 @@ function FormOrchestrator(props: FormsEngineProps) {
 					{isRepeatMode ? (
 						<RepeatModeHeader repeat={repeat} collapse={collapseHeader} />
 					) : isCreateMode ? (
-						<CreateModeHeader path={create?.path} collapse={collapseHeader} />
+						<CreateModeHeader path={Boolean(create?.path) ? pathInSite : undefined} collapse={collapseHeader} />
 					) : (
 						<EditModeHeader isEmbedded={isEmbedded} collapse={collapseHeader} />
 					)}
