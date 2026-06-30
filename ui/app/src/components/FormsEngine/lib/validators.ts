@@ -256,8 +256,8 @@ export async function repeatGroupValidator(
 	meta: ValidatorMetaData
 ): Promise<boolean> {
 	let isValid = true;
-	const minOccurs: number = getPropertyValue(field.properties, 'minOccurs') as number;
-	const maxOccurs: number = getPropertyValue(field.properties, 'maxOccurs') as number;
+	const minOccurs: number = getValidationValue(field.validations, 'minOccurs') as number;
+	const maxOccurs: number = getValidationValue(field.validations, 'maxOccurs') as number;
 
 	// Validate repeat group restrictions (min/max occurrences)
 	if (nnou(minOccurs) && currentValue.length < minOccurs) {
