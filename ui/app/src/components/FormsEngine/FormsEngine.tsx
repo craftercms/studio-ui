@@ -813,7 +813,7 @@ function FormOrchestrator(props: FormsEngineProps) {
 		isEmbedded,
 		isCreateMode,
 		isRepeatMode,
-		createPath: pathInSite, // pathInSite is the result of processing the create path with macros.
+		createPath: Boolean(create?.path) ? pathInSite : undefined, // pathInSite is the result of processing the create path with macros.
 		onClose: () => onCloseHandler(null, null),
 		onMinimize: () => props.onMinimize?.()
 	});
