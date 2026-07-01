@@ -23,11 +23,12 @@ import { bulkResolveConflict, cancelFailedPull, resolveConflict } from '../../..
 import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../../state/actions/system';
 import { FormattedMessage, useIntl } from 'react-intl';
-import ConflictedPathDiffDialog from '../../ConflictedPathDiffDialog';
 import { useActiveSiteId } from '../../../hooks/useActiveSiteId';
 import { messages } from './translations';
 import { ConfirmDialog } from '../../ConfirmDialog';
-import { pushErrorDialog } from '../../../utils/system';
+import { createComponentId, pushErrorDialog } from '../../../utils/system';
+import { popDialog, pushDialog } from '../../../state/actions/dialogStack';
+import { nanoid } from 'nanoid';
 
 export interface RepoStatusProps {
 	status: RepositoryStatus;
@@ -52,11 +53,10 @@ export function RepoStatus(props: RepoStatusProps) {
 	} = props;
 	const siteId = useActiveSiteId();
 	const [openCommitResolutionDialog, setOpenCommitResolutionDialog] = useState(false);
-	const [openRemoteRepositoriesDiffDialog, setOpenRemoteRepositoriesDiffDialog] = useState(false);
-	const [diffPath, setDiffPath] = useState(null);
 	const dispatch = useDispatch();
 	const [fetching, setFetching] = useState(false);
 	const { formatMessage } = useIntl();
+	const [diffDialogId] = useState(() => nanoid());
 
 	if (!props.status || fetching) {
 		return <RepoStatusSkeleton />;
@@ -95,7 +95,7 @@ export function RepoStatus(props: RepoStatusProps) {
 	const onResolveConflictsSuccess = (status: RepositoryStatus) => {
 		onConflictResolved?.(status);
 		setFetching(false);
-		setOpenRemoteRepositoriesDiffDialog(false);
+		dispatch(popDialog({ id: diffDialogId }));
 	};
 
 	const onResolveConflictsError = (response) => {
@@ -132,8 +132,18 @@ export function RepoStatus(props: RepoStatusProps) {
 	};
 
 	const openDiffDialog = (path) => {
-		setDiffPath(path);
-		setOpenRemoteRepositoriesDiffDialog(true);
+		dispatch(
+			pushDialog({
+				id: diffDialogId,
+				component: createComponentId('ConflictedPathDiffDialog'),
+				allowFullScreen: true,
+				allowMinimize: true,
+				props: {
+					path,
+					onResolveConflict: onResolveConflict
+				}
+			})
+		);
 	};
 
 	const onBulkAction = (e, action) => {
@@ -165,12 +175,6 @@ export function RepoStatus(props: RepoStatusProps) {
 				onCommitRequestSent={() => setFetching(true)}
 				onCommitSuccess={onCommitSuccess}
 				onCommitError={onCommitError}
-			/>
-			<ConflictedPathDiffDialog
-				open={openRemoteRepositoriesDiffDialog}
-				path={diffPath}
-				onResolveConflict={onResolveConflict}
-				onClose={() => setOpenRemoteRepositoriesDiffDialog(false)}
 			/>
 			<ConfirmDialog
 				open={openConfirmDialog}
