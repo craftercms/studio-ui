@@ -379,7 +379,7 @@ export function generateSingleItemOptions(
 	) {
 		sectionC.push(menuOptions.publish);
 	}
-	if (isInActiveWorkflow(item)) {
+	if (isInActiveWorkflow(item) && actionsToInclude.viewPackages) {
 		sectionC.push(menuOptions.viewPackages);
 	}
 	// endregion
