@@ -198,9 +198,6 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
 						[`& .${treeItemClasses.iconContainer}`]: {
 							width: '26px',
 							marginRight: 0
-						},
-						[`& .${treeItemClasses.focused}`]: {
-							background: 'none !important'
 						}
 					}}
 				/>
