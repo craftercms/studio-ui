@@ -32,19 +32,18 @@ import { parseComponentsDataSourceContentTypesProperty } from '../../../services
  * @param {string | undefined} contentTypesProperty - The raw content types property from the data source configuration. Can be a comma-separated list of ids or "*".
  * @param {'components' | 'pages'} dataSourceType - Indicates if the data source is for components or pages. Used to filter the contentTypes list accordingly.
  * @param {ContentType[] | null} contentTypes - The full list of all content types. Required if `contentTypesProperty` is '*'.
- * @returns {string} - A comma-separated list of resolved content type ids. Returns '' if input is empty or contentTypes required but not provided.
+ * @returns {string | undefined} - A comma-separated list of resolved content type ids, the original property when not a wildcard, or undefined.
  */
 function resolveComponentsDataSourceContentTypes(
 	contentTypesProperty: string | undefined,
 	dataSourceType: 'components' | 'pages',
 	contentTypes: ContentType[] | null
-): string {
-	const value = contentTypesProperty?.trim();
-	if (!value || value !== '*') {
-		return contentTypesProperty ?? '';
+): string | undefined {
+	if (contentTypesProperty?.trim() !== '*') {
+		return contentTypesProperty;
 	}
 	if (!contentTypes) {
-		return '';
+		return undefined;
 	}
 	const expectedType = dataSourceType === 'pages' ? 'page' : 'component';
 	return contentTypes
@@ -80,8 +79,12 @@ export function useConsolidatedItemPickerData(dataSources: DataSource[]): Consol
 						contentTypes
 					);
 					const allowedContentTypesData =
-						parseComponentsDataSourceContentTypesProperty(ds as ComponentsDatasource, resolvedContentTypes)
-							.allowedContentTypes.value ?? {};
+						resolvedContentTypes !== undefined
+							? (parseComponentsDataSourceContentTypesProperty(
+									ds as ComponentsDatasource,
+									resolvedContentTypes
+								).allowedContentTypes.value ?? {})
+							: {};
 					const allowedContentTypes: string[] = Object.keys(allowedContentTypesData);
 					const allowedSharedExisingTypes: string[] = [];
 					allowedContentTypes.forEach((contentTypeId) => {
