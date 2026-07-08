@@ -113,6 +113,12 @@ export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
 		loadPage(getCurrentPage(offset, limit), true);
 	};
 
+	const onPackageClick = (packageId: number) => {
+		setState({
+			packageDetailsDialogId: packageId
+		});
+	};
+
 	const onPackageMouseOver = (packageId: number) => {
 		setHoveredPackage(packageId);
 	};
@@ -197,6 +203,7 @@ export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
 							sx={{ pt: 0, pb: 0 }}
 							onMouseEnter={() => onPackageMouseOver(pkg.id)}
 							onMouseLeave={onPackageMouseLeave}
+							onClick={() => onPackageClick(pkg.id)}
 						>
 							{pkg.submitter && (
 								<PersonAvatar
