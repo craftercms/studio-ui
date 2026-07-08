@@ -161,28 +161,12 @@
 		z-index: 99;
 		white-space: normal;
 	}
-	.ace_search.left {
-		border-left: 0 none;
-		border-radius: 0px 0px 5px 0px;
-		left: 0;
-	}
-	.ace_search.right {
-		border-radius: 0px 0px 0px 5px;
-		border-right: 0 none;
-		right: 0;
-	}
 
 	.ace_search_form,
 	.ace_replace_form {
 		margin: 0 20px 4px 0;
 		overflow: hidden;
 		line-height: 1.9;
-	}
-	.ace_replace_form {
-		margin-right: 0;
-	}
-	.ace_search_form.ace_nomatch {
-		outline: 1px solid red;
 	}
 
 	.ace_search_field {
@@ -230,19 +214,6 @@
 	.ace_searchbtn.next {
 		padding: 0px 0.7em;
 	}
-	.ace_searchbtn.prev:after,
-	.ace_searchbtn.next:after {
-		content: '';
-		border: solid 2px #888;
-		width: 0.5em;
-		height: 0.5em;
-		border-width: 2px 0 0 2px;
-		display: inline-block;
-		transform: rotate(-45deg);
-	}
-	.ace_searchbtn.next:after {
-		border-width: 0 2px 2px 0;
-	}
 	.ace_searchbtn_close {
 		background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAcCAYAAABRVo5BAAAAZ0lEQVR42u2SUQrAMAhDvazn8OjZBilCkYVVxiis8H4CT0VrAJb4WHT3C5xU2a2IQZXJjiQIRMdkEoJ5Q2yMqpfDIo+XY4k6h+YXOyKqTIj5REaxloNAd0xiKmAtsTHqW8sR2W5f7gCu5nWFUpVjZwAAAABJRU5ErkJggg==)
 			no-repeat 50% 0;
@@ -257,11 +228,6 @@
 		top: 9px;
 		right: 7px;
 		position: absolute;
-	}
-	.ace_searchbtn_close:hover {
-		background-color: #656565;
-		background-position: 50% 100%;
-		color: white;
 	}
 
 	.ace_button {
