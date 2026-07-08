@@ -283,6 +283,9 @@ export interface GlobalState {
 		mainSection?: {
 			widgets: WidgetDescriptor[];
 		};
+		rightSection?: {
+			authorFilterPlaceholder?: string;
+		};
 	};
 	globalNavigation: {
 		error: AjaxError;

@@ -95,6 +95,7 @@ import Box from '@mui/material/Box';
 import { firstValueFrom } from 'rxjs';
 import { useInfiniteLoader } from 'react-window-infinite-loader';
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
+import { useDashboardState } from '../../hooks/useDashboardState';
 
 export interface ActivityDashletProps extends Partial<DashletCardProps> {}
 
@@ -174,6 +175,8 @@ export function ActivityDashlet(props: ActivityDashletProps) {
 	const { formatMessage } = useIntl();
 	const dispatch = useDispatch();
 	const widgetDialogContext = useEnhancedDialogContext();
+	const dashboard = useDashboardState();
+	const authorFilterPlaceholder = dashboard?.rightSection?.authorFilterPlaceholder;
 	// region const { ... } = state
 	const [
 		{
@@ -493,7 +496,7 @@ export function ActivityDashlet(props: ActivityDashletProps) {
 							value={authorFilterValue}
 							disabled={isFetching}
 							onChange={handleAuthorFilterInputChange}
-							placeholder={formatMessage(
+							placeholder={ authorFilterPlaceholder ? authorFilterPlaceholder : formatMessage(
 								{ defaultMessage: 'e.g. "{examples}"' },
 								{
 									examples: 'jon.doe, jdoe, jane@example.com'
