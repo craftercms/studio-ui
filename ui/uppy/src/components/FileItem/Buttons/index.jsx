@@ -125,9 +125,13 @@ export default function Buttons(props) {
 				onClick={editAction}
 			/>
 			{showRemoveButton ? <RemoveButton i18n={i18n} file={file} onClick={() => uppy.removeFile(file.id)} /> : null}
-			{file.meta.validating === false && file.meta.allowed && file.meta.suggestedName && (
-				<ConfirmActionIcon i18n={i18n} labelKey="validateAndRetry" onClick={() => validateAndRetry(file.id)} />
-			)}
+
+			{file.meta.validating === false &&
+				file.meta.allowed &&
+				file.meta.suggestedName &&
+				!file.meta.overwriteRequired && (
+					<ConfirmActionIcon i18n={i18n} labelKey="validateAndRetry" onClick={() => validateAndRetry(file.id)} />
+				)}
 			{file.meta.validating === false && file.meta.overwriteRequired && (
 				<ConfirmActionIcon i18n={i18n} labelKey="confirmOverwrite" onClick={() => confirmOverwrite(file.id)} />
 			)}
