@@ -21,7 +21,7 @@ import * as contentController from '../contentController';
 import { ContentTypeFieldValidations } from '@craftercms/studio-ui/models/ContentType';
 import { post } from '../utils/communicator';
 import { GuestStandardAction } from '../store/models/GuestStandardAction';
-import { NEVER, Observable, Subject } from 'rxjs';
+import { EMPTY, Observable, Subject } from 'rxjs';
 import { startWith } from 'rxjs/operators';
 import { nou } from '@craftercms/studio-ui/utils/object';
 import { snackGuestMessage } from '@craftercms/studio-ui/state/actions/preview';
@@ -49,7 +49,7 @@ export function initTinyMCE(
 			})
 		);
 		post(unlockItem({ path }));
-		return NEVER;
+		return EMPTY;
 	}
 
 	const dispatch$ = new Subject<GuestStandardAction>();

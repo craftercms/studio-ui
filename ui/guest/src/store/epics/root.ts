@@ -44,7 +44,7 @@ import {
 	isInheritedField,
 	modelHierarchyMap
 } from '../../contentController';
-import { interval, merge, NEVER, Observable, of, Subscriber } from 'rxjs';
+import { EMPTY, interval, merge, Observable, of, Subscriber } from 'rxjs';
 import { clearAndListen$, destroyDragSubjects, dragover$, escape$, initializeDragSubjects } from '../subjects';
 import { initTinyMCE } from '../../controls/rte';
 import { dragAndDropActiveClass, EditingStatus, HighlightMode } from '../../constants';
@@ -145,7 +145,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 				const iceId = state.draggable?.[record.id];
 				const { isLocked, isExternallyModified } = checkIfLockedOrModified(state, record);
 				if (isLocked || isExternallyModified) {
-					return NEVER;
+					return EMPTY;
 				} else if (nullOrUndefined(iceId)) {
 					// When the drag starts on a child element of the item, it passes through here.
 					console.error('No ice id found for this drag instance.', record, state.draggable);
@@ -163,7 +163,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 					document.documentElement.classList.add(dragAndDropActiveClass);
 					return initializeDragSubjects(state$);
 				}
-				return NEVER;
+				return EMPTY;
 			})
 		),
 	// endregion
@@ -438,12 +438,12 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 										}
 									}
 								}
-								return NEVER;
+								return EMPTY;
 							})
 						);
 					}
 				} else {
-					return NEVER;
+					return EMPTY;
 				}
 			})
 		);
@@ -472,7 +472,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 						return [computedDragEnd(), startListening()];
 					}
 					default:
-						return NEVER;
+						return EMPTY;
 				}
 			})
 		),
@@ -543,7 +543,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 						(isLocked && !isLockedByCurrentUser && getById(record.iceIds[0]).recordType === 'field') ||
 						!isEditable
 					) {
-						return NEVER;
+						return EMPTY;
 					} else if (
 						state.highlightMode === HighlightMode.ALL &&
 						(state.status === EditingStatus.LISTENING || actionType === 'triggered_click')
@@ -664,8 +664,9 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 							return of(startListening());
 						}
 					}
-					// Note: Returning NEVER will unsubscribe from any previous stream returned on a prior click.
-					return NEVER;
+					// No action to dispatch for this click; EMPTY completes immediately (switchMap still
+					// unsubscribes from any previous inner stream when a new click arrives).
+					return EMPTY;
 				}
 			)
 		),
@@ -838,7 +839,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 						return initializeDragSubjects(state$);
 					}
 				}
-				return NEVER;
+				return EMPTY;
 			})
 		),
 	// endregion
@@ -876,7 +877,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 						return initializeDragSubjects(state$);
 					}
 				}
-				return NEVER;
+				return EMPTY;
 			})
 		);
 	},
@@ -889,7 +890,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 			switchMap(([, state]) => {
 				if (nullOrUndefined((state.dragContext.dragged as SearchItem).path)) {
 					console.error('No path found for this drag asset.');
-					return NEVER;
+					return EMPTY;
 				}
 				return initializeDragSubjects(state$);
 			})
@@ -907,7 +908,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 				} else {
 					return initializeDragSubjects(state$);
 				}
-				return NEVER;
+				return EMPTY;
 			})
 		);
 	},
@@ -933,7 +934,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 							values: { name }
 						})
 					);
-					return NEVER;
+					return EMPTY;
 				}
 			})
 		);

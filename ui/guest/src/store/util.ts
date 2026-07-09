@@ -25,7 +25,7 @@ import {
 	snackGuestMessage
 } from '@craftercms/studio-ui/state/actions/preview';
 import { unlockItem } from '@craftercms/studio-ui/state/actions/content';
-import { forkJoin, NEVER, Observable, of } from 'rxjs';
+import { EMPTY, forkJoin, Observable, of } from 'rxjs';
 import { ContentItem } from '@craftercms/studio-ui/models';
 import { GuestState } from './models/GuestStore';
 import { ElementRecord, ICERecord } from '../models/InContextEditing';
@@ -62,12 +62,12 @@ export interface BeforeWriteProps<T = 'continue', S = never> {
 /**
  * Locks the target item, checks workflow state and checks for background changes
  * to the target. If all goes well, continues (returning the `continue$` stream). If
- * can't continue with the target operation, it returns the `stop$` stream (never, by default).
+ * can't continue with the target operation, it returns the `stop$` stream (EMPTY, by default).
  */
 export function beforeWrite$<T extends any = 'continue', S extends any = never>(
 	props: BeforeWriteProps<T, S>
 ): Observable<T | S> {
-	const { site, username, path, continue$ = of('continue') as Observable<T>, stop$ = NEVER, localItem } = props;
+	const { site, username, path, continue$ = of('continue') as Observable<T>, stop$ = EMPTY, localItem } = props;
 	return lock(site, path).pipe(
 		switchMap(() => forkJoin([fetchContentItem(site, path), fetchAffectedPackages(site, path)])),
 		switchMap(([item, affectedPackages]) => {
