@@ -22,6 +22,7 @@ import { validateActionPolicy } from '../../services/sites';
 import { checkPathExistence } from '../../services/content';
 import { defineMessages, useIntl } from 'react-intl';
 import { showSystemNotification } from '../../state/actions/system';
+import { pushErrorDialog } from '../../utils/system';
 import { useDispatch } from 'react-redux';
 import { alpha } from '@mui/material';
 import { Subject } from 'rxjs';
@@ -32,6 +33,7 @@ import { UppyDashboardProps } from './UppyDashboardProps';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Box from '@mui/material/Box';
 import type { DashboardOptions } from 'uppy';
+import { extractErrorPayload } from '../../utils/ajax';
 
 const translations = defineMessages({
 	cancelPending: {
@@ -177,6 +179,9 @@ export function UppyDashboard(props: UppyDashboardProps) {
 			proudlyDisplayPoweredByUppy: false,
 			validateActionPolicy,
 			checkPathExistence,
+			onPathExistenceError: (err) => {
+				dispatch(pushErrorDialog({ props: { error: extractErrorPayload(err) } }));
+			},
 			onPendingChanges: function () {
 				functionsRef.current.onPendingChanges.apply(null, arguments);
 			},

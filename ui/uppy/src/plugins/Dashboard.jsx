@@ -199,8 +199,20 @@ export class Dashboard extends UppyDashboard {
 					startUpload();
 				}
 			},
-			error: () => {
-				startUpload();
+			error: (err) => {
+				invalidFiles[fileId] = true;
+				const detail =
+					err?.response?.response?.message ??
+					(typeof err?.response?.response === 'string' ? err.response.response : null) ??
+					err?.message ??
+					'Unable to verify whether the file already exists';
+				this.uppy.setFileMeta(fileId, {
+					allowed: false,
+					message: detail
+				});
+				this.setPluginState({ invalidFiles: { ...invalidFiles } });
+				this.opts.onPathExistenceError?.(err);
+				complete();
 			}
 		});
 	};
@@ -241,6 +253,10 @@ export class Dashboard extends UppyDashboard {
 				})
 			)
 			.subscribe((response) => {
+				pendingExistenceChecks = response.filter(
+					({ allowed, modifiedValue }) => allowed && modifiedValue === null && this.opts.checkPathExistence
+				).length;
+
 				response.forEach(({ allowed, modifiedValue, target, message }) => {
 					let fileId = fileIdLookup[target];
 					this.uppy.setFileMeta(fileId, {
@@ -251,7 +267,6 @@ export class Dashboard extends UppyDashboard {
 					});
 					if (allowed && modifiedValue === null) {
 						if (this.opts.checkPathExistence) {
-							pendingExistenceChecks++;
 							this.checkPathAndUpload(fileId, target, invalidFiles, {
 								onUploadStarted: () => {
 									uploading = true;
@@ -347,6 +362,15 @@ export class Dashboard extends UppyDashboard {
 	confirmAll = () => {
 		const invalidFiles = { ...this.getPluginState().invalidFiles };
 		let uploading = false;
+		let pendingPathChecks = 0;
+
+		const onPathCheckComplete = () => {
+			pendingPathChecks--;
+			if (pendingPathChecks === 0) {
+				if (uploading) this.opts.onPendingChanges(true);
+			}
+		};
+
 		Object.keys(invalidFiles).forEach((fileID) => {
 			if (invalidFiles[fileID]) {
 				invalidFiles[fileID] = false;
@@ -369,11 +393,12 @@ export class Dashboard extends UppyDashboard {
 						name: suggestedName,
 						path
 					});
+					pendingPathChecks++;
 					this.checkPathAndUpload(fileID, path, invalidFiles, {
 						onUploadStarted: () => {
 							uploading = true;
-							this.opts.onPendingChanges(true);
-						}
+						},
+						onComplete: onPathCheckComplete
 					});
 				} else {
 					this.uppy.removeFile(fileID);
@@ -381,8 +406,8 @@ export class Dashboard extends UppyDashboard {
 			}
 		});
 		this.setPluginState({ invalidFiles });
-		if (uploading) {
-			this.opts.onPendingChanges(true);
+		if (pendingPathChecks === 0) {
+			if (uploading) this.opts.onPendingChanges(true);
 		}
 	};
 
