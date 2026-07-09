@@ -205,7 +205,7 @@ export class Dashboard extends UppyDashboard {
 					err?.response?.response?.message ??
 					(typeof err?.response?.response === 'string' ? err.response.response : null) ??
 					err?.message ??
-					'Unable to verify whether the file already exists';
+					this.i18n('pathExistenceCheckFailed');
 				this.uppy.setFileMeta(fileId, {
 					allowed: false,
 					message: detail

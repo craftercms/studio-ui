@@ -129,6 +129,10 @@ const translations = defineMessages({
 	},
 	dropPasteBoth: {
 		defaultMessage: 'Drop files here, {browseFiles} or {browseFolders}'
+	},
+	pathExistenceCheckFailed: {
+		id: 'uppyDashboard.pathExistenceCheckFailed',
+		defaultMessage: 'Unable to verify whether the file already exists'
 	}
 });
 
@@ -220,7 +224,8 @@ export function UppyDashboard(props: UppyDashboardProps) {
 						// These values are for uppy's mechanism to replace the placeholders with links
 						browseFiles: '%{browseFiles}',
 						browseFolders: '%{browseFolders}'
-					})
+					}),
+					pathExistenceCheckFailed: formatMessage(translations.pathExistenceCheckFailed)
 				},
 				pluralize: (n: number) => (n === 1 ? 0 : 1)
 			},
