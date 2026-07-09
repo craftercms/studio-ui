@@ -154,7 +154,7 @@ export class Dashboard extends UppyDashboard {
 			if (file.progress.uploadComplete) {
 				completeFiles++;
 			}
-			if (file.meta.allowed === false || file.meta.suggestedName) {
+			if (file.meta.allowed === false || file.meta.suggestedName || file.meta.overwriteRequired) {
 				invalidFiles++;
 			}
 		});
@@ -170,11 +170,60 @@ export class Dashboard extends UppyDashboard {
 		}
 	};
 
+	// craftercms/uppy - check path existence custom code
+	checkPathAndUpload = (fileId, path, invalidFiles, { onUploadStarted, onComplete } = {}) => {
+		const complete = () => onComplete?.();
+
+		const startUpload = () => {
+			this.uppy.retryUpload(fileId);
+			onUploadStarted?.();
+			complete();
+		};
+
+		if (!this.opts.checkPathExistence) {
+			startUpload();
+			return;
+		}
+
+		this.opts.checkPathExistence(this.opts.site, path).subscribe({
+			next: (exists) => {
+				if (exists) {
+					invalidFiles[fileId] = true;
+					this.uppy.setFileMeta(fileId, {
+						allowed: true,
+						overwriteRequired: true
+					});
+					this.setPluginState({ invalidFiles: { ...invalidFiles } });
+					complete();
+				} else {
+					startUpload();
+				}
+			},
+			error: () => {
+				startUpload();
+			}
+		});
+	};
+
 	// craftercms/uppy - site policy custom code
 	validateFilesPolicy = (files) => {
 		if (files.length === 0) return;
 		const fileIdLookup = {};
-		const invalidFiles = this.getPluginState().invalidFiles;
+		const invalidFiles = { ...this.getPluginState().invalidFiles };
+		let uploading = false;
+		let pendingExistenceChecks = 0;
+
+		const finalizeExistenceChecks = () => {
+			this.opts.onPendingChanges(uploading);
+			this.setPluginState({ invalidFiles });
+		};
+
+		const onExistenceCheckComplete = () => {
+			pendingExistenceChecks--;
+			if (pendingExistenceChecks === 0) {
+				finalizeExistenceChecks();
+			}
+		};
 
 		this.opts
 			.validateActionPolicy(
@@ -192,7 +241,6 @@ export class Dashboard extends UppyDashboard {
 				})
 			)
 			.subscribe((response) => {
-				let uploading = false;
 				response.forEach(({ allowed, modifiedValue, target, message }) => {
 					let fileId = fileIdLookup[target];
 					this.uppy.setFileMeta(fileId, {
@@ -202,16 +250,25 @@ export class Dashboard extends UppyDashboard {
 						...(modifiedValue && { suggestedName: modifiedValue.replace(/^.*[\\\/]/, '') })
 					});
 					if (allowed && modifiedValue === null) {
-						this.uppy.retryUpload(fileId);
-						uploading = true;
+						if (this.opts.checkPathExistence) {
+							pendingExistenceChecks++;
+							this.checkPathAndUpload(fileId, target, invalidFiles, {
+								onUploadStarted: () => {
+									uploading = true;
+								},
+								onComplete: onExistenceCheckComplete
+							});
+						} else {
+							this.uppy.retryUpload(fileId);
+							uploading = true;
+						}
 					} else {
 						invalidFiles[fileId] = true;
 					}
 				});
-				this.opts.onPendingChanges(uploading);
-				this.setPluginState({
-					invalidFiles: invalidFiles
-				});
+				if (pendingExistenceChecks === 0) {
+					finalizeExistenceChecks();
+				}
 			});
 	};
 
@@ -229,7 +286,16 @@ export class Dashboard extends UppyDashboard {
 			name: suggestedName,
 			path
 		});
+		this.checkPathAndUpload(fileID, path, invalidFiles);
+	};
+
+	confirmOverwrite = (fileID) => {
+		const invalidFiles = { ...this.getPluginState().invalidFiles };
+		invalidFiles[fileID] = false;
+		this.setPluginState({ invalidFiles });
+		this.uppy.setFileMeta(fileID, { overwriteRequired: null });
 		this.uppy.retryUpload(fileID);
+		this.opts.onPendingChanges(true);
 	};
 
 	validateAndRemove = (fileID) => {
@@ -275,14 +341,21 @@ export class Dashboard extends UppyDashboard {
 	};
 
 	confirmAll = () => {
-		const files = this.uppy.getFiles();
 		const invalidFiles = { ...this.getPluginState().invalidFiles };
+		let uploading = false;
 		Object.keys(invalidFiles).forEach((fileID) => {
 			if (invalidFiles[fileID]) {
 				invalidFiles[fileID] = false;
 				const file = this.uppy.getFile(fileID);
-				const suggestedName = this.uppy.getFile(fileID).meta.suggestedName;
-				if (file.meta.allowed) {
+				if (!file) {
+					return;
+				}
+				if (file.meta.overwriteRequired) {
+					this.uppy.setFileMeta(fileID, { overwriteRequired: null });
+					this.uppy.retryUpload(fileID);
+					uploading = true;
+				} else if (file.meta.allowed) {
+					const suggestedName = file.meta.suggestedName;
 					const initialPath = file.meta.path;
 					const basePath = initialPath.substring(0, initialPath.lastIndexOf('/'));
 					const path = `${basePath}/${suggestedName}`;
@@ -292,13 +365,16 @@ export class Dashboard extends UppyDashboard {
 						name: suggestedName,
 						path
 					});
-					this.uppy.retryUpload(fileID);
+					this.checkPathAndUpload(fileID, path, invalidFiles);
 				} else {
 					this.uppy.removeFile(fileID);
 				}
 			}
 		});
 		this.setPluginState({ invalidFiles });
+		if (uploading) {
+			this.opts.onPendingChanges(true);
+		}
 	};
 
 	#generateLargeThumbnailIfSingleFile = () => {
@@ -537,6 +613,7 @@ export class Dashboard extends UppyDashboard {
 			cancelPending: this.cancelPending,
 			clearCompleted: this.clearCompleted,
 			validateAndRetry: this.validateAndRetry,
+			confirmOverwrite: this.confirmOverwrite,
 			rejectAll: this.rejectAll,
 			confirmAll: this.confirmAll,
 			invalidFiles: pluginState.invalidFiles ?? {},

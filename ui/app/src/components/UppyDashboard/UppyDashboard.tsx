@@ -19,6 +19,7 @@ import React, { useCallback, useEffect, useRef } from 'react';
 
 import palette from '../../styles/palette';
 import { validateActionPolicy } from '../../services/sites';
+import { checkPathExistence } from '../../services/content';
 import { defineMessages, useIntl } from 'react-intl';
 import { showSystemNotification } from '../../state/actions/system';
 import { useDispatch } from 'react-redux';
@@ -100,6 +101,18 @@ const translations = defineMessages({
 	projectPoliciesNoComply: {
 		defaultMessage: 'File "{fileName}" doesn\'t comply with project policies: {detail}'
 	},
+	fileAlreadyExists: {
+		id: 'uppyDashboard.fileAlreadyExists',
+		defaultMessage: 'A file with the name "{fileName}" already exists at this location.'
+	},
+	fileOverwriteRequired: {
+		id: 'uppyDashboard.fileOverwriteRequired',
+		defaultMessage: 'A file named "{fileName}" already exists. Confirm to overwrite it, or remove it from the queue.'
+	},
+	confirmOverwrite: {
+		id: 'uppyDashboard.confirmOverwrite',
+		defaultMessage: 'Overwrite and upload'
+	},
 	proceed: {
 		defaultMessage: 'Start Uploads'
 	},
@@ -163,6 +176,7 @@ export function UppyDashboard(props: UppyDashboardProps) {
 			singleFileFullScreen: false,
 			proudlyDisplayPoweredByUppy: false,
 			validateActionPolicy,
+			checkPathExistence,
 			onPendingChanges: function () {
 				functionsRef.current.onPendingChanges.apply(null, arguments);
 			},
@@ -186,6 +200,7 @@ export function UppyDashboard(props: UppyDashboardProps) {
 					rejectAll: formatMessage(translations.rejectAll),
 					validating: formatMessage(translations.validating),
 					validateAndRetry: formatMessage(translations.validateAndRetry),
+					confirmOverwrite: formatMessage(translations.confirmOverwrite),
 					removeFile: formatMessage(translations.removeFile),
 					back: formatMessage(translations.back),
 					addingMoreFiles: formatMessage(translations.addingMoreFiles),
@@ -218,6 +233,12 @@ export function UppyDashboard(props: UppyDashboardProps) {
 				},
 				projectPoliciesNoComply: (fileName, detail) => {
 					return formatMessage(translations.projectPoliciesNoComply, { fileName, detail });
+				},
+				fileAlreadyExists: (fileName) => {
+					return formatMessage(translations.fileAlreadyExists, { fileName });
+				},
+				fileOverwriteRequired: (fileName) => {
+					return formatMessage(translations.fileOverwriteRequired, { fileName });
 				}
 			},
 			onMaxActiveUploadsReached: () => {

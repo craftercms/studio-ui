@@ -45,7 +45,8 @@ export default function FileList({
 	containerHeight,
 	externalMessages,
 	validateFilesPolicy,
-	validateAndRetry
+	validateAndRetry,
+	confirmOverwrite
 }) {
 	// It's not great that this is hardcoded!
 	// It's ESPECIALLY not great that this is checking against `itemsPerRow`!
@@ -107,6 +108,7 @@ export default function FileList({
 					file={files[fileID]}
 					validateFilesPolicy={validateFilesPolicy}
 					validateAndRetry={validateAndRetry}
+					confirmOverwrite={confirmOverwrite}
 				/>
 			))}
 		</div>
