@@ -286,7 +286,11 @@ export class Dashboard extends UppyDashboard {
 			name: suggestedName,
 			path
 		});
-		this.checkPathAndUpload(fileID, path, invalidFiles);
+		this.checkPathAndUpload(fileID, path, invalidFiles, {
+			onUploadStarted: () => {
+				this.opts.onPendingChanges(true);
+			}
+		});
 	};
 
 	confirmOverwrite = (fileID) => {
@@ -365,7 +369,12 @@ export class Dashboard extends UppyDashboard {
 						name: suggestedName,
 						path
 					});
-					this.checkPathAndUpload(fileID, path, invalidFiles);
+					this.checkPathAndUpload(fileID, path, invalidFiles, {
+						onUploadStarted: () => {
+							uploading = true;
+							this.opts.onPendingChanges(true);
+						}
+					});
 				} else {
 					this.uppy.removeFile(fileID);
 				}
