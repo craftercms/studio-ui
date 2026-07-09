@@ -224,8 +224,11 @@ export class Dashboard extends UppyDashboard {
 		const invalidFiles = { ...this.getPluginState().invalidFiles };
 		let uploading = false;
 		let pendingExistenceChecks = 0;
+		let finalized = false;
 
 		const finalizeExistenceChecks = () => {
+			if (finalized) return;
+			finalized = true;
 			this.opts.onPendingChanges(uploading);
 			this.setPluginState({ invalidFiles });
 		};
@@ -363,11 +366,18 @@ export class Dashboard extends UppyDashboard {
 		const invalidFiles = { ...this.getPluginState().invalidFiles };
 		let uploading = false;
 		let pendingPathChecks = 0;
+		let finalized = false;
+
+		const finalizePathChecks = () => {
+			if (finalized) return;
+			finalized = true;
+			if (uploading) this.opts.onPendingChanges(true);
+		};
 
 		const onPathCheckComplete = () => {
 			pendingPathChecks--;
 			if (pendingPathChecks === 0) {
-				if (uploading) this.opts.onPendingChanges(true);
+				finalizePathChecks();
 			}
 		};
 
@@ -407,7 +417,7 @@ export class Dashboard extends UppyDashboard {
 		});
 		this.setPluginState({ invalidFiles });
 		if (pendingPathChecks === 0) {
-			if (uploading) this.opts.onPendingChanges(true);
+			finalizePathChecks();
 		}
 	};
 
