@@ -107,7 +107,7 @@ const translations = defineMessages({
 	},
 	fileOverwriteRequired: {
 		id: 'uppyDashboard.fileOverwriteRequired',
-		defaultMessage: 'A file named "{fileName}" already exists. Confirm to overwrite it, or remove it from the queue.'
+		defaultMessage: 'A file named "{fileName}" already exists. Do you want to overwrite it?'
 	},
 	confirmOverwrite: {
 		id: 'uppyDashboard.confirmOverwrite',

@@ -22,6 +22,7 @@ import 'uppy/dist/uppy.css';
 import '@uppy/progress-bar/dist/style.css';
 import { getGlobalHeaders } from '../../utils/ajax';
 import { validateActionPolicy } from '../../services/sites';
+import { checkPathExistence } from '../../services/content';
 import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
 import type { Body, Meta, UppyFile } from '@uppy/utils/lib/UppyFile';
 import { useDispatch } from 'react-redux';
@@ -60,6 +61,10 @@ const messages = defineMessages({
 	},
 	policyError: {
 		defaultMessage: 'File "{fileName}" doesn\'t comply with project policies: {detail}'
+	},
+	overwriteConfirm: {
+		id: 'fileUpload.overwriteConfirm',
+		defaultMessage: 'A file named "{fileName}" already exists at this location. Do you want to overwrite it?'
 	}
 });
 
@@ -133,7 +138,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 	const { upload } = useSiteUIConfig();
 	const [confirm, setConfirm] = useState<{
 		body: string;
-		error?: boolean;
+		type: 'policy' | 'overwrite' | 'error';
 	}>(null);
 	const [error, setError] = useState(null);
 	fileRef.current = file;
@@ -191,6 +196,33 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 			}),
 		[fileTypes, customFileName, path]
 	);
+
+	const confirmUpload = () => {
+		// When uploading large files to aws/s3, something causes requests to fail and get retried n times before finally stating it failed; despite the file seemingly actually getting uploaded.
+		// This setTimeout avoids that issue. The mechanism of failure or why this avoids it is unknown.
+		setTimeout(() => uppy.upload(), 50);
+		setDescription(`${formatMessage(messages.uploadingFile)}:`);
+		onUploadStart?.();
+	};
+
+	const checkExistenceAndUpload = (targetPath: string, fileName: string) => {
+		checkPathExistence(site, targetPath).subscribe({
+			next: (exists) => {
+				if (exists) {
+					setConfirm({
+						type: 'overwrite',
+						body: formatMessage(messages.overwriteConfirm, { fileName })
+					});
+				} else {
+					confirmUpload();
+				}
+			},
+			error: ({ response }) => {
+				setDisableInput(false);
+				dispatch(pushErrorDialog({ props: { error: response?.response } }));
+			}
+		});
+	};
 
 	const retryUpload = () => {
 		setError(null);
@@ -291,6 +323,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 								// Modified value is expected to be a path.
 								const modifiedName = modifiedValue.match(/[^/]+$/)?.[0] ?? modifiedValue;
 								setConfirm({
+									type: 'policy',
 									body: formatMessage(
 										{
 											defaultMessage:
@@ -301,15 +334,11 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 								});
 								setSuggestedName(modifiedName);
 							} else {
-								// When uploading large files to aws/s3, something causes requests to fail and get retried n times before finally stating it failed; despite the file seemingly actually getting uploaded.
-								// This setTimeout avoids that issue. The mechanism of failure or why this avoids it is unknown.
-								setTimeout(() => uppy.upload(), 50);
-								setDescription(`${formatMessage(messages.uploadingFile)}:`);
-								onUploadStart?.();
+								checkExistenceAndUpload(ensureSingleSlash(`${path}/${fileName}`), fileName);
 							}
 						} else {
 							setConfirm({
-								error: true,
+								type: 'error',
 								body: formatMessage(messages.policyError, { fileName: file.name, detail: message })
 							});
 						}
@@ -342,17 +371,21 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 	}, [onUploadStart, formatMessage, path, site, uppy, dispatch, onFileAddedProp]);
 
 	const onConfirm = () => {
-		uppy.upload();
-		setSuggestedName(null);
-		setDescription(`${formatMessage(messages.uploadingFile)}:`);
-		onUploadStart?.();
-		setConfirm(null);
+		if (confirm?.type === 'policy') {
+			const name = suggestedName ?? file.name;
+			setConfirm(null);
+			checkExistenceAndUpload(ensureSingleSlash(`${path}/${name}`), name);
+		} else if (confirm?.type === 'overwrite') {
+			setConfirm(null);
+			confirmUpload();
+		}
 	};
 
 	const onConfirmCancel = () => {
 		document.querySelector('.uppy-FileInput-btn')?.removeAttribute('disabled');
 		uppy.removeFile(file.id);
 		setFile(null);
+		setSuggestedName(null);
 		setConfirm(null);
 		setDescription(formatMessage(messages.selectFileMessage));
 		setDisableInput(false);
@@ -455,8 +488,8 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 			<ConfirmDialog
 				open={Boolean(confirm)}
 				body={confirm?.body}
-				onOk={confirm?.error ? onConfirmCancel : onConfirm}
-				onCancel={confirm?.error ? null : onConfirmCancel}
+				onOk={confirm?.type === 'error' ? onConfirmCancel : onConfirm}
+				onCancel={confirm?.type === 'error' ? null : onConfirmCancel}
 				disableEnforceFocus={true}
 			/>
 		</>
