@@ -53,14 +53,13 @@ export function PackageItemsList(props: PackageItemsListProps) {
 	});
 
 	return (
-		<Box sx={{ flex: 1 }}>
+		<Box sx={{ flex: 1, minHeight: 0 }}>
 			<List
 				className="List"
 				rowCount={rowCount}
 				rowHeight={59}
 				onRowsRendered={onRowsRendered}
 				rowProps={{ rows: items }}
-				style={{ overflow: 'hidden' }} // The wrapper component already has overflow: auto, so we need to hide it here to avoid double scrollbar
 				rowComponent={({ index, style }: RowComponentProps) => {
 					let content;
 					if (!isItemLoaded(index)) {
