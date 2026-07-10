@@ -89,7 +89,7 @@ export function useSaveForm(props: UseSaveFormProps) {
 	const setHasPendingChanges = useSetAtom(stableFormContext.atoms.hasPendingChanges);
 	const onSave = wrapOnSaveProp(props.onSave);
 	const fileName = useAtomValue(stableFormContext.atoms.fileName);
-	const { setRenamedPath } = useContext(RenamedPathContext);
+	const { setRenamedPath, triggerReload } = useContext(RenamedPathContext);
 	const initialFileName = itemPath ? getFileNameValueFromPath(itemPath, isPage) : '';
 	const item = useContext(ItemContext);
 	return async (draft?: boolean) => {
@@ -170,12 +170,18 @@ export function useSaveForm(props: UseSaveFormProps) {
 		}
 
 		const saveActionCallbacks = {
-			async next() {
+			async next(ajaxResponse) {
+				const isAmended = ajaxResponse.response?.items?.[0]?.amended;
 				const dom = fromString(xml);
 				const result = (await onSave?.({ dom, xml, values, versionComment, path })) as FormSavePromiseResult;
 				const shouldClose = result.close || closeAfterSave;
-				if (isRename && !shouldClose) {
-					setRenamedPath(renamePath);
+				// TODO: handle create mode scenario.
+				if (!shouldClose && !isCreateMode) {
+					if (isRename) {
+						setRenamedPath(renamePath);
+					} else if (isAmended) {
+						triggerReload();
+					}
 				}
 				onSavePromiseHandler(result);
 			},

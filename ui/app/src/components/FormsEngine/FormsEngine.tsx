@@ -20,7 +20,16 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
 import useActiveSite from '../../hooks/useActiveSite';
 import useContentTypes from '../../hooks/useContentTypes';
-import React, { createElement, type RefCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+	createElement,
+	type RefCallback,
+	useCallback,
+	useContext,
+	useEffect,
+	useMemo,
+	useRef,
+	useState
+} from 'react';
 import { ContentTypeField, PublishPackage } from '../../models';
 import {
 	FormsEngineAtoms,
@@ -263,6 +272,8 @@ function FormBootstrap(props: FormsEngineProps) {
 	const effectRefs = useUpdateRefs({ contentTypesById, username });
 	const stableFormContextRef = useRef<StableFormContextProps>(formsStackData[stackIndex]);
 	const [renamedPath, setRenamedPath] = useState<string | null>(null);
+	const [reloadNonce, setReloadNonce] = useState(0);
+	const triggerReload = useCallback(() => setReloadNonce((nonce) => nonce + 1), []);
 	const effectiveUpdatePath = renamedPath ?? update?.path;
 
 	const contextApi = useMemo<FormsEngineFormApiContextProps>(() => {
@@ -552,7 +563,8 @@ function FormBootstrap(props: FormsEngineProps) {
 		store,
 		update,
 		username,
-		renamedPath
+		renamedPath,
+		reloadNonce
 	]);
 
 	if (prepError) {
@@ -567,7 +579,7 @@ function FormBootstrap(props: FormsEngineProps) {
 				<StableFormContext.Provider value={stableFormContextRef.current}>
 					<ItemContext.Provider value={liveUpdatedItem}>
 						<ItemMetaContext.Provider value={itemMeta}>
-							<RenamedPathContext.Provider value={{ renamedPath, setRenamedPath }}>
+							<RenamedPathContext.Provider value={{ renamedPath, setRenamedPath, reloadNonce, triggerReload }}>
 								{createElement(FormOrchestrator, props)}
 							</RenamedPathContext.Provider>
 						</ItemMetaContext.Provider>
