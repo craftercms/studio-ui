@@ -38,8 +38,8 @@ import {
 import { FormSavePromiseResult, FormsEngineProps } from '../FormsEngine';
 import { XmlKeys } from './formConsts';
 import { fromString } from '../../../utils/xml';
-import { moveAndUpdateContent, writeContent } from '../../../services/content';
-import { AjaxError } from 'rxjs/ajax';
+import { moveAndUpdateContent, writeContent, WriteContentResponse } from '../../../services/content';
+import { AjaxError, AjaxResponse } from 'rxjs/ajax';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { buildContentXml } from './valueSerializers';
@@ -170,7 +170,7 @@ export function useSaveForm(props: UseSaveFormProps) {
 		}
 
 		const saveActionCallbacks = {
-			async next(ajaxResponse) {
+			async next(ajaxResponse: AjaxResponse<WriteContentResponse>) {
 				const isAmended = ajaxResponse.response?.items?.[0]?.amended;
 				const dom = fromString(xml);
 				const result = (await onSave?.({ dom, xml, values, versionComment, path })) as FormSavePromiseResult;
