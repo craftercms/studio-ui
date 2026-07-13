@@ -161,4 +161,11 @@ export const RenamedPathContext = createContext<{
 	setRenamedPath(path: string | null): void;
 	reloadNonce: number;
 	triggerReload(): void;
-}>({ renamedPath: null, setRenamedPath: () => {}, reloadNonce: 0, triggerReload: () => {} });
+	setSavedCreatePath(path: string | null): void;
+}>({
+	renamedPath: null,
+	setRenamedPath: () => {},
+	reloadNonce: 0,
+	triggerReload: () => {},
+	setSavedCreatePath: () => {}
+});

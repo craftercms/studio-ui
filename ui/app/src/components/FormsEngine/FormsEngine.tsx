@@ -256,7 +256,15 @@ function GlobalFormsState(props: FormsEngineProps) {
 
 // Fetches the requirements for the form and sets up various contexts.
 function FormBootstrap(props: FormsEngineProps) {
-	const { create, update, repeat, fieldsToRender, readonly: readonlyProp, stackIndex = 0, isDialog } = props;
+	// When creating a new item. If we save the form, and do not close it, we need to update the 'mode' from create to update, using the path of the created item.
+	// effectiveProps are the props that are used to render the form, considering the scenario mentioned above.
+	const [savedCreatePath, setSavedCreatePath] = useState<string | null>(null);
+	const effectiveProps = useMemo((): FormsEngineProps => {
+		if (!savedCreatePath) return props;
+		const { create: _create, ...rest } = props;
+		return { ...rest, update: { path: savedCreatePath } };
+	}, [props, savedCreatePath]);
+	const { create, update, repeat, fieldsToRender, readonly: readonlyProp, stackIndex = 0, isDialog } = effectiveProps;
 	const siteId = useActiveSiteId();
 	const dispatch = useDispatch();
 	const contentTypesById = useContentTypes();
@@ -309,7 +317,7 @@ function FormBootstrap(props: FormsEngineProps) {
 			: state.content.itemsByPath[effectiveUpdatePath ?? formsStackData[stackIndex - 1]?.props?.update?.path]
 	);
 
-	api.updateProps(stackIndex, props);
+	api.updateProps(stackIndex, effectiveProps);
 
 	useEffect(() => {
 		if (!create && !repeat && !liveUpdatedItem) setReady(false);
@@ -579,8 +587,10 @@ function FormBootstrap(props: FormsEngineProps) {
 				<StableFormContext.Provider value={stableFormContextRef.current}>
 					<ItemContext.Provider value={liveUpdatedItem}>
 						<ItemMetaContext.Provider value={itemMeta}>
-							<RenamedPathContext.Provider value={{ renamedPath, setRenamedPath, reloadNonce, triggerReload }}>
-								{createElement(FormOrchestrator, props)}
+							<RenamedPathContext.Provider
+								value={{ renamedPath, setRenamedPath, reloadNonce, triggerReload, setSavedCreatePath }}
+							>
+								{createElement(FormOrchestrator, effectiveProps)}
 							</RenamedPathContext.Provider>
 						</ItemMetaContext.Provider>
 					</ItemContext.Provider>
