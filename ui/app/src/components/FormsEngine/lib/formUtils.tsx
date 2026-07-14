@@ -1001,7 +1001,6 @@ export function getTinyMceInitOptions(
 	};
 	// TODO: Tiny: must remove `autoresize_on_init`, `templates` from all configs
 	const init: Editor['props']['init'] = {
-		// @ts-expect-error: Typings state the prop is wrong for the React integration, but the prop is correct.
 		license_key: 'gpl',
 		// Needs to be set to split when the editor is rendered in a scrollable container.
 		// The `height` and `overflow` of the FormsEngine root breaks some of Tiny's internal rendering mechanics.
@@ -1143,30 +1142,34 @@ export function getTinyMceInitOptions(
 			setup?.(editor);
 		},
 		...(tinymceOptions && {
-			...reversePluckProps(
-				// Tiny seems to somehow mutate the options object which would cause crashes when attempting
-				// to mutate immutable object (possibly from redux). Also, we don't want the state to get mutated.
-				JSON.parse(JSON.stringify(tinymceOptions)),
-				'target', // Target can't be changed
-				'inline', // Not using inline view doesn't behave well on XB, this setting shouldn't be changed.
-				'setup',
-				'base_url',
-				'encoding',
-				'autosave_ask_before_unload', // Auto-save options are removed since it is not supported in control.
-				'autosave_interval',
-				'autosave_prefix',
-				'autosave_restore_when_empty',
-				'autosave_retention',
-				'file_picker_callback', // No file picker is set by default, and functions are not supported in config file. Files/images handlers currently not supported.
-				'height', // Height is set to the size of content
-				'paste_postprocess',
-				'paste_preprocess',
-				'paste_as_text', // Considered above,
-				'images_upload_handler',
-				'code_editor_inline',
-				'plugins', // Considered/used above, mixed with our options
-				'external_plugins', // Considered/used above, mixed with our options,
-				'content_css' // Handled above, if no content_css is found it will use dark/default styles.
+			// Pluck non-serializable props (DOM `target`, callbacks) before cloning. Tiny mutates the
+			// options object; cloning avoids crashes on immutable state (e.g. Redux) and keeps state clean.
+			...JSON.parse(
+				JSON.stringify(
+					reversePluckProps(
+						tinymceOptions,
+						'target', // Target can't be changed; also a DOM node (circular / non-JSON).
+						'inline', // Not using inline view doesn't behave well on XB, this setting shouldn't be changed.
+						'setup',
+						'base_url',
+						'encoding',
+						'autosave_ask_before_unload', // Auto-save options are removed since it is not supported in control.
+						'autosave_interval',
+						'autosave_prefix',
+						'autosave_restore_when_empty',
+						'autosave_retention',
+						'file_picker_callback', // No file picker is set by default, and functions are not supported in config file. Files/images handlers currently not supported.
+						'height', // Height is set to the size of content
+						'paste_postprocess',
+						'paste_preprocess',
+						'paste_as_text', // Considered above,
+						'images_upload_handler',
+						'code_editor_inline',
+						'plugins', // Considered/used above, mixed with our options
+						'external_plugins', // Considered/used above, mixed with our options,
+						'content_css' // Handled above, if no content_css is found it will use dark/default styles.
+					)
+				)
 			)
 		}),
 		...controlProps
