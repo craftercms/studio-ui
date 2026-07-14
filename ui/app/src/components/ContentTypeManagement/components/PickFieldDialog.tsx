@@ -229,11 +229,11 @@ export function SelectField(props: {
 		setSelectedField,
 		systemFieldsIds = [],
 		systemFieldsTitle = <FormattedMessage defaultMessage="System Fields" />,
-		currentFields
+		currentFields = {}
 	} = props;
 	const [searchTerm, setSearchTerm] = useState('');
 	const { formatMessage } = useIntl();
-	const currentFieldTypes = Object.values(currentFields ?? {}).map((field) => field.type);
+	const currentFieldTypes = Object.values(currentFields).map((field) => field.type);
 
 	const basicFields = typesFullList
 		.map((type) => applyTranslations(type, formatMessage))
