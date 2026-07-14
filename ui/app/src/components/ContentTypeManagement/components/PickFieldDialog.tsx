@@ -235,7 +235,7 @@ export function SelectField(props: {
 	const { formatMessage } = useIntl();
 	const currentFieldTypes = Object.values(currentFields).map((field) => field.type);
 
-	const basicFields = typesFullList
+	const systemFields = typesFullList
 		.map((type) => applyTranslations(type, formatMessage))
 		.filter(
 			(type) =>
@@ -284,14 +284,14 @@ export function SelectField(props: {
 					</ListItemButton>
 				))}
 			</Box>
-			{basicFields.length > 0 && (
+			{systemFields.length > 0 && (
 				<>
 					<Divider />
 					<FormControl sx={{ mt: 2 }}>
 						<FormLabel id="fieldSectionRadioGroupLabel">{systemFieldsTitle}</FormLabel>
 					</FormControl>
 					<Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', mt: 2 }}>
-						{basicFields.map((field, index) => (
+						{systemFields.map((field, index) => (
 							<ListItemButton
 								key={index}
 								onClick={() => setSelectedField(field)}
