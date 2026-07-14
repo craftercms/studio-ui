@@ -21,6 +21,7 @@ import { nou } from './object';
 import { FormatXMLElementFn, PrimitiveType } from 'intl-messageformat';
 import { ReactNode } from 'react';
 import LookupTable from '../models/LookupTable';
+import { getLocalStorageItem, setLocalStorageItem } from './storage';
 
 export type BundledLocaleCodes = 'en' | 'es' | 'de' | 'ko';
 
@@ -44,6 +45,18 @@ export const intl$ = intl$$.asObservable();
 
 /* private */
 let intl = createIntl({ locale: 'en', messages: currentTranslations.en }, createIntlCache());
+
+export function getCurrentLocale(username?: string): string {
+	const user = username ?? getLocalStorageItem('username');
+	return getStoredLanguage(user) || 'en';
+}
+
+export function getStoredLanguage(username?: string): string {
+	return (
+		(username ? getLocalStorageItem(buildStoredLanguageKey(username)) : null) ??
+		getLocalStorageItem(`crafterStudioLanguage`)
+	);
+}
 
 if (getCurrentLocale() !== 'en') {
 	createIntlInstance(getCurrentLocale()).then((newIntl) => {
@@ -126,11 +139,6 @@ export function getPossibleTranslation(
 	return typeof titleOrDescriptor === 'object' ? formatMessage(titleOrDescriptor, values) : titleOrDescriptor;
 }
 
-export function getCurrentLocale(username?: string): string {
-	const user = username ?? localStorage.getItem('username');
-	return getStoredLanguage(user) || 'en';
-}
-
 export function getCurrentIntl(): IntlShape {
 	return intl;
 }
@@ -139,35 +147,33 @@ export function buildStoredLanguageKey(username: string): string {
 	return `${username}_crafterStudioLanguage`;
 }
 
-export function getStoredLanguage(username?: string): string {
-	return (
-		(username ? localStorage.getItem(buildStoredLanguageKey(username)) : null) ??
-		localStorage.getItem(`crafterStudioLanguage`)
-	);
-}
-
 export function setStoredLanguage(language: string, username?: string): void {
 	// Prevent `null` or `undefined`, or even `"""` from being stored.
 	if (language) {
-		username && localStorage.setItem(buildStoredLanguageKey(username), language);
-		localStorage.setItem('crafterStudioLanguage', language);
+		username && setLocalStorageItem(buildStoredLanguageKey(username), language);
+		setLocalStorageItem('crafterStudioLanguage', language);
 	}
 }
 
 export function dispatchLanguageChange(language: string): void {
+	if (typeof document === 'undefined') {
+		return;
+	}
 	let event = new CustomEvent('setlocale', { detail: language });
 	document.dispatchEvent(event);
 }
 
-// @ts-ignore
-document.addEventListener(
-	'setlocale',
-	async (e: CustomEvent<string>) => {
-		if (e.detail && e.detail !== intl.locale) {
-			intl = await createIntlInstance(e.detail);
-			document.documentElement.setAttribute('lang', e.detail);
-			intl$$.next(intl);
-		}
-	},
-	false
-);
+if (typeof document !== 'undefined') {
+	// @ts-ignore
+	document.addEventListener(
+		'setlocale',
+		async (e: CustomEvent<string>) => {
+			if (e.detail && e.detail !== intl.locale) {
+				intl = await createIntlInstance(e.detail);
+				document.documentElement.setAttribute('lang', e.detail);
+				intl$$.next(intl);
+			}
+		},
+		false
+	);
+}
