@@ -389,10 +389,13 @@ export function AccountManagement(props: AccountManagementProps) {
               <NumberField.Root
                 id="snackDuration"
                 value={snackDuration / 1000} // Display in seconds
-                onValueChange={(value) =>
-                  setSnackDuration(Number.isFinite(value) ? Number(value) * 1000 : DEFAULT_SNACKBAR_DURATION)
-                } // Store in milliseconds
-                min={0}
+                onValueChange={(value) => {
+                  const seconds = Number(value);
+                  setSnackDuration(
+                    Number.isFinite(seconds) && seconds > 0 ? seconds * 1000 : DEFAULT_SNACKBAR_DURATION
+                  );
+                }} // Store in milliseconds
+                min={1}
                 max={60}
                 step={1}
                 format={{ maximumFractionDigits: 0 }}
