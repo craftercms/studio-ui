@@ -51,6 +51,7 @@ import { USER_USERNAME_MAX_LENGTH } from '../UserManagement/utils';
 import useTimer from '../../hooks/useTimer';
 import { nnou } from '../../utils/object';
 import moment from 'moment-timezone';
+import useSnackbarDuration from '../../hooks/useSnackbarDuration';
 
 export interface SystemLang {
   id: string;
@@ -546,6 +547,7 @@ export function LoginViewContainer(props: LoginViewProps) {
     open: false,
     message: ''
   });
+  const autoHideDuration = useSnackbarDuration();
   const [isFetching, onSubmit] = useState(false);
 
   let [CurrentView, setCurrentView] = useState<React.ElementType>(() => LoginView);
@@ -626,7 +628,7 @@ export function LoginViewContainer(props: LoginViewProps) {
       </Dialog>
       <Snackbar
         open={snack.open}
-        autoHideDuration={snack.autoHideDuration ?? 8000}
+        autoHideDuration={snack.autoHideDuration ?? autoHideDuration}
         onClose={() => onSnack({ open: false, message: '' })}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         message={snack.message}

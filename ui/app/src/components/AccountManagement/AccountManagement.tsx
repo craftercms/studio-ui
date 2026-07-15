@@ -18,7 +18,7 @@ import Box, { BoxProps } from '@mui/material/Box';
 import React, { forwardRef, useEffect, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import GlobalAppToolbar from '../GlobalAppToolbar';
-import { Checkbox, FormControlLabel, Typography } from '@mui/material';
+import { FormControlLabel, Switch, Typography } from '@mui/material';
 import Paper from '@mui/material/Paper';
 import useStyles from './styles';
 import Avatar from '@mui/material/Avatar';
@@ -413,10 +413,8 @@ export function AccountManagement(props: AccountManagementProps) {
             </FormControl>
             <FormControl sx={{ my: 2 }}>
               <FormControlLabel
-                control={
-                  <Checkbox checked={enableAnimations} onChange={(e) => setEnableAnimations(e.target.checked)} />
-                }
-                label={<FormattedMessage defaultMessage="Enable animations" />}
+                control={<Switch checked={enableAnimations} onChange={(e) => setEnableAnimations(e.target.checked)} />}
+                label={<FormattedMessage defaultMessage="Enable user interface animations" />}
               />
             </FormControl>
             <PrimaryButton
