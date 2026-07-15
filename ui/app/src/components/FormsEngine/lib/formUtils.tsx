@@ -654,6 +654,7 @@ export interface ShouldUnlockArguments {
 	isRenamed: boolean;
 	saveAsDraft: boolean;
 	invalidForm: boolean;
+	itemSavedAsDraft: boolean;
 }
 
 /**
@@ -669,7 +670,8 @@ export function shouldUnlockItem(props: ShouldUnlockArguments): boolean {
 		isParentReadonly,
 		isRenamed,
 		saveAsDraft,
-		invalidForm
+		invalidForm,
+		itemSavedAsDraft
 	} = props;
 	return (
 		!invalidForm &&
@@ -678,6 +680,7 @@ export function shouldUnlockItem(props: ShouldUnlockArguments): boolean {
 		!isRepeatMode &&
 		!isCreateMode &&
 		!readonly &&
+		!itemSavedAsDraft &&
 		// Note these "Or" statements below build on top of the previous one (i.e. it only gets to the next if the previous is false).
 		// If it's not embedded, unlock the item.
 		(!isEmbedded ||
@@ -692,8 +695,10 @@ export function shouldUnlockItem(props: ShouldUnlockArguments): boolean {
  * When the consumer component is being unmounted, checks if it should be unlocked and unlocks if so.
  * @param props {FormsEngineProps}
  **/
-export function useUnlockOnClose(props: FormsEngineProps & { saveAsDraft?: boolean; invalidForm?: boolean }) {
-	const { create, update, repeat, stackIndex = 0, saveAsDraft = false, invalidForm } = props;
+export function useUnlockOnClose(
+	props: FormsEngineProps & { saveAsDraft?: boolean; invalidForm?: boolean; itemSavedAsDraft?: boolean }
+) {
+	const { create, update, repeat, stackIndex = 0, saveAsDraft = false, invalidForm, itemSavedAsDraft } = props;
 	const itemPath = useContext(ItemContext)?.path;
 	const { atoms } = useContext(StableFormContext);
 	const { formsStackData } = useContext(StableGlobalContext);
@@ -721,7 +726,8 @@ export function useUnlockOnClose(props: FormsEngineProps & { saveAsDraft?: boole
 		siteId,
 		isRenamed,
 		saveAsDraft,
-		invalidForm
+		invalidForm,
+		itemSavedAsDraft
 	});
 	useEffect(
 		() => () => {

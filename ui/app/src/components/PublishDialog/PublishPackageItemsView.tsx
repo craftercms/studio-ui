@@ -15,8 +15,8 @@
  */
 
 import Box from '@mui/material/Box';
-import { listItemSecondaryActionClasses } from '@mui/material';
-import { useIntl } from 'react-intl';
+import { Chip, listItemSecondaryActionClasses, Typography } from '@mui/material';
+import { FormattedMessage, useIntl } from 'react-intl';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
@@ -170,6 +170,7 @@ export function PublishPackageItemsView(props: PublishItemsProps) {
 						{trees.map((node) =>
 							renderTreeNode({
 								itemMap,
+								itemsByPath,
 								node,
 								dependencyTypeMap,
 								onMenuClick: onContextMenuOpen,
@@ -231,6 +232,14 @@ export function PublishPackageItemsView(props: PublishItemsProps) {
 														sx={{ mr: 1 }}
 														showPublishingTarget={false}
 													/>
+													{itemsByPath[path]?.savedAsDraft && (
+														<Chip
+															size="small"
+															variant="outlined"
+															color="error"
+															label={<FormattedMessage defaultMessage="Draft" />}
+														/>
+													)}
 													<DependencyChip type={dependencyTypeMap?.[path]} />
 												</Box>
 											}

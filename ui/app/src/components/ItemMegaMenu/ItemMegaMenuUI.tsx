@@ -106,6 +106,7 @@ export function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
 	const isFolder = item?.systemType === 'folder';
 	const inWorkflow = isInWorkflow(item?.stateMap);
 	const { formatMessage } = useIntl();
+
 	return (
 		<Popover
 			open={open}
@@ -207,7 +208,10 @@ export function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
 										sxs={{ root: { fontSize: '0.8rem', verticalAlign: 'middle', ...sxs?.icon } }}
 									/>
 									<Typography variant="body2" component="span">
-										{getItemStateText(item?.stateMap, formatMessage, { user: item?.lockOwner?.username })}
+										{getItemStateText(item?.stateMap, formatMessage, {
+											user: item?.lockOwner?.username,
+											draft: item?.savedAsDraft
+										})}
 									</Typography>
 								</>
 							) : (

@@ -15,18 +15,19 @@
  */
 
 import LookupTable from '../../models/LookupTable';
-import { LightItem } from '../../models';
+import { ContentInstance, ContentItem, LightItem } from '../../models';
 import { PathTreeNode } from '../PublishDialog/buildPathTrees';
 import React from 'react';
 import { DependencyChip, DependencyMap } from '../PublishDialog';
 import { TreeItem } from '@mui/x-tree-view/TreeItem';
 import Box from '@mui/material/Box';
 import ItemDisplay from '../ItemDisplay';
-import { Typography } from '@mui/material';
+import { Chip, Typography } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import MoreVertRounded from '@mui/icons-material/MoreVertRounded';
 import Checkbox from '@mui/material/Checkbox';
 import FolderOpenRoundedIcon from '@mui/icons-material/FolderOpenRounded';
+import { FormattedMessage } from 'react-intl';
 
 export function renderTreeNode(props: {
 	itemMap: LookupTable<LightItem>;
@@ -36,9 +37,11 @@ export function renderTreeNode(props: {
 	onCheckboxChange?: (e: React.ChangeEvent<HTMLInputElement>, checked: boolean, path: string) => void;
 	selectedDependencies?: string[];
 	showItemTarget?: boolean;
+	itemsByPath?: LookupTable<ContentItem>;
 }) {
 	const {
 		itemMap,
+		itemsByPath,
 		node,
 		onMenuClick,
 		dependencyTypeMap,
@@ -66,6 +69,14 @@ export function renderTreeNode(props: {
 									showPublishingTarget={false}
 									sx={{ mr: 1 }}
 								/>
+								{itemsByPath?.[node.path]?.savedAsDraft && (
+									<Chip
+										size="small"
+										variant="outlined"
+										color="error"
+										label={<FormattedMessage defaultMessage="Draft" />}
+									/>
+								)}
 								{isDependency && <DependencyChip type={dependencyTypeMap[node.path]} />}
 							</Box>
 							<Typography
@@ -112,6 +123,7 @@ export function renderTreeNode(props: {
 					: node.children.map((child) =>
 							renderTreeNode({
 								itemMap,
+								itemsByPath,
 								node: child,
 								dependencyTypeMap,
 								onMenuClick,

@@ -653,7 +653,7 @@ function FormOrchestrator(props: FormsEngineProps) {
 		lockStatus
 	});
 	const [collapseHeader, setCollapseHeader] = useState(false);
-	const [saveAsDraft, setSaveAsDraft] = useState(false);
+	const [saveAsDraftAction, setSaveAsDraftAction] = useState(false);
 	const [invalidForm, setInvalidForm] = useState(false);
 	const jotai = useJotaiStore();
 
@@ -710,7 +710,12 @@ function FormOrchestrator(props: FormsEngineProps) {
 	}, [isSubmitting, hasPendingChanges, isStackedForm, updateSubmittingOrHasPendingChanges]);
 
 	// Unlock content when the form is closed.
-	useUnlockOnClose({ ...props, saveAsDraft, invalidForm });
+	useUnlockOnClose({
+		...props,
+		saveAsDraft: saveAsDraftAction,
+		invalidForm,
+		itemSavedAsDraft: Boolean(item?.savedAsDraft)
+	});
 
 	// region Workflow item updates
 	useEffect(() => {
@@ -1010,7 +1015,7 @@ function FormOrchestrator(props: FormsEngineProps) {
 										isEmbedded={isEmbedded}
 										isStackedForm={isStackedForm}
 										isRepeatMode={isRepeatMode}
-										setSaveAsDraft={setSaveAsDraft}
+										setSaveAsDraft={setSaveAsDraftAction}
 										invalidForm={invalidForm}
 										onSave={(e, draft) => saveFn(draft)}
 									/>

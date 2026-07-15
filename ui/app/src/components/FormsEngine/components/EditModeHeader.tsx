@@ -81,6 +81,9 @@ export function EditModeHeader({ isEmbedded, collapse = false }: { isEmbedded: b
 					{isLargeContainer && collapse && <CollapseToCButton />}
 					<ItemTypeIcon item={typeIconItem} sx={{ color: 'info.main' }} />
 					<Typography>{itemLabel}</Typography>
+					{item.savedAsDraft && (
+						<Chip variant="outlined" color="error" label={<FormattedMessage defaultMessage="Draft" />} />
+					)}
 					{readonly && (
 						<Chip
 							sx={{ [`.${chipClasses.label}`]: { display: 'flex', alignItems: 'center' } }}
@@ -160,7 +163,10 @@ export function EditModeHeader({ isEmbedded, collapse = false }: { isEmbedded: b
 									</Box>
 									<Box component="span" display="flex" alignItems="center">
 										<ItemStateIcon fontSize="inherit" sxs={{ root: { mr: 0.25 } }} item={item} />{' '}
-										{getItemStateText(item.stateMap, formatMessage, { user: item.lockOwner?.username })}
+										{getItemStateText(item.stateMap, formatMessage, {
+											user: item.lockOwner?.username,
+											draft: item.savedAsDraft
+										})}
 									</Box>
 								</Typography>
 							</div>
