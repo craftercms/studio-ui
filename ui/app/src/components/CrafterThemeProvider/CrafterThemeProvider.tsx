@@ -47,6 +47,8 @@ export function CrafterThemeProvider(props: CrafterThemeProviderProps) {
 			// Animations: Disable MUI JavaScript/CSS transition helpers
 			...(!enableAnimations && {
 				transitions: {
+					...defaultThemeOptions?.transitions,
+					...props.themeOptions?.transitions,
 					create: () => 'none'
 				}
 			}),
