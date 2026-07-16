@@ -16,7 +16,12 @@
 
 /** Returns true when `localStorage` is available (browser / client). */
 export function isLocalStorageAvailable(): boolean {
-	return typeof window !== 'undefined' && typeof window.localStorage !== 'undefined';
+	try {
+		const storage = typeof window !== 'undefined' ? window.localStorage : undefined;
+		return typeof storage !== 'undefined';
+	} catch {
+		return false;
+	}
 }
 
 /**
@@ -24,32 +29,49 @@ export function isLocalStorageAvailable(): boolean {
  * Returns `null` when unavailable or when the key is missing/empty (same as native).
  */
 export function getLocalStorageItem(key: string): string | null {
-	if (!key || !isLocalStorageAvailable()) {
+	if (!key) {
 		return null;
 	}
-	return localStorage.getItem(key);
+	try {
+		const storage = window.localStorage;
+		return storage.getItem(key);
+	} catch {
+		return null;
+	}
 }
 
 /** SSR-safe `localStorage.setItem`. No-ops when storage is unavailable. */
 export function setLocalStorageItem(key: string, value: string): void {
-	if (!key || !isLocalStorageAvailable()) {
+	if (!key) {
 		return;
 	}
-	localStorage.setItem(key, value);
+	try {
+		const storage = window.localStorage;
+		storage.setItem(key, value);
+	} catch {
+		// No-op: unavailable storage or quota errors.
+	}
 }
 
 /** SSR-safe `localStorage.removeItem`. No-ops when storage is unavailable. */
 export function removeLocalStorageItem(key: string): void {
-	if (!key || !isLocalStorageAvailable()) {
+	if (!key) {
 		return;
 	}
-	localStorage.removeItem(key);
+	try {
+		const storage = window.localStorage;
+		storage.removeItem(key);
+	} catch {
+		// No-op.
+	}
 }
 
 /** SSR-safe `Object.keys(localStorage)`. Returns `[]` when unavailable. */
 export function getLocalStorageKeys(): string[] {
-	if (!isLocalStorageAvailable()) {
+	try {
+		const storage = window.localStorage;
+		return Object.keys(storage);
+	} catch {
 		return [];
 	}
-	return Object.keys(localStorage);
 }
