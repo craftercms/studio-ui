@@ -22,7 +22,7 @@ import Cookies from 'js-cookie';
 import { fromTopic, post } from './utils/communicator';
 import { v4 as uuid } from 'uuid';
 import { ContentInstance, InstanceRecord } from '@craftercms/studio-ui/models/ContentInstance';
-import { ContentType } from '@craftercms/studio-ui/models/ContentType';
+import type { ContentType } from '@craftercms/studio-ui/models/ContentType';
 import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
 import { Operation } from './models/Operations';
 import {

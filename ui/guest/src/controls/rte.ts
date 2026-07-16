@@ -29,7 +29,7 @@ import { editComponentInline, exitComponentInlineEdit } from '../store/actions';
 import { emptyFieldClass } from '../constants';
 import { unlockItem } from '@craftercms/studio-ui/state/actions/content';
 import { Editor as EditorReact } from '@tinymce/tinymce-react';
-import { getTinyMceInitOptions } from '@craftercms/studio-ui/components/FormsEngine/lib/formUtils';
+import { getTinyMceInitOptions } from '@craftercms/studio-ui/components/FormsEngine/lib/rteUtils';
 import { RteSetup } from '../models/Rte';
 
 export function initTinyMCE(

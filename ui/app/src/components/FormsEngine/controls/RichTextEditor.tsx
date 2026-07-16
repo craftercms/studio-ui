@@ -28,9 +28,10 @@ import useActiveSiteId from '../../../hooks/useActiveSiteId';
 import { Editor } from '@tinymce/tinymce-react';
 import { TinyMCE } from 'tinymce';
 import { getTinymce } from '@tinymce/tinymce-react/lib/es2015/main/ts/TinyMCE';
-import { getPropertyValue, getTinyMceInitOptions } from '../lib/formUtils';
+import { getPropertyValue } from '../lib/formUtils';
 import { loadAceEditorAssets } from '../../../utils/system';
 import { FormsEngineDialogContext } from '../lib/formsEngineContext';
+import { getTinyMceInitOptions } from '../lib/rteUtils';
 
 export interface RichTextEditorProps extends ControlProps {
 	value: string;

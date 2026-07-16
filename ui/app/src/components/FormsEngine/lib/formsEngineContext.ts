@@ -18,7 +18,7 @@ import { createContext } from 'react';
 import { ContentItem, PublishPackage } from '../../../models';
 import ContentType from '../../../models/ContentType';
 import ApiResponse from '../../../models/ApiResponse';
-import { FormsEngineProps } from '../FormsEngine';
+import { type FormsEngineProps } from '../FormsEngine';
 import LookupTable from '../../../models/LookupTable';
 import type { Atom, PrimitiveAtom } from 'jotai';
 import { FieldValidityState } from './validators';

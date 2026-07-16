@@ -16,7 +16,7 @@
 
 import { LookupTable } from './LookupTable';
 import { XmlKeys } from '../components/FormsEngine/lib/formConsts';
-import { DescriptorFieldValidationKeys } from '../components/ContentTypeManagement/utils';
+import type { DescriptorFieldValidationKeys } from '../components/ContentTypeManagement/utils';
 
 export interface ContentTypeFieldValidation<T = any> {
 	id: ValidationKeys | DescriptorFieldValidationKeys;
