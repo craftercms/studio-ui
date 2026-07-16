@@ -44,11 +44,8 @@ export function getTinyMceInitOptions(
 	const defaultTinymceOptions = defaultOptions
 		? { id: '', tinymceOptions: defaultOptions }
 		: (Object.values(rteConfig)[0] ?? { id: '', tinymceOptions: {} });
-	const tinymceOptions: Editor['props']['init'] = (
-		rteConfig[setupId] ??
-		Object.values(rteConfig)[0] ??
-		defaultTinymceOptions ?? { id: '', tinymceOptions: {} }
-	)?.tinymceOptions;
+	const tinymceOptions: Editor['props']['init'] =
+		(rteConfig[setupId] ?? Object.values(rteConfig)[0])?.tinymceOptions ?? {};
 	const controlProps: Partial<Editor['props']['init']> = {};
 	if (typeof field.properties?.enableSpellCheck?.value === 'boolean') {
 		controlProps.browser_spellcheck = field.properties.enableSpellCheck.value;
