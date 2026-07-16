@@ -68,11 +68,16 @@ async function createIntlInstance(localeCode: string): Promise<IntlShape> {
   );
 }
 
+let requestedLocale = intl.locale;
 // Do not read localStorage here — guest may run for example in a Next.js app.
 fromTopic(hostCheckIn.type).subscribe(({ payload }) => {
   const locale = payload?.locale;
+  if (locale) {
+    requestedLocale = locale;
+  }
   if (locale && locale !== intl.locale) {
     createIntlInstance(locale).then((newIntl) => {
+      if (locale !== requestedLocale) return;
       intl = newIntl;
       intl$$.next(newIntl);
     });
