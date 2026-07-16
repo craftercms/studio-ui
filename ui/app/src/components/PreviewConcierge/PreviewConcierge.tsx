@@ -192,6 +192,7 @@ import { ActionCreatorWithOptionalPayload } from '@reduxjs/toolkit';
 import { ItemMegaMenuStateProps } from '../ItemMegaMenu';
 import StandardAction from '../../models/StandardAction';
 import { versionStringToInt } from '../../utils/string';
+import { getCurrentLocale } from '../../utils/i18n';
 
 const issueDescriptorRequest = (props: {
   site: string;
@@ -704,7 +705,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
               authoringBase: upToDateRefs.current.authoringBase,
               site: upToDateRefs.current.siteId,
               editModePadding: upToDateRefs.current.editModePadding,
-              rteConfig: upToDateRefs.current.rteConfig ?? {}
+              rteConfig: upToDateRefs.current.rteConfig ?? {},
+              locale: getCurrentLocale(upToDateRefs.current.user.username)
             })
           );
           dispatch(guestCheckIn(payload));
