@@ -454,7 +454,7 @@ export function createVirtualSection<K extends ContentTypeSection | DescriptorSe
 		description: '',
 		expandByDefault: true,
 		...sectionData,
-		color: sectionData?.color ?? toColor?.(title)
+		color: sectionData?.color ?? toColor(title)
 	} as K;
 }
 

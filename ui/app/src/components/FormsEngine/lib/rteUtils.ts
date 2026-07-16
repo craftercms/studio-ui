@@ -17,7 +17,7 @@
 import { Editor } from '@tinymce/tinymce-react';
 import { ContentTypeField, GlobalState, LookupTable } from '../../../models';
 import { reversePluckProps } from '../../../utils/object';
-import { getPropertyValue, getValidationValue } from './formUtils';
+import { getPropertyValue, getValidationValue } from './fieldPropertyUtils';
 // import { getCurrentLocale } from '../../../utils/i18n';
 
 // Maps application locales to their corresponding TinyMCE language codes.
