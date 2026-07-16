@@ -30,6 +30,7 @@ import { emptyFieldClass } from '../constants';
 import { unlockItem } from '@craftercms/studio-ui/state/actions/content';
 import { Editor as EditorReact } from '@tinymce/tinymce-react';
 import { getTinyMceInitOptions } from '@craftercms/studio-ui/components/FormsEngine/lib/rteUtils';
+import { getCurrentIntl } from '../utils/i18n';
 import { RteSetup } from '../models/Rte';
 
 export function initTinyMCE(
@@ -157,6 +158,7 @@ export function initTinyMCE(
 				}
 			}
 		},
+		getCurrentIntl().locale,
 		{},
 		(editor: Editor) => {
 			let changed = false;

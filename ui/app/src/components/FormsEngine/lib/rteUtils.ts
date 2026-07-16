@@ -18,7 +18,6 @@ import { Editor } from '@tinymce/tinymce-react';
 import { ContentTypeField, GlobalState, LookupTable } from '../../../models';
 import { reversePluckProps } from '../../../utils/object';
 import { getPropertyValue, getValidationValue } from './fieldPropertyUtils';
-// import { getCurrentLocale } from '../../../utils/i18n';
 
 // Maps application locales to their corresponding TinyMCE language codes.
 const tinymceLangMap = {
@@ -31,6 +30,7 @@ const tinymceLangMap = {
 export function getTinyMceInitOptions(
 	field: ContentTypeField,
 	rteConfig: GlobalState['preview']['richTextEditor'], // GlobalState['preview']['richTextEditor']['']['']
+	locale: string,
 	defaultOptions?: Editor['props']['init'],
 	setup?: Editor['props']['init']['setup']
 ): Editor['props']['init'] {
@@ -38,8 +38,6 @@ export function getTinyMceInitOptions(
 	const height = getPropertyValue(field.properties, 'height', 300) as number;
 	const autoGrow = getPropertyValue(field.properties, 'autoGrow', false) as boolean;
 	const allowAddMedia = getValidationValue(field.validations, 'addMedia', true) as boolean;
-	// const language = getCurrentLocale(); // TODO: solve this, locale as a param to avoid localStorage access
-	const language = 'en';
 
 	const defaultTinymceOptions = defaultOptions
 		? { id: '', tinymceOptions: defaultOptions }
@@ -65,7 +63,7 @@ export function getTinyMceInitOptions(
 		// Needs to be set to split when the editor is rendered in a scrollable container.
 		// The `height` and `overflow` of the FormsEngine root breaks some of Tiny's internal rendering mechanics.
 		ui_mode: 'split',
-		language: tinymceLangMap[language] ?? 'en',
+		language: tinymceLangMap[locale] ?? 'en',
 		target: tinymceOptions.target,
 		promotion: false,
 		branding: false,
