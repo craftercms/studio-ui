@@ -34,7 +34,7 @@ const importsLookup: ImportsLookup = {
 /* private */
 let currentTranslations = { en: {} };
 
-let fetchedLocales: Partial<Record<BundledLocaleCodes, boolean>> = { en: true };
+let fetchedLocales: Partial<Record<string, boolean>> = { en: true };
 
 /* private */
 const intl$$ = new Subject<IntlShape>();
