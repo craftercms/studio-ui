@@ -76,11 +76,23 @@ fromTopic(hostCheckIn.type).subscribe(({ payload }) => {
 		requestedLocale = locale;
 	}
 	if (locale && locale !== intl.locale) {
-		createIntlInstance(locale).then((newIntl) => {
-			if (locale !== requestedLocale) return;
-			intl = newIntl;
-			intl$$.next(newIntl);
-		});
+		createIntlInstance(locale).then(
+			(newIntl) => {
+				if (locale !== requestedLocale) return;
+				intl = newIntl;
+				intl$$.next(newIntl);
+			},
+			(error) => {
+				if (locale !== requestedLocale) return;
+				console.error(`[Guest] Failed to load locale "${locale}". Falling back to English.`, error);
+				const fallbackIntl = createIntl(
+					{ locale: 'en', messages: currentTranslations.en },
+					createIntlCache()
+				);
+				intl = fallbackIntl;
+				intl$$.next(fallbackIntl);
+			}
+		);
 	}
 });
 
