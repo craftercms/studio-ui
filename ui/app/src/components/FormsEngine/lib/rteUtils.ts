@@ -50,9 +50,10 @@ export function getTinyMceInitOptions(
 		defaultTinymceOptions ?? { id: '', tinymceOptions: {} }
 	)?.tinymceOptions;
 	const controlProps: Partial<Editor['props']['init']> = {};
-	if (field.properties?.enableSpellCheck?.value === false) {
-		controlProps.browser_spellcheck = true;
+	if (typeof field.properties?.enableSpellCheck?.value === 'boolean') {
+		controlProps.browser_spellcheck = field.properties.enableSpellCheck.value;
 	}
+
 	const external: LookupTable<string> = {
 		...tinymceOptions.external_plugins,
 		acecode: '/studio/static-assets/js/tinymce-plugins/ace/plugin.min.js',
