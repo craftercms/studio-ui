@@ -15,7 +15,7 @@
  */
 
 import LookupTable from '../../models/LookupTable';
-import { ContentInstance, ContentItem, LightItem } from '../../models';
+import { ContentItem, LightItem } from '../../models';
 import { PathTreeNode } from '../PublishDialog/buildPathTrees';
 import React from 'react';
 import { DependencyChip, DependencyMap } from '../PublishDialog';
