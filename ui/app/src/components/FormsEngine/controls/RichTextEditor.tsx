@@ -120,15 +120,6 @@ export function RichTextEditor(props: RichTextEditorProps) {
 				},
 				'.tox .tox-statusbar': {
 					borderTopColor: 'divider'
-				},
-				'.tox.tox-tinymce-inline .tox-editor-header': {
-					backgroundColor: '#1C1C1E'
-				},
-				'.tox:not(.tox-tinymce-inline) .tox-editor-header': {
-					backgroundColor: '#1C1C1E'
-				},
-				'.tox:not(.tox-tinymce-inline).tox-tinymce--toolbar-sticky-on .tox-editor-header': {
-					backgroundColor: '#1C1C1E'
 				}
 			}}
 		>
