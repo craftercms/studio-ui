@@ -98,7 +98,8 @@ export const valueSerializersLookup: Record<BuiltInControlType | DescriptorContr
 	'input-link': undefined,
 	'input-phone': undefined,
 	'delete-dependencies': (field, value) => (value == null ? undefined : prepareObject(field, value as object)),
-	'copy-dependencies': (field, value) => (value == null ? undefined : prepareObject(field, value as object))
+	'copy-dependencies': (field, value) => (value == null ? undefined : prepareObject(field, value as object)),
+	'sort-dropdown': undefined
 };
 
 /**

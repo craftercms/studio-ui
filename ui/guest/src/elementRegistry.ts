@@ -146,18 +146,18 @@ export function register(payload: ElementRecordRegistration): number {
         : fieldId.split(',').map((str) => str.trim());
 	const terminator$ = deregister$.pipe(filter((_id) => _id === String(id)));
 
-	function create() {
+	function create(inheritanceParentModelId?: string) {
 		// Create/register the physical record
 		db[id] = {
 			id,
 			element,
-			modelId,
+			modelId: inheritanceParentModelId ?? modelId,
 			index,
 			label,
 			fieldId: fieldIds,
 			iceIds,
 			complete: false,
-			inherited: fieldIds.some((fieldId) => isInheritedField(modelId, fieldId))
+			inherited: fieldIds.some((fieldId) => isInheritedField(inheritanceParentModelId ?? modelId, fieldId))
 		};
 	}
 
@@ -172,8 +172,9 @@ export function register(payload: ElementRecordRegistration): number {
 					takeUntil(terminator$),
 					take(1)
 				)
-				.subscribe(() => {
-					create();
+				.subscribe((response) => {
+					const sourceModelId = response.craftercms.id;
+					create(sourceModelId);
 					completeDeferredRegistration(id);
 				});
 		} else {
@@ -202,13 +203,13 @@ export function register(payload: ElementRecordRegistration): number {
 	return id;
 }
 
-export function completeDeferredRegistration(id: number): void {
+export function completeDeferredRegistration(id: number, inheritanceParentModelId?: string): void {
 	const record = db[id];
 	const { modelId, index, fieldId: fieldIds, iceIds } = record;
 
 	if (fieldIds.length > 0) {
 		fieldIds.forEach((fieldId) => {
-			const iceId = iceRegistry.register({ modelId, index, fieldId });
+			const iceId = iceRegistry.register({ modelId: inheritanceParentModelId ?? modelId, index, fieldId });
 			if (!registry[iceId]) {
 				registry[iceId] = [];
 			}
@@ -216,7 +217,7 @@ export function completeDeferredRegistration(id: number): void {
 			!iceIds.includes(iceId) && iceIds.push(iceId);
 		});
 	} else {
-		const iceId = iceRegistry.register({ modelId, index });
+		const iceId = iceRegistry.register({ modelId: inheritanceParentModelId ?? modelId, index });
 		if (!registry[iceId]) {
 			registry[iceId] = [];
 		}

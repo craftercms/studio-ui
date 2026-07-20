@@ -66,18 +66,24 @@ export function useConsolidatedItemPickerData(dataSources: DataSource[]): Consol
 							allowedSharedExisingTypes.push(contentTypeId);
 						}
 					});
+					const sortOptions = {
+						sortBy: ds.properties?.['sortBy'] as string | undefined,
+						sortOrder: ds.properties?.['sortOrder'] as 'asc' | 'desc' | undefined
+					};
 					if (ds.properties.enableBrowse) {
 						allowedBrowsePaths.push({
 							title: ds.title,
 							path: ds.properties.baseBrowsePath,
-							allowedContentTypes: allowedSharedExisingTypes
+							allowedContentTypes: allowedSharedExisingTypes,
+							options: sortOptions
 						});
 					}
 					if (ds.properties.enableSearch) {
 						allowedSearchPaths.push({
 							title: ds.title,
 							path: ds.properties.baseBrowsePath,
-							allowedContentTypes: allowedSharedExisingTypes
+							allowedContentTypes: allowedSharedExisingTypes,
+							options: sortOptions
 						});
 					}
 					break;

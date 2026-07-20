@@ -32,6 +32,7 @@ import type { RepeatItem } from '../controls/Repeat';
 import { getValidationValue } from './formUtils';
 import type { NodeSelectorItem } from '../controls/NodeSelector';
 import type { CheckboxGroupProps } from '../controls/CheckboxGroup';
+import { macroCreatorLookupTable } from '../../ContentTypeManagement/controls/PathWithMacroCreator';
 
 interface ValidatorMetaData {
 	siteId: string;
@@ -82,7 +83,9 @@ export const validatorsMap: Partial<Record<BuiltInControlType | DescriptorContro
 		dateTimeExpressionInputValidator(field, currentValue as string, messages),
 	'input-email': (field, currentValue, messages) => inputEmailValidator(field, currentValue as string, messages),
 	'input-link': (field, currentValue, messages) => inputLinkValidator(field, currentValue as string, messages),
-	'input-phone': (field, currentValue, messages) => inputPhoneValidator(field, currentValue as string, messages)
+	'input-phone': (field, currentValue, messages) => inputPhoneValidator(field, currentValue as string, messages),
+	'path-with-macro-creator': (field, currentValue, messages) =>
+		pathWithMacroValidator(field, currentValue as string, messages)
 };
 
 // TODO: Fix FormatXMLElementFn generics
@@ -362,8 +365,12 @@ export function numericInputValidator(
 	const lastUnderscore = field.id.lastIndexOf('_');
 	const numType = lastUnderscore !== -1 ? field.id.substring(lastUnderscore) : '_i';
 
-	if (nou(currentValue) || Number.isNaN(Number(currentValue))) {
+	if (nou(currentValue)) {
 		return isValid;
+	}
+	if (Number.isNaN(Number(currentValue))) {
+		messages.push([defineMessage({ defaultMessage: 'Please enter a valid number.' })]);
+		return false;
 	}
 
 	let numTypeRegex;
@@ -552,10 +559,11 @@ const rteValidator = (field: ContentTypeField, currentValue: string, messages?: 
 	if (nou(field)) return true;
 	const isRequired = isFieldRequired(field);
 	let isValid = true;
+	const safeValue = typeof currentValue === 'string' ? currentValue : '';
 
 	const maxLength: number | undefined = getValidationValue(field.validations, 'maxLength');
 	const aux = document.createElement('div');
-	aux.innerHTML = currentValue;
+	aux.innerHTML = safeValue;
 	const trimmedContent = aux.innerText.trim(); // Get only the text and remove white space
 
 	if (isRequired) {
@@ -565,7 +573,7 @@ const rteValidator = (field: ContentTypeField, currentValue: string, messages?: 
 		}
 	}
 	if (nnou(maxLength) && trimmedContent.length > maxLength) {
-		messages.push([
+		messages?.push([
 			defineMessage({
 				defaultMessage: `The value is greater than the allowed maximum ({maxLength}).`
 			}),
@@ -575,6 +583,33 @@ const rteValidator = (field: ContentTypeField, currentValue: string, messages?: 
 	}
 
 	return isValid;
+};
+
+const pathWithMacroValidator = (
+	field: ContentTypeField,
+	currentValue: string,
+	messages: FieldValidityMessage[]
+): boolean => {
+	if (currentValue.trim() === '') {
+		return true;
+	}
+	const validMacros = Object.values(macroCreatorLookupTable).map(({ macro }) => macro);
+	// Find all macros in the currentValue (e.g., {macroName})
+	const macroRegex = /(\{[a-zA-Z0-9_]+\})/g;
+	const foundMacros = Array.from(currentValue.matchAll(macroRegex)).map((match) => match[1]);
+
+	// Find macros not in the whitelist
+	const invalidMacros = foundMacros.filter((macro) => !validMacros.includes(macro));
+
+	if (invalidMacros.length > 0) {
+		messages.push([
+			defineMessage({ defaultMessage: 'The following are invalid macros: {invalidMacros}.' }),
+			{ invalidMacros: invalidMacros.join(', ') }
+		]);
+		return false;
+	}
+
+	return true;
 };
 
 export default validateFieldValue;
