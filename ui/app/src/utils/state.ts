@@ -574,3 +574,16 @@ export function getStoredEnableAnimations(user: string): boolean | null {
 export function removeStoredEnableAnimations(user: string) {
 	window.localStorage.removeItem(`craftercms.${user}.enableAnimations`);
 }
+
+export function setStoredShowDisabledUsers(user: string, value: boolean) {
+	window.localStorage.setItem(`craftercms.${user}.showDisabledUsers`, JSON.stringify(value));
+}
+
+export function getStoredShowDisabledUsers(user: string): boolean {
+	const value = window.localStorage.getItem(`craftercms.${user}.showDisabledUsers`);
+	return value ? value === 'true' : false;
+}
+
+export function removeStoredShowDisabledUsers(user: string) {
+	window.localStorage.removeItem(`craftercms.${user}.showDisabledUsers`);
+}
