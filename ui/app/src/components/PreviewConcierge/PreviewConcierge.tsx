@@ -101,6 +101,7 @@ import RubbishBin from '../RubbishBin/RubbishBin';
 import { useSnackbar } from 'notistack';
 import {
 	getStoredClipboard,
+	getStoredEnabledKeyboardShortcutsState,
 	getStoredEditModeChoice,
 	getStoredEditModePadding,
 	getStoredHighlightModeChoice,
@@ -335,6 +336,9 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 	const priorState = useRef({ site: siteId });
 	const { enqueueSnackbar } = useSnackbar();
 	const { formatMessage } = useIntl();
+	const dialogs = useSelection((state) => state.dialogs);
+	const stack = useSelection((state) => state.dialogStack);
+	const keyboardShortcutsEnabled = useSelection((state) => state.preview.keyboardShortcutsEnabled);
 	const models = guest?.models;
 	const modelIdByPath = guest?.modelIdByPath;
 	const hierarchyMap = guest?.hierarchyMap;
@@ -389,7 +393,15 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 		showToolsPanel,
 		toolsPanelWidth,
 		browseFilesDialogState,
+		dialogs,
+		stack,
+		keyboardShortcutsEnabled,
 		onShortCutKeypress(event: KeyboardEvent) {
+			const openDialogs: boolean =
+				Object.values(upToDateRefs.current.dialogs).some((dialog) => dialog.open) ||
+				Boolean(upToDateRefs.current.stack.ids?.length);
+			if (openDialogs || !upToDateRefs.current.keyboardShortcutsEnabled) return;
+
 			const key = event.key;
 			switch (key) {
 				case 'e':
@@ -471,7 +483,16 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 			const storedEditMode = getStoredEditModeChoice(username, uuid);
 			const storedHighlightMode = getStoredHighlightModeChoice(username, uuid);
 			const storedPaddingMode = getStoredEditModePadding(username);
-			dispatch(initPreviewConfig({ configXml: uiConfig.xml, storedEditMode, storedHighlightMode, storedPaddingMode }));
+			const storedEnabledKeyboardShortcuts = getStoredEnabledKeyboardShortcutsState(username);
+			dispatch(
+				initPreviewConfig({
+					configXml: uiConfig.xml,
+					storedEditMode,
+					storedHighlightMode,
+					storedPaddingMode,
+					storedEnabledKeyboardShortcuts
+				})
+			);
 		}
 	}, [uiConfig.xml, username, uuid, dispatch]);
 

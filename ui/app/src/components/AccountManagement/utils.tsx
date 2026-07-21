@@ -40,7 +40,8 @@ import {
 	removeViewVersionDialogViewModes,
 	removeTypeViewCompactMode,
 	removeViewGroupedTypes,
-	removeStoredShowDisabledUsers
+	removeStoredShowDisabledUsers,
+	removeStoredEnabledKeyboardShortcutsState
 } from '../../utils/state';
 
 export const preferencesGroups: Array<{
@@ -142,6 +143,7 @@ export const preferencesGroups: Array<{
 			removeTypeViewCompactMode(props.username);
 			removeViewGroupedTypes(props.username);
 			removeStoredShowDisabledUsers(props.username);
+			removeStoredEnabledKeyboardShortcutsState(props.username);
 		}
 	}
 ];

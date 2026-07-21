@@ -587,3 +587,16 @@ export function getStoredShowDisabledUsers(user: string): boolean {
 export function removeStoredShowDisabledUsers(user: string) {
 	window.localStorage.removeItem(`craftercms.${user}.showDisabledUsers`);
 }
+
+export function setStoredEnabledKeyboardShortcutsState(enabled: boolean, user: string): void {
+	window.localStorage.setItem(`craftercms.${user}.enabledKeyboardShortcuts`, JSON.stringify(enabled));
+}
+
+export function getStoredEnabledKeyboardShortcutsState(user: string): boolean {
+	const value = window.localStorage.getItem(`craftercms.${user}.enabledKeyboardShortcuts`);
+	return value ? value === 'true' : true;
+}
+
+export function removeStoredEnabledKeyboardShortcutsState(user: string): void {
+	window.localStorage.removeItem(`craftercms.${user}.enabledKeyboardShortcuts`);
+}
