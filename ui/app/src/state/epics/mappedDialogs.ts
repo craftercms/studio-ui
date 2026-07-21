@@ -98,7 +98,8 @@ import { popDialog, pushDialog, updateDialogState } from '../actions/dialogStack
 import { generateDialogId } from '../../utils/dialogs';
 import { updatePublishingStatus } from '../actions/publishingStatus';
 import { DialogStackItem, StandardAction } from '../../models';
-import { createCallback, type EnhancedDialogProps } from '../../components';
+import { createCallback } from '../../components/GlobalDialogManager';
+import type { EnhancedDialogProps } from '../../components/EnhancedDialog';
 import { blockUI, unblockUI } from '../actions/system';
 import { NEVER } from 'rxjs';
 
