@@ -1028,7 +1028,7 @@ export function createFileUpload(
 	uploadMeta: (Record<string, unknown> & { site: string }) | (Record<string, unknown> & { siteId: string }),
 	xsrfArgumentName: string = '_csrf'
 ): Observable<StandardAction> {
-	const blob = dataUriToBlob(file.dataUrl);
+	const blob = file.blob ?? dataUriToBlob(file.dataUrl);
 	return uploadBlob(
 		(uploadMeta?.site ?? uploadMeta?.siteId) as string,
 		path,

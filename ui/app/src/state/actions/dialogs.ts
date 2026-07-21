@@ -51,6 +51,7 @@ import { PublishingPackageResubmitDialogStateProps } from '../../components/Publ
 import type { ErrorDialogStateProps, PackageDetailsDialogProps } from '../../components';
 import { ViewPackagesDialogProps } from '../../components/ViewPackagesDialog';
 import type { FolderMoveAlertDialogStateProps } from '../../components/FolderMoveAlertDialog/FolderMoveAlertDialog';
+import { ImageEditorDialogBaseProps } from '../../components/ImageEditorDialog/types';
 
 // region History
 export const showHistoryDialog = /*#__PURE__*/ createAction<Partial<HistoryDialogStateProps>>('SHOW_HISTORY_DIALOG');
@@ -381,3 +382,27 @@ export const errorDialogClosed = /*#__PURE__*/ createAction<StandardAction>('ERR
 // endregion
 
 export const popCodeEditorDialog = /*#__PURE__*/ createAction<{ id: string }>('POP_CODE_EDITOR_DIALOG');
+
+export interface ShowImageEditorDialogPayload extends Partial<ImageEditorDialogBaseProps> {
+	fileName?: string;
+	recordId?: number;
+	uploadPath?: string;
+}
+export interface ImageEditedPayload {
+	blob: Blob;
+	newPath?: string;
+	fileName?: string;
+	recordId?: number;
+	uploadPath?: string;
+}
+
+// region showImageEditorDialog
+export const showImageEditorDialog =
+	/*#__PURE__*/ createAction<ShowImageEditorDialogPayload>('SHOW_IMAGE_EDITOR_DIALOG');
+export const imageEdited = /*#__PURE__*/ createAction<ImageEditedPayload>('IMAGE_EDITED');
+export const imageEditCancelled = /*#__PURE__*/ createAction<{
+	fileName?: string;
+	recordId: number;
+	uploadPath?: string;
+}>('IMAGE_EDIT_CANCELLED');
+// endregion
