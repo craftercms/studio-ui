@@ -47,6 +47,7 @@ import { ErrorBoundary } from '../ErrorBoundary';
 import Box from '@mui/material/Box';
 import { pushDialog } from '../../state/actions/dialogStack';
 import { createComponentId } from '../../utils/system';
+import { assetsPanelInitialState } from '../../state/reducers/preview';
 
 const translations = defineMessages({
 	previewAssetsPanelTitle: {
@@ -80,10 +81,20 @@ export interface PreviewAssetsPanelProps {
 	mimeTypes?: string[];
 }
 
+function mimeTypesChanged(a?: string[], b?: string[]): boolean {
+	const left = a ?? [];
+	const right = b ?? [];
+	if (left.length !== right.length) return true;
+	const rightSet = new Set(right);
+	return left.some((type) => !rightSet.has(type));
+}
+function completeAssetsPath(path?: string): string {
+	return path ? `${path.replace(/\/$/, '')}/.+` : undefined;
+}
+
 export function PreviewAssetsPanel(props: PreviewAssetsPanelProps) {
-	const { path, mimeTypes } = props;
+	const { path, mimeTypes: mimeTypesProp } = props;
 	const initialKeyword = useSelection((state) => state.preview.assets.query.keywords);
-	const assetsPath = path ? `${path.replace(/\/$/, '')}/.+` : undefined;
 	const [keyword, setKeyword] = useState(initialKeyword);
 	const [dragInProgress, setDragInProgress] = useState(false);
 	const site = useActiveSiteId();
@@ -91,6 +102,11 @@ export function PreviewAssetsPanel(props: PreviewAssetsPanelProps) {
 	const dispatch = useDispatch();
 	const editMode = useSelection((state) => state.preview.editMode);
 	const assets = useSelection((state) => state.preview.assets);
+
+	const mimeTypes = mimeTypesProp ?? assetsPanelInitialState.query.filters['mime-type'];
+	const assetsPath = completeAssetsPath(path);
+	const cachedPathRef = useRef<string | undefined>(undefined);
+	const cachedMimeTypesRef = useRef<string[] | undefined>(undefined);
 
 	const fetchItems = useCallback(
 		(params: Partial<ElasticParams> = {}) => {
@@ -106,10 +122,19 @@ export function PreviewAssetsPanel(props: PreviewAssetsPanelProps) {
 	);
 
 	useEffect(() => {
-		if (site && assets.isFetching === null) {
+		if (!site) {
+			return;
+		}
+
+		const configChanged =
+			cachedPathRef.current !== assetsPath || mimeTypesChanged(cachedMimeTypesRef.current, mimeTypes);
+
+		if (configChanged) {
+			cachedPathRef.current = assetsPath;
+			cachedMimeTypesRef.current = mimeTypes;
 			fetchItems();
 		}
-	}, [site, assets.isFetching, fetchItems]);
+	}, [site, assetsPath, mimeTypes, fetchItems]);
 
 	const { guestBase, xsrfArgument } = useSelector<GlobalState, GlobalState['env']>((state) => state.env);
 	const { formatMessage } = useIntl();

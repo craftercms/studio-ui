@@ -119,7 +119,7 @@ const audiencesPanelInitialState = {
 	applied: false
 };
 
-const assetsPanelInitialState = createEntityState({
+export const assetsPanelInitialState = createEntityState({
 	page: [],
 	query: {
 		keywords: '',
