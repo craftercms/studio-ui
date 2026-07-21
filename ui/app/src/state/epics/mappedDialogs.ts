@@ -132,11 +132,15 @@ const dialogsMap = {
 	[showRenameAssetDialog.type]: 'craftercms.components.RenameAssetDialog',
 	[showDeleteDialog.type]: 'craftercms.components.DeleteDialog',
 	[showEditDialog.type]: 'craftercms.components.LegacyFormDialog',
-	[blockUI.type]: 'craftercms.components.UIBlocker',
 	[showFolderMoveAlertDialog.type]: 'craftercms.components.FolderMoveAlertDialog'
 };
 
-const allowMinimizeDialogs = [showPreviewDialog.type, showCodeEditorDialog.type, showEditDialog.type];
+const allowMinimizeDialogs = [
+	showPreviewDialog.type,
+	showCodeEditorDialog.type,
+	showEditDialog.type,
+	showWidgetDialog.type
+];
 const allowFullScreenDialogs = [showPreviewDialog.type, showCodeEditorDialog.type];
 
 const showDialogsEpics: CrafterCMSEpic[] = [
@@ -275,29 +279,6 @@ const showDialogsEpics: CrafterCMSEpic[] = [
 			})
 		),
 	// endregion
-
-	// region UIBlocker
-	(action$, state$) =>
-		action$.pipe(
-			ofType(blockUI.type),
-			withLatestFrom(state$),
-			map(([{ payload, type }]) => {
-				return pushDialog({
-					id: blockUI.type,
-					component: dialogsMap[type],
-					props: payload
-				});
-			})
-		),
-	(action$, state$) =>
-		action$.pipe(
-			ofType(unblockUI.type),
-			withLatestFrom(state$),
-			map(() => {
-				return popDialog({ id: blockUI.type });
-			})
-		)
-	// end region
 ] as CrafterCMSEpic[];
 
 export default showDialogsEpics;
