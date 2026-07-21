@@ -48,7 +48,8 @@ import { BrokenReferencesDialogStateProps } from '../../components/BrokenReferen
 import { PublishingPackageReviewDialogStateProps } from '../../components/PublishPackageReviewDialog/types';
 import { CancelPackageDialogProps } from '../../components/CancelPackageDialog';
 import { PublishingPackageResubmitDialogStateProps } from '../../components/PublishingPackageResubmitDialog/types';
-import type { ErrorDialogStateProps, PackageDetailsDialogProps } from '../../components';
+import type { ErrorDialogStateProps } from '../../components/ErrorDialog';
+import type { PackageDetailsDialogProps } from '../../components/PackageDetailsDialog';
 import { ViewPackagesDialogProps } from '../../components/ViewPackagesDialog';
 import type { FolderMoveAlertDialogStateProps } from '../../components/FolderMoveAlertDialog/FolderMoveAlertDialog';
 import { ImageEditorDialogBaseProps } from '../../components/ImageEditorDialog/types';

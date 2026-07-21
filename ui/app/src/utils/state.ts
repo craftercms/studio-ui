@@ -23,7 +23,7 @@ import ToolsPanelTarget from '../models/ToolsPanelTarget';
 import { EnhancedDialogState } from '../hooks/useEnhancedDialogState';
 import { HighlightMode } from '../models/GlobalState';
 import { PathNavInitPayload } from '../state/actions/pathNavigator';
-import { MediaCardViewModes } from '../components';
+import { MediaCardViewModes } from '../components/MediaCard';
 
 export function setStoredGlobalMenuSiteViewPreference(value: 'grid' | 'list', user: string) {
 	window.localStorage.setItem(`craftercms.${user}.globalMenuSiteViewPreference`, value);
