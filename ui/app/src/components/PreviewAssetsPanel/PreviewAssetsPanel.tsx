@@ -46,7 +46,6 @@ import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { ErrorBoundary } from '../ErrorBoundary';
 import Box from '@mui/material/Box';
 import { pushDialog } from '../../state/actions/dialogStack';
-import { nanoid } from 'nanoid';
 import { createComponentId } from '../../utils/system';
 
 const translations = defineMessages({
@@ -78,14 +77,13 @@ const translations = defineMessages({
 
 export interface PreviewAssetsPanelProps {
 	path?: string;
+	mimeTypes?: string[];
 }
 
 export function PreviewAssetsPanel(props: PreviewAssetsPanelProps) {
-	const { path } = props;
+	const { path, mimeTypes } = props;
 	const initialKeyword = useSelection((state) => state.preview.assets.query.keywords);
 	const assetsPath = path ? `${path.replace(/\/$/, '')}/.+` : undefined;
-	const assetsPathRef = useRef(assetsPath);
-	assetsPathRef.current = assetsPath;
 	const [keyword, setKeyword] = useState(initialKeyword);
 	const [dragInProgress, setDragInProgress] = useState(false);
 	const site = useActiveSiteId();
@@ -96,16 +94,22 @@ export function PreviewAssetsPanel(props: PreviewAssetsPanelProps) {
 
 	const fetchItems = useCallback(
 		(params: Partial<ElasticParams> = {}) => {
-			dispatch(fetchAssetsPanelItems({ ...params, path: assetsPathRef.current }));
+			dispatch(
+				fetchAssetsPanelItems({
+					...params,
+					path: assetsPath,
+					filters: { ...params.filters, 'mime-type': mimeTypes }
+				})
+			);
 		},
-		[dispatch]
+		[dispatch, assetsPath, mimeTypes]
 	);
 
 	useEffect(() => {
 		if (site && assets.isFetching === null) {
-			dispatch(fetchAssetsPanelItems({ path: assetsPathRef.current }));
+			fetchItems();
 		}
-	}, [assets.isFetching, site, dispatch]);
+	}, [site, assets.isFetching, fetchItems]);
 
 	const { guestBase, xsrfArgument } = useSelector<GlobalState, GlobalState['env']>((state) => state.env);
 	const { formatMessage } = useIntl();

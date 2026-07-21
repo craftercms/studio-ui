@@ -723,7 +723,7 @@ const reducer = createReducer<GlobalState['preview']>(initialState, (builder) =>
 					}
 				]
 			};
-			const arrays = ['widgets', 'devices', 'values'];
+			const arrays = ['widgets', 'devices', 'values', 'mimeTypes'];
 			const configDOM = fromString(payload.configXml);
 			const icePanel = configDOM.querySelector('[id="craftercms.components.ICEToolsPanel"] > configuration > widgets');
 			if (icePanel) {
