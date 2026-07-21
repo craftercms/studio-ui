@@ -88,9 +88,6 @@ function mimeTypesChanged(a?: string[], b?: string[]): boolean {
 	const rightSet = new Set(right);
 	return left.some((type) => !rightSet.has(type));
 }
-function completeAssetsPath(path?: string): string {
-	return path ? `${path.replace(/\/$/, '')}/.+` : undefined;
-}
 
 export function PreviewAssetsPanel(props: PreviewAssetsPanelProps) {
 	const { path, mimeTypes: mimeTypesProp } = props;
@@ -104,7 +101,7 @@ export function PreviewAssetsPanel(props: PreviewAssetsPanelProps) {
 	const assets = useSelection((state) => state.preview.assets);
 
 	const mimeTypes = mimeTypesProp ?? assetsPanelInitialState.query.filters['mime-type'];
-	const assetsPath = completeAssetsPath(path);
+	const assetsPath = path ? `${path.replace(/\/$/, '')}/.+` : undefined;
 	const cachedPathRef = useRef<string | undefined>(undefined);
 	const cachedMimeTypesRef = useRef<string[] | undefined>(undefined);
 
