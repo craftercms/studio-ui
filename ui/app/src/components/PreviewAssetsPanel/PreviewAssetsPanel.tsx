@@ -16,7 +16,7 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
-import { MediaItem } from '../../models/Search';
+import { ElasticParams, MediaItem } from '../../models/Search';
 import { alpha } from '@mui/material';
 import SearchBar from '../SearchBar/SearchBar';
 import { useDispatch, useSelector } from 'react-redux';
@@ -76,8 +76,16 @@ const translations = defineMessages({
 	}
 });
 
-export function PreviewAssetsPanel() {
+export interface PreviewAssetsPanelProps {
+	path?: string;
+}
+
+export function PreviewAssetsPanel(props: PreviewAssetsPanelProps) {
+	const { path } = props;
 	const initialKeyword = useSelection((state) => state.preview.assets.query.keywords);
+	const assetsPath = path ? `${path.replace(/\/$/, '')}/.+` : undefined;
+	const assetsPathRef = useRef(assetsPath);
+	assetsPathRef.current = assetsPath;
 	const [keyword, setKeyword] = useState(initialKeyword);
 	const [dragInProgress, setDragInProgress] = useState(false);
 	const site = useActiveSiteId();
@@ -86,11 +94,18 @@ export function PreviewAssetsPanel() {
 	const editMode = useSelection((state) => state.preview.editMode);
 	const assets = useSelection((state) => state.preview.assets);
 
+	const fetchItems = useCallback(
+		(params: Partial<ElasticParams> = {}) => {
+			dispatch(fetchAssetsPanelItems({ ...params, path: assetsPathRef.current }));
+		},
+		[dispatch]
+	);
+
 	useEffect(() => {
 		if (site && assets.isFetching === null) {
-			dispatch(fetchAssetsPanelItems({}));
+			dispatch(fetchAssetsPanelItems({ path: assetsPathRef.current }));
 		}
-	}, [assets, dispatch, site]);
+	}, [assets.isFetching, site, dispatch]);
 
 	const { guestBase, xsrfArgument } = useSelector<GlobalState, GlobalState['env']>((state) => state.env);
 	const { formatMessage } = useIntl();
@@ -124,14 +139,14 @@ export function PreviewAssetsPanel() {
 					xsrfArgument
 				).subscribe({
 					complete() {
-						dispatch(fetchAssetsPanelItems({}));
+						fetchItems();
 					}
 				});
 			};
 			reader.readAsDataURL(file);
 			setDragInProgress(false);
 		},
-		[xsrfArgument, dispatch, site]
+		[xsrfArgument, fetchItems, site]
 	);
 
 	useEffect(() => {
@@ -176,19 +191,16 @@ export function PreviewAssetsPanel() {
 		}
 	}, [dragInProgress, onDragDrop]);
 
-	const onSearch = useCallback(
-		(keywords: string) => dispatch(fetchAssetsPanelItems({ keywords, offset: 0 })),
-		[dispatch]
-	);
+	const onSearch = useCallback((keywords: string) => fetchItems({ keywords, offset: 0 }), [fetchItems]);
 
 	const onSearch$ = useDebouncedInput(onSearch, 400);
 
 	function onPageChanged(newPage: number) {
-		dispatch(fetchAssetsPanelItems({ offset: newPage }));
+		fetchItems({ offset: newPage });
 	}
 
 	function onRowsPerPageChange(e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) {
-		dispatch(fetchAssetsPanelItems({ offset: 0, limit: e.target.value }));
+		fetchItems({ offset: 0, limit: Number(e.target.value) });
 	}
 
 	function handleSearchKeyword(keyword: string) {
