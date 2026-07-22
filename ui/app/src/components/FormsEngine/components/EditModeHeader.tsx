@@ -41,6 +41,7 @@ import MenuOpenIcon from '@mui/icons-material/MenuOpenRounded';
 import { XmlKeys } from '../lib/formConsts';
 import { useAtom } from 'jotai';
 import Collapse from '@mui/material/Collapse';
+import { DraftChip } from '../../DraftChip';
 
 export function EditModeHeader({ isEmbedded, collapse = false }: { isEmbedded: boolean; collapse?: boolean }) {
 	const { atoms } = useContext(StableFormContext);
@@ -81,9 +82,7 @@ export function EditModeHeader({ isEmbedded, collapse = false }: { isEmbedded: b
 					{isLargeContainer && collapse && <CollapseToCButton />}
 					<ItemTypeIcon item={typeIconItem} sx={{ color: 'info.main' }} />
 					<Typography>{itemLabel}</Typography>
-					{item.savedAsDraft && (
-						<Chip variant="outlined" color="error" label={<FormattedMessage defaultMessage="Draft" />} />
-					)}
+					{item.savedAsDraft && <DraftChip />}
 					{readonly && (
 						<Chip
 							sx={{ [`.${chipClasses.label}`]: { display: 'flex', alignItems: 'center' } }}

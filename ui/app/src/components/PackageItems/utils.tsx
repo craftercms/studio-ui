@@ -22,12 +22,12 @@ import { DependencyChip, DependencyMap } from '../PublishDialog';
 import { TreeItem } from '@mui/x-tree-view/TreeItem';
 import Box from '@mui/material/Box';
 import ItemDisplay from '../ItemDisplay';
-import { Chip, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import MoreVertRounded from '@mui/icons-material/MoreVertRounded';
 import Checkbox from '@mui/material/Checkbox';
 import FolderOpenRoundedIcon from '@mui/icons-material/FolderOpenRounded';
-import { FormattedMessage } from 'react-intl';
+import { DraftChip } from '../DraftChip';
 
 export function renderTreeNode(props: {
 	itemMap: LookupTable<LightItem>;
@@ -69,14 +69,7 @@ export function renderTreeNode(props: {
 									showPublishingTarget={false}
 									sx={{ mr: 1 }}
 								/>
-								{itemsByPath?.[node.path]?.savedAsDraft && (
-									<Chip
-										size="small"
-										variant="outlined"
-										color="error"
-										label={<FormattedMessage defaultMessage="Draft" />}
-									/>
-								)}
+								{itemsByPath?.[node.path]?.savedAsDraft && <DraftChip size="small" />}
 								{isDependency && <DependencyChip type={dependencyTypeMap[node.path]} />}
 							</Box>
 							<Typography

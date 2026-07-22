@@ -19,6 +19,7 @@ import { Chip, Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import Box from '@mui/material/Box';
 import { DependencyChip } from './PublishDialogContainer';
+import { DraftChip } from '../DraftChip';
 
 export function PublishReferencesLegend() {
 	return (
@@ -39,13 +40,7 @@ export function PublishReferencesLegend() {
 				</Typography>
 			</Box>
 			<Box sx={{ display: 'flex', gap: 1 }}>
-				<Chip
-					size="small"
-					variant="outlined"
-					color="error"
-					label={<FormattedMessage defaultMessage="Draft" />}
-					sx={{ px: '11px' }}
-				/>
+				<DraftChip size="small" sx={{ px: '11px' }} />
 				<Typography variant="body2" color="textSecondary">
 					<FormattedMessage defaultMessage="Draft item. Required fields may be empty and can cause errors when published." />
 				</Typography>
