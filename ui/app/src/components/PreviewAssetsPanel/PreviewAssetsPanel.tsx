@@ -135,7 +135,7 @@ export function PreviewAssetsPanel(props: PreviewAssetsPanelProps) {
 			cachedPathRef.current = assetsPath;
 			cachedMimeTypesRef.current = mimeTypes;
 			cachedQueryRef.current = query;
-			fetchItems();
+			fetchItems({ offset: 0 });
 		}
 	}, [site, assetsPath, mimeTypes, query, fetchItems]);
 
