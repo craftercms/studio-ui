@@ -84,11 +84,10 @@ export interface PreviewAssetsPanelProps {
 }
 
 function mimeTypesChanged(a?: string[], b?: string[]): boolean {
-	const left = a ?? [];
-	const right = b ?? [];
-	if (left.length !== right.length) return true;
-	const rightSet = new Set(right);
-	return left.some((type) => !rightSet.has(type));
+	const leftSet = new Set(a ?? []);
+	const rightSet = new Set(b ?? []);
+	if (leftSet.size !== rightSet.size) return true;
+	return [...leftSet].some((type) => !rightSet.has(type));
 }
 
 export function PreviewAssetsPanel(props: PreviewAssetsPanelProps) {
