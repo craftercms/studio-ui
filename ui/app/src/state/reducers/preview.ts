@@ -180,7 +180,8 @@ const initialState: GlobalState['preview'] = {
 	windowSize: window.innerWidth,
 	xbDetectionTimeoutMs: 5000,
 	error: null,
-	keyboardShortcutsEnabled: true
+	keyboardShortcutsEnabled: true,
+	createContentCompactView: false
 };
 
 const minDrawerWidth = 240;
@@ -267,6 +268,7 @@ const reducer = createReducer<GlobalState['preview']>(initialState, (builder) =>
 			const previewConfigEl = configDOM.querySelector('[id="craftercms.components.Preview"]');
 			const initialEditModeOn = previewConfigEl?.getAttribute('initialEditModeOn');
 			const initialHighlightMode = previewConfigEl?.getAttribute('initialHighlightMode') as HighlightMode;
+			const initialCreateContentCompactView = previewConfigEl?.getAttribute('initialCreateContentCompactView');
 
 			// If there is no storedEditMode, set it to the value of initialEditModeOn (config value), otherwise, defaults to true
 			state.editMode = payload.storedEditMode ?? (initialEditModeOn ? initialEditModeOn === 'true' : true);
@@ -275,6 +277,7 @@ const reducer = createReducer<GlobalState['preview']>(initialState, (builder) =>
 				(['all', 'move'].includes(initialHighlightMode) ? initialHighlightMode : state.highlightMode);
 			state.editModePadding = payload.storedPaddingMode ?? state.editModePadding;
 			state.keyboardShortcutsEnabled = payload.storedEnabledKeyboardShortcuts;
+			state.createContentCompactView = initialCreateContentCompactView === 'true';
 		})
 		.addCase(openToolsPanel, (state) => {
 			const { windowSize, editMode, toolsPanelWidth, icePanelWidth } = state;

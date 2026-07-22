@@ -222,6 +222,7 @@ export interface GlobalState {
 			message: string;
 		};
 		keyboardShortcutsEnabled: boolean;
+		createContentCompactView: boolean;
 	};
 	previewNavigation: {
 		currentUrlPath: string;
