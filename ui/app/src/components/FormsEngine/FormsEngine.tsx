@@ -640,7 +640,7 @@ function FormOrchestrator(props: FormsEngineProps) {
 	const stableFormContext = useContext(StableFormContext);
 	const formContextApi = useContext(FormsEngineFormContextApi);
 	const item = useContext(ItemContext);
-	const { contentType, sourceMap } = useContext(ItemMetaContext);
+	const { contentType, sourceMap, pathInSite } = useContext(ItemMetaContext);
 	const { fieldUpdates$, changedFieldIds, atoms } = stableFormContext;
 	const [disableStackedFormDrawerAutoFocus, setDisableStackedFormDrawerAutoFocus] = useState(true);
 	const [enablingEditInProgress, setEnablingEditInProgress] = useState(false);
@@ -835,7 +835,7 @@ function FormOrchestrator(props: FormsEngineProps) {
 		isEmbedded,
 		isCreateMode,
 		isRepeatMode,
-		createPath: create?.path,
+		createPath: Boolean(create?.path) ? pathInSite : undefined, // pathInSite is the result of processing the create path with macros.
 		onClose: () => onCloseHandler(null, null),
 		onMinimize: () => props.onMinimize?.()
 	});
@@ -930,7 +930,7 @@ function FormOrchestrator(props: FormsEngineProps) {
 					{isRepeatMode ? (
 						<RepeatModeHeader repeat={repeat} collapse={collapseHeader} />
 					) : isCreateMode ? (
-						<CreateModeHeader path={create?.path} collapse={collapseHeader} />
+						<CreateModeHeader path={Boolean(create?.path) ? pathInSite : undefined} collapse={collapseHeader} />
 					) : (
 						<EditModeHeader isEmbedded={isEmbedded} collapse={collapseHeader} />
 					)}
