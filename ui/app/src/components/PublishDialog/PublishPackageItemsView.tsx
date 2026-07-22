@@ -233,7 +233,7 @@ export function PublishPackageItemsView(props: PublishItemsProps) {
 														sx={{ mr: 1 }}
 														showPublishingTarget={false}
 													/>
-													{itemsByPath[path]?.savedAsDraft && <DraftChip size="small" />}
+													{itemsByPath?.[path]?.savedAsDraft && <DraftChip size="small" />}
 													<DependencyChip type={dependencyTypeMap?.[path]} />
 												</Box>
 											}
