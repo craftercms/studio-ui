@@ -79,6 +79,7 @@ const translations = defineMessages({
 export interface PreviewAssetsPanelProps {
 	path?: string;
 	mimeTypes?: string[];
+	query?: string;
 }
 
 function mimeTypesChanged(a?: string[], b?: string[]): boolean {
@@ -90,7 +91,7 @@ function mimeTypesChanged(a?: string[], b?: string[]): boolean {
 }
 
 export function PreviewAssetsPanel(props: PreviewAssetsPanelProps) {
-	const { path, mimeTypes: mimeTypesProp } = props;
+	const { path, mimeTypes: mimeTypesProp, query } = props;
 	const initialKeyword = useSelection((state) => state.preview.assets.query.keywords);
 	const [keyword, setKeyword] = useState(initialKeyword);
 	const [dragInProgress, setDragInProgress] = useState(false);
@@ -104,6 +105,7 @@ export function PreviewAssetsPanel(props: PreviewAssetsPanelProps) {
 	const assetsPath = path ? `${path.replace(/\/$/, '')}/.+` : undefined;
 	const cachedPathRef = useRef<string | undefined>(undefined);
 	const cachedMimeTypesRef = useRef<string[] | undefined>(undefined);
+	const cachedQueryRef = useRef<string | undefined>(undefined);
 
 	const fetchItems = useCallback(
 		(params: Partial<ElasticParams> = {}) => {
@@ -111,11 +113,12 @@ export function PreviewAssetsPanel(props: PreviewAssetsPanelProps) {
 				fetchAssetsPanelItems({
 					...params,
 					path: assetsPath,
-					filters: { ...params.filters, 'mime-type': mimeTypes }
+					filters: { ...params.filters, 'mime-type': mimeTypes },
+					query
 				})
 			);
 		},
-		[dispatch, assetsPath, mimeTypes]
+		[dispatch, assetsPath, mimeTypes, query]
 	);
 
 	useEffect(() => {
@@ -124,14 +127,17 @@ export function PreviewAssetsPanel(props: PreviewAssetsPanelProps) {
 		}
 
 		const configChanged =
-			cachedPathRef.current !== assetsPath || mimeTypesChanged(cachedMimeTypesRef.current, mimeTypes);
+			cachedPathRef.current !== assetsPath ||
+			mimeTypesChanged(cachedMimeTypesRef.current, mimeTypes) ||
+			cachedQueryRef.current !== query;
 
 		if (configChanged) {
 			cachedPathRef.current = assetsPath;
 			cachedMimeTypesRef.current = mimeTypes;
+			cachedQueryRef.current = query;
 			fetchItems();
 		}
-	}, [site, assetsPath, mimeTypes, fetchItems]);
+	}, [site, assetsPath, mimeTypes, query, fetchItems]);
 
 	const { guestBase, xsrfArgument } = useSelector<GlobalState, GlobalState['env']>((state) => state.env);
 	const { formatMessage } = useIntl();
@@ -235,39 +241,56 @@ export function PreviewAssetsPanel(props: PreviewAssetsPanelProps) {
 	}
 
 	return (
-		<Box sx={dragInProgress ? { overflow: 'hidden' } : null}>
-			<div ref={elementRef}>
-				<Box sx={{ padding: '15px 15px 0 15px' }}>
-					<SearchBar showActionButton={Boolean(keyword)} onChange={handleSearchKeyword} keyword={keyword} autoFocus />
-				</Box>
-				<ErrorBoundary>
-					{assets.error ? (
-						<ApiResponseErrorState error={assets.error} />
-					) : assets.isFetching ? (
-						<LoadingState title={formatMessage(translations.retrieveAssets)} />
-					) : assets.page[assets.pageNumber] ? (
-						<>
-							{dragInProgress && (
-								<Box
-									sx={{
-										position: 'absolute',
-										background: alpha(palette.black, 0.9),
-										top: 0,
-										bottom: 0,
-										left: 0,
-										right: 0,
-										display: 'flex',
-										justifyContent: 'center',
-										alignContent: 'center',
-										zIndex: 2
-									}}
-								>
-									<UploadIcon
-										style={{ pointerEvents: 'none' }}
-										sx={{ fontSize: '8em', color: palette.gray.light5, margin: 'auto' }}
-									/>
-								</Box>
-							)}
+		<Box
+			ref={elementRef}
+			sx={(theme) => {
+				const toolbarHeight = typeof theme.mixins.toolbar.minHeight === 'number' ? theme.mixins.toolbar.minHeight : 64;
+				const panelHeight = `calc(100dvh - ${toolbarHeight * 2}px - 1px - 50px)`;
+
+				return {
+					display: 'flex',
+					flexDirection: 'column',
+					height: panelHeight,
+					maxHeight: panelHeight,
+					minHeight: 0,
+					overflow: 'hidden',
+					position: 'relative',
+					...(dragInProgress ? { overflow: 'hidden' } : {})
+				};
+			}}
+		>
+			<Box sx={{ padding: '15px 15px 0 15px', flexShrink: 0 }}>
+				<SearchBar showActionButton={Boolean(keyword)} onChange={handleSearchKeyword} keyword={keyword} autoFocus />
+			</Box>
+			<ErrorBoundary>
+				{assets.error ? (
+					<ApiResponseErrorState error={assets.error} />
+				) : assets.isFetching ? (
+					<LoadingState title={formatMessage(translations.retrieveAssets)} />
+				) : assets.page[assets.pageNumber] ? (
+					<Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
+						{dragInProgress && (
+							<Box
+								sx={{
+									position: 'absolute',
+									background: alpha(palette.black, 0.9),
+									top: 0,
+									bottom: 0,
+									left: 0,
+									right: 0,
+									display: 'flex',
+									justifyContent: 'center',
+									alignContent: 'center',
+									zIndex: 2
+								}}
+							>
+								<UploadIcon
+									style={{ pointerEvents: 'none' }}
+									sx={{ fontSize: '8em', color: palette.gray.light5, margin: 'auto' }}
+								/>
+							</Box>
+						)}
+						<Box sx={{ flexShrink: 0 }}>
 							<Pagination
 								count={assets.count}
 								rowsPerPage={assets.query.limit}
@@ -275,54 +298,54 @@ export function PreviewAssetsPanel(props: PreviewAssetsPanelProps) {
 								onPageChange={(e, page: number) => onPageChanged(page * assets.query.limit)}
 								onRowsPerPageChange={onRowsPerPageChange}
 							/>
-							<Box sx={{ p: 2 }}>
-								{assets.page[assets.pageNumber]?.map((id) => {
-									const item = assets.byId[id];
-									return (
-										<MediaCard
-											key={item.path}
-											item={item}
-											previewAppBaseUri={guestBase}
-											avatar={<DragIndicatorRounded />}
-											sxs={{
-												root: { cursor: 'move', marginBottom: '16px' }
-											}}
-											onDragStart={() => onDragStart(item)}
-											onDragEnd={() => onDragEnd()}
-											onPreview={() =>
-												dispatch(
-													pushDialog({
-														component: createComponentId('PreviewDialog'),
-														allowMinimize: true,
-														allowFullScreen: true,
-														props: {
-															// TODO: check if it's image or video
-															type: 'image',
-															title: item.name,
-															url: item.path
-														}
-													})
-												)
-											}
-										/>
-									);
-								})}
-								{assets.count === 0 && (
-									<EmptyState
-										title={formatMessage(translations.noResults)}
+						</Box>
+						<Box sx={{ p: 2, flex: 1, minHeight: 0, overflowY: 'auto' }}>
+							{assets.page[assets.pageNumber]?.map((id) => {
+								const item = assets.byId[id];
+								return (
+									<MediaCard
+										key={item.path}
+										item={item}
+										previewAppBaseUri={guestBase}
+										avatar={<DragIndicatorRounded />}
 										sxs={{
-											image: { width: '150px' },
-											title: { fontSize: 'inherit', marginTop: '10px' }
+											root: { cursor: 'move', marginBottom: '16px' }
 										}}
+										onDragStart={() => onDragStart(item)}
+										onDragEnd={() => onDragEnd()}
+										onPreview={() =>
+											dispatch(
+												pushDialog({
+													component: createComponentId('PreviewDialog'),
+													allowMinimize: true,
+													allowFullScreen: true,
+													props: {
+														// TODO: check if it's image or video
+														type: 'image',
+														title: item.name,
+														url: item.path
+													}
+												})
+											)
+										}
 									/>
-								)}
-							</Box>
-						</>
-					) : (
-						<></>
-					)}
-				</ErrorBoundary>
-			</div>
+								);
+							})}
+							{assets.count === 0 && (
+								<EmptyState
+									title={formatMessage(translations.noResults)}
+									sxs={{
+										image: { width: '150px' },
+										title: { fontSize: 'inherit', marginTop: '10px' }
+									}}
+								/>
+							)}
+						</Box>
+					</Box>
+				) : (
+					<></>
+				)}
+			</ErrorBoundary>
 		</Box>
 	);
 }
