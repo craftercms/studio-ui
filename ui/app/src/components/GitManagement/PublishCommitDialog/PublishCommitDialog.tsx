@@ -65,8 +65,7 @@ export function PublishCommitDialog(props: PublishCommitDialogProps) {
 	};
 	const [state, setState] = useSpreadState<PublishCommitDialogState>(initialState);
 	const { loadingPublishingTargets, isSubmitting, publishingTargets, publishSuccessful, ...data } = state;
-	const { publishByCommitCommentRequired } = useSelection((state) => state.uiConfig.publishing);
-	const isInvalid = (publishByCommitCommentRequired && isBlank(data.comment)) || isBlank(data.commitIds);
+	const isInvalid = isBlank(data.commitIds);
 	const open = Boolean(dialogProps?.open);
 	const { formatMessage } = useIntl();
 	const submissionCommentPlaceholder = formatMessage(
@@ -83,8 +82,8 @@ export function PublishCommitDialog(props: PublishCommitDialogProps) {
 			publish(site, {
 				publishingTarget: data.publishingTarget,
 				commitIds: data.commitIds.replace(/\s/g, '').split(',').filter(Boolean),
-				title: 'Publish by commit ids', // TODO: title generation
-				comment: data.comment || submissionCommentPlaceholder
+				title: isBlank(data.title) ? formatMessage({ defaultMessage: 'Publish by commit ids' }) : data.title,
+				comment: isBlank(data.comment) ? submissionCommentPlaceholder : data.comment
 			}).subscribe({
 				next() {
 					setState({ isSubmitting: false, publishSuccessful: true });
