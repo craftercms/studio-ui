@@ -30,7 +30,7 @@ export interface SplitViewProps {
 
 export function ConflictedPathDiffDialogSplitView(props: SplitViewProps) {
 	const { diff, className, sx } = props;
-	const ref = useRef(undefined);
+	const ref = useRef<HTMLDivElement>(undefined);
 	const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
 	const diffEditorRef = useRef(null);
 	useEffect(() => {
@@ -48,7 +48,8 @@ export function ConflictedPathDiffDialogSplitView(props: SplitViewProps) {
 						},
 						readOnly: true,
 						// Monaco editor has a breakpoint for split view, we had to decrease it for the split view to show in current dialog
-						renderSideBySideInlineBreakpoint: 300
+						renderSideBySideInlineBreakpoint: 300,
+						automaticLayout: true
 					});
 				}
 				diffEditorRef.current.setModel({
