@@ -132,6 +132,11 @@ export function RepoGrid(props: RepoGridProps) {
 		}
 	};
 
+	const handlePullError = (response: ApiResponse) => {
+		onPullError?.(response);
+		pullFromRemoteDialogState.onClose();
+	};
+
 	const onPushSuccess = () => {
 		pushToRemoteDialogState.onResetState();
 		dispatch(
@@ -227,7 +232,7 @@ export function RepoGrid(props: RepoGridProps) {
 				remoteName={pullRemoteName}
 				mergeStrategies={mergeStrategies}
 				onPullSuccess={onPullSuccess}
-				onPullError={onPullError}
+				onPullError={handlePullError}
 				isMinimized={pullFromRemoteDialogState.isMinimized}
 				isSubmitting={pullFromRemoteDialogState.isSubmitting}
 				hasPendingChanges={pullFromRemoteDialogState.hasPendingChanges}

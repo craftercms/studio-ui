@@ -118,13 +118,15 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 			// If there aren't any available target (or they haven't loaded), dialog should not have a selected target.
 			if (publishingTargets?.length && target === '') {
 				// If we haven't found a target by this point, we wish to default the dialog to
-				// staging (as long as that target is enabled in the system, which is checked next).
-				target = publishingTargets.find((target) => target.name === 'staging')?.name ?? publishingTargets[0].name;
+				// staging (as long as that target is enabled in the system and it's not the first publish), which is checked next.
+				target = published
+					? (publishingTargets.find((target) => target.name === 'staging')?.name ?? publishingTargets[0].name)
+					: (publishingTargets.find((target) => target.name !== 'staging')?.name ?? '');
 			}
 		}
 
 		return target;
-	}, [publishingTargets, mainItems]);
+	}, [publishingTargets, mainItems, published]);
 	const commentMaxLength = useSelector<GlobalState, number>(
 		(state) => state.uiConfig.publishing.submissionCommentMaxLength
 	);

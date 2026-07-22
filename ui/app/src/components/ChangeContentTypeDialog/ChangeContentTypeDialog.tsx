@@ -19,21 +19,34 @@ import { FormattedMessage } from 'react-intl';
 import EnhancedDialog from '../EnhancedDialog';
 import { ChangeContentTypeDialogProps } from './utils';
 import ChangeContentTypeDialogContainer from './ChangeContentTypeDialogContainer';
+import useFetchAllowedTypesForPath from '../../hooks/useFetchAllowedTypesForPath';
+import { getNormalizedFolderPathForApi1GetTypes } from '../../utils/contentType';
 
 export function ChangeContentTypeDialog(props: ChangeContentTypeDialogProps) {
 	const { item, onContentTypeSelected, initialCompact, ...rest } = props;
+	const { contentTypes, isFetching } = useFetchAllowedTypesForPath(
+		getNormalizedFolderPathForApi1GetTypes(item),
+		// Filter only compatible types, and filter out current type.
+		(types) => types.filter((type) => type.type === item.systemType && item.contentTypeId != type.id)
+	);
+
 	return (
 		<EnhancedDialog
-			maxWidth="lg"
+			maxWidth={isFetching || contentTypes?.length ? 'lg' : 'xs'}
 			dialogHeaderProps={{
 				title: <FormattedMessage defaultMessage="Change Content Type" />,
-				subtitle: <FormattedMessage defaultMessage="The item can only be changed to the types below." />
+				subtitle:
+					isFetching || contentTypes?.length ? (
+						<FormattedMessage defaultMessage="The item can only be changed to the types below." />
+					) : undefined
 			}}
 			{...rest}
 		>
 			<ChangeContentTypeDialogContainer
 				item={item}
 				initialCompact={initialCompact}
+				contentTypes={contentTypes}
+				isFetching={isFetching}
 				onContentTypeSelected={onContentTypeSelected}
 				onClose={props.onClose}
 			/>
