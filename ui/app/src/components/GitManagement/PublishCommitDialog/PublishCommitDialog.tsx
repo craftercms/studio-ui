@@ -19,7 +19,7 @@ import DialogBody from '../../DialogBody/DialogBody';
 import { EnhancedDialog, EnhancedDialogProps } from '../../EnhancedDialog';
 import PublishOnDemandForm from '../../PublishOnDemandForm';
 import SecondaryButton from '../../SecondaryButton';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import PrimaryButton from '../../PrimaryButton';
 import DialogFooter from '../../DialogFooter';
 import { PublishFormData, PublishingTarget } from '../../../models';
@@ -68,6 +68,11 @@ export function PublishCommitDialog(props: PublishCommitDialogProps) {
 	const { publishByCommitCommentRequired } = useSelection((state) => state.uiConfig.publishing);
 	const isInvalid = (publishByCommitCommentRequired && isBlank(data.comment)) || isBlank(data.commitIds);
 	const open = Boolean(dialogProps?.open);
+	const { formatMessage } = useIntl();
+	const submissionCommentPlaceholder = formatMessage(
+		{ defaultMessage: 'Publishing commit id(s) {commitIds}' },
+		{ commitIds: data.commitIds }
+	);
 	const pendingChangesCloseRequest = useWithPendingChangesCloseRequest(dialogProps.onClose);
 	const fnRefs = useUpdateRefs({ onSubmittingAndOrPendingChange });
 	const onCancel = (e) =>
@@ -79,7 +84,7 @@ export function PublishCommitDialog(props: PublishCommitDialogProps) {
 				publishingTarget: data.publishingTarget,
 				commitIds: data.commitIds.replace(/\s/g, '').split(',').filter(Boolean),
 				title: 'Publish by commit ids', // TODO: title generation
-				comment: data.comment
+				comment: data.comment || submissionCommentPlaceholder
 			}).subscribe({
 				next() {
 					setState({ isSubmitting: false, publishSuccessful: true });
@@ -166,6 +171,7 @@ export function PublishCommitDialog(props: PublishCommitDialogProps) {
 							publishingTargets={state.publishingTargets}
 							publishingTargetsError={null}
 							disabled={!state.publishingTargets || isSubmitting}
+							submissionCommentPlaceholder={submissionCommentPlaceholder}
 						/>
 					</DialogBody>
 					<DialogFooter>
