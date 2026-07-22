@@ -80,7 +80,7 @@ function Body(props: FieldInformationDialogBodyProps) {
 								</Grid>
 								<Grid size={{ xs: 8 }}>
 									{renderHtml ? (
-										<Typography dangerouslySetInnerHTML={{ __html: value ?? '-' }} />
+										<Typography component="section" dangerouslySetInnerHTML={{ __html: value ?? '-' }} />
 									) : (
 										<Typography>{nnou(value) && value !== '' ? value : '-'}</Typography>
 									)}
