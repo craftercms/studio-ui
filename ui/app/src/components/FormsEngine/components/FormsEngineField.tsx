@@ -255,6 +255,7 @@ export const FormsEngineField = forwardRef<HTMLDivElement, FormsEngineFieldProps
 										update: { path: sourceMap[fieldId] }
 									});
 								}}
+								aria-label={formatMessage({ defaultMessage: 'Edit' })}
 								title={formatMessage({ defaultMessage: 'Edit' })}
 							>
 								<EditOutlined fontSize="small" />
