@@ -62,6 +62,7 @@ import {
 	setHostSize,
 	setHostWidth,
 	setItemBeingDragged,
+	setKeyboardShortcutsEnabled,
 	setPreviewEditMode,
 	setWindowSize,
 	toggleEditModePadding,
@@ -179,6 +180,7 @@ const initialState: GlobalState['preview'] = {
 	windowSize: window.innerWidth,
 	xbDetectionTimeoutMs: 5000,
 	error: null,
+	keyboardShortcutsEnabled: true,
 	createContentCompactView: false
 };
 
@@ -274,6 +276,7 @@ const reducer = createReducer<GlobalState['preview']>(initialState, (builder) =>
 				payload.storedHighlightMode ??
 				(['all', 'move'].includes(initialHighlightMode) ? initialHighlightMode : state.highlightMode);
 			state.editModePadding = payload.storedPaddingMode ?? state.editModePadding;
+			state.keyboardShortcutsEnabled = payload.storedEnabledKeyboardShortcuts;
 			state.createContentCompactView = initialCreateContentCompactView === 'true';
 		})
 		.addCase(openToolsPanel, (state) => {
@@ -819,6 +822,9 @@ const reducer = createReducer<GlobalState['preview']>(initialState, (builder) =>
 		.addCase(fetchContentTypesComplete, (state) => {
 			if (!state.guest) return state;
 			state.guest.contentTypesUpdated = true;
+		})
+		.addCase(setKeyboardShortcutsEnabled, (state, { payload }) => {
+			state.keyboardShortcutsEnabled = payload.enabled;
 		});
 });
 

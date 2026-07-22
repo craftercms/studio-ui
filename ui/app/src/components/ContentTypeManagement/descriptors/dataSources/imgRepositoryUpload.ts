@@ -27,7 +27,7 @@ export const imgRepositoryUploadDataSourceDescriptor: DescriptorContentType = {
 		createVirtualSection({
 			id: 'properties',
 			title: defineMessage({ defaultMessage: 'Options' }),
-			fields: ['repoPath', 'useSearch']
+			fields: ['repoPath', 'useSearch', 'sortBy', 'sortOrder']
 		})
 	],
 	fields: {
@@ -47,6 +47,26 @@ export const imgRepositoryUploadDataSourceDescriptor: DescriptorContentType = {
 			name: defineMessage({ defaultMessage: 'Use Search' }),
 			defaultValue: undefined,
 			validations: immutableEmptyObject
+		},
+		sortBy: {
+			id: 'sortBy',
+			type: 'sort-dropdown',
+			name: defineMessage({ defaultMessage: 'Sort By' }),
+			defaultValue: '-AUTO-',
+			validations: immutableEmptyObject,
+			properties: {
+				type: { name: 'type', type: 'string', value: 'sortBy' }
+			}
+		},
+		sortOrder: {
+			id: 'sortOrder',
+			type: 'sort-dropdown',
+			name: defineMessage({ defaultMessage: 'Sort Order' }),
+			defaultValue: undefined,
+			validations: immutableEmptyObject,
+			properties: {
+				type: { name: 'type', type: 'string', value: 'sortOrder' }
+			}
 		}
 	}
 };
