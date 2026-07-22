@@ -48,6 +48,7 @@ import Box from '@mui/material/Box';
 import { pushDialog } from '../../state/actions/dialogStack';
 import { createComponentId } from '../../utils/system';
 import { assetsPanelInitialState } from '../../state/reducers/preview';
+import { ensureSingleSlash } from '../../utils/string';
 
 const translations = defineMessages({
 	previewAssetsPanelTitle: {
@@ -102,7 +103,7 @@ export function PreviewAssetsPanel(props: PreviewAssetsPanelProps) {
 	const assets = useSelection((state) => state.preview.assets);
 
 	const mimeTypes = mimeTypesProp ?? assetsPanelInitialState.query.filters['mime-type'];
-	const assetsPath = path ? `${path.replace(/\/$/, '')}/.+` : undefined;
+	const assetsPath = path ? ensureSingleSlash(`${path}/.+`) : undefined;
 	const cachedPathRef = useRef<string | undefined>(undefined);
 	const cachedMimeTypesRef = useRef<string[] | undefined>(undefined);
 	const cachedQueryRef = useRef<string | undefined>(undefined);
