@@ -103,6 +103,7 @@ export function PreviewAssetsPanel(props: PreviewAssetsPanelProps) {
 
 	const mimeTypes = mimeTypesProp ?? assetsPanelInitialState.query.filters['mime-type'];
 	const assetsPath = path ? ensureSingleSlash(`${path}/.+`) : undefined;
+	const cachedSiteRef = useRef<string | undefined>(undefined);
 	const cachedPathRef = useRef<string | undefined>(undefined);
 	const cachedMimeTypesRef = useRef<string[] | undefined>(undefined);
 	const cachedQueryRef = useRef<string | undefined>(undefined);
@@ -127,11 +128,13 @@ export function PreviewAssetsPanel(props: PreviewAssetsPanelProps) {
 		}
 
 		const configChanged =
+			cachedSiteRef.current !== site ||
 			cachedPathRef.current !== assetsPath ||
 			mimeTypesChanged(cachedMimeTypesRef.current, mimeTypes) ||
 			cachedQueryRef.current !== query;
 
 		if (configChanged) {
+			cachedSiteRef.current = site;
 			cachedPathRef.current = assetsPath;
 			cachedMimeTypesRef.current = mimeTypes;
 			cachedQueryRef.current = query;
