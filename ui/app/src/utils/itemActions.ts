@@ -190,7 +190,7 @@ const unparsedMenuOptions: Record<AllItemActions, ContextMenuOptionDescriptor<Al
 	},
 	dependencies: {
 		id: 'dependencies',
-		label: translations.dependencies
+		label: translations.references
 	},
 	editController: {
 		id: 'editController',
@@ -379,7 +379,7 @@ export function generateSingleItemOptions(
 	) {
 		sectionC.push(menuOptions.publish);
 	}
-	if (isInActiveWorkflow(item)) {
+	if (isInActiveWorkflow(item) && actionsToInclude.viewPackages) {
 		sectionC.push(menuOptions.viewPackages);
 	}
 	// endregion

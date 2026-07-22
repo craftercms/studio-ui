@@ -315,7 +315,11 @@ export function PublishDialogForm(props: PublishDialogFormProps) {
 								>
 									<Box component="span">
 										<FormControlLabel
-											disabled={disabled || (target.name === 'staging' && isPromote)}
+											disabled={
+												disabled ||
+												(target.name === 'staging' && isPromote) ||
+												(target.name === 'staging' && !published)
+											}
 											value={target.name}
 											control={
 												<Radio
@@ -323,7 +327,17 @@ export function PublishDialogForm(props: PublishDialogFormProps) {
 													sx={{ padding: '4px', marginLeft: '5px', marginRight: '5px', ...sxs?.radioInput }}
 												/>
 											}
-											label={messages[target.name] ? formatMessage(messages[target.name]) : capitalize(target.name)}
+											label={
+												messages[target.name] ? (
+													target.name === 'staging' && !published ? (
+														<FormattedMessage defaultMessage="Staging (disabled on first publish)" />
+													) : (
+														formatMessage(messages[target.name])
+													)
+												) : (
+													capitalize(target.name)
+												)
+											}
 											slotProps={{
 												typography: {
 													sx: { fontSize: '14px', ...sxs?.formInputs }

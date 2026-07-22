@@ -18,7 +18,39 @@ import { useMemo } from 'react';
 import type LookupTable from '../../../models/LookupTable';
 import type { AllowedContentTypesDataWithDestinations, AllowedPathsData } from '../controls/NodeSelector';
 import { ComponentsDatasource, DataSource } from '../../../models';
+import type ContentType from '../../../models/ContentType';
+import useContentTypeList from '../../../hooks/useContentTypeList';
 import { parseComponentsDataSourceContentTypesProperty } from '../../../services/contentTypes';
+
+/**
+ * Resolves the content types for a given components or pages data source, handling wildcards.
+ *
+ * This function interprets the `contentTypesProperty` parameter, which may contain a comma-separated list of content
+ * type ids or the wildcard character "*". If "*" is provided, it is replaced with a comma-separated list of all
+ * content type ids relevant for the given dataSourceType ('components' or 'pages')
+ *
+ * @param {string | undefined} contentTypesProperty - The raw content types property from the data source configuration. Can be a comma-separated list of ids or "*".
+ * @param {'components' | 'pages'} dataSourceType - Indicates if the data source is for components or pages. Used to filter the contentTypes list accordingly.
+ * @param {ContentType[] | null} contentTypes - The full list of all content types. Required if `contentTypesProperty` is '*'.
+ * @returns {string | undefined} - A comma-separated list of resolved content type ids, the original property when not a wildcard, or undefined.
+ */
+function resolveComponentsDataSourceContentTypes(
+	contentTypesProperty: string | undefined,
+	dataSourceType: 'components' | 'pages',
+	contentTypes: ContentType[] | null
+): string | undefined {
+	if (contentTypesProperty?.trim() !== '*') {
+		return contentTypesProperty;
+	}
+	if (!contentTypes) {
+		return undefined;
+	}
+	const expectedType = dataSourceType === 'pages' ? 'page' : 'component';
+	return contentTypes
+		.filter((contentType) => contentType.type === expectedType)
+		.map((contentType) => contentType.id)
+		.join(',');
+}
 
 export interface ConsolidatedItemPickerData {
 	allowedCreateTypes: LookupTable<AllowedContentTypesDataWithDestinations>;
@@ -29,6 +61,7 @@ export interface ConsolidatedItemPickerData {
 }
 
 export function useConsolidatedItemPickerData(dataSources: DataSource[]): ConsolidatedItemPickerData {
+	const contentTypes = useContentTypeList();
 	return useMemo(() => {
 		const allowedCreateTypes: LookupTable<AllowedContentTypesDataWithDestinations> = {};
 		const allowedCreatePaths = new Set<string>();
@@ -40,10 +73,18 @@ export function useConsolidatedItemPickerData(dataSources: DataSource[]): Consol
 			switch (ds.type) {
 				case 'components':
 				case 'pages': {
-					// TODO: Handle '*' from components DS
+					const resolvedContentTypes = resolveComponentsDataSourceContentTypes(
+						ds.properties.contentTypes,
+						ds.type as 'components' | 'pages',
+						contentTypes
+					);
 					const allowedContentTypesData =
-						parseComponentsDataSourceContentTypesProperty(ds as ComponentsDatasource, ds.properties.contentTypes)
-							.allowedContentTypes.value ?? {};
+						resolvedContentTypes !== undefined
+							? (parseComponentsDataSourceContentTypesProperty(
+									ds as ComponentsDatasource,
+									resolvedContentTypes
+								).allowedContentTypes.value ?? {})
+							: {};
 					const allowedContentTypes: string[] = Object.keys(allowedContentTypesData);
 					const allowedSharedExisingTypes: string[] = [];
 					allowedContentTypes.forEach((contentTypeId) => {
@@ -164,7 +205,7 @@ export function useConsolidatedItemPickerData(dataSources: DataSource[]): Consol
 			allowedSearchPaths,
 			allowedUploadPaths
 		};
-	}, [dataSources]);
+	}, [dataSources, contentTypes]);
 }
 
 export default useConsolidatedItemPickerData;

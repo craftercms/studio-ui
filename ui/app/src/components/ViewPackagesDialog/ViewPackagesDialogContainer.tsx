@@ -37,7 +37,7 @@ import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import ListItemButton from '@mui/material/ListItemButton';
 import ItemDisplay from '../ItemDisplay';
-import { pushDialog } from '../../state/actions/dialogStack';
+import { popDialog, pushDialog } from '../../state/actions/dialogStack';
 import { createComponentId } from '../../utils/system';
 import { hasApproveAction, hasRejectAction } from '../../utils/content';
 import { PublishPackage } from '../../models';
@@ -45,6 +45,7 @@ import { SubmittedPackageDetail } from '../DashletCard/dashletCommons';
 import FormControl from '@mui/material/FormControl';
 import TextFieldWithMax from '../TextFieldWithMax';
 import Grid from '@mui/material/Grid';
+import { nanoid } from 'nanoid';
 
 export interface ViewPackagesDialogContainerProps extends Pick<
 	ViewPackagesDialogProps,
@@ -64,15 +65,21 @@ export function ViewPackagesDialogContainer(props: ViewPackagesDialogContainerPr
 	const disableContinue = onContinue ? cancelPackagesComment.trim() === '' : false;
 
 	const onShowPackageDetails = (pkg: PublishPackage) => {
+		onClose?.(null, null);
 		if (
 			pkg.approvalState === 'SUBMITTED' &&
 			(hasApproveAction(pkg.availableActions) || hasRejectAction(pkg.availableActions))
 		) {
+			const dialogId = nanoid();
 			dispatch(
 				pushDialog({
+					id: dialogId,
 					component: createComponentId('PublishPackageReviewDialog'),
 					props: {
-						packageId: pkg.id
+						packageId: pkg.id,
+						onSuccess: () => {
+							dispatch(popDialog({ id: dialogId }));
+						}
 					}
 				})
 			);

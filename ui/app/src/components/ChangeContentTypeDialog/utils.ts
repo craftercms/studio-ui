@@ -19,6 +19,7 @@ import StandardAction from '../../models/StandardAction';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 import { NewContentDialogProps } from '../NewContentDialog/utils';
+import { ContentType } from '../../models';
 
 export interface ChangeContentTypeDialogBaseProps {
 	item: ContentItem;
@@ -36,4 +37,7 @@ export interface ChangeContentTypeDialogStateProps extends ChangeContentTypeDial
 }
 
 export interface ChangeContentTypeDialogContainerProps
-	extends ChangeContentTypeDialogBaseProps, Pick<ChangeContentTypeDialogProps, 'onContentTypeSelected' | 'onClose'> {}
+	extends ChangeContentTypeDialogBaseProps, Pick<ChangeContentTypeDialogProps, 'onContentTypeSelected' | 'onClose'> {
+	contentTypes?: ContentType[];
+	isFetching: boolean;
+}
