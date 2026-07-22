@@ -161,31 +161,46 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
 		));
 		children.length < totalByPath[path] &&
 			propsForTreeItem.children.push(
-				<Box
-					component="section"
+				<TreeItem
 					key="more"
+					itemId={`${path}::__more__`}
+					label={
+						<Button
+							color="primary"
+							size="small"
+							onClick={(event) => {
+								event.stopPropagation();
+								onMoreClick(path);
+							}}
+						>
+							<FormattedMessage
+								id="pathNavigatorTree.moreLinkLabel"
+								defaultMessage="{count, plural, one {...{count} more item} other {...{count} more items}}"
+								values={{ count: totalByPath[path] - children.length }}
+							/>
+						</Button>
+					}
 					sx={{
-						color: (theme) => theme.palette.text.primary,
-						display: 'flex',
-						alignItems: 'center',
-						minHeight: '23.5px',
-						marginLeft: '10px'
+						[`& > .${treeItemClasses.content}`]: {
+							pt: 0,
+							pb: 0,
+							pr: 0,
+							alignItems: 'center',
+							minHeight: '23.5px',
+							cursor: 'default',
+							'&:hover': {
+								background: 'none'
+							}
+						},
+						[`& .${treeItemClasses.label}`]: {
+							paddingLeft: 0
+						},
+						[`& .${treeItemClasses.iconContainer}`]: {
+							width: '26px',
+							marginRight: 0
+						}
 					}}
-				>
-					<Button
-						color="primary"
-						size="small"
-						onClick={() => {
-							onMoreClick(path);
-						}}
-					>
-						<FormattedMessage
-							id="pathNavigatorTree.moreLinkLabel"
-							defaultMessage="{count, plural, one {...{count} more item} other {...{count} more items}}"
-							values={{ count: totalByPath[path] - children.length }}
-						/>
-					</Button>
-				</Box>
+				/>
 			);
 	} else if (totalByPath[path] > 0 && !childrenByParentPath[path]?.length) {
 		// If totalByPath at the current path is greater than 0, but there are no children in childrenByParentPath for the current path,
