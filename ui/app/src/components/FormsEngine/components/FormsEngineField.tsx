@@ -237,6 +237,7 @@ export const FormsEngineField = forwardRef<HTMLDivElement, FormsEngineFieldProps
 							color="inherit"
 							target="_blank"
 							component="a"
+							aria-label={formatMessage({ defaultMessage: 'Learn more about content inheritance' })}
 							title={formatMessage({ defaultMessage: 'Learn more about content inheritance' })}
 							sx={{ p: 0 }}
 						>
