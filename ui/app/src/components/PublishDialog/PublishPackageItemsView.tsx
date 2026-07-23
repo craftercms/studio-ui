@@ -15,7 +15,7 @@
  */
 
 import Box from '@mui/material/Box';
-import { listItemSecondaryActionClasses, Typography } from '@mui/material';
+import { listItemSecondaryActionClasses } from '@mui/material';
 import { useIntl } from 'react-intl';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
