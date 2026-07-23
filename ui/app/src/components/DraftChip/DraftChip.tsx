@@ -15,12 +15,7 @@
  */
 
 import Chip, { ChipProps } from '@mui/material/Chip';
-import { ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
-
-export interface DraftChipProps extends ChipProps {
-	label?: ReactNode;
-}
 
 export function DraftChip(props: ChipProps) {
 	return (
