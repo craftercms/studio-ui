@@ -229,10 +229,9 @@ export const FormsEngineField = forwardRef<HTMLDivElement, FormsEngineFieldProps
 				<Alert
 					variant="standard"
 					severity="info"
-					// TODO: Create or link to content inheritance article
 					icon={
 						<IconButton
-							href="/"
+							href="https://craftercms.com/docs/current/by-role/developer/common/content-modeling/content-inheritance.html"
 							size="small"
 							color="inherit"
 							target="_blank"
