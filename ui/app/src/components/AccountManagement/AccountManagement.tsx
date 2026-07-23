@@ -18,7 +18,7 @@ import Box, { BoxProps } from '@mui/material/Box';
 import React, { forwardRef, useEffect, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import GlobalAppToolbar from '../GlobalAppToolbar';
-import { Checkbox, FormControlLabel, Typography } from '@mui/material';
+import { FormControlLabel, Switch, Typography } from '@mui/material';
 import Paper, { paperClasses } from '@mui/material/Paper';
 import Avatar from '@mui/material/Avatar';
 import Container from '@mui/material/Container';
@@ -403,8 +403,13 @@ export function AccountManagement(props: AccountManagementProps) {
 							<NumberField.Root
 								id="snackDuration"
 								value={snackDuration / 1000} // Display in seconds
-								onValueChange={(value) => setSnackDuration(value * 1000)} // Store in milliseconds
-								min={0}
+								onValueChange={(value) => {
+									const seconds = Number(value);
+									setSnackDuration(
+										Number.isFinite(seconds) && seconds > 0 ? seconds * 1000 : DEFAULT_SNACKBAR_DURATION
+									);
+								}} // Store in milliseconds
+								min={1}
 								max={60}
 								step={1}
 								format={{ maximumFractionDigits: 0 }}
@@ -426,10 +431,8 @@ export function AccountManagement(props: AccountManagementProps) {
 
 						<FormControl sx={{ my: 2 }}>
 							<FormControlLabel
-								control={
-									<Checkbox checked={enableAnimations} onChange={(e) => setEnableAnimations(e.target.checked)} />
-								}
-								label={<FormattedMessage defaultMessage="Enable animations" />}
+								control={<Switch checked={enableAnimations} onChange={(e) => setEnableAnimations(e.target.checked)} />}
+								label={<FormattedMessage defaultMessage="Enable user interface animations" />}
 							/>
 						</FormControl>
 						<PrimaryButton

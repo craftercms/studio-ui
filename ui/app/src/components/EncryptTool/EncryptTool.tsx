@@ -34,6 +34,7 @@ import Paper from '@mui/material/Paper';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
 import { copyToClipboard } from '../../utils/system';
+import useSnackbarDuration from '../../hooks/useSnackbarDuration';
 
 export interface EncryptToolProps {
 	site?: string;
@@ -80,6 +81,7 @@ export const EncryptTool = (props: EncryptToolProps) => {
 	const { formatMessage } = useIntl();
 	const fnRefs = useUpdateRefs({ onSubmittingAndOrPendingChange });
 	const hasText = Boolean(text);
+	const autoHideDuration = useSnackbarDuration();
 
 	const focus = () => {
 		const toolRawTextInput: HTMLInputElement = document.querySelector('#encryptionToolRawText');
@@ -190,7 +192,7 @@ export const EncryptTool = (props: EncryptToolProps) => {
 							horizontal: 'right'
 						}}
 						open={notificationSettings.open}
-						autoHideDuration={5000}
+						autoHideDuration={autoHideDuration}
 						onClose={() => {
 							setNotificationSettings({ open: false });
 						}}
