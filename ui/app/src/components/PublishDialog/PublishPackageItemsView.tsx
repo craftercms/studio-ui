@@ -15,8 +15,8 @@
  */
 
 import Box from '@mui/material/Box';
-import { Chip, listItemSecondaryActionClasses, Typography } from '@mui/material';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { listItemSecondaryActionClasses, Typography } from '@mui/material';
+import { useIntl } from 'react-intl';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';

@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { Chip, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import Box from '@mui/material/Box';
 import { DependencyChip } from './PublishDialogContainer';
