@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ContentTypeField, ContentTypeSection, PublishPackage } from '../../../models';
+import type { ContentTypeField, ContentTypeSection, PublishPackage } from '../../../models';
 import LookupTable from '../../../models/LookupTable';
 import ContentType from '../../../models/ContentType';
 import validateFieldValue, { FieldValidityState } from './validators';
