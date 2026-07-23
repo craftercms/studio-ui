@@ -21,6 +21,7 @@ import React, { useMemo } from 'react';
 import { treeItemClasses } from '@mui/x-tree-view/TreeItem';
 import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
 import { renderTreeNode } from './utils';
+import Box from '@mui/material/Box';
 
 export interface PackageItemsTreeProps {
 	items: LightItem[];
@@ -52,30 +53,32 @@ export function PackageItemsTree(props: PackageItemsTreeProps) {
 	}, [itemPaths]);
 
 	return (
-		<SimpleTreeView
-			expandedItems={expandedPaths ?? parentTreeNodePaths}
-			onExpandedItemsChange={(event, itemIds) => setExpandedPaths(itemIds)}
-			disableSelection
-			sx={{
-				'.tree-item-more-section': { display: 'none' },
-				[`.${treeItemClasses.content}:hover`]: {
-					'.tree-item-more-section': { display: 'flex' }
-				},
-				[`[data-is-item="false"] > .${treeItemClasses.content} > .${treeItemClasses.checkbox}`]: {
-					display: 'none'
-				}
-			}}
-		>
-			{trees.map((node) =>
-				renderTreeNode({
-					itemMap: itemMap,
-					node,
-					dependencyTypeMap: {},
-					onMenuClick: (e, path) => onOpenMenu(e, itemMap[path]),
-					showItemTarget: false
-				})
-			)}
-		</SimpleTreeView>
+		<Box sx={{ height: '100%', overflowY: 'auto' }}>
+			<SimpleTreeView
+				expandedItems={expandedPaths ?? parentTreeNodePaths}
+				onExpandedItemsChange={(event, itemIds) => setExpandedPaths(itemIds)}
+				disableSelection
+				sx={{
+					'.tree-item-more-section': { display: 'none' },
+					[`.${treeItemClasses.content}:hover`]: {
+						'.tree-item-more-section': { display: 'flex' }
+					},
+					[`[data-is-item="false"] > .${treeItemClasses.content} > .${treeItemClasses.checkbox}`]: {
+						display: 'none'
+					}
+				}}
+			>
+				{trees.map((node) =>
+					renderTreeNode({
+						itemMap: itemMap,
+						node,
+						dependencyTypeMap: {},
+						onMenuClick: (e, path) => onOpenMenu(e, itemMap[path]),
+						showItemTarget: false
+					})
+				)}
+			</SimpleTreeView>
+		</Box>
 	);
 }
 

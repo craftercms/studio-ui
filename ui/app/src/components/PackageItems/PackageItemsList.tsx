@@ -53,7 +53,7 @@ export function PackageItemsList(props: PackageItemsListProps) {
 	});
 
 	return (
-		<Box sx={{ flex: 1 }}>
+		<Box sx={{ flex: 1, minHeight: 0 }}>
 			<List
 				className="List"
 				rowCount={rowCount}
