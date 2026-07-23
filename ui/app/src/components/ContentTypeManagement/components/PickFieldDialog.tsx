@@ -15,7 +15,7 @@
  */
 
 import { EnhancedDialog, EnhancedDialogProps } from '../../EnhancedDialog';
-import { ContentType, DataSource } from '../../../models';
+import { ContentType, ContentTypeField, DataSource } from '../../../models';
 import { FormattedMessage, useIntl } from 'react-intl';
 import React, { ReactNode, useState } from 'react';
 import { applyTranslations, DescriptorContentType, DescriptorField, PartialContentType } from '../utils';
@@ -62,7 +62,6 @@ export function PickFieldDialogBody(props: PickFieldDialogBodyProps) {
 	const [selectedField, setSelectedField] = useState<PartialContentType>(undefined);
 	const [selectedView, setSelectedView] = useState<number>(0);
 	const [position, setPosition] = useState<number>(typesCurrentList?.length ?? 0);
-	const currentFieldTypes = Object.values(type.fields ?? {}).map((field) => field.type);
 
 	const onSecondaryAction = (e: React.MouseEvent) => {
 		if (selectedView === 0) {
@@ -96,7 +95,7 @@ export function PickFieldDialogBody(props: PickFieldDialogBodyProps) {
 				{selectedView === 0 ? (
 					<SelectField
 						configLookup={configLookup}
-						currentFieldTypes={currentFieldTypes}
+						currentFields={type.fields}
 						typesFullList={typesFullList}
 						selectedField={selectedField}
 						setSelectedField={onSelectField}
@@ -221,21 +220,22 @@ export function SelectField(props: {
 	setSelectedField: (field: PartialContentType) => void;
 	systemFieldsIds?: PickFieldDialogProps['systemFieldsIds'];
 	systemFieldsTitle?: PickFieldDialogProps['systemFieldsTitle'];
-	currentFieldTypes?: string[];
+	currentFields?: LookupTable<ContentTypeField>;
 }) {
 	const {
 		configLookup,
 		typesFullList,
-		currentFieldTypes = [],
 		selectedField,
 		setSelectedField,
 		systemFieldsIds = [],
-		systemFieldsTitle = <FormattedMessage defaultMessage="System Fields" />
+		systemFieldsTitle = <FormattedMessage defaultMessage="System Fields" />,
+		currentFields = {}
 	} = props;
 	const [searchTerm, setSearchTerm] = useState('');
 	const { formatMessage } = useIntl();
+	const currentFieldTypes = Object.values(currentFields).map((field) => field.type);
 
-	const basicFields = typesFullList
+	const systemFields = typesFullList
 		.map((type) => applyTranslations(type, formatMessage))
 		.filter(
 			(type) =>
@@ -244,6 +244,8 @@ export function SelectField(props: {
 				systemFieldsIds.includes(type.id) &&
 				// Type is not in 'currentTypeIds'
 				!currentFieldTypes.includes(type.id) &&
+				// id is not in currentFields
+				!currentFields[type.id] &&
 				// If type is file-name and `currentTypeIds` has auto-filename, or
 				// type is auto-filename and `currentTypeIds` has file-name, then filter out
 				!(
@@ -282,14 +284,14 @@ export function SelectField(props: {
 					</ListItemButton>
 				))}
 			</Box>
-			{basicFields.length > 0 && (
+			{systemFields.length > 0 && (
 				<>
 					<Divider />
 					<FormControl sx={{ mt: 2 }}>
 						<FormLabel id="fieldSectionRadioGroupLabel">{systemFieldsTitle}</FormLabel>
 					</FormControl>
 					<Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', mt: 2 }}>
-						{basicFields.map((field, index) => (
+						{systemFields.map((field, index) => (
 							<ListItemButton
 								key={index}
 								onClick={() => setSelectedField(field)}
