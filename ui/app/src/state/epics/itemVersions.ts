@@ -34,7 +34,7 @@ import {
 	revertToPreviousVersion,
 	versionsChangeItem
 } from '../actions/versions';
-import { NEVER, of } from 'rxjs';
+import { EMPTY, of } from 'rxjs';
 import { historyDialogClosed } from '../actions/dialogs';
 import { fetchHistory as getConfigurationHistory } from '../../services/configuration';
 import { reloadContentItem } from '../actions/content';
@@ -131,7 +131,7 @@ export default [
 				if (!dialogs.viewVersion.open && !dialogs.compareVersions.open) {
 					return of(resetVersionsState());
 				} else {
-					return NEVER;
+					return EMPTY;
 				}
 			})
 		)

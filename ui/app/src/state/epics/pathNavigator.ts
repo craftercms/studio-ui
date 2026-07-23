@@ -25,7 +25,7 @@ import {
 	fetchItemWithChildrenByPath
 } from '../../services/content';
 import { getIndividualPaths, getParentPath, getRootPath, withIndex, withoutIndex } from '../../utils/path';
-import { forkJoin, NEVER, Observable } from 'rxjs';
+import { EMPTY, forkJoin, Observable } from 'rxjs';
 import {
 	pathNavigatorBackgroundRefresh,
 	pathNavigatorBulkFetchPathComplete,
@@ -180,7 +180,7 @@ export default [
 							),
 							catchAjaxError((error) => pathNavigatorBulkFetchPathFailed({ ids: requests.map(({ id }) => id), error }))
 						)
-					: NEVER;
+					: EMPTY;
 			})
 		),
 	// endregion
@@ -443,7 +443,7 @@ export default [
             actions.push(fetchContentItem({ path: parentPathOfTargetPath }));
           } */
 				});
-				return refreshRequests.length ? [pathNavigatorBulkRefresh({ requests: refreshRequests })] : NEVER;
+				return refreshRequests.length ? [pathNavigatorBulkRefresh({ requests: refreshRequests })] : EMPTY;
 			})
 		),
 	// endregion
@@ -497,7 +497,7 @@ export default [
 					}
 				});
 				refreshRequests.length && actions.push(pathNavigatorBulkRefresh({ requests: refreshRequests }));
-				return actions.length ? actions : NEVER;
+				return actions.length ? actions : EMPTY;
 			})
 		),
 	// endregion
@@ -514,7 +514,7 @@ export default [
 						requests.push({ id: tree.id, backgroundRefresh: true });
 					}
 				});
-				return requests.length ? [pathNavigatorBulkRefresh({ requests })] : NEVER;
+				return requests.length ? [pathNavigatorBulkRefresh({ requests })] : EMPTY;
 			})
 		),
 	// endregion
@@ -533,7 +533,7 @@ export default [
 			withLatestFrom(state$),
 			switchMap(([, state]) => {
 				const requests = Object.keys(state.pathNavigator).map((id) => ({ id, backgroundRefresh: true }));
-				return requests.length ? [pathNavigatorBulkRefresh({ requests })] : NEVER;
+				return requests.length ? [pathNavigatorBulkRefresh({ requests })] : EMPTY;
 			})
 		)
 	// endregion

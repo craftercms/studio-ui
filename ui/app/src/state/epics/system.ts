@@ -67,7 +67,7 @@ import {
 } from '../actions/publishingStatus';
 import { fetchStatus } from '../../services/publishing';
 import { catchAjaxError } from '../../utils/ajax';
-import { interval, NEVER, Observable } from 'rxjs';
+import { EMPTY, interval, Observable } from 'rxjs';
 import { sessionTimeout } from '../actions/user';
 import { sharedWorkerUnauthenticated } from '../actions/auth';
 import { fetchGlobalMenuItems } from '../../services/configuration';
@@ -490,7 +490,7 @@ const systemEpics: CrafterCMSEpic[] = [
 							formatMessage({ defaultMessage: "This project has been deleted, you'll be redirected to projects list." })
 						);
 						window.location.href = `${authoringBase}#${GlobalRoutes.Projects}`;
-						return NEVER;
+						return EMPTY;
 					} else {
 						return [popSite({ siteId: site, isActive: true }), messageSharedWorker(closeSiteSocket({ site }))];
 					}

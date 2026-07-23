@@ -16,7 +16,7 @@
 
 import { ofType } from 'redux-observable';
 import { filter, ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
-import { NEVER, of } from 'rxjs';
+import { EMPTY, of } from 'rxjs';
 import { camelize, dasherize } from '../../utils/string';
 import {
 	closeCodeEditorDialog,
@@ -125,8 +125,9 @@ const dialogEpics: CrafterCMSEpic[] = [
 						if (isMinimized === true) {
 							return of(updateDialogAction({ isMinimized: false }));
 						}
+						return EMPTY;
 					} else {
-						return NEVER;
+						return EMPTY;
 					}
 				} else {
 					const dialogId = nanoid();
