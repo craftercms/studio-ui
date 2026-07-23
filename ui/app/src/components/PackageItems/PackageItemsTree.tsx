@@ -21,7 +21,7 @@ import React, { useMemo } from 'react';
 import { treeItemClasses } from '@mui/x-tree-view/TreeItem';
 import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
 import { renderTreeNode } from './utils';
-import { Box } from '@mui/material';
+import Box from '@mui/material/Box';
 
 export interface PackageItemsTreeProps {
 	items: LightItem[];
