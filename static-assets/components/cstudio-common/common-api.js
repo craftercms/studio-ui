@@ -3687,12 +3687,60 @@ var nodeOpen = false,
       },
 
       /**
+       * Maps a modern ContentType (from form-definition) back to the LegacyContentType shape
+       * previously returned by get-content-types.json.
+       * Fields that lived only in config.xml (removed) use best-effort defaults.
+       */
+      asLegacyContentType: function (contentType) {
+        var thumbnail = contentType.thumbnailFileName || '';
+        return {
+          allowedRoles: [],
+          // contentAsFolder was previously in config.xml; pages historically defaulted to true.
+          contentAsFolder: contentType.type === 'page',
+          copyDepedencyPattern: ((contentType['copy-dependencies'] && contentType['copy-dependencies']['copy-dependency']) || []).map(
+            function (d) {
+              return d.pattern;
+            }
+          ),
+          deleteDependencyPattern: ((contentType['delete-dependencies'] && contentType['delete-dependencies']['delete-dependency']) || []).map(
+            function (d) {
+              return d.pattern;
+            }
+          ),
+          form: contentType.id,
+          formPath: '/content-types' + contentType.id + '/form-definition.xml',
+          imageThumbnail: thumbnail,
+          label: contentType.name,
+          lastUpdated: '',
+          modelInstancePath: '/content-types' + contentType.id + '/',
+          name: contentType.id,
+          noThumbnail: !thumbnail,
+          nodeRef: null,
+          pathExcludes: (contentType.paths && contentType.paths.excludes && contentType.paths.excludes.pattern) || [],
+          pathIncludes: (contentType.paths && contentType.paths.includes && contentType.paths.includes.pattern) || [],
+          previewable: contentType.previewable || false,
+          quickCreate: contentType.quickCreate || false,
+          quickCreatePath: contentType.quickCreatePath || '',
+          type: contentType.type,
+          useRoundedFolder: ''
+        };
+      },
+
+      /**
        * lookup content type metadata
        */
       lookupContentType: function (site, type, callback) {
-        CrafterCMSNext.services.contentTypes.fetchLegacyContentType(site, type).subscribe(
-          function (contentType) {
-            callback.success(contentType);
+        var self = this;
+        CrafterCMSNext.services.contentTypes.fetchContentTypes(site).subscribe(
+          function (contentTypes) {
+            var contentType = contentTypes.find(function (ct) {
+              return ct.id === type;
+            });
+            if (contentType) {
+              callback.success(self.asLegacyContentType(contentType));
+            } else {
+              callback.failure({ message: 'Content type not found: ' + type });
+            }
           },
           function (err) {
             callback.failure(err);
@@ -3704,14 +3752,12 @@ var nodeOpen = false,
        * given a site id returns the available All content types
        */
       getAllContentTypesForSite: function (site, callback) {
-        CrafterCMSNext.services.contentTypes.fetchLegacyContentTypes(site).subscribe(
-          (contentTypes) => {
-            if (!contentTypes.length) {
-              contentTypes = [contentTypes];
-            }
-            callback.success(contentTypes);
+        var self = this;
+        CrafterCMSNext.services.contentTypes.fetchContentTypes(site).subscribe(
+          function (contentTypes) {
+            callback.success(contentTypes.map(self.asLegacyContentType.bind(self)));
           },
-          (error) => {
+          function (error) {
             callback.failure(error);
           }
         );
