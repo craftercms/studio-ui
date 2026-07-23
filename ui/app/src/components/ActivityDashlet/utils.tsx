@@ -139,7 +139,9 @@ export function renderActivity(
 					values={{ render_package_link }}
 				/>
 			);
+		// PUBLISH and APPROVE_PUBLISH_PACKAGE are approval actions, for direct publishing or via a request approval.
 		case 'PUBLISH':
+		case 'APPROVE_PUBLISH_PACKAGE':
 			return (
 				<FormattedMessage
 					id="activityDashlet.publishActivityMessage"
@@ -168,7 +170,7 @@ export function renderActivity(
 					values={{ item: [item.label, item.systemType, item.previewUrl, item.path], anchor, systemType }}
 				/>
 			);
-		case 'PUBLISHED':
+		case 'PUBLISH_ITEM_LIST_COMPLETE':
 			return (
 				<FormattedMessage
 					id="activityDashlet.publishedActivityMessage"
@@ -176,14 +178,14 @@ export function renderActivity(
 					values={{ render_package_link }}
 				/>
 			);
-		case 'INITIAL_PUBLISH':
+		case 'INITIAL_PUBLISH_COMPLETE':
 			return (
 				<FormattedMessage
 					id="activityDashlet.initialPublishActivityMessage"
 					defaultMessage="Performed the project's initial publish"
 				/>
 			);
-		case 'PUBLISH_ALL':
+		case 'PUBLISH_ALL_COMPLETE':
 			return <FormattedMessage defaultMessage="Published entire project" />;
 		case 'CANCEL_PUBLISH_PACKAGE':
 			return (
@@ -211,15 +213,16 @@ export const activityNameLookup: Record<Activities | 'ALL', any> = {
 	ALL: <FormattedMessage id="activityDashlet.showActivityByEveryone" defaultMessage="All activities" />,
 	CREATE: <FormattedMessage id="words.create" defaultMessage="Create" />,
 	DELETE: <FormattedMessage id="words.delete" defaultMessage="Delete" />,
-	INITIAL_PUBLISH: <FormattedMessage id="operations.initialPublish" defaultMessage="Initial Publish" />,
+	INITIAL_PUBLISH_COMPLETE: <FormattedMessage id="operations.initialPublish" defaultMessage="Initial Publish" />,
 	MOVE: <FormattedMessage id="words.move" defaultMessage="Move" />,
 	PUBLISH: <FormattedMessage id="words.approve" defaultMessage="Approve" />,
-	PUBLISHED: <FormattedMessage id="words.publish" defaultMessage="Publish" />,
+	APPROVE_PUBLISH_PACKAGE: <FormattedMessage id="words.approve" defaultMessage="Approve" />,
+	PUBLISH_ITEM_LIST_COMPLETE: <FormattedMessage id="words.publish" defaultMessage="Publish" />,
 	REJECT_PUBLISH_PACKAGE: <FormattedMessage id="words.reject" defaultMessage="Reject" />,
 	REQUEST_PUBLISH: <FormattedMessage id="operations.requestPublish" defaultMessage="Request Publish" />,
 	REVERT: <FormattedMessage id="words.revert" defaultMessage="Revert" />,
 	UPDATE: <FormattedMessage id="words.update" defaultMessage="Update" />,
-	PUBLISH_ALL: <FormattedMessage defaultMessage="Publish All" />,
+	PUBLISH_ALL_COMPLETE: <FormattedMessage defaultMessage="Publish All" />,
 	CANCEL_PUBLISH_PACKAGE: <FormattedMessage defaultMessage="Cancel" />
 };
 
