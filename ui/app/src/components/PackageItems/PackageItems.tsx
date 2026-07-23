@@ -174,7 +174,7 @@ export function PackageItems(props: PackageItemsProps) {
 						minHeight: 420,
 						height: 'calc(60vh)',
 						maxHeight: 600,
-						overflowY: !disableTreeView && isTreeView ? 'auto' : 'hidden'
+						overflowY: 'hidden'
 					}}
 				>
 					{state.items &&
