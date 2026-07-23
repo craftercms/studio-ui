@@ -27,7 +27,6 @@ import FormHelperText from '@mui/material/FormHelperText';
 import React, { forwardRef, PropsWithChildren, ReactNode, SyntheticEvent, useEffect, useRef, useState } from 'react';
 import { type FieldValidityMessage, isEmptyValue, isFieldRequired } from '../lib/validators';
 import FormLabel from '@mui/material/FormLabel';
-import Button from '@mui/material/Button';
 import useItemsByPath from '../../../hooks/useItemsByPath';
 import { FormattedMessage, type IntlFormatters, useIntl } from 'react-intl';
 import { HelpOutlineRounded } from '@mui/icons-material';
@@ -46,6 +45,11 @@ import { useAtomValue } from 'jotai';
 import { translateIfMessageDescriptor } from '../../ContentTypeManagement/utils';
 import useLoadableAtom from '../lib/useLoadableAtom';
 import { XmlKeys } from '../lib/formConsts';
+import EditOutlined from '@mui/icons-material/EditOutlined';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import { useDispatch } from 'react-redux';
+import { pushDialog } from '../../../state/actions/dialogStack';
+import { createComponentId } from '../../../utils/system';
 
 function createLengthBlock({ length, max }: { length: number; max: number }) {
 	const pieces = [];
@@ -119,6 +123,7 @@ export const FormsEngineField = forwardRef<HTMLDivElement, FormsEngineFieldProps
 	const validityData = useLoadableAtom(atoms.validationByFieldId[fieldId]);
 	const value = useAtomValue(atoms.valueByFieldId[fieldId]);
 	const isValid = props.isValid ?? (validityData.state === 'hasData' ? validityData?.data.isValid : true);
+	const dispatch = useDispatch();
 	const handleCloseMenu = () => setOpenMenu(false);
 	const handleRollback = () => formApi.rollbackField(field.id);
 	useEffect(() => {
@@ -170,7 +175,16 @@ export const FormsEngineField = forwardRef<HTMLDivElement, FormsEngineFieldProps
 								onClose={handleCloseMenu}
 								onClick={handleCloseMenu}
 							>
-								<MenuItem>
+								<MenuItem
+									onClick={() => {
+										dispatch(
+											pushDialog({
+												component: createComponentId('FieldInformationDialog'),
+												props: { field }
+											})
+										);
+									}}
+								>
 									<ListItemText>
 										<FormattedMessage defaultMessage="Field Information" />
 									</ListItemText>
@@ -215,31 +229,35 @@ export const FormsEngineField = forwardRef<HTMLDivElement, FormsEngineFieldProps
 				<Alert
 					variant="standard"
 					severity="info"
+					icon={
+						<IconButton
+							href="https://craftercms.com/docs/current/by-role/developer/common/content-modeling/content-inheritance.html"
+							size="small"
+							color="inherit"
+							target="_blank"
+							component="a"
+							aria-label={formatMessage({ defaultMessage: 'Learn more about content inheritance' })}
+							title={formatMessage({ defaultMessage: 'Learn more about content inheritance' })}
+							sx={{ p: 0 }}
+						>
+							<InfoOutlinedIcon />
+						</IconButton>
+					}
 					action={
 						<>
-							<Button
+							<IconButton
 								color="inherit"
 								size="small"
 								sx={{ px: 0.5, minWidth: 0 }}
 								onClick={() => {
 									globalApi.pushForm({
-										readonly: true,
 										update: { path: sourceMap[fieldId] }
 									});
 								}}
+								aria-label={formatMessage({ defaultMessage: 'Edit' })}
+								title={formatMessage({ defaultMessage: 'Edit' })}
 							>
-								View
-							</Button>
-							{/* TODO: Create or link to content inheritance article */}
-							<IconButton
-								href="/"
-								size="small"
-								color="inherit"
-								target="_blank"
-								component="a"
-								title={formatMessage({ defaultMessage: 'Learn more about content inheritance' })}
-							>
-								<HelpOutlineRounded fontSize="small" />
+								<EditOutlined fontSize="small" />
 							</IconButton>
 						</>
 					}
@@ -260,7 +278,7 @@ export const FormsEngineField = forwardRef<HTMLDivElement, FormsEngineFieldProps
 						/>
 					) : (
 						<FormattedMessage
-							defaultMessage="Inherited value from {label} is overriden"
+							defaultMessage="Inherited value from {label} is overridden"
 							values={{ label: itemsByPath[sourceMap[fieldId]]?.label ?? sourceMap[fieldId] }}
 						/>
 					)}
