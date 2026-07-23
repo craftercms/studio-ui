@@ -16,7 +16,7 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
-import { MediaItem } from '../../models/Search';
+import { ElasticParams, MediaItem } from '../../models/Search';
 import { alpha } from '@mui/material';
 import SearchBar from '../SearchBar/SearchBar';
 import { useDispatch, useSelector } from 'react-redux';
@@ -46,8 +46,9 @@ import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { ErrorBoundary } from '../ErrorBoundary';
 import Box from '@mui/material/Box';
 import { pushDialog } from '../../state/actions/dialogStack';
-import { nanoid } from 'nanoid';
 import { createComponentId } from '../../utils/system';
+import { assetsPanelInitialState } from '../../state/reducers/preview';
+import { ensureSingleSlash } from '../../utils/string';
 
 const translations = defineMessages({
 	previewAssetsPanelTitle: {
@@ -76,7 +77,21 @@ const translations = defineMessages({
 	}
 });
 
-export function PreviewAssetsPanel() {
+export interface PreviewAssetsPanelProps {
+	path?: string;
+	mimeTypes?: string[];
+	query?: string;
+}
+
+function mimeTypesChanged(a?: string[], b?: string[]): boolean {
+	const leftSet = new Set(a ?? []);
+	const rightSet = new Set(b ?? []);
+	if (leftSet.size !== rightSet.size) return true;
+	return [...leftSet].some((type) => !rightSet.has(type));
+}
+
+export function PreviewAssetsPanel(props: PreviewAssetsPanelProps) {
+	const { path, mimeTypes: mimeTypesProp, query } = props;
 	const initialKeyword = useSelection((state) => state.preview.assets.query.keywords);
 	const [keyword, setKeyword] = useState(initialKeyword);
 	const [dragInProgress, setDragInProgress] = useState(false);
@@ -86,11 +101,46 @@ export function PreviewAssetsPanel() {
 	const editMode = useSelection((state) => state.preview.editMode);
 	const assets = useSelection((state) => state.preview.assets);
 
+	const mimeTypes = mimeTypesProp ?? assetsPanelInitialState.query.filters['mime-type'];
+	const assetsPath = path ? ensureSingleSlash(`${path}/.+`) : undefined;
+	const cachedSiteRef = useRef<string | undefined>(undefined);
+	const cachedPathRef = useRef<string | undefined>(undefined);
+	const cachedMimeTypesRef = useRef<string[] | undefined>(undefined);
+	const cachedQueryRef = useRef<string | undefined>(undefined);
+
+	const fetchItems = useCallback(
+		(params: Partial<ElasticParams> = {}) => {
+			dispatch(
+				fetchAssetsPanelItems({
+					...params,
+					path: assetsPath,
+					filters: { ...params.filters, 'mime-type': mimeTypes },
+					query
+				})
+			);
+		},
+		[dispatch, assetsPath, mimeTypes, query]
+	);
+
 	useEffect(() => {
-		if (site && assets.isFetching === null) {
-			dispatch(fetchAssetsPanelItems({}));
+		if (!site) {
+			return;
 		}
-	}, [assets, dispatch, site]);
+
+		const configChanged =
+			cachedSiteRef.current !== site ||
+			cachedPathRef.current !== assetsPath ||
+			mimeTypesChanged(cachedMimeTypesRef.current, mimeTypes) ||
+			cachedQueryRef.current !== query;
+
+		if (configChanged) {
+			cachedSiteRef.current = site;
+			cachedPathRef.current = assetsPath;
+			cachedMimeTypesRef.current = mimeTypes;
+			cachedQueryRef.current = query;
+			fetchItems({ offset: 0 });
+		}
+	}, [site, assetsPath, mimeTypes, query, fetchItems]);
 
 	const { guestBase, xsrfArgument } = useSelector<GlobalState, GlobalState['env']>((state) => state.env);
 	const { formatMessage } = useIntl();
@@ -120,18 +170,18 @@ export function PreviewAssetsPanel() {
 						...pluckProps(file, 'name', 'type'),
 						dataUrl: reader.result
 					},
-					'/static-assets/images/',
+					path ? ensureSingleSlash(`${path}/`) : '/static-assets/images/',
 					xsrfArgument
 				).subscribe({
 					complete() {
-						dispatch(fetchAssetsPanelItems({}));
+						fetchItems();
 					}
 				});
 			};
 			reader.readAsDataURL(file);
 			setDragInProgress(false);
 		},
-		[xsrfArgument, dispatch, site]
+		[xsrfArgument, fetchItems, site]
 	);
 
 	useEffect(() => {
@@ -176,19 +226,16 @@ export function PreviewAssetsPanel() {
 		}
 	}, [dragInProgress, onDragDrop]);
 
-	const onSearch = useCallback(
-		(keywords: string) => dispatch(fetchAssetsPanelItems({ keywords, offset: 0 })),
-		[dispatch]
-	);
+	const onSearch = useCallback((keywords: string) => fetchItems({ keywords, offset: 0 }), [fetchItems]);
 
 	const onSearch$ = useDebouncedInput(onSearch, 400);
 
 	function onPageChanged(newPage: number) {
-		dispatch(fetchAssetsPanelItems({ offset: newPage }));
+		fetchItems({ offset: newPage });
 	}
 
 	function onRowsPerPageChange(e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) {
-		dispatch(fetchAssetsPanelItems({ offset: 0, limit: e.target.value }));
+		fetchItems({ offset: 0, limit: Number(e.target.value) });
 	}
 
 	function handleSearchKeyword(keyword: string) {
@@ -197,39 +244,56 @@ export function PreviewAssetsPanel() {
 	}
 
 	return (
-		<Box sx={dragInProgress ? { overflow: 'hidden' } : null}>
-			<div ref={elementRef}>
-				<Box sx={{ padding: '15px 15px 0 15px' }}>
-					<SearchBar showActionButton={Boolean(keyword)} onChange={handleSearchKeyword} keyword={keyword} autoFocus />
-				</Box>
-				<ErrorBoundary>
-					{assets.error ? (
-						<ApiResponseErrorState error={assets.error} />
-					) : assets.isFetching ? (
-						<LoadingState title={formatMessage(translations.retrieveAssets)} />
-					) : assets.page[assets.pageNumber] ? (
-						<>
-							{dragInProgress && (
-								<Box
-									sx={{
-										position: 'absolute',
-										background: alpha(palette.black, 0.9),
-										top: 0,
-										bottom: 0,
-										left: 0,
-										right: 0,
-										display: 'flex',
-										justifyContent: 'center',
-										alignContent: 'center',
-										zIndex: 2
-									}}
-								>
-									<UploadIcon
-										style={{ pointerEvents: 'none' }}
-										sx={{ fontSize: '8em', color: palette.gray.light5, margin: 'auto' }}
-									/>
-								</Box>
-							)}
+		<Box
+			ref={elementRef}
+			sx={(theme) => {
+				const toolbarHeight = typeof theme.mixins.toolbar.minHeight === 'number' ? theme.mixins.toolbar.minHeight : 64;
+				const panelHeight = `calc(100dvh - ${toolbarHeight * 2}px - 1px - 50px)`;
+
+				return {
+					display: 'flex',
+					flexDirection: 'column',
+					height: panelHeight,
+					maxHeight: panelHeight,
+					minHeight: 0,
+					overflow: 'hidden',
+					position: 'relative',
+					...(dragInProgress ? { overflow: 'hidden' } : {})
+				};
+			}}
+		>
+			<Box sx={{ padding: '15px 15px 0 15px', flexShrink: 0 }}>
+				<SearchBar showActionButton={Boolean(keyword)} onChange={handleSearchKeyword} keyword={keyword} autoFocus />
+			</Box>
+			<ErrorBoundary>
+				{assets.error ? (
+					<ApiResponseErrorState error={assets.error} />
+				) : assets.isFetching ? (
+					<LoadingState title={formatMessage(translations.retrieveAssets)} />
+				) : assets.page[assets.pageNumber] ? (
+					<Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
+						{dragInProgress && (
+							<Box
+								sx={{
+									position: 'absolute',
+									background: alpha(palette.black, 0.9),
+									top: 0,
+									bottom: 0,
+									left: 0,
+									right: 0,
+									display: 'flex',
+									justifyContent: 'center',
+									alignContent: 'center',
+									zIndex: 2
+								}}
+							>
+								<UploadIcon
+									style={{ pointerEvents: 'none' }}
+									sx={{ fontSize: '8em', color: palette.gray.light5, margin: 'auto' }}
+								/>
+							</Box>
+						)}
+						<Box sx={{ flexShrink: 0 }}>
 							<Pagination
 								count={assets.count}
 								rowsPerPage={assets.query.limit}
@@ -237,54 +301,54 @@ export function PreviewAssetsPanel() {
 								onPageChange={(e, page: number) => onPageChanged(page * assets.query.limit)}
 								onRowsPerPageChange={onRowsPerPageChange}
 							/>
-							<Box sx={{ p: 2 }}>
-								{assets.page[assets.pageNumber]?.map((id) => {
-									const item = assets.byId[id];
-									return (
-										<MediaCard
-											key={item.path}
-											item={item}
-											previewAppBaseUri={guestBase}
-											avatar={<DragIndicatorRounded />}
-											sxs={{
-												root: { cursor: 'move', marginBottom: '16px' }
-											}}
-											onDragStart={() => onDragStart(item)}
-											onDragEnd={() => onDragEnd()}
-											onPreview={() =>
-												dispatch(
-													pushDialog({
-														component: createComponentId('PreviewDialog'),
-														allowMinimize: true,
-														allowFullScreen: true,
-														props: {
-															// TODO: check if it's image or video
-															type: 'image',
-															title: item.name,
-															url: item.path
-														}
-													})
-												)
-											}
-										/>
-									);
-								})}
-								{assets.count === 0 && (
-									<EmptyState
-										title={formatMessage(translations.noResults)}
+						</Box>
+						<Box sx={{ p: 2, flex: 1, minHeight: 0, overflowY: 'auto' }}>
+							{assets.page[assets.pageNumber]?.map((id) => {
+								const item = assets.byId[id];
+								return (
+									<MediaCard
+										key={item.path}
+										item={item}
+										previewAppBaseUri={guestBase}
+										avatar={<DragIndicatorRounded />}
 										sxs={{
-											image: { width: '150px' },
-											title: { fontSize: 'inherit', marginTop: '10px' }
+											root: { cursor: 'move', marginBottom: '16px' }
 										}}
+										onDragStart={() => onDragStart(item)}
+										onDragEnd={() => onDragEnd()}
+										onPreview={() =>
+											dispatch(
+												pushDialog({
+													component: createComponentId('PreviewDialog'),
+													allowMinimize: true,
+													allowFullScreen: true,
+													props: {
+														// TODO: check if it's image or video
+														type: 'image',
+														title: item.name,
+														url: item.path
+													}
+												})
+											)
+										}
 									/>
-								)}
-							</Box>
-						</>
-					) : (
-						<></>
-					)}
-				</ErrorBoundary>
-			</div>
+								);
+							})}
+							{assets.count === 0 && (
+								<EmptyState
+									title={formatMessage(translations.noResults)}
+									sxs={{
+										image: { width: '150px' },
+										title: { fontSize: 'inherit', marginTop: '10px' }
+									}}
+								/>
+							)}
+						</Box>
+					</Box>
+				) : (
+					<></>
+				)}
+			</ErrorBoundary>
 		</Box>
 	);
 }

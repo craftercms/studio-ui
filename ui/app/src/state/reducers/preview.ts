@@ -120,7 +120,7 @@ const audiencesPanelInitialState = {
 	applied: false
 };
 
-const assetsPanelInitialState = createEntityState({
+export const assetsPanelInitialState = createEntityState({
 	page: [],
 	query: {
 		keywords: '',
@@ -729,7 +729,7 @@ const reducer = createReducer<GlobalState['preview']>(initialState, (builder) =>
 					}
 				]
 			};
-			const arrays = ['widgets', 'devices', 'values'];
+			const arrays = ['widgets', 'devices', 'values', 'mimeTypes'];
 			const configDOM = fromString(payload.configXml);
 			const icePanel = configDOM.querySelector('[id="craftercms.components.ICEToolsPanel"] > configuration > widgets');
 			if (icePanel) {
