@@ -90,7 +90,7 @@ import { getParentModelId } from '../../utils/ice';
 import { getCachedModels, getCachedContentItems, modelHierarchyMap } from '../../contentController';
 import { isEditActionAvailable } from '../../utils/util';
 import type { BuiltInControlType } from '@craftercms/studio-ui/components/FormsEngine/lib/controlMap';
-import { ContentTypeFieldValidations } from '@craftercms/studio-ui';
+import { type ContentTypeFieldValidations } from '@craftercms/studio-ui/src/models/ContentType';
 
 type CaseReducer<S = GuestState, A extends GuestStandardAction = GuestStandardAction> = Reducer<S, A>;
 

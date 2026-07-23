@@ -16,13 +16,23 @@
 
 import { createIntl, createIntlCache, IntlShape } from 'react-intl';
 import { Subject } from 'rxjs';
-import { createIntlInstance, getCurrentLocale, ImportsLookup } from '@craftercms/studio-ui/utils/i18n';
+import { hostCheckIn } from '@craftercms/studio-ui/state/actions/preview';
+import { fromTopic } from './communicator';
 
+type BundledLocaleCodes = 'en' | 'es' | 'de' | 'ko';
+
+type ImportsLookup = Record<string, () => Promise<{ default: Record<string, string> }>>;
 const importsLookup: ImportsLookup = {
 	de: () => import('../translations/de.json'),
 	es: () => import('../translations/es.json'),
 	ko: () => import('../translations/ko.json')
 };
+
+/* private */
+let currentTranslations: Record<string, Record<string, string>> = { en: {} };
+
+/* private */
+let fetchedLocales: Partial<Record<BundledLocaleCodes, boolean>> = { en: true };
 
 /* private */
 const intl$$ = new Subject<IntlShape>();
@@ -31,14 +41,60 @@ const intl$$ = new Subject<IntlShape>();
 export const intl$ = intl$$.asObservable();
 
 /* private */
-let intl = createIntl({ locale: 'en', messages: {} }, createIntlCache());
+// Default to English; Studio sends the authoring locale via hostCheckIn.
+let intl = createIntl({ locale: 'en', messages: currentTranslations.en }, createIntlCache());
 
-if (getCurrentLocale() !== 'en') {
-	createIntlInstance(getCurrentLocale(), importsLookup).then((newIntl) => {
-		intl = newIntl;
-		intl$$.next(newIntl);
-	});
+async function fetchLocale(locale: string): Promise<Record<string, string>> {
+	const importFn = importsLookup[locale];
+	if (!importFn) {
+		return {};
+	}
+	const translations = await importFn();
+	return translations.default;
 }
+
+async function createIntlInstance(localeCode: string): Promise<IntlShape> {
+	if (!fetchedLocales[localeCode] && ['de', 'es', 'ko'].includes(localeCode)) {
+		const fetchedTranslations = await fetchLocale(localeCode);
+		currentTranslations[localeCode] = { ...currentTranslations[localeCode], ...fetchedTranslations };
+		fetchedLocales[localeCode as BundledLocaleCodes] = true;
+	}
+	return createIntl(
+		{
+			locale: localeCode,
+			messages: currentTranslations[localeCode] || currentTranslations.en
+		},
+		createIntlCache()
+	);
+}
+
+let requestedLocale = intl.locale;
+// Do not read localStorage here — guest may run for example in a Next.js app.
+fromTopic(hostCheckIn.type).subscribe(({ payload }) => {
+	const locale = payload?.locale;
+	if (locale) {
+		requestedLocale = locale;
+	}
+	if (locale && locale !== intl.locale) {
+		createIntlInstance(locale).then(
+			(newIntl) => {
+				if (locale !== requestedLocale) return;
+				intl = newIntl;
+				intl$$.next(newIntl);
+			},
+			(error) => {
+				if (locale !== requestedLocale) return;
+				console.error(`[Guest] Failed to load locale "${locale}". Falling back to English.`, error);
+				const fallbackIntl = createIntl(
+					{ locale: 'en', messages: currentTranslations.en },
+					createIntlCache()
+				);
+				intl = fallbackIntl;
+				intl$$.next(fallbackIntl);
+			}
+		);
+	}
+});
 
 export function getCurrentIntl(): IntlShape {
 	return intl;

@@ -28,9 +28,11 @@ import useActiveSiteId from '../../../hooks/useActiveSiteId';
 import { Editor } from '@tinymce/tinymce-react';
 import { TinyMCE } from 'tinymce';
 import { getTinymce } from '@tinymce/tinymce-react/lib/es2015/main/ts/TinyMCE';
-import { getPropertyValue, getTinyMceInitOptions } from '../lib/formUtils';
+import { getPropertyValue } from '../lib/formUtils';
 import { loadAceEditorAssets } from '../../../utils/system';
 import { FormsEngineDialogContext } from '../lib/formsEngineContext';
+import { getTinyMceInitOptions } from '../lib/rteUtils';
+import { getCurrentLocale } from '../../../utils/i18n';
 
 export interface RichTextEditorProps extends ControlProps {
 	value: string;
@@ -47,6 +49,7 @@ declare global {
 
 export function RichTextEditor(props: RichTextEditorProps) {
 	const { field, value, setValue, readonly, defaultInitOptions } = props;
+	const locale = getCurrentLocale();
 	const rteConfig = useRTEConfig();
 	const editorRef = useRef<Editor>(undefined);
 	const hasReceivedFocusRef = useRef(false);
@@ -125,7 +128,7 @@ export function RichTextEditor(props: RichTextEditorProps) {
 		>
 			<Editor
 				licenseKey="gpl"
-				init={getTinyMceInitOptions(field, rteConfig, defaultInitOptions, (editor) => {
+				init={getTinyMceInitOptions(field, rteConfig, locale, defaultInitOptions, (editor) => {
 					editor.on('OpenWindow', () => {
 						setDisableEnforceFocus?.(true);
 					});

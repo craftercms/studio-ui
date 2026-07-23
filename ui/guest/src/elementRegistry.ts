@@ -34,7 +34,7 @@ import {
 	HighlightData,
 	ICERecord
 } from './models/InContextEditing';
-import { ValidationResult } from '@craftercms/studio-ui/models/ContentType';
+import type { ValidationResult } from '@craftercms/studio-ui/models/ContentType';
 import { RegistryEntry } from './models/Registry';
 import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
 import { notNullOrUndefined, nou, nullOrUndefined } from '@craftercms/studio-ui/utils/object';

@@ -33,7 +33,7 @@ import UltraStyledTypography from './UltraStyledTypography';
 import UltraStyledTooltip from './UltraStyledTooltip';
 import { SystemCssProperties } from '@mui/system/styleFunctionSx/styleFunctionSx';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { ItemStateMap } from '@craftercms/studio-ui';
+import { type ItemStateMap } from '@craftercms/studio-ui/src/models/Item';
 import { defineMessages } from 'react-intl';
 
 const AllowedTypeCircle = styled('div')({

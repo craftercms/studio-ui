@@ -50,6 +50,7 @@ export const hostCheckIn = /*#__PURE__*/ createAction<{
 	editModePadding: boolean;
 	site: string;
 	username: string;
+	locale: string;
 	rteConfig: GlobalState['preview']['richTextEditor'];
 }>('HOST_CHECK_IN');
 export const guestCheckIn = /*#__PURE__*/ createAction<{

@@ -191,6 +191,7 @@ import { createComponentId, pickShowContentFormAction } from '../../utils/system
 import { popDialog, pushDialog } from '../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
 import { ImageRestrictionSubtitle } from '../FormsEngine/lib/controlHelpers';
+import { getCurrentLocale } from '../../utils/i18n';
 
 const issueDescriptorRequest = (props: {
 	site: string;
@@ -675,7 +676,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 							authoringBase: upToDateRefs.current.authoringBase,
 							site: upToDateRefs.current.siteId,
 							editModePadding: upToDateRefs.current.editModePadding,
-							rteConfig: upToDateRefs.current.rteConfig ?? {}
+							rteConfig: upToDateRefs.current.rteConfig ?? {},
+							locale: getCurrentLocale(upToDateRefs.current.user.username)
 						})
 					);
 					dispatch(guestCheckIn(payload));
