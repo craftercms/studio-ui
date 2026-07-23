@@ -119,6 +119,7 @@ export default class FileItem extends Component {
 						uppy={this.props.uppy}
 						i18n={this.props.i18n}
 						validateAndRetry={this.props.validateAndRetry}
+						confirmOverwrite={this.props.confirmOverwrite}
 					/>
 				</div>
 			</div>

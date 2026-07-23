@@ -74,14 +74,14 @@ function CopyLinkButton({ file, uppy, i18n }) {
 	);
 }
 
-function AcceptSuggestedNameIcon({ i18n, onClick }) {
+function ConfirmActionIcon({ i18n, onClick, labelKey }) {
 	return (
 		<button
 			className="uppy-dashboard-button-base uppy-dashboard-icon-button edgeEnd"
 			tabIndex="0"
 			type="button"
-			aria-label={i18n('validateAndRetry')}
-			title={i18n('validateAndRetry')}
+			aria-label={i18n(labelKey)}
+			title={i18n(labelKey)}
 			onClick={() => onClick()}
 		>
 			<svg className="uppy-dashboard-svg-icon" focusable="false" viewBox="0 0 24 24" aria-hidden="true">
@@ -103,7 +103,8 @@ export default function Buttons(props) {
 		i18n,
 		toggleFileCard,
 		openFileEditor,
-		validateAndRetry
+		validateAndRetry,
+		confirmOverwrite
 	} = props;
 	const editAction = () => {
 		if (metaFields && metaFields.length > 0) {
@@ -124,8 +125,15 @@ export default function Buttons(props) {
 				onClick={editAction}
 			/>
 			{showRemoveButton ? <RemoveButton i18n={i18n} file={file} onClick={() => uppy.removeFile(file.id)} /> : null}
-			{file.meta.validating === false && file.meta.allowed && file.meta.suggestedName && (
-				<AcceptSuggestedNameIcon i18n={i18n} onClick={() => validateAndRetry(file.id)} />
+
+			{file.meta.validating === false &&
+				file.meta.allowed &&
+				file.meta.suggestedName &&
+				!file.meta.overwriteRequired && (
+					<ConfirmActionIcon i18n={i18n} labelKey="validateAndRetry" onClick={() => validateAndRetry(file.id)} />
+				)}
+			{file.meta.validating === false && file.meta.overwriteRequired && (
+				<ConfirmActionIcon i18n={i18n} labelKey="confirmOverwrite" onClick={() => confirmOverwrite(file.id)} />
 			)}
 			{showLinkToFileUploadResult && file.uploadURL ? <CopyLinkButton file={file} uppy={uppy} i18n={i18n} /> : null}
 		</div>

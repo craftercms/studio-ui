@@ -43,6 +43,7 @@ type DashboardLocale = Uppy.Locale<
 	| 'poweredBy'
 	| 'validating'
 	| 'validateAndRetry'
+	| 'confirmOverwrite'
 	| 'rejectAll'
 	| 'acceptAll'
 	| 'clear'

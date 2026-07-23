@@ -149,6 +149,8 @@ export default {
 			0: '%{smart_count} more file added',
 			1: '%{smart_count} more files added'
 		},
-		showErrorDetails: 'Show error details'
+		showErrorDetails: 'Show error details',
+		// Shown when the path-existence check fails before upload
+		pathExistenceCheckFailed: 'Unable to verify whether the file already exists'
 	}
 };

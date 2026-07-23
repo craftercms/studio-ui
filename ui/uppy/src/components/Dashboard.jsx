@@ -169,6 +169,7 @@ export default function Dashboard(props) {
 							externalMessages={props.externalMessages}
 							validateFilesPolicy={props.validateFilesPolicy}
 							validateAndRetry={props.validateAndRetry}
+							confirmOverwrite={props.confirmOverwrite}
 						/>
 					) : (
 						<div

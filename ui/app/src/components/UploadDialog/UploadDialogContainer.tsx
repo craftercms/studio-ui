@@ -23,7 +23,7 @@ import { translations } from './translations';
 import { getBulkUploadUrl } from '../../services/content';
 import { getGlobalHeaders } from '../../utils/ajax';
 import { useUnmount } from '../../hooks/useUnmount';
-import { Button, IconButton } from '@mui/material';
+import { IconButton } from '@mui/material';
 import CloseIconRounded from '@mui/icons-material/CloseRounded';
 import DialogBody from '../DialogBody/DialogBody';
 import UppyDashboard from '../UppyDashboard';
@@ -170,7 +170,6 @@ export function UploadDialogContainer(props: UploadDialogContainerProps) {
 
 	return (
 		<>
-			<Button style={{ display: 'none' }}>test</Button>
 			<IconButton style={{ display: 'none' }} size="large" aria-label={formatMessage({ defaultMessage: 'Close' })}>
 				<CloseIconRounded />
 			</IconButton>

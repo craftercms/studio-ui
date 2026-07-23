@@ -19,8 +19,10 @@ import React, { useCallback, useEffect, useRef } from 'react';
 
 import palette from '../../styles/palette';
 import { validateActionPolicy } from '../../services/sites';
+import { checkPathExistence } from '../../services/content';
 import { defineMessages, useIntl } from 'react-intl';
 import { showSystemNotification } from '../../state/actions/system';
+import { pushErrorDialog } from '../../utils/system';
 import { useDispatch } from 'react-redux';
 import { alpha } from '@mui/material';
 import { Subject } from 'rxjs';
@@ -31,6 +33,7 @@ import { UppyDashboardProps } from './UppyDashboardProps';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Box from '@mui/material/Box';
 import type { DashboardOptions } from 'uppy';
+import { extractErrorPayload } from '../../utils/ajax';
 
 const translations = defineMessages({
 	cancelPending: {
@@ -100,6 +103,18 @@ const translations = defineMessages({
 	projectPoliciesNoComply: {
 		defaultMessage: 'File "{fileName}" doesn\'t comply with project policies: {detail}'
 	},
+	fileAlreadyExists: {
+		id: 'uppyDashboard.fileAlreadyExists',
+		defaultMessage: 'A file with the name "{fileName}" already exists at this location.'
+	},
+	fileOverwriteRequired: {
+		id: 'uppyDashboard.fileOverwriteRequired',
+		defaultMessage: 'A file named "{fileName}" already exists. Do you want to overwrite it?'
+	},
+	confirmOverwrite: {
+		id: 'uppyDashboard.confirmOverwrite',
+		defaultMessage: 'Overwrite and upload'
+	},
 	proceed: {
 		defaultMessage: 'Start Uploads'
 	},
@@ -114,6 +129,10 @@ const translations = defineMessages({
 	},
 	dropPasteBoth: {
 		defaultMessage: 'Drop files here, {browseFiles} or {browseFolders}'
+	},
+	pathExistenceCheckFailed: {
+		id: 'uppyDashboard.pathExistenceCheckFailed',
+		defaultMessage: 'Unable to verify whether the file already exists'
 	}
 });
 
@@ -163,6 +182,10 @@ export function UppyDashboard(props: UppyDashboardProps) {
 			singleFileFullScreen: false,
 			proudlyDisplayPoweredByUppy: false,
 			validateActionPolicy,
+			checkPathExistence,
+			onPathExistenceError: (err) => {
+				dispatch(pushErrorDialog({ props: { error: extractErrorPayload(err) } }));
+			},
 			onPendingChanges: function () {
 				functionsRef.current.onPendingChanges.apply(null, arguments);
 			},
@@ -186,6 +209,7 @@ export function UppyDashboard(props: UppyDashboardProps) {
 					rejectAll: formatMessage(translations.rejectAll),
 					validating: formatMessage(translations.validating),
 					validateAndRetry: formatMessage(translations.validateAndRetry),
+					confirmOverwrite: formatMessage(translations.confirmOverwrite),
 					removeFile: formatMessage(translations.removeFile),
 					back: formatMessage(translations.back),
 					addingMoreFiles: formatMessage(translations.addingMoreFiles),
@@ -200,7 +224,8 @@ export function UppyDashboard(props: UppyDashboardProps) {
 						// These values are for uppy's mechanism to replace the placeholders with links
 						browseFiles: '%{browseFiles}',
 						browseFolders: '%{browseFolders}'
-					})
+					}),
+					pathExistenceCheckFailed: formatMessage(translations.pathExistenceCheckFailed)
 				},
 				pluralize: (n: number) => (n === 1 ? 0 : 1)
 			},
@@ -218,6 +243,12 @@ export function UppyDashboard(props: UppyDashboardProps) {
 				},
 				projectPoliciesNoComply: (fileName, detail) => {
 					return formatMessage(translations.projectPoliciesNoComply, { fileName, detail });
+				},
+				fileAlreadyExists: (fileName) => {
+					return formatMessage(translations.fileAlreadyExists, { fileName });
+				},
+				fileOverwriteRequired: (fileName) => {
+					return formatMessage(translations.fileOverwriteRequired, { fileName });
 				}
 			},
 			onMaxActiveUploadsReached: () => {
