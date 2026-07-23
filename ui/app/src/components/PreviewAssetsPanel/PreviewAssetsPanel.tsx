@@ -170,7 +170,7 @@ export function PreviewAssetsPanel(props: PreviewAssetsPanelProps) {
 						...pluckProps(file, 'name', 'type'),
 						dataUrl: reader.result
 					},
-					'/static-assets/images/',
+					path ? ensureSingleSlash(`${path}/`) : '/static-assets/images/',
 					xsrfArgument
 				).subscribe({
 					complete() {
