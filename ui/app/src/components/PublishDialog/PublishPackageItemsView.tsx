@@ -44,6 +44,7 @@ import PackageItemsActions from '../PackageItems/PackageItemsActions';
 import useItemsByPath from '../../hooks/useItemsByPath';
 import { fetchContentItem } from '../../services/content';
 import { List, type RowComponentProps } from 'react-window';
+import DraftChip from '../DraftChip';
 
 export interface PublishItemsProps {
 	itemMap: Record<string, LightItem>;
@@ -170,6 +171,7 @@ export function PublishPackageItemsView(props: PublishItemsProps) {
 						{trees.map((node) =>
 							renderTreeNode({
 								itemMap,
+								itemsByPath,
 								node,
 								dependencyTypeMap,
 								onMenuClick: onContextMenuOpen,
@@ -231,6 +233,7 @@ export function PublishPackageItemsView(props: PublishItemsProps) {
 														sx={{ mr: 1 }}
 														showPublishingTarget={false}
 													/>
+													{itemsByPath?.[path]?.savedAsDraft && <DraftChip size="small" />}
 													<DependencyChip type={dependencyTypeMap?.[path]} />
 												</Box>
 											}

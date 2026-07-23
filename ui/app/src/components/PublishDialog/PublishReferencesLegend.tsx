@@ -19,6 +19,7 @@ import { Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import Box from '@mui/material/Box';
 import { DependencyChip } from './PublishDialogContainer';
+import { DraftChip } from '../DraftChip';
 
 export function PublishReferencesLegend() {
 	return (
@@ -32,10 +33,16 @@ export function PublishReferencesLegend() {
 					<FormattedMessage defaultMessage="References of mandatory submission" />
 				</Typography>
 			</Box>
-			<Box sx={{ display: 'flex', gap: 1 }}>
+			<Box sx={{ display: 'flex', mb: 1, gap: 1 }}>
 				<DependencyChip type="soft" />
 				<Typography variant="body2" color="textSecondary">
 					<FormattedMessage defaultMessage="References of optional submission" />
+				</Typography>
+			</Box>
+			<Box sx={{ display: 'flex', gap: 1 }}>
+				<DraftChip size="small" sx={{ px: '11px' }} />
+				<Typography variant="body2" color="textSecondary">
+					<FormattedMessage defaultMessage="Draft item. Required fields may be empty and can cause errors when published." />
 				</Typography>
 			</Box>
 		</Box>

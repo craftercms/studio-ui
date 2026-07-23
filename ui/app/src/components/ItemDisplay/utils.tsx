@@ -32,7 +32,7 @@ export function getItemPublishingTargetText(
 export function getItemStateText(
 	stateMap: ItemStateMap,
 	formatMessage: IntlFormatters['formatMessage'],
-	values?: { user: string }
+	values?: { user: string; draft?: boolean }
 ): string {
 	const map: { [key in ItemStates]: string } = {
 		new: formatMessage({ id: 'itemState.new', defaultMessage: 'New' }),
@@ -40,10 +40,16 @@ export function getItemStateText(
 		deleted: formatMessage({ id: 'itemState.deleted', defaultMessage: 'Deleted' }),
 		locked: values?.user
 			? (formatMessage(
-					{ id: 'itemState.lockedBy', defaultMessage: 'Locked by {user}' },
+					values?.draft
+						? { id: 'itemState.lockedByDraft', defaultMessage: 'Locked by {user} - Draft' }
+						: { id: 'itemState.lockedBy', defaultMessage: 'Locked by {user}' },
 					{ user: values.user }
 				) as string)
-			: formatMessage({ id: 'itemState.locked', defaultMessage: 'Locked' }),
+			: formatMessage(
+					values?.draft
+						? { id: 'itemState.lockedDraft', defaultMessage: 'Locked - Draft' }
+						: { id: 'itemState.locked', defaultMessage: 'Locked' }
+				),
 		systemProcessing: formatMessage({ id: 'itemState.systemProcessing', defaultMessage: 'System Processing' }),
 		submitted: formatMessage({ id: 'itemState.submitted', defaultMessage: 'Submitted' }),
 		scheduled: formatMessage({ id: 'itemState.scheduled', defaultMessage: 'Scheduled' }),
