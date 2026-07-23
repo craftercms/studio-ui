@@ -18,13 +18,19 @@ import Chip, { ChipProps } from '@mui/material/Chip';
 import { ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-export interface DraftChipProps extends Omit<ChipProps, 'color'> {
+export interface DraftChipProps extends ChipProps {
 	label?: ReactNode;
 }
 
-export function DraftChip(props: DraftChipProps) {
-	const { label = <FormattedMessage defaultMessage="Draft" />, variant = 'outlined', ...rest } = props;
-	return <Chip variant={variant} color="error" label={label} {...rest} />;
+export function DraftChip(props: ChipProps) {
+	return (
+		<Chip
+			{...props}
+			variant={props.variant ?? 'outlined'}
+			color={props.color ?? 'error'}
+			label={props.label ?? <FormattedMessage defaultMessage="Draft" />}
+		/>
+	);
 }
 
 export default DraftChip;
