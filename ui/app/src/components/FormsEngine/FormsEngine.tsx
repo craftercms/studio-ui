@@ -401,16 +401,20 @@ function FormBootstrap(props: FormsEngineProps) {
 				);
 
 			const descriptors = { ...customControls, ...controlDescriptors };
-			let additionalFieldsIds = [];
+			const additionalFieldsIds: string[] = [];
 			// If repeat.values was provided, `createCleanValuesObject` didn't run; hence, atomValueCreator needs to be run manually.
 			if (repeat.values) {
 				// First gather all additional fields ids from the provided values
-				fieldsToRender.forEach((field) => {
-					const type = field.type;
-					additionalFieldsIds = [
-						...additionalFieldsIds,
-						...getAdditionalFieldsIdsFromDescriptor(field.id, descriptors[type])
-					];
+				(fieldsToRender ?? []).forEach((field) => {
+					const descriptor = descriptors[field.type];
+					if (!descriptor) return;
+					additionalFieldsIds.push(...getAdditionalFieldsIdsFromDescriptor(field.id, descriptor));
+				});
+				// Ensure descriptor additional fields exist in values so atoms are created
+				additionalFieldsIds.forEach((additionalFieldId) => {
+					if (!(additionalFieldId in values)) {
+						values[additionalFieldId] = undefined;
+					}
 				});
 				// Run atomValueCreator for each field considering the additional fields
 				Object.keys(values).forEach((fieldId) => {
