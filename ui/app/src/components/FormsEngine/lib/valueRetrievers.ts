@@ -120,7 +120,8 @@ export function createParsedValuesObject(
 	// TODO: should controlDescriptors have priority over customControls to avoid overriding OOB controls?
 	const descriptors = { ...customControls, ...controlDescriptors };
 	(Array.isArray(contentTypeFields) ? contentTypeFields : Object.values(contentTypeFields)).forEach((field) => {
-		const additionalFieldIds = getAdditionalFieldsIdsFromDescriptor(field.id, descriptors[field.type]);
+		const descriptor = descriptors[field.type];
+		const additionalFieldIds = descriptor ? getAdditionalFieldsIdsFromDescriptor(field.id, descriptor) : [];
 
 		additionalFieldIds.forEach((additionalFieldId) => {
 			values[additionalFieldId] = createParsedValueForField(
