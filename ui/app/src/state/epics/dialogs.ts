@@ -16,7 +16,7 @@
 
 import { ofType } from 'redux-observable';
 import { filter, ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
-import { NEVER, of } from 'rxjs';
+import { EMPTY, of } from 'rxjs';
 import { camelize, dasherize } from '../../utils/string';
 import {
 	closeCodeEditorDialog,
@@ -44,12 +44,8 @@ import { getHostToGuestBus } from '../../utils/subjects';
 import { unlockItem } from '../actions/content';
 import { generateDialogId } from '../../utils/dialogs';
 import type { LegacyFormDialogStateProps } from '../../components/LegacyFormDialog/utils';
-import type {
-	CodeEditorDialogProps,
-	CodeEditorDialogStateProps,
-	PreviewDialogProps,
-	PreviewDialogStateProps
-} from '../../components';
+import type { CodeEditorDialogProps, CodeEditorDialogStateProps } from '../../components/CodeEditorDialog';
+import type { PreviewDialogProps, PreviewDialogStateProps } from '../../components/PreviewDialog';
 import { popDialog, pushDialog, updateDialogState } from '../actions/dialogStack';
 import { nanoid } from 'nanoid';
 import { pushConfirmDialog } from '../../utils/system';
@@ -129,8 +125,9 @@ const dialogEpics: CrafterCMSEpic[] = [
 						if (isMinimized === true) {
 							return of(updateDialogAction({ isMinimized: false }));
 						}
+						return EMPTY;
 					} else {
-						return NEVER;
+						return EMPTY;
 					}
 				} else {
 					const dialogId = nanoid();

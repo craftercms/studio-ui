@@ -23,8 +23,9 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 import Box from '@mui/material/Box';
+import useEnhancedDialogContext from '../EnhancedDialog/useEnhancedDialogContext';
 
-const tabsHeight = 450;
+const tabsHeight = '60vh';
 
 export interface RemoteRepositoriesDiffDialogUIProps {
 	fileDiff: FileDiff;
@@ -33,11 +34,11 @@ export interface RemoteRepositoriesDiffDialogUIProps {
 
 export function ConflictedPathDiffDialogUI(props: RemoteRepositoriesDiffDialogUIProps) {
 	const { fileDiff, tab } = props;
-
+	const isFullScreen = useEnhancedDialogContext()?.isFullScreen;
 	return (
 		<Box
 			sx={{
-				height: tabsHeight,
+				height: isFullScreen ? '100%' : tabsHeight,
 				overflowX: 'auto',
 				'& .ace_editor': {
 					margin: 0

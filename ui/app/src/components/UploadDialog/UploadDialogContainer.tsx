@@ -18,27 +18,20 @@ import { getResponseError as getResponseErrorUtil, UploadDialogContainerProps } 
 import { useIntl } from 'react-intl';
 import { useSelection } from '../../hooks/useSelection';
 import React, { useEffect } from 'react';
-import { Uppy } from '@uppy/core';
+import { Uppy, type XHRUploadOptions as UppyXHRUploadOptions, XHRUpload } from 'uppy';
 import { translations } from './translations';
-import { XHRUpload } from '@craftercms/uppy';
 import { getBulkUploadUrl } from '../../services/content';
 import { getGlobalHeaders } from '../../utils/ajax';
 import { useUnmount } from '../../hooks/useUnmount';
-import { Button, IconButton } from '@mui/material';
+import { IconButton } from '@mui/material';
 import CloseIconRounded from '@mui/icons-material/CloseRounded';
 import DialogBody from '../DialogBody/DialogBody';
 import UppyDashboard from '../UppyDashboard';
 import useSiteUIConfig from '../../hooks/useSiteUIConfig';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
-import type { Body, Meta } from '@uppy/utils/lib/UppyFile';
-import type { XHRUploadOptions as UppyXHRUploadOptions } from '@uppy/xhr-upload';
 import { nnou } from '../../utils/object';
 
 const mixHeaders = (headers: Record<string, any>) => Object.assign({}, getGlobalHeaders(), headers);
-
-interface XHRUploadOptions extends UppyXHRUploadOptions<Meta, Body> {
-	validateStatus?(statusCode: number, responseText: string, response: unknown): boolean;
-}
 
 export function UploadDialogContainer(props: UploadDialogContainerProps) {
 	const { formatMessage } = useIntl();
@@ -55,7 +48,7 @@ export function UploadDialogContainer(props: UploadDialogContainerProps) {
 		hasPendingChanges,
 		setPendingChanges,
 		headers,
-		method = 'post',
+		method = 'put',
 		meta,
 		allowedMetaFields,
 		endpoint,
@@ -95,7 +88,9 @@ export function UploadDialogContainer(props: UploadDialogContainerProps) {
 			onUploadSuccess,
 			meta
 		} = propRefs.current;
-		const xhrOptions: XHRUploadOptions = {
+		const xhrOptions: UppyXHRUploadOptions & {
+			validateStatus?(statusCode: number, responseText: string, response: unknown): boolean;
+		} = {
 			endpoint: endpoint ?? getBulkUploadUrl(site, path),
 			formData: useFormData,
 			fieldName,
@@ -175,7 +170,6 @@ export function UploadDialogContainer(props: UploadDialogContainerProps) {
 
 	return (
 		<>
-			<Button style={{ display: 'none' }}>test</Button>
 			<IconButton style={{ display: 'none' }} size="large" aria-label={formatMessage({ defaultMessage: 'Close' })}>
 				<CloseIconRounded />
 			</IconButton>

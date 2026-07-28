@@ -15,7 +15,7 @@
  */
 
 import { FormattedMessage } from 'react-intl';
-import { ContentItem } from '../../models/Item';
+import { ContentItem, LightItem } from '../../models/Item';
 import { isAsset, isCode } from '../../utils/content';
 import React, { ReactNode } from 'react';
 import StandardAction from '../../models/StandardAction';
@@ -42,10 +42,10 @@ export interface DependenciesDialogStateProps extends DependenciesDialogBaseProp
 export interface DependenciesDialogContainerProps extends DependenciesDialogBaseProps {}
 
 export interface DependenciesListProps {
-	dependencies: ContentItem[];
+	dependencies: ContentItem[] | LightItem[];
 	compactView: boolean;
 	showTypes: string;
-	renderAction?(dependency: ContentItem): ReactNode;
+	renderAction?(dependency: ContentItem | LightItem): ReactNode;
 }
 
 export interface DependenciesDialogUIProps {
@@ -79,7 +79,7 @@ export const dialogInitialState = {
 
 export const assetsTypes = {
 	'all-deps': {
-		label: <FormattedMessage id="dependenciesDialog.allDeps" defaultMessage="Show all dependencies" />,
+		label: <FormattedMessage defaultMessage="Show all references" />,
 		filter: () => true
 	},
 	'content-items': {

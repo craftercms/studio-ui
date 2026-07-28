@@ -15,16 +15,14 @@
  */
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import Core, { type Uppy } from '@uppy/core';
-import XHRUpload from '@uppy/xhr-upload';
+import { Uppy, XHRUpload, Form } from 'uppy';
 import ProgressBar from '@uppy/progress-bar';
-import Form from '@uppy/form';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import '@uppy/core/src/style.scss';
-import '@uppy/progress-bar/src/style.scss';
-import '@uppy/file-input/src/style.scss';
+import 'uppy/dist/uppy.css';
+import '@uppy/progress-bar/dist/style.css';
 import { getGlobalHeaders } from '../../utils/ajax';
 import { validateActionPolicy } from '../../services/sites';
+import { checkPathExistence } from '../../services/content';
 import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
 import type { Body, Meta, UppyFile } from '@uppy/utils/lib/UppyFile';
 import { useDispatch } from 'react-redux';
@@ -32,7 +30,6 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import useSiteUIConfig from '../../hooks/useSiteUIConfig';
 import { ensureSingleSlash } from '../../utils/string';
-import { toQueryString } from '../../utils/object';
 import Alert from '@mui/material/Alert';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
@@ -64,6 +61,10 @@ const messages = defineMessages({
 	},
 	policyError: {
 		defaultMessage: 'File "{fileName}" doesn\'t comply with project policies: {detail}'
+	},
+	overwriteConfirm: {
+		id: 'fileUpload.overwriteConfirm',
+		defaultMessage: 'A file named "{fileName}" already exists at this location. Do you want to overwrite it?'
 	}
 });
 
@@ -99,6 +100,10 @@ export interface SingleFileUploadProps {
 	customFileName?: string;
 	fileTypes?: string[];
 	onFileAdded?: (file: UppyFile<Meta, Body>, uppy: Uppy, callback: () => void) => void;
+	method?: 'PUT' | 'POST';
+	showFileDetails?: boolean;
+	showProgressBar?: boolean;
+	disabled?: boolean;
 	onUploadStart?(): void;
 	onComplete?(result: FileUploadResult): void;
 	onError?({ file, error, response }): void;
@@ -106,7 +111,8 @@ export interface SingleFileUploadProps {
 
 export function SingleFileUpload(props: SingleFileUploadProps) {
 	const {
-		url = '/studio/api/1/services/api/1/content/write-content.json',
+		site,
+		url = `/studio/api/2/content/${site}`,
 		formTarget = '#asset_upload_form',
 		onUploadStart,
 		onComplete,
@@ -114,8 +120,11 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 		customFileName,
 		fileTypes,
 		path,
-		site,
-		onFileAdded: onFileAddedProp
+		onFileAdded: onFileAddedProp,
+		method = 'PUT',
+		showFileDetails = true,
+		showProgressBar = true,
+		disabled = false
 	} = props;
 	const { formatMessage } = useIntl();
 	const dispatch = useDispatch();
@@ -129,7 +138,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 	const { upload } = useSiteUIConfig();
 	const [confirm, setConfirm] = useState<{
 		body: string;
-		error?: boolean;
+		type: 'policy' | 'overwrite' | 'error';
 	}>(null);
 	const [error, setError] = useState(null);
 	fileRef.current = file;
@@ -137,7 +146,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 
 	const uppy = useMemo(
 		() =>
-			new Core({
+			new Uppy({
 				autoProceed: false,
 				...(fileTypes ? { restrictions: { allowedFileTypes: fileTypes } } : {}),
 				...(customFileName
@@ -148,7 +157,8 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 									name: customFileName,
 									meta: {
 										...currentFile.meta,
-										name: customFileName
+										name: customFileName,
+										path: ensureSingleSlash(`${path}/${customFileName}`)
 									}
 								};
 							}
@@ -163,19 +173,56 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 								name: suggestedNameRef.current,
 								meta: {
 									...files[fileRef.current.id].meta,
-									name: suggestedNameRef.current
+									name: suggestedNameRef.current,
+									path: ensureSingleSlash(`${path}/${suggestedNameRef.current}`)
 								}
 							}
 						};
 						setSuggestedName(null);
 						return updatedFiles;
 					} else {
-						return files;
+						return {
+							...files,
+							[fileRef.current.id]: {
+								...files[fileRef.current.id],
+								meta: {
+									...files[fileRef.current.id].meta,
+									path: ensureSingleSlash(`${path}/${files[fileRef.current.id].meta.name}`)
+								}
+							}
+						};
 					}
 				}
 			}),
-		[fileTypes, customFileName]
+		[fileTypes, customFileName, path]
 	);
+
+	const confirmUpload = () => {
+		// When uploading large files to aws/s3, something causes requests to fail and get retried n times before finally stating it failed; despite the file seemingly actually getting uploaded.
+		// This setTimeout avoids that issue. The mechanism of failure or why this avoids it is unknown.
+		setTimeout(() => uppy.upload(), 50);
+		setDescription(`${formatMessage(messages.uploadingFile)}:`);
+		onUploadStart?.();
+	};
+
+	const checkExistenceAndUpload = (targetPath: string, fileName: string) => {
+		checkPathExistence(site, targetPath).subscribe({
+			next: (exists) => {
+				if (exists) {
+					setConfirm({
+						type: 'overwrite',
+						body: formatMessage(messages.overwriteConfirm, { fileName })
+					});
+				} else {
+					confirmUpload();
+				}
+			},
+			error: ({ response }) => {
+				setDisableInput(false);
+				dispatch(pushErrorDialog({ props: { error: response?.response } }));
+			}
+		});
+	};
 
 	const retryUpload = () => {
 		setError(null);
@@ -197,7 +244,8 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 				hideAfterFinish: false
 			})
 			.use(XHRUpload, {
-				endpoint: `${url}${toQueryString({ path, site })}`,
+				endpoint: url,
+				method,
 				formData: true,
 				fieldName: 'file',
 				timeout: upload.timeout,
@@ -214,7 +262,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 			instance.cancelAll();
 			instance.destroy();
 		};
-	}, [uppy, formTarget, url, upload.timeout, path, site, formatMessage]);
+	}, [uppy, formTarget, url, upload.timeout, path, site, formatMessage, method]);
 
 	useEffect(() => {
 		const onUploadSuccess = () => {
@@ -258,12 +306,12 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 		const onFileAdded = (file: UppyFile<Meta, Body>) => {
 			setError(null);
 			setFileNameErrorClass('');
-
+			const fileName = file.name;
 			const validatePolicy = () => {
 				setDescription(`${formatMessage(messages.validatingFile)}:`);
 				validateActionPolicy(site, {
 					type: 'CREATE',
-					target: ensureSingleSlash(`${path}/${file.name}`),
+					target: ensureSingleSlash(`${path}/${fileName}`),
 					contentMetadata: {
 						fileSize: file.size
 					}
@@ -274,18 +322,23 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 							if (modifiedValue) {
 								// Modified value is expected to be a path.
 								const modifiedName = modifiedValue.match(/[^/]+$/)?.[0] ?? modifiedValue;
-								setConfirm({ body: message });
+								setConfirm({
+									type: 'policy',
+									body: formatMessage(
+										{
+											defaultMessage:
+												'Path `{fileName}` was transformed to `{modifiedName}` per the project file name policy'
+										},
+										{ fileName, modifiedName }
+									)
+								});
 								setSuggestedName(modifiedName);
 							} else {
-								// When uploading large files to aws/s3, something causes requests to fail and get retried n times before finally stating it failed; despite the file seemingly actually getting uploaded.
-								// This setTimeout avoids that issue. The mechanism of failure or why this avoids it is unknown.
-								setTimeout(() => uppy.upload(), 50);
-								setDescription(`${formatMessage(messages.uploadingFile)}:`);
-								onUploadStart?.();
+								checkExistenceAndUpload(ensureSingleSlash(`${path}/${fileName}`), fileName);
 							}
 						} else {
 							setConfirm({
-								error: true,
+								type: 'error',
 								body: formatMessage(messages.policyError, { fileName: file.name, detail: message })
 							});
 						}
@@ -318,17 +371,21 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 	}, [onUploadStart, formatMessage, path, site, uppy, dispatch, onFileAddedProp]);
 
 	const onConfirm = () => {
-		uppy.upload();
-		setSuggestedName(null);
-		setDescription(`${formatMessage(messages.uploadingFile)}:`);
-		onUploadStart?.();
-		setConfirm(null);
+		if (confirm?.type === 'policy') {
+			const name = suggestedName ?? file.name;
+			setConfirm(null);
+			checkExistenceAndUpload(ensureSingleSlash(`${path}/${name}`), name);
+		} else if (confirm?.type === 'overwrite') {
+			setConfirm(null);
+			confirmUpload();
+		}
 	};
 
 	const onConfirmCancel = () => {
 		document.querySelector('.uppy-FileInput-btn')?.removeAttribute('disabled');
 		uppy.removeFile(file.id);
 		setFile(null);
+		setSuggestedName(null);
 		setConfirm(null);
 		setDescription(formatMessage(messages.selectFileMessage));
 		setDisableInput(false);
@@ -360,10 +417,9 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 	return (
 		<>
 			<form id="asset_upload_form">
-				<input type="hidden" name="path" value={path} />
 				<input type="hidden" name="site" value={site} />
 			</form>
-			<Box className="uppy-progress-bar" sx={{ display: error ? 'none' : null }} />
+			<Box className="uppy-progress-bar" sx={{ display: !showProgressBar || error ? 'none' : null }} />
 			<div className="uploaded-files">
 				{error ? (
 					<Alert
@@ -387,26 +443,30 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 						</Typography>
 					</Alert>
 				) : (
+					showFileDetails && (
+						<Typography variant="subtitle1" component="h2" sx={{ mb: 2 }}>
+							{description}
+						</Typography>
+					)
+				)}
+				{showFileDetails && (
 					<Typography variant="subtitle1" component="h2" sx={{ mb: 2 }}>
-						{description}
+						{file && (
+							<Box
+								component="em"
+								className={`single-file-upload--filename ${fileNameErrorClass}`}
+								sx={{
+									overflow: 'hidden',
+									textOverflow: 'ellipsis',
+									whiteSpace: 'nowrap'
+								}}
+								title={file.name}
+							>
+								{file.name}
+							</Box>
+						)}
 					</Typography>
 				)}
-				<Typography variant="subtitle1" component="h2" sx={{ mb: 2 }}>
-					{file && (
-						<Box
-							component="em"
-							className={`single-file-upload--filename ${fileNameErrorClass}`}
-							sx={{
-								overflow: 'hidden',
-								textOverflow: 'ellipsis',
-								whiteSpace: 'nowrap'
-							}}
-							title={file.name}
-						>
-							{file.name}
-						</Box>
-					)}
-				</Typography>
 				<Box sx={{ marginBottom: '10px' }}>
 					<Box
 						component="input"
@@ -416,10 +476,10 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 						type="file"
 						onChange={onChange}
 						onClick={onInputClick}
-						disabled={disableInput}
+						disabled={disabled || disableInput}
 					/>
 					<label htmlFor="contained-button-file">
-						<Button variant="outlined" component="span" disabled={disableInput}>
+						<Button variant="outlined" component="span" disabled={disabled || disableInput}>
 							{formatMessage(messages.chooseFile)}
 						</Button>
 					</label>
@@ -428,8 +488,8 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 			<ConfirmDialog
 				open={Boolean(confirm)}
 				body={confirm?.body}
-				onOk={confirm?.error ? onConfirmCancel : onConfirm}
-				onCancel={confirm?.error ? null : onConfirmCancel}
+				onOk={confirm?.type === 'error' ? onConfirmCancel : onConfirm}
+				onCancel={confirm?.type === 'error' ? null : onConfirmCancel}
 				disableEnforceFocus={true}
 			/>
 		</>

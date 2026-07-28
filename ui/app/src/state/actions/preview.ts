@@ -50,6 +50,7 @@ export const hostCheckIn = /*#__PURE__*/ createAction<{
 	editModePadding: boolean;
 	site: string;
 	username: string;
+	locale: string;
 	rteConfig: GlobalState['preview']['richTextEditor'];
 }>('HOST_CHECK_IN');
 export const guestCheckIn = /*#__PURE__*/ createAction<{
@@ -183,6 +184,7 @@ export const requestWorkflowCancellationDialog = /*#__PURE__*/ createAction<{
 }>('REQUEST_WORKFLOW_CANCELLATION_DIALOG');
 export const requestWorkflowCancellationDialogOnResult = /*#__PURE__*/ createAction<{
 	type: 'continue' | 'close';
+	cancelPackagesComment?: string;
 }>('REQUEST_WORKFLOW_CANCELLATION_DIALOG_ON_RESULT');
 export const updateRteConfig = /*#__PURE__*/ createAction('UPDATE_RTE_CONFIG');
 export const highlightModeChanged = /*#__PURE__*/ createAction('HIGHLIGHT_MODE_CHANGED');
@@ -249,6 +251,7 @@ export const initPreviewConfig = /*#__PURE__*/ createAction<{
 	storedEditMode: boolean;
 	storedHighlightMode: HighlightMode;
 	storedPaddingMode: boolean;
+	storedEnabledKeyboardShortcuts: boolean;
 }>('INIT_PREVIEW_PANEL_CONFIG');
 
 export const selectForEdit = /*#__PURE__*/ createAction<EditSelection>(SELECT_FOR_EDIT);
@@ -446,4 +449,8 @@ export const goToNextPage = /*#__PURE__*/ createAction('GO_TO_NEXT_PAGE');
 
 export const mainModelModifiedExternally = /*#__PURE__*/ createAction<ContentEventPayload>(
 	'MAIN_MODEL_MODIFIED_EXTERNALLY'
+);
+
+export const setKeyboardShortcutsEnabled = /*#__PURE__*/ createAction<{ enabled: boolean }>(
+	'SET_KEYBOARD_SHORTCUTS_ENABLED'
 );

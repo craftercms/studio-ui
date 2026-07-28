@@ -40,10 +40,19 @@ interface PublishOnDemandFormProps {
 	publishingTargets: PublishingTarget[];
 	publishingTargetsError: ApiResponse;
 	disabled: boolean;
+	submissionCommentPlaceholder: string;
 }
 
 export function PublishOnDemandForm(props: PublishOnDemandFormProps) {
-	const { mode, formData, disabled, setFormData, publishingTargets, publishingTargetsError } = props;
+	const {
+		mode,
+		formData,
+		disabled,
+		setFormData,
+		publishingTargets,
+		publishingTargetsError,
+		submissionCommentPlaceholder
+	} = props;
 	const { formatMessage } = useIntl();
 	const handleFormChange = (name: string) => (event: React.ChangeEvent<{ value: unknown }> | SelectChangeEvent) => {
 		const value = event.target.value as string;
@@ -159,11 +168,14 @@ export function PublishOnDemandForm(props: PublishOnDemandFormProps) {
 						<TextFieldWithMax
 							disabled={disabled}
 							value={formData.comment}
+							placeholder={submissionCommentPlaceholder}
 							label={<FormattedMessage id="publishOnDemand.submissionComment" defaultMessage="Submission Comment" />}
+							slotProps={{
+								inputLabel: { shrink: true }
+							}}
 							fullWidth
 							multiline
 							onChange={handleFormChange('comment')}
-							required
 						/>
 					</FormControl>
 				</Grid>

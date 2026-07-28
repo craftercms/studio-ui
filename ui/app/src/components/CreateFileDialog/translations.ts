@@ -25,7 +25,6 @@ export const translations = defineMessages({
 		defaultMessage: 'File "{fileName}" doesn\'t comply with project policies: {detail}'
 	},
 	fetchingDependentItems: {
-		id: 'renameAssetDialog.fetchingDependentItems',
-		defaultMessage: 'Fetching dependent items'
+		defaultMessage: 'Fetching items that reference the selected item'
 	}
 });

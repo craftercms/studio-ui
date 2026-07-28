@@ -20,7 +20,16 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
 import useActiveSite from '../../hooks/useActiveSite';
 import useContentTypes from '../../hooks/useContentTypes';
-import React, { createElement, type RefCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+	createElement,
+	type RefCallback,
+	useCallback,
+	useContext,
+	useEffect,
+	useMemo,
+	useRef,
+	useState
+} from 'react';
 import { ContentTypeField, PublishPackage } from '../../models';
 import {
 	FormsEngineAtoms,
@@ -31,6 +40,7 @@ import {
 	FormsEngineItemMetaContextProps,
 	ItemContext,
 	ItemMetaContext,
+	RenamedPathContext,
 	StableFormContext,
 	StableFormContextProps,
 	StableGlobalContext,
@@ -120,6 +130,19 @@ import { displayWithPendingChangesConfirm } from '../../utils/ui';
 import useActiveUser from '../../hooks/useActiveUser';
 import FormBackToTop from './components/FormBackToTop';
 import { createComponentId } from '../../utils/system';
+import {
+	workflowEventApprove,
+	workflowEventCancel,
+	workflowEventDirectPublish,
+	workflowEventReject,
+	workflowEventSubmit
+} from '../../state/actions/system';
+import { getHostToHostBus } from '../../utils/subjects';
+import { fetchAffectedPackages } from '../../services/workflow';
+import useMount from '../../hooks/useMount';
+import { nnou, nou } from '../../utils/object';
+import { buildContentXml } from './lib/valueSerializers';
+import { processPathMacros } from '../../utils/path';
 import { useCustomControlsDescriptorsById } from '../../hooks/useCustomControlsDescriptorsById';
 import controlDescriptors from '../ContentTypeManagement/descriptors/controls';
 
@@ -157,6 +180,7 @@ export interface UpdateModeProps {
 		path: string;
 		modelId?: string;
 		values?: LookupTable<unknown>;
+		changeTypeId?: string; // Allows specifying a different content type for the item being updated, overriding the current item's content type.
 	};
 }
 
@@ -235,7 +259,15 @@ function GlobalFormsState(props: FormsEngineProps) {
 
 // Fetches the requirements for the form and sets up various contexts.
 function FormBootstrap(props: FormsEngineProps) {
-	const { create, update, repeat, fieldsToRender, readonly: readonlyProp, stackIndex = 0, isDialog } = props;
+	// When creating a new item. If we save the form, and do not close it, we need to update the 'mode' from create to update, using the path of the created item.
+	// effectiveProps are the props that are used to render the form, considering the scenario mentioned above.
+	const [savedCreatePath, setSavedCreatePath] = useState<string | null>(null);
+	const effectiveProps = useMemo((): FormsEngineProps => {
+		if (!savedCreatePath) return props;
+		const { create: _create, ...rest } = props;
+		return { ...rest, update: { path: savedCreatePath } };
+	}, [props, savedCreatePath]);
+	const { create, update, repeat, fieldsToRender, readonly: readonlyProp, stackIndex = 0, isDialog } = effectiveProps;
 	const siteId = useActiveSiteId();
 	const dispatch = useDispatch();
 	const contentTypesById = useContentTypes();
@@ -250,6 +282,10 @@ function FormBootstrap(props: FormsEngineProps) {
 	const username = useActiveUser()?.username;
 	const effectRefs = useUpdateRefs({ contentTypesById, username });
 	const stableFormContextRef = useRef<StableFormContextProps>(formsStackData[stackIndex]);
+	const [renamedPath, setRenamedPath] = useState<string | null>(null);
+	const [reloadNonce, setReloadNonce] = useState(0);
+	const triggerReload = useCallback(() => setReloadNonce((nonce) => nonce + 1), []);
+	const effectiveUpdatePath = renamedPath ?? update?.path;
 	const customControls = useCustomControlsDescriptorsById();
 
 	const contextApi = useMemo<FormsEngineFormApiContextProps>(() => {
@@ -282,14 +318,14 @@ function FormBootstrap(props: FormsEngineProps) {
 		// If we're in create mode, there's no item yet. If updating, we can get the path from props or parent props in the case of repeat mode.
 		create
 			? null
-			: state.content.itemsByPath[props?.update?.path ?? formsStackData[stackIndex - 1]?.props?.update?.path]
+			: state.content.itemsByPath[effectiveUpdatePath ?? formsStackData[stackIndex - 1]?.props?.update?.path]
 	);
 
-	api.updateProps(stackIndex, props);
+	api.updateProps(stackIndex, effectiveProps);
 
 	useEffect(() => {
-		if (!liveUpdatedItem) setReady(false);
-	}, [liveUpdatedItem]);
+		if (!create && !repeat && !liveUpdatedItem) setReady(false);
+	}, [liveUpdatedItem, create, repeat]);
 
 	useEffect(() => {
 		contentTypesById && setContentTypesLoaded(true);
@@ -326,12 +362,13 @@ function FormBootstrap(props: FormsEngineProps) {
 			isChildForm &&
 			repeat?.fieldId
 		) {
-			const contentType = effectRefs.current.contentTypesById[parentContentType.id];
+			const contentType = parentContentType ? effectRefs.current.contentTypesById[parentContentType.id] : undefined;
 			if (!contentType) return setPrepError(ContentTypeNotFoundError);
 			const parentLockResult = store.get(parentAtoms.lockResult);
 			const isParentLocked = parentLockResult.locked;
+			const isCreate = nou(parentPath);
 			const lockResultAtom = atom<FormsEngineEditContextProps>({
-				locked: isParentLocked,
+				locked: isCreate ? true : isParentLocked,
 				lockError: parentLockResult.lockError,
 				affectedPackages: parentLockResult.affectedPackages
 			});
@@ -349,7 +386,7 @@ function FormBootstrap(props: FormsEngineProps) {
 					fieldId,
 					atoms,
 					value,
-					siteId,
+					{ siteId, contentTypesById: effectRefs.current.contentTypesById },
 					isAdditional
 				);
 			};
@@ -382,12 +419,12 @@ function FormBootstrap(props: FormsEngineProps) {
 				});
 			}
 
-			const xmlDoc = fromString(parentStackData.itemMeta.contentXml);
+			const xmlDoc = fromString(parentStackData.itemMeta.contentXml ?? '');
 			const fieldId = repeat.fieldId;
-			const index = repeat.index;
-			const element = xmlDoc.querySelector(`:scope > ${fieldId}`).children[index];
-			const contentObject = (parentStackData.itemMeta.contentObject[fieldId] as { item: Array<LookupTable<unknown>> })
-				.item[index];
+			const index = repeat.index ?? 0;
+			const element = xmlDoc?.querySelector(`:scope > ${fieldId}`)?.children[index];
+			const contentObject =
+				(parentStackData.itemMeta.contentObject[fieldId] as { item: Array<LookupTable<unknown>> })?.item?.[index] ?? {};
 
 			initializeState(atoms, values, {
 				id: parentId,
@@ -396,7 +433,7 @@ function FormBootstrap(props: FormsEngineProps) {
 				pathInSite: parentPathInSite,
 				contentType: parentContentType,
 				contentObject,
-				contentXml: element.outerHTML
+				contentXml: element?.outerHTML ?? ''
 			});
 		} else if (
 			// An embedded component is being opened as a stacked form.
@@ -420,6 +457,8 @@ function FormBootstrap(props: FormsEngineProps) {
 					parentStackData,
 					stableFormContextRef,
 					parentPathInSite,
+					siteId,
+					contentTypesById: effectRefs.current.contentTypesById,
 					customControls
 				});
 				initializeState(requirements.atoms, requirements.values, requirements.itemMeta);
@@ -464,31 +503,39 @@ function FormBootstrap(props: FormsEngineProps) {
 						fieldId,
 						atoms,
 						value,
-						siteId,
+						{ siteId, contentTypesById },
 						isAdditional
 					);
 				},
 				customControls
 			);
+			const { [XmlKeys.fileName]: _, ...valuesWithoutFileName } = values;
 
+			const objectId = contentObject[XmlKeys.modelId] as string;
 			initializeState(atoms, values, {
-				id: contentObject[XmlKeys.modelId] as string,
+				id: objectId,
 				// TODO: Should/could we somehow deduce the target path?
 				path: null,
 				// TODO: Sourcemap? How can we determine what would be inherited by this content? New API?
 				sourceMap: null,
-				pathInSite: create.path,
+				pathInSite: processPathMacros({
+					path: create.path,
+					objectId,
+					fullParentPath: '',
+					useUUID: false
+				}),
 				contentType,
 				contentObject,
-				contentXml: null
+				contentXml: buildContentXml(valuesWithoutFileName, contentTypesById)
 			});
 		} /* if (isUpdateMode) */ else {
 			const subscription = fetchUpdateRequirements({
 				siteId,
-				path: update.path,
+				path: renamedPath ?? update?.path,
 				modelId: update.modelId,
 				readonly: readonlyProp,
-				contentTypesById: effectRefs.current.contentTypesById
+				contentTypesById: effectRefs.current.contentTypesById,
+				changeTypeId: update.changeTypeId
 			})
 				.pipe(
 					catchError((error: AjaxError | symbol) => {
@@ -532,7 +579,7 @@ function FormBootstrap(props: FormsEngineProps) {
 								fieldId,
 								atoms,
 								value,
-								siteId,
+								{ siteId, contentTypesById },
 								isAdditional
 							);
 						},
@@ -564,7 +611,10 @@ function FormBootstrap(props: FormsEngineProps) {
 		siteId,
 		stackIndex,
 		store,
-		update
+		update,
+		username,
+		renamedPath,
+		reloadNonce
 	]);
 
 	if (prepError) {
@@ -572,14 +622,18 @@ function FormBootstrap(props: FormsEngineProps) {
 	} else if (
 		ready &&
 		// Create doesn't need the liveUpdateItem, but otherwise, it should be preset before proceeding to rendering a form
-		(create || liveUpdatedItem)
+		(create || repeat || liveUpdatedItem)
 	) {
 		return (
 			<FormsEngineFormContextApi.Provider value={contextApi}>
 				<StableFormContext.Provider value={stableFormContextRef.current}>
 					<ItemContext.Provider value={liveUpdatedItem}>
 						<ItemMetaContext.Provider value={itemMeta}>
-							{createElement(FormOrchestrator, props)}
+							<RenamedPathContext.Provider
+								value={{ renamedPath, setRenamedPath, reloadNonce, triggerReload, setSavedCreatePath }}
+							>
+								{createElement(FormOrchestrator, effectiveProps)}
+							</RenamedPathContext.Provider>
 						</ItemMetaContext.Provider>
 					</ItemContext.Provider>
 				</StableFormContext.Provider>
@@ -628,7 +682,7 @@ function FormOrchestrator(props: FormsEngineProps) {
 	const stableFormContext = useContext(StableFormContext);
 	const formContextApi = useContext(FormsEngineFormContextApi);
 	const item = useContext(ItemContext);
-	const { contentType, sourceMap } = useContext(ItemMetaContext);
+	const { contentType, sourceMap, pathInSite } = useContext(ItemMetaContext);
 	const { fieldUpdates$, changedFieldIds, atoms } = stableFormContext;
 	const [disableStackedFormDrawerAutoFocus, setDisableStackedFormDrawerAutoFocus] = useState(true);
 	const [enablingEditInProgress, setEnablingEditInProgress] = useState(false);
@@ -657,9 +711,36 @@ function FormOrchestrator(props: FormsEngineProps) {
 	}, [contentType.sections, isEmbedded]);
 	const useCollapsedToC = useAtomValue(atoms.useCollapsedToC);
 	const tableOfContents = <TableOfContents fieldsToRender={fieldsToRender} containerRef={containerRef} />;
-	const effectRefs = useUpdateRefs({ fieldsToRender, versionCommentAtom: stableFormContext.atoms.versionComment });
+	const effectRefs = useUpdateRefs({
+		fieldsToRender,
+		versionCommentAtom: stableFormContext.atoms.versionComment,
+		lockStatus
+	});
 	const [collapseHeader, setCollapseHeader] = useState(false);
-	const scrollTimeout = useRef(null);
+	const [saveAsDraftAction, setSaveAsDraftAction] = useState(false);
+	const [invalidForm, setInvalidForm] = useState(false);
+	const jotai = useJotaiStore();
+
+	useMount(() => {
+		// If 'update.changeTypeId' has content, it means the content type has changed, so we set pending changes to true
+		// to be able to enable the save button and allow users to save immediately if that's all they want to do.
+		if (update?.changeTypeId) {
+			setHasPendingChanges(true);
+		}
+		const checkValidationState = async () => {
+			const validityStates = await Promise.all(
+				Object.values(stableFormContext.atoms.validationByFieldId).map((validityDataAtom) =>
+					jotai.get(validityDataAtom)
+				)
+			);
+			setInvalidForm(validityStates.some((state) => !state.isValid));
+		};
+		void checkValidationState();
+		const subscription = stableFormContext.fieldUpdates$
+			.pipe(debounceTime(300))
+			.subscribe(() => void checkValidationState());
+		return () => subscription.unsubscribe();
+	});
 
 	// Changes comment generation & change detection/tracking
 	useEffect(() => {
@@ -693,7 +774,43 @@ function FormOrchestrator(props: FormsEngineProps) {
 	}, [isSubmitting, hasPendingChanges, isStackedForm, updateSubmittingOrHasPendingChanges]);
 
 	// Unlock content when the form is closed.
-	useUnlockOnClose(props);
+	useUnlockOnClose({
+		...props,
+		saveAsDraft: saveAsDraftAction,
+		invalidForm,
+		itemSavedAsDraft: Boolean(item?.savedAsDraft)
+	});
+
+	// region Workflow item updates
+	useEffect(() => {
+		const events = [
+			workflowEventSubmit.type,
+			workflowEventDirectPublish.type,
+			workflowEventApprove.type,
+			workflowEventReject.type,
+			workflowEventCancel.type
+		];
+
+		const hostToHost$ = getHostToHostBus();
+		const subscription = hostToHost$.subscribe(({ type }) => {
+			if (!item || !events.includes(type)) return;
+			fetchAffectedPackages(siteId, item.path).subscribe({
+				next(packages) {
+					setLockStatus({
+						...effectRefs.current.lockStatus,
+						affectedPackages: packages
+					});
+				},
+				error({ response }) {
+					console.error(response);
+				}
+			});
+		});
+
+		return () => {
+			subscription.unsubscribe();
+		};
+	}, [effectRefs, item, setLockStatus, siteId]);
 
 	const handleOpenDrawerSidebar = () => {
 		const scroller = getScrollContainer(containerRef.current);
@@ -765,8 +882,9 @@ function FormOrchestrator(props: FormsEngineProps) {
 		isEmbedded,
 		isCreateMode,
 		isRepeatMode,
-		createPath: create?.path,
-		onClose: () => onCloseHandler(null, null)
+		createPath: Boolean(create?.path) ? pathInSite : undefined, // pathInSite is the result of processing the create path with macros.
+		onClose: () => onCloseHandler(null, null),
+		onMinimize: () => props.onMinimize?.()
 	});
 
 	// If not on a dialog or the prop is not provided, there's no need to handle the close. The form is running in a standalone mode.
@@ -780,10 +898,15 @@ function FormOrchestrator(props: FormsEngineProps) {
 	};
 
 	const [mainContent, setMainContent] = useState(null);
+	const collapseHeaderAllowed = useRef(false);
 	const sentinelRef = useRef<HTMLDivElement>(null);
 
 	const mainContentRefCallback: RefCallback<HTMLDivElement> = (element) => {
 		setMainContent(element);
+		if (!mainContent && nnou(element)) {
+			// First time the main content is set, if the scrollHeight is not 100px larger than clientHeight, we don't allow collapsing the header.
+			collapseHeaderAllowed.current = element.scrollHeight - element.clientHeight > 100;
+		}
 	};
 
 	// Monitor when sentinel element crosses the threshold
@@ -793,7 +916,9 @@ function FormOrchestrator(props: FormsEngineProps) {
 		const observer = new IntersectionObserver(
 			([entry]) => {
 				// When sentinel is NOT intersecting (scrolled past 60px, sentinel's top position), collapse header
-				setCollapseHeader(!entry.isIntersecting);
+				if (collapseHeaderAllowed.current) {
+					setCollapseHeader(!entry.isIntersecting);
+				}
 			},
 			{
 				root: mainContent,
@@ -805,7 +930,7 @@ function FormOrchestrator(props: FormsEngineProps) {
 		observer.observe(sentinelRef.current);
 
 		return () => {
-			observer.disconnect();
+			observer?.disconnect();
 		};
 	}, [mainContent]);
 
@@ -852,7 +977,7 @@ function FormOrchestrator(props: FormsEngineProps) {
 					{isRepeatMode ? (
 						<RepeatModeHeader repeat={repeat} collapse={collapseHeader} />
 					) : isCreateMode ? (
-						<CreateModeHeader path={create?.path} collapse={collapseHeader} />
+						<CreateModeHeader path={Boolean(create?.path) ? pathInSite : undefined} collapse={collapseHeader} />
 					) : (
 						<EditModeHeader isEmbedded={isEmbedded} collapse={collapseHeader} />
 					)}
@@ -954,7 +1079,9 @@ function FormOrchestrator(props: FormsEngineProps) {
 										isEmbedded={isEmbedded}
 										isStackedForm={isStackedForm}
 										isRepeatMode={isRepeatMode}
-										onSave={() => saveFn()}
+										setSaveAsDraft={setSaveAsDraftAction}
+										invalidForm={invalidForm}
+										onSave={(e, draft) => saveFn(draft)}
 									/>
 									{!isCreateMode && // There's no locking on create mode
 										(!isRepeatMode || (isRepeatMode && repeat.values)) && // No point in the "unlock" button for new repeat items

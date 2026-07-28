@@ -38,7 +38,7 @@ import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import { Typography } from '@mui/material';
 import Button from '@mui/material/Button';
-import { fetchLegacySite } from '../../../services/sites';
+import { fetchSite } from '../../../services/sites';
 import useSpreadState from '../../../hooks/useSpreadState';
 import Skeleton from '@mui/material/Skeleton';
 import useSelection from '../../../hooks/useSelection';
@@ -94,7 +94,7 @@ export function PullDialogContainer(props: PullFromRemoteDialogContainerProps) {
 
 	const fetchSandboxBranch = useCallback(() => {
 		setSandboxState({ loading: true, error: null });
-		fetchLegacySite(siteId).subscribe({
+		fetchSite(siteId).subscribe({
 			next: ({ sandboxBranch }) => {
 				setSandboxState({
 					branch: sandboxBranch,

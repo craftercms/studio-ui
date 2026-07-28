@@ -65,13 +65,13 @@ export const updateItemsByPath = /*#__PURE__*/ createAction<{ items: ContentItem
 
 export const setClipboard = /*#__PURE__*/ createAction<{
 	type: 'CUT' | 'COPY';
-	paths?: string[];
+	includeChildren?: boolean;
 	sourcePath: string;
 }>('SET_CLIPBOARD');
 
 export const restoreClipboard = /*#__PURE__*/ createAction<{
 	type: 'CUT' | 'COPY';
-	paths?: string[];
+	includeChildren?: boolean;
 	sourcePath: string;
 }>('RESTORE_CLIPBOARD');
 

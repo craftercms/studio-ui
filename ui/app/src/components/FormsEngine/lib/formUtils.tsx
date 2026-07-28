@@ -14,10 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ContentTypeField, type ContentTypeFieldValidation, ContentTypeSection, PublishPackage } from '../../../models';
+import type { ContentTypeField, ContentTypeSection, PublishPackage } from '../../../models';
 import LookupTable from '../../../models/LookupTable';
 import ContentType from '../../../models/ContentType';
 import validateFieldValue, { FieldValidityState } from './validators';
+import { getPropertyValue } from './fieldPropertyUtils';
 import { catchError, forkJoin, map, Observable, of, Subject, switchMap } from 'rxjs';
 import {
 	FormRequirementsResponse,
@@ -68,10 +69,15 @@ import { areAllPairsEqual } from '../../../utils/array';
 import { deserializeContentDoc } from './valueRetrievers';
 import useUpdateRefs from '../../../hooks/useUpdateRefs';
 import ApiResponse from '../../../models/ApiResponse';
-import { getFormsEngineCloseAfterSave, getFormsEngineCollapseToCKey } from '../../../utils/state';
+import {
+	getFormsEngineCloseAfterSave,
+	getFormsEngineCollapseToCKey,
+	getFormsEngineMinimizeAfterSave
+} from '../../../utils/state';
 import { createComponentId } from '../../../utils/system';
 import { showErrorDialog } from '../../../state/actions/dialogs';
 import { ensureSingleSlash } from '../../../utils/string';
+import { isPagePath } from '../../../utils/path';
 import { nou } from '../../../utils/object';
 import type { DescriptorContentType } from '../../ContentTypeManagement/utils';
 import type { DescriptorControlType } from '../../ContentTypeManagement/controlMap';
@@ -174,6 +180,8 @@ export const displayFormBeingSavedSnack = (dispatch: ReduxDispatch, formatMessag
 export const getTargetHeight = (isDialog: boolean, isFullScreen: boolean, theme: Theme) =>
 	isDialog ? `calc(100vh - ${isFullScreen ? 0 : theme.spacing(4)})` : '100%';
 
+export type ValidatorsData = { siteId: string; contentTypesById: LookupTable<ContentType> };
+
 /**
  * Creates the value and validity atoms for a give field.
  **/
@@ -183,8 +191,7 @@ export function createFieldAtoms(
 	formContextRef: RefObject<
 		Pick<StableFormContextProps, 'fieldUpdates$' | 'changedFieldIds' | 'originalValues' | 'atoms' | 'itemMeta'>
 	>,
-	// TODO: Consider a more comprehensive context for validators
-	siteId?: string
+	validatorsData?: ValidatorsData
 ): [PrimitiveAtom<unknown>, Atom<Promise<FieldValidityState>>] {
 	let isInitialization = true;
 	const valueAtom = atom(initialValue);
@@ -223,7 +230,8 @@ export function createFieldAtoms(
 			formContextRef.current.fieldUpdates$.next(field.id);
 		}
 		return validateFieldValue(field, value, {
-			siteId,
+			siteId: validatorsData?.siteId,
+			contentTypesById: validatorsData?.contentTypesById,
 			itemMeta: formContextRef.current.itemMeta as FormsEngineItemMetaContextProps,
 			fileName: formContextRef.current.atoms.fileName ? get(formContextRef.current.atoms.fileName) : ''
 		});
@@ -234,17 +242,6 @@ export function createFieldAtoms(
 /** Creates the readonly flag property atom based on the lock result atom */
 export const createReadonlyAtom = (lockedResultAtom: Atom<FormsEngineEditContextProps>) =>
 	atom((get) => !get(lockedResultAtom).locked);
-
-/**
- * Determines if the given path corresponds to a page path.
- *
- * @param {string} path - The path to check.
- * @returns {boolean} - Returns `true` if the path matches the pattern for a page path; otherwise, `false`.
- *
- */
-export const isPagePath = (path: string): boolean => {
-	return /^\/site\/website(\/.*)?\/index.*\.xml$/.test(path);
-};
 
 /**
  * Creates a Jotai atom for the file name based on the given path.
@@ -384,13 +381,15 @@ export function fetchUpdateRequirements({
 	path,
 	modelId,
 	readonly,
-	contentTypesById
+	contentTypesById,
+	changeTypeId
 }: {
 	siteId: string;
 	path: string;
 	modelId: string;
 	readonly: boolean;
 	contentTypesById: LookupTable<ContentType>;
+	changeTypeId?: string;
 }): Observable<FormRequirementsResponse> {
 	// Good to start with the lock so that posterior fetch of the item comes with the lock status. If we need
 	// to fetch the content type, will need the item first to determine its content type id, but currently relying
@@ -422,7 +421,7 @@ export function fetchUpdateRequirements({
 			])
 		),
 		map(([item, lockResult, contentXml, descriptorXml]) => {
-			let contentType = contentTypesById[item.contentTypeId];
+			let contentType = contentTypesById[changeTypeId ?? item.contentTypeId];
 			if (!contentType) {
 				throw ContentTypeNotFoundError;
 			}
@@ -475,6 +474,9 @@ export function createFormsEngineAtoms(
 		closeAfterSave: atomWithStorage(getFormsEngineCloseAfterSave(username), true, undefined, {
 			getOnInit: true
 		}) as unknown as AtomWithStorage,
+		minimizeAfterSave: atomWithStorage(getFormsEngineMinimizeAfterSave(username), false, undefined, {
+			getOnInit: true
+		}) as unknown as AtomWithStorage,
 		...mixin
 	};
 	return atoms;
@@ -490,7 +492,7 @@ export function setFieldAtoms(
 	fieldId: string,
 	atomsTarget: FormsEngineAtoms,
 	value: unknown,
-	siteId?: string,
+	validatorsData?: ValidatorsData,
 	isAdditional?: boolean
 ): void {
 	let field = fieldLookup[fieldId];
@@ -530,7 +532,7 @@ export function setFieldAtoms(
 			return;
 		}
 	}
-	const [valueAtom, validityAtom] = createFieldAtoms(field, value, stableFormContextRef, siteId);
+	const [valueAtom, validityAtom] = createFieldAtoms(field, value, stableFormContextRef, validatorsData);
 	atomsTarget.valueByFieldId[fieldId] = valueAtom;
 	atomsTarget.validationByFieldId[fieldId] = validityAtom;
 }
@@ -660,17 +662,36 @@ export interface ShouldUnlockArguments {
 	isStackedForm: boolean;
 	isParentReadonly: boolean;
 	siteId: string;
+	isRenamed: boolean;
+	saveAsDraft: boolean;
+	invalidForm: boolean;
+	itemSavedAsDraft: boolean;
 }
 
 /**
  * Determines if an item should be unlocked when its form is being unmounted.
  **/
 export function shouldUnlockItem(props: ShouldUnlockArguments): boolean {
-	const { isRepeatMode, isCreateMode, readonly, isEmbedded, isStackedForm, isParentReadonly } = props;
+	const {
+		isRepeatMode,
+		isCreateMode,
+		readonly,
+		isEmbedded,
+		isStackedForm,
+		isParentReadonly,
+		isRenamed,
+		saveAsDraft,
+		invalidForm,
+		itemSavedAsDraft
+	} = props;
 	return (
+		!invalidForm &&
+		!saveAsDraft &&
+		!isRenamed &&
 		!isRepeatMode &&
 		!isCreateMode &&
 		!readonly &&
+		!itemSavedAsDraft &&
 		// Note these "Or" statements below build on top of the previous one (i.e. it only gets to the next if the previous is false).
 		// If it's not embedded, unlock the item.
 		(!isEmbedded ||
@@ -685,8 +706,10 @@ export function shouldUnlockItem(props: ShouldUnlockArguments): boolean {
  * When the consumer component is being unmounted, checks if it should be unlocked and unlocks if so.
  * @param props {FormsEngineProps}
  **/
-export function useUnlockOnClose(props: FormsEngineProps) {
-	const { create, update, repeat, stackIndex = 0 } = props;
+export function useUnlockOnClose(
+	props: FormsEngineProps & { saveAsDraft?: boolean; invalidForm?: boolean; itemSavedAsDraft?: boolean }
+) {
+	const { create, update, repeat, stackIndex = 0, saveAsDraft = false, invalidForm, itemSavedAsDraft } = props;
 	const itemPath = useContext(ItemContext)?.path;
 	const { atoms } = useContext(StableFormContext);
 	const { formsStackData } = useContext(StableGlobalContext);
@@ -698,6 +721,11 @@ export function useUnlockOnClose(props: FormsEngineProps) {
 	const dispatch = useDispatch();
 	const readonly = useAtomValue(atoms.readonly);
 	const siteId = useActiveSiteId();
+	// Check fileName atom to determine if renamed (renamedPath context is not updated until saving, so if we use that here
+	// it will have an outdated value).
+	const currentFileName = useAtomValue(atoms.fileName);
+	const isRenamed = itemPath ? currentFileName !== getFileNameValueFromPath(itemPath, isPagePath(itemPath)) : false;
+
 	const unlockEffectRefs = useUpdateRefs<ShouldUnlockArguments & { dispatch: ReduxDispatch }>({
 		dispatch,
 		isRepeatMode,
@@ -706,7 +734,11 @@ export function useUnlockOnClose(props: FormsEngineProps) {
 		isEmbedded,
 		isStackedForm,
 		isParentReadonly: formsStackData[stackIndex - 1] ? store.get(formsStackData[stackIndex - 1].atoms.readonly) : false,
-		siteId
+		siteId,
+		isRenamed,
+		saveAsDraft,
+		invalidForm,
+		itemSavedAsDraft
 	});
 	useEffect(
 		() => () => {
@@ -724,7 +756,7 @@ export function useUnlockOnClose(props: FormsEngineProps) {
 				});
 			}
 		},
-		[itemPath, unlockEffectRefs]
+		[itemPath, unlockEffectRefs, saveAsDraft]
 	);
 }
 
@@ -817,6 +849,8 @@ export function prepareEmbeddedItemForm(props: {
 	parentStackData: StableFormContextProps;
 	stableFormContextRef: RefObject<StableFormContextProps>;
 	parentPathInSite: string;
+	siteId: string;
+	contentTypesById?: LookupTable<ContentType>;
 	customControls?: LookupTable<DescriptorControlType>;
 }): { atoms: FormsEngineAtoms; values: LookupTable<unknown>; itemMeta: FormsEngineItemMetaContextProps } {
 	const {
@@ -829,6 +863,8 @@ export function prepareEmbeddedItemForm(props: {
 		locked,
 		lockError,
 		affectedPackages,
+		siteId,
+		contentTypesById,
 		customControls
 	} = props;
 	const lockResultAtom = atom<FormsEngineEditContextProps>({
@@ -843,6 +879,7 @@ export function prepareEmbeddedItemForm(props: {
 		fileName: atom(update.modelId)
 	});
 	const values = update.values;
+	const validatorsData = { siteId, contentTypesById };
 
 	const descriptors = { ...customControls, ...controlDescriptors };
 	let additionalFieldsIds = [];
@@ -859,7 +896,12 @@ export function prepareEmbeddedItemForm(props: {
 		const isAdditionalField = additionalFieldsIds.includes(fieldId);
 		// System fields (e.g. content-type, display-template, etc.) are not part of the content type, but are part of the content object. We don't need atoms or validity checks for these.
 		if (!contentType.fields[fieldId] && !isAdditionalField) return;
-		const [valueAtom, validityAtom] = createFieldAtoms(contentType.fields[fieldId], value, stableFormContextRef);
+		const [valueAtom, validityAtom] = createFieldAtoms(
+			contentType.fields[fieldId],
+			value,
+			stableFormContextRef,
+			validatorsData
+		);
 		atoms.valueByFieldId[fieldId] = valueAtom;
 		if (!isAdditionalField) atoms.validationByFieldId[fieldId] = validityAtom;
 	});
@@ -885,37 +927,7 @@ export function prepareEmbeddedItemForm(props: {
 	};
 }
 
-/**
- * Retrieves the value of a specific validation property from a field's validations.
- *
- * @param validations {ContentTypeField['validations']} - The validations object containing various validation properties.
- * @param property {string} - The name of the validation property to retrieve.
- * @param [defaultValue=undefined] {ContentTypeFieldValidation['value'] | undefined} - The default value to return if the property is not found.
- * @returns {ContentTypeFieldValidation['value']} - The value of the specified validation property, or the default value if the property is not found.
- */
-export function getValidationValue(
-	validations: ContentTypeField['validations'],
-	property: string,
-	defaultValue: ContentTypeFieldValidation['value'] | undefined = undefined
-): ContentTypeFieldValidation['value'] {
-	return validations?.[property]?.value ?? defaultValue;
-}
-
-/**
- * Retrieves the value of a specific property from a field's properties.
- *
- * @param properties {ContentTypeField['properties']} - The properties object containing various property definitions.
- * @param property {string} - The name of the property to retrieve.
- * @param [defaultValue=undefined] {ContentTypeField['properties'][string]['value'] | undefined} - The default value to return if the property is not found.
- * @returns {ContentTypeField['properties'][string]['value']} - The value of the specified property, or the default value if the property is not found.
- */
-export function getPropertyValue(
-	properties: ContentTypeField['properties'],
-	property: string,
-	defaultValue: ContentTypeField['properties'][string]['value'] | undefined = undefined
-): ContentTypeField['properties'][string]['value'] {
-	return properties?.[property]?.value ?? defaultValue;
-}
+export { getPropertyValue, getValidationValue } from './fieldPropertyUtils';
 
 /**
  * Determines if a field is read-only based on the form's read-only state or the field's properties.

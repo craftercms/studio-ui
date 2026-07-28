@@ -33,6 +33,8 @@ import UltraStyledTypography from './UltraStyledTypography';
 import UltraStyledTooltip from './UltraStyledTooltip';
 import { SystemCssProperties } from '@mui/system/styleFunctionSx/styleFunctionSx';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { type ItemStateMap } from '@craftercms/studio-ui/src/models/Item';
+import { defineMessages } from 'react-intl';
 
 const AllowedTypeCircle = styled('div')({
 	width: 20,
@@ -65,6 +67,7 @@ export interface ZoneMarkerProps {
 	sx?: ZoneMarkerPartialSx;
 	classes?: PartialClassRecord<ZoneMarkerClassKey>;
 	field?: ContentTypeField;
+	stateMap?: ItemStateMap;
 }
 
 function getStyles(sx: ZoneMarkerPartialSx): ZoneMarkerFullSx {
@@ -109,6 +112,12 @@ function getStyles(sx: ZoneMarkerPartialSx): ZoneMarkerFullSx {
 	} as Record<ZoneMarkerClassKey, SxProps<Theme>>;
 }
 
+const dropTargetModesMessages = defineMessages({
+	shared: { id: 'zoneMarker.existing', defaultMessage: 'existing' },
+	embedded: { id: 'zoneMarker.embedded', defaultMessage: 'embedded' },
+	sharedExisting: { id: 'zoneMarker.existingShared', defaultMessage: 'existing shared' }
+});
+
 export function ZoneMarker(props: ZoneMarkerProps) {
 	const {
 		rect,
@@ -121,7 +130,8 @@ export function ZoneMarker(props: ZoneMarkerProps) {
 		lockInfo = null,
 		isStale = false,
 		isEditable,
-		field
+		field,
+		stateMap
 	} = props;
 	const isLockedItem = Boolean(lockInfo);
 	const [zoneStyle, setZoneStyle] = useState<CSSProperties>();
@@ -138,6 +148,8 @@ export function ZoneMarker(props: ZoneMarkerProps) {
 	useEffect(() => {
 		setZoneStyle(getZoneMarkerStyle(rect));
 	}, [rect]);
+	const isSystemProcessing = Boolean(stateMap?.systemProcessing);
+
 	return (
 		<>
 			<Box
@@ -203,12 +215,7 @@ export function ZoneMarker(props: ZoneMarkerProps) {
 															type: type?.name ?? '',
 															modes: Object.keys(modes)
 																.map((mode) =>
-																	mode === 'sharedExisting'
-																		? formatMessage({
-																				id: 'zoneMarker.existingShared',
-																				defaultMessage: 'existing shared'
-																			})
-																		: mode
+																	dropTargetModesMessages[mode] ? formatMessage(dropTargetModesMessages[mode]) : mode
 																)
 																.join(', ')
 														}}
@@ -241,7 +248,11 @@ export function ZoneMarker(props: ZoneMarkerProps) {
 						)}
 						{!isEditable && !isLockedItem && (
 							<Typography noWrap variant="body2" component="div">
-								<FormattedMessage id="zoneMarker.notEditable" defaultMessage="Not editable" />
+								{isSystemProcessing ? (
+									<FormattedMessage id="zoneMarker.systemProcessing" defaultMessage="System processing" />
+								) : (
+									<FormattedMessage id="zoneMarker.notEditable" defaultMessage="Not editable" />
+								)}
 							</Typography>
 						)}
 						{isStale && (

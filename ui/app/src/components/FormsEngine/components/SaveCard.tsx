@@ -16,37 +16,76 @@
 
 import { useAtom, useAtomValue } from 'jotai';
 import { FormattedMessage, useIntl } from 'react-intl';
-import React, { ChangeEvent, useContext, useState } from 'react';
+import React, { MouseEvent, useContext } from 'react';
 import { StableFormContext } from '../lib/formsEngineContext';
-import { ButtonProps } from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
-import PrimaryButton from '../../PrimaryButton';
 import FormHelperText from '@mui/material/FormHelperText';
 import Grow from '@mui/material/Grow';
 import Alert from '@mui/material/Alert';
+import { SplitButton } from '../../SplitButton';
+import { useDispatch } from 'react-redux';
+import { pushConfirmDialog } from '../../../utils/system';
+import { popDialog } from '../../../state/actions/dialogStack';
+import { nanoid } from 'nanoid';
 
 export interface SaveCardProps {
 	isRepeatMode: boolean;
 	isStackedForm: boolean;
 	isEmbedded: boolean;
-	onSave: ButtonProps['onClick'];
+	setSaveAsDraft: (value: boolean) => void;
+	invalidForm: boolean;
+	onSave: (e: MouseEvent, draft?: boolean) => void;
 }
 
 export function SaveCard(props: SaveCardProps) {
-	const { formatMessage } = useIntl();
-	const { isEmbedded, isStackedForm, isRepeatMode, onSave } = props;
+	const { isEmbedded, isStackedForm, isRepeatMode, setSaveAsDraft, invalidForm, onSave } = props;
 	const stableFormContext = useContext(StableFormContext);
-	const { affectedPackages } = useAtomValue(stableFormContext.atoms.lockResult);
 	const isSubmitting = useAtomValue(stableFormContext.atoms.isSubmitting);
 	const [versionComment, setVersionComment] = useAtom(stableFormContext.atoms.versionComment);
 	const hasPendingChanges = useAtomValue(stableFormContext.atoms.hasPendingChanges);
 	const [closeAfterSave, setCloseAfterSave] = useAtom(stableFormContext.atoms.closeAfterSave);
-	const [acceptedWorkflowCancellation, setAcceptedWorkflowCancellation] = useState(false);
-	const hasAffectedPackages = Boolean(affectedPackages?.length > 0);
-	const disableSave = isSubmitting || !hasPendingChanges || (hasAffectedPackages && !acceptedWorkflowCancellation);
+	const [minimizeAfterSave, setMinimizeAfterSave] = useAtom(stableFormContext.atoms.minimizeAfterSave);
+	const disableSave = !isEmbedded && !isRepeatMode && (isSubmitting || !versionComment);
+	const { formatMessage } = useIntl();
+	const dispatch = useDispatch();
+
+	const handleSetCloseAfterSave = (checked: boolean) => {
+		if (checked) {
+			setMinimizeAfterSave(false);
+		}
+		setCloseAfterSave(checked);
+	};
+	const handleSetMinimizeAfterSave = (checked: boolean) => {
+		if (checked) {
+			setCloseAfterSave(false);
+		}
+		setMinimizeAfterSave(checked);
+	};
+	const handleSave = (e: MouseEvent, type: 'save' | 'saveDraft', draft?: boolean) => {
+		if (type === 'save' && invalidForm) {
+			const dialogId = nanoid();
+			dispatch(
+				pushConfirmDialog({
+					id: dialogId,
+					props: {
+						title: formatMessage({ defaultMessage: 'Cannot Proceed' }),
+						body: formatMessage({
+							defaultMessage:
+								'You cannot save until all form requirements are satisfied. If you still want to save, you can use the Save as draft option, but required fields left blank may cause errors when previewed or deployed.'
+						}),
+						cancelButtonText: formatMessage({ defaultMessage: 'Ok' }),
+						onCancel: () => dispatch(popDialog({ id: dialogId }))
+					}
+				})
+			);
+		} else {
+			onSave(e, draft);
+		}
+	};
+
 	return (
 		<Paper sx={{ p: 1 }}>
 			{(!isEmbedded || !isStackedForm) && !isRepeatMode && (
@@ -61,41 +100,59 @@ export function SaveCard(props: SaveCardProps) {
 					onFocus={(e) => e.target.select()}
 				/>
 			)}
-			{hasAffectedPackages && (
-				<FormControlLabel
-					title={formatMessage({
-						defaultMessage: 'The item is part of a publishing package. Editing it will cancel the entire package.'
-					})}
-					label={<FormattedMessage defaultMessage="Cancel affected packages" />}
-					control={
-						<Checkbox
-							size="small"
-							checked={acceptedWorkflowCancellation}
-							onChange={(e: ChangeEvent<HTMLInputElement>) => {
-								setAcceptedWorkflowCancellation(e.target.checked);
-							}}
-						/>
-					}
-				/>
+			{!isEmbedded && !isRepeatMode && (
+				<>
+					<FormControlLabel
+						label={<FormattedMessage defaultMessage="Minimize after saving" />}
+						control={
+							<Checkbox
+								size="small"
+								checked={minimizeAfterSave}
+								onChange={(e, checked) => handleSetMinimizeAfterSave(checked)}
+							/>
+						}
+					/>
+					<FormControlLabel
+						label={<FormattedMessage defaultMessage="Close after saving" />}
+						control={
+							<Checkbox
+								size="small"
+								checked={closeAfterSave}
+								onChange={(e, checked) => handleSetCloseAfterSave(checked)}
+							/>
+						}
+					/>
+				</>
 			)}
-			<FormControlLabel
-				label={<FormattedMessage defaultMessage="Close after saving" />}
-				control={
-					<Checkbox size="small" checked={closeAfterSave} onChange={(e, checked) => setCloseAfterSave(checked)} />
-				}
+			<SplitButton
+				fullWidth
+				loading={isSubmitting}
+				disabled={disableSave}
+				options={[
+					{
+						id: 'save',
+						label:
+							isRepeatMode || (isEmbedded && isStackedForm)
+								? formatMessage({ defaultMessage: 'Done' })
+								: formatMessage({ defaultMessage: 'Save' }),
+						callback: (e) => {
+							setSaveAsDraft(false);
+							handleSave(e, 'save');
+						}
+					},
+					{
+						id: 'saveDraft',
+						label:
+							isRepeatMode || (isEmbedded && isStackedForm)
+								? formatMessage({ defaultMessage: 'Done (Draft)' })
+								: formatMessage({ defaultMessage: 'Save Draft' }),
+						callback: (e) => {
+							setSaveAsDraft(true);
+							handleSave(e, 'saveDraft', true);
+						}
+					}
+				]}
 			/>
-			{/*
-			TODO:
-				- If validations aren't all passed, should read "Save Draft" and a different colour.
-				- What about embedded drafts? Should they be allowed?
-      */}
-			<PrimaryButton fullWidth variant="contained" onClick={onSave} disabled={disableSave} loading={isSubmitting}>
-				{isRepeatMode || (isEmbedded && isStackedForm) ? (
-					<FormattedMessage defaultMessage="Done" />
-				) : (
-					<FormattedMessage defaultMessage="Save" />
-				)}
-			</PrimaryButton>
 			{isStackedForm && isEmbedded && (
 				<FormHelperText sx={{ textAlign: 'center' }}>
 					<FormattedMessage defaultMessage="Changes are saved with the main item." />

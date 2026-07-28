@@ -98,19 +98,19 @@ defineMessages({
 		defaultMessage: 'Scripts'
 	},
 	audiencesPanelSegmentLabel: {
-		id: 'audiencesPanel.segmentLabel',
+		id: 'previewAudiencesPanel.segmentLabel',
 		defaultMessage: 'Segment'
 	},
 	audiencesPanelGuyValueLabel: {
-		id: 'audiencesPanel.guyValueLabel',
+		id: 'previewAudiencesPanel.guyValueLabel',
 		defaultMessage: 'Guy'
 	},
 	audiencesPanelGalValueLabel: {
-		id: 'audiencesPanel.galValueLabel',
+		id: 'previewAudiencesPanel.galValueLabel',
 		defaultMessage: 'Gal'
 	},
 	audiencesPanelAnonymousValueLabel: {
-		id: 'audiencesPanel.anonymousValueLabel',
+		id: 'previewAudiencesPanel.anonymousValueLabel',
 		defaultMessage: 'Anonymous'
 	},
 	audiencesPanelSegmentHelpText: {
@@ -118,11 +118,11 @@ defineMessages({
 		defaultMessage: 'Setting the segment will change content targeting to the audience selected'
 	},
 	audiencesPanelNameLabel: {
-		id: 'audiencesPanel.nameLabel',
+		id: 'previewAudiencesPanel.nameLabel',
 		defaultMessage: 'Name'
 	},
 	audiencesPanelNameHelpText: {
-		id: 'audiencesPanel.nameHelpText',
+		id: 'previewAudiencesPanel.nameHelpText',
 		defaultMessage: "Enter user's first and last name"
 	}
 });

@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ReactNode, useEffect, useId, useState } from 'react';
+import React, { ReactNode, useEffect, useId, useMemo, useRef, useState } from 'react';
 import Paper from '@mui/material/Paper';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import DialogHeader from '../DialogHeader/DialogHeader';
@@ -50,12 +50,12 @@ import Alert, { alertClasses } from '@mui/material/Alert';
 import { popDialog, pushDialog } from '../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
 import { createComponentId, pushConfirmDialog, pushErrorDialog } from '../../utils/system';
+import { extractErrorPayload } from '../../utils/ajax';
 
 const messages = defineMessages({
 	publishStudioWarning: {
-		id: 'publishingDashboard.warning',
 		defaultMessage:
-			"This will force publish all items that match the pattern requested including their dependencies, and it may take a long time depending on the number of items. Please make sure that all modified items (including potentially someone's work in progress) are ready to be published before continuing."
+			"This will force publish all items that match the pattern requested including their references, and it may take a long time depending on the number of items. Please make sure that all modified items (including potentially someone's work in progress) are ready to be published before continuing."
 	},
 	warningLabel: {
 		id: 'words.warning',
@@ -134,7 +134,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 	const [selectedMode, setSelectedMode] = useState<PublishOnDemandMode>(() => pickMode(mode));
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const permissionsBySite = usePermissionsBySite();
-	const hasPublishPermission = permissionsBySite[siteId]?.includes('publish');
+	const hasPublishPermission = permissionsBySite[siteId]?.includes('publish_approve');
 	const [hasInitialPublish, setHasInitialPublish] = useState(false);
 	const initialPublishItem = useContentItem('/site/website/index.xml');
 	const [initialPublishingTarget, setInitialPublishingTarget] = useState(null);
@@ -145,21 +145,18 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 	const publishGitFormValid =
 		!isBlank(publishGitFormData.publishingTarget) &&
 		!isBlank(publishGitFormData.title) &&
-		!isBlank(publishGitFormData.comment) &&
 		publishGitFormData.commitIds.replace(/\s/g, '') !== '';
 	const [publishStudioFormData, setPublishStudioFormData] =
 		useSpreadState<PublishFormData>(initialPublishStudioFormData);
 	const publishStudioFormValid =
 		!isBlank(publishStudioFormData.publishingTarget) &&
 		!isBlank(publishStudioFormData.title) &&
-		!isBlank(publishStudioFormData.comment) &&
 		publishStudioFormData.path.replace(/\s/g, '') !== '';
 	const [publishEverythingFormData, setPublishEverythingFormData] = useSpreadState<PublishFormData>(
 		initialPublishEverythingFormData
 	);
 	const publishEverythingFormValid =
 		publishEverythingFormData.publishingTarget !== '' &&
-		!isBlank(publishEverythingFormData.comment) &&
 		!isBlank(publishEverythingFormData.title) &&
 		publishEverythingAck;
 	const fnRefs = useUpdateRefs({ onSubmittingAndOrPendingChange });
@@ -170,6 +167,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 			: selectedMode === 'git'
 				? publishGitFormData
 				: publishEverythingFormData;
+	const refs = useUpdateRefs({ currentFormData });
 	// endregion
 	// region currentSetFormData
 	const currentSetFormData =
@@ -200,6 +198,31 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 				: publishEverythingFormData.comment !== initialPublishEverythingFormData.comment ||
 					publishEverythingFormData.publishingTarget !== initialPublishingTarget;
 	// endregion
+
+	const submissionCommentPlaceholder = useMemo(() => {
+		let comment = '';
+		const formData = refs.current.currentFormData;
+
+		if (selectedMode === 'everything' && formData.publishingTarget) {
+			comment = formatMessage(
+				{ defaultMessage: 'Publish all changes on the repo to {target}' },
+				{ target: formData.publishingTarget }
+			);
+		} else if (selectedMode === 'studio') {
+			comment = formatMessage(
+				{ defaultMessage: 'Publish changes made in Studio via the UI to {target}' },
+				{ target: formData.publishingTarget }
+			);
+		} else if (selectedMode === 'git') {
+			comment = formatMessage(
+				{ defaultMessage: 'Publish by tags or commit ids to {target}' },
+				{ target: formData.publishingTarget }
+			);
+		}
+
+		return comment;
+	}, [selectedMode, refs.current.currentFormData, formatMessage]);
+
 	const bottomElId = useId();
 
 	const setDefaultPublishingTarget = (targets, clearData?) => {
@@ -261,7 +284,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 			publishingTarget,
 			commitIds: ids,
 			title,
-			comment
+			comment: isBlank(comment) ? submissionCommentPlaceholder : comment
 		}).subscribe({
 			next() {
 				setIsSubmitting(false);
@@ -278,14 +301,9 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 					dispatch(onSuccessProp);
 				}
 			},
-			error({ response }) {
+			error(error) {
 				setIsSubmitting(false);
-				dispatch(
-					showSystemNotification({
-						message: response.message,
-						options: { variant: 'error' }
-					})
-				);
+				dispatch(pushErrorDialog({ props: { error: extractErrorPayload(error) } }));
 			}
 		});
 	};
@@ -310,7 +328,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 							publishingTarget,
 							paths: [{ path, includeChildren: true, includeSoftDeps: false }],
 							title,
-							comment
+							comment: isBlank(comment) ? submissionCommentPlaceholder : comment
 						}).subscribe({
 							next() {
 								setIsSubmitting(false);
@@ -325,12 +343,9 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 									dispatch(onSuccessProp);
 								}
 							},
-							error({ response }) {
+							error(error) {
 								setIsSubmitting(false);
-								showSystemNotification({
-									message: response.message,
-									options: { variant: 'error' }
-								});
+								dispatch(pushErrorDialog({ props: { error: extractErrorPayload(error) } }));
 							}
 						});
 					}
@@ -346,7 +361,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 			publishingTarget,
 			publishAll: true,
 			title,
-			comment
+			comment: isBlank(comment) ? submissionCommentPlaceholder : comment
 		}).subscribe({
 			next() {
 				setIsSubmitting(false);
@@ -362,14 +377,9 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 					dispatch(onSuccessProp);
 				}
 			},
-			error({ response }) {
+			error(error) {
 				setIsSubmitting(false);
-				dispatch(
-					showSystemNotification({
-						message: response.message,
-						options: { variant: 'error' }
-					})
-				);
+				dispatch(pushErrorDialog({ props: { error: extractErrorPayload(error) } }));
 			}
 		});
 	};
@@ -523,6 +533,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 								mode={selectedMode}
 								publishingTargets={publishingTargets}
 								publishingTargetsError={publishingTargetsError}
+								submissionCommentPlaceholder={submissionCommentPlaceholder}
 							/>
 							{selectedMode === 'everything' ? (
 								<Alert severity="warning" icon={false} sx={{ [`.${alertClasses.message}`]: { overflow: 'visible' } }}>

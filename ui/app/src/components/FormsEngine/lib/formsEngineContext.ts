@@ -18,7 +18,7 @@ import { createContext } from 'react';
 import { ContentItem, PublishPackage } from '../../../models';
 import ContentType from '../../../models/ContentType';
 import ApiResponse from '../../../models/ApiResponse';
-import { FormsEngineProps } from '../FormsEngine';
+import { type FormsEngineProps } from '../FormsEngine';
 import LookupTable from '../../../models/LookupTable';
 import type { Atom, PrimitiveAtom } from 'jotai';
 import { FieldValidityState } from './validators';
@@ -27,6 +27,11 @@ import { AtomWithStorage } from '../types';
 import { createUseContextHook } from '../../../utils/system';
 
 export type FormsEngineSourceMap = LookupTable<string>;
+
+export interface FormsEngineDialogContextProps {
+	disableEnforceFocus?: boolean;
+	setDisableEnforceFocus?: (disable: boolean) => void;
+}
 
 // Provides an API global to the form(s) to manage & operate the forms stack
 export interface FormsEngineGlobalApiContextProps {
@@ -44,10 +49,8 @@ export interface FormsEngineFormApiContextProps {
 }
 
 export interface FormRequirementsResponse
-	extends Pick<
-			FormsEngineItemMetaContextProps,
-			'sourceMap' | 'pathInSite' | 'contentType' | 'contentObject' | 'contentXml'
-		>,
+	extends
+		Pick<FormsEngineItemMetaContextProps, 'sourceMap' | 'pathInSite' | 'contentType' | 'contentObject' | 'contentXml'>,
 		FormsEngineEditContextProps {
 	item: ContentItem;
 	contentObject: LookupTable<unknown>;
@@ -86,6 +89,7 @@ export interface FormsEngineAtoms {
 	expandedStateBySectionId: LookupTable<PrimitiveAtom<boolean>>;
 	tableOfContentsDrawerOpen: PrimitiveAtom<boolean>;
 	closeAfterSave: AtomWithStorage;
+	minimizeAfterSave: AtomWithStorage;
 	fileName?: Atom<string>;
 }
 
@@ -114,6 +118,10 @@ export interface StableFormContextProps {
 	props: FormsEngineProps;
 	state: FormsEngineCachedStackedFormState;
 }
+
+export const FormsEngineDialogContext = /*#__PURE__*/ createContext<FormsEngineDialogContextProps | undefined>(
+	undefined
+);
 
 export const FormsEngineFormContextApi = /*#__PURE__*/ createContext<FormsEngineFormApiContextProps>(undefined);
 FormsEngineFormContextApi.displayName = 'FormsEngineFormContextApi';
@@ -147,3 +155,17 @@ export const useStableFormContext = /*#__PURE__*/ createUseContextHook('useStabl
 export const useItemContext = /*#__PURE__*/ createUseContextHook('useItemContext', ItemContext);
 
 export const useItemMetaContext = /*#__PURE__*/ createUseContextHook('useItemMetaContext', ItemMetaContext);
+
+export const RenamedPathContext = createContext<{
+	renamedPath: string | null;
+	setRenamedPath(path: string | null): void;
+	reloadNonce: number;
+	triggerReload(): void;
+	setSavedCreatePath(path: string | null): void;
+}>({
+	renamedPath: null,
+	setRenamedPath: () => {},
+	reloadNonce: 0,
+	triggerReload: () => {},
+	setSavedCreatePath: () => {}
+});

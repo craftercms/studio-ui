@@ -17,15 +17,22 @@
 import { CommonDashletProps, getCurrentPage } from '../SiteDashboard/utils';
 import DashletCard from '../DashletCard/DashletCard';
 import palette from '../../styles/palette';
-import { defineMessages, FormattedMessage, MessageDescriptor, useIntl } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import React, { ReactNode, useCallback, useEffect, useState } from 'react';
-import { DashletEmptyMessage, getItemSkeleton, List, Pager, PersonAvatar } from '../DashletCard/dashletCommons';
+import {
+	DashletEmptyMessage,
+	getItemSkeleton,
+	List,
+	Pager,
+	PersonAvatar,
+	usePackageContextMenu
+} from '../DashletCard/dashletCommons';
 import ListItemText from '@mui/material/ListItemText';
 import { LIVE_COLOUR, STAGING_COLOUR } from '../ItemPublishingTargetIcon/styles';
 import useSpreadState from '../../hooks/useSpreadState';
 import useLocale from '../../hooks/useLocale';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
-import { PackageActions, PagedArray, PublishPackage } from '../../models';
+import { PagedArray } from '../../models';
 import RefreshRounded from '@mui/icons-material/RefreshRounded';
 import { PackageDetailsDialog } from '../PackageDetailsDialog';
 import { publishEvent } from '../../state/actions/system';
@@ -37,12 +44,9 @@ import Box from '@mui/material/Box';
 import { asLocalizedDateTime } from '../../utils/datetime';
 import { nnou, reversePluckProps } from '../../utils/object';
 import IconButton from '@mui/material/IconButton';
-import { COMPLETED_MASK } from '../../utils/constants';
+import { COMPLETED_MASK, PACKAGE_TYPE_INITIAL_PUBLISH } from '../../utils/constants';
 import ListItemButton from '@mui/material/ListItemButton';
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
-import { ContextMenu, ContextMenuOption } from '../ContextMenu';
-import { generatePackageOptions, packageActionDispatcher } from '../../utils/packageActions';
-import { useDispatch } from 'react-redux';
 
 interface RecentlyPublishedDashletProps extends CommonDashletProps {}
 
@@ -78,17 +82,8 @@ export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
 	const locale = useLocale();
 	const site = useActiveSiteId();
 	const { formatMessage } = useIntl();
-	const dispatch = useDispatch();
 	const [hoveredPackage, setHoveredPackage] = useState<number>(null);
-	const [contextMenu, setContextMenu] = useSpreadState<{
-		el: HTMLButtonElement;
-		package: PublishPackage;
-		options: ContextMenuOption[];
-	}>({
-		el: null,
-		package: null,
-		options: []
-	});
+	const contextMenu = usePackageContextMenu();
 
 	const loadPage = useCallback(
 		(pageNumber: number, backgroundRefresh?: boolean) => {
@@ -118,47 +113,18 @@ export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
 		loadPage(getCurrentPage(offset, limit), true);
 	};
 
+	const onPackageClick = (packageId: number) => {
+		setState({
+			packageDetailsDialogId: packageId
+		});
+	};
+
 	const onPackageMouseOver = (packageId: number) => {
 		setHoveredPackage(packageId);
 	};
 
 	const onPackageMouseLeave = () => {
 		setHoveredPackage(null);
-	};
-
-	const handleContextMenuClick = (e: React.MouseEvent<HTMLButtonElement>, pkg: FetchPackagesResponse) => {
-		const contextMenuOptions = [
-			{
-				id: 'view',
-				label: <FormattedMessage defaultMessage="View Package" />
-			},
-			...generatePackageOptions([pkg], { includeOnly: ['resubmit'] }).map((option) => ({
-				id: option.id,
-				label: formatMessage(option.label as MessageDescriptor)
-			}))
-		];
-		setContextMenu({ el: e.currentTarget, package: pkg, options: contextMenuOptions });
-	};
-
-	const handleContextMenuClose = () => {
-		setContextMenu({
-			el: null,
-			package: null,
-			options: []
-		});
-	};
-
-	const onOptionClicked = (option: string | 'view', pkg: PublishPackage) => {
-		handleContextMenuClose();
-		if (option === 'view') {
-			setState({ packageDetailsDialogId: pkg.id });
-		} else {
-			packageActionDispatcher({
-				pkg,
-				option: option as PackageActions,
-				dispatch
-			});
-		}
 	};
 
 	useEffect(() => {
@@ -237,6 +203,7 @@ export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
 							sx={{ pt: 0, pb: 0 }}
 							onMouseEnter={() => onPackageMouseOver(pkg.id)}
 							onMouseLeave={onPackageMouseLeave}
+							onClick={() => onPackageClick(pkg.id)}
 						>
 							{pkg.submitter && (
 								<PersonAvatar
@@ -253,10 +220,11 @@ export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
 							<ListItemText
 								primary={
 									<FormattedMessage
-										defaultMessage="<bold>{title}</bold> ({total} items)"
+										defaultMessage="<bold>{title}</bold> ({initialPublish, select, 1 {Initial publish} other {{total} {total, plural, one {item} other {items}}}})"
 										values={{
 											title: pkg.title,
 											total: pkg.itemCount,
+											initialPublish: pkg.packageType === PACKAGE_TYPE_INITIAL_PUBLISH ? 1 : 0,
 											bold: (chunks: React.ReactNode) => <strong>{chunks}</strong>
 										}}
 									/>
@@ -265,7 +233,8 @@ export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
 									<FormattedMessage
 										defaultMessage="Approved by {name} to go {publishingTarget, select, live { <render_target>live</render_target>} other {<render_target>staging</render_target>}} on {submittedDate}"
 										values={{
-											name: pkg.submitter?.username,
+											// If a reviewer approved, show their name; otherwise show submitter name
+											name: pkg.reviewer?.username ?? pkg.submitter?.username,
 											publishingTarget: pkg.target,
 											render_target(target: ReactNode[]) {
 												return (
@@ -279,7 +248,7 @@ export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
 											submittedDate: asLocalizedDateTime(
 												pkg.submittedOn,
 												locale.localeCode,
-												reversePluckProps(locale.dateTimeFormatOptions, 'hour', 'minute', 'second')
+												locale.dateTimeFormatOptions
 											)
 										}}
 									/>
@@ -288,7 +257,7 @@ export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
 							<IconButton
 								onClick={(e) => {
 									e.stopPropagation();
-									handleContextMenuClick(e, pkg);
+									contextMenu?.openContextMenu(e, pkg);
 								}}
 								sx={{ visibility: hoveredPackage === pkg.id ? 'visible' : 'hidden' }}
 							>
@@ -311,15 +280,7 @@ export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
 				onClose={() => setState({ packageDetailsDialogId: null })}
 				packageId={packageDetailsDialogId}
 			/>
-			{Boolean(contextMenu.el) && (
-				<ContextMenu
-					open
-					anchorEl={contextMenu.el}
-					onClose={handleContextMenuClose}
-					options={[contextMenu.options]}
-					onMenuItemClicked={(option) => onOptionClicked(option, contextMenu.package)}
-				/>
-			)}
+			{contextMenu?.contextMenuElement}
 		</DashletCard>
 	);
 }

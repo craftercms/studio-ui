@@ -122,7 +122,11 @@ export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
 				onClose: () => {
 					updateSubmittingOrHasPendingChanges({ isSubmitting: false });
 				},
-				cancelPackagesMessage: `Cancel packages to rename "${item.path}"`
+				cancelPackagesComment: formatMessage(
+					{ defaultMessage: 'Cancel packages to rename "{path}"' },
+					{ path: item.path }
+				),
+				formatMessage
 			});
 		} else {
 			updateSubmittingOrHasPendingChanges({ isSubmitting: false });

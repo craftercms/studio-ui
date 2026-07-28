@@ -36,6 +36,7 @@ import { generateSingleItemOptions, itemActionDispatcher } from '../../utils/ite
 import MenuItem from '@mui/material/MenuItem';
 import useEnv from '../../hooks/useEnv';
 import PackageItemsActions from './PackageItemsActions';
+import { firstValueFrom } from 'rxjs';
 
 export interface PackageItemsProps {
 	packageId: number;
@@ -64,7 +65,6 @@ export function PackageItems(props: PackageItemsProps) {
 		offset: 0,
 		isNextPageLoading: false
 	});
-	const hasNextPage = state.items?.length < state.total;
 	const { username } = useActiveUser();
 	const storedPreferredView = getPublishingPackagePreferredView(username);
 	const [isTreeView, setIsTreeView] = useState(nnou(storedPreferredView) ? storedPreferredView === 'tree' : true);
@@ -98,22 +98,22 @@ export function PackageItems(props: PackageItemsProps) {
 		}
 	}, [packageId, siteId, setState, state.limit]);
 
-	const loadNextPage = () => {
+	const loadNextPage = (startIndex: number, stopIndex: number) => {
+		if (state.isNextPageLoading) return Promise.resolve();
 		setState({ isNextPageLoading: true, error: null });
-		fetchPackageItems(siteId, packageId, { limit: state.limit, offset: state.offset }).subscribe({
-			next(items) {
-				const newOffset = state.offset + state.limit;
+		const offset = startIndex;
+		return firstValueFrom(fetchPackageItems(siteId, packageId, { limit: state.limit, offset }))
+			.then((items) => {
 				setState({
 					items: [...state.items, ...items.map((item) => ({ ...item.itemMetadata, path: item.path }))],
 					isNextPageLoading: false,
-					offset: newOffset,
+					offset: offset + state.limit,
 					total: items.total
 				});
-			},
-			error({ response }) {
+			})
+			.catch(({ response }) => {
 				setState({ error: response.response, isNextPageLoading: false });
-			}
-		});
+			});
 	};
 
 	const onOpenMenu = (e: React.MouseEvent<HTMLButtonElement>, packageItem: LightItem) => {
@@ -174,7 +174,7 @@ export function PackageItems(props: PackageItemsProps) {
 						minHeight: 420,
 						height: 'calc(60vh)',
 						maxHeight: 600,
-						overflowY: 'auto'
+						overflowY: 'hidden'
 					}}
 				>
 					{state.items &&
@@ -205,8 +205,7 @@ export function PackageItems(props: PackageItemsProps) {
 							<PackageItemsList
 								items={state.items}
 								totalItems={state.total}
-								hasNextPage={hasNextPage}
-								isNextPageLoading={state.isNextPageLoading}
+								fetchLimit={state.limit}
 								loadNextPage={loadNextPage}
 								onOpenMenu={onOpenMenu}
 							/>

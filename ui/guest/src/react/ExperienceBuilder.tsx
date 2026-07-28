@@ -83,7 +83,7 @@ import { GuestState } from '../store/models/GuestStore';
 import { nnou, nullOrUndefined } from '@craftercms/studio-ui/utils/object';
 import { scrollToDropTargets } from '../utils/dom';
 import { checkIfLockedOrModified, dragOk } from '../store/util';
-import { createLocationArgument, isEditActionAvailable } from '../utils/util';
+import { createLocationArgument, getContentItemFromRecord, isEditActionAvailable } from '../utils/util';
 import FieldInstanceSwitcher from './FieldInstanceSwitcher';
 import LookupTable from '@craftercms/studio-ui/models/LookupTable';
 import { Snackbar, SnackbarProps, Theme, ThemeOptions, ThemeProvider } from '@mui/material';
@@ -121,6 +121,8 @@ import { emitSystemEvent, emitSystemEvents } from '@craftercms/studio-ui/state/a
 import { getParentModelId } from '../utils/ice';
 import { SxProps } from '@mui/system';
 import { I18nProvider } from './I18nProvider';
+import { loadAceEditorAssets } from '@craftercms/studio-ui/utils/system';
+import { imageEditCancelled, imageEdited } from '@craftercms/studio-ui/state/actions/dialogs';
 
 // TODO: add themeOptions and global styles customising
 interface BaseXBProps {
@@ -415,6 +417,8 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
 				case updateRteConfig.type:
 				case setEditModePadding.type:
 				case assetDragStarted.type:
+				case imageEdited.type:
+				case imageEditCancelled.type:
 					dispatch(action);
 					break;
 				// endregion
@@ -458,16 +462,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
 				// script.onload = () => ...;
 				document.head.appendChild(script);
 			}
-			if (!window.ace) {
-				const script = document.createElement('script');
-				script.src = '/studio/static-assets/libs/ace/ace.js';
-				document.head.appendChild(script);
-
-				const styleSheet = document.createElement('link');
-				styleSheet.rel = 'stylesheet';
-				styleSheet.href = '/studio/static-assets/styles/tinymce-ace.css';
-				document.head.appendChild(styleSheet);
-			}
+			loadAceEditorAssets();
 			const allowedTypesSubscription = subscribeToAllowedContentTypes((allowed) =>
 				post(allowedContentTypesUpdate(allowed))
 			);
@@ -667,6 +662,13 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
 									: sxStylesConfig.zoneMarker.selectModeHighlight;
 							}
 							const zoneMarkerSx = deepmerge(sxStylesConfig.zoneMarker.base, zoneMarkerModeStyles, { clone: true });
+							const contentItem = getContentItemFromRecord({
+								record: elementRecord,
+								models: getCachedModels(),
+								contentItemsByPath: getCachedContentItems(),
+								parentModelId: getParentModelId(elementRecord.modelId, getCachedModels(), modelHierarchyMap)
+							});
+							const itemStateMap = contentItem?.stateMap;
 							return (
 								<ZoneMarker
 									key={highlight.id}
@@ -676,6 +678,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
 									lockInfo={lockInfo}
 									isStale={isExternallyModified}
 									isEditable={isEditable}
+									stateMap={itemStateMap}
 									field={field}
 									onPopperClick={
 										isMoveMode && isFieldSelectedMode

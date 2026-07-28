@@ -23,16 +23,14 @@ export type Activities =
 	| 'DELETE'
 	| 'MOVE'
 	| 'REQUEST_PUBLISH'
-	| 'APPROVE'
+	| 'APPROVE_PUBLISH_PACKAGE'
 	| 'REJECT_PUBLISH_PACKAGE'
 	| 'REVERT'
-	| 'PUBLISHED'
-	| 'INITIAL_PUBLISH'
+	| 'PUBLISH_ITEM_LIST_COMPLETE'
+	| 'INITIAL_PUBLISH_COMPLETE'
 	| 'CANCEL_PUBLISH_PACKAGE'
-	// TODO - Change when backend is updated
-	//  PUBLISH is what the backend sends for APPROVE & APPROVE_SCHEDULED.
-	//  The latter are never sent back currently.
-	| 'PUBLISH_ALL';
+	| 'PUBLISH'
+	| 'PUBLISH_ALL_COMPLETE';
 
 export interface Activity {
 	id: number;

@@ -16,7 +16,7 @@
 
 import { ofType } from 'redux-observable';
 import { catchError, filter, map, switchMap, withLatestFrom } from 'rxjs/operators';
-import { merge, NEVER, Observable, of } from 'rxjs';
+import { EMPTY, merge, Observable, of } from 'rxjs';
 import GlobalState from '../../models/GlobalState';
 import {
 	batchActions,
@@ -59,7 +59,7 @@ const epics = [
 						})
 					);
 				}
-				return NEVER;
+				return EMPTY;
 			})
 		),
 	(action$, state$, { getIntl, store }) =>

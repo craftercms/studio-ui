@@ -24,7 +24,6 @@ import {
 	closeCodeEditorDialog,
 	closeCompareVersionsDialog,
 	closeConfirmDialog,
-	closeCopyDialog,
 	closeCreateFileDialog,
 	closeCreateFolderDialog,
 	closeDeleteDialog,
@@ -55,7 +54,6 @@ import {
 	showCodeEditorDialog,
 	showCompareVersionsDialog,
 	showConfirmDialog,
-	showCopyDialog,
 	showCreateFileDialog,
 	showCreateFolderDialog,
 	showDeleteDialog,
@@ -82,7 +80,6 @@ import {
 	updateBulkCancelPackageDialog,
 	updateCancelPackageDialog,
 	updateCodeEditorDialog,
-	updateCopyDialog,
 	updateCreateFileDialog,
 	updateCreateFolderDialog,
 	updateDeleteDialog,
@@ -101,9 +98,10 @@ import { popDialog, pushDialog, updateDialogState } from '../actions/dialogStack
 import { generateDialogId } from '../../utils/dialogs';
 import { updatePublishingStatus } from '../actions/publishingStatus';
 import { DialogStackItem, StandardAction } from '../../models';
-import { createCallback, type EnhancedDialogProps } from '../../components';
+import { createCallback } from '../../components/GlobalDialogManager';
+import type { EnhancedDialogProps } from '../../components/EnhancedDialog';
 import { blockUI, unblockUI } from '../actions/system';
-import { NEVER } from 'rxjs';
+import { EMPTY } from 'rxjs';
 
 const dialogsMap = {
 	[showConfirmDialog.type]: 'craftercms.components.ConfirmDialog',
@@ -113,7 +111,6 @@ const dialogsMap = {
 	[showDependenciesDialog.type]: 'craftercms.components.DependenciesDialog',
 	[showCreateFolderDialog.type]: 'craftercms.components.CreateFolderDialog',
 	[showCreateFileDialog.type]: 'craftercms.components.CreateFileDialog',
-	[showCopyDialog.type]: 'craftercms.components.CopyDialog',
 	[showUploadDialog.type]: 'craftercms.components.UploadDialog',
 	[showSingleFileUploadDialog.type]: 'craftercms.components.SingleFileUploadDialog',
 	[showPreviewDialog.type]: 'craftercms.components.PreviewDialog',
@@ -135,11 +132,15 @@ const dialogsMap = {
 	[showRenameAssetDialog.type]: 'craftercms.components.RenameAssetDialog',
 	[showDeleteDialog.type]: 'craftercms.components.DeleteDialog',
 	[showEditDialog.type]: 'craftercms.components.LegacyFormDialog',
-	[blockUI.type]: 'craftercms.components.UIBlocker',
 	[showFolderMoveAlertDialog.type]: 'craftercms.components.FolderMoveAlertDialog'
 };
 
-const allowMinimizeDialogs = [showPreviewDialog.type, showCodeEditorDialog.type, showEditDialog.type];
+const allowMinimizeDialogs = [
+	showPreviewDialog.type,
+	showCodeEditorDialog.type,
+	showEditDialog.type,
+	showWidgetDialog.type
+];
 const allowFullScreenDialogs = [showPreviewDialog.type, showCodeEditorDialog.type];
 
 const showDialogsEpics: CrafterCMSEpic[] = [
@@ -154,7 +155,6 @@ const showDialogsEpics: CrafterCMSEpic[] = [
 				showDependenciesDialog.type,
 				showCreateFolderDialog.type,
 				showCreateFileDialog.type,
-				showCopyDialog.type,
 				showUploadDialog.type,
 				showSingleFileUploadDialog.type,
 				showPreviewDialog.type,
@@ -188,7 +188,7 @@ const showDialogsEpics: CrafterCMSEpic[] = [
 
 				const isDialogOpen = Boolean(state.dialogStack.byId[dialogId]);
 				// If showEditDialog or showCodeEditorDialog is already open, do not open another one
-				if ((type === showEditDialog.type || type === showCodeEditorDialog.type) && isDialogOpen) return NEVER;
+				if ((type === showEditDialog.type || type === showCodeEditorDialog.type) && isDialogOpen) return EMPTY;
 
 				return pushDialog({
 					id: dialogId,
@@ -211,7 +211,6 @@ const showDialogsEpics: CrafterCMSEpic[] = [
 				updatePublishDialog.type,
 				updateCreateFolderDialog.type,
 				updateCreateFileDialog.type,
-				updateCopyDialog.type,
 				updateSingleFileUploadDialog.type,
 				updatePreviewDialog.type,
 				updateWidgetDialog.type,
@@ -251,7 +250,6 @@ const showDialogsEpics: CrafterCMSEpic[] = [
 				closeDependenciesDialog.type,
 				closeCreateFolderDialog.type,
 				closeCreateFileDialog.type,
-				closeCopyDialog.type,
 				closeUploadDialog.type,
 				closeSingleFileUploadDialog.type,
 				closePreviewDialog.type,
@@ -281,29 +279,6 @@ const showDialogsEpics: CrafterCMSEpic[] = [
 			})
 		),
 	// endregion
-
-	// region UIBlocker
-	(action$, state$) =>
-		action$.pipe(
-			ofType(blockUI.type),
-			withLatestFrom(state$),
-			map(([{ payload, type }]) => {
-				return pushDialog({
-					id: blockUI.type,
-					component: dialogsMap[type],
-					props: payload
-				});
-			})
-		),
-	(action$, state$) =>
-		action$.pipe(
-			ofType(unblockUI.type),
-			withLatestFrom(state$),
-			map(() => {
-				return popDialog({ id: blockUI.type });
-			})
-		)
-	// end region
 ] as CrafterCMSEpic[];
 
 export default showDialogsEpics;

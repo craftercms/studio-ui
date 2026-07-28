@@ -31,7 +31,6 @@ import { VersionsStateProps } from './Version';
 import QuickCreateItem from './content/QuickCreateItem';
 import { PathNavigatorStateProps } from '../components/PathNavigator';
 import { ContentItem } from './Item';
-import { CopyDialogStateProps } from '../components/CopyDialog/utils';
 import { PathSelectionDialogStateProps } from '../components/PathSelectionDialog/PathSelectionDialog';
 import { WidgetDescriptor } from './WidgetDescriptor';
 import { ItemMenuStateProps } from '../components/ItemActionsMenu';
@@ -70,10 +69,11 @@ import { PublishingPackageReviewDialogStateProps } from '../components/PublishPa
 import { CancelPackageDialogStateProps } from '../components/CancelPackageDialog';
 import { BulkCancelPackageDialogStateProps } from '../components/BulkCancelPackageDialog';
 import { PublishingPackageResubmitDialogStateProps } from '../components/PublishingPackageResubmitDialog/types';
-import { PackageDetailsDialogStateProps } from '../components';
+import { PackageDetailsDialogStateProps } from '../components/PackageDetailsDialog';
 import { ViewPackagesDialogStateProps } from '../components/ViewPackagesDialog';
 import type { FolderMoveAlertDialogStateProps } from '../components/FolderMoveAlertDialog/FolderMoveAlertDialog';
 import type { PublishingStatus } from './Publishing';
+import type { Archetype } from '../components/ContentTypeManagement/descriptors/archetypes';
 import { DescriptorContentType } from '../components/ContentTypeManagement/utils';
 
 export type HighlightMode = 'all' | 'move';
@@ -122,7 +122,7 @@ export interface GuestData {
 
 export interface Clipboard {
 	type: 'CUT' | 'COPY';
-	paths?: string[];
+	includeChildren?: boolean;
 	sourcePath: string;
 }
 
@@ -222,6 +222,8 @@ export interface GlobalState {
 			code: number;
 			message: string;
 		};
+		keyboardShortcutsEnabled: boolean;
+		createContentCompactView: boolean;
 	};
 	previewNavigation: {
 		currentUrlPath: string;

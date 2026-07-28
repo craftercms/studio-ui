@@ -22,7 +22,7 @@ import Cookies from 'js-cookie';
 import { fromTopic, post } from './utils/communicator';
 import { v4 as uuid } from 'uuid';
 import { ContentInstance, InstanceRecord } from '@craftercms/studio-ui/models/ContentInstance';
-import { ContentType } from '@craftercms/studio-ui/models/ContentType';
+import type { ContentType } from '@craftercms/studio-ui/models/ContentType';
 import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
 import { Operation } from './models/Operations';
 import {
@@ -174,8 +174,8 @@ export function byPathFetchIfNotLoaded(path: string): Observable<ContentInstance
 	} else if (requestedPaths[path]) {
 		return paths$.pipe(
 			filter((paths) => Boolean(paths[path])),
-			map((paths) => paths[path]),
-			map((modelId) => models$.value[modelId])
+			take(1),
+			map((paths) => models$.value[paths[path]])
 		);
 	} else {
 		requestedPaths[path] = true;
@@ -255,16 +255,24 @@ function collectReferrers(modelId) {
 
 function updateHierarchyMapIndexesFromCollection(collection: string[]) {
 	if (collection.length) {
-		const isSimpleIndex = isSimple(modelHierarchyMap[collection[0]].parentContainerFieldIndex);
+		const firstEntry = modelHierarchyMap[collection[0]];
+		if (!firstEntry) {
+			return;
+		}
+		const isSimpleIndex = isSimple(firstEntry.parentContainerFieldIndex);
 		// 1. Update item being sorted and items getting displaced because of that sort
 		collection.forEach(
 			isSimpleIndex
 				? (id, index) => {
-						modelHierarchyMap[id].parentContainerFieldIndex = String(index);
+						if (modelHierarchyMap[id]) {
+							modelHierarchyMap[id].parentContainerFieldIndex = String(index);
+						}
 					}
 				: (id, index) => {
-						const current = modelHierarchyMap[id].parentContainerFieldIndex as string;
-						modelHierarchyMap[id].parentContainerFieldIndex = `${removeLastPiece(current)}.${index}`;
+						const entry = modelHierarchyMap[id];
+						if (!entry) return;
+						const current = entry.parentContainerFieldIndex as string;
+						entry.parentContainerFieldIndex = `${removeLastPiece(current)}.${index}`;
 					}
 		);
 	}

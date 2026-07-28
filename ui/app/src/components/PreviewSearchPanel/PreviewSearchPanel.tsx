@@ -106,7 +106,16 @@ const initialSearchParameters: Partial<ElasticParams> = {
 	orOperator: true
 };
 
-const mimeTypes = ['image/png', 'image/jpeg', 'image/gif', 'video/mp4', 'image/svg+xml'];
+const mimeTypes = [
+	'image/png',
+	'image/jpeg',
+	'image/gif',
+	'video/mp4',
+	'image/svg+xml',
+	'image/webp',
+	'video/quicktime',
+	'video/x-msvideo'
+];
 
 export function PreviewSearchPanel() {
 	const { formatMessage } = useIntl();
@@ -273,6 +282,7 @@ export function PreviewSearchPanel() {
 					onChange={(keyword) => handleSearchKeyword(keyword)}
 					showDecoratorIcon={true}
 					showActionButton={Boolean(keyword)}
+					autoFocus
 				/>
 			</Box>
 			{state.items && !error && (

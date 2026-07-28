@@ -23,16 +23,30 @@ import { Middleware } from 'redux';
 import { GuestState, GuestStore } from './models/GuestStore';
 import { Observable } from 'rxjs';
 import { distinctUntilChanged, pluck, share } from 'rxjs/operators';
-import { Middlewares } from '@reduxjs/toolkit/dist/configureStore';
+import { IntlShape } from 'react-intl';
+import { getCurrentIntl } from '../utils/i18n';
 
 let store: GuestStore;
+
+export type GuestEpicMiddlewareDependencies = {
+	getIntl: () => IntlShape;
+};
 
 export function createGuestStore(): GuestStore {
 	if (store) {
 		return store;
 	}
-	const epicMiddleware = createEpicMiddleware<GuestStandardAction, GuestStandardAction, GuestState>();
-	store = configureStore<GuestState, GuestStandardAction, Tuple<Middlewares<GuestState>>>({
+	const epicMiddleware = createEpicMiddleware<
+		GuestStandardAction,
+		GuestStandardAction,
+		GuestState,
+		GuestEpicMiddlewareDependencies
+	>({
+		dependencies: {
+			getIntl: getCurrentIntl
+		}
+	});
+	store = configureStore<GuestState, GuestStandardAction, Tuple<ReadonlyArray<Middleware<GuestState>>>>({
 		reducer,
 		middleware: (getDefaultMiddleware) =>
 			getDefaultMiddleware({

@@ -146,4 +146,5 @@ export interface ContentItem extends LightItem {
 	childrenCount: number;
 	staging: PublishTargetStatus;
 	live: PublishTargetStatus;
+	savedAsDraft: boolean;
 }

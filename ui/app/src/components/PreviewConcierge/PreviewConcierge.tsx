@@ -92,7 +92,7 @@ import {
 } from '../../services/content';
 import { filter, map, switchMap, take, takeUntil } from 'rxjs/operators';
 import { BehaviorSubject, forkJoin, Observable, of } from 'rxjs';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { getGuestToHostBus, getHostToGuestBus, getHostToHostBus } from '../../utils/subjects';
 import { useDispatch, useStore } from 'react-redux';
 import { getPersonFullName, nnou } from '../../utils/object';
@@ -101,6 +101,7 @@ import RubbishBin from '../RubbishBin/RubbishBin';
 import { useSnackbar } from 'notistack';
 import {
 	getStoredClipboard,
+	getStoredEnabledKeyboardShortcutsState,
 	getStoredEditModeChoice,
 	getStoredEditModePadding,
 	getStoredHighlightModeChoice,
@@ -137,8 +138,11 @@ import { useActiveSite } from '../../hooks/useActiveSite';
 import { getPathFromPreviewURL, processPathMacros, withIndex } from '../../utils/path';
 import {
 	closeItemMegaMenu,
+	imageEditCancelled,
+	imageEdited,
 	itemMegaMenuClosed,
 	rtePickerActionResult,
+	showImageEditorDialog,
 	showItemMegaMenu,
 	showRtePickerActions,
 	type ShowRtePickerActionsPayload
@@ -186,6 +190,8 @@ import StandardAction from '../../models/StandardAction';
 import { createComponentId, pickShowContentFormAction } from '../../utils/system';
 import { popDialog, pushDialog } from '../../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
+import { ImageRestrictionSubtitle } from '../FormsEngine/lib/controlHelpers';
+import { getCurrentLocale } from '../../utils/i18n';
 
 const issueDescriptorRequest = (props: {
 	site: string;
@@ -331,6 +337,9 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 	const priorState = useRef({ site: siteId });
 	const { enqueueSnackbar } = useSnackbar();
 	const { formatMessage } = useIntl();
+	const dialogs = useSelection((state) => state.dialogs);
+	const stack = useSelection((state) => state.dialogStack);
+	const keyboardShortcutsEnabled = useSelection((state) => state.preview.keyboardShortcutsEnabled);
 	const models = guest?.models;
 	const modelIdByPath = guest?.modelIdByPath;
 	const hierarchyMap = guest?.hierarchyMap;
@@ -385,7 +394,15 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 		showToolsPanel,
 		toolsPanelWidth,
 		browseFilesDialogState,
+		dialogs,
+		stack,
+		keyboardShortcutsEnabled,
 		onShortCutKeypress(event: KeyboardEvent) {
+			const openDialogs: boolean =
+				Object.values(upToDateRefs.current.dialogs).some((dialog) => dialog.open) ||
+				Boolean(upToDateRefs.current.stack.ids?.length);
+			if (openDialogs || !upToDateRefs.current.keyboardShortcutsEnabled) return;
+
 			const key = event.key;
 			switch (key) {
 				case 'e':
@@ -467,7 +484,16 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 			const storedEditMode = getStoredEditModeChoice(username, uuid);
 			const storedHighlightMode = getStoredHighlightModeChoice(username, uuid);
 			const storedPaddingMode = getStoredEditModePadding(username);
-			dispatch(initPreviewConfig({ configXml: uiConfig.xml, storedEditMode, storedHighlightMode, storedPaddingMode }));
+			const storedEnabledKeyboardShortcuts = getStoredEnabledKeyboardShortcutsState(username);
+			dispatch(
+				initPreviewConfig({
+					configXml: uiConfig.xml,
+					storedEditMode,
+					storedHighlightMode,
+					storedPaddingMode,
+					storedEnabledKeyboardShortcuts
+				})
+			);
 		}
 	}, [uiConfig.xml, username, uuid, dispatch]);
 
@@ -517,7 +543,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 				dispatch(
 					restoreClipboard({
 						type: localClipboard.type,
-						paths: localClipboard.paths,
+						includeChildren: localClipboard.includeChildren,
 						sourcePath: localClipboard.sourcePath
 					})
 				);
@@ -650,7 +676,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 							authoringBase: upToDateRefs.current.authoringBase,
 							site: upToDateRefs.current.siteId,
 							editModePadding: upToDateRefs.current.editModePadding,
-							rteConfig: upToDateRefs.current.rteConfig ?? {}
+							rteConfig: upToDateRefs.current.rteConfig ?? {},
+							locale: getCurrentLocale(upToDateRefs.current.user.username)
 						})
 					);
 					dispatch(guestCheckIn(payload));
@@ -1038,7 +1065,9 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 				}
 				case snackGuestMessage.type: {
 					enqueueSnackbar(
-						payload.id in guestMessages ? formatMessage(guestMessages[payload.id], payload.values ?? {}) : payload.id,
+						payload.id in guestMessages
+							? formatMessage(guestMessages[payload.id], payload.values ?? {})
+							: (payload.message ?? payload.id),
 						{
 							variant: payload.level
 								? payload.level === 'required'
@@ -1109,7 +1138,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 							props: {
 								item: payload.item,
 								onClosed: () => dispatch(requestWorkflowCancellationDialogOnResult({ type: 'close' })),
-								onContinue: () => dispatch(requestWorkflowCancellationDialogOnResult({ type: 'continue' }))
+								onContinue: (cancelPackagesComment) =>
+									dispatch(requestWorkflowCancellationDialogOnResult({ type: 'continue', cancelPackagesComment }))
 							}
 						})
 					);
@@ -1125,6 +1155,37 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 					extendedAction.payload.onClosed = batchActions([itemMegaMenuClosed(), dispatchDOMEvent({ id })]);
 					createCustomDocumentEventListener(id, () => iframe.contentWindow.focus());
 					dispatch(action);
+					break;
+				}
+				case showImageEditorDialog.type: {
+					const id = nanoid();
+					const { path, restrictions, writeContent, fileName, recordId, uploadPath } = action.payload;
+					dispatch(
+						pushDialog({
+							id,
+							component: createComponentId('ImageEditorDialog'),
+							props: {
+								path,
+								subtitle: restrictions ? <ImageRestrictionSubtitle restrictions={restrictions} /> : undefined,
+								restrictions,
+								writeContent,
+								onCrop: (blob: Blob, newPath: string) => {
+									dispatch(popDialog({ id }));
+									hostToGuest$.next({
+										type: imageEdited.type,
+										payload: { blob, newPath, fileName, recordId, uploadPath }
+									});
+								},
+								onClose: () => {
+									dispatch(popDialog({ id }));
+									hostToGuest$.next({
+										type: imageEditCancelled.type,
+										payload: { fileName, recordId, uploadPath }
+									});
+								}
+							}
+						})
+					);
 					break;
 				}
 				// region actions whitelisted

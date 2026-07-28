@@ -95,10 +95,11 @@ export function DateTimeTimezonePicker(props: DateTimeTimezonePickerProps) {
 		onChange
 	});
 	const handleChange = ((newValue) => {
-		setSelectedDate(newValue);
 		if (!newValue) return;
-		if (newValue.toISOString() !== moment(effectRefs.current.dateProp).toISOString()) {
+		// Only set the value change if the date is valid and different from current.
+		if (newValue.isValid() && newValue.toISOString() !== moment(effectRefs.current.dateProp).toISOString()) {
 			effectRefs.current.onChange?.(createTransposedToTimezoneDate(newValue, selectedTimezone));
+			setSelectedDate(newValue);
 		}
 	}) as DateTimePickerProps['onChange'];
 	const handleTimezoneChange = ((event, value) => {

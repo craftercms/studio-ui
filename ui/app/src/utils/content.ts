@@ -85,6 +85,7 @@ import { pushDialog } from '../state/actions/dialogStack';
 import { nanoid } from 'nanoid';
 import { createComponentId, pickShowContentFormAction } from './system';
 import { popCodeEditorDialog } from '../state/actions/dialogs';
+import { ImageRestrictions } from '../components/ImageEditorDialog/types';
 
 export function isEditableAsset(path: string) {
 	return (
@@ -198,99 +199,6 @@ export function getSystemTypeFromPath(path: string): SystemType {
 	} else {
 		return 'file';
 	}
-}
-
-function getLegacyItemSystemType(item: LegacyItem): SystemType {
-	switch (true) {
-		case item.contentType === 'renderingTemplate': {
-			return 'renderingTemplate';
-		}
-		case item.contentType === 'script': {
-			return 'script';
-		}
-		case item.contentType === 'folder': {
-			return 'folder';
-		}
-		case item.asset || item.isAsset: {
-			return 'asset';
-		}
-		case item.component || item.isComponent: {
-			return 'component';
-		}
-		case item.page || item.isPage: {
-			return 'page';
-		}
-		case item.folder:
-		case item.container || item.isContainer: {
-			return 'folder';
-		}
-		case item.contentType === 'taxonomy': {
-			return 'taxonomy';
-		}
-		default: {
-			return 'file';
-		}
-	}
-}
-
-export function parseLegacyItemToContentItem(item: LegacyItem): ContentItem;
-export function parseLegacyItemToContentItem(item: LegacyItem[]): ContentItem[];
-export function parseLegacyItemToContentItem(item: LegacyItem | LegacyItem[]): ContentItem | ContentItem[] {
-	if (Array.isArray(item)) {
-		// If no internalName then skipping (e.g. level descriptors)
-		return item.flatMap((i) => (i.internalName || i.name ? [parseLegacyItemToContentItem(i)] : []));
-	}
-
-	const stateMap = getStateMapFromLegacyItem(item);
-	const state = getStateBitmap(stateMap);
-	return {
-		id: item.uri ?? item.path,
-		label: item.internalName ?? item.name,
-		parentId: null,
-		contentTypeId: item.contentType,
-		path: item.uri ?? item.path,
-		// Assuming folders aren't navigable
-		previewUrl: item.uri?.includes('index.xml') ? item.browserUri || '/' : null,
-		systemType: getLegacyItemSystemType(item),
-		mimeType: item.mimeType,
-		state,
-		stateMap,
-		lockOwner: null,
-		localeCode: 'en',
-		translationSourceId: null,
-		creator: null,
-		dateCreated: null,
-		modifier: {
-			username: item.user,
-			firstName: null,
-			lastName: null,
-			avatar: null
-		},
-		dateModified: item.lastEditDate,
-		availableActions: null,
-		availableActionsMap: null,
-		childrenCount: 0,
-		staging: {
-			dateScheduled: item.scheduledDate,
-			dateLastPublished: item.publishedDate ?? item.eventDate,
-			publisher: {
-				username: item.user,
-				firstName: null,
-				lastName: null,
-				avatar: null
-			}
-		},
-		live: {
-			dateScheduled: item.scheduledDate,
-			dateLastPublished: item.publishedDate ?? item.eventDate,
-			publisher: {
-				username: item.user,
-				firstName: null,
-				lastName: null,
-				avatar: null
-			}
-		}
-	};
 }
 
 export const systemPropsList = [
@@ -1267,4 +1175,55 @@ export function isAudio(item: Pick<ContentItem, 'mimeType'>): boolean {
 export function isPdfDocument(mimeType: string): boolean {
 	// Using `startsWith` to cover possible mime types like `application/pdf; charset=UTF-8`
 	return mimeType.toLowerCase().startsWith('application/pdf');
+}
+
+/** Validates if an HTMLImageElement meets the given size restrictions. The restrictions may be a range (min/max) or an
+ * exact value (width/height). If no restrictions are provided, the image is considered valid.
+ *
+ * @param file - The HTMLImageElement to validate.
+ * @param restrictions - Optional image size restrictions (width, height, minWidth, minHeight, maxWidth, maxHeight).
+ * @returns True if the image meets the restrictions or if no restrictions are provided, false otherwise.
+ */
+function doesImageMeetSizeRestrictions(file: HTMLImageElement, restrictions?: ImageRestrictions): boolean {
+	let meetRestrictions = true;
+	if (restrictions) {
+		const { width, height, minWidth, minHeight, maxWidth, maxHeight } = restrictions;
+		if (
+			(width && file.width !== width) ||
+			(height && file.height !== height) ||
+			(minWidth && file.width < minWidth) ||
+			(minHeight && file.height < minHeight) ||
+			(maxWidth && file.width > maxWidth) ||
+			(maxHeight && file.height > maxHeight)
+		) {
+			meetRestrictions = false;
+		}
+	}
+	return meetRestrictions;
+}
+
+/** Loads an image from the given path and validates it against the provided size restrictions.
+ *
+ * @param path - The image path or URL to load.
+ * @param restrictions - Optional size restrictions to validate the image against.
+ * @returns Promise that resolves to true if the image meets the restrictions or no restrictions are provided, false otherwise.
+ * */
+export function validateImageRestrictions(path: string, restrictions?: ImageRestrictions): Promise<boolean> {
+	if (!restrictions || (!isImage(path) && !isBlobUrl(path) && !path.startsWith('data:image/'))) {
+		return Promise.resolve(true);
+	}
+	return new Promise((resolve) => {
+		const img = new window.Image();
+		const done = (result: boolean) => resolve(result);
+		const timeout = window.setTimeout(() => done(true), 5000);
+		img.onload = () => {
+			window.clearTimeout(timeout);
+			done(doesImageMeetSizeRestrictions(img, restrictions));
+		};
+		img.onerror = img.onabort = () => {
+			window.clearTimeout(timeout);
+			done(true);
+		};
+		img.src = path;
+	});
 }

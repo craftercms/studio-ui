@@ -15,8 +15,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import Dialog from '@mui/material/Dialog';
-import DialogHeader from '../DialogHeader';
+import EnhancedDialog, { EnhancedDialogProps } from '../EnhancedDialog';
 import DialogBody from '../DialogBody/DialogBody';
 import DialogFooter from '../DialogFooter/DialogFooter';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -34,15 +33,13 @@ import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { LoadingState } from '../LoadingState';
 
-export interface RemoteRepositoriesDiffDialogProps {
-	open: boolean;
+export interface ConflictedPathDiffDialogProps extends EnhancedDialogProps {
 	path: string;
 	onResolveConflict(strategy: string, path: string): void;
-	onClose(): void;
 }
 
-export function ConflictedPathDiffDialog(props: RemoteRepositoriesDiffDialogProps) {
-	const { open, path, onResolveConflict, onClose } = props;
+export function ConflictedPathDiffDialog(props: ConflictedPathDiffDialogProps) {
+	const { path, onResolveConflict, onClose, ...dialogProps } = props;
 	const siteId = useActiveSiteId();
 	const [tab, setTab] = useState(0);
 	const [fileDiff, setFileDiff] = useState<FileDiff>(null);
@@ -71,46 +68,50 @@ export function ConflictedPathDiffDialog(props: RemoteRepositoriesDiffDialogProp
 	};
 
 	return (
-		<Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
-			<DialogHeader
-				title={
-					<>
-						<FormattedMessage id="words.diff" defaultMessage="Diff" />: {path}
-					</>
-				}
-				onCloseButtonClick={onClose}
-				sxs={{
+		<EnhancedDialog
+			title={
+				<>
+					<FormattedMessage id="words.diff" defaultMessage="Diff" />: {path}
+				</>
+			}
+			maxWidth="lg"
+			dialogHeaderProps={{
+				sxs: {
 					root: {
 						paddingBottom: 0
 					},
 					subtitleWrapper: {
 						padding: 0
 					}
-				}}
-			>
-				<Tabs
-					value={tab}
-					indicatorColor="primary"
-					textColor="primary"
-					onChange={handleTabChange}
-					sx={{
-						minHeight: 'inherit',
-						[`& .${tabClasses.root}`]: {
-							minWidth: '80px',
-							minHeight: '0',
-							padding: '0 0 5px 0',
-							marginRight: '20px',
-							opacity: 1,
-							'& span': {
-								textTransform: 'none'
+				},
+				children: (
+					<Tabs
+						value={tab}
+						indicatorColor="primary"
+						textColor="primary"
+						onChange={handleTabChange}
+						sx={{
+							minHeight: 'inherit',
+							[`& .${tabClasses.root}`]: {
+								minWidth: '80px',
+								minHeight: '0',
+								padding: '0 0 5px 0',
+								marginRight: '20px',
+								opacity: 1,
+								'& span': {
+									textTransform: 'none'
+								}
 							}
-						}
-					}}
-				>
-					<Tab label={<FormattedMessage id="words.diff" defaultMessage="Diff" />} />
-					<Tab label={<FormattedMessage id="repositories.splitView" defaultMessage="Split View" />} />
-				</Tabs>
-			</DialogHeader>
+						}}
+					>
+						<Tab label={<FormattedMessage id="words.diff" defaultMessage="Diff" />} />
+						<Tab label={<FormattedMessage id="repositories.splitView" defaultMessage="Split View" />} />
+					</Tabs>
+				)
+			}}
+			onClose={onClose}
+			{...dialogProps}
+		>
 			<DialogBody sx={{ padding: 0 }}>
 				{error ? (
 					<ApiResponseErrorState error={error} />
@@ -121,7 +122,7 @@ export function ConflictedPathDiffDialog(props: RemoteRepositoriesDiffDialogProp
 				) : null}
 			</DialogBody>
 			<DialogFooter>
-				<SecondaryButton onClick={onClose}>
+				<SecondaryButton onClick={(e) => onClose?.(e, null)}>
 					<FormattedMessage id="words.close" defaultMessage="Close" />
 				</SecondaryButton>
 				<ConfirmDropdown
@@ -151,7 +152,7 @@ export function ConflictedPathDiffDialog(props: RemoteRepositoriesDiffDialogProp
 					onConfirm={() => onResolveConflict('ours', path)}
 				/>
 			</DialogFooter>
-		</Dialog>
+		</EnhancedDialog>
 	);
 }
 

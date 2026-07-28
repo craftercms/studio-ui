@@ -81,7 +81,7 @@ export function ItemMegaMenu(props: ItemMegaMenuProps) {
 	const hasClipboard =
 		item &&
 		clipboard &&
-		clipboard.paths.length &&
+		clipboard.sourcePath &&
 		getRootPath(clipboard.sourcePath) === getRootPath(item.path) &&
 		(clipboard.type === 'CUT'
 			? isValidCutPastePath(item.path, clipboard.sourcePath)

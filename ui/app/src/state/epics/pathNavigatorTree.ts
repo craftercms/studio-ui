@@ -53,7 +53,7 @@ import {
 } from '../../services/content';
 import { catchAjaxError } from '../../utils/ajax';
 import { removeStoredPathNavigatorTree, setStoredPathNavigatorTree } from '../../utils/state';
-import { forkJoin, NEVER, Observable } from 'rxjs';
+import { EMPTY, forkJoin, Observable } from 'rxjs';
 import { createPresenceTable } from '../../utils/array';
 import {
 	getFileExtension,
@@ -80,7 +80,7 @@ import {
 import StandardAction from '../../models/StandardAction';
 import { GetChildrenOptions, MarketplacePlugin, MoveContentEventPayload, SocketEventBase } from '../../models';
 import { contentAndDeleteEventForEachApplicableTree } from '../reducers/pathNavigatorTree';
-import { PathNavigatorTreeStateProps } from '../../components';
+import { PathNavigatorTreeStateProps } from '../../components/PathNavigatorTree';
 import { pluckProps } from '../../utils/object';
 
 const createGetChildrenOptions: (
@@ -266,7 +266,7 @@ export default [
 								pathNavigatorTreeBulkRestoreFailed({ ids: requests.map(({ id }) => id), error })
 							)
 						)
-					: NEVER;
+					: EMPTY;
 			})
 		),
 	// endregion
@@ -539,7 +539,7 @@ export default [
 						requests.push({ id: tree.id, backgroundRefresh: true });
 					}
 				});
-				return requests.length ? [pathNavigatorTreeBulkRefresh({ requests: requests })] : NEVER;
+				return requests.length ? [pathNavigatorTreeBulkRefresh({ requests: requests })] : EMPTY;
 			})
 		),
 	// endregion

@@ -30,12 +30,17 @@ import ListItemButton from '@mui/material/ListItemButton';
 import { EnhancedDialog } from '../../EnhancedDialog';
 import { DialogBody } from '../../DialogBody';
 import useEnhancedDialogState from '../../../hooks/useEnhancedDialogState';
+import { useStableFormContext } from '../../FormsEngine/lib/formsEngineContext';
+import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
+import { nanoid } from 'nanoid';
+import { popDialog, pushDialog } from '../../../state/actions/dialogStack';
+import { useDispatch } from 'react-redux';
 
 export interface PathWithMacroCreatorProps extends TypeBuilderControl {
 	value: string;
 }
 
-const macroCreatorLookupTable = {
+export const macroCreatorLookupTable = {
 	objectId: {
 		macro: '{objectId}',
 		description: defineMessage({ defaultMessage: 'Inserts a GUID.' })
@@ -64,10 +69,14 @@ const macroCreatorLookupTable = {
 
 export function PathWithMacroCreator(props: PathWithMacroCreatorProps) {
 	const { field, value, setValue, readonly, autoFocus } = props;
+	const { originalValues } = useStableFormContext();
+	const type = originalValues.type;
+	const defaultPath = type === 'page' ? '/site/website/' : '/site/components/';
 	const htmlId = useId();
 	const maxLength = field.validations.maxLength?.value;
 	const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement>(undefined);
 	const { formatMessage } = useIntl();
+	const dispatch = useDispatch();
 	const dialogState = useEnhancedDialogState();
 	const inputRef = useRef<HTMLInputElement>(undefined);
 	const addMacroRef = useRef<{
@@ -95,6 +104,26 @@ export function PathWithMacroCreator(props: PathWithMacroCreatorProps) {
 		}
 	};
 
+	const onOpenPathSelectionDialog = () => {
+		const id = nanoid();
+		dispatch(
+			pushDialog({
+				id,
+				component: 'craftercms.components.PathSelectionDialog',
+				props: {
+					rootPath: '/site',
+					allowSwitchingRootPath: false,
+					initialPath: '/site',
+					onClose: () => dispatch(popDialog({ id })),
+					onOk: ({ path }) => {
+						setValue(path);
+						dispatch(popDialog({ id }));
+					}
+				}
+			})
+		);
+	};
+
 	useEffect(() => {
 		// Focus the input when it has been updated after adding a macro.
 		if (addMacroRef.current.triggered) {
@@ -116,14 +145,33 @@ export function PathWithMacroCreator(props: PathWithMacroCreatorProps) {
 					inputProps={{ maxLength }}
 					value={value}
 					onChange={handleChange}
+					placeholder={defaultPath}
+					onFocus={() => {
+						if (!value) {
+							setValue(defaultPath);
+						}
+					}}
 					disabled={readonly}
 					spellCheck={false}
 					endAdornment={
-						<Tooltip title={<FormattedMessage defaultMessage="Add macro" />}>
-							<IconButton onClick={() => dialogState.onOpen()}>
-								<AddCircleOutlineOutlinedIcon />
-							</IconButton>
-						</Tooltip>
+						<>
+							<Tooltip title={<FormattedMessage defaultMessage="Select path" />}>
+								<IconButton
+									aria-label={formatMessage({ defaultMessage: 'Select path' })}
+									onClick={() => onOpenPathSelectionDialog()}
+								>
+									<SearchRoundedIcon />
+								</IconButton>
+							</Tooltip>
+							<Tooltip title={<FormattedMessage defaultMessage="Add macro" />}>
+								<IconButton
+									aria-label={formatMessage({ defaultMessage: 'Add macro' })}
+									onClick={() => dialogState.onOpen()}
+								>
+									<AddCircleOutlineOutlinedIcon />
+								</IconButton>
+							</Tooltip>
+						</>
 					}
 				/>
 			</FormsEngineField>

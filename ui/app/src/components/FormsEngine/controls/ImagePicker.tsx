@@ -58,64 +58,13 @@ import {
 import type { ImageRestrictions } from '../../ImageEditorDialog/types';
 import Skeleton from '@mui/material/Skeleton';
 import { nnou, nou } from '../../../utils/object';
+import { validateImageRestrictions } from '../../../utils/content';
 
 export interface ImagePickerProps extends ControlProps {
 	value: string | null;
 }
 
-type PickerType = 'browse' | 'upload' | 'search';
-
-/** Validates if an HTMLImageElement meets the given size restrictions. The restrictions may be a range (min/max) or an
- * exact value (width/height). If no restrictions are provided, the image is considered valid.
- *
- * @param file - The HTMLImageElement to validate.
- * @param restrictions - Optional image size restrictions (width, height, minWidth, minHeight, maxWidth, maxHeight).
- * @returns True if the image meets the restrictions or if no restrictions are provided, false otherwise.
- */
-function doesImageMeetSizeRestrictions(file: HTMLImageElement, restrictions?: ImageRestrictions): boolean {
-	let meetRestrictions = true;
-	if (restrictions) {
-		const { width, height, minWidth, minHeight, maxWidth, maxHeight } = restrictions;
-		if (
-			(width && file.width !== width) ||
-			(height && file.height !== height) ||
-			(minWidth && file.width < minWidth) ||
-			(minHeight && file.height < minHeight) ||
-			(maxWidth && file.width > maxWidth) ||
-			(maxHeight && file.height > maxHeight)
-		) {
-			meetRestrictions = false;
-		}
-	}
-	return meetRestrictions;
-}
-
-/** Loads an image from the given path and validates it against the provided size restrictions.
- *
- * @param path - The image path or URL to load.
- * @param restrictions - Optional size restrictions to validate the image against.
- * @returns Promise that resolves to true if the image meets the restrictions or no restrictions are provided, false otherwise.
- * */
-function validateImageRestrictions(path: string, restrictions?: ImageRestrictions): Promise<boolean> {
-	return new Promise((resolve) => {
-		if (restrictions) {
-			const img = new window.Image();
-			const done = (result: boolean) => resolve(result);
-			const timeout = window.setTimeout(() => done(true), 5000);
-			img.onload = () => {
-				window.clearTimeout(timeout);
-				done(doesImageMeetSizeRestrictions(img, restrictions));
-			};
-			img.onerror = img.onabort = () => {
-				window.clearTimeout(timeout);
-				done(true);
-			};
-			img.src = path;
-		} else {
-			resolve(true);
-		}
-	});
-}
+export type ImagePickerType = 'browse' | 'upload' | 'search';
 
 export function ImagePicker(props: ImagePickerProps) {
 	const { field, value: valueProp, setValue, contentType, autoFocus, readonly: formReadonly } = props;
@@ -148,7 +97,7 @@ export function ImagePicker(props: ImagePickerProps) {
 	const [addMenuOpen, setAddMenuOpen] = useState(false);
 	const dispatch = useDispatch();
 	const [openPickerDialog, setOpenPickerDialog] = useState(false);
-	const [pickerType, setPickerType] = useState<PickerType | null>(null);
+	const [pickerType, setPickerType] = useState<ImagePickerType | null>(null);
 
 	useEffect(() => {
 		// If there's a default value and no value has been set yet, set it as the value.
@@ -160,7 +109,7 @@ export function ImagePicker(props: ImagePickerProps) {
 	const imageRestrictionMessages = getImageRestrictionMessages(restrictions);
 	/* TODO: handleDataSourceOptionClick and executeDataSourceOption only handle hardcoded 'browse', 'upload' and 'search' options.
 	    We need to make them dynamic to support plugins. */
-	const handleDataSourceOptionClick = (event: ReactMouseEvent<HTMLLIElement, MouseEvent>, option: PickerType) => {
+	const handleDataSourceOptionClick = (option: ImagePickerType) => {
 		setAddMenuOpen(false);
 		switch (option) {
 			case 'browse': {
@@ -191,10 +140,11 @@ export function ImagePicker(props: ImagePickerProps) {
 					setPickerType('search');
 					setOpenPickerDialog(true);
 				}
+				break;
 			}
 		}
 	};
-	const executeDataSourceOption = (optionType: PickerType, choice: AllowedPathsData) => {
+	const executeDataSourceOption = (optionType: ImagePickerType, choice: AllowedPathsData) => {
 		const processPath = (path: string) =>
 			processPathMacros({ path, objectId: id, fullParentPath: contextItem?.path ?? pathInSite });
 
@@ -204,6 +154,11 @@ export function ImagePicker(props: ImagePickerProps) {
 					dispatch,
 					path: processPath(choice.path),
 					multiSelect: false,
+					preselectedPaths: value ? [value] : [],
+					initialParameters: {
+						sortBy: choice.options?.sortBy,
+						sortOrder: choice.options?.sortOrder
+					},
 					onSuccess(imageData: MediaItem) {
 						// Check if the image meets restrictions
 						validateImageRestrictions(imageData.path, restrictions).then((meetsRestrictions) => {
@@ -230,6 +185,11 @@ export function ImagePicker(props: ImagePickerProps) {
 				showSearchDialog({
 					dispatch,
 					path: ensureSingleSlash(`${processPath(choice.path)}/.+`),
+					preselectedPaths: value ? [value] : [],
+					initialParameters: {
+						sortBy: choice.options?.sortBy,
+						sortOrder: choice.options?.sortOrder
+					},
 					onAcceptSelection(images) {
 						validateImageRestrictions(images[0], restrictions).then((meetsRestrictions) => {
 							if (!meetsRestrictions) {
@@ -258,7 +218,7 @@ export function ImagePicker(props: ImagePickerProps) {
 					fileTypes: ['image/*'],
 					onFileAdded: (file, uppy, callback) => {
 						const data = file.data;
-						const url = URL.createObjectURL(data);
+						const url = URL.createObjectURL(data as Blob | MediaSource);
 						validateImageRestrictions(url, restrictions).then((meetsRestrictions) => {
 							if (!meetsRestrictions) {
 								showImageCropDialog({
@@ -285,7 +245,7 @@ export function ImagePicker(props: ImagePickerProps) {
 					},
 					onUploadComplete(result: FileUploadResult) {
 						if (result.successful.length) {
-							const newValue = ensureSingleSlash(`${result.successful[0].meta.path}/${result.successful[0].meta.name}`);
+							const newValue = ensureSingleSlash(`${result.successful[0].meta.path}`);
 							setValue(newValue);
 						}
 					}
@@ -300,7 +260,11 @@ export function ImagePicker(props: ImagePickerProps) {
 		setOpenPickerDialog(false);
 	};
 
-	const menuOptions = createMediaMenuOptions(dataSourceSummary, handleDataSourceOptionClick, readonly);
+	const { menuOptions, availableOptions } = createMediaMenuOptions(
+		dataSourceSummary,
+		handleDataSourceOptionClick,
+		readonly
+	);
 
 	const handleRemoveImage = () => {
 		setValue(null);
@@ -418,7 +382,11 @@ export function ImagePicker(props: ImagePickerProps) {
 											disabled={readonly}
 											autoFocus={autoFocus}
 											onClick={() => {
-												setAddMenuOpen(true);
+												if (availableOptions.length === 1) {
+													handleDataSourceOptionClick(availableOptions[0]);
+												} else if (availableOptions.length > 1) {
+													setAddMenuOpen(true);
+												}
 											}}
 										>
 											<EditOutlined />

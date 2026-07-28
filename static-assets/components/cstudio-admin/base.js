@@ -141,6 +141,7 @@
 											});
 										}
 									} catch (e) {
+										console.error(e);
 										// in preview, this function undefined raises error -- unlike dashboard.
 										// I agree, not a good solution!
 									}

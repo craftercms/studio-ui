@@ -26,7 +26,24 @@ export function CodeEditorDialog(props: CodeEditorDialogProps) {
 	const { mode = 'text', path, readonly, contentType, onSuccess, onClose, onMinimize, onFullScreen, ...rest } = props;
 	const title = formatMessage(translations.title);
 	return (
-		<EnhancedDialog title={title} omitHeader maxWidth="xl" onMinimize={onMinimize} onClose={onClose} {...rest}>
+		<EnhancedDialog
+			title={title}
+			omitHeader
+			maxWidth={false}
+			slotProps={{
+				paper: {
+					sx: [
+						!props.isFullScreen && {
+							width: '90%',
+							height: '90vh'
+						}
+					]
+				}
+			}}
+			onMinimize={onMinimize}
+			onClose={onClose}
+			{...rest}
+		>
 			<CodeEditorDialogContainer
 				path={path}
 				mode={mode}

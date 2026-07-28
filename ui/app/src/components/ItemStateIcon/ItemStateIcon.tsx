@@ -50,7 +50,7 @@ export type ItemStateIconClassKey =
 	| 'stateNotInWorkflow';
 
 export interface ItemStateIconProps {
-	item: Pick<ContentItem, 'systemType' | 'stateMap' | 'lockOwner'>;
+	item: Pick<ContentItem, 'systemType' | 'stateMap' | 'lockOwner' | 'savedAsDraft'>;
 	classes?: Partial<Record<ItemStateIconClassKey, string>>;
 	sxs?: PartialSxRecord<ItemStateIconClassKey>;
 	className?: string;
@@ -161,7 +161,11 @@ export function ItemStateIcon(props: ItemStateIconProps) {
 		/>
 	) : (
 		<Tooltip
-			title={displayTooltip ? getItemStateText(item.stateMap, formatMessage, { user: item.lockOwner?.username }) : ''}
+			title={
+				displayTooltip
+					? getItemStateText(item.stateMap, formatMessage, { user: item.lockOwner?.username, draft: item.savedAsDraft })
+					: ''
+			}
 			open={displayTooltip ? void 0 : false}
 		>
 			<Icon
@@ -169,7 +173,10 @@ export function ItemStateIcon(props: ItemStateIconProps) {
 					...sxs?.root,
 					...stateSpecificSx
 				}}
-				aria-label={getItemStateText(item.stateMap, formatMessage, { user: item.lockOwner?.username })}
+				aria-label={getItemStateText(item.stateMap, formatMessage, {
+					user: item.lockOwner?.username,
+					draft: item.savedAsDraft
+				})}
 				aria-hidden={false}
 				className={[className, stateSpecificClass].filter(Boolean).join(' ')}
 				fontSize={fontSize}

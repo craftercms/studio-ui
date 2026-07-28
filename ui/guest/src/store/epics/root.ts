@@ -19,6 +19,7 @@ import { GuestStandardAction } from '../models/GuestStandardAction';
 import {
 	catchError,
 	filter,
+	finalize,
 	ignoreElements,
 	map,
 	switchMap,
@@ -31,20 +32,20 @@ import { isEditActionAvailable, not } from '../../utils/util';
 import { post } from '../../utils/communicator';
 import * as iceRegistry from '../../iceRegistry';
 import { getById, getReferentialEntries, isTypeAcceptedAsByField } from '../../iceRegistry';
-import { beforeWrite$, checkIfLockedOrModified, dragOk, unwrapEvent, getMoveComponentInfo } from '../util';
+import { beforeWrite$, checkIfLockedOrModified, dragOk, getMoveComponentInfo, unwrapEvent } from '../util';
 import * as contentController from '../../contentController';
 import {
 	createContentInstance,
+	getCachedContentItem,
+	getCachedContentItems,
 	getCachedModel,
 	getCachedModels,
 	getCachedModelsByPath,
-	getCachedContentItem,
-	getCachedContentItems,
 	getModelIdFromInheritedField,
 	isInheritedField,
 	modelHierarchyMap
 } from '../../contentController';
-import { interval, merge, NEVER, Observable, of, Subscriber } from 'rxjs';
+import { EMPTY, from, interval, merge, Observable, of, Subscriber } from 'rxjs';
 import { clearAndListen$, destroyDragSubjects, dragover$, escape$, initializeDragSubjects } from '../subjects';
 import { initTinyMCE } from '../../controls/rte';
 import { dragAndDropActiveClass, EditingStatus, HighlightMode } from '../../constants';
@@ -71,7 +72,7 @@ import { GuestState } from '../models/GuestStore';
 import { notNullOrUndefined, nullOrUndefined } from '@craftercms/studio-ui/utils/object';
 import { ElementRecord, ICEProps } from '../../models/InContextEditing';
 import * as ElementRegistry from '../../elementRegistry';
-import { get, getElementFromICEProps } from '../../elementRegistry';
+import { compileAllDropZones, get, getElementFromICEProps } from '../../elementRegistry';
 import { scrollToElement } from '../../utils/dom';
 import {
 	computedDragEnd,
@@ -100,8 +101,10 @@ import { processPathMacros } from '@craftercms/studio-ui/utils/path';
 import { uploadDataUrl } from '@craftercms/studio-ui/services/content';
 import { getRequestForgeryToken } from '@craftercms/studio-ui/utils/auth';
 import { ensureSingleSlash } from '@craftercms/studio-ui/utils/string';
-import { getInheritanceParentIdsForField } from '@craftercms/studio-ui/utils/content';
+import { getInheritanceParentIdsForField, validateImageRestrictions } from '@craftercms/studio-ui/utils/content';
 import { SearchItem } from '@craftercms/studio-ui/models';
+import type { ImageRestrictions } from '@craftercms/studio-ui/components/ImageEditorDialog/types';
+import { imageEditCancelled, imageEdited, showImageEditorDialog } from '@craftercms/studio-ui/state/actions/dialogs';
 
 const createReader$ = (file: File) =>
 	new Observable((subscriber: Subscriber<ProgressEvent<FileReader>>) => {
@@ -145,7 +148,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 				const iceId = state.draggable?.[record.id];
 				const { isLocked, isExternallyModified } = checkIfLockedOrModified(state, record);
 				if (isLocked || isExternallyModified) {
-					return NEVER;
+					return EMPTY;
 				} else if (nullOrUndefined(iceId)) {
 					// When the drag starts on a child element of the item, it passes through here.
 					console.error('No ice id found for this drag instance.', record, state.draggable);
@@ -163,7 +166,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 					document.documentElement.classList.add(dragAndDropActiveClass);
 					return initializeDragSubjects(state$);
 				}
-				return NEVER;
+				return EMPTY;
 			})
 		),
 	// endregion
@@ -257,15 +260,52 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 									case EditingStatus.PLACING_DETACHED_ASSET: {
 										const { dropZone } = dragContext;
 										if (dropZone && dragContext.inZone) {
-											const record = iceRegistry.getById(dropZone.iceId);
-											contentController.updateField(
-												record.modelId,
-												record.fieldId,
-												record.index,
-												(dragContext.dragged as SearchItem).path
+											const iceRecord = iceRegistry.getById(dropZone.iceId);
+											const field = iceRegistry.getRecordField(iceRecord);
+											const {
+												validations: { allowImageUpload }
+											} = field;
+
+											const restrictions: ImageRestrictions = {
+												height: field.validations?.height?.value,
+												width: field.validations?.width?.value,
+												maxHeight: field.validations?.maxHeight?.value,
+												maxWidth: field.validations?.maxWidth?.value,
+												minHeight: field.validations?.minHeight?.value,
+												minWidth: field.validations?.minWidth?.value
+											};
+
+											// Path to upload asset if image doesn't meet restrictions
+											const uploadPath = allowImageUpload?.value
+												? processPathMacros({
+														path: allowImageUpload.value,
+														objectId: iceRecord.modelId
+													})
+												: `/static-assets/images/${iceRecord.modelId}`;
+
+											const { path, name } = dragContext.dragged as SearchItem;
+											return from(validateImageRestrictions(path, restrictions)).pipe(
+												switchMap((meetsRestrictions) => {
+													if (meetsRestrictions) {
+														contentController.updateField(iceRecord.modelId, iceRecord.fieldId, iceRecord.index, path);
+														return EMPTY;
+													} else {
+														post(
+															showImageEditorDialog({
+																path,
+																restrictions,
+																fileName: name,
+																recordId: record.id,
+																uploadPath
+															})
+														);
+														return of(desktopAssetDragEnded());
+													}
+												})
 											);
+										} else {
+											return EMPTY;
 										}
-										break;
 									}
 									case EditingStatus.SORTING_COMPONENT: {
 										if (notNullOrUndefined(dragContext.targetIndex)) {
@@ -290,8 +330,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 													entries.contentType.dataSources?.find(
 														(ds) =>
 															ds.type === 'components' && ds.properties.contentTypes.split(',').includes(contentType.id)
-														// FE2 TODO: check type
-													)?.baseRepoPath ?? null;
+													)?.properties?.baseRepoPath ?? null;
 												newComponentPath = newComponentPath
 													? processPathMacros({
 															path: newComponentPath,
@@ -347,105 +386,249 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 												: // TODO: Support path coming from content type definition
 													`/static-assets/images/${record.modelId}`;
 
-											return merge(
-												of(desktopAssetUploadStarted({ record })),
-												of(desktopAssetDragEnded()),
-												validateActionPolicy(state.activeSite, {
-													type: 'CREATE',
-													target: ensureSingleSlash(`${path}/${file.name}`),
-													contentMetadata: {
-														fileSize: file.size
-													}
-												}).pipe(
-													switchMap(({ allowed, modifiedValue, message }) => {
-														const aImg = record.element;
-														const originalSrc = aImg.src;
-														if (allowed) {
-															const readerObs = createReader$(file);
-															const fileName = modifiedValue
-																? modifiedValue.replace(path, '').replace(/^\//, '')
-																: file.name;
-															return readerObs.pipe(
-																switchMap((event) => {
-																	aImg.src = event.target.result;
+											const restrictions: ImageRestrictions = {
+												height: field.validations?.height?.value,
+												width: field.validations?.width?.value,
+												maxHeight: field.validations?.maxHeight?.value,
+												maxWidth: field.validations?.maxWidth?.value,
+												minHeight: field.validations?.minHeight?.value,
+												minWidth: field.validations?.minWidth?.value
+											};
+											const readerObs = createReader$(file);
 
-																	post(snackGuestMessage({ id: 'assetUploadStarted' }));
-																	return uploadDataUrl(
-																		state.activeSite,
-																		{
-																			name: fileName,
-																			type: file.type,
-																			dataUrl: event.target.result
-																		},
-																		path,
-																		getRequestForgeryToken()
-																	).pipe(
-																		switchMap((action) => {
-																			if (action.type === 'progress') {
-																				const { progress } = action.payload;
-																				const percentage = Math.floor(
-																					parseInt(((progress.bytesUploaded / progress.bytesTotal) * 100).toFixed(2))
-																				);
-																				return of(
-																					desktopAssetUploadProgress({
-																						record,
-																						percentage
+											return readerObs.pipe(
+												switchMap((event) => {
+													const fileSrc = event.target.result as string;
+													return from(validateImageRestrictions(fileSrc, restrictions)).pipe(
+														switchMap((meetsRestrictions) => {
+															if (!meetsRestrictions) {
+																const url = URL.createObjectURL(file);
+																post(
+																	showImageEditorDialog({
+																		path: url,
+																		restrictions,
+																		fileName: file.name,
+																		recordId: record.id,
+																		uploadPath: path
+																	})
+																);
+
+																return of(desktopAssetDragEnded());
+															} else {
+																return merge(
+																	of(desktopAssetUploadStarted({ record })),
+																	of(desktopAssetDragEnded()),
+																	validateActionPolicy(state.activeSite, {
+																		type: 'CREATE',
+																		target: ensureSingleSlash(`${path}/${file.name}`),
+																		contentMetadata: {
+																			fileSize: file.size
+																		}
+																	}).pipe(
+																		switchMap(({ allowed, modifiedValue, message }) => {
+																			const aImg = record.element;
+																			const originalSrc = aImg.src;
+																			if (allowed) {
+																				const fileName = modifiedValue
+																					? modifiedValue.replace(path, '').replace(/^\//, '')
+																					: file.name;
+
+																				aImg.src = fileSrc;
+
+																				post(snackGuestMessage({ id: 'assetUploadStarted' }));
+																				return uploadDataUrl(
+																					state.activeSite,
+																					{
+																						name: fileName,
+																						type: file.type,
+																						dataUrl: event.target.result
+																					},
+																					path,
+																					getRequestForgeryToken()
+																				).pipe(
+																					switchMap((action) => {
+																						if (action.type === 'progress') {
+																							const { progress } = action.payload;
+																							const percentage = Math.floor(
+																								parseInt(
+																									((progress.bytesUploaded / progress.bytesTotal) * 100).toFixed(2)
+																								)
+																							);
+																							return of(
+																								desktopAssetUploadProgress({
+																									record,
+																									percentage
+																								})
+																							);
+																						} else {
+																							if (modifiedValue) {
+																								post(snackGuestMessage({ id: message }));
+																							}
+																							return of(
+																								desktopAssetUploadComplete({
+																									record,
+																									path: `${path}${path.endsWith('/') ? '' : '/'}${fileName}`
+																								})
+																							);
+																						}
+																					}),
+																					catchError(() => {
+																						aImg.src = originalSrc;
+																						post(
+																							snackGuestMessage({
+																								id: 'uploadError',
+																								level: 'required'
+																							})
+																						);
+																						return of(desktopAssetUploadFailed({ record }));
 																					})
 																				);
 																			} else {
-																				if (modifiedValue) {
-																					post(snackGuestMessage({ id: message }));
-																				}
-																				return of(
-																					desktopAssetUploadComplete({
-																						record,
-																						path: `${path}${path.endsWith('/') ? '' : '/'}${fileName}`
+																				aImg.src = originalSrc;
+																				post(
+																					snackGuestMessage({
+																						id: 'noPolicyComply',
+																						level: 'required',
+																						values: {
+																							fileName: file.name,
+																							detail: message
+																						}
 																					})
 																				);
+																				return of(desktopAssetUploadFailed({ record }));
 																			}
-																		}),
-																		catchError(() => {
-																			aImg.src = originalSrc;
-																			post(
-																				snackGuestMessage({
-																					id: 'uploadError',
-																					level: 'required'
-																				})
-																			);
-																			return of(desktopAssetUploadFailed({ record }));
 																		})
-																	);
-																})
-															);
-														} else {
-															aImg.src = originalSrc;
-															post(
-																snackGuestMessage({
-																	id: 'noPolicyComply',
-																	level: 'required',
-																	values: {
-																		fileName: file.name,
-																		detail: message
-																	}
-																})
-															);
-															return of(desktopAssetUploadFailed({ record }));
-														}
-													})
-												)
+																	)
+																);
+															}
+														})
+													);
+												})
 											);
 										} else {
 											return of(desktopAssetDragEnded());
 										}
 									}
 								}
-								return NEVER;
+								return EMPTY;
 							})
 						);
 					}
 				} else {
-					return NEVER;
+					return EMPTY;
 				}
+			})
+		);
+	},
+	// endregion
+	// region imageEdited
+	(action$, state$) => {
+		return action$.pipe(
+			ofType(imageEdited.type),
+			withLatestFrom(state$),
+			switchMap(([action, state]) => {
+				const { blob, fileName: imageFileName, recordId, uploadPath: path } = action.payload;
+				const record = get(recordId);
+				const iceId = record.iceIds[0];
+				const dropZone = compileAllDropZones(iceId)[0];
+
+				if (dropZone) {
+					return merge(
+						of(desktopAssetDragEnded()),
+						of(desktopAssetUploadStarted({ record })),
+						validateActionPolicy(state.activeSite, {
+							type: 'CREATE',
+							target: ensureSingleSlash(`${path}/${imageFileName}`),
+							contentMetadata: {
+								fileSize: blob.size
+							}
+						}).pipe(
+							switchMap(({ allowed, modifiedValue, message }) => {
+								const aImg = record.element as HTMLImageElement;
+								const originalSrc = aImg.src;
+								if (allowed) {
+									const fileName = modifiedValue ? modifiedValue.replace(path, '').replace(/^\//, '') : imageFileName;
+									const previewUrl = URL.createObjectURL(blob);
+									aImg.src = previewUrl;
+
+									post(snackGuestMessage({ id: 'assetUploadStarted' }));
+									return uploadDataUrl(
+										state.activeSite,
+										{
+											name: fileName,
+											type: blob.type,
+											blob
+										},
+										path,
+										getRequestForgeryToken()
+									).pipe(
+										switchMap((action) => {
+											if (action.type === 'progress') {
+												const { progress } = action.payload;
+												const percentage = Math.floor(
+													parseInt(((progress.bytesUploaded / progress.bytesTotal) * 100).toFixed(2))
+												);
+												return of(
+													desktopAssetUploadProgress({
+														record,
+														percentage
+													})
+												);
+											} else {
+												if (modifiedValue) {
+													post(snackGuestMessage({ id: message }));
+												}
+												return of(
+													desktopAssetUploadComplete({
+														record,
+														path: `${path}${path.endsWith('/') ? '' : '/'}${fileName}`
+													})
+												);
+											}
+										}),
+										catchError(() => {
+											aImg.src = originalSrc;
+											post(
+												snackGuestMessage({
+													id: 'uploadError',
+													level: 'required'
+												})
+											);
+											return of(desktopAssetUploadFailed({ record }));
+										}),
+										finalize(() => URL.revokeObjectURL(previewUrl))
+									);
+								} else {
+									aImg.src = originalSrc;
+									post(
+										snackGuestMessage({
+											id: 'noPolicyComply',
+											level: 'required',
+											values: {
+												fileName: imageFileName,
+												detail: message
+											}
+										})
+									);
+									return of(desktopAssetUploadFailed({ record }));
+								}
+							})
+						)
+					);
+				} else {
+					return EMPTY;
+				}
+			})
+		);
+	},
+	// endregion
+	// region imageEditCancelled
+	(action$) => {
+		return action$.pipe(
+			ofType(imageEditCancelled.type),
+			switchMap(({ payload: { recordId } }) => {
+				const record = get(recordId);
+				return merge(of(desktopAssetDragEnded()), of(desktopAssetUploadFailed({ record })));
 			})
 		);
 	},
@@ -473,7 +656,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 						return [computedDragEnd(), startListening()];
 					}
 					default:
-						return NEVER;
+						return EMPTY;
 				}
 			})
 		),
@@ -544,7 +727,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 						(isLocked && !isLockedByCurrentUser && getById(record.iceIds[0]).recordType === 'field') ||
 						!isEditable
 					) {
-						return NEVER;
+						return EMPTY;
 					} else if (
 						state.highlightMode === HighlightMode.ALL &&
 						(state.status === EditingStatus.LISTENING || actionType === 'triggered_click')
@@ -580,7 +763,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 										'Please add tinymce on to the page to enable editing.'
 								);
 							} else if (not(validations?.readOnly?.value)) {
-								const setupId = field.properties?.rteConfiguration?.value ?? 'generic';
+								const setupId = (field.properties?.rteConfiguration?.value as string) ?? 'generic';
 								const setup = state.rteConfig[setupId] ?? Object.values(state.rteConfig)[0] ?? {};
 								// Only pass rte setup to html type, text/textarea (plaintext) controls won't show full rich-text-editing.
 
@@ -665,8 +848,9 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 							return of(startListening());
 						}
 					}
-					// Note: Returning NEVER will unsubscribe from any previous stream returned on a prior click.
-					return NEVER;
+					// No action to dispatch for this click; EMPTY completes immediately (switchMap still
+					// unsubscribes from any previous inner stream when a new click arrives).
+					return EMPTY;
 				}
 			)
 		),
@@ -839,12 +1023,12 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 						return initializeDragSubjects(state$);
 					}
 				}
-				return NEVER;
+				return EMPTY;
 			})
 		),
 	// endregion
 	// region componentInstanceDragStarted
-	(action$: MouseEventActionObservable, state$) => {
+	(action$: MouseEventActionObservable, state$, { getIntl }) => {
 		return action$.pipe(
 			ofType(componentInstanceDragStarted.type),
 			withLatestFrom(state$),
@@ -853,19 +1037,31 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 					console.error('No contentTypeId found for this drag instance.');
 				} else {
 					if (state.dragContext.dropZones.length === 0) {
-						post(
-							snackGuestMessage({
-								id: 'dropTargetsNotFound',
-								level: 'info',
-								values: { contentType: state.dragContext.contentType.name }
-							})
-						);
+						if (state.dragContext.isInstanceDuplicateInZone) {
+							post(
+								snackGuestMessage({
+									message: getIntl().formatMessage({
+										id: 'instanceDragStarted.duplicateItem',
+										defaultMessage: 'Drop targets do not allow duplicate items.'
+									}),
+									level: 'info'
+								})
+							);
+						} else {
+							post(
+								snackGuestMessage({
+									id: 'dropTargetsNotFound',
+									level: 'info',
+									values: { contentType: state.dragContext.contentType.name }
+								})
+							);
+						}
 					} else {
 						document.documentElement.classList.add(dragAndDropActiveClass);
 						return initializeDragSubjects(state$);
 					}
 				}
-				return NEVER;
+				return EMPTY;
 			})
 		);
 	},
@@ -878,7 +1074,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 			switchMap(([, state]) => {
 				if (nullOrUndefined((state.dragContext.dragged as SearchItem).path)) {
 					console.error('No path found for this drag asset.');
-					return NEVER;
+					return EMPTY;
 				}
 				return initializeDragSubjects(state$);
 			})
@@ -896,7 +1092,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 				} else {
 					return initializeDragSubjects(state$);
 				}
-				return NEVER;
+				return EMPTY;
 			})
 		);
 	},
@@ -922,7 +1118,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 							values: { name }
 						})
 					);
-					return NEVER;
+					return EMPTY;
 				}
 			})
 		);
